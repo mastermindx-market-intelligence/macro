@@ -525,5 +525,141 @@ def test_kernel_applicability_refuses_unsupported_contracts(style, right, second
     assert got == {"status": status, "reason": reason, "model": model}
 
 
+# ── (11) V01 qualification: the kernel against references that live only in this file ──
+# Closed forms and finite differences of bs_price itself, with a nonzero carry (r=0.03,
+# q=0.01) so a dropped e^{-qT} or e^{-rT} factor is visible. Steps are scaled to the
+# distribution width S·σ√T, and every tolerance is normalised to a dimensionless greek.
+
+_QR = 0.03
+_QQ = 0.01
+_QUAL_CASES = [(600.0, K, T, 0.25) for T in (1.0 / 365.0, 30.0 / 365.0, 1.0)
+               for K in (570.0, 600.0, 630.0)] \
+    + [(5000.0, 5000.0, 3600.0 / _SECONDS_PER_YEAR, 0.20)]
+
+
+def _px(S, K, T, sig, isc):
+    return float(bs_price(S, np.array([K]), np.array([T]), np.array([sig]), np.array([isc]),
+                          _QR, _QQ)[0])
+
+
+def _greeks(S, K, T, sig, isc):
+    out = bs_greeks_vec(S, np.array([K]), np.array([T]), np.array([sig]), np.array([isc]),
+                        _QR, _QQ)
+    return tuple(float(g[0]) for g in out)
+
+
+@pytest.mark.parametrize("S,K,T,sig", [(600.0, K, T, 0.20) for T in (30.0 / 365.0, 0.25, 1.0)
+                                       for K in (570.0, 600.0, 630.0)]
+                         + [(5000.0, 5000.0, 3600.0 / _SECONDS_PER_YEAR, 0.20)])
+def test_vega_matches_price_finite_difference_in_sigma(S, K, T, sig):
+    from engine.intraday_greeks import bs_vega
+
+    h = 1e-5
+    fd = (_px(S, K, T, sig + h, True) - _px(S, K, T, sig - h, True)) / (2.0 * h)
+    vega = float(bs_vega(S, np.array([K]), np.array([T]), np.array([sig]), _QR, _QQ)[0])
+    # truncation h²/6·∂³P/∂σ³ < 1e-9 here; rounding ~2·eps·S/(2h) ≤ 1.1e-7 at S=5000
+    assert abs(fd - vega) < 1e-5
+
+
+@pytest.mark.parametrize("S,K,T", [(600.0, 600.0, 0.25),
+                                   (5000.0, 5000.0, 3600.0 / _SECONDS_PER_YEAR)])
+def test_vega_is_per_one_point_zero_vol(S, K, T):
+    """A 1-vol-point move (0.01) changes the price by 0.01·vega: vega is per 1.00 of vol."""
+    from engine.intraday_greeks import bs_vega
+
+    sig = 0.20
+    vega = float(bs_vega(S, np.array([K]), np.array([T]), np.array([sig]), _QR, _QQ)[0])
+    move = _px(S, K, T, sig + 0.01, True) - _px(S, K, T, sig, True)
+    # ATM with r−q = σ²/2 → d2 = 0 → volga = 0; the residual h³/6·ultima is < 1e-5
+    assert abs(move - 0.01 * vega) < 2e-3
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_delta_matches_price_finite_difference(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    fd = (_px(S + h, K, T, sig, isc) - _px(S - h, K, T, sig, isc)) / (2.0 * h)
+    delta = _greeks(S, K, T, sig, isc)[0]
+    # truncation h²·|speed|/6 ≤ 1e-6/6·φ(d1)·(σ√T + |d1|) < 6e-8; rounding ~eps·S/h < 1e-10
+    assert abs(fd - delta) < 1e-6
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_gamma_matches_price_second_difference(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    fd = (_px(S + h, K, T, sig, isc) - 2.0 * _px(S, K, T, sig, isc)
+          + _px(S - h, K, T, sig, isc)) / (h * h)
+    gamma = _greeks(S, K, T, sig, isc)[1]
+    # normalised by S·σ√T (Γ·S·σ√T = e^{-qT}φ(d1) ≤ 0.4): truncation ~(1e-3)²/12·O(1) < 1e-6;
+    # rounding ~8·eps·S/h²·S·σ√T < 7e-7 at the S=5000, 1-hour case
+    assert abs(fd - gamma) * S * sig * np.sqrt(T) < 1e-5
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_vanna_matches_price_mixed_difference(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    k = 1e-4
+    fd = (_px(S + h, K, T, sig + k, isc) - _px(S + h, K, T, sig - k, isc)
+          - _px(S - h, K, T, sig + k, isc) + _px(S - h, K, T, sig - k, isc)) / (4.0 * h * k)
+    vanna = _greeks(S, K, T, sig, isc)[2]
+    # normalised by σ (vanna·σ = −e^{-qT}φ(d1)·d2): truncation O((1e-3)² + (k/σ)²) < 1e-6;
+    # rounding ~2·eps·S·σ/(h·k) < 5e-7 at the S=5000, 1-hour case
+    assert abs(fd - vanna) * sig < 1e-5
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_charm_matches_price_mixed_difference_in_calendar_time(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    tau = 1e-3 * T
+
+    def fd_delta(t):
+        return (_px(S + h, K, t, sig, isc) - _px(S - h, K, t, sig, isc)) / (2.0 * h)
+
+    fd = -(fd_delta(T + tau) - fd_delta(T - tau)) / (2.0 * tau)   # per calendar year: −∂Δ/∂T
+    charm = _greeks(S, K, T, sig, isc)[3]
+    # normalised by T (charm·T = delta drift over the remaining life): truncation
+    # O((τ/T)² + (h/(Sσ√T))²) < 1e-6; rounding ~2·eps·S·T/(h·τ) < 3e-7
+    assert abs(fd - charm) * T < 1e-5
+
+
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_put_call_parity_of_prices(S, K, T, sig):
+    c = _px(S, K, T, sig, True)
+    p = _px(S, K, T, sig, False)
+    assert abs((c - p) - (S * np.exp(-_QQ * T) - K * np.exp(-_QR * T))) < 1e-10
+
+
+def test_floored_refit_is_not_a_universal_gamma_multiplier():
+    """No single constant converts greeks at a floored clock into greeks at the raw clock.
+
+    Re-pricing at max(T, 1 h) rescales gamma and vega by ~√(1 h / T), a factor that grows
+    as expiry nears; a fixed multiplier cannot undo a floored clock across maturities.
+    """
+    from engine.intraday_greeks import bs_vega
+
+    S = K = 5000.0
+    sig = 0.20
+    seconds = np.array([3600.0, 1800.0, 900.0, 300.0, 60.0])
+    T_raw = seconds / _SECONDS_PER_YEAR
+    T_floor = np.maximum(seconds, 3600.0) / _SECONDS_PER_YEAR
+    Ks = np.full(seconds.shape, K)
+    sigs = np.full(seconds.shape, sig)
+    calls = np.full(seconds.shape, True)
+
+    _, g_raw, _, _ = bs_greeks_vec(S, Ks, T_raw, sigs, calls, 0.0, 0.0)
+    _, g_floor, _, _ = bs_greeks_vec(S, Ks, T_floor, sigs, calls, 0.0, 0.0)
+    v_raw = bs_vega(S, Ks, T_raw, sigs, 0.0, 0.0)
+    v_floor = bs_vega(S, Ks, T_floor, sigs, 0.0, 0.0)
+
+    vega_ratio = v_floor / v_raw
+    gamma_ratio = g_raw / g_floor
+    assert np.ptp(vega_ratio) > 0.5, f"vega ratio is ~constant: {vega_ratio}"
+    assert np.ptp(gamma_ratio) > 0.5, f"gamma ratio is ~constant: {gamma_ratio}"
+    assert np.all(vega_ratio[seconds <= 1800.0] >= 1.4), f"vega ratio: {vega_ratio}"
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
