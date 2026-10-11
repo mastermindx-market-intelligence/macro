@@ -675,19 +675,51 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent
-  #6805, PICKUP_ACK 5793983971): wave 2 closed 2026-09-23 (handoff
-  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave2-close.md; decisions
-  DEC:PROPHET-US-D03-SOURCE-READINESS-SCOPE, DEC:PROPHET-US-B16-CYCLE-INTERNAL-DIAGNOSTIC-ERA,
-  DEC:PROPHET-US-B04-EVIDENCE-DOSSIER-CONTRACT, DEC:PROPHET-US-D10-SOURCE-CUSTODY-ADMISSION).
-  Wave 3: merge DS-PR-0a (#7849) on concluded green and live-verify theme.css; adjudicate the
-  B20-1 component spec (#7851) after its repair lane and an Opus read-only audit; consume the
-  pre-registered Cycle (a) diagnostic run and B04-A from the m1 window (internal-only evidence,
-  never a pilot); rule R6-D07-01 on the D07 evidence-class register draft, then B04-B/C and
-  DS-PR-0c on 7849's merge sha. B01 stays with the #7180 writer; B03 merged by the #7572 writer
-  (177146dd) awaits production proof. The 2026-09-18 rotation mandate and the masterplan §21
-  wave graph remain in force beneath this program; never replay an old next action without
-  reconciling the R6 records.
+  2026-10-11 B1 validation continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-b1-validation-performance.md and programme
+  comment6107291350. PR8832 source is closed at3cb4bfcc and its exact engine was
+  installed before a normal API restart, but entitled B03 still aborted after15s.
+  Current isolated read25.57s spent24.57s in B1 semantics; request arrival remains
+  unknown. The new bounded repair removes repeated envelope validation and final
+  per-episode relation scans without weakening any per-request integrity check.
+  Parent190 affected tests pass; full371-row retained-input result is identical
+  and independent exact-diff review approved. PR8845's first exact plan exposed
+  a CI ownership gap: B1's four-suite command was in a nightly-only data job.
+  The same branch moves that unchanged proof to the existing Prophet code job
+  and tightens unique-owner/source-selector regression tests. Complete normal CI/merge/adoption
+  and live B03 proof; candidate return still awaits coherent generated HTML.
+  Earlier progress below is historical and does not reopen closed evidence.
+  2026-10-11 B03 runtime continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-b03-read-performance.md and programme comment
+  6107291350. B03/8798/8801/8806/8827 source releases are closed; 8827 merged as
+  f6ab52870283d0b1f782a6b0978a81b672864285. Earlier four-feature publication
+  completed, and live bilingual entry/source copy plus exact related Plan filter
+  were observed. Live B03 read aborted at its existing 15-second deadline;
+  original request arrival and first fault remain unknown. The current bounded
+  per-request relation index preserves full B1 validation, passes 53 affected
+  tests and exact 371-row retained-input comparison, and has independent scoped
+  review. Publish and consume exact-head CI before normal source release; actual
+  installed-source/live timeout resolution and 8827 candidate return remain owed.
+  The older progression below is historical and does not reopen closed releases.
+  2026-10-11 human-approved continuation under 6817/6805 and original root
+  01a11e89-b35d-7a81-9404-5fce2c6170cb: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-entry-copy.md and programme comment 6107291350.
+  B03 PR8762 is source-merged at 395e5d6089e95aa907c48fae811ecb918fb26f95 after
+  accepted source, current-head hosted CI and explicit human component visual
+  approval. Existing automatic render 38133349439 and authenticated B03 production
+  proof remain owed. Deliver the current-main mixed Buy/Near group copy repair
+  through normal source/CI/release. B04 PR7869 and B06 PR8670 source releases and
+  reviews are closed. P1a PR8444 access/cached-render deltas are independently
+  accepted within scope at a8d84782b3d2f1e6a875012067584c0b4234d7c0; its original
+  explicit integration refusal and generated public-shell repair remain separate.
+  Resume prepared HK P1b then China P1c at the actual shared P1a acceptance/release
+  edge, preserving incumbent source effects. Daily Brief original PR8249 retains
+  its refused source edit and owner-issued exact selection tuple obligation.
+  Continue native evidence, truthful entry and Model Plans to four-market
+  authenticated production acceptance; do not replay closed operations or infer
+  mission completion from source delivery. Native same-parent children are
+  admitted within actual runtime limits; existing M2 remains preferred and no
+  Executive plugin is used.
 ---
 
 ## Context

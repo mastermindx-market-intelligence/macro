@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-11T03:31:42.005641+00:00",
+  "generated_utc": "2026-10-11T17:19:57.344018+00:00",
   "as_of": "2026-10-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -6785,14 +6785,6 @@
       },
       {
         "ticker": "NVNI",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "PSKY",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -21288,14 +21280,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "IPEXR",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "JENA-RI",
         "category": "Delistings",
         "confidence": "high",
@@ -21928,7 +21912,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "LGNZZ",
+        "ticker": "LGNYZ",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -22144,7 +22128,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "FHN-PF",
+        "ticker": "FHN-PH",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -25552,7 +25536,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "AQNB",
+        "ticker": "AGQPF",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -25816,7 +25800,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RWTQ",
+        "ticker": "RWTN",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -26008,7 +25992,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "TCBIO",
+        "ticker": "TCBI-PB",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -26334,14 +26318,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "MSSAF",
-        "category": "Liquidations",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Liquidations"
       },
       {
         "ticker": "PRGS",
@@ -27098,7 +27074,7 @@
         "ticker": "FIVE",
         "net_up_30d": 24,
         "breadth": 1.0,
-        "est_chg_30d": 11.01,
+        "est_chg_30d": 0.01,
         "n_analysts": 24,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27208,7 +27184,7 @@
         "ticker": "DLTR",
         "net_up_30d": 20,
         "breadth": 0.77,
-        "est_chg_30d": 0.22,
+        "est_chg_30d": 0.08,
         "n_analysts": 26,
         "bull_ratio": 0.88,
         "rising": true,
@@ -28349,10 +28325,10 @@
         },
         {
           "ticker": "COE",
-          "buy_usd": 133514854.0,
+          "buy_usd": 124202047.0,
           "sell_usd": 0.0,
-          "net_usd": 133514854.0,
-          "buyers": 40,
+          "net_usd": 124202047.0,
+          "buyers": 37,
           "sellers": 0
         },
         {
@@ -28494,12 +28470,12 @@
           "sellers": 163
         },
         {
-          "ticker": "UMC",
+          "ticker": "ILMN",
           "buy_usd": 0.0,
-          "sell_usd": 755150200.0,
-          "net_usd": -755150200.0,
+          "sell_usd": 724475263.0,
+          "net_usd": -724475263.0,
           "buyers": 0,
-          "sellers": 7
+          "sellers": 122
         }
       ]
     },
@@ -29556,14 +29532,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -32009,13 +31985,6 @@
         "last_surprise_pct": -3.3
       },
       {
-        "ticker": "UMC",
-        "next_date": "2026-10-28",
-        "days_to": 17,
-        "eps_forecast": 0.23,
-        "last_surprise_pct": 237.5
-      },
-      {
         "ticker": "URI",
         "next_date": "2026-10-28",
         "days_to": 17,
@@ -32119,6 +32088,13 @@
         "days_to": 18,
         "eps_forecast": 2.55,
         "last_surprise_pct": 2.3
+      },
+      {
+        "ticker": "ILMN",
+        "next_date": "2026-10-29",
+        "days_to": 18,
+        "eps_forecast": 1.36,
+        "last_surprise_pct": 6.5
       },
       {
         "ticker": "IR",
