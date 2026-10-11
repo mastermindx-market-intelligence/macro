@@ -61,7 +61,7 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | W13 records (W12 landing + FIXBIND-01 MERGED (D90) + #8434 facts and the MO-PAID-027 evidence note (D91) + CEO B 5987672592 evidence: MO-DELTA-007's first natural exercise, MO-DELTA-003 / Terminal #805, Terminal #806 facts (D92)) | seat-executed RECORDS_W13 (L.7, sole F00 writer), one PR | union rows only (OUTSIDE_UNION_SHA256 unchanged); NO state moves — 006 stays PROVEN_LIVE; 027/003/007 stay PARTIAL (007's rung stays BUILT_NOT_PROVEN per D85: the installed worker does not yet score); #8434/#806 map to no admitted row (FACTS only) | DONE — #8465 MERGED `c35996123e3f` 05:05:30Z 10-05 (D90–D92; readback 5988458120) |
 | W14 records (W13 landing + CEO B 6004683154 F13-WS natural-run result on MO-DELTA-007, #820 on MO-PAID-054 and #807 on MO-DELTA-003 by its own body's lineage (D93); CEO B's other Terminal lanes #816/#817/#818/#822/#823/#830 as FACTS, Add Symbol / Watchlist import as OPEN for Sol (D94)) | seat-executed RECORDS_W14 (L.7, sole F00 writer), one PR | union rows only (OUTSIDE_UNION_SHA256 unchanged); NO state moves — 003/007/054 stay PARTIAL (007: the worker now completes at natural cadence, but no authorized real claim has been scored); a row is written only when the PR body names it or names its recorded lineage | **DONE** — #8496 MERGED `543e6513453b` 00:05:43Z 10-06 (exact head `2ca63534`, `--match-head-commit`), blob-verified; readback #6819 6006069622; B ACCEPT 6006318924 |
 | W15 records + SEAT TRANSFER (consumed edges 10-06→10-10 as FACTS (D95), MO-PAID-032 10-10 natural run CANCELLED before its producer step (D96), CEO A seat → Claude3 under a full-throttle mandate (D97), successor brief §7) | seat-executed RECORDS_W15 (L.7, sole F00 writer), one PR | NO ledger row moves (no edge since W14 names an admitted F01–F05 row; 032 had no observation); records cite carrier ids, run ids and merged shas only | 22:0xZ 10-10 → this PR, then hand-off |
-| W16 product resumption + source/local proof | CEO A root `01a128b5-e26b-7b12-94b5-231bfe0b8036`; sole F00 writer; B verifies | Six union-row evidence updates, no state promotion; J1 #8769, F01 #8771/#8778, F05 #8775, B Settings #917 and bounded dependency returns | IN PROGRESS — §8; exact-head CI/render/served proof still outstanding |
+| W16 product resumption + source/local proof | CEO A root `01a128b5-e26b-7b12-94b5-231bfe0b8036`; sole F00 writer; B verifies | Six union-row evidence updates, no state promotion; J1 #8769, F01 #8771/#8778, F05 #8775, B Settings #917 and bounded dependency returns | SOURCE RECORDS MERGED #8779 ea7fa5bbb44be1c3938abd03b9fbf9f378c42b2b; §9 qualifies remaining publication |
 
 ## 3 Lane matrix
 
@@ -639,3 +639,105 @@ Fabric child `mo-a-f01-producer-census-01a128b5-v1` failed with provider/client 
 ### Next ready dependencies and unchanged gates
 
 Finish the four A product increments through their actual CI/release/served boundaries; publish W16 with B's exact-row verification once material results are folded. Continue the existing F01 regime source lane and consume the Options owner incident return; the bounded dependency re-census is complete. Do not rebuild accepted owners. F03 natural RTH remains Monday2026-10-12 13:30–20:00Z; MO-PAID-032 next natural weekly read is Saturday2026-10-17 at/after22:30Z. Do not dispatch/enable/retry a replacement observation. #8260/#8250/#7100/#8434, the named held Terminal carriers and Sol-OPEN D87/D88/D89/D94 stay with their owners. MISSION_COMPLETE remains false.
+
+
+## 9. W17 — native delegation acceptance and truthful publication boundary (2026-10-11)
+
+This is the next cumulative CEO A checkpoint, original root
+`01a128b5-e26b-7b12-94b5-231bfe0b8036`, at protected Macro
+`488cb027751ee644c681e2579c6fcc23ca9b3e9f`. It supersedes §8's pending source merges
+and absent-native-tool observation only. Existing product/rights/held-work laws remain.
+A remains the sole F00C writer. B retains F06–F13 and signed-in J1 consumers.
+
+### D104–D108
+
+- **D104 — existing credit source honesty delivered in source.** #8780 head
+  `1a2987e4886c8ef710814511606ec96bf4525f6b` merged as
+  `6f4e215d26b127bdf97e82e62ffcbfde8946773d` at09:00:06Z. All27checks concluded
+  with no nonstanding failure; all15changed blobs matched freshmain.127targeted
+  checks and8dark/light EN/ZH1440/390 browser states plus valid-input controls
+  passed; attended Fabric exact-patch review was explicitly ACCEPTED. Missing,
+  malformed, null and empty root snapshots are unavailable instead of low-stress
+  or zero-maturity observations. This does not launch the dedicated credit page,
+  refresh the Sep10 artifact, or prove this source is published.
+- **D105 — useful native hierarchy accepted, capacity bounded.** Native collaboration
+  tools became available in the same original A chat. Two `sol-coordinator` children
+  each spawned two explicit `gpt-6.1-sol` workers; `collaboration.list_agents` observed
+  root plus all six descendants running concurrently. Both coordinator results
+  returned through the native hierarchy and were consumed and accepted by A.
+  Runtime instruction exposes12total slots including root. This is three-level
+  useful delegation, not16children, saturation, four-level recursion or Executive
+  RuntimeBinding/Wake proof. Receipt `NATIVE_HIERARCHY_ACCEPTANCE_2026-10-11.json`
+  under the existing evidence root. The Fabric parent then relayed the Chairman's
+  cost correction: consume already-running native children; future eligible leaf
+  work uses paid GLM/Qwen/Grok Fabric, Sol coordinates/reviews. No more native leaf
+  fanout merely because tools are present. Existing infrastructure owner retains
+  the12-versus16 discrepancy. Current V3 read is serviceable, but the Fabric owner
+  verified `ceo_submit_armed:false` at11:24:47Z; no trial Job was submitted. The
+  existing attended stable-handle adapter remains the admitted new Macro labor path.
+- **D106 — source publication remains unaccepted.** All five increments8769,
+  8771,8775,8778,8780 and W16#8779 are merged. #8778 merged
+  `3f5e0307b889d31b27612914532cb7ebb60cc72b` at08:26:47Z after28concluded checks
+  and24blob matches. At11:12:19Z Transmission/AM/News/Bonds wereHTTP200 and
+  byte-matched generatedmain `b88076e83581972595a7371f8a184817317e4fb7`, while
+  new AM partial-context/regime and News family markup remained absent. Current
+  valid Transmission/credit inputs do not discriminate the repaired negative
+  branches. Existing source tests/reviews remain accepted. Engine38123814331 failed
+  Git checkout before builders;38126841768 cancelled without jobs;38120613686
+  cancelled before commit. Successful engine38120613697 actually built at
+  `478103d5e8bae869edca77efdcba41239a0739b7`, before all five, then rebased outputs
+  onto newer source: ancestry is not generation proof. Preserve existing render
+  38131898513/pending38133349439. Old observer55376 is dead; replacement58860
+  launched11:19:01Z at300-second cadence and returns to this root. No new dispatch,
+  cancel or rerun. Separate News JSON-builder null defect is reproduced offline;
+  #8797 head `5f00bfe636ae` contains one guard, actual-producer regression and
+  existing-CI enrollment,152checksPASS, Sol reviewPASS, CI/merge still pending.
+  `build_news` writes JSON side artifacts; `build_site` produces News HTML earlier.
+  Do not attribute the absent family HTML solely to this null dereference.
+- **D107 — F04 private-consumer source contract accepted, interface not invented.**
+  Terminal protectedmaster `0e8de334d3a772d3c8b035a1ce01d04b1316274a` supplies
+  auth-before-I/O and authoritative `/api/me` patterns. Existing public Company
+  Intelligence/event-workspace routes are not newly classified as security defects.
+  GMI acknowledged consumer-contract SHA256
+  `09837391e08a476fbd0b862427dad933a03dcc8b2c6112f89437af24d2ebcc1b` and retained
+  actual private endpoint/safe metadata, purpose/adoption/identity/time/correction
+  resolver, and source-owned current artifact selection obligations in its original
+  continuation. C01 remains private and NOT_ADMITTED. CI entitlement needs actual
+  authority; options entitlement is not a substitute. No generic refusal stub,
+  fabricated receipt/grant, private source read or production admission was created.
+- **D108 — credit architecture readiness does not establish launch rights.**
+  The module-body precondition is discharged; same Bonds renderer/context can
+  support a bounded dedicated route. Technical readiness is accepted, but new
+  public/product display is NOT_ESTABLISHED as RIPE. Generic
+  `macro.fred.observations` licensing `public_domain` does not resolve the F01
+  wiring trace's explicitly ungranted FRED/ICE/Yahoo redistribution, IMCE FRED
+  transport/storage freeze or selected third-module lineage. No series-specific
+  purpose record/superseding ruling was found for BAMLH0A0HYM2/BAMLC0A0CM.
+  The existing source/rights owner must supply that record; no new licence ruling
+  is made here. DerivedSep10 uses Sep8data_session while primary FRED series reach
+  Oct7. Currentness separately needs incumbent producer/publication proof. The
+  page remains unlaunched; freshness diagnosis may proceed read-only on existing
+  producers through paid Fabric. MO-DELTA-013 is outside the current union fence
+  and stays byte-identical; this paired evidence is recorded on008 and here.
+
+### Records and continuation
+
+Only MO-PAID-011 and MO-DELTA-008 receive W17 ledger evidence/gap updates. All
+capability states,15columns,CRLF and all other row bytes stay unchanged. Outside-union
+SHA256 stays `a5f263439ac32778504c887db876ad5391961eb86ec41de533e81628424ba3ea`.
+
+Canonical carrier:
+https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-6108478545
+Evidence root: `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5`;
+`publication-acceptance-1110/`, `f04-private-adoption/`, `f01-credit-page-scope/`.
+The Agent OS checkpoint is
+`agentos/handoffs/MARKET-OS-2026-10-11-ceo-a-w17.md`.
+
+Next: finish #8797's exact-head checks/manual merge, then qualify immutable actual
+builder checkout/output/publication from the existing covering render and make one
+fresh served feature readback. Independently consume the paid credit-producer
+diagnosis `mo-a-credit-producer-diagnosis-01a128b5-v1`; do not replay unknown/refused
+operations or turn a diagnosis into collector/rebuild authority. Existing GMI owner
+retains its private-native inputs. F03 and MO-PAID-032 natural-time gates and all
+named held/Sol-OPEN work in §8 remain. MISSION_COMPLETE:false. This is a checkpoint,
+not a claim of autonomous wake or program completion.
