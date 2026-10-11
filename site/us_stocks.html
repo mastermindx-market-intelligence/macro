@@ -1120,7 +1120,7 @@
 
 
 <link rel="stylesheet" href="assets/css/7331c259.css?v=7331c259">
-<details class="ucp" id="us-candidate-pool" data-status="ready" data-total="230" data-as-of="2026-10-08" data-source-digest="6b771ec81b378905530fe30c443e9652866a69172c69d24c769d719feace14b3" data-view="table">
+<details class="ucp" id="us-candidate-pool" data-status="ready" data-total="230" data-as-of="2026-10-08" data-source-digest="f82d0b7d29daa2eecfc154d1ed7cad5ed38a4b12c6b7ff799cf747b9dee19ce6" data-view="table">
   <summary><span class="l-en">All eligible candidates</span><span class="l-zh">全部候选股票</span>
     <span class="ucp-summary-count">230 <span class="l-en">eligible</span><span class="l-zh">个候选</span> · 120 <span class="l-en">outside main list</span><span class="l-zh">个不在主榜</span></span>
   </summary>
@@ -1324,7 +1324,7 @@
   </div>
   <div class="ucp-score">
     
-    <b>48.1</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
+    <b>48.0</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
     
   </div>
 </div>
@@ -1418,7 +1418,7 @@
   </div>
   <div class="ucp-score">
     
-    <b>65.6</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
+    <b>65.5</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
     
   </div>
 </div>
@@ -1815,7 +1815,7 @@
           "alpha":         -1.83,
           "off_high":      -25.5,
           "factor_z":      -0.099,
-          "sue_z":         1.09,
+          "sue_z":         1.08,
           "insider_buyers": 4,
           "sig_tier":      "T2",
           "entry_status":  "partial",
@@ -1834,7 +1834,7 @@
           "alpha":         -0.06,
           "off_high":      0.0,
           "factor_z":      -0.822,
-          "sue_z":         1.21,
+          "sue_z":         1.2,
           "insider_buyers": null,
           "sig_tier":      "T2",
           "entry_status":  "buy_now",
@@ -7333,7 +7333,10 @@ function initStockTableView(){
     applyView(currentView);
   }
 
-  window.USStockTable = { _setView: applyView, _mergeRows: mergeRows };
+  /* _getView is the read half of the existing view owner: the candidate→Plan return
+     restores the view the reader was actually in (table rows are never re-rendered by
+     applyView), so no second table owner, store or localStorage key is introduced. */
+  window.USStockTable = { _setView: applyView, _getView: function(){ return currentView; }, _mergeRows: mergeRows };
 
   StockTable.init(STINIT);
 
@@ -7370,6 +7373,13 @@ if (document.readyState === 'loading') {
   function setSrc(mode){
     if (mode !== 'today' && mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
     if (mode === 'today' && !document.getElementById('us-today')) mode = 'candidates';
+    /* The transient candidate→Plan journey (theme.js owns the one context) survives
+       only its own two hops: the Plans hop taken from inside a candidate detail and
+       the return hop that brings that same candidate back. Every other mode change —
+       the toggle, a Today shortcut, a provisional-board paint — is an explicit
+       unrelated navigation, and the pending return goes with it. */
+    var journey = window.PVSetupReturn;
+    if (journey && !journey.claim(mode)) journey.clear();
     /* the table renders CANDIDATE rows only, so Today/Plans must leave table view */
     if (mode !== 'candidates' && panel.classList.contains('st-table-mode') &&
         window.USStockTable && window.USStockTable._setView){
@@ -7386,13 +7396,22 @@ if (document.readyState === 'loading') {
     var b = ev.target && ev.target.closest ? ev.target.closest('button[data-src]') : null;
     if (b) setSrc(b.getAttribute('data-src'));
   });
-  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); } };
+  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); },
+    /* PR 8801 follow-up — the header row this owner already wires is where the journey's
+       single explicit action renders. It is not a fourth source option: it restores the
+       exact originating row, so no generic navigation is duplicated. */
+    returnHost: function(){ return tog.parentNode; } };
 
   document.addEventListener('click', function(event){
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
     if (!button) return;
     var target = button.getAttribute('data-pvs-plan-target');
     var dialog = document.getElementById('pv-setup-dialog');
+    /* Snapshot BEFORE the existing .pvs-close releases the live candidate source;
+       nothing is claimed until the exact target is confirmed further down. */
+    var pending = window.PVSetupReturn ? window.PVSetupReturn.snapshot({
+      mode: window.USProphetSource ? window.USProphetSource.get() : null,
+      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null}) : null;
     if (dialog && dialog.open) {
       var close = dialog.querySelector('.pvs-close');
       if (close) close.click();
@@ -7401,6 +7420,9 @@ if (document.readyState === 'loading') {
     var card = document.getElementById(target);
     if (!card || !target || target.indexOf('pv-') !== 0 ||
         !window.USProphetLife || !window.USProphetLife.selectPlan(card)) {
+      /* No confirmed target, so no journey — a hop into Plans must never inherit a
+         stale return from an earlier candidate. */
+      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
       document.body.dataset.pvsPlanLinkResult='missing';
       return;
     }
@@ -7410,6 +7432,8 @@ if (document.readyState === 'loading') {
     card.scrollIntoView({block:'center'});
     card.focus({preventScroll:true});
     document.body.dataset.pvsPlanLinkResult='ok';
+    /* Confirmed: same candidate, same Plan, one transient return. */
+    if (window.PVSetupReturn) window.PVSetupReturn.establish(pending, target, card);
   });
 })();
 </script>
