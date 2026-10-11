@@ -60,9 +60,9 @@ waves:
   status: in_progress
   depends_on:
   - IM00
-  next_action: Actual Overview mount, scoped independent source review, 21 render/composition cases, 27 Chrome cases
-    and canonical visual matrix are accepted. Live qualification, authenticated served proof and normal publication
-    remain required.
+  next_action: Repair the visible Overview composition against exact Paper R10 desktop and mobile references.
+    Prior fixture and functional checks do not establish Paper parity. Connect authentic return-qualification
+    evidence to the publisher and verify the actual served dual-theme, bilingual journey.
 - id: IM02
   title: Compare and Rotation
   status: in_progress
@@ -179,3 +179,15 @@ Fresh readback (`gh pr view 8527 --repo mastermindx-market-intelligence/macro`) 
 The stable Fabric adapter had launched the controller with PATH-selected Homebrew Bash, which reproduced a heredoc deadlock before remote setup. Its two launch sites now use `/bin/bash`; no provider, host, lease, lifecycle or capacity policy changed. Exact installed SHA is `2c8694995a1f18e7f830a99af496208e6dd78e8df87637115eac779181aa7827`. The three new regression cases fail at both old launch sites and pass on the installed repair;22 existing adapter tests pass. Commands and the reversible installation receipt are in `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/fabric-bash-fix-local/`. Existing stalled runs remain unsettled and unreplayed: `paper-01a1101f-im06-provenance-witness-review-r3`, `paper-01a1101f-asset-access-review-r1`, and `paper-01a1101f-im08-context-review-r1`.
 
 The current native Paper read confirms the Saved detail, mobile light and320/200% references with token hash `501cd923`. Exact JSX and read receipt are in the same evidence root under `im09-native-design/`. Terminal's accepted shell remains dark-only under `docs/TERMINAL_UI_DOCTRINE_2026-07-28.md`; those light references do not create a second theme owner. The new pure domain/component candidates are unintegrated. No manifest version, migration, rights grant, save/recovery service or live Saved capability has been added.
+
+## Paper-parity correction from live inspection, 2026-10-11
+
+The Chairman explicitly reiterated that the final product must meet the Paper mockup level. Fresh authenticated Chrome inspection at `https://www.mastermind-x.com/intl.html` exercised Overview to Compare successfully. Thus the earlier disabled-control observation is not the current signed-in state. Separate unauthenticated HTTP reads still return401 for the three sampled workspace assets; PR8754 remains an unmerged draft at f1c3dac28d470949cc92f7657486d73784d7fe8a. Asset serving and visual parity are separate defects.
+
+The actual overview is visibly sparse relative to native Paper file `01M3P1TW5Y3XWQC37ADDS8K5AG`, page `p-2-0`, desktop board `1-0`; the light mobile reference is `101-0`, tokens501cd923. Paper's composed header, tab row, summary/focus split and structured rows are absent or materially reduced. Prior accepted source/fixture evidence remains valid only within its functional scope; **served Paper-level visual parity is not accepted**. Required completion includes hierarchy, spacing, typography, density, material treatment, responsive composition, interactions and truthful unavailable states in dark/light and EN/ZH.
+
+Exact source inspection of `scripts/build_intl.py` confirms `_publication_workspace` calls `_workspace_overviews(closes, workspace_generation=generation)` without `production_inputs`. The existing qualifier therefore withholds returns by design. This is unfinished source-evidence integration, not proof that the underlying markets have no returns. The collector's adjusted-close storage alone is not a completed-session or disclosure receipt. Do not fabricate receipts to populate the design.
+
+A bounded full-GLM C2 leaf, `paper-01a1101f-overview-parity-build-r1`, reached remote launch on ubuntu2 through the installed stable adapter. Its exact f1c3dac source capsule is `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/overview-parity-build-r1/`; only Overview/shell templates and their CSS may change. Parent froze design decisions from native JSX and retains visual/integration acceptance. No delivered or live parity claim follows from launch.
+
+IM08 evidence candidate r1 was consumed and rejected:30 author tests passed but five frozen parent counterexamples failed (false readiness, no qualified observations, malformed context exception, full-scope collision, unavailable misclassified as denied). Full-GLM repair `paper-01a1101f-im08-evidence-repair-r2` preserves the original root and immutable kernel/countertests. IM09 panel r1 returned complete code; parent strict TypeScript passes and12 React tests pass after repairing three ambiguous/incorrect test locators. Those are source checks, not visual, integration or production acceptance.
