@@ -1933,6 +1933,11 @@ jobs:
       - "lib/ai_costs.py"
       - "lib/closes_panel.py"
       - "lib/cn_calendar.py"
+      - "collectors/tushare_client.py"
+      - "collectors/tushare_index_daily.py"
+      - "lib/cn_pullback_observation.py"
+      - "lib/pullback_depth.py"
+      - "lib/pullback_observation.py"
       - "lib/delisted_symbols.py"
       - "lib/filing_value_units.py"
       - "lib/forex_link.py"
@@ -3514,6 +3519,18 @@ jobs:
           tests/test_gd4a_cnhk_ledger_repair.py
           tests/test_risk_radar_dlg_country_wiring.py
           tests/test_risk_radar_dlg_partial.py
+          tests/test_pullback_depth_projection.py
+          tests/test_risk_radar_pullback_depth_template.py
+          tests/test_us_pullback_observation_adapter.py
+          tests/test_us_pullback_modal_integration.py
+          tests/test_us_pullback_builder_hook.py
+          tests/test_pullback_observation.py
+          tests/test_cn_pullback_observation_adapter.py
+          tests/test_cn_pullback_builder_hook.py
+          tests/test_cn_pullback_dialog_integration.py
+          tests/test_pullback_forward_minimum_labels.py
+          tests/test_pullback_oos_baseline.py
+          tests/test_pullback_causal_features.py
           tests/test_risk_state_live_copy_sync.py
           tests/test_build_china_risk_state.py
           tests/test_china_connect_leaderboard_render.py
@@ -5224,7 +5241,7 @@ jobs:
       # at RUN time it loads only pandas/numpy/pyarrow/pyyaml, all covered by this job's
       # install line (numpy arrives with pandas).
       - name: china tushare takeover suites — addons gate + minutes plane + chips (A/B/C)
-        run: python -m pytest tests/test_tushare_addons.py tests/test_tushare_minutes_plane.py tests/test_tushare_chips_distribution.py tests/test_tushare_freshness_tripwire.py -q
+        run: python -m pytest tests/test_tushare_addons.py tests/test_tushare_minutes_plane.py tests/test_tushare_chips_distribution.py tests/test_tushare_freshness_tripwire.py tests/test_tushare_index_daily.py -q
 
   china-board-breadth:
     if: ${{ false }}
@@ -5618,6 +5635,13 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - lib/illus.py
+      - lib/us_pullback_observation.py
+      - lib/pullback_depth.py
+      - lib/pullback_observation.py
+      - collectors/massive_flatfiles.py
+      - collectors/massive_stock_day.py
+      - lib/massive_ticker.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -10155,6 +10179,15 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/us_pullback_observation.py
+      - collectors/tushare_client.py
+      - collectors/tushare_index_daily.py
+      - lib/cn_pullback_observation.py
+      - lib/pullback_depth.py
+      - lib/pullback_observation.py
+      - collectors/massive_flatfiles.py
+      - collectors/massive_stock_day.py
+      - lib/massive_ticker.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"

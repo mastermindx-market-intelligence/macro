@@ -407,6 +407,7 @@
   .topline { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 
 {% include "_risk_radar_card.css.j2" %}
+{% include "_risk_radar_pullback_depth.css.j2" %}{# Measured-only Risk Radar underway state #}
 {% include "_aibrief_css.j2" %}{# ABX v2 — shared AI-brief body stylesheet (.aib2-*) #}
 {# _mag7_panel.css.j2 removed (MLC-W2a): .m7p-stale moved to ldb <style>; no .m7p elements rendered #}
 
@@ -12852,6 +12853,21 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {# Measured price damage leads only when the canonical settled-close
+           observation confirms an active decline; risk odds remain evidence. #}
+        {% set _us_pbv = us_pullback_view if (us_pullback_view is defined and us_pullback_view is mapping) else none %}
+        {% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
+        {# The fragment's own qualification decides; one rule, not two. #}
+        {% set _us_pb_active = _us_pbv is not none and (pb_depth.lead('us', _us_pbv)|trim) == '1' %}
+        {% if _us_pb_active %}
+          {# The observed-path chart is the shared illustration format; this page
+             links its published stylesheet only when that chart can render. #}
+          {% if _us_pbv.get('detail_chart_html') %}<link rel="stylesheet" href="illus.css">{% endif %}
+          {{ pb_depth.detail('us', _us_pbv) }}
+          <script>{% include "_risk_radar_pullback_depth.js.j2" %}</script>
+          <details class="riskdlg-legacy-details">
+            <summary>{{ t('Forward risk and drivers','前瞻风险与驱动因素') }}</summary>
+        {% endif %}
 
         {# — Risk Brief: one hero, not two — #}
         {% set _dlgr_rdr = market_state.radar if market_state.radar is defined else {} %}
@@ -13822,6 +13838,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <p class="riskdlg-method-note">{{ t(_rd.authority.note_en, _rd.authority.note_zh) }}</p>
           {% endif %}
         </details>
+        {% if _us_pb_active %}</details>{% endif %}
 
 
 
@@ -15192,10 +15209,26 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(focusable.length) focusable[0].focus();
     }
 
+    /* A stop the keyboard can reach. A closed <details> keeps its controls in the
+       DOM and Chrome still reports layout boxes for them, so ask the disclosure
+       rather than the box; only its own <summary> stays reachable. */
+    function _tabStop(el){
+      if(el.tabIndex < 0 || el.closest('[inert]') || el.getClientRects().length === 0) return false;
+      for(var d = el.closest('details:not([open])'); d;
+          d = d.parentElement && d.parentElement.closest('details:not([open])')){
+        var s = d.querySelector(':scope > summary');
+        if(!s || !s.contains(el)) return false;
+      }
+      return true;
+    }
+
     function _trapTab(dlg, e){
       if(e.key !== 'Tab') return;
-      var focusable = Array.prototype.slice.call(
-        dlg.querySelectorAll('button:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'));
+      /* Counting the hidden forward-risk controls made `last` unreachable, so Tab
+         walked out of the dialog. */
+      var focusable = Array.prototype.filter.call(
+        dlg.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])'),
+        _tabStop);
       if(!focusable.length) return;
       var first = focusable[0], last = focusable[focusable.length-1];
       if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
@@ -15276,6 +15309,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           if(_dlgActive === dlg) dlg.classList.add('mx5-dlg-in');
         }); });
       }
+      /* Settle expiry before focus lands, so focus never starts on figures the
+         check is about to withdraw. */
+      if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();
       _focusFirst(dlg);
       dlg._trapHandler = function(e){ _trapTab(dlg, e); };
       dlg.addEventListener('keydown', dlg._trapHandler);

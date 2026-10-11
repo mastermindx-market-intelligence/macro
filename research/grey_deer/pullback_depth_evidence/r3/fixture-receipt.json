@@ -1,0 +1,56 @@
+{
+  "kind": "synthetic_component_integration_not_production",
+  "generated_at": "2026-10-10T00:15:49.127678+00:00",
+  "local_asset_hashes": {
+    "product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+  },
+  "reference_status": "HELD_SOURCE_NOT_ADOPTED",
+  "reference_sources": [
+    {
+      "ref": "ff27a268abaacfdb50534a60d1ca4ffe7a119938",
+      "path": "lib/pullback_observation.py",
+      "git_blob": "54e7f0443d5b58d08a2a7327326e62766cc1ca0d",
+      "sha256": "4d3feffe453251ce7f25858738a4a2cdd31c63d00d2002d881ceb911d8482313"
+    },
+    {
+      "ref": "ff27a268abaacfdb50534a60d1ca4ffe7a119938",
+      "path": "lib/china_pullback_view.py",
+      "git_blob": "1aaab7db71cba7d9b023af5ba7fad5b5a5e700b8",
+      "sha256": "bf24496d5a08f2afdfdeee0f0487128912a893cda6ac166e17611e8df1e5e60b"
+    }
+  ],
+  "sources": {
+    "templates/_risk_radar_pullback_depth.html.j2": "45eacb47f1864353e83239648336383e85296fbb248229436d12a7f53eaf89fd",
+    "templates/_risk_radar_pullback_depth.css.j2": "a51108cae814dbafaeeccb78bc2e1886ad335edce11d26c3fa56838c34e41b43",
+    "lib/pullback_depth_projection.py": "b390181ada05b493e544e9fa096e13bbfbcae7041b05d422d68d13ffb1cbdb2b",
+    "tests/test_risk_radar_pullback_depth_template.py": "87a21cbb0421e66c57d1548716fd412b6965cbfcf7c5ea2c1916b13782e548b8"
+  },
+  "fixtures": [
+    {
+      "market": "cn",
+      "view_path": "held China present()",
+      "observed_phase": "underway",
+      "asof": "2026-10-09",
+      "valid_until": "2026-10-12T09:00:00+00:00",
+      "synthetic_prices": true,
+      "path": ".pytest_cache/pullback-proof/site/cn.html",
+      "sha256": "09e6cdc812a475881202bc9e1c2ad4a7f08d9bea52154e322d3c5d68a0339815"
+    },
+    {
+      "market": "us",
+      "view_path": "synthetic US fixture shape + native observer + shared illus; not a production adapter",
+      "observed_phase": "underway",
+      "asof": "2026-10-09",
+      "valid_until": "2026-10-12T21:00:00+00:00",
+      "synthetic_prices": true,
+      "path": ".pytest_cache/pullback-proof/site/us.html",
+      "sha256": "9edd5f10637fe6581d170bcee90766a62a104ed08ed839ed93d47b8dd1083392"
+    }
+  ]
+}

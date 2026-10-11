@@ -1,0 +1,547 @@
+"""US price-basis adapter contracts. Synthetic inputs, no network or source writes."""
+from __future__ import annotations
+
+from datetime import date, datetime, timezone
+
+import pandas as pd
+import pytest
+
+from engine.close_pass.massive_close import CorpActions, SessionCloses
+from lib import nyse_calendar
+from lib import us_pullback_observation as pb
+from lib.us_pullback_observation import (
+    LicensedCloses, SourceRefused, licensed_spy_closes, snapshot,
+)
+
+
+FIXED_NOW = datetime(2026, 10, 9, 22, 0, tzinfo=timezone.utc)
+EXPECTED = date(2026, 10, 9)
+
+
+def store(stamps=("2026-10-06", "2026-10-07", "2026-10-08"), closes=(90.0, 88.5, 88.0),
+          column="close"):
+    """The licensed daily store's shape: naive UTC-midnight date index, raw close."""
+    return pd.DataFrame({column: list(closes)}, index=pd.to_datetime(list(stamps)))
+
+
+def quiet(session):
+    return CorpActions(session=session, complete=True)
+
+
+def final_close(price=89.0):
+    def fetch(session, wanted):
+        assert wanted == {"SPY"}
+        return SessionCloses(session=session, closes={"SPY": price},
+                             source="grouped", finalized=True)
+    return fetch
+
+
+def reader(**over):
+    kwargs = {"load": lambda ticker: store(), "session_closes": final_close(),
+              "corp_actions": quiet}
+    kwargs.update(over)
+    return lambda expected: licensed_spy_closes(expected, **kwargs)
+
+
+def observer_receipt(rows, *, expected_session, is_session):
+    return {
+        "schema": "pullback_observation.v1",
+        "available": True,
+        "quality": "current",
+        "phase": "underway",
+        "active": True,
+        "asof": expected_session.isoformat(),
+        "expected_session": expected_session.isoformat(),
+        "close": rows[-1][1],
+        "peak_close": 100.0,
+        "low_close": 88.0,
+        "low_session": "2026-10-08",
+        "peak_session": "2026-09-18",
+        "source_digest": "a" * 64,
+        # The owner's shape: since-peak closes against the retained high, ending
+        # today, passing through the retained low.
+        "price_path": {"dates": ["2026-09-18", "2026-10-07", "2026-10-08",
+                                 expected_session.isoformat()],
+                       "vals": [0.0, -9.0, -12.0, round(100.0 * (rows[-1][1] / 100.0 - 1.0), 4)]},
+    }
+
+
+def currency_observer(rows, *, expected_session, is_session):
+    """Mirrors the owner's currency rule: a series short of the session is delayed."""
+    if rows[-1][0] != expected_session.isoformat():
+        return {"schema": "pullback_observation.v1", "available": False,
+                "quality": "delayed", "phase": "unavailable", "active": None,
+                "asof": rows[-1][0], "drawdown_pct": None}
+    return observer_receipt(rows, expected_session=expected_session, is_session=is_session)
+
+
+def test_licensed_store_and_same_session_close_feed_the_owner_observer():
+    seen = []
+    def load(ticker):
+        seen.append(("load", ticker))
+        return store()
+
+    def observe(rows, *, expected_session, is_session):
+        seen.append(("observe", tuple(rows), expected_session))
+        assert is_session is nyse_calendar.is_session
+        return observer_receipt(rows, expected_session=expected_session, is_session=is_session)
+
+    out = snapshot(now=FIXED_NOW, read=reader(load=load), observer=observe)
+    assert seen == [
+        ("load", "SPY"),
+        ("observe", (("2026-10-06", 90.0), ("2026-10-07", 88.5), ("2026-10-08", 88.0),
+                     ("2026-10-09", 89.0)), EXPECTED),
+    ]
+    assert out["market"] == "us" and out["benchmark"] == "SPY"
+    assert out["benchmark_en"].startswith("S&P 500") and "标普" in out["benchmark_zh"]
+    assert out["price_basis"] == "split_adjusted_dividend_unadjusted_close"
+    assert out["close"] == 89.0 and out["available"] is True
+    assert out["session_tip"] == {"appended": [{"session": "2026-10-09", "settlement": "final"}],
+                                  "hold": None}
+    assert out["source_digest"] == "a" * 64
+    assert out["clock"] == "settled_close"
+    assert out["valid_until"] == "2026-10-12T21:00:00+00:00"
+    assert out["produced_at"] == FIXED_NOW.isoformat()
+
+
+def test_provenance_label_never_names_a_vendor():
+    assert not any(v in pb.SOURCE.lower() for v in ("yahoo", "massive", "polygon"))
+    out = snapshot(now=FIXED_NOW, read=reader(), observer=observer_receipt)
+    assert out["source"] == pb.SOURCE
+
+
+def test_reader_never_touches_the_internal_only_yahoo_store(monkeypatch):
+    from lib import store as yahoo_store
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Yahoo prices are internal-only; never a popup source")
+    monkeypatch.setattr(yahoo_store, "read", forbidden)
+    out = snapshot(now=FIXED_NOW, read=reader(), observer=observer_receipt)
+    assert out["available"] is True
+
+
+def test_current_store_needs_no_session_fetch():
+    def no_network(*args, **kwargs):
+        raise AssertionError("a store that already holds the session needs no fetch")
+    got = licensed_spy_closes(
+        EXPECTED, load=lambda t: store(stamps=("2026-10-07", "2026-10-08", "2026-10-09")),
+        session_closes=no_network, corp_actions=no_network)
+    assert got.rows[-1] == ("2026-10-09", 88.0)
+    assert got.appended == () and got.hold is None
+
+
+def test_multi_session_tip_appends_in_order_and_never_skips_a_failed_session():
+    asked = []
+    def closes(session, wanted):
+        asked.append(session)
+        if session == "2026-10-08":
+            return SessionCloses(session=session, reason="grouped and snapshot both returned no rows")
+        return SessionCloses(session=session, closes={"SPY": 88.0}, finalized=True)
+    got = licensed_spy_closes(
+        EXPECTED, load=lambda t: store(stamps=("2026-10-05", "2026-10-06"), closes=(90.0, 89.0)),
+        session_closes=closes, corp_actions=quiet)
+    assert asked == ["2026-10-07", "2026-10-08"]
+    assert [r[0] for r in got.rows] == ["2026-10-05", "2026-10-06", "2026-10-07"]
+    assert got.hold == "session_close_unavailable"
+
+
+def test_provisional_snapshot_close_is_held_not_reported_as_settled():
+    """A snapshot close can still be revised; the popup's receipt says "Settled close"."""
+    def snap(session, wanted):
+        return SessionCloses(session=session, closes={"SPY": 89.0}, finalized=False)
+    got = licensed_spy_closes(EXPECTED, load=lambda t: store(), session_closes=snap,
+                              corp_actions=quiet)
+    assert got.appended == ()
+    assert got.hold == "session_close_provisional"
+    assert [r[0] for r in got.rows][-1] == "2026-10-08"
+    out = snapshot(now=FIXED_NOW, read=reader(session_closes=snap), observer=currency_observer)
+    assert out["available"] is False and out["drawdown_pct"] is None
+    assert out["session_tip"] == {"appended": [], "hold": "session_close_provisional"}
+    assert pb.present(out)["detail_chart_html"] == ""
+
+
+def test_finalized_session_close_is_appended_as_final():
+    got = licensed_spy_closes(EXPECTED, load=lambda t: store(), session_closes=final_close(),
+                              corp_actions=quiet)
+    assert got.appended == ({"session": "2026-10-09", "settlement": "final"},)
+    assert got.hold is None
+
+
+@pytest.mark.parametrize("actions, hold", [
+    (lambda s: CorpActions(session=s, complete=False, reason="page cap"), "corporate_action_guard_down"),
+    (lambda s: CorpActions(session=s, tickers=frozenset({"SPY"}), complete=True), "corporate_action_on_session"),
+])
+def test_corporate_action_guard_holds_the_tip_and_the_owner_reports_delay(actions, hold):
+    def no_close(*args, **kwargs):
+        raise AssertionError("no close may be spliced past a down or tripped guard")
+    out = snapshot(now=FIXED_NOW, read=reader(session_closes=no_close, corp_actions=actions),
+                   observer=currency_observer)
+    assert out["available"] is False and out["quality"] == "delayed"
+    assert out["drawdown_pct"] is None
+    assert out["session_tip"] == {"appended": [], "hold": hold}
+
+
+@pytest.mark.parametrize("result", [
+    SessionCloses(session="2026-10-09", reason="no API key (MASSIVE_API_KEY/POLYGON_API_KEY unset)"),
+    SessionCloses(session="2026-10-08", closes={"SPY": 89.0}, finalized=True),
+    SessionCloses(session="2026-10-09", closes={"QQQ": 500.0}, finalized=True),
+    SessionCloses(session="2026-10-09", closes={"SPY": float("nan")}, finalized=True),
+])
+def test_unusable_session_close_is_held_not_spliced(result):
+    out = snapshot(now=FIXED_NOW, read=reader(session_closes=lambda s, w: result),
+                   observer=currency_observer)
+    assert out["quality"] == "delayed" and out["available"] is False
+    assert out["session_tip"]["hold"] == "session_close_unavailable"
+
+
+def test_stalled_store_is_not_patched_from_session_closes():
+    def no_network(*args, **kwargs):
+        raise AssertionError("a stalled store must not be rebuilt from session closes")
+    out = snapshot(
+        now=FIXED_NOW,
+        read=reader(load=lambda t: store(stamps=("2026-10-01", "2026-10-02"), closes=(90.0, 89.0)),
+                    session_closes=no_network, corp_actions=no_network),
+        observer=currency_observer)
+    assert out["quality"] == "delayed"
+    assert out["session_tip"] == {"appended": [], "hold": "store_behind"}
+
+
+@pytest.mark.parametrize("closes, tip", [
+    ((90.0, 45.0, 44.0), 44.5),     # 2:1 split inside the stored history
+    ((90.0, 89.0, 88.0), 44.0),     # 2:1 split on the appended session
+    ((90.0, 180.0, 181.0), 182.0),  # 1:2 reverse split
+])
+def test_split_like_discontinuity_refuses_the_basis(closes, tip):
+    def observe(*args, **kwargs):
+        raise AssertionError("no observation on an unverified price basis")
+    out = snapshot(now=FIXED_NOW,
+                   read=reader(load=lambda t: store(closes=closes),
+                               session_closes=final_close(tip)),
+                   observer=observe)
+    assert out["available"] is False and out["quality"] == "price_basis_discontinuity"
+    assert out["drawdown_pct"] is None
+
+
+def test_crash_sized_move_is_not_mistaken_for_a_split():
+    got = licensed_spy_closes(EXPECTED, load=lambda t: store(closes=(90.0, 79.0, 70.0)),
+                              session_closes=final_close(62.0), corp_actions=quiet)
+    assert got.rows[-1] == ("2026-10-09", 62.0)
+
+
+@pytest.mark.parametrize("frame", [None, pd.DataFrame(), store(column="close_price"),
+                                   store(stamps=("2026-10-12",), closes=(90.0,))])
+def test_missing_store_or_close_column_fails_closed(frame):
+    with pytest.raises(SourceRefused) as refused:
+        licensed_spy_closes(EXPECTED, load=lambda t: frame,
+                            session_closes=final_close(), corp_actions=quiet)
+    assert refused.value.quality == "source_unavailable"
+    out = snapshot(now=FIXED_NOW, read=reader(load=lambda t: frame), observer=observer_receipt)
+    assert out["quality"] == "source_unavailable" and out["available"] is False
+    assert out["active"] is None and out["drawdown_pct"] is None
+
+
+@pytest.mark.parametrize("failure", [None, LicensedCloses(rows=[]), [("2026-10-09", 1.0)],
+                                     ValueError("corrupt"), OSError("read failed")])
+def test_missing_or_unreadable_source_fails_closed(failure):
+    def read(expected):
+        if isinstance(failure, Exception):
+            raise failure
+        return failure
+    out = snapshot(now=FIXED_NOW, read=read, observer=observer_receipt)
+    assert out["quality"] == "source_unavailable"
+    assert out["available"] is False
+    assert out["active"] is None
+    assert out["drawdown_pct"] is None
+
+
+def test_intraday_label_is_forwarded_intact_for_canonical_rejection():
+    def observer(rows, *, expected_session, is_session):
+        assert any(label.startswith("2026-10-08T14:15:00") for label, _ in rows)
+        return {"schema": "pullback_observation.v1", "available": False,
+                "quality": "invalid_session_label", "phase": "unavailable",
+                "active": None, "drawdown_pct": None, "asof": None}
+    mixed = pd.DataFrame({"close": [88.0, 88.2]},
+                         index=[pd.Timestamp("2026-10-07"), pd.Timestamp("2026-10-08T14:15:00")])
+    out = snapshot(now=FIXED_NOW, read=reader(load=lambda t: mixed), observer=observer)
+    assert not out["available"] and out["quality"] == "invalid_session_label"
+
+
+@pytest.mark.parametrize("now", [datetime(2026, 10, 9, 22, 0), "2026-10-09"])
+def test_explicit_clock_must_be_aware_datetime(now):
+    with pytest.raises(ValueError):
+        snapshot(now=now, read=reader(), observer=observer_receipt)
+
+
+def test_caller_cannot_promote_inconsistent_observer_as_current():
+    def inconsistent(rows, *, expected_session, is_session):
+        result = observer_receipt(rows, expected_session=expected_session, is_session=is_session)
+        result["asof"] = "2026-10-08"
+        return result
+    out = snapshot(now=FIXED_NOW, read=reader(), observer=inconsistent)
+    assert out["available"] is False and out["quality"] == "observation_inconsistent"
+    assert out["drawdown_pct"] is None
+    assert out["source_digest"] is None
+
+
+def test_default_missing_observer_dependency_yields_unavailable_not_fabricated_price():
+    out = snapshot(now=FIXED_NOW, read=reader())
+    # This repository branch has not taken custody of held PR #8188's observer.
+    # Once that source is merged, it may produce an observation; never infer one from a score.
+    assert out["schema"] == "pullback_observation.v1"
+    assert out["market"] == "us"
+    assert out["price_basis"] == "split_adjusted_dividend_unadjusted_close"
+    assert out["quality"] == "observer_unavailable"
+
+
+def test_us_view_has_country_correct_accessible_chart_without_reusing_china_labels():
+    from lib.us_pullback_observation import present
+    obs = observer_receipt([("2026-10-08", 88.0), ("2026-10-09", 89.0)],
+                           expected_session=FIXED_NOW.date(), is_session=nyse_calendar.is_session)
+    obs.update(market="us", benchmark="SPY", benchmark_en="S&P 500 ETF (SPY)",
+               benchmark_zh="标普500 ETF (SPY)", quality="current",
+               clock="settled_close", valid_until="2026-10-12T21:00:00+00:00")
+    view = present(obs, radar={"top_score": 99, "dd21": 0.98})
+    assert view["phase"] == "underway"
+    assert view["observation"] is obs
+    assert 'aria-label="Observed SPY' in view["detail_chart_html"]
+    assert "Shanghai" not in view["detail_chart_html"]
+    assert "probability" not in view and "score" not in view and "forecast" not in view
+
+
+def test_no_usable_price_cannot_generate_a_spurious_drawdown_chart():
+    from lib.us_pullback_observation import present
+    obs = snapshot(now=FIXED_NOW, read=lambda expected: None, observer=observer_receipt)
+    view = present(obs)
+    assert view["phase"] == "unavailable"
+    assert view["detail_chart_html"] == ""
+    assert view["observation"]["drawdown_pct"] is None
+
+
+def test_unmerged_observer_must_be_explicitly_injected_not_auto_imported(monkeypatch):
+    """A similarly named module is not a release/ownership or license receipt."""
+    import sys
+    from types import ModuleType
+    candidate = ModuleType("lib.pullback_observation")
+    invoked = []
+    def unauthorized_observe(*args, **kwargs):
+        invoked.append(True)
+        raise AssertionError("unmerged observer must not run")
+    candidate.observe = unauthorized_observe
+    monkeypatch.setitem(sys.modules, "lib.pullback_observation", candidate)
+
+    def unauthorized_read(*args):
+        raise AssertionError("source must not be read before observer admitted")
+    out = snapshot(now=FIXED_NOW, read=unauthorized_read)
+    assert out["available"] is False
+    assert out["quality"] == "observer_unavailable"
+    assert out["drawdown_pct"] is None
+    assert invoked == []
+
+
+def test_absent_source_reader_never_autoselects_a_store(monkeypatch):
+    """Model/display rights are not established by whichever local SPY parquet exists."""
+    from collectors import massive_stock_day
+    from lib import store
+    def forbidden(*args, **kwargs):
+        raise AssertionError("an unbound reader must not select a store implicitly")
+    monkeypatch.setattr(store, "read", forbidden)
+    monkeypatch.setattr(massive_stock_day, "load_ticker", forbidden)
+    out = snapshot(now=FIXED_NOW, observer=observer_receipt)
+    assert not out["available"]
+    assert out["quality"] == "source_unavailable"
+    assert out["drawdown_pct"] is None
+
+
+def _qualified(price_path, **over):
+    obs = observer_receipt([("2026-09-22", 96.0)], expected_session=date(2026, 9, 22),
+                           is_session=nyse_calendar.is_session)
+    obs.update(market="us", clock="settled_close", price_path=price_path,
+               low_close=96.0, low_session="2026-09-22")
+    obs.update(over)
+    return obs
+
+
+PATH = {"dates": ["2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18",
+                  "2026-09-21", "2026-09-22"],
+        "vals": [-3.0, -1.0, 0.0, -1.5, -2.0, -2.5, -4.0]}
+
+
+def _drawn(monkeypatch, obs):
+    from lib import illus
+    seen = []
+    monkeypatch.setattr(illus, "illus", lambda series, **kw: seen.append(series) or "<figure></figure>")
+    view = pb.present(obs)
+    return seen, view
+
+
+def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch):
+    """Pre-peak closes measured against a later high would draw a rally as damage."""
+    obs = _qualified({k: list(v) for k, v in PATH.items()}, peak_session="2026-09-16")
+    seen, view = _drawn(monkeypatch, obs)
+    # The end point is the metric's own ratio, not the owner's rounded copy of it.
+    end = 100.0 * (obs["close"] / obs["peak_close"] - 1.0)
+    window = {"dates": PATH["dates"][2:], "vals": PATH["vals"][2:-1] + [end]}
+    assert seen == [window]
+    assert view["detail_path"] == window  # the history table's rows
+    assert view["detail_withheld"] is None
+    assert obs["price_path"] == PATH  # the owner's observation is not rewritten
+
+
+def _bump(index, value):
+    vals = list(PATH["vals"])
+    vals[index] = value
+    return {"dates": list(PATH["dates"]), "vals": vals}
+
+
+@pytest.mark.parametrize("path, over", [
+    # Fewer than four points: the shared renderer would draw "No history yet".
+    (PATH, {"peak_session": "2026-09-18"}),
+    (PATH, {"peak_session": "2026-09-23"}),
+    # Without a usable peak date the window would fall back to pre-peak closes.
+    (PATH, {"peak_session": None}),
+    (PATH, {"peak_session": date(2026, 9, 16)}),
+    # The owner keeps 63 closes: a peak or low older than the path is not drawn
+    # as a partial episode beside the full-episode figures.
+    ({"dates": PATH["dates"][3:], "vals": PATH["vals"][3:]}, {}),
+    (PATH, {"peak_session": "2026-09-15"}),
+    (_bump(2, -0.5), {}),
+    (PATH, {"low_session": "2026-09-10"}),
+    (PATH, {"low_session": "2026-09-14"}),
+    (PATH, {"low_session": None}),
+    (PATH, {"low_close": None}),
+    (PATH, {"low_session": None, "low_close": None}),
+    # Only a pre-episode phase may omit the low, and only both fields together.
+    (PATH, {"phase": "monitoring", "active": False, "low_close": None}),
+    (PATH, {"phase": "developing", "active": False, "low_session": None}),
+    # Low inside the window, but the path never reaches the reported worst.
+    (PATH, {"low_close": 87.0}),
+    # The path must end on the receipt's session at the metric's own value.
+    ({"dates": PATH["dates"][:-1], "vals": PATH["vals"][:-1]}, {}),
+    (_bump(-1, -5.8), {}),
+    # Not deeper than the retained low, never above the high, finite, ordered.
+    (_bump(-2, -20.0), {}),
+    (_bump(-2, 3.0), {}),
+    (_bump(-2, float("nan")), {}),
+    ({"dates": PATH["dates"][:4] + ["2026-09-17"] + PATH["dates"][5:], "vals": PATH["vals"]}, {}),
+    ({"dates": PATH["dates"], "vals": PATH["vals"][1:]}, {}),
+    (PATH, {"close": 101.0}),
+])
+def test_chart_is_withheld_when_it_would_disagree_with_the_measured_figures(monkeypatch, path, over):
+    obs = _qualified({k: list(v) for k, v in path.items()}, **{"peak_session": "2026-09-16", **over})
+    seen, view = _drawn(monkeypatch, obs)
+    assert seen == []
+    assert view["detail_chart_html"] == "" and view["detail_path"] is None
+    assert view["detail_withheld"] == "uncovered"
+
+
+def test_a_reclaimed_close_still_draws_at_the_zero_line(monkeypatch):
+    path = _bump(-1, 0.0)
+    obs = _qualified(path, peak_session="2026-09-16", close=100.4, phase="recovering",
+                     low_close=97.5, low_session="2026-09-21")
+    seen, view = _drawn(monkeypatch, obs)
+    assert seen == [{"dates": PATH["dates"][2:], "vals": path["vals"][2:]}]
+
+
+def test_a_drawdown_that_rounds_to_zero_prints_without_a_minus():
+    """The chart's end tag agrees with the metric, which prints 0.0%."""
+    close = 100.0 * (1 - 0.0003)
+    path = {"dates": PATH["dates"], "vals": PATH["vals"][:-1] + [round(100.0 * (close / 100.0 - 1.0), 4)]}
+    obs = _qualified(path, peak_session="2026-09-16", close=close,
+                     low_close=97.5, low_session="2026-09-21")
+    chart = pb.present(obs)["detail_chart_html"]
+    assert '<span class="ilx-tag">0.0%' in chart
+    assert "-0.0%" not in chart
+
+
+@pytest.mark.parametrize("close", [99.95004, 97.65004, 99.97])
+def test_chart_end_tag_reads_the_same_figure_as_the_metric(close):
+    """The owner rounds each point to 4 dp; formatting that rounded value again
+    can land a tenth away from the metric (-0.04996 -> -0.05 -> -0.1)."""
+    from bs4 import BeautifulSoup
+    from tests.test_risk_radar_pullback_depth_template import render
+    path = {"dates": PATH["dates"],
+            "vals": PATH["vals"][:-1] + [round(100.0 * (close / 100.0 - 1.0), 4)]}
+    obs = _qualified(path, peak_session="2026-09-16", close=close, low_close=97.5,
+                     low_session="2026-09-21", valid_until="2026-09-23T21:00:00+00:00")
+    soup = BeautifulSoup(render(pb.present(obs), "us"), "html.parser")
+    tag = soup.select_one(".ilx-tag").get_text(strip=True).replace("-", "\u2212")
+    assert tag == soup.select_one('[data-metric="current"]').get_text(strip=True)
+
+
+@pytest.mark.parametrize("phase", ["monitoring", "developing"])
+def test_pre_episode_observation_still_draws_from_the_reference_high(monkeypatch, phase):
+    """The owner retains no low before an episode; the worst figure prints
+    Unavailable, so there is nothing for the chart to contradict."""
+    from bs4 import BeautifulSoup
+    from tests.test_risk_radar_pullback_depth_template import render
+    obs = _qualified({k: list(v) for k, v in PATH.items()}, peak_session="2026-09-16",
+                     phase=phase, active=False, low_close=None, low_session=None,
+                     valid_until="2026-09-23T21:00:00+00:00")
+    view = pb.present(obs)
+    assert view["detail_path"]["dates"] == PATH["dates"][2:]
+    soup = BeautifulSoup(render(view, "us"), "html.parser")
+    assert soup.select_one("section.rrp").get("data-pb-phase") == phase
+    assert soup.select_one(".rrp-chart .ilx") is not None
+    assert "Unavailable" in soup.select_one('[data-metric="worst"]').get_text()
+
+
+def _evidence_text(view):
+    from bs4 import BeautifulSoup
+    from tests.test_risk_radar_pullback_depth_template import render
+    soup = BeautifulSoup(render(view, "us"), "html.parser")
+    assert soup.select_one("section.rrp").get("data-pb-phase") == view["phase"]
+    return soup.select_one(".rrp-evidence").get_text()
+
+
+def _young(n, phase="underway"):
+    """A valid window of n closes ending today, in a shape the owner emits: a new
+    high today (n=1) or shallow monitoring; developing on today's first close
+    2-5% under the high (5% would confirm); underway confirmed by today's 5%
+    shock, which makes today the episode low."""
+    dates = PATH["dates"][-n:]
+    tail = {"monitoring": -1.0, "developing": -3.0, "underway": -5.0}[phase]
+    vals = [0.0] + [-1.0] * (n - 2) + [tail] if n > 1 else [0.0]
+    over = dict(peak_session=dates[0], close=100.0 + vals[-1])
+    if phase == "underway":
+        over.update(low_close=100.0 + vals[-1], low_session=dates[-1])
+    else:
+        over.update(active=False, low_close=None, low_session=None)
+    return _qualified({"dates": list(PATH["dates"][:-n]) + dates,
+                       "vals": [-3.0] * (len(PATH["dates"]) - n) + vals},
+                      phase=phase, valid_until="2026-09-23T21:00:00+00:00", **over)
+
+
+@pytest.mark.parametrize("n, phase", [(1, "monitoring"), (2, "underway"), (3, "underway"),
+                                      (3, "developing")])
+def test_a_young_window_says_it_is_short_not_that_history_fails_the_figures(monkeypatch, n, phase):
+    """Coverage is complete; there are just fewer than MIN_CHART_POINTS closes to draw."""
+    seen, view = _drawn(monkeypatch, _young(n, phase))
+    assert seen == [] and view["detail_path"] is None
+    assert view["detail_withheld"] == "short"
+    text = _evidence_text(view)
+    assert "Too few closes since the reference high" in text
+    assert "does not fully" not in text and "needs current" not in text
+
+
+def test_four_closes_from_the_reference_high_draw(monkeypatch):
+    seen, view = _drawn(monkeypatch, _young(4))
+    assert len(seen) == 1 and view["detail_withheld"] is None
+
+
+@pytest.mark.parametrize("index, value", [(-1, -3.0), (-2, -1.0)])
+def test_a_short_window_that_disagrees_with_the_figures_is_uncovered_not_short(monkeypatch, index, value):
+    """Every coverage check runs before the length check: being young is not a pass."""
+    obs = _young(2)
+    obs["price_path"]["vals"][index] = value  # the end misses the metric / the peak is not 0
+    seen, view = _drawn(monkeypatch, obs)
+    assert seen == [] and view["detail_withheld"] == "uncovered"
+
+
+def test_an_uncovered_window_says_the_history_does_not_support_the_figures():
+    # The 63-close cap: the episode's peak predates the retained path.
+    obs = _qualified({"dates": PATH["dates"][3:], "vals": PATH["vals"][3:]},
+                     peak_session="2026-09-16", valid_until="2026-09-23T21:00:00+00:00")
+    view = pb.present(obs)
+    assert view["detail_withheld"] == "uncovered"
+    text = _evidence_text(view)
+    assert "does not fully support these figures" in text
+    assert "Too few closes" not in text and "needs current" not in text

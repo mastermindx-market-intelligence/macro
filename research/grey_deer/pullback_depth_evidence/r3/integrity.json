@@ -1,0 +1,20 @@
+{
+  "kind": "synthetic_component_proof_not_production",
+  "focused_tests": 206,
+  "focused_test_command": "python3 -m pytest tests/test_risk_radar_pullback_depth_template.py tests/test_pullback_depth_projection.py tests/test_risk_radar_dlg_partial.py tests/test_risk_radar_dlg_country_wiring.py -q",
+  "tests_exit": 0,
+  "contract_delta_introduced": 0,
+  "contract_delta_inherited": 0,
+  "design_added_blocking": 0,
+  "browser_cases": 16,
+  "no_javascript_chart_cases": 2,
+  "canonical_image_cells": 32,
+  "image_hashes_and_lengths_match": true,
+  "console_errors": 0,
+  "failed_responses": 0,
+  "horizontal_overflow": false,
+  "canonical_receipt_content_validation": "PASS",
+  "local_whole_repo_receipt_discovery": "NOT_RUN: mockups sparse; receipt will be created natively in source tree",
+  "live_popup_replacement": false,
+  "model_fitted": false
+}

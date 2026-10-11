@@ -1,0 +1,24 @@
+{
+  "operation": "risk-radar-pullback-20261009",
+  "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+  "file_name": "Mastermind · Market Dashboard Popups · Redesign",
+  "page_id": "p-1-0",
+  "original_primary": "1-0",
+  "design_status": "native artboards created and screenshot-inspected; not production acceptance",
+  "snapshot_drift_guard": "14d05f0d2ed00fbc30c6851d0af63cdb7cdb1c3708ce4db955276965c93c0997",
+  "snapshot_is_document_revision": false,
+  "numbers_are_illustrative": true,
+  "original_artboards_retained": true,
+  "artboards": [
+    {"id":"9TH-0","name":"40 · Pullback underway · US · Illustrative","width":1240,"height":1232,"theme":"dark","locale":"en"},
+    {"id":"9WB-0","name":"41 · Pullback underway · China · Estimate unavailable","width":1240,"height":1058,"theme":"dark","locale":"en"},
+    {"id":"9ZG-0","name":"42 · Pullback · Mobile · Stabilization watch","width":390,"height":1143,"theme":"dark","locale":"en"},
+    {"id":"A1M-0","name":"43 · Pullback · China · Light EN","width":1240,"height":1102,"theme":"light","locale":"en"},
+    {"id":"A3K-0","name":"44 · Pullback · China · Light ZH","width":1240,"height":1079,"theme":"light","locale":"zh"}
+  ],
+  "light_treatment": "White headline and metrics; cool research canvas; two white evidence cards, hairlines and controlled shadow. No dark damage glow is carried into the light hero.",
+  "localization": "Chinese directional price loss is green and rebound is red; fixed risk and uncertainty semantics do not flip.",
+  "native_full_matrix_complete": false,
+  "browser_component_evidence": "research/grey_deer/pullback_depth_evidence/r3/manifest.json",
+  "remaining": "Integrate through the existing held observer and shared modal owners. The component matrix is synthetic; live US/China popup replacement and forecast qualification remain unproven."
+}

@@ -5874,6 +5874,24 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
     return out
 
 
+def _us_pullback_risk_popup(*, now: datetime) -> dict | None:
+    """Read-only US Risk Radar observation for the existing shared popup.
+
+    Keep the original observer, source store, NYSE calendar and page renderer.
+    The licensed SPY reader and the single episode owner are bound here. Any
+    failure, including an import or programming error in the adapters, leaves
+    the view unavailable without breaking builds.
+    """
+    try:
+        from lib import us_pullback_observation as pb
+        from lib.pullback_observation import observe
+        return pb.present(pb.snapshot(now=now, read=pb.licensed_spy_closes,
+                                      observer=observe))
+    except Exception as exc:  # noqa: BLE001 — additive popup section, never fatal
+        log.warning("US pullback presentation unavailable: %s", type(exc).__name__)
+        return None
+
+
 def main() -> int:
     from lib import nyse_calendar as _us_nyse_calendar  # noqa: PLC0415
 
@@ -7152,6 +7170,10 @@ def main() -> int:
         factor_season=factor_season,         # B4: seasonal-climate chip (display-only, page furniture)
         **_master_brief_vm(),
     )
+
+    # One measured-price view for the existing Macro/US Risk Radar dialog.
+    # Missing/stale/held-source states cannot replace the legacy forecast view.
+    vm["us_pullback_view"] = _us_pullback_risk_popup(now=datetime.now(timezone.utc))
 
     # DEV-ONLY fast-render cache: when MACRO_DUMP_VM is set, pickle the assembled
     # view-model so scripts/render_macro_fast.py can re-render macro.html /

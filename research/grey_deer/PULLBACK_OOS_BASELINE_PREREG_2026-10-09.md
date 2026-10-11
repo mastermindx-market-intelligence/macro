@@ -1,0 +1,25 @@
+# Risk Radar pullback: OOS baseline pilot preregistration (research only)
+
+**Operation:** `risk-radar-pullback-20261009`. This specification is frozen **before the first conditional-vs-unconditional rolling-origin baseline evaluation**. A preliminary retrospective full-span feasibility census of sampled 21-session origins was already viewed, so this is an **exploratory methodology trial, not an untouched confirmatory holdout**. The comparison must not be marketed as accepted accuracy.
+
+## Question
+
+For a US SPY close-price pullback at a historically reconstructed, causally observable origin, does a simple **phase-conditioned** distribution of additional loss to the next 21-session minimum improve held-out quantile loss and coverage over an **unconditional** distribution trained on the same price basis? Do not claim causal attribution or bottom-date precision.
+
+## Fixed observation, vintage and target
+
+- Market and benchmark: `us` / `SPY`. Source: local `data/yahoo/SPY.parquet`, `close_price` (split-adjusted, dividend-unadjusted), last observed 2026-10-08. The inspected SHA256 is `6c785d556c22e20f85f89f55597b10469f0fc4c40a577b8efb04bc11964a3152`. No raw data committed. This is today's revised vendor vintage, **not** an archived true PIT tape and not license/release proof.
+- Causal phase source: exactly held #8188 `lib.pullback_observation.observe()`, Git blob `54e7f0443d5b58d08a2a7327326e62766cc1ca0d`. At each origin replay **only** raw closes through that origin with the owning `lib.nyse_calendar`; do not reimplement episode detection or infer phase from eventual trough.
+- Sampling: 21-session stride beginning at sample index 63 of the source's stored session order, explicitly recorded as arbitrary and sensitivity-prone. No claim that 400 sampled origins mean 400 independent crises. The already-observed 400-origin feasibility counts are NOT prospective validation.
+- Primary horizon: 21 local NYSE trading sessions; secondary label quality checks 5 and 10. Label `A_h = 1 - min(P_t,...,P_(t+h))/P_t`. Immature horizons, missing expected sessions, conflicting/invalid prices and non-session dates abstain. The label end belongs to the original price basis.
+- Origins: training `origin < 2018-01-01`; evaluation `origin >= 2018-01-01`, provided all 21 future sessions have matured by source snapshot. No evaluation labels enter training. Conservative purge: `training.label_end < evaluation.origin` and `training.label_end < 2018-01-01` for the fixed-fit benchmark. No hyperparameter search on evaluation folds.
+- Two model families only: (A) unconditional empirical loss quantiles of all eligible training origins; (B) empirical quantiles conditioned on the **exact contemporaneous observed phase**. No volatility/breadth/rates/credit features, ML, adaptive conformal, class merging, or reconstructed eventual crash labels in this pilot.
+- Quantiles: Q25, Q75, Q90 of additional-loss fraction, with linear interpolation of ordered training losses. Middle interval Q25–Q75 is an outcome **predictive interval**, not a guaranteed bottom. Q90 is stress context only; no capital sizing or release authority.
+- Minimum eligible training sample: 30 matured forecast origins **and** 20 distinct non-empty peak-session proxies for phase-conditioned study (not true independent episode IDs). If below threshold, abstain. For the unconditional study, group key is the retained peak when present and otherwise the origin date, but disclosed as a crude proxy. Record training sizes; these thresholds are experimental filters and are NOT production admission thresholds.
+- Evaluation: print per-family eligible test origins; empirical Q25–Q75 interval coverage and width, Q90 exceedance frequency, and mean pinball loss at Q25/Q75/Q90. Report phase and era slices (2018–2019, 2020–2021, 2022 onward), distinct proxy counts, and unavailable rates. Compare paired origins only and never declare a winner by one aggregate score. No bootstrap/inference or causal attribution is claimed in this trial.
+- Falsifiers: no improvement in held-out pinball loss vs unconditional; systematic miscoverage in 2020 stress or newer regimes; too few distinct episode proxies; severe sensitivity to 21-session stride; vendor calendar discrepancies; source licensing/vintage gaps.
+- Hard release gate: no numeric forecast/odds or buy permission is enabled by this pilot, even if a score improves. Require separately preregistered phase/volatility/market cohorts, true historical availability clocks, independent crisis/episode uncertainty estimates, US and China **separate** holdout receipts, admitted review, production paths, and licensing before displaying remaining-depth numbers.
+
+## Do not redo
+
+Keep the existing native drawdown observer (#8188), risk envelope, canonical history, publication path and Paper mockups untouched. Model/label experiments stay in `research/grey_deer`, not the market render path. Use existing `lib/pullback_depth_projection.py` for eventual total-depth arithmetic, not invented sum-of-percentages or a new scoring engine.

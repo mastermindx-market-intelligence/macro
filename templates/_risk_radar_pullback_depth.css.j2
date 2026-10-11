@@ -1,0 +1,73 @@
+/* Paper 40–44: measured-only content inside the existing Risk Radar popup.
+   Directional numbers use down/up; uncertainty and risk use fixed health inks.
+   The existing observation expiry owner adds pb-expired. No additional timer. */
+.rrp{display:flex;flex-direction:column;min-width:0;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);font-family:var(--font-ui);font-size:var(--fs-body);overflow:hidden}
+.rrp *{box-sizing:border-box;min-width:0}
+.rrp h2,.rrp h3,.rrp p{margin:0}
+.rrp .rrp-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-6,24px);padding:var(--sp-6,24px);border-bottom:1px solid var(--line);background:linear-gradient(110deg,var(--panel2),var(--panel))}
+.rrp .rrp-heading h2{font:800 var(--fs-h1)/1.2 var(--font-ui);letter-spacing:-.025em;color:var(--text)}
+.rrp .rrp-eyebrow{font:600 var(--fs-label)/1.5 var(--font-ui);letter-spacing:.06em;color:var(--muted);padding-bottom:var(--sp-2,8px)}
+.rrp .rrp-sub{padding-top:var(--sp-3,12px);font-size:var(--fs-body);line-height:1.6;color:var(--muted)}
+.rrp .rrp-stamp{flex:0 0 auto;text-align:right;font-size:var(--fs-label);line-height:1.7;color:var(--muted)}
+.rrp .rrp-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:var(--sp-6,24px);gap:var(--sp-6,24px)}
+.rrp .rrp-metrics>div+div{border-left:1px solid var(--line);padding-left:var(--sp-6,24px)}
+.rrp .rrp-label{font-size:var(--fs-sm);line-height:1.5;color:var(--muted);padding-bottom:var(--sp-3,12px)}
+.rrp .rrp-metrics strong{display:block;font:600 var(--fs-h1)/1.3 var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.03em;color:var(--ink-down)}
+.rrp .rrp-metrics .rrp-primary{font-size:var(--fs-display)}
+.rrp .rrp-metrics .rrp-rebound{color:var(--ink-up)}
+.rrp .rrp-note{padding-top:var(--sp-2,8px);font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-age{padding:0 var(--sp-6,24px) var(--sp-4,16px);font-size:var(--fs-sm);color:var(--muted)}
+.rrp .rrp-study{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:var(--sp-6,24px);padding:var(--sp-6,24px);border-top:1px solid var(--line);background:var(--bg)}
+.rrp .rrp-study>div{padding:var(--sp-5,20px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+.rrp .rrp-study h3{font:700 var(--fs-h2)/1.5 var(--font-ui);color:var(--text);padding-bottom:var(--sp-3,12px)}
+.rrp .rrp-study p{font-size:var(--fs-body);line-height:1.65;color:var(--muted)}
+.rrp .rrp-chart{padding:var(--sp-3,12px) 0;overflow:hidden}
+.rrp .rrp-chart .ilx{width:100%;background:transparent;border:0;border-radius:0;box-shadow:none;margin:0}
+.rrp .rrp-forecast .rrp-eyebrow{color:var(--ink-warn)}
+.rrp .rrp-forecast-row{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-3,12px);padding:var(--sp-3,12px) 0;border-bottom:1px solid var(--line);font-size:var(--fs-sm);line-height:1.6}
+.rrp .rrp-forecast-row:first-of-type{margin-top:var(--sp-3,12px)}
+.rrp .rrp-forecast-row strong{font-family:var(--font-mono);color:var(--muted)}
+.rrp .rrp-method{padding-top:var(--sp-2,8px)}
+.rrp .rrp-method summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2,8px);font-size:var(--fs-sm);color:var(--text);cursor:pointer;list-style:none}
+.rrp .rrp-method summary::-webkit-details-marker{display:none}
+.rrp .rrp-method summary::after{content:'+';font:400 var(--fs-h2)/1 var(--font-ui);color:var(--muted)}
+.rrp .rrp-method[open] summary::after{content:'−'}
+.rrp .rrp-method summary:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px;border-radius:var(--r-ctl,8px)}
+.rrp .rrp-method p{font-size:var(--fs-sm);padding:var(--sp-2,8px) 0}
+.rrp .rrp-limit{padding:var(--sp-4,16px) var(--sp-6,24px);border-top:1px solid var(--line);font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .pbx-expiry{display:none;padding:var(--sp-4,16px) var(--sp-6,24px);font-size:var(--fs-body);line-height:1.6;color:var(--ink-warn)}
+.rrp.pb-expired .pbx-expiry{display:block}
+.rrp.pb-expired .pbx-current,.rrp.pb-expired .rrp-sub{display:none}
+.rrp.pb-expired .rrp-study{grid-template-columns:minmax(0,1fr)}
+html[data-theme="light"] .rrp{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .rrp .rrp-heading{background:var(--panel)}
+html[data-theme="light"] .rrp .rrp-study{background:var(--bg)}
+html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:var(--card-shadow)}
+@media(max-width:680px){
+ .rrp .rrp-heading{flex-direction:column;gap:var(--sp-3,12px);padding:var(--sp-5,20px)}
+ .rrp .rrp-stamp{text-align:left}
+ .rrp .rrp-metrics{grid-template-columns:minmax(0,1fr);gap:var(--sp-4,16px);padding:var(--sp-5,20px)}
+ .rrp .rrp-metrics>div+div{border-left:0;border-top:1px solid var(--line);padding:var(--sp-4,16px) 0 0}
+ .rrp .rrp-study{grid-template-columns:minmax(0,1fr);padding:var(--sp-4,16px);gap:var(--sp-4,16px)}
+ .rrp .rrp-age,.rrp .rrp-limit,.rrp .pbx-expiry{padding-left:var(--sp-5,20px);padding-right:var(--sp-5,20px)}
+}
+
+.rrp .rrp-chart-caption{font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-history table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:var(--fs-sm)}
+.rrp .rrp-history th,.rrp .rrp-history td{padding:var(--sp-2,8px);border-bottom:1px solid var(--line);text-align:left;overflow-wrap:anywhere}
+.rrp .rrp-history th:last-child,.rrp .rrp-history td:last-child{text-align:right}
+/* Observed damage is immediately readable, including below the fold and no-JS.
+   Reuse the shared SVG, but do not defer critical ink to scroll choreography. */
+.rrp .rrp-chart .ilx-path{stroke-dashoffset:0;animation:none}
+.rrp .rrp-chart .ilx-water{opacity:.55;animation:none}
+.rrp .rrp-chart .ilx-ref{opacity:.4;animation:none}
+.rrp .rrp-chart .ilx-tag,.rrp .rrp-chart .ilx-d,.rrp .rrp-chart .ilx-reflab{opacity:1;animation:none}
+.rrp .rrp-chart .ilx-dot{transform:scale(1);animation:none}
+
+/* Preserve the one original US modal and expose its forecast evidence on demand. */
+.riskdlg-legacy-details{margin-top:var(--sp-5,20px);border-top:1px solid var(--line);padding-top:var(--sp-3,12px)}
+.riskdlg-legacy-details>summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px);font:650 var(--fs-body)/1.5 var(--font-ui);cursor:pointer;color:var(--text);list-style:none}
+.riskdlg-legacy-details>summary::-webkit-details-marker{display:none}
+.riskdlg-legacy-details>summary::after{content:"+";font-size:var(--fs-h2);color:var(--muted)}
+.riskdlg-legacy-details[open]>summary::after{content:"−"}
+.riskdlg-legacy-details>summary:focus-visible{outline:2px solid var(--ink-info,var(--info));outline-offset:3px}
