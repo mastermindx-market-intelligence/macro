@@ -10,6 +10,7 @@ from app import company_disclosures as api
 from engine.company_intelligence import issuer_disclosures as native
 from engine.research_vault.r2_store import LocalStore
 from tests.test_company_issuer_disclosures import sample, SyntheticSourceReader
+from tests.test_company_disclosure_owner import case
 
 
 @pytest.fixture
@@ -82,6 +83,40 @@ def test_positive_uses_canonical_auth_fresh_feature_and_same_native_result(bound
     }
     assert before == {p.relative_to(store.root): p.read_bytes() for p in store.root.rglob('*') if p.is_file()}
     assert 'synthetic-token' not in response.text and 'text_sha256' not in response.text
+
+
+def test_current_owner_http_composition_rechecks_authority_and_entitlement(boundary, case):
+    from engine.company_intelligence import issuer_disclosure_owner as owner
+    from tests.test_company_disclosure_owner import publish
+    publish(case)
+    source, state, artifacts, *_ = case
+    current = owner.CurrentDisclosureOwner(source, owner.ReadOnlyLocalObjects(state.root))
+    opened = []
+    def factory():
+        opened.append(1)
+        return owner.ReadOnlyLocalObjects(artifacts.root)
+    boundary[0].app.state.company_disclosure_reader = api.PrivateDisclosureReader(current, factory, current)
+    fact = source.value.spec['fact']
+    url = '/api/company-intelligence/private/product-integrations/' + fact['fact_id']
+    headers = {'Authorization': 'Bearer synthetic-token'}
+    response = boundary[0].get(url, headers=headers)
+    assert response.status_code == 200
+    private_headers(response)
+    assert response.json()['source_timing']['published_date'] == '2024-02-26'
+    assert response.json()['reference'] == native.validate_fact(fact).payload()
+    issuer_url = '/api/company-intelligence/private/issuers/' + fact['subject_id'] + '/product-integrations'
+    selection = boundary[0].get(issuer_url, headers=headers)
+    assert selection.status_code == 200
+    assert selection.json()['generation'] == response.json()['generation']
+    assert selection.json()['selections'][0]['fact_reference'] == response.json()['reference']
+    before = len(opened)
+    source.value = replace(source.value, ruling_revision='0'*64)
+    assert boundary[0].get(url, headers=headers).status_code == 503
+    assert len(opened) == before
+    boundary[2]['features'] = []
+    calls = source.calls
+    assert boundary[0].get(url, headers=headers).status_code == 403
+    assert source.calls == calls and len(opened) == before
 
 
 @pytest.mark.parametrize('patch', [

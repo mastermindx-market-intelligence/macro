@@ -28,8 +28,10 @@ continues. A synthetic authority in tests is never a production authority.
    instant with at most microsecond precision.
 4. Use the source-owner `DisclosureAuthority.resolve(request)` for metadata-only
    adoption, purpose, identity, time, correction and current-generation selection.
-   `preflight(authority, request)` requires no store and performs no private I/O.
-   A denial or resolver error must stop before private storage is touched.
+   `preflight(authority, request)` requires no artifact Store. It may read bounded
+   owner decision/current-selection metadata after authentication and entitlement,
+   but never retained source, reviewer text or native artifact content. A denial
+   or resolver error stops before artifact Store construction or content access.
 5. Call `read_disclosure(store, authority, request)` with the incumbent private
    Store. It repeats admission, verifies exact content references and native
    revision bindings, walks both bounded predecessor chains and rechecks the
@@ -401,3 +403,27 @@ at https://git-scm.com/docs/git/2.43.0#Documentation/git.txt-codeGITALLOWPROTOCO
 The host was only inspected; source installation and authenticated API serving
 still require postmerge proof. No Git upgrade, service restart or account change
 was performed for these compatibility checks.
+
+## Implemented C01 owner and staged publication
+
+The original source owner now supplies `CommittedDisclosureSource`,
+`CurrentDisclosureOwner` and `ReadOnlyLocalObjects`. The Macro source mount wires
+these capabilities to the fixed paths in `PRIVATE_RUNTIME_LAYOUT.md`; constructors
+do not read or create those paths. Actual deployment remains separately owned.
+The protected C01 ruling/specification, current MU/NVDA identity receipts, Data OS
+registry adoption and native revision decisions are requalified on every read.
+
+The one DERIVED generation dataset begins PROPOSED. Initial retained-input
+publication may produce verified immutable native members and a manifest, returning
+`MEMBERS_OBSERVED_NOT_ADOPTED`; it cannot create a current serving pointer. On that
+actual receipt, the source owner can amend the existing protected registry row to
+PRODUCED, then publish a new manifest bound to that adoption revision and CAS-promote
+current. A staged pointer or content blob never substitutes for source adoption.
+
+The attended CLI reserves a stable operation ID and its complete exact candidate
+intent before writes, including the original computed clock, manifest reference,
+code/decision bindings and expected predecessor. Intent and result are separate
+exclusive, fsynced files. An unknown acknowledgement retains one exact candidate
+for same-operation reconciliation; no automatic retry or operation-ID replacement
+is authorized. Native artifact publication and private current promotion are
+independent of browser acceptance, which still requires the entitled F04 path.

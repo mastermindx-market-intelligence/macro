@@ -314,7 +314,11 @@ class DisclosureAuthority(Protocol):
 
 def preflight(authority: DisclosureAuthority, request: Request,
               candidate: Reference | None = None) -> Admission:
-    """No store argument and no private I/O; errors reveal no owner detail."""
+    """Metadata only; no source/reviewer/artifact bodies or artifact Store.
+
+    An installed owner may read bounded decision/current-selection metadata.
+    HTTP authentication and actual entitlement must precede even that access.
+    """
     _require(type(request) is Request, "REQUEST_INVALID")
     try:
         admitted = (authority.resolve(request) if candidate is None

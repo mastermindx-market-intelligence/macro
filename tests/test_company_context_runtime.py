@@ -182,11 +182,20 @@ def test_wrong_purpose_never_opens_repo(installed, monkeypatch):
     assert installed[1].current_identity_bundle('public', api.AUDIENCE) is None
 
 
-def test_main_mount_installs_identity_only(boundary):
+def test_main_mount_keeps_identity_independent_and_disclosure_readonly(boundary):
+    from engine.company_intelligence.issuer_disclosure_owner import CurrentDisclosureOwner, ReadOnlyLocalObjects
     main = boundary[-1]
     assert type(main.app.state.company_context_owner) is CommittedCompanyContextOwner
     assert main.app.state.company_context_owner.repo == main.REPO
-    assert not hasattr(main.app.state, 'company_disclosure_reader')
+    reader = main.app.state.company_disclosure_reader
+    assert type(reader.authority) is CurrentDisclosureOwner
+    assert reader.authority.source.identity_owner is main.app.state.company_context_owner
+    assert type(reader.authority.state) is ReadOnlyLocalObjects
+    assert str(reader.authority.state.root) == '/var/lib/macro-company-intelligence/state'
+    store = reader.store_factory()
+    assert type(store) is ReadOnlyLocalObjects
+    assert str(store.root) == '/var/lib/macro-company-intelligence/artifacts'
+    assert not hasattr(store, 'put_bytes_strict_conditional')
 
 
 def rewrite_records(installed, context_fixture, records):

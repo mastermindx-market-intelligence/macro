@@ -3948,6 +3948,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - scripts/publish_company_disclosure.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13454,6 +13455,7 @@ jobs:
       - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -13963,6 +13965,7 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -15194,6 +15197,8 @@ jobs:
     # the repo it imports only stdlib + numpy, pytest.
     scope: exclusive
     paths:
+      - research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json
+      - research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json
       - "engine/__init__.py"
       - "engine/vol_noise_robust_realized.py"
       - "tests/test_vol_noise_robust_realized.py"
@@ -15928,6 +15933,7 @@ jobs:
       - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -16616,6 +16622,7 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -20657,6 +20664,7 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -22474,6 +22482,9 @@ jobs:
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
       - "tests/test_verify_ticker_news.py"
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - scripts/publish_company_disclosure.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -23838,11 +23849,27 @@ jobs:
       - scripts/worktree_sparse.py
       - tests/__init__.py
       - tests/conftest.py
+      - tests/test_company_disclosure_owner.py
       - tests/test_company_issuer_disclosures.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
       - tests/test_company_relationship_observations.py
       - tests/test_company_relationship_review_set.py
+      - research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json
+      - research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json
+      - config/delisted_symbols.yml
+      - config/issuer_group_allowlist.yml
+      - engine/company_intelligence/current_company_context.py
+      - engine/company_intelligence/current_context_runtime.py
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - engine/company_intelligence/issuer_disclosure_selection.py
+      - lib/delisted_symbols.py
+      - lib/ticker_aliases.py
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - scripts/build_security_master.py
+      - scripts/publish_company_disclosure.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23852,7 +23879,7 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File, pinned-source, observation and native disclosure contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
