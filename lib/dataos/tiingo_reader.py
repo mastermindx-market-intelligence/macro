@@ -133,6 +133,11 @@ def read_research_view(source: str, day: str, sha256: str, *,
     if (manifest.get("pit_backtest_eligible") is not False
             or manifest.get("dataos_identity_admitted") is not False):
         raise TiingoViewRefusal("research manifest cannot assert canonical/PIT admission")
+    # A local research manifest is never a licensing/redistribution authority.
+    # The user's plan attestation must be mapped through the incumbent rights
+    # owner, not an editable flag on a vendor research artifact.
+    if manifest.get("redistribution_admitted") is not False:
+        raise TiingoViewRefusal("local research manifest cannot grant redistribution rights")
     pit = False
     if purpose == "RETROSPECTIVE_EXPLORATORY" and not acknowledge_hindsight:
         raise TiingoViewRefusal("must acknowledge historical source availability is unknown")
@@ -150,6 +155,9 @@ def read_research_view(source: str, day: str, sha256: str, *,
             or manifest.get("source_observed_at_utc") != observed
             or any(row.get("source_sha256") != sha256
                    or row.get("source_view_schema") != SCHEMA_VERSION
+                   or row.get("source_vendor") != "tiingo"
+                   or row.get("dataset_source") != source
+                   or row.get("source_rights_admitted") is not False
                    or row.get("pit_backtest_eligible") is not False
                    or row.get("dataos_identity_admitted") is not False
                    or row.get("source_observed_at_utc") != observed for row in rows)):
@@ -164,6 +172,6 @@ def read_research_view(source: str, day: str, sha256: str, *,
         source=source, source_sha256=sha256,
         source_observed_at_utc=manifest.get("source_observed_at_utc"),
         purpose=purpose, pit_backtest_eligible=pit,
-        redistribution_admitted=manifest.get("redistribution_admitted") is True,
+        redistribution_admitted=False,
         rows=tuple(rows),
     )

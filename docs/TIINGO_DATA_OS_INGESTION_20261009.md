@@ -455,3 +455,32 @@ Separate Tiingo News PR #8697 reports an authenticated HTTP 200 for a bounded
 news sample, evidence of news API token functionality only. This is not
 proof of EOD, fundamentals, BOATS, or public-news redistribution entitlements,
 and does not permit replay of the separately refused authenticated probe.
+
+
+### October 10 research reader rights-admission repair
+
+An independent defect in the existing research consumer allowed editable Parquet
+manifest metadata to report redistribution_admitted=true, even though only the
+incumbent licensing/right-to-publication owner can admit redistribution.
+Pure read-side tests reproduced this false-positive without any provider call.
+The research reader now refuses a manifest that asserts rights and always
+returns redistribution_admitted=false for ordinary inspected/retrospective views.
+It additionally refuses tampered source_vendor, dataset_source and
+source_rights_admitted fields on materialized research rows, even after an
+attacker recomputes the editable Parquet checksum. These are research-only
+source/rights lineage checks; they do not repair the raw writer or qualify an
+actual vendor contract.
+
+Four new synthetic regressions failed before this consumer fix and now pass.
+Focused research-reader/history-view/auditor tests: 158 passed (process 59412).
+Full Tiingo + registry suite: 273 passed, the SAME 11 historical producer
+integrity failures remain (process 70292).
+Full-suite log:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-reader-rights-20261011.log
+SHA-256 e8ff4e744fbd3cb8e4a93389ad54a0283c3dfc7b50ae17ee1e1ff7d6e84e626a
+
+The entire core collector remains at SHA-256
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+No source data, key, BOATS session, vendor requests, new scheduler or
+producer-path workaround was touched. Keep all 24 Data OS contracts PROPOSED and
+PR #8698 draft until real entitlement, producer integrity, and runtime evidence.

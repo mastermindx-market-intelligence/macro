@@ -164,3 +164,36 @@ def test_research_reader_schema_is_pinned_per_row_not_just_manifest(view):
     meta["output_sha256"] = hashlib.sha256(artifact.read_bytes()).hexdigest(); file.write_text(json.dumps(meta))
     with pytest.raises(TiingoViewRefusal, match="lineage"):
         read_research_view(source, day, digest, root=root, check_mount=False)
+
+
+def test_editable_manifest_cannot_grant_redistribution_rights(view):
+    root, source, day, digest = view
+    manifest_path = root / "manifests" / source / day / (digest + ".json")
+    manifest = json.loads(manifest_path.read_text())
+    manifest["redistribution_admitted"] = True
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(TiingoViewRefusal, match="rights"):
+        read_research_view(source, day, digest, root=root, check_mount=False)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_rights_admitted", True),
+    ("source_vendor", "another_provider"),
+    ("dataset_source", "other_source"),
+])
+def test_mutable_research_rows_cannot_claim_source_or_rights_authority(view, field, value):
+    import hashlib
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    root, source, day, digest = view
+    manifest_path = root / "manifests" / source / day / (digest + ".json")
+    manifest = json.loads(manifest_path.read_text())
+    artifact = root / manifest["output_path"]
+    rows = pq.read_table(artifact).to_pylist()
+    rows[0][field] = value
+    pq.write_table(pa.Table.from_pylist(rows), artifact)
+    manifest["output_sha256"] = hashlib.sha256(artifact.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(TiingoViewRefusal, match="lineage"):
+        read_research_view(source, day, digest, root=root, check_mount=False)
