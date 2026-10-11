@@ -396,6 +396,32 @@ _LAWFUL_RESOLUTION_STATES = (
 )
 
 
+def _resolved_source_identity_defects(source_identity: Any) -> tuple[str, ...]:
+    """Missing/invalid grain on an asserted RESOLVED source; no owner inference.
+
+    Genuine non-RESOLVED states keep their existing abstention behavior. An
+    incomplete RESOLVED claim is invalid input, never silently relabelled as an
+    owner-issued UNRESOLVED verdict. Strings are validated but not normalized;
+    this proves neither the owner's id grammar nor authentic resolution.
+    """
+    if not isinstance(source_identity, dict):
+        return ()  # The existing state/schema gates own this malformed shape.
+    if source_identity.get("resolution_state") != "RESOLVED":
+        return ()
+    defects = []
+    for field in ("issuer_id", "security_id"):
+        value = source_identity.get(field)
+        if (
+            type(value) is not str
+            or not value.strip()
+            or len(value) > 120
+            or "\r" in value
+            or "\n" in value
+        ):
+            defects.append(field)
+    return tuple(defects)
+
+
 def governing_identity_state(target_resolution_state: Any, source_identity_state: Any) -> Any:
     """Which identity, if either, blocks semantic inference.
 
@@ -524,6 +550,12 @@ def validate_hypothesis(record: Any) -> list[Finding]:
         else {}
     )
     source_identity_state = source_identity_for_gate.get("resolution_state")
+    for field in _resolved_source_identity_defects(source_identity_for_gate):
+        findings.append(_f(
+            "K3D_R015", f"$.source_event.source_identity.{field}",
+            "RESOLVED source requires a nonblank issuer_id and security_id "
+            "within the existing string bounds; shape does not authenticate the owner",
+        ))
     # The source event's OWN identity gates inference as the target's does. This
     # block mirrors the target gate's NON-RESOLVED branch below (K3D_R010/R011/R012)
     # clause for clause. Only the HEADLINE claim may consult ``abstained``: the
@@ -535,15 +567,9 @@ def validate_hypothesis(record: Any) -> list[Finding]:
     # that accepts what the composer refuses is drift, so both sides stay pinned by
     # test_r015_mirrors_the_target_side_gate_clause_for_clause.
     #
-    # Deliberately NOT mirrored, and NOT closed here: the target's RESOLVED-branch
-    # grain check (K3D_R013/K3D_R014, which reject a RESOLVED identity carrying a
-    # null issuer_id or security_id). A source_identity asserting RESOLVED with null
-    # ids therefore still passes BOTH composer and validator. That gap is
-    # pre-existing — it behaves identically before this commit — and is a claim to
-    # be exactly resolved rather than the "non-RESOLVED" state the controlling
-    # review ordered gated, so closing it is a separate scope change raised to Sol
-    # rather than taken here. Do not read the parity above as wider than the
-    # non-RESOLVED branch.
+    # RESOLVED source-grain completeness is checked by the shared helper above
+    # and before composer derivation. This does not authenticate native identity,
+    # normalize IDs, alter target-first abstention or mint a replacement verdict.
     if source_identity_state != "RESOLVED":
         if abstention.get("abstained") is not True:
             findings.append(
@@ -1205,6 +1231,12 @@ def compose_hypothesis(
     if source_identity_state not in _LAWFUL_RESOLUTION_STATES:
         raise EconomicPropagationError(
             f"source_event.source_identity.resolution_state {source_identity_state!r} is not a lawful state"
+        )
+
+    if _resolved_source_identity_defects(source_identity):
+        raise EconomicPropagationError(
+            "K3D_R015 source_event.source_identity: RESOLVED requires complete "
+            "issuer_id and security_id before semantic derivation"
         )
 
     admissions = [dict(a) for a in generator_admissions]
