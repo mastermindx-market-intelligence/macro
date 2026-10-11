@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Deliver the tested single-attempt and audit-discovery implementation on the same disarmed PR 8786, obtain fresh exact-head checks and protected landing, then verify installed source and browser behavior. Root owns input qualification without a historical-owner pickup gate. Preserve the unsettled provider attempt, actual access refusals, missing stage-only credentials and story rights/release obligations.
+next_action: PR 8786 is armed at a85aeb97144e469719b1c4ef4a77da55fa27c103 with fresh CI 38169345491 running. Obtain protected landing and verify installed source and browser behavior. Continue the retained White House/NVIDIA event through the existing external-source intake and D14 evidence gates; the direct root owns qualification. Its current replay has zero first-party receipts and is not publication-ready.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
@@ -31,6 +31,8 @@ artifacts:
   - research/agentic_media/public_intelligence_20261011/STAGING_RECOVERY.md
   - research/agentic_media/public_intelligence_20261011/SINGLE_ATTEMPT_QUALIFICATION.md
   - research/agentic_media/public_intelligence_20261011/STORY_DISCOVERY.md
+  - research/agentic_media/public_intelligence_20261011/QUALIFIED_EVENT_CANDIDATE.md
+  - research/agentic_media/public_intelligence_20261011/whitehouse_event_validation.json
 do_not_redo:
   - Do not duplicate Commission 19 or claim its Fable-owned source.
   - Do not duplicate Catalyst Loop integration PR 8678 or its acquisition stores.

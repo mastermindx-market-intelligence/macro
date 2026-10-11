@@ -34,7 +34,7 @@ unresolved:
   - Existing Brief and Research drafts fail current combined-batch acceptance on overlap; preserve the unchanged threshold.
   - Exact admitted immutable earnings packet and permitted read path unavailable in current evidence.
   - Root now owns qualification directly under the Chairman continuation; historical owner labels do not gate work. Actual immutable source, rights and permitted read-only admission still need qualification.
-  - The retained ordinary feed route has no qualified current primary-source stock event, and Brief currently consumes Chronicle rather than PRESS-FEEDS artifacts.
+  - Root has retained and qualified the October 8 White House science event from the supported official fact-sheet feed. Brief still lacks its external-source intake; the unadmitted candidate fails our-value and first-party receipt floors.
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
@@ -113,3 +113,27 @@ The first candidate `3b8a642735378309e73107690bbc4682ffbd3108` concluded all 21 
 A fresh preflight found PR #8786 OPEN at 3b8a, with no attached open refresh lease. The root visibly disarmed it and integrated the substantive recovery source on the same carrier, superseding the earlier separate-follow-on intention. The retained observer was stopped deliberately (PID 73730, exit 130). Protected main merged conflict-free as `28bc4468a090775630b24473a0176746fce4197d`; no application implementation/test file changed in that main merge. This requires fresh candidate proof and does not authorize a manual merge, deployment, provider replay or publication. The one repeated controller-status read refused by the CI wait guard was not retried through another carrier.
 
 Consolidated local verification at integration `28bc4468a090775630b24473a0176746fce4197d`: six affected suites (Press validators/run/writer/staging inspection and earnings dossier-link/ingress) passed **214 tests in 20.82s**, no skips; curated import-closure regression passed **1 test in 183.31s**; Agent OS validated **1,649 records, zero errors, 141 warnings**. The main merge changed none of the accepted public builder/template/three acceptance-page paths, so the existing 69-file byte-identical estate proof remains applicable. `git diff --check` is clean. No further real provider call or emit occurred.
+
+
+## Direct root qualification of a real public event
+
+The Chairman directed root to proceed directly. Candidate/source proof was saved
+and pushed on the private recovery branch as `6beaa5ec2110`; it is not part of
+the armed PR head `a85aeb97144e469719b1c4ef4a77da55fa27c103`. Current CI is
+`38169345491`. No extra PR or writer was created.
+
+Root verified the October 8 White House science announcement, its source-specific
+copyright policy, and one exact item in the existing official fact-sheet RSS
+parser. Nine source facts and the 62.5% rounded commitment-share derivation passed
+a bounded independent claims/rights review. The original reporting candidate links
+the existing NVIDIA dossier, verified in Chrome with its Terminal continuation.
+The source qualification is not article approval or universal vendor rights.
+
+Verified command: `python3 research/agentic_media/public_intelligence_20261011/replay_event_candidate.py --peer-root /Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main`. Result: the existing suite measured **334 prose words**, 12/17 checks passing, source overlap **0.0177 <= 0.18**, and zero overlap with the two preserved staged peers. It rejected **our_value=0%** and **receipts=0 of 5**, plus the deliberately absent publishing byline/footer/frontmatter. The Markdown whitespace count349 and validator prose count334 use different tokenization. External government numbers and external-derived arithmetic remain third_party. The two peer hashes are unchanged.
+
+`whitehouse_event_validation.json` binds this offline replay to source, draft,
+validator, config and peer hashes. The replay script does not create a planner
+slot or stage record and never calls a provider. No generation-batch credit,
+publication, source freshness or authenticated signup/follow is claimed. The
+next substantive input task is the existing PRESS-FEEDS-to-Brief intake plus
+relevant first-party evidence; do not pad unrelated metrics to force the floor.
