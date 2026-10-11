@@ -1,8 +1,8 @@
 {
   "display_only": true,
   "organ": "hk_narrative",
-  "as_of": "2026-10-10",
-  "generated_utc": "2026-10-10T15:51:38+00:00",
+  "as_of": "2026-10-11",
+  "generated_utc": "2026-10-11T14:39:39+00:00",
   "freshness": "degraded",
   "entities": [
     {
@@ -70,15 +70,15 @@
       "ticker": "9888.HK",
       "name_en": "Baidu",
       "name_zh": "\u767e\u5ea6",
-      "attention_shock_z": -0.191,
+      "attention_shock_z": 2.73,
       "tone_pctile": null,
-      "narrative_state": "quiet",
+      "narrative_state": "attention_spike",
       "young": false,
-      "n_obs": 78,
-      "as_of_date": "2026-10-06",
+      "n_obs": 77,
+      "as_of_date": "2026-10-10",
       "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     },
     {
       "slug": "jdcom",
@@ -165,15 +165,15 @@
       "ticker": "9888.HK",
       "name_en": "Baidu",
       "name_zh": "\u767e\u5ea6",
-      "attention_shock_z": -0.191,
+      "attention_shock_z": 2.73,
       "tone_pctile": null,
-      "narrative_state": "quiet",
+      "narrative_state": "attention_spike",
       "young": false,
-      "n_obs": 78,
-      "as_of_date": "2026-10-06",
+      "n_obs": 77,
+      "as_of_date": "2026-10-10",
       "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     },
     {
       "slug": "smic",

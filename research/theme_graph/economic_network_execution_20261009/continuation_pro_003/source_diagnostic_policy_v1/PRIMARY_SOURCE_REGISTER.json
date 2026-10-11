@@ -1,0 +1,349 @@
+{
+  "schema": "research.gmi.wp02.selection_policy_sources/v1",
+  "status": "PRIMARY_WEB_RESEARCH_ONLY",
+  "research_date_utc": "2026-10-09",
+  "raw_source_bytes_captured": false,
+  "source_byte_digests_asserted": false,
+  "dataset_or_constituent_census_performed": false,
+  "sources": [
+    {
+      "id": "P01",
+      "publisher": "FINRA",
+      "title": "Market Cap Explained",
+      "url": "https://www.finra.org/investors/insights/market-cap",
+      "document_date": "2022-09-30",
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "lines 194–208",
+      "finding": "Describes variable conventions: micro below USD250m, small USD250m–2b, mid USD2b–10b, large USD10b–200b, mega USD200b+. The proposed half-open boundaries and merging mega into large are this policy's choices.",
+      "web_refs": [
+        "turn147view0",
+        "turn149view3"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P02",
+      "publisher": "S&P Dow Jones Indices",
+      "title": "S&P U.S. Indices Methodology",
+      "url": "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf",
+      "document_date": "2026-07",
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY_PDF",
+      "locator": "PDF pp.8–9; lines 225–265",
+      "finding": "Currently served document uses company-level addition thresholds USD22.7b, USD8.0b and USD1.2b; it also discusses quarterly review, share classes and separate float requirements. Membership is not a universal size label.",
+      "web_refs": [
+        "turn147view5",
+        "turn150view1",
+        "turn154view3"
+      ],
+      "raw_sha256": null,
+      "currentness_limit": "The live methodology article's Download linked to this July2026 PDF on2026-10-09; no future threshold update is assumed."
+    },
+    {
+      "id": "P03",
+      "publisher": "MSCI",
+      "title": "Global Investable Market Indexes Methodology",
+      "url": "https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_May2026.pdf",
+      "document_date": "2026-05",
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY_PDF",
+      "locator": "§2.3.3–2.3.4, printed pp.26–27",
+      "finding": "Ranks companies by full capitalization and uses cumulative free-float coverage targets with global size bounds. This is not issuer-count quartiles. Multiple securities of a company share a size segment.",
+      "web_refs": [
+        "turn149view0",
+        "turn150view5"
+      ],
+      "raw_sha256": null,
+      "currentness_limit": "The live latest/GIMI route failed; May full methodology was cross-checked against the July summary linked from the current methodology index."
+    },
+    {
+      "id": "P04",
+      "publisher": "MSCI",
+      "title": "Global Investable Market Indexes Methodology Summary",
+      "url": "https://www.msci.com/eqb/methodology/meth_docs/MSCI_Jul26_GIMIMethod_Summary.pdf",
+      "document_date": "2026-07",
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY_PDF",
+      "locator": "Index maintenance overview and pp.11–12; current index links summary",
+      "finding": "Supports the distinction between market coverage, global size requirements and maintenance buffers. It does not prescribe the diagnostic count bands recommended here.",
+      "web_refs": [
+        "turn146view1",
+        "turn147view4",
+        "turn147view6"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P05",
+      "publisher": "S&P Dow Jones Indices",
+      "title": "S&P/TSX Canadian Indices Methodology",
+      "url": "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-tsx-canadian-indices.pdf",
+      "document_date": "2026-09",
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY_PDF",
+      "locator": "Highlights, printed pp.2–4; Eligibility Factors",
+      "finding": "Composite and SmallCap have different universes; capped sector indices generally start with Composite membership and GICS categories. These are index perimeters, not a national issuer census. Index weighting is not full issuer capitalization.",
+      "web_refs": [
+        "turn148view1",
+        "turn149view2",
+        "turn154view0"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P06",
+      "publisher": "S&P Dow Jones Indices",
+      "title": "S&P/TSX Venture Health Care (Sector) Index",
+      "url": "https://www.spglobal.com/spdji/en/indices/equity/sp-tsx-venture-health-care-sector-index/",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "Description, lines 10–17",
+      "finding": "The issuer explicitly defines this as the healthcare subset of its Venture Composite micro-cap universe. This supports a separate perimeter route, not a measured count of eligible WP02 issuers.",
+      "web_refs": [
+        "turn150view3"
+      ],
+      "raw_sha256": null,
+      "limitation": "Search-rendered market-cap statistics lacked adequately bound units/as-of and were not used."
+    },
+    {
+      "id": "P07",
+      "publisher": "S&P Dow Jones Indices / MSCI",
+      "title": "Global Industry Classification Standard (GICS) Methodology",
+      "url": "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-gics.pdf",
+      "document_date": "2026-04",
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY_PDF",
+      "locator": "Classification, printed p.3; structure and review",
+      "finding": "Uses principal business activity with revenue, earnings and review considerations; companies receive one hierarchical assignment. Its exact decision rules differ from the proposed strict-majority fallback. Public methodology is not evidence of a company's classification or a data license.",
+      "web_refs": [
+        "turn149view1",
+        "turn150view2"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P08",
+      "publisher": "NIST",
+      "title": "The NIST Definition of Cloud Computing, SP800-145",
+      "url": "https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-145.pdf",
+      "document_date": "2011-09",
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY_PDF",
+      "locator": "Service models, printed pp.2–3",
+      "finding": "Distinguishes SaaS, PaaS and IaaS. Restricting this pilot's cloud operator scope to externally sold IaaS/PaaS is a research choice, not a NIST sector classification.",
+      "web_refs": [
+        "turn152view3",
+        "turn152view4"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P09",
+      "publisher": "European Central Bank",
+      "title": "Euro foreign exchange reference rates",
+      "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "Introduction and quote-basis statement, lines 35–41; history links",
+      "finding": "Quotes currencies against EUR; publishes reference rates on working days, ordinarily around16:00CET, for information rather than transactions. No rate values from the current page are used as the proposed historical valuation rates.",
+      "web_refs": [
+        "turn147view3",
+        "turn148view5"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P10",
+      "publisher": "SEC / Investor.gov",
+      "title": "American Depositary Receipts (ADRs)",
+      "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/american-depositary-receipts-adrs",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "Definition, lines151–154",
+      "finding": "An ADR can represent multiple underlying ordinary shares or a fraction. Ratio adjustment is therefore required; depositary receipts cannot be counted again on top of the underlying ordinary shares.",
+      "web_refs": [
+        "turn152view5"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P11",
+      "publisher": "SEC",
+      "title": "National Securities Exchanges",
+      "url": "https://www.sec.gov/about/divisions-offices/division-trading-markets/national-securities-exchanges",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "Section6(a) list and separate6(g) discussion",
+      "finding": "Provides a regulator venue-status route. Exchange registration alone does not prove that a security is an operating issuer's primary ordinary-equity listing.",
+      "web_refs": [
+        "turn152view0"
+      ],
+      "raw_sha256": null,
+      "limitation": "Page shows an old display date alongside updated venue names; do not treat display date as historical validity of every entry."
+    },
+    {
+      "id": "P12",
+      "publisher": "Ontario Securities Commission",
+      "title": "Recognized exchanges",
+      "url": "https://www.osc.ca/en/industry/market-regulation/marketplaces/exchanges/recognized-exchanges",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "PRIMARY_SEARCH_RENDER_ONLY",
+      "locator": "Search result for official register",
+      "finding": "Navigation route to recognized Canadian exchanges, including CSE and Cboe Canada. Direct open failed; no full register or complete venue inventory is asserted.",
+      "web_refs": [
+        "turn151search2",
+        "turn152view1"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P13",
+      "publisher": "European Union",
+      "title": "EU countries",
+      "url": "https://european-union.europa.eu/principles-countries-history/eu-countries_en",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "Current country directory; Pages(27)",
+      "finding": "Supports EU27 rather than all of Europe or the EEA. The proposed frozen ISO set is explicit in the policy.",
+      "web_refs": [
+        "turn152view2"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P14",
+      "publisher": "HKEX",
+      "title": "Understanding requirements and risks relating to overseas issuers",
+      "url": "https://www.hkex.com.hk/Listing/Rules-and-Resources/Guidance/IPO/Listing-of-Overseas-Companies/Understanding-the-Risks-of-Investing-in-Overseas-Issuers?sc_lang=en",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "Primary and Secondary Listings, lines636–657",
+      "finding": "Confirms that those listing statuses are distinct. The proposed hash assignment resolves a sampling slot only; it cannot establish or change a legal listing status.",
+      "web_refs": [
+        "turn154view2"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P15",
+      "publisher": "ESMA",
+      "title": "ESMA Registers help",
+      "url": "https://registers.esma.europa.eu/publication/helpPage",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "PRIMARY_SEARCH_RENDER_ONLY",
+      "locator": "Trading venue / RM / MTF sections",
+      "finding": "Official navigation for EU venue status. No venue export, historical admission status or constituent data was acquired.",
+      "web_refs": [
+        "turn152search23"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P16",
+      "publisher": "Japan FSA",
+      "title": "List of licensed (registered) Financial Institutions",
+      "url": "https://www.fsa.go.jp/en/regulated/licensed/index.html",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "PRIMARY_SEARCH_RENDER_ONLY",
+      "locator": "Official registry navigation",
+      "finding": "Navigation only. An attempted direct exchange PDF failed; no verified full Japanese venue table is claimed.",
+      "web_refs": [
+        "turn152search0",
+        "turn151view1"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P17",
+      "publisher": "FCA",
+      "title": "Aquis Stock Exchange Limited register entry",
+      "url": "https://register.fca.org.uk/s/firm?id=001b000000MgB0FAAV",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "PRIMARY_SEARCH_RENDER_ONLY",
+      "locator": "Official register entry, reference470594",
+      "finding": "Illustrates the regulator venue-status route beyond the main London market. Direct body was minimal; not a complete UK venue census or historical eligibility proof.",
+      "web_refs": [
+        "turn153search2",
+        "turn154view1"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P18",
+      "publisher": "UK Government",
+      "title": "Countries in the EU and EEA",
+      "url": "https://www.gov.uk/eu-eea",
+      "document_date": null,
+      "accessed_on": "2026-10-09",
+      "evidence": "WEB_RENDERED_PRIMARY",
+      "locator": "EU country list, lines53–65",
+      "finding": "Provides the complete EU27 list and distinguishes the additional EEA countries and Switzerland. Used to validate the proposed explicit ISO set.",
+      "web_refs": [
+        "turn153view2"
+      ],
+      "raw_sha256": null
+    },
+    {
+      "id": "P19",
+      "publisher": "MSCI",
+      "title": "GICS Methodology, live latest route",
+      "url": "https://www.msci.com/index/methodology/latest/GICS",
+      "document_date": "2026-04 (search-rendered)",
+      "accessed_on": "2026-10-09",
+      "evidence": "PRIMARY_SEARCH_RENDER_ONLY",
+      "locator": "Semiconductor leaf codes45301010 and45301020",
+      "finding": "Codes are compatibility hints for a future entitled issuer-level classification, not an assignment for any company. Live full open failed; the April S&P-hosted methodology supplies the classification-method discussion.",
+      "web_refs": [
+        "turn146search7",
+        "turn153search1"
+      ],
+      "raw_sha256": null
+    }
+  ],
+  "bounded_failures": [
+    {
+      "target": "Live MSCI latest/GIMI and latest/GICS",
+      "outcome": "WEB_OPEN_ERROR",
+      "handling": "Used dated full GIMI, currently linked July summary, and S&P-hosted April GICS. No false latest-byte identity."
+    },
+    {
+      "target": "S&P/TSX Capped Health Care exact guessed page",
+      "outcome": "WEB_OPEN_ERROR_AND_NO_RELIABLE_DATED_FULL_CAP_STATISTIC",
+      "handling": "No national healthcare cap/count inferred; Canadian methodology and Venture scope only."
+    },
+    {
+      "target": "S&P Venture healthcare search statistics",
+      "outcome": "INSUFFICIENT_ASOF_AND_UNIT_BINDING",
+      "handling": "Rejected for any size/count conclusion."
+    },
+    {
+      "target": "FCA guessed UK regulated markets URL",
+      "outcome": "WEB_OPEN_ERROR",
+      "handling": "UK regulator/venue evidence remains a future frame input, not a researched complete register."
+    },
+    {
+      "target": "S&P/TSX Life & Health Insurance result",
+      "outcome": "WRONG_SECTOR_FOR_HEALTHCARE_QUOTA",
+      "handling": "Financial-sector insurance is not relabelled as healthcare."
+    },
+    {
+      "target": "July2026 GICS consultation",
+      "outcome": "PROPOSALS_NOT_ADOPTED_BY_PUBLICATION",
+      "handling": "Not treated as a current issuer-classification change. April methodology and actual source-vintage requirements remain the basis.",
+      "primary_url": "https://www.spglobal.com/spdji/en/documents/indexnews/announcements/20260717-1484356/1484356_gicsconsultation2026.pdf",
+      "web_ref": "turn153search4"
+    }
+  ],
+  "rights_statement": "These are bibliographic and methodological findings. No listing, pricing, classification, index-membership or redistribution entitlement has been established. A later source owner must bind permitted use, retention and distribution for each actual frame input."
+}

@@ -2,6 +2,19 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-11",
+      "tickers": [
+        "AIG",
+        "GIS",
+        "IDA",
+        "KRC",
+        "LLY",
+        "OMC",
+        "RYAN",
+        "SPY"
+      ]
+    },
+    {
       "as_of": "2026-10-10",
       "tickers": [
         "AMG",
@@ -179,41 +192,6 @@
         "HLNE",
         "KRC",
         "PPLI"
-      ]
-    },
-    {
-      "as_of": "2026-10-04",
-      "tickers": [
-        "AIO",
-        "AMKR",
-        "ASTH",
-        "COST",
-        "CR",
-        "CTVA",
-        "DLHC",
-        "ECG",
-        "EGBN",
-        "ESE",
-        "FBK",
-        "FIX",
-        "GAP",
-        "KRC",
-        "MRSH",
-        "MYRG",
-        "N",
-        "NTCT",
-        "NYAX",
-        "PANW",
-        "PL",
-        "PORT.U",
-        "PPLI",
-        "RL",
-        "SQQQ",
-        "SYF",
-        "TBBK",
-        "TNDM",
-        "TRIP",
-        "VOO"
       ]
     }
   ]
