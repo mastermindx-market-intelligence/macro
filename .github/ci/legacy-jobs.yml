@@ -15893,12 +15893,6 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py --help
           python -m pytest tests/test_r4_v2_receipt.py -q
-      # EVAL-1 challenger trial identity (ITP B6). Name the checker CLI as
-      # well as its suite; the suite loads the checker by file path.
-      - name: information-to-price EVAL-1 challenger trial identity
-        run: |
-          python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
-          python -m pytest tests/test_eval1_challenger_identity.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
@@ -15928,6 +15922,63 @@ jobs:
       # BODIES. A rewritten walk_forward with an unchanged signature still passes.
       - name: pick-conditional forward distributions — PIT/embargo (w1) + HAR standardizer pin (w1.5)
         run: python -m pytest tests/test_pick_forward_dist.py tests/test_pick_forward_dist_phase1.py -q
+
+  information-to-price-eval1-identity:
+    # ITP B6 · EVAL-1 challenger trial identity checker + suite, given its own
+    # CODE lane (B-HEAL-CI-PACK-CEILING-3, 2026-10-11). #8630 added this step
+    # to the fallback job unrun-factor-research, and its +3 weight took the
+    # templates/index.html probe over the 5,800 ceiling in
+    # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs.
+    # Hermetic: the checker is stdlib-only (pinned by
+    # test_checker_stdlib_only_imports) and validates the committed identity
+    # document alone — never labels, outcomes or data/; the suite loads the
+    # checker by file path (spec_from_file_location), so the CLI is named
+    # alongside the suite for the same sibling-import reason as SRC-A1.
+    # CURATED SCOPE (2026-10-11, B-HEAL-CI-PACK-CEILING-3). `scope: exclusive`
+    # makes the paths below REPLACE inference (the suite's own subprocess
+    # ambiguities would otherwise mint research/** fallback). Every path is
+    # EARNED: the checker, the suite and the identity JSON the commands name;
+    # the eight repo files the identity's citations pin and the checker
+    # resolves (preregistration rationale, evaluation prereg, expectation
+    # model spec, eval0/eval1 preregistration JSONs, K3E custody DEC); the two
+    # engine modules its emitter/label fields name (k3e_expectation_surface
+    # EMITTER_PATH, k3e_eval1_forward t1_label); and lib/dataos/identity.py,
+    # which the pinned emitter's denominator rule names by module
+    # (engine/k3e_expectation_surface.py:617, closure-coverage audit). Widening
+    # is the safe direction: a future citation that pins a file this
+    # declaration omits fails the committed-identity checker itself.
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    scope: exclusive
+    paths:
+      - "research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py"
+      - "research/alpha_intelligence/expectation_market_dynamics/eval1_challenger_trial_identity.v1.json"
+      - "tests/test_eval1_challenger_identity.py"
+      # files pinned by the identity JSON's citations (checker resolves each)
+      - "research/alpha_intelligence/expectation_market_dynamics/EVAL1_PREREGISTRATION_RATIONALE_2026-10-07.md"
+      - "research/alpha_intelligence/expectation_market_dynamics/EVALUATION_PREREG.md"
+      - "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_MODEL_SPEC.md"
+      - "research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json"
+      - "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json"
+      - "agentos/decisions/DEC-K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07.md"
+      # engine modules the identity names (EMITTER_PATH / t1_label reference);
+      # the emitter's denominator rule names lib/dataos/identity.AliasRow.covers
+      - "engine/k3e_expectation_surface.py"
+      - "engine/k3e_eval1_forward.py"
+      - "lib/dataos/identity.py"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: information-to-price EVAL-1 challenger trial identity
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
+          python -m pytest tests/test_eval1_challenger_identity.py -q
 
   unrun-serving-admin:
     # admin control surfaces + the brain/tape serving edges.

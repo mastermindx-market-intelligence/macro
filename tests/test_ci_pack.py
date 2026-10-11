@@ -4655,6 +4655,11 @@ CURATED_EXCLUSIVE = {
     # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
     # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
     "dataos-web-workspace",
+    # 2026-10-11 B-HEAL-CI-PACK-CEILING-3: the EVAL-1 challenger trial
+    # identity step leaves the fallback job unrun-factor-research for its own
+    # gate:code owner (checker + suite + identity JSON + the citation-pinned
+    # closure); packing ceilings stay unchanged.
+    "information-to-price-eval1-identity",
 }
 
 
@@ -5464,6 +5469,32 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     owner. A M0D-only path list cannot safely replace that whole-job closure.
     The fallback claims remain conservative until that audit; these two
     count changes do not assert direct ownership of the probe modules.
+
+    WAVE 2026-10-11 (B-HEAL-CI-PACK-CEILING-3): the WEIGHT ceiling reds again.
+    #8630 (K3E EVAL-1) added ONE step to the fallback job unrun-factor-research
+    (+3: one run command naming one tests/test_ path), taking templates/
+    index.html 5,799 -> 5,802 over the bound, and #8776's +1 made it 5,803 on
+    the tested origin/main sha dafe18c32e84002c3a32a79ef28af22273614534 —
+    jobs AT the 135 ceiling, weight 3 over. Per the standing convention the
+    ceiling is NOT raised; the entrant is curated at the source: the step
+    moves verbatim into the new ``scope: exclusive`` job
+    information-to-price-eval1-identity (weight 4, rides no probe), whose
+    paths are the audited closure — the checker, the suite, the identity
+    JSON, the eight repo files its citations pin, the two engine modules its
+    emitter/label fields name, and lib/dataos/identity.py, which the pinned
+    emitter's denominator rule names by module
+    (engine/k3e_expectation_surface.py:617; closure-coverage audit: zero
+    misses). unrun-factor-research loses exactly the entrant's 3 weight
+    (65 -> 62) and nothing else enters or leaves any probe. Before -> after,
+    measured on the tested origin/main sha:
+
+        templates/index.html          135 -> 135 jobs, 5,803 -> 5,800 weight
+        scripts/build_free_content.py 133 -> 133 jobs, 5,578 -> 5,575 weight
+        engine/prophet/plan_book.py   128 -> 128 jobs, 5,538 -> 5,535 weight
+
+    All ceilings — jobs, weight and packs — are unchanged, and the index
+    probe lands exactly AT the 5,800 bound: no headroom is bought, so the
+    next weight delta is again a decision recorded here, not a reflexive bump.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
