@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T21:06:44.573398+00:00",
-  "count": 2831,
+  "generated_at": "2026-10-11T22:06:51.539958+00:00",
+  "count": 2834,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -248,6 +248,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-dqeokbvrap4-71c755",
+      "title": "Article floatingrateloanmarketmonitor q32026",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T03:04:28Z",
+      "summary_points": [
+        "Credit Quality Concentration: 61.54% of market value in B-rated loans signals high exposure to lower credit quality, with BBB (7.54%) and BB (23.51%) segments dominating, requiring active risk monitoring.",
+        "CCC Index Spread Risk: CCC Index exhibits extreme spread (2188 bps), highlighting severe credit risk in lower-rated segments versus B Index (445 bps) and BBB Index (200 bps), indicating potential volatility.",
+        "Rate-Cutting Cycle Performance: US Equities (+38.0%) significantly outperformed Loans (+12.3%) since first Fed rate cut, underscoring equity dominance and loan vulnerability in easing environments.",
+        "Sector Imbalance & Concentration: Software (11.25% index weight, 4.9% return) dominates performance, while Diversified Telecom Services (-2.3%) lags; top 3 issuers (e.g., UKG Inc) reveal critical concentration for credit assessment.",
+        "Market Liquidity & Activity: Trading volume peaked at $978B (LTM Q2 2026) with 100% turnover ratio, signaling heightened liquidity and active flows, though refinancings remain subdued."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 38,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-tufn0gpul9r-305469",
       "title": "43274",
       "institution": "Morgan Stanley",
@@ -285,6 +306,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rc9hi0toy31-75d4dc",
+      "title": "Jefferies Wood GREED and fear Election rout pending and credit tremors 1 Oct 2026",
+      "institution": "Greed and Fear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:47:36Z",
+      "summary_points": [
+        "US Consumer Confidence Index Decline: Conference Board index fell to 81.9 (lowest since 2014), down 6.7 points, signaling heightened political uncertainty ahead of midterms.",
+        "S&P500 Earnings Growth Surge: Q3 2026 consensus forecasts 30.2% YoY earnings growth (vs 16.1% last Oct), driven by AI capex; IT sector (semiconductors) leads at 131.7% growth.",
+        "Bond Yield Surge & Structural Bear Market: 10Y/30Y Treasury yields at 5.34%/5.69% (highest since 2002); 2Y yield at 4.96% (108bp above Fed funds rate) implies further rate hikes and duration risk.",
+        "Geopolitical Risk Escalation: Iran’s UN envoy move signals negotiation intent, but US polling shows 62% disapproval of strikes and 67% disapproval of Trump’s economy handling, heightening market volatility.",
+        "China Real Estate Fundamentals Deterioration: MSCI China Real Estate Index shows sustained decline since Jan-22; household loans down 1.6% YoY (Rmb1.03tn drop in first 8 months), signaling sector collapse."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
       "language": "en",
       "needs_metadata": false
     },
@@ -447,6 +489,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-u8luwnsc2xy-810a75",
+      "title": "Global Rates Trader Establishing a Foothold",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:18Z",
+      "summary_points": [
+        "US Rate Positioning: Investor-base better hedged against yield rises; mortgage convexity near zero reduces payoff, with asset managers underweight duration (fundamentals/flows).",
+        "China Treasury Holdings Decline: Negative 12m TIC data signals reduced foreign demand, posing geopolitical risk to US debt markets and potential yield volatility.",
+        "CFTC Positioning Divergence: Speculators net short across all contracts (avg. 50.0), dealers net long (e.g., SFR 64.5), indicating bearish speculator vs bullish dealer sentiment (flows).",
+        "US Rate Hike Expectation Gap: Market forecasts ~0.25pp hikes vs Goldman Sachs’ ~0.50pp, signaling market underestimation of US rate hikes (policy/fundamentals)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
