@@ -265,6 +265,33 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   F1–F6 runs only after Terminal #723 is MERGED: master SHA; #846 head still `eb57a683…`; Lab-heartbeat custody with a fenced
   claim at launch; ort merge-tree conflicts; SSD worktree plus a baseline; launch via `launch_when_admitted`. O8 defect 7
   (the flow cache ignores account identity) is still unassigned.
+- D42 (19:12Z) D16a review judged REQUEST_REPAIR and accepted.
+  - F1 is BLOCKING and was reproduced on the host's CPython 3.12.4: with `os.lstat` denied on `/Volumes/Mastermind`, `os.path.ismount`
+    returns False. So a permission error on a mounted volume root became `_UNMOUNTED`, which is a false "remount" diagnosis and bypasses
+    fail-open `_UNKNOWN`.
+  - The seat repaired it directly (L.7: the worker had exited, the seat holds custody, no other writer). The repair is `c93aa900`:
+    - `_is_mount` compares st_dev/st_ino with `p.parent`;
+    - only FileNotFoundError and NotADirectoryError mean unmounted, and any other OSError reaches `_UNKNOWN`;
+    - docstrings now match;
+    - the RuntimeError double period is gone.
+  - F2 was repaired with 10 new tests:
+    - T8 (denied root resolves as `_UNKNOWN`), plus a direct denied-lstat test. Both are red at the `9ff6c68` engine
+      (`leads/D16a/r1_new_at_9ff6c68.txt`).
+    - The unstubbed predicate: missing, leftover dir, symlink, parity with ismount on `/` and `/dev`, and the positive `/`.
+    - T6b, a sibling-prefix control.
+    - T9, the backfill `main()` guard. It is red with the guard disabled (`r1_t9_guard_disabled.txt`) and has an in-test sentinel control.
+  - Gate: 145 passed (`r1_gate2.txt`). The import check is OK and every hunk is above `_default_store_root`. `merge-tree` against
+    origin/main `98a40e3f4b13` is clean.
+  - Consumer suite at `9ff6c68`: 1733 passed and 7 failed. The same 7 fail with the base engine and script planted, from absent sparse-worktree data
+    and one foreign hardcoded path (`consumer_suite_at_head.txt`, `consumer7_at_base.txt`). It was not re-run after the repair, which
+    changes only the error path of `_is_mount`.
+  - Follow-ups recorded in the PR body, not in scope:
+    - F3: the backfill re-classify race.
+    - F4: the `publish_r2` default-path fallback.
+    - F5: the nightly `--theta-store` message.
+    - F9: identity versus presence.
+    - 14 unassessed call sites.
+  - Macro PR #8856 is open at `c93aa900`, labelled `merge-on-green`, and the app bound it.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -434,9 +461,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 3. Then U01 step 2: #846 refresh under this account (cross-owner A01/A03 tests, Read<T>, optionsReadAccess,
    three-state copy, VolPayload, lockfile regen, O-11 items).
 4. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
-5. D16a (D40): on the consumer suite b2zxmgms7 exit, a failure counts against D16a only if it is green on base `565d883c`.
-   On the Opus review, judge its findings. If both are clean, open the Macro PR from `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`,
-   add `merge-on-green`, and bind the PR monitor. Production proof is the next natural resolver call on m1 logging a resolved store, not NONE.
+5. D16a (D42): PR #8856 at CI with `merge-on-green`. On merge, record MERGED. Production proof is the next natural resolver call on m1,
+   which should log `resolved store=…`, not NONE (env, data_dir and ops-wt are one physical store there). Do not run a resolver on m1 to
+   manufacture that proof. Follow-ups F3/F4/F5/F9 are a successor lane (D16c), not this PR.
 6. Judge the OC return by artifact on its (re)launched task exit (bocvhjvo5 was never admitted; D34): positive controls reproduced; rerun `oc_sim.py --quick`
    and one full cell myself; no sentence selects a parameter. On ACCEPT persist as a Macro research PR.
 7. DONE through freeze (D35): O2/O3/O4 judged ACCEPT; V01/F01/M01 commissions frozen; worktrees ready.
@@ -452,12 +479,12 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(19:00Z snapshot.) Rows superseding older rows below:
+(19:15Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
 | U01 step 1B | RUNNING — admitted 18:20:45Z via bt8w3juhp (launch_when_admitted, fix_build, alarm 14400); grok operator live; artifacts dir named in `leads/U01/step1B_pool.log` |
-| D16a | DELIVERED 18:45:40Z at `9ff6c68a5a56` (bjtdrpkg9 rc=0); seat re-ran the gate (135) and the base-engine negatives (T2–T5 FAIL); consumer suite b2zxmgms7 + Opus READ_ONLY review RUNNING (D40); PR after both |
+| D16a | CI — Macro PR #8856 at `c93aa900` (review REQUEST_REPAIR F1/F2 → seat repair, D42); gate 145; consumer suite no regression (7 pre-existing); `merge-on-green`; app bound; production proof = next natural m1 resolver call logs a resolved store |
 | V01 | CI — Macro PR #8851 at `479b16df2a7a` (audit REQUEST_REPAIR → seat repair `f51bda96804f` + `479b16df2a7a`, D39); gate 351 passed; `merge-on-green`; app PR monitor bound; pilot red = O-4 by design; production proof = first natural flow-surface cycle on m1 after merge |
 | OC | QUEUED → armed 18:36Z on bnwojs7jx (launch_when_admitted, build-bounded, alarm 12600, wait budget 10800 s); takes the next slot 1B or D16a frees (max_active 2) |
 | F01, M01 | QUEUED — commissions frozen |
@@ -650,3 +677,9 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   suite and the Opus review are running.
 - U01 step 2 drafted, not issuable until #723 merges (D41). 1B (bt8w3juhp) is still RUNNING. OC (bnwojs7jx) is waiting for load1 < 15
   (load1 21 at 18:58Z).
+
+### 2026-10-11 19:15Z — D16a review repaired; PR #8856 at CI; D42
+- The D16a Opus review returned REQUEST_REPAIR. F1 (ismount swallows lstat errors) was reproduced on the host interpreter and repaired at
+  `c93aa900` with 10 new tests. Two of them are red at the first delivery, and T9 is red with the backfill guard disabled. Gate 145. The consumer suite
+  shows no regression.
+- Macro PR #8856 is labelled `merge-on-green`. V01 #8851 was still OPEN at 19:12Z (mergeStateStatus UNKNOWN), merge-on-green.
