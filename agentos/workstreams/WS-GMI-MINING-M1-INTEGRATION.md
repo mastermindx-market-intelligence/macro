@@ -28,6 +28,8 @@ owns_paths:
 depends_on:
   - WS:GMI-THEME-GRAPH
   - WS:EARNINGS-INTELLIGENCE-OS
+decisions:
+  - DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11
 waves:
   - id: MIN-W1
     title: "T01' consumption harness: synthetic casebook, dependency-binding validator, typed route_unbound client, gate:code job mining-economic-dossier"
@@ -52,6 +54,11 @@ waves:
     depends_on: [MIN-W4]
     next_action: "Wait for Semiconductor B's shared route/client/mount on main and the incumbent-intake G2 source admission; never build against #7870's branch."
 next_action: >
+  2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): the T02 gate is OPEN.
+  CDV-1 #7905 MERGED 2026-09-30T01:42Z as cdce3023fbba, so the "waits on #7905 reaching main"
+  condition below is satisfied and no longer binds. T02 dispatch stays SYNTHETIC-ONLY per the
+  existing ruling; it shares the issuer_profiles.py seam with Industrials #8250 and CDV-1. Packet P-MIN-1.
+  .
   MIN-W2 IS PARTLY DELIVERED AND STILL OPEN. T04a is at PRODUCTION_PROOF (#7950 merged
   aff8b76cba6, 53 passed against origin/main). The wave's other half, T02, has not started.
   DISPATCH POSITION, stated explicitly because two successive handoffs got it wrong in opposite

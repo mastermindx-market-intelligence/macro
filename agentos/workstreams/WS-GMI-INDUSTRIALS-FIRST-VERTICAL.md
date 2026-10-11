@@ -27,6 +27,8 @@ owns_paths:
 depends_on:
   - WS:EARNINGS-INTELLIGENCE-OS
   - WS:GMI-THEME-GRAPH
+decisions:
+  - DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11
 waves:
   - id: IND-W1
     title: "T01 synthetic corpus, helper harness, delivery-input validator, gate:code job industrials-result-cash"
@@ -54,6 +56,12 @@ waves:
     depends_on: [IND-W4]
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
+  2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): T02 carrier #8250
+  (codex/industrials-t02-issuer-enrollment-20260930-sol-001 @20b853e2907e, Draft) is unadjudicated;
+  it needs a fresh non-author exact-head review before any ruling (packet P-IND-1 / #8250
+  re-adjudication). The seam gate on issuer_profiles.py is shared with Mining T02 and CDV-1; land
+  order is decided by this seat, not by whichever lane finishes first.
+  .
   SPECIFICATION AUTHORITY RESOLVED 2026-09-29 - SOL RULING / CONTINUE (#7789 comment
   5894127980), which consumes this seat's asks 5881951284 / 5882425483 / 5894142128.
   RECOVERY SUCCEEDED AND NO RE-SPECIFICATION IS AUTHORIZED OR NEEDED. The original corpus was

@@ -41,6 +41,11 @@ waves:
       T4 → T5 ∥ T6. T7 UI build and T8 release gates wait for the
       Semiconductors foundation (#7870).
 next_action: >
+  2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): T4 carrier #8245
+  (claude/cdv1-t4-private-publication-v2 @b019f975c695, Draft) is unadjudicated under this seat;
+  first act is an exact-head read plus an independent review before any ruling (packet CDV-T4).
+  T7/T8 still wait on #7870 (WS:GMI-SEMICONDUCTORS SB-W1).
+  .
   Land T2 ∥ T3 (r3 lanes dispatched 2026-09-30; T1 merged as cdce3023), then
   T4 → T5 ∥ T6; T7 is a merged CONTENT + CONTRACT spec awaiting the
   foundation host slot; readers first, producer flag last.
@@ -62,6 +67,7 @@ artifacts:
 decisions:
   - "DEC:CDV1-PLAN-SEAM-RULINGS"
   - "DEC:CDV1-FOUNDATION-INTEGRATION"
+  - "DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11"
 carrier:
   operation: gmi-consumer-defensive-research-20260923-sol-001
   research_pr: 7792
