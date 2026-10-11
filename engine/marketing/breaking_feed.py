@@ -106,6 +106,10 @@ class _OfficialSourceTimeRejected(ValueError):
     """A first-party release lacks an attested unambiguous publication clock."""
 
 
+class _OfficialSourcePayloadRejected(ValueError):
+    """An official HTTP success carried no verifiable RSS/Atom document."""
+
+
 def _parse_pub_date(raw: str, *, require_attested: bool = False) -> str:
     """Parse RSS pubDate / Atom updated/published / dc:date → ISO8601 UTC str.
 
@@ -192,9 +196,16 @@ def parse_feed(xml_or_json_text: str, source_cfg: dict) -> list[FeedItem]:
                 xml_or_json_text, source_key, source_name, source_tier,
                 strict_date=strict_clock,
             )
-    except _OfficialSourceTimeRejected:
+    except (_OfficialSourceTimeRejected, _OfficialSourcePayloadRejected):
         raise
     except Exception as exc:  # noqa: BLE001
+        if strict_clock:
+            # On the qualified BLS/BEA path a malformed HTTP 200 must NOT
+            # turn into a valid "quiet feed" with an acknowledged ETag. The
+            # normal legacy feeds retain their historic fail-soft [] result.
+            raise _OfficialSourcePayloadRejected(
+                "official feed payload malformed"
+            ) from exc
         print(f"[breaking_feed] parse_feed error ({source_key}): {exc}", file=sys.stderr)
         return []
 
@@ -209,6 +220,10 @@ def _parse_xml_feed(
     root = ET.fromstring(text)
 
     atom_ns = "{http://www.w3.org/2005/Atom}"
+    if strict_date and root.tag not in ("rss", f"{atom_ns}feed", "feed"):
+        raise _OfficialSourcePayloadRejected(
+            "official feed payload is not RSS or Atom"
+        )
     # If root tag contains Atom namespace, treat as Atom
     if "w3.org/2005/Atom" in (root.tag + " " + (root.get("xmlns", ""))):
         return _parse_atom(root, source_key, source_name, source_tier, atom_ns,
@@ -222,7 +237,11 @@ def _parse_xml_feed(
     # RSS 2.0: look for <channel><item>
     channel = root.find("channel")
     if channel is None:
-        # Try root as channel
+        if strict_date:
+            raise _OfficialSourcePayloadRejected(
+                "official feed payload missing RSS channel"
+            )
+        # Legacy parser accepts channel-less fragments.
         channel = root
     items = channel.findall("item")
     results: list[FeedItem] = []
@@ -243,6 +262,10 @@ def _parse_xml_feed(
             desc_raw = desc_raw + " " + (content_el.text or "")
 
         if not title and not link:
+            if strict_date:
+                raise _OfficialSourcePayloadRejected(
+                    "official feed payload has incomplete RSS item"
+                )
             continue
 
         item_id = _make_id(source_key, guid or link)
@@ -299,6 +322,10 @@ def _parse_atom(
         desc_raw = _elem_text(desc_el)
 
         if not title and not link:
+            if strict_date:
+                raise _OfficialSourcePayloadRejected(
+                    "official feed payload has incomplete Atom entry"
+                )
             continue
 
         item_id = _make_id(source_key, entry_id_raw or link)
@@ -530,9 +557,10 @@ def poll_source(
 
         return parse_feed(text, source_cfg)
 
-    except (_OfficialFeedRedirectRefused, _OfficialSourceTimeRejected):
-        # An unqualified transport or publication clock stops the ENTIRE
-        # preview before proposed ETag/seen can ever be acknowledged.
+    except (_OfficialFeedRedirectRefused, _OfficialSourceTimeRejected,
+            _OfficialSourcePayloadRejected):
+        # Unqualified transport, publication clock or RSS/Atom payload stops
+        # the ENTIRE preview before proposed ETag/seen is acknowledged.
         raise
     except HTTPError as exc:
         # urllib raises for every non-2xx, INCLUDING 304. A redirect to an

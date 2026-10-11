@@ -2281,3 +2281,178 @@ def test_official_private_bridge_rejects_forged_unqualified_source_items(
     assert not writes
     assert feed._load_seen(tmp_path) == {}
     assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
+
+
+
+@pytest.mark.parametrize("payload", [
+    "<rss><channel><item><title>Truncated agency release</title>",
+    "<html><body>Temporary service unavailable</body></html>",
+    '{"message":"rate limited but status 200"}',
+])
+def test_official_preview_refuses_malformed_or_nonfeed_http_200_without_etag(
+        tmp_path, monkeypatch, payload):
+    """A successful HTTP response is not proof its body is valid RSS/Atom."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+
+    class Response:
+        headers = {"ETag": "must-not-be-acknowledged"}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def read(self, n): return payload.encode("utf-8")[:n]
+        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    with pytest.raises(ValueError, match="official feed payload"):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [src], "poll_interval_s": 0}
+        )
+    folder = tmp_path / "data/marketing/breaking"
+    assert not (folder / "state.json").exists()
+    assert not (folder / "seen.json").exists()
+
+
+def test_official_preview_allows_genuinely_empty_rss_and_courtesy_etag(
+        tmp_path, monkeypatch):
+    """An empty valid agency RSS channel can checkpoint poll state only."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    calls = []
+    payload = '<rss version="2.0"><channel><title>Agency feed</title></channel></rss>'
+
+    class Response:
+        headers = {"ETag": "valid-empty-feed"}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def read(self, n): return payload.encode("utf-8")[:n]
+        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+
+    def fake_open(req, timeout):
+        calls.append(req.full_url)
+        return Response()
+    monkeypatch.setattr(feed, "urlopen", fake_open)
+    preview = feed.preview_official_sources(
+        tmp_path, {"sources": [src], "poll_interval_s": 0}
+    )
+    assert preview.items == ()
+    assert feed.ack_official_preview(tmp_path, preview, accepted_ids=set())
+    folder = tmp_path / "data/marketing/breaking"
+    assert not (folder / "seen.json").exists()
+    assert json.loads((folder / "state.json").read_text())[
+        "bls_news"]["etag"] == "valid-empty-feed"
+    assert len(calls) == 1
+
+
+def test_legacy_nonofficial_malformed_xml_remains_failsoft():
+    from engine.marketing import breaking_feed as feed
+    assert feed.parse_feed("<rss><channel><item>", {
+        "key": "legacy-wire", "kind": "rss",
+        "tier": "wire", "source_name": "Legacy wire",
+    }) == []
+
+
+
+@pytest.mark.parametrize("payload", [
+    ('<rss version="2.0"><channel><item><guid>valid-guid-but-no-story</guid>'
+     '<pubDate>Sat, 10 Oct 2026 08:30:00 EDT</pubDate></item></channel></rss>'),
+    ('<feed xmlns="http://www.w3.org/2005/Atom"><entry>'
+     '<id>tag:bls.gov,2026:missing-facts</id>'
+     '<updated>2026-10-10T12:30:00Z</updated></entry></feed>'),
+])
+def test_official_preview_refuses_malformed_item_without_headline_or_link(
+        tmp_path, monkeypatch, payload):
+    """A feed with broken items must not be considered a harmless quiet feed."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+
+    class Response:
+        headers = {"ETag": "would-suppress-incomplete-release"}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def read(self, n): return payload.encode("utf-8")[:n]
+        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    with pytest.raises(ValueError, match="official feed payload"):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [src], "poll_interval_s": 0}
+        )
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+
+def test_official_private_bridge_real_rss_transport_to_existing_private_desk(
+        tmp_path, monkeypatch):
+    """Registered HTTP response → original RSS parser → scorer → Desk → ack.
+
+    Synthetic agency-style fixture only; neither a real BLS request nor a
+    licensed public-use receipt. No daemon, public writer or new DB service.
+    """
+    import xml.etree.ElementTree as ET
+    from datetime import timedelta
+    from engine.marketing import breaking_feed as feed
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    from scripts import marketing_fastlane_daemon as daemon
+
+    root_xml = ET.fromstring(_load_fixture("rss_mixed.xml"))
+    channel = root_xml.find("channel")
+    for item in list(channel.findall("item")):
+        link = (item.findtext("link") or "").strip()
+        if not link.startswith("https://www.bls.gov/"):
+            channel.remove(item)
+    rss_bytes = ET.tostring(root_xml, encoding="utf-8")
+    opens = []
+
+    class Response:
+        headers = {"ETag": "synthetic-official-release-etag"}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def geturl(self): return BLS_SOURCE_CFG["url"]
+        def read(self, n): return rss_bytes[:n]
+
+    def fake_open(req, timeout):
+        opens.append(req.full_url)
+        return Response()
+
+    monkeypatch.setattr(feed, "urlopen", fake_open)
+    cfg = {"sources": [dict(BLS_SOURCE_CFG)], "poll_interval_s": 0}
+    preview = feed.preview_official_sources(tmp_path, cfg)
+    assert len(preview.items) == 1
+    official = preview.items[0]
+    assert official["source"] == "bls_news"
+    state_dir = tmp_path / "data/marketing/breaking"
+    assert not (state_dir / "seen.json").exists()
+    assert not (state_dir / "state.json").exists()
+    monkeypatch.setattr(
+        daemon, "_PRESS_STATE_PATH",
+        tmp_path / "data/marketing/press/state.json",
+    )
+    as_of = datetime.fromisoformat(official["published_at"]) + timedelta(minutes=5)
+    result = accept_private_official_preview(
+        preview, root=tmp_path, now=as_of,
+        marketing_cfg={"breaking": {"llm": {"enabled": False}}},
+        press_cfg={"wire": {"intelligence": {
+            "salience_floor": 0.0, "max_packets_per_tick": 10,
+        }}},
+        current_state=daemon._load_press_state(),
+        persist_identity=daemon._save_press_state,
+        load_identity=daemon._load_press_state,
+    )
+    assert result["status"] == "ACCEPTED"
+    assert result["accepted_ids"] == [official["id"]]
+    assert feed._load_seen(tmp_path).get(official["id"])
+    assert feed._load_state(tmp_path)["bls_news"]["etag"] == (
+        "synthetic-official-release-etag"
+    )
+    snapshot = json.loads(
+        (tmp_path / "data/marketing/press/intelligence.json").read_text()
+    )
+    assert official["id"] in {
+        e["event_id"] for story in snapshot["stories"]
+        for e in story["evidence"]
+    }
+    assert (tmp_path / "data/marketing/press/intelligence.db").exists()
+    assert len(opens) == 1
+    assert opens == [BLS_SOURCE_CFG["url"]]
+    assert not list(tmp_path.rglob("items.jsonl"))
