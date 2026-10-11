@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: The import-closure and staged-cohort repairs are integrated locally; finish exact-head CI on existing PR 8786, protected landing and installed/live checks. Preserve the interrupted provider attempt without replay. A tested isolated follow-on adds durable staging checkpoints; integrate it after the running PR settles. Live story staging still requires the Earnings owner packet/revision, public-article rights and permitted read-only path.
+next_action: Complete fresh exact-head CI and protected landing/install checks for same-carrier PR 8786, now including durable staging recovery after current-main integration. Preserve the interrupted provider attempt without replay. Live story staging still requires the qualified Earnings packet/revision, public-article rights and permitted read-only path.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
