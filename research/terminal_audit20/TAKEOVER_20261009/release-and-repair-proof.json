@@ -6417,5 +6417,44 @@
       },
       "next_action": "Prepare bounded storage migration/recovery and exact purchase/maintenance decision within existing mission; after actual admitted capacity and release gates, parent owns qualified canonical installation and live Settings/phone Replay proof. No acknowledgment needed or sent to B. All independent review/security/SQL/rights/EFFECT_UNKNOWN holds remain."
     }
+  },
+  "current_capability_frontier_20261011T0823": {
+    "observed_at": "2026-10-11T08:23:22Z",
+    "supersedes": "current_capability_frontier_20261011T0810",
+    "supersession_scope": "Only actual read-only mount/service/scheduler configuration findings and concrete storage migration/recovery/purchase/maintenance preparation. T0800 quotes and T0810 exact917 merged source/CI retained; no storage/resource/source/release/live acceptance.",
+    "whole_original_mission_accepted": false,
+    "actual_configuration_findings": "08:21:29 root and all canonical Terminal/app/node_modules/publicdata paths are ext4/devvda1 UUIDd36f7414-beb7-45e0-900e-9ab79cdbcb2d/device64769. No separate Terminal mount/fstab entry observed. Terminal and QuoteHub unit path dependencies resolve to root -.mount; existing RequiresMountsFor properties do exist. Neither binds a future volume UUID. Root cron/terminal-data/shared macro-update paths are affected; bounded sanitized configuration inventory is not lifetime writer clearance.",
+    "prepared_storage_layout": "One50GB new volume in exactSFO3/project, complete live-terminal tree bind-mounted at unchanged/opt/terminal; separate independent recovery sibling with no live/recovery hardlinks. Expected UUID/base-mount/bind-mount/service/job guards must fail closed, leaving no stale root tree fallback. Builder staging/live/rollback remain samefilesystem; storage recovery is separate from builderrollback.",
+    "prepared_recovery_and_reclaim": "After admitted settled-writer pause final copy seals paths/bytes/metadata/ACL/xattrs/symlinks/hardlink groups/source stability; rehearse recovery restoration and snapshot quiesced/flushed/unmounted new volume within cap. Keep coherent root original through generation/service/live cutover acceptance; remove ONLY admitted verified old tree afterward, then measure/available>=10737418240. No Macro.git/otherproject/private-data cleanup. Copies and snapshot currently only proposed, not accepted backup/restore proof.",
+    "prepared_decision": {
+      "droplet_id": 580786327,
+      "existing_compute_usd_per_month": 24,
+      "new_volume_ui_size_gb": 50,
+      "new_volume_usd_per_month": 5,
+      "server_plus_volume_usd_per_month": 29,
+      "temporary_volume_snapshot_allowance_usd_per_month": 3,
+      "proposed_total_cap_while_snapshot_retained_usd_per_month": 32,
+      "basis": "Current compute/volume quote retained T0800. New prospective snapshot allowance uses official $0.06/GiB/month and 50GiB x0.06=$3 as a cap; actual snapshot bytes/charge/eligibility unobserved. Before taxes and other account resources.",
+      "approved": false,
+      "superseded": "Old $48/month compute-resize and $6/month full-droplet snapshot proposal remains unapproved and must not execute."
+    },
+    "downtime_scope": "Terminal and Quote Hub plus affected data refresh jobs pause for final synchronization, recovery qualification/snapshot, mount switch and checks. Other Macro/API and unrelated services remain running unless a real dependency requires a new scoped decision. Exact duration unmeasured; no guaranteed ETA. Initial copy can run before service pause.",
+    "next_action": "Await one concrete Chairman decision for50GB5USD/month storage, one temporary volume snapshot capped3USD/month while retained (server+volume+snapshot allowance32USD/month before taxes), and Terminal/QuoteHub plus affected scheduled-writer maintenance now or specified window. Full coherent-tree migration/identity-guarded startup/recovery and verified old-root-tree reclamation are prepared; no resource or production effect before admission. Do not repeat the superseded48USD upgrade or this decision on unchanged heartbeats. After admission fresh exact writer/resource checks, gated storage cutover, root10GiB, qualified canonical installation, then paid phone Replay/Settings proof.",
+    "continuation": "Await one concrete Chairman decision for50GB5USD/month storage, one temporary volume snapshot capped3USD/month while retained (server+volume+snapshot allowance32USD/month before taxes), and Terminal/QuoteHub plus affected scheduled-writer maintenance now or specified window. Full coherent-tree migration/identity-guarded startup/recovery and verified old-root-tree reclamation are prepared; no resource or production effect before admission. Do not repeat the superseded48USD upgrade or this decision on unchanged heartbeats. After admission fresh exact writer/resource checks, gated storage cutover, root10GiB, qualified canonical installation, then paid phone Replay/Settings proof.",
+    "pending_human_question_policy": "Ask this new concrete storage decision once after published preparation; preference alone is not spending/cutover approval. Subsequent unchanged heartbeats stay quiet and do not repeat questions or poll provider/runtime/CI/credentials.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-migration-recovery-plan-parent-qualification-20261011T0823.json",
+        "bytes": 16635,
+        "sha256": "86ee046882bf4dbcb8243781c03befb1847ad2a1f2e7ac02c19c730c3b28a5a7"
+      }
+    ],
+    "retained_frontiers": [
+      "current_capability_frontier_20261011T0810",
+      "current_capability_frontier_20261011T0800",
+      "current_capability_frontier_20261011T0518"
+    ],
+    "retained_source_and_boundaries": "914caf+917fc76 scoped source/merge/exact requiredCI qualified; canonical install/paid phone+Settings not accepted. Completed source branches neverreuse. Oldfb1/c968 operations unreplayed/root10GiB preserved. Brain/A12 scopes retained without replay;781reservedreview/IW2explicitcyber/SQL0030-32/operator/rights/security/887/effectunknown/A19 holds remain. No wholeAudit20 acceptance.",
+    "parent_verdict": "Prepared reviewable storage-only consequential decision after actual affected configuration inspection and independent planning checklist. No purchase/mount/migration/cleanup/outage/snapshot/build/deploy/paid test performed."
   }
 }
