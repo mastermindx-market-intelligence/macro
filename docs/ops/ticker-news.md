@@ -213,3 +213,34 @@ secret names for Benzinga/Massive/Polygon/ticker-news rights. Organization-level
 secret presence could not be inspected with the current GitHub credential and
 remains **unknown**. The source therefore makes no claim that a production credential
 or commercial display right already exists.
+
+## Alpaca provider (Benzinga content via Alpaca)
+
+The default provider remains **benzinga** (direct Benzinga key). Alpaca is a
+second, opt-in transport whose news feed is Benzinga content, so the content
+source stays Benzinga everywhere downstream (store, rights, API, Terminal) and
+only the provider/transport changes. Nothing about the Benzinga path changes
+unless the operator explicitly switches.
+
+Activation is a root act on the Macro API VPS, in the existing env file
+`/etc/macro-ticker-news.env` (mode 0600, root-owned):
+
+    QBUS_NEWS_PROVIDER=alpaca
+    ALPACA_API_KEY_ID=<key id>
+    ALPACA_API_SECRET_KEY=<secret key>
+
+Exactly one `ALPACA_API_KEY_ID=` line and exactly one `ALPACA_API_SECRET_KEY=`
+line; `ticker-news-setup.sh` refuses duplicates, empty values, or any provider
+value other than `benzinga`/`alpaca`. The rights file for this provider is
+`config/ticker_news_rights_alpaca_benzinga.json`, installed to
+`/etc/macro-ticker-news-rights.json`, after which the existing
+`ticker-news-setup.sh --check` / `--install` / `--arm` flow applies unchanged.
+
+Operator notes:
+
+- Alpaca publishes **no removal feed**: removals and corrections that Benzinga
+  delivers via its removal endpoint are never delivered on this provider.
+- Never switch providers over a populated store: the cursor namespaces differ
+  (`benzinga-rest` vs `alpaca-rest`) and back-switching mixes clock domains.
+- One WebSocket connection per key pair; the Alpaca stream handshake
+  authenticates over the socket and never places credentials in a URL.
