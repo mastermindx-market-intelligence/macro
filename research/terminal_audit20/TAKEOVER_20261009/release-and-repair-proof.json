@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-11 05:18:27 UTC",
+  "observed_at": "2026-10-11 06:59:13 UTC",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T0518",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T0659",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -5685,6 +5685,33 @@
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-release-capacity-cause-parent-diagnosis-20261011T0518.json",
         "bytes": 6429,
         "sha256": "71640fec21de623ec64bb910eeb51e9c362ff557d1ef5cf7aca94566d950d402"
+      }
+    ]
+  },
+  "current_capability_frontier_20261011T0659": {
+    "observed_at": "2026-10-11 06:59:13 UTC",
+    "supersedes": "current_capability_frontier_20261011T0518",
+    "supersession_scope": "Only actual authenticated provider resource/plan binding, exact resize quote, scoped recovery-page observation and concrete spend/maintenance proposal. The login human step is satisfied; earlier credentials rejection and capacity diagnosis remain historical. Prior source/CI/runtime/paid receipts remain retained without replay.",
+    "whole_original_mission_accepted": false,
+    "authenticated_provider": "Chairman reports DigitalOcean logged in. Same selected IAB5/tab1 actual authenticated MastermindX project contains droplet580786327 ubuntu-s-mastermindx/SFO3/146.190.142.17/Ubuntu24.04LTS/Active, matching retained instance metadata and80GiB physicaldisk. No login retry/credential read or new identity.",
+    "actual_current_plan": "Basic SharedCPU Regular/2vCPU/4GB RAM/80GB SSD/4TB transfer exact24USD/month0.036USD/hour. Plan price is provider current configuration estimate, not retrospective whole-account billing.",
+    "actual_proposal": "Smallest displayed disk-expanding Regular Basic plan:4vCPU/8GB RAM/160GB SSD/5TB transfer exact48USD/month0.071USD/hour, +24USD/month. Exact48 radio selected for preview; keep80GBfixed box unchecked. Monthly cost48; providerActive/ResizeDroplet disabled untilpoweroff. No TurnOff/Resize/Snapshot/Restart/Rebuild/Destroy action pressed.",
+    "recovery_and_spend": "Exact droplet Backups&Snapshots surface lists setupbackups/takesnapshot actions and no existing image on that surface; no claim of complete backend/account absence. Distinct temporary full-droplet filesystemsnapshot recommended before resize, NOT a repeat of accepted DB/R2 backup7532. Official snapshotprice0.06USD/GB/month/min0.01; actualimagebytes/chargeunobserved. Propose allowance up to6USD/month while retained; no creation or automaticirreversibledeletion.",
+    "maintenance_proposal": "Explicit decision needed for48USD/month coreplan plus temporarysnapshot allowance6USD/month, permanent disk increase and shared-VPS outage. Officialdocs recommend graceful SSHshutdown and roughly1min/GBused downtime, oftenless; exactdurationunknown. Upon decision fresh exactoperation/writer/resources, graceful shutdown, temporarysnapshot withinallowance, resize/poweron/existinghealth, then canonicalTerminal release and owningpaidphoneproof onlyifactualgatespass. No new billing/snapshot/poweroff/deploy effects fromlogin.",
+    "source_and_capacity_retained": "T0518 capacitycause/local10GiB invariant retained; oldfb1/c968 operations unreplayed/no weakening/Gitcleanup/alternateprincipal. PR914caf source/latest3CI/all10jobsqualified; last actualcanonical34d installgapnotclosed. Completed914/8755 branches stayclosed. No settled source/CI/tests/capture/paidanswers/Peak/export/backup replay.",
+    "retained_protected_boundaries": "PR781 reservedmastermindx-3 ad5 independentnumericreview/3threads, IW2explicitcyberrefusal/platformhumanstep, SQL0030-32/operator/API+SQL/rights/release/security/source/EFFECT_UNKNOWN and exact887ALLOW remain scoped. No fullA11/Audit20acceptance.",
+    "screenshot_diagnostic": "A data:image URL attempt to expose the captured screenshot to a browser download API was blocked by the browser URL policy. No blocked protocol/navigation/CDP/browser-surface workaround retried. Temporary blank tab closed. Materially safer direct local file save of the already captured screenshot succeeded without browser navigation. This exact failed URL effect remains closed.",
+    "continuation": "Await one concrete Chairman spend+snapshotallowance+maintenance decision; login is satisfied and must not be asked again. Keep authenticated exact quote tab; soleheartbeat quiet pending decision/no routine provider/CI/runtime/credential polling or repeated approval question. Consume only actual relevant independent material returns.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-authenticated-resize-proposal-parent-qualification-20261011T0659.json",
+        "bytes": 5399,
+        "sha256": "375d0781c5e727780ea00307aa354901d6fb7921130894ce4eb231f1bcaf1582"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-resize-quote-20261011T0650.jpg",
+        "bytes": 219013,
+        "sha256": "ca7c6296f14a5e0c5d38f51a9be15cbff309f255f9da2f42d3f8c7464dd0376d"
       }
     ]
   }

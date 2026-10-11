@@ -9,7 +9,7 @@ blocked_by:
 - PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
 - Phone Replay PR914 mergedcaf/source and exact CI are qualified; last observed canonical remains34d. Actual05:08 storage available8752930816 is1984487424 below retained10GiB reserve. Capacity check is a local pre-effect validator; it is not a platform permission denial. Canonical installation and paid phone proof remain.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
-- DigitalOcean droplet580786327/sfo3 provider autofill login was rejected; macOS Passwords is locked. Human establishes a valid authorized provider session before account-specific resize/price/maintenance proposal. Preserve10GiB, Git/private/current/rollback data and exact old fb1/c968 no-build receipts; no paid resize, cleanup or builder effect conducted.
+- DigitalOcean authenticated exact580786327 quote verified:24USD/month current80GB plan;48USD/month proposed160GB/4vCPU/8GB (+24USD/month), temporarysnapshot allowance up to6USD/month while retained. Chairman spend/permanentdisk/shared-VPS maintenance decision pending. Login step satisfied; no paid snapshot/resize/poweroff/deployment yet. Preserve10GiB and existing Git/private/current/rollback data.
 - A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
 program: terminal-charting
 repos:
@@ -26,7 +26,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: Human establishes a valid authorized DigitalOcean session on the preserved provider login page. Parent then inspects exact droplet580786327 resize offer/current billing and prepares the concrete capacity and downtime decision; public160GiB/$48 catalog is not account qualification. Preserve10GiB, Git/private/current/rollback data and prior no-build operations. Consume only actual independent material returns; no settled PR914 source/CI/test/browser or repeated support polling. WholeAudit20 remains incomplete.
+next_action: Chairman decides the concrete48USD/month160GB plan (+24USD/month), temporaryfull-dropletsnapshot allowance up to6USD/month while retained and shared-VPS downtime, now or a specified maintenance window. Parent then fresh-checks exactoperation/writer/resource gates and owns graceful shutdown/snapshot/resize/poweron/health/canonicalTerminal delivery/paidphoneproof as admitted. Login is satisfied; no repeatedquestion/providerpolling/settledsource replay. WholeAudit20 remains incomplete.
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -656,3 +656,23 @@ The latest frontier is `current_capability_frontier_20261011T0518`, superseding 
 - Human establishes a valid DigitalOcean session on the preserved provider page. Parent then inspects only exact droplet580786327 resize offer/current price, prepares concrete capacity/downtime proposal, and requests the actual consequential decision. No retry of rejected saved credential or bypass of OS/provider authentication. Meanwhile consume only actual independent material returns; no repeated settled source/CI/runtime/browser/backup/export/test/capture or unchanged support-only polling.
 
 Evidence: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-release-capacity-cause-parent-diagnosis-20261011T0518.json` — 6429B / SHA256 `71640fec21de623ec64bb910eeb51e9c362ff557d1ef5cf7aca94566d950d402`. Read-only diagnosis is a material cause finding, not installation, paid phone acceptance or whole-mission completion.
+
+
+## 20261011T0659 — authenticated DigitalOcean resize proposal prepared
+
+The latest frontier is `current_capability_frontier_20261011T0659`, superseding T0518 only for actual provider authentication, plan/quote binding and the concrete decision. Historical evidence remains retained.
+
+- Chairman reports DigitalOcean logged in. Same selected IAB5/tab1 actual authenticated MastermindX project contains droplet580786327 ubuntu-s-mastermindx/SFO3/146.190.142.17/Ubuntu24.04LTS/Active, matching retained instance metadata and80GiB physicaldisk. No login retry/credential read or new identity.
+- Basic SharedCPU Regular/2vCPU/4GB RAM/80GB SSD/4TB transfer exact24USD/month0.036USD/hour. Plan price is provider current configuration estimate, not retrospective whole-account billing.
+- Smallest displayed disk-expanding Regular Basic plan:4vCPU/8GB RAM/160GB SSD/5TB transfer exact48USD/month0.071USD/hour, +24USD/month. Exact48 radio selected for preview; keep80GBfixed box unchecked. Monthly cost48; providerActive/ResizeDroplet disabled untilpoweroff. No TurnOff/Resize/Snapshot/Restart/Rebuild/Destroy action pressed.
+- Exact droplet Backups&Snapshots surface lists setupbackups/takesnapshot actions and no existing image on that surface; no claim of complete backend/account absence. Distinct temporary full-droplet filesystemsnapshot recommended before resize, NOT a repeat of accepted DB/R2 backup7532. Official snapshotprice0.06USD/GB/month/min0.01; actualimagebytes/chargeunobserved. Propose allowance up to6USD/month while retained; no creation or automaticirreversibledeletion.
+- Explicit decision needed for48USD/month coreplan plus temporarysnapshot allowance6USD/month, permanent disk increase and shared-VPS outage. Officialdocs recommend graceful SSHshutdown and roughly1min/GBused downtime, oftenless; exactdurationunknown. Upon decision fresh exactoperation/writer/resources, graceful shutdown, temporarysnapshot withinallowance, resize/poweron/existinghealth, then canonicalTerminal release and owningpaidphoneproof onlyifactualgatespass. No new billing/snapshot/poweroff/deploy effects fromlogin.
+- T0518 capacitycause/local10GiB invariant retained; oldfb1/c968 operations unreplayed/no weakening/Gitcleanup/alternateprincipal. PR914caf source/latest3CI/all10jobsqualified; last actualcanonical34d installgapnotclosed. Completed914/8755 branches stayclosed. No settled source/CI/tests/capture/paidanswers/Peak/export/backup replay.
+- PR781 reservedmastermindx-3 ad5 independentnumericreview/3threads, IW2explicitcyberrefusal/platformhumanstep, SQL0030-32/operator/API+SQL/rights/release/security/source/EFFECT_UNKNOWN and exact887ALLOW remain scoped. No fullA11/Audit20acceptance.
+- A data:image URL attempt to expose the captured screenshot to a browser download API was blocked by the browser URL policy. No blocked protocol/navigation/CDP/browser-surface workaround retried. Temporary blank tab closed. Materially safer direct local file save of the already captured screenshot succeeded without browser navigation. This exact failed URL effect remains closed.
+- Await one concrete Chairman spend+snapshotallowance+maintenance decision; login is satisfied and must not be asked again. Keep authenticated exact quote tab; soleheartbeat quiet pending decision/no routine provider/CI/runtime/credential polling or repeated approval question. Consume only actual relevant independent material returns.
+
+Evidence bindings:
+
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-authenticated-resize-proposal-parent-qualification-20261011T0659.json` — 5399B / SHA256 `375d0781c5e727780ea00307aa354901d6fb7921130894ce4eb231f1bcaf1582`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-resize-quote-20261011T0650.jpg` — 219013B / SHA256 `ca7c6296f14a5e0c5d38f51a9be15cbff309f255f9da2f42d3f8c7464dd0376d`.
