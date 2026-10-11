@@ -46,3 +46,84 @@ def test_none_and_empty_and_nan_are_graceful():
     assert market_gamma_view(None) is None
     assert market_gamma_view(pd.DataFrame()) is None
     assert market_gamma_view(_gex(10.0, 5000, 5000.0, np.nan)) is None
+
+
+# 2026-06-11 and 2026-06-12 are NYSE sessions (Thursday, Friday). The session
+# filter must keep these rows; a weekend date would fail-open and hide a miss.
+_SESSION = "2026-06-12"
+_OTHER_SESSION = "2026-06-11"
+
+
+def _engine_row(gamma_regime, asof=_SESSION):
+    return pd.DataFrame(
+        {"gamma_regime": [gamma_regime]},
+        index=pd.to_datetime([asof]),
+    )
+
+
+def test_regime_uses_engine_direct_sign_not_flip_side():
+    """Spot below the flip (svf < 0) while the same-session engine row is long.
+    Regime follows the engine direct sign, not spot_vs_flip_pct."""
+    gex = _gex(17.7, 8100, 7394.3, -1.2)
+    gex.index = pd.to_datetime([_SESSION])
+    v = market_gamma_view(gex, gex_spx=_engine_row("long"))
+    assert v["regime"] == "long"
+    assert v["regime_basis"] == "engine_direct_sign"
+
+
+def test_regime_mirror_engine_short_above_flip():
+    """Mirror: spot above the flip while the engine row is short."""
+    gex = _gex(25.0, 5000, 5150.0, 1.0)
+    gex.index = pd.to_datetime([_SESSION])
+    v = market_gamma_view(gex, gex_spx=_engine_row("short"))
+    assert v["regime"] == "short"
+    assert v["regime_basis"] == "engine_direct_sign"
+
+
+def test_regime_unavailable_when_engine_row_missing():
+    gex = _gex(17.7, 8100, 7394.3, -1.2)
+    gex.index = pd.to_datetime([_SESSION])
+    v = market_gamma_view(gex, gex_spx=None)
+    assert v is not None
+    assert v["regime"] is None
+    assert v["regime_basis"] == "unavailable"
+
+
+def test_regime_unavailable_on_session_date_mismatch():
+    gex = _gex(17.7, 8100, 7394.3, -1.2)
+    gex.index = pd.to_datetime([_SESSION])
+    v = market_gamma_view(gex, gex_spx=_engine_row("long", asof=_OTHER_SESSION))
+    assert v is not None
+    assert v["regime"] is None
+    assert v["regime_basis"] == "unavailable"
+
+
+def test_regime_unavailable_when_engine_value_is_null():
+    gex = _gex(17.7, 8100, 7394.3, -1.2)
+    gex.index = pd.to_datetime([_SESSION])
+    for raw in (None, np.nan):
+        v = market_gamma_view(gex, gex_spx=_engine_row(raw))
+        assert v is not None
+        assert v["regime"] is None
+        assert v["regime_basis"] == "unavailable"
+
+
+def test_regime_unchanged_when_engine_agrees_with_flip_side():
+    """Control: engine sign and flip side agree. Pre-existing keys keep the
+    values the flip-side deriver published; only regime_basis is added."""
+    gex = _gex(17.7, 8100, 7394.3, -1.2)
+    gex.index = pd.to_datetime([_SESSION])
+    v = market_gamma_view(gex, gex_spx=_engine_row("short"))
+    assert v["regime"] == "short"
+    assert v["regime_basis"] == "engine_direct_sign"
+    assert v["spot_vs_flip_pct"] == -1.2
+    assert v["net_gex_bn"] == 18
+    assert v["flip"] == 8100
+    assert v["gamma_flip"] == 8100
+    assert v["flip_strike"] == 8100
+    assert v["spot"] == 7394
+    assert v["asof"] == _SESSION
+    assert set(v) == {
+        "regime", "regime_basis", "spot_vs_flip_pct", "net_gex_bn",
+        "flip", "gamma_flip", "flip_strike", "spot", "asof",
+    }
