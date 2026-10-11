@@ -115,3 +115,13 @@ source commit and module hashes. The real candidate remains **15/17**, failing
 only our-value and receipts, with both staged peer hashes unchanged. All external
 figures and external-only arithmetic remain third-party. Hashes bind the reviewed
 rights input; they do not independently grant rights or publication approval.
+
+CI integration retains the existing `press-lane` owner and adds the new suite to
+its manifest command. This is the existing data-health lane, not a new claim of
+pre-merge proof. Runtime scope inference confirms all six new code/test/evidence
+paths select that lane (source fixtures through the conservative read fallback).
+The workflow start catch-all already covers them; no redundant global workflow
+change is retained. `check_ci_trigger_closure.py` reports zero gaps; manifest
+`--validate-only --workflow .github/ci/legacy-jobs.yml` passes;28 Press workflow
+contract tests pass in3.90s. The curated import-closure test passed in131.78s.
+No application or test behavior changed after the154-test run.
