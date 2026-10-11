@@ -571,3 +571,69 @@ def test_stage_a_verified_document_requires_typed_source_snapshot_version():
     good = build(raw, document_observation=stage_a_receipt(),
                  rights_resolver=versioned_rights)
     assert good["source_snapshot_version"] == "test-snapshot-001"
+
+
+def _actual_sec_earnings_event(*, adjusted_eps=None):
+    """Actual incumbent earnings-wire producer, with synthetic issuer data.
+
+    The chosen accession and figures are from the independently checked 2026
+    Pfizer 8-K; no network read, public-rights receipt or real availability
+    clock is asserted by constructing this fixture.
+    """
+    from engine.marketing.edgar_earnings_wire import (
+        Expectation, Figures, build_event,
+    )
+    figures = Figures(
+        revenue=15034.0, revenue_label="Total Revenues",
+        eps=-0.04, eps_label="GAAP diluted earnings per share",
+        table_index=0, adjusted_eps=adjusted_eps,
+        adjusted_eps_label="Adjusted diluted EPS" if adjusted_eps is not None else "",
+    )
+    expectation = Expectation(ticker="PFE", cik=78003, eps_forecast=0.71)
+    return build_event(
+        expectation, figures,
+        when=datetime(2026, 8, 4, 11, 3, 10, tzinfo=timezone.utc),
+        accession="0000078003-26-000094",
+        source_url=SEC_URL, cik=78003,
+        acceptance_datetime="2026-08-04T07:02:43-04:00",
+        filing_date="2026-08-04", form="8-K",
+    )
+
+
+def test_actual_incumbent_sec_wire_requires_separate_document_observation():
+    source = _actual_sec_earnings_event()
+    assert source["source"] == "edgar_8k_202"
+    assert source["filing_key"] == "0000078003:0000078003-26-000094"
+    assert source["when_semantics"] == "processing_wall_clock"
+    assert "publication_time_utc" not in source
+    denied = build(source, rights_resolver=versioned_rights)
+    assert denied["public_disposition"] == "BLOCKED_PUBLIC"
+    assert "publication_time_not_attested" in denied["missing_data"]
+    assert denied["what_changed"] == denied["sources"] == []
+    qualified = build(source, document_observation=stage_a_receipt(),
+                      rights_resolver=versioned_rights)
+    assert (qualified["schema"], qualified["schema_version"]) == (
+        "catalyst.public_event/v2", 2)
+    assert qualified["event_time_utc"] == "2026-08-04T11:02:43Z"
+    assert qualified["first_observed_at_utc"] == "2026-08-04T11:03:10Z"
+    assert qualified["publication_time_utc"] is None
+    assert {x["kind"] for x in qualified["evidence"]} == {
+        "eps_actual", "rev_actual"}
+    assert any("15,034,000,000" in x["text"] for x in qualified["what_changed"])
+    assert any("GAAP EPS of -0.04" in x["text"] for x in qualified["what_changed"])
+    assert all(x["evidence_ids"] for x in qualified["what_changed"])
+
+
+def test_real_earnings_wire_adjusted_and_gaap_bases_never_conflated():
+    source = _actual_sec_earnings_event(adjusted_eps=0.77)
+    assert source["eps_actual"] == 0.77
+    assert source["_eps_gaap"] == -0.04
+    assert source["_eps_basis"] == "adjusted"
+    public = build(source, document_observation=stage_a_receipt(),
+                   rights_resolver=versioned_rights)
+    assert public["public_disposition"] == "PUBLIC_READY"
+    texts = " ".join(item["text"] for item in public["what_changed"])
+    assert "ADJUSTED EPS of 0.77" in texts
+    assert "GAAP EPS of 0.77" not in texts
+    assert "beat" not in texts.lower() and "expected" not in texts.lower()
+    assert "consensus_not_independently_evidenced" in public["missing_data"]
