@@ -1069,7 +1069,11 @@ def test_h9_705_rows_tombstone_byte_frozen_except_two_columns(master: pd.DataFra
     ceiling catches its mirror, a duplicate-mint regression phantom-minting rows
     en masse (fine-grained admission accounting is the receipt tests' job)."""
     n_us = len(master[master["country"] == "US"])
-    assert 705 + 508 + 1 <= n_us <= 705 + 508 + 1 + 120
+    # Ceiling widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # load_universe() now admits the S&P 400/600 breadth constituents forward-only;
+    # the A8 dry run puts US rows at 1939 (+721 admissions, +1 CBOE input drift).
+    # The floor is unchanged; the +120 duplicate-mint headroom now sits above 1939.
+    assert 705 + 508 + 1 <= n_us <= 1939 + 120
     tomb = master[master["security_id"] == "SEC:US-XNYS-VMRK"].iloc[0]
     assert tomb["issuer_state"] == "NO_ISSUER_EVIDENCE"
     assert pd.isna(tomb["issuer_id"])
@@ -3413,9 +3417,14 @@ def test_us_coverage_scope_holds_through_lawful_admissions(receipt: dict) -> Non
     scopes), and the same PR unwedged the nightly artifact refresh, so exact
     counts rot with the next lawful admission — floors keep the downward bite
     (coverage silently SHRINKING is the defect this pins against)."""
-    assert 713 <= receipt["coverage"]["total"] <= 713 + 120
+    # Ceilings widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
+    # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
+    # security row, and QRVO, under the pre-existing KHC pending-transition fence that
+    # the unpatched rebuild also shows).
+    assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 10
+    assert receipt["coverage"]["unresolved"] <= 13
     assert receipt["coverage"]["total"] == (
         receipt["coverage"]["resolved"] + receipt["coverage"]["unresolved"])
     assert receipt["issuer"]["state_counts"]["RESOLVED"] >= 699
@@ -3879,9 +3888,14 @@ def test_gmi_us_regression_bands_cn_hk_and_legacy_us(
     n_hk = len(master[master["country"] == "HK"])
     assert 1005 <= n_cn <= 1005 + 180
     assert 147 <= n_hk <= 147 + 60
-    assert 713 <= receipt["coverage"]["total"] <= 713 + 120
+    # Ceilings widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
+    # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
+    # security row, and QRVO, under the pre-existing KHC pending-transition fence that
+    # the unpatched rebuild also shows).
+    assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 10
+    assert receipt["coverage"]["unresolved"] <= 13
 
 
 # 16: ordinary reruns preserve artifacts and every evidenced refusal. A stable

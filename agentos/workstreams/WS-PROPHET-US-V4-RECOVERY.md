@@ -675,21 +675,25 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  2026-10-11 human-renewed end-to-end continuation under #6817/#6805 and original
-  root 01a11e89-b35d-7a81-9404-5fce2c6170cb: use the current checkpoint
-  PROPHET-US-V4-RECOVERY-2026-10-11-b03-delivery.md. Obtain actual same-carrier
-  integration clearance and independent source/visual approval for P1a #8444,
-  then consume the prepared HK/China adoption through existing owners. Complete
-  independent review and normal release of the disjoint B03 lossless observation
-  delivery candidate PR8762. Its eager optional-parquet import and missing cached
-  restart closure from CI38111473458 are repaired with RED/GREEN regressions;
-  require hosted CI on the new repair commit. PR8670's exact-head CI is satisfied; accounting recovery and
-  current annotation independent approval remain held. M2 Fabric admission needs
-  canonical effect/policy reconciliation; no Executive dispatch or retry around
-  refused effects. Then advance native economic evidence, Daily Brief, entry
-  availability and Model Plans to authenticated four-market production journeys.
-  Historical wave-2 decisions and scientific holds remain in force; never replay
-  an old next action without reconciling its exact current source/effect owner.
+  2026-10-11 human-approved continuation under 6817/6805 and original root
+  01a11e89-b35d-7a81-9404-5fce2c6170cb: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-entry-copy.md and programme comment 6107291350.
+  B03 PR8762 is source-merged at 395e5d6089e95aa907c48fae811ecb918fb26f95 after
+  accepted source, current-head hosted CI and explicit human component visual
+  approval. Existing automatic render 38133349439 and authenticated B03 production
+  proof remain owed. Deliver the current-main mixed Buy/Near group copy repair
+  through normal source/CI/release. B04 PR7869 and B06 PR8670 source releases and
+  reviews are closed. P1a PR8444 access/cached-render deltas are independently
+  accepted within scope at a8d84782b3d2f1e6a875012067584c0b4234d7c0; its original
+  explicit integration refusal and generated public-shell repair remain separate.
+  Resume prepared HK P1b then China P1c at the actual shared P1a acceptance/release
+  edge, preserving incumbent source effects. Daily Brief original PR8249 retains
+  its refused source edit and owner-issued exact selection tuple obligation.
+  Continue native evidence, truthful entry and Model Plans to four-market
+  authenticated production acceptance; do not replay closed operations or infer
+  mission completion from source delivery. Native same-parent children are
+  admitted within actual runtime limits; existing M2 remains preferred and no
+  Executive plugin is used.
 ---
 
 ## Context

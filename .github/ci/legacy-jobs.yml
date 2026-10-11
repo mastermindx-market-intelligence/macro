@@ -4810,7 +4810,7 @@ jobs:
         run: python -m pytest tests/test_china_news.py -q
       - name: optional news provider semantics and actual ordering consumer
         # Source-only fixtures: no live data, vendor credentials or activation.
-        run: python -m pytest tests/test_news_ai_feed_contract.py -q
+        run: python -m pytest tests/test_news_ai_feed_contract.py tests/test_build_news.py -q
       - name: strict SEC filing parser, extraction, and sealed attestation contracts
         run: |
           python -m pytest \
@@ -8066,6 +8066,8 @@ jobs:
         run: python -m pytest tests/test_leader_lifecycle.py -q
       - name: leader radar builder tests
         run: python -m pytest tests/test_build_leader_radar.py -q
+      - name: RS leader highs and deep recovery regression
+        run: python -m pytest tests/test_rs_leader_highs.py tests/test_leader_recovery.py tests/test_leader_recovery_outcomes.py tests/test_leader_recovery_integration.py tests/test_leader_recovery_policy_research.py tests/test_leader_recovery_expectations.py tests/test_leader_recovery_observations.py -q
 
   evidence-clock:
     if: ${{ false }}
@@ -15889,6 +15891,12 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py --help
           python -m pytest tests/test_r4_v2_receipt.py -q
+      # EVAL-1 challenger trial identity (ITP B6). Name the checker CLI as
+      # well as its suite; the suite loads the checker by file path.
+      - name: information-to-price EVAL-1 challenger trial identity
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
+          python -m pytest tests/test_eval1_challenger_identity.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
@@ -20880,6 +20888,12 @@ jobs:
       - collectors/china_analyst.py
       - collectors/china_tushare_spine.py
       - tests/test_identity_seam_agreement.py
+      # ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the hermetic
+      # universe-admission suite needs pandas+pyarrow for its tmp parquet fixtures,
+      # so it rides this code-gate job rather than the thin dataos-foundation lane or
+      # the data-gate house-law-registry job, which never runs on a pull request.
+      - scripts/build_security_master.py
+      - tests/test_build_security_master_universe.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20895,6 +20909,10 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_identity_seam_agreement.py -q -rs
+      - name: security master universe admits the S&P 400/600 constituents (hermetic)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_build_security_master_universe.py -q -rs
 
   ticker-news-qbus:
     # Package N — Terminal per-ticker news feed correctness kernel (PR #8454).
