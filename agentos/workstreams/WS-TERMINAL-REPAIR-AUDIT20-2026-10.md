@@ -9,7 +9,7 @@ blocked_by:
 - PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. Its SQL0030-32 remain unapplied and operator/rights/release/API+SQL holds remain. PR946 single-function0032 is a distinct, explicitly admitted repair and does not release IW2.
 - A11 cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW, MoneySCP/OAuth EFFECT_UNKNOWN and other security/source/rights paths remain unqualified; scoped paid render/ordinary UI proof does not satisfy them.
-- Actual873 scheduled publication remains unobserved; configured schedule is not a publication event. Consume only the existing producer's actual return, with no manual replay.
+- Existing873 nightly log now proves run start21:30:01Z and polygon producer start21:30:02Z on2026-10-11; completion/atomic publication remains unqualified. Consume the same existing producer actual terminal return, with no manual replay or new observer.
 program: terminal-charting
 repos:
 - terminal
@@ -1046,3 +1046,39 @@ and all independent holds remain unchanged: PR946 and the one AAccept/BReject ar
 both existing theses remain archived, and whole Audit20 remains incomplete. The ended
 capacity defer creates no new work or effect authority; continue only actual newly admitted
 work or relevant original-owner review/platform/rights/producer returns.
+
+
+## 2026-10-11 23:05 UTC — human-action blockers clarified; existing nightly run start consumed
+
+Chris directly asked to finish currently available work and identify exactly which remaining
+blockers need his action. The completed946 proposal repair/SQL/AcceptA/RejectB, both archived
+identities, prior storage/releases/proofs and browser cleanup remain closed; no replay is owed.
+The ended GMI capacity defer is not a blocker. FuturePL6 remains coordination only.
+
+One bounded read of the existing /var/log/terminal-data.log returned a new run-start marker at
+21:30:01Z and polygon producer invocation at21:30:02Z. The23:02:36Z retained414-line segment
+has no completion or final manifest swap marker. This proves the existing run started, not its
+terminal success, source binding, atomic publication, final artifact bytes or public adoption.
+No manual producer, new job/observer, restart or source/data effect was issued. The sanitized
+receipt is873-existing-nightly-run-start-parent-consumption-20261011T2302.json under the
+existing Audit20 evidence directory; raw log/command/credential bytes were not retained.
+
+The confirmed personal human gate is supported platform resolution of the explicit IW2 cyber
+refusal in its original chat. The separate exact887 decision is adding ONLY ownedPR887 to the
+existing trusted CI approval helper: current3d96573 already permits the seven older carriers
+and refuses887 before network. The prepared one-line51a1ee45 proposal and15 original guard
+checks are concrete review material, not approval. Existing max2freshpairs/exacthead/workflow/
+actor/exclusiveeffectreceipt/stickyunknown controls remain. No permission is inferred here.
+
+PR781 still needs its reserved mastermindx-3 reviewer to replace5388952130 and qualify the
+three threads with exact-current-head numeric evidence. This is reviewer action, not a new
+selfreview or generic user approval. MoneySCP/OAuth unknown effects, separate IW2SQL/access/
+rights/release, A19 actual operational intake/prior-effect/canonical authority, same873 publication
+and the remaining original real-path/cutoff/native/Options/math/rights outcomes need owning
+evidence. No additional precise personal human action is established for those by this review.
+A single compact A/B first-party snapshot attempt delivered no result before bounded read
+cancellation; no owner release, ACK or new human blocker is inferred and no alternate retry ran.
+
+WholeAudit20 remains incomplete. Frontier current_capability_frontier_20261011T2305 inherits
+T2017 except this actual producer-start observation and clarified blocker classification. All119
+prior objects/rawprefix remain exceptcurrentpointer. Continuity uses SAME8545twofiles only.
