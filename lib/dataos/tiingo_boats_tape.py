@@ -163,6 +163,7 @@ def audit_boats_tape(
     max_observations: int = MAX_OBSERVATIONS,
     max_examples: int = 10,
     quote_max_age_ms: int = 1000,
+    source_silence_threshold_ms: int = 5000,
     check_mount: bool = True,
 ) -> dict[str, Any]:
     """Summarize venue-native BOATS events from explicitly selected local L0/L1.
@@ -179,7 +180,9 @@ def audit_boats_tape(
             or type(max_observations) is not int
             or not 1 <= max_observations <= MAX_OBSERVATIONS
             or type(max_examples) is not int or not 0 <= max_examples <= MAX_EXAMPLES
-            or type(quote_max_age_ms) is not int or not 1 <= quote_max_age_ms <= 60000):
+            or type(quote_max_age_ms) is not int or not 1 <= quote_max_age_ms <= 60000
+            or type(source_silence_threshold_ms) is not int
+            or not 1 <= source_silence_threshold_ms <= 60000):
         raise TiingoViewRefusal("invalid bounded BOATS analysis budgets")
     if not isinstance(refs, (tuple, list)) or not 1 <= len(refs) <= max_captures:
         raise TiingoViewRefusal("invalid bounded BOATS capture list")
@@ -215,13 +218,33 @@ def audit_boats_tape(
         if total_source_messages > max_observations:
             raise TiingoViewRefusal("BOATS source messages exceed bounded research budget")
     segments.sort(key=lambda item: (item[0], item[2]))
+    # Receipt intervals can reveal an unobserved interval, never prove zero
+    # missing upstream events, an uninterrupted socket, or a complete session.
+    max_between_segment_gap_ms = 0
+    positive_segment_gaps = 0
+    overlapping_segment_intervals = 0
+    prior_segment_last: datetime | None = None
+    for first, last, _, _, _ in segments:
+        if prior_segment_last is not None:
+            gap_ns = _ns(first) - _ns(prior_segment_last)
+            if gap_ns > 0:
+                positive_segment_gaps += 1
+                max_between_segment_gap_ms = max(
+                    max_between_segment_gap_ms, gap_ns // 1_000_000
+                )
+            elif gap_ns < 0:
+                overlapping_segment_intervals += 1
+        prior_segment_last = max(prior_segment_last, last) if prior_segment_last else last
+    max_within_segment_qtb_gap_ms = 0
+    qtb_gaps_exceeding_silence_threshold = 0
+    qtb_observations_for_gap_measurement = 0
+    source_arrival_regressions_all_tickers = 0
     quality = Counter()
     types = Counter()
     examples: list[dict[str, Any]] = []
     total_traded_shares = 0
     total_break_shares = 0
     last_epoch: int | None = None
-    last_quotes: tuple[Any, ...] | None = None
     seen_raw: set[str] = set()
     latency_nonnegative_ns: list[int] = []
     matched = 0
@@ -231,8 +254,10 @@ def audit_boats_tape(
     for first, last, digest, rows, receipt in segments:
         # No cross-segment temporal bridging: receipts do not prove that the
         # interval between two BOATS captures was continuously observed.
+        last_quotes: tuple[Any, ...] | None = None
         latest_prior_venue_quote: tuple[int, int] | None = None
         prior_arrival_ns: int | None = None
+        prior_QTB_arrival_ns: int | None = None
         for row in rows:
             symbol = row.get("ticker")
             if not isinstance(symbol, str) or not symbol:
@@ -241,6 +266,21 @@ def audit_boats_tape(
             clock, epoch, received, lag_ns, conditions = _event_quality(row)
             if not first <= received <= last:
                 raise TiingoViewRefusal("BOATS frame receipt time outside original capture interval")
+            # These are observed Q/T/B frame times, not the full raw transport:
+            # the original source receipt may include opaque/control frames.
+            current_QTB_arrival_ns = _ns(received)
+            qtb_observations_for_gap_measurement += 1
+            if prior_QTB_arrival_ns is not None:
+                interval_ns = current_QTB_arrival_ns - prior_QTB_arrival_ns
+                if interval_ns < 0:
+                    source_arrival_regressions_all_tickers += 1
+                else:
+                    max_within_segment_qtb_gap_ms = max(
+                        max_within_segment_qtb_gap_ms, interval_ns // 1_000_000
+                    )
+                    if interval_ns > source_silence_threshold_ms * 1_000_000:
+                        qtb_gaps_exceeding_silence_threshold += 1
+            prior_QTB_arrival_ns = current_QTB_arrival_ns
             if symbol != vendor_symbol or not start <= clock <= end:
                 continue
             matched += 1
@@ -376,6 +416,23 @@ def audit_boats_tape(
         "source_capture_segments_verified": len(segments),
         "source_messages_all_tickers": total_source_messages,
         "source_event_kind_counts_all_tickers": dict(counts_by_kind),
+        "capture_observation_gaps": {
+            "source_segments": len(segments),
+            "source_projected_QTB_observations": qtb_observations_for_gap_measurement,
+            "observed_QTB_messages_for_interarrival": qtb_observations_for_gap_measurement,
+            "within_segment_silence_threshold_ms": source_silence_threshold_ms,
+            "max_positive_within_segment_QTB_arrival_gap_ms": max_within_segment_qtb_gap_ms,
+            "within_segment_gaps_exceeding_threshold": qtb_gaps_exceeding_silence_threshold,
+            "max_positive_between_segment_arrival_gap_ms": max_between_segment_gap_ms,
+            "between_segment_positive_gaps": positive_segment_gaps,
+            "overlapping_receipt_intervals": overlapping_segment_intervals,
+            "raw_QTB_arrival_timestamp_regressions": source_arrival_regressions_all_tickers,
+            "unparsed_other_frames_are_not_in_interarrival_denominator": True,
+            "missing_source_message_count_known": False,
+            "complete_session_proven": False,
+            "transport_continuity_proven": False,
+            "source_arrival_silence_is_not_packet_loss_proof": True,
+        },
         "distinct_symbols_in_selected_segments": len(symbols_in_source),
         "selected_symbol_events": matched,
         "selected_kind_counts": {k: types[k] for k in ("Q", "T", "B")},

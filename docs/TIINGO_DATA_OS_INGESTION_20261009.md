@@ -998,3 +998,86 @@ owned collector, backfill eligible history with storage/throughput guards,
 and verify canonical downstream machine and Terminal users. The
 current Macro PR #8698 remains DRAFT / NOT READY, its existing source
 carrier and worktree retained; 24 Data OS Tiingo datasets remain PROPOSED.
+
+
+### October 11 UTC — BOATS source-gap observation and Terminal consumer ownership
+
+Current protected Mastermind pin was verified at
+70e9ef1ede16628d00a7cc1d749387d893a1d5b3, compatible INDEX
+mastermind.sol_skillpack.v1/1.0.1/bootstrap major 1 and same-commit
+COLD_START, ACTIVE_EXECUTION, SESSION_RELIABILITY, WEB_CEO_DELEGATION,
+REVIEW_RETURN and CLOSEOUT. Existing PR carrier:
+macro#8698 sol/tiingo-data-archive-20261009, prior published head
+e2aff0d56eade37734b707111cb6187a5327d415. Macro News PR #8697
+remains an independent incumbent source owner; no copy of its source.
+
+**Decision from actual Terminal source:** The existing Terminal Quote Hub
+already owns all extended-hours and overnight QUOTE display data.
+Verified against Terminal source master commit
+707648d5201494ec42a2429ffb64cc39fb24314e:
+  hub/lib/extfeed.js — one Hub extended/overnight quote source pipeline;
+  hub/lib/store.js — extPrice/extChg/extTs/extSession/extSource/extBasis
+                     fields separated from regular-session close/last;
+  terminal/app/api/ext-quote/route.ts — passes through Hub, NO vendor fetch
+                                       from Next.js route.
+Do NOT add a competing Tiingo WebSocket collector, another quote truth,
+a direct Next.js provider call, or a second transport/control plane to
+"integrate faster". Actual downstream quote display/consumer acceptance
+must occur through that incumbent Hub and under real Data OS/rights
+source-admission evidence, not by treating archived research observations
+as real-time executable quotes. No Terminal modifications were made in
+this continuation.
+
+**Implemented pure BOATS read-side capture-quality metrics:**
+Existing lib/dataos/tiingo_boats_tape.py now reports source_capture
+segments, max positive inter-segment receipt gaps, overlapping receipt
+intervals, max observed Q/T/B inter-arrival silence inside each segment,
+number of within-segment gaps over a configurable threshold,
+and nonmonotonic Q/T/B receipt clocks. The CLI adds
+--source-silence-threshold-ms 1..60,000 for boats-firehose only.
+The existing 1–60,000 ms prior-quote age analysis remains separate.
+No raw T/B count becomes a valid trade-count or order-flow signal.
+
+All gap evidence is OBSERVATIONAL, not actual dropped-message counts,
+session completion, feed continuity, provenance-authenticity or a
+negative fill/trade claim. Opaque/control frames have receipt counts but
+are not measured in the projected Q/T/B interarrival series, so the
+diagnostic labels its denominator explicitly. A zero observed gap
+never promotes continuous-session proof. Two separate BOATS capture
+segments never share a prior quote or quote-repetition state, even when
+a repeated quote looks identical across an unobserved source gap.
+
+Regression tests first reproduced the cross-segment repetition bug.
+Tests were then added for segmented positive gaps, intra-segment
+silences, zero-gap-not-complete, strict threshold typing/range, opaque
+frames excluded from the Q/T/B denominator, and the CLI source-only
+control. Focused BOATS + CLI suites: 75 PASSED (process 90501).
+Full Tiingo + Data OS registry suites: **412 PASSED, the exact SAME
+11 existing collector/normalized-writer integrity tests FAILED**
+(process 92264; pytest exit 1). No red gate waived; source producer and
+original failing tests remain unchanged.
+Retained bounded log on M2 external drive:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-boats-capture-gap-quality-20261011.log
+SHA-256:
+f7678d966fec270ea706ebedbd925788c046a7734f6250e707d6727af1240178.
+
+Hosted Macro CI for previous head e2aff0d... (run 38128969928,
+ci-pack-6 job 114439619038) independently identified the SAME 11
+producer-integrity failures in dataos-prospective-reference and
+CI_PACK_FAILED_JOBS=["dataos-prospective-reference"]; this was
+not a separate failure of the BOATS research tests. Separate current
+merge authority and other hosted checks must still accept a
+subsequent candidate. The external archive target remains absent;
+no vendor-connected BOATS messages, EOD, fundamental corpus, pilot,
+historical PIT clocks or production browser proof are claimed.
+The M2 external-drive read-only check had ~304 GiB free, but no
+measured BOATS retention rate, and 35 GiB minimum reserve remains.
+
+Protected platform denials stand for the previous authenticated Tiingo
+probe and core writer rewrite. The Chairman's BOATS purchased/licensed
+and redistribution authorization is preserved and accepted; it is
+distinct from runtime/write-effect permission and a real vendor response.
+Neither denied effect was retried, fragmented, delegated or re-routed.
+Continue only safe independent work until a genuinely permitted path
+exists. No live or queued collector, no deployment, no auto-alerts;
+24 Data OS Tiingo contracts remain PROPOSED; PR stays draft.

@@ -391,3 +391,40 @@ def test_non_boats_query_refuses_quote_age_control(lake):
               end="2019-12-31", observed_before=CUTOFF,
               acknowledge_hindsight=True, quote_max_age_ms=350,
               check_mount=False)
+
+
+
+def test_boats_cli_exposes_observed_source_arrival_silence_without_coverage_claim(lake, capsys):
+    day, digest = boats_partition(lake)
+    cli = [
+        "query", "--source", "boats-firehose", "--symbol", "AMD",
+        "--capture", day + ":" + digest,
+        "--start", "2026-10-09T01:00:00Z",
+        "--end", "2026-10-09T03:00:00Z",
+        "--observed-before", "2026-10-10T00:00:00Z",
+        "--acknowledge-hindsight", "--source-silence-threshold-ms", "250",
+    ]
+    assert main(cli, root=lake.root, check_mount=False) == 0
+    output = json.loads(capsys.readouterr().out)
+    d = output["boats_single_venue_tape_diagnostics"]["capture_observation_gaps"]
+    assert d["within_segment_silence_threshold_ms"] == 250
+    assert d["within_segment_gaps_exceeding_threshold"] == 1
+    assert d["source_projected_QTB_observations"] == 2
+    assert d["missing_source_message_count_known"] is False
+    assert d["complete_session_proven"] is False
+    assert output["complete_history_proven"] is False
+    cli[-1] = "0"
+    assert main(cli, root=lake.root, check_mount=False) == 2
+    assert json.loads(capsys.readouterr().out)["status"] == "REFUSED"
+
+
+def test_non_boats_cannot_set_source_silence_threshold(lake):
+    day, digest = partition(lake)
+    with pytest.raises(ValueError, match="only applies to BOATS"):
+        query(
+            lake.root, source="eod-bars", vendor_symbol="AMD",
+            captures=[day + ":" + digest],
+            start="2019-01-01", end="2019-12-31",
+            observed_before=CUTOFF, acknowledge_hindsight=True,
+            source_silence_threshold_ms=2000, check_mount=False,
+        )

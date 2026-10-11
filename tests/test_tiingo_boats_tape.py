@@ -409,3 +409,112 @@ def test_quote_from_another_vendor_symbol_never_counts_as_prior_venue_quote(lake
     assert x["trade_quote_age_diagnostics"]["no_prior_quote"] == 1
     assert x["distinct_symbols_in_selected_segments"] == 2
     assert x["trade_initiator_side_proven"] is False
+
+
+
+def test_tape_gap_metadata_exposes_unobserved_between_segments(lake):
+    first = saved(lake, [
+        ("2026-10-09T01:00:01Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z")),
+    ])
+    later = saved(lake, [
+        ("2026-10-09T01:00:11Z",
+         frame("T", event_at="2026-10-09T01:00:10Z")),
+    ])
+    out = audit(lake, [later, first])
+    gap = out["capture_observation_gaps"]
+    assert gap["source_segments"] == 2
+    assert gap["max_positive_between_segment_arrival_gap_ms"] == 10_000
+    assert gap["between_segment_positive_gaps"] == 1
+    assert gap["observed_QTB_messages_for_interarrival"] == 2
+    assert gap["unparsed_other_frames_are_not_in_interarrival_denominator"] is True
+    assert gap["complete_session_proven"] is False
+    assert gap["transport_continuity_proven"] is False
+    assert out["time_window_completeness_proven"] is False
+    assert out["trade_quote_age_diagnostics"]["fresh_prior_venue_quote"] == 0
+
+
+def test_large_within_segment_silence_is_diagnostic_not_missing_tick_count(lake):
+    capture = saved(lake, [
+        ("2026-10-09T01:00:01Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:06Z",
+         frame("T", event_at="2026-10-09T01:00:05Z")),
+    ])
+    result = audit(lake, [capture], source_silence_threshold_ms=2000)
+    gap = result["capture_observation_gaps"]
+    assert gap["source_segments"] == 1
+    assert gap["max_positive_within_segment_QTB_arrival_gap_ms"] == 5_000
+    assert gap["within_segment_silence_threshold_ms"] == 2_000
+    assert gap["within_segment_gaps_exceeding_threshold"] == 1
+    assert gap["missing_source_message_count_known"] is False
+    assert result["transport_continuity_proven"] is False
+
+
+def test_zero_observed_gap_is_not_claim_of_venue_session_completeness(lake):
+    capture = saved(lake, [
+        ("2026-10-09T01:00:01Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:01Z",
+         frame("T", event_at="2026-10-09T01:00:00Z")),
+    ])
+    out = audit(lake, [capture])
+    x = out["capture_observation_gaps"]
+    assert x["max_positive_within_segment_QTB_arrival_gap_ms"] == 0
+    assert x["complete_session_proven"] is False
+    assert x["missing_source_message_count_known"] is False
+
+
+@pytest.mark.parametrize("threshold", [True, 0, -1, 60_001, 1.5, "500"])
+def test_capture_silence_budget_is_never_coerced_to_valid(threshold, lake):
+    capture = saved(lake, [
+        ("2026-10-09T01:00:01Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z")),
+    ])
+    with pytest.raises(TiingoViewRefusal):
+        audit(lake, [capture], source_silence_threshold_ms=threshold)
+
+
+def test_quality_counts_only_projected_QTB_arrivals_not_opaque_frames(lake):
+    capture = saved(lake, [
+        ("2026-10-09T01:00:01Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:02Z",
+         json.dumps({"service": "boats", "messageType": "I", "data": []})),
+        ("2026-10-09T01:00:04Z",
+         frame("T", event_at="2026-10-09T01:00:03Z")),
+    ])
+    out = audit(lake, [capture])
+    gaps = out["capture_observation_gaps"]
+    assert gaps["source_projected_QTB_observations"] == 2
+    assert out["source_messages_all_tickers"] == 3
+    assert gaps["unparsed_other_frames_are_not_in_interarrival_denominator"] is True
+    assert gaps["max_positive_within_segment_QTB_arrival_gap_ms"] == 3_000
+    assert gaps["complete_session_proven"] is False
+
+
+
+def test_same_quote_across_unproven_segment_gap_is_not_counted_as_continuous_repetition(lake):
+    first = saved(lake, [
+        ("2026-10-09T01:00:01Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z", bid=99.9, ask=100.1)),
+    ])
+    next_segment = saved(lake, [
+        ("2026-10-09T01:00:11Z",
+         frame("Q", event_at="2026-10-09T01:00:10Z", bid=99.9, ask=100.1)),
+    ])
+    out = audit(lake, [first, next_segment])
+    assert out["capture_observation_gaps"]["between_segment_positive_gaps"] == 1
+    assert out["quality_flags"].get("same_venue_quote_repetition", 0) == 0
+    assert out["transport_continuity_proven"] is False
+
+
+def test_same_quote_within_verified_segment_remains_observed_repeat(lake):
+    capture = saved(lake, [
+        ("2026-10-09T01:00:01Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:02Z",
+         frame("Q", event_at="2026-10-09T01:00:01Z")),
+    ])
+    out = audit(lake, [capture])
+    assert out["quality_flags"]["same_venue_quote_repetition"] == 1
