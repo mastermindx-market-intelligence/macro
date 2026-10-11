@@ -14415,6 +14415,9 @@ jobs:
       - "tests/test_free_content.py"
       - "tests/test_i18n_split_tag_guard.py"
       - "tests/test_externalize_css.py"
+      - "templates/calculators/compounding.html.j2"
+      - "templates/calculators/dollar_cost_averaging.html.j2"
+      - "tests/js/calculator_input_integrity.test.mjs"
     # Free acquisition estate drift law (2026-07-26). scripts/build_free_content.py
     # and tests/test_free_content.py were wired into ZERO workflows — the D12/W1
     # masterplan flagged `--check` as "currently a manual command" and it was never
@@ -14436,6 +14439,8 @@ jobs:
         run: python -m pytest tests/test_free_content.py -q
       - name: committed estate must match a fresh render (template↔site drift law)
         run: python -m scripts.build_free_content --check
+      - name: calculator input + chart integrity (compounding, dollar-cost-averaging)
+        run: node --test tests/js/calculator_input_integrity.test.mjs
       # i18n split-tag law (2026-07-30). `--check` above pins the committed bytes
       # to a fresh render — it does NOT judge whether those bytes are valid, so it
       # froze 48 t() calls that passed an OPENING `<a href="` through the
