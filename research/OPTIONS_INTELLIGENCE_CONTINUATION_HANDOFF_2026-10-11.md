@@ -46,6 +46,12 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 - D6 This file is the program ledger; it is committed on macro branch
   `claude/options-intelligence-e2e-program-20261011` and refreshed at each material delta. Agent OS
   DEC/DSC/handoff records are written only for real events, as normal macro PRs.
+- D7 (08:58Z, from O7 return) Integration order for U01: #723 → #846 → small lane-owned C3 follow-up → #804 independent (own SQL gate) → #781 independent (foreign carrier). Each refresh is an OWNER merge-commit of master into the PR branch; never rebase/reset/force-push; `package-lock.json` regenerated at the integrated head, never hand-merged.
+- D8 #723 (head b83a9b852a62) stays the U01 carrier, conditional on a REAL recapture of B-PL-6 batch-1 / options-level-axis-labels / terminal-visual-intelligence crops and a fresh review (the 10-09 T09 approval does not cover a refresh).
+- D9 #723's companion must read through `flowGetResult` keeping absent ≠ unavailable (failure-state-truth law); the boolean `flowGetFresh(f, true)` form survives only as an additive overload.
+- D10 The C3 date-decoder divergence (`gexLadder.ts:270` reads only `_build_meta.asof_date`; `investigationOptionsReference.ts:151` reads both and refuses mismatch) is fixed in ONE separate follow-up after #846 lands; joint desk+lab enablement is gated on it. Not a mid-refresh cross-owner edit.
+- D11 #804 is coordination only (live writer: three commits today, head 9deff9514fce 07:15Z). Any coordination note goes through the PR carrier once, after the custody read (O-7).
+- D12 U02 stays SCOPED ONLY; Save stays OFF until D03 (O1: #7861 retained bytes + reference identity re-qualified against c095a2b0) and the options source-use rights interface (allowed/denied/unavailable × display/export) are both named.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -73,6 +79,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   another collector/Theta instance/live-flow store/campaign or outcome ledger/control plane; stale MomoEdge
   reruns; FS-4 promotion; backfilling later-settled OI/NBBO; OA-1T Flow consumer evidence re-hunt;
   Sep-03 campaign-outcome history rewrite; collapsing Workbench/Alpha/Tactical into one super-score.
+- (08:58Z) RETRACTION: the "#804 live-writer commit 03342a8d" recorded earlier does not exist in the Terminal repo (gh 422). The frozen-writer fact stands on corrected evidence: #804 commits 8dfaa44342bf 05:32Z, 99c578b9db84 07:01Z, 9deff9514fce 07:15Z today (IM08–IM10 intl panels; scope beyond the options seam).
+- #723 and #846: no commit or comment since 2026-10-09 (~06:52Z / 03:29Z). #723 red only on `b_pl_6Batch1Evidence` (crop hash lock). #723 and #846 both CONFLICTING against master; #804 MERGEABLE/BEHIND; #781 BLOCKED, bot head `action_required`, CHANGES_REQUESTED, foreign custody.
+- Seat-verified at exact heads (not testimony): C3 divergence; #846 `researchLabAdapter.ts` stores `strike: number` (:7, :49) and `reconcileResearchSelection` (:63-67) silently filters missing selections → contradicts U02-A03/A02 if used on a restore path; `investigationOptionsReference.ts` is byte-identical in #846 and #804 and absent on master.
+- Macro #7861 is now CONFLICTING/DIRTY at c095a2b0c8e4, unreviewed, `merge-queue-pilot` FAIL (ci-authority SUCCESS). #804's contract doc pins stale heads (#7861 c63e9e28; #846 6bd2852f/c299a03d).
+- m2 load at 08:52Z: 134 (1-min) on 24 CPUs; O7's one operator attempt refused exit 75 at load1 155.4. All O7 enumeration is lead-performed.
 
 ## OPEN
 
@@ -84,6 +95,8 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   failing at 0s is unexplained).
 - O-5 U02 existing SQL operator approval — not reachable from this seat; name the exact approver when U02 opens.
 - O-6 Executive connector OAuth (user action in an interactive `claude` terminal via `/mcp`).
+- O-7 Custody of the #723 / #846 refreshes: no live writer observed since 10-09. Decide after reading the #599 carrier past comment 100 (Oct 6 receipt + any later custody claims). Seat may take the refresh only via canonical recovery, never as a silent second writer.
+- O-8 Guest-bundle status of #723's static `OptionsRail` import in `TerminalShell.tsx:5` (guest-bundle-boundary law) — verification owed at the integrated head.
 
 ## NEXT
 
@@ -195,3 +208,8 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   after custody/topology checks; recovery + judgment phases need no operator START). Leads attempt each operator
   launch once; exit 75 → packet kept PENDING_CAPACITY, lead continues recovery/judgment; refusal 78 → stop that
   effect. Load on m2 is other tenants' work: not diagnosed further, nothing killed.
+
+### 2026-10-11 08:53Z — O7 lead returned; ACCEPTED as plan
+- Artifacts judged by content (not summary): `leads/O7/U01_overlap_map.md`, `U01_integration_candidate.md`, `U02_scoping.md`, `raw/` (merge-tree + path lists). Seat re-read the cited lines at the exact PR heads: all four spot-checks held.
+- Rulings D7–D12 recorded above. Six O8 checks owed (ort-strategy conflict sets; C3 payload with `session` ≠ `_build_meta.asof_date`; guest-chunk grep; order never rebases/force-pushes/adds a writer; U02 proven/owed/contradicted table esp. A02/A04; U01-A05 = recapture log + crop diff, never hash edits).
+- Cost: ~50 tool calls, 1 operator attempt (exit 75), 0 paid labor. Fallbacks inserted: DECIDED=True FACTS=True OPEN=True.
