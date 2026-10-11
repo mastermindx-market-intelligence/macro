@@ -112,15 +112,37 @@ waves:
       (the Chairman or Sol) accepts the recorded substitute on #7870 by a cited comment or
       message id before the DECISION, and that acceptance is narrowed to: (i) only
       REMOTE_CENSUS_INCOMPLETE caused by the open-PR roster exceeding _MAX_COLLISION_PRS = 490
-      (scripts/source_continuity.py:77 and :1337; emitted for acc72f3f at :2614-2615, before
-      the ownership check at :2618-2619); every other refusal code (budget-exhaustion
-      REMOTE_CENSUS_INCOMPLETE at :2679-2680, REMOTE_PROOF_CHANGED, PATH_OUTSIDE_OWNERSHIP,
-      and the control_plane/source_continuity.py:650-662 refusals) is RELEASE_BLOCKED
+      (scripts/source_continuity.py:77 and :1337). The verifier does not report the cause:
+      REMOTE_CENSUS_INCOMPLETE is one static text (control_plane/source_continuity.py:171)
+      emitted from several sites (scripts/source_continuity.py:2181, :2197, :2217, :2276,
+      :2298, :2615, :2680 and control_plane/source_continuity.py:661-662), and the :2615 site
+      fires on `not files_complete or not collisions_complete`, which is not roster-size
+      specific; that the acc72f3f refusal came from :2614-2615 (before the ownership check at
+      :2618-2619) is the seat's inference from the roster size, not a verifier output. Roster
+      size is therefore established only by an explicit attribution test recorded in the
+      DECISION: a fresh open-PR count taken immediately before and immediately after the run,
+      both above 490; the PR's fully paginated pulls/N/files equal to git diff --name-only
+      against its base; and the run's recorded wall time inside the adapter's census budget
+      read at the same source SHA. Any doubt on any leg is RELEASE_BLOCKED. Every other
+      refusal code (budget-exhaustion REMOTE_CENSUS_INCOMPLETE at :2679-2680,
+      REMOTE_PROOF_CHANGED, PATH_OUTSIDE_OWNERSHIP, and the
+      control_plane/source_continuity.py:650-662 refusals) is RELEASE_BLOCKED
       regardless; (ii) a head is covered only if the substitute is re-recorded at that exact
       head (git ls-remote == HEAD, GitHub commit tree == HEAD^{tree}, fully paginated
       pulls/N/files == git diff --name-only, a fresh open-PR count and collision census) and
       quoted in the DECISION; the 2026-10-11 substitute below covers acc72f3f only; (iii)
-      #8250 needs its own substitute at its own release head in its own cited #8250 comment.
+      #8250 needs its own substitute at its own release head in its own cited #8250 comment
+      (recorded at 1db9cad1 in #8250 comment 6106395498; see WS:GMI-INDUSTRIALS-FIRST-VERTICAL),
+      and gate (4) for #8250 is applied to #8250 in its own terms: the verifier run at #8250's
+      own release head with --external-effect-evidence-fingerprint = sha256 of #8250's recorded
+      external-effect artifact (the ls-remote line plus the pulls/8250 head/state/draft read;
+      da6a8c45d80757e2ef3eda821dd56e24db64149c92e8a6c6d3bb231846cc0c06 at 1db9cad1), quoted
+      verbatim in a #8250 DECISION, or a non-seat acceptance citing that #8250 comment by id.
+      The verifier checks the fingerprint only for shape (control_plane/source_continuity.py:26,
+      the pattern ^[0-9a-f]{64}$, and :500-511) and, with --external-effect-state NONE and
+      branch dependency NONE (:611-620), records it in the receipt without binding it to any
+      artifact; binding the fingerprint to the recorded artifact is the DECISION's own
+      obligation, checkable by recomputing the sha256 from the artifact quoted there.
       Roster size is the only observed cause of today's refusal, not the only possible one:
       with 490 or fewer open PRs the verifier can still refuse on budget exhaustion or on
       churn in any of the 190 overlapping PRs, and the ownership, local-probe and content
@@ -131,7 +153,7 @@ waves:
       == acc72f3f; the GitHub commit tree cd76b979136ccd77bc4bfd50b14c9f5fa19d4a93 == git
       rev-parse HEAD^{tree}; gh api pulls/7870/files fully paginated (102 paths) == git diff
       --name-only 363b4e62..acc72f3f; the pairwise collision set with #8250 = the two paths
-      above; and the extended open-PR collision census of 2026-10-11 (632 open PRs enumerated at 2026-10-11T05:12Z (634 at 05:59Z; the two newer PRs are not censused), 0 enumeration failures, 190 PRs touch at least one of #7870's 102 owned paths, 139 of them only via .github/ci/legacy-jobs.yml, none of the 190 contains acc72f3f (the census summary's collider fields are compare_status and contains_acc72f3f; stacking on an earlier #7870 commit was not tested by them, and #8002 (ENE-W1) IS stacked on #7870 commit 6cd958e9 through its base branch claude/energy-stack-base-b-6cd958e9: git merge-base acc72f3f 508d8c206357 = 6cd958e92b259f7221690547e7076f4a0de4ed33, an ancestor of acc72f3f and not of origin/main; it has 0 own-path collisions because its diff is measured against that base, so it sits outside the 190 by construction and is retargeted to main only after #7870 lands; 41 open PRs had a base other than main); issuer_profiles.py shared only with #8250; census JSON sha256 f51180b7b6e6915ef5e07de6aca663fbf98374a5e94ba05c40e874f3f1ff770c, retained by the seat, with its per-PR projection durable in #7870 comment 6106134520 section 3). With
+      above; and the extended open-PR collision census of 2026-10-11 (632 open PRs enumerated by the census run that completed at 2026-10-11T05:26:33Z (the GraphQL pullRequests(states:OPEN).totalCount read before it, at 05:12Z, was also 632; 634 at 05:59Z; the two newer PRs are not censused), 0 enumeration failures, 190 PRs touch at least one of #7870's 102 owned paths, 139 of them only via .github/ci/legacy-jobs.yml, none of the 190 contains acc72f3f (the census records eight fields per PR: number, head, base, draft, files_censused, collisions, compare_status and contains_acc72f3f; stacking on an earlier #7870 commit was not tested by them, and #8002 (ENE-W1) IS stacked on #7870 commit 6cd958e9 through its base branch claude/energy-stack-base-b-6cd958e9: git merge-base acc72f3f 508d8c206357 = 6cd958e92b259f7221690547e7076f4a0de4ed33, an ancestor of acc72f3f and not of origin/main; it has 0 own-path collisions because its diff is measured against that base, so it sits outside the 190 by construction and is retargeted to main only after #7870 lands; 41 open PRs had a base other than main); issuer_profiles.py shared only with #8250; census JSON sha256 f51180b7b6e6915ef5e07de6aca663fbf98374a5e94ba05c40e874f3f1ff770c, retained by the seat and seat-only-checkable, with its per-PR projection durable in #7870 comment 6106134520 section 3). With
       (1)-(4) in hand at the post-merge head: a fresh
       carrier read before EVERY post and act (DEC:FABLE-SEAT line 60), then ONE release
       DECISION in DEC:FABLE-SEAT order (quote the Chairman ruling, cite the consumed audit, the
@@ -159,10 +181,15 @@ next_action: >
   SB-W1 is the critical path for every vertical below it. Consume the verdict of the one
   live CI watcher at acc72f3f (bind exactly one if none is verifiably live); do not poll it.
   The b76551be..acc72f3f delta review is in hand (#7870 comment 6105402719); #8250 lands
-  first, then the non-author read of the merge resolution, green at the post-merge head and
-  gate (4) (a binding Source Continuity re-run returning REMOTE_COMPLETE_VERIFIED, or a
-  non-seat acceptance of the recorded substitute on #7870 by cited id; a refusal without
-  that acceptance is RELEASE_BLOCKED) are owed before any release act. After release, open SB-W2 (Option A) first because
+  first on its own four conditions (WS:GMI-INDUSTRIALS-FIRST-VERTICAL next_action), then the
+  non-author read of the merge resolution, green at the post-merge head and gate (4) (a
+  binding Source Continuity re-run at the post-merge release head returning
+  REMOTE_COMPLETE_VERIFIED, or a non-seat acceptance by cited id of a substitute re-recorded
+  at that exact head on #7870 under the narrowed rule of #7870 comment 6106134520 as written
+  in SB-W1 gate (4) above: roster-size REMOTE_CENSUS_INCOMPLETE only, shown by the
+  attribution test, every other refusal code RELEASE_BLOCKED regardless, #8250 covered only
+  by its own substitute; a refusal without that acceptance is RELEASE_BLOCKED) are owed
+  before any release act. After release, open SB-W2 (Option A) first because
   three verticals block on it, then re-land Robotics (WS:GMI-ROBOTICS) and reconcile
   Energy #8002 (WS:GMI-ENERGY-NUCLEAR) onto the accepted base.
 ---

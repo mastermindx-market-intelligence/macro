@@ -67,16 +67,39 @@ next_action: >
   repaired by merging origin/main f191b7f1 into the carrier (03d29dfea9d8) plus a two-line
   path widening (1db9cad104437dc0c9bb4b27cf45781040302fb2, pushed 2026-10-11, local closure
   check {} and the two curated-scope tests pass locally); it lands on main first per the #7870
-  landing order (comment 6105402719 line 18) once, at 1db9cad1: ALL_CONCLUDED green from the
-  one bound watcher; a non-author READ_ONLY review of 20e7e9ac..1db9cad1 (the merge commit
-  03d29dfe against each parent plus the two-line commit) is in hand; the Source Continuity
-  gate is in hand or accepted by a non-seat authority under the narrowed rule of #7870 comment
-  6106134520, which requires #8250's own substitute recorded at its release head in its own
-  cited #8250 comment (the verifier has not been run on #8250; it would refuse
-  REMOTE_CENSUS_INCOMPLETE on roster size alone: 634 open PRs per GraphQL
-  pullRequests(states:OPEN).totalCount at 2026-10-11T05:59:21Z and 633 at 06:17:20Z, against
-  _MAX_COLLISION_PRS = 490; see WS:GMI-SEMICONDUCTORS gate (4) and #7870 comments 6106057199
-  and 6106134520); and the custody reconciliation below is done. Custody basis for the seat's
+  landing order (comment 6105402719 line 18) once, at 1db9cad1, four conditions are in hand:
+  (1) ALL_CONCLUDED green from the one bound watcher (in hand: 2026-10-11T06:24:44Z, 15 check
+  runs, the only failure ci-authority/codex/merge-queue-pilot, which is not a gate); (2) the
+  non-author READ_ONLY review chain over 20b853e2..1db9cad1 (in hand: 20b853e2..20e7e9ac
+  returned ACCEPT_MANIFEST_COMMIT, reported in #8250 comment 6105272573; 20e7e9ac..1db9cad1,
+  the merge commit 03d29dfe against each parent plus the two-line commit, returned
+  ACCEPT_REPAIR, consumed in #8250 comment 6106321419: scope PASS over exactly the 7 owned
+  paths; the tip is the exact two-line widening of the closure lists of jobs nw-lobe-unfreeze
+  (.github/ci/legacy-jobs.yml:10407, unquoted) and ticker-news-qbus (:21058, quoted), not of
+  industrials-result-cash (:22605); 0 conflict markers and each def and table once in
+  issuer_profiles.py; that comment supersedes the earlier 'twins at the Industrials job'
+  wording of comment 6106264920); (3) Source Continuity gate (4) applied to #8250 in its own
+  terms (owed): the verifier run at #8250's own release head from protected Mastermind master
+  at re-run time, with --external-effect-evidence-fingerprint = sha256 of #8250's recorded
+  external-effect artifact (the git ls-remote line plus the pulls/8250 head/state/draft read;
+  da6a8c45d80757e2ef3eda821dd56e24db64149c92e8a6c6d3bb231846cc0c06 at 1db9cad1), quoted
+  verbatim in a #8250 DECISION and returning REMOTE_COMPLETE_VERIFIED; or a non-seat
+  acceptance (the Chairman or Sol, by cited id) of #8250's own substitute, recorded at
+  1db9cad1 in #8250 comment 6106395498 (git ls-remote == HEAD; GitHub commit tree
+  7a9ee2b823bcf3058e62dffdea3d4440868c33e9 == HEAD^{tree}; fully paginated pulls/8250/files
+  == git diff --name-only f191b7f1..1db9cad1, 7 paths; open-PR count 634 at 06:31:56Z;
+  own-path collision census of 2026-10-11T06:37:16Z to 06:40:30Z over 634 open PRs with 0
+  enumeration failures: 183 other open PRs touch an owned path, 182 of them only
+  .github/ci/legacy-jobs.yml, #7870 that file plus issuer_profiles.py, none of the 183
+  containing 1db9cad1, 10 with a base other than main; census JSON sha256
+  e039b80f2a41d32091a74d2756a7b806cd9bdf7d6a649e44e98d52d825dc70d8, seat-only-checkable),
+  under the narrowed rule of #7870 comment 6106134520 (roster-size REMOTE_CENSUS_INCOMPLETE
+  only, shown by the attribution test in WS:GMI-SEMICONDUCTORS gate (4); every other refusal
+  code RELEASE_BLOCKED; the verifier has not been run on #8250 and would be expected to
+  refuse at the census step, roster 634 > _MAX_COLLISION_PRS = 490 per GraphQL
+  pullRequests(states:OPEN).totalCount at 2026-10-11T05:59:21Z, 633 at 06:17:20Z and 634 at
+  06:31:56Z, which is an expectation, not a run); and (4) the custody reconciliation below
+  (owed). Custody basis for the seat's
   two pushes to codex/industrials-t02-issuer-enrollment-20260930-sol-001 (20e7e9ac, 1db9cad1):
   Ruling C-1 of DECISION 6105015260 names Industrials #7789/#8250 as this seat's, and #8250
   comment 6105257496 line 22 records the seat's execution of the mechanical rebuild as an
