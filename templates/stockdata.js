@@ -69,14 +69,15 @@
   var _mktNeg = {};                  // market -> epoch ms before which a FAILED index is not refetched
 
   // Build {list, byTicker} OFF TO THE SIDE so a malformed payload never reaches the
-  // successful cache. A non-array top level throws; a row with no usable ticker
-  // identity is dropped from BOTH list and lookup, so the two always describe the
-  // same generation. Optional/null fields are left exactly as served.
+  // successful cache. A non-array top level throws; a non-object row (null or a
+  // primitive) is dropped from BOTH list and lookup so it cannot poison the
+  // generation. Every object row is kept exactly as the pre-fix module kept it (no
+  // stricter ticker-identity rule); optional/null fields are left exactly as served.
   function _buildIndex(raw, mktOf) {
     if (!Array.isArray(raw)) throw new Error('malformed index');
     var list = [], by = {};
     raw.forEach(function (x) {
-      if (!x || typeof x !== 'object' || typeof x.t !== 'string' || !x.t) return;
+      if (!x || typeof x !== 'object') return;
       x.mkt = mktOf(x);
       list.push(x); by[x.t] = x;
     });

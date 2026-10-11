@@ -3,9 +3,10 @@
  *
  * Four properties this suite pins, all inside the existing stockdata.js owner:
  *   S3-02  the US index is validated OFF TO THE SIDE and published atomically — a
- *          malformed payload (non-array top level, rows with no usable ticker `t`)
- *          is never cached as success; list and byTicker always describe the same
- *          generation.
+ *          malformed payload (non-array top level, or non-object rows such as null)
+ *          is never cached as success and never poisons the lookup; every object row
+ *          is kept exactly as the pre-fix module kept it; list and byTicker always
+ *          describe the same generation.
  *   S3-04  the US index read is deduplicated: direct callers (loadIndex) and indirect
  *          ones (loadIndexes(['us', ...])) share ONE in-flight fetch.
  *   S3-01  a FAILED regional index is never cached as success either — it is retried
@@ -99,12 +100,9 @@ test('S3-02a: malformed index object rejects and is NOT cached as success — ne
   assert.deepEqual(plain(res.list).map((x) => x.t), ['AAA', 'BBB']);
 });
 
-test('S3-02b: rows without a usable ticker t are dropped from BOTH list and byTicker', async () => {
-  const raw = [
-    { t: 'AAA', n: 'A' }, null, 5, { n: 'no-t' }, { t: '' }, { t: null },
-    { t: 'BBB', n: null, s: null },
-  ];
-  const { SD } = makeCtx((url) => (url === US_INDEX ? respond(200, raw) : respond(404, {})));
+test('S3-02b: non-object rows (null, a primitive) are dropped from BOTH list and byTicker and do not poison the index', async () => {
+  const raw = [{ t: 'AAA', n: 'A' }, null, 5, { t: 'BBB', n: null, s: null }];
+  const { SD, calls } = makeCtx((url) => (url === US_INDEX ? respond(200, raw) : respond(404, {})));
   const res = await SD.loadIndex();
   assert.equal(res.list.length, 2);
   assert.deepEqual(Object.keys(res.byTicker).sort(), ['AAA', 'BBB']);
@@ -114,6 +112,8 @@ test('S3-02b: rows without a usable ticker t are dropped from BOTH list and byTi
   });
   assert.equal(res.byTicker.BBB.n, null, 'optional null fields are preserved as served');
   assert.equal(res.byTicker.BBB.s, null, 'optional null fields are preserved as served');
+  await SD.loadIndex();
+  assert.equal(count(calls, US_INDEX), 1, 'the cleaned index is a cached success');
 });
 
 test('S3-02c: valid empty index caches as success — no refetch on the second call', async () => {
@@ -144,6 +144,18 @@ test('S3-02e: a row that already carries mkt keeps it', async () => {
   const { SD } = makeCtx((url) => (url === US_INDEX ? respond(200, raw) : respond(404, {})));
   const res = await SD.loadIndex();
   assert.equal(res.byTicker.BTC.mkt, 'crypto');
+});
+
+test('S3-02f preservation: every object row the pre-fix module kept survives — numeric, empty, null or missing t', async () => {
+  const raw = [
+    { t: 'AAA', n: 'Alpha' }, { t: 7203, n: 'num' }, { n: 'no-t' }, { t: '' }, { t: null },
+  ];
+  const { SD } = makeCtx((url) => (url === US_INDEX ? respond(200, raw) : respond(404, {})));
+  const res = await SD.loadIndex();
+  assert.equal(res.list.length, 5, 'no object row is dropped');
+  assert.equal(res.byTicker['7203'].n, 'num', 'a numeric ticker is still looked up');
+  assert.equal(res.byTicker.AAA.n, 'Alpha');
+  res.list.forEach((row) => assert.equal(row.mkt, 'us'));
 });
 
 // ---------------------------------------------------------------- S3-04 ----
