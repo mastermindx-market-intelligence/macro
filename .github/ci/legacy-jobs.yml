@@ -4056,6 +4056,7 @@ jobs:
       - "templates/logo_config.js"
       - "templates/stock-logos.js"
       - "templates/tablesort.js"
+      - "tests/js/tablesort_browser.test.cjs"
       - "templates/account.js"
       - "templates/terminal_overlay.js"
       - "scripts/build_intl.py"
@@ -4327,6 +4328,8 @@ jobs:
         run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
       - name: Actual DOM controller and page entry in Chromium
         run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs
+      - name: Generic table sort/filter in Chromium (templates/tablesort.js)
+        run: node --test tests/js/tablesort_browser.test.cjs
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -22144,6 +22147,7 @@ jobs:
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
       - "tests/test_unified_dashboard_b2w2.py"
+      - "tests/test_macro_mtf_sort_key.py"
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
@@ -22292,7 +22296,8 @@ jobs:
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
-          tests/test_vsb_surface.py -q
+          tests/test_vsb_surface.py
+          tests/test_macro_mtf_sort_key.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

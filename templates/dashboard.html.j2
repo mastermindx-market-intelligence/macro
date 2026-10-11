@@ -12402,7 +12402,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <tr>
             <td style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))"><span class="l-en">{{ r.label_en }}</span><span class="l-zh">{{ r.label_zh or r.label_en }}</span></td>
             {% for tf in ['D','3D','W','M'] %}{% set cell = r.cells[tf] %}
-            <td>{% if cell %}<span class="ms-cell2 {{ cell.tone }}"><span class="ar">{{ cell.arrow }}</span><span class="rsi">{{ cell.rsi|round|int if cell.rsi is not none else '·' }}</span></span>{% else %}<span class="ms-cell2 flat"><span class="ar">·</span></span>{% endif %}</td>
+            <td{% if cell and cell.rsi is not none %} data-sort="{{ cell.rsi|round|int }}"{% else %} data-sort=""{% endif %}>{% if cell %}<span class="ms-cell2 {{ cell.tone }}"><span class="ar">{{ cell.arrow }}</span><span class="rsi">{{ cell.rsi|round|int if cell.rsi is not none else '·' }}</span></span>{% else %}<span class="ms-cell2 flat"><span class="ar">·</span></span>{% endif %}</td>
             {% endfor %}
             <td style="text-align:right"><span class="mx5-dlg-mtf-conf {{ r.tone }}"><span class="l-en">{{ r.confluence_en }}</span><span class="l-zh">{{ r.confluence_zh or r.confluence_en }}</span></span></td>
           </tr>
