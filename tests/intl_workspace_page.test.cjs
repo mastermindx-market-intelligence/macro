@@ -143,7 +143,13 @@ for(const state of ['qualified','negative','denied']) {
         await page.setViewportSize({width,height:900});
         await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
         assert.equal(await page.locator('[data-im-workspace]').evaluate(n=>n.scrollWidth>n.clientWidth+1),false);
-        if(state==='negative') assert.match(await page.locator('[data-im-summary]').innerText(),lang==='zh'?/0 \/ 7/:/0 of 7/);
+        if(state==='negative') {
+          const positiveReturns=page.locator('[data-im-summary] .intl-overview__stats > div').filter({
+            has:page.locator(`dt .l-${lang}:visible`,{hasText:lang==='zh'?/^正回报$/:/^Positive returns$/})
+          });
+          assert.equal(await positiveReturns.count(),1);
+          assert.equal(await positiveReturns.locator('dd').innerText(),'0 / 7');
+        }
         if(state==='denied') assert.doesNotMatch(await page.locator('[data-im-workspace]').innerText(),/Nikkei|FTSE/);
         if(process.env.INTL_BROWSER_EVIDENCE_DIR) {
           await page.waitForTimeout(1250);
