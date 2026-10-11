@@ -256,6 +256,104 @@ def test_r2_strict_read_returns_payload_and_propagates_other_failures(monkeypatc
             "snapshots/one.json")
 
 
+def test_r2_strict_read_recovers_new_get_after_ssl_body_failure(monkeypatch):
+    import ssl
+
+    class SequencedClient:
+        def __init__(self):
+            self.calls = []
+            self.bodies = []
+
+        def get_object(self, *, Bucket, Key):
+            self.calls.append((Bucket, Key))
+            outcome = (
+                ssl.SSLError("[SSL] record layer failure")
+                if len(self.calls) == 1 else b"complete corpus bytes"
+            )
+            body = _Body(outcome)
+            self.bodies.append(body)
+            return {"Body": body}
+
+    sleeps = []
+    monkeypatch.setattr(store_mod.time, "sleep", sleeps.append)
+    client = SequencedClient()
+
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) == b"complete corpus bytes"
+    assert len(client.calls) == 2
+    assert all(body.closed for body in client.bodies)
+    assert sleeps == [0.25]
+
+
+def test_r2_strict_read_exhausted_tls_failures_remain_fatal(monkeypatch):
+    import ssl
+
+    class BrokenClient:
+        def __init__(self):
+            self.bodies = []
+
+        def get_object(self, *, Bucket, Key):
+            body = _Body(ssl.SSLError("[SSL] record layer failure"))
+            self.bodies.append(body)
+            return {"Body": body}
+
+    sleeps = []
+    monkeypatch.setattr(store_mod.time, "sleep", sleeps.append)
+    client = BrokenClient()
+    with pytest.raises(ssl.SSLError, match="record layer failure"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert len(client.bodies) == 3
+    assert all(body.closed for body in client.bodies)
+    assert sleeps == [0.25, 0.75]
+
+
+def test_r2_strict_read_never_retries_nontransport_failures(monkeypatch):
+    class DeniedBodyClient:
+        def __init__(self):
+            self.calls = 0
+            self.body = _Body(PermissionError("access denied"))
+
+        def get_object(self, *, Bucket, Key):
+            self.calls += 1
+            return {"Body": self.body}
+
+    client = DeniedBodyClient()
+    monkeypatch.setattr(store_mod.time, "sleep", lambda x: pytest.fail(
+        "non-transport failures must not consume retry budget"
+    ))
+    with pytest.raises(PermissionError, match="access denied"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert client.calls == 1
+    assert client.body.closed
+
+
+def test_r2_strict_read_bounded_tls_header_retry_does_not_soften_404(monkeypatch):
+    import ssl
+    ClientError = _install_fake_botocore(monkeypatch)
+
+    class HeaderClient:
+        def __init__(self):
+            self.calls = 0
+
+        def get_object(self, *, Bucket, Key):
+            self.calls += 1
+            if self.calls == 1:
+                raise ssl.SSLError("[SSL] record layer failure")
+            raise ClientError("NoSuchKey")
+
+    client = HeaderClient()
+    monkeypatch.setattr(store_mod.time, "sleep", lambda _: None)
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) is None
+    assert client.calls == 2
+
+
 def test_r2_strict_read_rejects_unavailable_store(monkeypatch):
     monkeypatch.setattr(store_mod, "_r2_client", lambda: None)
     with pytest.raises(RuntimeError, match="unavailable"):

@@ -33,6 +33,7 @@ import errno
 import fcntl
 import logging
 import os
+import ssl
 import stat
 import time
 from dataclasses import dataclass
@@ -241,6 +242,43 @@ def _is_authoritative_r2_not_found(error: Exception) -> bool:
     return str(details.get("Code", "")) in {"404", "NoSuchKey", "NotFound"}
 
 
+# Retry ONLY a transport that failed to deliver authoritative bytes. Botocore
+# retries the GET request, but not failures while reading its StreamingBody.
+# Every new attempt must create a NEW GET and close the previous response.
+_STRICT_STREAM_READ_RETRY_DELAYS = (0.25, 0.75)
+
+
+def _retryable_strict_stream_error(error: Exception) -> bool:
+    if isinstance(error, ssl.SSLError):
+        return True
+    # These imports stay lazy: LocalStore/tests have no boto3 requirement.
+    try:
+        import botocore.exceptions as botocore_errors
+    except ImportError:
+        botocore_errors = None
+    try:
+        import urllib3.exceptions as urllib3_errors
+    except ImportError:
+        urllib3_errors = None
+    for module, names in (
+        (botocore_errors, (
+            "SSLError", "ReadTimeoutError", "ConnectionClosedError",
+            "ResponseStreamingError", "IncompleteReadError",
+        )),
+        (urllib3_errors, (
+            "SSLError", "ReadTimeoutError", "ProtocolError",
+            "IncompleteRead",
+        )),
+    ):
+        if module is None:
+            continue
+        for name in names:
+            exception_type = getattr(module, name, None)
+            if isinstance(exception_type, type) and isinstance(error, exception_type):
+                return True
+    return False
+
+
 def _is_authoritative_r2_conditional_conflict(error: Exception) -> bool:
     """Whether R2 authoritatively rejected an exact-predecessor PUT."""
     try:
@@ -284,37 +322,53 @@ class R2Store:
             return None
 
     def get_bytes_strict(self, key: str) -> bytes | None:
-        """Read an immutable object without converting operational failure to a miss.
+        """Read exact authoritative bytes; never turn transport failure into absence.
 
-        ``None`` means R2 returned one of its explicit not-found ``ClientError``
-        codes (404, ``NoSuchKey``, or ``NotFound``).  Missing credentials, a
-        permission error, network/service failure, or body read failure all
-        propagate so snapshot publication cannot silently publish from an
-        incomplete view of the object store.
+        A TLS/stream interruption can occur AFTER S3's GET header succeeded.
+        Retry only that narrow class of transport failure with a fresh GET and
+        deterministic bound; partial bodies are never returned. 404 remains the
+        sole authoritative absent result; permissions, protocol, malformed
+        bodies and exhausted retries still raise (publication stays fail-closed).
         """
         if not self.available:
             raise RuntimeError("R2 store unavailable: missing bucket or credentials")
-        try:
-            response = self._s3.get_object(Bucket=self.bucket, Key=key)
-        except Exception as error:
-            if _is_authoritative_r2_not_found(error):
-                return None
-            raise
-        if not isinstance(response, dict):
-            raise RuntimeError("R2 get_object returned a malformed response")
-        body = response.get("Body")
-        if body is None or not callable(getattr(body, "read", None)):
-            raise RuntimeError("R2 get_object response is missing a readable body")
-        close = getattr(body, "close", None)
-        if not callable(close):
-            raise RuntimeError("R2 get_object response body is not closeable")
-        try:
-            content = body.read()
-        finally:
-            close()
-        if not isinstance(content, bytes):
-            raise RuntimeError("R2 object body returned non-bytes")
-        return content
+        for attempt in range(len(_STRICT_STREAM_READ_RETRY_DELAYS) + 1):
+            try:
+                try:
+                    response = self._s3.get_object(Bucket=self.bucket, Key=key)
+                except Exception as error:
+                    if _is_authoritative_r2_not_found(error):
+                        return None
+                    raise
+                if not isinstance(response, dict):
+                    raise RuntimeError("R2 get_object returned a malformed response")
+                body = response.get("Body")
+                if body is None or not callable(getattr(body, "read", None)):
+                    raise RuntimeError("R2 get_object response is missing a readable body")
+                close = getattr(body, "close", None)
+                if not callable(close):
+                    raise RuntimeError("R2 get_object response body is not closeable")
+                try:
+                    content = body.read()
+                finally:
+                    close()
+                if not isinstance(content, bytes):
+                    raise RuntimeError("R2 object body returned non-bytes")
+                return content
+            except Exception as error:
+                if (
+                    attempt >= len(_STRICT_STREAM_READ_RETRY_DELAYS)
+                    or not _retryable_strict_stream_error(error)
+                ):
+                    raise
+                log.warning(
+                    "R2 strict read transport interrupted; retrying fresh GET "
+                    "(%d/%d)", attempt + 1,
+                    len(_STRICT_STREAM_READ_RETRY_DELAYS),
+                )
+                time.sleep(_STRICT_STREAM_READ_RETRY_DELAYS[attempt])
+        raise AssertionError("bounded strict read retry loop exhausted")
+
 
     def get_bytes_strict_bounded(
         self,
