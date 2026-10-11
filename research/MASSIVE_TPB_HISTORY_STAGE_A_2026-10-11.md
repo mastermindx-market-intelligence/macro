@@ -1,0 +1,60 @@
+# Massive TP-B — Source-Free Historical Ruler, Stage A (2026-10-11)
+
+**Parent:** [Macro #7367](https://github.com/mastermindx-market-intelligence/macro/issues/7367), bounded TP-B [#7369](https://github.com/mastermindx-market-intelligence/macro/issues/7369).
+**Canonical research/program plan:** Macro `research/MASSIVE_ADVANCED_INTEGRATION_MASTERPLAN_BY_FABLE.md` §0, §3.3, §4.1, §4.3, §5.1.
+**Implementation:** `engine/tpb_historical_ruler.py`; hermetic tests `tests/test_tpb_historical_ruler.py`.
+**Current state:** `BUILT_NOT_PROVEN`; candidate private **research measurement only**, not a production/historical rank truth, live source, R2 object, registered service, dashboard, trading/alpha system or official market record.
+
+## Why this source-free stage exists
+
+The delivered TP-1 T/Q and private spool adapters are not real-source admitted. Authorized Quote Hub root SSH previously denied the documented key and the incumbent RT socket has no verified safe custody. TP-1's separate protected CI test enrollment attempt was explicitly refused by its platform gate; **do not try another tool, account, test name, branch or policy waiver to bypass either barrier.** TP-B needs a deterministic historical ruler independently of touching that socket.
+
+There are accepted *research-only* upstream references for corporate-action basis (Q03), conditionally explained off-exchange participation (Q10), and persistent episodes (Q11). They are **not wired**, and this module does not override their owners. Q03's vintage/segment may be externally attached to an original SIP/TRF source generation; this tool does not itself calculate or assume split factors. Q10/Q11 are not auto-promoted to served rank, classifier or signal authority.
+
+## Exact owner-supplied input and clocks
+
+`measure_source_snapshot(snapshot)` admits **one bounded, owner-reconciled current vintage** at a declared as-of time:
+
+- Strict `equity.tp_b.source_snapshot/v0`; one ticker, explicit `YYYY-MM-DD:RTH`, externally calendar-backed aligned `start_ns,end_ns`, bounded `asof_ns`, `watermark_complete_ns` and original `watermark_available_ns`.
+- Separate immutable SHA256s for source manifest, source generation, previous/superseded generation, market calendar, volume policy, exchange reference and corporate-action basis vintage; explicit `split_basis_id` and `split_segment`. These are **supplied receipts**; a digest is not vendor authentication.
+- At most 20,000 current native print identities per source snapshot. Each current row explicitly identifies latest revision/ACTIVE or CANCELLED action, source receipt SHA, source condition/volume eligibility, venue/TRF pipe, exact decimal price/shares, SIP clock, optional participant and TRF-report clocks, and original availability. No correction chain is independently replayed: revised/cancelled rows require a previous-generation ref, and an external correction owner must retain the immutable predecessor.
+- A TRF observation needs an exchange-4 reporting code, recognized 201/202/203 TRF pipe and `volume_eligible is True`. Non-TRF, ineligible and unknown-policy rows are not silently imputed as qualified off-exchange volume. A TRF pipe is **not** a named ATS.
+- No more than 390 explicitly sourced cumulative-minute records. Each minute has an exact minute index, source receipt, source availability no earlier than the minute end, an explicit prefix-coverage assertion and cumulative OE/consolidated shares from one admitted **RTH, same-share-basis** source contract. Missing/invalid/zero denominator produces a null ratio, not 0% participation. Observed minute source and historical source rights/authenticity remain externally unverified.
+- A partial market day is allowed and cannot produce **daily record ranks**. Coverage after the qualified source watermark, late original print receipts, impossible native report/participant clocks, duplicate current identities or non-monotone cumulative rows are refused, not guessed.
+
+This is a **source-owner-prepared normalized read** rather than a second trade signer. No live connection, Massive call, REST/flat-file crawl, credentials, device permission, writer/lock, scheduler, container, public API, metadata registries or raw-payload export.
+
+## Outputs and semantics
+
+The source-free `equity.tp_b.historical_ruler/v0` result has distinct observed measurements:
+
+1. **Largest individual qualifying TRF print** by exact USD notional.
+2. **Largest same-TRF-pipe + exact-price cluster** of at least two qualifying prints in an anchored 60-second SIP-time window. Prints at other prices can interleave; they do not fracture a matching level. *SIP-time grouping is a report-time proxy, not same-order execution or actor identity.* The native participant and TRF-report clock presence and deltas remain separate from the receipt clock.
+3. **Daily measured TRF total** notional and shares, not the same as one print or cluster; source coverage is unverified and cannot be described as total market volume.
+4. Absolute observed block tiers at $100k/$500k/$1m: counts, rates and notional fractions. These source measurements **do not yet include historical block-tier distributions**. The attempted separate tier-history profile edit was explicitly refused before tool dispatch by the platform, `EFFECT_NONE`. Do not retry the denied effect through a different carrier/account/rephrasing.
+
+`calibrate_history(target, previous, minute_index, evaluation_ns, min_history=20)` then uses only the caller's **existing** source-observation candidates. It never performs acquisition or mutation. Its three independently scoped daily objects get competition rank with a stated tie count, strict new-record indicator only when strictly greater than all prior qualified values, explicit prior N and historical coverage start. **"Rank 1 in observed comparable sample" does not mean "largest in history."**
+
+The intraday part matches **exact RTH minute index** and compares only historical *cumulative* OE share at that minute, never 10:00 cumulative to prior full-day participation. The target and future revisions are excluded from training; exact split-basis/vintage/segment mismatches are counted and quarantined. Median, MAD, midrank percentile and robust z are observational with source N. Missing minute / thin history / zero MAD yield typed null, not fabricated normality. Unfinished sessions allow a minute-conditioned read but not day ranks. No future-return/outcome joins, score threshold optimization or alpha audition.
+
+Every produced record keeps `public_delivery_allowed=False`, `ranking_trading_alert_authority=False`, `source_authenticated=False` or equivalent unqualified status, `signal=None`. No named ATS/institutional owner or quote-rule accuracy is inferred. The original source raw trade IDs never enter the derived result. Accepted source artifacts remain confidential to authorized private readers.
+
+## Stage-A verification and remaining acceptance
+
+Run from the **Macro worktree/repository root on M2**, not from the parent of the repos or a generic global Terminal:
+
+```sh
+cd /Volumes/Mastermind/agent-workspaces/sol/tpb-history-calibration-20261011
+PYTHONPATH=. python3 -m pytest -q --noconftest -p no:cacheprovider tests/test_tpb_historical_ruler.py
+```
+
+Synthetic tests cover source/venue/clock guardrails, corrections and cancellations with immutable source-generation change, two same-price prints interleaved with another price, anchored cluster non-chaining, three distinct rank objects, tie policy, split segments, target/past availability, early/partial RTH observation, minute-of-day conditioning, zero-MAD and missing-source nulls, block-tier quantities and privacy/authority prohibitions. These are *constructed cases*, not actual 2-year data or several real giant-print-day reconstructions.
+
+**Unfinished obligations** (not blocked by missing programming knowledge):
+
+- The original TP-B data/source owner must **LIST and budget before GET** for the entitled trade flat files, predefine Tier-A symbols/time, first 2y pilot and a hard storage/retrieval ceiling, and confirm private licensed custody. Historic NBBO is only targeted window/per-name REST, never a market-wide multi-year quote crawl. Source connectors, true correction finality, split corporate-action factor vintage and calendar remain original-owner inputs, not claims of this artifact.
+- Measure source completeness, compared *same RTH source scope*, share volume reconciliation, multi-day correction lineage, split-event changes, known giant-print-day reconstructions and sampling capacity. The 20k-print/snapshot cap is a source-free bound, **not** demonstrated production sufficiency. TP-1's live acceptance is separately 99% connected seconds, >=95% lit-print qualified prior NBBO <=5s, and within 2% grouped same-scope volume for >=90% comparable names.
+- Complete independent semantic/source review, proper **policy-owner CI suite enrollment**, current-head hosted CI, private R2 publisher/reader rights and authenticated TP-2/Terminal data path, then real deployed/browser proof. No protected CI waiver or enrollment workaround is authorized. EOD FINRA named ATS remains delayed and separate from real TRF.
+- Historical **block-rate distributions** and ADV-relative tiers remain future TP-B work; the source-level $100k/$500k/$1m rates are built but not a fully calibrated historical distribution. No trade, Prophet, alert, sizing, ranking-authority or public delivery may be promoted from this Stage A.
+
+**Release/done-when** is parent #7367's real RTH producer -> private source -> derived TP-B/TP-2 -> Macro -> authenticated Terminal with trustworthy coverage, corrections and evidence clocks. This draft is neither that final output nor permission to merge or deploy.
