@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1008",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1033",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -6711,5 +6711,93 @@
       }
     ],
     "next_action": "Resume exact97850/SAMEprivatecontrol actualbuilder result; no secondobserver/manualCI/provider/credential polling. Restore ownpausedlaunches/guardedwrapper iffailed; qualify exact707runtime andexistingservices thenowningpaidReplayphone andSettingsnormalUI. No unchanged34d/browser/source/test/CI replay."
+  },
+  "current_capability_frontier_20261011T1033": {
+    "observed_at": "2026-10-11T10:33:56.963152+00:00",
+    "supersedes": "current_capability_frontier_20261011T1008",
+    "supersession_scope": "Same canonical707 release settled and independently installed/guarded/healthy. New owning paid Replay controls and Settings normalGET qualified scoped; actual phone badge clipping produces NEW source repair, not full phone or Audit20 acceptance.",
+    "whole_original_mission_accepted": false,
+    "canonical_install": {
+      "operation": "canonical-volume-release-707648d-20261011-v1",
+      "generation": "707648d5201494ec42a2429ffb64cc39fb24314e",
+      "exec_session": 97850,
+      "settled_at": "2026-10-11T10:13:27.970405Z",
+      "rc": 0,
+      "builder_rc": 0,
+      "post_guard_rc": 0,
+      "qualification_at": "2026-10-11T10:14:19.751454Z",
+      "clean_source_and_live_marker": true,
+      "five_product_files_and_two_entrypoints_match": true,
+      "mount_uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+      "root_available": 16646172672,
+      "volume_available": 33889746944,
+      "services_active": {
+        "Terminal": 2786711,
+        "QuoteHub": 2756258,
+        "MacroAPI": 2550552,
+        "rsyslog": 491178
+      },
+      "public_http": 200,
+      "public_asset_generation": "707648d",
+      "owned_pause_restore_owed": false,
+      "scheduled_launches_restored": 8,
+      "owned_lock_inode5488_removed": true,
+      "never_replay": "Settled release/controller/build/storage purchase/copy/snapshot/cutover/rootreclaim remain closed."
+    },
+    "owning_paid_ui": {
+      "browser": "existing approved Chrome3/tab1925913721; no login/credential access",
+      "replay_phone_controls": "Analysis hub entry; Next2245to2246; Previous2245; off removes rail andbadge; seven44px targets/range/counter fit390x844.",
+      "tablet_desktop": "Actual badge bounds fit820x1180 and1440x900.",
+      "phone_defect": {
+        "badge_x": [
+          567.765625,
+          638.140625
+        ],
+        "chart_host_width": 381,
+        "renderer_table_width": 380,
+        "statusline_width": 656.140625,
+        "status_values_width": 322.40625,
+        "cause": "Unbounded horizontalstatusline/nowrapvalues; actual renderer fits host. Fullscreen reproduces.",
+        "full_phone_layout_accepted": false
+      },
+      "settings": "Actual portfolio-targets-loaded normalGET at390x844/820x1180/1440x900, client/scroll390/390,522/522,891/891; no componenthorizontaloverflow.",
+      "settings_limits": "No privateholding/weight evidence, edits/POST/liveRetry/full-lifecycle/#761 closure. No-target notice is not an emptyholdingaccount.",
+      "restored": "Original MU/3D/fourstudies, Replayoff/Settingsclosed/default1520x1218."
+    },
+    "new_source_repair": {
+      "worker": "/root/phone_replay_badge_repair",
+      "scope": "NEW phone-web statusline layout and discriminating responsive regression; fresh externalSSD workspace only, no completedbranch reuse.",
+      "parent_ownership": "Sole paid-browser andVPS release effects; source worker owns one newsource/CI/MOGmerge lane.",
+      "workspace_and_carrier": "Not yet parent-consumed; do not infer acquisition or PR from dispatch."
+    },
+    "retained_independent_holds": "781reservednumericreview/IW2explicitcyber/SQL/rights/security/887/EFFECT_UNKNOWN/A19/actual873producerpublication unchanged; no financialmath/native/fullAudit20 acceptance.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-707-install-source-guards-health-parent-qualification-20261011.json",
+        "bytes": 4565,
+        "sha256": "607e5d3d6eec2c9287c5d23e9e71564faedbbb06e29cc968eaca74b640a89455"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-Replay-Settings-707-parent-qualification-20261011.json",
+        "bytes": 21042,
+        "sha256": "afe62389c5c432f842185725592d9db863cb49b6d700755c8fe04605e84ceb18"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-Replay-707-phone-NVDA-390x844-20261011.png",
+        "bytes": 39194,
+        "sha256": "118a384013cd71c17792a1726a74c4f05c69d4dbcb75350ccf4aef82ef70be79"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-Replay-707-desktop-NVDA-1440x900-20261011.png",
+        "bytes": 87928,
+        "sha256": "c99485155bc9ff1e23b21b688662e70b8c9e7c9256f48b00dc515853a9f4b3e3"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-Settings-707-phone-public-status-20261011.png",
+        "bytes": 15469,
+        "sha256": "90737691c473487649611194bdc5cffdfb170229f08f6a6cd7151b99afb3fc54"
+      }
+    ],
+    "next_action": "Consume actual newbadge source repair/requiredCI/merge, admit fresh same-guardedcanonicaldelivery only after actualsource/writer/resource gates, then owningphone badge/regression proof. No unchangedReplaycontrols/Settings recapture/secondCIobserver."
   }
 }
