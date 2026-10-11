@@ -57,17 +57,6 @@ def brain_src() -> str:
     return MM_BRAIN_JS.read_text()
 
 
-@pytest.fixture(scope="module")
-def theme_code(theme_src: str) -> str:
-    """theme.js with /* block comments */ removed.
-
-    Needed because this file's own prose quotes the defect verbatim
-    (``s.src = 'mm_brain.js'``), and so does theme.js's — a guard that scanned
-    comments would fire on the explanation of the bug rather than the bug.
-    """
-    return re.sub(r"/\*.*?\*/", " ", theme_src, flags=re.DOTALL)
-
-
 # ---------------------------------------------------------------------------
 # 1. every dynamic child asset resolves from the SHARED root, never the document
 # ---------------------------------------------------------------------------
@@ -78,18 +67,77 @@ def theme_code(theme_src: str) -> str:
 # are checked for shared-root provenance by the second half of the test.
 _LITERAL_SRC_RE = re.compile(r"""\.(?:src|href)\s*=\s*(['"])([^'"]+)\1""")
 
+# A freshly created anchor's href is navigation, not an injected asset. Recognize
+# only the adjacent declaration/optional literal className/href-literal shape: no calls,
+# reassignments or scope boundary may intervene. The declaration must start a
+# source line, so a //-commented declaration cannot classify a live href below it.
+# Include the complete href literal using the asset scanner's literal grammar;
+# an exemption must not cover a shorter prefix of a match that swallows live code.
+# Unknown href receivers remain
+# guarded; never exempt a URL spelling or every later use of an anchor variable.
+_ANCHOR_NAVIGATION_RE = re.compile(
+    r"""(?m)^[ \t]*(?:var|let|const)\s+(?P<node>[A-Za-z_$][\w$]*)\s*=\s*"""
+    r"""document\.createElement\(\s*(?P<tag_quote>['"])a(?P=tag_quote)\s*\)\s*;\s*"""
+    r"""(?:(?P=node)\.className\s*=\s*(?P<class_quote>['"])[^'"]*(?P=class_quote)\s*;\s*)?"""
+    r"""(?P=node)(?P<href>\.href)\s*=\s*(?P<href_quote>['"])[^'"]+(?P=href_quote)"""
+)
+
 # URLs that are not ours to rebase: absolute, protocol-relative, data/blob, and
 # the empty string (used to detach a media element).
 _NOT_LOCAL = ("http://", "https://", "//", "data:", "blob:", "about:", "#", "/")
 
 
+def _has_clear_statement_boundary(code: str, start: int) -> bool:
+    """Conservatively refuse a declaration controlled by an unfinished statement."""
+    prefix = code[:start].strip()
+    # Only source-leading block comments can be skipped without interpreting
+    # preceding JavaScript. Never let the legacy mask erase a control header.
+    while prefix.startswith("/*"):
+        end = prefix.find("*/", 2)
+        if end < 0:
+            return False
+        prefix = prefix[end + 2:].lstrip()
+    if not prefix:
+        return True
+    previous_line = prefix.rsplit("\n", 1)[-1]
+    # A terminator inside a string/comment is not a statement boundary. Refuse
+    # ambiguous raw lines instead of stripping // inside a quoted URL or trying
+    # to parse expressions. Include Annex B HTML line-comment delimiters. The
+    # Hub's completed if/continue guard is supported.
+    return previous_line.endswith((";", "{", "}")) and not any(
+        marker in previous_line for marker in ("'", '"', "/", "\\", "`", "<!--", "-->")
+    )
+
+
 def _document_relative_offenders(code: str) -> list[str]:
-    """Injected asset URLs that are bare relative literals (comments stripped)."""
-    code = re.sub(r"/\*.*?\*/", " ", code, flags=re.DOTALL)
+    """Injected asset URLs that are bare relative literals in unprocessed source."""
+    # Prove adjacency before the legacy comment filter can erase live code
+    # between comment delimiters inside strings. Also reject any candidate that
+    # overlaps a masked span: a commented-out declaration cannot exempt a live
+    # href after the comment ends. Delimiters inside literals fail closed too;
+    # this retains the legacy mask's limitations, rather than parsing JavaScript.
+    block_comments = re.compile(r"/\*.*?\*/", re.DOTALL)
+    masked_spans = [m.span() for m in block_comments.finditer(code)]
+    # Ordinary quoted strings can reach a line-anchored declaration only through
+    # an escaped newline. Template text can cross into executable code through a
+    # backtick or ${ anywhere in the full proof, including the href value. Exempt
+    # only escape-free literals: backslashes can also change raw quote boundaries.
+    # Refuse these ambiguous shapes rather than treating this guard as a JS lexer.
+    navigation = {
+        m.start("href")
+        for m in _ANCHOR_NAVIGATION_RE.finditer(code)
+        if _has_clear_statement_boundary(code, m.start())
+        if not code[max(0, m.start() - 3):m.start()].endswith(("\\\n", "\\\r\n"))
+        if not any(marker in m.group() for marker in ("\\", "`", "${"))
+        if not any(start < m.end() and m.start() < end for start, end in masked_spans)
+    }
+    # Keep offsets aligned with the original source while ignoring prose that
+    # quotes relative asset assignments in genuine block comments.
+    code = block_comments.sub(lambda m: " " * len(m.group()), code)
     return [
-        url
-        for _q, url in _LITERAL_SRC_RE.findall(code)
-        if url and not url.startswith(_NOT_LOCAL)
+        m.group(2)
+        for m in _LITERAL_SRC_RE.finditer(code)
+        if m.start() not in navigation and not m.group(2).startswith(_NOT_LOCAL)
     ]
 
 
@@ -113,7 +161,7 @@ def test_the_resolution_guard_actually_fires_on_the_2026_08_19_defect() -> None:
     ) == []
 
 
-def test_no_dynamic_child_asset_is_document_relative(theme_code: str) -> None:
+def test_no_dynamic_child_asset_is_document_relative(theme_src: str) -> None:
     """No injected asset URL may be a bare relative literal.
 
     This is the bug itself. `s.src = 'mm_brain.js'` reads as obviously correct
@@ -121,12 +169,12 @@ def test_no_dynamic_child_asset_is_document_relative(theme_code: str) -> None:
     wrong on every nested one — the failure is invisible from the source and
     invisible in CI, because the only symptom is a 404 in someone else's browser.
     """
-    offenders = _document_relative_offenders(theme_code)
+    offenders = _document_relative_offenders(theme_src)
     assert not offenders, (
-        "theme.js assigns a document-relative URL to an injected asset: "
-        f"{offenders}. A dynamic <script>/<link> resolves against the PAGE, so "
-        "this 404s on every nested route (site/stocks/, site/sectors/, …) while "
-        "working perfectly at the site root. Build the URL from "
+        "theme.js has a document-relative src/href literal without proven "
+        f"anchor navigation: {offenders}. For injected assets, a dynamic "
+        "<script>/<link> resolves against the PAGE and can 404 on nested routes. "
+        "Build injected asset URLs from "
         "_mmSharedAssetRoot, which is derived from theme.js's own script URL: "
         "  new URL('<asset>', _mmSharedAssetRoot || location.href).href"
     )
@@ -410,3 +458,253 @@ def test_stub_is_keyboard_operable_and_carries_no_translated_title(theme_src: st
         "the stub must re-localize on langchange rather than pinning the language "
         "it happened to mount in"
     )
+
+
+# ---------------------------------------------------------------------------
+# Navigation classification controls (kept in the CI-registered launcher suite)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("declaration", ["var", "let", "const"])
+def test_fresh_anchor_href_is_navigation(declaration):
+    source = (
+        f"{declaration} target = document.createElement('a');\n"
+        "target.className = 'mm-terminal-ticker-link';\n"
+        "target.href = 'stock.html#' + encodeURIComponent(ticker);"
+    )
+    assert _document_relative_offenders(source) == []
+
+
+def test_anchor_without_class_assignment_is_navigation():
+    assert _document_relative_offenders(
+        'var anchor = document.createElement("a"); anchor.href = "stock.html#";'
+    ) == []
+
+
+@pytest.mark.parametrize("source,expected", [
+    ("var s = document.createElement('script'); s.src = 'mm_brain.js';", ["mm_brain.js"]),
+    ("var s = document.createElement('script'); s.src = 'stock.html#';", ["stock.html#"]),
+    ("var a = document.createElement('link'); a.href = 'stock.html#';", ["stock.html#"]),
+    ("var a = document.createElement('a'); a.src = 'mm_brain.js';", ["mm_brain.js"]),
+    ("unknown.href = 'relative.css';", ["relative.css"]),
+    ("// var a = document.createElement('a');\na.href = 'relative.css';", ["relative.css"]),
+    ("var a = document.createElement('a'); a = document.createElement('link'); a.href = 'relative.css';", ["relative.css"]),
+    ("function one() { var a = document.createElement('a'); } function two() { a.href = 'relative.css'; }", ["relative.css"]),
+    ("var a = document.createElement('a'); a.href = 'stock.html#'; var a = document.createElement('link'); a.href = 'relative.css';", ["relative.css"]),
+    ("var a = document.createElement('a'); rebind(); a.href = 'relative.css';", ["relative.css"]),
+])
+def test_real_assets_and_unknown_receivers_remain_guarded(source, expected):
+    assert _document_relative_offenders(source) == expected
+
+
+@pytest.mark.parametrize("intervening", [
+    "a = document.createElement('link');",
+    "rebind();",
+], ids=["reassignment", "call"])
+def test_comment_delimiters_in_strings_cannot_hide_intervening_code(intervening):
+    source = (
+        "var a = document.createElement('a');\n"
+        "a.className = '/*';\n"
+        f"{intervening}\n"
+        "a.className = '*/';\n"
+        "a.href = 'relative.css';"
+    )
+    assert _document_relative_offenders(source) == ["relative.css"]
+    with pytest.raises(AssertionError, match="relative.css"):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("quote", ["'", '"'], ids=["single-quoted", "double-quoted"])
+def test_block_comment_origin_cannot_exempt_a_live_href(quote):
+    source = (
+        "var a = document.createElement('link');\n"
+        "/*\n"
+        "var a = document.createElement('a');\n"
+        f"a.className = {quote}*/ //{quote};\n"
+        "a.href = 'relative.css';"
+    )
+    assert _document_relative_offenders(source) == ["relative.css"]
+    with pytest.raises(AssertionError, match="relative.css"):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("quote", ["'", '"'], ids=["single-quoted", "double-quoted"])
+def test_template_literal_origin_cannot_exempt_a_live_href(quote):
+    source = (
+        "var a = document.createElement('link');\n"
+        "var text = `\n"
+        "var a = document.createElement('a');\n"
+        f"a.className = {quote}` //{quote};\n"
+        "a.href = 'relative.css';"
+    )
+    assert _document_relative_offenders(source) == ["relative.css"]
+    with pytest.raises(AssertionError, match="relative.css"):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("quote", ["'", '"'], ids=["single-quoted", "double-quoted"])
+@pytest.mark.parametrize("transition,expected", [
+    ("end", "`; a.href = "),
+    ("interpolation", "${(a.href = "),
+])
+def test_template_transition_inside_href_literal_is_not_navigation(quote, transition, expected):
+    prefix = (
+        "var a = document.createElement('link');\n"
+        "var text = `\n"
+        "var a = document.createElement('a');\n"
+    )
+    if transition == "end":
+        source = prefix + f"a.href = {quote}`; a.href = {quote}relative.css{quote};"
+    else:
+        source = prefix + "a.href = " + quote + "${(a.href = " + quote + "relative.css" + quote + ")}" + quote + "`;"
+    # The inherited scanner reports the unproven outer literal, not a parsed URL.
+    # It must still raise the actual guard instead of exempting swallowed code.
+    assert _document_relative_offenders(source) == [expected]
+    with pytest.raises(AssertionError):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("quote", ["'", '"'], ids=["single-quoted", "double-quoted"])
+@pytest.mark.parametrize("newline", ["\n", "\r\n"], ids=["lf", "crlf"])
+@pytest.mark.parametrize("indent", ["", "  "], ids=["unindented", "indented"])
+def test_escaped_line_string_origin_cannot_exempt_a_live_href(quote, newline, indent):
+    tag_quote = '"' if quote == "'" else "'"
+    source = (
+        "var a = document.createElement('link');\n"
+        f"var text = {quote}\\" + newline
+        + f"{indent}var a = document.createElement({tag_quote}a{tag_quote}); "
+        + f"a.href = {quote}; a.href = {quote}relative.css{quote};"
+    )
+    assert _document_relative_offenders(source) == ["; a.href = "]
+    with pytest.raises(AssertionError):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("quote", ["'", '"'], ids=["single-quoted", "double-quoted"])
+def test_escaped_class_quote_cannot_manufacture_anchor_adjacency(quote):
+    source = (
+        "function rebind() { a = document.createElement('link'); }\n"
+        "var a = document.createElement('a');\n"
+        f"a.className = {quote}\\{quote}; a.href = {quote}; "
+        f"rebind(); a.href = {quote}relative.css{quote};"
+    )
+    assert _document_relative_offenders(source) == ["; rebind(); a.href = "]
+    with pytest.raises(AssertionError):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("control", [
+    "if (false)",
+    "while (false)",
+    "for (;false;)",
+    "if (true) {} else",
+    "if (\n false\n)",
+    "if (false) // looks complete ;",
+    "if (false) /* ; */",
+    "if (false) /*\n ;\n */",
+    'if (!"x;//")',
+    "if (false)\n<!-- ;",
+    "if (false)\n--> ;",
+    "if (false)\n<!-- {",
+    "if (false)\n--> }",
+    "if (false) //\v;",
+    "if (false) //\f;",
+    "if (false) //\x85;",
+])
+def test_skipped_anchor_declaration_cannot_exempt_a_live_href(control):
+    source = (
+        "var a = document.createElement('link');\n"
+        f"{control}\n"
+        "var a = document.createElement('a');\n"
+        "a.href = 'relative.css';"
+    )
+    assert _document_relative_offenders(source) == ["relative.css"]
+    with pytest.raises(AssertionError, match="relative.css"):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+def test_comment_mask_cannot_manufacture_predecessor_statement_boundary():
+    source = (
+        "var a = document.createElement('link');\n"
+        "var text = '/*';\n"
+        "if (false) // */;\n"
+        "var a = document.createElement('a');\n"
+        "a.href = 'relative.css';"
+    )
+    assert _document_relative_offenders(source) == ["relative.css"]
+    with pytest.raises(AssertionError, match="relative.css"):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("prefix,suffix", [
+    ("", ""),
+    ("/* leading comment */\n", ""),
+    ("/* first */\n /* second */\n", ""),
+    ("var sentinel = 1;\n", ""),
+    ("var sentinel = 1;\n\n  \n", ""),
+    ("if (true) {\n", "\n}"),
+    ("if (false) {}\n", ""),
+    ("for (var i = 0; i < 1; i++) {\nif (false) continue;\n", "\n}"),
+])
+def test_complete_predecessor_boundaries_allow_fresh_anchor_navigation(prefix, suffix):
+    source = (
+        prefix + "var a = document.createElement('a');\n"
+        "a.className = 'mm-terminal-ticker-link';\n"
+        "a.href = 'stock.html#';" + suffix
+    )
+    assert _document_relative_offenders(source) == []
+
+
+@pytest.mark.parametrize("quote", ["'", '"'], ids=["single-quoted", "double-quoted"])
+@pytest.mark.parametrize("class_name", ["/* */", "prefix /* comment */ suffix"])
+def test_anchor_class_literal_overlapping_comment_mask_fails_closed(quote, class_name):
+    # The legacy mask is not string-aware. An exemption overlapping any masked
+    # span must fail closed, even when the delimiters happen to be in a string.
+    source = (
+        "var a = document.createElement('a');\n"
+        f"a.className = {quote}{class_name}{quote};\n"
+        "a.href = 'stock.html#';"
+    )
+    assert _document_relative_offenders(source) == ["stock.html#"]
+    with pytest.raises(AssertionError, match="stock.html#"):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("source,expected", [
+    (
+        "/* s.src = 'comment-only.js';\n a.href = 'comment-only.css'; */\n"
+        "var a = document.createElement('a');\na.href = 'stock.html#';",
+        [],
+    ),
+    (
+        "/* var a = document.createElement('a'); */\na.href = 'relative.css';",
+        ["relative.css"],
+    ),
+    (
+        "var a = document.createElement('a');\n/* comment */\na.href = 'relative.css';",
+        ["relative.css"],
+    ),
+], ids=["comment-before-fresh-anchor", "commented-declaration", "comment-interrupts-adjacency"])
+def test_block_comments_do_not_manufacture_anchor_adjacency(source, expected):
+    assert _document_relative_offenders(source) == expected
+
+
+def test_shared_root_and_root_absolute_assets_pass():
+    assert _document_relative_offenders(
+        "var s = document.createElement('script'); "
+        "s.src = new URL('mm_brain.js', _mmSharedAssetRoot || location.href).href; "
+        "var css = document.createElement('link'); css.href = '/theme.css';"
+    ) == []
+
+
+@pytest.mark.parametrize("original,replacement,asset", [
+    ("_mmBrainScript.src = _mmBrainSrc();", "_mmBrainScript.src = 'mm_brain.js';", "mm_brain.js"),
+    ("_mmOverlayScript.src = _mmOverlaySrc;", "_mmOverlayScript.src = 'terminal_overlay.js';", "terminal_overlay.js"),
+    ("s.src = pfx + 'account.js?v=20260913-account-actions';", "s.src = 'account.js?v=20260913-account-actions';", "account.js?v=20260913-account-actions"),
+    ("s.src = pfx + 'onboard.js';", "s.src = 'onboard.js';", "onboard.js"),
+])
+def test_guard_rejects_relative_mutations_of_real_child_assets(theme_src, original, replacement, asset):
+    assert theme_src.count(original) == 1, "child loader changed shape; update the mutation"
+    mutant = theme_src.replace(original, replacement, 1)
+    assert _document_relative_offenders(mutant) == [asset]
+    with pytest.raises(AssertionError, match=re.escape(asset)):
+        test_no_dynamic_child_asset_is_document_relative(mutant)
