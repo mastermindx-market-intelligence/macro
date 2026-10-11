@@ -14671,18 +14671,10 @@ jobs:
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: data
-    # D14 W1 Media Network press engine (2026-07-26). The press lane emits INTO
-    # the free acquisition estate, so its own suite has to run wherever that
-    # estate's drift law runs — a press change that breaks the frontmatter
-    # contract would otherwise surface as a red free-content-estate job on
-    # somebody else's PR. The dependency line follows free-content-estate's
-    # minimal-deps convention verbatim (`pytest pyyaml jinja2`) — the same three
-    # packages cover the same closure, so there is no reason to spell it
-    # differently. (run_ci_pack.py does share a venv between adjacent jobs with
-    # byte-identical install lines, but these two land in different packs, so
-    # matching buys convention here, not a shared environment.)
-    # Network-free: the validator suite is 100% deterministic and the writer
-    # (the one module that would make an LLM call) is never invoked by tests.
+    # D14 Press emits into the free acquisition estate, so keep its validation
+    # in the same data gate. The fixed offline baseline adds the incumbent
+    # pandas/numpy analytical engine and requests transport tests to the estate
+    # pytest/pyyaml/jinja2 closure. Tests never invoke a real provider or writer.
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -14691,11 +14683,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2
+        run: pip install pytest pyyaml jinja2 numpy pandas requests
       - name: press validator suite (paraphrase, fact-anchor, our-value, lexicons)
         run: python -m pytest tests/test_press_validators.py -q
       - name: press planner + writer + orchestrator suites
-        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
+        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
       - name: press admin panel + workflow shape
         run: python -m pytest tests/test_press_admin.py tests/test_press_workflow.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the

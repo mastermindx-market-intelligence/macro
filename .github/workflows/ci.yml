@@ -3032,6 +3032,8 @@ on:
       - "engine/earnings_narrative/**"
       - "scripts/build_earnings_story_packet.py"
       - "scripts/run_press.py"
+      - "scripts/qualify_press_nvda_baseline.py"
+      - ".github/workflows/press-source-qualification.yml"
       - "config/press.yml"
       - "admin/press.py"
       - "tests/test_press_*.py"

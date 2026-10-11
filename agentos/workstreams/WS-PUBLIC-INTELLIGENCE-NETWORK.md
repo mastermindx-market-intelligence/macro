@@ -35,6 +35,7 @@ artifacts:
   - research/agentic_media/public_intelligence_20261011/QUALIFIED_EVENT_CANDIDATE.md
   - research/agentic_media/public_intelligence_20261011/whitehouse_event_validation.json
   - research/agentic_media/public_intelligence_20261011/SOURCE_RETENTION.md
+  - research/agentic_media/public_intelligence_20261011/ADJUSTED_BASELINE_QUALIFICATION.md
 do_not_redo:
   - Do not duplicate Commission 19 or claim its Fable-owned source.
   - Do not duplicate Catalyst Loop integration PR 8678 or its acquisition stores.

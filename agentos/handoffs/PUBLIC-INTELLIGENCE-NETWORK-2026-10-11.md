@@ -198,3 +198,25 @@ A bounded release-liveness review found a possible overlap-aware reservation rem
 Verified source-specific data alternative: the protected Massive entitlement record covers daily bars and derived research/redistribution. A bounded public NVDA capture at23:26UTC produced stable object/manifest transport evidence, but the object endsOctober9 while manifest coverage/anchor endOctober7; raw prices also lack qualified corporate-action treatment for proposed technical history. Independent review refused this input for Press analytical facts. Existing Mac and VPS Macro configuration checks exposed only credential-name presence booleans: neither adjusted-reader API key is available. No secret value, authenticated REST call, new provider completion, stage or emit occurred. See LICENSED_INPUT_QUALIFICATION.md and licensed_nvda_input_qualification.json. The earlier Yahoo replay remains separately unqualified; no metrics were relabeled.
 
 The first read of controller38183507395 log establishes the refresh cause at23:15:57UTC: main commitfba80a12a288 changed the check definitions themselves. The protected controller refreshed at23:15:59UTC. Exact lines are retained in protected_refresh_38183507395.txt. Source parity cannot substitute for proof of those changed definitions. Agent OS validation:1,665records,0errors,141existing warnings.
+
+
+## Adjusted-baseline implementation — 23:44 UTC
+
+The next safe analytical source slice is implemented in the recovery branch: a
+fixed main-only manual workflow reuses the existing market-data REST client and
+canonical technical engine, with no collector/staging/publication writes. It
+binds exact source and entitlement bytes, rejects incomplete or malformed adjusted
+NVDA history, and retains exact canonical parsed input plus calculation receipts
+outside Git. Scoped redirect refusal and normalized foreign-checkout rejection
+were repaired after bounded review. Final source review accepted; no live fetch
+or workflow dispatch occurred. Verified commands/results are in
+ADJUSTED_BASELINE_QUALIFICATION.md:43focused tests pass; existing transport suite
+passed in the83-test run;28workflow tests pass after a real dependency-contract
+failure/repair; trigger closure zero gaps and279legacy jobs validate.
+
+Macro8786 still awaits protected f4 CI/landing; the latest retained observation
+has17binding checks passing and three packs running. Terminal956's desktop2 and
+tablet browser shards passed; desktop1/mobile were running at the last accepted
+read. A repeated direct Terminal PR read was refused by the CI wait guard before
+execution and not retried. Neither PR's installation nor pristine production
+acceptance is claimed. All prepared install paths remain gated on actual merge.
