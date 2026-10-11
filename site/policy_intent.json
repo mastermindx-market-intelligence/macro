@@ -2,31 +2,31 @@
   "schema": "policy_intent_desk.v1",
   "is_context_only": true,
   "lens": "realpolitik",
-  "generated_at": "2026-10-09T06:26:27.923337+00:00",
-  "state_asof": "2026-10-08",
+  "generated_at": "2026-10-09T08:00:12.529977+00:00",
+  "state_asof": "2026-10-09",
   "model": "deepseek-v4-pro",
-  "regime_context": "The policy mix is an aligned-incentives campaign: Warsh's Fed is banking hawkish credibility (Sept hike >70% priced) while Bessent's Treasury suppresses front-end yields structurally, aiming for the outcome of lower real yields without the optics of near-term cuts. The consensus still reads 'higher for longer' as pure tightening; revealed interest is a sequenced setup where the inflation hawkishness pre-loads doctrinal cover for a post-midterm, inflation-gated easing pivot.",
-  "regime_context_zh": "\u653f\u7b56\u7ec4\u5408\u662f\u4e00\u573a\u6fc0\u52b1\u5bf9\u9f50\u7684\u8fd0\u52a8\uff1a\u6c83\u4ec0\u6cbb\u4e0b\u7684\u7f8e\u8054\u50a8\u6b63\u5728\u79ef\u7d2f\u9e70\u6d3e\u4fe1\u8a89\uff08\u5e02\u573a\u5bf99\u6708\u52a0\u606f\u7684\u5b9a\u4ef7\u8d85\u8fc770%\uff09\uff0c\u800c\u8d1d\u68ee\u7279\u9886\u5bfc\u4e0b\u7684\u8d22\u653f\u90e8\u4ee5\u7ed3\u6784\u6027\u65b9\u5f0f\u538b\u4f4e\u524d\u7aef\u6536\u76ca\u7387\uff0c\u76ee\u6807\u662f\u5b9e\u73b0\u66f4\u4f4e\u7684\u5b9e\u9645\u6536\u76ca\u7387\uff0c\u4f46\u4e0d\u627f\u62c5\u8fd1\u671f\u964d\u606f\u7684\u89c2\u611f\u4ee3\u4ef7\u3002\u5171\u8bc6\u4ecd\u628a\u2018\u66f4\u9ad8\u66f4\u4e45\u2019\u89e3\u8bfb\u4e3a\u7eaf\u7cb9\u7684\u7d27\u7f29\uff1b\u4f46\u663e\u9732\u51fa\u7684\u771f\u5b9e\u610f\u56fe\u662f\u5206\u9636\u6bb5\u5e03\u5c40\u2014\u2014\u5f53\u524d\u7684\u9e70\u6d3e\u6297\u901a\u80c0\u59ff\u6001\u662f\u5728\u4e3a\u4e2d\u671f\u9009\u4e3e\u540e\u3001\u4ee5\u901a\u80c0\u4e3a\u6761\u4ef6\u7684\u5bbd\u677e\u8f6c\u5411\u9884\u88c5\u7406\u8bba\u4f9d\u636e\u3002",
+  "regime_context": "The regime is aligned by incentives, not proven coordination: the Administration wants lower real yields and strategic capacity without the inflation optics of immediate easing, while the Fed preserves flexibility behind an inflation-first posture. Consensus may focus on eventual cuts, but revealed preference still favors structural yield suppression, energy security and domestic industrial capacity over near-term broad easing.",
+  "regime_context_zh": "\u8fd9\u4e00\u653f\u7b56\u683c\u5c40\u4f53\u73b0\u7684\u662f\u6fc0\u52b1\u4e00\u81f4\uff0c\u800c\u975e\u5df2\u88ab\u8bc1\u5b9e\u7684\u534f\u8c03\uff1a\u653f\u5e9c\u5e0c\u671b\u5728\u4e0d\u627f\u62c5\u7acb\u5373\u5bbd\u677e\u6240\u5e26\u6765\u7684\u901a\u80c0\u89c2\u611f\u4e0b\u538b\u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u5e76\u6269\u5927\u6218\u7565\u4ea7\u80fd\uff0c\u800c\u7f8e\u8054\u50a8\u5219\u4ee5\u901a\u80c0\u4f18\u5148\u7684\u59ff\u6001\u4fdd\u7559\u653f\u7b56\u7075\u6d3b\u6027\u3002\u5171\u8bc6\u53ef\u80fd\u805a\u7126\u4e8e\u6700\u7ec8\u964d\u606f\uff0c\u4f46\u5df2\u663e\u9732\u7684\u504f\u597d\u4ecd\u662f\u7ed3\u6784\u6027\u538b\u4f4e\u6536\u76ca\u7387\u3001\u4fdd\u969c\u80fd\u6e90\u5b89\u5168\u548c\u6269\u5927\u56fd\u5185\u5de5\u4e1a\u4ea7\u80fd\uff0c\u800c\u975e\u8fd1\u671f\u5168\u9762\u5bbd\u677e\u3002",
   "theses": [
     {
-      "id": "2026-10-08-20261009062627-1",
+      "id": "2026-10-09-20261009080012-1",
       "actor": "admin",
       "subject": "XLE",
       "lean": "overweight",
       "conviction": "low",
       "horizon_d": 42,
-      "thesis": "The Iran ceasefire collapse is a real, headline-driven oil supply-shock vector that re-primes the energy inflow rotation seen in Q1 2026; Brent's intraday spike to ~$80 keeps the upside skew alive regardless of the stagflationary Fed path. The administration's bridge \u2014 manufactured strong-dollar demand plus a haven bid \u2014 does not suppress energy equities the way it suppresses front-end yields.",
-      "thesis_zh": "\u4f0a\u6717\u505c\u706b\u7834\u88c2\u662f\u4e00\u4e2a\u771f\u5b9e\u7684\u3001\u7531\u65b0\u95fb\u63a8\u52a8\u7684\u77f3\u6cb9\u4f9b\u5e94\u51b2\u51fb\u5411\u91cf\uff0c\u91cd\u65b0\u6fc0\u6d3b\u4e862026\u5e74\u7b2c\u4e00\u5b63\u5ea6\u51fa\u73b0\u7684\u80fd\u6e90\u677f\u5757\u8d44\u91d1\u6d41\u5165\u8f6e\u52a8\uff1b\u5e03\u4f26\u7279\u539f\u6cb9\u76d8\u4e2d\u51b2\u9ad8\u81f3\u7ea680\u7f8e\u5143\uff0c\u4f7f\u4e0a\u884c\u504f\u659c\u5728\u7f8e\u8054\u50a8\u6ede\u80c0\u8def\u5f84\u4e0b\u4f9d\u7136\u5b58\u5728\u3002\u653f\u5e9c\u6240\u642d\u5efa\u7684\u2018\u5f3a\u52bf\u7f8e\u5143\u9700\u6c42\uff0b\u907f\u9669\u4e70\u76d8\u2019\u6865\u6881\u5e76\u4e0d\u50cf\u538b\u4f4e\u524d\u7aef\u6536\u76ca\u7387\u90a3\u6837\u538b\u5236\u80fd\u6e90\u80a1\u3002",
+      "thesis": "Iran re-escalation gives the Administration a security incentive to tolerate and support domestic energy capacity, while the realized oil shock and established sector inflows create a nearer-term relative tailwind for XLE. This is an upside-skewed but headline-fragile policy lean, not a durable call on uninterrupted conflict.",
+      "thesis_zh": "\u4f0a\u6717\u5c40\u52bf\u518d\u5ea6\u5347\u7ea7\uff0c\u4f7f\u653f\u5e9c\u6709\u5b89\u5168\u5c42\u9762\u7684\u52a8\u673a\u53bb\u5bb9\u5fcd\u5e76\u652f\u6301\u56fd\u5185\u80fd\u6e90\u4ea7\u80fd\uff1b\u5df2\u7ecf\u51fa\u73b0\u7684\u6cb9\u4ef7\u51b2\u51fb\u548c\u65e2\u6709\u884c\u4e1a\u8d44\u91d1\u6d41\u5165\uff0c\u5219\u4e3a XLE \u63d0\u4f9b\u8f83\u8fd1\u7aef\u7684\u76f8\u5bf9\u987a\u98ce\u3002\u8fd9\u662f\u4e00\u4e2a\u4e0a\u884c\u504f\u659c\u4f46\u9ad8\u5ea6\u53d7\u65b0\u95fb\u5f71\u54cd\u7684\u653f\u7b56\u5224\u65ad\uff0c\u5e76\u975e\u5bf9\u51b2\u7a81\u6301\u7eed\u4e0d\u65ad\u7684\u957f\u671f\u62bc\u6ce8\u3002",
       "evidence": [
-        "Iran / Middle East theater: ceasefire declared over 7/8, US strikes on Iran 7/8\u201311, Brent spiked ~$80 intraday.",
-        "Rotation map: energy was the top ETF-inflow sector Q1 2026 on the conflict; rotation now re-primed by collapse.",
-        "Open prediction track: 'XLE overweight' hit +10.1% as of 2026-10-06."
+        "Iran / Middle East theater: the ceasefire collapsed and Brent spiked intraday after US strikes.",
+        "Energy was the top ETF-inflow sector in Q1 2026, indicating an established rotation rather than a purely hypothetical one.",
+        "The substrate characterizes oil as two-sided but upside-skewed on headlines."
       ],
-      "dissent": "A rapid diplomatic truce or Hormuz transit normalization would unwind the risk premium fast, and the hike-majority Fed path can compress energy equity multiples via demand-destruction fears.",
-      "dissent_zh": "\u5feb\u901f\u8fbe\u6210\u5916\u4ea4\u505c\u706b\u6216\u970d\u5c14\u6728\u5179\u6d77\u5ce1\u8fd0\u8f93\u6062\u590d\u6b63\u5e38\uff0c\u5c06\u8fc5\u901f\u6d88\u9000\u98ce\u9669\u6ea2\u4ef7\uff1b\u800c\u5e02\u573a\u591a\u6570\u9884\u671f\u7f8e\u8054\u50a8\u52a0\u606f\uff0c\u53ef\u80fd\u901a\u8fc7\u9700\u6c42\u7834\u574f\u7684\u62c5\u5fe7\u538b\u7f29\u80fd\u6e90\u80a1\u4f30\u503c\u3002",
+      "dissent": "A durable ceasefire or normalized Hormuz transit could rapidly remove the geopolitical premium, while tighter Fed policy could weaken demand-sensitive energy equities.",
+      "dissent_zh": "\u6301\u4e45\u505c\u706b\u6216\u970d\u5c14\u6728\u5179\u6d77\u5ce1\u901a\u884c\u6062\u590d\u6b63\u5e38\uff0c\u53ef\u80fd\u8fc5\u901f\u6d88\u9664\u5730\u7f18\u653f\u6cbb\u6ea2\u4ef7\uff1b\u4e0e\u6b64\u540c\u65f6\uff0c\u7f8e\u8054\u50a8\u6536\u7d27\u653f\u7b56\u4e5f\u53ef\u80fd\u6253\u51fb\u5bf9\u9700\u6c42\u654f\u611f\u7684\u80fd\u6e90\u80a1\u3002",
       "falsifier": {
-        "text": "XLE lags SPY by 5% or more over the next 42 days without a renewed supply disruption.",
-        "text_zh": "\u5728\u63a5\u4e0b\u676542\u5929\u5185\uff0c\u82e5\u672a\u53d1\u751f\u65b0\u7684\u4f9b\u5e94\u4e2d\u65ad\uff0cXLE\u8dd1\u8f93SPY\u8fbe5%\u6216\u4ee5\u4e0a\u3002",
+        "text": "XLE trails SPY over the next 42 trading days despite continued Iran strike activity or disrupted Hormuz transit.",
+        "text_zh": "\u672a\u676542\u4e2a\u4ea4\u6613\u65e5\u5185\uff0c\u5373\u4f7f\u4f0a\u6717\u76f8\u5173\u6253\u51fb\u884c\u52a8\u6301\u7eed\u6216\u970d\u5c14\u6728\u5179\u6d77\u5ce1\u901a\u884c\u4ecd\u53d7\u6270\u52a8\uff0cXLE \u4ecd\u843d\u540e\u4e8e SPY\u3002",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "XLE",
@@ -37,91 +37,59 @@
           "horizon_d": 42
         }
       },
-      "check_by": "2026-12-07"
+      "check_by": "2026-12-08"
     },
     {
-      "id": "2026-10-08-20261009062627-2",
+      "id": "2026-10-09-20261009080012-2",
       "actor": "admin",
-      "subject": "ITA",
+      "subject": "SMH",
       "lean": "overweight",
       "conviction": "low",
-      "horizon_d": 84,
-      "thesis": "The NATO defense-spending super-cycle is structural and budget-driven, independent of both the Fed's inflation fight and the Iran ceasefire's oil noise; defense primes, missile-defense/Golden Dome and munitions remain targeted capital even when other rotation legs wobble.",
-      "thesis_zh": "\u5317\u7ea6\u9632\u52a1\u5f00\u652f\u8d85\u7ea7\u5468\u671f\u662f\u7ed3\u6784\u6027\u7684\u3001\u7531\u9884\u7b97\u9a71\u52a8\u7684\uff0c\u72ec\u7acb\u4e8e\u7f8e\u8054\u50a8\u7684\u6297\u901a\u80c0\u8fdb\u7a0b\u548c\u4f0a\u6717\u505c\u706b\u6240\u5f15\u53d1\u7684\u6cb9\u4ef7\u566a\u97f3\uff1b\u9632\u52a1\u9f99\u5934\u3001\u5bfc\u5f39\u9632\u5fa1/\u91d1\u7a79\u9879\u76ee\u53ca\u5f39\u836f\u4ecd\u662f\u5b9a\u5411\u8d44\u91d1\u914d\u7f6e\u65b9\u5411\uff0c\u5373\u4fbf\u5176\u4ed6\u8f6e\u52a8\u652f\u7ebf\u51fa\u73b0\u6ce2\u52a8\u3002",
+      "horizon_d": 63,
+      "thesis": "Advanced-chip tariffs and the continuing de-risking mandate steer capital toward strategically protected domestic semiconductor capacity. The Administration's interest is supply-chain control, so the onshoring preference can survive a China truce even if the exact tariff mechanism changes.",
+      "thesis_zh": "\u5148\u8fdb\u82af\u7247\u5173\u7a0e\u548c\u6301\u7eed\u7684\u53bb\u98ce\u9669\u5316\u8981\u6c42\uff0c\u5c06\u8d44\u672c\u5f15\u5411\u53d7\u5230\u6218\u7565\u4fdd\u62a4\u7684\u56fd\u5185\u534a\u5bfc\u4f53\u4ea7\u80fd\u3002\u653f\u5e9c\u7684\u6838\u5fc3\u5229\u76ca\u662f\u638c\u63a7\u4f9b\u5e94\u94fe\uff0c\u56e0\u6b64\u5373\u4f7f\u5bf9\u534e\u4f11\u6218\u3001\u5177\u4f53\u5173\u7a0e\u673a\u5236\u53d1\u751f\u53d8\u5316\uff0c\u63a8\u52a8\u4ea7\u80fd\u56de\u6d41\u7684\u504f\u597d\u4ecd\u53ef\u80fd\u5ef6\u7eed\u3002",
       "evidence": [
-        "NATO / Defense theater: structural spending super-cycle.",
-        "Rotation map: 'Defense \u00b7 shipbuilding \u00b7 missile defense' listed under FACT mechanism.",
-        "Open prediction: no policy lever currently threatens defense budget expansion."
+        "China theater: the tariff-protection premium persisted after the court ruling, although the Section 301 replacement remained pending.",
+        "Open prediction: the 25% advanced-chip tariff remains in force and/or its covered list expands.",
+        "Domestic semiconductors and fabs are identified as a targeted capital-rotation theme."
       ],
-      "dissent": "A durable Iran ceasefire could trigger mean-reversion in defense stocks that had priced in conflict escalation, as seen in the July 2 ITA overweight miss (-10.8%).",
-      "dissent_zh": "\u82e5\u4f0a\u6717\u505c\u706b\u957f\u671f\u7ef4\u6301\uff0c\u5df2\u8ba1\u5165\u51b2\u7a81\u5347\u7ea7\u9884\u671f\u7684\u9632\u52a1\u80a1\u53ef\u80fd\u51fa\u73b0\u5747\u503c\u56de\u5f52\uff0c\u6b63\u59827\u67082\u65e5ITA\u8d85\u914d\u5224\u65ad\u8dd1\u8f93\uff08-10.8%\uff09\u6240\u663e\u793a\u7684\u90a3\u6837\u3002",
+      "dissent": "An incomplete Section 301 handoff could remove protection faster than onshoring demand materializes, while tighter financial conditions could compress semiconductor valuations.",
+      "dissent_zh": "\u82e5 Section 301 \u7684\u653f\u7b56\u8854\u63a5\u672a\u80fd\u5b8c\u6210\uff0c\u4fdd\u62a4\u63aa\u65bd\u6d88\u9000\u7684\u901f\u5ea6\u53ef\u80fd\u5feb\u4e8e\u4ea7\u80fd\u56de\u6d41\u9700\u6c42\u5151\u73b0\uff1b\u540c\u65f6\uff0c\u91d1\u878d\u6761\u4ef6\u6536\u7d27\u4e5f\u53ef\u80fd\u538b\u7f29\u534a\u5bfc\u4f53\u4f30\u503c\u3002",
       "falsifier": {
-        "text": "ITA lags SPY by 5% or more over the next 84 days with no NATO budget reversal.",
-        "text_zh": "\u5728\u63a5\u4e0b\u676584\u5929\u5185\uff0c\u82e5\u5317\u7ea6\u9884\u7b97\u6ca1\u6709\u9006\u8f6c\uff0cITA\u8dd1\u8f93SPY\u8fbe5%\u6216\u4ee5\u4e0a\u3002",
+        "text": "The advanced-chip tariff is rescinded without a comparable replacement and SMH trails SPY over the next 63 trading days.",
+        "text_zh": "\u5148\u8fdb\u82af\u7247\u5173\u7a0e\u88ab\u64a4\u9500\u4e14\u6ca1\u6709\u540c\u7b49\u529b\u5ea6\u7684\u66ff\u4ee3\u63aa\u65bd\uff0c\u540c\u65f6 SMH \u5728\u672a\u676563\u4e2a\u4ea4\u6613\u65e5\u5185\u843d\u540e\u4e8e SPY\u3002",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "XLI",
-          "vs": "SPY",
-          "via": "correlated",
-          "op": "<",
-          "threshold": -0.08000000000000002,
-          "horizon_d": 84,
-          "surrogate_of": "ITA",
-          "note": "graded via correlated surrogate XLI (no local series for ITA)"
-        }
-      },
-      "check_by": "2027-02-03"
-    },
-    {
-      "id": "2026-10-08-20261009062627-3",
-      "actor": "admin",
-      "subject": "KBE",
-      "lean": "underweight",
-      "conviction": "low",
-      "horizon_d": 56,
-      "thesis": "Regional banks remain squeezed between a hike-majority Fed (funding-cost shock) and the administration's front-end yield suppression strategy, which helps large dealer banks via central clearing and eSLR reform but does little for regionals; the 7/10 KBE overweight miss (-8.2%) confirms the squeeze is live.",
-      "thesis_zh": "\u533a\u57df\u6027\u94f6\u884c\u7ee7\u7eed\u5939\u5728\u52a0\u606f\u6982\u7387\u5360\u591a\u6570\u7684\u7f8e\u8054\u50a8\uff08\u8d44\u91d1\u6210\u672c\u51b2\u51fb\uff09\u4e0e\u653f\u5e9c\u524d\u7aef\u6536\u76ca\u7387\u538b\u5236\u7b56\u7565\u4e4b\u95f4\uff1b\u8be5\u7b56\u7565\u901a\u8fc7\u4e2d\u592e\u6e05\u7b97\u548ceSLR\u6539\u9769\u5229\u597d\u5927\u578b\u4ea4\u6613\u5546\u94f6\u884c\uff0c\u4f46\u5bf9\u533a\u57df\u94f6\u884c\u5e2e\u52a9\u6709\u9650\u30027\u670810\u65e5KBE\u8d85\u914d\u5224\u65ad\u8dd1\u8f93\uff08-8.2%\uff09\u5370\u8bc1\u4e86\u8fd9\u4e00\u6324\u538b\u4ecd\u5728\u6301\u7eed\u3002",
-      "evidence": [
-        "Fed-path gap: Sept hike >70% probability, Dec-hike majority.",
-        "Open predictions: eSLR reform and SEC central-clearing expansion benefit primary dealers, not regionals.",
-        "Track record: KBE overweight miss -8.18% as of 2026-10-02."
-      ],
-      "dissent": "If the labor crack widens and Warsh pivots to a September cut, funding-cost relief would hit regionals hardest to the upside.",
-      "dissent_zh": "\u82e5\u5c31\u4e1a\u88c2\u53e3\u6269\u5927\u3001\u6c83\u4ec0\u8f6c\u54119\u6708\u964d\u606f\uff0c\u8d44\u91d1\u6210\u672c\u7684\u7f13\u89e3\u5c06\u6700\u6709\u529b\u5730\u63d0\u632f\u533a\u57df\u6027\u94f6\u884c\u3002",
-      "falsifier": {
-        "text": "KBE beats SPY by 5% or more over the next 56 days with no explicit regional-bank funding relief.",
-        "text_zh": "\u5728\u63a5\u4e0b\u676556\u5929\u5185\uff0c\u82e5\u6ca1\u6709\u660e\u786e\u7684\u533a\u57df\u94f6\u884c\u878d\u8d44\u7ebe\u56f0\u63aa\u65bd\uff0cKBE\u8dd1\u8d62SPY\u8fbe5%\u6216\u4ee5\u4e0a\u3002",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "KBE",
+          "subject_ticker": "SMH",
           "vs": "SPY",
           "via": "direct",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 56
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 63
         }
       },
-      "check_by": "2026-12-25"
+      "check_by": "2027-01-06"
     },
     {
-      "id": "2026-10-08-20261009062627-4",
+      "id": "2026-10-09-20261009080012-3",
       "actor": "fed",
       "subject": "TLT",
       "lean": "underweight",
       "conviction": "low",
       "horizon_d": 42,
-      "thesis": "Long-duration Treasuries are the funding leg of the low-real-yield regime, but the current setup \u2014 Sept hike >70% priced, real 10y at 2.29%, gold >$4,000 \u2014 punishes duration; Bessent's suppression operates at the front end (bills, buybacks), not the long end, so TLT carries the hawkish-Fed beta while BIL/SHV pocket the structural bid.",
-      "thesis_zh": "\u957f\u4e45\u671f\u7f8e\u503a\u662f\u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u673a\u5236\u4e2d\u7684\u878d\u8d44\u7aef\uff0c\u4f46\u5f53\u524d\u683c\u5c40\u2014\u2014\u5e02\u573a\u5bf99\u6708\u52a0\u606f\u5b9a\u4ef7\u8d8570%\u300110\u5e74\u671f\u5b9e\u9645\u6536\u76ca\u73872.29%\u3001\u91d1\u4ef7\u9ad8\u4e8e4000\u7f8e\u5143\u2014\u2014\u5bf9\u4e45\u671f\u4e0d\u5229\uff1b\u8d1d\u68ee\u7279\u7684\u538b\u5236\u64cd\u4f5c\u96c6\u4e2d\u5728\u524d\u7aef\uff08\u77ed\u503a\u3001\u56de\u8d2d\uff09\uff0c\u800c\u975e\u957f\u7aef\uff0c\u56e0\u6b64TLT\u627f\u8f7d\u9e70\u6d3e\u7f8e\u8054\u50a8\u7684\u8d1d\u5854\uff0c\u800cBIL/SHV\u5219\u627f\u63a5\u7ed3\u6784\u6027\u4e70\u76d8\u3002",
+      "thesis": "Warsh's revealed preference remains inflation-first, and the Iran oil shock raises the cost of validating inflation through near-term easing. Treasury's suppression tools are concentrated in bills and market plumbing, so they do not automatically protect long-duration Treasuries from inflation and term-premium pressure.",
+      "thesis_zh": "Warsh \u5df2\u663e\u9732\u7684\u504f\u597d\u4ecd\u662f\u901a\u80c0\u4f18\u5148\uff0c\u800c\u4f0a\u6717\u5f15\u53d1\u7684\u6cb9\u4ef7\u51b2\u51fb\u63d0\u9ad8\u4e86\u8fd1\u671f\u5bbd\u677e\u88ab\u89c6\u4e3a\u7eb5\u5bb9\u901a\u80c0\u7684\u653f\u6cbb\u4e0e\u653f\u7b56\u6210\u672c\u3002\u8d22\u653f\u90e8\u538b\u4f4e\u6536\u76ca\u7387\u7684\u5de5\u5177\u4e3b\u8981\u96c6\u4e2d\u4e8e\u77ed\u671f\u56fd\u503a\u548c\u5e02\u573a\u673a\u5236\u6539\u9769\uff0c\u56e0\u6b64\u65e0\u6cd5\u81ea\u52a8\u4fdd\u62a4\u957f\u671f\u7f8e\u56fd\u56fd\u503a\u514d\u53d7\u901a\u80c0\u4e0e\u671f\u9650\u6ea2\u4ef7\u538b\u529b\u3002",
       "evidence": [
-        "Fed staging: CME FedWatch >70% Sept hike probability, DXY well off high.",
-        "Regime thesis: Treasury suppresses yields via bill-heavy issuance, buybacks, front-end alignment.",
-        "Track record: TLT underweight hit -7.19% as of 2026-09-29."
+        "Warsh maintained a hawkish line after hot PCE and withheld a signal of near-term easing.",
+        "Open prediction: the Fed does not cut at the July and September 2026 meetings.",
+        "The market was approximately aligned with the Fed at end-2026, leaving limited policy-path divergence to support duration.",
+        "The live regime is classified as Reflation."
       ],
-      "dissent": "A post-midterm easing pivot with a dovish dot rewrite could trigger a violent duration rally that outruns the front-end bid.",
-      "dissent_zh": "\u82e5\u4e2d\u671f\u9009\u4e3e\u540e\u51fa\u73b0\u5bbd\u677e\u8f6c\u5411\u53ca\u9e3d\u6d3e\u70b9\u9635\u56fe\u91cd\u5199\uff0c\u53ef\u80fd\u5f15\u53d1\u4e45\u671f\u7aef\u5267\u70c8\u53cd\u5f39\uff0c\u5176\u5e45\u5ea6\u8d85\u8fc7\u524d\u7aef\u6536\u76ca\u7387\u4e0b\u884c\u7684\u5229\u597d\u3002",
+      "dissent": "A deeper labor-market crack could trigger a data-driven easing pivot, while Treasury buybacks and yield-suppression efforts could pull long yields lower despite inflation risk.",
+      "dissent_zh": "\u52b3\u52a8\u529b\u5e02\u573a\u82e5\u8fdb\u4e00\u6b65\u660e\u663e\u6076\u5316\uff0c\u53ef\u80fd\u89e6\u53d1\u6570\u636e\u9a71\u52a8\u7684\u5bbd\u677e\u8f6c\u5411\uff1b\u540c\u65f6\uff0c\u5373\u4f7f\u5b58\u5728\u901a\u80c0\u98ce\u9669\uff0c\u8d22\u653f\u90e8\u56de\u8d2d\u548c\u538b\u4f4e\u6536\u76ca\u7387\u7684\u63aa\u65bd\u4e5f\u53ef\u80fd\u63a8\u52a8\u957f\u671f\u6536\u76ca\u7387\u4e0b\u884c\u3002",
       "falsifier": {
-        "text": "TLT beats SPY by 5% or more over the next 42 days with no explicit long-end yield-suppression policy.",
-        "text_zh": "\u5728\u63a5\u4e0b\u676542\u5929\u5185\uff0c\u82e5\u6ca1\u6709\u660e\u786e\u7684\u957f\u7aef\u6536\u76ca\u7387\u538b\u5236\u653f\u7b56\uff0cTLT\u8dd1\u8d62SPY\u8fbe5%\u6216\u4ee5\u4e0a\u3002",
+        "text": "TLT outperforms SPY over the next 42 trading days as the Fed signals a data-driven easing pivot.",
+        "text_zh": "\u672a\u676542\u4e2a\u4ea4\u6613\u65e5\u5185\uff0c\u968f\u7740\u7f8e\u8054\u50a8\u91ca\u653e\u6570\u636e\u9a71\u52a8\u578b\u5bbd\u677e\u8f6c\u5411\u4fe1\u53f7\uff0cTLT \u8dd1\u8d62 SPY\u3002",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "TLT",
@@ -132,38 +100,7 @@
           "horizon_d": 42
         }
       },
-      "check_by": "2026-12-07"
-    },
-    {
-      "id": "2026-10-08-20261009062627-5",
-      "actor": "fed",
-      "subject": "GLD",
-      "lean": "underweight",
-      "conviction": "low",
-      "horizon_d": 42,
-      "thesis": "Gold is a credibility-banking casualty: Warsh's strict-2% hawkish stance plus a hike-majority market keeps real yields elevated, and the dollar's manufactured strength (Bessent's 'strong dollar while cutting' bridge) suppresses the non-yielding haven bid even with the Iran escalation realized; gold trading $4,044\u20134,200 faces resistance from the front-end real-rate floor.",
-      "thesis_zh": "\u9ec4\u91d1\u662f\u7f8e\u8054\u50a8\u79ef\u7d2f\u4fe1\u8a89\u8fc7\u7a0b\u4e2d\u7684\u53d7\u635f\u54c1\u79cd\uff1a\u6c83\u4ec0\u4e25\u683c\u76842%\u76ee\u6807\u9e70\u6d3e\u7acb\u573a\u52a0\u4e0a\u5e02\u573a\u591a\u6570\u9884\u671f\u52a0\u606f\uff0c\u4f7f\u5b9e\u9645\u6536\u76ca\u7387\u7ef4\u6301\u9ad8\u4f4d\uff1b\u8d1d\u68ee\u7279\u2018\u964d\u606f\u540c\u65f6\u7ef4\u6301\u5f3a\u52bf\u7f8e\u5143\u2019\u7684\u6865\u6881\u6240\u5236\u9020\u7684\u7f8e\u5143\u5f3a\u52bf\uff0c\u538b\u5236\u4e86\u65e0\u6536\u76ca\u907f\u9669\u8d44\u4ea7\u7684\u9700\u6c42\u2014\u2014\u5373\u4fbf\u4f0a\u6717\u5c40\u52bf\u5347\u7ea7\u5df2\u7ecf\u53d1\u751f\u3002\u9ec4\u91d1\u57284044\u20134200\u7f8e\u5143\u533a\u95f4\u9762\u4e34\u6765\u81ea\u524d\u7aef\u5b9e\u9645\u5229\u7387\u5e95\u90e8\u7684\u963b\u529b\u3002",
-      "evidence": [
-        "Fed staging: real 10y 2.29%, Sept hike >70%.",
-        "Dollar/debt theater: Bessent's 6/24 'strong dollar while cutting' as FX bridge.",
-        "Track record: two GLD underweight hits (+1.63%, +2.62%)."
-      ],
-      "dissent": "A genuine Mar-a-Lago Accord turn or an inflation-expectations de-anchoring under the oil shock would make gold the cleanest stagflation hedge.",
-      "dissent_zh": "\u82e5\u51fa\u73b0\u771f\u6b63\u7684\u2018\u6d77\u6e56\u5e84\u56ed\u534f\u8bae\u2019\u5f0f\u8f6c\u5411\uff0c\u6216\u77f3\u6cb9\u51b2\u51fb\u4e0b\u901a\u80c0\u9884\u671f\u8131\u951a\uff0c\u9ec4\u91d1\u5c06\u6210\u4e3a\u6700\u7eaf\u7cb9\u7684\u6ede\u80c0\u5bf9\u51b2\u5de5\u5177\u3002",
-      "falsifier": {
-        "text": "GLD beats SPY by 5% or more over the next 42 days without a dollar-crash or real-yield-breakdown catalyst.",
-        "text_zh": "\u5728\u63a5\u4e0b\u676542\u5929\u5185\uff0c\u82e5\u6ca1\u6709\u7f8e\u5143\u5d29\u8dcc\u6216\u5b9e\u9645\u6536\u76ca\u7387\u5931\u5b88\u7684\u50ac\u5316\u5242\uff0cGLD\u8dd1\u8d62SPY\u8fbe5%\u6216\u4ee5\u4e0a\u3002",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "GC_F",
-          "vs": "SPY",
-          "via": "direct",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 42
-        }
-      },
-      "check_by": "2026-12-07"
+      "check_by": "2026-12-08"
     }
   ],
   "track_record": {

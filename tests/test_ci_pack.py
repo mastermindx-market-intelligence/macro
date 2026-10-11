@@ -4284,14 +4284,18 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "push-retry-policy",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.
     "transmission-chains",
+    "quant-q01-arbfree-surface",  # Q01 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "nw-lobe-unfreeze",
+    "quant-q06-sparse-cal",  # Q06 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "china-search-universe",
+    "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -4340,6 +4344,7 @@ CURATED_EXCLUSIVE = {
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
     "mining-economic-dossier",
+    "quant-q08-cov-shrinkage",  # Q08 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-09-24 Healthcare D1 T02: gate:code home for the qualified FDA
     # observation and frozen supply probes; T01 probes remain intentionally red.
     "healthcare-fda-supply",
@@ -4398,6 +4403,7 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
@@ -4412,10 +4418,13 @@ CURATED_EXCLUSIVE = {
     "unrun-government-revenue-grader",
     "biocatalyst-worker",
     "biocatalyst-serving",
+    "quant-q13-rn-tail-density",  # Q13 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "flow-surface",
     "biocatalyst-history",
+    "quant-q14-horizon-vrp",  # Q14 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-subsector-themes",
     "inline-js",
+    "quant-q15-noise-robust-rv",  # Q15 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-picks-boards",
     "intelligence-registry",
     # 2026-08-14 wave 2: the manifest grew 180→193 jobs and the new fallback
@@ -4456,6 +4465,7 @@ CURATED_EXCLUSIVE = {
     # (site/flow_desk.json, site/options.html). This test is the check that
     # catches it; a sparse local run of it is not evidence that it passes.
     "options-estate-guards",
+    "quant-q18-async-session-cov",  # Q18 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-15 wave 4. The two jobs the #5754 re-base below deferred. Both had
     # NO owned tier at all — every inferred pattern was opaque fallback — after
     # scripts/build_china_library.py gained engine/china_intel_interest.py, whose
@@ -4475,6 +4485,7 @@ CURATED_EXCLUSIVE = {
     # test and enumeration would drop them silently.
     "cn-standout-audit",
     "coiled-mtf-anchor-era",
+    "quant-q19-first-passage-ambiguity",  # Q19 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-20 main-red-repair. serving-observability (#6115, Sentry arm for
     # the macro-api serving tier) shipped with no scope at all. Its own subject
     # (_release()'s `subprocess.run(["git", ...])` for the deployed SHA) is an
@@ -4492,6 +4503,7 @@ CURATED_EXCLUSIVE = {
     # source: its true subject is the frozen fixture plus the two template
     # files its own header comment already documents as the only reads.
     "govrev-company-bridge",
+    "quant-q20-spa-challenger",  # Q20 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # #6117 (records(dislocation): P0-A1 price-blind candidate harvest) shipped
     # its own `scope: exclusive` declaration pre-curated — registered here so
     # this file's pin does not drift from the manifest (no fix required, the
@@ -4640,6 +4652,34 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
+    # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
+    "dataos-web-workspace",
+    # 2026-10-11 #8805: the Information-to-Price receipt suites (SRC-A1, PIT
+    # conformance, R4 V2 admission, EVAL-1 partition clock, EVAL-1 challenger
+    # identity) leave unrun-factor-research, whose opaque engine/** and
+    # collectors/** fallback smeared them onto templates/index.html and pushed
+    # that probe to 5,802 (main) / 5,805 (this head) against its 5,800 ceiling.
+    # Register the reviewed 18-path owner; closure audits and ceilings stay fixed.
+    "information-to-price-eval-receipts",
+    # 2026-10-11 lineage wave (#8802): leader-radar-unit gained the lineage
+    # descriptor step (+3 weight) while still an opaque always-on selector:
+    # inference smeared the builder's jinja loader (templates/**), the
+    # integration suite's data/site roots and the lineage suite's AST import
+    # scan (engine/**, scripts/**) onto it, so two packing probes breached on
+    # the PR's merge ref (templates/index.html 5,806 > 5,800, where main was
+    # already over at 5,802; scripts/build_free_content.py 5,603 > 5,600).
+    # paths: = the measured 43-path import/read closure + the rendered
+    # template and its include chain. Measured on the merged FULL checkout:
+    # index.html 5,806 -> 5,781, build_free_content 5,603 -> 5,578, plan_book
+    # 5,563 -> 5,538; the fallback tier drops to (); ceilings unchanged. Derive
+    # the closure against a FULL checkout: the two site/ JSON literals are
+    # invisible on a sparse tree, exactly as the options-estate-guards note warns.
+    "leader-radar-unit",
+    # 2026-10-11 SNI E0/M0 (#8837): the Alibaba/Tencent coverage-profile suite
+    # reads only its own config/contracts trees; its 3-path owner is the whole
+    # closure (closure findings 0, gated-unrun 0), so no inference fallback.
+    "single-name-coverage-profiles",
 }
 
 
@@ -5449,6 +5489,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     owner. A M0D-only path list cannot safely replace that whole-job closure.
     The fallback claims remain conservative until that audit; these two
     count changes do not assert direct ownership of the probe modules.
+
+    2026-10-11 (#8805, EVAL-1 partition clock receipt): the fifth
+    Information-to-Price receipt suite registered in unrun-factor-research
+    took templates/index.html from 5,802 (already over the ceiling; main run
+    38139442230 failed this test) to 5,805. The five ITP steps now live in the
+    exclusive information-to-price-eval-receipts job with their measured
+    closure, so the probe reads 5,793 (head) against 5,805 before
+    the move. No ceiling moves; no suite, registration, assertion or selector
+    is removed or weakened.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
@@ -5729,6 +5778,27 @@ def test_ci_python_is_pinned_to_a_released_parser_runtime() -> None:
 # ---------------------------------------------------------------------------
 
 DATA_HEALTH_WORKFLOW = ROOT / ".github" / "workflows" / "data-health.yml"
+
+
+def test_prophet_chronology_suites_run_in_the_code_gate() -> None:
+    """A green PR must execute the clock/correction suites, not defer them to data-health."""
+    suites = (
+        "tests/test_prophet_plan_chronology_audit.py",  # ci-trigger-closure: data — suite name inspected in the manifest
+        "tests/test_prophet_integrity.py",  # ci-trigger-closure: data — suite name inspected in the manifest
+    )
+    jobs = PACK.load_legacy_jobs(MANIFEST, gate="code")
+    owners = [
+        job for job in jobs
+        if any(
+            all(suite in str(step.get("run", "")).split() for suite in suites)
+            for step in job.definition["steps"]
+        )
+    ]
+    assert len(owners) == 1, "clock/correction suites need one code-gated owner"
+    scopes, _ = PACK.infer_job_scopes(owners)
+    for changed in (*suites, "scripts/audit_prophet_plan_chronology.py"):  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+        selected, reason = PACK.select_jobs(scopes, [changed])
+        assert [job.job_id for job in selected] == [owners[0].job_id], (changed, reason)
 
 
 def test_gate_filter_selects_only_matching_jobs(tmp_path: Path) -> None:

@@ -78,7 +78,7 @@ def _write_shadow_graph_state(root: Path, generated_at: str | None) -> bool:
         phase_started = time.perf_counter()
         known_at = generated_at or datetime.now(timezone.utc).isoformat()
         bundle = adapter.capture_owner_bundle(
-            root, effective_at=known_at[:10], known_at=known_at,
+            root, effective_at=known_at[:10], known_at=generated_at,
         )
         capture_s = time.perf_counter() - phase_started
 

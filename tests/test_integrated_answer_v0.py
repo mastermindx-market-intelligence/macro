@@ -119,7 +119,7 @@ def _patch_all_seams(monkeypatch, *, ticker: str = "AAPL") -> None:
             "leadership": [],
         },
     )
-    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t: integrated_answer._leg_shell("financial_facts") | {
+    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t, *_a, **_k: integrated_answer._leg_shell("financial_facts") | {
         "status": "ok",
         "payload": {"request": {}, "query_hash": "c" * 64, "response_sha256": "d" * 64, "replay_route": "/x"},
         "ref": {
@@ -203,7 +203,7 @@ def test_later_correction_under_earlier_cutoff(monkeypatch) -> None:
     monkeypatch.setattr(integrated_answer, "_event_result", lambda _t: {"available": False})
     monkeypatch.setattr(integrated_answer, "_theme_context", lambda: None)
     monkeypatch.setattr(integrated_answer, "_cte_dir", lambda: Path("/nonexistent"))
-    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t: integrated_answer._leg_shell("financial_facts"))
+    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t, *_a, **_k: integrated_answer._leg_shell("financial_facts"))
     page = _page(_client(monkeypatch))
     leg = _leg_by_id(page, "earnings_expectation")
     assert leg["status"] in {"ok", "stale"}
@@ -234,7 +234,7 @@ def test_missing_or_withdrawn_source(monkeypatch) -> None:
     })
     monkeypatch.setattr(integrated_answer, "_event_result", lambda _t: {"available": False, "note": "n/a"})
     monkeypatch.setattr(integrated_answer, "_theme_context", lambda: None)
-    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t: integrated_answer._leg_shell("financial_facts") | {"status": "absent", "degraded_reason": "x"})
+    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t, *_a, **_k: integrated_answer._leg_shell("financial_facts") | {"status": "absent", "degraded_reason": "x"})
     page = _page(_client(monkeypatch))
     leg = _leg_by_id(page, "earnings_expectation")
     assert leg["status"] == "absent"
@@ -279,7 +279,7 @@ def test_incompatible_generations(monkeypatch, tmp_path) -> None:
         monkeypatch.setattr(integrated_answer, "_receipt_identity", lambda: (_ for _ in ()).throw(RuntimeError("off")))
         monkeypatch.setattr(integrated_answer, "_event_result", lambda _t: {"available": False})
         monkeypatch.setattr(integrated_answer, "_theme_context", lambda: None)
-        monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t: integrated_answer._leg_shell("financial_facts"))
+        monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t, *_a, **_k: integrated_answer._leg_shell("financial_facts"))
         page = _page(_client(monkeypatch))
         leg = _leg_by_id(page, "company_theme_exposure")
         if expected_reason:
@@ -307,7 +307,7 @@ def test_raw_capture_vs_normalized_baseline(monkeypatch) -> None:
     monkeypatch.setattr(integrated_answer, "_receipt_identity", lambda: (_ for _ in ()).throw(RuntimeError()))
     monkeypatch.setattr(integrated_answer, "_event_result", lambda _t: {"available": False})
     monkeypatch.setattr(integrated_answer, "_theme_context", lambda: None)
-    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t: integrated_answer._leg_shell("financial_facts"))
+    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t, *_a, **_k: integrated_answer._leg_shell("financial_facts"))
     page = _page(_client(monkeypatch))
     leg = _leg_by_id(page, "earnings_expectation")
     assert leg["payload"]["capture_inspection"]["normalized_baseline"]["value"] is None
@@ -399,7 +399,7 @@ def test_real_golden_h01_aapl(monkeypatch) -> None:
     assert leg["status"] == "ok"
     assert leg["ref"]["owner_hash"] and re.fullmatch(r"[0-9a-f]{64}", leg["ref"]["owner_hash"])
     assert leg["payload"]["query_hash"]
-    assert leg["ref"]["as_of"] == "2026-08-23T12:00:00Z"
+    assert leg["ref"]["as_of"] == "2026-08-23T07:02:13Z"
 
 
 def test_stale_vs_page_stamp(monkeypatch) -> None:
@@ -493,3 +493,21 @@ def test_main_include_block_present() -> None:
     assert "from app.integrated_answer import router as integrated_answer_router" in text
     idx = text.index("from app.integrated_answer import router as integrated_answer_router")
     assert "try:" in text[max(0, idx - 200) : idx]
+
+
+def test_macro_api_unit_enables_integrated_answer_exactly_once() -> None:
+    text = (ROOT / "app" / "deploy" / "macro-api.service").read_text(encoding="utf-8")
+    lines = [line.strip() for line in text.splitlines()]
+    assert lines.count("Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1") == 1
+    service_idx = lines.index("[Service]")
+    flag_idx = lines.index("Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1")
+    assert service_idx < flag_idx
+    next_section_idx = next(
+        (i for i in range(service_idx + 1, len(lines)) if lines[i].startswith("[")),
+        len(lines),
+    )
+    assert flag_idx < next_section_idx
+    for line in lines:
+        if "MACRO_INTEGRATED_ANSWER_ENABLED" not in line:
+            continue
+        assert line == "Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1"
