@@ -243,12 +243,19 @@ def adapt_eight_year_input_history(
     rows: Iterable[Mapping[str, Any]], *, industry_code: str, commodity_code: str,
     as_of: object = None, purpose: str = "private_research"
 ) -> dict[str, Any]:
-    """Require exactly eight distinct same-edition accounting years in order."""
+    """Require exactly eight ordered years; refuse unbounded caller iterables."""
+    bounded_rows = []
+    for row in rows:
+        if len(bounded_rows) == 8:
+            raise BEAContextRefused("more than eight industry input rows")
+        bounded_rows.append(row)
+    if len(bounded_rows) != 8:
+        raise BEAContextRefused("exactly eight industry input rows required")
     observations = [
         adapt_industry_commodity_input(row, industry_code=industry_code,
                                        commodity_code=commodity_code,
                                        as_of=as_of, purpose=purpose)
-        for row in rows
+        for row in bounded_rows
     ]
     if [x["accounting_year"] for x in observations] != list(range(2017, 2025)):
         raise BEAContextRefused("eight distinct ordered source years required")

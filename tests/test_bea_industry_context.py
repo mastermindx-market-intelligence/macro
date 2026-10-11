@@ -245,6 +245,21 @@ class BEAIndustryContextTests(unittest.TestCase):
                     modified, industry_code="3341", commodity_code="3344"
                 )
 
+    def test_ninth_row_refused_before_unbounded_generator_continues(self):
+        observed = []
+
+        def surplus():
+            for year in range(2017, 2026):
+                observed.append(year)
+                yield synthetic_row(year=min(year, 2024))
+            raise AssertionError("reader consumed an unauthorized tenth row")
+
+        with self.assertRaisesRegex(BEAContextRefused, "more than eight"):
+            adapt_eight_year_input_history(
+                surplus(), industry_code="3341", commodity_code="3344"
+            )
+        self.assertEqual(observed, list(range(2017, 2026)))
+
 
 if __name__ == "__main__":
     unittest.main()
