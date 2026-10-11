@@ -504,7 +504,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(19:30Z snapshot.) Rows superseding older rows below:
+(19:45Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
@@ -514,6 +514,10 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | OC | RUNNING — admitted 18:48:21Z (ATTEMPT 1, load1 14.16) via bnwojs7jx (build-bounded, alarm 12600); `oc_sim.py` last modified 19:11:50Z; launched by v1 without `POOL_CHILD_TIMEOUT_SECONDS`, so the pool kills it at about 19:48:21Z (D43); judge what it leaves, then a v2 continuation |
 | F01 | ARMED — `launch_when_admitted_v2` bzn10wigs (fix_build, child timeout 7200, wait budget 14400); blrzzl887 stopped before launch (D43); log `leads/F01/pool.log` |
 | M01 | ARMED — `launch_when_admitted_v2` bmq245vh6 (fix_build, child timeout 7200, wait budget 18000); bj2hwmddd stopped before launch (D43); log `leads/M01/pool.log` |
+| O3 M02 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:30Z; `leads/O3/M02_lead.md`; hit the 12-turn limit once, resumed 19:31Z; custody of #8684/#870 is the first question (the seat rules VACANT per D20, not the lead) |
+| O6 N01 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:30Z; `leads/O6/N01_lead.md`; hit the 12-turn limit once, resumed 19:33Z; first finding: the Terminal clock is a projection of Macro `lib/nyse_calendar.py` + `engine/session_digest.py` |
+| O5 Q02 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:37Z; `leads/O5/Q02_lead.md`; the adapter already exists on main (`scripts/options_pilot_study_adapter.py`, 513 lines + test); D13 bounds it |
+| O1 D04 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:37Z; `leads/O1/D04_lead.md`; builds on accepted D01/D02; natural proof is Monday 2026-10-12 only |
 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
@@ -729,3 +733,14 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - F01 and M01 are re-armed with the v2 launcher (child timeout 7200). OC will likely be killed at about 19:48Z.
 - #8851 is all green but still OPEN (mergeStateStatus UNKNOWN). #8856 has ci-pack-1..6 and 9 in progress. The merge-on-green
   sweeper is active (run 38167878999 in progress at 19:24:24Z), so it owns the merge wait.
+
+### 2026-10-11 19:45Z — four verify leads out; #8851 waits on sweeper CI capacity; B3 pace
+- Native READ_ONLY leads launched for M02 (O3), N01 (O6), Q02 (O5) and D04 (O1). The orchestrator agent type stops at
+  12 turns; each lead now carries an explicit turn budget (emit the packet by turn 10).
+- #8851 at `479b16df2a7a`: every required check passes (the pilot red is O-4 by design). The sweeper notice at 19:28Z
+  says the proof is stale because main `98a40e3f4b13` changed the check definitions, and that it will merge main into
+  the head when a CI workload slot frees (12 indexed PR CI runs against a global cap of 8, so 0 slots). The sweeper owns
+  this wait; no seat action. #8856 still had ci-pack-2/4/6 running at 19:28Z.
+- B3 (orphan responsive e2e on 1B's tree): 396 of 2,062 marks at 19:30Z (337 pass, 59 skip, 0 fail), about 20 per
+  minute, so it finishes around 20:55Z.
+- Load1 26.7 at 19:29Z, so F01/M01 admission (< 15) is not yet met.
