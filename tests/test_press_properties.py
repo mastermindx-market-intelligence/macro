@@ -1183,7 +1183,9 @@ def test_the_property_suite_can_be_triggered_by_the_changes_it_guards():
 
 def _stage_passing(root: Path, slug: str = "routed-note") -> None:
     slot = F.slot()
-    draft = dict(F.draft_from_slot(slot), slug=slug)
+    # Emit now revalidates copy: reduce neutral filler so this routing fixture
+    # meets the real anchoring-density floor rather than forging a pass.
+    draft = dict(F.draft_from_slot(slot, extra_filler=-3), slug=slug)
     (root / "data" / "press" / "staging").mkdir(parents=True, exist_ok=True)
     (root / "data" / "press" / "staging" / "x.json").write_text(json.dumps({
         "id": "press-brief-x", "desk": "brief", "publication": "mastermind_news",

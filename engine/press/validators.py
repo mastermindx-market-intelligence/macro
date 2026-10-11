@@ -1021,8 +1021,6 @@ def check_ai_tells(draft: dict, slot: dict, cfg: dict) -> dict:
 
 
 _HREF_RE = re.compile(r'href="([^"]+)"', re.IGNORECASE)
-_SITE_HOSTS = ("https://www.mastermind-x.com", "https://mastermind-x.com",
-               "http://www.mastermind-x.com", "http://mastermind-x.com")
 
 
 def _norm_ws(text: str) -> str:
@@ -1031,14 +1029,36 @@ def _norm_ws(text: str) -> str:
 
 def _internal_path(href: str) -> str | None:
     """Root-relative path for an internal link; None for an external one."""
+    from urllib.parse import urlsplit  # noqa: PLC0415
+
     h = str(href or "").strip()
-    if h.startswith("#") or h.startswith("mailto:") or h.startswith("tel:"):
+    if "\\" in h:
+        # Browsers normalize backslashes as URL separators; urlsplit does not.
+        # Reject the ambiguous spelling before it can pose as an external host.
+        return "/" + h
+    if h.startswith("#") or h.lower().startswith(("mailto:", "tel:")):
         return None
-    for host in _SITE_HOSTS:
-        if h.startswith(host):
-            return "/" + h[len(host):].lstrip("/")
     if h.startswith("//") or "://" in h:
-        return None                      # genuinely external
+        try:
+            parsed = urlsplit(h)
+            host = (parsed.hostname or "").lower().rstrip(".")
+        except ValueError:
+            return "/" + h               # malformed URL fails the internal gate
+        if not host:
+            # HTTP(S) with extra slashes may gain an authority in a browser.
+            # A missing parsed authority must fail closed, never be external.
+            return "/" + h
+        if host not in ("www.mastermind-x.com", "mastermind-x.com"):
+            return None                  # genuinely external
+        # Classify by the parsed host, preserving the path's exact spelling.
+        # Protocol-relative, case variants and userinfo cannot pose as external
+        # URLs; the dossier gate below still rejects noncanonical stock forms.
+        path = parsed.path or "/"
+        if parsed.query:
+            path += "?" + parsed.query
+        if parsed.fragment:
+            path += "#" + parsed.fragment
+        return path
     if h.startswith("/"):
         return h
     return "/" + h
@@ -1110,29 +1130,60 @@ def check_link_allowlist(draft: dict, slot: dict, cfg: dict) -> dict:
     All three answer 302 to /?signin=1.  The validator was actively FORCING
     every public article to cite a login wall — the reader clicks the citation
     and lands on a signin form.  Only prefixes verified public logged-out are
-    allowed (config/press.yml `public_link_prefixes`; today /research/ and
-    /blog/, both confirmed 200).
+    allowed (config/press.yml `public_link_prefixes`). Stock dossiers also
+    require the planner's exact canonical path in `slot.allowed_links`: a
+    public route family does not prove that a named company page exists.
 
     External links are untouched: an external source is what the piece is
     citing, and the allowlist is about OUR estate.
     """
+    from urllib.parse import unquote  # noqa: PLC0415
+
     prefixes = [str(p) for p in (cfg.get("public_link_prefixes") or [])]
-    body = _prose_html(draft, cfg)
+    stock_paths = set()
+    for url in slot.get("allowed_links") or []:
+        match = re.fullmatch(
+            r"https://www\.mastermind-x\.com(/stocks/[A-Z0-9][A-Z0-9.-]*\.html)",
+            str(url),
+        )
+        if match:
+            stock_paths.add(match.group(1))
+    # Every anchor renders, including anchors inside byline/footer furniture.
+    body = _body(draft)
     offenders: list[str] = []
     checked = 0
-    for href in _HREF_RE.findall(body):
-        path = _internal_path(href)
+    # HTML permits all three quoting forms; none may bypass the dossier gate.
+    hrefs = re.findall(
+        r'''(?<![\w-])href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))''',
+        body, flags=re.IGNORECASE,
+    )
+    for parts in hrefs:
+        href = next((part for part in parts if part), "")
+        if not href:
+            continue
+        decoded_href = _html.unescape(href)
+        path = _internal_path(decoded_href)
         if path is None:
             continue                     # external link — not our estate
         checked += 1
-        if not any(path.startswith(p) for p in prefixes):
+        decoded_path = unquote(path).split("?", 1)[0].split("#", 1)[0]
+        malformed = (
+            "\\" in decoded_path
+            or any(part in (".", "..") for part in decoded_path.split("/"))
+            or any(ord(char) < 32 for char in decoded_path)
+        )
+        stock_unadmitted = path.startswith("/stocks/") and (
+            path not in stock_paths
+            or decoded_href not in (path, f"https://www.mastermind-x.com{path}")
+        )
+        if malformed or stock_unadmitted or not any(path.startswith(p) for p in prefixes):
             offenders.append(href)
 
     ok = not offenders
     return _row("link_allowlist", ok,
                 f"{checked} internal link(s), all public" if ok else
-                f"internal link(s) outside the public allowlist {prefixes} — "
-                f"these are regwall-gated and send the reader to a signin form: "
+                f"internal link(s) outside the public allowlist {prefixes}, "
+                f"unplanned stock dossiers, or malformed paths: "
                 f"{offenders}",
                 internal_links=checked, offenders=offenders, prefixes=prefixes)
 

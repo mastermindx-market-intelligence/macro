@@ -13,7 +13,7 @@ Two modes, and the default is the safe one:
            tests/test_press_run.py::test_staging_writes_nothing_outside_staging
            snapshots the tree and fails on any other write.
 
---emit     Takes the staged items whose status is `passed`, writes
+--emit     Revalidates staged items whose status is `passed`, writes
            content/seo/blog/<slug>.md, renders the estate with the EXISTING
            free-content builder, copies the /blog/ subtree (pages + feed.xml)
            into site/, and appends one row per piece to
@@ -930,6 +930,26 @@ def run_emit(root: Path, cfg: dict) -> dict:
                 _annotate(
                     "warning", "press_emit_canonical_approval",
                     f"press emit: canonical slot {obj.get('id')} requires verified approval",
+                )
+                continue
+            # Staging is mutable: its saved report describes the earlier draft,
+            # not necessarily the copy we just loaded. Re-run the same suite
+            # before ANY content/render/ledger write and retain the fresh report
+            # for both quarantine and the eventual ledger row. The validator's
+            # slot-id exclusion keeps this candidate out of its staged peers.
+            report = validators.validate(obj["draft"], slot, cfg, root=root)
+            obj["validator_report"] = report
+            if not report["ok"]:
+                obj["status"] = "quarantined"
+                obj["quarantine_reason"] = "validators at emit: " + ", ".join(report["failed"])
+            path.write_text(
+                json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
+                encoding="utf-8",
+            )
+            if not report["ok"]:
+                _annotate(
+                    "warning", "press_emit_validation",
+                    f"press emit: slot {obj.get('id')} quarantined — {obj['quarantine_reason']}",
                 )
                 continue
             items.append((path, obj))
