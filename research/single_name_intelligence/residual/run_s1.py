@@ -743,7 +743,8 @@ def log_p03_configs(ledger: TrialLedger, challenger_ctx: dict | None) -> None:
 # --------------------------------------------------------------------------- #
 # main pipeline
 # --------------------------------------------------------------------------- #
-def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str) -> dict:
+def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
+                 ledger_file: Path | None = None) -> dict:
     repo_root = repo_root.resolve()
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -782,7 +783,11 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str) ->
         "prior_looks": "none for v1",
     }
 
-    ledger = TrialLedger(path=_resolve_ledger(repo_root, ledger_path_arg))
+    # The ledger FILE is where this run writes; the receipt string is what the
+    # operator passed. In --check mode the file lives in the temp out-dir so
+    # the byte-compare against the committed ledger is apples-to-apples.
+    ledger = TrialLedger(path=ledger_file if ledger_file is not None
+                         else _resolve_ledger(repo_root, ledger_path_arg))
     results: dict = {}
     observations_out: dict = {}
 
@@ -1007,7 +1012,8 @@ def main(argv=None, store=None) -> int:
         if args.check:
             with tempfile.TemporaryDirectory(prefix="sni_s1_check_") as td:
                 out_dir = Path(td) / "out"
-                run_pipeline(store, repo_root, out_dir, ledger_arg)
+                run_pipeline(store, repo_root, out_dir, ledger_arg,
+                             ledger_file=out_dir / "trial_ledger.jsonl")
                 ok = _byte_compare(repo_root / RUNS_REL, out_dir)
                 print("check:", "IDENTICAL" if ok else "DIFFERS")
                 return 0 if ok else 1
