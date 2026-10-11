@@ -84,7 +84,8 @@ files match, the roster was 632" has recorded legs (1), (2) and a paraphrase of 
 reader cannot tell whether the refusal came from the roster-size site or from budget exhaustion
 or from an ownership gap. Leg (3)'s before/after roster reads and wall-time reading (plus, under
 the seat's tightening, the call/byte totals) are what attribute the refusal to the roster; leg
-(4)'s posted artifact bytes (the seat's tightening) are what make the fingerprint recomputable
+(4)'s posted artifact bytes (required by 6106495383 section 2) are what make the fingerprint
+recomputable
 by someone other than the poster, since the verifier checks it for shape only.
 
 Confidence `verified` covers the verifier facts only (the refusal, the 490 cap, the emission
