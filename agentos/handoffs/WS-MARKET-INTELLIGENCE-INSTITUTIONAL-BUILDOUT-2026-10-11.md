@@ -111,7 +111,7 @@ unverified:
   - claim: "#8812 is live: the sentinel served-file read uses the measured whole-file cap"
     what_would_verify: "the first sentinel tick after the VPS pull (14:42Z cadence) logs no HTML-truncation refusal; watcher bjaodhbad reads it"
   - claim: "#8807 and #8816 heal their units after the 10-12 nightly republishes the manifest"
-    what_would_verify: "first :53 technicals tick after the ~02:0xZ nightly completes without 'store ticker count does not match'; update.sh then arms W2C (D-experience) and the experience tick logs the torn-pending discard path instead of a wedge"
+    what_would_verify: "GATED by the nightly outage (DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES; GH001 on data/qledger/claims.jsonl, Sol #8042/#8756): first :53 technicals tick after a GENUINE nightly completes without 'store ticker count does not match'; update.sh then arms W2C (D-experience) and the experience tick logs the torn-pending discard path instead of a wedge"
   - claim: "DIDC #8830 reached PRODUCTION_PROOF on the VPS: the 17:30:25Z macro-market-memory-identity run exited 0 after the deploy pull moved HEAD 8a75b657→b79cd122 mid-run (completion_commit ≠ deployed_commit; merged blob 57f6ae0d155d at HEAD)"
     command: "ssh -i ~/.ssh/macro_dashboard_deploy_v2 -o BatchMode=yes root@146.190.142.17 'cd /opt/macro && git rev-parse HEAD:scripts/ingest_market_memory_identity.py && git reflog --date=iso | head -12 && systemctl show macro-market-memory-identity.service -p Result,NRestarts,ExecMainStartTimestamp,ExecMainExitTimestamp,ExecMainStatus && journalctl -u macro-market-memory-identity.service --since 17:25 -o cat | grep -E completion_commit' (ORCH-OPS read 17:34:37Z; seat judged the artifact)"
   - claim: "P2 brings the writer live on the VPS once the deploy-alpaca-secrets dispatch (#8838) refreshes the VPS Alpaca pair, and the canary reads live with growing rows"
@@ -130,7 +130,7 @@ next_actions:
   - "#8838 deploy-alpaca-secrets.yml (armed merge-on-green; watcher bbyqxi0ml 150 s on head dbdf75a58f00): merge on concluded green → gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=false (a dispatch from the PR branch answered 404 — workflow_dispatch resolves against the default branch) → on success SendMessage ORCH-N CONTINUE: ticker-news-setup.sh --disarm then --arm, canary ×2 ≥10 min apart, then P3 Terminal drop-in (TICKER_NEWS_RAIL=1, daemon-reload, one restart); P3 proof = newsRailEnabled true at .deployment-id 707648d52014. Never restart marketing-press-feeds before reading the press-lane cursor/dedupe semantics (two-month frozen cursor)"
   - "Covering main proof for the authority-frozen heads #8830 (scripts/) and #8838 (.github/workflows/): gh workflow run ci.yml --ref main only after run 38158841888 concludes and #8838 merges, over a clear field (preflight the in-flight list first)"
   - "Identity-timer runway: both 17:27Z and 17:30Z runs took ~165 s wall for ~82 s CPU under CPUQuota=50% against TimeoutStartSec=180 in app/deploy/macro-market-memory-identity.service (92% of the budget; corpus grows daily). Lift the budget in a small unit-file PR (CPUQuota and/or TimeoutStartSec; read app/deploy/update.sh for how unit edits deploy) BEFORE the timer starts timing out — this is the identity unit, not the options-context-audit unit whose timeout DNR forbids the same lever"
-  - "Proof reads after the 10-12 nightly (~02:0xZ) + first :53 technicals tick: B (#8807) replay passes; D-experience (#8816) W2C activation by update.sh; then the scheduled identity/options runs for #8819/#8818"
+  - "GATED — proof reads after the next GENUINE nightly (10-12 ~02:0xZ is cut again unless the M2 runner host is fixed: DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES; GH001 on claims.jsonl is Sol's #8042/#8756; cron 15b0b437 reads once at 05:07Z and never dispatches/cancels daily.yml) + first :53 technicals tick: B (#8807) replay passes; D-experience (#8816) W2C activation by update.sh; then the scheduled identity/options runs for #8819/#8818"
   - "On ORCH-OPS watcher bb4o086m3 CONCLUDED for #8830 at head 3418a0e579bf: hold scan (DRAFT, 0 labels, auto-merge null, reviewDecision, no hold text in body/comments) -> gh pr ready 8830 && gh pr merge 8830 --squash --match-head-commit <full sha> -> bare git fetch origin + 2-path blob compare -> SendMessage ORCH-OPS the sha; proof on the first moved-HEAD identity run (one journald read); then the seat's separate timeout-runway decision"
   - "ONE #1202 checkpoint comment at the W8/W9 boundary (never re-ACK/re-START); refresh account memory; Chairman blocker list LAST; SESSION END line"
 do_not_redo:
@@ -142,6 +142,7 @@ do_not_redo:
   - "G-PR DECIDED: MAX_SOURCE_ROWS stays 25_000 until prereg v2 (DEC:PRODUCTION-RECORDS-ROW-BOUND-STAYS-FAIL-CLOSED-UNTIL-PREREG-V2); never window/evict owners"
   - "Never relaunch a Terminal news server lane (#832 closed superseded); P3 is a systemd drop-in on the Terminal host, not a Vercel redeploy"
 danger_areas:
+  - "Runner-host services and host network settings on the M2 Studio (actions-runner* launchd services, runsvc.sh, the runner .env, VPN / Little Snitch / Tailscale) are operator settings: read ~/actions-runner*/_diag only; never restart a listener; never dispatch/cancel daily.yml (hook shape 6); never read a runner .credentials file"
   - "The VPS Alpaca pair is refreshed ONLY by deploy-alpaca-secrets.yml (#8838; DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW): never read, paste, copy or hand-edit the pair; a file mtime newer than the 2026-08-04 rotation is not evidence the pair is current (DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04); the press-lane cursor has been frozen since 2026-08-04, so a marketing-press-feeds restart replays a two-month backlog whose dedupe semantics are unread — restart_press_feeds stays false until that is read"
   - "Pushing into an armed PR, or reading a PR the orchestrator just read within 300 s (REDUNDANT POLL guard)"
   - "engine/qbus_news_receipts.py is edited by Sol's held #8697 (head 7b7fa9599b26) — the Alpaca adapter must never touch it"
@@ -161,6 +162,7 @@ decisions:
   - DEC:TICKER-NEWS-UNIVERSE-STAYS-FAIL-CLOSED-ON-UNRESOLVED-ALIAS
   - DEC:PRODUCTION-RECORDS-ROW-BOUND-STAYS-FAIL-CLOSED-UNTIL-PREREG-V2
 discoveries:
+  - DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES
   - DSC:MASSIVE-OPTIONS-FLATFILE-ENTITLEMENT-REGRESSION
   - DSC:OPTIONS-CONTEXT-AUDIT-V1-TIMEOUT-PRECEDES-4096-REFUSAL
   - DSC:PSKY-SKYD-RENAME-IS-ONE-CIK-DATED-BOUNDARY
@@ -449,7 +451,7 @@ macro-api journal since the 19:05:03Z rail flip = 5 × 401, all seat probes; zer
 TerminalShell.tsx:5781, app/terminal/page.tsx:74). Recipe for any seat/operator with a browser: sign in at
 app.mastermind-x.com/terminal → select UNH → News rail tab → panel `data-testid="ticker-news-panel"` shows
 ≥1 headline + live dot. GAP carried: signed-in rail render unobserved in production.
-Open next: post-nightly proofs on 10-12 (B #8807 first :53 technicals tick; D-experience #8816 W2C activation
+Open next: post-nightly proofs after the next GENUINE nightly — 10-12 is GATED by the M2 runner-listener self-cancel and GH001 (DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES; #8748 comment 6114287529) — (B #8807 first :53 technicals tick; D-experience #8816 W2C activation
 — the first /opt/macro tick after a matching manifest should print no refusal and no frozen line; #8828
 roster; data-health.yml). Chairman/owner-only list (LAST): Massive options-snapshot entitlement (money); MCP
 OAuth (mastermind-executive, linear-server, figma); direct Benzinga contract only for body/image display; Sol
