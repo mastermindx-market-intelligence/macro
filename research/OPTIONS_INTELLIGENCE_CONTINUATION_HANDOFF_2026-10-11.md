@@ -76,8 +76,8 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## OPEN
 
-- O-1 G01 canary: round 1 PARTIAL (see delta log); round 2 re-commissioned on grok (policy-permitted local
-  engine) at ~08:30Z, budget 20 min; artifacts under the seat scratchpad `g01_canary/`.
+- O-1 G01 canary: round 1 PARTIAL (see delta log); round 2 (grok, no task class) refused by the
+  economic filter; round 3 (grok, `POOL_TASK_CLASS=audit` + escalation reason, dry-checked allowed) launched ~08:40Z; artifacts under the seat scratchpad `g01_canary/`.
 - O-2 D01 current M1 source serviceability (read-only census; owner receipts only).
 - O-3 Q01 independence: Opus methods review + Fable ruling; no floor imposed on the six-pilot programme.
 - O-4 Which macro checks are actually gating for #7861 given `main` has no protection (merge-queue-pilot
@@ -97,7 +97,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
 | G00 ownership + interface map | Fable seat | this file | #599 | — | IN_PROGRESS | — |
-| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus, model claude-opus-5-5) → `pool run grok` operator | scratchpad `g01_canary/` | this file | agent completion notification | ROUND2_RUNNING | 20 min |
+| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus, model claude-opus-5-5) → `pool run grok` operator | scratchpad `g01_canary/` | this file | agent completion notification | ROUND3_RUNNING | 20 min |
 | O1 D01→D02→D03 | native Opus lead → pool operators | macro worktree (new per lane) | #7861 / #599 | agent notification | NOT_STARTED | — |
 | O5 Q01 | native Opus lead → pool operator + independent review | #8385 head `0234ea19cb` | #8385 | agent notification | NOT_STARTED | — |
 | O7/O8 U01 + integration | native Opus lead → pool operators | terminal worktree (new per lane) | #599 | agent notification | NOT_STARTED | — |
@@ -154,3 +154,27 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   (#8377). Carry to O5 as input; Opus statistics review still owed.
 - Seat decision: round 2 = the same operator task once on grok (the refusal's named permitted engine; not a
   provider/account bypass). No third run from this seat if grok also refuses.
+
+### 2026-10-11 08:26Z — G01 canary round 2 (grok, no task class)
+- `pool run grok` refused before launch, rc 78, no run id: `ECONOMIC_POLICY_REFUSED {"allowed":false,
+  "reason":"unknown_task_class","requested_model":"","task_class":"","tier":"unknown"}`. Cause (read, not
+  inferred): kit `ext/sub.sh` ~L443 runs `pick.py launch-policy --mode grok --class "${POOL_TASK_CLASS:-}"
+  --escalation-reason "${POOL_ESCALATION_REASON:-}"` for glm/grok/cursor/go/qwen/bailian; empty class → refused;
+  class `audit` is `leaf-labor` in `model_tier.CLASS_TIER` and on a non-leaf engine needs an escalation
+  reason ≥12 chars (not yes/ok/none). `launch_policy()` is a pure JSON decision (writes nothing).
+- Child stopped per ruling (no oc-free / remote / third run). Operator return: none. A02 still undemonstrated.
+- Seat dry check (read-only) 08:3xZ: grok × {audit,census,extract,mechanical,execute} + reason → allowed
+  `leaf_labor_escalation_recorded`; grok × review → allowed `economic_guard_permitted_class` (frontier-labor);
+  oc-free × audit with no `--model` → refused `unregistered_free_model` (needs one of mimo-v2.5-free /
+  mimo-v2.6-flash-free / ling-3.0-flash-fin-free named explicitly).
+- **Working local recipe for leads on m2 (pending round-3 confirmation):**
+  `POOL_ORCHESTRATOR_ID=<seat sid> POOL_TASK_CLASS=<audit|census|extract|execute|review>
+  POOL_ESCALATION_REASON="<≥12 chars, why not the leaf executor>" pool run grok "<packet>" <cwd>`.
+  Executor-tier pools (minimax/qwen) from m2 only via `pool remote <host|auto> <pool> <packet_file>
+  <remote_cwd>` — route qualification UNPROVEN, and the remote host needs the repo/gh the task touches.
+- Pool-tooling defects recorded for the Fabric owner (not fixed here — Fabric is out of scope): (1) `pool pick`
+  applies neither the seat-host policy nor the economic launch policy that `pool run` enforces, so pick and run
+  disagree on m2; (2) the agent-pools skill's quick recipe omits `POOL_TASK_CLASS`, which the launcher requires.
+- Seat decision (L.4 honoured: rounds 1 and 2 were different refusals, each yielding a new fact; round 3 changes
+  the parameters the filter itself names, not the provider/account/host): round 3 = grok with class `audit` and
+  the seat's escalation reason; a refusal there ends G01-A02 for this seat and is reported as a blocked gate.
