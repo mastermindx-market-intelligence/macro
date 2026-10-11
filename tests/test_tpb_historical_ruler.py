@@ -323,6 +323,26 @@ def test_minute_conditioning_never_uses_full_day_baseline():
     assert float(minute["robust_z"])>5  # full-day 0.5 would hide the morning event
 
 
+def test_valid_source_generated_tiny_minute_shares_remain_calibratable():
+    # Each input volume fits the bounded source integer-decimal contract,
+    # while an exact cumulative participation fraction may need more than
+    # the 128 characters allowed for native source amounts.
+    large = "1" + "0"*127
+    target = measured(points=[point(30,"4",large),point(209,"4",large)])
+    prior = [
+        measured("2026-09-"+str(i).zfill(2),
+                 rows=[trade("p"+str(i),30,shares="500")],
+                 points=[point(30,str(i),large),point(209,str(i),large)])
+        for i in (1,2,3)
+    ]
+    result = calibrate_history(
+        target=target, previous=prior, minute_index=30,
+        evaluation_ns=END+90_000_000_000, min_history=3)
+    assert result["minute_conditioned_baseline"]["state"]=="OBSERVED_COVERAGE_ONLY"
+    assert result["minute_conditioned_baseline"]["n_prior"]==3
+    assert result["minute_conditioned_baseline"]["robust_z"] is not None
+
+
 def test_missing_or_nonmatching_minute_is_not_filled_from_daily():
     target=measured(points=[point(209,"400","500")])
     out=calibrate_history(target=target,previous=history(5),minute_index=30,

@@ -28,6 +28,9 @@ MAX_PRINTS = 20000
 MAX_MINUTES = 390
 MAX_HISTORY = 1500
 MAX_DECIMAL_WIDTH = 128
+# Exact derived ratios can be wider than their bounded source numerators
+# and denominators; the calculation itself uses 2*128+20 precision.
+MAX_DERIVED_DECIMAL_WIDTH = 2*MAX_DECIMAL_WIDTH + 24
 MINUTE_NS = 60_000_000_000
 CLUSTER_NS = 60_000_000_000
 _BLOCK_TIERS = (100000, 500000, 1000000)
@@ -78,8 +81,10 @@ def _sha(x, label):
     return x
 
 
-def _amount(x, label, *, zero=False):
-    if type(x) is not str or len(x) > MAX_DECIMAL_WIDTH + 16:
+def _amount(x, label, *, zero=False, max_width=MAX_DECIMAL_WIDTH):
+    if type(max_width) is not int or not 1 <= max_width <= MAX_DERIVED_DECIMAL_WIDTH:
+        raise HistoricalRulerRefusal(f"{label} invalid decimal width budget")
+    if type(x) is not str or len(x) > max_width + 16:
         raise HistoricalRulerRefusal(f"{label} requires bounded exact decimal text")
     try:
         d = Decimal(x)
@@ -92,7 +97,7 @@ def _amount(x, label, *, zero=False):
     left = n + exponent
     width = (n + exponent if exponent >= 0 else
              n + 1 if left > 0 else 2 - left + n) + tup.sign
-    if width > MAX_DECIMAL_WIDTH:
+    if width > max_width:
         raise HistoricalRulerRefusal(f"{label} unbounded decimal exponent")
     return d
 
@@ -543,7 +548,8 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
         for historical_point in record["minute_points_private_only"]:
             if historical_point["minute_index"] == index and historical_point["qualified_prefix"]:
                 if historical_point["share"] is not None:
-                    minute_samples.append((_amount(historical_point["share"], "history.share", zero=True),
+                    minute_samples.append((_amount(historical_point["share"], "history.share", zero=True,
+                                                 max_width=MAX_DERIVED_DECIMAL_WIDTH),
                                            record["session"]))
                 break
     minute = {"conditioning": "EXACT_MINUTE_INDEX_RTH_CUMULATIVE_ONLY",
@@ -562,7 +568,8 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
             values = sorted(x[0] for x in minute_samples)
             center = median(values)
             dispersion = median(abs(x-center) for x in values)
-            now = _amount(point["share"], "target.share", zero=True)
+            now = _amount(point["share"], "target.share", zero=True,
+                          max_width=MAX_DERIVED_DECIMAL_WIDTH)
             minute["median"] = _fmt(center)
             minute["mad"] = _fmt(dispersion)
             minute["midrank_percentile"] = _fmt(
