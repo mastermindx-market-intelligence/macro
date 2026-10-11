@@ -5279,3 +5279,6 @@
 {"date":"2026-10-10","ticker":"ESE","rank":null,"score":13,"lean":1,"broken":true}
 {"date":"2026-10-10","ticker":"BMY","departed":true,"left_desk":"2026-10-10","last_rank":27,"last_score":29}
 {"date":"2026-10-10","ticker":"UNP","departed":true,"left_desk":"2026-10-10","last_rank":30,"last_score":28}
+{"date":"2026-10-10","ticker":"KO","rank":19,"score":36,"lean":1,"broken":false}
+{"date":"2026-10-10","ticker":"A","rank":29,"score":31,"lean":1,"broken":false}
+{"date":"2026-10-10","ticker":"NOVT","rank":null,"score":13,"lean":1,"broken":true}
