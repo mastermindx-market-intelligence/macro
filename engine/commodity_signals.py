@@ -30,6 +30,7 @@ import numpy as np
 import pandas as pd
 
 from lib import config
+from lib.cot_publication import align_released
 
 YIELD_DRIVERS = {"real_yield", "us10y", "us2y", "breakeven10", "breakeven5y5y"}
 ANN = np.sqrt(252)  # commodities trade ~252 days/yr (BTC engine uses 365)
@@ -164,17 +165,20 @@ def structure(px: pd.DataFrame, cfg: dict) -> pd.DataFrame:
 
 
 def positioning(pos: pd.Series | None, idx: pd.Index, cfg: dict) -> pd.DataFrame:
-    """COT spec net % of OI -> rolling percentile + crowding state. Rolling (not
-    full-history) so the 2022 oil contract handoff doesn't distort the scale."""
+    """Release-aligned positioning; legacy daily-window scoring is retained.
+
+    Missing/stale inputs remain unknown. New COT-board ranks use weekly samples.
+    """
     out = pd.DataFrame(index=idx)
     if pos is None:
         return out
-    p = pos.reindex(idx).ffill(limit=10)
+    p = align_released(pos, idx, max_age_days=12)
     pct = _pctile(p, cfg["pctile_lookback_d"])
     out["pos_net_pct_oi"] = p
     out["pos_pctile"] = pct * 100
-    out["pos_state"] = np.where(pct > cfg["crowded_long_pctile"], "crowded_long",
-                       np.where(pct < cfg["crowded_short_pctile"], "crowded_short", "neutral"))
+    out["pos_state"] = np.where(pct.isna(), None,
+                       np.where(pct > cfg["crowded_long_pctile"], "crowded_long",
+                       np.where(pct < cfg["crowded_short_pctile"], "crowded_short", "neutral")))
     return out
 
 
