@@ -502,3 +502,59 @@ source-normalization, not the same denied calculation.
 **Next:** single original-branch source/evidence commit and
 GitHub immutable readback; consume new-head checks and
 maintain owner-led S2-P1 admission requirement.
+
+## Exact HELD Macro source reader v1 output interop — owner ABI proof
+
+**Original PR source parent:** `9d407ba6bed520399b1153b66638ebb133afe8a6`;
+same `claude/factor-atlas-capital-pressure-20261008` branch,
+Macro PR #8677 DRAFT/HOLD. Protected Mastermind
+`8d62a8571d2a6ad9da9d50e5e4624de6eecaac4c`,
+compatible Sol Skillpack 1.0.1/bootstrap1 unchanged protected blobs.
+
+**Genuine integration seam proven read-only:** Held Macro #8623
+source head `6cff6ef8aba28dc7ee6f7779a81ef18856d9b3b6`,
+file `engine/entry_radar/replay/terminal_minute_observations.py`,
+blob `95b53bba32eb2ebd6e7804052c31271bf1b65eed`,
+provides `mastermind.entry_radar.terminal_minute_observations.v1`
+already-decoded event/owner-read/source-clock/capture SHA and
+revision rows, but deliberately sets `basis_id=null`,
+`basis_refusals=[TERMINAL_BASIS_UNPROVEN]` and does not
+select competing revisions or grant admission.
+
+**New bounded native negative interop:** research-only
+`prototype/owner_reader_abi.py` checks exact supplied decoder
+schema/source_ref/pages/immutable row SHA self-consistency,
+source/read ns vs microsecond-ceiled ISO known-at, UTC calendar
+minute, explicit owner adjustment/volume state and duplicate
+revision input; maps into the existing S2-P1 preflight with
+`listing_ref=null`, `basis_id=null`, no monetary-basis/action
+receipt, no dataset-specific rights, no revision-selection
+attestation. All 12/12 fabricated input candidates remain
+`OWNER_BASIS_UNPROVEN`, cannot enter BVC calculation, and
+have NO market, customer or trading authority. No live source
+file/raw bytes read or selector, source, reader, licence,
+calendar, identity or publisher owner altered.
+
+**Proof:** 27/27 new TDD native ABI cases passing, full
+13-suite research fixtures **384/384 local pass** Python3.12;
+fabricated decoder packet witness and complete digests in
+`evidence/native_owner_reader_abi_tests.json`, protocol
+`OWNER_READER_ABI_CONFORMANCE.md`. Original held source
+PRs Terminal #844, Macro #8623 remained Draft/unmerged at
+the last verified decision. This is a candidate ABI conformance
+check, not installed source or positive data admission.
+
+**DO_NOT_REDO:** previous four explicit source-read refusals,
+benchmark repair, fresh-main comparison and the separate blocked
+S2-P4 calculation integrity edit. Two original uncommitted
+read-model files remain unmodified with 4 red integrity
+falsifiers and are EXCLUDED from manifest/staged CI.
+No program/broker/source writer custody transfer, merge,
+deployment, alert/trade rank, new data purchase or
+asynchronous executor. Real AAPL/MSFT/NVDA/SPY 1m +
+trade/NBBO dataset remains S2-P1/S2-P2 NOT_ADMITTED.
+Next: commit on original branch and verify remote source SHA;
+consume new-head CI. Then original data owners must bind
+true monetary price/volume/action vintage, rights, PIT
+security identity/calendar and selected first-observed
+revision receipts before any empirical study.
