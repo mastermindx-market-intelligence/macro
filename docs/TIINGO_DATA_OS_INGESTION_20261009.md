@@ -420,3 +420,38 @@ producer regressions, overwrite prior evidence, infer complete history from the
 catalogue, promote current membership to a historical universe, or call these
 fixture-verified research readers PROVEN_LIVE. Keep the PR draft and the 24
 registry entries PROPOSED until real acceptance evidence exists.
+
+
+### October 10 additional read-only corpus audit correction
+
+The existing corpus auditor could report NOT_FOUND for an unseen request when
+receipt scanning was truncated. Equally, a sampled corrupt receipt could be
+described as finally INVALID_CAPTURE although a later valid revision might be
+beyond the scan cutoff. Both statuses were stronger than the bounded evidence
+could prove. On every incomplete receipt scan, all selected requests now
+receive UNCONFIRMED_LATEST_PARTIAL_SCAN with latest_capture null; observed
+diagnostic counts remain in scan. A complete scan still distinguishes
+NOT_FOUND, INVALID_CAPTURE and valid/empty/partial captures normally.
+This is a pure auditor correction, not ingestion, source mutation, historical
+coverage proof or a new control plane.
+
+Three new synthetic tests verify absent/invalid outcomes under a scan limit
+and retention of a definite invalid status under a complete scan.
+Focused audit + read-side suites: 154 passed (process 86117); full
+Tiingo + registry suite: 269 passed, 11 failed (process 87192).
+The same 11 failed test identities remain the unrepaired core
+producer/context-integrity release blocks.
+
+Full-suite evidence log on the external drive:
+/Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-partial-scan-guard.log
+SHA-256 92a4ec9c80eacb0e9ddd76493530dbd383113e7245bb77a6304c8c3f6823c0d1
+The core collectors/tiingo_archive.py remains unchanged at SHA-256
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+No previously refused effect was retried or delegated. This change does not
+supersede the rights/availability limits or authorize a release. Keep
+Macro PR #8698 draft and all 24 Tiingo Data OS entries PROPOSED.
+
+Separate Tiingo News PR #8697 reports an authenticated HTTP 200 for a bounded
+news sample, evidence of news API token functionality only. This is not
+proof of EOD, fundamentals, BOATS, or public-news redistribution entitlements,
+and does not permit replay of the separately refused authenticated probe.

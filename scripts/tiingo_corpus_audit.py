@@ -191,8 +191,12 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
                 status = "RAW_RECORDS_CAPTURED" if summary["records"] else "EMPTY_CAPTURED"
                 if summary.get("outside_requested_range") or summary.get("missing_crypto_pairs"):
                     status = "PARTIAL_OR_OUT_OF_RANGE"
-        if not all_inspected and summary is not None:
+        if not all_inspected:
+            # An incomplete receipt scan cannot prove a request absent, empty,
+            # healthy, or finally invalid: an unseen later vintage can change
+            # any of those conclusions. Preserve observed diagnostics in `scan`.
             status = "UNCONFIRMED_LATEST_PARTIAL_SCAN"
+            summary = None
         statuses[status] += 1
         source_statuses[task.source][status] += 1
         if len(details) < detail_limit:

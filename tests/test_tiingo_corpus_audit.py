@@ -225,3 +225,39 @@ def test_partial_scan_cannot_confirm_latest_capture(lake):
 def test_corpus_source_date_uses_strict_shared_date_semantics(clock):
     with pytest.raises(ValueError):
         summarize_records(json.dumps([{"date": clock, "close": 1}]).encode(), task())
+
+
+def test_partial_scan_cannot_certify_missing_request(lake):
+    """Unseen receipts in a partial scan are UNKNOWN, not proven missing."""
+    amd, nvda = task(symbol="AMD"), task(symbol="NVDA")
+    saved(lake, amd, [{"date": "2020-01-01", "close": 1}])
+    saved(lake, nvda, [{"date": "2020-01-01", "close": 2}])
+    result = audit(lake, [amd, nvda], max_receipts=1)
+    assert result["all_receipts_inspected"] is False
+    assert result["request_status_counts"] == {"UNCONFIRMED_LATEST_PARTIAL_SCAN": 2}
+    assert "NOT_FOUND" not in result["request_status_counts"]
+
+
+def test_partial_scan_with_only_invalid_seen_still_cannot_certify_final_state(lake):
+    """One corrupt sampled receipt says nothing about unseen later captures."""
+    first, second = task(symbol="AMD"), task(symbol="NVDA")
+    saved(lake, first, [{"date": "2020-01-01", "close": 1}])
+    saved(lake, second, [{"date": "2020-01-01", "close": 2}])
+    # Make every candidate invalid, independently of filesystem traversal order.
+    for recpath in (lake.root / "receipts").rglob("*.json"):
+        record = json.loads(recpath.read_text())
+        (lake.root / record["raw_path"]).write_bytes(b"corrupt-response")
+    result = audit(lake, [first, second], max_receipts=1)
+    assert result["all_receipts_inspected"] is False
+    assert result["request_status_counts"] == {"UNCONFIRMED_LATEST_PARTIAL_SCAN": 2}
+    assert result["scan"]["invalid_receipts_or_payloads"] == 1
+
+
+def test_full_scan_preserves_positive_invalid_capture_status(lake):
+    saved(lake, task(), [{"date": "2020-01-01", "close": 1}])
+    rec = next((lake.root / "receipts").rglob("*.json"))
+    record = json.loads(rec.read_text())
+    (lake.root / record["raw_path"]).write_bytes(b"corrupt-response")
+    result = audit(lake, max_receipts=50)
+    assert result["all_receipts_inspected"] is True
+    assert result["request_status_counts"] == {"INVALID_CAPTURE": 1}
