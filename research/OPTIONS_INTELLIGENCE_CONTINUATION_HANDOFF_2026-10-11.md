@@ -52,6 +52,59 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 - D10 The C3 date-decoder divergence (`gexLadder.ts:270` reads only `_build_meta.asof_date`; `investigationOptionsReference.ts:151` reads both and refuses mismatch) is fixed in ONE separate follow-up after #846 lands; joint desk+lab enablement is gated on it. Not a mid-refresh cross-owner edit.
 - D11 #804 is coordination only (live writer: three commits today, head 9deff9514fce 07:15Z). Any coordination note goes through the PR carrier once, after the custody read (O-7).
 - D12 U02 stays SCOPED ONLY; Save stays OFF until D03 (O1: #7861 retained bytes + reference identity re-qualified against c095a2b0) and the options source-use rights interface (allowed/denied/unavailable × display/export) are both named.
+- D13 (09:1xZ, O5 Q01 on #8385, DR-1..6) Adopt O-A now: no new calibration gate; calibration stays
+  UNAVAILABLE (never "pass"); the delay is accepted; no floor — including the derived S1 — is imposed on
+  the six-pilot programme. O-B (20-per-bin/200) and O-D (smaller floor) REJECTED as invented. O-C is
+  admitted only as a data-free operating-characteristics DESIGN commission for the statistics owner,
+  parameters fixed before any `calibration_eval` label is read; registering any gate from it needs an FS-3
+  amendment + re-check (FS3:522) and a Macro `agentos` DEC by the owning session (stays OPEN). DR-2: T1
+  whole-tie contiguous bins, B=min(10,G); incumbent `lib/flow_score.ece()` is recorded UNWEIGHTED and
+  must not gate. DR-3: M1/M2 deferred to the OC package; b ≥ L=H+1 with 2L/4L stress; no fixed point
+  tolerance. DR-4: P = each admitted population as implemented in #8377 with the <2-effective-obs edge
+  bound; no-recompute extended to bins/score groups/era cells/bootstrap replicates; per-bin Σw fsum
+  conservation test. DR-5 adopted (freeze P, b, floors, B-rule, DP objective, tie rule, seed before any
+  label read; insufficiency reports label-blind). DR-6: E15 4.8/17.5/50.8 relabelled covered-session years
+  (anchor-years 4.7/17.4/50.5), Brier gate label "resolution exceeds reliability" — bookkeeping owed to the
+  #8385 author. #8385 stays REVISE (not merged, not closed). Trainer, `lib/flow_score.py`,
+  `lib/flow_score_geometry.py`, FS-3 §4.4 weights, frozen v1 registration unchanged before ratification.
+- D14 (O1 req 1) #7861 merge gate = Sol hold disposed by its holding authority + author refresh via OWNER
+  merge-commit of main (never rebase/force) + fresh ci-authority green + classification of the
+  `merge-queue-pilot` 0s FAIL (O-4) + one non-author approval. This seat neither merges nor takes the writer role.
+- D15 (O1 req 2+5) D01 verdict NOT SERVICEABLE is a CURRENT measurement (08:40–08:41Z), distinct from the
+  Oct 6 historical receipt. Falsifier = the natural `com.macro.optionsmatrix` run 2026-10-12T23:00Z,
+  observed read-only AFTER the fact. No manual re-run, kickstart, guard help/apply, second producer, host
+  move, or ssh/nohup publish. Best-supported cause = launchd TCC removable-volume block (EINTR shape
+  consistent with macro #4967 fail-fast), UNPROVEN. Root fix = Full Disk Access / Removable Volumes grant
+  on m1 to the launchd interpreters `/opt/homebrew/Caskroom/miniconda/base/bin/python` and
+  `~/miniconda3/envs/plane/bin/python`: a security-setting GUI change = genuine user-only control. The
+  discriminating launchd probe (`launchctl bootstrap gui/501 <probe.plist>`) is an effectful act on the
+  EFFECT_UNKNOWN host: owner's call (WS-ADVANCED-DATA-OPTIONS source owner), not this seat's.
+- D16 (O1 req 3) D01-A01/R6 code fixes (mount/device identity refusal; remove the internal `data_dir`
+  fallback for the production purpose; bounded gate read with stderr surfaced; fixtures positive /
+  negative-A / negative-B) = one bounded Macro lane for the source owner or fabric when capacity admits. No
+  new service. Not on the critical path (the TCC grant is).
+- D17 (O1 req 4) A05 checks (i) botocore `IfNoneMatch` support and (c) 403-vs-404 on GET of an absent
+  history key with the publisher credential are READ-ONLY and allowed in the next bounded host budget
+  (credentials never printed). (ii) any synthetic object write under `history/<QUALROOT>/` on the public
+  plane is effectful and needs source-owner authorization via the owner lane, never from this seat.
+- D18 (O1 req 6+7) Producer-contract fixes (A02 refuse/quarantine instead of summing same-key OI rows;
+  A03 exclusion counts; A04 exact strike tokens + `unrepresentable_strike`; A05 `available_at` domain
+  object) = successor PR AFTER #7861, same owner, paired fixtures. R1 (R2-head put session precondition)
+  requested of the #7861 author as a small pre-merge amendment via ONE PR review.
+- D19 (O1 req 8) R7 accepted under the existing `options_structure_current` classification;
+  qualification bytes synthetic non-licensed only; any private-plane migration must name `history/**`
+  (preserved obligation).
+- D20 (O-7 custody) #723/#846 refresh custody is VACANT by bounded evidence (no commit/comment/review/
+  claim since 2026-10-09T06:52Z; Oct 6 Fable handoff closed "no open build lane"; WS owner `ceo-sol` is a
+  label, not a live receiver; protocol §7: a signal to look, never an automatic takeover). Fencing = ONE
+  claim comment on #723 (then #846) posted only when the refresh lane actually launches (claim and START
+  coincide); never a silent second writer. Refresh labor (owner merge-commit of master, lockfile regen,
+  REAL 6-crop recapture, fresh review) goes to a fabric operator — PENDING_CAPACITY. Principal exception
+  only under L.7; never a mass rebase.
+- D21 O8 = independent acceptance review by a fresh native `mastermind-opus-auditor` (model opus,
+  `ROUTE: AUDIT`, `MODE: READ_ONLY`), never the O7 agent. PR-head inputs pre-materialized into scratchpad
+  `leads/O8/inputs/` (the auditor has Read/Glob/Grep only). Checks = the six O8 checks of 08:53Z +
+  U01-A01..A05 against O7's candidate + B4 guest-bundle `OptionsRail` + D02/D03 consistency.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -84,57 +137,97 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 - Seat-verified at exact heads (not testimony): C3 divergence; #846 `researchLabAdapter.ts` stores `strike: number` (:7, :49) and `reconcileResearchSelection` (:63-67) silently filters missing selections → contradicts U02-A03/A02 if used on a restore path; `investigationOptionsReference.ts` is byte-identical in #846 and #804 and absent on master.
 - Macro #7861 is now CONFLICTING/DIRTY at c095a2b0c8e4, unreviewed, `merge-queue-pilot` FAIL (ci-authority SUCCESS). #804's contract doc pins stale heads (#7861 c63e9e28; #846 6bd2852f/c299a03d).
 - m2 load at 08:52Z: 134 (1-min) on 24 CPUs; O7's one operator attempt refused exit 75 at load1 155.4. All O7 enumeration is lead-performed.
+- (09:08Z) Seat spot-checks at macro S `50a7771` CONFIRM O1's code claims: `engine/thetadata_store.py`
+  `_OPS_WT_STORE` (:94), candidate order env → `data_dir()/thetadata_eod` (:265) → ops-wt (:268), no
+  ismount/st_dev check, "Emptiness is NOT established … treated as PRESENT" (:186/:201); `engine/options_matrix.py`
+  `_f(x, n=2)` (:93) at `"strike": _f(k)` (:916); `ops/launchd/run_options_matrix.sh` gate
+  `pq.read_table(columns=["date"])`, 6 attempts then exit 1, `PYTHON=/opt/homebrew/Caskroom/miniconda/base/bin/python` (:71).
+- D01 CURRENT census (08:40–08:41Z, read-only): hub `com.mastermind.optionshub` exit 4, stderr
+  2026-10-11T00:30:11Z InterruptedError listing tier dirs under `~/theta-ops-wt/data/thetadata_eod`;
+  `com.macro.optionsmatrix` runs=0 since boot ≈2026-10-10T00:04Z, no `/tmp/optionsmatrix.*.log`; next
+  natural run 2026-10-12T23:00Z; STORAGE (`/dev/disk7s1`) 114 GiB free; `oi/SPY/2026.parquet` 9,753,193 B
+  mtime 2026-10-10T01:00Z; no stuck process; installed bytes = S for store/runner/builder/matrix.
+- O1 artifacts: `leads/O1/D01_serviceability_census.md` (173 l), `D02_contract_crosswalk_draft.md` (158 l),
+  `D03_7861_qualification_plan.md` (286 l). D02 gaps: EOD `date`→`created` fallback unflagged; same-key OI
+  rows SUMMED at S and H; `_f(k)` 2dp rounding + silent off-grid drop; ±20%/0<DTE≤90 window undisclosed.
+  D03: head advances only after retention+readback NOT CONTRADICTED at H; residuals R1–R7.
+- O5 artifacts: `leads/O5/Q01_methods_review.md` (sha256 e884b708…), `Q01_decision_request.md` (b4d31f7a…);
+  anchor table 4.7/17.4/50.5 vs E15 4.8/17.5/50.8; P(ECE≥.05 | n=20, perfect) 0.569; monotonicity power
+  0.069 at n=100, 0.800 at n=600.
+- Macro #8385: DRAFT, head 0234ea19cb8f, no labels, only review = Fable 2026-10-04 REVISE; no comment after
+  10-10; no later Fable ruling exists (O.17 search).
+- #723 head branch `claude/terminal-options-heatmap-20260923`, last activity 2026-10-09T06:52:04Z (APPROVE at
+  b83a9b85); #846 head `claude/ssd-options-3d-research-lab-20261007-fd4fcda98840d206`, last 2026-10-09T06:52:29Z;
+  both same-repo, both CONFLICTING; no claim since.
+- m2 load1 09:12Z = 59.0 (27–96 this hour); the <15 admission gate has not opened this session.
 
 ## OPEN
 
-- O-1 G01 canary: round 1 PARTIAL (see delta log); round 2 (grok, no task class) refused by the
-  economic filter; round 3 (grok, `POOL_TASK_CLASS=audit` + escalation reason, dry-checked allowed) launched ~08:40Z; artifacts under the seat scratchpad `g01_canary/`.
-- O-2 D01 current M1 source serviceability (read-only census; owner receipts only).
-- O-3 Q01 independence: Opus methods review + Fable ruling; no floor imposed on the six-pilot programme.
-- O-4 Which macro checks are actually gating for #7861 given `main` has no protection (merge-queue-pilot
-  failing at 0s is unexplained).
+- O-1 G01 canary: A01/A03/A04 PASS; A02 (operator START+return consumed by the same Opus) WAITING_EXTERNAL
+  on the m2 load gate (watcher to ~09:25Z). On timeout A02 is DEFERRED and reported as a fabric-admission
+  refusal (delegation surface down, L.7) — not routed around.
+- O-2 D01 measurement CLOSED (D15). Open falsifier: observe the 2026-10-12T23:00Z natural run read-only
+  after the fact. Root fix (m1 TCC grant) is user-only.
+- O-3 Q01 CLOSED by D13 (O-A). Residual: OC design commission (statistics owner, when capacity admits);
+  DR-6 bookkeeping owed to the #8385 author; one ruling comment on #8385 owed (searched: none exists).
+- O-4 Which macro checks gate #7861 (`merge-queue-pilot` 0s FAIL unexplained) — part of the D14 gate.
 - O-5 U02 existing SQL operator approval — not reachable from this seat; name the exact approver when U02 opens.
 - O-6 Executive connector OAuth (user action in an interactive `claude` terminal via `/mcp`).
-- O-7 Custody of the #723 / #846 refreshes: no live writer observed since 10-09. Decide after reading the #599 carrier past comment 100 (Oct 6 receipt + any later custody claims). Seat may take the refresh only via canonical recovery, never as a silent second writer.
-- O-8 Guest-bundle status of #723's static `OptionsRail` import in `TerminalShell.tsx:5` (guest-bundle-boundary law) — verification owed at the integrated head.
+- O-7 CLOSED by D20 (custody VACANT; fenced claim at launch only).
+- O-8 Guest-bundle status of #723's static `OptionsRail` import — O8 auditor checks at the PR head;
+  integrated-head verification still owed to the refresh lane.
+- O-9 A05 read-only R2 checks (botocore `IfNoneMatch`; 403-vs-404 on absent key) — next bounded host budget (D17).
+- O-10 R1 pre-merge amendment request to the #7861 author (one PR review) — owed (D18).
 
 ## NEXT
 
-1. Consume G01 → record G01-A01..A04 dispositions → open dependent dispatch.
-2. Launch O1 (D01/D02 census → D03 retention qualification on #7861), O5 (Q01 on #8385), O7/O8 (U01 +
-   ownership/interface map; #723/#846/#781 integration reconciliation, read-only where custody is held).
-3. Persist: refresh this file per material delta; #599 compact checkpoint only on a capability delta.
+1. Launch O8 (pre-materialized inputs) → consume by artifact → record dispositions.
+2. Post the single D13 ruling comment on #8385 (O.17 searched: none exists).
+3. Consume the load watcher → G01 A02 final attempt (gate open) or DEFERRED (timeout).
+4. When capacity admits: U01 refresh operator (fenced claim on #723 at launch, D20); D01-A01/R6 lane (D16);
+   A05 read-only checks (D17); OC design commission (D13); #7861 R1 review (D18).
+5. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
+6. Expand to O2/O3/O4/O6 only when their inputs clear (D01 falsifier, #7861 merge, U01 integrated head).
 
 ## Lane matrix
 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
-| G00 ownership + interface map | Fable seat | this file | #599 | — | IN_PROGRESS | — |
-| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus, model claude-opus-5-5) → `pool run grok` operator | scratchpad `g01_canary/` | this file | agent completion notification | WAITING_EXTERNAL (m2 load gate) | — |
-| O1 D01→D02→D03 | native Opus lead → pool operators | macro worktree (new per lane) | #7861 / #599 | agent notification | NOT_STARTED | — |
-| O5 Q01 | native Opus lead → pool operator + independent review | #8385 head `0234ea19cb` | #8385 | agent notification | NOT_STARTED | — |
-| O7/O8 U01 + integration | native Opus lead → pool operators | terminal worktree (new per lane) | #599 | agent notification | NOT_STARTED | — |
+| G00 ownership + interface map | Fable seat | this file + `leads/O7/U01_overlap_map.md` | #599 | — | DELIVERED (custody ruled D20) | — |
+| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus) → `pool run grok` operator | scratchpad `g01_canary/` | this file | load watcher (bounded, to ~09:25Z) | WAITING_EXTERNAL — A01/A03/A04 PASS, A02 on load gate | — |
+| O1 D01→D02→D03 | native Opus lead (lead-performed; 0 operators admitted) | scratchpad `leads/O1/` | #7861 / #599 | — | JUDGED: ACCEPT (census CUR, crosswalk, plan); rulings D14–D19 | 1 lead |
+| O5 Q01 | native Opus lead (lead-performed) | scratchpad `leads/O5/` | #8385 | — | JUDGED: ACCEPT as independent methods review; D13 | 1 lead |
+| O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | ACCEPTED as PLAN 08:53Z; D7–D12 | 1 lead |
+| O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | LAUNCHING 09:1xZ | 1 auditor |
+| U01 refresh (#723→#846) | fabric operator (PENDING_CAPACITY) | new terminal worktree per lane | #723 / #846 | — | NOT_STARTED (fenced claim at launch) | — |
 
 ## DO_NOT_REDO (this programme)
 
 October 3 gamma repair; storage-guard help/apply or any cleanup retry; immutable-history service; second
 #8358 publisher or manufactured receipt; Massive entitlement gate; the `do_not_redo` lists above; a new
 collector, store, pricer, replay clock, candidate lifecycle, queue, auth or evaluation plane.
+ADDED 09:1xZ: manual `com.macro.optionsmatrix` re-run / kickstart / ssh+nohup publish; a launchd TCC probe
+from this seat; any real-R2 `history/**` write from this seat; any calibration floor (incl. S1) on the
+six-pilot programme; re-litigating O-A on #8385 without a material invalidator; a second writer on #723/#846
+before the fenced claim.
 
 ## Preserved obligations
 
 #8555/#7328 holds; P1–P6 studies, B1-RI, historical nulls, P6 actual-fill requirement; EOD never a silent
 v1 formation predicate; observed prints/OI vs derived vs assumed-book vs evaluated kept separate;
 missing ≠ zero; #7861/#723/#846/#804/#781 source custody.
+ADDED 09:1xZ: `history/**` keys stay on the existing public plane until a migration names them (R7/D19);
+the m1 TCC grant for the launchd interpreters is a user-only control (D15); DR-6 bookkeeping and the R1
+amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKNOWN stays on its original carrier.
 
 ## Capsule
 
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (first WIP commit on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "O1/O5 judged; D13–D21" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: consume G01 canary return, then dispatch O1/O5/O7-O8 leads
+EXACT_NEXT_ACTION: consume O8 auditor return; post D13 ruling on #8385; consume load watcher for G01 A02
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -213,3 +306,13 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Artifacts judged by content (not summary): `leads/O7/U01_overlap_map.md`, `U01_integration_candidate.md`, `U02_scoping.md`, `raw/` (merge-tree + path lists). Seat re-read the cited lines at the exact PR heads: all four spot-checks held.
 - Rulings D7–D12 recorded above. Six O8 checks owed (ort-strategy conflict sets; C3 payload with `session` ≠ `_build_meta.asof_date`; guest-chunk grep; order never rebases/force-pushes/adds a writer; U02 proven/owed/contradicted table esp. A02/A04; U01-A05 = recapture log + crop diff, never hash edits).
 - Cost: ~50 tool calls, 1 operator attempt (exit 75), 0 paid labor. Fallbacks inserted: DECIDED=True FACTS=True OPEN=True.
+### 2026-10-11 09:1xZ — O5 and O1 lead returns judged; rulings D13–D21; custody O-7 closed
+- O5 judged by artifact (both files read in full, hashes recorded): ACCEPT as independent methods review;
+  consistent with the 2026-10-04 REVISE on #8385. Ruling D13 (O-A now; O-C as design only; no six-pilot floor).
+- O1 judged by artifact (three files read in full; four code claims re-read at S and confirmed): ACCEPT.
+  D01 is a CURRENT not-serviceable measurement with a dated falsifier; D02 a crosswalk (fixtures proposed,
+  none written); D03 a plan ("holds in code at H", R1–R7). Rulings D14–D19.
+- Lane matrix corrected: O1/O5/O7 rows had stayed NOT_STARTED while the delta log recorded O7's acceptance.
+- O-7 closed (D20): custody VACANT, fenced claim only at launch. O8 auditor launching (D21).
+- Cost this cycle: ~25 tool calls, 0 paid labor, 0 operators admitted (m2 load 27–96).
+
