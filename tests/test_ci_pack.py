@@ -5477,7 +5477,11 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     on jobs that already ride templates/index.html: main wri-risk-core
     43 -> 44 and unrun-grading-board 29 -> 34 (+6); the carrier
     signal-contract 146 -> 148, tier-gate 41 -> 49 and unrun-intl-libraries
-    101 -> 122 (+31, its T10/T10b suites). Each side alone is under the
+    101 -> 122 (+31: the native-identity suite added to signal-contract's K1
+    step, the T09 paid-transport step added to tier-gate, and the T01, T02,
+    T03 and T07/T08 steps added to unrun-intl-libraries; the T10/T10b suites
+    ride ``unrun-subsector-themes``, which is ``scope: exclusive`` and rides
+    none of the three probes). Each side alone is under the
     bound. Measured locally, full manifest, inference on (sparse checkout
     omitting data/, mockups/ and verify_shots/, none of which this
     measurement reads), merge-base 363b4e6296b7 / main / carrier -> merged:
@@ -5486,10 +5490,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
         scripts/build_free_content.py 133 jobs, 5,591 weight (merged)
         engine/prophet/plan_book.py   128 jobs, 5,551 weight (merged)
 
-    The merged tree is the first to exceed the 5,800 weight bound, by one
-    weight-second, and only because two independently green sides' weight
-    bumps sum. This is the decision the #8322 entry said the next weight
-    delta would need: the templates/index.html WEIGHT ceiling moves to the
+    The merged tree exceeds the 5,800 weight bound by one weight-second, and
+    only because two independently green sides' weight bumps sum. It is not
+    the first breach of that bound: the 2026-09-23 wave above
+    (B-HEAL-CI-PACK-CEILING-2) measured 132 jobs / 5,810 here and, per the
+    standing convention, did not raise the ceiling; it curated four
+    fallback-tier jobs ``scope: exclusive``. This entry departs from that
+    convention and raises instead, on a narrower delta than that smear: no
+    job enters or leaves the probe, the +37 is declared-weight growth on
+    five jobs already riding templates/index.html on both sides, and
+    curating any of the three carrier jobs ``scope: exclusive`` needs the
+    whole-job closure audit the entry above requires before a path list can
+    replace a job's inferred coverage, which a base-sync merge on a carrier
+    under review does not perform. This is the decision the #8322 entry
+    said the next weight delta would need: the templates/index.html WEIGHT
+    ceiling moves to the
     exact merged measurement, 5,801, with no padding (the #8656 shape for
     job ceilings). The other two weight ceilings, all three job ceilings
     and the 10-pack bound stay unmoved (packs are 10 / 10 / 10). No suite,
@@ -5497,7 +5512,9 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     a declared weight is a measurement, and lowering one to clear the bound
     would be the dodge this test exists to catch.
     The incident this file bounds is still ~1,550 weight-seconds away; the
-    next weight delta on this probe needs its own decision recorded here.
+    headroom under the new ceiling is zero, so the next weight delta on this
+    probe needs its own decision recorded here: curate at the source, or
+    raise again on evidence.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
