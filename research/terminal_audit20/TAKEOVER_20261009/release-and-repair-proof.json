@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T23:17:44.096799+00:00",
+  "observed_at": "2026-10-11T00:38:30.325316+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T2318",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T0038",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -3968,7 +3968,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-heal-canonical-live-parent-acceptance-20261009.json",
       "sha256": "642001ab745582399923583ed9fdbbb669ce2edf8001ec85d7ed30d1db4042ef"
     },
-    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48\u201319:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
+    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48–19:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
     "A11_new_mounted_test": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-final-source-native-parent-qualification-20261009.json",
       "sha256": "253fcba0289507d5cc42d5e14790e0264e871df49e5e0764b9a543b92eb29f80"
@@ -4117,7 +4117,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-canonical-release-and-existing-controller-parent-acceptance-20261009.json",
       "sha256": "718ffba1f325d18dab385cdf1b864598590abd3d0a06bff1c9cae6af7046d0a7"
     },
-    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11\u201320:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
+    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11–20:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
     "785_automatic_existing_controller": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-existing-controller-actual-return-20261009T2035.json",
       "sha256": "93299fb83e693559f85bb7a93815b413196fb6069171864a5372fcd5bf66bd4d"
@@ -4271,7 +4271,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-parent-proposal-20261009/qualification.json",
       "sha256": "de480b675a1f0fa3236ad208a3b7d69732c5258e07dea77b44836147b3402e84"
     },
-    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5\u2192new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
+    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5→new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
     "A19_independent_review_request": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-independent-review-admission-20261009.json",
       "sha256": "d5d603b2edad81d56ef015fef502ea952b9f56af4073e9e1ce96e073a4334577"
@@ -5521,5 +5521,40 @@
     "read_corrections": "Initial GraphQL unsupportedWorkflow.path corrected owningrun REST path; initial APIcompare outputtruncated corrected full local object-byte binding all58. Exactobjects alreadyavailable/no fetch/checkout/source edits/localHEADe89ebda clean unchanged. Initial YAML final assertion wrongly expected all29 priorinvalid; observed28ScannerError and1alreadyvalid preserved/corrected with no effects orcapture replay.",
     "781_and_protected_gates": "PR781 unchanged5b/baseffc OPEN/CHANGES_REQUESTED/MERGEABLE/BEHIND/nativeauto+MOG+merge-blocked. Reserved exactcurrenthead independent review replacement plus3thread qualification pending; no CIloop/reapproval/rearm/parentPUT/competingwriter/newworker. IW2fifth explicitcyberrefusal frozen/no poll/retry/rephrase/othermodeltoolcarrierprincipal; supportedhumanplatformresolution existingIW2chat required. Paididentity/887ALLOW unanswered/do notrepeat;0030-32/operatorapproval/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/UNKNOWN exact.",
     "continuation": "New913 mergedsource/exactCI/YAML repair consumed scoped; no wholeoriginalmissionaccepted. After useful authorized qualification, next readyphase requires actual existing781controller newhead/masterrepair/reservedreview, independentlyauthorized existingproducer/canonicalevent or supportedhumanplatformclearance. Soleheartbeat/MOG/nativeauto remainsobserver. No unchanged administrative writes or principalpolling; checkpoint notcompletion."
+  },
+  "current_capability_frontier_20261011T0038": {
+    "observed_at": "2026-10-11T00:38:30.325316+00:00",
+    "supersedes": "current_capability_frontier_20261010T2239",
+    "whole_original_mission_accepted": false,
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-source-recovery-Brain-failure-parent-adjudication-20261011T0022.json",
+        "bytes": 8137,
+        "sha256": "50af3fb2377240e1d34cd3dc36cba947372345a7b1475e52f5737d72f018a2a8"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/brain-empty-recovery-parent-source-qualification-20261011T0045.json",
+        "bytes": 2612,
+        "sha256": "2b2ecd53c43b0852c82e52c492faceae12128f4a57415d66b49cb87c9a46c3e2"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/brain-8755-initial-CI-controller-observation.json",
+        "bytes": 5507,
+        "sha256": "9c9caa5300b6f12e954043c064239dbab8bc71d6cd28778c9cb7939b3b246544"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/brain-8755-ci-authority-pilot-failure.json",
+        "bytes": 5882,
+        "sha256": "e5f16313a553a17ef5cc14920f3afc0a46d7bb02ee60abaf678ebdb204f8b27f"
+      }
+    ],
+    "human_authorization_delta": "Direct Chairman continuation clears the stale unknown paid identity gate and authorizes recovery instead of waiting for organizational owner labels. Ordinary login to the designated test account succeeded; account showed Pro / Lifetime / Granted access. No credential retained in evidence, source, PR or automation. This does not waive actual safety/tool refusals, uncertain effects, independent numeric review, SQL approval or protected source/rights boundaries.",
+    "781_source_recovery": "Bounded exact local custody/process/effect reconciliation and explicit human recovery authorization; reused existing 781 SSD carrier only. Normal FF711->5b then clean merge current114 -> ad5a39f07d35afe6b0fbb67a8b971e73e0c841a3. All17 own paths bound:16 exact5b and only manifest inherited913 wording. Full533files/8634nativePASS/4TODO/rc0; TSC0/diffcheck0;18 actual responsive owned-fixture cases across three required viewports PASS. First maxWorkers-only runner error corrected min1/max2 before genuine execution. One normal FFpush5b->ad5 succeeded. No numeric rewrite or recapture. Initial CI38097840484 running, not green; reserved mastermindx-3 exactad5 independent review replacing5388952130 plus3threads still required. No selfapproval, admin bypass or new observer.",
+    "paid_browser_acceptance": "Actual signed-in Pro browser: Levels SPY rendered at1440x900/820x1180/390x844, desktop Keystone explanation retained; scoped paid render/explanation accepted, source10daysold Sep30 clearly disclosed. USD CAP Heatmap9160 names/501 usable/8659 missing/0unusable,500 capped map; all8659 semantic missing-list entries bound atthree sizes; separate cached capitalization/quote clocks and table price-times-volume proxy disclosed. No horizontal page overflow. Temporary viewport reset. This is scoped paid coverage/basis display, not full G7/G9/math/PIT/rights/whole UI acceptance.",
+    "brain_actual_live_failure": "One owning /api/brain/* Fast NVDA evidence request completed37s/4checks but displayed unavailable. Conversation-only text and panel PNG bound; unrelated chats/watchlists not retained. Native macro-api log2026-10-11T00:14:48.447284Z confirms thinking-only max_tokens,1399input/4000output/cap4000. Runtime gateway506337B/0e62d727 exact Macro main7fb8cd8d496708fe27cea3ac7a05f6bb14125522. No auth failure or live successful answer claimed.",
+    "brain_source_repair": "Canonical mmx-workspace manual operation terminal-audit20-01a10f92-brain-empty-repair admitted new externalSSD workspace. Two files only; commit46fa6078edb2080d17e965ca28e1a5f878a40e68 pushed normal once on sol/manual-terminal-audit20-01a10f92-brain-empty-repair. Macro PR8755 non-draft; MOG armed LAST/nativeautoNULL. Exactly thinking/redacted-thinking-only max_tokens gets one existing synthesis phase,2x cap,no tools,completed read/evidence receipts retained,incomplete reasoning discarded; refusal/partial/tool/leak excluded. Nonrecursive empty recovery remains degraded; sync earlier narration cleared; spent usage combined. Causal red2FAIL1PASS; finalsix-file609PASS/6warnings20.66s/rc0,syntax0/diffcheck0. First607PASS/1omittedsitefailure corrected through normalhelper materializing exacttrackedsite; no sourcewidget change. Ruff module unavailable, not a pass.",
+    "brain_CI_and_review": "First owning8755 CI observationci.yml38098905658 inprogress, authority38098905424 andfences38098905544. ci-authority/mainSUCCESS. Pilot114350553174 FAILURE is exact inactive_base_context,allowedordinary_change=true; existingci-authority.yml andMOG exclude this retarget-invalidation context for main. No ignoring genuine required red. Optional independent new same-root Fabric review terminal-audit20-01a10f92-brain-empty-review-20261011 refused75 ARTIFACT_CONTRACT_MODE_UNAVAILABLE before qualifiedSTART; no artifact/verdict; effectFROZEN/no retry/substitution. Refused packet is historical since final narration guard added. Parent source/offline qualification only; no independent review, CIgreen, merge, install or live-repair acceptance.",
+    "retained_protected_boundaries": "T2239 PR913 source/CI/YAML and T1315 lastqualified34d runtime receipts retained without replay; no current114 install observation. Terminalfb1/c968 firstreserve refusalsFROZEN/no retry/rawbuilder/weakerfloor/cleanup/alternatecarrier; no ownrestoreowed. IW2fifth explicitcyberrefusalFROZEN/no poll/retry/rephrase/alternateexecution, supportedhumanplatformresolution required in existingIW2chat.0030-32/SQL/operator/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/EFFECT_UNKNOWN holds retained.887 exactALLOW pending, not inferred from general continuation.",
+    "continuation": "Continue this original root/parent. Paid identity is cleared, so do not repeat identity question or login/gate proof. Existing781 and8755 MOG plus soleheartbeat own terminalCI/merge events. At material event qualify exacthead/source/requiredchecks; repair genuine failures; follow existing canonical release only with actual gates, then owning paid live Brain proof. Do not poll unchanged principals or redo accepted captures/tests. Checkpoint is not completion; reassess permitted source/test/paid phases and stop only at verified outcome or actual protected boundary."
   }
 }
