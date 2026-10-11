@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T15:05:48.258426+00:00",
-  "count": 2814,
+  "generated_at": "2026-10-11T15:35:56.633784+00:00",
+  "count": 2815,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -388,6 +388,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-prsylmf567h-9dc1d4",
+      "title": "Allocaton views risk on rates up",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-10T03:07:11Z",
+      "summary_points": [
+        "Geopolitical & Policy Tightening: Middle East tensions driving global tightening bias (incl.",
+        "US), Fed credibility reinforced by Warsh, US debt ceiling causing bond volatility; energy prices pressuring fixed income.",
+        "Fixed Income Valuation Opportunity: US 10Y yields (5.25%) exceed equilibrium (4.59%), Japan (3.08% vs 2.68%) and Australia (5.37% vs 4.80%) also above equilibrium, signaling attractive duration positioning.",
+        "AI Infrastructure Allocation: Strategic overweight in semiconductor giants (TSMC, Samsung), Japanese firms (Tokyo Electron, Kioxia), and US hyperscalers (NVIDIA, Broadcom) for AI-driven growth amid EM uncertainty.",
+        "Portfolio Strategy Shift: Reducing cash holdings, selective credit exposure, and intra-asset class diversification amid positive stock-bond correlation and heightened fixed income volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
       "language": "en",
       "needs_metadata": false
     },
