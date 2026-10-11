@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import re
 import shutil
 import subprocess
 from datetime import datetime, timezone
@@ -300,3 +302,151 @@ def test_entry_script_pins_the_repository_before_importing_engine_modules() -> N
     )
     assert "from engine.neuralweb import" not in source[:function]
     assert pin < engine_import < post_import_check
+
+
+def _rewrite_snapshot(path: Path) -> None:
+    frame = pd.read_parquet(path)
+    path.unlink()
+    RECEIPTS.durable_atomic_write_parquet(frame.iloc[:-1].copy(), path)
+
+
+def test_ingest_replay_over_a_captured_date_with_identical_bytes_is_a_noop(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    store = tmp_path / "identity-store"
+
+    first = INGEST.ingest_identity_observations(repository, store_root=store)
+    capsys.readouterr()
+    second = INGEST.ingest_identity_observations(repository, store_root=store)
+
+    assert second["published_count"] == 0
+    assert second["idempotent_count"] == 1
+    assert second["divergence_count"] == 0
+    assert second["divergences"] == []
+    assert second["generation_id"] == first["generation_id"]
+    warnings = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith("::warning")
+    ]
+    assert warnings == []
+
+
+def test_ingest_records_an_upstream_rewrite_after_capture_and_keeps_accruing(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    store = tmp_path / "identity-store"
+
+    first = INGEST.ingest_identity_observations(repository, store_root=store)
+    assert first["published_count"] == 1
+
+    tracked_key = _git(
+        repository,
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "HEAD",
+        "--",
+        "data/symbol_directory/snapshots",
+    )
+    tracked_name = Path(tracked_key).name
+    date_partition = Path(tracked_key).stem
+    snapshot_dir = repository / "data" / "symbol_directory" / "snapshots"
+    untracked = [
+        path
+        for path in sorted(snapshot_dir.glob("*.parquet"))
+        if path.name != tracked_name
+    ]
+    assert len(untracked) == 1
+
+    captured = STORE.load_identity_observation_store(store, repository_root=repository)
+    stored_capture = next(
+        capture
+        for capture in captured.captures
+        if capture.observation["date_partition"] == date_partition
+    )
+    stored_id = stored_capture.observation["source_observation_id"]
+    original_bytes = stored_capture.source_artifact_bytes
+    assert original_bytes == (snapshot_dir / tracked_name).read_bytes()
+
+    _rewrite_snapshot(snapshot_dir / tracked_name)
+    _git(repository, "add", f"data/symbol_directory/snapshots/{tracked_name}")
+    _git(repository, "add", f"data/symbol_directory/snapshots/{untracked[0].name}")
+    _git(repository, "commit", "-qm", "rewrite captured date and track the next one")
+    capsys.readouterr()
+
+    second = INGEST.ingest_identity_observations(repository, store_root=store)
+
+    assert second["tracked_snapshot_count"] == 2
+    assert second["divergence_count"] == 1
+    assert second["published_count"] == 1
+    assert second["idempotent_count"] == 0
+    assert (
+        second["published_count"]
+        + second["idempotent_count"]
+        + second["divergence_count"]
+        == second["tracked_snapshot_count"]
+    )
+    divergence = second["divergences"][0]
+    assert divergence["kind"] == "upstream_rewrite_after_capture"
+    assert divergence["date_partition"] == date_partition
+    assert divergence["authoritative"] == "stored"
+    assert divergence["stored_source_observation_id"] == stored_id
+    assert divergence["candidate_source_observation_id"] != stored_id
+    assert re.fullmatch(r"[0-9a-f]{64}", divergence["stored_source_sha256"])
+    assert re.fullmatch(r"[0-9a-f]{64}", divergence["candidate_source_sha256"])
+    assert divergence["stored_source_sha256"] != divergence["candidate_source_sha256"]
+
+    warning_prefix = "::warning title=upstream_rewrite_after_capture::"
+    warning_lines = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith(warning_prefix)
+    ]
+    assert len(warning_lines) == 1
+    assert json.loads(warning_lines[0][len(warning_prefix) :]) == divergence
+
+    after = STORE.load_identity_observation_store(store, repository_root=repository)
+    after_capture = next(
+        capture
+        for capture in after.captures
+        if capture.observation["date_partition"] == date_partition
+    )
+    assert after_capture.observation["source_observation_id"] == stored_id
+    assert after_capture.source_artifact_bytes == original_bytes
+    after_dates = {
+        capture.observation["date_partition"] for capture in after.captures
+    }
+    assert untracked[0].stem in after_dates
+
+    capsys.readouterr()
+    third = INGEST.ingest_identity_observations(repository, store_root=store)
+    assert third["divergence_count"] == 1
+    assert third["published_count"] == 0
+    assert third["idempotent_count"] == 1
+    assert third["generation_id"] == second["generation_id"]
+
+
+def test_ingest_of_uncaptured_dates_is_unchanged_by_the_divergence_path(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repository = _temporary_repository(tmp_path, tracked_count=2)
+    store = tmp_path / "identity-store"
+
+    result = INGEST.ingest_identity_observations(repository, store_root=store)
+
+    assert result["published_count"] == 2
+    assert result["idempotent_count"] == 0
+    assert result["divergence_count"] == 0
+    assert result["divergences"] == []
+    warnings = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith("::warning")
+    ]
+    assert warnings == []

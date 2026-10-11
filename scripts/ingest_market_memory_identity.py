@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -151,6 +152,13 @@ def ingest_identity_observations(
         store,
         repository_root=root,
     )
+    stored_by_date = {
+        capture.observation["date_partition"]: capture
+        for capture in market_memory_identity_store.load_identity_observation_store(
+            store, repository_root=root
+        ).captures
+    }
+    divergences: list[dict[str, str]] = []
     published = 0
     idempotent = 0
     operational = 0
@@ -192,6 +200,20 @@ def ingest_identity_observations(
             raise IdentityIngestError(
                 f"completion receipt {receipt_key} is not Git-owned"
             )
+        stored = stored_by_date.get(bundle.observation["date_partition"])
+        if (
+            stored is not None
+            and stored.observation["source_observation_id"]
+            != bundle.observation["source_observation_id"]
+        ):
+            divergence = _upstream_rewrite_receipt(key, stored, bundle)
+            divergences.append(divergence)
+            print(
+                "::warning title=upstream_rewrite_after_capture::"
+                + json.dumps(divergence, sort_keys=True, separators=(",", ":")),
+                flush=True,
+            )
+            continue
         result = market_memory_identity_store.capture_spy_listing_observation(
             store,
             bundle,
@@ -219,6 +241,8 @@ def ingest_identity_observations(
         "tracked_snapshot_count": len(keys),
         "published_count": published,
         "idempotent_count": idempotent,
+        "divergence_count": len(divergences),
+        "divergences": divergences,
         "reconstruction_count": reconstruction,
         "operational_count": operational,
         "generation_id": head["generation_id"],
@@ -227,6 +251,21 @@ def ingest_identity_observations(
             "training_eligible": False,
             "promotion_eligible": False,
         },
+    }
+
+
+def _upstream_rewrite_receipt(key: str, stored: object, bundle: object) -> dict[str, str]:
+    """Describe a tracked snapshot rewritten after its date was captured."""
+
+    return {
+        "kind": "upstream_rewrite_after_capture",
+        "snapshot_key": key,
+        "date_partition": stored.observation["date_partition"],
+        "authoritative": "stored",
+        "stored_source_observation_id": stored.observation["source_observation_id"],
+        "candidate_source_observation_id": bundle.observation["source_observation_id"],
+        "stored_source_sha256": hashlib.sha256(stored.source_artifact_bytes).hexdigest(),
+        "candidate_source_sha256": hashlib.sha256(bundle.snapshot_bytes).hexdigest(),
     }
 
 
