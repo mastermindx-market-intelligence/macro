@@ -2233,8 +2233,12 @@ def _additive_layer_clock(ohlcv_map: dict, today: date) -> tuple[date, dict]:
     2026-10-09, every ``data/baskets/ohlcv`` issuer 2026-10-08) — observing the
     additive layer at SPY's clock then blanks the whole universe. So the additive
     layer observes at the latest date that a majority of the loaded universe has
-    completed, never ahead of ``today``. Incumbent ``as_of`` / ``stale`` are
-    untouched; the lag is reported, never hidden.
+    completed, never ahead of ``today``. An issuer store that runs AHEAD of
+    ``today`` is read at its latest observation at or before ``today`` — it is
+    never excluded, because dropping it would move the majority clock backward
+    and could flip a daily-high classification whose inputs did not change.
+    Incumbent ``as_of`` / ``stale`` are untouched; the lag is reported, never
+    hidden.
     """
     last_dates: list[date] = []
     for df in ohlcv_map.values():
@@ -2242,10 +2246,18 @@ def _additive_layer_clock(ohlcv_map: dict, today: date) -> tuple[date, dict]:
             close = df["close"].dropna()
             if close.empty:
                 continue
-            last = pd.Timestamp(close.index.max())
-            if last.tzinfo is not None:
-                last = last.tz_convert("America/New_York").tz_localize(None)
-            last_dates.append(last.date())
+            # Each issuer contributes its latest observation AT OR BEFORE the cap. A store
+            # that advanced past SPY's cut (independently updated stores) must not be
+            # dropped from the universe: excluding it shifts the majority clock backward
+            # and can flip an already-classified daily high (counterexample on #8750).
+            index = pd.DatetimeIndex(pd.to_datetime(close.index))
+            if index.tz is not None:
+                index = index.tz_convert("America/New_York").tz_localize(None)
+            index = index[~index.isna()]
+            index = index[index.date <= today]
+            if index.empty:
+                continue
+            last_dates.append(index.max().date())
         except Exception:  # noqa: BLE001 — a malformed store is the per-ticker lens's problem
             continue
     meta = {"basis": "incumbent_as_of_fallback", "universe_rows": len(ohlcv_map),

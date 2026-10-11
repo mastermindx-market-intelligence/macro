@@ -132,3 +132,62 @@ def test_additive_layer_clock_equals_incumbent_when_stores_align(tmp_path, capsy
         assert clock['as_of']==result['as_of']==clock['incumbent_as_of']
         assert clock['lag_sessions']==0 and clock['rows_behind_clock']==0
     assert not any('leader_radar_additive_clock' in line for line in out.splitlines())
+
+
+@pytest.mark.parametrize("ahead_tickers", [("AAPL",), ("AAPL", "MSFT")])
+def test_additive_clock_ignores_issuer_rows_after_spy_cut(tmp_path, ahead_tickers):
+    """Independently updated issuer stores may run AHEAD of the benchmark cut. Appending a
+    later row to an issuer must not move the universe-majority clock backward or change an
+    existing daily-high classification whose issuer+benchmark history at or before the cut
+    is identical (counterexample from the late review on PR #8750). The core engine already
+    ignores observations after ``as_of``; this pins the builder's clock to the same rule."""
+    from datetime import date, timedelta
+    import pandas as pd
+    from engine.rs_leader_highs import observe_rs_highs
+    from lib.nyse_calendar import sessions_between
+    from scripts.build_leader_radar import _additive_layer_clock, _load_ohlcv, _load_spy
+    cut = date(2026, 10, 8)
+    index = pd.to_datetime(sessions_between(cut - timedelta(days=700), cut))
+    close = pd.Series(100.0, index=index)
+    close.iloc[-1] = 101.0  # a strict daily RS high against a flat benchmark
+    bars = pd.DataFrame({"open": close, "high": close + 0.5, "low": close - 0.5,
+                         "close": close, "volume": 1_000_000.0}, index=index)
+    frames = {"AAPL": bars.copy(), "MSFT": bars.copy(), "GOOG": bars.iloc[:-1].copy()}
+    data_root = tmp_path / "data"
+    issuer_dir = data_root / "baskets" / "ohlcv"
+    issuer_dir.mkdir(parents=True)
+    spy_dir = data_root / "yahoo"
+    spy_dir.mkdir(parents=True)
+    for ticker, frame in frames.items():
+        frame.to_parquet(issuer_dir / f"{ticker}.parquet")
+    pd.DataFrame({"close": 100.0}, index=index).to_parquet(spy_dir / "SPY.parquet")
+
+    def load_issuers():
+        loaded = {t: _load_ohlcv(t, data_root) for t in frames}
+        assert all(f is not None for f in loaded.values())
+        return loaded
+
+    spy = _load_spy(data_root)
+    assert spy is not None
+    today = spy.index[-1].date()
+    assert today == cut
+    before_frames = load_issuers()
+    before_clock, before_meta = _additive_layer_clock(before_frames, today)
+    assert before_clock == cut  # majority (AAPL, MSFT) completed the cut session
+    assert before_meta["basis"] == "universe_majority_completed_session"
+    before_watch = observe_rs_highs(before_frames["MSFT"]["close"], spy, as_of=before_clock)
+    assert before_watch["daily"]["new_high"] is True
+    # append ONE later row (past SPY's cut) to the ahead issuers; nothing at/before the cut changes
+    for ticker in ahead_tickers:
+        advanced = frames[ticker].copy()
+        advanced.loc[pd.Timestamp("2026-10-09")] = [102.0, 102.5, 101.5, 102.0, 1_000_000.0]
+        advanced.to_parquet(issuer_dir / f"{ticker}.parquet")
+    after_frames = load_issuers()
+    # the engine itself is cut-stable (fixed as_of): same classification from the advanced store
+    assert observe_rs_highs(after_frames["MSFT"]["close"], spy, as_of=cut) == before_watch
+    # the builder's additive clock must be cut-stable too — never moved backward by a store
+    # that ran ahead, and never excluding that store from the universe census
+    after_clock, after_meta = _additive_layer_clock(after_frames, today)
+    assert after_clock == before_clock
+    assert after_meta == before_meta
+    assert observe_rs_highs(after_frames["MSFT"]["close"], spy, as_of=after_clock) == before_watch
