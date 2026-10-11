@@ -27,7 +27,11 @@ from engine.entry_radar.replay.rs_pullback_launch_data import InputContractError
 
 CAPTURE_SCHEMA = "mastermind.intraday_minute_capture.v1"
 CAPTURE_SCHEMA_V2 = "mastermind.intraday_minute_capture.v2"
+CAPTURE_SCHEMA_V3 = "mastermind.intraday_minute_capture.v3"
 PAYLOAD_SCHEMA_V2 = "mastermind.intraday_minute_capture_payload.v2"
+PAYLOAD_SCHEMA_V3 = "mastermind.intraday_minute_capture_payload.v3"
+CHART_ADJUSTED = "chart_adjusted"
+RESEARCH_UNADJUSTED = "research_unadjusted"
 RESPONSE_ADJUSTED_STATES = frozenset({
     "TRUE", "FALSE", "MISSING", "NULL", "INVALID_TYPE", "UNPARSED", "AMBIGUOUS",
 })
@@ -139,7 +143,7 @@ def _captures(raw: bytes) -> tuple[str, list[dict[str, Any]]]:
     document = _json(raw)
     envelope = document.get("minute_capture") if isinstance(document, dict) else None
     if not isinstance(envelope, dict) or not isinstance(envelope.get("schema"), str) \
-            or envelope["schema"] not in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2}:
+            or envelope["schema"] not in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2, CAPTURE_SCHEMA_V3}:
         raise InputContractError("versioned minute_capture is absent or unsupported")
     if envelope.get("observer_id") != OBSERVER_ID:
         raise InputContractError("unrecognized capture observer")
@@ -293,13 +297,30 @@ def _coverage(
     return coverage
 
 
+def _acquisition_role(payload: Mapping[str, Any]) -> str:
+    """Only a visible v3 payload declares a role; legacy output stays unchanged."""
+    if payload.get("schema") == PAYLOAD_SCHEMA_V3:
+        role = payload.get("acquisition_role")
+        if not isinstance(role, str) or role not in {CHART_ADJUSTED, RESEARCH_UNADJUSTED}:
+            raise InputContractError("invalid v3 acquisition role")
+        request = payload.get("request")
+        expected = role == CHART_ADJUSTED
+        if not isinstance(request, dict) or request.get("adjusted") is not expected:
+            raise InputContractError("v3 acquisition role/request adjusted mismatch")
+        return role
+    if "acquisition_role" in payload:
+        raise InputContractError("legacy payload cannot declare a v3 acquisition role")
+    return CHART_ADJUSTED
+
+
 def _eligible_payload(
     record: dict[str, Any], receipt: dict[str, Any], symbol: str,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     payload = record["payload"]
-    v2 = payload.get("schema") == PAYLOAD_SCHEMA_V2
+    v2 = payload.get("schema") in (PAYLOAD_SCHEMA_V2, PAYLOAD_SCHEMA_V3)
+    role = _acquisition_role(payload)
     if v2 and type(payload.get("chart_eligible")) is not bool:
-        raise InputContractError("v2 capture requires a boolean chart declaration")
+        raise InputContractError("versioned capture requires a boolean chart declaration")
     if not v2 and "chart_eligible" in payload:
         raise InputContractError("v1 capture cannot assert a v2 chart declaration")
     if payload.get("symbol") != symbol or payload.get("timeframe") != "1m" \
@@ -310,7 +331,7 @@ def _eligible_payload(
     if completed > receipt["read_completed_at_utc_ns"]:
         raise InputContractError("owner receipt precedes capture completion")
     status = payload.get("status")
-    if status not in {"complete", "partial", "failed"}:
+    if not isinstance(status, str) or status not in {"complete", "partial", "failed"}:
         raise InputContractError("unknown capture outcome")
     if status != "complete":
         if v2 and payload["chart_eligible"]:
@@ -325,8 +346,8 @@ def _eligible_payload(
     request = payload.get("request")
     if not isinstance(request, dict) or request.get("multiplier") != 1 \
             or type(request.get("multiplier")) is not int \
-            or request.get("timespan") != "minute" or request.get("adjusted") is not True:
-        raise InputContractError("capture is not the declared adjusted one-minute request")
+            or request.get("timespan") != "minute" or request.get("adjusted") is not (role == CHART_ADJUSTED):
+        raise InputContractError("capture is not the declared role's one-minute request")
     pages = payload.get("pages")
     observations = payload.get("observations")
     counts = payload.get("counts")
@@ -343,7 +364,8 @@ def _eligible_payload(
     for index, page in enumerate(pages):
         _response_adjusted(payload, page)
         if not isinstance(page, dict) or type(page.get("page_index")) is not int \
-                or page["page_index"] != index or page.get("status") not in {"OK", "DELAYED"}:
+                or page["page_index"] != index or not isinstance(page.get("status"), str) \
+                or page["status"] not in {"OK", "DELAYED"}:
             raise InputContractError("invalid complete capture page")
         requested = _integer(page.get("request_started_at_utc_ns"), "page request", started)
         received = _integer(page.get("response_received_at_utc_ns"), "page response", requested)
@@ -357,8 +379,8 @@ def _eligible_payload(
     if any(sum(page[name] for page in pages) != counts[name]
            for name in ("rows_received", "finalized_rows", "forming_skipped")):
         raise InputContractError("capture/page row accounting mismatch")
-    if v2 and payload["chart_eligible"] != all(
-            _response_adjusted(payload, page) == "TRUE" for page in pages):
+    if v2 and payload["chart_eligible"] != (role == CHART_ADJUSTED and all(
+            _response_adjusted(payload, page) == "TRUE" for page in pages)):
         raise InputContractError("chart eligibility disagrees with response declarations")
     return payload, observations
 
@@ -367,7 +389,7 @@ def _response_adjusted(payload: Mapping[str, Any], page: Any) -> str:
     """Resolve only the exact sealed page; legacy absence is not v2 MISSING."""
     if not isinstance(page, Mapping):
         raise InputContractError("invalid capture page")
-    if payload.get("schema") != PAYLOAD_SCHEMA_V2:
+    if payload.get("schema") not in (PAYLOAD_SCHEMA_V2, PAYLOAD_SCHEMA_V3):
         if "response_adjusted" in page:
             raise InputContractError("v1 page cannot assert a v2 response declaration")
         return "UNRECORDED"
@@ -431,7 +453,8 @@ def decode_terminal_minute_observations(
         "visible_capture_outcomes": {"complete": 0, "partial": 0, "failed": 0},
         "complete_captures_with_no_retained_observations": 0,
     }
-    v2_seen = False
+    last_version = 1
+    envelope_version = (CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2, CAPTURE_SCHEMA_V3).index(envelope_schema) + 1
     for record in records:
         receipt = coverage[record["sequence"]]
         if receipt is None:
@@ -440,13 +463,18 @@ def decode_terminal_minute_observations(
         # Prefix receipts make coverage contiguous. Only this visible prefix
         # determines supported payload versions and their upgrade order; intact
         # unenrolled/future records cannot poison an earlier owner's replay.
-        version = record["payload"].get("schema")
-        if version == PAYLOAD_SCHEMA_V2:
-            if envelope_schema != CAPTURE_SCHEMA_V2:
-                raise InputContractError("v2 payload requires a v2 capture envelope")
-            v2_seen = True
-        elif "schema" in record["payload"] or v2_seen:
-            raise InputContractError("unsupported payload version or v1 after v2")
+        schema = record["payload"].get("schema")
+        if "schema" not in record["payload"]:
+            version = 1
+        elif schema == PAYLOAD_SCHEMA_V2:
+            version = 2
+        elif schema == PAYLOAD_SCHEMA_V3:
+            version = 3
+        else:
+            raise InputContractError("unsupported payload version")
+        if version < last_version or version > envelope_version:
+            raise InputContractError("payload version downgrade or envelope mismatch")
+        last_version = version
         payload, observations = _eligible_payload(record, receipt, symbol)
         diagnostics["visible_capture_outcomes"][payload["status"]] += 1
         if payload["status"] != "complete":
@@ -494,7 +522,7 @@ def decode_terminal_minute_observations(
                     "source_response_sha256": page["response_sha256"],
                     "owner_reader_identity": reader_identity,
                     "owner_read_completed_at_utc_ns": completed,
-                    "request_adjusted": True,
+                    "request_adjusted": payload["request"]["adjusted"],
                     "response_adjusted": _response_adjusted(payload, page),
                     "page_index": page_index, "row_index": row_index,
                     "owner_read_receipt_sha256": receipt["receipt_sha256"],
@@ -502,6 +530,11 @@ def decode_terminal_minute_observations(
                                     "null" if raw["v"] is None else "observed",
                 },
             }
+            if payload.get("schema") == PAYLOAD_SCHEMA_V3:
+                row["source_observation"].update({
+                    "acquisition_role": payload["acquisition_role"],
+                    "capture_payload_schema": PAYLOAD_SCHEMA_V3,
+                })
             row["receipt_sha256"] = _digest(row)
             minutes.append(row)
     return {
