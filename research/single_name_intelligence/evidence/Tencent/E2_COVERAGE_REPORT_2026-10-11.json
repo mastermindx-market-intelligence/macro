@@ -15,16 +15,14 @@
   },
   "metrics": {
     "adr_h_basis.hkd_0700": {
-      "status": "PARTIAL",
+      "status": "ABSENT",
       "owner": [
         "engine/hk_adr_bridge.py"
       ],
-      "owner_call": "engine.hk_adr_bridge.snapshot(hk_session_date=date(2026,10,9)) -> 0700.HK row adr_ticker=KWEB adr_source=proxy display_only=True implied_open_gap_pct=3.79 freshness lag 0 fresh (writer run() not executed)",
-      "missing_descriptors": [
-        "issuer_subject_adr_leg_proxy_not_tencent_security"
-      ],
+      "owner_call": "engine.hk_adr_bridge.snapshot(hk_session_date=date(2026,10,9)) -> 0700.HK row adr_ticker=KWEB adr_source=proxy display_only=True implied_open_gap_pct=3.79 freshness lag 0 fresh (writer run() not executed). Cross-pack ruling: this return is implied-open CONTEXT, not a basis/ratio value, and no owner carries the ADS-to-ordinary ratio, so the basis metric records ABSENT with the verbatim bridge row kept as adjacent owner output; the owner itself records adr_ticker KWEB, adr_source proxy, display_only true — a KWEB ETF proxy is not a Tencent security",
+      "missing_descriptors": [],
       "refusal_code": null,
-      "evidence_rows": 1
+      "evidence_rows": 0
     },
     "adr_h_basis.rmb_80700": {
       "status": "NO_OWNER",
@@ -67,23 +65,34 @@
       ],
       "owner_call": "engine.hk_filing_bus._ticker_summary(tape,'0700.HK') -> 1 realized results event 2026-08-12; exact scan of data/earnings/earnings.parquet for '0700|TCEHY|Tencent' -> 0 rows (no forward HK calendar owner); event_workspace.production_registry().resolve_ticker('0700.HK', asof=2026-10-11) -> None",
       "missing_descriptors": [
+        "issuer_subject",
         "reporting_period",
-        "forward_scheduled_date_known_at",
         "definition_version",
         "correction_refusal_state"
       ],
+      "descriptor_notes": {
+        "issuer_subject": "RAW_TICKER_KEY_NO_ISSUER_EVIDENCE"
+      },
       "refusal_code": null,
       "evidence_rows": 1
     },
     "company_events_earnings_calendar.rmb_80700": {
-      "status": "NO_OWNER",
+      "status": "PARTIAL",
       "owner": [
-        "collectors/hk_hkexnews.py"
+        "engine/hk_filing_bus.py"
       ],
-      "owner_call": "issuer-level events only; no counter join",
-      "missing_descriptors": [],
-      "refusal_code": "NO_COUNTER_SECURITY_ID",
-      "evidence_rows": 0
+      "owner_call": "issuer-level row news_id 12280990 whose raw stock_code list contains 80700 is served through ticker 0700.HK (build_tape tape row re-run 2026-10-11: news_id=12280990, ticker=0700.HK, raw stock_code preserves 80700) — the owner returns a value whose issuer_subject is missing for this counter; the counter join itself needs a security_id that does not exist",
+      "missing_descriptors": [
+        "issuer_subject",
+        "reporting_period",
+        "definition_version",
+        "correction_refusal_state"
+      ],
+      "descriptor_notes": {
+        "issuer_subject": "ROW_STOCK_CODE_LISTS_80700_NO_SECURITY_ID"
+      },
+      "refusal_code": null,
+      "evidence_rows": 1
     },
     "corporate_actions_adjustment.hkd_0700": {
       "status": "ABSENT",
@@ -113,7 +122,7 @@
         "data/qledger/claims.jsonl",
         "data/qledger/grades.jsonl"
       ],
-      "owner_call": "line scan claims.jsonl (118,022 lines) + grades.jsonl for '0700'/'80700'/'tencent' in scope fields (scope/tickers/symbols/subject) -> 0 claims; raw substring grep hits are numeric-substring false positives of prices/levels",
+      "owner_call": "line scan claims.jsonl (118022 lines) + grades.jsonl for '0700'/'80700'/'tencent' in scope fields (scope/tickers/symbols/subject) -> 0 claims; raw substring grep hits re-run 2026-10-11 are numeric-substring false positives of prices/levels (claims '0700' 143, grades '0700' 406, claims '80700' 4, grades '80700' 4, 'tencent' 0 in both). Adjacent disclosure (no identity link joins TCEHY to 0700/Tencent and none was created): json.loads scope.key=='TCEHY' claims in claims.jsonl = 20 (claim_family us_importance_v0 10, us_importance_v0_pit 10); TCEHY matching rows in security_master.parquet = 0 and in vendor_aliases.parquet = 0 (whole-frame substring scans) — disclosed in the pack GAPS section",
       "missing_descriptors": [],
       "refusal_code": null,
       "evidence_rows": 0
@@ -137,23 +146,35 @@
       ],
       "owner_call": "engine.hk_filing_bus: build_tape(read('data/hk_filings/events.parquet'), read('data/hk_placements/events.parquet')); classify_row('interim_results', title); _ticker_summary(tape,'0700.HK') -> counts {'results': 1}, most_recent_date '2026-08-12'",
       "missing_descriptors": [
+        "issuer_subject",
         "reporting_period",
         "definition_version",
         "correction_refusal_state"
       ],
+      "descriptor_notes": {
+        "issuer_subject": "RAW_STOCK_CODE_KEY_NO_ISSUER_EVIDENCE"
+      },
       "refusal_code": null,
       "evidence_rows": 1
     },
     "filings_announcements.rmb_80700": {
-      "status": "NO_OWNER",
+      "status": "PARTIAL",
       "owner": [
         "engine/hk_filing_bus.py",
         "data/hk_filings/events.parquet"
       ],
-      "owner_call": "issuer-level row news_id 12280990 carries '80700' in its stock_code list, but the counter join needs a security_id that does not exist",
-      "missing_descriptors": [],
-      "refusal_code": "NO_COUNTER_SECURITY_ID",
-      "evidence_rows": 0
+      "owner_call": "issuer-level row news_id 12280990 carries 80700 in its raw stock_code list (build_tape tape row re-run 2026-10-11: ticker=0700.HK, raw stock_code preserves 80700) — the owner serves a value whose issuer_subject is missing for this counter; the counter join needs a security_id that does not exist",
+      "missing_descriptors": [
+        "issuer_subject",
+        "reporting_period",
+        "definition_version",
+        "correction_refusal_state"
+      ],
+      "descriptor_notes": {
+        "issuer_subject": "ROW_STOCK_CODE_LISTS_80700_NO_SECURITY_ID"
+      },
+      "refusal_code": null,
+      "evidence_rows": 1
     },
     "financials.hkd_0700": {
       "status": "PARTIAL",
@@ -163,13 +184,19 @@
       ],
       "owner_call": "json.loads(read('data/hk_fundamentals/fundamentals.parquet', ticker=='0700.HK').payload) -> 7 annual rows fy2019..fy2025 + profile + forecast; currency field reads 'HKD' on every row (defect per collectors/hk_fundamentals.py:19-22)",
       "missing_descriptors": [
-        "reporting_period_known_at",
-        "unit_currency_untrustworthy_hkd_label",
+        "issuer_subject",
+        "known_at_evidence",
+        "unit_currency",
         "accounting_basis",
         "source_span",
         "definition_version",
         "correction_refusal_state"
       ],
+      "descriptor_notes": {
+        "unit_currency": "CURRENCY_DEFECT_HKD_LABEL_ON_RMB_REPORTED_FINANCIALS",
+        "issuer_subject": "RAW_TICKER_KEY_NO_ISSUER_EVIDENCE",
+        "source_span": "VENDOR_PAYLOAD_NO_FILING_SPAN"
+      },
       "refusal_code": null,
       "evidence_rows": 7
     },
@@ -191,10 +218,10 @@
         "data/hk/HKD_X.parquet",
         "data/fred/DEXCHUS.parquet"
       ],
-      "owner_call": "pd.read_parquet('data/hk/HKD_X.parquet').tail(2) -> 2026-10-10 close=7.8472, 2026-10-11 close=7.8469 (USD/HKD); pd.read_parquet('data/fred/DEXCHUS.parquet').tail(2) -> 2026-10-01/02 fx_cny_usd=6.7038",
+      "owner_call": "pd.read_parquet('data/hk/HKD_X.parquet').tail(2) -> 2026-10-10 close=7.8471999168396, 2026-10-11 close=7.84689998626709 (USD/HKD); pd.read_parquet('data/fred/DEXCHUS.parquet').tail(2) -> 2026-10-01/02 fx_cny_usd=6.7038",
       "missing_descriptors": [
-        "unit_currency_in_row",
-        "known_at_close_convention",
+        "known_at_evidence",
+        "unit_currency",
         "definition_version",
         "correction_refusal_state"
       ],
@@ -209,17 +236,22 @@
         "data/forex/latest.json",
         "data/china/CNH_F.parquet"
       ],
-      "owner_call": "forex/latest.json pairs.USDCNH quote=6.6685 asof=2026-10-09; pd.read_parquet('data/china/CNH_F.parquet') -> 3368 rows 2013-02-11..2026-10-09, last close=6.663 (futures, not spot CNH); no spot CNH history; no CNH/HKD cross",
+      "owner_call": "forex/latest.json pairs.USDCNH quote=6.6685 asof=2026-10-09; pd.read_parquet('data/china/CNH_F.parquet') -> 3368 rows 2013-02-11..2026-10-09, last closes 2026-10-08=6.672999858856201, 2026-10-09=6.663000106811523 (a futures contract, not spot CNH); no spot CNH history; no CNH/HKD cross",
       "missing_descriptors": [
-        "unit_currency_in_row_cnh_f",
-        "definition_version_settlement_convention",
-        "correction_refusal_state_futures_not_spot"
+        "known_at_evidence",
+        "unit_currency",
+        "definition_version",
+        "correction_refusal_state"
       ],
+      "descriptor_notes": {
+        "correction_refusal_state": "FUTURES_SERIES_NOT_SPOT_RATE",
+        "definition_version": "SETTLEMENT_CONVENTION_NOT_RECORDED"
+      },
       "refusal_code": null,
       "evidence_rows": 2
     },
     "identity_listing.hkd_0700": {
-      "status": "PARTIAL",
+      "status": "REFUSED",
       "owner": [
         "lib/dataos/identity.py",
         "data/reference/security_master.parquet",
@@ -227,9 +259,12 @@
       ],
       "owner_call": "lib.dataos.identity: IssuerMaster.from_records(security_master.parquet).issuer_of_security('SEC:HK-XHKG-00700') -> None; VendorAliasTable.resolve('theme_graph_native','0700.HK',date(2026,10,11)) -> 'SEC:HK-XHKG-00700'",
       "missing_descriptors": [
-        "definition_version"
+        "issuer_subject"
       ],
-      "refusal_code": null,
+      "descriptor_notes": {
+        "issuer_subject": "SECURITY_ROW_EXISTS_ISSUER_LINK_NO_ISSUER_EVIDENCE"
+      },
+      "refusal_code": "OWNER_REFUSED_NO_ISSUER_EVIDENCE",
       "evidence_rows": 1
     },
     "identity_listing.rmb_80700": {
@@ -238,7 +273,7 @@
         "lib/dataos/identity.py",
         "data/reference/security_master.parquet"
       ],
-      "owner_call": "IssuerMaster.listing_key_of_security('SEC:HK-XHKG-80700') -> None; issuer_of_security -> None; exact scans: 0 rows matching 80700 in listing_key/inception_code/vendor_aliases",
+      "owner_call": "whole-frame substring scans re-run 2026-10-11: security_master.parquet rows matching '80700' in any column = 0; vendor_aliases.parquet rows matching '80700' in any column = 0; the counter has no security_id, so no owner lookup can address it",
       "missing_descriptors": [],
       "refusal_code": "NO_COUNTER_SECURITY_ID",
       "evidence_rows": 0
@@ -253,9 +288,9 @@
       ],
       "owner_call": "pd.read_parquet('data/hk_stocks/0700.HK.parquet') -> 5485 rows 2004-06-16..2026-10-09; pd.read_parquet('data/hk_search/closes_deep.parquet')['0700.HK'].dropna() -> 5511 closes",
       "missing_descriptors": [
-        "known_at_evidence_observation_vintage",
-        "unit_currency_in_row",
-        "definition_version_adjustment_vintage",
+        "known_at_evidence",
+        "unit_currency",
+        "definition_version",
         "correction_refusal_state"
       ],
       "refusal_code": null,
@@ -299,11 +334,16 @@
       ],
       "owner_call": "pd.read_parquet('data/hk_gdelt/tencent.parquet') -> 78 rows 2026-07-13..2026-10-10, entity_query='Tencent', ticker='0700.HK'; sample avg_tone 1.1061..0.98, vol_intensity NaN in all 4 sampled rows",
       "missing_descriptors": [
-        "unit_currency_undeclared_measures",
-        "known_at_collection_stamp",
+        "issuer_subject",
+        "known_at_evidence",
+        "unit_currency",
         "definition_version",
         "correction_refusal_state"
       ],
+      "descriptor_notes": {
+        "issuer_subject": "NAME_QUERY_NOT_ISSUER_ID",
+        "unit_currency": "TONE_AND_VOLUME_MEASURES_UNDECLARED"
+      },
       "refusal_code": null,
       "evidence_rows": 4
     },
@@ -345,8 +385,13 @@
       ],
       "owner_call": "engine.research_vault.catalog.parse_strict(bytes('data/research_vault/catalog.json')) -> schema research_vault.catalog.v1, generated_at 2026-10-11T17:21:24Z, 2820 items; pattern 'tencent|腾讯' over title+tickers+tags -> 1 item marketdesk-58kvinf7h6l-7b504f; full-item-text -> 13",
       "missing_descriptors": [
-        "issuer_subject_binding"
+        "issuer_subject",
+        "definition_version"
       ],
+      "descriptor_notes": {
+        "issuer_subject": "NO_ISSUER_BINDING_ON_CATALOG_ITEMS",
+        "definition_version": "SUBJECT_MATCH_RULE_IS_PACK_SIDE_NOT_OWNER_VERSIONED"
+      },
       "refusal_code": null,
       "evidence_rows": 1
     },
@@ -361,22 +406,36 @@
       "evidence_rows": 0
     },
     "sessions_calendar.hkd_0700": {
-      "status": "OWNER_NATIVE",
+      "status": "PARTIAL",
       "owner": [
         "lib/hk_calendar.py"
       ],
       "owner_call": "lib.hk_calendar.is_session(date(2026,10,9)) -> True; is_session(date(2026,10,11)) -> False (Sunday); rules pinned by lib/hk_calendar.py blob 5ffb5af43465",
-      "missing_descriptors": [],
+      "missing_descriptors": [
+        "known_at_evidence",
+        "definition_version"
+      ],
+      "descriptor_notes": {
+        "known_at_evidence": "HOLIDAY_RULES_IN_CODE_NO_PUBLICATION_KNOWN_AT",
+        "definition_version": "NO_VERSION_CONSTANT_IN_OWNER_MODULE"
+      },
       "refusal_code": null,
       "evidence_rows": 2
     },
     "sessions_calendar.rmb_80700": {
-      "status": "OWNER_NATIVE",
+      "status": "PARTIAL",
       "owner": [
         "lib/hk_calendar.py"
       ],
       "owner_call": "lib.hk_calendar.is_session(date(2026,10,9)) -> True; is_session(date(2026,10,11)) -> False; venue-level, no counter identity needed",
-      "missing_descriptors": [],
+      "missing_descriptors": [
+        "known_at_evidence",
+        "definition_version"
+      ],
+      "descriptor_notes": {
+        "known_at_evidence": "HOLIDAY_RULES_IN_CODE_NO_PUBLICATION_KNOWN_AT",
+        "definition_version": "NO_VERSION_CONSTANT_IN_OWNER_MODULE"
+      },
       "refusal_code": null,
       "evidence_rows": 2
     },
@@ -388,7 +447,7 @@
       ],
       "owner_call": "positions[ticker=='0700.HK'] -> 735 weekly rows 2012-08-31..2026-10-02; latest 2026-10-02 shorted_shares=75217572 value_hkd=31681641326",
       "missing_descriptors": [
-        "known_at_evidence_publication_lag",
+        "known_at_evidence",
         "definition_version",
         "correction_refusal_state"
       ],
@@ -401,13 +460,18 @@
         "collectors/hk_shorts.py",
         "data/hk_shorts/positions.parquet"
       ],
-      "owner_call": "positions[stock_code=='80700'] -> 172 weekly rows 2023-06-23..2026-10-02 (TENCENT-R); latest 2026-10-02 shorted_shares=123203 value_hkd=51282017 (HKD label on the CNH counter, unflagged in-row)",
+      "owner_call": "positions[stock_code==80700] (stock_code dtype int64) -> 172 weekly rows 2023-06-23..2026-10-02 (TENCENT-R); latest 2026-10-02 shorted_shares=123203 value_hkd=51282017 (HKD label on the CNH counter, unflagged in-row)",
       "missing_descriptors": [
-        "issuer_subject_no_security_id",
-        "known_at_evidence_publication_lag",
+        "issuer_subject",
+        "known_at_evidence",
+        "unit_currency",
         "definition_version",
-        "correction_refusal_state_value_hkd_on_cnh"
+        "correction_refusal_state"
       ],
+      "descriptor_notes": {
+        "issuer_subject": "NO_SECURITY_ID_FOR_80700",
+        "unit_currency": "VALUE_COLUMN_CURRENCY_CONVENTION_FOR_RMB_COUNTER_NOT_RECORDED"
+      },
       "refusal_code": null,
       "evidence_rows": 2
     },
@@ -418,13 +482,16 @@
         "engine/hk_southbound_stocks.py",
         "data/hk_southbound/holdings.parquet"
       ],
-      "owner_call": "engine.hk_southbound_stocks.latest_holdings(allow_fetch=False); holdings[ticker=='0700.HK'] -> 477 rows 2024-07-10..2026-10-09; latest 2026-10-09 hold_shares=1.082673e+09 own_pct=11.9 close=424.8",
+      "owner_call": "engine.hk_southbound_stocks.latest_holdings(allow_fetch=False); holdings[ticker=='0700.HK'] -> 477 rows 2024-07-10..2026-10-09; latest 2026-10-09 hold_shares=1082672910.0 own_pct=(A11-REFUSED as a denominator-bearing value — HKEX-reported issued-share denominator, no canonical capital-structure version; raw in-row value not displayed) close=424.8",
       "missing_descriptors": [
-        "known_at_evidence_observation_stamp",
-        "unit_currency_in_row",
-        "definition_version_and_own_pct_denominator",
+        "known_at_evidence",
+        "unit_currency",
+        "definition_version",
         "correction_refusal_state"
       ],
+      "descriptor_notes": {
+        "definition_version": "OWN_PCT_DENOMINATOR_UNVERSIONED"
+      },
       "refusal_code": null,
       "evidence_rows": 2
     },
@@ -440,13 +507,18 @@
       "evidence_rows": 0
     },
     "themes.hkd_0700": {
-      "status": "OWNER_NATIVE",
+      "status": "PARTIAL",
       "owner": [
         "engine/theme_graph/identity_resolution.py",
         "data/theme_graph/identity_resolution.parquet"
       ],
       "owner_call": "identity_resolution[node_id=='co:hk:0700.HK'] -> 61 snapshots; latest resolution_asof=2026-10-09 RESOLVED -> security_id SEC:HK-XHKG-00700, issuer_id NaN, schema gmi.identity_resolution/v1, computed_at 2026-10-09T14:11:26Z",
-      "missing_descriptors": [],
+      "missing_descriptors": [
+        "issuer_subject"
+      ],
+      "descriptor_notes": {
+        "issuer_subject": "GRAPH_NODE_RESOLVES_TO_SECURITY_ONLY_NO_ISSUER_EVIDENCE"
+      },
       "refusal_code": null,
       "evidence_rows": 1
     },
@@ -462,20 +534,20 @@
     }
   },
   "counts": {
-    "OWNER_NATIVE": 3,
-    "PARTIAL": 13,
-    "REFUSED": 0,
-    "ABSENT": 5,
-    "NO_OWNER": 15,
+    "OWNER_NATIVE": 0,
+    "PARTIAL": 16,
+    "REFUSED": 1,
+    "ABSENT": 6,
+    "NO_OWNER": 13,
     "total": 36
   },
   "a33_required_source_classes": {
     "identity_listing": {
       "owner_native_cell": null,
       "best_cell": "identity_listing.hkd_0700",
-      "best_status": "PARTIAL",
+      "best_status": "REFUSED",
       "blocking_missing_descriptors": [
-        "definition_version"
+        "issuer_subject"
       ],
       "would_be_owner": "Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a new issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py"
     },
@@ -484,6 +556,7 @@
       "best_cell": "filings_announcements.hkd_0700",
       "best_status": "PARTIAL",
       "blocking_missing_descriptors": [
+        "issuer_subject",
         "reporting_period",
         "definition_version",
         "correction_refusal_state"
@@ -495,8 +568,9 @@
       "best_cell": "financials.hkd_0700",
       "best_status": "PARTIAL",
       "blocking_missing_descriptors": [
-        "reporting_period_known_at",
-        "unit_currency_untrustworthy_hkd_label",
+        "issuer_subject",
+        "known_at_evidence",
+        "unit_currency",
         "accounting_basis",
         "source_span",
         "definition_version",
@@ -509,8 +583,8 @@
       "best_cell": "company_events_earnings_calendar.hkd_0700",
       "best_status": "PARTIAL",
       "blocking_missing_descriptors": [
+        "issuer_subject",
         "reporting_period",
-        "forward_scheduled_date_known_at",
         "definition_version",
         "correction_refusal_state"
       ],
@@ -521,7 +595,15 @@
       "best_cell": "corporate_actions_adjustment.hkd_0700",
       "best_status": "ABSENT",
       "blocking_missing_descriptors": [
-        "(no corporate-action rows returned at all)"
+        "issuer_subject",
+        "reporting_period",
+        "known_at_evidence",
+        "unit_currency",
+        "dimensions",
+        "accounting_basis",
+        "source_span",
+        "definition_version",
+        "correction_refusal_state"
       ],
       "would_be_owner": "an explicit HK corporate-action ledger owner (engine/capital_structure is SEC-only; share count carried by no owner)"
     },
@@ -530,18 +612,19 @@
       "best_cell": "market_data_daily.hkd_0700",
       "best_status": "PARTIAL",
       "blocking_missing_descriptors": [
-        "known_at_evidence_observation_vintage",
-        "unit_currency_in_row",
-        "definition_version_adjustment_vintage",
+        "known_at_evidence",
+        "unit_currency",
+        "definition_version",
         "correction_refusal_state"
       ],
       "would_be_owner": "collectors/hk_stock_prices.py carrying per-row observation stamps, in-row currency and a pinned adjustment vintage"
     }
   },
   "notes": [
-    "No metric ID was minted beyond the 36 profile cells; no identity id was constructed.",
-    "REFUSED count is 0 because no profile cell is a pure denominator/share-count metric; the A11 denominator refusal is recorded inside southbound_holdings descriptors and adversarial probe 1.",
-    "The HKD-label-on-RMB-financials currency defect is carried in financials.hkd_0700's missing_descriptors and never relabelled or converted.",
+    "No metric ID was minted beyond the 36 profile cells; no identity id was constructed and no id-shaped string for the RMB counter appears anywhere in this pack — identity absence is established by whole-frame substring scans whose matching-row counts are 0 (security_master 0, vendor_aliases 0, re-run 2026-10-11).",
+    "REFUSED count is 1: identity_listing.hkd_0700 — the security_master row SEC:HK-XHKG-00700 exists, but the owner itself records the issuer link as NO_ISSUER_EVIDENCE, which is the owner's refusal of this cell's issuer-security link; after repair the pack has ZERO OWNER_NATIVE cells (sessions_calendar both counters and themes.hkd_0700 are PARTIAL because a call-time evaluation timestamp, a git blob pin and a pack-side subject-match rule are not owner-recorded descriptors) and all six A33 required source classes are gaps.",
+    "No forward HK earnings-schedule owner exists: the absence of a forward scheduled date for the next result is recorded in this notes list and in the pack's GAPS section, not as a descriptor of company_events_earnings_calendar.hkd_0700.",
+    "The HKD-label-on-RMB-financials currency defect is carried in financials.hkd_0700's descriptor_notes and never relabelled or converted.",
     "TME (ISS:US-XNYS-TME, Tencent Music Entertainment Group) appears in no Tencent row."
   ]
 }

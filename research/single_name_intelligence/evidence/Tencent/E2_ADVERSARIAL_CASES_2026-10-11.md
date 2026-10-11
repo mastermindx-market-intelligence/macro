@@ -1,15 +1,15 @@
 # E2 — adversarial cases, Tencent (2026-10-11)
 
-Seven required probes, each executed against REAL owner output for this issuer (commands re-runnable from worktree `claude/sni-e2-tencent-evidence-20261011`, base `b79cd12239e5`). Every verdict is `SILENT_JOIN` (the owner merged/passed the case without a flag — a defect finding) or `REFUSED/FLAGGED`. Where a probe had no real instance for Tencent in owner output, the closest real instance in the same owner for this issuer was used and the limitation is recorded. No case was fabricated. A20: all retrieved text was treated as data; no span contained instructions (none found — see the pack's A20 note).
+Seven required probes, each executed against REAL owner output for this issuer (commands re-runnable from worktree `claude/sni-e2-tencent-evidence-20261011`, base `b79cd12239e5`). Every verdict is `SILENT_JOIN` (the owner merged/passed the case without a flag — a defect finding), `REFUSED/FLAGGED`, or a SPLIT of both forms where the case splits (probe 4; probe 6's fold check). Where a probe had no real instance for Tencent in owner output, the closest real instance in the same owner for this issuer was used and the limitation is recorded. No case was fabricated. A20: all retrieved text was treated as data; no span contained instructions (none found — see the pack's A20 note).
 
 | # | Probe | Verdict | One-line mechanism |
 |---|---|---|---|
 | 1 | Mismatched denominator | **SILENT_JOIN** (vendor-side) + pack REFUSED per A11 | Three owners embed three different uncarried share denominators for the same issuer-day; nothing flags. |
 | 2 | Repeated report | **SILENT_JOIN** | The same daily close lives in two owner stores with different coverage and no dedupe key or vintage flag. |
 | 3 | Segment recast | **SILENT_JOIN** (by mechanism; real recast not exercisable — limitation) | Growth columns recompute against the in-store prior year with no restatement flag or vintage pin. |
-| 4 | Late filing | **SILENT_JOIN** | The filing is keyed to publication only; period end lives in title prose; no lag field, no flag. |
+| 4 | Late filing | **SPLIT: FLAGGED (first-public announced_at preserved; no backdating)** AND **SILENT_JOIN (structural: no period-end/filing-lag field; period only in title prose)** | The publication timestamp is a genuine first-public record, but the filing is keyed to publication only; period end lives in title prose; no lag field. |
 | 5 | Unit scale / currency | **SILENT_JOIN** | `"currency": "HKD"` passes unflagged on RMB-reported financials; `value_hkd` unflagged on the RMB counter. |
-| 6 | Duplicate languages / names | **FLAGGED** (no owner joins on names) | Owners key by code/ticker; parallel-language names ride as display columns; the name-space collision (TENCENT / TENCENT-R / HUAYI TENCENT) is real but unjoined by owners. |
+| 6 | Duplicate languages / names | **FLAGGED** (no owner joins on names); fold check **SPLIT** (see below) | Owners key by code/ticker; parallel-language names ride as display columns; the name-space collision (TENCENT / TENCENT-R / HUAYI TENCENT) is real but unjoined by owners. The dual-counter fold check on news_id 12280990 splits. |
 | 7 | Source correction | **REFUSED/FLAGGED** | The identity owner refuses the issuer binding (returns None, never the name-similar TME) and runs an append-only migration ledger; no Tencent correction row exists. |
 
 ---
@@ -25,17 +25,19 @@ import pandas as pd, json
 f = pd.read_parquet('data/hk_fundamentals/fundamentals.parquet')
 p = json.loads(f[f['ticker']=='0700.HK'].iloc[0]['payload'])
 fin = {x['fy']: x for x in p['financials']}
-fin[2024]['ni'] / fin[2024]['eps']          # -> 9,268,936,861.209
-fin[2024]['ni'] / fin[2024]['eps_diluted']  # -> 9,473,445,279.703
+fin[2024]['ni'] / fin[2024]['eps']          # -> 9268936861.209286
+fin[2024]['ni'] / fin[2024]['eps_diluted']  # -> 9473445279.70321
 sb = pd.read_parquet('data/hk_southbound/holdings.parquet')
 t = sb[sb.index.get_level_values('ticker')=='0700.HK'].tail(1)
-float(t['hold_shares'].iloc[0]) / (float(t['own_pct'].iloc[0])/100)   # -> 9,098,091,681
+float(t['hold_shares'].iloc[0]) / (float(t['own_pct'].iloc[0])/100)   # -> 9098091680.672268
 "
 ```
 
-Concrete rows involved: `financials` FY2024 `ni=194073000000.0, eps=20.938, eps_diluted=20.486, currency="HKD"`; `southbound` 2026-10-09 `hold_shares=1.082673e+09, own_pct=11.9`.
+(The three denominator outputs are **probe-derived, not an owner value, never carried as a capital-structure value** — printed exactly as the probe code computes them, verbatim reprs re-run 2026-10-11.)
 
-Observed owner behaviour: three implied total-share denominators for the same issuer, none carried as a value by any owner — fundamentals implies 9,268,936,861 (basic) vs 9,473,445,280 (diluted) from its own payload, and the southbound vendor's `own_pct` implies 9,098,091,681. No owner stores a share count (searched: `security_master.parquet`, `vendor_aliases.parquet`, fundamentals payloads, placements output — profile note, re-confirmed here). `engine/capital_structure/` is SEC-only (`companyfacts_authenticated_read.py`, `share_count_*.py` are CIK/EDGAR-machinery); Tencent has no CIK in Data OS. The southbound vendor's `own_pct` arrives already computed against ITS uncarried denominator with no version — that is the silent join, performed inside the vendor payload and passed through by the owner without a flag.
+Concrete rows involved: `financials` FY2024 `ni=194073000000.0, eps=20.938, eps_diluted=20.486, currency="HKD"`; `southbound` 2026-10-09 `hold_shares=1082672910.0, own_pct=(A11-REFUSED as a denominator-bearing value — raw in-row value not displayed)`.
+
+Observed owner behaviour: three implied total-share denominators for the same issuer, none carried as a value by any owner — fundamentals implies 9268936861.209286 (basic) vs 9473445279.70321 (diluted) from its own payload, and the southbound vendor's `own_pct` implies 9098091680.672268. No owner stores a share count (searched: `security_master.parquet`, `vendor_aliases.parquet`, fundamentals payloads, placements output — profile note, re-confirmed here). `engine/capital_structure/` is SEC-only (`companyfacts_authenticated_read.py`, `share_count_*.py` are CIK/EDGAR-machinery); Tencent has no CIK in Data OS. The southbound vendor's `own_pct` arrives already computed against ITS uncarried denominator with no version — that is the silent join, performed inside the vendor payload and passed through by the owner without a flag.
 
 Verdict: **SILENT_JOIN** at the vendor/owner layer (denominators embedded in returned ratios, uncarried, unflagged). Per the frozen spec A11 this pack **REFUSES** any share-count or valuation denominator: no canonical capital-structure version exists to name, so no market cap, no per-share cross-check, and no 00700/80700 pooling denominator is produced anywhere in this pack.
 
@@ -58,9 +60,9 @@ extra = cd.dropna().index.difference(px.index); print(len(extra))
 "
 ```
 
-Concrete rows involved: on 2024-12-31 the price store has NO row (`ts in px.index → False`) while closes_deep carries `411.3742370605469`; 26 closes_deep-only dates exist (first: 2004-06-22, 2004-07-01, 2004-07-05…); on the ~5,485 shared dates the values agree to the float (`np.isclose → all True`; e.g. 2004-06-16 both `0.7032909989356995`, 2026-06-30 both `429.79998779296875`).
+Concrete rows involved: on 2024-12-31 the price store has NO row (`ts in px.index → False`) while closes_deep carries `411.3742370605469`; 26 closes_deep-only dates exist (first: 2004-06-22, 2004-07-01, 2004-07-05…); on the 5485 shared dates the values agree to the float (`np.isclose → all True`; e.g. 2004-06-16 both `0.7032909989356995`, 2026-06-30 both `429.79998779296875`).
 
-Observed owner behaviour: the two stores disagree on coverage (5,485 vs 5,511 non-null) for the same issuer-day metric; neither store carries a vintage stamp, a source id, or any dedupe key across stores. A consumer concatenating or outer-joining the two owners gets every shared day twice and 26 one-sided days with NOTHING in the owner output flagging the duplication — the recorded splice risk `DSC:HK-DEEP-PANEL-SPLICES-ADJUSTMENT-VINTAGES` is the same defect class.
+Observed owner behaviour: the two stores disagree on coverage (5485 vs 5511 non-null) for the same issuer-day metric; neither store carries a vintage stamp, a source id, or any dedupe key across stores. A consumer concatenating or outer-joining the two owners gets every shared day twice and 26 one-sided days with NOTHING in the owner output flagging the duplication — the recorded splice risk `DSC:HK-DEEP-PANEL-SPLICES-ADJUSTMENT-VINTAGES` is the same defect class.
 
 Verdict: **SILENT_JOIN** (owner side does not dedupe, stamp vintages, or flag cross-store duplicates; only consumer discipline prevents double-counting).
 
@@ -109,7 +111,7 @@ Concrete rows involved: `news_id=12280990`, `announced_at=2026-08-12 16:31:00` (
 
 Observed owner behaviour: the filing arrived 43 days after its economic period end (2026-06-30 → 2026-08-12; the lag is derived HERE, consumer-side — the owner carries no period-end field and no lag field). The period end exists ONLY as title prose. The owner's date axis is publication (`date=2026-08-12`, `announced_at` timestamp); a consumer keying the event to its economic quarter would need to parse the headline. Nothing in the owner output flags the 43-day gap, marks the row "late", or separates first_public from event semantics beyond the two fields it happens to carry. Secondary instance: the store begins 2026-04-13 (`coverage.json earliest`), so any earlier filing of this issuer is not "late" — it is invisible; no backfill marker exists either.
 
-Verdict: **SILENT_JOIN** (publication-date keying passes without a period-end field, lag field, or lateness flag).
+Verdict: **SPLIT** — **FLAGGED (first-public announced_at preserved; no backdating)**: the owner's `announced_at=2026-08-12 16:31:00` is a genuine HKEX first-public timestamp and the store never re-dates a filing to its period; AND **SILENT_JOIN (structural: no period-end/filing-lag field; period only in title prose)**: publication-date keying passes without a period-end field, lag field, or lateness flag, so the 43-day gap is invisible to any consumer keying economic periods.
 
 ## Probe 5 — Unit scale (currency defect)
 
@@ -124,7 +126,7 @@ p = json.loads(f[f['ticker']=='0700.HK'].iloc[0]['payload'])
 print(p['financials'][-1]['revenue'], p['financials'][-1]['currency'])   # 751766000000.0 HKD
 print(p['financials'][-2]['revenue'], p['financials'][-2]['currency'])   # 660257000000.0 HKD
 sp = pd.read_parquet('data/hk_shorts/positions.parquet')
-print(sp[sp['stock_code']=='80700'].tail(1)[['date','stock_name','value_hkd']].to_string())
+print(sp[sp['stock_code']==80700].tail(1)[['date','stock_name','value_hkd']].to_string())
 "
 ```
 
@@ -157,6 +159,29 @@ Concrete rows involved: the same issuer appears as `name_en="Tencent"` + `name_z
 Observed owner behaviour: every owner keys rows by code/ticker (`0700.HK`, `700`, `80700`, `0419.HK`); the EN/ZH name pair rides as display columns of the same row, so no owner split one subject into two language rows, and no owner merged `TENCENT`/`TENCENT-R`/`HUAYI TENCENT` — queried directly, each returns its own counter/company rows. The name-space collision is REAL (a name-substring join would pull 256 Huayi Tencent rows and merge the two Tencent counters into one subject) but it lives in consumer joins, not in any observed owner read.
 
 Verdict: **FLAGGED** (owners do not silently join on names — the pass; the collision documented here so no downstream join repeats it). Residual finding recorded: the RMB counter is distinguishable ONLY by the `-R` display suffix and its distinct code, since it has no security id.
+
+### Probe 6 fold check — dual-counter representation of the same document (repair R6)
+
+The same HKEXnews announcement (one document, `news_id=12280990`) carries BOTH counters in its raw `stock_code` list while the owner's tape keys it to a single normalized ticker. Owner call re-run 2026-10-11 (build_tape filters a trailing 90-day window from the wall-clock day; the row fell INSIDE the default window, so no extended window was needed — a `window_days=3650` re-run returns the identical row):
+
+```python
+/usr/bin/python3 -c "
+import sys; sys.path.insert(0,'.')
+import pandas as pd
+from engine import hk_filing_bus as fb
+tape = fb.build_tape(fb._load_filings(), fb._load_placements())
+print(tape[tape['news_id'].astype(str)=='12280990'][['news_id','stock_code','ticker','date','category']].to_string())
+"
+```
+
+Output verbatim (run 2026-10-11T18:40:37Z):
+
+```
+       news_id                                                                                                                                                                                                     stock_code   ticker       date category
+2660  12280990  00700<br/>05093<br/>05094<br/>05542<br/>05962<br/>05963<br/>40240<br/>40241<br/>40242<br/>40470<br/>40472<br/>40655<br/>40656<br/>40657<br/>40658<br/>80700<br/>85069<br/>85070<br/>85071<br/>85134<br/>85135  0700.HK 2026-08-12  results
+```
+
+Fold-check verdict: **SPLIT** — **SILENT_JOIN (ticker normalization folds the 80700 RMB counter into 0700.HK with no counter flag)**: the tape's `ticker` column carries `0700.HK` only, so the RMB counter's presence in the same document is invisible to any tape-level consumer and no counter dimension exists; AND **FLAGGED (raw stock_code preserves both counters)**: the raw `stock_code` `<br/>` list retains `00700` and `80700` side by side, so the owner does not destroy the counter distinction — it just does not carry it into the served key. This is the evidence behind the coverage JSON's PARTIAL filings/events rows for the RMB counter (the owner serves a value whose issuer_subject is missing for that counter).
 
 ## Probe 7 — Source correction
 
