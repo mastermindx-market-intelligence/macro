@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T13:35:36.892882+00:00",
-  "count": 2809,
+  "generated_at": "2026-10-11T13:50:44.962764+00:00",
+  "count": 2810,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -43,6 +43,7 @@
     "Gabelli",
     "Goldman Sachs",
     "HSBC",
+    "HSBC AM",
     "Halcyon",
     "Handelsbanken",
     "ING",
@@ -118,6 +119,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cxuixky8noz-6137e7",
+      "title": "AM Investment Weekly 09 10 26",
+      "institution": "HSBC AM",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T03:10:49Z",
+      "summary_points": [
+        "Geopolitical Resilience Amidst Rising Risks: S&P 500 near 8000 despite Middle East/Russia-Ukraine tensions; 2026e global profit growth at 36% (4x long-term avg) but bond yields and geopolitics threaten valuations.",
+        "China Stocks as AI Trade Hedge: Tech localization and high-end manufacturing drive earnings growth; policies curb price wars, offering diversification against Western tech crowding and supply chain vulnerabilities.",
+        "Macro Shocks & EM Opportunity: Middle East conflict (oil) + China \"shock 2.0\" (tech/green exports) create inflation/disinflation tension; favor EM with lower valuations and selective bonds/equities amid US AI spillovers.",
+        "Risk & Diversification: Geopolitical tensions (Middle East, China), sticky inflation, and fiscal uncertainty; hedge with real assets (infrastructure, energy transition) and avoid broad high-yield credits.",
+        "Fed Policy & Inflation Dynamics: FOMC minutes signal year-end rate hikes; US CPI at 3.6% (Oct 14) and India CPI at 5.5% (Oct 12) highlight persistent inflation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
