@@ -1307,7 +1307,7 @@ def recent_own_posts(root=None, *, as_of=None, window_days: int = 30) -> list[di
 
 
 def staged_peers(root=None, cfg: dict | None = None, *, exclude_id: str = "") -> list[dict]:
-    """[{slug, text}] for drafts sitting in staging (excluding `exclude_id`).
+    """Staged text and prose blocks, excluding `exclude_id`.
 
     WHY THIS EXISTS: the 10-article evidence gate accrues across staged drafts
     that have not been emitted yet.  A radar that only read content/seo/blog/
@@ -1335,7 +1335,8 @@ def staged_peers(root=None, cfg: dict | None = None, *, exclude_id: str = "") ->
         if not isinstance(d, dict) or not d.get("body_html"):
             continue
         out.append({"slug": f"staged:{obj.get('slug') or obj.get('id')}",
-                    "text": strip_tags(d["body_html"])})
+                    "text": strip_tags(d["body_html"]),
+                    "prose_blocks": [b["text"] for b in blocks(_prose_html(d, cfg or {}))]})
     return out
 
 
@@ -1364,6 +1365,17 @@ def check_self_similarity(draft: dict, slot: dict, cfg: dict, root=None) -> dict
             j = window_jaccard(btoks, words(peer["text"]), n)
             if j > worst:
                 worst, worst_slug, worst_block = j, peer["slug"], blk["text"][:120]
+
+    # Windowing is asymmetric when the new block is much longer than an
+    # existing staged block. Check the reverse direction before accepting the
+    # new draft, so a later sibling cannot invalidate an earlier passing one.
+    # Use the same furniture/quotation exclusions as the peer's own replay.
+    candidate_tokens = words(strip_tags(_body(draft)))
+    for peer in peers:
+        for text in peer.get("prose_blocks", []):
+            j = window_jaccard(words(strip_quotes(text)), candidate_tokens, n)
+            if j > worst:
+                worst, worst_slug, worst_block = j, peer["slug"], text[:120]
 
     ok = worst <= threshold
     return _row("self_similarity", ok,

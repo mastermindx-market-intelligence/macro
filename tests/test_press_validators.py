@@ -701,6 +701,43 @@ def test_self_similarity_does_not_compare_a_draft_to_its_own_staged_record(tmp_p
     assert row["metrics"]["peers"] == 0
 
 
+def test_self_similarity_rejects_new_copy_that_invalidates_a_shorter_staged_block(tmp_path):
+    """A long candidate cannot bury an existing short paragraph below the gate."""
+    root = F.fixture_root(tmp_path)
+    prior = F.FILLER_PARAGRAPHS[0]
+    path = root / "data/press/staging/prior.json"
+    path.write_text(json.dumps({
+        "id": "press-prior", "status": "passed", "slug": "prior",
+        "draft": {"body_html": f"<p>{prior}</p>"},
+    }), encoding="utf-8")
+    before = path.read_bytes()
+    # One long block used to dilute the shared passage; the prior article's
+    # short block would fail only after this candidate had already been saved.
+    padding = " ".join(f"distinctword{i}" for i in range(300))
+    candidate = F.draft(prior + " " + padding, fold=False, byline=False, footer=False)
+    row = V.check_self_similarity(candidate, F.slot(), F.config(), root=root)
+    assert row["ok"] is False
+    assert row["metrics"]["worst_slug"] == "staged:prior"
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("shared_kind", ["footer", "quotation"])
+def test_reverse_staged_similarity_excludes_required_furniture_and_quotes(tmp_path, shared_kind):
+    root = F.fixture_root(tmp_path)
+    shared = F.FILLER_PARAGRAPHS[0]
+    furniture = f'<p class="press-footer">{shared}</p>'
+    quoted = f'<p>"{shared}"</p>'
+    prior_body = furniture if shared_kind == "footer" else quoted
+    (root / "data/press/staging/prior.json").write_text(json.dumps({
+        "id": "press-prior", "status": "passed", "slug": "prior",
+        "draft": {"body_html": prior_body},
+    }), encoding="utf-8")
+    candidate = F.draft(F.REWRITTEN_PARAGRAPH, fold=False, byline=False, footer=False)
+    candidate["body_html"] += furniture if shared_kind == "footer" else quoted
+    row = V.check_self_similarity(candidate, F.slot(), F.config(), root=root)
+    assert row["ok"] is True, row["detail"]
+
+
 def test_self_similarity_ignores_posts_outside_the_window(tmp_path):
     root = tmp_path / "repo"
     blog = root / "content" / "seo" / "blog"
