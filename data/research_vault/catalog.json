@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T14:20:42.739085+00:00",
-  "count": 2811,
+  "generated_at": "2026-10-11T14:35:44.780977+00:00",
+  "count": 2812,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -534,6 +534,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-13xymlwyzih-8c7b4b",
+      "title": "BofA U.S. REIT Weekly 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:05:57Z",
+      "summary_points": [
+        "REIT Valuation Discount: REITs trade at 82% of 1-yr forward NAV vs LTA 97%, with cap rates at 6.0% (vs BofA 5.7%) and 76bp spread vs historical 300bp, signaling undervaluation but yield compression vs Treasuries.",
+        "Sector Divergence: Healthcare (18.3% earnings growth) and Data Centers (11.5%) lead growth; Cold Storage (-11.4%) and Net Lease (declining 2027 growth) show material risks, with PEG ratios highlighting overvaluation (Self Storage 29.2 vs Data Centers 2.1).",
+        "Top Catalysts: ADC (6% AFFO growth), AHR (aging demographics), CUBE (NYC supply constraints), and PECO (grocery anchors) selected for sector-specific growth drivers and strong metrics.",
+        "Earnings Volatility Risk: 18 REITs report Q3 earnings Oct 20–26, with guidance ranges (e.g., KRC $3.49–3.63) indicating potential surprises and heightened portfolio volatility.",
+        "Yield Compression Risk: REITs trade at -119bps vs 10Y Treasury (vs LTA +111bps), critical for income-focused portfolios amid rising rates and reduced relative attractiveness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
       "language": "en",
       "needs_metadata": false
     },
