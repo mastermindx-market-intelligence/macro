@@ -466,7 +466,7 @@ def _dispatcher_script() -> str:
         "require_private_file() {\n"
         "  local mode\n"
         '  [ -f "$1" ] && [ ! -L "$1" ] || fail "required regular file missing: $1"\n'
-        '  mode=$(stat -c "%a" "$1")\n'
+        '  mode=$(stat -c "%a" "$1" 2>/dev/null || stat -f "%Lp" "$1")\n'
         '  case "$mode" in 600|400) ;; *) fail "file must be mode 600 or 400: $1" ;; esac\n'
         "}\n\n"
     )
