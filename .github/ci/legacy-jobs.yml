@@ -20973,6 +20973,7 @@ jobs:
       - "app/unsubscribe.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
+      - "collectors/alpaca_news.py"
       - "collectors/base.py"
       - "collectors/benzinga_news.py"
       - "collectors/biocatalyst/drugs_at_fda.py"
@@ -21036,6 +21037,7 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
+      - "config/ticker_news_rights_alpaca_benzinga.json"
       - "config/us_names_zh.json"
       - "config/us_search_aliases_zh.json"
       - "contracts/capital_structure_projection.schema.json"
@@ -21612,6 +21614,7 @@ jobs:
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
+      - "tests/test_alpaca_news.py"
       - "tests/test_benzinga_news.py"
       - "tests/test_build_qbus_news_universe.py"
       - "tests/test_massive_benzinga_news.py"
@@ -21648,6 +21651,7 @@ jobs:
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_alpaca_news.py
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
           tests/test_massive_benzinga_news.py
