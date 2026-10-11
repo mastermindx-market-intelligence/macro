@@ -256,3 +256,74 @@ current metadata and final rechecks. No indefinitely cached startup allow,
 caller-supplied grant or second rights registry is acceptable. This integration
 requires real owner records and an approved private transport; no always-refusing
 adapter constitutes production completion.
+
+
+## Current company context query
+
+GET `/api/company-intelligence/private/company-context?symbol=MU` is the additive
+authenticated metadata edge. The same canonical authentication and fresh actual
+feature check precede even reference metadata access. Only one `symbol` query
+parameter is admitted. It must already be uppercase, 1–24 characters, and match
+`[A-Z0-9][A-Z0-9.\-]{0,23}`. No caller vendor, market, CIK, ID, date or path is
+accepted. The server fixes the namespace to the incumbent Data OS `store` current
+alias space. A symbol is a query, never identity evidence. Punctuation is exact:
+no dot/hyphen conversion, vendor fallback or invented venue. Unsupported aliases
+and non-US-equity identities refuse. For the qualified committed bundle, `BRK-B`
+resolves while `BRK.B` does not; `^NDX` is invalid for this company query.
+
+The closed success schema is `company_intelligence.private_company_context/v1`:
+
+```text
+schema
+identity_mode = current
+query = {namespace: store, symbol: <validated input>}
+security_id = <owner-resolved canonical SEC identity>
+issuer_binding = {issuer_id, evidenced_cik, identity_snapshot_reference}
+identity_receipt = {schema, identity_mode, issuer_id, evidenced_cik, source_commit,
+                    sources, evidence_source, evidence_snapshot}
+```
+
+`identity_snapshot_reference` is `{schema, sha256, byte_length}` over the exact
+UTF-8 receipt JSON (sorted keys recursively, compact separators, no ASCII escape).
+Its schema is `company_intelligence.current_issuer_identity/v1`. `sources` contains
+exactly `security_master`, `vendor_aliases`, and `issuer_master`, each with SHA256
+and byte length of the immutable Parquet bytes. `source_commit` identifies the
+owner-qualified compatible committed tree; `evidence_source=sec_company_tickers`,
+and `evidence_snapshot` is the actual date-only source observation. The receipt
+is at most16KiB and references the larger artifacts rather than relabeling them.
+It deliberately excludes the query, security and evaluation time: share classes
+of one issuer in the same bundle receive the same issuer receipt.
+
+The installed `PrivateDisclosureReader.context_owner` supplies a currently
+qualified `IdentityBundle` via `current_identity_bundle(purpose, audience)`. It
+must establish exact compatible source-tree bytes before supplying the bundle
+and re-resolve its current generation on every call; a constructor or hash alone
+is no qualification. The pure composition hashes and parses the same bytes, uses
+only `VendorAliasTable` and `IssuerMaster`, validates active/resolved securities,
+canonical issuer kind, positive CIK, listing/alias roundtrips and compatible
+issuer evidence. Both source observations must be valid dates no later than the
+current UTC date. It rechecks the bundle and UTC date before returning, refusing
+a midnight transition. No HTTP-supplied clock or historical identity is supported.
+
+F04 must first obtain this context, then call the existing issuer-selection
+endpoint and compare the entire issuer/CIK/identity-reference binding. A mismatch
+invalidates the composed result; never force an older binding. The selection and
+fact admission owner must use this exact receipt, or separately qualify a new
+generation binding all three surfaces. The aggregate admission identity decision
+remains distinct from this subject receipt. The new endpoint grants no disclosure
+purpose and does not access the private artifact Store.
+
+Errors retain the existing `company_intelligence.private_error/v1` envelope,
+`automatic_retry_permitted=false`, and private/no-store headers. Authentication
+and entitlement are401/403; malformed query is400 `REQUEST_INVALID`; missing
+installed capability is503 `SOURCE_RUNTIME_UNAVAILABLE`; unresolved, conflicting,
+future, changed or unsupported identity is503 `PRIVATE_SOURCE_UNAVAILABLE`.
+
+Verification: independent review supplied five concrete canonical-ID/CIK/date/
+midnight counterexamples; all five failed before correction. The affected native,
+private and public API suites then passed160 tests. Canonical exclusive CI closure
+is empty. Exact committed references and producer row counts were independently
+checked for current MU/NVDA/GOOG/GOOGL/BRK-B resolution, exact BRK.B/^NDX refusal,
+and shared GOOG/GOOGL issuer receipt equality. This is source/reference metadata
+qualification only; no current owner is installed and no C01 rights or private
+publication have been admitted.

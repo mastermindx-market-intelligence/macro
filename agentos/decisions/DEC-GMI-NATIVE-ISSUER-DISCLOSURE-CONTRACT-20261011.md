@@ -66,3 +66,20 @@ binding to match the issuer/CIK/snapshot before private I/O. The actual source
 decision must bind that tuple; equality of unverified hashes is insufficient.
 No Data OS snapshot schema is invented or relabelled. The private generation
 producer, actual source-owner records and runtime wiring remain uninstalled.
+
+
+Current company context continuation (2026-10-11): the existing Terminal host
+provides a normalized ticker string only. Adopt the incumbent Data OS current
+`store` query semantics through a private metadata route, without deriving an
+issuer from that string or public filing CIK. The same source owner supplies an
+immutable compatible reference bundle; canonical VendorAliasTable/IssuerMaster
+remain the only readers. A bounded issuer receipt over exact source bytes is
+stable across share classes and must exactly match selection/fact subject binding.
+Independent review found five identifier/CIK/date/midnight counterexamples;5RED
+then160 native/private/public tests PASS, canonical scope closure clean. Actual
+committed references and producer counts qualify MU/NVDA/GOOG/GOOGL/BRK-B current
+resolution, exact BRK.B/^NDX refusal, and shared GOOG/GOOGL receipt parity. Proof:
+`research/theme_graph/issuer_disclosures_20261011/CURRENT_CONTEXT_VALIDATION.json`
+and `CURRENT_CONTEXT_REFERENCE_QUALIFICATION.json`. Owner installation, source
+purpose and private publication remain unaccepted; native PR kernel dependency
+hold remains. F04 owns isolated consumer composition and compares full bindings.

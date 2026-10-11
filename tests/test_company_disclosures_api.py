@@ -345,3 +345,161 @@ def test_transient_binding_downgrade_cannot_skip_original_fact_decision(selectio
         response = selection_get(selection_boundary)
     assert response.status_code == 503
     assert not reads
+
+# Current company-context composition uses synthetic reference-owner evidence.
+@pytest.fixture
+def context_fixture(boundary):
+    from datetime import date
+    from io import BytesIO
+    import pandas as pd
+    from engine.company_intelligence import current_company_context as context
+    records = {
+        'security_master': [dict(security_id='SEC:US-XNAS-AAA', issuer_id='ISS:US-XNAS-AAA',
+            issuer_state='RESOLVED', issuer_cik='0000000001', listing_key='US-XNAS-AAA',
+            issuer_evidence_snapshot=date(2026, 1, 1), security_state=None, superseded_by=None),
+            dict(security_id='SEC:US-XNAS-AAB', issuer_id='ISS:US-XNAS-AAA',
+            issuer_state='RESOLVED', issuer_cik='0000000001', listing_key='US-XNAS-AAB',
+            issuer_evidence_snapshot=date(2026, 1, 1), security_state=None, superseded_by=None)],
+        'issuer_master': [dict(issuer_id='ISS:US-XNAS-AAA', cik='0000000001', status='active',
+            evidence_source='sec_company_tickers', evidence_snapshot=date(2026, 1, 1))],
+        'vendor_aliases': [dict(vendor='store', vendor_symbol=symbol, security_id='SEC:US-XNAS-'+symbol,
+            valid_from=None, valid_to=None) for symbol in ['AAA', 'AAB']],
+    }
+    def bundle(data=records, commit='a'*40):
+        blobs = {}
+        for name, rows in data.items():
+            output=BytesIO(); pd.DataFrame(rows).to_parquet(output, index=False); blobs[name]=output.getvalue()
+        return context.IdentityBundle(commit, **blobs)
+    class Owner:
+        calls=0
+        value=bundle()
+        replacement=None
+        def current_identity_bundle(self, purpose, audience):
+            assert (purpose, audience)==(api.PURPOSE,api.AUDIENCE)
+            self.calls+=1; boundary[3].append('identity_metadata')
+            return self.replacement if self.calls>1 and self.replacement else self.value
+    owner=Owner()
+    client=boundary[0]
+    client.app.state.company_disclosure_reader=replace(client.app.state.company_disclosure_reader,context_owner=owner)
+    return client, owner, records, bundle
+
+
+def context_get(fixture, query='?symbol=AAA'):
+    return fixture[0].get('/api/company-intelligence/private/company-context'+query,
+                           headers={'Authorization':'Bearer synthetic-token'})
+
+
+def test_context_resolves_actual_owner_values_and_same_issuer_receipt_for_share_classes(context_fixture,boundary):
+    from hashlib import sha256
+    import json
+    one=context_get(context_fixture); two=context_get(context_fixture,'?symbol=AAB')
+    assert one.status_code==two.status_code==200
+    a,b=one.json(),two.json(); assert a['security_id']!=b['security_id']
+    assert a['issuer_binding']==b['issuer_binding'] and a['identity_receipt']==b['identity_receipt']
+    raw=json.dumps(a['identity_receipt'],sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+    ref=a['issuer_binding']['identity_snapshot_reference']
+    assert ref['sha256']==sha256(raw).hexdigest() and ref['byte_length']==len(raw)<=16384
+    assert a['query']=={'namespace':'store','symbol':'AAA'} and a['identity_mode']=='current'
+    assert 'private_store' not in boundary[3]
+    private_headers(one)
+
+
+@pytest.mark.parametrize('query',['?symbol=^NDX','?symbol=aaa','?symbol=AAA&symbol=AAB',
+    '?symbol=AAA&vendor=yahoo','?symbol=AAA&on=2025-01-01','?issuer_id=ISS:US-XNAS-AAA',''])
+def test_context_query_cannot_supply_identity_namespace_or_time(context_fixture,boundary,query):
+    result=context_get(context_fixture,query); assert result.status_code==400
+    assert context_fixture[1].calls==0 and 'private_store' not in boundary[3];private_headers(result)
+
+
+@pytest.mark.parametrize('symbol',['UNKNOWN','AAA.B','AAA-B'])
+def test_context_does_not_invent_aliases(context_fixture,symbol):
+    result=context_get(context_fixture,'?symbol='+symbol)
+    assert result.status_code==503 and result.json()['code']=='PRIVATE_SOURCE_UNAVAILABLE'
+
+
+@pytest.mark.parametrize('mutation',['duplicate_security','duplicate_issuer','ambiguous_alias','superseded',
+    'no_issuer_evidence','wrong_cik','wrong_snapshot','listing_mismatch','wrong_market'])
+def test_context_refuses_unqualified_reference_composition(context_fixture,mutation):
+    import copy
+    client,owner,original,bundle=context_fixture; data=copy.deepcopy(original)
+    if mutation=='duplicate_security': data['security_master'].append(data['security_master'][0].copy())
+    elif mutation=='duplicate_issuer': data['issuer_master'].append(data['issuer_master'][0].copy())
+    elif mutation=='ambiguous_alias': data['vendor_aliases'].append(dict(data['vendor_aliases'][0],security_id='SEC:US-XNAS-AAB'))
+    elif mutation=='superseded': data['security_master'][0]['superseded_by']='SEC:US-XNAS-AAB'
+    elif mutation=='no_issuer_evidence': data['security_master'][0]['issuer_state']='NO_ISSUER_EVIDENCE'
+    elif mutation=='wrong_cik': data['issuer_master'][0]['cik']='0000000002'
+    elif mutation=='wrong_snapshot':
+        from datetime import date
+        data['issuer_master'][0]['evidence_snapshot']=date(2025,1,1)
+    elif mutation=='listing_mismatch': data['security_master'][0]['listing_key']='US-XNAS-AAB'
+    elif mutation=='wrong_market':
+        data['security_master'][0]['security_id']='SEC:HK-XHKG-0001'
+        data['security_master'][0]['listing_key']='HK-XHKG-0001'
+        data['vendor_aliases'][0]['security_id']='SEC:HK-XHKG-0001'
+    owner.value=bundle(data)
+    result=context_get(context_fixture); assert result.status_code==503;private_headers(result)
+
+
+def test_context_rechecks_bundle_generation_before_response(context_fixture):
+    owner=context_fixture[1];owner.replacement=replace(owner.value,source_commit='b'*40)
+    result=context_get(context_fixture);assert result.status_code==503 and owner.calls==2
+
+
+def test_context_auth_and_feature_precede_reference_metadata(context_fixture,boundary):
+    client,owner,*_=context_fixture
+    result=client.get('/api/company-intelligence/private/company-context?symbol=AAA')
+    assert result.status_code==401 and owner.calls==0
+    boundary[2]['features']=[]
+    result=context_get(context_fixture);assert result.status_code==403 and owner.calls==0
+    assert 'private_store' not in boundary[3]
+
+
+@pytest.mark.parametrize('bad',['corrupt','oversize','unqualified_generation'])
+def test_context_invalid_bundle_is_sanitized(context_fixture,bad):
+    from engine.company_intelligence import current_company_context as context
+    owner=context_fixture[1]
+    if bad=='corrupt':owner.value=replace(owner.value,issuer_master=b'not parquet')
+    elif bad=='oversize':owner.value=replace(owner.value,issuer_master=b'x'*(context.MAX_REFERENCE_BYTES+1))
+    else:owner.value=replace(owner.value,source_commit='not-a-source-commit')
+    result=context_get(context_fixture);assert result.status_code==503
+    assert 'not parquet' not in result.text and 'not-a-source-commit' not in result.text
+    private_headers(result)
+
+
+def test_context_absent_runtime_is_not_a_public_fallback(boundary):
+    result=context_get((boundary[0],));assert result.status_code==503
+    assert result.json()['code']=='SOURCE_RUNTIME_UNAVAILABLE' and 'private_store' not in boundary[3]
+
+@pytest.mark.parametrize('gap',['issuer_kind','zero_cik','future_snapshot','invalid_snapshot'])
+def test_context_review_gap_rejects_noncanonical_or_future_evidence(context_fixture,gap):
+    import copy
+    from datetime import date
+    owner=context_fixture[1];data=copy.deepcopy(context_fixture[2])
+    if gap=='issuer_kind':
+        for row in data['security_master']:row['issuer_id']='SEC:US-XNAS-AAA'
+        data['issuer_master'][0]['issuer_id']='SEC:US-XNAS-AAA'
+    elif gap=='zero_cik':
+        for row in data['security_master']:row['issuer_cik']='0000000000'
+        data['issuer_master'][0]['cik']='0000000000'
+    else:
+        value=date(2099,1,1) if gap=='future_snapshot' else 'not-a-date'
+        for row in data['security_master']:row['issuer_evidence_snapshot']=value
+        data['issuer_master'][0]['evidence_snapshot']=value
+    owner.value=context_fixture[3](data)
+    assert context_get(context_fixture).status_code==503
+
+
+def test_context_review_gap_midnight_expiry_refuses(context_fixture,monkeypatch):
+    import copy
+    from datetime import date,datetime,timezone
+    from engine.company_intelligence import current_company_context as context
+    data=copy.deepcopy(context_fixture[2]);data['vendor_aliases'][0]['valid_to']=date(2026,10,12)
+    context_fixture[1].value=context_fixture[3](data)
+    class Clock:
+        calls=0
+        @classmethod
+        def now(cls,tz):
+            cls.calls+=1
+            return datetime(2026,10,11,23,59,59,tzinfo=timezone.utc) if cls.calls==1 else datetime(2026,10,12,tzinfo=timezone.utc)
+    monkeypatch.setattr(context,'datetime',Clock)
+    assert context_get(context_fixture).status_code==503
