@@ -236,7 +236,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   and nothing is EFFECT_UNKNOWN. So the seat executes the frozen V01 commission directly, niced, with no change to the commission.
   V01 is REMOVED from the fabric launch queue (one writer). 1B and the others stay queued for admission. Acceptance still
   needs an independent Opus READ_ONLY exact-head review before the PR.
-- D37 (18:20Z) Seat launcher `leads/../launch_when_admitted.sh`. It launches ONE pool lane only while load1 < 15 (just under
+- D37 (18:20Z) Seat launcher `$S/launch_when_admitted.sh` (scratchpad). It launches ONE pool lane only while load1 < 15 (just under
   the 16 admission limit). A clean refusal (exit 75 + LANE_ADMISSION_REFUSED, no run id) has no effect, so it is renamed and
   waited out on the same carrier. Any other exit ends the wait. This is the O-14 re-arm, with no new queue: the fabric's own
   admission still decides. 1B was admitted at 18:20:45Z (load1 13.8); D16a is armed behind it (bjtdrpkg9).
@@ -435,9 +435,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | lane | state |
 |---|---|
 | U01 step 1B | RUNNING — admitted 18:20:45Z via bt8w3juhp (launch_when_admitted, fix_build, alarm 14400); grok operator live; artifacts dir named in `leads/U01/step1B_pool.log` |
-| D16a | QUEUED → armed on bjtdrpkg9 (launch_when_admitted, fix_build, alarm 7200, wait budget 7200 s); old refusal log renamed `pool.refused-1750Z.log` |
+| D16a | RUNNING — admitted 18:30:50Z (load1 14.7) via bjtdrpkg9 (fix_build, alarm 7200); grok artifacts dir named in `leads/D16a/pool.log` |
 | V01 | DELIVERED by seat (D36/D38) — branch pushed at `3eadb841171d` (red `51a12c8b51d8`, qualification `019c5cdf4aa5`, fix `3eadb841171d`); gates: 348 passed, imports OK, diff = 2 owned files; 8/8 mutations killed; return `leads/V01/return.md`; Opus READ_ONLY audit RUNNING |
-| OC | QUEUED; old refusal log renamed `pool.refused-1751Z.log`; launch after D16a or 1B frees a slot |
+| OC | QUEUED → armed 18:36Z on bnwojs7jx (launch_when_admitted, build-bounded, alarm 12600, wait budget 10800 s); takes the next slot 1B or D16a frees (max_active 2) |
 | F01, M01 | QUEUED — commissions frozen |
 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
