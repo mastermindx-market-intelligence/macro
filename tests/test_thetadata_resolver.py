@@ -727,3 +727,106 @@ class TestUnmountedVolumeStopsTheChain:
             "backfill no longer consults unmounted_store_candidates() — its "
             "store-agreement guard can mint a second store while the canonical "
             "volume is absent")
+
+    def test_t6b_sibling_prefix_dir_is_not_under_the_volumes_root(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """`VolumesX/STORAGE` shares a string prefix with `Volumes/`; it is not
+        on a volume, so nothing being mounted must not refuse it."""
+        _patch_volumes(monkeypatch, tmp_path / "Volumes")
+        store = _mk_store(tmp_path / "VolumesX" / "STORAGE", roots=("SPY",))
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        assert tds.resolve_thetadata_store(purpose="t6b") == store
+
+    def test_t8_denied_volume_root_fails_open_not_unmounted(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """EACCES/EPERM on a volume root is "cannot read", not "unmounted".
+
+        Uses the REAL `_is_mount`. os.path.ismount swallows the lstat error and
+        returns False, which refused a mounted store and told the operator to
+        remount a disk that was already mounted.
+        """
+        import os
+        vroot = tmp_path / "Volumes"
+        vroot.mkdir()
+        monkeypatch.setattr(tds, "_VOLUMES_ROOT", vroot)
+        store = _mk_store(vroot / "STORAGE" / "thetadata_eod", roots=("SPY",))
+        denied = str(_volume_path(vroot))
+        real_lstat = os.lstat
+
+        def lstat(p, *a, **k):
+            if os.fspath(p) == denied:
+                raise PermissionError(1, "Operation not permitted", denied)
+            return real_lstat(p, *a, **k)
+
+        monkeypatch.setattr(os, "lstat", lstat)
+        monkeypatch.setenv("THETADATA_STORE", str(store))
+        assert tds._classify_store(store) == tds._UNKNOWN
+        assert tds.unmounted_store_candidates() == []
+        assert tds.resolve_thetadata_store(purpose="t8") == store
+
+    def test_t9_backfill_refuses_before_minting_a_store(
+            self, tmp_path, monkeypatch, isolated_chain):
+        """The backfill guard returns 1 before `_store_dir()`, whose mkdir would
+        be the second store. The control proves the sentinel can fire."""
+        import sys
+        from scripts import backfill_thetadata_eod as bk
+        vol = tmp_path / "Volumes" / "STORAGE"
+        monkeypatch.setattr(sys, "argv", [
+            "backfill_thetadata_eod", "--dry-run", "--roots", "SPY"])
+        monkeypatch.setattr(bk, "resolve_thetadata_store", lambda **k: None)
+        monkeypatch.setattr(bk, "drained_store_candidates", lambda: [])
+        monkeypatch.setattr(bk, "_unmounted_volume", lambda p: vol)
+
+        def minted():
+            raise AssertionError("_store_dir() called: that mkdir is the second store")
+
+        monkeypatch.setattr(bk, "_store_dir", minted)
+        monkeypatch.setattr(
+            bk, "unmounted_store_candidates", lambda: [vol / "thetadata_eod"])
+        assert bk.main() == 1
+
+        monkeypatch.setattr(bk, "unmounted_store_candidates", lambda: [])
+        with pytest.raises(AssertionError, match="second store"):
+            bk.main()
+
+
+class TestRealMountPredicate:
+    """`_is_mount` itself, unstubbed. Every chain test above stubs it."""
+
+    def test_missing_volume_is_not_a_mount(self, tmp_path):
+        assert tds._is_mount(tmp_path / "Volumes" / "STORAGE") is False
+
+    def test_leftover_plain_dir_is_not_a_mount(self, tmp_path):
+        d = tmp_path / "Volumes" / "STORAGE"
+        d.mkdir(parents=True)
+        assert tds._is_mount(d) is False
+
+    def test_symlink_is_not_a_mount(self, tmp_path):
+        link = tmp_path / "link"
+        link.symlink_to("/")
+        assert tds._is_mount(link) is False
+
+    @pytest.mark.parametrize("p", ["/", "/dev"])
+    def test_agrees_with_os_path_ismount_on_readable_paths(self, p):
+        import os
+        assert tds._is_mount(Path(p)) == os.path.ismount(p)
+
+    def test_root_is_a_mount(self):
+        """A positive, so the predicate is shown able to return True."""
+        assert tds._is_mount(Path("/")) is True
+
+    def test_denied_lstat_raises_instead_of_reading_unmounted(
+            self, tmp_path, monkeypatch):
+        import os
+        d = tmp_path / "Volumes" / "STORAGE"
+        d.mkdir(parents=True)
+        real_lstat = os.lstat
+
+        def lstat(p, *a, **k):
+            if os.fspath(p) == str(d):
+                raise PermissionError(1, "Operation not permitted", str(d))
+            return real_lstat(p, *a, **k)
+
+        monkeypatch.setattr(os, "lstat", lstat)
+        with pytest.raises(PermissionError):
+            tds._is_mount(d)

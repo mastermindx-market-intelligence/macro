@@ -141,15 +141,33 @@ _VOLUMES_ROOT = Path("/Volumes")
 
 
 def _is_mount(p: Path) -> bool:
-    return os.path.ismount(p)
+    """os.path.ismount's test without its blanket error swallowing.
+
+    os.path.ismount returns False on ANY lstat error, so a mounted volume whose
+    root is denied (EACCES, or EPERM from a sandbox) would read as unmounted.
+    Here only "not there" (FileNotFoundError / NotADirectoryError) is
+    unmounted. Every other OSError propagates, and _classify_store fails it
+    open to _UNKNOWN. The parent is `p.parent` (the volumes root), not
+    `p/..`, so no lookup happens inside the volume.
+    """
+    import stat
+    try:
+        st = os.lstat(p)
+    except (FileNotFoundError, NotADirectoryError):
+        return False
+    if stat.S_ISLNK(st.st_mode):
+        return False
+    parent = os.lstat(p.parent)
+    return st.st_dev != parent.st_dev or st.st_ino == parent.st_ino
 
 
 def _unmounted_volume(p: Path) -> Path | None:
     """Return the unmounted volume `p` or one of its tier entries lands on.
 
     Candidates are `p` itself and every tier entry that lexists, so a dangling
-    symlink counts. Only lstat / readlink / stat — no directory listing.
-    OSError propagates; the caller fails that open to `_UNKNOWN`.
+    symlink counts. Only lstat / readlink — no directory listing. realpath
+    and lexists are non-strict; the mount test raises any OSError other than
+    not-found, and the caller fails that open to `_UNKNOWN`.
     """
     candidates: list[Path] = [p]
     for t in _STORE_TIERS:
@@ -457,11 +475,12 @@ def resolve_thetadata_store(required: bool = False,
         raise RuntimeError(
             f"ThetaData store required (purpose={purpose or '-'}) but no path "
             f"resolves. Tried: {', '.join(tried)}. A path resolves unless it is "
-            f"provably empty — a store whose tier directories are all present but "
-            f"hold no root is DRAINED, not resolvable"
+            f"provably empty or on an unmounted volume — a store whose tier "
+            f"directories are all present but hold no root is DRAINED, not resolvable"
             + (f" (drained: {', '.join(drained)}; refill it with "
                f"scripts/backfill_thetadata_eod.py)" if drained else "")
-            + (f" UNMOUNTED: {', '.join(unmounted_vols)}."
+            + (f"; the chain stopped at a store on an unmounted volume "
+               f"(UNMOUNTED: {', '.join(unmounted_vols)}; mount it)"
                if unmounted_vols else "")
             + ". Set THETADATA_STORE or point the caller at a real store."
         )
