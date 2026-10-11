@@ -36,7 +36,7 @@ Report the actual stored coverage, source alias, evidence kind, missingness and 
 
 Use `lab_signals` to discover recipes and their support status, then `lab_plan` to make the intended test concrete. The installed adapter admits only reviewed OHLCV-only recipe modules. Other catalog entries remain discoverable with a refusal reason.
 
-Run `lab_run` when a bounded test is part of the user's authorized task. Supply explicit source refs, source-to-OHLCV column mapping, date column and bounds, \`bar_frequency:"daily"\`, and a positive declared `n_configs_searched` representing the trial budget. Do not invent missing OHLCV columns or a trial budget for an unspecified search.
+Run `lab_run` when a bounded test is part of the user's authorized task. Supply explicit source refs, source-to-OHLCV column mapping, date column and bounds, `bar_frequency:"daily"`, and a positive declared `n_configs_searched` representing the trial budget. Do not invent missing OHLCV columns or a trial budget for an unspecified search.
 
 Lab execution writes a dedicated test run's request, status and result artifacts and the existing canonical temporary declared-budget TrialLedger. It does not write the production trial ledger. Read artifacts via the `web_test_runs` binding and the returned `run_id`. A timeout or failure is not a completed test.
 

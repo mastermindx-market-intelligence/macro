@@ -24,6 +24,27 @@ The host configuration fixes roots and test-workspace paths. Requests cannot sup
 
 Data refs are `root_alias:relative/path`. Registry refs describe contracts; they do not resolve automatically to a physical file. The host bindings include local Macro snapshots and legacy history, fundamentals, IEX raw captures, Cboe samples, other research captures, proposed Tiingo and LSE options roots, and web test artifacts. A binding may be absent or empty.
 
+### Useful starting refs
+
+Search observes top-level namespaces; it is not a recursive filename index.
+Use these already observed refs as starting points, and describe them again
+before interpreting current contents:
+
+| Purpose | Ref |
+|---|---|
+| Daily stock history | `macro_snapshot:stocks/AMD.parquet` |
+| Derived options flow | `macro_snapshot:options_flow/summary_AMD.parquet` |
+| Stored chain snapshot | `macro_snapshot:polygon_gex/chains/2026-08-13.parquet` |
+| Overnight-gap research panel | `macro_snapshot:research/pss_f2_overnight_panel.parquet` |
+| Session-level flow research | `macro_snapshot:intraday_flow/ledger.parquet` |
+| Macro vintages | `macro_snapshot:fred_vintage/vintages.parquet` |
+| Fundamental snapshot | `fundamental_history:us_fund/AMD.json` |
+
+The overnight panel contains evaluation metrics from daily open/previous-close
+decomposition, not timestamped overnight trades. No date/session column was
+observed in that panel at the initial census. A zero top-level search match is
+not proof that no nested dataset exists.
+
 ## Read rows
 
 After obtaining the exact schema and version, replace the example version with the returned value:
