@@ -219,14 +219,19 @@ def test_view_field_list_quotes_shell_field_names_in_order():
 
 
 def _theme_registrable_facts(reg):
-    """A facts double that satisfies the shell's theme keying, for tests of
-    the construction branches. The real Finance facts are a ``sector_profile``
-    and are held before construction (see the HOLD tests)."""
+    """A facts double that passes the adapter's pre-construction hold (string
+    anchor, non-empty slices), for tests of the construction branches. The
+    values follow the shell's canonical id grammar (lowercase a-z, 0-9,
+    underscore) so the double is not itself a grammar violation; it still
+    deliberately departs from the real facts' declared ``anchor_theme_id:
+    None``. Every construction-branch test injects a fake registry, so the
+    real shell's guards are never the subject here. The real Finance facts
+    are a ``sector_profile`` and are held before construction (HOLD tests)."""
     import dataclasses
     return dataclasses.replace(
         reg.FINANCE_REGISTRATION_FACTS,
-        anchor_theme_id="theme:finance-test-double",
-        slice_keys=("test-slice",),
+        anchor_theme_id="finance_test_double",
+        slice_keys=("test_slice",),
     )
 
 
@@ -241,8 +246,12 @@ def test_shared_shell_registration_roundtrip_pinned_to_7870():
     adapter's refusal subclasses ``ValueError``; the exact-string assertion
     below can.
     """
+    import importlib.util
     reg = _import_reg()
-    shell_present = reg._resolve_vertical_registration_class() is not None
+    # Presence is decided by an instrument INDEPENDENT of the resolver under
+    # test, so a resolver that wrongly reports "absent" on a carrier that has
+    # the shell cannot hand this test its own expected answer.
+    shell_present = importlib.util.find_spec(reg._SHELL_REGISTRY_MODULE) is not None
     with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
         reg.registration_entry_or_refusal()
     expected = (
@@ -273,6 +282,39 @@ def test_shell_present_sector_profile_facts_are_held_before_construction():
             reg.registration_entry_or_refusal()
     assert str(excinfo.value) == "vertical_registration_held:sector_profile"
     assert reg.VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE == str(excinfo.value)
+    assert constructed == []
+
+
+@pytest.mark.parametrize(
+    "anchor_theme_id, slice_keys",
+    [
+        pytest.param("finance_test_double", (), id="string-anchor-empty-slices"),
+        pytest.param(None, ("test_slice",), id="none-anchor-nonempty-slices"),
+    ],
+)
+def test_hold_requires_both_anchor_and_slices(anchor_theme_id, slice_keys):
+    """Each half of the hold predicate is load-bearing on its own: facts that
+    satisfy only one half are still held before construction."""
+    import dataclasses
+    reg = _import_reg()
+    constructed: list = []
+
+    class FakeRegistration:
+        def __init__(self, **kwargs: Any) -> None:
+            constructed.append(kwargs)
+
+    fake_registry = types.ModuleType("engine.market_ontology.theme_research_registry")
+    fake_registry.VerticalRegistration = FakeRegistration
+    facts = dataclasses.replace(
+        reg.FINANCE_REGISTRATION_FACTS,
+        anchor_theme_id=anchor_theme_id,
+        slice_keys=slice_keys,
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
+        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+            reg.registration_entry_or_refusal(facts=facts)
+    assert str(excinfo.value) == "vertical_registration_held:sector_profile"
     assert constructed == []
 
 
@@ -357,8 +399,8 @@ def test_roundtrip_accepting_shell_returns_entry_with_kwargs_subset():
     assert captured["definition_version"] == reg.DEFINITION_VERSION
     # The adapter forwards the facts it was handed verbatim; anchorless facts
     # never reach this branch (held before construction, H1 ruling B).
-    assert captured["anchor_theme_id"] == "theme:finance-test-double"
-    assert captured["slice_keys"] == ("test-slice",)
+    assert captured["anchor_theme_id"] == "finance_test_double"
+    assert captured["slice_keys"] == ("test_slice",)
 
 
 # ---------------------------------------------------------------------------

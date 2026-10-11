@@ -3,12 +3,20 @@
 Fixture-only — nothing registers here. The §8 sector_profile entry_kind is
 pending adjudication in PR #7780 (comment 5828668393); point (a) of that
 comment asks for a registration adapter that conforms to the shared
-research shell (PR #7870 head 6cd958e92b259f7221690547e7076f4a0de4ed33).
+research shell (PR #7870; the shell's record is
+``engine.market_ontology.theme_research_registry.VerticalRegistration``).
 
 This module is the Finance side of that contract: every name here is frozen
-to the §8 dispatch values, and every callable is a placeholder. Once §8 is
-adjudicated, switching from fixture-only to a real registration is a copy of
-ONE frozen constant — :data:`FINANCE_REGISTRATION_FACTS`.
+to the §8 dispatch values, and every callable is a placeholder. The shell
+keys every registration on a canonical ``anchor_theme_id`` plus non-empty
+``slice_keys``; Finance's §8 facts are a ``sector_profile`` with neither, so
+:func:`registration_entry_or_refusal` raises the typed hold
+``vertical_registration_held:sector_profile`` before construction (H1 ruling,
+option B, #7870 2026-10-11). Retiring that hold is NOT a one-constant edit:
+it needs the §8 ``sector_profile`` migration on the shell side (accepted
+anchor/slice semantics for a sector entry, plus the shell's ``view_keys`` and
+``build_query`` fields that this adapter deliberately does not forward — see
+``_VERTICAL_REGISTRATION_FIELDS``). Never invent an anchor to pass the hold.
 
 Constraints:
 
@@ -180,8 +188,9 @@ def _import_shell_research_refusal() -> type[ValueError] | None:
 #: Every code on this set raises the shell's :class:`ResearchRefusal` when
 #: the shell is importable, and the adapter's :class:`FinanceRegistrationRefusal`
 #: otherwise. Codes absent from this set — ``shared_shell_unavailable``,
-#: ``sealed_input_unavailable:*``, ``vertical_registration_refused:*``,
-#: ``finance_owner_loader_pending`` — stay typed as the adapter refusal.
+#: ``sealed_input_unavailable:*``, ``vertical_registration_held:sector_profile``,
+#: ``vertical_registration_refused:*``, ``finance_owner_loader_pending`` —
+#: stay typed as the adapter refusal.
 _SHELL_SHARED_REFUSAL_CODES: frozenset[str] = frozenset({
     "generation_changed",
     "not_available",
@@ -1020,10 +1029,6 @@ FINANCE_REGISTRATION_FACTS = FinanceRegistrationFacts(
 )
 
 
-# VerticalRegistration field set (12), in the shell's exact order. The facts
-# table above carries additional §8 columns (entry_kind, profile_id,
-# sector_ref, anchor_theme_id, slice_keys, views); the share with the shell
-# is exactly this tuple.
 #: Typed HOLD code (H1 ruling, option B, #7870 2026-10-11). The shared shell
 #: keys every registration on a canonical ``anchor_theme_id`` plus a non-empty
 #: ``slice_keys`` tuple; Finance's §8 facts are a ``sector_profile`` with no
@@ -1034,6 +1039,13 @@ FINANCE_REGISTRATION_FACTS = FinanceRegistrationFacts(
 #: sector_profile migration that supplies accepted anchor/slice semantics.
 VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE: str = "vertical_registration_held:sector_profile"
 
+# The 12-field share with the shell's VerticalRegistration, in the shell's
+# field order. The shell itself carries 14 fields: the two it adds
+# (``view_keys``, ``build_query``) are NOT forwarded by this adapter, and the
+# exact gap is pinned by
+# tests/test_finance_research_registration.py::test_real_shell_field_gap_is_exactly_view_keys_and_build_query.
+# The facts table above carries additional §8 columns (entry_kind,
+# profile_id, sector_ref, views) that are not part of the share.
 _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
     "anchor_theme_id",
     "slice_keys",
@@ -1086,9 +1098,11 @@ def registration_entry_or_refusal(
     * ``vertical_registration_refused:<ExcType>`` — the shell is present,
       the facts are theme-registrable, and construction raised a
       non-``TypeError`` exception.
-    * ``TypeError`` — propagate the shell's structural error so the carrier
-      diagnoses the signature gap, exactly as the shell's design
-      requires. The adapter never silently coerces.
+    * ``TypeError`` — propagated uncaught when theme-registrable facts reach
+      a shell whose signature the adapter does not satisfy, so the carrier
+      sees the structural gap. The real Finance facts never reach this
+      branch (they are held first); the 12-vs-14 field gap is pinned by the
+      field-gap test instead. The adapter never silently coerces.
 
     ``facts`` defaults to :data:`FINANCE_REGISTRATION_FACTS`; tests inject
     a theme-registrable double to exercise the construction branches.
