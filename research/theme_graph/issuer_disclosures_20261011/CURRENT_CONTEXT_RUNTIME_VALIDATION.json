@@ -1,6 +1,6 @@
 {
   "schema": "gmi.current_context_runtime_validation/v1",
-  "at": "2026-10-11T15:31:56.988218+00:00",
+  "at": "2026-10-11T15:38:17.011237+00:00",
   "base_head": "b536aeaa378eb8cd89e7b70f6a1ae5ae1e7a6482",
   "red": {
     "independent_capability": {
@@ -66,10 +66,10 @@
     }
   },
   "sources": {
-    "engine/company_intelligence/current_context_runtime.py": "107fcfd9b7fa45316dec77faa04788203a31e8a46b8e8417b24696a466bf11b9",
+    "engine/company_intelligence/current_context_runtime.py": "b5a55cdfa5fd3bf15e5f2554b9185fe517671c267bca5dfecfb4d6929276d8bb",
     "app/company_disclosures.py": "367b51158f225c92eef4401e1b662507faa80bf8f29d98ab7275b3272ce5a42d",
     "app/main.py": "a0d6ac570eb1827643862fe9e58be07ee1e96018ee73babc9069188e38c2d65f",
-    "tests/test_company_context_runtime.py": "74f95f0551b208fc9cdaa640f7dbaf103c43067cbbb9c5c40e56f44ab7c5a7b5",
+    "tests/test_company_context_runtime.py": "9ace9865874c63a13fc15012cc86b38f7dbfd0aa6da042628afed281c687720f",
     "tests/test_company_disclosures_api.py": "359848006e7e85d2289792f32fe65ae9e1482e3db85f8289fa562b67ca5260f0",
     ".github/ci/legacy-jobs.yml": "64a1f7b04a1e6bfaa0e943d40d3d0c686956ee1d98dfbf07ffb7405cdec6de98"
   },
@@ -78,5 +78,35 @@
   "private_store_access": false,
   "production_runtime_installed": false,
   "authenticated_production_proof": false,
-  "C01": "NOT_ADMITTED"
+  "C01": "NOT_ADMITTED",
+  "compatibility": {
+    "actual_host_git": "2.43.0",
+    "unsupported_cli_rc": 129,
+    "actual_host_empty_protocol_whitelist_rc": 128,
+    "actual_host_protocol_result": "fatal: transport 'file' not allowed",
+    "host_negative_at": "2026-10-11T15:34:44.415784+00:00",
+    "host_capability_receipt_sha256": "46e47d30db30c2510a7b4f29279b77267642fd1e612767791a46a0650019d3a1",
+    "host_negative_receipt_sha256": "e21daebb61268395c93bb5cc848fac72ae2a848ac9aa240beca0a511f1ecd14d",
+    "red": {
+      "exec": 5531,
+      "rc": 1,
+      "cases": 1
+    },
+    "green": {
+      "exec": 27395,
+      "rc": 0,
+      "tests": 32,
+      "seconds": 11.07
+    },
+    "missing_promisor_proof": [
+      "file transport denied despite allow",
+      "custom helper never started despite allow",
+      "lazy suppression disabled to exercise fallback",
+      "object remained absent",
+      "isolated repo file hashes unchanged"
+    ],
+    "review": "Same independent reasoning reviewer accepted final compatibility correction",
+    "actual_local_generation_after_correction": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+    "production_installation_attested": false
+  }
 }

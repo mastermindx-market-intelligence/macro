@@ -135,11 +135,13 @@ class CommittedCompanyContextOwner:
         # Keep the configured deployment root and ordinary installed Git config;
         # no request inherits another process's repository selection.
         env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
-        env.update(GIT_OPTIONAL_LOCKS='0', GIT_TERMINAL_PROMPT='0')
-        # Command-line guards fail on an old Git; an ignored env variable must
-        # never permit a blobless runtime to fetch missing objects on a request.
+        env.update(GIT_OPTIONAL_LOCKS='0', GIT_TERMINAL_PROMPT='0',
+                   GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+        # Git2.43 lacks --no-lazy-fetch. The empty protocol whitelist overrides
+        # even an explicit per-protocol allow, preventing all retrieval when old
+        # Git ignores the newer lazy-fetch variable. Never retry unguarded.
         result = subprocess.run(
-            ['git', '--no-lazy-fetch', '--no-replace-objects', '-C', str(self.repo), *args],
+            ['git', '--no-replace-objects', '-C', str(self.repo), *args],
             input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             timeout=3, check=True, env=env)
         _require(len(result.stdout) <= 5 * _MAX_BYTES + 4096)

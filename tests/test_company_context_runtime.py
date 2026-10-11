@@ -156,7 +156,9 @@ def test_git_never_lazy_fetches_and_missing_objects_refuse(installed, monkeypatc
     calls = []; real = runtime.subprocess.run
     def guarded(command, **kwargs):
         calls.append(command)
-        assert command[:3] == ['git', '--no-lazy-fetch', '--no-replace-objects']
+        assert command[:2] == ['git', '--no-replace-objects']
+        assert kwargs['env']['GIT_ALLOW_PROTOCOL'] == ''
+        assert kwargs['env']['GIT_NO_LAZY_FETCH'] == '1'
         assert kwargs['env']['GIT_OPTIONAL_LOCKS'] == '0'
         assert kwargs['timeout'] == 3
         if 'cat-file' in command: raise subprocess.CalledProcessError(1, command)
@@ -241,3 +243,54 @@ def test_review_resolved_member_requires_positive_evidence(installed, context_fi
         issuer_id='ISS:US-XNAS-OTHER', cik=None))
     rewrite_records(installed, context_fixture, records)
     assert resolve(installed) is None
+
+
+def test_git243_command_compatibility(installed, monkeypatch):
+    real = runtime.subprocess.run
+    def old_git(command, **kwargs):
+        if '--no-lazy-fetch' in command:
+            raise subprocess.CalledProcessError(129, command, stderr=b'unknown option: --no-lazy-fetch')
+        return real(command, **kwargs)
+    monkeypatch.setattr(runtime.subprocess, 'run', old_git)
+    assert resolve(installed) is not None
+
+
+@pytest.mark.parametrize('protocol', ['file', 'synthetic'])
+def test_missing_promisor_fallback_cannot_start_transport_or_mutate_source(installed, tmp_path, monkeypatch, protocol):
+    import hashlib
+    repo, owner, _, _ = installed
+    remote = tmp_path / 'remote.git'
+    git(tmp_path, 'clone', '-q', '--bare', str(repo), str(remote))
+    sentinel = tmp_path / 'helper-started'
+    bindir = tmp_path / 'bin'; bindir.mkdir()
+    helper = bindir / 'git-remote-synthetic'
+    helper.write_text('#!/bin/sh\ntouch "'+str(sentinel)+'"\nexit 1\n'); helper.chmod(0o755)
+    monkeypatch.setenv('PATH', str(bindir)+':'+runtime.os.environ['PATH'])
+    git(repo, 'config', 'remote.origin.url', str(remote) if protocol == 'file' else 'synthetic::unused')
+    git(repo, 'config', 'remote.origin.promisor', 'true')
+    git(repo, 'config', 'remote.origin.partialclonefilter', 'blob:none')
+    git(repo, 'config', 'protocol.'+protocol+'.allow', 'always')
+    oid = git(repo, 'rev-parse', 'HEAD:'+runtime._ARTIFACTS['security_master'])
+    missing = repo / '.git' / 'objects' / oid[:2] / oid[2:]
+    assert missing.is_file(); missing.unlink()
+    def snapshot():
+        return {str(p.relative_to(repo)):hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in repo.rglob('*') if p.is_file()}
+    before = snapshot(); real = runtime.subprocess.run; errors = []
+    def without_lazy_suppression(command, **kwargs):
+        assert kwargs['env']['GIT_ALLOW_PROTOCOL'] == ''
+        # Exercise the actual fallback, as on Git2.43, independently of the
+        # newer Git environment variable's ability to suppress lazy fetching.
+        kwargs['env'].pop('GIT_NO_LAZY_FETCH', None)
+        try:
+            return real(command, **kwargs)
+        except subprocess.CalledProcessError as exc:
+            errors.append(exc.stderr.decode())
+            raise
+    monkeypatch.setattr(runtime.subprocess, 'run', without_lazy_suppression)
+    assert resolve(installed) is None
+    with pytest.raises(subprocess.CalledProcessError):
+        owner._git('cat-file', '-p', oid)
+    assert any("transport '"+protocol+"' not allowed" in error for error in errors)
+    assert not sentinel.exists() and not missing.exists()
+    assert snapshot() == before

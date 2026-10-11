@@ -349,8 +349,11 @@ issuer membership. Missing CIK on unresolved members is allowed; resolved or
 evidenced active links require positive ten-digit matching CIKs.
 
 Git repository/object/config environment redirection is removed. Explicit
-`--no-lazy-fetch` and `--no-replace-objects` guards, bounded local objects and
-command deadlines prevent a request from fetching or reconstructing source.
+`--no-replace-objects`, lazy-fetch suppression where supported, a present empty
+`GIT_ALLOW_PROTOCOL` whitelist, bounded objects and command deadlines prohibit
+transport retrieval. The actual API host uses Git2.43, which lacks the
+`--no-lazy-fetch` command option. Its empty whitelist overrides per-protocol allow
+configuration, including when lazy-fetch suppression is unavailable.
 Missing objects, unsupported guards, unprotected ancestry, incompatible evidence
 or a changing installed HEAD refuse. Cached immutable bundles remain contingent
 on the current selector, all four object identities and the current registry.
@@ -361,3 +364,18 @@ postmerge installed-source selection and an authenticated context response still
 must be verified. The context receipt must be bound by any future disclosure
 owner; no disclosure purpose, C01 artifact, qualified empty selection or private
 publication is created here. The response schema and fields are unchanged.
+
+
+Git2.43 compatibility was checked against the real API host: the unsupported
+option returned129; the deny-all environment returned128 with an explicit file
+transport refusal despite `protocol.file.allow=always`. Local missing-promisor
+regressions deliberately disable lazy-fetch suppression and allow file/custom
+protocols: no remote helper starts, no object is retrieved, and all isolated
+repository file hashes remain unchanged. The affected runtime suite passes32
+cases after correction; the earlier190-case transport/native/public suite is
+reused for unchanged boundaries. Independent reasoning review accepts this
+compatibility repair. Reference: Git2.43's documented overriding protocol whitelist
+at https://git-scm.com/docs/git/2.43.0#Documentation/git.txt-codeGITALLOWPROTOCOLcode.
+The host was only inspected; source installation and authenticated API serving
+still require postmerge proof. No Git upgrade, service restart or account change
+was performed for these compatibility checks.

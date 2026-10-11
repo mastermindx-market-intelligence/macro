@@ -95,3 +95,10 @@ review counterexamples plus one resolved-without-CIK case reproduced RED; the
 corrected affected suite passes190 cases. The final correction is independently
 accepted at source architecture level. Real installed-source/authenticated proof
 remains open; C01 remains NOT_ADMITTED. See CURRENT_CONTEXT_RUNTIME_VALIDATION.json.
+
+The actual API host's Git2.43 rejected the newer no-lazy-fetch CLI option. Keep
+lazy suppression where supported, and unconditionally deny every transport via
+an empty overriding protocol whitelist. Real host denial plus two genuine local
+missing-promisor/no-helper/no-mutation cases qualify the compatibility repair;
+32 affected runtime tests pass and independent review accepts it. This does not
+attest production installation or authorize source retrieval through a fallback.
