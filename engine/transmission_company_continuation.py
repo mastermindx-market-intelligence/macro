@@ -235,7 +235,7 @@ def _project_channel(
     channel_id: str,
     chan: dict,
     aliases: VendorAliasTable | None,
-    decision_date: date,
+    decision_date: date | None,
     chain_asof: str,
 ) -> dict:
     """Project one blast channel to its ``companies`` block."""
