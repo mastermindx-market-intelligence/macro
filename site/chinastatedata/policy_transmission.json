@@ -5,8 +5,8 @@
     "may_originate": false,
     "may_escalate": false
   },
-  "built": "2026-10-10T15:51:57.774701+00:00",
-  "asof": "2026-10-10",
+  "built": "2026-10-11T13:34:05.878296+00:00",
+  "asof": "2026-10-11",
   "policy_impulse": "market_rescue",
   "transmission_channel": [
     "liquidity",
@@ -126,10 +126,10 @@
   ],
   "staleness": {
     "per_source_days": {
-      "lpr": 20,
-      "rrr": 521,
-      "fr007": 0,
-      "communiques": 165
+      "lpr": 21,
+      "rrr": 522,
+      "fr007": 1,
+      "communiques": 166
     }
   },
   "priced_in_check": {

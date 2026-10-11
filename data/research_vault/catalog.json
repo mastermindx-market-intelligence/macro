@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T12:50:39.953150+00:00",
-  "count": 2807,
+  "generated_at": "2026-10-11T14:35:44.780977+00:00",
+  "count": 2812,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -43,6 +43,7 @@
     "Gabelli",
     "Goldman Sachs",
     "HSBC",
+    "HSBC AM",
     "Halcyon",
     "Handelsbanken",
     "ING",
@@ -118,6 +119,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cxuixky8noz-6137e7",
+      "title": "AM Investment Weekly 09 10 26",
+      "institution": "HSBC AM",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T03:10:49Z",
+      "summary_points": [
+        "Geopolitical Resilience Amidst Rising Risks: S&P 500 near 8000 despite Middle East/Russia-Ukraine tensions; 2026e global profit growth at 36% (4x long-term avg) but bond yields and geopolitics threaten valuations.",
+        "China Stocks as AI Trade Hedge: Tech localization and high-end manufacturing drive earnings growth; policies curb price wars, offering diversification against Western tech crowding and supply chain vulnerabilities.",
+        "Macro Shocks & EM Opportunity: Middle East conflict (oil) + China \"shock 2.0\" (tech/green exports) create inflation/disinflation tension; favor EM with lower valuations and selective bonds/equities amid US AI spillovers.",
+        "Risk & Diversification: Geopolitical tensions (Middle East, China), sticky inflation, and fiscal uncertainty; hedge with real assets (infrastructure, energy transition) and avoid broad high-yield credits.",
+        "Fed Policy & Inflation Dynamics: FOMC minutes signal year-end rate hikes; US CPI at 3.6% (Oct 14) and India CPI at 5.5% (Oct 12) highlight persistent inflation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kix52sdoxmz-983c42",
+      "title": "India Insights October 2026",
+      "institution": "HSBC AM",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T03:10:39Z",
+      "summary_points": [
+        "GDP & FX Resilience: Real GDP expanded 7.8% YoY (vs 7.4% forecast), FX reserves rebuilt to $780B (from $671.6B) via $133B FCNR(B) deposits and $143.5B foreign borrowing post-RBI policy.",
+        "Corporate Fundamentals Strengthening: Strongest revenue growth in ten quarters, 19% earnings growth ahead of expectations; domestic credit growth at 19% (2-yr high), auto sales broadening recovery beyond narrow sectors.",
+        "Foreign Flows Rebounding: After $29bn peak-to-trough outflows, foreign investors bought $6bn in Indian equities since mid-June; India remains under-owned globally with room for further capital inflows.",
+        "Liquidity & Inflation Dynamics: RBI absorbed INR11.6T foreign currency surplus (down to INR7.4T), but headline CPI accelerated to 4.8% YoY (core 4.2%) amid oil price shocks (+0.3pp CPI) threatening liquidity management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -454,6 +496,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-sqrt8axv7hx-6c9390",
+      "title": "Week Ahead in Economics US inflation on the rise as central bankers head to IMF World Bank meetings",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:23:14Z",
+      "summary_points": [
+        "US Fed Policy Outlook: Hawkish FOMC minutes confirm inflation concerns (energy, tariffs, AI demand); no rate hike until December, 25bp hike in December, terminal rate 4.375% by March 2027.",
+        "China Imports YoY (Sep): Consensus 24.0% vs previous 21.5%, substantial upward revision signaling robust demand and inflationary pressures.",
+        "Brazil Election Fiscal Impact: Conservative gains strengthen fiscal credibility, enabling deeper BCB rate cuts in 2027-28 and improving debt dynamics.",
+        "ECB Tightening & BoE Dovish Pivot: ECB hikes to 2.75% (Dec 2026) with structural refinancing (2028); BoE cuts to 3.00% (Q4 2027), impacting global liquidity and EM flows.",
+        "Spain Election Dynamics: Nov 29 election targeting housing discontent; polls favor PP victory without majority, enabling Vox to form government, with corruption scrutiny critical."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-inzarreerzg-022372",
       "title": "BofA The Flow Show Midterms Bidterms Skidterms 2026 10 09",
       "institution": "Bank of America",
@@ -471,6 +534,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-13xymlwyzih-8c7b4b",
+      "title": "BofA U.S. REIT Weekly 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:05:57Z",
+      "summary_points": [
+        "REIT Valuation Discount: REITs trade at 82% of 1-yr forward NAV vs LTA 97%, with cap rates at 6.0% (vs BofA 5.7%) and 76bp spread vs historical 300bp, signaling undervaluation but yield compression vs Treasuries.",
+        "Sector Divergence: Healthcare (18.3% earnings growth) and Data Centers (11.5%) lead growth; Cold Storage (-11.4%) and Net Lease (declining 2027 growth) show material risks, with PEG ratios highlighting overvaluation (Self Storage 29.2 vs Data Centers 2.1).",
+        "Top Catalysts: ADC (6% AFFO growth), AHR (aging demographics), CUBE (NYC supply constraints), and PECO (grocery anchors) selected for sector-specific growth drivers and strong metrics.",
+        "Earnings Volatility Risk: 18 REITs report Q3 earnings Oct 20–26, with guidance ranges (e.g., KRC $3.49–3.63) indicating potential surprises and heightened portfolio volatility.",
+        "Yield Compression Risk: REITs trade at -119bps vs 10Y Treasury (vs LTA +111bps), critical for income-focused portfolios amid rising rates and reduced relative attractiveness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
       "language": "en",
       "needs_metadata": false
     },
@@ -575,6 +659,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fyrxjw2flxh-5cd63b",
+      "title": "Yaskawa Electric (6506.T) 2Q above expectations; focus on order trends and procurement production trends from 2H onward; Buy...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-09T14:44:02Z",
+      "summary_points": [
+        "2Q Beat & Revised Guidance: 2Q operating profits (¥13.6 bn) and orders (¥185.4 bn) exceeded estimates; full-year guidance revised down to ¥57.5 bn (still above consensus ¥55.8 bn), signaling resilient fundamentals despite near-term adjustments.",
+        "2H Procurement/Production Risks: Critical supply-demand tightness in FA industry and component procurement uncertainty heading into FY2/28, requiring cautious production volume management to sustain peak cycle growth.",
+        "Revenue & EBITDA Growth Trajectory: Projected revenue growth from ¥542.1 bn (2/26) to ¥681.0 bn (2/29E) and EBITDA expansion from ¥68.4 bn to ¥119.0 bn, driven by widening EBIT margin (8.7% → 13.5%) and operational efficiency.",
+        "Cash Flow Strength & Outperformance: Free cash flow surged from ¥5.9 bn to ¥63.8 bn, supporting robust capital allocation; stock outperformed TOPIX (29.5% absolute return) amid sustainable growth trajectory.",
+        "Key Downside Risks: Semiconductor/AI capex slowdown, delayed cost optimization results, and ERP recovery delays pose material threats to near-term earnings and margin expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
