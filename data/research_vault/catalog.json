@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T20:21:47.954819+00:00",
-  "count": 2829,
+  "generated_at": "2026-10-11T20:40:17.152105+00:00",
+  "count": 2830,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -262,6 +262,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kfjyotw4egb-a35dda",
+      "title": "Global Economics Wrap Up October 9, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:45:24Z",
+      "summary_points": [
+        "Global PMI Strength: Global composite PMI at 53.4 (+0.9pt) signals robust economic momentum across manufacturing (53.0) and services (54.5), with rising employment and prices—key fundamental indicator for risk assets and USD.",
+        "Fed Policy Outlook: FOMC minutes confirm no October hike but December rate increase to 4.425% expected; internal splits (Wallace vs.",
+        "Jefferson/Williams) create policy uncertainty critical for fixed income and USD positioning.",
+        "US Rate Impact on Growth: Higher rates to drag 2027 GDP by 0.2pp (rising to 0.5pp if sustained), with specific impacts: residential investment (-2pp), consumer spending (-0.2pp), capex (-0.3pp)—quantifiable risk for equity and credit portfolios.",
+        "European Sovereign Stress: French 10-yr bond spreads at 2012 highs due to fiscal contraction and borrowing costs, triggering sovereign risk spillovers and ECB policy concerns—direct threat to European bond markets and equity valuations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
