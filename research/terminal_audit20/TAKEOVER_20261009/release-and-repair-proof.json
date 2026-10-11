@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1705",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1732",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -8259,5 +8259,212 @@
     "independent_holds": "781reserved numeric review, IW2explicit cyber HUMAN, SQL/rights/security,887exactALLOW,MoneySCP/OAuthEFFECT_UNKNOWN,A19 and873actual publication unchanged. Prior refused/uncertain Fabric effects remain same-id/carrier unreplayed.",
     "next_ready_phase": "Actual owner browser reconnection/capability event enables parent read-only paid acceptance and cleanup. Consume actual931/platform/producer returns. No routine browser/provider/runtime/CI/credential polling, duplicate question/observer/builder or idle principal.",
     "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1732": {
+    "observed_at": "2026-10-11T17:32:14.020090+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "T1705 unavailable Chrome/human connection gate, browser cleanup owed and939 normal-read/three-size UI pending. Installed source, prior Replay/source CI and all independent holds retain original scopes.",
+    "material": "Chris connection restored; root claimed fresh existing tab1925916325 and completed939 normal-read/three-size UI. Existing Thesis reader returned no theses;935 Active/history/inspector and941 proposal/race requirements remain untriggered. Browser restored.",
+    "installed_generation": "292357daa86525d6c488fb2042340f782cf91e60",
+    "release_evidence_retained": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/292357-installed-source-guards-health-parent-qualification.json",
+      "bytes": 4722,
+      "sha256": "df39146693ddc40aaa4dd790e99413a1a81098e9df9f4b05a5e1b9306bf8584c",
+      "not_requeried": true
+    },
+    "browser": {
+      "profile": "Chris",
+      "extension_instance_id": "8c79a09c-f98f-4027-8969-f620ae705b18",
+      "root_browser_id": "7",
+      "tab_id": "1925916325",
+      "provider_identity": [
+        "18221987-a0a5-4e57-b2e7-04f3ec2bee07",
+        "1925916325"
+      ],
+      "owner_return": "B reports Chrome16865 actually exited before any Settings/thesis action, then once relaunched regular Chrome under actual human authorization. B only inventoried the fresh unclaimed New Tab. Root independently inventoried the same Chris extension/tab, successfully claimed it through the supported API and navigated once to the admitted Terminal URL.",
+      "previous_claim": "1925916244 belonged to B; root claim refused and no root input occurred. Earlier custody receipt retained separately.",
+      "root_input_custody": "Sole root UI lane after successful fresh-tab claim; no duplicate profile/tab/private hook or unchanged native-control retry.",
+      "authentication": "Authenticated account UI observed through existing Chris profile; no credential access/export/new login"
+    },
+    "939": {
+      "normal_loading_observed": "Reading your targets\u2026",
+      "answered_read_state": "portfolio-targets-loaded",
+      "public_notice": "You haven't set any targets yet.",
+      "scope": "Normal UI-triggered read/loading-to-answered state and responsive geometry; no network response/payload/status export or mutation/readback-race acceptance. No-target notice does not establish empty holdings.",
+      "three_sizes": [
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "observedAt": "2026-10-11T17:22:24.167Z",
+          "loaded": true,
+          "notice": "You haven't set any targets yet.",
+          "settings": {
+            "clientWidth": 390,
+            "scrollWidth": 390
+          },
+          "dialog": {
+            "clientWidth": 390,
+            "scrollWidth": 390
+          },
+          "safeCapture": "939-phone-public-notice.jpg"
+        },
+        {
+          "dialog": {
+            "clientWidth": 771,
+            "scrollWidth": 771
+          },
+          "loaded": true,
+          "notice": "You haven't set any targets yet.",
+          "noticeRect": {
+            "height": 18.125,
+            "width": 465.796875,
+            "x": 293.59375,
+            "y": 442.78125
+          },
+          "observedAt": "2026-10-11T17:22:58.303Z",
+          "settings": {
+            "clientWidth": 522,
+            "scrollWidth": 522
+          },
+          "viewport": {
+            "height": 1180,
+            "width": 820
+          },
+          "safeCapture": "939-tablet-public-notice.jpg"
+        },
+        {
+          "dialog": {
+            "clientWidth": 1140,
+            "scrollWidth": 1140
+          },
+          "loaded": true,
+          "notice": "You haven't set any targets yet.",
+          "noticeRect": {
+            "height": 18.125,
+            "width": 835,
+            "x": 419,
+            "y": 283.9375
+          },
+          "observedAt": "2026-10-11T17:22:58.497Z",
+          "settings": {
+            "clientWidth": 891,
+            "scrollWidth": 891
+          },
+          "viewport": {
+            "height": 900,
+            "width": 1440
+          },
+          "safeCapture": "939-desktop-public-notice.jpg"
+        }
+      ],
+      "accepted": true,
+      "mutation_fault_retry_races": "UNTRIGGERED; no weights typed/autosave/POST replay/fault/interception/disposable identity"
+    },
+    "935_941": {
+      "normal_route": "/analysis?view=theses&symbol=MU",
+      "loading_observed": "Loading your theses\u2026",
+      "answered_state": "No theses yet. Start with a view you could be wrong about.",
+      "scope": "Existing empty reader only; no saved theses. Phone Back to list from untouched subject-prefilled editor revealed empty list.",
+      "active_semantic_EN_ZH_West_East": "UNTRIGGERED_NO_EXISTING_THESES",
+      "history_inspector": "UNTRIGGERED_NO_EXISTING_THESES",
+      "proposal_selection_POST_PATCH_lateAccept": "UNTRIGGERED_NO_EXISTING_THESES",
+      "preferences_changed": false,
+      "real_mutation_or_fixture": false
+    },
+    "restoration": {
+      "observation": {
+        "fullscreenChartControl": false,
+        "fullscreenElement": false,
+        "observedAt": "2026-10-11T17:29:17.190Z",
+        "publicStudyPresence": [
+          {
+            "label": "Moving Averages",
+            "present": true
+          },
+          {
+            "label": "Volume",
+            "present": true
+          },
+          {
+            "label": "TW \u00b7 Mastermind Candles",
+            "present": true
+          },
+          {
+            "label": "MACD-RSI",
+            "present": true
+          }
+        ],
+        "replayBadgeVisible": [],
+        "replayControl": [
+          {
+            "label": "Replay",
+            "pressed": null
+          },
+          {
+            "label": "Replay",
+            "pressed": null
+          }
+        ],
+        "selected3D": false,
+        "servedAssets": [
+          "292357daa86525d6c488fb2042340f782cf91e60"
+        ],
+        "url": "/terminal?symbol=MU",
+        "viewport": {
+          "height": 1170,
+          "width": 2080
+        },
+        "visibleSettingsDialogs": [],
+        "selected3DQualification": "Rendered public legend Micron Technology \u00b7 3D \u00b7 NASDAQ and highlighted3D control; earlier class heuristic false is not selected-state evidence",
+        "fullscreenQualification": "Accessible Fullscreen chart entry control present, no Exit fullscreen control; normal chart layout",
+        "publicChartStateObservedAt": "2026-10-11T17:29:45.462Z"
+      },
+      "result": "MU3D4studies, Replay off, Settings closed, nonfullscreen chart and temporary viewport override reset to initial2080x1170. Initial unpainted post-navigation image retained; separate settled actual public chart visually inspected. Earlier class/aria heuristics are disclosed and superseded only by current rendered legend/accessibility evidence.",
+      "temporary_browser_cleanup_owed": false,
+      "old_devtools": "B-reported old Chrome process exit removed old DevTools/window state. Root did not reopen DevTools and used supported viewport capability reset. Native outer-window inspection was not repeated."
+    },
+    "evidence": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-292357-live-ui-restoration-parent-qualification-20261011.json",
+      "bytes": 13701,
+      "sha256": "a478ba38b5e6d556ee88fa0a3a6844b434df14a773ef052d0327689e72b5430b",
+      "safe_artifact_count": 11
+    },
+    "earlier_actual_custody_evidence": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-292357-browser-restoration-parent-qualification-20261011.json",
+      "bytes": 2770,
+      "sha256": "c09e1940cfc0818670b6d2df4176b0ece88bb6e0d2daf26138110fb7fdf25901",
+      "scope": "Earlier actual B tab claim/root refusal retained; superseded by actual old process exit/new unclaimed tab root claim."
+    },
+    "coordination": "Necessary first-party custody/route/result messages to B delivered under independently verified earlier human work-with-release-owner authorization. Incoming peer suggestion of controlled substitution did not override retained parent no-live-fault boundary; owner accepted this normal-read scope.",
+    "remaining": [
+      "935 existing Active semantic color across EN/ZH and West/East atthree sizes: no existing theses",
+      "935 history/inspector: no existing theses",
+      "941 existing proposal selection and POST/PATCH/lateAccept races: no existing theses or admitted disposable identity",
+      "939 mutation/readback or malformed-read Retry race",
+      "931 unreleased original review/release/live obligation",
+      "761/full-lifecycle/fullA11/science/math/rights/wholeAudit20"
+    ],
+    "independent_holds": "781 reserved numeric/IW2 explicit cyber HUMAN/SQL/rights/security/887 exactALLOW/MoneySCP+OAuth EFFECT_UNKNOWN/A19/873 actual publication unchanged. Shared-host T1646 bounded no-reservation remains scoped; A cross-chat send authorization pending.",
+    "retained_frontiers": {
+      "installed_source_and941CI": "current_capability_frontier_20261011T1705",
+      "shared_host_custody": "current_capability_frontier_20261011T1646",
+      "fabric": "current_capability_frontier_20261011T1600",
+      "935_source_CI": "current_capability_frontier_20261011T1547",
+      "prior_paid_Replay": "current_capability_frontier_20261011T1502"
+    },
+    "next_ready_phase": "Consume actual direct human answer to B existing disposable-thesis question, or actual931 original-review/release/platform/producer return. Browser restored; no routine polling or duplicate question. Without new authority/state,935/941 remain untriggered.",
+    "whole_audit20_complete": false,
+    "pending_disposable_test_data_decision": {
+      "owner": "B01a128b7 already asked Chris once; root does not repeat the question",
+      "current_status": "NOT_AUTHORIZED_NOT_EXECUTED",
+      "plan_path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/marketontology-consumer/proposed-disposable-thesis-live-check.json",
+      "bytes": 2079,
+      "sha256": "1be2d6456ed3e03348b5c5976c2c92913f29ae29f57af1b29ac1a06d00cd6422",
+      "scope": "Exactly two labelled private test theses/minimum proposals then archive retaining history; no preexisting data/alerts/weights/security/export. Requires actual direct human answer; incoming peer plan is not authorization. Normal UI proof is distinct from delayed race/server proof."
+    }
   }
+
 }
