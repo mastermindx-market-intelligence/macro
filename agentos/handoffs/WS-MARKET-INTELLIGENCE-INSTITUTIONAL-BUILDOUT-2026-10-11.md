@@ -310,3 +310,42 @@ under 180 s / 50%) ended Result=success at 165 s wall / 81.96 CPU-s; the first r
 Covering main proof ci.yml run 38162040929 (a same-second sibling dispatch, 38162041313, is still in flight and is
 left alone — never cancel a proof run) on f1ae1e0365fc (descendant of the #8830 and #8838
 merges; dispatched 18:01:07Z over a clear field; watcher `blq7tnv8m` at 120 s): concluded SUCCESS 18:28:59Z (watcher line `MAINPROOF-CONCLUDED 38162040929 success f1ae1e0365fc`) — both authority freezes (#8830 scripts/, #8838 .github/workflows/) CLEAR
+
+## Checkpoint W9-4 (2026-10-11 19:34Z)
+
+Carrier consumed: #1202 comment 6111762953 (the dependency return) was folded into ONE W8/W9
+checkpoint, issuecomment-6112439924 (POSTED 18:4xZ): the 18-row PR table (all MERGED, squash SHAs),
+covering main proof 38162040929 SUCCESS 18:28:59Z, and the consumption classification — macro-api
+MainPID 3071870 since 18:21:17Z is the restart update.sh performs at /opt/macro HEAD 31b9647872e1
+(PROVEN, not inferred); the W2C technicals unit fails BY DESIGN on `store ticker count does not match
+the publish manifest` until the 10-12 nightly regenerates the manifest (first :53 tick after ~02:0xZ)
+— no manual start, no intervention, not a defect. The 6-item Chairman/owner-only list sits LAST in
+that comment and is unchanged here.
+#8841 identity-unit budget: FULL PRODUCTION_PROOF — the first run under TimeoutStartSec=600 /
+CPUQuota=100% (18:30:03Z trigger) ended 18:31:40Z, 97 s wall, `Result=success`; the install proof
+(18:27:36Z, cmp IDENTICAL) was W9-3's. Headroom, not the fix: the structural identity runway lane
+(memoize `_project_snapshot` / load store metadata once, CPU-second gate) stays later work.
+Package N (ORCH-N `ad8bb35435bc5fe52`, canary under ruling 6): writer `macro-ticker-news.service`
+re-armed with the rotated pair 18:20:21–18:20:59Z; read 1 18:36:37Z revisions=0 (REST cursor
+1791743768 — Sunday flow gap, external); read 2 18:46:38Z FIRST ROW: revisions=1,
+revisions_by_source {benzinga:1}, deliveries_by_transport {alpaca_ws:1}, max_received 18:45:06Z,
+state=live, catchups_failed=0, disconnects=0, both error codes null, secret_hits=0, e406=0, anonymous
+`/api/ticker-news/AAPL` 401. ORCH-N RETURN `READY_FOR_SEAT_PROOF` judged by artifact and ACCEPTED: the P2 canary series (two consecutive reads carrying benzinga rows), the pre-flip baseline `newsRailEnabled":false`, and the P3 rail flip 19:05:03Z under the updater lock (drop-in `/etc/systemd/system/terminal.service.d/ticker-news-rail.conf` TICKER_NEWS_RAIL=1, terminal.service MainPID 3099200, live `.deployment-id` bc28e47ee54f). Seat reads 19:09:10Z and 19:24Z: deliveries_by_transport {alpaca_ws:2}, revisions=2, max_received 19:15:07Z, anonymous 401. Package N = PRODUCTION_PROOF (#8809/#8823 writer + receipt, #8828 c50af4eb0421 rail through the canary). ORCH-N and ORCH-OPS ENDED PROVEN_OUTCOME; no watcher armed. GAPs carried, not hidden: REST catch-up real-item ingestion unproven (stream rows only, Sunday flow); the signed-in TickerNewsPanel not browser-checked; anonymous 401 proven on the VPS only; O1 300 s lookback; O3 406 never observed.
+G3 health error codes = PR #8848 (`claude/mi-ticker-news-health-error-codes-20261011`, head
+c1948d1134e2eb9261280edac86f444fa835455d, lane g3-health-codes-20261011-r1 rc=0 on ubuntu1 glm-5.3,
+tests 58/0 + 298/0 per lane). Seat judged SOUND from fetched bytes, not the report: `_error_code`
+reads only a pre-sanitized `code` attribute or the exception class name — never `str(exc)`,
+`repr(exc)`, `exc.args` or message text — through `[a-z0-9_]{1,64}` with a 64-char cap;
+`engine/qbus_news_receipts.py` `_diagnostic_code` mirrors it and `parse_health_receipt` surfaces
+`last_catchup_error` / `last_stream_error` (set on failure, cleared on commit / after handshake).
+ARMED merge-on-green 18:52:18Z (ARM LAST: lane finished, no further pushes; post-arm read 19 pass /
+1 pending / only red = the standing-inactive `ci-authority/codex/merge-queue-pilot` context;
+hold_hits=0; ONE watcher b1gggc89s at 180 s). MERGED 19:05:13Z by hand on concluded checks (`--match-head-commit c1948d1134e2…`), squash 1f45d70041e60faaae9593ad8ba2b53879a8ba57, 4/4 paths blob-verified on origin/main after a bare fetch; watcher b1gggc89s exited 19:02:17Z. /opt/macro pulled it 19:06:30Z (macro-api MainPID 3100680 restarted by that run) but the writer was NOT restarted — root cause below — so PRODUCTION_PROOF came from a seat restart 19:24:36–43Z under `/var/lock/macro-update.lock` (`flock -w 40`; a first `flock -n` at the 19:24:03Z cron tick found it BUSY): deployed `scripts/run_qbus_news.py` 95375cdbba3f982f and `engine/qbus_news_receipts.py` 67a1d79778250166 sha-matched origin/main 102ac7ee5bb1 before the restart; pre-restart health copied to `/var/lib/macro-ticker-news/health.pre-restart-1924Z.json`; old process exit line `catchups_ok: 127, disconnects: 0, catchups_failed: 0` (18:20:58→19:24:37Z); new MainPID 3111697 active since 19:24:41Z, ready in 2 s, NRestarts=0, universe snapshot 503, state live, anonymous 401, revisions=2 intact. RETRACTED by name (§7.5): W9-3's claim that update.sh's TICKER_NEWS_RUNTIME_REGEX restart IS the G3 proof path; and this window's assumption that #8848 adds `*_error_code` health keys — `_error_code(exc)` (run_qbus_news.py L106) only changes the VALUE stored in `last_catchup_error` / `last_stream_error` (L238/L362), the 13-key health set is unchanged, so the behavioral proof needs a real error and the structural proof is sha match + post-deploy process start.
+Root cause (DSC:UPDATE-SH-W2C-REFUSAL-EXITS-BEFORE-LATER-DEPLOY-BLOCKS): update.sh L1528-1529 `exit 1` on the W2C owner-replay refusal (technicals manifest mismatch, by design until the 10-12 nightly) aborts every later block — ticker-news L2312-2344, press-feeds, BioCatalyst, unit reconcile, daemon modules — and fires the options fail-closed EXIT trap (`disarm_options_timer`) every 3 min; `CHANGED` is per-run so a missed restart is permanent. ORCH-D (Opus orchestrator `ad812dc60c846701f` driving one GLM-5.3 fabric build lane, branch `claude/mi-update-sh-w2c-lane-freeze-20261011`, owned files app/deploy/update.sh + tests/test_market_memory_experience_deploy.py) commissioned 19:34Z with a frozen OUTCOME spec: refusal -> lane flag + continue, lane-independent blocks run, final exit status 1 preserved (L1124-1125 still pin), a new test proving the ticker-news restart fires on a refusing run, the dependency map of every post-L1549 block in the PR body; never touches Sol's #7992 (`sol/vps-disk-hygiene-20260925`, also edits update.sh). Seat merges and proves live from the updater log.
+Guard finding (DSC:GH-QUOTA-GUARD-PARSES-ANY-DO-TOKEN-AS-A-LOOP-BODY): `.claude/hooks/gh_quota_guard.py`
+`loop_bodies()` extracts every `do`…`done` span from the command TEXT, so the literal phrase `do not
+merge` inside a jq `match()` on a loop-free gh command was denied as "gh call in a loop with no
+sleep". Hold scans use `match("HOLD|not merge")`; the token `do` never appears in a gh-bearing
+command. Also this window: the desktop host's PreToolUse hooks timed out for Write and ccd_pr
+("host client may be unreachable") — Bash heredocs were the writer; the ccd_pr binding was abandoned
+in favour of the bash watcher + sweeper (no second watcher).

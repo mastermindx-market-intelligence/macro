@@ -334,15 +334,17 @@ class FakeStorage {
 
 // ------------------------------------------------------------- env --------
 export const ACCT_A = Object.freeze({
-  authenticated: true, email: 'avery@example.test', name: 'Avery Example', user_id: 'user-a-fictional',
+  authenticated: true, id: 'user-a-fictional', email: 'avery@example.test', name: 'Avery Example', user_id: 'user-a-fictional',
   plan_label: 'Free', providers: ['email'], provider_label: 'Email',
   created_at: '2026-01-02T00:00:00Z', last_sign_in_at: '2026-10-01T00:00:00Z',
 });
 export const ACCT_B = Object.freeze({
-  authenticated: true, email: 'blake@example.test', name: 'Blake Example', user_id: 'user-b-fictional',
+  authenticated: true, id: 'user-b-fictional', email: 'blake@example.test', name: 'Blake Example', user_id: 'user-b-fictional',
   plan_label: 'Free', providers: ['email'], provider_label: 'Email',
   created_at: '2026-02-03T00:00:00Z', last_sign_in_at: '2026-10-02T00:00:00Z',
 });
+// An account read from an API that predates the stable `id` field: the fence must key by email.
+export const ACCT_A_NOID = Object.freeze(Object.fromEntries(Object.entries(ACCT_A).filter(([k]) => k !== 'id')));
 export const PREFS_ON = Object.freeze({
   prefs: {
     alert_email_optin: true, alert_categories: ['holdings_material_change'],
@@ -369,10 +371,19 @@ export function makeEnv(opts = {}) {
   const fetchFake = (url, init = {}) => new Promise((resolve, reject) => {
     let body;
     if (typeof init.body === 'string') { try { body = JSON.parse(init.body); } catch (e) { body = init.body; } }
-    calls.push({
+    const call = {
       url: String(url), path: new URL(String(url)).pathname, method: String(init.method || 'GET').toUpperCase(),
-      headers: clone(init.headers || {}), body, resolve, reject, done: false,
-    });
+      headers: clone(init.headers || {}), body, resolve, reject, done: false, aborted: false,
+    };
+    // Like a real fetch: aborting an unanswered request rejects it with an AbortError.
+    if (init.signal && typeof init.signal.addEventListener === 'function') {
+      init.signal.addEventListener('abort', () => {
+        if (call.done) return;
+        call.done = true; call.aborted = true;
+        const err = new Error('The operation was aborted'); err.name = 'AbortError'; reject(err);
+      });
+    }
+    calls.push(call);
   });
 
   // MDXAuth (theme.js) fake ---------------------------------------------------
@@ -390,7 +401,7 @@ export function makeEnv(opts = {}) {
     localStorage: new FakeStorage(),
     setTimeout: setTimeoutFake, clearTimeout: clearTimeoutFake,
     setInterval: () => 0, clearInterval: () => {},
-    fetch: fetchFake,
+    fetch: fetchFake, AbortController,
     confirm: () => true,
     MM_API: API_BASE,
     __mmNavMarketLoading: true,
@@ -1068,4 +1079,147 @@ test('S1-04 positive: local sign-out stays a separate, labelled action', async (
   env.click(local); await env.settle();
   assert.equal(env.auth.signOutCalls, 1);
   assert.equal(env.posts(SIGNOUT_ALL).length, 0, 'local sign-out must not call global revocation');
+});
+
+// ============================== S1 follow-up (#8776 deferred items) ==========
+// Item 4 (stable user id keys the pending-pref fence; email only as the fallback).
+
+test('S1-01 red: a SIGNED_IN under a different user id with the same email drops the pending save and re-reads', async () => {
+  const env = makeEnv();
+  await openSignedIn(env);
+  env.win.setTheme('light');
+  env.authEvent('SIGNED_IN', { id: 'user-b-fictional', email: ACCT_A.email }); await env.settle();
+  await env.advance(1000);
+  assert.equal(env.posts(PREFS).length, 0, 'pending save was sent under a different user id');
+  assert.equal(env.requests('/api/account').length, 2, 'a different user id must re-read the account');
+});
+
+test('S1-03 red: a same-id SIGNED_IN with a changed email neither drops the save nor re-reads', async () => {
+  const env = makeEnv();
+  await openSignedIn(env);
+  env.win.setTheme('light');
+  env.authEvent('SIGNED_IN', { id: 'user-a-fictional', email: 'avery.renamed@example.test' }); await env.settle();
+  await env.advance(1000);
+  assert.equal(env.requests('/api/account').length, 1, 'the same user id re-read the account');
+  const posts = env.posts(PREFS);
+  assert.equal(posts.length, 1, 'the same user id dropped a real pending save');
+  assert.deepEqual(posts[0].body, { theme: 'light' });
+});
+
+test('S1-01 positive: an account read without an id still keys the fence by email', async () => {
+  const env = makeEnv();
+  await openSignedIn(env, ACCT_A_NOID);
+  env.win.setTheme('light');
+  env.authEvent('SIGNED_IN', { id: 'user-a-fictional', email: ACCT_A.email }); await env.settle();
+  await env.advance(1000);
+  assert.equal(env.requests('/api/account').length, 1, 'same email without an id re-read the account');
+  assert.equal(env.posts(PREFS).length, 1, 'same email without an id dropped the save');
+  env.authEvent('SIGNED_IN', { id: 'user-b-fictional', email: ACCT_B.email }); await env.settle();
+  assert.equal(env.requests('/api/account').length, 2, 'a different email without an id must re-read');
+});
+
+test('S1-03 positive: the panel copies the stable user id', async () => {
+  const env = makeEnv();
+  const seen = [];
+  env.win.navigator.clipboard.writeText = (v) => { seen.push(v); return Promise.resolve(); };
+  await openSignedIn(env);
+  env.click(env.q('[data-act="copy-id"]')); await env.settle();
+  assert.deepEqual(seen, [ACCT_A.id]);
+});
+
+// api() timeout: a request that never answers takes the transport-failure path.
+
+test('S1-03 red: an account read that never answers times out into the unavailable state', async () => {
+  const env = makeEnv();
+  env.win.MMAccount.open(); await env.settle();
+  const call = env.pending('/api/account')[0];
+  assert.ok(call);
+  await env.advance(29999);
+  assert.equal(env.q('[data-acct-state="unavailable"]'), null, 'timed out before the documented 30 s');
+  await env.advance(1);
+  assert.ok(env.q('[data-acct-state="unavailable"]'), 'a hung account read never became unavailable');
+  assert.ok(env.panelText().includes(UNAVAIL_EN));
+  assert.ok(env.q('[data-act="retry-load"]'), 'retry missing');
+  assert.equal(call.aborted, true, 'the hung request was not aborted');
+});
+
+test('S1-03 positive: a read answered in time is not aborted later', async () => {
+  const env = makeEnv();
+  await openSignedIn(env);
+  await env.advance(60000);
+  assert.ok(env.panelText().includes(ACCT_A.email));
+  assert.equal(env.q('[data-acct-state="unavailable"]'), null, 'a cleared timeout still fired');
+  assert.ok(env.calls.every((c) => !c.aborted));
+});
+
+test('S1-01 red: a pref save that never answers times out as failed', async () => {
+  const env = makeEnv();
+  await openSignedIn(env);
+  env.win.setTheme('light');
+  await env.advance(600);
+  assert.equal(prefState(env, 'theme'), 'sent');
+  await env.advance(30000);
+  assert.equal(prefState(env, 'theme'), 'failed', 'a hung save never failed');
+  assert.equal(env.posts(PREFS)[0].aborted, true);
+});
+
+test('S1-02 red: a tz save that never answers times out and reverts to the server copy', async () => {
+  const env = makeEnv();
+  await openSignedIn(env, ACCT_A, PREFS_ON);
+  env.change(tzSel(env), TZ_NY);
+  await env.advance(600);
+  assert.equal(tzSel(env).value, TZ_NY);
+  await env.advance(30000);
+  assert.equal(tzSel(env).value, TZ_LON, 'a hung tz save never reverted');
+  assert.notEqual(msgText(env, 'mmacc-alert-msg'), '', 'a hung tz save reported nothing');
+});
+
+test('S1-04 red: a revocation that never answers is not confirmed', async () => {
+  const env = makeEnv();
+  await openSignedIn(env);
+  env.click(env.q('[data-act="signout-all"]')); await env.settle();
+  assert.ok(openPosts(env, SIGNOUT_ALL)[0], 'sign-out-everywhere must POST');
+  await env.advance(30000);
+  assert.equal(env.auth.signOutCalls, 0, 'a hung revocation signed this device out');
+  assert.ok(msgText(env, 'mmacc-signout-msg').includes(SO_UNKNOWN_EN), 'a hung revocation never reported unknown');
+});
+
+// Single owner of the theme/lang atomics: theme.js asks MMAccount.claimsPref(key).
+
+test('S1-01 red: MMAccount.claimsPref owns theme/lang only for a loaded signed-in account', async () => {
+  const env = makeEnv();
+  const acc = env.win.MMAccount;
+  assert.equal(typeof acc.claimsPref, 'function', 'claimsPref missing');
+  assert.equal(acc.claimsPref('theme'), false, 'claimed before the panel mounted');
+  await openSignedIn(env);
+  assert.equal(acc.claimsPref('theme'), true, 'theme not claimed for a signed-in account');
+  assert.equal(acc.claimsPref('lang'), true, 'lang not claimed for a signed-in account');
+  assert.equal(acc.claimsPref('theme_auto'), false, 'theme_auto is browser-only and stays with theme.js');
+  env.authEvent('SIGNED_OUT', null); await env.settle();
+  assert.equal(acc.claimsPref('theme'), false, 'claimed after sign-out');
+});
+
+test('S1-03 red: claimsPref is false while the account is unavailable or anonymous', async () => {
+  const env = makeEnv();
+  assert.equal(typeof env.win.MMAccount.claimsPref, 'function', 'claimsPref missing');
+  await openWith(env, 503, { detail: 'Service unavailable' });
+  assert.equal(env.win.MMAccount.claimsPref('theme'), false, 'claimed while unavailable');
+  const guest = makeEnv({ user: null });
+  await openWith(guest, 401, { detail: 'Not authenticated' });
+  assert.equal(guest.win.MMAccount.claimsPref('lang'), false, 'claimed while anonymous');
+});
+
+test('S1-01 red: claimsPref releases theme/lang during the sign-in pref apply and reclaims after', async () => {
+  const env = makeEnv({ serverPrefsOnSignIn: true });
+  await openSignedIn(env);
+  assert.equal(typeof env.win.MMAccount.claimsPref, 'function', 'claimsPref missing');
+  let during = null;
+  // Bubble listener registered after theme.js's apply: observes the claim inside the dispatch.
+  env.win.addEventListener('mdx-auth', () => { during = env.win.MMAccount.claimsPref('theme'); });
+  env.emitAuth('SIGNED_IN', { id: 'user-a-fictional', email: ACCT_A.email, user_metadata: { theme: 'light' } });
+  assert.equal(during, false, 'claimed during the auth apply (theme.js would then skip a save nobody makes)');
+  await env.settle();
+  assert.equal(env.win.MMAccount.claimsPref('theme'), true, 'not reclaimed after the apply settled');
+  await env.advance(1000);
+  assert.equal(env.posts(PREFS).length, 0, 'sign-in pref apply echoed a save');
 });
