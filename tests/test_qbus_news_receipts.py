@@ -217,3 +217,54 @@ def test_health_rejects_future_observation_and_counter_booleans():
         m.parse_health_receipt(_health(observed_at="2026-10-06T00:00:00+00:00"), now=NOW)
     with pytest.raises(m.NewsReceiptError):
         m.parse_health_receipt(_health(connect_attempts=True), now=NOW)
+
+
+def test_health_projects_diagnostic_error_codes_when_well_formed():
+    from engine import qbus_news_receipts as m
+
+    parsed = m.parse_health_receipt(
+        _health(last_catchup_error="http_401", last_stream_error="stream_auth_error_406"),
+        now=NOW,
+    )
+
+    assert parsed["last_catchup_error"] == "http_401"
+    assert parsed["last_stream_error"] == "stream_auth_error_406"
+    assert parsed["state"] == "live"
+    assert parsed["reason"] == "fresh"
+
+
+@pytest.mark.parametrize(
+    "bad",
+    ["Bearer abc/def", "HTTP 401 Bearer abc", 406, True, "", "a" * 65, ["http_401"]],
+)
+def test_health_invalid_diagnostic_codes_parse_as_none_and_never_gate(bad):
+    from engine import qbus_news_receipts as m
+
+    without_keys = m.parse_health_receipt(_health(), now=NOW)
+
+    parsed = m.parse_health_receipt(
+        _health(last_catchup_error=bad, last_stream_error=bad), now=NOW
+    )
+
+    assert parsed["last_catchup_error"] is None
+    assert parsed["last_stream_error"] is None
+    assert parsed["state"] == without_keys["state"]
+    assert parsed["reason"] == without_keys["reason"]
+
+
+def test_health_receipt_without_diagnostic_codes_parses_both_as_none():
+    from engine import qbus_news_receipts as m
+
+    parsed = m.parse_health_receipt(_health(), now=NOW)
+
+    assert parsed["last_catchup_error"] is None
+    assert parsed["last_stream_error"] is None
+
+
+def test_health_base_carries_both_diagnostic_codes_as_none():
+    from engine import qbus_news_receipts as m
+
+    base = m._health_base("receipt_missing")
+
+    assert base["last_catchup_error"] is None
+    assert base["last_stream_error"] is None

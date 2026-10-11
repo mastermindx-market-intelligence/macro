@@ -22,7 +22,15 @@
    Preference sync: when signed in, theme + language changes are saved to the
    account (Supabase user_metadata) and re-applied on load, so a user's look
    follows them to any device/site. Hooks the EXISTING theme.js toggles via the
-   `themechange` / `langchange` document events. */
+   `themechange` / `langchange` document events.
+
+   Single owner (site-20 S1 follow-up): once this panel is mounted and holds a
+   loaded, signed-in account it is the ONLY writer of the shared `theme` and
+   `lang` atomics. theme.js asks `MMAccount.claimsPref(key)` before its own
+   `updateUser` save and skips a claimed key; it keeps the browser-only
+   `theme_auto` flag, which this panel never writes. One writer per key means an
+   acked POST here IS the server copy, and a failed save stays visible as
+   `failed` instead of being masked by a second, silent writer. */
 (function () {
   'use strict';
 
@@ -43,7 +51,20 @@
   // theme.js applies the signed-in account's saved theme/lang on SIGNED_IN (setTheme/setLang
   // inside the 'mdx-auth' dispatch). Those are not user edits, so they must not echo a save.
   var _authApplying = false;
-  function _acctKey(a) { return (a && a.authenticated) ? 'u:' + String(a.email || '').toLowerCase() : ''; }
+  // Pending-pref owner key. /api/account carries the stable Supabase user id, so the
+  // fence keys on it; the email is the fallback only when the id is absent.
+  function _acctKey(a) {
+    if (!(a && a.authenticated)) return '';
+    if (a.id) return 'id:' + String(a.id);
+    return 'u:' + String(a.email || '').toLowerCase();
+  }
+  // The key a SIGNED_IN session user resolves to, in the same basis as the loaded
+  // account: by id when the account read carried one, else by email.
+  function _sessionKey(user, acct) {
+    if (!user) return '';
+    if (acct && acct.id) return user.id ? 'id:' + String(user.id) : '';
+    return user.email ? 'u:' + String(user.email).toLowerCase() : '';
+  }
   // The server answers ok:true when only the email_prefs mirror stored a lang
   // (metadata:false). /api/account reads user_metadata back, so that is not a saved pref.
   function _saveOk(res) {
@@ -57,8 +78,8 @@
   }
   function _onAuthTransition(user, evt) {
     if (evt !== 'SIGNED_IN' && evt !== 'SIGNED_OUT') return;
-    if (evt === 'SIGNED_IN' && !(user && user.email)) return;
-    var next = (evt === 'SIGNED_IN') ? 'u:' + String(user.email).toLowerCase() : '';
+    if (evt === 'SIGNED_IN' && !(user && (user.id || user.email))) return;
+    var next = (evt === 'SIGNED_IN') ? _sessionKey(user, state.acct) : '';
     if (state.loaded && !state.unavail && _acctKey(state.acct) === next) return;
     _dropPendingWrites(); _loadGen++;
     state.acct = null; state.loaded = false; state.unavail = false;
@@ -276,23 +297,37 @@
   }
 
   // ------------------------------------------------------------- API ---------
+  // Every panel request is bounded. 30 s is deliberately conservative: a pref save can
+  // make up to three sequential Supabase admin calls server-side (6 s each, see
+  // app/account_prefs.py) and the browser's own default is far longer. A request that
+  // outlives it is aborted and takes the SAME path as a transport failure
+  // ({ok:false, status:0}): the account read shows the unavailable state (S1-03), a
+  // pending pref/alert write is marked failed and reverted (S1-01/S1-02), and sign-out
+  // everywhere reports "not confirmed" (S1-04). Without AbortController the request
+  // stays unbounded, exactly as before.
+  var API_TIMEOUT_MS = 30000;
   function api(path, opts) {
     opts = opts || {};
+    var ctl = (typeof AbortController === 'function') ? new AbortController() : null;
+    var timer = null;
     return getToken().then(function (token) {
       var headers = {};
       if (opts.body) headers['Content-Type'] = 'application/json';
       // A null token is lawful on www (cookie carries identity): still send the
       // request with credentials:'include' and no Authorization header.
       if (token) headers['Authorization'] = 'Bearer ' + token;
+      if (ctl) timer = setTimeout(function () { ctl.abort(); }, API_TIMEOUT_MS);
       return fetch(API + path, {
         method: opts.method || 'GET', headers: headers, credentials: 'include',
-        body: opts.body ? JSON.stringify(opts.body) : undefined
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+        signal: ctl ? ctl.signal : undefined
       });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
         return { ok: r.ok, status: r.status, data: j };
       });
-    }).catch(function () { return { ok: false, status: 0, data: {} }; });
+    }).catch(function () { return { ok: false, status: 0, data: {} }; })
+      .then(function (res) { clearTimeout(timer); return res; });
   }
   // An account read is authoritative only as a 2xx JSON object carrying a boolean
   // `authenticated`, or as a 401 (a real anonymous answer). 5xx, network failure and
@@ -1080,9 +1115,20 @@
     wirePrefSync();
     _wireAuthTransitions();
   }
+  // Single-owner handshake for the shared theme/lang atomics (see the header). True
+  // exactly when persistPref would queue a write for `key`: the panel is mounted, the
+  // account read settled as signed-in, and no hydration or auth-apply fence is up.
+  // theme.js consults this before its own updateUser save and leaves those keys here.
+  function claimsPref(key) {
+    if (!_mounted) return false;
+    if (key !== 'theme' && key !== 'lang') return false;
+    if (_hydrating || _authApplying) return false;
+    return !!(state.loaded && !state.unavail && state.acct && state.acct.authenticated);
+  }
   window.MMAccount = {
     embed: function (el) { try { mountEmbed(el); } catch (e) {} },   // legacy (old settings modal)
-    open: function () { try { if (!_mounted) mountMacro(); open(); } catch (e) {} }
+    open: function () { try { if (!_mounted) mountMacro(); open(); } catch (e) {} },
+    claimsPref: function (key) { try { return claimsPref(key); } catch (e) { return false; } }
   };
 
   function boot() {
@@ -1203,7 +1249,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20261010-account-continuity';
+    s.src = pfx + 'nav_market.js?v=20261011-account-identity';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();
