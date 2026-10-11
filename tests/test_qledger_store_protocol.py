@@ -1283,3 +1283,99 @@ def test_public_validate_plan_rejects_noop_with_changed_result(limits):
     other = p.plan_append(base, transaction_id="one", serialized_rows=[b"one\n"], limits=limits)
     object.__setattr__(noop, "snapshot", other.snapshot)
     error(lambda: p.validate_plan(noop, limits=limits), "CONFLICT")
+
+
+# Source-only C-preflight: uses accepted native protocol, no real file / writer.
+from engine.qledger_store_import_preview import (
+    LegacyPreviewRefusal,
+    qualify_legacy_history,
+)
+
+
+def _preview(raw_bytes, limits):
+    return qualify_legacy_history(
+        raw_bytes, expected_sha256=digest(raw_bytes),
+        expected_size=len(raw_bytes), limits=limits,
+    )
+
+
+def test_legacy_import_preview_preserves_raw_order_duplicates_and_malformed(limits):
+    raw_legacy = (
+        b'{"claim_id":"same","timestamp":"2026-09-01T00:00:00Z"}\r\n'
+        b'\n'
+        b'not-json\n'
+        b'{"claim_id":"same","timestamp":"2026-09-02T00:00:00Z"}\n'
+        b'{"str":"\xe4\xb8\xad"}\n'
+        + b'{"claim_id":"other","payload":"' + b"x" * 280 + b'"}\n'
+    )
+    # Deliberately allow a nonempty logical view under an empty base ceiling.
+    tiny = replace(limits, base_bytes=0, part_bytes=384)
+    result = _preview(raw_legacy, tiny)
+    assert result.input_sha256 == result.logical_sha256 == digest(raw_legacy)
+    assert result.input_bytes == len(raw_legacy)
+    assert result.row_occurrences == raw_legacy.count(b"\n")
+    assert result.native_base_bytes == 0
+    assert len(result.part_sizes) >= 2
+    assert all(0 < size <= tiny.part_bytes for size in result.part_sizes)
+    assert result.max_git_blob_bytes <= tiny.git_blob_bytes
+    assert result.candidate_members >= 4
+    assert result.introduced_git_blobs >= 3
+    assert result.source_assurance == "CALLER_BYTES_ONLY_NOT_CUTOVER_ADMISSION"
+    assert result.eligible_for_cutover is False
+
+
+@pytest.mark.parametrize("sample,code", [
+    (b"", "EMPTY_OR_NONBYTES"),
+    ("text", "EMPTY_OR_NONBYTES"),
+    (b'{"claim_id":"last"}', "UNTERMINATED_TAIL"),
+])
+def test_legacy_import_preview_refuses_incomplete_sources(sample, code, limits):
+    if type(sample) is bytes and sample:
+        expected = digest(sample)
+        size = len(sample)
+    else:
+        expected = "0" * 64
+        size = len(sample)
+    with pytest.raises(LegacyPreviewRefusal) as caught:
+        qualify_legacy_history(
+            sample, expected_sha256=expected,
+            expected_size=size, limits=limits,
+        )
+    assert caught.value.code == code
+
+
+def test_legacy_import_preview_refuses_stale_source_identity(limits):
+    raw = b'{"original":1}\n'
+    for digest_arg, size_arg, expected_code in (
+        ("0" * 64, len(raw), "SOURCE_CHANGED"),
+        (digest(raw), len(raw) + 1, "SIZE_MISMATCH"),
+        ("BAD", len(raw), "INVALID_DIGEST"),
+        (digest(raw), True, "SIZE_MISMATCH"),
+    ):
+        with pytest.raises(LegacyPreviewRefusal) as caught:
+            qualify_legacy_history(raw, expected_sha256=digest_arg,
+                                   expected_size=size_arg, limits=limits)
+        assert caught.value.code == expected_code
+
+
+def test_legacy_import_preview_refuses_impossible_part_and_logical_limits(limits):
+    raw = b'{"oversize":"' + b"x" * 100 + b'"}\n'
+    with pytest.raises(p.SnapshotIntegrityError) as caught:
+        _preview(raw, replace(limits, part_bytes=64, base_bytes=0))
+    assert caught.value.code == "CAPACITY"
+    with pytest.raises(LegacyPreviewRefusal) as caught:
+        _preview(raw, replace(limits, logical_bytes=80))
+    assert caught.value.code == "LOGICAL_CAPACITY"
+
+
+def test_legacy_import_preview_is_pure_and_deterministic(limits):
+    raw = b'{"claim_id":"a"}\n{"claim_id":"a"}\n{"claim_id":"b"}\n'
+    preview = _preview(raw, replace(limits, base_bytes=0))
+    assert preview == _preview(raw, replace(limits, base_bytes=0))
+    assert preview.eligible_for_cutover is False
+    assert "SOURCE_CHANGED" not in repr(preview)
+    # The module imports no domain claim registrar or rewrite/clock publisher.
+    import engine.qledger_store_import_preview as imp
+    assert not hasattr(imp, "register")
+    assert not hasattr(imp, "materialize_plan")
+    assert not hasattr(imp, "commit")
