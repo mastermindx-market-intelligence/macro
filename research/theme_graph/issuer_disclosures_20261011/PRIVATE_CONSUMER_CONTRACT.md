@@ -7,8 +7,8 @@ inventing an earnings period, SEC accession or corporate-action identity.
 `SourceDocument.v1`, the accepted relationship-observation implementation, and
 the economic kernel remain unchanged.
 
-This is an implemented source contract, not an installed production resolver,
-HTTP endpoint, entitlement or source-purpose grant. C01 remains NOT_ADMITTED.
+This is an implemented source contract and mounted HTTP source boundary, not an
+installed production resolver, entitlement or source-purpose grant. C01 remains NOT_ADMITTED.
 The source changes permit the incumbent F04 owner to implement its private
 boundary against a concrete versioned interface while real source qualification
 continues. A synthetic authority in tests is never a production authority.
@@ -124,3 +124,42 @@ correction resolver and current private artifact, F04's real entitlement and
 private route, an authenticated source-backed positive and refusal, and matching
 human/machine production evidence. No public teaser publication, commercial
 magnitude, graph promotion, cohort certification or trade authority is implied.
+
+## Fixed private HTTP boundary
+
+`app/company_disclosures.py` mounts GET
+`/api/company-intelligence/private/product-integrations/{fact_id}` in the existing
+Macro application. Bearer and shared-cookie callers use `app.main.require_user`.
+The handler reads the actual entitlement row freshly, requires the exact
+`company_intelligence_private_read` feature with active/trialing and nonfree
+semantics, and does not reuse another feature's paywall cache or a Pro label.
+All successful and failed handler outcomes are private/no-store; failures carry
+a bounded code without upstream details.
+
+Only `mode` and `as_of` are query controls. Unknown or duplicate parameters are
+rejected after authentication and entitlement. The server fixes purpose to
+`private_company_intelligence_context` and audience to
+`company_intelligence_entitled`; a future positive owner receipt must cover
+that entire audience. A grant limited to one operator, customer or tenant cannot
+be used through this audience without a separately qualified narrower binding.
+
+The installed capability slot is `app.state.company_disclosure_reader`, an exact
+`PrivateDisclosureReader` instance containing the trusted owner resolver and a
+lazy incumbent Store factory. Preflight precedes even Store construction. The
+native reader verifies admission before retrieval and again before serialization.
+The browser cannot set this slot, deserialize an Admission, choose a root or
+publish an artifact. Missing runtime is `SOURCE_RUNTIME_UNAVAILABLE`; denied
+admission never constructs the private Store. No production capability has been
+installed by these source changes.
+
+The 28 new transport tests passed, then the unchanged public API plus private
+transport suite passed 49 tests in 4.90 seconds. These include actual app mounting,
+actual LocalStore reads with immutable references, fresh entitlement revocation,
+cookie forwarding, query injection/duplicates, generation changes, absent runtime,
+and no-store sanitized errors. Authentication and owner grants in those tests are
+synthetic. The tests are enrolled once in the existing `prelaunch-hardening` API
+job; no new CI job or threshold is introduced. Independent architectural critique
+found no make-or-break authorization defect; its final-recheck comment correction
+was applied. Real resolver installation, source-owner purpose and dataset adoption,
+current private artifact, deployment, and authenticated positive/refusal proof are
+still required.

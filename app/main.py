@@ -2289,6 +2289,10 @@ app.include_router(earnings_router)
 from app.company_intelligence import router as company_intelligence_router  # noqa: E402
 app.include_router(company_intelligence_router)
 
+# Authenticated private facts retain their independent entitlement and source-owner gate.
+from app.company_disclosures import router as company_disclosures_router  # noqa: E402
+app.include_router(company_disclosures_router)
+
 # Private low-latency ticker-news reads. The router authenticates + enforces
 # site_full, then independently fails closed on feed-specific display rights
 # before opening the qbus store read-only.
