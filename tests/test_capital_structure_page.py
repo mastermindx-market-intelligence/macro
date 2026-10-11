@@ -162,6 +162,22 @@ def test_exact_ticker_resolver_reads_the_api_envelope_issuer_and_selects_it() ->
     assert "return selectIssuer(issuerId, { focus: true });" in js
 
 
+def test_issuer_transitions_preserve_current_request_state() -> None:
+    node = shutil.which("node")
+    if node is None:
+        return
+    result = subprocess.run(
+        [node, str(ROOT / "tests" / "capital_structure_runtime_harness.cjs"), str(ROOT)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    report = json.loads(result.stdout)
+    assert len(report["results"]) == 64
+    assert all(item["pass"] for item in report["results"])
+
+
 def test_stable_issuer_deep_links_survive_reload_and_history_navigation() -> None:
     js = (TEMPLATES / "capital_structure.js").read_text(encoding="utf-8")
     for token in (
@@ -221,7 +237,8 @@ def test_api_rendered_labels_follow_the_site_language_event_contract() -> None:
     js = (TEMPLATES / "capital_structure.js").read_text(encoding="utf-8")
     assert "document.addEventListener('langchange', relabelDynamicContent);" in js
     assert "updateLocalizedAttributes();" in js
-    assert "if (state.record) renderRecord(state.record);" in js
+    assert "renderDossierState();" in js
+    assert "if (state.record) renderRecord(state.record);" not in js
     assert "mastermind:languagechange" not in js
 
 
