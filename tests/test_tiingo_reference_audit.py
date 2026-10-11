@@ -144,3 +144,66 @@ def test_empty_catalogue_never_implies_data_access():
 def test_observation_clock_requires_timezone():
     with pytest.raises(ref.ReferenceAuditError):
         audit(zipped([]), observed_at="2026-10-09T20:00:00")
+
+
+
+def test_full_history_sizing_counts_current_annual_chunks_without_authorizing_requests():
+    # Two-year span needs three 366-day windows; one-day span only one.
+    raw = zipped([
+        ["AAA", "NYSE", "Stock", "USD", "2020-01-01", "2022-01-02"],
+        ["BBB", "NYSE", "ETF", "USD", "2020-01-01", "2020-01-01"],
+        ["CCC", "SHE", "Stock", "CNY", "2020-01-01", "2020-01-01"],
+    ])
+    out = audit(raw, start=date(2020, 1, 1), end=date(2022, 1, 2),
+                currencies=("USD",))
+    sizing = out["historical_eod_request_sizing"]
+    assert sizing["eligible_public_catalogue_records"] == 2
+    assert sizing["current_366_day_chunk_requests"] == 4
+    assert sizing["single_full_history_request_hypothesis"] == 2
+    assert sizing["one_call_guaranteed_by_vendor"] is False
+    assert sizing["entitlement_confirmed"] is False
+    assert sizing["downloaded_history"] is False
+    assert sizing["execution_authorized"] is False
+    assert sizing["network"] is False
+    assert sizing["groups"] == [
+        {"asset_type": "ETF", "currency": "USD",
+         "eligible_records": 1, "current_366_day_requests": 1},
+        {"asset_type": "Stock", "currency": "USD",
+         "eligible_records": 1, "current_366_day_requests": 3},
+    ]
+
+
+def test_sizing_respects_ticker_quarantine_and_history_date_clipping():
+    raw = zipped([
+        ["VALID", "NYSE", "Stock", "USD", "1900-01-01", "2020-01-01"],
+        ["DUP", "NYSE", "Stock", "USD", "2020-01-01", "2020-01-01"],
+        ["DUP", "LSE", "Stock", "GBP", "2020-01-01", "2020-01-01"],
+        ["CONFLICT", "NYSE", "Stock", "USD", "2020-01-01", "2021-01-01"],
+        ["CONFLICT", "NYSE", "Stock", "USD", "2020-01-01", "2022-01-01"],
+        ["OUTSIDE", "NYSE", "Stock", "USD", "2023-01-01", "2023-01-05"],
+        ["RESERVATION", "NYSE", "Stock", "USD", "", ""],
+    ])
+    out = audit(raw, start=date(2020, 1, 1), end=date(2020, 1, 31),
+                currencies=("USD",))
+    sizing = out["historical_eod_request_sizing"]
+    assert sizing["eligible_public_catalogue_records"] == 1
+    assert sizing["current_366_day_chunk_requests"] == 1
+    assert sizing["single_full_history_request_hypothesis"] == 1
+    assert out["conflicting_catalogue_keys"] == 1
+    assert out["ambiguous_ticker_strings"] == 1
+
+
+def test_sizing_is_stable_across_catalogue_pagination_and_empty_cohorts():
+    raw = zipped([
+        ["AAA", "NYSE", "Stock", "USD", "2020-01-01", "2020-01-10"],
+        ["BBB", "NYSE", "Stock", "USD", "2020-01-01", "2020-01-10"],
+    ])
+    first = audit(raw, start=date(2020, 1, 1), end=date(2020, 1, 10),
+                  offset=0, limit=1)
+    second = audit(raw, start=date(2020, 1, 1), end=date(2020, 1, 10),
+                   offset=1, limit=1,
+                   expected_sha256=first["catalogue_sha256"])
+    assert first["historical_eod_request_sizing"] == second["historical_eod_request_sizing"]
+    empty = audit(zipped([]))
+    assert empty["historical_eod_request_sizing"]["current_366_day_chunk_requests"] == 0
+    assert empty["historical_eod_request_sizing"]["groups"] == []

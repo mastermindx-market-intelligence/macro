@@ -79,6 +79,57 @@ def catalogue_rows(raw_zip: bytes) -> list[dict[str, str]]:
         raise ReferenceAuditError("invalid catalogue archive") from exc
 
 
+def _sizing_historical_eod(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    """Size an *offline* EOD acquisition hypothesis from the public catalogue.
+
+    The existing planner currently chunks each EOD date range into at most
+    366-day requests. Tiingo's public ingestion guide recommends fetching
+    each full security history initially, then querying the daily bulk
+    endpoint and refreshing adjusted histories after splits/dividends.
+    A single full-history query is ONLY a request-count hypothesis; it may
+    fail, paginate, exceed vendor quotas, or be unavailable to this account.
+    This function does not create tasks, queues, authorizations or requests.
+    """
+    buckets: dict[tuple[str, str], list[int]] = {}
+    per_year = 0
+    for row in candidates:
+        first, last = date.fromisoformat(row["request_start"]), date.fromisoformat(row["request_end"])
+        days = (last - first).days + 1
+        if days < 1:
+            raise ReferenceAuditError("history candidate outside requested bounds")
+        chunks = (days + 365) // 366
+        per_year += chunks
+        key = (row["assetType"], row["priceCurrency"])
+        if key not in buckets:
+            buckets[key] = [0, 0]
+        buckets[key][0] += 1
+        buckets[key][1] += chunks
+    return {
+        "scope": "ELIGIBLE_UNAMBIGUOUS_PUBLIC_CATALOGUE_EOD_METADATA_ONLY",
+        "eligible_public_catalogue_records": len(candidates),
+        "current_366_day_chunk_requests": per_year,
+        "single_full_history_request_hypothesis": len(candidates),
+        "one_call_guaranteed_by_vendor": False,
+        "entitlement_confirmed": False,
+        "downloaded_history": False,
+        "execution_authorized": False,
+        "network": False,
+        "refresh_for_corporate_action_changes_unmodeled": True,
+        "groups": [
+            {"asset_type": asset, "currency": currency,
+             "eligible_records": values[0], "current_366_day_requests": values[1]}
+            for (asset, currency), values in sorted(buckets.items())
+        ],
+        "vendor_guidance": "https://www.tiingo.com/kb/article/the-fastest-method-to-ingest-tiingo-end-of-day-stock-api-data/",
+        "caveat": (
+            "Public metadata is not endpoint entitlement or an active EOD security census. "
+            "The one-history-call comparison is a documented strategy hypothesis, not a "
+            "guaranteed downloadable request count. Vendor throttles, payload limits, "
+            "adjustment refreshes, retry costs, raw storage and actual bytes are unmeasured."
+        ),
+    }
+
+
 def audit_catalogue(raw_zip: bytes, *, observed_at: str, start: date,
                     end: date, currencies: tuple[str, ...] = (),
                     asset_types: tuple[str, ...] = (), offset: int = 0,
@@ -184,7 +235,9 @@ def audit_catalogue(raw_zip: bytes, *, observed_at: str, start: date,
         "earliest_advertised_history": earliest.isoformat() if earliest else None,
         "latest_advertised_history": latest.isoformat() if latest else None,
         "filters": {"currencies": list(currencies), "asset_types": list(asset_types)},
-        "acquisition_candidate_count": len(candidates), "offset": offset, "selected": selected,
+        "acquisition_candidate_count": len(candidates),
+        "historical_eod_request_sizing": _sizing_historical_eod(candidates),
+        "offset": offset, "selected": selected,
         "next_offset": offset + len(selected) if offset + len(selected) < len(candidates) else None,
         "catalogue_is_account_entitlement_proof": False,
         "historical_survivorship_safe_universe": False,

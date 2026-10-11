@@ -687,3 +687,73 @@ historical known-at availability, full coverage, or redistribution approval.
 The CLI remains SOURCE-DARK until a genuinely permitted producer and actual
 raw historical receipts exist. Do not merge/release or invoke blocked
 producer/probe effects in alternate form.
+
+
+### October 11 UTC — quantified EOD archive acquisition strategy decision
+
+**Provisional source-only finding, not activated collector work.**
+Official Tiingo public guidance:
+https://www.tiingo.com/kb/article/the-fastest-method-to-ingest-tiingo-end-of-day-stock-api-data/
+recommends initial complete per-symbol historical EOD loads, followed by
+bulk daily price deltas, with full-history adjustments refreshed when
+dividends/splits change historical adjusted values. Existing offline
+request planning instead chunks EOD into 366-day calls.
+
+New bounded calculation in the EXISTING public-reference catalogue auditor
+reports the 366-day request count and the **hypothetical**, unproven
+one-full-history-request-per-candidate comparison for exactly the same
+quarantined, eligible, identifier-preserving catalogue candidates. All
+metrics preserve explicit metadata-only, entitlement-unknown,
+execution-authorized=false and historical-universe-not-proven flags.
+
+Exact observed public ZIP SHA-256
+015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0
+with vendor advertised 1960-01-01 to 2026-10-09 history window:
+
+- All unambiguous/candidate catalogue records: 104,137; current annual
+  chunks: 1,090,365; one full-range-call hypothesis: 104,137 (10.470x).
+- USD stocks, ETFs and funds: 96,938 candidates; 1,017,775 annual
+  chunks versus 96,938 hypothetical complete calls (10.499x).
+- USD stocks only: 39,672 candidates; 388,557 annual chunks versus
+  39,672 hypothetical complete calls (9.794x).
+
+This changes the intended implementation design: **do not blindly launch
+full-catalogue collection from the current annual EOD chunk planner**.
+The proper subsequent lawful, separately qualified implementation should
+validate real per-symbol response size/latency and endpoint availability,
+then use complete-history fetch when sustainable, delta refresh when
+entitled and full revised-adjustment refresh on corporate action changes.
+Preserve original raw captures and revision lineage. Do not confuse
+a restated adjusted series with what was known on the old market date.
+This recommendation is NOT a collector modification, new scheduler,
+rate allocator or full-corpus completion receipt.
+
+Local free space at the bounded census observation was 335.59 GiB, with
+35.00 GiB reserved by the unchanged collector guard, leaving 300.59 GiB
+above the existing free-space floor. This is NOT a measured backfill capacity
+or a BOATS firehose retention guarantee. Storage amplification, retries,
+actual endpoint quotas, response sizes, historical fundamentals, intraday,
+news rights, exchange coverage and revision refresh costs are unknown.
+
+Immutable source-derived evidence is retained as
+research/tiingo/2026-10-11/EOD_FULL_BACKFILL_SIZING.json,
+SHA-256 a7994b3ae2b3eb6536b379510635fc97ec5871d5a0960da1d3d934ff91ceba2f,
+and test cases are added within the existing offline
+test_tiingo_reference_audit.py suite. The existing Data OS test/CI owner
+continues; no new queue/control plane/identity was created.
+The original core collector and authenticated probe restrictions remain
+untouched, untried and not delegated. All 24 registry entries are PROPOSED,
+real import has not begun and Macro PR #8698 remains DRAFT/HOLD.
+
+
+Verification for the public-catalogue sizing milestone: the new synthetic
+sizing/quarantine/page-bound tests pass, and the full Tiingo and Data OS
+registry test run returned 355 passed, the same 11 previously active
+collector-integrity failures, pytest exit 1 (M2 process 62282).
+The test evidence log is stored on the external drive:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-eod-catalogue-sizing-20261011.log
+SHA-256 32b9ff5749757a318037347a43c5ceee59e001cc7c1db75fef64a960f7c6f0b8.
+The frozen core collector still hashes to
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+A published source commit and confirmed GitHub head do not prove live
+entitlement, full history or a green CI/release. No key/network/live job used.
