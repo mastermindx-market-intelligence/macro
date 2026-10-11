@@ -20644,6 +20644,9 @@ jobs:
       - lib/dataos/web_readers.py
       - lib/dataos/web_workspace.py
       - scripts/data_workspace.py
+      # Canonical catalog artifact references present in the full CI tree.
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
       - tests/test_dataos_web_api.py
       - tests/test_dataos_web_lab.py
       - tests/test_dataos_web_lab_worker.py
