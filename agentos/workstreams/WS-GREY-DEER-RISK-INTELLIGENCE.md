@@ -357,10 +357,13 @@ waves:
   - id: GD-PB-T03
     title: Publication-health note and GH001/heartbeat owner routing (O7/T01+T03)
     status: in_progress
+    # merged f1ae1e0365fc (PR 8835); closes at the first trading-day daily state write.
     depends_on: [GD-PB-W0]
   - id: GD-PB-T22
     title: Observed-move preregistration, frozen before outcome inspection (O8/T22)
-    status: todo
+    status: done
+    # research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md sha256 b50ab2430b3450900d87f42d71b8accd61c30f0a326a795a9b2856a4115b07ee
+    # git blob 49a68b5e9c6543d662044b0aa391c4b6e6e6052e; Opus read-only audit before freeze. Execution is W2/W3.
     depends_on: [GD-PB-T02]
   - id: GD-PB-W2
     title: Observed-move primitives (PIT, basis-correct, off the render path)
@@ -371,18 +374,20 @@ waves:
     status: todo
     depends_on: [GD-PB-W2, GD-PB-T03]
 next_action: >
-  W0 (PR 8785) and O1/T02 (PR 8833, squash 565d883c2657; manifest v1.0.0 in
-  research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md) are
-  merged. O7/T03 is recorded in
-  research/grey_deer/incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md:
-  the heartbeat stall marker now clears only on a strictly newer asof
-  (scripts/check_ledger_advance.py + 5 regression tests); QLedger GH001 has
-  blocked the US nightly collection push since 10-10 (no US collection on main
-  after the one labelled 2026-10-09) and is routed to the QLedger owner
-  (PR 8042 is throughput, not size proof). T03 closes when the first
-  trading-day daily run after merge writes data/ci/ledger_heartbeat_state.json
-  under the repaired rule. Then O8/T22: the preregistration that freezes the
-  manifest's qualified sample with sha256 before any outcome inspection.
+  W0 (PR 8785), O1/T02 (PR 8833, manifest v1.0.0) and O7/T03 (PR 8835, squash
+  f1ae1e0365fc; heartbeat stall marker clears only on a strictly newer asof) are
+  merged. O8/T22 froze research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
+  (sha256 b50ab2430b345090..., full value in the GD-PB-T22 row) before any outcome on the
+  qualified Massive SPY sample was computed; it was audited read-only before
+  merge. T03 closes when the first trading-day daily run after merge writes
+  data/ci/ledger_heartbeat_state.json under the repaired rule (read it with
+  git show origin/main:data/ci/ledger_heartbeat_state.json). QLedger GH001 has
+  blocked the US nightly collection push since 10-10 and is routed to the
+  QLedger owner (PR 8042 is throughput, not size proof); until it publishes,
+  no prospective pullback outcome can be graded on main. Next: W2 observed-move
+  primitives (PIT, basis-correct, off the render path), then W3 executes the
+  frozen protocol once. P-active stays blocked until PR 8188 lands with
+  byte-identical rules.
   The held 2026-10-08 incident note belongs to PR 8648 and is never written here.
   Operation risk-radar-pullback-20261009 under carrier key
   grey-deer-fable-orchestration-20261003-001 (ACK Slack 1791707775.860299);

@@ -1092,6 +1092,9 @@ def account(user: dict = Depends(require_user),
     tier = ent["tier"]
     return {
         "authenticated": True,
+        # Stable Supabase auth user id. account.js keys its pending-preference fence on
+        # it (site-20 S1), falling back to the email only when the id is absent.
+        "id": user.get("id"),
         "name": _user_display_name(user),
         "email": user.get("email"),
         "email_confirmed": bool(user.get("email_confirmed_at") or user.get("confirmed_at")),
