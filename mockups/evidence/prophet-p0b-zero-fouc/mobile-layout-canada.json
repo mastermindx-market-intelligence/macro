@@ -288,7 +288,7 @@
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
-    "site/account.js": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be",
+    "site/account.js": "6c14fe90aab48eb5f2a54284922e55e027411488646c52c36865ad97016d56ca",
     "site/canada-stock-v36.js": "b7ba336ddf9955585eacf0a18d07652249d2d2b9da8393c083bd7a9a416f41c0",
     "site/chart_i18n.js": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
     "site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
@@ -314,7 +314,7 @@
     "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
     "site/tablesort.js": "995ddaf84cf481b2fc94a160fc755f9c9c6f3bd1b838dc7872f22c0e5a321b57",
     "site/theme.css": "d6d5207461084867fa835042037b0393deccb193498e946b2c5eef414d0c4f0e",
-    "site/theme.js": "14bc9b378f37a3aaf1f031f445dbc1c81faaab5a66aca8d057947a38491d3d53"
+    "site/theme.js": "0fae635945bdda7e65603497e42e39fe94a98b27a6d1709204f4c0bf0b0005e3"
   },
   "viewport": {
     "width": 390,
