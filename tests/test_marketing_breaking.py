@@ -57,6 +57,14 @@ BLS_SOURCE_CFG = {
     "tier": "official",
 }
 
+BLS_CPI_RELEASE_CFG = {
+    "key": "bls_cpi_release",
+    "kind": "rss",
+    "url": "https://www.bls.gov/feed/cpi.rss",
+    "source_name": "Bureau of Labor Statistics — CPI Release",
+    "tier": "official",
+}
+
 ATOM_SOURCE_CFG = {
     "key": "fed_press",
     "kind": "rss",
@@ -1345,8 +1353,8 @@ class TestRateDecisionVocabulary:
 def _official_preview_fixture(monkeypatch):
     from engine.marketing import breaking_feed as feed
 
-    item = parse_feed(_load_fixture("rss_mixed.xml"), BLS_SOURCE_CFG)[0]
-    src = dict(BLS_SOURCE_CFG)
+    item = parse_feed(_load_fixture("rss_mixed.xml"), BLS_CPI_RELEASE_CFG)[0]
+    src = dict(BLS_CPI_RELEASE_CFG)
     calls = []
     def fake_poll(source_cfg, *, root, session_state):
         calls.append(source_cfg["key"])
@@ -1362,7 +1370,7 @@ def test_official_preview_keeps_existing_seen_and_etag_untouched(tmp_path, monke
     feed, item, src, calls = _official_preview_fixture(monkeypatch)
     initial = feed.preview_official_sources(tmp_path, {"sources": [src]})
     assert [row["id"] for row in initial.items] == [item["id"]]
-    assert calls == ["bls_news"]
+    assert calls == ["bls_cpi_release"]
     root = tmp_path / "data" / "marketing" / "breaking"
     assert not (root / "seen.json").exists()
     assert not (root / "state.json").exists()
@@ -1382,7 +1390,7 @@ def test_official_preview_ack_requires_all_accepted_source_ids(tmp_path, monkeyp
     ) is True
     assert item["id"] in json.loads((ledger / "seen.json").read_text())
     assert json.loads((ledger / "state.json").read_text())[
-        "bls_news"
+        "bls_cpi_release"
     ]["etag"] == "qualified-etag-01"
     assert feed.preview_official_sources(
         tmp_path, {"sources": [src]}
@@ -1546,12 +1554,12 @@ def test_official_ack_rejects_updated_etag_state_without_seen_consumption(
         tmp_path, monkeypatch):
     feed, item, src, _ = _official_preview_fixture(monkeypatch)
     token = feed.preview_official_sources(tmp_path, {"sources": [src]})
-    feed._save_state(tmp_path, {"bls_news": {"etag": "other-owner-etag"}})
+    feed._save_state(tmp_path, {"bls_cpi_release": {"etag": "other-owner-etag"}})
     assert feed.ack_official_preview(
         tmp_path, token, accepted_ids={item["id"]}
     ) is False
     assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
-    assert feed._load_state(tmp_path)["bls_news"]["etag"] == "other-owner-etag"
+    assert feed._load_state(tmp_path)["bls_cpi_release"]["etag"] == "other-owner-etag"
 
 
 def test_official_preview_refuses_symlinked_ledger_directory(
@@ -1630,7 +1638,7 @@ def test_official_preview_accepts_shipped_bea_rss_endpoint(
 def test_official_preview_rejects_third_party_item_inside_bls_feed(
         tmp_path, monkeypatch):
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     rows = parse_feed(_load_fixture("rss_mixed.xml"), src)
     assert any("entertainment.example.com" in r["url"] for r in rows)
     calls = []
@@ -1640,7 +1648,7 @@ def test_official_preview_rejects_third_party_item_inside_bls_feed(
     monkeypatch.setattr(feed, "poll_source", inject)
     with pytest.raises(ValueError):
         feed.preview_official_sources(tmp_path, {"sources": [src]})
-    assert calls == ["bls_news"]
+    assert calls == ["bls_cpi_release"]
     assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
 
 
@@ -1664,7 +1672,7 @@ def test_official_preview_refuses_same_guid_changed_facts_in_one_batch(
     monkeypatch.setattr(feed, "poll_source", mixed)
     with pytest.raises(ValueError):
         feed.preview_official_sources(tmp_path, {"sources": [src]})
-    assert calls == ["bls_news"]
+    assert calls == ["bls_cpi_release"]
     assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
     assert not (tmp_path / "data/marketing/breaking/state.json").exists()
 
@@ -1678,7 +1686,7 @@ def test_official_preview_identical_same_guid_repeat_is_one_first_print(
     monkeypatch.setattr(feed, "poll_source", repeated)
     preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
     assert [row["id"] for row in preview.items] == [item["id"]]
-    assert calls == ["bls_news"]
+    assert calls == ["bls_cpi_release"]
 
 
 
@@ -1686,10 +1694,10 @@ def test_official_preview_rejects_redirected_feed_even_with_agency_looking_items
         tmp_path, monkeypatch):
     """An HTTPS off-host redirect is not authenticated agency transport."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     item = parse_feed(_load_fixture("rss_mixed.xml"), src)[0]
     assert str(item["url"]).startswith("https://www.bls.gov/")
-    original_endpoint = "https://www.bls.gov/feed/bls_latest.rss"
+    original_endpoint = "https://www.bls.gov/feed/cpi.rss"
     agency_xml = f"""<rss><channel><item><title>Official release</title>
     <link>{item["url"]}</link><guid>feed-redirect-case</guid>
     <pubDate>Fri, 09 Oct 2026 08:30:00 EDT</pubDate></item></channel></rss>"""
@@ -1725,7 +1733,7 @@ def test_official_preview_accepts_exact_effective_feed_endpoint(
         tmp_path, monkeypatch):
     """The positive transport control keeps the incumbent RSS decoder."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     agency_xml = """<rss><channel><item><title>CPI official release</title>
     <link>https://www.bls.gov/news.release/cpi.nr0.htm</link>
     <guid>feed-effective-control</guid>
@@ -1740,7 +1748,7 @@ def test_official_preview_accepts_exact_effective_feed_endpoint(
         def read(self, length):
             return agency_xml.encode("utf-8")[:length]
         def geturl(self):
-            return "https://www.bls.gov/feed/bls_latest.rss"
+            return "https://www.bls.gov/feed/cpi.rss"
 
     monkeypatch.setattr(feed, "urlopen",
                         lambda req, timeout: AgencyResponse())
@@ -1748,8 +1756,8 @@ def test_official_preview_accepts_exact_effective_feed_endpoint(
         tmp_path, {"sources": [src], "poll_interval_s": 0}
     )
     assert len(result.items) == 1
-    assert result.items[0]["source"] == "bls_news"
-    assert result.updated_state["bls_news"]["etag"] == "agency-etag"
+    assert result.items[0]["source"] == "bls_cpi_release"
+    assert result.updated_state["bls_cpi_release"]["etag"] == "agency-etag"
     state = tmp_path / "data/marketing/breaking"
     assert not (state / "seen.json").exists()
     assert not (state / "state.json").exists()
@@ -1762,7 +1770,7 @@ def test_official_preview_refuses_redirected_http_error_status(
     """A redirected 304/429 cannot masquerade as official-source proof."""
     from engine.marketing import breaking_feed as feed
     from urllib.error import HTTPError
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     def redirect_error(req, timeout):
         raise HTTPError(
             "https://external-cdn-not-approved.example/feed",
@@ -1783,11 +1791,11 @@ def test_official_empty_poll_records_existing_fetch_state_without_seen_consumpti
         tmp_path, monkeypatch):
     """No new event: preserve courtesy/backoff without inventing seen IDs."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     calls = []
     def quiet_poll(source_cfg, *, root, session_state):
         calls.append((source_cfg["key"], dict(session_state)))
-        session_state["bls_news"] = {
+        session_state["bls_cpi_release"] = {
             "etag": "observed-empty-etag", "last_poll_ts": 1791524100.0,
             "fail_count": 0,
         }
@@ -1801,30 +1809,30 @@ def test_official_empty_poll_records_existing_fetch_state_without_seen_consumpti
     assert feed.ack_official_preview(tmp_path, first, accepted_ids=set()) is True
     assert not (source_dir / "seen.json").exists()
     assert json.loads((source_dir / "state.json").read_text())[
-        "bls_news"]["etag"] == "observed-empty-etag"
+        "bls_cpi_release"]["etag"] == "observed-empty-etag"
     again = feed.preview_official_sources(tmp_path, {"sources": [src]})
     assert again.items == ()
-    assert calls[-1][1]["bls_news"]["etag"] == "observed-empty-etag"
+    assert calls[-1][1]["bls_cpi_release"]["etag"] == "observed-empty-etag"
 
 
 def test_official_empty_poll_ack_rejects_concurrent_state_update(
         tmp_path, monkeypatch):
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     def quiet_poll(source_cfg, *, root, session_state):
-        session_state["bls_news"] = {"etag": "proposed"}
+        session_state["bls_cpi_release"] = {"etag": "proposed"}
         return []
     monkeypatch.setattr(feed, "poll_source", quiet_poll)
     token = feed.preview_official_sources(tmp_path, {"sources": [src]})
-    feed._save_state(tmp_path, {"bls_news": {"etag": "already-newer"}})
+    feed._save_state(tmp_path, {"bls_cpi_release": {"etag": "already-newer"}})
     assert feed.ack_official_preview(tmp_path, token, accepted_ids=set()) is False
-    assert feed._load_state(tmp_path)["bls_news"]["etag"] == "already-newer"
+    assert feed._load_state(tmp_path)["bls_cpi_release"]["etag"] == "already-newer"
     assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
 
 
 def test_official_empty_poll_cannot_ack_unoffered_event_ids(tmp_path, monkeypatch):
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     monkeypatch.setattr(feed, "poll_source", lambda *args, **kwargs: [])
     preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
     assert feed.ack_official_preview(
@@ -1842,7 +1850,7 @@ def test_official_preview_refuses_unproven_publication_clock(
         tmp_path, monkeypatch, pubdate):
     """Ingest time must never masquerade as an agency publication receipt."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     date = f"<pubDate>{pubdate}</pubDate>" if pubdate else ""
     xml = (f"<rss><channel><item><title>CPI report released</title>"
            f"<link>https://www.bls.gov/news.release/cpi.nr0.htm</link>"
@@ -1853,7 +1861,7 @@ def test_official_preview_refuses_unproven_publication_clock(
         def __enter__(self): return self
         def __exit__(self, exc_type, exc, tb): return False
         def read(self, n): return xml.encode("utf-8")[:n]
-        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
     monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
     with pytest.raises(ValueError, match="official publication timestamp"):
         feed.preview_official_sources(
@@ -1882,7 +1890,7 @@ def test_official_atom_entry_without_source_timestamp_refused(
         tmp_path, monkeypatch):
     """An Atom entry's ingest clock must not impersonate its source date."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     atom = """<feed xmlns="http://www.w3.org/2005/Atom">
       <entry><id>tag:bls.gov,2026:atom-example</id><title>Official update</title>
       <link href="https://www.bls.gov/news.release/cpi.nr0.htm"/>
@@ -1892,7 +1900,7 @@ def test_official_atom_entry_without_source_timestamp_refused(
         def __enter__(self): return self
         def __exit__(self, exc_type, exc, tb): return False
         def read(self, n): return atom.encode("utf-8")[:n]
-        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
     monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
     with pytest.raises(ValueError, match="official publication timestamp"):
         feed.preview_official_sources(
@@ -1944,7 +1952,7 @@ def test_official_private_bridge_accepts_only_after_existing_desk_snapshot(
                           for ev in story["evidence"]}
     assert (tmp_path / "data/marketing/press/intelligence.db").exists()
     assert feed.preview_official_sources(
-        tmp_path, {"sources": [dict(BLS_SOURCE_CFG)]}
+        tmp_path, {"sources": [dict(BLS_CPI_RELEASE_CFG)]}
     ).items == ()
     assert not list(tmp_path.rglob("items.jsonl"))
 
@@ -2293,14 +2301,14 @@ def test_official_preview_refuses_malformed_or_nonfeed_http_200_without_etag(
         tmp_path, monkeypatch, payload):
     """A successful HTTP response is not proof its body is valid RSS/Atom."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
 
     class Response:
         headers = {"ETag": "must-not-be-acknowledged"}
         def __enter__(self): return self
         def __exit__(self, exc_type, exc, tb): return False
         def read(self, n): return payload.encode("utf-8")[:n]
-        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
 
     monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
     with pytest.raises(ValueError, match="official feed payload"):
@@ -2316,7 +2324,7 @@ def test_official_preview_allows_genuinely_empty_rss_and_courtesy_etag(
         tmp_path, monkeypatch):
     """An empty valid agency RSS channel can checkpoint poll state only."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
     calls = []
     payload = '<rss version="2.0"><channel><title>Agency feed</title></channel></rss>'
 
@@ -2325,7 +2333,7 @@ def test_official_preview_allows_genuinely_empty_rss_and_courtesy_etag(
         def __enter__(self): return self
         def __exit__(self, exc_type, exc, tb): return False
         def read(self, n): return payload.encode("utf-8")[:n]
-        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
 
     def fake_open(req, timeout):
         calls.append(req.full_url)
@@ -2339,7 +2347,7 @@ def test_official_preview_allows_genuinely_empty_rss_and_courtesy_etag(
     folder = tmp_path / "data/marketing/breaking"
     assert not (folder / "seen.json").exists()
     assert json.loads((folder / "state.json").read_text())[
-        "bls_news"]["etag"] == "valid-empty-feed"
+        "bls_cpi_release"]["etag"] == "valid-empty-feed"
     assert len(calls) == 1
 
 
@@ -2363,14 +2371,14 @@ def test_official_preview_refuses_malformed_item_without_headline_or_link(
         tmp_path, monkeypatch, payload):
     """A feed with broken items must not be considered a harmless quiet feed."""
     from engine.marketing import breaking_feed as feed
-    src = dict(BLS_SOURCE_CFG)
+    src = dict(BLS_CPI_RELEASE_CFG)
 
     class Response:
         headers = {"ETag": "would-suppress-incomplete-release"}
         def __enter__(self): return self
         def __exit__(self, exc_type, exc, tb): return False
         def read(self, n): return payload.encode("utf-8")[:n]
-        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
 
     monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
     with pytest.raises(ValueError, match="official feed payload"):
@@ -2408,7 +2416,7 @@ def test_official_private_bridge_real_rss_transport_to_existing_private_desk(
         headers = {"ETag": "synthetic-official-release-etag"}
         def __enter__(self): return self
         def __exit__(self, exc_type, exc, tb): return False
-        def geturl(self): return BLS_SOURCE_CFG["url"]
+        def geturl(self): return BLS_CPI_RELEASE_CFG["url"]
         def read(self, n): return rss_bytes[:n]
 
     def fake_open(req, timeout):
@@ -2416,11 +2424,11 @@ def test_official_private_bridge_real_rss_transport_to_existing_private_desk(
         return Response()
 
     monkeypatch.setattr(feed, "urlopen", fake_open)
-    cfg = {"sources": [dict(BLS_SOURCE_CFG)], "poll_interval_s": 0}
+    cfg = {"sources": [dict(BLS_CPI_RELEASE_CFG)], "poll_interval_s": 0}
     preview = feed.preview_official_sources(tmp_path, cfg)
     assert len(preview.items) == 1
     official = preview.items[0]
-    assert official["source"] == "bls_news"
+    assert official["source"] == "bls_cpi_release"
     state_dir = tmp_path / "data/marketing/breaking"
     assert not (state_dir / "seen.json").exists()
     assert not (state_dir / "state.json").exists()
@@ -2442,7 +2450,7 @@ def test_official_private_bridge_real_rss_transport_to_existing_private_desk(
     assert result["status"] == "ACCEPTED"
     assert result["accepted_ids"] == [official["id"]]
     assert feed._load_seen(tmp_path).get(official["id"])
-    assert feed._load_state(tmp_path)["bls_news"]["etag"] == (
+    assert feed._load_state(tmp_path)["bls_cpi_release"]["etag"] == (
         "synthetic-official-release-etag"
     )
     snapshot = json.loads(
@@ -2454,5 +2462,406 @@ def test_official_private_bridge_real_rss_transport_to_existing_private_desk(
     }
     assert (tmp_path / "data/marketing/press/intelligence.db").exists()
     assert len(opens) == 1
-    assert opens == [BLS_SOURCE_CFG["url"]]
+    assert opens == [BLS_CPI_RELEASE_CFG["url"]]
+    assert not list(tmp_path.rglob("items.jsonl"))
+
+
+# WEB-P1 G1 — verified publisher semantics, 2026-10-11:
+# /feed/bls_latest.rss is an aggregate "Latest Numbers" board with ONE
+# item linking /bls/ (stable source ID), not a dated set of separate releases.
+# BLS's own /feed/ directory lists /feed/cpi.rss and /feed/empsit.rss under
+# News Release feeds; their Atom entry IDs and clocks are source-native.
+
+def test_official_preview_refuses_legacy_bls_latest_numbers_board(
+        tmp_path, monkeypatch):
+    from engine.marketing import breaking_feed as feed
+    src = {
+        "key": "bls_news", "url": "https://www.bls.gov/feed/bls_latest.rss",
+        "source_name": "Bureau of Labor Statistics", "tier": "official",
+        "kind": "rss",
+    }
+    polled = []
+    monkeypatch.setattr(
+        feed, "poll_source",
+        lambda *args, **kwargs: polled.append(True) or [],
+    )
+    with pytest.raises(ValueError, match="BLS latest numbers"):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert polled == []  # known mismatched source does not cost a read
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+@pytest.mark.parametrize("key,endpoint,title,first_id,first_url,first_clock,prior_id,prior_url,prior_clock", [
+    ("bls_cpi_release", "https://www.bls.gov/feed/cpi.rss",
+     "CPI for all items increases 0.4% in August; gasoline rises",
+     "cpi-2026_09_11__07_50_40", "cpi_09112026.htm",
+     "2026-09-11T07:50:40.968-04:00",
+     "cpi-2026_08_12__07_51_16", "cpi_08122026.htm",
+     "2026-08-12T07:51:16.21-04:00"),
+    ("bls_employment_release", "https://www.bls.gov/feed/empsit.rss",
+     "Both payroll employment (+29,000) and unemployment rate (4.2%) change little in September",
+     "empsit-2026_10_02__07_51_08", "empsit_10022026.htm",
+     "2026-10-02T07:51:08.289-04:00",
+     "empsit-2026_09_04__07_51_08", "empsit_09042026.htm",
+     "2026-09-04T07:51:08.695-04:00"),
+])
+def test_official_preview_accepts_source_native_bls_release_atom_entries(
+        tmp_path, monkeypatch, key, endpoint, title, first_id, first_url,
+        first_clock, prior_id, prior_url, prior_clock):
+    from engine.marketing import breaking_feed as feed
+    from xml.sax.saxutils import escape
+    # IDs, paths and offset-aware publication clocks are transcribed from
+    # live BLS Atom RSS observations on 2026-10-11. Reduced to two entries
+    # and served through a mocked HTTP transport, not a live collector run.
+    atom = (
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        '<id>bls.gov:feed:official</id>'
+        '<title>Official BLS news releases</title>'
+        '<entry><id>' + first_id + '</id><title>' + escape(title) + '</title>'
+        '<link href="https://www.bls.gov/news.release/archives/' + first_url + '"/>'
+        '<published>' + first_clock + '</published>'
+        '<updated>' + first_clock + '</updated>'
+        '<content>Verified source-native release observation.</content></entry>'
+        '<entry><id>' + prior_id + '</id>'
+        '<title>Prior official BLS release</title>'
+        '<link href="https://www.bls.gov/news.release/archives/' + prior_url + '"/>'
+        '<published>' + prior_clock + '</published>'
+        '<updated>' + prior_clock + '</updated>'
+        '</entry></feed>'
+    ).encode("utf-8")
+
+    class Response:
+        headers = {"ETag": "atom-news-releases-02"}
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def read(self, n): return atom[:n]
+        def geturl(self): return endpoint
+
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    src = {"key": key, "kind": "rss", "tier": "official",
+           "source_name": "Bureau of Labor Statistics", "url": endpoint}
+    batch = feed.preview_official_sources(
+        tmp_path, {"sources": [src], "poll_interval_s": 0}
+    )
+    assert len(batch.items) == 2
+    assert len({x["id"] for x in batch.items}) == 2
+    assert batch.items[0]["id"] == feed._make_id(key, first_id)
+    assert batch.items[1]["id"] == feed._make_id(key, prior_id)
+    assert batch.items[0]["headline"] == title
+    assert datetime.fromisoformat(batch.items[0]["published_at"]) == (
+        datetime.fromisoformat(first_clock).astimezone(timezone.utc)
+    )
+    assert datetime.fromisoformat(batch.items[1]["published_at"]) == (
+        datetime.fromisoformat(prior_clock).astimezone(timezone.utc)
+    )
+    assert all(x["source"] == key for x in batch.items)
+    assert all(x["url"].startswith(
+        "https://www.bls.gov/news.release/archives/") for x in batch.items)
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+    ids = {x["id"] for x in batch.items}
+    assert feed.ack_official_preview(tmp_path, batch, accepted_ids={batch.items[0]["id"]}) is False
+    assert feed.ack_official_preview(tmp_path, batch, accepted_ids=ids) is True
+    assert feed._load_state(tmp_path)[key]["etag"] == "atom-news-releases-02"
+    assert len(feed._load_seen(tmp_path)) == 2
+
+
+
+def test_real_shape_cpi_atom_to_private_desk_then_exact_source_ack(
+        tmp_path, monkeypatch):
+    """BLS publication-entry shape passes the incumbent news/Desk path.
+
+    The HTTP response is synthetic, based on the official 2026-09-11 CPI
+    Atom entry. No provider network, public sink, outbox or paid rights grant.
+    """
+    from datetime import timedelta
+    from engine.marketing import breaking_feed as feed
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    from scripts import marketing_fastlane_daemon as daemon
+
+    endpoint = "https://www.bls.gov/feed/cpi.rss"
+    source = dict(BLS_CPI_RELEASE_CFG)
+    rss = (
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        '<id>bls.gov:feed:cpi</id><title>Consumer Price Index</title>'
+        '<entry><title>CPI for all items increases 0.4% in August; gasoline rises</title>'
+        '<link href="https://www.bls.gov/news.release/archives/cpi_09112026.htm"/>'
+        '<id>cpi-2026_09_11__07_50_40</id>'
+        '<content>In August, the Consumer Price Index rose 0.4 percent,'
+        ' seasonally adjusted, according to the Bureau of Labor Statistics.</content>'
+        '<published>2026-09-11T07:50:40.968-04:00</published>'
+        '<updated>2026-09-11T07:50:40.968-04:00</updated>'
+        '<category>News Release</category></entry></feed>'
+    ).encode("utf-8")
+
+    class Response:
+        headers = {"ETag": "cpi-2026-09-agency-entry"}
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def geturl(self): return endpoint
+        def read(self, n): return rss[:n]
+
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    preview = feed.preview_official_sources(
+        tmp_path, {"sources": [source], "poll_interval_s": 0}
+    )
+    assert len(preview.items) == 1
+    item = preview.items[0]
+    assert item["id"] == feed._make_id("bls_cpi_release",
+                                        "cpi-2026_09_11__07_50_40")
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+    monkeypatch.setattr(daemon, "_PRESS_STATE_PATH",
+                        tmp_path / "data/marketing/press/state.json")
+    moment = datetime.fromisoformat(item["published_at"]) + timedelta(minutes=5)
+    result = accept_private_official_preview(
+        preview, root=tmp_path, now=moment,
+        marketing_cfg={"breaking": {"llm": {"enabled": False}}},
+        press_cfg={"wire": {"intelligence": {
+            "salience_floor": 0.0, "max_packets_per_tick": 10,
+        }}},
+        current_state=daemon._load_press_state(),
+        persist_identity=daemon._save_press_state,
+        load_identity=daemon._load_press_state,
+    )
+    assert result["status"] == "ACCEPTED"
+    assert result["accepted_ids"] == [item["id"]]
+    served = json.loads(
+        (tmp_path / "data/marketing/press/intelligence.json").read_text()
+    )
+    assert item["id"] in {
+        e["event_id"] for story in served["stories"]
+        for e in story["evidence"]
+    }
+    assert feed._load_state(tmp_path)["bls_cpi_release"]["etag"] == (
+        "cpi-2026-09-agency-entry"
+    )
+    assert item["id"] in feed._load_seen(tmp_path)
+    assert not list(tmp_path.rglob("items.jsonl"))
+
+
+
+@pytest.mark.parametrize("unqualified_url", [
+    "https://www.bls.gov/bls/",
+    "https://www.bls.gov/feed/",
+    "https://data.bls.gov/news.release/archives/cpi_09112026.htm",
+])
+def test_official_bls_release_feed_refuses_non_release_page(
+        tmp_path, monkeypatch, unqualified_url):
+    """A CPI/Employment source key cannot bless a generic dashboard link."""
+    from engine.marketing import breaking_feed as feed
+    source, item, src, _ = _official_preview_fixture(monkeypatch)
+    def injected(source_cfg, *, root, session_state):
+        return [{**item, "url": unqualified_url}]
+    monkeypatch.setattr(feed, "poll_source", injected)
+    with pytest.raises(ValueError, match="unqualified official feed item"):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+@pytest.mark.parametrize("raw_url,should_accept", [
+    ("www.bea.gov/news/2026/gdp-advance-estimate-4th-quarter-and-year-2025", True),
+    ("www.bea.gov.evil.example/news/2026/gdp-advance-estimate", False),
+    ("http://www.bea.gov/news/2026/gdp-advance-estimate-4th-quarter-and-year-2025", False),
+    ("www.bea.gov/bls/", False),
+])
+def test_official_bea_release_known_schemeless_link_is_repaired_only_if_safe(
+        tmp_path, monkeypatch, raw_url, should_accept):
+    """The observed legacy BEA link has no scheme but resolves as HTTPS.
+
+    Source item ID stays its original GUID; other relative/unsafe hosts are
+    NOT silently upgraded. This remains a private, unactivated source pilot.
+    """
+    from engine.marketing import breaking_feed as feed
+    item_id = feed._make_id("bea_news", raw_url)
+    rows = [{
+        "id": item_id, "source": "bea_news",
+        "source_name": "Bureau of Economic Analysis",
+        "source_tier": "official", "url": raw_url,
+        "published_at": "2026-02-20T13:30:00+00:00",
+        "headline": "GDP (Advance Estimate), 4th Quarter and Year 2025",
+        "body_snippet": "The U.S. economy released new GDP results.",
+    }]
+    src = {"key": "bea_news", "kind": "rss", "tier": "official",
+           "url": "https://apps.bea.gov/rss/rss.xml"}
+    monkeypatch.setattr(feed, "poll_source",
+                        lambda *args, **kwargs: [dict(rows[0])])
+    state = tmp_path / "data/marketing/breaking"
+    if should_accept:
+        preview = feed.preview_official_sources(
+            tmp_path, {"sources": [src]}
+        )
+        assert len(preview.items) == 1
+        assert preview.items[0]["id"] == item_id
+        assert preview.items[0]["url"] == "https://" + raw_url
+        assert not (state / "seen.json").exists()
+        assert not (state / "state.json").exists()
+    else:
+        with pytest.raises(ValueError, match="unqualified official feed item"):
+            feed.preview_official_sources(tmp_path, {"sources": [src]})
+        assert not (state / "seen.json").exists()
+        assert not (state / "state.json").exists()
+
+
+
+def _bea_mixed_vintages_fixture(monkeypatch):
+    """Two BEA-shaped source observations: current print plus historic alias."""
+    from engine.marketing import breaking_feed as feed
+    entries = [
+        {
+            "id": feed._make_id("bea_news", "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026"),
+            "source": "bea_news", "source_name": "Bureau of Economic Analysis",
+            "source_tier": "official",
+            "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026",
+            "published_at": "2026-10-06T12:30:00+00:00",
+            "headline": "U.S. International Trade in Goods and Services, August 2026",
+            "body_snippet": "The U.S. international trade deficit increased.",
+        },
+        {
+            "id": feed._make_id("bea_news", "www.bea.gov/news/2026/gdp-advance-estimate-4th-quarter-and-year-2025"),
+            "source": "bea_news", "source_name": "Bureau of Economic Analysis",
+            "source_tier": "official",
+            "url": "www.bea.gov/news/2026/gdp-advance-estimate-4th-quarter-and-year-2025",
+            "published_at": "2026-02-20T13:30:00+00:00",
+            "headline": "GDP (Advance Estimate), 4th Quarter and Year 2025",
+            "body_snippet": "GDP was estimated.",
+        },
+    ]
+    monkeypatch.setattr(
+        feed, "poll_source",
+        lambda *args, **kwargs: [dict(x) for x in entries],
+    )
+    src = {"key": "bea_news", "kind": "rss", "tier": "official",
+           "url": "https://apps.bea.gov/rss/rss.xml"}
+    return feed, entries, src
+
+
+def test_official_bea_explicit_historical_cutoff_admits_only_selected_window(
+        tmp_path, monkeypatch):
+    """The caller, not the poller, owns a deliberate no-backfill lower bound."""
+    feed, rows, src = _bea_mixed_vintages_fixture(monkeypatch)
+    bound = datetime(2026, 10, 1, tzinfo=timezone.utc)
+    preview = feed.preview_official_sources(
+        tmp_path, {"sources": [src]}, not_before=bound
+    )
+    assert [row["id"] for row in preview.items] == [rows[0]["id"]]
+    assert preview.excluded_historical_count == 1
+    assert preview.not_before == bound
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+    assert feed.ack_official_preview(
+        tmp_path, preview, accepted_ids={rows[0]["id"]}
+    ) is True
+    assert rows[0]["id"] in feed._load_seen(tmp_path)
+    assert rows[1]["id"] not in feed._load_seen(tmp_path)
+
+
+def test_official_bea_without_explicit_window_keeps_historical_source_items(
+        tmp_path, monkeypatch):
+    feed, rows, src = _bea_mixed_vintages_fixture(monkeypatch)
+    preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert {row["id"] for row in preview.items} == {x["id"] for x in rows}
+    assert preview.excluded_historical_count == 0
+    assert preview.not_before is None
+
+
+def test_official_bea_cutoff_without_recent_items_cannot_ack_false_quiet(
+        tmp_path, monkeypatch):
+    feed, rows, src = _bea_mixed_vintages_fixture(monkeypatch)
+    future = datetime(2027, 1, 1, tzinfo=timezone.utc)
+    preview = feed.preview_official_sources(
+        tmp_path, {"sources": [src]}, not_before=future
+    )
+    assert preview.items == ()
+    assert preview.excluded_historical_count == 2
+    assert feed.ack_official_preview(
+        tmp_path, preview, accepted_ids=set()
+    ) is False
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+def test_official_bea_naive_cutoff_rejected_before_any_provider_read(
+        tmp_path, monkeypatch):
+    feed, rows, src = _bea_mixed_vintages_fixture(monkeypatch)
+    polled = []
+    monkeypatch.setattr(feed, "poll_source",
+                        lambda *a, **kw: polled.append(True) or [])
+    with pytest.raises(ValueError, match="not_before"):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [src]},
+            not_before=datetime(2026, 10, 1)
+        )
+    assert polled == []
+
+
+
+def test_real_shape_bea_rss_current_window_to_private_desk_no_historical_backfill(
+        tmp_path, monkeypatch):
+    """Current BEA release accepted; old genuine but scheme-less GDP row excluded.
+
+    The feed format, timestamps and URL form reflect observed BEA RSS items.
+    The transport is a hermetic test response, never a live feed/publisher.
+    """
+    from datetime import timedelta
+    from engine.marketing import breaking_feed as feed
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    from scripts import marketing_fastlane_daemon as daemon
+
+    rss = (
+        '<rss version="2.0"><channel>'
+        '<title>U.S. Bureau of Economic Analysis</title>'
+        '<item><title>U.S. International Trade in Goods and Services, August 2026</title>'
+        '<link>https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026</link>'
+        '<guid>https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026</guid>'
+        '<description>The U.S. goods and services trade deficit increased in August 2026.</description>'
+        '<pubDate>Tue, 06 Oct 2026 08:30:00 EDT</pubDate></item>'
+        '<item><title>GDP (Advance Estimate), 4th Quarter and Year 2025</title>'
+        '<link>www.bea.gov/news/2026/gdp-advance-estimate-4th-quarter-and-year-2025</link>'
+        '<guid>www.bea.gov/news/2026/gdp-advance-estimate-4th-quarter-and-year-2025</guid>'
+        '<description>BEA GDP release, historically superseded.</description>'
+        '<pubDate>Fri, 20 Feb 2026 08:30:00 EST</pubDate></item>'
+        '</channel></rss>'
+    ).encode("utf-8")
+
+    class Response:
+        headers = {"ETag": "bea-2026-10-trade"}
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def read(self, n): return rss[:n]
+        def geturl(self): return "https://apps.bea.gov/rss/rss.xml"
+
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    src = {"key": "bea_news", "kind": "rss", "tier": "official",
+           "source_name": "Bureau of Economic Analysis",
+           "url": "https://apps.bea.gov/rss/rss.xml"}
+    preview = feed.preview_official_sources(
+        tmp_path, {"sources": [src], "poll_interval_s": 0},
+        not_before=datetime(2026, 10, 1, tzinfo=timezone.utc)
+    )
+    assert len(preview.items) == 1
+    assert preview.excluded_historical_count == 1
+    item = preview.items[0]
+    assert item["url"].endswith("us-international-trade-goods-and-services-august-2026")
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+    monkeypatch.setattr(daemon, "_PRESS_STATE_PATH",
+                        tmp_path / "data/marketing/press/state.json")
+    when = datetime.fromisoformat(item["published_at"]) + timedelta(minutes=5)
+    result = accept_private_official_preview(
+        preview, root=tmp_path, now=when,
+        marketing_cfg={"breaking": {"llm": {"enabled": False}}},
+        press_cfg={"wire": {"intelligence": {
+            "salience_floor": 0.0, "max_packets_per_tick": 10
+        }}},
+        current_state=daemon._load_press_state(),
+        persist_identity=daemon._save_press_state,
+        load_identity=daemon._load_press_state,
+    )
+    assert result["status"] == "ACCEPTED"
+    assert result["accepted_ids"] == [item["id"]]
+    served = json.loads((tmp_path / "data/marketing/press/intelligence.json").read_text())
+    assert item["id"] in {e["event_id"] for story in served["stories"]
+                          for e in story["evidence"]}
+    assert len(feed._load_seen(tmp_path)) == 1
+    assert feed._load_state(tmp_path)["bea_news"]["etag"] == "bea-2026-10-trade"
     assert not list(tmp_path.rglob("items.jsonl"))

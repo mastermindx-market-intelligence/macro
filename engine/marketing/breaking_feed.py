@@ -636,13 +636,21 @@ def poll_all(root: Path | str, cfg: dict) -> list[FeedItem]:
 # This is neither a parallel queue nor a second source/revision ledger.
 # ─────────────────────────────────────────────────────────────────────────────
 
+# BLS distinguishes its /feed/bls_latest.rss Latest Numbers BOARD from
+# individual News Release Atom feeds at /feed/cpi.rss and /feed/empsit.rss.
+# The board has one repeating item with no release GUID; admitting it as a
+# first-print news item would suppress future changes under keep-FIRST.
+# These exact release endpoints are preview-only candidates; they are NOT
+# automatically added to the incumbent regular breaking.sources register.
 _OFFICIAL_PREVIEW_URLS = {
-    "bls_news": "https://www.bls.gov/feed/bls_latest.rss",
+    "bls_cpi_release": "https://www.bls.gov/feed/cpi.rss",
+    "bls_employment_release": "https://www.bls.gov/feed/empsit.rss",
     "bea_news": "https://apps.bea.gov/rss/rss.xml",
 }
 
 _OFFICIAL_ITEM_DOMAINS = {
-    "bls_news": "bls.gov",
+    "bls_cpi_release": "bls.gov",
+    "bls_employment_release": "bls.gov",
     "bea_news": "bea.gov",
 }
 
@@ -663,6 +671,12 @@ def _qualified_official_item_url(url: object, source_key: str) -> bool:
             and parsed.username is None and parsed.password is None
             and parsed.port in (None, 443)
             and not parsed.fragment
+            # A BLS latest-numbers board or other agency dashboard is NOT
+            # an individual first-print news release. Qualified BLS release
+            # Atom items point to the publisher's /news.release/ archive.
+            and (source_key not in ("bls_cpi_release", "bls_employment_release")
+                 or (host in ("bls.gov", "www.bls.gov")
+                     and parsed.path.startswith("/news.release/")))
         )
     except ValueError:
         return False
@@ -684,6 +698,10 @@ class OfficialFeedPreview:
     baseline_state_digest: str | None
     updated_seen: dict[str, str]
     updated_state: dict[str, Any]
+    # Explicit, caller-selected first-print scope. Never imply the full
+    # provider history was read/accepted when old rows were excluded.
+    not_before: datetime | None = None
+    excluded_historical_count: int = 0
 
 
 def _official_checkpoint(
@@ -711,17 +729,23 @@ def _official_checkpoint(
 
 
 def preview_official_sources(
-    root: Path | str, cfg: dict,
+    root: Path | str, cfg: dict, *, not_before: datetime | None = None,
 ) -> OfficialFeedPreview:
     """Observe existing BLS/BEA RSS without consuming state or seen cursors.
 
-    Requires explicit first-party HTTPS source identity and official tier.
-    This DOES NOT certify any individual release's copyright, correction,
-    earliest-observable timestamp or permission to appear in a public product.
-    The normal poll_all path is not modified. This is a one-shot native
-    measurement seam until a rights-qualified News owner integrates its
-    exact durable acceptance boundary.
+    Optional aware-UTC not_before is a deliberate, caller-chosen initial
+    first-print scope, NOT automatic history reconciliation. Older source
+    entries are counted but NOT admitted as accepted events. An all-excluded
+    nonempty feed cannot be ACKed as a quiet feed/ETag.
+    Requires first-party source identity; this certifies neither copyright
+    nor any historical revision, real first-observation clock or public right.
+    Normal poll_all and its original source registry remain unchanged.
     """
+    if not_before is not None:
+        if (type(not_before) is not datetime or not_before.tzinfo is None
+                or not_before.utcoffset() is None):
+            raise ValueError("official not_before needs timezone-aware datetime")
+        not_before = not_before.astimezone(timezone.utc)
     before_seen, seen_digest = _official_checkpoint(root, "seen.json")
     before_state, state_digest = _official_checkpoint(root, "state.json")
     if any(not isinstance(v, str) for v in before_seen.values()):
@@ -734,16 +758,25 @@ def preview_official_sources(
         raise ValueError("invalid official feed config")
     items: list[FeedItem] = []
     batch_by_id: dict[str, FeedItem] = {}
+    excluded_historical = 0
     for source in breaking_cfg.get("sources", []):
         if not isinstance(source, dict):
             continue
         key = str(source.get("key") or "")
+        if key == "bls_news":
+            # Incumbent normal poll_all still owns this legacy config. The
+            # WEB-P1 release pilot refuses the aggregate latest-numbers board
+            # rather than treat its repeated single GUID/link as fresh news.
+            raise ValueError(
+                "BLS latest numbers is not an individual release feed"
+            )
         expected_url = _OFFICIAL_PREVIEW_URLS.get(key)
         if expected_url is None:
             continue
         # Official domain identity alone does not qualify every hosted path,
-        # redirect, userinfo or alternate port. Accept exactly the incumbent
-        # registered agency RSS endpoints; do not expand the source register.
+        # redirect, userinfo or alternate port. Accept only verified agency
+        # endpoint candidates explicitly supplied to this dormant preview.
+        # Normal poll_all's registered config and runtime remain unchanged.
         if (source.get("url") != expected_url
                 or source.get("kind", "rss") != "rss"
                 or source.get("tier") != "official"):
@@ -761,6 +794,19 @@ def preview_official_sources(
         }
         fetched = poll_source(merged, root=root, session_state=proposed_state)
         for item in fetched:
+            # The live BEA RSS archive includes a historical row whose link
+            # literally starts "www.bea.gov/news/" without https://. Allow
+            # only this exact first-party news-path grammar to gain HTTPS.
+            # The source GUID/ID is NOT reminted or reinterpreted; all other
+            # schemeless, foreign, query, dot-segment or HTTP links refuse.
+            if key == "bea_news" and isinstance(item, dict):
+                raw_link = item.get("url")
+                if (isinstance(raw_link, str)
+                        and re.fullmatch(
+                            r"www\.bea\.gov/news/[A-Za-z0-9_-]+"
+                            r"(?:/[A-Za-z0-9_-]+)*", raw_link
+                        )):
+                    item = {**item, "url": "https://" + raw_link}
             if (not isinstance(item, dict) or not str(item.get("id") or "")
                     or item.get("source") != key
                     or item.get("source_tier") != "official"
@@ -769,6 +815,20 @@ def preview_official_sources(
                 # Do not process it, advance its cursor or infer public rights
                 # from the transport or from a source_tier label alone.
                 raise ValueError("unqualified official feed item")
+            if not_before is not None:
+                # The source-owned parser supplies aware ISO dates in strict
+                # preview mode. Never infer a missing clock as ingest-now.
+                try:
+                    stamp = datetime.fromisoformat(
+                        str(item.get("published_at") or "").replace("Z", "+00:00")
+                    )
+                except ValueError as exc:
+                    raise ValueError("unqualified official publication clock") from exc
+                if stamp.tzinfo is None or stamp.utcoffset() is None:
+                    raise ValueError("unqualified official publication clock")
+                if stamp.astimezone(timezone.utc) < not_before:
+                    excluded_historical += 1
+                    continue
             iid = str(item["id"])
             prior = batch_by_id.get(iid)
             if prior is not None and prior != item:
@@ -789,6 +849,8 @@ def preview_official_sources(
         baseline_state_digest=state_digest,
         updated_seen=updated_seen,
         updated_state=proposed_state,
+        not_before=not_before,
+        excluded_historical_count=excluded_historical,
     )
 
 
@@ -825,6 +887,10 @@ def ack_official_preview(
         return False
 
     if not offered:
+        if preview.excluded_historical_count:
+            # An explicit lower bound excluded real provider items. This
+            # cannot be reported as a genuinely empty/quiet observed feed.
+            return False
         # No events were offered for acceptance. Preserve only the existing
         # poller's ETag/last-attempt/backoff state so official-feed politeness
         # survives quiet or failing polls; never mint or rewrite a seen ledger
