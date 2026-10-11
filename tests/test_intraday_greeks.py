@@ -490,6 +490,9 @@ _APPLICABILITY_TABLE = [
     ("european", "P", float("nan"), False, (_REFUSED, "unknown_economic_clock", None)),
     ("european", "C", float("inf"), False, (_REFUSED, "unknown_economic_clock", None)),
     ("bermudan", "C", None, None, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "C", True, False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "P", np.True_, False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "C", 10**400, False, (_REFUSED, "unknown_economic_clock", None)),
     # 3. at_or_after_economic_expiry
     ("european", "C", 0.0, False, (_REFUSED, "at_or_after_economic_expiry", None)),
     ("american", "P", -5.0, False, (_REFUSED, "at_or_after_economic_expiry", None)),
