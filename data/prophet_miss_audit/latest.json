@@ -295,7 +295,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 1,
-  "n_unrepresented": 9,
+  "n_unrepresented": 8,
   "misses": [],
   "baskets": [
    {
@@ -412,18 +412,17 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 6,
+    "n_members_on_board": 5,
     "members_on_board": [
      "ASO",
      "BJ",
      "BURL",
-     "FIVE",
      "ROST",
      "ULTA"
     ],
     "present_counts": {
      "buy": 1,
-     "watch": 3,
+     "watch": 2,
      "leaders": 0,
      "ran": 2
     },
@@ -941,11 +940,13 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "MSM"
+    ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
