@@ -34,6 +34,7 @@ landmines:
   - "tests/test_research_priority_ordering.py is RED on origin/main (30 TemplateNotFound: _finance_sector_deep_dive.html.j2 missing from _SUPPORT_PARTIALS) and is not this carrier's defect; it is packet P-FIN-1."
   - "An xfail with raises=ValueError absorbs every refusal that subclasses ValueError; a hold that must discriminate causes needs an exact-string assertion (DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE)."
   - "Never bare git stash in the shared store; never mutate git in the main checkout; the worktree lives on the external SSD."
+  - "#7870 writes nothing in engine/earnings_narrative/private_publication.py (its four curation_assertion paths only); the generic private projection role Energy asked for in R-ENE-07 is authored once by #8245 (CDV-1 Task 4, head b019f975, draft, open at 2026-10-11T19:24:48Z) and consumed by Energy and B; B registers no second role (#7870 comment 6112888232)."
 do_not_redo:
   - "H1 is ruled (B) and implemented at acc72f3f; do not re-open the registry identity grammar on #7870. Option A is a separate carrier."
   - "C1 (SBD-41..48) is DEFERRED by ruling; V1.1 (object.subject_role optional) is PROPOSED_NOT_BUILT; rights qualification is QUEUED_NOT_STARTED and blocked on the Robotics R1 corpus."
@@ -235,7 +236,14 @@ waves:
     depends_on: [SB-W1]
     next_action: >
       Rights qualification stays QUEUED_NOT_STARTED until the Robotics R1 corpus exists;
-      C1 stays DEFERRED until re-commissioned. Do not start either on a hunch.
+      C1 stays DEFERRED until re-commissioned. Do not start either on a hunch. R-ENE-07
+      (Energy's consumer ask, #7870 comments 5808374777 and 5810058080 section 4; answered by
+      the seat in #7870 comment 6112888232 on 2026-10-11) is queued here: the additive
+      REGULATORY_MILESTONE predicate value and a statement_mode field on
+      contracts/theme_graph/curation_assertion.v1.schema.json are a contract change outside
+      SB-W1's approved scope, to land under V1.1 with Energy's admission terms (additive enum,
+      no date-triggered transition, no new required field); until then Energy retains the
+      milestone under limitations.establishes of the DEPLOYMENT_TARGET assertion (R-ENE-07(b)).
 next_action: >
   2026-10-11: the seat consolidated under DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11.
   SB-W1 is the critical path for every vertical below it. Head is 839bd6a1b065959b90e48d3171edbbe85f4f74f3

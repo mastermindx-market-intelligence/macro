@@ -50,8 +50,10 @@ changed:
       36e2064d -> 1eb871d6 -> 839bd6a1 with the review chain by comment id, the
       watcher-registration trap inside gate (3), the superseded Source Continuity substitute
       inside gate (4), the recorded-not-accepted raises as gate (5), five new do_not_redo lines,
-      the DSC citation, the CI red at 1eb871d6 with its repair head 839bd6a1 and the body state
-      lines at that head.
+      the DSC citation, the CI red at 1eb871d6 with its repair head 839bd6a1, hosted green at
+      839bd6a1 (check-runs read 19:24:07Z; #7870 comment 6112888232) and the body state lines at
+      that head; SB-W3 carries the R-ENE-07 queue item and a new landmine names #8245 as the
+      single private_publication.py writer.
   - path: agentos/discoveries/DSC-SOURCE-CONTINUITY-CENSUS-PASS-CRITERION-FOR-MACRO-CARRIERS-OVER-THE-490-CAP.md
     what: >
       New. The five-leg substitute criterion the seat has requested (not ruled) for gate (4) on
@@ -64,6 +66,13 @@ changed:
       the requested, still unruled five-leg substitute criterion (the DSC; a request, not a
       ruling) and which legs 6106395498 satisfies by that reading; no other change to the #8250
       state.
+  - path: agentos/workstreams/WS-GMI-ENERGY-NUCLEAR.md
+    what: >
+      One landmine and one dated next_action sentence recording the seat's R-ENE-07 answer (#7870
+      comment 6112888232): the REGULATORY_MILESTONE enum is queued under SB-W3 (V1.1) with Energy's
+      admission terms, Energy retains the milestone under limitations.establishes meanwhile
+      (R-ENE-07(b)), and #8245 is the single writer of the generic private projection role in
+      engine/earnings_narrative/private_publication.py.
 verified:
   - claim: "#7870 branch ref, local HEAD and tree agree at 1eb871d6e504bf141367582dfa1d58d115882204 and the worktree is clean."
     command: "git ls-remote origin refs/heads/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9; git rev-parse HEAD 'HEAD^{tree}'; git status --porcelain | wc -l"
