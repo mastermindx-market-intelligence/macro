@@ -56,7 +56,9 @@ waves:
 next_action: >
   2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): the T02 gate is OPEN.
   CDV-1 #7905 MERGED 2026-09-30T01:42Z as cdce3023fbba, so the "waits on #7905 reaching main"
-  condition below is satisfied and no longer binds. T02 dispatch stays SYNTHETIC-ONLY per the
+  condition below is satisfied and no longer binds. Verified against main per the rule below, not
+  against #7905: at origin/main a4d48836a69e, `git show origin/main:engine/company_intelligence/issuer_profiles.py | grep -n fiscal_scope`
+  returns 4 hits (profile_for_ticker kwarg at :1294; private PG guard at :1306-1309). T02 dispatch stays SYNTHETIC-ONLY per the
   existing ruling; it shares the issuer_profiles.py seam with Industrials #8250 and CDV-1. Packet P-MIN-1.
   .
   MIN-W2 IS PARTLY DELIVERED AND STILL OPEN. T04a is at PRODUCTION_PROOF (#7950 merged

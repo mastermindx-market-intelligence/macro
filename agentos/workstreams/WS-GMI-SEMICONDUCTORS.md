@@ -43,10 +43,15 @@ waves:
     pr: 7870
     next_action: >
       Head acc72f3fb3efb1ad092359ce2ba4190de66d75e1 is pushed with the H1-B audit repairs.
-      One CI watcher is bound to that exact head. On ALL_CONCLUDED green: fresh carrier
+      A session-local CI watcher was bound to that exact head on 2026-10-11; a successor
+      verifies it is live (control_plane owns liveness) and otherwise binds exactly one.
+      Gates still owed before release: ALL_CONCLUDED green at the exact head AND a fresh
+      non-author review of the b76551be..acc72f3f delta (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL
+      requires a non-author exact-head review; the consumed Opus audit read b76551be, and the
+      builder alone judged the later delta behaviour-neutral). On both in hand: fresh carrier
       read, then ONE release DECISION in DEC:FABLE-SEAT order (quote the Chairman ruling,
-      cite the consumed audit, ACCEPTED/STOP, BRANCH_WRITER_RELEASED, review state, body,
-      Ready, merge queue), each act asserting the exact head. On red: repair in scope,
+      cite the consumed audit and the delta review, ACCEPTED/STOP, BRANCH_WRITER_RELEASED,
+      review state, body, Ready, merge queue), each act asserting the exact head. On red: repair in scope,
       new head, re-bind the watcher. On HEAD_CHANGED: re-read before anything.
   - id: SB-W2
     title: "Option A registry follow-on: entry_kind admitting sector_profile/company_profile, optional anchor"
@@ -65,8 +70,9 @@ waves:
       C1 stays DEFERRED until re-commissioned. Do not start either on a hunch.
 next_action: >
   2026-10-11: the seat consolidated under DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11.
-  SB-W1 is the critical path for every vertical below it. Consume the bound watcher's
-  verdict at acc72f3f; do not poll it. After release, open SB-W2 (Option A) first because
+  SB-W1 is the critical path for every vertical below it. Consume the verdict of the one
+  live CI watcher at acc72f3f (bind exactly one if none is verifiably live); do not poll it.
+  Obtain the owed non-author delta review before any release act. After release, open SB-W2 (Option A) first because
   three verticals block on it, then re-land Robotics (WS:GMI-ROBOTICS) and reconcile
   Energy #8002 (WS:GMI-ENERGY-NUCLEAR) onto the accepted base.
 ---

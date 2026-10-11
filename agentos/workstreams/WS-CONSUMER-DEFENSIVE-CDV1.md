@@ -42,8 +42,11 @@ waves:
       Semiconductors foundation (#7870).
 next_action: >
   2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): T4 carrier #8245
-  (claude/cdv1-t4-private-publication-v2 @b019f975c695, Draft) is unadjudicated under this seat;
-  first act is an exact-head read plus an independent review before any ruling (packet CDV-T4).
+  (claude/cdv1-t4-private-publication-v2 @b019f975c695, Draft) already carries an independent
+  REQUEST_CHANGES review at that exact head (#8245 comment 5927055846): a P2 scoped-reader defect
+  in engine/earnings_narrative/private_publication.py (validate_native_closure / load_economic_closure
+  check membership against the selection instead of the complete manifest catalog). The next act is
+  that fix, not another review (packet CDV-T4 = the fix); adjudication follows on the repaired head.
   T7/T8 still wait on #7870 (WS:GMI-SEMICONDUCTORS SB-W1).
   .
   Land T2 ∥ T3 (r3 lanes dispatched 2026-09-30; T1 merged as cdce3023), then

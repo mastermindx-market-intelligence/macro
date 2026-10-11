@@ -22,7 +22,7 @@ state_before: >
   Robotics was still believed to be on main; it is not (#7908 merged 2026-09-25T07:27Z, then
   #8013 reverted it the same day at e5512ef66a74 because 11 first-party imports were unresolved).
 changed:
-  - path: engine/sector_intelligence/finance/research_registration.py
+  - path: engine/sector_intelligence/finance_research_registration.py
     what: >
       Macro PR 7870, head acc72f3fb3efb1ad092359ce2ba4190de66d75e1. H1 ruling B: the adapter
       raises FinanceRegistrationRefusal("vertical_registration_held:sector_profile") BEFORE
@@ -69,18 +69,24 @@ changed:
   - path: agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md
     what: DEC link; dated note that #8250 @20b853e2907e is unadjudicated and needs a fresh non-author review.
   - path: agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md
-    what: DEC link; dated note that the T02 gate is OPEN because #7905 merged 2026-09-30 as cdce3023fbba.
+    what: DEC link; dated note that the T02 gate is OPEN because #7905 merged 2026-09-30 as cdce3023fbba, verified by the fiscal_scope presence check on main a4d48836a69e (4 hits).
   - path: agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md
-    what: DEC link; dated note that #8245 @b019f975c695 is unadjudicated; T7/T8 still wait on #7870.
+    what: DEC link; dated note that #8245 @b019f975c695 already carries independent REQUEST_CHANGES review 5927055846 at that exact head, so the next act is the P2 scoped-reader fix; T7/T8 still wait on #7870.
   - path: agentos/workstreams/WS-CONSUMER-CYCLICAL-V1.md
     what: Owner -> fable-meta-ceo; both DEC links; dated note that #7870 is the critical-path blocker.
 verified:
   - claim: "#7870 local head equals acc72f3fb3efb1ad092359ce2ba4190de66d75e1 and the PR head read by gh agrees."
     command: "git -C <7870 worktree> rev-parse HEAD; gh pr view 7870 -R mastermindx-market-intelligence/macro --json headRefOid -q .headRefOid"
     result: "both print acc72f3fb3efb1ad092359ce2ba4190de66d75e1; worktree clean"
-  - claim: "At acc72f3f the Finance registration suite and the two shell suites are green locally, and the hold fires on the real adapter."
-    command: "/opt/homebrew/bin/python3 -m pytest tests/test_finance_research_registration.py tests/test_sector_intelligence_shared_shell.py tests/test_theme_research_registry.py -q"
-    result: "100 passed / 100 passed / 64 passed; the positive-control test observes vertical_registration_held:sector_profile from the unpatched adapter"
+  - claim: "At acc72f3f the Finance registration suite is green locally with the shell present, and the hold fires on the real adapter."
+    command: "/opt/homebrew/bin/python3 -m pytest tests/test_finance_research_registration.py -q"
+    result: "100 passed, 1 warning; the positive-control test observes vertical_registration_held:sector_profile from the unpatched adapter"
+  - claim: "No tests/test_sector_intelligence_shared_shell.py exists at acc72f3f; the earlier three-count claim named a file that is not in the tree."
+    command: "ls tests | grep -i shared_shell"
+    result: "(no shared-shell test file exists at acc72f3f)"
+  - claim: "At acc72f3f the theme research registry suite is green locally."
+    command: "/opt/homebrew/bin/python3 -m pytest tests/test_theme_research_registry.py -q"
+    result: "64 passed, 1 warning"
   - claim: "The Agent OS validator stays at zero errors with the 7 new records and 6 edited records."
     command: "/opt/homebrew/bin/python3 scripts/agentos.py validate"
     result: "agentos: 1609 records (88 workstreams, 428 decisions, 478 discoveries, 615 handoffs) — 0 error(s), 145 warning(s); the 2 new warnings are review-overdue on the new stubs' dated waits, none on cross-references"
@@ -100,16 +106,16 @@ unresolved:
   - "The Executive/Subagent Fabric is under repair (Mastermind PRs 1300-1319 open except 1305); the mastermind-executive and linear-server MCP connectors need user OAuth and mmx-cimd-probe refuses connections, so no fabric packet can be submitted from this seat yet."
   - "Option A (registry entry_kind) is scoped in the H1 DEC but has no carrier branch yet (SB-W2 todo)."
 next_actions:
-  - "Consume the bound watcher result for #7870 @ acc72f3f: on green, fresh-read the carrier and post ONE release DECISION per the DEC-FABLE-SEAT order, then Ready and merge queue, each asserting the exact head; on red, repair in scope on a new head and re-bind the watcher; on HEAD_CHANGED, re-read before anything."
+  - "Consume the result of the one live CI watcher for #7870 @ acc72f3f (bind exactly one if none is verifiably live) AND obtain the fresh non-author review of the b76551be..acc72f3f delta that DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL requires: with both in hand, fresh-read the carrier and post ONE release DECISION per the DEC-FABLE-SEAT order, then Ready and merge queue, each asserting the exact head; on red, repair in scope on a new head and re-bind the watcher; on HEAD_CHANGED, re-read before anything."
   - "Open the Option A registry carrier (SB-W2) off a main that contains #7870; it must forward view_keys/build_query from FINANCE_REGISTRATION_FACTS and must not reintroduce any xfail on the round trip."
   - "Dispatch the held wave-2 packets once the fabric accepts submissions, in this order: P-FIN-1, CDV-T4, Energy-1 arity patch, Tech-1, Robotics-1 re-land, CC-1, P-IND-1 / #8250 re-adjudication, P-MIN-1, HC-1."
   - "Append the #7870 outcome and the records PR number to the Semiconductors record (SB-W1 status) in a follow-on records PR."
 do_not_redo:
-  - "Do not re-litigate H1; ruling B is implemented at acc72f3f and the Opus audit is consumed. A re-audit is owed only if behaviour changes."
+  - "Do not re-litigate H1; ruling B is implemented at acc72f3f and the Opus audit of b76551be is consumed. The H1 ruling itself is not re-audited, but the non-author review of the b76551be..acc72f3f delta IS still owed before release."
   - "Do not re-add an xfail(raises=ValueError) on test_shared_shell_registration_roundtrip_pinned_to_7870; FinanceRegistrationRefusal subclasses ValueError and the marker absorbs the real defect."
   - "Do not treat Robotics as merged; #8013 reverted #7908. Re-landing is ROB-W2."
   - "Do not edit WS-GMI-THEME-GRAPH.md from this seat while the Astra lane is live; it is observe-only until the Chairman rules."
-  - "Do not poll the CI watcher, run gh run watch, or re-bind a second watcher for the same head."
+  - "Do not poll a CI watcher or run gh run watch; do not stack a second watcher on a head while one is verifiably live (control_plane owns liveness); if none is live, bind exactly one."
 danger_areas:
   - "engine/theme_graph/store.py and templates/basket_detail.html.j2 are frozen by #7462 and #7669; no product code on #7780 / #7773 / #7462 / #7669."
   - "The macro repository is PUBLIC; never commit paid research payloads, credentials or private screenshots, and never create a new private store."
