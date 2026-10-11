@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T20:06:39.148452+00:00",
-  "count": 2828,
+  "generated_at": "2026-10-11T20:21:47.954819+00:00",
+  "count": 2829,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -403,6 +403,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ayiijj63mgv-f053ed",
+      "title": "US Weekly Kickstart The outlook for corporate equity supply and demand in 2027",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:06Z",
+      "summary_points": [
+        "Net Equity Supply Balance: $600B 2027 equity issuance offset by $1.7T S&P 500 buybacks (15% YoY growth), creating neutral net supply despite AI-driven follow-ons ($65B) and M&A.",
+        "AI Infrastructure Dominance: 45% of 2026 YTD follow-on issuance AI-related ($65B), reflecting capital allocation to AI infrastructure as a core tech sector driver.",
+        "Rate Sensitivity Threshold: 10-yr TIPS yield rises >1.5 std dev historically correlate with slowed IPOs/follow-ons; current yield spike (125bp YoY) pressures issuance.",
+        "Hyperscaler Structural Shift: $1.2T capex, $1.1T cash flow, and debt-fueled growth (35% debt-funded capex) imply cash flow exceeding capex in 2027-2028, limiting equity issuance incentive.",
+        "Debt vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
       "language": "en",
       "needs_metadata": false
     },
