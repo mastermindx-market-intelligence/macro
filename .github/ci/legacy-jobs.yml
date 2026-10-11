@@ -874,6 +874,7 @@ jobs:
       - "tests/fixtures/fundamental_forensics/aapl_10k_2025/**"
       - "tests/fixtures/fundamental_forensics/aapl_10q_2026q3/**"
       - "tests/test_company_theme_exposure.py"
+      - "tests/test_integrated_answer_clock.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
