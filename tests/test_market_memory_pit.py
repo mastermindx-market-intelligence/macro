@@ -539,7 +539,70 @@ def test_is_foreign_owned_directory_reads_real_ownership(tmp_path: Path) -> None
     regular = tmp_path / "regular.txt"
     regular.write_text("marker")
     assert pit._is_foreign_owned_directory(regular) is False
-    assert pit._is_foreign_owned_directory(Path("/")) is (os.getuid() != 0)
+    assert pit._is_foreign_owned_directory(Path("/")) is (os.geteuid() != 0)
+
+
+def test_owned_root_parent_is_still_fsynced(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "store"
+    assert pit._write_create_once(
+        root,
+        root / "objects" / "aa" / "first.json",
+        b'{"value":1}',
+        label="chain artifact",
+    )
+    real_sync = pit._directory_fsync
+    synced: list[Path] = []
+
+    def record(directory: Path) -> None:
+        real_sync(directory)
+        synced.append(directory)
+
+    monkeypatch.setattr(pit, "_directory_fsync", record)
+    assert pit._write_create_once(
+        root,
+        root / "objects" / "bb" / "second.json",
+        b'{"value":2}',
+        label="chain artifact",
+    )
+    assert root.parent in synced
+
+
+def test_new_root_whose_post_creation_parent_fsync_is_denied_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "store"
+    assert not root.exists()
+    real_sync = pit._directory_fsync
+    parent_syncs = 0
+
+    def deny_parent_after_first_sync(directory: Path) -> None:
+        nonlocal parent_syncs
+        if directory == root.parent:
+            parent_syncs += 1
+            if parent_syncs > 1:
+                raise OSError(
+                    errno.EACCES, os.strerror(errno.EACCES), str(root.parent)
+                )
+        real_sync(directory)
+
+    monkeypatch.setattr(pit, "_directory_fsync", deny_parent_after_first_sync)
+    monkeypatch.setattr(
+        pit, "_is_foreign_owned_directory", lambda path: path == root.parent
+    )
+    first = root / "objects" / "aa" / "first.json"
+    with pytest.raises(PermissionError):
+        pit._write_create_once(root, first, b'{"value":1}', label="chain artifact")
+    assert not first.exists()
+
+
+def test_is_foreign_owned_directory_uses_the_effective_uid(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    real = os.geteuid()
+    monkeypatch.setattr(pit.os, "geteuid", lambda: real + 1)
+    assert pit._is_foreign_owned_directory(tmp_path) is True
 
 
 def test_pinned_generation_rejects_rewritten_append_history(
