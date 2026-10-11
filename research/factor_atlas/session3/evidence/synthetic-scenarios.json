@@ -1,0 +1,322 @@
+{
+  "actual_market_data": false,
+  "full": {
+    "asof": "2026-10-08T22:00:00+00:00",
+    "authority": {
+      "display_only": true,
+      "position_sizing": false,
+      "prophet": false,
+      "publication": false
+    },
+    "correlation": {
+      "known_at": "2026-10-08T21:00:00+00:00",
+      "method": "scenario_assumption",
+      "observed_at": "2026-10-07T22:00:00+00:00",
+      "roots": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AMZN",
+        "GOOGL",
+        "META",
+        "TSLA"
+      ],
+      "sha256": "113e0c91dfac497e276f91f6024d681da3bee8a5d8e54e45df09fa3766af4412",
+      "source_ref": "fixture:correlation",
+      "valid_until": "2026-10-09T00:00:00+00:00"
+    },
+    "coverage": {
+      "count": 7,
+      "count_fraction": 1.0,
+      "excluded": [],
+      "largest_missing_weight": 0,
+      "missing_weight": 0,
+      "total_count": 7,
+      "weight": 1.0
+    },
+    "covered": {
+      "effective_names": 7.0,
+      "mean_iv": 0.39714285714285713,
+      "normalization": "eligible subset weights sum to one; not whole-basket risk",
+      "rms_iv": 0.4231852009294681,
+      "weighted_median_iv": 0.35
+    },
+    "definition": {
+      "known_at": "2026-10-07T22:00:00+00:00",
+      "sha256": "aecc5df7b4556753118c076e675923706fb7943e5e836a877174b0b3ba275a50",
+      "source_ref": "fixture:definition"
+    },
+    "factor_ref": "synthetic:mag7_example",
+    "headline_label": "covered-constituent annual IV statistic",
+    "headline_mean_iv": 0.39714285714285713,
+    "horizon": {
+      "basis": "ACT/365F",
+      "days": 30,
+      "unit": "calendar_day"
+    },
+    "hybrid_expected_move": 0.08029356258343473,
+    "hybrid_label": "modeled: constituent IV with supplied correlation",
+    "inputs": [
+      {
+        "iv": 0.3,
+        "known_at": "2026-10-08T21:00:00+00:00",
+        "method": "iv30_total_variance_act365f",
+        "observed_at": "2026-10-08T20:00:00+00:00",
+        "qualified": true,
+        "root": "AAPL",
+        "sha256": "eaaa0f8e82e8be84c87c1aa7634b4e0d17f126c2cbdee912f3189ee368333a21",
+        "source_ref": "fixture:AAPL",
+        "tenor_calendar_days": 30.0,
+        "valid_until": "2026-10-09T00:00:00+00:00",
+        "weight": 0.14285714285714285,
+        "year_basis": "ACT/365F"
+      },
+      {
+        "iv": 0.35,
+        "known_at": "2026-10-08T21:00:00+00:00",
+        "method": "iv30_total_variance_act365f",
+        "observed_at": "2026-10-08T20:00:00+00:00",
+        "qualified": true,
+        "root": "AMZN",
+        "sha256": "0af3e6e9df331db41a6fa7bcf2b5fbcccd62deab4cbaefb278599eff0dfe0cdd",
+        "source_ref": "fixture:AMZN",
+        "tenor_calendar_days": 30.0,
+        "valid_until": "2026-10-09T00:00:00+00:00",
+        "weight": 0.14285714285714285,
+        "year_basis": "ACT/365F"
+      },
+      {
+        "iv": 0.29,
+        "known_at": "2026-10-08T21:00:00+00:00",
+        "method": "iv30_total_variance_act365f",
+        "observed_at": "2026-10-08T20:00:00+00:00",
+        "qualified": true,
+        "root": "GOOGL",
+        "sha256": "7e47c0d5059e1440ccce3f811574cd779476f3a0b767b6ef95ff5e879f00c7fb",
+        "source_ref": "fixture:GOOGL",
+        "tenor_calendar_days": 30.0,
+        "valid_until": "2026-10-09T00:00:00+00:00",
+        "weight": 0.14285714285714285,
+        "year_basis": "ACT/365F"
+      },
+      {
+        "iv": 0.36,
+        "known_at": "2026-10-08T21:00:00+00:00",
+        "method": "iv30_total_variance_act365f",
+        "observed_at": "2026-10-08T20:00:00+00:00",
+        "qualified": true,
+        "root": "META",
+        "sha256": "2aa34f59ebcd4e8c879ac33073a561f843d3a3d64dddfd6211c225e9df6b1814",
+        "source_ref": "fixture:META",
+        "tenor_calendar_days": 30.0,
+        "valid_until": "2026-10-09T00:00:00+00:00",
+        "weight": 0.14285714285714285,
+        "year_basis": "ACT/365F"
+      },
+      {
+        "iv": 0.25,
+        "known_at": "2026-10-08T21:00:00+00:00",
+        "method": "iv30_total_variance_act365f",
+        "observed_at": "2026-10-08T20:00:00+00:00",
+        "qualified": true,
+        "root": "MSFT",
+        "sha256": "7b71ad572c051e52f3e18672e52a78c8824a6bd6f7b33bfc88169bbcb5a9f6ec",
+        "source_ref": "fixture:MSFT",
+        "tenor_calendar_days": 30.0,
+        "valid_until": "2026-10-09T00:00:00+00:00",
+        "weight": 0.14285714285714285,
+        "year_basis": "ACT/365F"
+      },
+      {
+        "iv": 0.55,
+        "known_at": "2026-10-08T21:00:00+00:00",
+        "method": "iv30_total_variance_act365f",
+        "observed_at": "2026-10-08T20:00:00+00:00",
+        "qualified": true,
+        "root": "NVDA",
+        "sha256": "3067892657bd8babb899266f65c3f3b7993602d635a16fd188e31455bae9deb5",
+        "source_ref": "fixture:NVDA",
+        "tenor_calendar_days": 30.0,
+        "valid_until": "2026-10-09T00:00:00+00:00",
+        "weight": 0.14285714285714285,
+        "year_basis": "ACT/365F"
+      },
+      {
+        "iv": 0.68,
+        "known_at": "2026-10-08T21:00:00+00:00",
+        "method": "iv30_total_variance_act365f",
+        "observed_at": "2026-10-08T20:00:00+00:00",
+        "qualified": true,
+        "root": "TSLA",
+        "sha256": "8be88187934e6bcc98c7a68a32278415efd9a78e0f907acbcabb5f6a572100e8",
+        "source_ref": "fixture:TSLA",
+        "tenor_calendar_days": 30.0,
+        "valid_until": "2026-10-09T00:00:00+00:00",
+        "weight": 0.14285714285714285,
+        "year_basis": "ACT/365F"
+      }
+    ],
+    "policy": "factor_options_coverage/v1",
+    "policy_parameters": {
+      "full_risk_requires_complete_coverage": true,
+      "max_missing_name_weight": 0.1,
+      "min_count_fraction": 0.8,
+      "min_names": 3,
+      "min_weight": 0.8,
+      "premium_dominance": 0.7
+    },
+    "premium": {
+      "complete": true,
+      "denominator": "reported constituent activity proxy; not whole-market coverage",
+      "root_count": 7,
+      "top_share_reported": 0.9,
+      "total_reported": 1000.0
+    },
+    "reasons": [],
+    "schema": "options_hub.factor_options/v1",
+    "warnings": [
+      "REPORTED_PREMIUM_SINGLE_NAME_DOMINATED"
+    ]
+  },
+  "mean_iv_as_move_for_comparison_only": 0.11385731841751204,
+  "producer_integration": false,
+  "schema": "factor_atlas.s3.synthetic_witness/v1",
+  "sparse": {
+    "missing_30_percent": {
+      "coverage": {
+        "count": 7,
+        "count_fraction": 0.7,
+        "excluded": [
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN07",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN08",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN09",
+            "weight": 0.1
+          }
+        ],
+        "largest_missing_weight": 0.1,
+        "missing_weight": 0.29999999999999993,
+        "total_count": 10,
+        "weight": 0.7000000000000001
+      },
+      "headline_mean_iv": null,
+      "hybrid_expected_move": null,
+      "reasons": [
+        "INCOMPLETE_IV_COVERAGE"
+      ]
+    },
+    "missing_40_percent": {
+      "coverage": {
+        "count": 6,
+        "count_fraction": 0.6,
+        "excluded": [
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN06",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN07",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN08",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN09",
+            "weight": 0.1
+          }
+        ],
+        "largest_missing_weight": 0.1,
+        "missing_weight": 0.3999999999999999,
+        "total_count": 10,
+        "weight": 0.6000000000000001
+      },
+      "headline_mean_iv": null,
+      "hybrid_expected_move": null,
+      "reasons": [
+        "INCOMPLETE_IV_COVERAGE"
+      ]
+    },
+    "missing_50_percent": {
+      "coverage": {
+        "count": 5,
+        "count_fraction": 0.5,
+        "excluded": [
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN05",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN06",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN07",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN08",
+            "weight": 0.1
+          },
+          {
+            "reasons": [
+              "IV_MISSING"
+            ],
+            "root": "SYN09",
+            "weight": 0.1
+          }
+        ],
+        "largest_missing_weight": 0.1,
+        "missing_weight": 0.5,
+        "total_count": 10,
+        "weight": 0.5
+      },
+      "headline_mean_iv": null,
+      "hybrid_expected_move": null,
+      "reasons": [
+        "INCOMPLETE_IV_COVERAGE"
+      ]
+    }
+  },
+  "synthetic": true
+}

@@ -1,0 +1,48 @@
+{
+  "base_sha": "773d6cc2f18fdbce5441e484abc16eb30d8ba3db",
+  "blocked_integration_test_append": "NOT_APPLIED; no replay",
+  "existing_store_preflight": {
+    "provider_requests": 0,
+    "reader": "engine.thetadata_store.resolve_thetadata_store",
+    "resolved": false
+  },
+  "mission_complete": false,
+  "native_definition": {
+    "current_observation_not_pit": true,
+    "qualified_option_values": 0,
+    "roots": 7
+  },
+  "observed_at": "2026-10-11T10:05:11.362259+00:00",
+  "operation_id": "factor-atlas-s3-native-20261011-c1",
+  "procedure_sha": "8e38a4ce8365fb3f0591d5729f228394b35d125d",
+  "production_proven": false,
+  "python": "3.12.13",
+  "schema": "factor_atlas.s3.native_verification/v1",
+  "source_hashes": {
+    "engine/options_basket_aggregation.py": "7558b7953535fe479baa7833db5a6ea3ffa3d94273de693aec73c2495d449a32",
+    "engine/options_basket_inputs.py": "a2adf675c927dec8873d5cab9e7886b40c09bf389b0e8e58d35e164006bb67da",
+    "research/factor_atlas/03_OPTIONS_POSITIONING_AND_FACTOR_RISK.md": "ee3fb750996e915fc80283b5d6fde77a7348b7fbe26548edf651b0ba4a030cb9",
+    "research/factor_atlas/session3/NATIVE_CONTINUATION.md": "70524bc10559a8877e364efce986546d64a7cfdb07d9e815b0b2306676905f79",
+    "research/factor_atlas/session3/evidence/native-definition-preflight.json": "bf00ce1c98ca2128210c43964552e745375ee417c10f52a62005eafa5e889a56",
+    "research/factor_atlas/session3/evidence/native-tests-py312.xml": "be2d52ffb72fb7395866a5047d62648e4cc6b739cbd79b4175a98c6e9addea6f",
+    "research/factor_atlas/session3/evidence/synthetic-scenarios.json": "147f59969647ab5888cdf74f6bbf0fb1422e587f998349dc80630e93a788890c",
+    "research/factor_atlas/session3/reproduce_native_scenarios.py": "202d4af1f7477059654f22caaabab229ebb820ca8cffe8e04a5cf23d2c5fce0c",
+    "tests/test_options_basket_aggregation.py": "9c9d020bd227fd190801be5d09dcb96b2c2d646b078abf814cfaad9a7a3f4cc4",
+    "tests/test_options_basket_inputs.py": "bfaf87080116f8b4524efc4be56c46d9d67ff69ae083182961c32a9b00fcf0bf"
+  },
+  "synthetic_replay": {
+    "actual_market_data": false,
+    "byte_identical": true,
+    "hash_seeds": [
+      1,
+      777
+    ]
+  },
+  "test_command": "python3.12 -B -m pytest -q tests/test_options_basket_aggregation.py tests/test_options_basket_inputs.py --basetemp=<unique native temporary directory> --junitxml=research/factor_atlas/session3/evidence/native-tests-py312.xml",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 85
+  }
+}
