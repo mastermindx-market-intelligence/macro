@@ -1,0 +1,43 @@
+{
+  "evidence": {
+    "after_sha256": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351",
+    "before_sha256": "e27b40119ca438c71d81fe89e5cd2cf5f87451cb454b7febc9dbe6435d33ebbd",
+    "input_row_n": 5,
+    "lost_event_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "lost_event_present_after_write": false,
+    "native_writer_row_counts": [
+      4
+    ],
+    "output_row_n": 4,
+    "reverse_order_refusal": "spool_regression"
+  },
+  "execution": {
+    "lab_root": "/private/tmp/mmx-cn-integration-lab-20261009-og849byq",
+    "out": "/private/tmp/mmx-cn-integration-review-20261010-r0xd07ip",
+    "pandas": "3.0.5",
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "source_root": "/private/tmp/mmx-cn-integration-lab-20261009-og849byq/source"
+  },
+  "native_source_sha256": {
+    "engine/prophet_live/cn_clock.py": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3",
+    "engine/prophet_live/cn_reconcile.py": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb",
+    "engine/prophet_live/interval.py": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3",
+    "engine/prophet_live/live_states.py": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012",
+    "engine/prophet_live/r2io.py": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271",
+    "lib/cn_calendar.py": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c",
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+    "scripts/reconcile_cn_live.py": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+  },
+  "network_disabled": true,
+  "schema": "cn_integration_native_parquet_review_v1",
+  "script_sha256": "8e04205511a6b0c180bd6dd6a6f96ba7d6b8a24914881583d0c5dd25545f0827",
+  "source_and_original_lab_unchanged": true,
+  "status": "CONFIRMED_DATA_LOSS_COUNTEREXAMPLE",
+  "study_source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "subject_inputs_sha256": {
+    "contract_prototype.py": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0",
+    "results/integration_fixture.json": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545",
+    "results/integration_results.json": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128"
+  },
+  "synthetic_fixture_only": true
+}

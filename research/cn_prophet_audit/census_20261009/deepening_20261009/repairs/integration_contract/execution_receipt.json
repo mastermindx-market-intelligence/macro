@@ -1,0 +1,42 @@
+{
+  "schema": "cn-integration-repair-execution-receipt/v1",
+  "status": "PASS",
+  "study_source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "scope": "Offline synthetic integration, real native gates/driver/Parquet; no vendor or production calls",
+  "host_root": "/tmp/mmx-cn-integration-lab-20261010-repair-nndsds62",
+  "isolated_source_root": "/tmp/mmx-cn-integration-lab-zlb_ciz5/source",
+  "command": "python3 -B /tmp/mmx-cn-integration-lab-20261010-repair-nndsds62/run_lab.py --repo /Users/chriswong/Documents/Cluade/macro-main --source-root /tmp/mmx-cn-integration-lab-zlb_ciz5/source --out /tmp/mmx-cn-integration-lab-20261010-repair-nndsds62/results_v2",
+  "pid": 72456,
+  "exit_code": 0,
+  "reported_wall_seconds": 42.48,
+  "tool_start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Process started with PID 72456 (shell: /bin/zsh)\nInitial output:\n\n⏳ Process is running. Use read_process_output to get more output."
+      }
+    ],
+    "isError": false
+  },
+  "tool_terminal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"status\": \"PASS\", \"counts\": {\"prototype_checks\": 63, \"hostile_checks\": 73}, \"real_probe\": {\"tickers\": [\"002460.SZ\", \"603799.SS\", \"300750.SZ\"], \"gate_calls\": 60, \"edges_checked\": 6}, \"spool_objects\": 4, \"ledger_rows\": 4, \"outputs\": {\"parquet_receipts.json\": {\"bytes\": 4934, \"sha256\": \"922d97c50a56aafc7a2d86a2363f78b87b86c70c456882861b8dee7062596bb7\"}, \"native_probe_debug.json\": {\"bytes\": 4058, \"sha256\": \"677150882d8958e11913bfc1c1616d2074485c7854218c55049c673ac62654ec\"}, \"unreadable_ledger_guard.parquet\": {\"bytes\": 37, \"sha256\": \"9a170269a539970d5dcafa39b976ee7034c8263bdbb21f069997911430ac485a\"}, \"synthetic_settlement_board.json.gz\": {\"bytes\": 700097, \"sha256\": \"18bc127682095a27642556b7082c28ea33038b1f83898335cb55847760240c45\"}, \"synthetic_forward.parquet\": {\"bytes\": 27992, \"sha256\": \"5fe4575776d110f78d9698f039cbcdd4a3f1901ef0a07156cbedb0f35d199660\"}, \"integration_results.json\": {\"bytes\": 64069, \"sha256\": \"d877f157bcfc8c8c74359dd3cdff1bf253724bfc6538cb7058f7385504b2f455\"}, \"execution.log\": {\"bytes\": 2237, \"sha256\": \"6056547d9202e47e01b3f7265df999e884745330ec79eb39660559eb8b4fe013\"}, \"repair_cases.json\": {\"bytes\": 231639, \"sha256\": \"ab57d30829ce31da920b90061c3190a58d42aba731bf1b044c2382f7da1e6601\"}, \"integration_fixture.json\": {\"bytes\": 34633, \"sha256\": \"c9dfccae6b07b9c045a49de17b8f1318f1ac0577c116099389a960bcf00efcc7\"}}}\n\n✅ Process completed with exit code 0 (runtime: 42.48s)"
+      }
+    ],
+    "isError": false
+  },
+  "prior_draft_run": {
+    "pid": 46886,
+    "exit_code": 0,
+    "reported_wall_seconds": 31.16,
+    "checks": 135,
+    "contract_sha256": "d633f0baeb8d506053387c15f5712ebd49c4b6b9b392a43e8e143e3c3226ee4f",
+    "results_sha256": "5217fea8ccf8a6320b0821b8f6bae9362aa25e610d8c47c70e88226f5340c4c7",
+    "status": "Superseded by full-precision timestamp repair and fractional-second positive control; independent draft evidence retained in separate review"
+  },
+  "transport": "22 retained result files verified against their exact host hashes; uncompressed duplicate canonical board is reconstructible from retained gzip",
+  "production_source_data_runtime_changes": false,
+  "natural_process_proof": false
+}

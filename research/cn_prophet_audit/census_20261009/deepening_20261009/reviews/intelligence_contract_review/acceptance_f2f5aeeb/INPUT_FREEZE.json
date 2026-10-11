@@ -1,0 +1,39 @@
+{
+  "initial_review_manifest_sha256": "0105976d7a771f47cb824e311a2f9dc221ca14f9c0725cac4bc322ec35832939",
+  "initial_review_payload_sha256": {
+    "CHALLENGE_RESULTS.json": "b70ff1a97c0c576160dbab099b8d26f08b0da02aaeed533b483771ba28fc8ed4",
+    "REVIEW.md": "369f32e88ce6afdc9e89a010af64ad1bdcd459cd77ddaf5acc4c460bacc90287",
+    "REVIEW_DESIGN.md": "dc3a860cb83497f298714ee9932b24afc79e33cb6326a34b2946cb3990fa5457",
+    "challenge_intelligence_contract.py": "41e7073b9586c59a72dc25bb9c6d59350e5ae71ffec27add2ba03f9c5188474b",
+    "reviewed_source/DESIGN.md": "6432eb2f25be89f6fc77b6410dc398e34abf5263d031f9e4aa460b0639a0cde4",
+    "reviewed_source/analyst_duplicates.json": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+    "reviewed_source/contract_lab.py": "377dde6af13c890d5b694769408ceaea2515e2a0b4018998128eeb86e150d559",
+    "reviewed_source/results.json": "8389a41b28453dae511f46607d783b8aa41986e97380adb4e056bee5fcf9c2cb",
+    "reviewed_source/source_input.json": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+  },
+  "prior_repaired_acceptance_directory": "acceptance_83944fe1",
+  "prior_repaired_acceptance_files_sha256": {
+    "ACCEPTANCE.md": "ed9de67740d37b6363526c4004a4ebc11624eab23ecc66447b327611236ab2ef",
+    "ACCEPTANCE_DESIGN.md": "47f6278a64882ab08a42be68091145b59831f431673f1d83681fe27fc4a672ad",
+    "ACCEPTANCE_RESULTS.json": "8db32ace7d81d126a0009fe07e74bd688a3e0b6730d777b76b728fed9ecb3c5d",
+    "INPUT_FREEZE.json": "b0d2bcaa667ccc255582f44c188a2baac0a0310a632f4db3d9d0effb054ca066",
+    "MANIFEST.json": "5099588bb3a866eb2a311e9d34f29d1c459fb08df6d6d8578680998606c8bc51",
+    "accept_repaired_contract.py": "5728da4c95850fd650d79181aff007141f671154af108670ae95a83b947e64cb",
+    "reviewed_source/DESIGN.md": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58",
+    "reviewed_source/analyst_duplicates.json": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+    "reviewed_source/contract_lab.py": "83944fe1d2090012203701cbd6f79acfa77555b3d7457cae351080eaddc38fb2",
+    "reviewed_source/results.json": "8b68899dd005ab869fba204d5eb1949bf2739de30e3bb75f8ed5d5188f1e1ebf",
+    "reviewed_source/source_input.json": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+  },
+  "recorded_utc_date": "2026-10-10",
+  "repaired_files_sha256": {
+    "DESIGN.md": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58",
+    "analyst_duplicates.json": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+    "contract_lab.py": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+    "results.json": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97",
+    "source_input.json": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+  },
+  "schema": "intelligence_final_acceptance_freeze_v1",
+  "scope": "Separate final acceptance after closing identified metadata/cadence type errors; no broad new fuzzing.",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}

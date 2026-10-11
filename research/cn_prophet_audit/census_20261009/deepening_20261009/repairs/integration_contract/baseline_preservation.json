@@ -1,0 +1,142 @@
+{
+  "files": [
+    {
+      "bytes": 21087,
+      "path": "integration_lab/INTEGRATION_DECISIONS.md",
+      "sha256": "4fd3eccc06dd6d85ffb69b37a15e6ff8c5a7c17cabdcb9e4f9877865a57bcdf0"
+    },
+    {
+      "bytes": 1885,
+      "path": "integration_lab/INTEGRATION_MANIFEST.json",
+      "sha256": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6"
+    },
+    {
+      "bytes": 24665,
+      "path": "integration_lab/contract_prototype.py",
+      "sha256": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0"
+    },
+    {
+      "bytes": 2207,
+      "path": "integration_lab/execution.log",
+      "sha256": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469"
+    },
+    {
+      "bytes": 3177,
+      "path": "integration_lab/execution_receipt.json",
+      "sha256": "98f31902f3fb9dbbab125ffa570c9bba57133d0e33f15140fc83da69f9f07ff8"
+    },
+    {
+      "bytes": 27278,
+      "path": "integration_lab/integration_fixture.json",
+      "sha256": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545"
+    },
+    {
+      "bytes": 43009,
+      "path": "integration_lab/integration_results.json",
+      "sha256": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128"
+    },
+    {
+      "bytes": 32343,
+      "path": "integration_lab/run_lab.py",
+      "sha256": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458"
+    },
+    {
+      "bytes": 2818,
+      "path": "reviews/integration_review/MANIFEST.json",
+      "sha256": "78fcfa3c271d214c751a40220dc92e44cec67409eb49fbe7421b9c22a32698b6"
+    },
+    {
+      "bytes": 14847,
+      "path": "reviews/integration_review/REVIEW.md",
+      "sha256": "25fc1ad2aa322e3ef707a1abc690794e6afc5112d8d20043bdf86c52e68187ef"
+    },
+    {
+      "bytes": 22630,
+      "path": "reviews/integration_review/REVIEW_RESULTS.json",
+      "sha256": "f5503340395f1fd857b00ffb45441b2d5947d65e85248db98047237bb554bf4c"
+    },
+    {
+      "bytes": 174543,
+      "path": "reviews/integration_review/native_source_bundle.json",
+      "sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829"
+    },
+    {
+      "bytes": 23732,
+      "path": "reviews/integration_review/parquet_cases/duplicate_daily_keys.before.parquet",
+      "sha256": "e27b40119ca438c71d81fe89e5cd2cf5f87451cb454b7febc9dbe6435d33ebbd"
+    },
+    {
+      "bytes": 23696,
+      "path": "reviews/integration_review/parquet_cases/duplicate_daily_keys.parquet",
+      "sha256": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351"
+    },
+    {
+      "bytes": 6229,
+      "path": "reviews/integration_review/parquet_counterexample.py",
+      "sha256": "8e04205511a6b0c180bd6dd6a6f96ba7d6b8a24914881583d0c5dd25545f0827"
+    },
+    {
+      "bytes": 2417,
+      "path": "reviews/integration_review/parquet_review_receipt.json",
+      "sha256": "a70ad278ac1abddd6f27841da68fe50830b1219940f1fc0ccc9ef6075df6d0a9"
+    },
+    {
+      "bytes": 26548,
+      "path": "reviews/integration_review/review_integration.py",
+      "sha256": "d858c3fec1adeef77ac1835ec8a4241d3c61221038618c32ae289caf7a068699"
+    },
+    {
+      "bytes": 12489,
+      "path": "reviews/vintage_review/VINTAGE_INDEPENDENT_REVIEW.md",
+      "sha256": "e7ad8ac0a3aeec15183c542ce8d7f7ba691b19404730e552e28df99f7bc8160b"
+    },
+    {
+      "bytes": 2236,
+      "path": "reviews/vintage_review/VINTAGE_REVIEW_MANIFEST.json",
+      "sha256": "be408edcd861d6cbe3d82adc7108638eedd3a80bc83720291cb34860d6cb946c"
+    },
+    {
+      "bytes": 6386,
+      "path": "reviews/vintage_review/pinned_china_prices.py",
+      "sha256": "fddb468e6cb2c6a1bf86235c337d6ad3b52cb34b0702510f3352c91b3e9a3b5a"
+    },
+    {
+      "bytes": 3877,
+      "path": "reviews/vintage_review/producer_benchmark_replay.json",
+      "sha256": "d8520a68e6fded2c3d1c87a10cecd782cb08bf078a4147867a6eade9946dc7d4"
+    },
+    {
+      "bytes": 5629,
+      "path": "reviews/vintage_review/producer_contract_replay.json",
+      "sha256": "6d1c2e671527006b4bb243525f40676d8de0d99196ea2f7867f405475d1d67f0"
+    },
+    {
+      "bytes": 339,
+      "path": "reviews/vintage_review/review_execution.log",
+      "sha256": "03f0be068165ca1c4f1f6e999b7af5064d364f54884ff0f6b53f9924751c31f7"
+    },
+    {
+      "bytes": 706,
+      "path": "reviews/vintage_review/review_execution_receipt.json",
+      "sha256": "34f8b750d6fad5b52082a802e6474a087021d970afced1f0a13ebf7c85d35178"
+    },
+    {
+      "bytes": 27314,
+      "path": "reviews/vintage_review/review_vintage.py",
+      "sha256": "2b7031b6d0b454eadf304c0173e8b72aa54219d9962b9524f92d668cd58834f2"
+    },
+    {
+      "bytes": 3916,
+      "path": "reviews/vintage_review/reviewed_input_identities.json",
+      "sha256": "094791f7e82086b8fe8319cf81ef680e052d6a982223cb4d0912098865f7ca63"
+    },
+    {
+      "bytes": 19970,
+      "path": "reviews/vintage_review/vintage_review_results.json",
+      "sha256": "a9d9a47f2e7524237e1a1b6a42717ea7705c57f6597c44cd11f3d11a2efa5c01"
+    }
+  ],
+  "files_unchanged": 27,
+  "schema": "cn-integration-repair-baseline-preservation/v1",
+  "status": "PASS"
+}

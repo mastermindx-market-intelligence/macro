@@ -1,0 +1,128 @@
+{
+  "artifact_built_at": "2026-10-12T02:00:00Z",
+  "contract_sha256": "d633f0baeb8d506053387c15f5712ebd49c4b6b9b392a43e8e143e3c3226ee4f",
+  "event_timestamps": [
+    "2026-10-12T02:00:00Z",
+    "2026-10-12T02:00:00Z",
+    "2026-10-12T02:00:00Z"
+  ],
+  "ingestion_result": {
+    "exception_class": "Refused",
+    "outcome": "exception",
+    "reason": "future_quote_source_receipt"
+  },
+  "limits": [
+    "This uses realistic fractional time through the normal native evaluator, with explicitly synthetic quote bytes.",
+    "No event or envelope timestamp was mutated by this probe.",
+    "No natural production occurrence, genuine vendor source or market execution is certified."
+  ],
+  "required": "Retain the supplied evaluation instant in event/envelope timestamps; keep strict source-before-event validation.",
+  "script_sha256": "ca331ede537e64b4f9e51e31251ac75d403106b233781c4b1107badaed30c68e",
+  "source_sha256": {
+    "engine/prophet_live/cn_clock.py": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3",
+    "engine/prophet_live/cn_reconcile.py": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb",
+    "engine/prophet_live/cn_states.py": "4a6f64dada3aaa47dfd3c14e881c2b0d353d6b3b5addbd090b5166ba01b51880",
+    "engine/prophet_live/interval.py": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3",
+    "engine/prophet_live/live_states.py": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012",
+    "engine/prophet_live/r2io.py": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271",
+    "lib/cn_calendar.py": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c",
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+    "scripts/reconcile_cn_live.py": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+  },
+  "status": "NORMAL_NATIVE_PRECISION_REGRESSION_CONFIRMED",
+  "supplied_observation_at": "2026-10-12T02:00:00.250000+00:00",
+  "unchanged_native_event_envelope": {
+    "built_at": "2026-10-12T02:00:00Z",
+    "close_board": null,
+    "evaluation_policy": {
+      "delay_floor_min": 0.0,
+      "future_clock_allowance_seconds": 60,
+      "quote_max_age_min": 10.0
+    },
+    "events": [
+      {
+        "entered": "board",
+        "event_id": "62d17c9a22b33b9c654b58dc29f42b2139d3adbafc57c666d2aa2390038e162b",
+        "from": null,
+        "kind": "forming",
+        "passes": 1,
+        "price": 46.1029,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:00:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+          "recorded_at": "2026-10-12T02:00:00.250000+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:00:00Z"
+      },
+      {
+        "entered": "cross",
+        "event_id": "fb07136de91cb4eabcf6cba275a6a783198deaefe3b3995307d9b9b47ab94165",
+        "from": null,
+        "kind": "crossing_unconfirmed",
+        "passes": 1,
+        "price": 349.1875,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:00:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "ccc6f43c7c0297f70c715a4c57ee15ca6b72228164ae04ac1530ed6446340531",
+          "recorded_at": "2026-10-12T02:00:00.250000+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "300750.SZ",
+        "ts": "2026-10-12T02:00:00Z"
+      },
+      {
+        "entered": "board",
+        "event_id": "f266f70bfa6c3ca7882c26ff066d5c5029720cfcb1110583035a57925fdf3bfc",
+        "from": null,
+        "kind": "forming",
+        "passes": 1,
+        "price": 36.0955,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:00:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "ff2f6633da7c39ed7889b7b48784f0d12cb7a140931aa6fd2bfea548ff165d3b",
+          "recorded_at": "2026-10-12T02:00:00.250000+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "603799.SS",
+        "ts": "2026-10-12T02:00:00Z"
+      }
+    ],
+    "pack_as_of": "2026-10-09",
+    "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+    "schema": "cn_prophet_live.events/research-v3",
+    "session": "2026-10-12",
+    "source_board": {
+      "artifact_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "as_of": "2026-10-09",
+      "board_definition": "cn_prophet_v4",
+      "effective_order_basis": "cn_prophet_v3_score",
+      "path": "site/factordata/china_standouts.json"
+    }
+  }
+}

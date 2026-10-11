@@ -1,0 +1,1212 @@
+{
+  "base_pack": {
+    "as_of": "2026-10-09",
+    "band_pct": 15.0,
+    "bisect_iters": 8,
+    "built_at": "2026-10-09T12:00:00Z",
+    "grid_points": 9,
+    "market": "CN",
+    "meta": {
+      "armed_n": 3,
+      "band_rule": "per_class_daily_limit",
+      "board_probe_share": 0.4,
+      "build_seconds": 10.6,
+      "by_class": {
+        "board": {
+          "armed_n": 2,
+          "candidates_n": 2,
+          "probe_seconds": 0.0,
+          "probed_n": 2
+        },
+        "cross": {
+          "armed_n": 1,
+          "candidates_n": 1,
+          "probe_seconds": 0.0,
+          "probed_n": 1
+        }
+      },
+      "calendar": "cn",
+      "edge_mismatches": [],
+      "edges_checked": 6,
+      "gate_calls": 60,
+      "price_adjustment_counts": {
+        "unknown": 3
+      },
+      "probe_center_flips": 0,
+      "probe_order": "buyable__eligible__bars_to_cross__hist_d2__ticker",
+      "probe_scope": "two_sided_for_buyable__up_only_for_rest",
+      "probed_n": 3,
+      "skipped": {},
+      "states": {
+        "buyable": 2,
+        "eligible_t4": 1
+      },
+      "t2_latch": "CN",
+      "universe_n": 3,
+      "unrounded_edges": 0,
+      "wanted_probe_n": 3
+    },
+    "names": {
+      "002460.SZ": {
+        "as_of_close": 45.47,
+        "band_hi_px": 50.0171,
+        "band_lo_px": 40.9229,
+        "band_pct": 10.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": true,
+        "fade_hi_px": null,
+        "fade_px": 42.1886,
+        "frozen": {
+          "lane": "featured",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "main",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 10.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "002460.SZ"
+          },
+          "rank": 1,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.8545551890548774,
+          "reversal_member": false,
+          "score": 90.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 1
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": true,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "buyable",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      },
+      "300750.SZ": {
+        "as_of_close": 297.75,
+        "band_hi_px": 357.3,
+        "band_lo_px": 0.0,
+        "band_pct": 20.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": false,
+        "fade_hi_px": null,
+        "frozen": {
+          "lane": "forming",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "chinext",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 20.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "300750.SZ"
+          },
+          "rank": 162,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.5631071264197222,
+          "reversal_member": false,
+          "score": 54.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 162
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": false,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "eligible_t4",
+        "tier": "anticipation",
+        "tier_cascade": null,
+        "trigger_px": 341.075
+      },
+      "603799.SS": {
+        "as_of_close": 35.6,
+        "band_hi_px": 39.1601,
+        "band_lo_px": 32.0399,
+        "band_pct": 10.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": true,
+        "fade_hi_px": null,
+        "fade_px": 33.0309,
+        "frozen": {
+          "lane": "featured",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "main",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 10.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "603799.SS"
+          },
+          "rank": 2,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.6947872223679032,
+          "reversal_member": false,
+          "score": 88.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 2
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": true,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "buyable",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      }
+    },
+    "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+    "price_adjustment": "split_and_dividend_adjusted",
+    "schema": "cn_prophet_live.armed/v1",
+    "source_board": {
+      "artifact_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "as_of": "2026-10-09",
+      "board_definition": "cn_prophet_v4",
+      "effective_order_basis": "cn_prophet_v3_score",
+      "path": "site/factordata/china_standouts.json"
+    }
+  },
+  "canonical_board": {
+    "as_of": "2026-10-12",
+    "board_definition": "cn_prophet_v4",
+    "buy": [
+      {
+        "ticker": "002460.SZ"
+      }
+    ],
+    "forming": [
+      {
+        "ticker": "300750.SZ"
+      }
+    ],
+    "late_or_unfillable": [],
+    "more_actionable": [],
+    "research_fixture": "INDEPENDENT_INTEGRATION_REPAIR_REVIEW_ONLY"
+  },
+  "canonical_board_utf8": "{\"as_of\":\"2026-10-12\",\"board_definition\":\"cn_prophet_v4\",\"buy\":[{\"ticker\":\"002460.SZ\"}],\"forming\":[{\"ticker\":\"300750.SZ\"}],\"late_or_unfillable\":[],\"more_actionable\":[],\"research_fixture\":\"INDEPENDENT_INTEGRATION_REPAIR_REVIEW_ONLY\"}",
+  "events": {
+    "live_flow/cn_prophet_live_events/2026-10-12/020000-0944301a08961fb33bfc9bb5c8a5a266f9190717962e728b292bd235a29e26c9.json": {
+      "built_at": "2026-10-12T02:00:00Z",
+      "close_board": null,
+      "evaluation_policy": {
+        "delay_floor_min": 0.0,
+        "future_clock_allowance_seconds": 60,
+        "quote_max_age_min": 10.0
+      },
+      "events": [
+        {
+          "entered": "board",
+          "event_id": "dc6824e3affd26a9d95d119806834c53b47f63c06d3624c1446c37056543bc1e",
+          "from": null,
+          "kind": "forming",
+          "passes": 1,
+          "price": 46.1029,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_age_min": 0.0,
+          "quote_source": "yahoo",
+          "quote_ts": "2026-10-12T02:00:00+00:00",
+          "session_phase": "morning",
+          "source_evidence": {
+            "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+            "origin": "SYNTHETIC_RESEARCH_ONLY",
+            "payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+            "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+            "quote_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+            "recorded_at": "2026-10-12T02:00:00+00:00",
+            "schema": "cn_prophet_live.quote_source/research-v1"
+          },
+          "ticker": "002460.SZ",
+          "ts": "2026-10-12T02:00:00Z"
+        },
+        {
+          "entered": "cross",
+          "event_id": "4b6e8e2120e658a30db16741516a83e43bc64e8c1a6dbf6dc3b9d6f0a6f5097c",
+          "from": null,
+          "kind": "crossing_unconfirmed",
+          "passes": 1,
+          "price": 349.1875,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_age_min": 0.0,
+          "quote_source": "yahoo",
+          "quote_ts": "2026-10-12T02:00:00+00:00",
+          "session_phase": "morning",
+          "source_evidence": {
+            "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+            "origin": "SYNTHETIC_RESEARCH_ONLY",
+            "payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+            "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+            "quote_record_sha256": "ccc6f43c7c0297f70c715a4c57ee15ca6b72228164ae04ac1530ed6446340531",
+            "recorded_at": "2026-10-12T02:00:00+00:00",
+            "schema": "cn_prophet_live.quote_source/research-v1"
+          },
+          "ticker": "300750.SZ",
+          "ts": "2026-10-12T02:00:00Z"
+        },
+        {
+          "entered": "board",
+          "event_id": "aac610a05ceeb7f4b4dde5c8d50305cd9ebdabff6c3211d6e903d2618d37ad86",
+          "from": null,
+          "kind": "forming",
+          "passes": 1,
+          "price": 36.0955,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_age_min": 0.0,
+          "quote_source": "yahoo",
+          "quote_ts": "2026-10-12T02:00:00+00:00",
+          "session_phase": "morning",
+          "source_evidence": {
+            "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+            "origin": "SYNTHETIC_RESEARCH_ONLY",
+            "payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+            "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+            "quote_record_sha256": "ff2f6633da7c39ed7889b7b48784f0d12cb7a140931aa6fd2bfea548ff165d3b",
+            "recorded_at": "2026-10-12T02:00:00+00:00",
+            "schema": "cn_prophet_live.quote_source/research-v1"
+          },
+          "ticker": "603799.SS",
+          "ts": "2026-10-12T02:00:00Z"
+        }
+      ],
+      "pack_as_of": "2026-10-09",
+      "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "schema": "cn_prophet_live.events/research-v3",
+      "session": "2026-10-12",
+      "source_board": {
+        "artifact_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "as_of": "2026-10-09",
+        "board_definition": "cn_prophet_v4",
+        "effective_order_basis": "cn_prophet_v3_score",
+        "path": "site/factordata/china_standouts.json"
+      }
+    },
+    "live_flow/cn_prophet_live_events/2026-10-12/020500-1846aaa216a0ebbb9d44739afbd102be452f4d8d66304825b4e309a349dfb5f1.json": {
+      "built_at": "2026-10-12T02:05:00Z",
+      "close_board": null,
+      "evaluation_policy": {
+        "delay_floor_min": 0.0,
+        "future_clock_allowance_seconds": 60,
+        "quote_max_age_min": 10.0
+      },
+      "events": [
+        {
+          "entered": "cross",
+          "event_id": "16c8e6384d845fb95c0b795cdd8146c702db5989cd65f8ffaa2660a25c5fd6fa",
+          "from": "near",
+          "kind": "forming",
+          "passes": 2,
+          "price": 349.1875,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_age_min": 0.0,
+          "quote_source": "yahoo",
+          "quote_ts": "2026-10-12T02:05:00+00:00",
+          "session_phase": "morning",
+          "source_evidence": {
+            "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+            "origin": "SYNTHETIC_RESEARCH_ONLY",
+            "payload_sha256": "91dc1e3c148af21a23a808a64336698e0390700211f082567d51e9afcfa38079",
+            "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770700}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770700}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770700}}],\"symbol\":\"603799.SS\"}]}}",
+            "quote_record_sha256": "b2d70cb18b4e0a7601af0ee58ee6771f12e0731c39222c822230be6a1ab0b064",
+            "recorded_at": "2026-10-12T02:05:00+00:00",
+            "schema": "cn_prophet_live.quote_source/research-v1"
+          },
+          "ticker": "300750.SZ",
+          "ts": "2026-10-12T02:05:00Z"
+        }
+      ],
+      "pack_as_of": "2026-10-09",
+      "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "schema": "cn_prophet_live.events/research-v3",
+      "session": "2026-10-12",
+      "source_board": {
+        "artifact_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "as_of": "2026-10-09",
+        "board_definition": "cn_prophet_v4",
+        "effective_order_basis": "cn_prophet_v3_score",
+        "path": "site/factordata/china_standouts.json"
+      }
+    },
+    "live_flow/cn_prophet_live_events/2026-10-12/070100-5c8306367a4f8b81103074d920c7d740f71e0e3bb76801de0766a61512e0145c.json": {
+      "built_at": "2026-10-12T07:01:00Z",
+      "close_board": {
+        "close_coverage_pct": 100.0,
+        "close_pending": false,
+        "first_close_board_at": "2026-10-12T07:01:00Z",
+        "lanes": {
+          "featured": [
+            {
+              "frozen": {
+                "lane": "featured",
+                "microstructure": {
+                  "as_of": "2026-10-09",
+                  "board": "main",
+                  "chase_veto": {
+                    "flag": false,
+                    "reason": null
+                  },
+                  "fillable": true,
+                  "limit_state": "open",
+                  "limit_width": 10.0,
+                  "t_plus_one_risk": "normal",
+                  "ticker": "002460.SZ"
+                },
+                "rank": 1,
+                "relay": {
+                  "count_3d": 0,
+                  "position": "early"
+                },
+                "rev_z": 0.8545551890548774,
+                "reversal_member": false,
+                "score": 90.0,
+                "score_basis": "cn_prophet_v3_score",
+                "score_rank": 1
+              },
+              "market_status": "trading",
+              "price": 46.1029,
+              "revision": "close_provisional",
+              "state": "forming",
+              "ticker": "002460.SZ"
+            },
+            {
+              "frozen": {
+                "lane": "featured",
+                "microstructure": {
+                  "as_of": "2026-10-09",
+                  "board": "main",
+                  "chase_veto": {
+                    "flag": false,
+                    "reason": null
+                  },
+                  "fillable": true,
+                  "limit_state": "open",
+                  "limit_width": 10.0,
+                  "t_plus_one_risk": "normal",
+                  "ticker": "603799.SS"
+                },
+                "rank": 2,
+                "relay": {
+                  "count_3d": 0,
+                  "position": "early"
+                },
+                "rev_z": 0.6947872223679032,
+                "reversal_member": false,
+                "score": 88.0,
+                "score_basis": "cn_prophet_v3_score",
+                "score_rank": 2
+              },
+              "market_status": "trading",
+              "price": 36.0955,
+              "revision": "close_provisional",
+              "state": "forming",
+              "ticker": "603799.SS"
+            }
+          ],
+          "forming": [
+            {
+              "frozen": {
+                "lane": "forming",
+                "microstructure": {
+                  "as_of": "2026-10-09",
+                  "board": "chinext",
+                  "chase_veto": {
+                    "flag": false,
+                    "reason": null
+                  },
+                  "fillable": true,
+                  "limit_state": "open",
+                  "limit_width": 20.0,
+                  "t_plus_one_risk": "normal",
+                  "ticker": "300750.SZ"
+                },
+                "rank": 162,
+                "relay": {
+                  "count_3d": 0,
+                  "position": "early"
+                },
+                "rev_z": 0.5631071264197222,
+                "reversal_member": false,
+                "score": 54.0,
+                "score_basis": "cn_prophet_v3_score",
+                "score_rank": 162
+              },
+              "market_status": "trading",
+              "price": 349.1875,
+              "revision": "close_provisional",
+              "state": "forming",
+              "ticker": "300750.SZ"
+            }
+          ]
+        },
+        "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "revision": "close_provisional",
+        "session": "2026-10-12"
+      },
+      "evaluation_policy": {
+        "delay_floor_min": 0.0,
+        "future_clock_allowance_seconds": 60,
+        "quote_max_age_min": 10.0
+      },
+      "events": [],
+      "pack_as_of": "2026-10-09",
+      "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "schema": "cn_prophet_live.events/research-v3",
+      "session": "2026-10-12",
+      "source_board": {
+        "artifact_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "as_of": "2026-10-09",
+        "board_definition": "cn_prophet_v4",
+        "effective_order_basis": "cn_prophet_v3_score",
+        "path": "site/factordata/china_standouts.json"
+      }
+    },
+    "live_flow/cn_prophet_live_events/2026-10-12/070600-7d7015ba4304fdfd77232609708613ead7a24a73bb3ebe60f7e7ffeb1c491dc2.json": {
+      "built_at": "2026-10-12T07:06:00Z",
+      "close_board": {
+        "close_coverage_pct": 100.0,
+        "close_pending": false,
+        "first_close_board_at": "2026-10-12T07:06:00Z",
+        "lanes": {
+          "featured": [
+            {
+              "frozen": {
+                "lane": "featured",
+                "microstructure": {
+                  "as_of": "2026-10-09",
+                  "board": "main",
+                  "chase_veto": {
+                    "flag": false,
+                    "reason": null
+                  },
+                  "fillable": true,
+                  "limit_state": "open",
+                  "limit_width": 10.0,
+                  "t_plus_one_risk": "normal",
+                  "ticker": "002460.SZ"
+                },
+                "rank": 1,
+                "relay": {
+                  "count_3d": 0,
+                  "position": "early"
+                },
+                "rev_z": 0.8545551890548774,
+                "reversal_member": false,
+                "score": 90.0,
+                "score_basis": "cn_prophet_v3_score",
+                "score_rank": 1
+              },
+              "market_status": "trading",
+              "price": 46.1029,
+              "revision": "close_provisional",
+              "state": "forming",
+              "ticker": "002460.SZ"
+            },
+            {
+              "frozen": {
+                "lane": "featured",
+                "microstructure": {
+                  "as_of": "2026-10-09",
+                  "board": "main",
+                  "chase_veto": {
+                    "flag": false,
+                    "reason": null
+                  },
+                  "fillable": true,
+                  "limit_state": "open",
+                  "limit_width": 10.0,
+                  "t_plus_one_risk": "normal",
+                  "ticker": "603799.SS"
+                },
+                "rank": 2,
+                "relay": {
+                  "count_3d": 0,
+                  "position": "early"
+                },
+                "rev_z": 0.6947872223679032,
+                "reversal_member": false,
+                "score": 88.0,
+                "score_basis": "cn_prophet_v3_score",
+                "score_rank": 2
+              },
+              "market_status": "trading",
+              "price": 36.0955,
+              "revision": "close_provisional",
+              "state": "forming",
+              "ticker": "603799.SS"
+            }
+          ],
+          "forming": [
+            {
+              "frozen": {
+                "lane": "forming",
+                "microstructure": {
+                  "as_of": "2026-10-09",
+                  "board": "chinext",
+                  "chase_veto": {
+                    "flag": false,
+                    "reason": null
+                  },
+                  "fillable": true,
+                  "limit_state": "open",
+                  "limit_width": 20.0,
+                  "t_plus_one_risk": "normal",
+                  "ticker": "300750.SZ"
+                },
+                "rank": 162,
+                "relay": {
+                  "count_3d": 0,
+                  "position": "early"
+                },
+                "rev_z": 0.5631071264197222,
+                "reversal_member": false,
+                "score": 54.0,
+                "score_basis": "cn_prophet_v3_score",
+                "score_rank": 162
+              },
+              "market_status": "trading",
+              "price": 349.1875,
+              "revision": "close_provisional",
+              "state": "forming",
+              "ticker": "300750.SZ"
+            }
+          ]
+        },
+        "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "revision": "close_provisional",
+        "session": "2026-10-12"
+      },
+      "evaluation_policy": {
+        "delay_floor_min": 0.0,
+        "future_clock_allowance_seconds": 60,
+        "quote_max_age_min": 10.0
+      },
+      "events": [],
+      "pack_as_of": "2026-10-09",
+      "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "schema": "cn_prophet_live.events/research-v3",
+      "session": "2026-10-12",
+      "source_board": {
+        "artifact_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "as_of": "2026-10-09",
+        "board_definition": "cn_prophet_v4",
+        "effective_order_basis": "cn_prophet_v3_score",
+        "path": "site/factordata/china_standouts.json"
+      }
+    }
+  },
+  "ledger": [
+    {
+      "close_same_day": null,
+      "confirmation_basis": "same_session_pack_center_buyable",
+      "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+      "confirmed": true,
+      "cross_basis_adjustment": "split_and_dividend_adjusted",
+      "cross_basis_close": 45.47,
+      "cross_px": 46.1029,
+      "date": "2026-10-12",
+      "entered": "board",
+      "event_ids": [
+        "dc6824e3affd26a9d95d119806834c53b47f63c06d3624c1446c37056543bc1e"
+      ],
+      "first_event_id": "dc6824e3affd26a9d95d119806834c53b47f63c06d3624c1446c37056543bc1e",
+      "first_observation_sha256": "160a3587af11ca68a38794e2f2677197552e03147954449359be00a7f7154a5a",
+      "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "first_passes": 1,
+      "first_px": 46.1029,
+      "first_quote_age_min": 0.0,
+      "first_quote_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+      "first_quote_ts": "2026-10-12T02:00:00+00:00",
+      "first_ts": "2026-10-12T02:00:00Z",
+      "from_state": null,
+      "frozen_lane": "featured",
+      "frozen_rank": 1,
+      "frozen_score": 90.0,
+      "frozen_score_rank": 1,
+      "ingest_contract": "cn_prophet_live.evidence/research-v2",
+      "kind": "forming",
+      "last_px": 46.1029,
+      "last_ts": "2026-10-12T02:00:00Z",
+      "next_close_fill": null,
+      "occurrences": 1,
+      "price_adjustment": "unadjusted_research_fixture",
+      "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+      "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+      "schema": "cn_prophet_live.forward/v1",
+      "session_phase": "morning",
+      "source_board_asof": "2026-10-09",
+      "source_board_definition": "cn_prophet_v4",
+      "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "ticker": "002460.SZ",
+      "via": null
+    },
+    {
+      "close_same_day": null,
+      "confirmation_basis": "same_session_pack_center_buyable",
+      "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+      "confirmed": true,
+      "cross_basis_adjustment": "split_and_dividend_adjusted",
+      "cross_basis_close": 297.75,
+      "cross_px": 349.1875,
+      "date": "2026-10-12",
+      "entered": "cross",
+      "event_ids": [
+        "4b6e8e2120e658a30db16741516a83e43bc64e8c1a6dbf6dc3b9d6f0a6f5097c"
+      ],
+      "first_event_id": "4b6e8e2120e658a30db16741516a83e43bc64e8c1a6dbf6dc3b9d6f0a6f5097c",
+      "first_observation_sha256": "92079cfba261b83fab68b1d0f278088feb7b6bbea77ca1f6e4193f6b3734c768",
+      "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "first_passes": 1,
+      "first_px": 349.1875,
+      "first_quote_age_min": 0.0,
+      "first_quote_record_sha256": "ccc6f43c7c0297f70c715a4c57ee15ca6b72228164ae04ac1530ed6446340531",
+      "first_quote_ts": "2026-10-12T02:00:00+00:00",
+      "first_ts": "2026-10-12T02:00:00Z",
+      "from_state": null,
+      "frozen_lane": "forming",
+      "frozen_rank": 162,
+      "frozen_score": 54.0,
+      "frozen_score_rank": 162,
+      "ingest_contract": "cn_prophet_live.evidence/research-v2",
+      "kind": "crossing_unconfirmed",
+      "last_px": 349.1875,
+      "last_ts": "2026-10-12T02:00:00Z",
+      "next_close_fill": null,
+      "occurrences": 1,
+      "price_adjustment": "unadjusted_research_fixture",
+      "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+      "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+      "schema": "cn_prophet_live.forward/v1",
+      "session_phase": "morning",
+      "source_board_asof": "2026-10-09",
+      "source_board_definition": "cn_prophet_v4",
+      "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "ticker": "300750.SZ",
+      "via": null
+    },
+    {
+      "close_same_day": null,
+      "confirmation_basis": "same_session_pack_center_buyable",
+      "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+      "confirmed": true,
+      "cross_basis_adjustment": "split_and_dividend_adjusted",
+      "cross_basis_close": 297.75,
+      "cross_px": 349.1875,
+      "date": "2026-10-12",
+      "entered": "cross",
+      "event_ids": [
+        "16c8e6384d845fb95c0b795cdd8146c702db5989cd65f8ffaa2660a25c5fd6fa"
+      ],
+      "first_event_id": "16c8e6384d845fb95c0b795cdd8146c702db5989cd65f8ffaa2660a25c5fd6fa",
+      "first_observation_sha256": "f3f62b105e02704afcfbb8b6c7815c87dccac2092fb515a2dfea46e04f037060",
+      "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "first_passes": 2,
+      "first_px": 349.1875,
+      "first_quote_age_min": 0.0,
+      "first_quote_record_sha256": "b2d70cb18b4e0a7601af0ee58ee6771f12e0731c39222c822230be6a1ab0b064",
+      "first_quote_ts": "2026-10-12T02:05:00+00:00",
+      "first_ts": "2026-10-12T02:05:00Z",
+      "from_state": "near",
+      "frozen_lane": "forming",
+      "frozen_rank": 162,
+      "frozen_score": 54.0,
+      "frozen_score_rank": 162,
+      "ingest_contract": "cn_prophet_live.evidence/research-v2",
+      "kind": "forming",
+      "last_px": 349.1875,
+      "last_ts": "2026-10-12T02:05:00Z",
+      "next_close_fill": null,
+      "occurrences": 1,
+      "price_adjustment": "unadjusted_research_fixture",
+      "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+      "quote_payload_sha256": "91dc1e3c148af21a23a808a64336698e0390700211f082567d51e9afcfa38079",
+      "schema": "cn_prophet_live.forward/v1",
+      "session_phase": "morning",
+      "source_board_asof": "2026-10-09",
+      "source_board_definition": "cn_prophet_v4",
+      "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "ticker": "300750.SZ",
+      "via": null
+    },
+    {
+      "close_same_day": null,
+      "confirmation_basis": "same_session_pack_center_buyable",
+      "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+      "confirmed": false,
+      "cross_basis_adjustment": "split_and_dividend_adjusted",
+      "cross_basis_close": 35.6,
+      "cross_px": 36.0955,
+      "date": "2026-10-12",
+      "entered": "board",
+      "event_ids": [
+        "aac610a05ceeb7f4b4dde5c8d50305cd9ebdabff6c3211d6e903d2618d37ad86"
+      ],
+      "first_event_id": "aac610a05ceeb7f4b4dde5c8d50305cd9ebdabff6c3211d6e903d2618d37ad86",
+      "first_observation_sha256": "4583c1d5986d5933aaba8e7ad78f9ab4fc48d1add37bec68da73671072ec8166",
+      "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+      "first_passes": 1,
+      "first_px": 36.0955,
+      "first_quote_age_min": 0.0,
+      "first_quote_record_sha256": "ff2f6633da7c39ed7889b7b48784f0d12cb7a140931aa6fd2bfea548ff165d3b",
+      "first_quote_ts": "2026-10-12T02:00:00+00:00",
+      "first_ts": "2026-10-12T02:00:00Z",
+      "from_state": null,
+      "frozen_lane": "featured",
+      "frozen_rank": 2,
+      "frozen_score": 88.0,
+      "frozen_score_rank": 2,
+      "ingest_contract": "cn_prophet_live.evidence/research-v2",
+      "kind": "forming",
+      "last_px": 36.0955,
+      "last_ts": "2026-10-12T02:00:00Z",
+      "next_close_fill": null,
+      "occurrences": 1,
+      "price_adjustment": "unadjusted_research_fixture",
+      "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+      "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+      "schema": "cn_prophet_live.forward/v1",
+      "session_phase": "morning",
+      "source_board_asof": "2026-10-09",
+      "source_board_definition": "cn_prophet_v4",
+      "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "ticker": "603799.SS",
+      "via": null
+    }
+  ],
+  "legacy_row": {
+    "close_same_day": null,
+    "confirmed": null,
+    "cross_px": 10.0,
+    "date": "2026-10-09",
+    "first_px": 10.0,
+    "first_ts": "2026-10-09T02:00:00Z",
+    "independent_legacy_note": "pre-existing native history",
+    "kind": "forming",
+    "last_px": 10.1,
+    "last_ts": "2026-10-09T02:05:00Z",
+    "next_close_fill": null,
+    "occurrences": 2,
+    "schema": "cn_prophet_live.forward/v1",
+    "ticker": "002460.SZ"
+  },
+  "limits": [
+    "The compact canonical board is newly synthetic and its exact bytes are bound into a separately sealed settlement generation.",
+    "Provider-shaped quote bytes are generated here, not received from Yahoo or any vendor.",
+    "Native parser, state and reconciliation bodies execute unchanged from their pinned code identities."
+  ],
+  "origin": "EXPLICITLY_SYNTHETIC_REVIEW_ONLY",
+  "prices": {
+    "002460.SZ": 46.1029,
+    "300750.SZ": 349.1875,
+    "603799.SS": 36.0955
+  },
+  "quote_contract": {
+    "adapter_function": "parse_yahoo_spark",
+    "adapter_git_blob": "f7ad6ebc550811708a20aaf259b30dd1df0a3699",
+    "adapter_path": "engine/live_quotes.py",
+    "adapter_source_sha256": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074",
+    "origin": "SYNTHETIC_RESEARCH_ONLY",
+    "payload_codec": "Retained original UTF-8 source text, hashed before JSON parsing",
+    "previous_close_field": "spark.result[].response[0].meta.previousClose",
+    "price_adjustment": "unadjusted_research_fixture",
+    "price_field": "spark.result[].response[0].meta.regularMarketPrice",
+    "price_unit": "CNY per share in an explicitly synthetic unadjusted scenario",
+    "provider_shape": "Yahoo v7 spark response; synthetic observations",
+    "schema": "cn_prophet_live.synthetic_quote_contract/research-v1",
+    "scope": "Defines the synthetic scenario's units; does not certify natural Yahoo or Tencent adjustment semantics.",
+    "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+    "timestamp_field": "spark.result[].response[0].meta.regularMarketTime"
+  },
+  "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+  "quote_payloads_utf8": {
+    "2026-10-12T02:00:00+00:00": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+    "2026-10-12T02:05:00+00:00": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791770700}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770700}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770700}}],\"symbol\":\"603799.SS\"}]}}",
+    "2026-10-12T07:01:00+00:00": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791788400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791788400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791788400}}],\"symbol\":\"603799.SS\"}]}}",
+    "2026-10-12T07:06:00+00:00": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791788400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791788400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791788400}}],\"symbol\":\"603799.SS\"}]}}"
+  },
+  "reconciliation": {
+    "archived_packs": [
+      "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09"
+    ],
+    "canonical_board_sha256": "8fd54b13930d7b9ed48d8b39f68db6729029773de62ea153061545adbf8afe13",
+    "close_and_fill_labels": "unresolved; this lab does not manufacture price-basis-aligned fills",
+    "close_board_available": true,
+    "distinct_events": 4,
+    "receipt": {
+      "adjusted": [],
+      "as_of": "2026-10-12",
+      "built_at": "2026-10-12T12:00:00Z",
+      "confirmed": [
+        "002460.SZ",
+        "300750.SZ"
+      ],
+      "detail": {
+        "added": [],
+        "basis": "close_board lanes vs china_standouts buy/more_actionable/forming",
+        "lane_moves": {},
+        "n_added": 0
+      },
+      "dropped": [
+        "603799.SS"
+      ],
+      "n_adjusted": 0,
+      "n_confirmed": 2,
+      "n_dropped": 1,
+      "n_total": 3,
+      "schema": "cn_board_confirmation/v1"
+    },
+    "row_count": 4,
+    "selected_close_evidence": {
+      "authority": "latest observation time; equivalent economics coalesced; conflicting ties refused",
+      "built_at": "2026-10-12T07:06:00+00:00",
+      "economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+      "object_keys": [
+        "live_flow/cn_prophet_live_events/2026-10-12/070600-7d7015ba4304fdfd77232609708613ead7a24a73bb3ebe60f7e7ffeb1c491dc2.json"
+      ]
+    },
+    "spool_objects": 4
+  },
+  "repeat_envelope": {
+    "built_at": "2026-10-12T02:10:00Z",
+    "close_board": null,
+    "evaluation_policy": {
+      "delay_floor_min": 0.0,
+      "future_clock_allowance_seconds": 60,
+      "quote_max_age_min": 10.0
+    },
+    "events": [
+      {
+        "entered": "board",
+        "event_id": "ce575078acfafccf70352e1c7d0b5becef6213b9b72ec05a127838166fc03523",
+        "from": "dark",
+        "kind": "forming",
+        "passes": 1,
+        "price": 46.1029,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:10:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "4609d5fe8d16a8aa17efe3feae9bd1fdf175ab7228b43ff35cd847d32c5d2be1",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791771000}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791771000}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791771000}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "ddedd8e6ce745742cc30faffa949284554bb8fa5cee8bac052b757650a70bd10",
+          "recorded_at": "2026-10-12T02:10:00+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:10:00Z"
+      }
+    ],
+    "pack_as_of": "2026-10-09",
+    "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+    "schema": "cn_prophet_live.events/research-v3",
+    "session": "2026-10-12",
+    "source_board": {
+      "artifact_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+      "as_of": "2026-10-09",
+      "board_definition": "cn_prophet_v4",
+      "effective_order_basis": "cn_prophet_v3_score",
+      "path": "site/factordata/china_standouts.json"
+    }
+  },
+  "review_binding": {
+    "candidate_inputs_sha256": {
+      "contract_prototype.py": "d633f0baeb8d506053387c15f5712ebd49c4b6b9b392a43e8e143e3c3226ee4f",
+      "pinned_quote_adapter.py": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074"
+    },
+    "fixture_generator_sha256": "5ebfc4ced080cc672170503c799115960c76c22387292e18c410ba6f741fa1ef",
+    "native_bundle_sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+    "original_fixture_sha256": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545"
+  },
+  "schema": "independent_cn_integration_repair_fixture/v1",
+  "session": "2026-10-12",
+  "settled_at": "2026-10-12T12:00:00+00:00",
+  "settlement_pack": {
+    "as_of": "2026-10-12",
+    "band_pct": 15.0,
+    "bisect_iters": 8,
+    "built_at": "2026-10-12T11:55:00Z",
+    "grid_points": 9,
+    "market": "CN",
+    "meta": {
+      "armed_n": 3,
+      "band_rule": "per_class_daily_limit",
+      "board_probe_share": 0.4,
+      "build_seconds": 0.0,
+      "by_class": {
+        "board": {
+          "armed_n": 2,
+          "candidates_n": 2,
+          "probe_seconds": 0.0,
+          "probed_n": 2
+        },
+        "cross": {
+          "armed_n": 1,
+          "candidates_n": 1,
+          "probe_seconds": 0.0,
+          "probed_n": 1
+        }
+      },
+      "calendar": "cn",
+      "edges_checked": 0,
+      "gate_calls": 0,
+      "price_adjustment_counts": {
+        "unknown": 3
+      },
+      "probe_center_flips": 2,
+      "probe_order": "buyable__eligible__bars_to_cross__hist_d2__ticker",
+      "probe_scope": "two_sided_for_buyable__up_only_for_rest",
+      "probed_n": 3,
+      "skipped": {},
+      "states": {
+        "buyable": 2,
+        "eligible_t4": 1
+      },
+      "t2_latch": "CN",
+      "universe_n": 3,
+      "unrounded_edges": 0,
+      "wanted_probe_n": 0
+    },
+    "names": {
+      "002460.SZ": {
+        "as_of_close": 45.47,
+        "band_hi_px": 50.0171,
+        "band_lo_px": 40.9229,
+        "band_pct": 10.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": true,
+        "fade_hi_px": null,
+        "fade_px": 42.1886,
+        "frozen": {
+          "lane": "featured",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "main",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 10.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "002460.SZ"
+          },
+          "rank": 1,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.8545551890548774,
+          "reversal_member": false,
+          "score": 90.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 1
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": true,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "buyable",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      },
+      "300750.SZ": {
+        "as_of_close": 297.75,
+        "band_hi_px": 357.3,
+        "band_lo_px": 0.0,
+        "band_pct": 20.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": true,
+        "fade_hi_px": null,
+        "frozen": {
+          "lane": "forming",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "chinext",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 20.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "300750.SZ"
+          },
+          "rank": 162,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.5631071264197222,
+          "reversal_member": false,
+          "score": 54.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 162
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": false,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "eligible_t4",
+        "tier": "anticipation",
+        "tier_cascade": null,
+        "trigger_px": 341.075
+      },
+      "603799.SS": {
+        "as_of_close": 35.6,
+        "band_hi_px": 39.1601,
+        "band_lo_px": 32.0399,
+        "band_pct": 10.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": false,
+        "fade_hi_px": null,
+        "fade_px": 33.0309,
+        "frozen_status": "not_in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": true,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "buyable",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      }
+    },
+    "pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+    "price_adjustment": "split_and_dividend_adjusted",
+    "schema": "cn_prophet_live.armed/v1",
+    "source_board": {
+      "artifact_sha256": "8fd54b13930d7b9ed48d8b39f68db6729029773de62ea153061545adbf8afe13",
+      "as_of": "2026-10-12",
+      "board_definition": "cn_prophet_v4",
+      "effective_order_basis": "cn_prophet_v3_score",
+      "path": "site/factordata/china_standouts.json"
+    }
+  }
+}

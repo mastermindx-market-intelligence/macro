@@ -1,0 +1,13 @@
+{
+  "accepted_documents": 5,
+  "accepted_evidence_files": 38,
+  "candidate_changes": false,
+  "experiments_rerun": false,
+  "local_links_resolved": 74,
+  "report_sha256": "a43990ca724d4a791e1b07795153136d80ca59c6580bc304e1ebec496b24e9f3",
+  "resolved_drafting_observations": 7,
+  "result_sha256": "18bc220b74f50f356690bcf219d788d031d1a701cabf966af9f8143709d979fd",
+  "schema": "handoff_review_terminal_custody/v1",
+  "scope": "Final document diffs, accepted candidate identities, local links and snapshot custody only",
+  "status": "PASS"
+}

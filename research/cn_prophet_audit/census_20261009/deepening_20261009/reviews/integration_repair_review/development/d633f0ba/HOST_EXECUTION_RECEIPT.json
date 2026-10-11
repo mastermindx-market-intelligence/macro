@@ -1,0 +1,18 @@
+{
+  "schema": "independent_integration_parquet_tool_receipt/v1",
+  "host_temporary_directory": "/tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u",
+  "process_id": 61085,
+  "command": "python3 /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/parquet_acceptance.py --subject /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/contract_prototype.py --adapter /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/pinned_quote_adapter.py --fixture /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/independent_fixture.json --bundle /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/native_source_bundle.json --out /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/results",
+  "terminal_tool_return": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"status\": \"PASS\", \"native_writes\": 4, \"refused_files\": 4, \"receipt_sha256\": \"62a4481b8447b11eb66012672289234f063d9d820d74571141701c09500f3642\"}\n\n✅ Process completed with exit code 0 (runtime: 1.98s)"
+      }
+    ],
+    "isError": false
+  },
+  "result_receipt_sha256": "62a4481b8447b11eb66012672289234f063d9d820d74571141701c09500f3642",
+  "transfer_uncompressed_json_sha256": "23783246d173c0e0fbc22e4797ed2b5f8f27779d1e4c6c049d5bca1a511d6684",
+  "review_scope": "Copied exact candidate, review fixture, pinned quote parser and native bundle in an isolated temporary directory only."
+}

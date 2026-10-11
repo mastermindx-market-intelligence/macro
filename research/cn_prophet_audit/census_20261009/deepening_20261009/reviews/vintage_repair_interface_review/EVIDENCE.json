@@ -1,0 +1,129 @@
+{
+  "calendar_fixture": {
+    "2026-09-16": {
+      "session_close": "2026-09-16T15:00:00+08:00",
+      "session_open": "2026-09-16T09:30:00+08:00"
+    },
+    "2026-10-12": {
+      "session_close": "2026-10-12T15:00:00+08:00",
+      "session_open": "2026-10-12T09:30:00+08:00"
+    }
+  },
+  "challenged_contract_sha256": "ad90cf372a95ae7ca05691681d95ea9a18e784a1379066e19e15fa05b0ef6b7d",
+  "findings": [
+    {
+      "graded_at": "2026-09-16T08:01:00Z",
+      "id": "V-R1",
+      "outcome": "accepted",
+      "required": "Validate every finalized row against the single blob availability clock.",
+      "selected_future_control_refusal": "SOURCE_PRECEDES_FINALIZED_BAR",
+      "selected_mark": {
+        "anchor": "session_close",
+        "anchor_at": "2026-09-16T07:00:00+00:00",
+        "bar_row_sha256": "45366519bf1a7666588adf7bc712b326e227b4640404e90469b8ac43597a81f5",
+        "basis_id": "fixture-v1",
+        "calendar_id": "4c792378efd2e3744df5be8d1732a33b576e820c074f6f08c1a613d4410173ec",
+        "execution_status": "MARK_ONLY",
+        "price": 100.0,
+        "session": "2026-09-16",
+        "source": {
+          "available_at": "2026-09-16T08:00:00+00:00",
+          "basis_id": "fixture-v1",
+          "clock_kind": "producer_available_at",
+          "codec": "research.price_fixture.v2",
+          "price_adjustment": "unadjusted",
+          "provider_id": "synthetic-review-only",
+          "sha256": "8ea60cd6bb70832f89002cd7f87e7bd0069eec7ff6a040b2d2a864e5fc359e1c"
+        },
+        "ticker": "000001.SZ"
+      },
+      "source_fixture": {
+        "available_at": "2026-09-16T08:00:00Z",
+        "basis_id": "fixture-v1",
+        "clock_kind": "producer_available_at",
+        "fixture_only": true,
+        "price_adjustment": "unadjusted",
+        "provider_id": "synthetic-review-only",
+        "rows": [
+          {
+            "bar": {
+              "close": 100
+            },
+            "session": "2026-09-16"
+          },
+          {
+            "bar": {
+              "close": 110
+            },
+            "session": "2026-10-12"
+          }
+        ],
+        "schema": "research.price_fixture.v2",
+        "ticker": "000001.SZ"
+      },
+      "source_sha256": "8ea60cd6bb70832f89002cd7f87e7bd0069eec7ff6a040b2d2a864e5fc359e1c",
+      "subject": "blob-wide availability"
+    },
+    {
+      "id": "V-R2",
+      "input_ledger": [
+        {
+          "basis": "t1_open",
+          "decision_id": "review-only",
+          "entry_session": "2026-09-16",
+          "event_id": "3b2b725f0e79c3cf04ed2214a4c5b004483c876c896d6f2a3051a6ac8a664872",
+          "kind": "original_entry",
+          "price": 100,
+          "recorded_at": "2026-09-16T08:00:00Z",
+          "ticker": "000001.SZ"
+        }
+      ],
+      "outcome": "accepted",
+      "output_ledger": [
+        {
+          "basis": "t1_open",
+          "decision_id": "review-only",
+          "entry_session": "2026-09-16",
+          "event_id": "3b2b725f0e79c3cf04ed2214a4c5b004483c876c896d6f2a3051a6ac8a664872",
+          "kind": "original_entry",
+          "price": 100,
+          "recorded_at": "2026-09-16T08:00:00Z",
+          "ticker": "000001.SZ"
+        },
+        {
+          "basis": "t1_open",
+          "correction_of": "3b2b725f0e79c3cf04ed2214a4c5b004483c876c896d6f2a3051a6ac8a664872",
+          "decision_id": "review-only",
+          "entry_session": "2026-09-16",
+          "event_id": "1bf65da4f06759400397ac2af80103b451c7b459fdb88c05bf446ba908c8a46a",
+          "kind": "entry_correction",
+          "price": 99,
+          "reason": "same-clock counterexample",
+          "recorded_at": "2026-09-16T08:00:00Z",
+          "ticker": "000001.SZ"
+        }
+      ],
+      "proposed_correction": {
+        "basis": "t1_open",
+        "correction_of": "3b2b725f0e79c3cf04ed2214a4c5b004483c876c896d6f2a3051a6ac8a664872",
+        "decision_id": "review-only",
+        "entry_session": "2026-09-16",
+        "event_id": "1bf65da4f06759400397ac2af80103b451c7b459fdb88c05bf446ba908c8a46a",
+        "kind": "entry_correction",
+        "price": 99,
+        "reason": "same-clock counterexample",
+        "recorded_at": "2026-09-16T08:00:00Z",
+        "ticker": "000001.SZ"
+      },
+      "required": "If the contract says later, require a strictly later correction timestamp.",
+      "subject": "strict correction ordering"
+    }
+  ],
+  "limits": [
+    "These are synthetic inputs to a draft research contract, not evidence of natural production occurrences.",
+    "The source codec and calendar are test adapters; declared clocks do not establish actual vendor availability.",
+    "This pre-seal challenge is not acceptance of the subsequently repaired candidate."
+  ],
+  "probe_sha256": "7190b80f2f11d8ed28fbc576749338aa9799500e998b75c60f042c0f41f5242f",
+  "status": "TWO_PRESEAL_BOUNDARY_GAPS_CONFIRMED"
+}

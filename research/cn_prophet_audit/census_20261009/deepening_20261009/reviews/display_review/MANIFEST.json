@@ -1,0 +1,44 @@
+{
+  "candidate_sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc",
+  "files": {
+    "EXECUTION_RECEIPT.json": {
+      "bytes": 944,
+      "sha256": "2bea42c37d0175b57e9fe5a626377f8789dd1d91a829e20f370b6ef725c83290"
+    },
+    "REVIEW.md": {
+      "bytes": 6743,
+      "sha256": "6cbc0ff5208b22646ef928a178b8f0b5a6d11134f7a4e3aa8de4a276b4333146"
+    },
+    "REVIEW_RESULTS.json": {
+      "bytes": 18879,
+      "sha256": "0dbfe553c22bb60d6e5fb05b6b92739eb96c0013b0dbd24d1c8d8e1ea03acb72"
+    },
+    "REVIEW_SCOPE.md": {
+      "bytes": 1430,
+      "sha256": "9d0d2e7ca98768e667fc7f171e92edc9b6be0d5e52ce9f187047e23c7640c071"
+    },
+    "producer_replay/candidate_cn_prophet_live.js": {
+      "bytes": 7885,
+      "sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc"
+    },
+    "producer_replay/pinned_cn_prophet_live.js": {
+      "bytes": 6651,
+      "sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147"
+    },
+    "producer_replay/results.json": {
+      "bytes": 7108,
+      "sha256": "bf41dee7453600d9b6008f8653a74852c453a669bafaa975e6e49a33d63c4dfa"
+    },
+    "producer_replay/verify.mjs": {
+      "bytes": 13161,
+      "sha256": "150787696c210036e164d88953288757d78c8274dec96cf899cc026427cc34fa"
+    },
+    "review_display.mjs": {
+      "bytes": 13559,
+      "sha256": "41cd321eeb6de5b2d1641f2bd0f5d840e99054daa7f2b7de4e0bff90bb994792"
+    }
+  },
+  "schema": "cn-display-independent-review-manifest/v1",
+  "status": "BLOCKED_ONE_DEADLINE_FAMILY_TWO_VARIANTS",
+  "subject_manifest_sha256": "5bb6c5b3b76d1f2739bd5f362b042c11b3d4e17d5f57fa4552c38ad83864b549"
+}

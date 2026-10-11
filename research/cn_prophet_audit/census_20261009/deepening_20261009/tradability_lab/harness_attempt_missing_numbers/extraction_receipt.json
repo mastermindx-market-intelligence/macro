@@ -1,0 +1,18 @@
+{
+  "pid": 97578,
+  "receipt_id": "eef419b3-0a83-44b0-a9bd-1ee100d5efab",
+  "source_receipt_bytes": 1494341,
+  "source_receipt_sha256": "c362c4ccd679ab15e9165757976f8e022c00f7e1b709488eaf8866d8480d5e7b",
+  "retrieved_pages": 142,
+  "terminal": "✅ Process completed with exit code 0 (runtime: 14.97s)",
+  "transport_note": "Native stdout JSON was split at the process-output line boundary; all retained chunks were joined before JSON parsing. No source or result fields changed.",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "safety": {
+    "source_files_modified": 0,
+    "data_files_modified": 0,
+    "host_files_written": 0,
+    "latch_calls": 0,
+    "collector_calls": 0,
+    "vendor_calls": 0
+  }
+}
