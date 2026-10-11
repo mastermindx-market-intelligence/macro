@@ -20,6 +20,7 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
 import pytest
+from jinja2 import Environment
 
 # Ensure repo root is on sys.path for direct test invocation
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -60,26 +61,102 @@ def test_hero_has_all_bilingual_keys():
             assert isinstance(h[key], str) and h[key], f"key {key!r} empty for ({breadth},{concentration})"
 
 
-def test_hero_unknown_concentration_degrades_to_breadth_row():
-    """unknown concentration should fall back to breadth-only row (no KeyError)."""
-    h_unk = _compose_hero(0.5, "unknown")
-    h_div = _compose_hero(0.5, "diversified")
-    # unknown falls through to diversified variant (breadth-only fallback per spec)
-    assert h_unk["tone"] == h_div["tone"]
-    assert h_unk["headline_en"] == h_div["headline_en"]
+@pytest.mark.parametrize("concentration", ["unknown", None, "", "unrecognized"])
+@pytest.mark.parametrize("breadth,tone,headline_en,headline_zh", [
+    (0.5, "green", "Upward trends are broader", "上涨趋势更广泛"),
+    (0.0, "amber", "Trends remain mixed", "趋势仍然分化"),
+    (-0.5, "red", "Downward trends are broader", "下跌趋势更广泛"),
+])
+def test_hero_unknown_concentration_is_breadth_only(
+    breadth, concentration, tone, headline_en, headline_zh,
+):
+    """CA-W3-R6: absent correlation cannot imply independent markets in either locale.
+
+    Supersedes the old unknown == diversified test: those rows made correlation
+    claims, so their wording was not actually a breadth-only fallback.
+    """
+    h = _compose_hero(breadth, concentration)
+    assert h == {
+        "tone": tone,
+        "headline_en": headline_en,
+        "headline_zh": headline_zh,
+        "sub_en": "Correlation data is unavailable; we can't tell whether markets are moving independently.",
+        "sub_zh": "暂无相关性数据，无法判断各市场是否独立运行。",
+        "stance_en": "Watch — diversification is unverified.",
+        "stance_zh": "留意——分散化效果尚不明确。",
+    }
 
 
-def test_hero_unknown_concentration_none_verdict():
-    """None verdict also degrades gracefully."""
-    h = _compose_hero(-0.5, None)
-    assert h["tone"] == "red"
-    assert isinstance(h["headline_en"], str)
+def test_hero_missing_breadth_and_correlation_keep_mixed_breadth_default():
+    assert _compose_hero(None, None) == _compose_hero(0.0, "unknown")
 
 
 def test_hero_none_breadth_defaults_to_mixed():
     """None breadth is treated as 0 (mixed)."""
     h = _compose_hero(None, "diversified")
     assert h["tone"] == "amber"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Hero rendering — unavailable, malformed, and valid correlation gauges
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _render_hero(correlation):
+    source = (Path(__file__).resolve().parents[1]
+              / "templates/crossasset.html.j2").read_text()
+    macro = source[:source.index("<!DOCTYPE html>")]
+    start = source.index("{% set _hero_tone")
+    end = source.index("{# Fragility watch chip")
+    template = Environment(autoescape=True).from_string(macro + source[start:end])
+    return template.render(
+        hero={"tone": "green", "headline_en": "Trend context", "headline_zh": "趋势背景",
+              "sub_en": "Trend context", "sub_zh": "趋势背景",
+              "stance_en": "Watch", "stance_zh": "留意"},
+        breadth=0.5, correlation=correlation, as_of="2026-10-09",
+    )
+
+
+@pytest.mark.parametrize("correlation", [
+    None, {}, {"verdict": "unknown"}, {"verdict": "diversified"},
+    {"verdict": "converging", "absorption_pctile_5y": None},
+    {"verdict": "unknown", "absorption_pctile_5y": 0.88},
+])
+def test_unavailable_gauge_has_bilingual_disclosure_without_invented_value(correlation):
+    html = _render_hero(correlation)
+    assert "Correlation data not available this build." in html
+    assert "本次构建暂无相关性数据。" in html
+    assert "Mostly independent" not in html
+    assert "大体独立" not in html
+    assert ">0%</text>" not in html
+    assert 'aria-label="Correlation absorption gauge"' not in html
+
+
+@pytest.mark.parametrize("value", [
+    False, True, float("nan"), float("inf"), -float("inf"), -0.1, 1.1, "0.25",
+])
+def test_invalid_percentile_uses_unavailable_state(value):
+    html = _render_hero({"verdict": "diversified", "absorption_pctile_5y": value})
+    assert "Correlation data not available this build." in html
+    assert "本次构建暂无相关性数据。" in html
+    assert "Mostly independent" not in html
+    assert 'aria-label="Correlation absorption gauge"' not in html
+
+
+@pytest.mark.parametrize("verdict", ["diversified", "converging", "concentrated"])
+@pytest.mark.parametrize("value,percent,en,zh", [
+    (0.0, 0, "Mostly independent", "大体独立"),
+    (0.25, 25, "Mostly independent", "大体独立"),
+    (0.5, 50, "Partial overlap", "部分联动"),
+    (0.8, 80, "Markets moving together", "各市场同步运动"),
+    (1.0, 100, "Markets moving together", "各市场同步运动"),
+])
+def test_known_gauge_retains_values_and_bilingual_labels(verdict, value, percent, en, zh):
+    html = _render_hero({"verdict": verdict, "absorption_pctile_5y": value})
+    assert f">{percent}%</text>" in html
+    assert en in html
+    assert zh in html
+    assert 'aria-label="Correlation absorption gauge"' in html
+    assert "Correlation data not available this build." not in html
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
