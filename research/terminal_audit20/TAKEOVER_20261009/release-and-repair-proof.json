@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1235",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1339",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -7400,6 +7400,87 @@
     "production": "Storage and canonical707 remain complete and unreplayed; own fixture server stopped normally, no VPS services/jobs paused and no restoration owed. No new paid/public/runtime replay.",
     "next_ready_phase": "Consume same exact-head workflow settled material; qualify actual required checks and merged source. Then parent fresh source/writer/mount/resource gates and new reviewed guarded canonical generation, owning paid visiblephonebadge/fullscreen/three-size proof and new939 normalGET/UI proof. No real user-data mutation/fault manufacturing.",
     "independent_holds": "781 reserved numeric reviewer, IW2 explicit cyber HUMAN platform resolution, SQL/rights/security/887 exactALLOW, MoneySCP/OAuth EFFECT_UNKNOWN, A19/873 actual producer publication and all prior exact holds unchanged. No incoming peer message is outgoing send authorization.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1339": {
+    "observed_at": "2026-10-11T13:39:01.963682+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "T1235 current940 head/range-only repair and workflow observer state. Historical source/capture/CI objects, qualified939 and independent holds remain unchanged.",
+    "material": "Actual e882 workflow failure consumed; controlled cached-range coordinate-map defect repaired through SAME940; paid Fabric verifier consumed/adjudicated/accepted; one actual fresh-head CI observer launched.",
+    "source_940": {
+      "pr": 940,
+      "head": "62e24eadd18f5b0312a8b0f139bcebfee77716a8",
+      "base": "9bc8a12b8e869a699d9bd3f0f90b160323d212b6",
+      "writer": "Sole parent in existing940 workspace; no conflicting writer/new carrier. Draft+auto-disable during repair, ready/nativeSQUASHauto on62e at13:35:44Z/mastermindxryan; merge-on-green retained, merge-blocked historical red label not waived.",
+      "ci_failure": {
+        "run": 38139585988,
+        "head": "e88222a741a1be7704b8b605760f3eb88971cb20",
+        "observer_exit": 1,
+        "settled_at": "2026-10-11T13:23:48.560025+00:00",
+        "failed_job": 114470563981,
+        "required_terminal": 114480140746,
+        "required_quote": 114470563893,
+        "required_ingest": 114470563723,
+        "failure": "Original legacy migration nonzero anchor assertion failed on all three attempts. The other eight jobs passed. Plain-language Bad.tsx finding was intentional self-check output inside a successful unit job.",
+        "pr_before_repair": "OPEN/unmerged/BLOCKED/merge-blocked; auto disabled and Draft during repair",
+        "exact_CI_range_state": "unobserved; do not claim cached-range state was measured in CI"
+      },
+      "repair": "Finite distinct forward and inverse endpoint probes plus post-projection current-range validation. Preserve zero prices, current paint/epoch/detach/teardown fences, original nonzero assertion and source validator. No timer, forever RAF, math or auth changes.",
+      "verification": {
+        "unit_causal_red": "1FAIL12PASS",
+        "browser_causal_red": "1FAIL0PASS with actual [0,0] persistence",
+        "final_unit": "19 readiness+3 existing owner=22PASS",
+        "final_browser": "6 desktop cases PASS/0failure/skip/flaky, 31.694s, actual committed62e source",
+        "typecheck": "0 after lawful next typegen on stopped fixture; earlier concurrent stale generated-route-input failure retained",
+        "diff_check": 0,
+        "captures": "Original e669/7e captures retain actual source identities; ChartPanel/globals unchanged. No new or future-head capture claimed; no packet restamp or production proof."
+      },
+      "source_receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/cached-coordinate-map-source-parent-qualification.json",
+        "bytes": 5792,
+        "sha256": "d0604100131a58277858aa7c265da164a1fa8bc486ae83bd7d192992ff61681a"
+      },
+      "captures": "Original e669/7e captures retained at their actual source identities; ChartPanel/globals Gitblobs unchanged. This helper-only repair was tested directly; no packet/hash restamp/new visual/future-head/production acceptance.",
+      "source_head_upstream_remote_clean_match": true
+    },
+    "current_single_observer": {
+      "run": 38143802083,
+      "head": "62e24eadd18f5b0312a8b0f139bcebfee77716a8",
+      "exec": 36254,
+      "controller_pid": 52915,
+      "gh_pid": 52919,
+      "verified_actual_launch_processes": true,
+      "workflow": "CI/pull_request, actual admission in_progress; no required check or merge accepted",
+      "native_auto_at": "2026-10-11T13:35:44Z",
+      "durable_launch": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/coordinate-map-ci-observer-launch.json",
+        "bytes": 755,
+        "sha256": "fdc7a91ce3dd1c1c15a26a57889f05fd244d72625afd3b6eeb820fda1b82f3a1"
+      },
+      "result_path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/coordinate-map-ci-observer-result.json",
+      "log_path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/coordinate-map-ci-observer.log",
+      "old_observer": "exec94513/38139585988 settledexit1 at13:23:48.560025Z; consumed once. Original21927 closed; neither restarted.",
+      "scope": "Consume SAME36254/result only; no manual CI/API/UI/log status query, second watcher or worker respawn while pending. Actual settled event permits exact requiredCI/source/merge qualification."
+    },
+    "fabric": {
+      "id": "terminal-audit20-coordinate-map-20261011",
+      "pool": "bailian",
+      "model": "qwen3.8-flash",
+      "class": "verify",
+      "complexity": "C1_ROUTINE_BOUNDED",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "result_bytes": 4748,
+      "status": "TERMINAL/rc0/resultavailable/ACCEPTED_BY_REVIEWER",
+      "accepted_scope": "Supplied-text verifier delivery reviewed and adjudicated: relational mapping check and post-projection range check used. Offset-validation suggestion not applied: this predicate verifies mapping health; existing synchronous translation is unchanged and actual browser asserts outcome. Unsupported rounded-coordinate claim not adopted. No independent numeric review/production acceptance.",
+      "old_child": "terminal-audit20-drawing-readiness-20261011 stays ACTIVE_OR_WAITING/unverified; no replacement/retry/cancel/lease effects"
+    },
+    "fabric_adjudication": "Use distinct finite forward/inverse projections and post-projection current range. Translation/rounding suggestions not adopted as unobserved claims; actual existing translation/outcome and lifecycle assertions preserved. Result delivery only accepted, not production or reserved numeric review.",
+    "production": "Storage and canonical707 complete/unreplayed; local configured fixture processes settled/closed. No VPS/service/job/provider effects, owned pause or restoration owed.",
+    "source_939": "Actual merged9bc/head2f6 required38134612457 retained qualified; integrated source but newgeneration normalGET/UI not yet accepted. 931/935 existing B merge receipts still unqualified. No outgoing peer send.",
+    "independent_holds": "781 reserved numeric reviewer, IW2 explicit cyber HUMAN platform resolution, SQL/rights/security/887 exactALLOW, MoneySCP/OAuth EFFECT_UNKNOWN, A19/873 actual producer publication and all prior exact holds unchanged. No incoming peer message is outgoing send authorization.",
+    "next_ready_phase": "Actual SAME fresh62e CI settled result, exact required checks and mergedsource qualification; then parent fresh source/writer/exactUUID/mount/root+volume10GiB/resource gates, new guarded canonical generation through bd22d2f wrapper, owning paid phonebadge/fullscreen/three sizes plus939 normalGET/UI. No real-data mutation/fault manufacturing.",
     "whole_audit20_complete": false
   }
 }
