@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1145",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1235",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -7308,5 +7308,98 @@
       }
     ],
     "next_action": "Consume actual same940 observer/B merged-source returns, qualify actual requiredCI and integrated source, then new guarded canonical release and owning paid badge/normal-read consumer proofs after real gates."
+  },
+  "current_capability_frontier_20261011T1235": {
+    "observed_at": "2026-10-11T12:35:29.959904+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "T1145 old940 source-owner/observer state and939 merge-pending state; historical receipts and all independent holds retained.",
+    "material": "Parent repaired a reproduced legacy drawing migration defect through existing PR940, integrated actual merged939 source and refreshed only source-invalidated ChartPanel packets.",
+    "source_940": {
+      "pr": 940,
+      "head": "e88222a741a1be7704b8b605760f3eb88971cb20",
+      "capture_source": "e669c889eaa004f580ae0b5a21bae6b55414d8a1",
+      "base": "9bc8a12b8e869a699d9bd3f0f90b160323d212b6",
+      "parent_source_slot": "Prior native owner handed over clean5439 and finished; no duplicate writer. Draft and auto-disable applied before unfinished source repair; ready/nativeSQUASHauto re-enabled12:31:56Z on repaired exacthead.",
+      "defect": "Empty indicator scale0..0 produced and persisted zero/zero legacy anchors with pane-value-v2.",
+      "repair": "Finite positive-span range gate keeps original legacy document. Public LWC primitive paints trigger automatic deferred migration; coalesced following frame, current generation, detach and teardown fences; no permanent polling timer.",
+      "causal_red": "Controlled degenerate public scale input reproduced one destructive saved drawing. Earlier first harness attempt found autoscale had already reset the range and is retained as a harness-input failure, not accepted causal proof.",
+      "verification": {
+        "focused_readiness_and_existing_owner_tests": 14,
+        "desktop_drawing_cases": 5,
+        "responsive_visual_crosshair_cases": 48,
+        "browser_failures_skips_flaky": 0,
+        "typecheck_exit": 0,
+        "unchanged_evidence_guard_files": 6,
+        "evidence_assertions": 28,
+        "Options_captures": 5,
+        "BPL6_captures": 24,
+        "Visual_crops": 6,
+        "parent_visual_check": "Fresh310x107/11268B phoneZH crop contains real SPY identity and numeric OHLC; no blank crop."
+      },
+      "scope": "Source and actual fixture captures only; historical7e/495/379-6093/full-unit counts remain tied to their original objects. Three ChartPanel-dependent packets recaptured; unchanged CSS-only packets retained. No financial/math/auth/entitlement/781 protection weakened.",
+      "receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/final-source-captures-ci-launch-parent-qualification.json",
+        "bytes": 6624,
+        "sha256": "ab5b8fce415d42dde0fabc2a21e52361248dbc2597c325dd18c4d35479b6e877"
+      }
+    },
+    "current_single_observer": {
+      "kind": "GitHub CLI admitted exact workflow watch",
+      "run": 38139585988,
+      "head": "e88222a741a1be7704b8b605760f3eb88971cb20",
+      "exec": 94513,
+      "pid": 21340,
+      "controller_pid": 21330,
+      "actual_processes_running": true,
+      "durable_launch": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/ci-observer-launch.json",
+        "bytes": 859,
+        "sha256": "7be3899b67c3061d4905f43959f1f0868907da7bea92084451a738af320eb854"
+      },
+      "durable_result_path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/ci-observer-result.json",
+      "observed_last_workflow_state": "in_progress at actual admission",
+      "acceptance": "No requiredCI/merge acceptance inferred; consume actual same result and qualify exact head/checks/source/merge after a settled event.",
+      "old_observer": "21927/PID85311 settledexit20 at12:04:31.534808Z on Draft/base_behind, all3green/merge unaccepted. Old installed plugin script path is now actually absent, ordinary technical missing-file fallback only; no refusal replay or second watcher."
+    },
+    "source_939_actual_merge": {
+      "head": "2f6af73a66baa13b3e0d4a83fa84c6ae54cbc55a",
+      "squash": "9bc8a12b8e869a699d9bd3f0f90b160323d212b6",
+      "merged_at": "2026-10-11T11:59:50Z",
+      "all_19_blobs_equal": true,
+      "exact_required_run": 38134612457,
+      "suite": 103319902726,
+      "attempt": 1,
+      "event": "pull_request",
+      "workflow": ".github/workflows/ci.yml",
+      "required": {
+        "Terminal": 114464048944,
+        "Quote": 114455821420,
+        "Ingest": 114455821187
+      },
+      "all_required_success_on_exact_head": true,
+      "receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/939-merged-source-required-ci-parent-qualification.json",
+        "bytes": 5133,
+        "sha256": "b2a9facd75a2539be1fa9810b9bb4b2ec5ad128256801bf1d54d7309fe07b77c"
+      },
+      "scope": "Merged source and required CI only. No new installed/live Settings/race/full-lifecycle/#761 acceptance."
+    },
+    "source_931_935": "Owning source/CI/MOG remains B; no new actual merge return qualified and no second observer or outgoing peer message. Reproduced shared drawing defect repaired here; B had no source edits.",
+    "fabric_verification": {
+      "id": "terminal-audit20-drawing-readiness-20261011",
+      "class": "verify",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "same_id_retained": true,
+      "last_actual_status": "ACTIVE_OR_WAITING, result unavailable and acceptance UNVERIFIED",
+      "actual_log": "12:07 LEASE_WAIT and LAUNCH present; not proof of admitted worker execution or acceptance. No eligible result before direct authorized repair.",
+      "technical_scope": "Old exec22381 UnknownProcessID; recover same stable artifacts/status, no resubmit/respawn/carrier change/kill/cancel/manual lease.",
+      "scope": "Supplied-context read-only textual verification only, no export/credential/provider/VPS/source effects; no previously refused operation retried."
+    },
+    "production": "Storage and canonical707 remain complete and unreplayed; own fixture server stopped normally, no VPS services/jobs paused and no restoration owed. No new paid/public/runtime replay.",
+    "next_ready_phase": "Consume same exact-head workflow settled material; qualify actual required checks and merged source. Then parent fresh source/writer/mount/resource gates and new reviewed guarded canonical generation, owning paid visiblephonebadge/fullscreen/three-size proof and new939 normalGET/UI proof. No real user-data mutation/fault manufacturing.",
+    "independent_holds": "781 reserved numeric reviewer, IW2 explicit cyber HUMAN platform resolution, SQL/rights/security/887 exactALLOW, MoneySCP/OAuth EFFECT_UNKNOWN, A19/873 actual producer publication and all prior exact holds unchanged. No incoming peer message is outgoing send authorization.",
+    "whole_audit20_complete": false
   }
 }
