@@ -344,6 +344,40 @@ def test_a_run_level_stop_does_not_burn_the_regeneration_budget(tmp_path, monkey
     assert calls["n"] == summary["planned"]      # one attempt per slot, not three
 
 
+@pytest.mark.parametrize("failure", ["provider", "validation"])
+def test_single_attempt_staging_quarantines_without_regeneration(
+    tmp_path, monkeypatch, failure,
+):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    cfg["quarantine"]["max_regenerations"] = 3
+
+    def _bad(slot, n):
+        draft = _good_draft(slot, n)
+        draft["body_html"] = F.body("Moreover, this trips the AI-tell rule outright.")
+        return draft
+
+    before = _snapshot(root)
+    calls = _stub_writer(monkeypatch, ok=failure != "provider",
+                         reason="draft_failure", draft_fn=_bad)
+    summary = R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"],
+                            max_slots=1, single_attempt=True)
+
+    assert summary["planned"] == summary["quarantined"] == 1
+    assert summary["passed"] == 0
+    assert calls["n"] == 1
+    assert calls["single_provider_attempt"] == [True]
+    assert calls["admitted_token_cap"] == [False]
+    assert all(path.startswith("data/press/staging/") for path in _snapshot(root) - before)
+    staged = json.loads(next(
+        path for path in (root / "data/press/staging").glob("*.json")
+        if not path.name.startswith("_")).read_text())
+    assert staged["status"] == "quarantined"
+    assert len(staged["attempts"]) == 1
+    expected_reason = "draft_failure" if failure == "provider" else "ai_tells"
+    assert expected_reason in staged["quarantine_reason"]
+
+
 def test_staging_emits_a_line_start_annotation(tmp_path, monkeypatch, capsys):
     root = F.fixture_root(tmp_path)
     _stub_writer(monkeypatch)
@@ -1248,6 +1282,25 @@ def test_cli_env_overrides_the_spend_guards(tmp_path, monkeypatch):
     assert R._env_int("PRESS_RUN_TOKEN_BUDGET", 999) == 999
     monkeypatch.delenv("PRESS_RUN_TOKEN_BUDGET")
     assert R._env_int("PRESS_RUN_TOKEN_BUDGET", 999) == 999
+
+
+def test_cli_single_attempt_stages_once(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    calls = _stub_writer(monkeypatch, ok=False, reason="draft_failure")
+    assert R.main(["--root", str(root), "--single-attempt", "--desks", "brief",
+                   "--as-of", "2026-07-26", "--max-slots", "1"]) == 0
+    assert calls["n"] == 1
+    assert calls["single_provider_attempt"] == [True]
+
+
+def test_cli_single_attempt_rejects_emit_before_any_effect(monkeypatch, capsys):
+    monkeypatch.setattr(R.desk_planner, "load_config",
+                        lambda *_args: pytest.fail("must reject before loading config"))
+    monkeypatch.setattr(R, "run_emit", lambda *_args: pytest.fail("must not emit"))
+    with pytest.raises(SystemExit) as exc:
+        R.main(["--emit", "--single-attempt"])
+    assert exc.value.code == 2
+    assert "--single-attempt applies only to staging" in capsys.readouterr().err
 
 
 def test_cli_reports_a_missing_config_rather_than_running_blind(tmp_path, capsys):

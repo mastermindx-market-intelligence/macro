@@ -646,8 +646,13 @@ def _stage_preplanned_slots(
 
 
 def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
-                max_slots: int | None = None) -> dict:
-    """Plan, reconcile, then stage the ordinary multi-slot Press run."""
+                max_slots: int | None = None, single_attempt: bool = False) -> dict:
+    """Plan, reconcile, then stage the ordinary multi-slot Press run.
+
+    Qualification runs may opt into one provider attempt per slot, disabling
+    SDK retries, provider fallback and draft regeneration. This does not change
+    source admission, token accounting, validation or publication authority.
+    """
     paths = _paths(cfg, root)
     # Preserve the generic lane's original timing: its staging directory
     # existed before either mutable discovery step ran.
@@ -667,6 +672,8 @@ def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
                                    int(llm_cfg.get("circuit_breaker_consecutive_failures") or 3)),
     )
     max_regen = int(((cfg.get("quarantine") or {}).get("max_regenerations")) or 2)
+    if single_attempt:
+        max_regen = 0
 
     _pub_refs, pub_slugs = desk_planner.published_refs(root, cfg)
     _stg_refs, stg_slugs = desk_planner.staged_refs(root, cfg)
@@ -681,6 +688,7 @@ def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
         max_regenerations=max_regen,
         taken_slugs=taken,
         revision_reconciliation=revision_reconciliation,
+        single_provider_attempt=single_attempt,
     )
 
 
@@ -1207,7 +1215,12 @@ def main(argv=None) -> int:
     ap.add_argument("--root", default="", help="repo root override (tests)")
     ap.add_argument("--max-slots", type=int, default=None,
                     help="cap the number of slots this run attempts")
+    ap.add_argument("--single-attempt", action="store_true",
+                    help="stage with at most one provider attempt per slot; "
+                         "disable SDK retries, provider fallback and regeneration")
     args = ap.parse_args(argv)
+    if args.emit and args.single_attempt:
+        ap.error("--single-attempt applies only to staging, not --emit")
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -1224,7 +1237,8 @@ def main(argv=None) -> int:
         out = run_emit(root, cfg)
     else:
         out = run_staging(root, cfg, desks=desks,
-                          as_of=(args.as_of or None), max_slots=args.max_slots)
+                          as_of=(args.as_of or None), max_slots=args.max_slots,
+                          single_attempt=args.single_attempt)
 
     print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
     return 0

@@ -466,9 +466,10 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
 
     Never raises.  Every failure path records against the RunState so the
     circuit breaker and the budget see it.  The default preserves Press's
-    existing provider waterfall.  ``single_provider_attempt`` is reserved for
-    immutable one-candidate ingress: it disables SDK retries at construction
-    time and passes only the first currently usable provider to ``make_call``.
+    existing provider waterfall. ``single_provider_attempt`` supports immutable
+    one-candidate ingress and opt-in staging qualification: it disables SDK
+    retries at construction time and passes only the first currently usable
+    provider to ``make_call``. The caller must also disable regeneration.
     """
     state = state or RunState(
         token_budget=int(((cfg.get("llm") or {}).get("run_token_budget")) or 240_000),
