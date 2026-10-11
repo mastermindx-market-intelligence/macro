@@ -108,6 +108,9 @@ html[data-theme="dark"] .stance-chip.calm{background:#222732}
 /* ---- tooltip system (B1.6) ---- */
 [data-tip-en],[data-tip-zh]{position:relative}
 .tip-pop{position:absolute;z-index:99;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%) translateY(4px);background:var(--ink);color:#fff;font-size:11.5px;line-height:1.5;border-radius:8px;padding:7px 11px;min-width:180px;max-width:280px;white-space:normal;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;box-shadow:0 4px 16px rgba(0,0,0,.22)}
+/* The light theme's --ink is a dark surface, but dark theme remaps --ink to
+   foreground text. Keep the same popover contrast by inverting onto --card. */
+html[data-theme="dark"] .tip-pop{background:var(--card);color:var(--ink)}
 [data-tip-en]:hover .tip-pop,[data-tip-en]:focus .tip-pop,
 [data-tip-zh]:hover .tip-pop,[data-tip-zh]:focus .tip-pop{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
 /* ---- §2 transmission ---- */
