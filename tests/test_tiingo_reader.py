@@ -197,3 +197,38 @@ def test_mutable_research_rows_cannot_claim_source_or_rights_authority(view, fie
     manifest_path.write_text(json.dumps(manifest))
     with pytest.raises(TiingoViewRefusal, match="lineage"):
         read_research_view(source, day, digest, root=root, check_mount=False)
+
+
+
+def test_reader_verifies_original_raw_gzip_even_if_parquet_is_intact(view):
+    root, source, day, digest = view
+    recfile = next((root / "receipts" / source / day).glob("*.json"))
+    receipt = json.loads(recfile.read_text())
+    raw = root / receipt["raw_path"]
+    raw.write_bytes(b"damaged gzip after the L1 view was materialized")
+    with pytest.raises(TiingoViewRefusal, match="raw"):
+        read_research_view(source, day, digest, root=root, check_mount=False)
+
+
+def test_reader_cannot_consume_external_symlinked_parquet(view):
+    root, source, day, digest = view
+    manifest = root / "manifests" / source / day / (digest + ".json")
+    metadata = json.loads(manifest.read_text())
+    parquet = root / metadata["output_path"]
+    external = root.parent / "external-artifact.parquet"
+    external.write_bytes(parquet.read_bytes())
+    parquet.unlink()
+    parquet.symlink_to(external)
+    with pytest.raises(TiingoViewRefusal, match="path"):
+        read_research_view(source, day, digest, root=root, check_mount=False)
+
+
+def test_reader_cannot_consume_external_symlinked_manifest(view):
+    root, source, day, digest = view
+    manifest = root / "manifests" / source / day / (digest + ".json")
+    external = root.parent / "external-manifest.json"
+    external.write_bytes(manifest.read_bytes())
+    manifest.unlink()
+    manifest.symlink_to(external)
+    with pytest.raises(TiingoViewRefusal, match="path"):
+        read_research_view(source, day, digest, root=root, check_mount=False)

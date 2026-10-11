@@ -4377,6 +4377,8 @@ on:
       - "tests/test_tiingo_views.py"
       - "tests/test_tiingo_reader.py"
       - "tests/test_tiingo_history.py"
+      - "tests/test_tiingo_research_query.py"
+      - "scripts/tiingo_research_query.py"
       - "tests/test_tiingo_vendor_cohort.py"
       - "tests/test_tiingo_ingestion_integrity.py"
       - "scripts/tiingo_reference_audit.py"

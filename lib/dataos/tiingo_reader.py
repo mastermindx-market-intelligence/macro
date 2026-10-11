@@ -17,7 +17,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from collectors.tiingo_archive import DEFAULT_ARCHIVE, SOURCES, require_external_root
+from collectors.tiingo_archive import DEFAULT_ARCHIVE, SOURCES, TiingoArchiveError, require_external_root
+from scripts.tiingo_materialize import verified_raw
 from lib.dataos.tiingo_views import SCHEMA_VERSION
 
 SHA = re.compile(r"^[0-9a-f]{64}$")
@@ -113,6 +114,13 @@ def read_research_view(source: str, day: str, sha256: str, *,
     rel = Path(source) / day / (sha256 + ".parquet")
     path = base / "normalized" / rel
     manifest_file = base / "manifests" / rel.with_suffix(".json")
+    # A locally editable manifest/hash is not sufficient if a symlink can
+    # redirect a research read onto another filesystem or escaped directory.
+    base_real = base.resolve()
+    if (manifest_file.is_symlink() or path.is_symlink()
+            or not manifest_file.resolve().is_relative_to(base_real)
+            or not path.resolve().is_relative_to(base_real)):
+        raise TiingoViewRefusal("research source view path is not confined to the archive")
     if not manifest_file.exists() or not path.is_file():
         raise TiingoViewRefusal("source view lacks artifact-bound evidence")
     try:
@@ -147,6 +155,17 @@ def read_research_view(source: str, day: str, sha256: str, *,
     except ImportError as exc:
         raise TiingoViewRefusal("pyarrow missing") from exc
     context = _unique_raw_context(base, source, day, sha256)
+    # The original raw receipt must STILL resolve to byte-identical source
+    # evidence. A valid Parquet/manifest pair cannot hide corrupted raw gzip.
+    # This invokes only the already-existing bounded, read-only verifier;
+    # nothing is reconstructed, repaired, fetched, or written to the lake.
+    try:
+        source_body = verified_raw(base, context)
+        length = context.get("raw_bytes")
+        if type(length) is not int or length != len(source_body):
+            raise TiingoViewRefusal("source raw receipt byte-length mismatch")
+    except (TiingoArchiveError, OSError, ValueError, KeyError, TypeError, EOFError) as exc:
+        raise TiingoViewRefusal("source raw byte integrity could not be verified") from exc
     pf = pq.ParquetFile(path)
     if pf.metadata.num_rows > max_rows:
         raise TiingoViewRefusal("row cap exceeded: partition is not bounded for reader")

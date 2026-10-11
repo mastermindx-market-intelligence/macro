@@ -594,3 +594,96 @@ DO_NOT_REDO. PR #8698 stays draft, all 24 Tiingo contracts PROPOSED,
 and Tiingo News remains separately owned by #8697. Next gate is genuinely
 permitted producer repair plus live BOATS/history entitlement qualification,
 followed by real archive and consumer integration proof.
+
+
+### October 11 UTC — self-service read-only research query CLI
+
+A local CLI now exposes the EXISTING evidence-bound Data OS Tiingo research
+reader for analysts and test workspaces without requiring them to write Python
+or install another service:
+
+    python3 -m scripts.tiingo_research_query discover --source eod-bars --symbol AMD
+
+When actual, qualified L0/L1 captures exist, discover returns ONLY
+locally verified manifest+receipt+Parquet references, each with exact
+capture-day and 64-hex source SHA-256. NO_LOCAL_ARCHIVE is an honest and
+non-mutating response while the intended target is empty. Discovery is
+budgeted, marks incomplete scans, keeps corrupt artifacts rejected rather
+than counting them as history, and does not claim vendor entitlement,
+historical PIT membership, or completeness.
+
+To use a returned exact reference for retrospective research:
+
+    python3 -m scripts.tiingo_research_query query \
+      --source eod-bars --symbol AMD \
+      --capture CAPTURE_DAY:FULL_SOURCE_SHA256 \
+      --start 2019-01-01 --end 2019-12-31 \
+      --observed-before 2026-10-10T00:00:00Z \
+      --acknowledge-hindsight
+
+Repeat --capture to compare multiple exact partitions. For daily fundamental
+metrics use --source fund-daily. For financial statements use --source
+fund-statements --as-reported true (or --as-reported false for the distinct
+latest-restated view). The CLI reuses read_research_history or
+read_research_statement_timeline and thus inherits capture provenance,
+original vendor request-window controls, identity restrictions, contradiction
+refusals, null/zero preservation, and explicitly false PIT/redistribution/
+completeness claims.
+
+--max-rows, --max-partitions, --max-scan, --max-results and the top-level
+--max-output-bytes cap restrict memory, scanning, stdout, and references.
+There is no silent partial-JSON success. The CLI writes bounded JSON only to
+stdout. It accesses no secrets, vendors or network; creates no publisher,
+HTTP service, archive, queue, scheduler, historical identity state or separate
+authorization plane.
+
+Source: scripts/tiingo_research_query.py; synthetic regression suite:
+tests/test_tiingo_research_query.py. Both are wired into the existing
+dataos-prospective-reference CI/test/trigger owner without another job.
+Local focused query/history/reader tests: 95 passed. Actual operator
+read-only discover returned NO_LOCAL_ARCHIVE, archive_exists=false,
+network=false, writes=false, pit_backtest_eligible=false on the
+unpopulated intended production lake. A working read-side CLI does not
+mean Tiingo is now delivering vendor files.
+
+Original collector rewrite and authenticated probe restrictions remain
+DO_NOT_REDO; the 11 producer integrity failures are still release
+blockers. The paid plan/full redistribution attestation remains on
+record, but no local editable manifest grants publication rights.
+
+
+### October 11 UTC — proof of read-side source-byte integrity
+
+The first CLI-focused regression pass found that an intact research Parquet
+and editable manifest could appear locally verified even if the original raw
+gzip had been damaged after projection. The existing research reader now
+reuses the pre-existing strictly bounded VERIFIED_RAW *reader* from the
+unchanged materializer, checks original raw SHA-256 and byte length against
+its unique receipt, and refuses local manifests/Parquet paths symlinked
+outside the external archive. No repair or source artifact rewrite occurs.
+
+New negative tests first reproduced all three cases; after the change:
+the original damaged-gzip fixture, escaped manifest and escaped Parquet
+are refused; the CLI discovery refuses raw-corrupt research candidates.
+The research CLI also refuses oversized output **before** printing rows,
+so an apparent truncated successful dataset is not produced.
+
+Latest full tests/test_tiingo_*.py + tests/test_dataos_registry.py run:
+**352 passed, the original 11 producer-integrity cases still failed**,
+pytest exit 1 (process 63916). There are no waived failures.
+Run log on the external data volume:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-research-cli-source-verified-20261011.log
+SHA-256 44e2ddadee1f2b7166403da56beadcfd5259c4359438c5a9aa25fe110d3ba149
+
+CI owner remains the existing dataos-prospective-reference job with
+49 inferred concrete paths, zero uncovered and zero other unwired suites.
+No live BOATS/EOD/fundamental response was collected and the original
+collector SHA-256 is unchanged:
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+
+Claim boundary: locally verified receipt bytes + read-only research artifact
+checks still do not prove Tiingo network authenticity, vendor entitlements,
+historical known-at availability, full coverage, or redistribution approval.
+The CLI remains SOURCE-DARK until a genuinely permitted producer and actual
+raw historical receipts exist. Do not merge/release or invoke blocked
+producer/probe effects in alternate form.
