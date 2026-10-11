@@ -26,6 +26,7 @@
   .cp-table-wrap td.pos-col{color:var(--up);}
   .cp-curve-wrap{margin:20px 0 0; border-radius:var(--r-md); border:1px solid var(--hair-strong); overflow:hidden;}
   .cp-curve-wrap svg{display:block; width:100%; height:auto; background:var(--panel2);}
+  .ci input[aria-invalid="true"]{border-color:var(--warn);}
 {% endblock %}
 
 {% block calc_form %}
@@ -157,16 +158,39 @@
   "use strict";
 
   var freq = 12;  // default monthly
+  var LIMIT = 1e15;
+
+  function parseNum(raw, unit){
+    var s = String(raw == null ? "" : raw).trim();
+    if(s === "") return {ok:false, why:"blank"};
+    if(unit === "pct") s = s.replace(/\s*%$/, "");
+    if(!/^[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d*)?$/.test(s) || !/\d/.test(s)) return {ok:false, why:"format"};
+    var v = Number(s.replace(/,/g, ""));
+    if(!isFinite(v)) return {ok:false, why:"range"};
+    return {ok:true, v:v};
+  }
+
+  function setBi(el, en, zh){
+    el.textContent = "";
+    var sEn = document.createElement("span");
+    sEn.className = "l-en";
+    sEn.textContent = en;
+    var sZh = document.createElement("span");
+    sZh.className = "l-zh";
+    sZh.textContent = zh;
+    el.appendChild(sEn);
+    el.appendChild(sZh);
+  }
 
   // ── pure compute (CONTRACT §7 — ordinary annuity) ──────────────────────────
   function compute(inp){
     var P=inp.P, c=inp.c, f=inp.f, r=inp.r, n=inp.n;
-    if(!(P>=0)) return {ok:false, msg:"Enter a starting principal (0 or more)."};
-    if(!(c>=0)) return {ok:false, msg:"Enter a contribution amount (0 or more)."};
-    if(!(f>0))  return {ok:false, msg:"Select a contribution frequency."};
-    if(!(r>=0)) return {ok:false, msg:"Enter an annual return rate (0 or more)."};
-    if(!(n>=1)) return {ok:false, msg:"Enter a holding period of at least 1 year."};
-    if(n>50)    return {ok:false, msg:"The table is capped at 50 years."};
+    if(!(P>=0)) return {ok:false, msg:{en:"Enter a starting principal (0 or more).", zh:"请输入初始本金（0 或以上）。"}};
+    if(!(c>=0)) return {ok:false, msg:{en:"Enter a contribution amount (0 or more).", zh:"请输入每期投入金额（0 或以上）。"}};
+    if(!(f>0))  return {ok:false, msg:{en:"Select a contribution frequency.", zh:"请选择投入频率。"}};
+    if(!(r>=0)) return {ok:false, msg:{en:"Enter an annual return rate (0 or more).", zh:"请输入年化收益率（0 或以上）。"}};
+    if(!(n>=1)) return {ok:false, msg:{en:"Enter a holding period of at least 1 year.", zh:"请输入至少 1 年的持有期。"}};
+    if(n>50)    return {ok:false, msg:{en:"The table is capped at 50 years.", zh:"表格最多显示 50 年。"}};
     var i = r / 100 / f;
     var m = Math.round(n * f);
     var pow = Math.pow(1 + i, m);
@@ -188,6 +212,12 @@
     if(n !== nFloor){
       rows.push({ year:n, contributed:contributed, growth:growth, fv:FV });
     }
+    var overflowMsg = {en:"Those numbers are out of range — try a smaller horizon or return.", zh:"这些数字超出可计算范围——请缩短年限或降低回报率。"};
+    if(!isFinite(FV) || Math.abs(FV) > LIMIT || !isFinite(contributed) || Math.abs(contributed) > LIMIT || !isFinite(growth) || Math.abs(growth) > LIMIT) return {ok:false, msg:overflowMsg, overflow:true};
+    for(var ri=0; ri<rows.length; ri++){
+      var row = rows[ri];
+      if(!isFinite(row.fv) || Math.abs(row.fv) > LIMIT || !isFinite(row.contributed) || Math.abs(row.contributed) > LIMIT || !isFinite(row.growth) || Math.abs(row.growth) > LIMIT) return {ok:false, msg:overflowMsg, overflow:true};
+    }
     var mult = contributed > 0 ? FV / contributed : null;
     return {ok:true, FV:FV, contributed:contributed, growth:growth, rows:rows, mult:mult};
   }
@@ -199,40 +229,70 @@
   (function selfCheck(){
     WORKED_EXAMPLES.forEach(function(ex, i){
       var got = compute(ex.in), w = ex.want, k;
-      if(!got.ok){ console.error("compounding self-check "+i+": compute failed", got.msg); return; }
+      if(!got.ok){ console.error("compounding self-check "+i+": compute failed", got.msg.en); return; }
       for(k in w){ if(Math.abs(got[k] - w[k]) > 1){
         console.error("compounding self-check "+i+" mismatch on "+k+": got "+got[k]+" want "+w[k]); } }
     });
   })();
 
   // ── SVG curve ──────────────────────────────────────────────────────────────
-  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function drawCurve(rows){
+  function curveGeometry(P, rows){
     var W=600, H=200, PL=40, PR=20, PT=24, PB=28;
     var cw=W-PL-PR, ch=H-PT-PB;
-    var maxFV = rows[rows.length-1].fv;
-    function sx(i){ return PL + (i / (rows.length-1)) * cw; }
-    function sy(v){ return PT + ch - (v / maxFV) * ch; }
-
-    function mkPath(getter){
-      return rows.map(function(r,i){ return (i===0?"M":"L")+sx(i).toFixed(1)+","+sy(getter(r)).toFixed(1); }).join(" ");
+    var points = [{t:0, fv:P, contributed:P}];
+    for(var i=0; i<rows.length; i++){
+      points.push({t:rows[i].year, fv:rows[i].fv, contributed:rows[i].contributed});
     }
-    function mkArea(getter){
-      var d = rows.map(function(r,i){ return (i===0?"M":"L")+sx(i).toFixed(1)+","+sy(getter(r)).toFixed(1); }).join(" ");
-      d += " L"+sx(rows.length-1).toFixed(1)+","+(PT+ch)+" L"+PL+","+(PT+ch)+" Z";
+    var tMax = points[points.length-1].t;
+    function xOf(t){ return PL + (t / tMax) * cw; }
+    var maxY = 0;
+    for(var j=0; j<points.length; j++){
+      if(points[j].fv > maxY) maxY = points[j].fv;
+      if(points[j].contributed > maxY) maxY = points[j].contributed;
+    }
+    function yOf(v){
+      if(!(maxY > 0)) return PT + ch;
+      return PT + ch - (v / maxY) * ch;
+    }
+    var pts = [];
+    for(var k=0; k<points.length; k++){
+      pts.push({
+        x: Number(xOf(points[k].t).toFixed(1)),
+        yFv: Number(yOf(points[k].fv).toFixed(1)),
+        yC: Number(yOf(points[k].contributed).toFixed(1))
+      });
+    }
+    function linePath(key){
+      var d = "";
+      for(var p=0; p<pts.length; p++){
+        d += (p===0?"M":" L") + pts[p].x.toFixed(1) + "," + pts[p][key].toFixed(1);
+      }
       return d;
     }
+    var lineFv = linePath("yFv");
+    var lineC = linePath("yC");
+    var lastX = pts[pts.length-1].x.toFixed(1);
+    var baseY = (PT + ch).toFixed(1);
+    var areaFv = lineFv + " L" + lastX + "," + baseY + " L" + PL.toFixed(1) + "," + baseY + " Z";
+    var areaC  = lineC  + " L" + lastX + "," + baseY + " L" + PL.toFixed(1) + "," + baseY + " Z";
+    return {lineFv:lineFv, lineC:lineC, areaFv:areaFv, areaC:areaC, pts:pts};
+  }
 
-    var lineFV  = document.getElementById("cp-line-fv");
-    var areaFV  = document.getElementById("cp-area-fv");
-    var lineC   = document.getElementById("cp-line-c");
-    var areaC   = document.getElementById("cp-area-c");
-
-    areaFV.setAttribute("d", mkArea(function(r){return r.fv;}));
-    areaC.setAttribute("d",  mkArea(function(r){return r.contributed;}));
-    var pathD = mkPath(function(r){return r.fv;});
-    lineFV.setAttribute("d", pathD);
-    lineC.setAttribute("d",  mkPath(function(r){return r.contributed;}));
+  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function clearCurve(){
+    ["cp-area-fv","cp-area-c","cp-line-fv","cp-line-c"].forEach(function(id){
+      document.getElementById(id).setAttribute("d", "");
+    });
+    document.getElementById("curve-wrap").style.display = "none";
+  }
+  function drawCurve(P, rows){
+    var g = curveGeometry(P, rows);
+    var lineFV = document.getElementById("cp-line-fv");
+    var lineC  = document.getElementById("cp-line-c");
+    document.getElementById("cp-area-fv").setAttribute("d", g.areaFv);
+    document.getElementById("cp-area-c").setAttribute("d", g.areaC);
+    lineFV.setAttribute("d", g.lineFv);
+    lineC.setAttribute("d", g.lineC);
 
     if(!reducedMotion){
       var len = lineFV.getTotalLength ? lineFV.getTotalLength() : 600;
@@ -252,6 +312,14 @@
         outContrib=$("out-contrib"), outGrowth=$("out-growth"), outMult=$("out-mult"),
         tbody=$("year-tbody"), tableWrap=$("year-table-wrap"), seg=$("freq-seg"),
         copyBtn=$("copy-result"), copied=$("copied");
+    var FIELD_ORDER = ["principal","contrib","rate","years"];
+    var FIELD_UNITS = {principal:"num", contrib:"num", rate:"pct", years:"num"};
+    var FIELD_LABELS = {
+      principal:{en:"Starting principal", zh:"初始本金"},
+      contrib:{en:"Contribution per period", zh:"每期投入"},
+      rate:{en:"Annual return", zh:"年化收益率"},
+      years:{en:"Years", zh:"年数"}
+    };
 
     seg.addEventListener("click", function(e){
       var btn=e.target.closest("[data-v]"); if(!btn) return;
@@ -259,17 +327,61 @@
       btn.classList.add("on"); freq=parseInt(btn.dataset.v,10); render();
     });
 
-    function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + n.toLocaleString("en-US",{maximumFractionDigits:0}); }
     function dash(){ outMain.textContent="—"; [outContrib,outGrowth,outMult].forEach(function(e){e.textContent="—";}); }
 
     var last=null;
     function render(){
-      var inp={ P:numFrom(els.principal), c:numFrom(els.contrib),
-                f:freq, r:numFrom(els.rate), n:numFrom(els.years) };
+      var firstFail = null;
+      var parsed = {};
+      FIELD_ORDER.forEach(function(id){
+        var el = els[id];
+        var pn = parseNum(el.value, FIELD_UNITS[id]);
+        if(pn.ok){
+          parsed[id] = pn.v;
+          el.removeAttribute("aria-invalid");
+          el.removeAttribute("aria-describedby");
+        } else if(pn.why === "blank"){
+          parsed[id] = NaN;
+          el.removeAttribute("aria-invalid");
+          el.removeAttribute("aria-describedby");
+        } else {
+          parsed[id] = NaN;
+          el.setAttribute("aria-invalid", "true");
+          el.setAttribute("aria-describedby", "out-plain");
+          if(!firstFail) firstFail = {id:id, why:pn.why, el:el};
+        }
+      });
+      if(firstFail){
+        dash();
+        tableWrap.style.display = "none";
+        clearCurve();
+        var lab = FIELD_LABELS[firstFail.id];
+        var ph = firstFail.el.getAttribute("placeholder") || "";
+        var en, zh;
+        if(firstFail.why === "format"){
+          en = lab.en + ": enter a number such as " + ph + ".";
+          zh = lab.zh + "：请输入数字，例如 " + ph + "。";
+        } else {
+          en = lab.en + ": that number is too large to calculate.";
+          zh = lab.zh + "：数字过大，无法计算。";
+        }
+        setBi(outPlain, en, zh);
+        outPlain.className = "co-plain warn";
+        last = {ok:false};
+        return;
+      }
+
+      var inp={ P:parsed.principal, c:parsed.contrib, f:freq, r:parsed.rate, n:parsed.years };
       var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain";
-        tableWrap.style.display="none"; document.getElementById("curve-wrap").style.display="none"; return; }
+      if(!res.ok){
+        dash();
+        setBi(outPlain, res.msg.en, res.msg.zh);
+        outPlain.className = res.overflow ? "co-plain warn" : "co-plain";
+        tableWrap.style.display = "none";
+        clearCurve();
+        return;
+      }
 
       outMain.textContent = money(res.FV);
       outContrib.textContent = money(res.contributed);
@@ -299,13 +411,13 @@
       });
       tableWrap.style.display = "";
 
-      // draw curve (≥2 rows needed)
-      if(res.rows.length >= 2) drawCurve(res.rows);
+      drawCurve(inp.P, res.rows);
     }
 
     function copyLine(){
       if(!last || !last.ok) return "";
-      return "Compounding: " + money(last.FV) + " after " + numFrom(els.years) + " years" +
+      var yearsPn = parseNum(els.years.value, "num");
+      return "Compounding: " + money(last.FV) + " after " + yearsPn.v + " years" +
         " · contributed " + money(last.contributed) +
         " · growth $" + last.growth.toLocaleString("en-US",{maximumFractionDigits:0}) +
         " — mastermind-x.com";

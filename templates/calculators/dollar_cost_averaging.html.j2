@@ -12,6 +12,10 @@
 
 {% block calc_glyph %}{{ glyphs.glyph('dollar-cost-averaging', 'crown') }}{% endblock %}
 
+{% block estate_css %}{{ super() }}
+  .ci input[aria-invalid="true"]{border-color:var(--warn);}
+{% endblock %}
+
 {% block calc_form %}
 <p class="cc-lede">{{ t('Enter how much you invest each period, how often, for how many years, and an expected annual return. You get the projected end value, what you actually put in, and the growth on top.',
    '填入每期投入金额、投入频率、投入年数，以及一个预期年化回报，即可得到期末的预估价值、你实际投入的本金，以及在此之上的增长。') }}</p>
@@ -111,23 +115,47 @@
 (function(){
   "use strict";
 
+  var LIMIT = 1e15;
+
+  function parseNum(raw, unit){
+    var s = String(raw == null ? "" : raw).trim();
+    if(s === "") return {ok:false, why:"blank"};
+    if(unit === "pct") s = s.replace(/\s*%$/, "");
+    if(!/^[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d*)?$/.test(s) || !/\d/.test(s)) return {ok:false, why:"format"};
+    var v = Number(s.replace(/,/g, ""));
+    if(!isFinite(v)) return {ok:false, why:"range"};
+    return {ok:true, v:v};
+  }
+
+  function setBi(el, en, zh){
+    el.textContent = "";
+    var sEn = document.createElement("span");
+    sEn.className = "l-en";
+    sEn.textContent = en;
+    var sZh = document.createElement("span");
+    sZh.className = "l-zh";
+    sZh.textContent = zh;
+    el.appendChild(sEn);
+    el.appendChild(sZh);
+  }
+
   // ── pure compute (DCA — ordinary annuity, end-of-period) ───────────────────
   // inputs: {c contribution, f periods/year, yrs years, r annualPct}. Returns
   // an outputs object, or {ok:false, msg} for invalid input. No NaN/Infinity.
   function compute(inp){
     var c=inp.c, f=inp.f, yrs=inp.yrs, r=inp.r;
-    if(!(c>0)) return {ok:false, msg:"Enter a contribution above zero."};
-    if(!(f>0)) return {ok:false, msg:"Pick how often you invest."};
-    if(!(yrs>0)) return {ok:false, msg:"Enter how many years you'll invest."};
-    if(!isFinite(r)) return {ok:false, msg:"Enter an expected annual return."};
+    if(!(c>0)) return {ok:false, msg:{en:"Enter a contribution above zero.", zh:"请输入大于零的每期投入。"}};
+    if(!(f>0)) return {ok:false, msg:{en:"Pick how often you invest.", zh:"请选择投入频率。"}};
+    if(!(yrs>0)) return {ok:false, msg:{en:"Enter how many years you'll invest.", zh:"请输入投入年数。"}};
+    if(!isFinite(r)) return {ok:false, msg:{en:"Enter an expected annual return.", zh:"请输入预期年化回报。"}};
     var N = Math.round(yrs * f);
-    if(!(N>0)) return {ok:false, msg:"That horizon is too short to make a single contribution."};
+    if(!(N>0)) return {ok:false, msg:{en:"That horizon is too short to make a single contribution.", zh:"这个期限太短，连一次投入都无法完成。"}};
     var i = r / 100 / f;
     var fv = (i === 0) ? (c * N) : (c * (Math.pow(1 + i, N) - 1) / i);
     var invested = c * N;
     var gain = fv - invested;
     var returnPct = invested > 0 ? (100 * gain / invested) : 0;
-    if(!isFinite(fv) || !isFinite(gain)) return {ok:false, msg:"Those numbers are out of range — try a smaller horizon or return."};
+    if(!isFinite(fv) || Math.abs(fv) > LIMIT || !isFinite(gain) || Math.abs(gain) > LIMIT || !isFinite(invested) || Math.abs(invested) > LIMIT) return {ok:false, msg:{en:"Those numbers are out of range — try a smaller horizon or return.", zh:"这些数字超出可计算范围——请缩短年限或降低回报率。"}, overflow:true};
     return { ok:true, N:N, fv:fv, invested:invested, gain:gain, returnPct:returnPct };
   }
 
@@ -139,7 +167,7 @@
   (function selfCheck(){
     WORKED_EXAMPLES.forEach(function(ex, i){
       var got = compute(ex.in), w = ex.want, k;
-      if(!got.ok){ console.error("dollar-cost-averaging self-check "+i+": compute failed", got); return; }
+      if(!got.ok){ console.error("dollar-cost-averaging self-check "+i+": compute failed", got.msg.en); return; }
       for(k in w){ if(Math.abs(got[k] - w[k]) > 1 && got[k] !== w[k]){
         console.error("dollar-cost-averaging self-check "+i+" mismatch on "+k+": got "+got[k]+" want "+w[k]); } }
     });
@@ -153,10 +181,16 @@
     var outMain=$("out-main"), outPlain=$("out-plain"),
         outInv=$("out-invested"), outGain=$("out-gain"), outRet=$("out-return"), outBuys=$("out-buys"),
         copyBtn=$("copy-result"), copied=$("copied");
+    var FIELD_ORDER = ["contrib","years","rate"];
+    var FIELD_UNITS = {contrib:"num", years:"num", rate:"pct"};
+    var FIELD_LABELS = {
+      contrib:{en:"Contribution per period", zh:"每期投入"},
+      years:{en:"Number of years", zh:"投入年数"},
+      rate:{en:"Expected annual return", zh:"预期年化回报"}
+    };
 
     var freq = 12; // default: monthly (matches the .on button)
 
-    function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
     function money0(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
     function dash(){ outMain.textContent="—";
@@ -164,9 +198,51 @@
 
     var last=null;
     function render(){
-      var inp={ c:numFrom(els.contrib), f:freq, yrs:numFrom(els.years), r:numFrom(els.rate) };
+      var firstFail = null;
+      var parsed = {};
+      FIELD_ORDER.forEach(function(id){
+        var el = els[id];
+        var pn = parseNum(el.value, FIELD_UNITS[id]);
+        if(pn.ok){
+          parsed[id] = pn.v;
+          el.removeAttribute("aria-invalid");
+          el.removeAttribute("aria-describedby");
+        } else if(pn.why === "blank"){
+          parsed[id] = NaN;
+          el.removeAttribute("aria-invalid");
+          el.removeAttribute("aria-describedby");
+        } else {
+          parsed[id] = NaN;
+          el.setAttribute("aria-invalid", "true");
+          el.setAttribute("aria-describedby", "out-plain");
+          if(!firstFail) firstFail = {id:id, why:pn.why, el:el};
+        }
+      });
+      if(firstFail){
+        dash();
+        var lab = FIELD_LABELS[firstFail.id];
+        var ph = firstFail.el.getAttribute("placeholder") || "";
+        var en, zh;
+        if(firstFail.why === "format"){
+          en = lab.en + ": enter a number such as " + ph + ".";
+          zh = lab.zh + "：请输入数字，例如 " + ph + "。";
+        } else {
+          en = lab.en + ": that number is too large to calculate.";
+          zh = lab.zh + "：数字过大，无法计算。";
+        }
+        setBi(outPlain, en, zh);
+        outPlain.className = "co-plain warn";
+        last = {ok:false};
+        return;
+      }
+      var inp={ c:parsed.contrib, f:freq, yrs:parsed.years, r:parsed.rate };
       var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
+      if(!res.ok){
+        dash();
+        setBi(outPlain, res.msg.en, res.msg.zh);
+        outPlain.className = res.overflow ? "co-plain warn" : "co-plain";
+        return;
+      }
       outMain.textContent = money0(res.fv);
       outInv.textContent  = money(res.invested);
       outGain.textContent = money(res.gain);
