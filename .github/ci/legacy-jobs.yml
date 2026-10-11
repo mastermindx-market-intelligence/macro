@@ -23187,3 +23187,26 @@ jobs:
         run: pip install pytest pyyaml jsonschema
       - name: SNI coverage_profile.v1 contract tests
         run: python -m pytest tests/test_single_name_coverage_profiles.py -q -p no:cacheprovider
+
+  grey-deer-observed-moves:
+    if: ${{ false }}
+    gate: code
+    # Grey Deer W2 (WS:GREY-DEER-RISK-INTELLIGENCE): observed-move label and
+    # feature primitives frozen by research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
+    # (§3 price-basis refusal, §4 forward maximum loss, §6 trailing features).
+    # Hermetic: synthetic series only, no data/ or site/ reads.
+    timeout-minutes: 5
+    paths:
+      - "lib/__init__.py"
+      - "lib/observed_moves.py"
+      - "tests/test_observed_moves.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy
+      - name: observed-move labels, features and price-basis refusal
+        run: python -m pytest tests/test_observed_moves.py -q
