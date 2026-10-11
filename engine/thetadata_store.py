@@ -128,26 +128,69 @@ _HAS_ROOT = "has_root"   # a tier provably holds at least one root directory
 _DRAINED = "drained"     # tier dirs exist and provably hold no roots
 _NO_TIERS = "no_tiers"   # empty stub: no eod/ oi/ greeks/ at all
 _UNKNOWN = "unknown"     # denied, blocked or errored — emptiness NOT established
+_UNMOUNTED = "unmounted" # path or a tier entry lands on a volume that is not mounted
 
 # THE fail-open rule, in exactly one place. Both the public predicate and the
 # resolver loop read it, so they cannot drift apart: only a PROVABLY empty
-# candidate (_DRAINED / _NO_TIERS) is refused.
+# candidate (_DRAINED / _NO_TIERS) is skipped. _UNMOUNTED is deliberately
+# absent — a store on a volume that is not mounted stops the chain.
 _RESOLVABLE = (_HAS_ROOT, _UNKNOWN)
+
+# Tests monkeypatch these two. Production uses the real volumes root.
+_VOLUMES_ROOT = Path("/Volumes")
+
+
+def _is_mount(p: Path) -> bool:
+    return os.path.ismount(p)
+
+
+def _unmounted_volume(p: Path) -> Path | None:
+    """Return the unmounted volume `p` or one of its tier entries lands on.
+
+    Candidates are `p` itself and every tier entry that lexists, so a dangling
+    symlink counts. Only lstat / readlink / stat — no directory listing.
+    OSError propagates; the caller fails that open to `_UNKNOWN`.
+    """
+    candidates: list[Path] = [p]
+    for t in _STORE_TIERS:
+        tier = p / t
+        if os.path.lexists(tier):
+            candidates.append(tier)
+    vroot = Path(os.path.realpath(_VOLUMES_ROOT))
+    for c in candidates:
+        r = Path(os.path.realpath(c))
+        try:
+            parts = r.relative_to(vroot).parts
+        except ValueError:
+            continue
+        if not parts:
+            continue
+        vol = vroot / parts[0]
+        if not _is_mount(vol):
+            return vol
+    return None
 
 
 def _classify_store(p: Path) -> str:
     """Classify a store candidate without ever mistaking "cannot read" for "empty".
 
-    Returns one of _HAS_ROOT / _DRAINED / _NO_TIERS / _UNKNOWN.
+    Returns one of _HAS_ROOT / _DRAINED / _NO_TIERS / _UNKNOWN / _UNMOUNTED.
 
-    Only the `is_dir()` calls happen on the calling thread — those are stats, the
-    same syscalls the pre-AD-1T2b predicate made, and they are not the operation
-    that hangs. The readdir runs in a daemon thread under a join budget so a
-    blocked external volume cannot wedge the resolver; on timeout the thread is
+    `_UNMOUNTED` is decided first, from lstat/readlink/stat only, when the path
+    or a tier entry resolves onto a volume that is not mounted. An OSError from
+    that check fails open to `_UNKNOWN`, same as the `is_dir()` stats.
+
+    Only the `is_dir()` calls and that volume check happen on the calling
+    thread — those are stats, the same class of syscall the pre-AD-1T2b
+    predicate made, and they are not the operation that hangs. The readdir
+    runs in a daemon thread under a join budget so a blocked external volume
+    cannot wedge the resolver; on timeout the thread is
     abandoned (daemon, so it never holds up interpreter exit) and the answer is
     _UNKNOWN.
     """
     try:
+        if _unmounted_volume(p) is not None:
+            return _UNMOUNTED
         if not p.is_dir():
             return _NO_TIERS
         tiers = [p / t for t in _STORE_TIERS if (p / t).is_dir()]
@@ -285,6 +328,21 @@ def drained_store_candidates() -> list[Path]:
             if _classify_store(path) == _DRAINED]
 
 
+def unmounted_store_candidates() -> list[Path]:
+    """Every candidate in the canonical chain that sits on an unmounted volume.
+
+    ``resolve_thetadata_store() is None`` is otherwise ambiguous: a fresh
+    install, a drained store, or a store whose volume is not mounted. A writer
+    that treats the unmounted case as a fresh install will mint a second store
+    on another disk — see scripts/backfill_thetadata_eod.py.
+
+    Never raises; an unreadable candidate is not unmounted (fail open, as
+    ``_classify_store`` does).
+    """
+    return [path for _src, path in _store_candidates()
+            if _classify_store(path) == _UNMOUNTED]
+
+
 def resolve_thetadata_store(required: bool = False,
                             purpose: str = "") -> Path | None:
     """THE canonical ThetaData store resolver (WP-RESOLVER) — single fallback chain.
@@ -298,7 +356,9 @@ def resolve_thetadata_store(required: bool = False,
     A candidate resolves unless it is PROVABLY empty — either a stub (exists, no
     eod/ oi/ greeks/ at all) or drained (tier dirs present, no root inside any of
     them). A candidate whose tiers cannot be listed is treated as present, never
-    as drained: see _has_store_content, which fails open by construction.
+    as drained: see _has_store_content, which fails open by construction. A
+    candidate on an unmounted volume (`_UNMOUNTED`) is refused and the chain
+    stops — later candidates are not tried.
 
     Args:
         required: when True and nothing resolves, raise RuntimeError naming
@@ -314,6 +374,7 @@ def resolve_thetadata_store(required: bool = False,
 
     tried: list[str] = []
     drained: list[str] = []
+    unmounted_vols: list[str] = []
     for source, path in candidates:
         verdict = _classify_store(path)
         if verdict in _RESOLVABLE:
@@ -335,6 +396,23 @@ def resolve_thetadata_store(required: bool = False,
                      " (readability unverified — see the warning above)"
                      if verdict == _UNKNOWN else "")
             return path
+
+        if verdict == _UNMOUNTED:
+            # Any source. Stop the chain: falling through would let a writer
+            # mint a second store on a different disk.
+            try:
+                vol = _unmounted_volume(path)
+            except OSError:
+                vol = None
+            vol_s = str(vol) if vol is not None else str(path)
+            unmounted_vols.append(vol_s)
+            log.error(
+                "thetadata_store: %s=%s is on unmounted volume %s — refusing "
+                "this store and not falling through to a later candidate "
+                "(purpose=%s)",
+                source, path, vol_s, purpose or "-")
+            tried.append(f"{source}:{path}")
+            break
 
         if verdict == _DRAINED:
             # AD-1T2b: two failures an operator must treat differently. "No store
@@ -371,6 +449,8 @@ def resolve_thetadata_store(required: bool = False,
     # earlier in the loop never reaches the operator who needs it.
     why = (f" — DRAINED (tier dirs present, zero roots): {', '.join(drained)}"
            if drained else "")
+    if unmounted_vols:
+        why += "".join(f" — UNMOUNTED: {v}" for v in unmounted_vols)
     log.error("thetadata_store: resolved store=NONE purpose=%s — tried %s%s",
               purpose or "-", ", ".join(tried), why)
     if required:
@@ -381,6 +461,8 @@ def resolve_thetadata_store(required: bool = False,
             f"hold no root is DRAINED, not resolvable"
             + (f" (drained: {', '.join(drained)}; refill it with "
                f"scripts/backfill_thetadata_eod.py)" if drained else "")
+            + (f" UNMOUNTED: {', '.join(unmounted_vols)}."
+               if unmounted_vols else "")
             + ". Set THETADATA_STORE or point the caller at a real store."
         )
     return None
