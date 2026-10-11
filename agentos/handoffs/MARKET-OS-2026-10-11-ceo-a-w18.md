@@ -20,7 +20,7 @@ verified:
     main; compare9changedblobs
   result: Reviewed efc418564fe17f6ca6ba76d170767d8e73f03009 merged5b7513b3b5995a5634b5ea66e55fcff737cde19d
     at13:43:46Z;27concludedchecks/0nonstandingfailures/9blobmatches.169billing+258deploymenttestsPASS.
-- claim: API adopted; admin is stopped behind unrelated W2C deployment ordering.
+- claim: API adopted; admin adoption is blocked by W2C deployment ordering while the old admin process remains active.
   command: 'Established read-only VPS SSH: issuer-runtime-readback.py; bounded systemctl metadata, source/installed
     hashes and macro-update diagnostic tail'
   result: 13:45receipt exact5b7513catalog/updater/API; admin PID2719081/start08:12oldunitgeneration. Last13:45:20log
