@@ -1017,3 +1017,32 @@ request; no run cancellation, second observer or release waiver followed. This r
 save stays on the same Draft/disarmed8545 two-file carrier. Whole Audit20 remains incomplete
 on the independent original review/platform/rights/unknown-effect and producer outcomes.
 Settled source/CI/SQL/UI/storage/releases are closed and must not be replayed.
+
+
+## 2026-10-11 20:17 UTC — narrow GMI defer ended; future PL6 coordination path clarified
+
+The existing GMI owner returned the release edge ending its accepted voluntary defer of
+discretionary new Macro records-only PRs/refreshes. Its first-party message reports controller
+run38170362127 admitting and refreshing PR8803 at20:01:59Z to
+`e58bb4f5ffc240a3333ccb86be4cc26264adb3f0` after six active proofs under cap8.
+The parent consumes the owner's explicit end of its voluntary defer; these controller details
+remain owner-reported, with no new metadata query or product/CI/release qualification. This
+is no new work request, cancellation or capacity waiver. No acknowledgment is required.
+
+A new bounded B custody question for A's existing F04 planning was answered once through
+the first-party tool. This active Audit20 root remains the coordination point for a future affected
+`b-pl-6-batch-1` recapture inherited from completed940, with no active capture writer or source
+reservation. A retains F04 integration; B retains F11-entry evidence. The newly referenced
+E20 comment6112991569 and immutable200786b34 PL6 manifest/gate paths were read only
+for that question. An actual AnalysisWorkspace change must return its exact final integrated
+tree and affected locks before a PL6 evidence writer is admitted. The existing producer, packet
+and gate are `capture_pl6_batch1.cjs`, `b-pl-6-batch-1/EVIDENCE.yml` and
+`b_pl_6Batch1Evidence.test.ts`; actual captures and source/PNG bindings must qualify the
+final changed tree. E20 host-writer and production-deploy custody stays scoped to its return.
+No recapture, source edit, UI/records/SQL/deploy effect or completed-carrier reopening occurred.
+
+This material save uses the same Draft/disarmed8545 two-file carrier. T1916 product proof
+and all independent holds remain unchanged: PR946 and the one AAccept/BReject are complete,
+both existing theses remain archived, and whole Audit20 remains incomplete. The ended
+capacity defer creates no new work or effect authority; continue only actual newly admitted
+work or relevant original-owner review/platform/rights/producer returns.

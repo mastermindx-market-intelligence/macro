@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1916",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T2017",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -8733,6 +8733,36 @@
       "whole Audit20"
     ],
     "next_ready_phase": "Consume only actual relevant original-owner review/platform/rights/producer release events. 781 reserved numeric review, IW2 explicit cyber human platform resolution,887exactALLOW,MoneySCP/OAuthUNKNOWN,A19operationalfirstintake and actual873 publication remain unresolved; no repeated questions/polls/idleprincipal/notice-onlydelegation or refused-effect retry. Continue admitted independent ready work when a real new event arrives.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T2017": {
+    "observed_at": "2026-10-11T20:17:32Z",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261011T1916",
+    "supersedes_only": "The temporary voluntary GMI defer of discretionary new Macro records-only PRs/refreshes has ended by its existing owner return. No product, source, CI, review, access, effect or release acceptance changes.",
+    "GMI_defer_release": {
+      "source": "Actual first-party incoming message from existing owner thread01a12842-2725-7361-be2c-77cf323d62c4",
+      "owner_reported_controller_run": 38170362127,
+      "owner_reported_admission_at": "2026-10-11T20:01:59Z",
+      "owner_reported_PR": 8803,
+      "owner_reported_refreshed_head": "e58bb4f5ffc240a3333ccb86be4cc26264adb3f0",
+      "owner_reported_active_proofs": 6,
+      "owner_reported_cap": 8,
+      "scope": "Existing owner expressly ended the accepted voluntary defer. No new work request, cancellation, capacity waiver or acknowledgment is required.",
+      "parent_qualification": "Owner return consumed as coordination authority for its voluntary defer; controller/source/CI metadata not independently queried or accepted as product/release proof."
+    },
+    "PL6_coordination_return": {
+      "request_from": "Existing B thread01a128b7-bd2b-7a91-891d-39d38f74ad55 for A existing F04 integration thread01a128b5-e26b-7b12-94b5-231bfe0b8036",
+      "root_ruling": "This active Audit20 root remains coordination point for future affected b-pl-6-batch-1 evidence inherited from completed940. No active PL6 capture writer or Audit20 source reservation is established; completed940 carrier stays closed.",
+      "delivery": "One first-party return to B succeeded without error under standing human coordination consent; recipient acknowledgment not claimed.",
+      "new_referenced_source_read": "E20 comment6112991569 updated2026-10-11T19:45:23Z and immutable Terminal200786b34 PL6 manifest/gate paths read for this new bounded question only.",
+      "gate_path": "A retains F04 source integration; B retains F11-entry packet responsibility. An actual AnalysisWorkspace change requires exact final integrated source tree and affected locks before admitting a PL6 evidence writer. Use existing capture_pl6_batch1.cjs/EVIDENCE.yml/b_pl_6Batch1Evidence.test.ts; actual captures and source/PNG bindings on final changed tree with gate green. E20 host-writer/production-deploy custody stays scoped as comment6112991569.",
+      "effects": "No source edit, recapture, UI/record/SQL/deploy effect, source reservation transfer, new worker or completed-carrier reopening."
+    },
+    "retained_completed_work": "PR946 reviewed/merged/installed; normal AAccept/BReject complete exactly once, both existing theses remain archived. Prior storage/releases/SQL/UI/captures/tests/CI/observers remain closed and unreplayed at their original scopes.",
+    "independent_holds": "781 reserved numeric review; IW2 explicit cyber HUMAN and its SQL/access/rights/release holds; exact887 ALLOW; MoneySCP/OAuth EFFECT_UNKNOWN; A19 operational first-intake; actual873 publication and all other original unqualified outcomes remain unchanged.",
+    "next_ready_phase": "Consume actual original-owner review/platform/rights/producer release events or independently useful newly admitted work. The ended capacity defer adds no work or authority. No unchanged polling, repeated questions, idle principal, notice-only delegation or refused-effect retry.",
     "whole_audit20_complete": false
   }
 }
