@@ -1,0 +1,1175 @@
+# coverage_profile.v1 — Alibaba Group Holding Ltd — as_of 2026-10-11
+# Schema: contracts/single_name_intelligence/coverage_profile.v1.schema.json
+# These values are QUALIFICATION FACTS about existing owners (who carries what, over which span,
+# under which clock and rights state). They are not signals, scores, ranks, gates or forecasts,
+# and every authority flag below is false. Identity ids appear only where Data OS already
+# carries them; everything else is UNRESOLVED with the owner that would mint it named.
+# Profile-local keys (issuer_key, counter keys such as hkd_9988) are file keys, never identity ids.
+# Evidence and narrative: research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md
+# and research/single_name_intelligence/SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md.
+schema_version: coverage_profile.v1
+as_of: '2026-10-11'
+profile_kind: qualification_facts
+issuer_key: alibaba
+display_name: Alibaba Group Holding Ltd
+canonical_issuer_id: ISS:US-XNYS-BABA
+canonical_issuer_id_owner: lib/dataos/identity.py (IssuerMaster; data/reference/issuer_master.parquet)
+canonical_issuer_id_scope: 'Existing Data OS issuer id on the SEC-registrant axis (evidence: SEC company_tickers).
+  It is linked to the BABA ADS only; the HK counters carry issuer_link UNRESOLVED.'
+observation:
+  repo_ref: origin/main 6f4e215d26b1 (2026-10-11T09:00Z fetch)
+  data_read: macro checkout data/ at eb55c8573d94 (2026-10-10), read-only; every evidence path is tracked on origin/main
+  observed_at_utc: 2026-10-11T08:58Z..09:15Z
+  census: O2 direct census under the execution-continuation law (fabric receipts in the E0 record)
+authority:
+  rank_authority: false
+  gate_authority: false
+  size_authority: false
+  signal_authority: false
+  escalation_authority: false
+  trade_authority: false
+counters:
+  hkd_9988:
+    label: HKEX 9988 (HKD counter)
+    venue_mic: XHKG
+    local_code: 09988
+    currency: HKD
+    security_id: SEC:HK-XHKG-09988
+    security_id_owner: lib/dataos/identity.py (data/reference/security_master.parquet)
+    issuer_link: UNRESOLVED
+    issuer_link_owner: 'Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a
+      new issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py'
+    pooling: 'One economic security with 89988; never pooled as an independent issuer (SNI masterplan §5.2, PR #8773
+      head 7906ef1c, not on main).'
+  rmb_89988:
+    label: HKEX 89988 (RMB counter)
+    venue_mic: XHKG
+    local_code: '89988'
+    currency: CNH
+    security_id: UNRESOLVED
+    security_id_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+      with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+    issuer_link: UNRESOLVED
+    issuer_link_owner: 'Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a
+      new issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py'
+    pooling: Same economic security as 9988; never pooled as an independent issuer.
+  adr_baba:
+    label: NYSE BABA (ADS)
+    venue_mic: XNYS
+    local_code: BABA
+    currency: USD
+    security_id: SEC:US-XNYS-BABA
+    security_id_owner: lib/dataos/identity.py (data/reference/security_master.parquet)
+    issuer_link: ISS:US-XNYS-BABA
+    issuer_link_owner: lib/dataos/identity.py (issuer_semantic_correction_v1 era, SEC registrant evidence)
+    pooling: ADS over the same issuer's ordinary shares; BABA/9988 basis is a diagnostic only.
+family_notes:
+  behavioral_pilot: 'HISTORICAL: the August 2026 stock-identity pilot froze at 2026-08-13 (auto_adjust=True OHLCV,
+    epoch_0 provisional, all authority false). It is prior art, not a live owner.'
+  adr_h_basis: 'SNI masterplan §5.2 (PR #8773 head 7906ef1c): a BABA/9988 basis is a diagnostic, not guaranteed
+    arbitrage; Tencent''s KWEB overnight proxy is never a Tencent ADS quote; HKD/RMB counters are never pooled as
+    extra independent issuers or forecasting examples.'
+  evaluation_qledger: Existence census only; no hit-rate or return grading is presented as probabilistic forecast
+    support.
+families:
+  identity_listing:
+    hkd_9988:
+      applicable: true
+      owner:
+      - lib/dataos/identity.py
+      - scripts/build_security_master.py
+      - config/identity_seams.yml
+      source: 'Data OS CN/HK admission: SFC official short-position reports + HKEX turnover (theme-graph company
+        node co:hk:9988.HK)'
+      coverage: SEC:HK-XHKG-09988 exists (effective_at 2019-11-29); issuer_state NO_ISSUER_EVIDENCE, issuer_id NULL;
+        vendor alias theme_graph_native 9988.HK
+      temporal:
+        span: effective 2019-11-29..current; master generated 2026-10-09T05:05
+        clock: current identity only (no historical issuer lineage)
+        state: LIVE
+      rights: verified-internal
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: Issuer axis groups only by identical SEC CIK, so the HK counter is not linked to ISS:US-XNYS-BABA.
+        Linking it from ticker/name is forbidden.
+      evidence:
+      - data/reference/security_master.parquet
+      - data/reference/issuer_master.parquet
+      - data/reference/vendor_aliases.parquet
+      - data/reference/_receipt.json
+      would_be_owner: 'Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a new
+        issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py'
+    rmb_89988:
+      applicable: true
+      owner:
+      - lib/dataos/identity.py
+      - scripts/build_security_master.py
+      - config/identity_seams.yml
+      source: none in Data OS; counter appears in SFC short positions and HKEXnews stock_code lists
+      coverage: absent from security_master and vendor_aliases (no security_id)
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: verified-internal
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: CN/HK admission is node-driven; no theme-graph node exists for the RMB counter.
+      evidence:
+      - data/reference/security_master.parquet
+      - data/reference/issuer_master.parquet
+      - data/reference/vendor_aliases.parquet
+      - data/reference/_receipt.json
+      would_be_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+        with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+    adr_baba:
+      applicable: true
+      owner:
+      - lib/dataos/identity.py
+      - scripts/build_security_master.py
+      - config/identity_seams.yml
+      source: SEC company_tickers registrant evidence (Data OS issuer axis)
+      coverage: SEC:US-XNYS-BABA -> ISS:US-XNYS-BABA RESOLVED; issuer_master cik 0001577552 recorded as evidence
+        only; issuer_evidence_snapshot 2026-08-18; vendor aliases membership/store/yahoo/yahoo_fetch
+      temporal:
+        span: effective 2026-08-21..current
+        clock: current identity only; issuer_master era issuer_semantic_correction_v1, evidence_source sec_company_tickers
+        state: LIVE
+      rights: verified-internal
+      status: ready
+      blocks: []
+      notes: The ADS:ordinary ratio is not carried by any Data OS field (needed only for the basis diagnostic).
+      evidence:
+      - data/reference/security_master.parquet
+      - data/reference/issuer_master.parquet
+      - data/reference/vendor_aliases.parquet
+      - data/reference/_receipt.json
+  filings_announcements:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_hkexnews.py
+      - engine/hk_filing_bus.py
+      source: HKEXnews titleSearchServlet headline metadata (scrape)
+      coverage: 4 event(s) for 9988.HK in a 3,905-row store (final_results 1, general_mandate 3 incl. the HK$80bn
+        new-share placing 2026-08-23..26); headline + category only, no full text, no metric extraction
+      temporal:
+        span: 2026-04-13..2026-10-09 (store window; issuer events 2026-05-13..2026-08-26)
+        clock: first_public = HKEX release time; owner_observation = collector run
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: 'Store begins 2026-04-13: no history before it. HKEXnews terms are not adjudicated in-repo (08-28 matrix
+        lists the paid IIS feed as NOT_BUILT).'
+      evidence:
+      - data/hk_filings/events.parquet
+      - data/hk_filings/coverage.json
+    rmb_89988:
+      applicable: true
+      owner:
+      - collectors/hk_hkexnews.py
+      - engine/hk_filing_bus.py
+      source: HKEXnews titleSearchServlet headline metadata (scrape)
+      coverage: 'no separate stream: announcements are issuer-level and the HKD-counter rows carry this counter
+        in their stock_code list (4 event(s) in window); join from this counter needs a security_id that does not
+        exist'
+      temporal:
+        span: 2026-04-13..2026-10-09 (store window)
+        clock: first_public = HKEX release time; owner_observation = collector run
+        state: LIVE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: Never pool with the HKD counter as an independent issuer; the counter join is the gap, not the announcements.
+      evidence:
+      - data/hk_filings/events.parquet
+      - data/hk_filings/coverage.json
+      would_be_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+        with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/fundamental_forensics/broad_sec_store.py
+      - engine/capital_structure/source_identity.py
+      source: SEC EDGAR (20-F/6-K) via FIF broad SEC store / capital-structure SEC evidence
+      coverage: 0 rows for CIK 1577552 in data/capital_structure (discovery, event_versions); FIF public_summary
+        has no BABA entry; companyfacts dir holds only a publish lock
+      temporal:
+        span: none
+        clock: first_public = EDGAR acceptance time (owner field, unused here)
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: FIF broad store admits 20-F/40-F forms in code but carries no BABA occurrences. DEC:FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED
+        holds SEC-evidence display rights until the family is admitted.
+      evidence:
+      - data/capital_structure/discovery.parquet
+      - data/capital_structure/event_versions.parquet
+      - data/fundamental_forensics/public_summary.json
+      would_be_owner: engine/fundamental_forensics/broad_sec_store.py universe (20-F filer admission)
+  financials:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_fundamentals.py
+      source: 'akshare (Eastmoney/ET endpoints): company profile, annual indicator analysis, broker profit forecast'
+      coverage: '9988.HK: payload keys ticker/financials (fy2020..fy2026 (fiscal year ends March; fy label convention
+        undeclared))/profile/forecast; per-row source not recorded; every financial row carries a vendor currency
+        field reading HKD, which conflicts with the collector''s own note that names such as Tencent report in CNY
+        (collectors/hk_fundamentals.py header) - the currency descriptor is present but untrustworthy; no reporting-period
+        known-at, accounting basis, source span, definition version or correction state'
+      temporal:
+        span: fy2020..fy2026 (fiscal year ends March; fy label convention undeclared) annual; snapshot asof 2026-06-18
+        clock: snapshot asof only; economic period present, first_public absent
+        state: STALE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: 'Collector notes reporting currency CNY vs HKD price; ratios deliberately not computed. Forecast block
+        is third-party consensus: display/qualification fact only, never an expectation lens.'
+      evidence:
+      - data/hk_fundamentals/fundamentals.parquet
+    rmb_89988:
+      applicable: true
+      owner:
+      - collectors/hk_fundamentals.py
+      source: 'akshare (Eastmoney/ET endpoints): company profile, annual indicator analysis, broker profit forecast'
+      coverage: issuer-level snapshot exists only under the HKD-counter key; no counter join (no security_id, no
+        issuer link)
+      temporal:
+        span: fy2020..fy2026 annual; snapshot asof 2026-06-18
+        clock: snapshot asof only; no per-metric known-at
+        state: STALE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: Issuer-level family; reachable from this counter only through an issuer link that does not exist.
+      evidence:
+      - data/hk_fundamentals/fundamentals.parquet
+      would_be_owner: 'Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a new
+        issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py'
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - engine/fundamental_forensics/broad_sec_store.py
+      source: SEC companyfacts / 20-F statements
+      coverage: no BABA metric rows in any FIF or capital-structure owner artifact on main
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: E0 metric descriptors (metric id, period, known-at, unit/currency, basis, span, definition version,
+        correction state) have no owner rows for this issuer.
+      evidence:
+      - data/capital_structure/discovery.parquet
+      - data/fundamental_forensics/public_summary.json
+      would_be_owner: engine/fundamental_forensics/sec_companyfacts.py (20-F filer admission)
+  company_events_earnings_calendar:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_hkexnews.py
+      source: HKEXnews results-category announcements (realized events only)
+      coverage: realized results announcements inside the hk_filings window; no forward earnings-date owner for
+        HK names (engine/hk_event_calendar.py and engine/hk_catalyst_calendar.py are macro/index-level)
+      temporal:
+        span: 2026-04-13..2026-10-09
+        clock: first_public = HKEX release time
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: No scheduled-date known-at for the next result; response windows can only be anchored after the fact.
+      evidence:
+      - data/hk_filings/events.parquet
+    rmb_89988:
+      applicable: true
+      owner:
+      - collectors/hk_hkexnews.py
+      source: HKEXnews (via HKD-counter rows)
+      coverage: issuer-level events only; no counter join
+      temporal:
+        span: 2026-04-13..2026-10-09
+        clock: first_public = HKEX release time
+        state: LIVE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: Counter join missing.
+      evidence:
+      - data/hk_filings/events.parquet
+      would_be_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+        with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+    adr_baba:
+      applicable: true
+      owner:
+      - collectors/equity_earnings.py
+      source: Nasdaq public earnings calendar JSON
+      coverage: next_date 2026-08-20 recorded with as_of 2026-09-30 (date already past at as_of)
+      temporal:
+        span: as_of 2026-09-30
+        clock: as_of = collector run; next_date = announced date
+        state: STALE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: 'Stale forward date: the next-report row was not rolled after the 2026-08-20 report.'
+      evidence:
+      - data/earnings/earnings.parquet
+  market_data_daily:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_stock_prices.py
+      - collectors/hk_closes_deep.py
+      source: yfinance .HK daily (auto_adjust=True; overwrite_overlap re-adjusts the refresh window)
+      coverage: data/hk_stocks/9988.HK.parquet 1681 rows OHLCV; hk_search/closes_deep.parquet 1690 non-null closes
+      temporal:
+        span: 2019-11-26..2026-10-09
+        clock: event_time = HK session date (HKT close); owner_observation = collector run; no first_public field
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: Total-return-adjusted only, no raw/unadjusted series; closes_deep splices dividend-adjustment vintages
+        (DSC:HK-DEEP-PANEL-SPLICES-ADJUSTMENT-VINTAGES).
+      evidence:
+      - data/hk_stocks/9988.HK.parquet
+      - data/hk_search/closes_deep.parquet
+    rmb_89988:
+      applicable: true
+      owner: []
+      source: none
+      coverage: no price series for 89988 in any owner store (data/hk_stocks has no 89988 file)
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: RMB counter prices are absent; never substitute the HKD counter.
+      evidence: []
+      would_be_owner: collectors/hk_stock_prices.py (universe via collectors/hk_universe.py) after a Data OS counter
+        security_id exists
+    adr_baba:
+      applicable: true
+      owner:
+      - collectors/yahoo.py
+      - collectors/massive_stock_day.py
+      source: 'yfinance daily: close = total-return adjusted, close_price = split-adjusted dividend-unadjusted'
+      coverage: data/yahoo/BABA.parquet 3,032 rows with close, close_price, volume (close/close_price = 0.9411 at
+        first row, 1.0 at last); massive_stock_day manifest spans 21,697 tickers 2021-07-06..2026-10-07 but no BABA
+        file on main
+      temporal:
+        span: 2014-09-19..2026-10-09
+        clock: event_time = NYSE session date; owner_observation = collector run
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: 'Two bases present (collectors/yahoo.py W1.3): close = split+dividend adjusted (total return); close_price
+        = split-adjusted, dividend-unadjusted. No fully unadjusted series. data/stock_identity/ohlcv/BABA.parquet
+        is the HISTORICAL pilot copy, not an owner.'
+      evidence:
+      - data/yahoo/BABA.parquet
+      - data/massive_stock_day/_manifest.json
+  market_data_intraday:
+    hkd_9988:
+      applicable: true
+      owner: []
+      source: none licensed (HKEX historical full book / OMD-C are paid)
+      coverage: no intraday series for 9988.HK; data/intraday_flow/ledger.parquet is US-only
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: BLOCKED-procurement
+      status: BLOCKED
+      blocks:
+      - S0
+      notes: '08-28 matrix: HKEX Historical Full Book (securities) is the preferred research candidate; procurement
+        is out of scope here.'
+      evidence:
+      - data/intraday_flow/ledger.parquet
+      would_be_owner: Chairman procurement decision, then a new HK intraday collector
+    rmb_89988:
+      applicable: true
+      owner: []
+      source: none licensed (HKEX historical full book / OMD-C are paid)
+      coverage: no intraday series for 89988; data/intraday_flow/ledger.parquet is US-only
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: BLOCKED-procurement
+      status: BLOCKED
+      blocks:
+      - S0
+      notes: '08-28 matrix: HKEX Historical Full Book (securities) is the preferred research candidate; procurement
+        is out of scope here.'
+      evidence:
+      - data/intraday_flow/ledger.parquet
+      would_be_owner: Chairman procurement decision, then a new HK intraday collector
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/intraday_flow.py
+      source: intraday flow ledger (US)
+      coverage: 0 BABA rows in data/intraday_flow/ledger.parquet (sessions 2026-07-11..2026-10-09)
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - S0
+      notes: No intraday owner carries BABA.
+      evidence:
+      - data/intraday_flow/ledger.parquet
+      would_be_owner: engine/intraday_flow.py universe
+  corporate_actions_adjustment:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_stock_prices.py
+      - collectors/hk_placements.py
+      source: implicit in yfinance auto_adjust=True; no explicit HK corporate-action ledger (engine/capital_structure
+        is SEC-only)
+      coverage: '9988.HK: adjustment factors not stored; dividend/split events not carried as rows; hk_filings categories
+        carry no dividend class'
+      temporal:
+        span: per price span
+        clock: adjustment vintage = collector run date (re-adjust on overwrite)
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: 'A frozen return window can drift between runs (DSC:HK-DEEP-PANEL-SPLICES-ADJUSTMENT-VINTAGES); response
+        windows must pin the vintage. No owner carries share count: share-count changes reach the repo only as HKEXnews
+        headline metadata (9988: HK$80bn new-share placing, general_mandate events 2026-08-23..26). collectors/hk_placements.py
+        (810 rows, 2026-03-05..2026-10-09) holds no row for this counter: it keys on the HKEXnews ''placing'' headline
+        category, so it missed the 9988 placing that HKEXnews filed under general_mandate.'
+      evidence:
+      - data/hk_stocks/9988.HK.parquet
+      - data/hk_placements/events.parquet
+    rmb_89988:
+      applicable: true
+      owner: []
+      source: none
+      coverage: no corporate-action or adjustment ledger for the RMB counter
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: Counter has no prices to adjust.
+      evidence: []
+      would_be_owner: collectors/hk_stock_prices.py + a Data OS counter security_id
+    adr_baba:
+      applicable: true
+      owner:
+      - collectors/yahoo.py
+      source: implied by close vs close_price (yfinance)
+      coverage: cumulative dividend factor derivable as close/close_price; no explicit corporate-action rows; capital_structure
+        has 0 BABA rows
+      temporal:
+        span: 2014-09-19..2026-10-09
+        clock: adjustment vintage = collector run
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: ADS ratio changes, if any, are not carried by any owner.
+      evidence:
+      - data/yahoo/BABA.parquet
+  sessions_calendar:
+    hkd_9988:
+      applicable: true
+      owner:
+      - lib/hk_calendar.py
+      source: rule arithmetic + annual HKEX notices (stdlib, no data dependency)
+      coverage: full-day closures and announced half days for HKEX cash equities
+      temporal:
+        span: computed for any date
+        clock: session date in HKT; 17:30 HKT regular data expectation, 13:30 HKT half-day
+        state: LIVE
+      rights: verified-internal
+      status: ready
+      blocks: []
+      notes: Same session for HKD and RMB counters. No intraday segments, halts or suspensions carried.
+      evidence: []
+    rmb_89988:
+      applicable: true
+      owner:
+      - lib/hk_calendar.py
+      source: rule arithmetic + annual HKEX notices (stdlib, no data dependency)
+      coverage: full-day closures and announced half days for HKEX cash equities
+      temporal:
+        span: computed for any date
+        clock: session date in HKT; 17:30 HKT regular data expectation, 13:30 HKT half-day
+        state: LIVE
+      rights: verified-internal
+      status: ready
+      blocks: []
+      notes: Same session for HKD and RMB counters. No intraday segments, halts or suspensions carried.
+      evidence: []
+    adr_baba:
+      applicable: true
+      owner:
+      - lib/nyse_calendar.py
+      source: rule arithmetic (house code)
+      coverage: NYSE sessions
+      temporal:
+        span: computed for any date
+        clock: session date in America/New_York
+        state: LIVE
+      rights: verified-internal
+      status: ready
+      blocks: []
+      notes: BABA close precedes the next HK open; the overnight ordering is a temporal-law fact, not a lead-lag
+        claim.
+      evidence: []
+  southbound_holdings:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_southbound_holdings.py
+      - engine/hk_southbound_stocks.py
+      source: Eastmoney datacenter mirror of HKEX Southbound holdings (third-party)
+      coverage: 290 rows for 9988.HK; latest own_pct 9.97 on 2026-10-09; store gap audit 523 dates / 9 gaps
+      temporal:
+        span: 2024-09-19..2026-10-09
+        clock: date = holding date (T); owner_observation = daily snapshot run
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: 'Value changes are price-contaminated; first-party CCASS is BLOCKED-licence per the 08-28 matrix. Aggregate
+        hk_connect/southbound_{sh,sz} are not per-name. Connect change roster: 9988 add announced 2024-09-09, effective
+        2024-09-10 (source sse), so the holdings span starts after inclusion.'
+      evidence:
+      - data/hk_southbound/holdings.parquet
+      - data/hk_southbound/backfill_gap_audit.json
+      - data/hk_connect_roster/roster.parquet
+    rmb_89988:
+      applicable: true
+      owner:
+      - collectors/hk_southbound_holdings.py
+      - scripts/collect_hk_connect_roster.py
+      source: Eastmoney mirror (no rows for this counter)
+      coverage: 0 rows keyed 89988
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: 'No owner artifact establishes whether the RMB counter is Southbound-eligible: the HK Connect change
+        roster holds no row for it, and a missing change row is not an eligibility verdict. Never pool with the
+        HKD counter.'
+      evidence:
+      - data/hk_southbound/holdings.parquet
+      - data/hk_connect_roster/roster.parquet
+      would_be_owner: collectors/hk_southbound_holdings.py after a Data OS counter security_id exists
+    adr_baba:
+      applicable: false
+      owner: []
+      source: not applicable
+      coverage: 'typed absence: a US ADS is not a Southbound security'
+      temporal:
+        span: n/a
+        clock: n/a
+        state: NONE
+      rights: verified-internal
+      status: ready
+      blocks: []
+      notes: Structural not-applicable; count separately from coverage.
+      evidence: []
+  short_positions:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_shorts.py
+      source: SFC aggregated reportable short positions (official, weekly) — admitted Data OS HK evidence source
+      coverage: 357 weekly rows for 9988.HK (columns date/stock_code/ticker/stock_name/shorted_shares/value_hkd)
+      temporal:
+        span: 2019-11-29..2026-10-02
+        clock: date = reporting position date; SFC publication lag is not carried as a field
+        state: LIVE
+      rights: verified-internal
+      status: ready
+      blocks: []
+      notes: Position date and first-public date differ; consumers must apply the publication lag explicitly.
+      evidence:
+      - data/hk_shorts/positions.parquet
+      - data/reference/_receipt.json
+    rmb_89988:
+      applicable: true
+      owner:
+      - collectors/hk_shorts.py
+      source: SFC aggregated reportable short positions (official, weekly) — admitted Data OS HK evidence source
+      coverage: 172 weekly rows for 89988.HK (columns date/stock_code/ticker/stock_name/shorted_shares/value_hkd)
+      temporal:
+        span: 2023-06-23..2026-10-02
+        clock: date = reporting position date; SFC publication lag is not carried as a field
+        state: LIVE
+      rights: verified-internal
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: Rows exist keyed by the RMB counter, but the counter has no security_id; value_hkd is HKD even for
+        the RMB counter.
+      evidence:
+      - data/hk_shorts/positions.parquet
+      - data/reference/_receipt.json
+      would_be_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+        with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+    adr_baba:
+      applicable: true
+      owner:
+      - collectors/finra.py
+      - collectors/finra_short_volume.py
+      source: FINRA short interest / short volume
+      coverage: 0 BABA rows in data/finra/short_interest_history.parquet and data/finra_short_volume/panel.parquet
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - S0
+      notes: Universe excludes BABA.
+      evidence:
+      - data/finra/short_interest_history.parquet
+      - data/finra_short_volume/panel.parquet
+      would_be_owner: collectors/finra.py universe
+  adr_h_basis:
+    hkd_9988:
+      applicable: true
+      owner:
+      - engine/hk_adr_bridge.py
+      source: display bridge BABA -> 9988.HK (pair kind direct)
+      coverage: overnight US-to-HK context from data/yahoo/BABA.parquet and data/hk_stocks/9988.HK.parquet; no basis
+        series
+      temporal:
+        span: per input spans
+        clock: BABA close (NY) then next HK session
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: 'Basis not reproducible from owners: no owner carries the ADS-to-ordinary-share ratio. USD/HKD is carried
+        (yfinance HKD=X via collectors/hk_prices.py, rights UNVERIFIED).'
+      evidence:
+      - data/yahoo/BABA.parquet
+      - data/hk_stocks/9988.HK.parquet
+      - data/hk/HKD_X.parquet
+    rmb_89988:
+      applicable: true
+      owner: []
+      source: none
+      coverage: no RMB-counter basis (no prices; no spot-CNH owner, CNH=F is a futures proxy)
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      - S0
+      notes: Diagnostic only even once inputs exist.
+      evidence: []
+      would_be_owner: engine/hk_adr_bridge.py after counter prices exist
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/hk_adr_bridge.py
+      source: display bridge (ADR side)
+      coverage: same bridge as the HKD counter
+      temporal:
+        span: per input spans
+        clock: BABA close (NY) then next HK session
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: Display-only, all authority false.
+      evidence:
+      - data/yahoo/BABA.parquet
+  fx:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_prices.py
+      - collectors/fred.py
+      - collectors/hkma.py
+      source: yfinance HKD=X (USD/HKD) + FRED DEXCHUS (USD/CNY noon NY); HKMA interbank liquidity is context only
+      coverage: USD/HKD (HKD per USD) daily 6,418 rows 2001-07-16..2026-10-10 in data/hk/HKD_X.parquet, read by
+        engine/hk_inputs.py as usdhkd; USD/CNY daily 1981-01-02..2026-10-02; HKMA file is liquidity, not spot FX
+      temporal:
+        span: 2001-07-16..2026-10-10 (HKD leg); 1981-01-02..2026-10-02 (CNY leg)
+        clock: HKD=X yfinance daily bar date (close convention undeclared); DEXCHUS NY noon
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: Both legs are vendor/public mirrors with no admitted Data OS FX owner; a fixed peg constant must never
+        stand in for the observed USD/HKD series.
+      evidence:
+      - data/hk/HKD_X.parquet
+      - data/fred/DEXCHUS.parquet
+      - data/hkma/interbank_liquidity.parquet
+    rmb_89988:
+      applicable: true
+      owner:
+      - scripts/build_forex.py
+      - collectors/china_prices.py
+      source: forex desk snapshot (USDCNH) + yfinance CNH=F (CME offshore-CNH futures)
+      coverage: USDCNH snapshot in data/forex/latest.json (date 2026-10-09); CNH=F daily 3,368 rows 2013-02-11..2026-10-09
+        (a futures contract, not spot CNH); no spot CNH history; no CNH/HKD cross
+      temporal:
+        span: 2013-02-11..2026-10-09 (futures proxy)
+        clock: yfinance daily bar date; futures settlement convention undeclared
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      - S0
+      notes: CNH (offshore) is the RMB-counter currency; a futures proxy is not spot, and onshore CNY (FRED DEXCHUS,
+        yfinance CNY=X) must not be substituted silently.
+      evidence:
+      - data/forex/latest.json
+      - data/china/CNH_F.parquet
+      - data/china/CNY_X.parquet
+    adr_baba:
+      applicable: true
+      owner:
+      - collectors/hk_prices.py
+      source: USD-native; FX needed only for the basis diagnostic
+      coverage: USD/HKD carried via yfinance HKD=X (see HKD counter)
+      temporal:
+        span: 2001-07-16..2026-10-10
+        clock: HKD=X yfinance daily bar date
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      notes: Counter trades in USD; FX matters only for basis work, and that leg's rights are UNVERIFIED.
+      evidence:
+      - data/hk/HKD_X.parquet
+  options:
+    hkd_9988:
+      applicable: true
+      owner: []
+      source: none (HKEX SOM full book / trade file are paid first-party products)
+      coverage: no stock-options owner for 9988.HK
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: BLOCKED-procurement
+      status: BLOCKED
+      blocks:
+      - S0
+      notes: '08-28 matrix: HKEX Historical Full Book (SOM) is the preferred H1 options candidate; procurement is
+        out of scope.'
+      evidence: []
+      would_be_owner: Chairman procurement decision, then an HK options owner
+    rmb_89988:
+      applicable: true
+      owner: []
+      source: none (HKEX SOM full book / trade file are paid first-party products)
+      coverage: no stock-options owner for 89988
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: BLOCKED-procurement
+      status: BLOCKED
+      blocks:
+      - S0
+      notes: No owner artifact establishes whether any option class references the RMB counter.
+      evidence: []
+      would_be_owner: Chairman procurement decision, then an HK options owner
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/options_skew.py
+      - collectors/thetadata.py
+      source: ThetaData chain store (subscription vendor)
+      coverage: 44 BABA skew snapshots; no ivspread rows; thetadata EOD n_roots 0; no options_flow BABA summary
+      temporal:
+        span: 2026-06-22..2026-08-21
+        clock: snapshot asof
+        state: STALE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - S0
+      notes: Snapshots stopped 2026-08-21 (about seven weeks before as_of).
+      evidence:
+      - data/options_skew/snapshots.parquet
+      - data/options_skew/validation_gate.json
+  research_vault:
+    hkd_9988:
+      applicable: true
+      owner:
+      - engine/research_vault/catalog.py
+      - engine/research_vault/subjects.py
+      source: Research vault catalog (mixed internal/external items; private full text not fetched)
+      coverage: 41 catalog items match the Alibaba name pattern out of 2,778; subject binding to an issuer id not
+        established
+      temporal:
+        span: catalog snapshot on main
+        clock: item publication date per catalog row; no issuer-subject clock
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      notes: Name-pattern counts are a census bound, not a subject-resolved link.
+      evidence:
+      - data/research_vault/catalog.json
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/research_vault/catalog.py
+      - engine/research_vault/subjects.py
+      source: Research vault catalog (mixed internal/external items; private full text not fetched)
+      coverage: 41 catalog items match the Alibaba name pattern out of 2,778; subject binding to an issuer id not
+        established
+      temporal:
+        span: catalog snapshot on main
+        clock: item publication date per catalog row; no issuer-subject clock
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      notes: Name-pattern counts are a census bound, not a subject-resolved link.
+      evidence:
+      - data/research_vault/catalog.json
+    rmb_89988:
+      applicable: true
+      owner:
+      - engine/research_vault/catalog.py
+      source: Research vault (issuer-level)
+      coverage: issuer-level items only; no counter join
+      temporal:
+        span: catalog snapshot
+        clock: item date
+        state: LIVE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      notes: Counter join missing.
+      evidence:
+      - data/research_vault/catalog.json
+      would_be_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+        with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+  news:
+    hkd_9988:
+      applicable: true
+      owner:
+      - collectors/hk_gdelt.py
+      source: GDELT volume/tone aggregates (no article text)
+      coverage: 77 daily rows keyed 9988.HK (vol_intensity, avg_tone)
+      temporal:
+        span: 2026-07-12..2026-10-06
+        clock: date = GDELT aggregation day (UTC)
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      notes: Aggregate attention/tone only; topic-level, not issuer-resolved.
+      evidence:
+      - data/hk_gdelt/alibaba.parquet
+    rmb_89988:
+      applicable: true
+      owner:
+      - collectors/hk_gdelt.py
+      source: GDELT (issuer topic keyed to 9988.HK)
+      coverage: no counter key
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      notes: Counter join missing.
+      evidence:
+      - data/hk_gdelt/alibaba.parquet
+      would_be_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+        with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+    adr_baba:
+      applicable: true
+      owner:
+      - collectors/hk_gdelt.py
+      source: GDELT (issuer topic keyed to 9988.HK)
+      coverage: issuer-topic rows keyed 9988.HK only; no BABA-keyed news owner found in the searched bounds (hk_gdelt,
+        research_vault)
+      temporal:
+        span: 2026-07-12..2026-10-06
+        clock: GDELT aggregation day (UTC)
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      notes: Reachable for BABA only through the issuer, whose HK link is UNRESOLVED.
+      evidence:
+      - data/hk_gdelt/alibaba.parquet
+  themes:
+    hkd_9988:
+      applicable: true
+      owner:
+      - engine/theme_graph/identity_resolution.py
+      - engine/theme_graph/store.py
+      - engine/theme_graph/rights.py
+      source: theme graph nodes/edges/evidence (evidence rows carry licensing fields)
+      coverage: 'identity_resolution: 61 snapshots for 9988.HK, latest 2026-10-09 RESOLVED -> SEC:HK-XHKG-09988,
+        issuer NULL'
+      temporal:
+        span: 2026-08-18..2026-10-09
+        clock: resolution_asof per snapshot
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      notes: Theme membership is display/context only; evidence-row rights are governed by engine/theme_graph/rights.py
+        and not adjudicated here.
+      evidence:
+      - data/theme_graph/nodes.parquet
+      - data/theme_graph/edges.parquet
+      - data/theme_graph/evidence.parquet
+      - data/theme_graph/identity_resolution.parquet
+    rmb_89988:
+      applicable: true
+      owner:
+      - engine/theme_graph/identity_resolution.py
+      - engine/theme_graph/store.py
+      source: theme graph (no node for this counter)
+      coverage: no company node, no identity_resolution row
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: UNVERIFIED
+      status: UNRESOLVED
+      blocks:
+      - C2
+      notes: CN/HK Data OS admission is driven by theme-graph company nodes, so a missing node is also why the counter
+        has no security_id.
+      evidence:
+      - data/theme_graph/nodes.parquet
+      - data/theme_graph/identity_resolution.parquet
+      would_be_owner: 'Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md,
+        with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml'
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/theme_graph/identity_resolution.py
+      - engine/theme_graph/store.py
+      - engine/theme_graph/rights.py
+      source: theme graph nodes/edges/evidence (evidence rows carry licensing fields)
+      coverage: 'identity_resolution: 61 snapshots for BABA, latest 2026-10-09 RESOLVED -> SEC:US-XNYS-BABA, issuer
+        ISS:US-XNYS-BABA (master_inception_exact)'
+      temporal:
+        span: 2026-08-18..2026-10-09
+        clock: resolution_asof per snapshot
+        state: LIVE
+      rights: UNVERIFIED
+      status: partial
+      blocks:
+      - C2
+      notes: Theme membership is display/context only; evidence-row rights are governed by engine/theme_graph/rights.py
+        and not adjudicated here.
+      evidence:
+      - data/theme_graph/nodes.parquet
+      - data/theme_graph/edges.parquet
+      - data/theme_graph/evidence.parquet
+      - data/theme_graph/identity_resolution.parquet
+  evaluation_qledger:
+    hkd_9988:
+      applicable: true
+      owner:
+      - engine/qledger.py
+      - engine/qledger_store.py
+      source: house-generated claim/grade ledger
+      coverage: 0 claims with 9988.HK in scope (117,961 claims / 202,275 grades scanned)
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: verified-internal
+      status: UNRESOLVED
+      blocks:
+      - S0
+      notes: 'V0 (SNI claim contracts) is not on main; #8042 is a held carrier.'
+      evidence:
+      - data/qledger/claims.jsonl
+      - data/qledger/grades.jsonl
+      would_be_owner: engine/qledger.py via the V0 contract lane
+    rmb_89988:
+      applicable: true
+      owner:
+      - engine/qledger.py
+      - engine/qledger_store.py
+      source: house-generated claim/grade ledger
+      coverage: 0 claims with 89988 in scope (117,961 claims / 202,275 grades scanned)
+      temporal:
+        span: none
+        clock: none
+        state: NONE
+      rights: verified-internal
+      status: UNRESOLVED
+      blocks:
+      - S0
+      notes: 'V0 (SNI claim contracts) is not on main; #8042 is a held carrier.'
+      evidence:
+      - data/qledger/claims.jsonl
+      - data/qledger/grades.jsonl
+      would_be_owner: engine/qledger.py via the V0 contract lane
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/qledger.py
+      - engine/qledger_store.py
+      source: house-generated claim/grade ledger
+      coverage: 159 claims with BABA in scope (claim_family us_importance_v0 78, us_importance_v0_pit 78, altdata
+        1, altdata_event 1, altdata_mid 1); no SNI claim family
+      temporal:
+        span: 2026-06-22..2026-09-27
+        clock: claim asof
+        state: LIVE
+      rights: verified-internal
+      status: partial
+      blocks:
+      - S0
+      notes: Generic desk claims exist; V0 SNI claim contracts are not on main (#8042 held).
+      evidence:
+      - data/qledger/claims.jsonl
+  behavioral_pilot:
+    hkd_9988:
+      applicable: true
+      owner:
+      - engine/stock_identity/pilot.py
+      - engine/stock_identity/fingerprint.py
+      source: August 2026 stock-identity pilot (21 US symbols)
+      coverage: 9988.HK not in the pilot
+      temporal:
+        span: pilot frozen 2026-08-13
+        clock: pilot asof
+        state: HISTORICAL
+      rights: verified-internal
+      status: UNRESOLVED
+      blocks: []
+      notes: 'HISTORICAL pilot: not a live owner; absence here blocks nothing in C2/S0.'
+      evidence:
+      - data/stock_identity/fingerprints/pilot_fingerprint_v0.parquet
+      would_be_owner: engine/stock_identity/pilot.py (no refresh scheduled)
+    rmb_89988:
+      applicable: true
+      owner:
+      - engine/stock_identity/pilot.py
+      - engine/stock_identity/fingerprint.py
+      source: August 2026 stock-identity pilot (21 US symbols)
+      coverage: 89988 not in the pilot
+      temporal:
+        span: pilot frozen 2026-08-13
+        clock: pilot asof
+        state: HISTORICAL
+      rights: verified-internal
+      status: UNRESOLVED
+      blocks: []
+      notes: 'HISTORICAL pilot: not a live owner; absence here blocks nothing in C2/S0.'
+      evidence:
+      - data/stock_identity/fingerprints/pilot_fingerprint_v0.parquet
+      would_be_owner: engine/stock_identity/pilot.py (no refresh scheduled)
+    adr_baba:
+      applicable: true
+      owner:
+      - engine/stock_identity/pilot.py
+      - engine/stock_identity/fingerprint.py
+      - engine/stock_identity/plane.py
+      source: August 2026 stock-identity pilot
+      coverage: BABA fingerprint asof 2026-08-13 (epoch_0 none/provisional); pilot OHLCV 2,992 rows (auto_adjust=True);
+        episode file
+      temporal:
+        span: pilot frozen 2026-08-13
+        clock: pilot asof
+        state: HISTORICAL
+      rights: verified-internal
+      status: partial
+      blocks: []
+      notes: 'HISTORICAL: prior art only, all authority false; never read as current behaviour.'
+      evidence:
+      - data/stock_identity/fingerprints/pilot_fingerprint_v0.parquet
+      - data/stock_identity/ohlcv/BABA.parquet
+      - data/stock_identity/episodes/pilot/BABA.json
+      - data/stock_identity/ohlcv/manifest.json
