@@ -59,6 +59,7 @@ def read_current_observations() -> dict:
         projection = load_observations(
             source, spine=spine, reference_session=reference,
             episode_root=_DATA_ROOT / "us_prophet_rank/episodes",
+            public_artifact_path=_DATA_ROOT.parent / "site/turn_watch/turn_watch.json",
         )
         if (projection["status"] != "UNAVAILABLE"
                 and projection["clocks"]["source_session"] != source.stem):

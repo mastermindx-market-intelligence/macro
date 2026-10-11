@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-10-11T03:45:05Z",
+  "generated_at": "2026-10-11T04:20:45Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -24,7 +24,7 @@
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1193,
+            "document_height_px": 1397,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
@@ -34,7 +34,7 @@
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 1,
+        "console_error_count": 0,
         "document_height_px": 900,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
@@ -55,7 +55,7 @@
           "viewport": "desktop"
         },
         "panel_count": 1,
-        "payload_bytes_total": 226280,
+        "payload_bytes_total": 230713,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 2,
@@ -64,7 +64,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 133
+        "visible_word_count": 159
       },
       "page_id": "observations.html",
       "route": "/observations.html"
@@ -89,7 +89,7 @@
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 1,
+        "console_error_count": 0,
         "document_height_px": 900,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
@@ -110,7 +110,7 @@
           "viewport": "desktop"
         },
         "panel_count": 1,
-        "payload_bytes_total": 223707,
+        "payload_bytes_total": 264778,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 2,
@@ -119,7 +119,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 70
+        "visible_word_count": 101
       },
       "page_id": "search.html",
       "route": "/search.html"
@@ -132,7 +132,7 @@
     "resolved_gitdir_or_none": null,
     "resolved_sha_or_none": null,
     "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/b03-visual-fixture-r2-20261011"
+    "site_dir": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/b03-visual-fixture-r3-20261011"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

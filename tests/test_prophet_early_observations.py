@@ -34,13 +34,84 @@ def seed(tmp_path, tickers=("AMZN",), *, session="2026-10-08"):
                    "valid_to": None} for t in tickers]).to_parquet(ref / "vendor_aliases.parquet", index=False)
     rows = [{"ticker": t, "asof": session, "triggers_fired": ["pre_confluence_2d"],
              "triggers": {"pre_confluence_2d": {"fired": True, "evaluated": True, "last_date": session}},
+             "slow_tier": {"evaluated": True, "eligible": False,
+                           "blocking": ["macd_below_signal"], "null_legs": {}},
              "reset": {"reset_low": 245.96, "reset_low_date": "2026-09-16"}}
             for t in tickers]
     artifact = {"schema": "us_turn_watch.v1", "data_session": session,
                 "selection_era": "anticipation-v1", "anchor_era": "anchor-v1",
-                "triggers": {"pre_confluence_2d": {"en": "Pre-confluence 2D"}}}
+                "triggers": {"pre_confluence_2d": {"en": "Pre-confluence 2D"}},
+                "deck": rows[:40], "beyond_cap": [{"ticker": r["ticker"]} for r in rows[40:]],
+                "coverage": {"triggered": len(rows), "deck": min(40, len(rows)),
+                             "beyond_cap": max(0, len(rows) - 40)}}
     path = write_candidate_episode_input(artifact, rows, data)
+    from engine.us_turn_watch import write_artifact
+    write_artifact(artifact, tmp_path / "site")
     return path, load_identity_spine(data), rows, artifact
+
+
+def test_featured_counts_require_the_exact_source_artifact_partition(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path, tuple(f"N{i:03}" for i in range(60)) + ("AMZN",))
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    p = view(api, source, spine, public_artifact_path=public)
+    assert p["coverage"]["state"] == "VERIFIED_SOURCE_PARTITION"
+    assert [p["coverage"][k] for k in ("total", "featured", "beyond_cap")] == [61, 40, 21]
+    assert p["rows"][-1]["source_visibility"] == "BEYOND_CAP"
+    public.write_text('{}')
+    changed = view(api, source, spine, public_artifact_path=public)
+    assert changed["coverage"]["featured"] is None
+    assert changed["coverage"]["reason"] == "SOURCE_ARTIFACT_RECEIPT_MISMATCH"
+    assert len(changed["rows"]) == 61
+    assert changed["snapshot_id"] != p["snapshot_id"]
+
+
+@pytest.mark.parametrize("malformation", ["overlap", "wrong_count", "wrong_session"])
+def test_matching_receipt_does_not_certify_a_broken_partition(api, tmp_path, malformation):
+    from engine.us_turn_watch import write_artifact
+    source, spine, rows, artifact = seed(tmp_path, ("AMZN", "MSFT"))
+    if malformation == "overlap":
+        artifact["beyond_cap"] = [{"ticker": "AMZN"}]
+    elif malformation == "wrong_count":
+        artifact["coverage"]["deck"] = 40
+    else:
+        artifact["data_session"] = "2026-10-07"
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    write_artifact(artifact, tmp_path / "site")
+    if malformation == "wrong_session":
+        # The dated private source has its original session; bind only its
+        # artifact receipt to the mismatched-session public artifact.
+        doc = json.loads(source.read_text())
+        raw = (tmp_path / "site/turn_watch/turn_watch.json").read_bytes()
+        doc["source_artifact_sha256"] = "sha256:" + sha256(raw).hexdigest()
+        doc.pop("content_sha256")
+        from engine.us_candidate_episode import canonical_json
+        doc["content_sha256"] = sha256(canonical_json(doc).encode()).hexdigest()
+        source.write_text(json.dumps(doc))
+    p = view(api, source, spine, public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json")
+    assert p["coverage"]["state"] == "UNAVAILABLE"
+    assert p["coverage"]["reason"] == "SOURCE_ARTIFACT_PARTITION_UNAVAILABLE"
+    assert p["coverage"]["featured"] is None
+    assert len(p["rows"]) == 2
+
+
+def test_counterevidence_and_correction_limits_preserve_source_meaning(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path)
+    row = view(api, source, spine)["rows"][0]
+    assert row["source_evidence"]["counterevidence"] == ["macd_below_signal"]
+    assert row["source_evidence"]["triggers"]["pre_confluence_2d"]["fired"] is True
+    assert row["lineage"]["state"] == "CURRENT_RECEIPT_ONLY"
+    assert row["lineage"]["prior_receipt"] is None
+    assert row["lineage"]["current_receipt"] == row["source_receipt"]
+    assert view(api, source, spine)["clocks"]["first_available_at"] is None
+
+
+def test_missing_counterevidence_is_not_an_all_clear(api, tmp_path):
+    source, spine, rows, artifact = seed(tmp_path)
+    rows[0].pop("slow_tier")
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    row = view(api, source, spine)["rows"][0]
+    assert row["source_evidence"]["counterevidence"] is None
+    assert row["source_evidence"]["counterevidence_state"] == "UNAVAILABLE_FIELD"
 
 
 def view(api, source, spine, **kwargs):

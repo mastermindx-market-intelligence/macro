@@ -75,13 +75,46 @@ def unavailable_observations(reason: str) -> dict:
     return {"schema": SCHEMA, "status": "UNAVAILABLE", "reason": reason,
            "source_receipt": None, "snapshot_id": None, "rows": [],
            "clocks": {"source_session": None, "logical_known_at": None,
-                      "source_available_at": None, "observed_at": None, "published_at": None,
+                      "first_available_at": None, "source_available_at": None,
+                      "observed_at": None, "published_at": None,
                       "actual_clock_state": "NOT_RECORDED"},
            "authority": dict(AUTHORITY)}
 
 
+def _source_coverage(doc, public_path):
+    """Join only the exact producer-published partition; never assume a cap."""
+    coverage = {"state": "UNAVAILABLE", "reason": "SOURCE_ARTIFACT_UNAVAILABLE",
+                "total": len(doc["rows"]), "featured": None, "beyond_cap": None,
+                "source_artifact_receipt": doc.get("source_artifact_sha256")}
+    if public_path is None:
+        return coverage, set()
+    def require(condition):
+        if not condition:
+            raise ValueError("source partition")
+    try:
+        raw = Path(public_path).read_bytes()
+        if "sha256:" + sha256(raw).hexdigest() != doc.get("source_artifact_sha256"):
+            coverage["reason"] = "SOURCE_ARTIFACT_RECEIPT_MISMATCH"
+            return coverage, set()
+        public = json.loads(raw)
+        require(public["schema"] == "us_turn_watch.v1" and public["data_session"] == doc["data_session"])
+        deck, beyond = public["deck"], public["beyond_cap"]
+        require(isinstance(deck, list) and isinstance(beyond, list))
+        names = [r["ticker"] for r in deck + beyond]
+        original = [r["ticker"] for r in doc["rows"]]
+        require(len(set(names)) == len(names) == len(original) and set(names) == set(original))
+        for key, value in (("triggered", len(original)), ("deck", len(deck)), ("beyond_cap", len(beyond))):
+            require(type(public["coverage"][key]) is int and public["coverage"][key] == value)
+    except (OSError, ValueError, TypeError, KeyError):
+        coverage["reason"] = "SOURCE_ARTIFACT_PARTITION_UNAVAILABLE"
+        return coverage, set()
+    coverage.update(state="VERIFIED_SOURCE_PARTITION", reason=None, featured=len(deck), beyond_cap=len(beyond))
+    return coverage, {r["ticker"] for r in deck}
+
+
 def load_observations(source_path: Path, *, spine: IdentitySpine | None,
-                      reference_session: str, episode_root: Path | None = None) -> dict:
+                      reference_session: str, episode_root: Path | None = None,
+                      public_artifact_path: Path | None = None) -> dict:
     """Read one source byte snapshot and, optionally, one validated atomic B1 HEAD.
 
     A broken B1/identity read degrades only its relationships, never the observation
@@ -115,6 +148,7 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
         out["reason"] = "SOURCE_MALFORMED"
         return out
     receipt = "sha256:" + digest
+    coverage, featured = _source_coverage(doc, public_artifact_path)
     snapshot = None
     if episode_root is not None:
         try:
@@ -150,18 +184,30 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
         fired = [key for key, trigger in triggers.items()
                  if isinstance(trigger, dict) and trigger.get("fired") is True
                  and trigger.get("evaluated") is True]
+        slow = row.get("slow_tier")
+        blockers = slow.get("blocking") if isinstance(slow, dict) and slow.get("evaluated") is True else None
+        if not isinstance(blockers, list) or any(not isinstance(v, str) for v in blockers):
+            blockers = None
         projected.append({"source_event_id": event_id, "source_receipt": receipt,
                           "ticker": ticker, "security_id": security,
                           "identity_basis": "CURRENT_REFERENCE_ONLY" if security else "UNRESOLVED",
                           "source_session": session, "triggers_fired": fired,
+                          "source_visibility": ("FEATURED" if ticker in featured else "BEYOND_CAP")
+                              if coverage["state"] == "VERIFIED_SOURCE_PARTITION" else "UNAVAILABLE",
+                          "source_evidence": {"triggers": triggers, "counterevidence": blockers,
+                              "counterevidence_state": "RECORDED" if blockers is not None else "UNAVAILABLE_FIELD"},
+                          "lineage": {"state": "CURRENT_RECEIPT_ONLY", "current_receipt": receipt,
+                              "source_event_id": event_id, "source_artifact_receipt": doc.get("source_artifact_sha256"),
+                              "selection_era": doc.get("selection_era"), "anchor_era": doc.get("anchor_era"),
+                              "prior_receipt": None, "correction_available_at": None},
                           "episode_relation": _episode_relation(event_id, receipt, security, snapshot),
                           "authority": dict(AUTHORITY)})
     out.update(status="CURRENT_SESSION" if session == reference_session else "RETAINED_PREVIOUS_SESSION",
-               reason=None, source_receipt=receipt, rows=projected)
+               reason=None, source_receipt=receipt, rows=projected, coverage=coverage)
     out["clocks"].update(source_session=session, logical_known_at=doc.get("known_at"))
     # Bind pagination to source, B1 generation and the actual current identity
     # projection. A changed receipt, alias resolution or B1 return invalidates it.
-    material = {"source_receipt": receipt, "rows": projected,
+    material = {"source_receipt": receipt, "rows": projected, "coverage": coverage,
                 "generation_id": snapshot.generation_id if snapshot else None,
                 "identity_receipts": list(spine.source_receipts) if spine else []}
     out["snapshot_id"] = "early:" + sha256(canonical_json(material).encode()).hexdigest()

@@ -11,7 +11,7 @@ scripts are removed, and an explicit fixture notice is added. The canonical
 scripts/capture_page_evidence.py loads those static fixture pages anonymously.
 observations.html shows page one of 61 synthetic observations; search.html shows
 an exact AMZN search over that full population, although AMZN is outside page one.
-No paid production data is contained in these files.
+The counts verify 40 featured / 21 beyond-preview fixture names against the exact producer receipt. Search captures open the source-evidence disclosure, preserving the MACD counterevidence and missing correction-history/first-available limits. Exact local shared font assets accompany the capture fixture. No paid production data is contained in these files.
 
 ## Art direction and scope
 
@@ -39,7 +39,7 @@ capture_page_evidence.py with --routes /observations.html,/search.html,
 --viewports desktop,tablet,mobile --locales en,zh --themes dark,light.
 The manifest records its exact tool hash, observed state, screenshot hashes and
 target directory. The original exported fixture DOM remains in the parent
-evidence root under b03-visual-fixture-r2-20261011.
+evidence root under b03-visual-fixture-r3-20261011.
 
 No B1/B3/B4 engines, episode history, entry decisions, rankings, Plans or scientific
 promotion rules were changed by this component.

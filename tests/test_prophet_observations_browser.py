@@ -96,7 +96,12 @@ def test_server_search_finds_amzn_outside_loaded_page_and_is_not_an_episode(desk
     page.wait_for_function("document.querySelector('[data-eo-rows]').textContent.includes('AMZN')")
     assert page.locator("[data-eo-row]").count() == 1
     assert "61" in page.locator("[data-eo-counts]").inner_text()
+    assert "40 featured" in page.locator("[data-eo-counts]").inner_text()
+    assert "21 beyond the preview" in page.locator("[data-eo-counts]").inner_text()
     assert "Episode link unavailable" in page.locator("[data-eo-rows]").inner_text()
+    page.locator("[data-eo-rows] summary").click()
+    assert "MACD below signal" in page.locator("[data-eo-rows]").inner_text()
+    assert "first-available time are not recorded here" in page.locator("[data-eo-rows]").inner_text()
     assert mode["requests"] == 2
     assert not page.locator("[data-eo-rows] button").count()
 
@@ -160,6 +165,8 @@ def test_theme_language_and_mobile_composition(desk, theme, lang, width, tmp_pat
     open_desk(page)
     if lang == "zh":
         assert "观察源记录的潜在转向" in page.locator("#us-early-observations").inner_text()
+    page.locator("[data-eo-rows] summary").first.click()
+    assert ("MACD 低于信号线" if lang == "zh" else "MACD below signal") in page.locator("[data-eo-rows]").inner_text()
     canvas = page.evaluate("getComputedStyle(document.body).backgroundColor")
     assert canvas != "rgba(0, 0, 0, 0)"
     overflow = page.evaluate("""() => [...document.querySelectorAll('#us-early-observations *')]

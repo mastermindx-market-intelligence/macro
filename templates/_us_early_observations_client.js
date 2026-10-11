@@ -21,6 +21,16 @@
     basket_turn: ['Group turning', '板块转向中'],
     leader_reset_turn: ['Leader reset', '龙头回踩重置']
   };
+  var blockers = {
+    macd_below_signal: ['MACD below signal', 'MACD 低于信号线'],
+    stoch_3d_not_crossed: ['3D confirmation not crossed', '3日确认尚未交叉'],
+    macd_2d_not_crossed: ['2D MACD not crossed', '2日 MACD 尚未交叉'],
+    stoch_overbought: ['Stochastic overbought', '随机指标超买'],
+    stoch_bear_cross: ['Stochastic bearish cross', '随机指标向下交叉'],
+    no_deep_or_weekly_confirm: ['Deep or weekly confirmation absent', '缺少深层或周线确认'],
+    rsi_too_hot: ['RSI extended', 'RSI 偏热'],
+    below_200dma: ['Below the 200-day average', '低于200日均线']
+  };
   function bilingual(node, en, zh) {
     node.replaceChildren();
     [['l-en', en], ['l-zh', zh]].forEach(function (v) {
@@ -48,6 +58,11 @@
       && body.counts && Number.isInteger(body.counts.source) && body.counts.source >= 0
       && Number.isInteger(body.counts.matched) && body.counts.matched >= body.rows.length
       && body.counts.source >= body.counts.matched && body.counts.returned === body.rows.length
+      && body.coverage && body.coverage.total === body.counts.source
+      && ((body.coverage.state === 'UNAVAILABLE' && body.coverage.featured === null && body.coverage.beyond_cap === null)
+        || (body.coverage.state === 'VERIFIED_SOURCE_PARTITION' && Number.isInteger(body.coverage.featured)
+          && Number.isInteger(body.coverage.beyond_cap) && body.coverage.featured >= 0 && body.coverage.beyond_cap >= 0
+          && body.coverage.featured + body.coverage.beyond_cap === body.counts.source))
       && body.page && body.page.offset === offset && body.page.limit === 8
       && (body.page.next_offset === null || body.page.next_offset === offset + 8)
       && body.clocks && /^\d{4}-\d{2}-\d{2}$/.test(body.clocks.source_session)
@@ -56,6 +71,9 @@
           && (row.security_id === null || (typeof row.security_id === 'string' && /^SEC:/.test(row.security_id)))
           && row.episode_relation && Object.prototype.hasOwnProperty.call(relations, row.episode_relation.state)
           && Array.isArray(row.triggers_fired) && row.triggers_fired.every(function (t) { return typeof t === 'string'; })
+          && row.source_evidence && row.source_evidence.triggers && row.lineage && row.lineage.state === 'CURRENT_RECEIPT_ONLY'
+          && (row.source_evidence.counterevidence === null || (Array.isArray(row.source_evidence.counterevidence)
+            && row.source_evidence.counterevidence.every(function (b) { return typeof b === 'string'; })))
           && authority(row.authority);
       });
   }
@@ -74,10 +92,35 @@
       var relation = document.createElement('span'); relation.className = 'eo-relation';
       bilingual(relation, relations[row.episode_relation.state][0], relations[row.episode_relation.state][1]);
       line.append(name, why, relation); rows.appendChild(line);
+      var evidence = document.createElement('details'); evidence.className = 'eo-note';
+      var title = document.createElement('summary'); bilingual(title, 'Source evidence', '来源证据'); evidence.appendChild(title);
+      var against = row.source_evidence.counterevidence;
+      var translated = (against || []).map(function (key) {
+        return Object.prototype.hasOwnProperty.call(blockers, key) ? blockers[key] : ['Other source confirmation withheld', '来源中的其他确认尚未通过'];
+      });
+      var counter = document.createElement('p');
+      bilingual(counter, against === null ? 'Counterevidence unavailable.' : (against.length
+        ? 'Confirmation withheld: ' + translated.map(function (b) { return b[0]; }).join(' · ')
+        : 'No slow-confirmation blockers recorded; entry permission is separate.'),
+        against === null ? '反向证据不可用。' : (against.length
+        ? '确认尚未通过：' + translated.map(function (b) { return b[1]; }).join(' · ')
+        : '未记录慢层确认阻碍；入场权限独立判定。'));
+      evidence.appendChild(counter);
+      var history = document.createElement('p');
+      bilingual(history, 'Current source revision only. Earlier correction history and first-available time are not recorded here.',
+        '仅显示当前来源版本；此来源未记录较早的修订历史或首次可用时间。');
+      evidence.appendChild(history); rows.appendChild(evidence);
     });
     counts.hidden = false;
     bilingual(counts, body.counts.source + ' observations · ' + body.counts.matched + ' matches · showing ' + body.rows.length,
       body.counts.source + ' 个观察 · ' + body.counts.matched + ' 个匹配 · 本页 ' + body.rows.length + ' 个');
+    var partition = document.createElement('span'), cov = body.coverage;
+    bilingual(partition, cov.state === 'VERIFIED_SOURCE_PARTITION'
+      ? ' · ' + cov.featured + ' featured · ' + cov.beyond_cap + ' beyond the preview'
+      : ' · Featured / beyond-preview counts unavailable', cov.state === 'VERIFIED_SOURCE_PARTITION'
+      ? ' · 精选 ' + cov.featured + ' 个 · 预览以外 ' + cov.beyond_cap + ' 个'
+      : ' · 精选与预览外数量不可用');
+    counts.appendChild(partition);
     source.hidden = false;
     var date = body.clocks.source_session, retained = body.status === 'RETAINED_PREVIOUS_SESSION';
     bilingual(source, (retained ? 'Retained source from ' : 'Source session ') + date + '. Capture and publication times are unverified.',

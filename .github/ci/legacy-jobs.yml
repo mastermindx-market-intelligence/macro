@@ -2641,6 +2641,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
       - "engine/prophet_early_observations.py"
       - "engine/us_candidate_episode_intake.py"
@@ -12099,6 +12101,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
       - "engine/prophet_early_observations.py"
       - "engine/session_digest.py"
@@ -12791,6 +12795,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
       - "engine/prophet_early_observations.py"
       - "engine/session_digest.py"
@@ -15005,6 +15011,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
@@ -15409,6 +15417,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
       - "engine/prophet_early_observations.py"
       - "engine/session_digest.py"
@@ -19390,6 +19400,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
       - "engine/prophet_early_observations.py"
       - "engine/session_digest.py"
@@ -20787,6 +20799,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
       - "app/prophet_observations.py"
       - "engine/prophet_early_observations.py"
