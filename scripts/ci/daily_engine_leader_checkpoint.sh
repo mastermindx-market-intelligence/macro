@@ -3,6 +3,12 @@
 # Narrow durability checkpoint for the existing US leader-pullback source artifact.
 # This moves no computation and creates no second publisher: the preceding owner step
 # writes the artifact; this step only prevents the long engine tail from stranding it.
+# Homebrew Bash 5.3.9 can deadlock on large heredocs on macstudio.
+# Enter the macOS system Bash before sourced helpers or any heredoc executes.
+if [ "$(uname -s)" = "Darwin" ] && [ "${BASH:-}" != "/bin/bash" ]; then
+  exec /bin/bash "$0" "$@"
+fi
+
 set -euo pipefail
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
 

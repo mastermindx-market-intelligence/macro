@@ -21,6 +21,12 @@
 #                     mutations are removed before the broad engine commit.
 #   assert-integrity  Terminal fail-closed gate over episode, campaign, and candidate outcomes.
 
+# Homebrew Bash 5.3.9 can deadlock on large heredocs on macstudio.
+# Enter the macOS system Bash before sourced helpers or any heredoc executes.
+if [ "$(uname -s)" = "Darwin" ] && [ "${BASH:-}" != "/bin/bash" ]; then
+  exec /bin/bash "$0" "$@"
+fi
+
 set -euo pipefail
 
 REPO_ROOT="${GITHUB_WORKSPACE:-$(git rev-parse --show-toplevel)}"
