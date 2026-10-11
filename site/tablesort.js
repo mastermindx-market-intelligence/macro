@@ -272,7 +272,7 @@
   }
 
   // one registry + one module-scope listener (site20 S2-04): a language flip
-  // rewrites every filter's status text and reset label immediately. #7502's
+  // rewrites every filter's status text and reset label immediately. PR 7502's
   // own copy refresh is a separate listener and coexists with this one.
   var filterCtrls = [];
   document.addEventListener('langchange', function () {
