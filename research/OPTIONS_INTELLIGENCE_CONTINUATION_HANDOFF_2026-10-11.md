@@ -172,6 +172,25 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   everything else. The package selects NO parameter and registers NO gate: alpha_ff, delta*, power, b-rule and the
   dependence envelope stay the statistics owner's, fixed before any `calibration_eval` label read (D13, DR-5).
   Persistence after ACCEPT: a non-normative Macro research PR for the #8385 owner; #8385 itself is not touched.
+- D30 (17:32Z, step 1A judged by artifact) **ACCEPT** at `cd5d50551a3d` (local = remote). Seat observations: merge
+  parents `b83a9b852` (#723 head) + `292357daa` (= current origin/master, 0 behind); #723's head is an ancestor, so the
+  D27d fast-forward is possible; zero conflict markers; resolver sha256 9debfdb1… matches; the conflicted evidence
+  paths are byte-identical to master; seat `tsc --noEmit` exit 0; seat vitest on the three new/extended files plus five
+  adjacent files (flowClientCache ×3, optionsMarketMemory, gexDeskPartialData) 79/79 passed; the six evidence-lock tests
+  fail only on `<file> changed without a recapture` — ChartPanel.tsx (b-pl-6, visual-intelligence, options-level-axis)
+  and app/globals.css (conductor-fit-badge-zh, eod-heatmap-flowdesk, gex-levels-heatmap); each stops at its first
+  stale row, so every packet is treated as wholly owed. Deviations accepted: two test-only follow-up commits (tsc mock
+  types; #723's own gexDeskPartialData harness now mocks master's `flowGetResult`); GexMarketMemory `gex_at` 404 keeps
+  the specific archive-missing copy (still an absent state, distinct from unavailable); 403 = unavailable at the
+  snapshot layer with not-entitled copy only from `access="locked"` (as commissioned). Ungated lock found:
+  `options-companion-20260923/EVIDENCE.json` pins 27 sourceFiles (the return said 12) and has no vitest gate — owed in
+  1B anyway. The four EVIDENCE.yml gates assert `capturedAtHead is informational`, so no squash re-pin is owed for them.
+- D31 (17:32Z, step 1B commission shape) One fabric operator (grok, fix_build) on the SAME worktree/branch (the 1A
+  operator has exited; one writer): B1 real recapture of all seven packets with each packet's own recorded tool; B2
+  guest-bundle proof for OptionsRail by literal grep over every JS response of a signed-out load of each TerminalShell
+  route on a `next build` + `next start`, with a mandatory positive control in `.next/static/chunks/` (O8 defect 11);
+  B3 full `npm run test:e2e:responsive`; B4 tsc 0 + `npm test` 0. No product-code or test edits; pushes only its own
+  branch; never marks ready. Packet `leads/U01/step1B_packet.md`.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -305,11 +324,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 ## NEXT
 
 
-1. Judge the step-1A return by artifact when bjyey2nbm exits (no polling): pushed head of
-   `claude/ssd-pr-723-c89a753150e1dbd6`, merge commit + A2–A4 commits, no conflict markers, tsc 0, only
-   evidence-lock tests failing, the three new/extended test files passing, resolver sha256 9debfdb1…, no
-   hand-edited evidence, RECAPTURE_OWED list. ACCEPT / REQUEST_REPAIR (numbered, one round) / REJECT / ESCALATE.
-2. On ACCEPT: commission step 1B (D27c) against the accepted head; then a fresh independent exact-head review
+1. DONE (17:32Z): step 1A ACCEPTED (D30); step 1B commissioned (D31).
+2. Judge step 1B by artifact on its task exit (hash loop re-run by the seat, one crop per packet opened, B2 positive
+   control present, `npm test` 0); then a fresh independent exact-head review
    (the T09 approval does not carry), fast-forward #723's branch (D27d), mark ready, `merge-on-green` + armed
    auto-merge, deploy `--target-sha`, verify live.
 3. Then U01 step 2: #846 refresh under this account (cross-owner A01/A03 tests, Read<T>, optionsReadAccess,
@@ -333,10 +350,10 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | O5 Q01 | native Opus lead (lead-performed) | scratchpad `leads/O5/` | #8385 | — | JUDGED: ACCEPT as independent methods review; D13 | 1 lead |
 | O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | PLAN ACCEPTED 08:53Z → REQUEST_REPAIR (O8 defects 1–12 + D24 rulings), carried by the refresh commission D26 | 1 lead |
 | O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | DELIVERED 09:3xZ (after one nudge at the 12-turn limit) → JUDGED: ACCEPT as evidence; D24 | 1 auditor |
-| U01 step 1A (#723 refresh) | fabric operator grok (fix_build), D26/D27 | SSD worktree `pr-723-c89a753150e1dbd6`, branch `claude/ssd-pr-723-c89a753150e1dbd6`; packet `leads/U01/step1A_packet.md` | #723 (claim issuecomment-6111490519) | background task bjyey2nbm exit (3 h alarm) + `leads/U01/step1A_return.md` | RUNNING (START 17:04Z; 17:08Z merge in progress) | 1 operator |
+| U01 step 1A (#723 refresh) | fabric operator grok (fix_build), D26/D27 | SSD worktree `pr-723-c89a753150e1dbd6`, branch `claude/ssd-pr-723-c89a753150e1dbd6`; packet `leads/U01/step1A_packet.md` | #723 (claim issuecomment-6111490519) | background task bjyey2nbm exit (3 h alarm) + `leads/U01/step1A_return.md` | DELIVERED → JUDGED: ACCEPT (17:32Z, D30) at cd5d50551a3d | — |
 | D16a resolver unmounted-volume refusal | fabric operator grok (fix_build), D28 | SSD worktree `thetadata-unmounted-refusal-ff0dcf1f0bf22254`, branch `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`; packet `leads/D16a/packet.md` | Macro PR (seat opens after ACCEPT) | background task bdofouo42 exit (2 h alarm) + `leads/D16a/return.md` | RUNNING (START 17:16:46Z; ECONOMIC_POLICY allowed) | 1 operator |
 | OC data-free operating-characteristics package | fabric operator grok (build-bounded), D29 | scratchpad `leads/OC/` only; packet `leads/OC/packet.md` | #8385 (non-normative input; Macro research PR after ACCEPT) | background task bocvhjvo5 exit (3.5 h alarm) + `leads/OC/return.md` | RUNNING (launched 17:22:12Z; a first attempt under class `research` was refused before effect: unknown_task_class) | 1 operator |
-| U01 step 1B (recapture + chunk grep + responsive e2e) | not commissioned (D27c) | accepted 1A head | #723 | — | WAITING on 1A ACCEPT | — |
+| U01 step 1B (recapture + chunk grep + responsive e2e) | fabric operator grok (fix_build), D31 | same SSD worktree/branch at cd5d50551a3d; packet `leads/U01/step1B_packet.md` | #723 | background task exit (4 h alarm) + `leads/U01/step1B_return.md` | LAUNCHING | 1 operator |
 
 ## DO_NOT_REDO (this programme)
 
@@ -362,9 +379,9 @@ amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKN
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (WIP commit "OC package running; D29" on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "step 1A accepted; 1B commissioned; D30-D31" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: on bjyey2nbm exit judge step 1A (NEXT 1); on bdofouo42 exit judge D16a (NEXT 5); on bocvhjvo5 exit judge OC (NEXT 6)
+EXACT_NEXT_ACTION: on step-1B task exit judge 1B (NEXT 2); on bdofouo42 exit judge D16a (NEXT 5); on bocvhjvo5 exit judge OC (NEXT 6)
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -477,4 +494,9 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   before effect on an unknown class name, relaunched under an admitted class.
 - Three operators running (step 1A, D16a, OC), each in its own workspace. Host load ~20 on 24 cores; the OC lane is
   niced and capped at two processes.
+### 2026-10-11 17:32Z — step 1A accepted; 1B commissioned; D30–D31
+- 1A judged by artifact at cd5d50551a3d: seat tsc 0, seat vitest 79/79 on new + adjacent files, six lock-only failures
+  observed with their stale source named. ACCEPT (D30).
+- 1B packet written (seven packets incl. the ungated companion EVIDENCE.json; guest chunk grep with positive control;
+  full responsive e2e) (D31).
 
