@@ -364,10 +364,7 @@ test('S4-02 empty visible population yields no invalid range', async () => {
   data[0].visible = 'legendonly';
   data[1].visible = 'legendonly';
   await restyle(gd, { visible: ['legendonly'] }, [0, 1]);
-  if (h.relayoutCalls.length > n) {
-    const upd = last(h.relayoutCalls);
-    assert.ok(!Object.prototype.hasOwnProperty.call(upd, 'yaxis.range'));
-  }
+  assert.equal(h.relayoutCalls.length, n, 'empty visible population must not relayout');
   for (const upd of h.relayoutCalls) {
     for (const v of finiteValues(upd)) {
       assert.ok(Number.isFinite(v), `non-finite ${v}`);
