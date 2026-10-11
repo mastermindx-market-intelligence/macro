@@ -119,8 +119,12 @@ waves:
       fires on `not files_complete or not collisions_complete`, which is not roster-size
       specific; that the acc72f3f refusal came from :2614-2615 (before the ownership check at
       :2618-2619) is the seat's inference from the roster size, not a verifier output. Roster
-      size is therefore established only by an explicit attribution test recorded in the
-      DECISION: a fresh open-PR count taken immediately before and immediately after the run,
+      size is therefore established only by an explicit attribution test, the seat's own
+      tightening (not part of 6106134520's text), posted on #7870 as the narrowing addendum
+      6106495383 (2026-10-11T07:03:50Z; it also withdraws ':2614-2615' as a verifier fact and
+      records that the acc72f3f run as recorded does not satisfy the test, so the seat re-runs
+      at the release head with all three legs recorded) and recorded in the DECISION: a fresh
+      open-PR count taken immediately before and immediately after the run,
       both above 490; the PR's fully paginated pulls/N/files equal to git diff --name-only
       against its base; and the run's recorded wall time inside the adapter's census budget
       read at the same source SHA. Any doubt on any leg is RELEASE_BLOCKED. Every other
@@ -136,18 +140,20 @@ waves:
       and gate (4) for #8250 is applied to #8250 in its own terms: the verifier run at #8250's
       own release head with --external-effect-evidence-fingerprint = sha256 of #8250's recorded
       external-effect artifact (the ls-remote line plus the pulls/8250 head/state/draft read;
-      da6a8c45d80757e2ef3eda821dd56e24db64149c92e8a6c6d3bb231846cc0c06 at 1db9cad1), quoted
-      verbatim in a #8250 DECISION, or a non-seat acceptance citing that #8250 comment by id.
+      da6a8c45d80757e2ef3eda821dd56e24db64149c92e8a6c6d3bb231846cc0c06 at 1db9cad1,
+      seat-only-checkable until the exact hashed bytes are posted), with the verifier source
+      SHA recorded in the #8250 DECISION and its JSON quoted verbatim there, or a non-seat
+      acceptance citing that #8250 comment by id and quoted in the #8250 release DECISION.
       The verifier checks the fingerprint only for shape (control_plane/source_continuity.py:26,
       the pattern ^[0-9a-f]{64}$, and :500-511) and, with --external-effect-state NONE and
       branch dependency NONE (:611-620), records it in the receipt without binding it to any
       artifact; binding the fingerprint to the recorded artifact is the DECISION's own
       obligation, checkable by recomputing the sha256 from the artifact quoted there.
-      Roster size is the only observed cause of today's refusal, not the only possible one:
+      Roster size is the seat's inferred cause of today's refusal (the verifier reports no cause; see the attribution test above), not the only possible one:
       with 490 or fewer open PRs the verifier can still refuse on budget exhaustion or on
       churn in any of the 190 overlapping PRs, and the ownership, local-probe and content
       checks have never run for this carrier. The seat requested that ruling on #7870
-      (comment 6106057199, 2026-10-11), narrowed it (6106134520) and does not rule on it.
+      (comment 6106057199, 2026-10-11), narrowed it (6106134520), tightened it in the addendum (6106495383) and does not rule on it.
       Substitute evidence recorded with commands on 2026-10-11 and
       offered for that ruling: git ls-remote origin refs/heads/<branch> == git rev-parse HEAD
       == acc72f3f; the GitHub commit tree cd76b979136ccd77bc4bfd50b14c9f5fa19d4a93 == git
