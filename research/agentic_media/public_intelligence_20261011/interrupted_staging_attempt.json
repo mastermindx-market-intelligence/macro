@@ -1,0 +1,29 @@
+{
+  "schema": "press.staging_attempt_recovery.v1",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "attempt_started_utc": "2026-10-11T12:07:00Z",
+  "recovered_utc": "2026-10-11T16:53:00Z",
+  "source_commit": "28c91feaa1c700e392d61b87facf5c175d32d159",
+  "command": "PRESS_RUN_TOKEN_BUDGET=12000 PRESS_CIRCUIT_BREAKER_FAILURES=1 python3 -m scripts.run_press --staging --root /Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main --desks brief --max-slots 1",
+  "provider_accounting": [
+    {
+      "ts": "2026-10-11T12:07:55Z",
+      "provider": "codex",
+      "model": "gpt-5.6-luna",
+      "input_tokens": 19654,
+      "output_tokens": 1097,
+      "lane": "press-brief",
+      "stage": "press_brief",
+      "cycle_id": ""
+    }
+  ],
+  "accounting_sha256": "f725fc2f4ba59a99c8ca82f46306c16e2a429af9aec756fec486d4626dbad099",
+  "stage_output_found": false,
+  "run_summary_changed": false,
+  "process_present": false,
+  "command_exit_status": "unavailable_after_interruption",
+  "effect_state": "unsettled_provider_call_no_replay",
+  "publication_approved": false,
+  "acceptance_credit": false,
+  "limitation": "One provider accounting row survives; no new staged record or completed run summary. This is not proof of successful generation, validation, source rights, or publication. Preserve accounting and recover the same attempt if retained output becomes available."
+}

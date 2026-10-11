@@ -7484,6 +7484,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/consumer_cyclical_intelligence_read_model.v1.valid.json"
       - "tests/test_consumer_cyclical_intelligence_read_model_contract.py"
@@ -12755,6 +12759,10 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "collectors/biocatalyst/**"
       - "config/**"
       - "contracts/**"
@@ -18007,6 +18015,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "tests/test_pg_economic_source_selection.py"
       - "scripts/refresh_event_workspaces.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -18069,6 +18081,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/economic_observations.py"
@@ -20917,6 +20933,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/pages.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -22537,6 +22555,8 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/pages.py"
       - "lib/exchange_holidays.py"
       - "ops/launchd/run_skew_accrual.sh"
       - "ops/launchd/run_with_env.sh"
@@ -22718,6 +22738,10 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"
@@ -22868,6 +22892,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/config.py"
+      - "lib/pages.py"
       - "engine/__init__.py"
       - "engine/pb_d_cohort.py"
       - "engine/pb_d_evaluation.py"

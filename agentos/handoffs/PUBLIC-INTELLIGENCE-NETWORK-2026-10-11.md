@@ -38,7 +38,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Complete PR 8786 through fresh binding CI and the existing protected landing/install controls; then integrate protected main and deliver the saved staged-cohort repair.
+  - Repair the current import-closure CI failure and consolidate the tested staged-cohort fix on existing PR 8786, then complete fresh binding CI and protected landing/install checks.
   - Obtain the existing source owner's qualified packet/revision receipt and permitted immutable read path, then use scripts/stage_earnings_story_press.py without creating a second compiler.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
 do_not_redo:
@@ -86,3 +86,13 @@ The earlier capacity interpretation was too broad. The controller cap pauses new
 Direct root work then repaired asymmetric staged novelty admission in an isolated helper-created worktree, saving `0978a42121cf853d2542d7e3ff730afca9b1faf4` on recovery branch `claude/ssd-mmx-press-staging-cohort-20261011-f95888901b9489c4`. No duplicate PR was created. The root locally merged the exact #8786 source into that follow-up to test compatibility while preserving the running PR proof. The new check rejects either arrival order of the retained overlapping pair, preserving both original byte hashes and the 0.18 threshold.
 
 Verification command: `python3 -m pytest tests/test_press_validators.py tests/test_press_run.py tests/test_press_writer.py tests/test_press_staging_inspection.py tests/test_earnings_dossier_link_contract.py tests/test_earnings_story_press_ingress.py -q --tb=short --basetemp=../mmx-cohort-integrated-fixtures`. Result: **209 passed in 16.55s**, no skips after materializing committed `site/`. The original regression failed before the repair. No new provider call or staging mutation occurred. See `STAGED_COHORT_REPAIR.md`; neither this checkpoint nor the tests grant publication, rights, or ten-draft acceptance.
+
+## Binding CI failure and same-carrier consolidation
+
+Run 38137036954 failed `contract-delta` (job 114462917549, 12:03:29 UTC): the dossier adapter now reaches `lib.pages`, exposing 19 missing dependency paths in eight curated existing jobs. This is a branch-caused coverage declaration failure, not inherited debt. The root visibly disarmed #8786 with `merge-blocked`, re-read no attached open refresh lease, and merged protected main `9667d803cf6b90ae2e13751f4fa680555fe9f71e` into the owned integration worktree. The existing observer was positively stopped at 12:05:04 UTC (PID 80473 absent, exit 130); no watcher is presently claimed. The necessary repair and the already-tested cohort fix now consolidate on the same PR; the earlier separate-follow-up intention is superseded. Only the exact 19 uncovered paths are added to the eight existing CI job scopes. Fresh proof remains required.
+
+## Interruption recovery
+
+At 16:53 UTC, PR #8786 was still OPEN at b767, only merge-blocked, with no open refresh lease. CI pack 0 and contract-delta failed on the same 19 import-closure declarations; the other 11 packs passed. The 12:07 real staging process no longer exists and left one accounted provider call but no draft/run receipt. Preserve this unsettled attempt without replay; `interrupted_staging_attempt.json` contains the bounded receipt. No new staging pass or publication is claimed. Agent OS validation completed: 1,628 records, zero errors, 140 warnings. The interrupted import-closure test had no output or live process; only that pure test was restarted.
+
+The resumed pure dependency audit completed: `python3 -m pytest tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure -q --tb=short --basetemp=../mmx-closure-fixtures-resume` — **1 passed in 120.13s**, exit 0, with all 19 introduced gaps repaired. It exercised local merge `28c91feaa1c700e392d61b87facf5c175d32d159` plus the exact declaration additions. This is not hosted CI proof.

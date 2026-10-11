@@ -2,9 +2,10 @@
 
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`.
 Base: `37ac222d0024983c830509799cddefff3fbec9e3`.
-This is a follow-up source slice, separate from the running PR #8786 proof.
-It must integrate #8786's protected landing before the combined implementation
-is claimed. It does not replay or replace that PR's source changes.
+This began as an isolated follow-up while PR #8786 was proving its prior head.
+That proof exposed a branch-caused CI dependency-coverage failure. The root
+therefore consolidates this tested slice and the necessary CI repair onto the
+same disarmed PR before fresh proof. No duplicate PR or publisher is created.
 
 ## Observed failure
 
@@ -61,3 +62,11 @@ python3 -m pytest tests/test_press_validators.py tests/test_press_run.py tests/t
 ```
 
 Result: **209 passed in 16.55s**, no skips. This includes the previously skipped estate replay, immutable dossier-link contract, read-only staging inspector and earnings ingress, against both implementation slices together. The earlier 146-test result is an overlapping subset, not additive.
+
+## Interrupted staging attempt recovered at 16:53 UTC
+
+The single current-date real staging attempt started at 12:07 UTC recorded one provider call at 12:07:55 UTC (19,654 input tokens and 1,097 output tokens). After interruption its process was absent, stdout log was empty, no new stage JSON existed, and the prior run summary was unchanged. Completion and command exit status are unknown. This is an **unsettled attempt, not a pass**; it is not replayed or replaced. `interrupted_staging_attempt.json` retains safe accounting fields and its hash. The two original drafts and all accounting files remain preserved. Accounting was written relative to the implementation worktree despite `--root`; those sparse local accounting files must never be staged as replacements for committed history.
+
+The resumed source remains on the same disarmed PR #8786. Both red checks on b767 (`contract-delta` and `ci-pack-0`) report the same 19 uncovered import paths; all other 11 CI packs passed. No new provider call, publication or domain change is authorized by this recovery.
+
+The resumed pure dependency audit completed: `python3 -m pytest tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure -q --tb=short --basetemp=../mmx-closure-fixtures-resume` — **1 passed in 120.13s**, exit 0, with all 19 introduced gaps repaired. It exercised local merge `28c91feaa1c700e392d61b87facf5c175d32d159` plus the exact declaration additions. This is not hosted CI proof.
