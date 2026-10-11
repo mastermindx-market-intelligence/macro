@@ -10,7 +10,7 @@ blocked_by:
 - Phone Replay PR914 mergedcaf/source and exact CI are qualified; last observed canonical remains34d. Actual05:08 storage available8752930816 is1984487424 below retained10GiB reserve. Capacity check is a local pre-effect validator; it is not a platform permission denial. Canonical installation and paid phone proof remain.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
 - Settings PR917 mergedfc76 at08:00:12 from881d; whole head/merge tree equal and exact three required CI38121240817 are SUCCESS. B source/merge obligation complete; never reuse completed917 branch. Canonical install/live Settings proof remain after storage and release gates; no #761 authenticated closure.
-- Storage-only migration/recovery/startup plan prepared from actual mount/service/root-cron references. Await concrete50GB5USD/month plus temporary volume snapshot capped3USD/month and Terminal/QuoteHub/affected scheduled-writer maintenance decision. Current compute24USD/month gives29USD base, up to32USD/month while snapshot retained before taxes. No purchase/mount/migration/outage/snapshot. Preserve root10GiB, coherent tree and expected-volume startup guards. Old48USD resize is superseded.
+- Chairman approved prepared50GB5USD/month storage, temporarysnapshot capped3USD/month and maintenance now. One terminal-storage volume is created/attached at/mnt/terminal_storage, UUID71dc6155-3f93-4370-a971-b89a6d87a203. Initialwhole-tree copy complete/unsealed; same admitted cutover/recovery operation is ready. No snapshot/servicepause/rootreclaim/canonicalrelease or paidproof yet.
 - A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
 program: terminal-charting
 repos:
@@ -27,7 +27,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: Await one concrete Chairman decision for50GB5USD/month storage, one temporary volume snapshot capped3USD/month while retained (server+volume+snapshot allowance32USD/month before taxes), and Terminal/QuoteHub plus affected scheduled-writer maintenance now or specified window. Full coherent-tree migration/identity-guarded startup/recovery and verified old-root-tree reclamation are prepared; no resource or production effect before admission. Do not repeat the superseded48USD upgrade or this decision on unchanged heartbeats. After admission fresh exact writer/resource checks, gated storage cutover, root10GiB, qualified canonical installation, then paid phone Replay/Settings proof.
+next_action: "Continue same admitted attended operation: bounded controller review, pause affectedlaunches/drain under existing updaterlock, Terminal+QuoteHub stop/finalcopy/metadata+hardlinks+source stability/recoveryrehearsal, exactlyone actualquiescedsnapshot<=3USD/month, expectedUUID samepath cutover/service+livequalification, admittedverifiedroot-originalreclamation/root>=10GiB, then qualifiednewcanonicalrelease/paidphone+Settingsproof. No duplicatecopy/controller/purchase or alternateprincipal if effectunknown."
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -725,3 +725,15 @@ Latest frontier `current_capability_frontier_20261011T0823` supersedes T0810 onl
 - After the concrete purchase/snapshot/maintenance decision, parent continues through actual capacity/mount/writer/release gates, canonical accepted914+917 installation and owning paid phone Replay/Settings behavior. Preference/quote/plan is not that approval. Ask the new concrete decision once, then stay quiet on unchanged pending state. No source/test/CI/capture/runtime/paid proof replay and no wholeAudit20 acceptance.
 
 Evidence: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-migration-recovery-plan-parent-qualification-20261011T0823.json` — 16635B / SHA256 `86ee046882bf4dbcb8243781c03befb1847ad2a1f2e7ac02c19c730c3b28a5a7`.
+
+## 20261011T0846 — approved storage operation and initial copy
+
+Latest frontier `current_capability_frontier_20261011T0846` supersedes T0823 only for the Chairman's “okay get it done” admission and actual storage/copy events. The prepared50GB5USD volume, one temporaryvolume snapshot capped3USD/month and maintenance now are approved; do not repeat the question. Old48USD upgrade remains superseded.
+
+- One `terminal-storage`50GB volume is visibly attached to exactdroplet580786327/SFO3. VPS verifies/dev/sda53687091200B ext4 UUID71dc6155-3f93-4370-a971-b89a6d87a203, automount/mnt/terminal_storage. Creation submitted once and reconciled on actual attached-volume surface.
+- Fresh admitted08:35:23 preflight: canonicalhead/live marker34d clean, builder6cd5088d exact, Terminal/QuoteHub/MacroAPI/rsyslog active, stageempty, root8585461760 below10GiB. OldPID883363 inspected read-only; no kill or takeover. Fullsourcehistory/absolute paths preserved.
+- Actual tree inventory136597entries/128619unique regular files/8206766080 allocatedbytes/no externalhardlinks; newvolume50374057984 initiallyfree. Whole-tree rsync-aHAXx/numericids initialcopy complete0,128619files. Services/data jobs remained live; copy is unsealed and does not prove coherent final fidelity or recovery.
+- Same parent attended operation `storage-migration-01a10f92-20261011-v1` owns the next cutover. Controller is being reviewed before any service/job pause. Copy fidelity, recoveryrestoration, actualonesnapshotreceipt, UUID/mount/service guards, currentgeneration/live checks and rootreclamation remain. No new owner/observer, no duplicatepurchase or source/test/CI/paid replay.
+- WholeAudit20 incomplete. Parent continues actual storage/resource/release gates in this same turn; prior independentreview/security/SQL/rights/effect holds are retained.
+
+Evidence: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-approved-volume-initial-copy-parent-consumption-20261011T0846.json` — 1715B / SHA256 `b1063fad3603024318207ec1332f1995b97bb80f2e7387ef53e49d309d60ca4e`.

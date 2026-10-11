@@ -6456,5 +6456,46 @@
     ],
     "retained_source_and_boundaries": "914caf+917fc76 scoped source/merge/exact requiredCI qualified; canonical install/paid phone+Settings not accepted. Completed source branches neverreuse. Oldfb1/c968 operations unreplayed/root10GiB preserved. Brain/A12 scopes retained without replay;781reservedreview/IW2explicitcyber/SQL0030-32/operator/rights/security/887/effectunknown/A19 holds remain. No wholeAudit20 acceptance.",
     "parent_verdict": "Prepared reviewable storage-only consequential decision after actual affected configuration inspection and independent planning checklist. No purchase/mount/migration/cleanup/outage/snapshot/build/deploy/paid test performed."
+  },
+  "current_capability_frontier_20261011T0846": {
+    "observed_at": "2026-10-11T08:46:39.765311+00:00",
+    "supersedes": "current_capability_frontier_20261011T0823",
+    "supersession_scope": "Human approves prepared storage/snapshot/maintenance now; one actual50GBvolume created/attached and identified; initial whole-tree copy rc0 complete but unsealed. No cutover, snapshot, service pause, root deletion or release/live acceptance yet. Prior source/CI/security facts retained.",
+    "whole_original_mission_accepted": false,
+    "human_admission": {
+      "text": "okay get it done",
+      "interpretation": "Approve prepared50GB5USD/month volume, one temporaryvolume snapshot capped3USD/month, migration and maintenance now; ordinary release gates retained."
+    },
+    "actual_volume": {
+      "volume_name": "terminal-storage",
+      "provider_droplet": 580786327,
+      "region": "SFO3",
+      "device_bytes": 53687091200,
+      "device": "/dev/sda",
+      "uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+      "provider_automount": "/mnt/terminal_storage"
+    },
+    "actual_preflight": "08:35:23 canonical source/live marker34d clean, exact58231B builder6cd5088d retained, four servicesactive/stageempty/root8585461760 below10GiB. OldPID883363 inspected read-only gitrevparse/tail/sleep/systemctlis-active/show only; preserve completehistoricalsource/stablepath. No clearance from idlelabels.",
+    "actual_initial_copy": "136597entries/128619unique regular files/8206766080 allocatedbytes/no externalhardlinks; volume initially50374057984 available. rsync-aHAXx/numericids complete0 with128619files; services/data writers were live, so this is not a sealed coherent-copy acceptance.",
+    "operation": "storage-migration-01a10f92-20261011-v1",
+    "next_action": "Continue same admitted attended operation: bounded controller review, pause affectedlaunches/drain under existing updaterlock, Terminal+QuoteHub stop/finalcopy/metadata+hardlinks+source stability/recoveryrehearsal, exactlyone actualquiescedsnapshot<=3USD/month, expectedUUID samepath cutover/service+livequalification, admittedverifiedroot-originalreclamation/root>=10GiB, then qualifiednewcanonicalrelease/paidphone+Settingsproof. No duplicatecopy/controller/purchase or alternateprincipal if effectunknown.",
+    "effects": {
+      "volume_created": true,
+      "initial_copy": true,
+      "snapshot": false,
+      "services_paused": false,
+      "path_cutover": false,
+      "root_originals_removed": false,
+      "build_deploy": false,
+      "paid_test": false
+    },
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-approved-volume-initial-copy-parent-consumption-20261011T0846.json",
+        "bytes": 1715,
+        "sha256": "b1063fad3603024318207ec1332f1995b97bb80f2e7387ef53e49d309d60ca4e"
+      }
+    ],
+    "retained_boundaries": "914caf/917fc76 source+CI accepted withoutreplay; completedbranchesclosed. Oldfb1/c968 operations not retried/root10GiB unchanged.781reservedreview/IW2cyber/SQL/operator/rights/security/887/effectunknown/A19 holds unchanged. PriorupgradependingquestionSUPERSEDED; currentnewdecision now approved and must not be askedagain."
   }
 }
