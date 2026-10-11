@@ -22,7 +22,12 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from engine.research_vault.sidecar import clean_title
+from engine.research_vault.sidecar import (
+    canon_institution,
+    clean_summary_points,
+    clean_title,
+    institution_is_desk,
+)
 
 log = logging.getLogger("research_vault.catalog")
 
@@ -316,7 +321,7 @@ def load(store) -> dict:
         if not isinstance(obj, dict) or not isinstance(obj.get("items"), list):
             log.warning("catalog malformed — starting fresh")
             return empty()
-        heal_titles(obj)
+        heal_display(obj)
         return obj
     except Exception as e:  # noqa: BLE001 — corrupt catalog: rebuild from empty
         log.warning("catalog parse failed (%s) — starting fresh", e)
@@ -349,12 +354,57 @@ def heal_titles(catalog: dict) -> int:
     return n
 
 
+def heal_summaries(catalog: dict) -> int:
+    """Strip markdown + rejoin split bullets on already-published rows."""
+    n = 0
+    for it in catalog.get("items") or []:
+        if not isinstance(it, dict):
+            continue
+        old = it.get("summary_points")
+        if not isinstance(old, list) or not old:
+            continue
+        new = clean_summary_points(old)
+        if new != old:
+            it["summary_points"] = new
+            n += 1
+    if n:
+        log.info("catalog: repaired %d summary_points list(s)", n)
+    return n
+
+
+def heal_institutions(catalog: dict) -> int:
+    """Canonicalize institution spellings on already-published rows. Never touches id."""
+    n = 0
+    for it in catalog.get("items") or []:
+        if not isinstance(it, dict):
+            continue
+        old = it.get("institution")
+        if not isinstance(old, str) or not old:
+            continue
+        new = canon_institution(old)
+        if new and new != old:
+            it["institution"] = new
+            n += 1
+    if n:
+        log.info("catalog: canonicalized %d institution name(s)", n)
+    return n
+
+
+def heal_display(catalog: dict) -> int:
+    """All public-surface heals for a catalog already on disk. Does not touch id."""
+    return heal_titles(catalog) + heal_summaries(catalog) + heal_institutions(catalog)
+
+
 def _public_item(item: dict) -> dict:
     """Project a normalized sidecar item to the public-safe catalog subset."""
     pub = {k: item.get(k) for k in _ITEM_FIELDS}
     # Belt-and-braces: normalize() already cleans, but the catalog is the last
     # stop before a title becomes public (page <title>, og:title, the crawl hub).
     pub["title"] = clean_title(pub.get("title")) or (pub.get("title") or "")
+    pub["summary_points"] = clean_summary_points(pub.get("summary_points") or [])
+    inst = canon_institution(str(pub.get("institution") or "").strip())
+    if inst:
+        pub["institution"] = inst
     return pub
 
 
@@ -449,14 +499,14 @@ def public_summary(catalog: dict, now: datetime | None = None) -> dict[str, Any]
     ]
 
     week_desks = {
-        str(item.get("institution") or "").strip()
+        canon_institution(str(item.get("institution") or "").strip())
         for item in week
-        if str(item.get("institution") or "").strip() not in ("", "Unknown")
+        if institution_is_desk(canon_institution(str(item.get("institution") or "").strip()))
     }
     institution_counts: dict[str, int] = {}
     for item in items:
-        name = str(item.get("institution") or "").strip()
-        if name and name != "Unknown":
+        name = canon_institution(str(item.get("institution") or "").strip())
+        if institution_is_desk(name):
             institution_counts[name] = institution_counts.get(name, 0) + 1
 
     theme_pool = week if week else items
@@ -528,8 +578,11 @@ def _reindex(catalog: dict) -> None:
     items.sort(key=lambda it: (it.get("published_at") or ""), reverse=True)
     catalog["schema"] = SCHEMA
     catalog["count"] = len(items)
-    insts = sorted({(it.get("institution") or "").strip()
-                    for it in items if (it.get("institution") or "").strip()})
+    insts = sorted({
+        canon_institution((it.get("institution") or "").strip())
+        for it in items
+        if institution_is_desk(canon_institution((it.get("institution") or "").strip()))
+    })
     catalog["institutions"] = insts
 
 

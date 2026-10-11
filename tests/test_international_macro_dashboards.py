@@ -241,6 +241,46 @@ def test_builder_renders_all_five_routes_from_one_template(
         assert "Source health & data contract" in html
 
 
+def test_builder_can_retain_each_already_loaded_history_receipt_once(tmp_path, monkeypatch):
+    from scripts import build_international_macro as builder
+
+    latest = {"records": [_record(cc) for cc in REGIONS]}
+    monkeypatch.setattr(builder.config, "load", lambda: {
+        "storage": {"site_dir": str(tmp_path), "data_dir": str(tmp_path / "data")}})
+    states = dict(zip(REGIONS, ["ready", "empty", "missing", "failed", "invalid"]))
+    receipts = {}
+    calls = []
+
+    def read(cc):
+        calls.append(cc)
+        frame = _history() if states[cc] == "ready" else _history().iloc[:0] if states[cc] == "empty" else None
+        receipts[cc] = dict(status=states[cc], market_id=cc,
+                            artifact_ref=f"intl_regime/{cc}_history.parquet",
+                            read_at="2026-10-09T01:00:00Z", method_ref=None, frame=frame)
+        return receipts[cc]
+
+    monkeypatch.setattr(builder, "load_history_result", read)
+    monkeypatch.setattr(builder, "load_history", lambda cc: pytest.fail("duplicate compatibility read"))
+    retained = {}
+    outputs = builder.build_all(latest, history_receipts=retained)
+    assert calls == list(REGIONS) and len(outputs) == 5
+    assert set(retained) == set(REGIONS)
+    for cc in REGIONS:
+        assert retained[cc] is receipts[cc]
+        assert retained[cc]["status"] == states[cc]
+        if states[cc] == "ready":
+            pd.testing.assert_frame_equal(retained[cc]["frame"], _history())
+
+
+@pytest.mark.parametrize("sink", [[], True, "", {"JP": "previous publication"}])
+def test_builder_refuses_nonempty_or_invalid_history_sink_before_effects(monkeypatch, sink):
+    from scripts import build_international_macro as builder
+
+    monkeypatch.setattr(builder.config, "load", lambda: pytest.fail("invalid sink reached configuration"))
+    with pytest.raises(ValueError, match="^invalid_history_receipts_sink$"):
+        builder.build_all({}, history_receipts=sink)
+
+
 def _radar_record(cc: str, **radar) -> dict:
     """A record whose nightly risk_radar_intl snapshot carries firing legs."""
     record = _record(cc)

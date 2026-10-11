@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-09-14",
+  "as_of": "2026-09-19",
   "coverage": {
-    "end": "2026-09-14",
+    "end": "2026-09-19",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W38; 13 week(s) have events so far; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-06-15"
+    "start": "2026-06-20"
   },
   "iso_week": "2026-W38",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,7 +11,42 @@
     {
       "clusters": [
         {
-          "n_events": 161,
+          "n_events": 300,
+          "source": "research_vault",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 40,
+          "source": "prophet_ledger",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 2,
+          "source": "research_vault",
+          "theme": "McElligott",
+          "top_events": []
+        },
+        {
+          "n_events": 2,
+          "source": "risk_band",
+          "theme": "risk",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "claims",
+          "top_events": []
+        }
+      ],
+      "iso_week": "2026-W38"
+    },
+    {
+      "clusters": [
+        {
+          "n_events": 178,
           "source": "research_vault",
           "theme": null,
           "top_events": []
@@ -135,7 +170,7 @@
           "top_events": []
         },
         {
-          "n_events": 1,
+          "n_events": 6,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -182,15 +217,15 @@
           "top_events": []
         },
         {
-          "n_events": 11,
-          "source": "prophet_ledger",
-          "theme": null,
+          "n_events": 14,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 4,
-          "source": "earnings",
-          "theme": "earnings",
+          "n_events": 11,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
@@ -241,7 +276,7 @@
           "top_events": []
         },
         {
-          "n_events": 33,
+          "n_events": 162,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -300,7 +335,7 @@
           "top_events": []
         },
         {
-          "n_events": 494,
+          "n_events": 745,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -347,7 +382,7 @@
     {
       "clusters": [
         {
-          "n_events": 572,
+          "n_events": 589,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -357,16 +392,6 @@
           "source": "research_vault",
           "theme": null,
           "top_events": [
-            {
-              "date": "2026-07-31",
-              "id": "cev-research_vault-32f68ca29d0d",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-0natz1tlzak-bf2676",
-              "tickers": [],
-              "title": "J.P. Morgan: JPM Europe Equity Research Today’s Morning Meeting",
-              "weight_hint": 3
-            },
             {
               "date": "2026-07-30",
               "id": "cev-research_vault-440862b5bab5",
@@ -468,7 +493,7 @@
     {
       "clusters": [
         {
-          "n_events": 249,
+          "n_events": 250,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -644,17 +669,6 @@
         }
       ],
       "iso_week": "2026-W26"
-    },
-    {
-      "clusters": [
-        {
-          "n_events": 6,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        }
-      ],
-      "iso_week": "2026-W25"
     }
   ]
 }

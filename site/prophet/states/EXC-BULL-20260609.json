@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EXC-BULL-20260609",
-  "asof": "2026-09-15",
+  "asof": "2026-10-09",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 26.2,
-  "raw_confidence": 24.2,
-  "delta_vs_base": -33.8,
+  "management_confidence": 18.5,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -41.5,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 11.4,
+    "validity": 0.6,
     "progress": 0.0,
-    "pace": 20.7,
-    "retention": 45.2,
-    "overlay": 55.0
+    "pace": 0.0,
+    "retention": 44.2,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.218,
+    "dist_to_stop_r": 0.057,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 115.6,
-    "p1": -0.5214,
-    "p2": -0.2607,
+    "horizon_pct_used": 168.9,
+    "p1": -0.6287,
+    "p2": -0.3144,
     "p3": null,
-    "move_r": -0.782,
+    "move_r": -0.943,
     "mfe_r": 0.0,
-    "mae_r": -0.782
+    "mae_r": -1.245
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -4.809998779296876,
+  "_mae": -7.655000000000001,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 52,
-  "tau": 1.1556
+  "days_elapsed": 76,
+  "tau": 1.6889
 }

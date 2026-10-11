@@ -82,6 +82,204 @@ push_retry_init() {
   PUSH_N_OTHER=0
   PUSH_FAIL_CLASS=""
   PUSH_STOP=""
+  # A definite GH001 is terminal for this operation. Retain its first status
+  # and captured output; only a new explicit init clears the receipt.
+  PUSH_TERMINAL_RC=0
+  PUSH_TERMINAL_OUTPUT=""
+  PUSH_ATTEMPT_ANCHOR_VALID=0
+  PUSH_ATTEMPT_ANCHOR_GIT_DIR=""
+  PUSH_ATTEMPT_ANCHOR_BRANCH=""
+  PUSH_ATTEMPT_ANCHOR_HEAD=""
+  PUSH_ATTEMPT_ANCHOR_INDEX_TREE=""
+  PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH=""
+  PUSH_ATTEMPT_ANCHOR_STASH=""
+  # Set only when this retry discovers rebase metadata that predates its own
+  # anchor. While set, push_abort_rebase must never trust that metadata.
+  PUSH_ATTEMPT_INHERITED_REBASE=0
+  # Sticky for this retry operation. Once exact recovery cannot be proven, no
+  # later attempt may recapture authority from the damaged post-failure state.
+  PUSH_RECOVERY_FAILED=0
+  return 0
+}
+
+# Internal operation state only; no Git or filesystem discovery.
+_push_terminal_failure() {
+  [ "${PUSH_TERMINAL_RC:-0}" -ne 0 ]
+}
+
+
+
+# Query the claims owner's one production selector. The current selector is
+# unconditionally legacy. Explicit native APIs are tested separately; there is
+# no environment or filesystem activation switch in this command.
+push_qledger_preflight() {
+  local boundary="$1" library_root py
+  shift
+  library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 1
+  # Prefer the explicit Python 3 executable over a legacy system python.
+  if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
+  PYTHONPATH="$library_root${PYTHONPATH:+:$PYTHONPATH}" "$py" \
+    -m scripts.ci.qledger_publication --repo "$(pwd -P)" --boundary "$boundary" "$@"
+}
+
+# A native integrity/classification failure is terminal for this retry. Keep
+# the first receipt and stop before any inherited cleanup, stash or live push.
+push_qledger_guard() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  local out rc=0
+  out=$(push_qledger_preflight "$@" 2>&1) || rc=$?
+  if [ "$rc" -eq 0 ]; then return 0; fi
+  PUSH_TERMINAL_RC="$rc"
+  PUSH_TERMINAL_OUTPUT="$out"
+  PUSH_FAIL_CLASS="qledger-integrity"
+  PUSH_STOP="QLedger publication verification failed; automatic mutation and retry stopped"
+  PUSH_N_OTHER=$(( ${PUSH_N_OTHER:-0} + 1 ))
+  [ -z "$out" ] || printf '%s\n' "$out" >&2
+  return "$rc"
+}
+
+# Capture the exact tracked state of this retry at the last verified boundary
+# before a caller enters rebase machinery. This is observation only: git stash create
+# writes an unreachable snapshot object but does not move refs, index or worktree.
+# An inherited rebase, detached HEAD or unmerged index cannot mint an anchor.
+# Failing to capture is deliberately non-fatal here; cleanup later may still
+# prove an empty metadata-only orphan safe, while a partial rebase fails closed.
+push_capture_attempt_anchor() {
+  local allow_existing_rebase="${1:-0}"
+  local gd="" branch="" head="" branch_head="" unmerged=""
+  local index_tree="" worktree_hash="" snapshot=""
+
+  PUSH_ATTEMPT_ANCHOR_VALID=0
+  PUSH_ATTEMPT_ANCHOR_GIT_DIR=""
+  PUSH_ATTEMPT_ANCHOR_BRANCH=""
+  PUSH_ATTEMPT_ANCHOR_HEAD=""
+  PUSH_ATTEMPT_ANCHOR_INDEX_TREE=""
+  PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH=""
+  PUSH_ATTEMPT_ANCHOR_STASH=""
+
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || return 0
+  if { [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; } \
+      && [ "$allow_existing_rebase" != "allow-existing-rebase" ]; then
+    return 0
+  fi
+  branch=$(git symbolic-ref -q HEAD 2>/dev/null) || return 0
+  head=$(git rev-parse 'HEAD^{commit}' 2>/dev/null) || return 0
+  branch_head=$(git rev-parse "${branch}^{commit}" 2>/dev/null) || return 0
+  [ "$branch_head" = "$head" ] || return 0
+  unmerged=$(git ls-files -u 2>/dev/null) || return 0
+  [ -z "$unmerged" ] || return 0
+  index_tree=$(git write-tree 2>/dev/null) || return 0
+  worktree_hash=$(git diff --binary --no-ext-diff --no-color | git hash-object --stdin 2>/dev/null) || return 0
+  snapshot=$(git stash create "push-retry-attempt-${PUSH_ATTEMPT}" 2>/dev/null) || return 0
+
+  PUSH_ATTEMPT_ANCHOR_GIT_DIR="$gd"
+  PUSH_ATTEMPT_ANCHOR_BRANCH="$branch"
+  PUSH_ATTEMPT_ANCHOR_HEAD="$head"
+  PUSH_ATTEMPT_ANCHOR_INDEX_TREE="$index_tree"
+  PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH="$worktree_hash"
+  PUSH_ATTEMPT_ANCHOR_STASH="$snapshot"
+  PUSH_ATTEMPT_ANCHOR_VALID=1
+  return 0
+}
+
+# Verify the current repository still equals this attempt's tracked anchor.
+# Observation only: never reset, apply a stash, move refs, or touch untracked bytes.
+push_verify_attempt_anchor() {
+  local gd="" branch_head="" unmerged="" index_tree="" worktree_hash=""
+
+  [ "${PUSH_ATTEMPT_ANCHOR_VALID:-0}" -eq 1 ] || return 1
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || return 1
+  [ "$gd" = "$PUSH_ATTEMPT_ANCHOR_GIT_DIR" ] || return 1
+  [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ] || return 1
+  branch_head=$(git rev-parse "${PUSH_ATTEMPT_ANCHOR_BRANCH}^{commit}" 2>/dev/null) || return 1
+  [ "$branch_head" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
+  [ "$(git symbolic-ref -q HEAD 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_BRANCH" ] || return 1
+  [ "$(git rev-parse 'HEAD^{commit}' 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
+  unmerged=$(git ls-files -u 2>/dev/null) || return 1
+  [ -z "$unmerged" ] || return 1
+  index_tree=$(git write-tree 2>/dev/null) || return 1
+  [ "$index_tree" = "$PUSH_ATTEMPT_ANCHOR_INDEX_TREE" ] || return 1
+  worktree_hash=$(git diff --binary --no-ext-diff --no-color | git hash-object --stdin 2>/dev/null) || return 1
+  [ "$worktree_hash" = "$PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH" ] || return 1
+  return 0
+}
+
+# Restore ONLY a snapshot captured by this retry attempt. Never trust the
+# damaged rebase's orig-head or autostash: those may belong to an older job.
+# The branch ref must still point at the captured HEAD before we touch bytes.
+push_restore_attempt_anchor() {
+  local gd="" branch_head="" unmerged="" index_tree="" worktree_hash=""
+
+  [ "${PUSH_ATTEMPT_ANCHOR_VALID:-0}" -eq 1 ] || return 1
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || return 1
+  [ "$gd" = "$PUSH_ATTEMPT_ANCHOR_GIT_DIR" ] || return 1
+  [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ] || return 1
+
+  branch_head=$(git rev-parse "${PUSH_ATTEMPT_ANCHOR_BRANCH}^{commit}" 2>/dev/null) || return 1
+  [ "$branch_head" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
+
+  # --quit removes metadata but leaves the conflicted detached tree in place.
+  # Reset that partial tree to the exact current-attempt HEAD, then reattach
+  # HEAD to the unchanged branch ref. Untracked files are intentionally not
+  # touched; rebase --autostash does not make them part of this tracked anchor.
+  git reset --hard "$PUSH_ATTEMPT_ANCHOR_HEAD" >/dev/null 2>&1 || return 1
+  git symbolic-ref HEAD "$PUSH_ATTEMPT_ANCHOR_BRANCH" >/dev/null 2>&1 || return 1
+
+  # git stash create does not register this object in refs/stash. Applying
+  # this exact object restores staged + unstaged tracked bytes. Any autostash
+  # saved by the damaged rebase remains separate and is NEVER applied here.
+  if [ -n "$PUSH_ATTEMPT_ANCHOR_STASH" ]; then
+    git stash apply --index "$PUSH_ATTEMPT_ANCHOR_STASH" >/dev/null 2>&1 || return 1
+  fi
+
+  push_verify_attempt_anchor
+}
+
+# A retained runner may begin a new retry while rebase metadata from an older
+# invocation is still present. Never let normal `git rebase --abort` interpret
+# that inherited orig-head/autostash as authority for this job. Recovery is
+# permitted only when the current job is on an attached branch with no unmerged
+# entries and its exact tracked state can be captured independently of that metadata.
+push_prepare_inherited_rebase() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  push_qledger_guard pre-rebase || return $?
+  local gd=""
+  [ "${PUSH_RECOVERY_FAILED:-0}" -eq 0 ] || return 1
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || { PUSH_RECOVERY_FAILED=1; return 1; }
+  if [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ]; then
+    return 0
+  fi
+
+  PUSH_ATTEMPT_INHERITED_REBASE=1
+  push_capture_attempt_anchor allow-existing-rebase
+  if [ "${PUSH_ATTEMPT_ANCHOR_VALID:-0}" -ne 1 ]; then
+    echo "::error title=inherited rebase state is not current-attempt authority::retained rebase metadata predates this retry and the current branch/index/worktree cannot be independently anchored; preserving the state and refusing stale orig-head/autostash recovery" >&2
+    PUSH_RECOVERY_FAILED=1
+    return 1
+  fi
+
+  # Cleanup-only: never abort inherited metadata. `--quit` removes the old
+  # control directory without applying its orig-head or autostash.
+  if ! git rebase --quit 2>/dev/null; then
+    echo "::error title=inherited rebase cleanup failed::git rebase --quit could not remove retained metadata; refusing to enter a new rebase" >&2
+    PUSH_RECOVERY_FAILED=1
+    return 1
+  fi
+  if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
+    echo "::error title=inherited rebase cleanup incomplete::retained rebase metadata survived git rebase --quit; refusing to enter a new rebase" >&2
+    PUSH_RECOVERY_FAILED=1
+    return 1
+  fi
+  # `git rebase --quit` is cleanup-only. It must leave the current job's
+  # branch/HEAD/index/tracked worktree untouched, so verify equality rather than
+  # destructively resetting/reapplying state (which can delete untracked output).
+  if ! push_verify_attempt_anchor; then
+    echo "::error title=inherited rebase current state verification failed::retained metadata was removed but this retry's independently captured tracked state changed; refusing without destructive restoration" >&2
+    PUSH_RECOVERY_FAILED=1
+    return 1
+  fi
+
+  PUSH_ATTEMPT_INHERITED_REBASE=0
   return 0
 }
 
@@ -89,6 +287,11 @@ push_retry_init() {
 # or the wall-clock deadline is spent (PUSH_STOP records which). The FIRST attempt is
 # always allowed regardless of the deadline.
 push_attempt() {
+  if _push_terminal_failure; then return 1; fi
+  if [ "${PUSH_RECOVERY_FAILED:-0}" -eq 1 ]; then
+    PUSH_STOP="recovery failed earlier in this retry operation"
+    return 1
+  fi
   if [ "${PUSH_ATTEMPT}" -ge "${PUSH_MAX_ATTEMPTS}" ]; then
     PUSH_STOP="attempt budget exhausted (${PUSH_MAX_ATTEMPTS} attempts)"
     return 1
@@ -98,6 +301,11 @@ push_attempt() {
     return 1
   fi
   PUSH_ATTEMPT=$(( PUSH_ATTEMPT + 1 ))
+  PUSH_ATTEMPT_INHERITED_REBASE=0
+  # Generic retry accounting is intentionally Git-light. Rebase callers capture
+  # their tracked recovery anchor only at push_fetch_main_for_rebase(), immediately
+  # before entering porcelain rebase machinery; metadata-only publishers never pay
+  # repository-wide diff/stash cost merely to count an attempt.
   # Default for this attempt: it died on the fetch/rebase leg before ever reaching the
   # push. push_do and push_abort_rebase refine it from there.
   PUSH_FAIL_CLASS="sync"
@@ -108,6 +316,20 @@ push_attempt() {
 # Pure (no git calls) so tests can drive the table directly.
 push_classify() {
   local rc="$1" out="$2"
+  if _push_terminal_failure; then return 0; fi
+  # A definite server rejection outranks contention hints and an alarm that
+  # arrives after the rejection. A filename mentioning GH001 is not enough.
+  if [ "$rc" -ne 0 ]; then
+    case "$out" in
+      *"error: GH001:"*)
+        PUSH_FAIL_CLASS="push-size-rejected"
+        PUSH_TERMINAL_RC="$rc"
+        PUSH_TERMINAL_OUTPUT="$out"
+        PUSH_STOP="GH001 large-file rejection; automatic retry stopped"
+        PUSH_N_OTHER=$(( ${PUSH_N_OTHER:-0} + 1 ))
+        return 0 ;;
+    esac
+  fi
   if [ "$rc" -eq 142 ]; then
     PUSH_FAIL_CLASS="push-timeout"
     return 0
@@ -130,7 +352,15 @@ push_classify() {
 
 # `git push` with classification. Extra args are passed through. Returns push's status.
 push_do() {
-  local out rc=0
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  local out rc=0 qledger_arg
+  local -a qledger_args=()
+  if [ "$#" -eq 0 ]; then
+    push_qledger_guard publish-candidate || return $?
+  else
+    for qledger_arg in "$@"; do qledger_args+=("--push-arg=$qledger_arg"); done
+    push_qledger_guard publish-candidate "${qledger_args[@]}" || return $?
+  fi
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?
   else
@@ -321,11 +551,49 @@ push_exact_paths_replay_commit() {
 # A rebase left IN PROGRESS is the tell for a real conflict — that is the one case that
 # deserves the conflict remedy and the long backoff, so record it before aborting.
 push_abort_rebase() {
-  local gd=""
+  # A terminal push rejection grants no cleanup or retry authority.
+  if _push_terminal_failure; then return 0; fi
+  local gd="" unmerged=""
+  # push_fetch_main_for_rebase marks metadata that existed before this retry.
+  # Never let a later generic cleanup call normal-abort that inherited state.
+  if [ "${PUSH_ATTEMPT_INHERITED_REBASE:-0}" -eq 1 ]; then
+    echo "::error title=inherited rebase abort refused::retained rebase metadata is not current-attempt authority; refusing to restore stale orig-head or autostash bytes" >&2
+    PUSH_RECOVERY_FAILED=1
+    return 1
+  fi
   gd=$(git rev-parse --git-dir 2>/dev/null) || gd=""
   if [ -n "$gd" ] && { [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; }; then
     PUSH_FAIL_CLASS="rebase-conflict"
-    git rebase --abort 2>/dev/null || true
+    # A cancelled self-hosted job can leave only the rebase metadata directory.
+    # `--abort` then refuses because head-name/orig-head is missing and, when its
+    # error is swallowed, every retry dies with "already a rebase-merge directory".
+    # `--quit` is Git's cleanup-only path for exactly that malformed/stale state.
+    if ! git rebase --abort 2>/dev/null; then
+      git rebase --quit 2>/dev/null || true
+      if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
+        echo "::error title=stale rebase state survived cleanup::git rebase --abort and --quit both failed; refusing to burn every push retry against the same poisoned workspace" >&2
+        PUSH_RECOVERY_FAILED=1
+        return 1
+      fi
+      # Unlike --abort, --quit never restores HEAD, the index, or the worktree.
+      # An empty cancelled-job residue leaves us on the caller's named branch with
+      # no unmerged entries and is safe to retry. A damaged *real* rebase leaves a
+      # detached HEAD and/or unmerged index; fail closed under bash -e rather than
+      # letting the caller treat that partial tree as a clean retry workspace.
+      if ! unmerged=$(git ls-files -u 2>/dev/null); then
+        echo "::error title=partial rebase state survived cleanup::could not inspect the index after git rebase --quit; refusing to retry from an unknown workspace" >&2
+        PUSH_RECOVERY_FAILED=1
+        return 1
+      fi
+      if [ -n "$unmerged" ] || ! git symbolic-ref -q HEAD >/dev/null 2>&1; then
+        if push_restore_attempt_anchor; then
+          return 0
+        fi
+        echo "::error title=partial rebase state survived cleanup::git rebase --quit removed malformed metadata but left a detached HEAD and/or unmerged index, and no trustworthy current-attempt anchor could restore it; refusing to retry or push from a partial rebase" >&2
+        PUSH_RECOVERY_FAILED=1
+        return 1
+      fi
+    fi
   fi
   return 0
 }
@@ -525,11 +793,26 @@ push_quarantine_untracked_collisions() {
 # collision containment against that exact object.  Do not replace this with
 # `git fetch origin main`: that only promises FETCH_HEAD, recreating #30727439896.
 push_fetch_main_for_rebase() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  push_qledger_guard pre-rebase || return $?
+  # Reconcile retained metadata before any fetch/rebase action can mistake an
+  # older invocation's Git control state for this retry's recovery authority.
+  if ! push_prepare_inherited_rebase; then
+    if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+    PUSH_FAIL_CLASS="rebase-conflict"
+    return 1
+  fi
   if ! git fetch origin +refs/heads/main:refs/remotes/origin/main; then
     PUSH_FAIL_CLASS="sync"
     return 1
   fi
-  push_quarantine_untracked_collisions origin/main
+  if ! push_quarantine_untracked_collisions origin/main; then
+    return 1
+  fi
+  # The fetch/quarantine boundary is the last shared point before callers enter
+  # porcelain rebase. Capture tracked state here, not in push_attempt(): exact-tree
+  # / metadata-only publishers never rebase and must retain their old retry cost.
+  push_capture_attempt_anchor
 }
 
 # ---------------------------------------------------------------------------
@@ -561,6 +844,8 @@ push_fetch_main_for_rebase() {
 # ---------------------------------------------------------------------------
 
 push_autostash_ok() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  push_qledger_guard pre-rebase || return $?
   # A stored `autostash`-subject entry after a pull means the re-apply FAILED
   # (conflicted, or refused over an untracked file — git stores the entry in
   # both cases). Drop it by exact subject match only — anything else (operator
@@ -670,6 +955,8 @@ push_why() {
     autostash-conflict) printf '%s' "autostash re-apply conflicted — leftovers discarded, retrying on a clean tree" ;;
     push-timeout)       printf '%s' "push exceeded the ${PUSH_ALARM}s alarm" ;;
     push-error)         printf '%s' "push rejected for a non-contention reason — see the output above" ;;
+    push-size-rejected) printf '%s' "GitHub rejected a large file (GH001) — automatic retry stopped" ;;
+    qledger-integrity)  printf '%s' "QLedger publication verification failed — automatic mutation stopped" ;;
     *)                  printf '%s' "fetch/rebase leg failed before the push" ;;
   esac
   return 0
@@ -678,6 +965,8 @@ push_why() {
 # Sleep before the next attempt, on a jittered ladder chosen by failure class, clamped
 # to whatever is left of the wall-clock budget.
 push_backoff() {
+  # A terminal push rejection grants no cleanup or retry authority.
+  if _push_terminal_failure; then return 0; fi
   local base cap secs left now
   case "${PUSH_FAIL_CLASS}" in
     contention)
@@ -729,7 +1018,16 @@ push_won() {
 }
 
 push_lost() {
-  # No-op unless the loop actually ran out of budget. Only push_attempt sets PUSH_STOP,
+  if _push_terminal_failure; then
+    local terminal_title="GH001 push stopped"
+    if [ "${PUSH_FAIL_CLASS:-}" = qledger-integrity ]; then terminal_title="QLedger publication stopped"; fi
+    printf '::error title=%s::%s: %s\n' "$terminal_title" "$PUSH_LABEL" "$PUSH_STOP" >&2
+    push_summary "NOT pushed — ${PUSH_STOP}"
+    # Standard bash -e callers stop here rather than reaching a warning-only
+    # success tail. Conditional callers must consume this nonzero return.
+    return "$PUSH_TERMINAL_RC"
+  fi
+  # Legacy no-op unless the loop ran out of budget. Only push_attempt sets that stop,
   # so a loop that left on a WIN never claims a loss — asia-close's data commit exits
   # its loop with `break` (it sits inside an if/else) and so runs the give-up tail on
   # the success path too. Guarding here keeps every call site safe.

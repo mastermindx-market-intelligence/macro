@@ -4341,10 +4341,28 @@ def test_v2_command_accepts_valid_trendline():
     assert res.get("op") == "draw.trendline"
     assert res.get("id") == "ai_tl_1"
     assert res.get("caption")
-    # Flat emission strips only internal keys; the envelope survives.
-    flat = gw._flat_command(res)
+    # Raw tool output is model-facing validation only; host wire identity is bound later.
+    assert "on" not in res and "batch_id" not in res and "seq" not in res
+    flat = gw._flat_command(res, batch_id="brain_test_0", seq=0)
     assert "client_executed" not in flat and "note" not in flat
     assert flat["op"] == "draw.trendline" and flat["v"] == 2
+    assert flat["on"] is True and flat["batch_id"] == "brain_test_0" and flat["seq"] == 0
+
+
+def test_v2_command_ignores_model_supplied_wire_identity():
+    """on/batch_id/seq are host-owned wire fields, never model-controlled inputs."""
+    res = gw._tool_chart_command({
+        "op": "ai.clear",
+        "on": False,
+        "batch_id": "model-chosen-batch",
+        "seq": 99,
+    })
+    assert res.get("client_executed") is True
+    assert "on" not in res and "batch_id" not in res and "seq" not in res
+    wire = gw._flat_command(res, batch_id="brain_host_batch", seq=3)
+    assert wire["on"] is True
+    assert wire["batch_id"] == "brain_host_batch"
+    assert wire["seq"] == 3
 
 
 def test_v2_command_rejects_unknown_op():
@@ -4456,7 +4474,82 @@ def test_v2_command_emitted_as_sse_event_in_stream(tmp_path):
     assert cmds, f"no v2 command event: {parsed}"
     assert cmds[0]["op"] == "draw.hline"
     assert cmds[0]["args"]["p"] == 112.5
+    assert cmds[0]["on"] is True
+    assert isinstance(cmds[0]["batch_id"], str) and cmds[0]["batch_id"].startswith("brain_")
+    assert cmds[0]["seq"] == 0
     assert "payload" not in cmds[0]
+
+
+def test_v2_same_round_commands_share_host_batch_and_sequence(tmp_path):
+    """Two v2 tool calls in one model round get one host batch and monotone host sequence."""
+    root = _make_temp_root()
+    a = _MockBlock("tool_use", name="emit_chart_command",
+                   input_={"op": "draw.hline", "id": "ai_a", "args": {"p": 100.0}}, id_="c-a")
+    b = _MockBlock("tool_use", name="emit_chart_command",
+                   input_={"op": "draw.hline", "id": "ai_b", "args": {"p": 101.0}}, id_="c-b")
+    turn1 = _MockResponse([a, b], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Marked both. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    providers = [{"client": _MockClient([turn1, turn2]), "model": "deepseek-chat"}]
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        events = list(gw.chat_stream("mark both", "userX", lane="fast",
+                                                     context={"page": "terminal"}, root=root))
+    parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
+    cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
+    assert len(cmds) == 2
+    assert [c["seq"] for c in cmds] == [0, 1]
+    assert cmds[0]["batch_id"] == cmds[1]["batch_id"]
+    assert all(c["on"] is True for c in cmds)
+
+
+def test_v2_commands_across_rounds_share_turn_batch_and_monotone_sequence(tmp_path):
+    """One user turn is one undo/provenance batch even when commands span model rounds."""
+    root = _make_temp_root()
+    first = _MockBlock("tool_use", name="emit_chart_command",
+                       input_={"op": "draw.hline", "id": "ai_r1", "args": {"p": 100.0}}, id_="r1")
+    second = _MockBlock("tool_use", name="emit_chart_command",
+                        input_={"op": "draw.hline", "id": "ai_r2", "args": {"p": 101.0}}, id_="r2")
+    turn1 = _MockResponse([first], "tool_use")
+    turn2 = _MockResponse([second], "tool_use")
+    turn3 = _MockResponse([_MockBlock("text", "Marked both. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    providers = [{"client": _MockClient([turn1, turn2, turn3]), "model": "deepseek-chat"}]
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        events = list(gw.chat_stream("mark in two steps", "userX", lane="fast",
+                                                     context={"page": "terminal"}, root=root))
+    parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
+    cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
+    assert len(cmds) == 2
+    assert cmds[0]["batch_id"] == cmds[1]["batch_id"]
+    assert [c["seq"] for c in cmds] == [0, 1]
+
+
+def test_v2_command_returned_in_nonstream_has_strict_wire_identity(tmp_path):
+    """chat() returns the same strict v2 wire envelope as streaming."""
+    root = _make_temp_root()
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_h2", "args": {"p": 113.0}}, id_="c2")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Marked it. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    providers = [{"client": _MockClient([turn1, turn2]), "model": "deepseek-chat"}]
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        out = gw.chat("mark 113", "userX", lane="fast",
+                                      context={"page": "terminal"}, root=root)
+    cmds = [c for c in out.get("commands", []) if c.get("v") == 2]
+    assert len(cmds) == 1
+    assert cmds[0]["on"] is True
+    assert isinstance(cmds[0]["batch_id"], str) and cmds[0]["batch_id"].startswith("brain_")
+    assert cmds[0]["seq"] == 0
 
 
 def test_v2_invalid_command_not_emitted(tmp_path):
@@ -5885,13 +5978,16 @@ def test_contradiction_doctrine_does_not_tell_the_model_to_pick_a_winner():
 # comment promises "the real cause is logged server-side".
 
 def test_degraded_stub_reports_degraded_and_logs_the_cause(tmp_path, caplog):
-    """The exact live shape: a round that stops AT the cap carrying only a thinking
-    block. The stub ships (users must never see a blank bubble), `done` says degraded,
-    and one server-side line carries the cause — lane, model, phase, stop reason,
-    both token counts, and the configured cap."""
+    """If the bounded answer pass also exhausts its cap, report the degraded
+    state, the final phase/cap, and the tokens spent by both calls."""
+    class ExhaustedAgain(_CaptureClient):
+        def _synthesis_stream(self):
+            return _ScriptedStreamCtx(_MockResponse(
+                [_ThinkBlock()], "max_tokens", _MockUsage(51_500, 8000)))
+
     truncated = _MockResponse([_ThinkBlock()], "max_tokens",
                               usage=_MockUsage(input_tokens=51_500, output_tokens=4000))
-    client = _CaptureClient(responses=[truncated])
+    client = ExhaustedAgain(responses=[truncated])
     root = _make_temp_root()
     with caplog.at_level(logging.WARNING, logger="engine.neuralweb.brain_gateway"):
         parsed = _stream_events(client, root, tmp_path, lane="fast")
@@ -5903,9 +5999,9 @@ def test_degraded_stub_reports_degraded_and_logs_the_cause(tmp_path, caplog):
     line = next((r.getMessage() for r in caplog.records
                  if "degraded stub shipped" in r.getMessage()), None)
     assert line is not None, [r.getMessage() for r in caplog.records]
-    for frag in ("lane=fast", "model=deepseek-v4-flash", "phase=tool-round",
-                 "stop=max_tokens", "input_tokens=51500", "output_tokens=4000",
-                 f"max_tokens={gw._FAST_MAX_TOKENS}"):
+    for frag in ("lane=fast", "model=deepseek-v4-flash", "phase=synthesis",
+                 "stop=max_tokens", "input_tokens=103000", "output_tokens=12000",
+                 f"max_tokens={gw._FAST_MAX_TOKENS * 2}"):
         assert frag in line, (frag, line)
 
 
@@ -6564,3 +6660,524 @@ def test_resolve_tier_leaves_a_canonical_row_untouched():
             gw._TIER_CACHE.clear()
 
     assert result["tier"] == "essential"
+
+
+def test_ontology_grounding_digest_uses_current_snapshot_and_selected_leg(tmp_path, monkeypatch):
+    """The existing Brain receives current owner truth, never a client-copied value."""
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
+
+    root = build_root(
+        tmp_path,
+        state_doc=chain_state(confirmed=(False, False, True, True)),
+    )
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", lang="en", chain=SLUG, user_id="paid-user"
+    )
+
+    assert "CURRENT ONTOLOGY OWNER RECEIPT" in digest
+    assert "Synthetic linear probe" in digest
+    assert "Owner state: dormant" in digest
+    assert "Current conditions met: 2 of 4" in digest
+    assert "First blocker: step 1, Node one" in digest
+    assert "Selected step: n1, Node one, not met" in digest
+    assert "SYN-N1" in digest
+    assert "value=0.0" in digest
+    assert "threshold=10.0" in digest
+    assert "comparison_unavailable" in digest
+    assert "downstream_true_without_upstream" in digest
+    assert "source_manifest_hash" in digest
+    assert "END CURRENT ONTOLOGY OWNER RECEIPT" in digest
+
+
+def test_ontology_grounding_digest_is_read_only_and_fails_closed(tmp_path, monkeypatch):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    import hashlib
+
+    root = build_root(tmp_path)
+    owned = [
+        root / "knowledge" / "transmission" / f"{SLUG}.yaml",
+        root / "data" / "transmission" / "chain_state.json",
+    ]
+    before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in owned}
+    assert gw._ontology_grounding_digest(
+        root, selected_leg="missing-leg", lang="en", chain=SLUG, user_id="paid-user"
+    )
+    after = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in owned}
+    assert after == before
+    assert gw._ontology_grounding_digest(
+        root, selected_leg="n1", lang="en", chain="not_admitted", user_id="paid-user"
+    ) == ""
+
+
+def test_brain_loop_injects_ontology_owner_digest_for_ontology_page(tmp_path, monkeypatch):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    response = _MockResponse([_MockBlock("text", "Answer")], "end_turn")
+    client = _MockClient([response])
+    monkeypatch.setattr(gw, "_grounding_digest", lambda root, lang="en": "")
+    monkeypatch.setattr(gw, "_symbol_grounding_digest", lambda *args, **kwargs: "")
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    gw._run_brain_loop(
+        "Why is this step blocked?",
+        "fast",
+        [],
+        {"page": "ontology", "panel": "n1", "ontology_selection": _current_ontology_test_ref(root)},
+        root,
+        root,
+        "http://127.0.0.1:3100",
+        client,
+        "deepseek-chat",
+        500,
+        1,
+        user_id="paid-user",
+    )
+    prompt = str(client.calls[0]["messages"][0]["content"])
+    assert "BEGIN CURRENT ONTOLOGY OWNER RECEIPT" in prompt
+    assert "Selected step: n1" in prompt
+    assert "page=ontology" in prompt
+    assert "panel=n1" in prompt
+
+
+def test_ontology_evidence_uses_the_existing_site_full_authority(monkeypatch):
+    from app import paywall
+
+    calls = []
+    monkeypatch.setattr(
+        paywall,
+        "_entitled",
+        lambda uid, feature: (calls.append((uid, feature)) or (True, "essential")),
+    )
+    assert gw._ontology_evidence_allowed("paid-user") is True
+    assert calls == [("paid-user", "site_full")]
+    assert gw._ontology_evidence_allowed("guest:abc") is False
+    assert gw._ontology_evidence_allowed("") is False
+
+
+def test_ontology_grounding_refuses_before_owner_read_when_not_entitled(tmp_path, monkeypatch):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+
+    root = build_root(tmp_path)
+    called = []
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: False)
+    monkeypatch.setattr(
+        "engine.ontology_explorer.compose_snapshot",
+        lambda *args, **kwargs: called.append((args, kwargs)),
+    )
+    assert gw._ontology_grounding_digest(
+        root, selected_leg="n1", lang="en", chain=SLUG, user_id="free-user"
+    ) == ""
+    assert called == []
+
+
+def test_brain_loop_does_not_inject_ontology_owner_data_without_site_full(
+    tmp_path, monkeypatch
+):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    response = _MockResponse([_MockBlock("text", "Answer")], "end_turn")
+    client = _MockClient([response])
+    monkeypatch.setattr(gw, "_grounding_digest", lambda root, lang="en": "")
+    monkeypatch.setattr(gw, "_symbol_grounding_digest", lambda *args, **kwargs: "")
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: False)
+    result = gw._run_brain_loop(
+        "Why is this step blocked?",
+        "fast",
+        [],
+        {"page": "ontology", "panel": "n1", "ontology_selection": _current_ontology_test_ref(root)},
+        root,
+        root,
+        "http://127.0.0.1:3100",
+        client,
+        "deepseek-chat",
+        500,
+        1,
+        user_id="free-user",
+    )
+    assert client.calls == []
+    assert "Refresh the path" in result[0]
+    assert "CURRENT ONTOLOGY OWNER RECEIPT" not in result[0]
+
+
+@pytest.mark.parametrize(
+    "receipt, expected_fields",
+    [
+        (
+            {"series": "SYN-N1", "metric": "ret_bp", "window": 22,
+             "value": 0, "op": "gt", "threshold": 15, "passed": False},
+            ("series=SYN-N1", "metric=ret_bp", "window=22", "value=0"),
+        ),
+        (
+            {"series": "SYN-N1", "metric": "rs_pp", "vs": "SYN-B",
+             "window": 63, "value": -3, "op": "gt", "threshold": 0,
+             "passed": False},
+            ("series=SYN-N1", "metric=rs_pp", "vs=SYN-B", "value=-3"),
+        ),
+    ],
+)
+def test_ontology_receipt_preserves_measurement_context(
+    tmp_path, monkeypatch, receipt, expected_fields
+):
+    """A bare number must not lose the field and measurement that give it meaning."""
+    from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    state = chain_state()
+    state["chains"][0]["nodes"][0]["receipts"] = [receipt]
+    root = build_root(tmp_path, state_doc=state)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", chain=SLUG, user_id="paid-user"
+    )
+    for field in expected_fields:
+        assert field in digest
+    assert "passed=False" in digest
+
+
+def test_ontology_grounding_withholds_unlabelled_measurements(tmp_path, monkeypatch):
+    """The composer omits private path/unit fields; Brain must not infer them."""
+    from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    state = chain_state()
+    state["chains"][0]["nodes"][0]["receipts"] = [
+        {"path": "state.rates.synthetic_change_bp", "unit": "bp", "value": -3,
+         "op": "gt", "threshold": 30, "passed": False}
+    ]
+    root = build_root(tmp_path, state_doc=state)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", chain=SLUG, user_id="paid-user"
+    )
+    assert "measurement metadata unavailable" in digest
+    assert "Selected receipt: value=-3" not in digest
+    assert "value=-3" not in digest
+    assert "Selected step: n1, Node one, not met" in digest
+
+
+@pytest.mark.parametrize("revision", ("rev-999", "rev-invalid", "", "rev-2\n"))
+def test_ontology_selected_revision_never_silently_rebinds(tmp_path, monkeypatch, revision):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    root = build_root(tmp_path)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", selected_revision=revision,
+        chain=SLUG, user_id="paid-user"
+    )
+    assert "Selection not verified" in digest
+    assert "Selected receipt:" not in digest
+    assert "SYN-N1" not in digest
+    assert "value=" not in digest
+
+
+def test_ontology_matching_revision_discloses_current_reread(tmp_path, monkeypatch):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    root = build_root(tmp_path)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", selected_revision="rev-2",
+        chain=SLUG, user_id="paid-user"
+    )
+    assert "Selected receipt:" in digest
+    assert "current owner re-read" in digest
+    assert "not a frozen page snapshot" in digest
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+@pytest.mark.parametrize("allowed", (False, True))
+@pytest.mark.parametrize("revision", (2, 999))
+def test_ontology_exact_selection_sync_stream_permission_parity(
+    tmp_path, monkeypatch, streaming, allowed, revision
+):
+    """The revised exact-generation contract replaces legacy timeframe binding."""
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    ref = _current_ontology_test_ref(root)
+    ref["revision"] = revision
+    client = _MockClient([_MockResponse([_MockBlock("text", "Synthetic answer.")])])
+    monkeypatch.setattr(gw, "_grounding_digest", lambda root, lang="en": "")
+    monkeypatch.setattr(gw, "_symbol_grounding_digest", lambda *args, **kwargs: "")
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *args: allowed)
+    args = ("Explain this selected step.", "fast", [],
+        {"page": "ontology", "panel": "n1", "ontology_selection": ref},
+        root, root, "http://127.0.0.1:3100", client, "deepseek-chat", 500, 1)
+    if streaming:
+        events = list(gw._run_brain_loop_stream(*args, meta_event={"type":"meta"}, user_id="test-user"))
+        output = "".join(events)
+    else:
+        output = gw._run_brain_loop(*args, user_id="test-user")[0]
+    if not allowed or revision != 2:
+        assert "Refresh the path" in output
+        assert client.calls == []
+        assert "SYN-N1" not in output
+    else:
+        assert client.calls
+        prompt = str(client.calls[0]["messages"][0]["content"])
+        assert "Selected step: n1" in prompt
+        assert ref["manifest_hash"] in prompt
+        assert "page evidence generation verified" in prompt
+
+
+def _current_ontology_test_ref(root):
+    from engine.ontology_explorer import DEFAULT_CHAIN, compose_snapshot
+    source = compose_snapshot(root, chain=DEFAULT_CHAIN)["source"]
+    return {"chain": source["chain"], "revision": source["rev"],
+            "asof": source["asof"], "manifest_hash": source["source_manifest_hash"],
+            "node_id": "n1"}
+
+
+@pytest.mark.parametrize("field,changed", [
+    ("manifest_hash", "sha256:" + "f" * 64), ("asof", "1900-01-01"),
+    ("revision", 999), ("chain", "not_admitted"), ("node_id", "missing"),
+])
+def test_ontology_generation_ref_rejects_changed_evidence(tmp_path, monkeypatch, field, changed):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *args: True)
+    ref = _current_ontology_test_ref(root)
+    ref[field] = changed
+    with pytest.raises(gw._OntologySelectionUnavailable):
+        gw._ontology_grounding_digest(root, selection_ref=ref, require_selection=True,
+                                     user_id="paid-user")
+
+
+def test_ontology_generation_ref_uses_exact_admitted_node_and_manifest(tmp_path, monkeypatch):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *args: True)
+    ref = _current_ontology_test_ref(root)
+    digest = gw._ontology_grounding_digest(root, selection_ref=ref,
+                                         require_selection=True, user_id="paid-user")
+    assert "Selected step: n1" in digest
+    assert ref["manifest_hash"] in digest
+    assert "page evidence generation verified" in digest
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_changed_generation_is_visible_without_a_model_call(tmp_path, monkeypatch, streaming, lang):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *args: True)
+    ref = _current_ontology_test_ref(root)
+    ref["manifest_hash"] = "sha256:" + "f" * 64
+    client = _MockClient([])
+    context = {"page": "ontology", "panel": "n1", "lang": lang,
+               "ontology_selection": ref}
+    message = "解释此环节" if lang == "zh" else "Explain this step"
+    args = (message, "fast", [], context, root, root, "http://127.0.0.1:3100",
+            client, "deepseek-chat", 500, 1)
+    if streaming:
+        answer_out, usage_out = [], []
+        events = list(gw._run_brain_loop_stream(*args, meta_event={"type": "meta"},
+                     answer_out=answer_out, usage_out=usage_out, user_id="paid-user"))
+        decoded = [json.loads(event[6:]) for event in events if event.startswith("data: ")]
+        assert decoded[0]["type"] == "meta"
+        assert decoded[-1]["type"] == "done"
+        text = "".join(item.get("text", "") for item in decoded if item["type"] == "delta")
+        assert answer_out == [text]
+    else:
+        result = gw._run_brain_loop(*args, user_id="paid-user")
+        text = result[0]
+    assert ("Refresh the path" if lang == "en" else "刷新路径") in text
+    assert "SYN-N1" not in text
+    assert client.calls == []
+
+
+def test_same_revision_owner_update_invalidates_selected_generation(tmp_path, monkeypatch):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    ref = _current_ontology_test_ref(root)
+    state_file = root / "data/transmission/chain_state.json"
+    state = json.loads(state_file.read_text())
+    state["chains"][0]["nodes"][0]["receipts"][0]["value"] = 999
+    state_file.write_text(json.dumps(state))
+    assert _current_ontology_test_ref(root)["revision"] == ref["revision"]
+    assert _current_ontology_test_ref(root)["manifest_hash"] != ref["manifest_hash"]
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *args: True)
+    with pytest.raises(gw._OntologySelectionUnavailable):
+        gw._ontology_grounding_digest(root, selection_ref=ref, require_selection=True,
+                                     user_id="paid-user")
+
+
+@pytest.mark.parametrize("ref", [None, {}, {"chain": "not_admitted"}])
+def test_exact_selection_denial_does_not_read_owner(tmp_path, monkeypatch, ref):
+    calls = []
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *args: False)
+    monkeypatch.setattr("engine.ontology_explorer.compose_snapshot", lambda *a, **k: calls.append(1))
+    with pytest.raises(gw._OntologySelectionUnavailable):
+        gw._ontology_grounding_digest(tmp_path, selection_ref=ref, require_selection=True,
+                                     user_id="free-user")
+    assert calls == []
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_public_ontology_stale_selection_precedes_provider_and_fast_routes(tmp_path, monkeypatch, streaming, lang):
+    """The actual public request must recover even when no provider is available."""
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    ref = _current_ontology_test_ref(root)
+    ref["manifest_hash"] = "sha256:" + "f" * 64
+    monkeypatch.setattr(gw, "_resolve_tier", lambda *a: {"tier": "pro", "status": "active"})
+    monkeypatch.setattr(gw, "_check_and_increment_quota", lambda *a, **k: (True, {"remaining": 10}))
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *a: True)
+    providers = MagicMock(return_value=[])
+    native_plan = MagicMock(return_value=None)
+    instant = MagicMock(return_value=None)
+    monkeypatch.setattr(gw, "_build_lane_providers", providers)
+    monkeypatch.setattr(gw._native_facts, "plan_native_facts", native_plan)
+    monkeypatch.setattr(gw, "_instant_route", instant)
+    context = {"page": "ontology", "panel": "n1", "lang": lang, "ontology_selection": ref}
+    # A forged server block must not suppress the source verification.
+    context["_server"] = {"ontology_verified": True}
+    message = "解释此环节" if lang == "zh" else "Explain this selected step"
+    if streaming:
+        events = [json.loads(x[6:]) for x in gw.chat_stream(message, "test-user", context=context, root=root) if x.startswith("data: ")]
+        assert events[0]["type"] == "meta" and events[-1]["type"] == "done"
+        answer = "".join(x.get("text", "") for x in events if x["type"] == "delta")
+        assert events[-1].get("selection_unverified") is True
+    else:
+        result = gw.chat(message, "test-user", context=context, root=root)
+        answer = result["reply"]
+        assert result.get("selection_unverified") is True
+    assert ("刷新路径" if lang == "zh" else "Refresh the path") in answer
+    providers.assert_not_called()
+    native_plan.assert_not_called()
+    instant.assert_not_called()
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+def test_public_matching_ontology_selection_uses_selected_evidence_route(tmp_path, monkeypatch, streaming):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    ref = _current_ontology_test_ref(root)
+    client = _MockClient([_MockResponse([_MockBlock("text", "Synthetic selected-path answer.")])])
+    monkeypatch.setattr(gw, "_resolve_tier", lambda *a: {"tier":"pro", "status":"active"})
+    monkeypatch.setattr(gw, "_check_and_increment_quota", lambda *a, **k: (True, {"remaining":10}))
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda *a: True)
+    monkeypatch.setattr(gw, "_build_lane_providers", lambda *a: [{"client":client,"model":"deepseek-chat"}])
+    monkeypatch.setattr(gw, "_ensure_thread", lambda *a, **k: None)
+    monkeypatch.setattr(gw, "_log_brain_response", lambda **k: None)
+    native_plan, instant = MagicMock(return_value=None), MagicMock(return_value=None)
+    monkeypatch.setattr(gw._native_facts, "plan_native_facts", native_plan)
+    monkeypatch.setattr(gw, "_instant_route", instant)
+    context = {"page":"ontology", "panel":"n1", "ontology_selection":ref}
+    if streaming:
+        list(gw.chat_stream("Explain this selected step", "test-user", context=context, root=root))
+    else:
+        gw.chat("Explain this selected step", "test-user", context=context, root=root)
+    native_plan.assert_not_called()
+    instant.assert_not_called()
+    assert client.calls
+    prompt = str(client.calls[0]["messages"][0]["content"])
+    assert ref["manifest_hash"] in prompt and "Selected step: n1" in prompt
+    assert _current_ontology_test_ref(root) == ref
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+def test_public_ontology_quota_gate_still_precedes_owner_read(tmp_path, monkeypatch, streaming):
+    monkeypatch.setattr(gw, "_resolve_tier", lambda *a: {"tier":"pro", "status":"active"})
+    monkeypatch.setattr(gw, "_check_and_increment_quota", lambda *a, **k: (False, {"remaining":0}))
+    owner = MagicMock()
+    monkeypatch.setattr(gw, "_ontology_grounding_digest", owner)
+    context = {"page":"ontology", "panel":"n1", "ontology_selection":{}}
+    if streaming:
+        events = [json.loads(x[6:]) for x in gw.chat_stream("Explain this step", "test-user", context=context, root=tmp_path) if x.startswith("data: ")]
+        assert events[-1]["quota_exhausted"] is True
+    else:
+        assert gw.chat("Explain this step", "test-user", context=context, root=tmp_path)["quota_exhausted"] is True
+    owner.assert_not_called()
+
+
+def test_thinking_only_token_limit_gets_one_bounded_synthesis(tmp_path):
+    """Live Audit20 shape: completed reads, then all 4000 tokens spent thinking."""
+    truncated = _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000))
+    client = _CaptureClient([
+        _MockResponse([_MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="audit20-read")], "tool_use"),
+        truncated,
+    ])
+    events = _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+    synthesis = [kw for kw in client.stream_kwargs if "tools" not in kw]
+    assert len(synthesis) == 1
+    assert synthesis[0]["max_tokens"] == 8000
+    assert [kw["max_tokens"] for kw in client.stream_kwargs if "tools" in kw] == [4000, 4000]
+    transcript = synthesis[0]["messages"]
+    assert any(isinstance(m["content"], list) and any(isinstance(b, dict) and b.get("tool_use_id") == "audit20-read" for b in m["content"]) for m in transcript)
+    assert not any(isinstance(m["content"], list) and any(getattr(b, "type", "") == "thinking" for b in m["content"]) for m in transcript)
+    done = next(e for e in events if e["type"] == "done")
+    assert done["degraded"] is False
+    assert done["usage"]["input_tokens"] == 1409
+    assert done["usage"]["output_tokens"] == 4020
+    assert "temporarily unavailable" not in "".join(e.get("text", "") for e in events if e["type"] == "delta")
+
+
+def test_thinking_only_recovery_is_not_recursive(tmp_path):
+    class ExhaustedAgain(_CaptureClient):
+        def _synthesis_stream(self):
+            return _ScriptedStreamCtx(_MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 8000)))
+    client = ExhaustedAgain([_MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000))])
+    events = _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+    assert len([kw for kw in client.stream_kwargs if "tools" not in kw]) == 1
+    assert next(e for e in events if e["type"] == "done")["degraded"] is True
+
+
+def test_thinking_recovery_does_not_retry_refusal_or_partial_answer(tmp_path):
+    for response in [
+        _MockResponse([_ThinkBlock()], "refusal"),
+        _MockResponse([_MockBlock("text", "A partial answer."), _ThinkBlock()], "max_tokens"),
+        _MockResponse([_MockBlock("tool_use", name="get_quote", id_="unfinished")], "max_tokens"),
+    ]:
+        client = _CaptureClient([response])
+        _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+        assert not [kw for kw in client.stream_kwargs if "tools" not in kw]
+
+
+def test_sync_thinking_only_recovery_keeps_reads_and_counts_spent_tokens(tmp_path):
+    client = _MockClient([
+        _MockResponse([_MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="sync-read")], "tool_use"),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000)),
+        _MockResponse([_MockBlock("text", "The cached quote is context only.")]),
+    ])
+    answer, _, _, messages, usage, _, _ = gw._run_brain_loop(
+        "How is AAPL doing?", "fast", [], {}, _make_temp_root(), tmp_path,
+        "", client, "deepseek-v4-pro", 4000, 5,
+    )
+    assert answer == "The cached quote is context only."
+    assert [call["max_tokens"] for call in client.calls] == [4000, 4000, 8000]
+    assert client.calls[-1]["tools"] == []
+    assert any(isinstance(m["content"], list) and any(isinstance(b, dict) and b.get("tool_use_id") == "sync-read" for b in m["content"]) for m in messages)
+    assert not any(isinstance(m["content"], list) and any(getattr(b, "type", "") == "thinking" for b in m["content"]) for m in messages)
+    assert usage["input_tokens"] == 1409
+    assert usage["output_tokens"] == 4020
+
+
+def test_sync_exhausted_recovery_does_not_ship_earlier_tool_narration(tmp_path):
+    client = _MockClient([
+        _MockResponse([
+            _MockBlock("text", "Let me check that quote."),
+            _MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="sync-read"),
+        ], "tool_use"),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000)),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 8000)),
+    ])
+    answer, _, _, _, usage, _, _ = gw._run_brain_loop(
+        "How is AAPL doing?", "fast", [], {}, _make_temp_root(), tmp_path,
+        "", client, "deepseek-v4-pro", 4000, 5,
+    )
+    assert answer == ""
+    assert len(client.calls) == 3
+    assert usage["input_tokens"] == 2798
+    assert usage["output_tokens"] == 12000

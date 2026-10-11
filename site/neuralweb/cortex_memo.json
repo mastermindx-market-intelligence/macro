@@ -1,16 +1,36 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-15T22:23:51+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
+  "as_of": "2026-10-10T11:24:52+00:00",
+  "summary": "Context-only shadow deliberation as of 2026-10-10: the US backdrop is MIXED (53), with improving trend and calm volatility offset by exceptionally weak participation, neutral-hollow liquidity, widening high-yield credit, restrictive/rising real yields, and cross-asset disagreement. Risk-radar intensity is receding and its current caution cell is not above its measured base rate, so it does not justify escalation. The confirmed Q2 label is low-confidence and internally unsupported: raw axes indicate Q1, now 4 of 7 confirmation sessions. Factor evidence is immature (9 dates versus the 60-date floor), Pair G is dormant, and no factor-attention authority has been earned. Six neutral attention items were recorded with explicit falsifiers. A narrow-leadership hypothesis was drafted but not registered because the weekly metabolism budget is already 3/3; no existing hypothesis was retired.",
+  "what_fired": [
+    "Displayed US regime-label mismatch: confirmed Q2 at 0.08 confidence versus raw Q1 axes, pending 4/7 sessions.",
+    "Breadth/credit tension: 48.3% of members above the 200-day average, breadth at the 11th percentile with price divergence, while HY OAS widened about 39 bp over 21 days.",
+    "Cross-asset confirmation verdict is diverge with 0% bonds/FX agreement; FX and rates-credit contradict the displayed Q2 regime.",
+    "Liquidity quality remains neutral-hollow: RRP buffer is exhausted, net liquidity declined over 20 and 65 days, and stress confirmation is active.",
+    "Master-Brain thesis conflicts were surfaced for semiconductors, growth over value, long Treasuries, and the China-equity overweight thesis.",
+    "No Pair G factor contradiction fired; the ledger is absent until the panel reaches at least 60 distinct dates."
+  ],
+  "contradictions_review": "The central contradiction is resilient headline tape versus deteriorated internals: trend score 70, volatility score 87, leadership INTACT, and systematic funds aligned adding coexist with breadth score 0, weak equal-weight/small-cap participation, credit stress, and hollow liquidity. This supports attention, not a directional claim. The regime label is also transitional: Q2 remains displayed while its own axes read Q1. Bonds and FX do not confirm the equity regime. Current Master-Brain records contain overdue open theses whose stated checks have passed: semiconductor underweights conflict with current semiconductor/technology leadership; growth-underweight theses conflict with IWF/IWD +5.14% and QQQ/SPY +3.08% over 20 days; long-Treasury overweight theses conflict with a 2.92% real 10-year yield, rising term premium, and bear steepening; the China-overweight thesis conflicts with China risk-off conditions, contracting liquidity, deep property contraction, and technology/AI breadth of 0.05. Factor Pair G contributes no evidence because it is dormant.",
+  "decaying_families": [
+    "Alternative-data claims remain unarmed and show negative pooled signed excess, especially at 21- and 63-day horizons.",
+    "Demand-chain evidence is thin (9/12 effective events) and its observed 21-day signed excess is negative.",
+    "Policy-family claims show negative signed excess across available horizons and remain unarmed.",
+    "AI, narrative, radar, stock, and thematic desk families have negative 63-day signed excess; their allocation tests are marked vacuous rather than validating an edge.",
+    "CA/CN/HK board outcome rows use unsigned maximum-favorable-excursion proxies; positive values must not be interpreted as directional alpha, and the engines remain unarmed.",
+    "Cortex attention has only two effective events in the kernel and remains far below its earn-in threshold."
+  ],
   "deserves_operator": [
-    "[context_stale] cortex deliberated over world_state from 2026-09-14T11:15:39Z; current run=2026-09-15T22:23:51+00:00"
+    "US regime-label transition \u2014 clear if pending Q1 fails to reach 7/7 and axes return to Q2 support; retain if Q1 confirms while Q2 remains displayed. Attention claim 01328839f175e54e.",
+    "US narrow-leadership fragility \u2014 clear if breadth exceeds 55% above the 200-day average and HY widening falls below +15 bp; retain if breadth stays below 50% with HY widening at least +30 bp or leadership deteriorates. Attention claim ca7a5b6a2f32586f.",
+    "Overdue semiconductor-underweight theses \u2014 clear if SMH underperforms SPY over five sessions and semiconductor breadth falls below 50%; retain if SMH/SPY stays positive and semiconductor/hardware breadth remains at least 0.67. Attention claim fa6f5cbe97eff7c4.",
+    "Overdue growth-over-value underweight theses \u2014 clear if IWF/IWD 20-day performance falls below +2%; retain if it remains above +5% or widens while QQQ/SPY stays positive. Attention claim 704a7df9a2bb6cee.",
+    "Long-Treasury overweight theses \u2014 clear the conflict if real 10-year yield falls below 2.5% and bear steepening ends; retain while real yield stays above 2.5% with rising term premium or bear steepening. Attention claim c12a9b0eae07b3b7.",
+    "China-equity overweight thesis \u2014 clear if China exits risk-off, liquidity stops contracting, and technology/AI breadth exceeds 25%; retain while risk-off, contracting liquidity, and technology/AI breadth at or below 10% persist. Attention claim fddbd2940c57794f.",
+    "Metabolism capacity is exhausted for 2026-W41 (3/3). The drafted narrow-leadership hypothesis was not registered; no evidence claim should be inferred from the rejected attempt."
   ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-15",
+    "as_of": "2026-10-10",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -22,18 +42,29 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 72,
-      "total_rows": 80
+      "ungradeable": 113,
+      "total_rows": 121
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "stake_hypothesis": 2,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
         "provider": "oauth",
@@ -41,7 +72,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61RWVqK8Qr6xb6FJh9U'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CftUPinHJoFMUMTPCx5Py'}"
       },
       {
         "provider": "oauth",
@@ -49,7 +80,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61Sor9K957V4CEUNwp4'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CftUQyjz5u4G2vSHjTQHC'}"
       },
       {
         "provider": "oauth",
@@ -57,7 +88,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61XQeGrbAiCf4b56c3m'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CftUVYSbWHUqXT441oEbp'}"
       },
       {
         "provider": "oauth",
@@ -65,77 +96,61 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61ks9avGeva6YLaVfpG'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CftUixkSuijWcb4pbGv8B'}"
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61qgFPQoKSt6FQgsQbh'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61qqMa3H334cTaxWBut'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61qzbSnWfbgPnAGbzcA'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf61rA9fkijrMXtmSD8ET'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 5,
+    "individual_tool_calls": 11,
     "expected_min_tool_calls": 1,
-    "context_stale": true,
-    "context_as_of": "2026-09-14T11:15:39Z"
+    "context_stale": false,
+    "context_as_of": "2026-10-10T11:18:02Z"
   }
 }

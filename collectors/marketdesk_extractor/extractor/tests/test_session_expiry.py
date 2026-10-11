@@ -273,3 +273,64 @@ def test_session_expiry_parks_the_account_and_sets_no_cooldown(tmp_path, monkeyp
     assert "NOT AUTHENTICATED" in trickle.plan_account(
         cfg, conn, states[0], NOW
     ).describe()
+
+
+def test_run_trickle_persists_auth_required_after_midflight_expiry(
+        tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    conn.execute(
+        "INSERT INTO papers (blob_id, article_url, blob_url, title, institution, "
+        "published_at, status) VALUES (?,?,?,?,?,?,?)",
+        ("expires_in_loop", "u2", "b2", "T2", "JPM",
+         (NOW - timedelta(hours=1)).isoformat(), Status.DISCOVERED.value),
+    )
+    conn.commit()
+    conn.close()
+
+    monkeypatch.setattr(trickle, "BrowserSession", ExpiredSession)
+    monkeypatch.setattr(trickle, "MarketDeskClient", ExpiringClient)
+    monkeypatch.setattr(trickle, "_refresh_queue", lambda *a, **k: None)
+
+    result = trickle.run_trickle(
+        cfg,
+        once=True,
+        dry_run=False,
+        now_fn=lambda: NOW,
+        sleep_fn=lambda _s: None,
+    )
+    assert result[0].session_expired == 1
+
+    conn = db.connect(cfg.database_url)
+    health = db.producer_auth_health(conn)
+    conn.close()
+    assert health == {
+        "state": db.AUTH_REQUIRED,
+        "observed_at": NOW.isoformat(),
+        "required_at": NOW.isoformat(),
+        "reason": "NO_AUTHENTICATED_PROFILE",
+    }
+
+
+def test_run_trickle_records_authenticated_without_inventing_download_activity(
+        tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    monkeypatch.setattr(trickle, "BrowserSession", ExpiredSession)
+    monkeypatch.setattr(trickle, "MarketDeskClient", ExpiringClient)
+    monkeypatch.setattr(trickle, "_refresh_queue", lambda *a, **k: None)
+
+    trickle.run_trickle(
+        cfg,
+        once=True,
+        dry_run=False,
+        now_fn=lambda: NOW,
+        sleep_fn=lambda _s: None,
+    )
+
+    conn = db.connect(cfg.database_url)
+    health = db.producer_auth_health(conn)
+    conn.close()
+    assert health["state"] == db.AUTHENTICATED
+    assert health["observed_at"] == NOW.isoformat()
+    assert health["required_at"] == ""

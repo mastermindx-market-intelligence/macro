@@ -4,7 +4,7 @@
  "index": "Nasdaq-100",
  "benchmark": "QQQ",
  "benchmark_label": "Nasdaq-100 (QQQ)",
- "as_of": "2026-09-15",
+ "as_of": "2026-10-09",
  "source": "finviz idx_ndx + QQQ holdings; curated tech subsectors + amalgamations",
  "subsectors": {
   "semiconductors": {
@@ -44,16 +44,12 @@
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "MPWR",
@@ -62,6 +58,10 @@
     {
      "ticker": "ALAB",
      "name": "Astera Labs Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "MCHP",
@@ -82,20 +82,20 @@
      "name": "Automatic Data Processing Inc"
     },
     {
-     "ticker": "ADBE",
-     "name": "Adobe Inc"
-    },
-    {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
     {
      "ticker": "CDNS",
      "name": "Cadence Design Systems Inc"
+    },
+    {
+     "ticker": "ADBE",
+     "name": "Adobe Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
@@ -170,12 +170,12 @@
      "name": "ASML Holding NV"
     },
     {
-     "ticker": "LRCX",
-     "name": "Lam Research Corp"
-    },
-    {
      "ticker": "AMAT",
      "name": "Applied Materials Inc"
+    },
+    {
+     "ticker": "LRCX",
+     "name": "Lam Research Corp"
     },
     {
      "ticker": "KLAC",
@@ -316,10 +316,6 @@
      "name": "Lumentum Holdings Inc"
     },
     {
-     "ticker": "ANET",
-     "name": "ANET"
-    },
-    {
      "ticker": "CIEN",
      "name": "CIEN"
     },
@@ -334,20 +330,16 @@
    "sector": "Software & Cloud",
    "members": [
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
     },
     {
-     "ticker": "KTOS",
-     "name": "KTOS"
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
     },
     {
-     "ticker": "AVAV",
-     "name": "AVAV"
+     "ticker": "KTOS",
+     "name": "KTOS"
     },
     {
      "ticker": "LUNR",
@@ -402,16 +394,12 @@
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "MPWR",
@@ -422,6 +410,10 @@
      "name": "Astera Labs Inc"
     },
     {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
+    },
+    {
      "ticker": "MCHP",
      "name": "Microchip Technology Inc"
     },
@@ -430,12 +422,12 @@
      "name": "ASML Holding NV"
     },
     {
-     "ticker": "LRCX",
-     "name": "Lam Research Corp"
-    },
-    {
      "ticker": "AMAT",
      "name": "Applied Materials Inc"
+    },
+    {
+     "ticker": "LRCX",
+     "name": "Lam Research Corp"
     },
     {
      "ticker": "KLAC",
@@ -452,10 +444,6 @@
     {
      "ticker": "LITE",
      "name": "Lumentum Holdings Inc"
-    },
-    {
-     "ticker": "ANET",
-     "name": "ANET"
     },
     {
      "ticker": "CIEN",
@@ -528,20 +516,20 @@
      "name": "Automatic Data Processing Inc"
     },
     {
-     "ticker": "ADBE",
-     "name": "Adobe Inc"
-    },
-    {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
     {
      "ticker": "CDNS",
      "name": "Cadence Design Systems Inc"
+    },
+    {
+     "ticker": "ADBE",
+     "name": "Adobe Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
@@ -576,20 +564,16 @@
      "name": "Copart Inc"
     },
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
     },
     {
-     "ticker": "KTOS",
-     "name": "KTOS"
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
     },
     {
-     "ticker": "AVAV",
-     "name": "AVAV"
+     "ticker": "KTOS",
+     "name": "KTOS"
     },
     {
      "ticker": "LUNR",
@@ -667,7 +651,7 @@
     },
     {
      "ticker": "WBD",
-     "name": "Warner Bros. Discovery Inc"
+     "name": "WBD"
     },
     {
      "ticker": "EA",
@@ -861,7 +845,7 @@
     },
     {
      "ticker": "KHC",
-     "name": "Kraft Heinz Co"
+     "name": "KHC"
     },
     {
      "ticker": "AEP",

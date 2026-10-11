@@ -62,7 +62,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+          "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
@@ -107,12 +107,12 @@
         {
           "path": "templates/_navlinks.html.j2",
           "role": "jinja_template",
-          "sha256": "e37bb828e7629be1b00df0c917fa30be4236bc7be89a2ab203a8e386d2c41366"
+          "sha256": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
         },
         {
           "path": "templates/_prophet_card.html.j2",
           "role": "jinja_template",
-          "sha256": "27b08e4f5a5c1aa0ad29108ed9ec6bfc2ce970b820fc46ab3a066c0ba3798e35"
+          "sha256": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27"
         },
         {
           "path": "templates/_risk_radar_card.css.j2",
@@ -122,7 +122,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "fe784862a462a62eae7e76b4c9df32cb2aefb01738a138ce262e2d171188d2d3"
+          "sha256": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",
@@ -132,7 +132,7 @@
         {
           "path": "templates/_risk_radar_dlg.html.j2",
           "role": "jinja_template",
-          "sha256": "a2ead084ec5feb4259c36423717a8a9b4273348c928e4b7b020b8c322e9cea43"
+          "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
         },
         {
           "path": "templates/_seo_head.html.j2",
@@ -151,7 +151,7 @@
         }
       ],
       "output": "canada_stocks.html",
-      "output_sha256": "781af5ee61e0da0eddba9117cec6265883dcdeaba97289cf8a3a0f330e4ed018",
+      "output_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
       "owner_cases": {
         "normal": {
           "input_transform": {
@@ -212,7 +212,7 @@
             "sha256": "561e2696a225b71fa1b1dd2e443e506daf20a55813986519cc650f7abaff6747"
           },
           "output": "canada_stocks.html",
-          "output_sha256": "781af5ee61e0da0eddba9117cec6265883dcdeaba97289cf8a3a0f330e4ed018",
+          "output_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
           "owner_population": {
             "board": 9,
             "intersection": [],
@@ -270,7 +270,7 @@
             "sha256": "15f0d1d2753fa912c5911ff8c4371db69f596c0e2a0661275960a18c6f9b8f2b"
           },
           "output": "canada_stocks.null-buy.html",
-          "output_sha256": "c4320ed437c1b54ed42d1d9af758dcbe20198f3087a1ca03508a9c6fe8b1483f",
+          "output_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
           "owner_population": {
             "board": null,
             "intersection": null,
@@ -328,7 +328,7 @@
             "sha256": "4f91a49be717ebde1e9f5683353438f9de7443d7f96751d826dc87b0589e5873"
           },
           "output": "canada_stocks.watch-only.html",
-          "output_sha256": "eac79e51344385a458b6ff9c26848c1a6d7b251c8f8105446174f467b9bdb813",
+          "output_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
           "owner_population": {
             "board": 0,
             "intersection": [],
@@ -401,7 +401,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+          "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json",
@@ -421,7 +421,7 @@
         {
           "path": "templates/_aibrief_body.html.j2",
           "role": "jinja_template",
-          "sha256": "f758be7fc256a9dad50ea07542ef6d75b1aa6694be58eabd5627a351b74bd7c5"
+          "sha256": "bde4c19d5f511f478bea3b725626d1fe6bc6e3054755504171fcd4fd3534eadd"
         },
         {
           "path": "templates/_aibrief_css.j2",
@@ -456,12 +456,12 @@
         {
           "path": "templates/_navlinks.html.j2",
           "role": "jinja_template",
-          "sha256": "e37bb828e7629be1b00df0c917fa30be4236bc7be89a2ab203a8e386d2c41366"
+          "sha256": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
         },
         {
           "path": "templates/_prophet_card.html.j2",
           "role": "jinja_template",
-          "sha256": "27b08e4f5a5c1aa0ad29108ed9ec6bfc2ce970b820fc46ab3a066c0ba3798e35"
+          "sha256": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27"
         },
         {
           "path": "templates/_risk_radar_card.css.j2",
@@ -471,7 +471,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "fe784862a462a62eae7e76b4c9df32cb2aefb01738a138ce262e2d171188d2d3"
+          "sha256": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",
@@ -481,7 +481,7 @@
         {
           "path": "templates/_risk_radar_dlg.html.j2",
           "role": "jinja_template",
-          "sha256": "a2ead084ec5feb4259c36423717a8a9b4273348c928e4b7b020b8c322e9cea43"
+          "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
         },
         {
           "path": "templates/_seo_head.html.j2",
@@ -496,11 +496,11 @@
         {
           "path": "templates/hk.html.j2",
           "role": "jinja_template",
-          "sha256": "1ae1c8edb8554b3fa3a64c02e326522c99c6649f0f7e7f48e62cecb8bda082c5"
+          "sha256": "b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8"
         }
       ],
       "output": "hk_stocks.html",
-      "output_sha256": "cfff62e246c431e75d4634e5dc642b16951a825f744f62297c52422528a866d6",
+      "output_sha256": "bb512b6652f31549ced331c3157500dade94f4bce23677cf355e5f129807e782",
       "owner_cases": {
         "normal": {
           "input_transform": {
@@ -633,7 +633,7 @@
             "sha256": "bc7ae67276a8a7c677af1ab1f69a8c08e6304a3a9b904285abd2454f5356c0e7"
           },
           "output": "hk_stocks.html",
-          "output_sha256": "cfff62e246c431e75d4634e5dc642b16951a825f744f62297c52422528a866d6",
+          "output_sha256": "bb512b6652f31549ced331c3157500dade94f4bce23677cf355e5f129807e782",
           "owner_population": {
             "board": 39,
             "intersection": [],
@@ -769,7 +769,7 @@
             "sha256": "7f3de426f8a9f756fa155df0fc0dfe5685ed3280579dbbd25817c22f5ed441b9"
           },
           "output": "hk_stocks.null-buy.html",
-          "output_sha256": "af30d264068b3fd890060b182f4a1378c82db06ddf55315ead4ac1d8a5feee9c",
+          "output_sha256": "4ae39a4ee6af18ef16e1da77d54f806ed687f02f53a97f803fccec1c53993801",
           "owner_population": {
             "board": null,
             "intersection": null,
@@ -905,7 +905,7 @@
             "sha256": "5229a4fca6654bf6be5c88f015225586f11104cd49c1ab1726c52a35c8dc1ecf"
           },
           "output": "hk_stocks.watch-only.html",
-          "output_sha256": "35514ada69762d0cf49a8c0e9fe05f2b3fd5eebbe457b12d62c66068d24b3475",
+          "output_sha256": "e9fb26f3abdf5ca77905d166de034d379523902d6a2d7aca20cc320b9885cf60",
           "owner_population": {
             "board": 36,
             "intersection": [],

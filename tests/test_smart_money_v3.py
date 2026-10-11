@@ -945,6 +945,26 @@ _DOSSIER_DIR = _find_templates_dir(_DOSSIER)
 _BASE_DIR = _find_templates_dir(*_BASE_FILES)
 
 
+def test_row_ticker_logos_do_not_compete_with_first_paint() -> None:
+    """Long fund/flow tables must not eagerly schedule every third-party logo."""
+    tpl_dir = _find_templates_dir(_DOSSIER, "smart_money.html.j2")
+    assert tpl_dir is not None, "fund/smart-money templates must exist"
+
+    for name in (_DOSSIER, "smart_money.html.j2"):
+        source = (tpl_dir / name).read_text()
+        logo_tags = [
+            line.strip()
+            for line in source.splitlines()
+            if "<img" in line and "ticker_icons/" in line
+        ]
+        assert logo_tags, f"expected row ticker logos in {name}"
+        for tag in logo_tags:
+            assert 'loading="lazy"' in tag, f"eager row logo in {name}: {tag}"
+            assert 'decoding="async"' in tag, f"sync image decode in {name}: {tag}"
+            assert 'fetchpriority="low"' in tag, f"row logo can contend with first paint in {name}: {tag}"
+            assert 'loading="eager"' not in tag, f"row logo regressed to eager loading in {name}: {tag}"
+
+
 def _env() -> "jinja2.Environment":
     """Mirror the build environment (build_smart_money.py phase 6):
     FileSystemLoader over templates/, autoescape ON."""

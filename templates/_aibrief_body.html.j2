@@ -147,7 +147,10 @@
     {%- set _tone = _f.get('tone') or 'neutral' -%}
     <span class="aib2-kf aib2-kf--{{ _tone }}">
       <span class="aib2-kf-k"><span class="l-en">{{ _f.get('label_en') or '' }}</span><span class="l-zh">{{ _f.get('label_zh') or _f.get('label_en') or '' }}</span></span>
-      <span class="aib2-kf-v"><span class="l-en">{{ _f.get('value_en') or '' }}</span><span class="l-zh">{{ _f.get('value_zh') or _f.get('value_en') or '' }}</span></span>
+      {%- set _ven = _f.get('value_en') or '' -%}
+      {%- set _vraw = _f.get('value_zh') or _ven -%}
+      {%- set _vzh = '增长恐慌' if _vraw in ['Growth-Scare', 'Growth-scare', 'Growth scare'] else _vraw -%}
+      <span class="aib2-kf-v"><span class="l-en">{{ _ven }}</span><span class="l-zh">{{ _vzh }}</span></span>
     </span>
     {%- endfor -%}
   </div>

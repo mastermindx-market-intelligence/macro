@@ -22,6 +22,9 @@
  *         `context_receipt` reply either way.
  *   getCompanySourceSpan: fn()->closed company_source_span reference for the next
  *         explicit turn only. The widget never stores or serializes source bytes.
+ *   onClose: fn()->true when the host restored focus to the exact invoking object.
+ *         Called only when focus was inside the Brain at close; returning true keeps
+ *         the widget from replacing the host's focus return with launcher focus.
  * Public API: window.MMBrain = { open, close, toggle, expand, mounted:true }
  * ========================================================================== */
 (function () {
@@ -215,12 +218,10 @@
     #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads,
     .mmb-tk-row,.mmb-tk-h .lb.mmb-swap,.mmb-tk-h .mmb-tk-ic::after,
     .mmb-recap.on .mmb-recap-list,.mmb-cards .mmb-cardp,.mmb-hero h1,.mmb-hero p,
-    .mmb-sugg .mmb-sug,.mmb-rpill.on svg .dv{animation:none}
+    .mmb-sugg .mmb-sug{animation:none}
     #mmb-panel{transition:opacity .18s ease!important}
-    .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,.mmb-rpill,
-    .mmb-rtip,.mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}
-    /* the tip still appears, it just does not travel */
-    .mmb-rtip{transform:none}}
+    .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,
+    .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}}
   #mmb-launch .ll{font:650 13.5px/1 var(--mmb-font);color:var(--mmb-text);white-space:nowrap}
   #mmb-launch .lk{font:600 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;white-space:nowrap}
   #mmb-launch .lt{display:flex;flex-direction:column}
@@ -319,49 +320,6 @@
   @keyframes mmb-dotpulse{0%,100%{opacity:1}50%{opacity:.45}}
   @media(prefers-reduced-motion:reduce){.mmb-head .dot.busy{animation:none}}
   .mmb-head .sp{flex:1}
-  /* Deep Research is the third stop on the depth control, not a separate mode: the
-     gateway forces lane='pro' for mode='research', so arming it lights Pro too. That
-     pair is the point — Pro in the signature blue says which bucket is being spent,
-     Deep in violet says this is a longer pass on top of it. Violet is already this
-     widget's "in flight / going deeper" accent (the caret, the busy dot, the ledger's
-     live arc), so the two lit stops read as one sentence rather than as a contradiction.
-     At REST it stays inert like its neighbours — the standing violet tint that used to
-     read as "already on" with Fast selected is a state setLane/setResearch make
-     impossible, and it is not coming back through the hover either. */
-  .mmb-rpill{position:relative;display:inline-flex;align-items:center;gap:5px;font:600 11.5px/1 var(--mmb-font);cursor:pointer;white-space:nowrap;flex:none;
-    color:var(--mmb-muted);background:transparent;border:none;border-radius:999px;padding:5px 11px 5px 9px;
-    transition:color .16s var(--mmb-ease-tint),background .16s var(--mmb-ease-tint),box-shadow .16s var(--mmb-ease-tint)}
-  .mmb-rpill svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-  .mmb-rpill:hover{color:color-mix(in srgb,var(--mmb-text) 80%,var(--mmb-muted));background:color-mix(in srgb,var(--mmb-ink) 7%,transparent)}
-  .mmb-rpill.on,.mmb-rpill.on:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-violet) 88%,#fff),var(--mmb-violet));
-    color:#fff;box-shadow:0 2px 10px -3px color-mix(in srgb,var(--mmb-violet) 70%,transparent)}
-  .mmb-rpill:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info) 70%,transparent);outline-offset:2px}
-  /* a hairline before the third stop: Fast/Pro are alternatives to each other, Deep is a
-     step past both — the divider says so without a second control */
-  .mmb-rpill::before{content:'';position:absolute;left:-1px;top:5px;bottom:5px;width:1px;
-    background:color-mix(in srgb,var(--mmb-ink) 12%,transparent)}
-  .mmb-rpill.on::before,.mmb-rpill:hover::before{opacity:0}
-  /* phones: the label gives way to the mark alone (aria-label carries the name) */
-  @media(max-width:560px){.mmb-rpill .mmb-l{display:none}.mmb-rpill{padding:5px 8px}}
-  /* Arming it plays the mark's own meaning once: the two chevrons travel down through
-     the rule they sit under. One 520ms gesture on a deliberate click, never a loop. */
-  .mmb-rpill.on svg .dv{animation:mmb-dive .52s var(--mmb-ease) both}
-  @keyframes mmb-dive{0%{transform:translateY(-3px);opacity:.25}100%{transform:none;opacity:1}}
-  .mmb-rpill.mmb-off{display:none}
-  /* What the toggle actually changes, in plain words — the doctrine's Tier-2 home for
-     mechanics. It opens UPWARD: the control sits on the composer, so a tip below it would
-     land off the panel; and left-anchored rather than centred, because the third stop is
-     near the panel's left edge in the compact box. */
-  .mmb-rtip{position:absolute;bottom:calc(100% + 10px);left:-6px;transform:translateY(4px);z-index:12;width:min(258px,68vw);white-space:normal;
-    pointer-events:none;opacity:0;visibility:hidden;text-align:left;
-    font:400 11.5px/1.55 var(--mmb-font);color:var(--mmb-text);
-    background:color-mix(in srgb,var(--mmb-panel) 96%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    border:1px solid var(--mmb-line);border-radius:12px;padding:10px 12px;box-shadow:var(--mmb-shadow-pop);
-    transition:opacity .18s var(--mmb-ease),transform .18s var(--mmb-ease),visibility 0s linear .18s}
-  .mmb-rpill:hover .mmb-rtip,.mmb-rpill:focus-visible .mmb-rtip{opacity:1;visibility:visible;transform:none;transition-delay:0s,0s,0s}
-  .mmb-rtip b{display:block;font:700 11.5px/1.4 var(--mmb-font);color:color-mix(in srgb,var(--mmb-text) 96%,var(--mmb-hi));margin-bottom:3px}
-  .mmb-rtip .cost{display:block;margin-top:5px;color:var(--mmb-muted)}
-  @media(max-width:560px){.mmb-rtip{display:none}}
   #mmb-panel.max .mmb-menu,#mmb-panel.max .mmb-sidescrim{display:none}
   #mmb-panel:not(.max) .mmb-rail{display:none}
   #mmb-panel:not(.max) .mmb-threads{position:absolute;left:0;top:0;bottom:0;width:236px;z-index:6;display:block;
@@ -810,13 +768,15 @@
      also the moment the user is about to press Enter and expect it to go. */
   .mmb-hint{display:none;font:11px/1 var(--mmb-font);color:var(--mmb-muted);white-space:nowrap;opacity:.85;min-width:0;overflow:hidden;text-overflow:ellipsis}
   .mmb-box.mmb-typing .mmb-hint{display:inline}
-  /* ── depth control (Fast / Pro / Deep) ────────────────────────────────────────
-     The three stops are not "cheap / dear / dearer", they are how deep the desk digs for
-     one question — so the marks are a depth family, drawn in this file rather than borrowed
-     from the emoji table: Fast is a single strike, Pro a cut stone with several faces, Deep
-     descends through the surface line. Fast and Pro take solid fills instead of the outline
-     language the rest of the chrome uses — at 12px a 1.8-stroke mark silts up, and these are
-     identity badges rather than affordances. */
+  /* ── depth control (Fast / Pro) ───────────────────────────────────────────────
+     The two stops are not "cheap / dear", they are how deep the desk digs for one
+     question — so the marks are a depth family, drawn in this file rather than borrowed
+     from the emoji table: Fast is a single strike, Pro a cut stone with several faces.
+     Both take solid fills instead of the outline language the rest of the chrome uses —
+     at 12px a 1.8-stroke mark silts up, and these are identity badges rather than
+     affordances. The family's third mark (a descent through the surface line) still
+     exists, but it now sits on the research row: research is a grounding MODE that
+     rides on Pro, not a third depth, and it reads as a sentence rather than as a stop. */
   .mmb-seg{display:flex;flex:none;gap:2px;padding:2px;border-radius:999px;background:color-mix(in srgb,var(--mmb-ink) 5%,transparent);border:1px solid var(--mmb-line)}
   .mmb-seg button{display:inline-flex;align-items:center;gap:5px;border:none;background:transparent;color:var(--mmb-muted);
     font:600 11.5px/1 var(--mmb-font);padding:5px 11px 5px 9px;border-radius:999px;cursor:pointer;white-space:nowrap;
@@ -888,11 +848,23 @@
     #mmb-panel.open{transform:none} .mmb-cards,#mmb-panel.max .mmb-cards{grid-template-columns:1fr}
     /* mobile is compact-only: no large mode (the overlay isn't responsive there) */
     .mmb-icon[data-act="max"]{display:none!important}
+    .mmb-head .mmb-icon,.mmb-abtn,.mmb-ti-act,.mmb-ti-yes,.mmb-ti-no{min-width:44px;min-height:44px}
+    .mmb-actions{height:auto;min-height:44px}
     #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads{display:none}
     /* iOS: composer font MUST be ≥16px or Safari zooms the viewport on focus */
     .mmb-ta{font-size:16px}
     /* no hardware modifier on a phone — the hint would be a lie AND a squeeze */
     .mmb-box.mmb-typing .mmb-hint{display:none}
+    /* Two rows keep depth and actions usable at 320px and with enlarged text. */
+    .mmb-tools{display:grid;grid-template-columns:44px 44px minmax(0,1fr) 44px}
+    .mmb-tools .sp{display:none}
+    .mmb-seg{grid-row:1;grid-column:1/-1;justify-self:start;max-width:100%;flex-wrap:wrap}
+    .mmb-seg button{min-width:44px;min-height:44px;white-space:normal}
+    .mmb-tools .mmb-tbtn,.mmb-tools .mmb-send{width:44px;min-width:44px;height:44px;min-height:44px;grid-row:2}
+    .mmb-tools [data-act="attach"]{grid-column:1}
+    .mmb-tools [data-act="voice"]{grid-column:2}
+    .mmb-tools .mmb-send{grid-column:4}
+    .mmb-tools .mmb-q{grid-row:2;grid-column:3;min-width:0;white-space:normal;overflow-wrap:anywhere;flex-wrap:wrap}
     .mmb-comp{padding-bottom:calc(14px + env(safe-area-inset-bottom))}}
   /* follow-up suggestion chips (rendered under the latest reply) */
   .mmb-sugg{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:8px}
@@ -901,13 +873,17 @@
   .mmb-sug:hover{border-color:color-mix(in srgb,var(--mmb-info) 40%,transparent);background:color-mix(in srgb,var(--mmb-info) 8%,transparent);color:var(--mmb-text);transform:translateX(2px)}
   .mmb-sug:active{transform:translateX(2px) scale(.99)}
   .mmb-sug .g{color:var(--mmb-muted);margin-right:6px}
-  /* "explain this panel" hover affordance on dashboard island cards */
-  .mmb-exp{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;cursor:pointer;padding:0;
-    background:var(--mmb-exp-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-    border:1px solid var(--mmb-line);box-shadow:var(--mmb-exp-shadow);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s,border-color .15s,box-shadow .15s;z-index:5}
-  .mmb-exp svg{width:12px;height:12px;fill:var(--mmb-exp-fg);opacity:.9}
-  .sx:hover .mmb-exp{opacity:1;pointer-events:auto}
-  .mmb-exp:hover{border-color:color-mix(in srgb,var(--mmb-info) 45%,transparent);box-shadow:0 0 12px -4px var(--mmb-info)}
+  /* "explain this panel" affordance on dashboard island cards */
+  .mmb-exp{position:absolute;top:6px;right:6px;width:40px;height:40px;border-radius:var(--r-pill,999px);cursor:pointer;padding:0;
+    background:var(--mmb-exp-bg,var(--panel));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);touch-action:manipulation;
+    border:1px solid var(--mmb-line,var(--line));box-shadow:var(--mmb-exp-shadow,none);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s,border-color .15s,box-shadow .15s;z-index:5}
+  html[data-theme="light"] .mmb-exp{background:var(--mmb-exp-bg,var(--panel));box-shadow:var(--mmb-exp-shadow,0 4px 12px -4px color-mix(in srgb,var(--text) 20%,transparent))}
+  .mmb-exp svg{width:12px;height:12px;fill:var(--mmb-exp-fg,var(--link));opacity:.9}
+  .sx:hover .mmb-exp,.sx:focus-within .mmb-exp,.mmb-exp:focus-visible{opacity:1;pointer-events:auto}
+  .mmb-exp:hover{border-color:color-mix(in srgb,var(--mmb-info,var(--link)) 45%,transparent);box-shadow:0 0 12px -4px var(--mmb-info,var(--link))}
+  .mmb-exp:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info,var(--link)) 70%,transparent);outline-offset:2px}
+  @media (hover:none),(pointer:coarse){.mmb-exp{opacity:1;pointer-events:auto}}
+  @media(prefers-reduced-motion:reduce){.mmb-exp{transition:none}}
   `;
 
   /* ── glyphs ── */
@@ -918,19 +894,8 @@
   var CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4 4 10-10"/></svg>';
   function ic(p) { return '<svg viewBox="0 0 24 24">' + p + '</svg>'; }
 
-  /* ── depth marks ─────────────────────────────────────────────────────────────
-     Fast, Pro and Deep Research are not three prices — they are three depths on ONE
-     axis: how far down the desk goes for a single question. So they are drawn as a
-     family rather than picked out of the emoji table (⚡ / ◈, which read as two
-     unrelated stickers and rendered as somebody else's typeface on every OS):
-
-       Fast      one strike — a single pass over the tape
-       Pro       a cut stone — the same question turned to several faces
-       Research  a descent — through the surface line and down two levels below it
-
-     Fast/Pro are solid: at 12px a 1.8-stroke mark silts up, and these two are identity
-     badges rather than affordances. Research keeps the outline language because it sits
-     in the header among the outline icons. */
+  /* Fast and Pro share the depth-control glyph family. Research keeps its
+     own glyph in the answer activity ledger, not a banner in the composer. */
   var MARK_FAST = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.9 2 5 13.6h4.9L8.6 22l8.8-11.9h-4.9z"/></svg>';
   var MARK_PRO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.3 20.5 9 12 21.7 3.5 9z"/>' +
     '<path class="fc" d="M3.5 9h17M12 2.3 9.1 9 12 21.7 14.9 9z"/></svg>';
@@ -1103,26 +1068,11 @@
             '<textarea class="mmb-ta" id="mmb-ta" rows="1" maxlength="2000" data-ph-en="Ask about any dashboard, signal, or ticker…" data-ph-zh="询问任意看板、信号或标的…" placeholder="' + L('Ask about any dashboard, signal, or ticker…', '询问任意看板、信号或标的…') + '"></textarea>' +
             '<input type="file" id="mmb-file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>' +
             '<div class="mmb-tools">' +
-              /* ── one control, one axis ────────────────────────────────────────────
-                 Fast, Pro and Deep Research are three stops on the same question —
-                 how deep should the desk go — so they are one control, not a segmented
-                 pair plus a pill parked in the header. Two things got better by moving
-                 it: the three depth marks now read as the family they are, and the
-                 header stopped truncating its own title ("Mastermin…") to make room. */
+              /* One control, one axis: Fast and Pro choose answer depth. */
               '<div class="mmb-seg" id="mmb-lane" role="group" aria-label="' + L('Answer depth', '回答深度') + '">' +
                 '<button data-lane="fast" class="on" aria-pressed="true">' + MARK_FAST + LB('Fast', '快速') + '</button>' +
                 '<button data-lane="pro" aria-pressed="false">' + MARK_PRO + '<span>Pro</span></button>' +
-                '<button class="mmb-rpill mmb-off" data-act="research" aria-pressed="false" aria-label="' + L('Deep Research', '深度研究') + '">' +
-                  ic(MARK_RESEARCH) + LB('Deep', '深度') +
-                  /* Tier-2 home for the mechanics (DESIGN_DOCTRINE §1): what the toggle
-                     actually changes, in plain words, with its price stated rather than
-                     discovered. aria-hidden + the aria-label above keep the accessible
-                     name at "Deep Research" instead of a paragraph. */
-                  '<span class="mmb-rtip" aria-hidden="true"><b>' + LB('A deeper pass on the same desk', '同一批资料，再深挖一遍') + '</b>' +
-                  LB('It can look up around twice as many sources, then writes a structured read that ends on a clear stance.',
-                     '可查阅约两倍的资料，并写成结构化研判，最后给出明确立场。') +
-                  '<span class="cost">' + LB('Runs on Pro · uses one Pro message', '走 Pro 通道 · 消耗一条 Pro 消息') + '</span></span>' +
-                '</button></div>' +
+              '</div>' +
               /* aria-hidden: the send button's own label already says it — one announcement, not two */
               '<span class="mmb-hint" id="mmb-hint" aria-hidden="true">' + LB(SEND_KEYS + ' to send', SEND_KEYS + ' 发送') + '</span>' +
               '<div class="sp"></div>' +
@@ -1141,7 +1091,7 @@
   var scrim = $('#mmb-scrim'), panel = $('#mmb-panel'), scroll = $('#mmb-scroll'),
       ta = $('#mmb-ta'), sendBtn = $('#mmb-send'), qEl = $('#mmb-q'), ctxEl = $('#mmb-ctx'),
       upgradeEl = $('#mmb-upgrade'), tlist = $('#mmb-tlist'), launch = $('#mmb-launch'),
-      researchBtn = $('.mmb-rpill'), thumbsEl = $('#mmb-thumbs'), fileEl = $('#mmb-file'),
+      thumbsEl = $('#mmb-thumbs'), fileEl = $('#mmb-file'),
       searchWrap = $('#mmb-search'), searchIn = $('#mmb-search-in'), boxEl = $('.mmb-box'),
       ctxInspEl = $('#mmb-ctxinsp'), ctxInspBody = $('#mmb-ctxinsp-body'), ctxInspRev = $('#mmb-ctxinsp-rev');
 
@@ -1999,19 +1949,20 @@
      operator has enabled free guest access, or 401 when it is off. A 'guest' tier flips the
      widget into guest mode (chat UI, not the sign-in gate); a 401 leaves the gate up. */
   function loadQuotas() {
+    var epoch = historyEpoch;
     withAuth().then(function (h) { return fetch(API + '/api/brain/me', { headers: h, credentials: 'include' }); })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
+        if (epoch !== historyEpoch) return;
         if (!d) { if (!authed) enterGuest(false); return; }
         quotas = d.quotas || {};
         /* Signed-out + tier 'guest' → guest mode ON; signed-out + anything else → gate. */
         if (!authed) enterGuest(d.tier === 'guest');
         /* limit < 0 = unlimited (operator allowlist) → Pro eligible; limit 0 = lane locked. */
         proEligible = !!(quotas.pro && quotas.pro.limit !== 0);
-        researchBtn.classList.toggle('mmb-off', !proEligible);
         restorePrefs();   /* re-apply the remembered lane (or clear it if Pro just lapsed) */
         renderQuota();
-      }).catch(function () { if (!authed) enterGuest(false); });
+      }).catch(function () { if (epoch === historyEpoch && !authed) enterGuest(false); });
   }
   function renderQuota() {
     var q = quotas[researchMode ? 'pro' : lane];
@@ -2028,12 +1979,26 @@
   }
 
   /* ── threads ── */
+  var allThreads = [], historyListUnavailable = false, historyOwner = null;
+  var historyEpoch = 0, historyListGeneration = 0, historyOpenGeneration = 0, principalKnown = false;
   function loadThreads() {
+    var generation = ++historyListGeneration, epoch = historyEpoch;
     withAuth().then(function (h) { return fetch(API + '/api/brain/threads', { headers: h, credentials: 'include' }); })
-      .then(function (r) { return r.ok ? r.json() : { threads: [] }; })
-      .then(function (d) { renderThreads((d && d.threads) || []); }).catch(function () {});
+      .then(function (r) { if (!r.ok) { var error = new Error('history unavailable'); error.status = r.status; throw error; } return r.json(); })
+      .then(function (d) {
+        if (generation !== historyListGeneration || epoch !== historyEpoch) return;
+        if (!d || !Array.isArray(d.threads) || !d.threads.every(function (t) {
+          return t && typeof t.id === 'string' && t.id.length > 0 &&
+            typeof t.title === 'string' && typeof t.lane === 'string' &&
+            (t.updated_at == null || typeof t.updated_at === 'string');
+        })) throw new Error('invalid history');
+        historyListUnavailable = false; renderThreads(d.threads);
+      }).catch(function (error) {
+        if (generation !== historyListGeneration || epoch !== historyEpoch) return;
+        if (error && (error.status === 401 || error.status === 403)) allThreads = [];
+        historyListUnavailable = true; paintThreads();
+      });
   }
-  var allThreads = [];
   var PENCIL = '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>';
   var TRASH = '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/>';
   function buildThreadItem(t) {
@@ -2112,12 +2077,16 @@
   }
   function findThread(id) { for (var i = 0; i < allThreads.length; i++) if (allThreads[i].id === id) return allThreads[i]; return null; }
   function paintThreads() {
-    if (guestMode) { paintGuestThreads(); return; }   /* guests see the sign-in prompt, not the (empty) list */
-    if (!allThreads.length) { tlist.innerHTML = '<div class="mmb-th-empty">' + L('Your conversations appear here.', '你的对话会显示在这里。') + '</div>'; return; }
+    if (guestMode) { paintGuestThreads(); return; }
+    var notice = historyListUnavailable ? '<div class="mmb-th-empty" role="status">' +
+      L('Research history is temporarily unavailable. Retry to load saved conversations.', '研究历史暂时不可用，请重试以加载已保存的对话。') +
+      (allThreads.length ? ' ' + L('Showing previously loaded conversations.', '以下显示此前加载的对话。') : '') +
+      '<button type="button" class="mmb-retry" data-act="history-retry" style="display:block;min-width:44px;min-height:44px;margin-top:6px">' + L('Retry', '重试') + '</button></div>' : '';
+    if (!allThreads.length) { tlist.innerHTML = notice || '<div class="mmb-th-empty">' + L('Your conversations appear here.', '你的对话会显示在这里。') + '</div>'; return; }
     var q = ((searchIn && searchIn.value) || '').trim().toLowerCase();
     var items = q ? allThreads.filter(function (t) { return (t.title || '').toLowerCase().indexOf(q) !== -1; }) : allThreads;
-    if (!items.length) { tlist.innerHTML = '<div class="mmb-th-empty">' + L('No chats match your search.', '没有匹配的对话。') + '</div>'; return; }
-    tlist.innerHTML = '';
+    if (!items.length) { tlist.innerHTML = notice + '<div class="mmb-th-empty">' + L('No chats match your search.', '没有匹配的对话。') + '</div>'; return; }
+    tlist.innerHTML = notice;
     items.forEach(function (t) { tlist.appendChild(buildThreadItem(t)); });
   }
   function renderThreads(threads) { allThreads = threads || []; paintThreads(); }
@@ -2131,24 +2100,34 @@
   /* openThread(id, done): `done` fires once the messages are painted — the resume path
      needs it so it can attach a still-running turn to the thread it belongs to. */
   function openThread(id, done) {
-    abortStream();   /* switching threads mid-stream must tear the old stream down first */
-    threadId = id;
-    root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.toggle('on', el.dataset.id === id); });
-    withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + id, { headers: h, credentials: 'include' }); })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    stopVoice();
+    var generation = ++historyOpenGeneration, epoch = historyEpoch;
+    abortStream();
+    withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + encodeURIComponent(id), { headers: h, credentials: 'include' }); })
+      .then(function (r) { if (!r.ok) throw new Error('history unavailable'); return r.json(); })
       .then(function (d) {
-        if (!d) return;
+        if (generation !== historyOpenGeneration || epoch !== historyEpoch) return;
+        if (!d || !d.thread || d.thread.id !== id || !Array.isArray(d.messages) ||
+            !d.messages.every(function (m) { return m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'; })) throw new Error('invalid history');
+        threadId = id;
+        root.querySelectorAll('.mmb-ti').forEach(function (node) { node.classList.toggle('on', node.dataset.id === id); });
         clearMsgs(); scroll.textContent = '';
         var lastDay = '';
-        (d.messages || []).forEach(function (m) {
+        d.messages.forEach(function (m) {
           var ms = 0; try { ms = m.created_at ? new Date(m.created_at).getTime() : 0; } catch (e) {}
           if (ms) { var dk = new Date(ms).toDateString(); if (dk !== lastDay) { addDaySep(ms); lastDay = dk; } }
           appendMsg(m.role, m.content, ms || undefined);
         });
         markLastAssistant(); pinned = true; scroll.scrollTop = scroll.scrollHeight;
         ta.value = ''; autosize(); syncSend(); updateCounter(); restoreDraft();
-        if (done) { try { done(d.messages || []); } catch (e) {} }
-      }).catch(function () {});
+        if (done) { try { done(d.messages); } catch (e) {} }
+      }).catch(function () {
+        if (generation !== historyOpenGeneration || epoch !== historyEpoch) return;
+        var old = scroll.querySelector('.mmb-history-error'); if (old) old.remove();
+        var error = el('div', 'mmb-history-error mmb-th-empty'); error.setAttribute('role', 'status');
+        error.textContent = L('This conversation could not be loaded. The previously displayed messages are still shown.', '此对话暂时无法加载，仍显示此前的消息。');
+        scroll.appendChild(error);
+      });
   }
 
   /* ── messages ── */
@@ -2280,7 +2259,9 @@
     root.querySelectorAll('[data-ph-en]').forEach(function (el) { el.placeholder = zh() ? el.getAttribute('data-ph-zh') : el.getAttribute('data-ph-en'); });
     paintPlaceholder();   /* an armed research pass keeps its own prompt through the switch */
     if (launch) launch.setAttribute('aria-label', zh() ? '问操盘大脑' : 'Ask Mastermind');  /* orb-only on phones: keep its accessible name in sync */
-    researchBtn.setAttribute('aria-label', L('Deep Research', '深度研究'));   /* label shortens to the mark on phones */
+    /* The research row needs no re-stamp here: its sentence is a dual-language LB()
+       span, so the sweep above already repainted both the visible label and — with no
+       aria-label overriding it — the accessible name. */
     if ($('#mmb-emptystate')) renderEmpty();
     paintThreads();   /* self-routes to the guest sign-in prompt when in guest mode */
     renderQuota();     /* refresh the meter's title in the new language sense */
@@ -2309,13 +2290,11 @@
     /* lang travels with every turn: the server pins the reply AND the follow-up chips to
        it, so a Chinese thread history can never drag an English turn's buttons into
        Chinese. A message typed in the other language still wins (server-side). */
-    var ctx = { page: (ANCHOR === 'top' ? 'terminal' : 'dashboard'), lang: (zh() ? 'zh' : 'en') }; if (ctxSymbol) ctx.symbol = ctxSymbol;
-    /* W1-C: the compiled envelope's client block rides alongside the legacy fields
-       above (never replacing them — the deep lane still reads context.symbol/page/
-       panel exactly as before). Built while `explainPanel` still holds its value. */
-    ctx.ai_context = buildAiContext();
-    /* an "explain this panel" request carries the panel key once, then clears */
-    if (explainPanel) { ctx.panel = explainPanel; explainPanel = null; }
+    /* Build the legacy page/panel hint and the typed context receipt from the
+       same host snapshot. An "explain this panel" request still clears its
+       one-turn panel after the shared context has captured it. */
+    var ctx = buildTurnContext();
+    if (explainPanel) explainPanel = null;
     var sourceSpan = captureCompanySourceSpan();
     var payload = { text: text, imgs: imgs, lane: researchMode ? 'pro' : lane, mode: researchMode ? 'research' : 'chat', ctx: ctx, sourceSpan: sourceSpan };
     priorTurn = lastTurn;   /* retracting this turn must not leave Regenerate replaying it */
@@ -2332,7 +2311,7 @@
     if (streaming || !lastTurn) return;
     refreshCtx();
     runStream({ text: lastTurn.text, imgs: (lastTurn.imgs || []).slice(), lane: lastTurn.lane, mode: lastTurn.mode, sourceSpan: lastTurn.sourceSpan || null,
-                ctx: (function () { var c = { page: (ANCHOR === 'top' ? 'terminal' : 'dashboard'), lang: (zh() ? 'zh' : 'en') }; if (ctxSymbol) c.symbol = ctxSymbol; c.ai_context = buildAiContext(); return c; })() }, false);
+                ctx: buildTurnContext() }, false);
   }
   /* ── durable turns ───────────────────────────────────────────────────────────
      A turn is owned by the SERVER (app/brain_runs.py), not by the socket that
@@ -2350,7 +2329,8 @@
        1. re-attach to the run buffer (exact replay, works for guests too);
        2. re-read the thread tail (survives an API restart / a run past its TTL);
        3. only then the "didn't make it through" card, with Retry. */
-  var RUN_KEY = 'mm.brain.run';
+  var RUN_KEY = 'mm.brain.run.v2:';
+  function runKey() { return principalKnown ? RUN_KEY + (historyOwner ? 'user:' + encodeURIComponent(historyOwner) : 'guest') : null; }
   var RUN_MAX_AGE_MS = 25 * 60 * 1000;   /* under the server's 30-min run TTL */
   var RESUME_TRIES = 6;
   var PARK_FALLBACK_MS = 20000;          /* re-check even if visibilitychange never fires */
@@ -2368,16 +2348,17 @@
     /* A finished/stopped turn must never re-arm itself: the cursor bump that follows
        the `done` event would otherwise rewrite the record clearRun() just deleted, and
        the next page load would try to resume a turn that is already on screen. */
-    if (!T.runId || T.doneSeen || T.stopped || !runStore) return;
+    var key = runKey();
+    if (!key || T.epoch !== historyEpoch || !T.runId || T.doneSeen || T.stopped || !runStore) return;
     try {
-      runStore.setItem(RUN_KEY, JSON.stringify({
+      runStore.setItem(key, JSON.stringify({
         id: T.runId, cursor: T.cursor, thread: T.threadId || threadId || null,
         q: (T.payload && T.payload.text) || '', ts: Date.now()
       }));
     } catch (e) {}
   }
-  function loadRun() { try { return JSON.parse((runStore && runStore.getItem(RUN_KEY)) || 'null'); } catch (e) { return null; } }
-  function clearRun() { try { if (runStore) runStore.removeItem(RUN_KEY); } catch (e) {} }
+  function loadRun() { var key = runKey(); try { return JSON.parse((key && runStore && runStore.getItem(key)) || 'null'); } catch (e) { return null; } }
+  function clearRun() { var key = runKey(); try { if (key && runStore) runStore.removeItem(key); } catch (e) {} }
 
   /* Per-turn UI + parse state. Shared by the opening POST and by every later
      re-attachment, so a resumed stream paints into the same bubble it started in. */
@@ -2552,7 +2533,7 @@
     /* `ub` is the user row THIS turn drew (null for a replay — regenerate/retry/resume
        paint no question of their own), so a retract can take back exactly what it put on
        screen and never a row that belongs to an earlier exchange. */
-    return { payload: payload, typing: typing, bub: null, ub: null, stream: null, tl: null,
+    return { epoch: historyEpoch, payload: payload, typing: typing, bub: null, ub: null, stream: null, tl: null,
              suggestions: null, sawDelta: false, doneSeen: false, stopped: false, retracted: false,
              runId: null, threadId: null, cursor: 0, tries: 0, parks: 0 };
   }
@@ -2568,7 +2549,7 @@
     /* A retract hands the prompt straight back to a focused composer, so "Stop, edit,
        send again" happens in a keystroke — and the aborted fetch's rejection lands AFTER
        that. Never let a straggler from a finished turn free the composer of the live one. */
-    if (T && activeStream && activeStream !== T) return;
+    if (T && (T.epoch !== historyEpoch || (activeStream && activeStream !== T))) return;
     streaming = false; streamAbort = null;
     if (activeStream === T) activeStream = null;
     setBusy(false); syncSend();
@@ -2576,6 +2557,7 @@
 
   /* Parse one SSE event. Returns false for the `run` envelope (cursor must not move). */
   function handleEvent(j, T) {
+    if (T.stopped || T.epoch !== historyEpoch) return false;
     if (j.type === 'run') { T.runId = j.run_id; if (j.thread_id) T.threadId = j.thread_id; saveRun(T); return false; }
     T.tries = 0;   /* bytes are flowing again — reset the reconnect backoff */
     if (j.type === 'meta') { if (j.thread_id) { threadId = j.thread_id; T.threadId = j.thread_id; } if (j.quota) { quotas[j.quota.lane] = j.quota; renderQuota(); } }
@@ -2650,6 +2632,7 @@
     var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
     function pump() {
       return reader.read().then(function (r) {
+        if (T.stopped || T.epoch !== historyEpoch) { try { reader.cancel(); } catch (e) {} return; }
         if (r.done) { finish(T); return; }
         buf += dec.decode(r.value, { stream: true }); var lines = buf.split('\n'); buf = lines.pop() || '';
         lines.forEach(function (ln) {
@@ -2666,6 +2649,7 @@
     return pump();
   }
   function finish(T) {
+    if (T.epoch !== historyEpoch) return;
     if (T.doneSeen || T.stopped) { endTurn(T); loadThreads(); announceDone(); return; }
     /* The stream ended without a `done`: the CONNECTION died, not the turn. */
     recover(T);
@@ -2674,6 +2658,7 @@
      is still being worked on, which is the truth. */
   var parked = null;   /* a turn waiting for the tab to come back to the foreground */
   function recover(T) {
+    if (T.epoch !== historyEpoch) return;
     if (T.doneSeen || T.stopped) { endTurn(T); return; }
     if (!T.runId) { failTurn(T, ''); return; }            /* dropped before we had an id */
     /* A hidden tab is throttled and frequently offline. Retrying into that burns the
@@ -2708,11 +2693,13 @@
     endTurn(T);
   }
   function attachRun(T) {
+    if (T.stopped || T.epoch !== historyEpoch) return;
     var url = API + '/api/brain/runs/' + encodeURIComponent(T.runId) + '/stream?cursor=' + (T.cursor || 0);
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
     streaming = true; setBusy(true); activeStream = T;
     withAuth().then(function (h) { return fetch(url, { headers: h, credentials: 'include', signal: ac ? ac.signal : undefined }); })
       .then(function (res) {
+        if (T.stopped || T.epoch !== historyEpoch) return;
         if (res.status === 404) { threadTail(T); return; }  /* expired, or the API restarted */
         if (!res.ok || !res.body) { recover(T); return; }
         return readSse(res, T);
@@ -2726,10 +2713,12 @@
      so even a run the registry has forgotten (API restart, past its TTL) left the
      answer behind. Paint the thread's tail if it is the reply we were waiting for. */
   function threadTail(T) {
+    if (T.stopped || T.epoch !== historyEpoch) return;
     if (!threadId || guestMode) { failTurn(T, ''); return; }
     withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + encodeURIComponent(threadId), { headers: h, credentials: 'include' }); })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
+        if (T.stopped || T.epoch !== historyEpoch) return;
         var msgs = (d && d.messages) || [];
         var last = msgs.length ? msgs[msgs.length - 1] : null;
         if (!last || last.role !== 'assistant' || !last.content) { failTurn(T, ''); return; }
@@ -2749,6 +2738,7 @@
       .catch(function () { failTurn(T, ''); });
   }
   function failTurn(T, msg) {
+    if (T.stopped || T.epoch !== historyEpoch) return;
     if (T.doneSeen) { endTurn(T); return; }
     T.doneSeen = true; clearRun(); parked = null;
     thinkTeardown(T.tl);
@@ -2766,6 +2756,7 @@
   /* runStream(payload, showUser): runs one SSE turn. showUser=false skips drawing a new
      user bubble (used by regenerate — the user turn is already on screen). */
   function runStream(payload, showUser) {
+    historyOpenGeneration++;  /* a late history read cannot replace a new or retried turn */
     /* only the latest reply carries follow-up chips — clear any stale rows */
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
     var ub = null;
@@ -2793,10 +2784,12 @@
     if (streamAbort) { try { streamAbort.abort(); } catch (e) {} }
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
     withAuth({ 'Content-Type': 'application/json' }).then(function (h) {
+      if (T.stopped || T.epoch !== historyEpoch) return null;
       return fetch(API + '/api/brain/stream', { method: 'POST', headers: h, credentials: 'include', body: body, signal: ac ? ac.signal : undefined });
     }).then(function (res) {
+      if (T.stopped || T.epoch !== historyEpoch || !res) return;
       if (res.status === 401) { T.doneSeen = true; thinkTeardown(T.tl); if (typing.parentNode) typing.remove(); endTurn(T); if (window.MDXAuth && window.MDXAuth.enabled()) window.MDXAuth.open('signin'); else if (CFG.onAuthRequired) { try { CFG.onAuthRequired(); } catch (e) {} } return; }
-      if (res.status === 402) { T.doneSeen = true; thinkTeardown(T.tl); if (typing.parentNode) typing.remove(); endTurn(T); return res.json().then(showUpgrade).catch(function () { showUpgrade({}); }); }
+      if (res.status === 402) { T.doneSeen = true; thinkTeardown(T.tl); if (typing.parentNode) typing.remove(); endTurn(T); return res.json().then(function (d) { if (T.epoch === historyEpoch) showUpgrade(d); }).catch(function () { if (T.epoch === historyEpoch) showUpgrade({}); }); }
       if (!res.ok || !res.body) { failTurn(T, ''); return; }
       return readSse(res, T);
     }).catch(function (err) {
@@ -2895,12 +2888,13 @@
                              fetch lands; without this the turn attaches twice */
   function resumeStoredRun() {
     if (streaming || resuming || !panel.classList.contains('open')) return;
-    var st = loadRun(); if (!st || !st.id) return;
+    var epoch = historyEpoch, st = loadRun(); if (!st || !st.id) return;
     if (!st.ts || (Date.now() - st.ts) > RUN_MAX_AGE_MS) { clearRun(); return; }
     resuming = true;
     withAuth().then(function (h) { return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (s) {
+        if (epoch !== historyEpoch) return;
         if (!s) { clearRun(); return; }        /* gone — the thread store is the record now */
         if (s.cancelled) { clearRun(); return; }
         if (s.thread_id) {
@@ -2912,6 +2906,7 @@
                assistant turn at the tail means the answer already landed and painting
                the replay too would double it. */
             openThread(s.thread_id, function (msgs) {
+              if (epoch !== historyEpoch) return;
               var tail = (msgs && msgs.length) ? msgs[msgs.length - 1] : null;
               if (tail && tail.role === 'assistant') { clearRun(); return; }
               attachFresh(s, 0, st.q);
@@ -2927,7 +2922,7 @@
         attachFresh(s, 0, st.q);
       })
       .catch(function () {})
-      .then(function () { resuming = false; });
+      .then(function () { if (epoch === historyEpoch) resuming = false; });
   }
   /* Build a fresh turn around an existing server run and attach to it. `question` is
      carried so a Retry on the error card can still replay the real turn. */
@@ -3032,22 +3027,20 @@
     }
   }
 
-  /* ── lane + Deep Research ────────────────────────────────────────────────────
-     One state machine, because the two controls describe the SAME choice: Deep
-     Research runs on Pro (the gateway forces lane='pro' for mode='research'), so
-     "Fast" and a lit Deep Research pill can never both be true. Picking Pro is a
-     deliberate act — it costs Pro quota — so it is remembered rather than reset to
-     Fast on the next page load. */
+  /* ── lane + research mode ────────────────────────────────────────────────────
+     One state machine, because the two controls describe the SAME choice: research
+     mode runs on Pro (the gateway forces lane='pro' for mode='research'), so "Fast"
+     and a lit research row can never both be true. Picking Pro is a deliberate act —
+     it costs Pro quota — so it is remembered rather than reset to Fast on the next
+     page load. */
   function paintLane() {
-    /* [data-lane] only — the third stop is Deep Research, and a blanket sweep over
-       #mmb-lane button would strip the class paintResearch() had just put on it. */
+    /* Keep the depth paint scoped to its two data-lane controls. */
     root.querySelectorAll('#mmb-lane button[data-lane]').forEach(function (b) {
       var on = b.dataset.lane === lane;
       b.classList.toggle('on', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
-  function paintResearch() { researchBtn.classList.toggle('on', researchMode); researchBtn.setAttribute('aria-pressed', researchMode ? 'true' : 'false'); }
   /* The composer says what the armed mode expects of it. A research pass is a question you
      ask once and come back to — not a one-line follow-up — and the box is the only surface
      that can say so at the moment it matters. Sourced from the data-ph-* pair when off, so
@@ -3060,12 +3053,12 @@
   function setLane(next) {
     lane = next === 'pro' ? 'pro' : 'fast';
     if (lane === 'fast' && researchMode) researchMode = false;   /* mutually exclusive */
-    paintLane(); paintResearch(); paintPlaceholder(); savePrefs(); renderQuota();
+    paintLane(); paintPlaceholder(); savePrefs(); renderQuota();
   }
   function setResearch(on) {
     researchMode = !!on;
     if (researchMode) lane = 'pro';                              /* research IS the Pro lane */
-    paintLane(); paintResearch(); paintPlaceholder(); savePrefs(); renderQuota();
+    paintLane(); paintPlaceholder(); savePrefs(); renderQuota();
   }
 
   /* Lane + Deep Research are USER choices, not per-page defaults. The widget is
@@ -3086,7 +3079,7 @@
   }
   function restorePrefs() {
     if (!proEligible) {
-      if (lane === 'pro' || researchMode) { lane = 'fast'; researchMode = false; paintLane(); paintResearch(); savePrefs(); }
+      if (lane === 'pro' || researchMode) { lane = 'fast'; researchMode = false; paintLane(); savePrefs(); }
       return;
     }
     var p = null; try { p = JSON.parse(localStorage.getItem(PREF_KEY) || 'null'); } catch (e) {}
@@ -3125,6 +3118,9 @@
      into the chat they opened. Take the composer when it is live, the gate's own primary
      action when it is not, and the first thing the panel is actually showing otherwise. */
   function focusPanel() {
+    /* The entry delay must not steal a control the user has already focused,
+       or move focus back into a panel they closed before the callback ran. */
+    if (!panel.classList.contains('open') || panel.contains(DOC.activeElement)) return;
     var cands = [ta, $('.mmb-signin')].concat(
       [].slice.call(panel.querySelectorAll('button:not([disabled]),a[href],textarea,[tabindex="0"]')));
     for (var i = 0; i < cands.length; i++) {
@@ -3153,17 +3149,24 @@
   /* Closing the panel does NOT tear the turn down — the widget is hidden, not gone, and
      the answer keeps painting into it. Re-opening shows the finished reply. */
   function close() {
+    stopVoice();
     if (panel._morph) { try { panel._morph.cancel(); } catch (e) {} }
     /* Read activeElement BEFORE the classes drop: the panel goes visibility:hidden on the
        way out, and the browser blurs whatever was focused inside it the moment it does. */
     var wasInside = root.contains(DOC.activeElement);
     scrim.classList.remove('open', 'max'); panel.classList.remove('open', 'max', 'show-side');
+    var hostReturnedFocus = false;
+    if (wasInside && typeof CFG.onClose === 'function') {
+      try { hostReturnedFocus = CFG.onClose() === true; } catch (e) {}
+    }
     if (launch) {
       launch.classList.remove('mmb-hide'); launch.setAttribute('aria-expanded', 'false');
       /* Hand focus back to the control that opened it — otherwise a keyboard user who
          closes with Esc is stranded on <body> and tabs from the top of the page again.
-         Only when focus was ours to begin with, so a scrim click never steals it. */
-      if (wasInside) { try { launch.focus(); } catch (e) {} }
+         A host-selected research object may own the more exact return; the launcher is
+         still the fallback. Only when focus was ours to begin with, so a scrim click
+         never steals it. */
+      if (wasInside && !hostReturnedFocus && launch) { try { launch.focus(); } catch (e) {} }
     }
   }
   function toggle() { panel.classList.contains('open') ? close() : open(); }
@@ -3205,17 +3208,32 @@
     });
   }
   function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
+  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
-    authed = !!user;
+    var owner = user && (user.id || user.email) || null;
+    if (!principalKnown || owner !== historyOwner) {
+      stopVoice();
+      if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
+      abortStream(); resuming = false;
+      historyOwner = owner; historyEpoch++; historyListGeneration++; historyOpenGeneration++;
+      allThreads = []; historyListUnavailable = false; threadId = null;
+      clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
+      quotas = {}; proEligible = false; renderQuota();
+      lastTurn = null; explainPanel = null; fileEl.value = '';
+      if (searchIn) searchIn.value = '';
+      ctxState.pinned = []; ctxState.lastReceipt = null; ctxState.lastHistoricalReceipt = null;
+      ctxState.lastNativeFactReceipt = null; ctxState.lastAppliedRevision = -1; ctxState.revision++;
+      lastCtxView = null; closeCtxInspector(); ctxInspBody.textContent = ''; ctxInspRev.textContent = ''; refreshCtx();
+    }
+    principalKnown = true; authed = !!user;
     var gate = $('#mmb-gate');
     if (authed) {
       guestMode = false;
       if (gate) gate.remove();
       if (!scroll.querySelector('.mmb-msg') && !$('#mmb-emptystate')) renderEmpty();
-      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); }
+      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); restoreDraft(); resumeStoredRun(); }
       showChat(true);
     } else {
       /* Signed out: default to the gate, then probe /api/brain/me — if guest access is on it
@@ -3271,9 +3289,9 @@
     var a = t.dataset.act;
     if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
-    else if (a === 'research') { if (guestMode) showUpgrade({ feature: 'pro' }); else setResearch(!researchMode); }
     else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
     else if (a === 'search') toggleSearch();
+    else if (a === 'history-retry') { loadThreads(); }
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }
     else if (a === 'voice') startVoice();
     else if (a === 'attach') { if (proEligible) fileEl.click(); else showUpgrade(guestMode ? { feature: 'pro' } : { feature: 'vision' }); }
@@ -3401,11 +3419,12 @@
 
   /* ── vision: attach + downscale images ── */
   function addFiles(files) {
+    var epoch = historyEpoch;
     var arr = [].slice.call(files || []);
     arr.forEach(function (f) {
       if (!/^image\//.test(f.type) || pendingImages.length >= MAX_IMAGES) return;
       downscaleImage(f).then(function (dataUri) {
-        if (!dataUri || pendingImages.length >= MAX_IMAGES) return;
+        if (epoch !== historyEpoch || !dataUri || pendingImages.length >= MAX_IMAGES) return;
         pendingImages.push(dataUri); renderThumbs();
       }).catch(function () {});
     });
@@ -3451,13 +3470,25 @@
   }
 
   /* ── voice (best-effort Web Speech) ── */
+  var activeVoice = null;
+  function stopVoice() {
+    var r = activeVoice; activeVoice = null;
+    /* Fence callbacks before abort: a provider can deliver a final result synchronously. */
+    if (r) { try { r.abort(); } catch (e) {} }
+  }
   function voiceSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
   function startVoice() {
+    stopVoice();
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return;
-    var r = new SR(); r.lang = zh() ? 'zh-CN' : 'en-US'; r.interimResults = false;
-    r.onresult = function (ev) { ta.value = (ta.value + ' ' + ev.results[0][0].transcript).trim(); autosize(); syncSend(); updateCounter(); };
-    try { r.start(); } catch (e) {}
+    var epoch = historyEpoch, r;
+    try { r = new SR(); } catch (e) { return; }
+    activeVoice = r; r.lang = zh() ? 'zh-CN' : 'en-US'; r.interimResults = false;
+    r.onresult = function (ev) { if (activeVoice !== r || epoch !== historyEpoch) return; ta.value = (ta.value + ' ' + ev.results[0][0].transcript).trim(); autosize(); syncSend(); updateCounter(); };
+    r.onend = function () { if (activeVoice === r) activeVoice = null; };
+    r.onerror = function () { if (activeVoice === r) stopVoice(); };
+    try { r.start(); } catch (e) { stopVoice(); }
   }
+  window.addEventListener('pagehide', stopVoice);
   /* Hide the mic entirely where Web Speech is unsupported (rather than a dead button). */
   (function () { if (!voiceSupported()) { var vb = root.querySelector('[data-act="voice"]'); if (vb) vb.style.display = 'none'; } })();
 
@@ -3470,17 +3501,25 @@
   }
 
   /* ── drafts (persist composer text per thread) ── */
-  function draftKey() { return 'mmb_draft_' + (threadId || 'new'); }
+  function draftKey() { return historyOwner ? 'mmb_draft_v2:' + encodeURIComponent(historyOwner) + ':' + encodeURIComponent(threadId || 'new') : null; }
   var draftTimer = 0;
   function saveDraft() {
     if (draftTimer) clearTimeout(draftTimer);
+    var key = draftKey(), value = ta.value, epoch = historyEpoch;
+    if (!key) return;  /* no migration from unbound legacy/guest drafts */
     draftTimer = setTimeout(function () {
-      try { var v = ta.value; if (v) localStorage.setItem(draftKey(), v); else localStorage.removeItem(draftKey()); } catch (e) {}
+      draftTimer = 0;
+      if (epoch !== historyEpoch) return;
+      try { if (value) localStorage.setItem(key, value); else localStorage.removeItem(key); } catch (e) {}
     }, 400);
   }
-  function clearDraft() { try { localStorage.removeItem(draftKey()); } catch (e) {} }
+  function clearDraft() {
+    if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
+    var key = draftKey(); try { if (key) localStorage.removeItem(key); } catch (e) {}
+  }
   function restoreDraft() {
-    try { var v = localStorage.getItem(draftKey()); if (v && !ta.value) { ta.value = v; autosize(); syncSend(); updateCounter(); } } catch (e) {}
+    var key = draftKey();
+    try { var v = key && localStorage.getItem(key); if (v && !ta.value) { ta.value = v; autosize(); syncSend(); updateCounter(); } } catch (e) {}
   }
 
   /* ── slash palette (typing "/" as the first char) ────────────────────────────
@@ -3572,6 +3611,40 @@
       ambient: { page: (ANCHOR === 'top' ? 'terminal' : 'dashboard'), panel: explainPanel || null }
     };
   }
+
+  /* Build the legacy page/panel fields and the typed client block from one
+     host snapshot. This keeps the existing answer lane and the visible context
+     receipt on the same selected object instead of letting a host integration
+     decorate the receipt while the model still sees only "dashboard". */
+  function buildTurnContext() {
+    var aiContext = buildAiContext();
+    var ambient = aiContext && aiContext.ambient && typeof aiContext.ambient === 'object'
+      ? aiContext.ambient : null;
+    var page = ambient && ambient.page;
+    if (!page) page = CFG.page || (ANCHOR === 'top' ? 'terminal' : 'dashboard');
+    var panelName = explainPanel || (ambient && ambient.panel) || null;
+    var ctx = { page: page, lang: (zh() ? 'zh' : 'en'), ai_context: aiContext };
+    if (ctxSymbol) ctx.symbol = ctxSymbol;
+    if (panelName) ctx.panel = panelName;
+    if (page === 'ontology' && typeof CFG.getOntologySelection === 'function') {
+      try {
+        var selection = CFG.getOntologySelection();
+        if (selection) {
+          ctx.ontology_selection = {
+            chain: selection.chain, revision: selection.revision, asof: selection.asof,
+            manifest_hash: selection.manifest_hash, node_id: selection.node_id
+          };
+        }
+      } catch (e) { ctx.ontology_selection = {}; }
+    }
+    /* Preserve ordinary host chart timeframes. Ontology generation identity
+       travels only in its bounded selection reference above. */
+    if (ambient && typeof ambient.timeframe === 'string' && ambient.timeframe.length <= 32) {
+      ctx.timeframe = ambient.timeframe;
+    }
+    return ctx;
+  }
+
   /* Review repair (NB-1): esc() escapes <, >, & (via the textContent -> innerHTML
      round trip) but NOT the double quote, so a value landing inside an
      ATTRIBUTE value (rather than as element text) can still break out of it
@@ -3742,6 +3815,20 @@
     var pair = CTX_STATUS_WORDS[status];
     return pair ? L(pair[0], pair[1]) : L('unavailable', '暂缺');
   }
+  /* Closed W1-A freshness vocabulary (fresh/stale/unknown/not_applicable).
+     Canonical `fresh` is the only state painted as current. Aliases such as
+     current/future are not granted as fresh. Missing/null/malformed/
+     unsupported states collapse to unknown — never to current. */
+  var CTX_FRESHNESS_WORDS = {
+    fresh: ['current', '最新'],
+    stale: ['stale', '较早'],
+    unknown: ['unknown', '未知'],
+    not_applicable: ['not applicable', '不适用']
+  };
+  function ctxFreshnessWord(state) {
+    var pair = (typeof state === 'string') ? Object.prototype.hasOwnProperty.call(CTX_FRESHNESS_WORDS, state) ? CTX_FRESHNESS_WORDS[state] : null : null;
+    return pair ? L(pair[0], pair[1]) : L('unknown', '未知');
+  }
   function ctxFactValue(f) {
     if (!f) return '—';
     if (f.status && f.status !== 'available') return ctxStatusWord(f.status);
@@ -3794,7 +3881,7 @@
       nf.facts.forEach(function (f) {
         var lbl = CTX_FIELD_LABELS[f.field_id]; var label = lbl ? L(lbl[0], lbl[1]) : f.field_id;
         var freshState = f.freshness && f.freshness.state;
-        var freshWord = freshState === 'stale' ? L('stale', '较早') : L('current', '最新');
+        var freshWord = ctxFreshnessWord(freshState);
         /* Review repair (NB-7): source_family only — `owner` is an internal
            label, not the plain-word "source family name" the design spec asks
            for, so it is never shown even as a fallback. */
@@ -3820,7 +3907,7 @@
     send(L('Explain the "' + t + '" panel — what is it showing right now, and what should I do about it?',
            '解释「' + t + '」面板 — 它现在显示什么？我该怎么做？'));
   }
-  /* inject a hover "ask the Brain" orb into each dashboard island card face.
+  /* inject an "ask the Brain" orb into each dashboard island card face.
      No-op on pages without .sx island cards (Terminal, plain pages). */
   function initExplain() {
     var faces = root.ownerDocument ? DOC.querySelectorAll('.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face') : [];
@@ -3830,7 +3917,8 @@
       if (face.querySelector('.mmb-exp')) return; /* one per host */
       var cs = (DOC.defaultView || window).getComputedStyle(face);
       if (cs && cs.position === 'static') face.style.position = 'relative';
-      var btn = DOC.createElement('button'); btn.className = 'mmb-exp'; btn.type = 'button'; btn.title = 'Ask the Brain';
+      var btn = DOC.createElement('button'); btn.className = 'mmb-exp'; btn.type = 'button';
+      btn.title = L('Ask the Brain', '询问 Mastermind AI'); btn.setAttribute('aria-label', btn.title);
       btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg>';
       btn.addEventListener('click', function (e) {
         e.stopPropagation(); e.preventDefault();
@@ -3846,12 +3934,15 @@
   /* ── boot ── */
   function boot() {
     if (window.MDXAuth) { window.MDXAuth.onChange(onAuth); }
+    else if (Object.prototype.hasOwnProperty.call(CFG, 'principal')) onAuth(CFG.principal ? { id: CFG.principal } : null);
     else window.addEventListener('load', function () { if (window.MDXAuth) window.MDXAuth.onChange(onAuth); else { authed = true; showChat(true); } });
   }
   boot();
   initExplain();
 
   window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain,
+    setPrincipal: function (id) { onAuth(typeof id === 'string' && id ? { id: id } : null); },
     expand: function () { var was = panel.classList.contains('open'); if (!was) open(); if (window.innerWidth > 560 && !panel.classList.contains('max')) setTimeout(toggleMax, was ? 0 : 80); },
     mounted: true };
+  window.dispatchEvent(new Event('mm-brain-ready'));
 })();

@@ -150,7 +150,10 @@ T11_SITE_PAGES = (
 # partials this packet never touches.
 _SUITE_REGION = ('<nav class="mq-suitenav"',
                  '<div class="mq-scrim" id="mq-scrim" hidden></div>')
-_HUB_REGION = ('<main class="mq-shell mq-hub"', "</main>")
+# Macro Command P1/P5 superseded the legacy ``mq-shell mq-hub`` container.
+# Bind T11 to the current canonical page owner without weakening the closing
+# boundary or the unconditional byte comparison below.
+_HUB_REGION = ('<main class="mc-shell" id="mc-shell"', "</main>")
 
 ARTIFACT = {
     "path": "macrodata/workspaces/rates_curves/US/latest.json",
@@ -700,6 +703,17 @@ def _t11_collapse_main_prior_label(html: str) -> str:
     )
 
 
+def _assert_same_macro_suite_region(before_html: str, after_html: str, name: str) -> None:
+    before = _region(before_html, name)
+    after = _region(after_html, name)
+    assert before is not None and after is not None, f"{name}: no macro-suite region"
+    assert _t11_collapse_main_prior_label(before) == _t11_collapse_main_prior_label(after), (
+        f"{name}: the macro-suite region is NOT byte-identical to the committed "
+        "page. That is a regression introduced by this packet's shared-surface "
+        "edits, not main-side drift."
+    )
+
+
 def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     """Region-level byte identity of the macro-suite region (the slice
     enclosing <main>) on all fourteen T11 targets, unconditionally.
@@ -749,13 +763,10 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
         if committed_path.read_bytes() == rendered_path.read_bytes():
             identical.append(name)
             continue
-        before = _region(committed_path.read_text(encoding="utf-8"), name)
-        after = _region(rendered_path.read_text(encoding="utf-8"), name)
-        assert before is not None and after is not None, f"{name}: no macro-suite region"
-        assert _t11_collapse_main_prior_label(before) == _t11_collapse_main_prior_label(after), (
-            f"{name}: the macro-suite region is NOT byte-identical to the committed "
-            "page. That is a regression introduced by this packet's shared-surface "
-            "edits, not main-side drift."
+        _assert_same_macro_suite_region(
+            committed_path.read_text(encoding="utf-8"),
+            rendered_path.read_text(encoding="utf-8"),
+            name,
         )
         drifted.append(name)
     print(f"T11 identical: {identical}")
@@ -763,6 +774,25 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     print(f"T11: 14 targets — {len(identical)} whole-page identical, "
           f"{len(drifted)} region-identical with whole-page drift.")
     assert len(identical) + len(drifted) == 14
+
+
+def test_11_current_macro_command_region_is_recognized_and_mutation_fails() -> None:
+    """The current hub owner is admitted, but a real body mutation still reds T11."""
+    name = "macro_monetary.html"
+    committed = (ROOT / "site" / name).read_text(encoding="utf-8")
+    region = _region(committed, name)
+    assert region is not None
+    assert region.startswith(_HUB_REGION[0])
+
+    marker = '<h1 class="mc-title">'
+    assert marker in committed
+    mutated = committed.replace(
+        marker,
+        '<h1 class="mc-title" data-ci-mutation="true">',
+        1,
+    )
+    with pytest.raises(AssertionError, match="NOT byte-identical"):
+        _assert_same_macro_suite_region(committed, mutated, name)
 
 
 def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> None:
@@ -1537,14 +1567,19 @@ def test_axis_method_and_metric_none_fields_render_em_dash_not_token() -> None:
     _assert_no_standalone_none_in_page(html)
 
 
-_NO_PRIOR_VECTOR_EN = (
+_NO_PRIOR_VECTOR_JARGON_EN = (
     "No vector is drawn: there is no method-comparable prior print to move from."
 )
-_NO_PRIOR_VECTOR_ZH = "不绘制向量：不存在方法可比的历史读数作为起点。"
-_INCOMPLETE_VECTOR_EN = (
+_NO_PRIOR_VECTOR_JARGON_ZH = "不绘制向量：不存在方法可比的历史读数作为起点。"
+_INCOMPLETE_VECTOR_JARGON_EN = (
     "The vector is not drawn: one of its two components is missing this cycle."
 )
-_INCOMPLETE_VECTOR_ZH = "不绘制向量：本周期缺少其中一个分量。"
+_INCOMPLETE_VECTOR_JARGON_ZH = "不绘制向量：本周期缺少其中一个分量。"
+# Autoescape turns the apostrophe in "can't" into &#39;; pin the unique tail.
+_INCOMPLETE_VECTOR_PLAIN_EN = (
+    "one of the two readings this cycle is missing."
+)
+_INCOMPLETE_VECTOR_PLAIN_ZH = "本周期缺少其中一个读数。"
 
 
 def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> None:
@@ -1552,6 +1587,10 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     machine token, must not claim there is no prior print, and must take
     the typed incomplete-vector branch. Defensive: no producer emits a
     half-vector today; this is a synthetic fixture.
+
+    User-openable ``mc-details`` is still user-facing, so the incomplete
+    sentence is the same plain pair as the reading path — not the jargon
+    "vector / components" line.
     """
     snap = _snapshot()
     snap["headline"]["one_month_vector"] = {
@@ -1559,10 +1598,12 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     }
     html = _render_rates_page(snap)
     _assert_no_standalone_none_in_page(html)
-    assert _NO_PRIOR_VECTOR_EN not in html
-    assert _NO_PRIOR_VECTOR_ZH not in html
-    assert _INCOMPLETE_VECTOR_EN in html
-    assert _INCOMPLETE_VECTOR_ZH in html
+    assert _NO_PRIOR_VECTOR_JARGON_EN not in html
+    assert _NO_PRIOR_VECTOR_JARGON_ZH not in html
+    assert _INCOMPLETE_VECTOR_JARGON_EN not in html
+    assert _INCOMPLETE_VECTOR_JARGON_ZH not in html
+    assert _INCOMPLETE_VECTOR_PLAIN_EN in html
+    assert _INCOMPLETE_VECTOR_PLAIN_ZH in html
     vec = _view(snap)["headline"]["vector"]
     assert vec["incomplete"] is True
     assert vec["present"] is False
@@ -1576,8 +1617,9 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     control_vec = _view(control)["headline"]["vector"]
     assert control_vec["incomplete"] is False
     assert control_vec["present"] is True
-    assert _INCOMPLETE_VECTOR_EN not in control_html
-    assert _NO_PRIOR_VECTOR_EN not in control_html
+    assert _INCOMPLETE_VECTOR_PLAIN_EN not in control_html
+    assert _INCOMPLETE_VECTOR_JARGON_EN not in control_html
+    assert _NO_PRIOR_VECTOR_JARGON_EN not in control_html
 
 
 _NONE_TOKEN = re.compile(r"\bNone\b")

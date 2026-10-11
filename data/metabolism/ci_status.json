@@ -1,85 +1,49 @@
 {
-  "ts": "2026-09-15T17:19:59+00:00",
-  "main_sha": "d9a56888ee33f868eda2669b7c6ab75b159be168",
+  "ts": "2026-10-11T06:14:34+00:00",
+  "main_sha": "5773bed337bd808846e6a571a20f8f4ce0b7a920",
   "red_required": [
     {
-      "name": "health",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34999248413/job/104483231026"
-    },
-    {
-      "name": "publish",
+      "name": "sweep",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34999115385/job/104482782802"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38116377841/job/114401964744"
     },
     {
       "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380510"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380497"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38116130668/job/114401266523"
     },
     {
       "name": "free-content-estate",
-      "conclusion": "cancelled",
+      "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380438"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38116130668/job/114401266517"
     },
     {
-      "name": "workflow-yaml",
-      "conclusion": "cancelled",
+      "name": "contract-drift",
+      "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380345"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38116130668/job/114401266510"
     },
     {
-      "name": "font-ui-defined",
-      "conclusion": "cancelled",
+      "name": "template-site-sync",
+      "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380308"
-    },
-    {
-      "name": "audit",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34966709580/job/104372888752"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38116130668/job/114401266468"
     },
     {
       "name": "engine-render-guards",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34965184211/job/104367843815"
-    },
-    {
-      "name": "sweep",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34958807854/job/104347196834"
-    },
-    {
-      "name": "engine-render",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34958660110/job/104346719630"
-    },
-    {
-      "name": "render",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34958660062/job/104346719261"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38116130668/job/114401266434"
     }
   ],
   "green": false,
-  "consecutive_failures": 141,
+  "consecutive_failures": 221,
   "sensed_shas": [
-    "d9a56888ee33f868eda2669b7c6ab75b159be168",
-    "06403b0ab3e7e6409325535ab9d41b1908a259fc"
+    "5773bed337bd808846e6a571a20f8f4ce0b7a920",
+    "4e27a718ec91d29d978e1ffd875d42d3754c7e2a"
   ],
   "heartbeat_degraded": false
 }

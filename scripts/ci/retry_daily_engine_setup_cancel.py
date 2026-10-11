@@ -1,9 +1,18 @@
-"""Retry one daily ``engine`` job lost before checkout.
+"""Retry one daily ``engine`` job lost before repository code can execute.
 
 This is deliberately much narrower than a generic workflow retry.  It admits
-only a trusted first-attempt ``daily.yml`` run whose sole cancelled job is the
-``engine`` job and whose sole executed step is GitHub's cancelled ``Set up
-job`` step.  Timeouts, operator-cancelled runs, and deterministic build
+only trusted first-attempt ``daily.yml`` runs matching one of two observed
+self-hosted-runner loss signatures:
+
+* the original setup race: ``engine`` is cancelled in ``Set up job``; or
+* the checkout race: setup succeeds, the harmless timing-start marker succeeds,
+  ``actions/checkout`` is cancelled, and every later workflow step is skipped.
+
+The checkout signature exists because a Mac runner shutdown on 2026-09-15
+arrived 35 seconds into checkout.  GitHub classified that job/run as *failure*,
+not *cancelled*, while unrelated siblings kept running; the setup-only detector
+therefore ignored it and the seasonality watch stayed stale.  Timeouts after
+repository code starts, operator-cancelled runs, and deterministic build
 failures remain untouched.
 """
 
@@ -146,6 +155,86 @@ def _setup_only_cancel(job: Mapping[str, Any]) -> bool:
     return 0 <= elapsed <= MAX_SETUP_CANCEL_SECONDS
 
 
+def _checkout_runner_loss(job: Mapping[str, Any]) -> bool:
+    """True only for the bounded pre-code checkout shutdown signature.
+
+    GitHub records all later workflow steps as ``skipped`` when the runner dies
+    inside checkout, plus a successful synthetic ``Complete job`` step.  The
+    only pre-checkout workflow command daily.yml intentionally runs is the
+    timing start marker.  Keeping that whitelist explicit makes this detector
+    fail closed if somebody later moves real repository work ahead of checkout.
+    """
+    if job.get("status") != "completed" or job.get("conclusion") != "failure":
+        return False
+    labels = job.get("labels")
+    if not isinstance(labels, list) or not {"self-hosted", "macstudio"}.issubset(
+        {label for label in labels if isinstance(label, str)}
+    ):
+        return False
+    steps = job.get("steps")
+    if not isinstance(steps, list) or not steps:
+        return False
+
+    checkout_indexes = [
+        i for i, raw in enumerate(steps)
+        if isinstance(raw, Mapping) and raw.get("name") == "Run actions/checkout@v4"
+    ]
+    if len(checkout_indexes) != 1:
+        return False
+    checkout_i = checkout_indexes[0]
+    checkout = _object(steps[checkout_i], "engine checkout step")
+    if (
+        checkout.get("status") != "completed"
+        or checkout.get("conclusion") != "cancelled"
+    ):
+        return False
+
+    allowed_before = {"Set up job", "timings — job start mark (W2)"}
+    for raw in steps[:checkout_i]:
+        step = _object(raw, "engine pre-checkout step")
+        if step.get("name") not in allowed_before or step.get("conclusion") != "success":
+            return False
+    if not any(
+        isinstance(raw, Mapping)
+        and raw.get("name") == "Set up job"
+        and raw.get("conclusion") == "success"
+        for raw in steps[:checkout_i]
+    ):
+        return False
+
+    for raw in steps[checkout_i + 1 :]:
+        step = _object(raw, "engine post-checkout step")
+        if step.get("name") == "Complete job":
+            if step.get("conclusion") not in {"success", "skipped"}:
+                return False
+            continue
+        if step.get("conclusion") != "skipped":
+            return False
+
+    started = _timestamp(job.get("started_at"), "engine.started_at")
+    completed = _timestamp(job.get("completed_at"), "engine.completed_at")
+    elapsed = (completed - started).total_seconds()
+    return 0 <= elapsed <= MAX_SETUP_CANCEL_SECONDS
+
+
+def _successful_sibling_after(
+    jobs: Sequence[Mapping[str, Any]], engine: Mapping[str, Any]
+) -> bool:
+    engine_completed = _timestamp(engine.get("completed_at"), "engine.completed_at")
+    for sibling in jobs:
+        if sibling is engine or sibling.get("conclusion") != "success":
+            continue
+        completed_at = sibling.get("completed_at")
+        if not isinstance(completed_at, str) or not completed_at:
+            continue
+        try:
+            if _timestamp(completed_at, "sibling.completed_at") > engine_completed:
+                return True
+        except RetryContractError:
+            continue
+    return False
+
+
 def decide_retry(
     run: Mapping[str, Any],
     jobs: Sequence[Mapping[str, Any]],
@@ -158,67 +247,82 @@ def decide_retry(
     if run.get("run_attempt") != 1:
         return RetryDecision(None, "automatic retry is permanently limited to attempt 1")
 
-    cancelled = [job for job in jobs if job.get("conclusion") == "cancelled"]
-    if not cancelled:
-        return RetryDecision(None, "daily run has no cancelled jobs")
-    if len(cancelled) != 1:
-        return RetryDecision(
-            None,
-            "daily run has multiple cancelled jobs; treating it as a wider/operator cancellation",
-        )
-
     engine_jobs = [job for job in jobs if job.get("name") == TARGET_JOB_NAME]
     if not engine_jobs:
         # A daily cancelled during an upstream job (observed: run 32194718597,
         # collect cancelled, two job rows total) never creates the engine job at
-        # all.  Nothing is ambiguous and nothing can be retried, so disclose a
-        # no-op instead of reddening the recovery lane on an ordinary shape.
+        # all. Nothing is ambiguous and nothing can be retried.
         return RetryDecision(None, "daily attempt never created an engine job")
     if len(engine_jobs) != 1:
         raise RetryContractError("daily attempt must contain exactly one engine job")
     engine = engine_jobs[0]
-    if cancelled[0] is not engine:
-        return RetryDecision(None, "the sole cancelled job is not engine")
-    if not _setup_only_cancel(engine):
-        return RetryDecision(
-            None,
-            "engine cancellation progressed beyond the bounded setup-only contract",
-        )
 
-    for required_name in ("collect", "government_revenue_projection / refresh"):
-        required = [job for job in jobs if job.get("name") == required_name]
-        if len(required) != 1:
-            raise RetryContractError(
-                f"daily attempt must contain exactly one {required_name} job"
-            )
-        if required[0].get("conclusion") != "success":
+    # Signature A: the original setup-only cancellation contract. Preserve its
+    # deliberately strict upstream and sole-cancel requirements unchanged.
+    if _setup_only_cancel(engine):
+        cancelled = [job for job in jobs if job.get("conclusion") == "cancelled"]
+        if len(cancelled) != 1:
             return RetryDecision(
-                None, f"required upstream job {required_name} did not succeed"
+                None,
+                "daily run has multiple cancelled jobs; treating it as a wider/operator cancellation",
             )
+        if cancelled[0] is not engine:
+            return RetryDecision(None, "the sole cancelled job is not engine")
 
-    engine_completed = _timestamp(engine.get("completed_at"), "engine.completed_at")
-    continued_after_cancel = False
-    for sibling in jobs:
-        if sibling is engine or sibling.get("conclusion") != "success":
-            continue
-        completed_at = sibling.get("completed_at")
-        if not isinstance(completed_at, str) or not completed_at:
-            continue
-        try:
-            if _timestamp(completed_at, "sibling.completed_at") > engine_completed:
-                continued_after_cancel = True
-                break
-        except RetryContractError:
-            continue
-    if not continued_after_cancel:
+        for required_name in ("collect", "government_revenue_projection / refresh"):
+            required = [job for job in jobs if job.get("name") == required_name]
+            if len(required) != 1:
+                raise RetryContractError(
+                    f"daily attempt must contain exactly one {required_name} job"
+                )
+            if required[0].get("conclusion") != "success":
+                return RetryDecision(
+                    None, f"required upstream job {required_name} did not succeed"
+                )
+
+        if not _successful_sibling_after(jobs, engine):
+            return RetryDecision(
+                None,
+                "no successful sibling proves the daily continued after engine cancellation",
+            )
         return RetryDecision(
-            None,
-            "no successful sibling proves the daily continued after engine cancellation",
+            _positive_int(engine.get("id"), "engine.id"),
+            "engine was cancelled during its sole Set up job step",
         )
+
+    # Signature B: runner shutdown while actions/checkout owned the process.
+    # This path intentionally does NOT require every sibling to be green. The
+    # engine job in daily.yml is gated only by successful `collect`; unrelated
+    # sibling failures/cancellations cannot make repository code have executed.
+    if _checkout_runner_loss(engine):
+        if run.get("conclusion") != "failure":
+            return RetryDecision(
+                None,
+                "checkout cancellation did not end in the bounded runner-loss failure shape",
+            )
+        collect = [job for job in jobs if job.get("name") == "collect"]
+        if len(collect) != 1:
+            raise RetryContractError("daily attempt must contain exactly one collect job")
+        if collect[0].get("conclusion") != "success":
+            return RetryDecision(None, "required upstream job collect did not succeed")
+        if not _successful_sibling_after(jobs, engine):
+            return RetryDecision(
+                None,
+                "no successful sibling proves the daily continued after engine checkout loss",
+            )
+        return RetryDecision(
+            _positive_int(engine.get("id"), "engine.id"),
+            "engine runner was lost during checkout before repository code executed",
+        )
+
+    cancelled = [job for job in jobs if job.get("conclusion") == "cancelled"]
+    if not cancelled:
+        return RetryDecision(None, "daily run has no bounded pre-code engine loss")
     return RetryDecision(
-        _positive_int(engine.get("id"), "engine.id"),
-        "engine was cancelled during its sole Set up job step",
+        None,
+        "engine cancellation progressed beyond the bounded pre-code recovery contract",
     )
+
 
 
 class GitHubApi:
@@ -306,7 +410,7 @@ def _summary(message: str) -> None:
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_path:
         with Path(summary_path).open("a", encoding="utf-8") as handle:
-            handle.write(f"### Daily engine setup retry\n\n{message}\n")
+            handle.write(f"### Daily engine pre-code retry\n\n{message}\n")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -387,5 +491,5 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except (RetryContractError, json.JSONDecodeError, OSError) as exc:
-        print(f"::error title=Daily engine setup retry::{exc}", file=sys.stderr)
+        print(f"::error title=Daily engine pre-code retry::{exc}", file=sys.stderr)
         raise SystemExit(1) from exc

@@ -79,6 +79,22 @@ except ImportError:  # pragma: no cover - environment guard
     print("::error title=agentos::PyYAML is required (pip install pyyaml)", flush=True)
     raise SystemExit(1)
 
+# PyYAML's C-backed SafeLoader preserves SafeLoader values while avoiding the
+# pure-Python scanner/parser cost on the ~1,100 Agent OS records. Malformed
+# YAML deliberately falls back through yaml.safe_load so the historical
+# diagnostic wording remains stable instead of changing with the C parser.
+_FAST_YAML_LOADER = getattr(yaml, "CSafeLoader", None)
+
+
+def _yaml_safe_load(text: str) -> Any:
+    if _FAST_YAML_LOADER is None:
+        return yaml.safe_load(text)
+    try:
+        return yaml.load(text, Loader=_FAST_YAML_LOADER)
+    except yaml.YAMLError:
+        return yaml.safe_load(text)
+
+
 _ROOT = Path(__file__).resolve().parent.parent
 # Pinned at module scope, before any in-repo import.  Run as `python3 scripts/agentos.py`,
 # sys.path[0] is scripts/, so `from scripts import ...` resolves against whatever `scripts`
@@ -151,6 +167,12 @@ STALE_DISCOVERY_DAYS = 90
 STALE_WORKSTREAM_DAYS = 30
 DEFAULT_CLAIM_HOURS = 12
 
+# A default CEO read should close cheap local truth gaps without reviving the 276-worktree
+# >120s failure mode that made the original scan opt-in.  Four bounded status calls cost at
+# most 20s at the timeout ceiling; larger hosts retain the explicit force flag.
+STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT = 4
+UNCOMMITTED_STATUS_TIMEOUT_SECONDS = 5.0
+
 
 class Problem:
     """One validation finding.  ``hard`` findings fail the run; warnings do not."""
@@ -181,7 +203,7 @@ def parse_record(path: Path) -> tuple[dict[str, Any], str]:
     if not match:
         raise ValueError("no YAML frontmatter block (expected a leading '---' fence)")
     try:
-        data = yaml.safe_load(match.group(1))
+        data = _yaml_safe_load(match.group(1))
     except yaml.YAMLError as exc:
         raise ValueError(f"malformed YAML frontmatter: {exc}") from exc
     if not isinstance(data, dict):
@@ -194,7 +216,7 @@ def _load_programs() -> set[str] | None:
     if not _PROGRAMS.exists():
         return None
     try:
-        doc = yaml.safe_load(_PROGRAMS.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_PROGRAMS.read_text(encoding="utf-8"))
     except (yaml.YAMLError, OSError):
         return None
     programs = doc.get("programs") if isinstance(doc, dict) else None
@@ -227,7 +249,7 @@ def _load_program_registry(path: Path = _PROGRAMS) -> dict[str, Any]:
     if not path.exists():
         return unavailable("program_registry_unavailable")
     try:
-        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(path.read_text(encoding="utf-8"))
     except UnicodeDecodeError:
         return unavailable("program_registry_malformed")
     except OSError:
@@ -612,6 +634,102 @@ def git_dates(path: Path) -> tuple[str | None, str | None]:
     last = (updated or "").strip().splitlines()
     first = [ln for ln in (added or "").strip().splitlines() if ln]
     return (first[-1] if first else None), (last[0] if last else None)
+
+
+_GIT_DATE_PATH_BATCH_SIZE = 128
+
+
+def _git_history_dates(
+    paths: list[str], *, additions_only: bool,
+) -> list[tuple[str, str]] | None:
+    """Read path dates from one bounded local history walk.
+
+    git_dates remains the semantic oracle and fallback. This helper only folds
+    identical per-path git-log observations into one invocation-local query;
+    it adds no cache, new date policy, network call, or durable state.
+    """
+    if not paths:
+        return []
+    args = ["log", "-z", "--format=%x1e%as", "--name-only"]
+    if additions_only:
+        args.append("--diff-filter=A")
+    payload = _git(*args, "--", *paths)
+    if payload is None:
+        return None
+
+    admitted = set(paths)
+    current_date: str | None = None
+    rows: list[tuple[str, str]] = []
+    for raw in payload.split("\0"):
+        if not raw:
+            continue
+        if raw.startswith("\x1e"):
+            current_date = raw[1:].strip() or None
+            continue
+        # Pretty-print and --name-only are separated by exactly one newline.
+        rel = raw[1:] if raw.startswith("\n") else raw
+        if current_date is not None and rel in admitted:
+            rows.append((rel, current_date))
+    return rows
+
+
+def git_dates_batch(paths: Iterable[Path]) -> dict[Path, tuple[str | None, str | None]]:
+    """Read canonical per-path dates with bounded batched local Git history.
+
+    Results retain git_dates semantics exactly: updated is the newest commit
+    touching the current path and created is the oldest true add for that path
+    (renames are not treated as adds). Inputs are consumed in bounded batches,
+    output keeps input order, and any batched Git observation failure falls back
+    to the existing per-path oracle for that batch.
+    """
+    iterator = iter(paths)
+    result: dict[Path, tuple[str | None, str | None]] = {}
+
+    while True:
+        batch: list[Path] = []
+        for _ in range(_GIT_DATE_PATH_BATCH_SIZE):
+            try:
+                batch.append(next(iterator))
+            except StopIteration:
+                break
+        if not batch:
+            break
+
+        rel_to_paths: dict[str, list[Path]] = {}
+        for path in batch:
+            try:
+                rel = path.resolve().relative_to(_ROOT).as_posix()
+            except ValueError:
+                result[path] = (None, None)
+                continue
+            rel_to_paths.setdefault(rel, []).append(path)
+
+        if not rel_to_paths:
+            continue
+
+        rels = list(rel_to_paths)
+        updated_rows = _git_history_dates(rels, additions_only=False)
+        created_rows = _git_history_dates(rels, additions_only=True)
+        if updated_rows is None or created_rows is None:
+            for path in batch:
+                if path not in result:
+                    result[path] = git_dates(path)
+            continue
+
+        updated: dict[str, str] = {}
+        for rel, date in updated_rows:
+            updated.setdefault(rel, date)
+        created: dict[str, str] = {}
+        for rel, date in created_rows:
+            # git log is newest-first; repeated assignment retains the oldest add.
+            created[rel] = date
+
+        for rel, originals in rel_to_paths.items():
+            dates = (created.get(rel), updated.get(rel))
+            for path in originals:
+                result[path] = dates
+
+    return result
 
 
 def _cycle(graph: dict[str, list[str]]) -> list[str] | None:
@@ -1406,7 +1524,7 @@ def load_p0(degraded: Degraded) -> dict[str, str] | None:
         text, ref = found
         source = f" (from {ref})"
     try:
-        doc = yaml.safe_load(text)
+        doc = _yaml_safe_load(text)
     except yaml.YAMLError as exc:
         degraded.add(
             f"{label}{source} unreadable ({exc.__class__.__name__}) — p0 ids unvalidated")
@@ -1422,7 +1540,9 @@ def load_p0(degraded: Degraded) -> dict[str, str] | None:
     return out
 
 
-def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
+def scan_worktrees(
+    degraded: Degraded, *, deep: bool = False, auto_small: bool = False
+) -> dict[str, Any]:
     """Live checkout occupancy, via ``scripts/audit_stranded_work.py``.
 
     REUSED, not reimplemented: that module already knows how to read
@@ -1430,11 +1550,12 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
     status, and it had zero callers.  Only its pure local-git helpers are used — its
     ``main()`` does a ``git fetch``, which is a network call and is never invoked here.
 
-    ``deep`` adds the per-worktree uncommitted-source scan and is OFF by default because
-    it costs one ``git status`` per checkout: measured 276 live worktrees on this host,
-    most carrying a multi-GB ``data/`` tree, which put a plain ``brief`` past 120s. A CEO
-    command nobody waits for is a CEO command nobody runs, so the expensive half is
-    opt-in and its absence is stated rather than silently skipped.
+    ``deep`` forces the per-worktree uncommitted-source scan.  ``auto_small`` lets the
+    nightly status compiler perform that scan automatically only when the live set is small
+    enough to stay bounded.  The CEO brief deliberately leaves ``auto_small`` false so this
+    truth repair cannot consume its frozen 30-second read budget.  Each status call also has
+    its own timeout; a failed observation degrades loudly rather than becoming indistinguishable
+    from a clean tree.
     """
     try:
         # The repo-root pin is at module scope (see `_ROOT`), so `scripts` resolves here.
@@ -1450,19 +1571,33 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
                      "worktree occupancy unknown")
         return {"count": 0, "branches": [], "uncommitted": []}
     uncommitted: list[dict[str, Any]] = []
-    if deep:
+    scan_uncommitted = deep or (auto_small and len(branches) <= STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT)
+    if scan_uncommitted:
         for branch in sorted(branches):
             try:
-                dirty = stranded.dirty_source_paths(branches[branch])
-            except Exception:
+                dirty = stranded.dirty_source_paths(
+                    branches[branch], timeout=UNCOMMITTED_STATUS_TIMEOUT_SECONDS
+                )
+            except Exception as exc:
+                degraded.add(
+                    f"uncommitted-work scan failed for {branch!r} "
+                    f"({exc.__class__.__name__}) — source status unknown"
+                )
                 continue
             if dirty:
                 uncommitted.append({"branch": branch, "source_files": len(dirty)})
     else:
-        degraded.add(
-            f"uncommitted-work scan skipped over {len(branches)} worktrees "
-            "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
-        )
+        if auto_small:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                f"(nightly auto limit {STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT}; "
+                "one bounded `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
+        else:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
     return {
         "count": len(branches),
         "branches": sorted(branches),
@@ -1572,11 +1707,12 @@ def build_records(
     merged_truncated = bool((builds or {}).get("merged_truncated"))
     live_branches = set(worktrees.get("branches") or [])
 
+    dates = git_dates_batch(store.paths[f"WS/{key}"] for key in sorted(ws))
     out: list[dict[str, Any]] = []
     for key in sorted(ws):
         rec = ws[key]
         path = store.paths[f"WS/{key}"]
-        created, updated = git_dates(path)
+        created, updated = dates[path]
         status = rec.get("status")
         waves = [w for w in (rec.get("waves") or []) if isinstance(w, dict)]
         rollup = {name: 0 for name in sorted(WAVE_STATUS)}
@@ -2166,7 +2302,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 
     builds = load_active_builds(degraded, Path(args.active_builds) if args.active_builds else None)
     p0_status = load_p0(degraded)
-    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted)
+    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted, auto_small=True)
 
     state = build_state(store, now=now, degraded=degraded, builds=builds,
                         p0_status=p0_status, worktrees=worktrees)
@@ -2762,7 +2898,7 @@ def _index_config() -> tuple[dict[str, dict[str, list[Any]]], str | None]:
     projects: dict[str, dict[str, list[Any]]] = {}
     error: str | None = None
     try:
-        doc = yaml.safe_load(_CONTEXT_INDEX_CONFIG.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_CONTEXT_INDEX_CONFIG.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         doc = None
         error = f"{_CONTEXT_INDEX_CONFIG_REL} unreadable ({exc.__class__.__name__})"
@@ -3184,7 +3320,7 @@ def _load_kill_rows(degraded: Degraded) -> dict[str, dict[str, Any]] | None:
         degraded.add(f"{_rel(_KILL_REGISTRY)} absent — DNR citations unresolved")
         return None
     try:
-        doc = yaml.safe_load(_KILL_REGISTRY.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_KILL_REGISTRY.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         degraded.add(
             f"{_rel(_KILL_REGISTRY)} unreadable ({exc.__class__.__name__}) — "
@@ -3208,7 +3344,7 @@ def _load_program_row(program: str, degraded: Degraded) -> dict[str, Any] | None
         degraded.add(f"{_PROGRAMS_REL} absent — program context omitted")
         return None
     try:
-        doc = yaml.safe_load(_PROGRAMS.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_PROGRAMS.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         degraded.add(
             f"{_PROGRAMS_REL} unreadable ({exc.__class__.__name__}) — program omitted"
@@ -3723,10 +3859,24 @@ def compile_bundle(
         emit("discoveries", row["item"])
 
     # ---- handoff: the LATEST only ------------------------------------------
-    mine: list[str] = [
-        stem for stem in sorted(hnd_all)
+    handoff_paths = {stem: store.paths[f"HND/{stem}"] for stem in sorted(hnd_all)}
+    mine = {
+        stem: path for stem, path in handoff_paths.items()
         if key in _refs(hnd_all[stem].get("workstream"), "WS")
-    ]
+    }
+    # The loader retains parsed records even when their association is invalid,
+    # and reports unparseable paths separately. Both are selection evidence.
+    for problem in store.problems:
+        if problem.rule == "unparseable" and problem.path.parent == store.root / "handoffs":
+            handoff_paths.setdefault(problem.path.stem, problem.path)
+    unassociated: set[str] = set()
+    for stem, path in handoff_paths.items():
+        date_match = HANDOFF_DATE_RE.search(stem)
+        if date_match and stem[:date_match.start()] == key and stem not in mine:
+            # Exact canonical filenames provide negative evidence only. They
+            # never rewrite a valid authored association to another workstream.
+            mine[stem] = path
+            unassociated.add(stem)
 
     def handoff_rank(stem: str) -> tuple[str, str]:
         match = HANDOFF_DATE_RE.search(stem)
@@ -3734,10 +3884,17 @@ def compile_bundle(
 
     if mine:
         latest = max(mine, key=handoff_rank)
-        for stem in mine:
-            hnd_path = source(f"HND/{stem}")
+        for stem, hnd_path in sorted(mine.items()):
+            # Bind malformed bytes too: they affect selection despite yielding
+            # no parsed record or emitted handoff.
+            sources.setdefault(str(hnd_path.resolve()), hnd_path)
             if stem != latest:
                 drop("handoff", stem, hnd_path, f"older_handoff (latest: {latest})")
+                continue
+            if stem in unassociated:
+                drop("handoff", stem, hnd_path,
+                     "malformed or inconsistent latest handoff association — no stale fallback")
+                degraded.add(f"record excluded (malformed association): {_rel(hnd_path)} — {stem}")
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
@@ -4068,7 +4225,7 @@ def main(argv: list[str] | None = None) -> int:
     p_status.add_argument("--md-out", help="AGENT_OS_STATE.md path override")
     p_status.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_status.add_argument("--scan-uncommitted", action="store_true",
-                          help="also scan every worktree for uncommitted source work")
+                          help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_status.add_argument("--dry-run", action="store_true",
                           help="print the JSON, write nothing")
     p_status.set_defaults(func=cmd_status)
@@ -4081,7 +4238,7 @@ def main(argv: list[str] | None = None) -> int:
     p_brief.add_argument("--json", action="store_true", help="emit ceo_brief.v1")
     p_brief.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_brief.add_argument("--scan-uncommitted", action="store_true",
-                         help="also scan every worktree for uncommitted source work")
+                         help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_brief.add_argument("--no-remember", action="store_true",
                          help="do not record this invocation as the last check-in")
     p_brief.set_defaults(func=cmd_brief)
@@ -4107,6 +4264,24 @@ def main(argv: list[str] | None = None) -> int:
     # error for "both or neither", which argparse cannot express between a positional
     # and an option.
     p_ctx.set_defaults(func=cmd_compile_context, _parser=p_ctx)
+
+    # W4 is authored metadata assistance. The command owns no execution state;
+    # keep the adapter lazy so existing read commands retain their import surface.
+    def ship_command(args):
+        from scripts.agentos_ship_capture import command
+        return command(args)
+
+    for name in ("ship-capture", "ship-report", "claim", "release"):
+        p_ship = sub.add_parser(name, help="report-only ship metadata / advisory claim")
+        p_ship.add_argument("--repo", help="repository root (default: this source checkout)")
+        if name in {"claim", "release"}:
+            p_ship.add_argument("workstream", help="exact existing workstream key")
+        else:
+            p_ship.add_argument("--hook", action="store_true", help="consume a native hook payload on stdin")
+        if name == "ship-capture":
+            p_ship.add_argument("--body-file", type=Path, help="exact submitted canonical PR body")
+            p_ship.add_argument("--pr", type=int, help="already-created PR number")
+        p_ship.set_defaults(func=ship_command)
 
     args = parser.parse_args(argv)
     return args.func(args)

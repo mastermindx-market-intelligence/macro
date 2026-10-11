@@ -1,0 +1,642 @@
+{
+ "candidate_rules": {
+  "contract_id": "OPT_CONTRACT_ID key, or a strike key together with an expiry key",
+  "dividend_schedule": "DIV_EXDATE AND DIV_AMOUNT key",
+  "option_quote": "contract id AND OPT_QUOTE key",
+  "option_terms": "contract id AND (EXERCISE or DELIVERABLE or SETTLEMENT) key"
+ },
+ "candidates": {
+  "dividend_schedule": {
+   "by_top_dir": {},
+   "examples": [],
+   "files": 0,
+   "list_digest_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "option_quote": {
+   "by_top_dir": {
+    "biocatalyst": 8,
+    "options_flow": 1,
+    "options_signal_campaign": 1,
+    "options_signal_episode": 11,
+    "regime": 1,
+    "signal_archive": 1
+   },
+   "examples": [
+    {
+     "keys": {
+      "DIV_DECL": [
+       "planned_maintenance_must_be_declared_before_soak",
+       "undeclared_exclusions_allowed"
+      ],
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "window_close_offset_seconds"
+      ]
+     },
+     "path": "biocatalyst/fixtures/biocatalyst_launch_slo_manifest.v1.valid.json",
+     "sha256": "a38e65882ad7755c7c6705113fad1cf0362b01918e7f2f3cfe590a5e75b5ec87"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "last_complete_run_ref",
+       "last_observed_at"
+      ]
+     },
+     "path": "biocatalyst/fixtures/clinicaltrials/trial_coverage_epoch.v1.valid.json",
+     "sha256": "9370ba8bbbde442a581fabf7592c849b4c4330f191cb637133db22591433b1ba"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "source_last_update_posted_at"
+      ]
+     },
+     "path": "biocatalyst/fixtures/clinicaltrials/trial_snapshot.v1.valid.json",
+     "sha256": "7c8ddbdf38f5ae0dc490764f29f8889d1a7efb6044ccbb88bf5c3022dbdc386d"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "source_last_update_posted_at"
+      ]
+     },
+     "path": "biocatalyst/fixtures/clinicaltrials/trial_snapshot_observation.after.v1.valid.json",
+     "sha256": "209aeaee2bf08479f3404b6e083b797e9b56c51ca9ce0ffaf258fcd8c9b95ba6"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "source_last_update_posted_at"
+      ]
+     },
+     "path": "biocatalyst/fixtures/clinicaltrials/trial_snapshot_observation.before.v1.valid.json",
+     "sha256": "a9a546cfef759764ed2a757615807766edb3cd537b90826adb36a37f1f25ffc4"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "source_last_update_posted_at"
+      ]
+     },
+     "path": "biocatalyst/fixtures/clinicaltrials/trial_source_snapshot.after.v1.valid.json",
+     "sha256": "fe57e0bc85281786c5c55e4e127f06fafd869a9f98f88b74895412c7230402d4"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "source_last_update_posted_at"
+      ]
+     },
+     "path": "biocatalyst/fixtures/clinicaltrials/trial_source_snapshot.before.v1.valid.json",
+     "sha256": "4659de1126eaf8a49336d771161a92960f59477da3c6cbd64505bb283c7bf9dd"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "contract_id"
+      ],
+      "OPT_QUOTE": [
+       "source_last_update_posted_at"
+      ]
+     },
+     "path": "biocatalyst/fixtures/clinicaltrials/trial_version_diff.v1.valid.json",
+     "sha256": "d588b37f4091ed1c7453967ba983213fffd6fc06ae5eeff65fbedbf45c8a394a"
+    },
+    {
+     "keys": {
+      "OPT_QUOTE": [
+       "last_session",
+       "last_session_window"
+      ]
+     },
+     "path": "options_flow/signing_gate.json",
+     "sha256": "13bf08a8983a099e6b662e060745e259f7a414b9f53990ec2d7be7fcb3b302af"
+    },
+    {
+     "keys": {
+      "OPT_QUOTE": [
+       "last_available_at",
+       "premium_usd",
+       "premium_usd_total"
+      ]
+     },
+     "path": "options_signal_campaign/campaigns.jsonl",
+     "sha256": "0c242957703d4a3a0031f0bf7322195c6d41f665391380e30626aea31bf95514"
+    },
+    {
+     "keys": {
+      "OPT_QUOTE": [
+       "cumulative_premium_usd",
+       "minimum_cumulative_premium_usd"
+      ]
+     },
+     "path": "options_signal_episode/campaigns.jsonl",
+     "sha256": "db326f5c772ab417c43b8579ad50abb0434916922bda3a13c2da5b8303813910"
+    },
+    {
+     "keys": {
+      "OPT_QUOTE": [
+       "avg_option_trade_price",
+       "premium_usd"
+      ]
+     },
+     "path": "options_signal_episode/episodes.jsonl",
+     "sha256": "a7c53ed59a9fd268470f9b107c8b9665707e31192e23331d2ad9e736f9270652"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_h60.jsonl",
+     "sha256": "617039e5e1a45f9e9a70682060e156b8e778a49c58a85d0a96bd89f8f4c69fa4"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session.jsonl",
+     "sha256": "fc02c3f6d224ada2179f89fcf09d63866567e4132d6d6738ccc90c012c9b6311"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session_parts/part-000001.jsonl",
+     "sha256": "a74f35d2d1f73b71e27cfdf0f5b7ae5b11e8750feb853f3eb50aeb2713c52637"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session_parts/part-000002.jsonl",
+     "sha256": "8e80c5a5d75a253155a94aa5c8c771c21a5ac40e79f1dceeb5fa8960bdc52c40"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session_parts/part-000003.jsonl",
+     "sha256": "02afa5176952bfb16705d3f2e87b5b3d23aa0d566616d8c14b664c6461a72bab"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session_parts/part-000004.jsonl",
+     "sha256": "52096168b293aec42ac2f4bc203615903ab8c85fac80e21af21de1dff3b3836b"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session_parts/part-000005.jsonl",
+     "sha256": "bb1385bd20cf444daadf5125fe47789211d921680e6747c57137a6a57df2ad3f"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session_parts/part-000006.jsonl",
+     "sha256": "2695f96d57a1c90bab3f056a055a063deeb08928f44c3bb042f7ec384414bab8"
+    },
+    {
+     "keys": {
+      "OPT_CONTRACT_ID": [
+       "option"
+      ],
+      "OPT_QUOTE": [
+       "close",
+       "last_bar_time",
+       "source_file_last_time"
+      ]
+     },
+     "path": "options_signal_episode/outcomes_session_parts/part-000007.jsonl",
+     "sha256": "0fa3ba19ab62321dcc8d11368535e18550635085debcf794da3ef2cfb67513f7"
+    },
+    {
+     "keys": {
+      "DELIVERABLE": [
+       "vol_match_multipliers"
+      ],
+      "OPT_QUOTE": [
+       "days_to_comment_close",
+       "last",
+       "last_observed",
+       "next_comment_close_date",
+       "next_comment_close_title",
+       "recon_regime_last",
+       "spark_last",
+       "target_mid",
+       "term_premium_chg_bp",
+       "term_premium_dir",
+       "zone_mid_pct"
+      ]
+     },
+     "path": "regime/latest.json",
+     "sha256": "2b9278c3fc9dc3c032bf82ad8818f20ac8854d168faf64d3095e4d82c73225f6"
+    },
+    {
+     "keys": {
+      "DELIVERABLE": [
+       "yield_curve_shape_pca_pca_health_vol_match_multipliers_pc2",
+       "yield_curve_shape_pca_pca_health_vol_match_multipliers_pc3"
+      ],
+      "OPT_QUOTE": [
+       "fed_path_target_mid",
+       "market_gamma_context_recon_regime_last",
+       "playbook_progress_zone_mid_pct",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_age_calendar_days",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_age_grid_intervals",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_as_of",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_basis",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_change_bp",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_elapsed_calendar_days",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_elapsed_grid_intervals",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_historical_availability_qualified",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_is_current_grid_row"
+      ]
+     },
+     "path": "signal_archive/us_regime.parquet",
+     "sha256": "4db8fc51370f78c6e94ad85f6b5dca71ea77254af7f4660a048bd7b5017c3d98"
+    }
+   ],
+   "files": 23,
+   "list_digest_sha256": "d01ec208219b5aaf807c0d97139927219d58f5363a3456cad803c1fde383df50"
+  },
+  "option_terms": {
+   "by_top_dir": {
+    "index_gex_history": 1,
+    "regime": 1,
+    "signal_archive": 1
+   },
+   "examples": [
+    {
+     "keys": {
+      "DELIVERABLE": [
+       "contract_multiplier"
+      ]
+     },
+     "path": "index_gex_history/_manifest.json",
+     "sha256": "d8db9472fdd51ef6d674f23131590ccb361de6d48864754329466ad1817fbf3b"
+    },
+    {
+     "keys": {
+      "DELIVERABLE": [
+       "vol_match_multipliers"
+      ],
+      "OPT_QUOTE": [
+       "days_to_comment_close",
+       "last",
+       "last_observed",
+       "next_comment_close_date",
+       "next_comment_close_title",
+       "recon_regime_last",
+       "spark_last",
+       "target_mid",
+       "term_premium_chg_bp",
+       "term_premium_dir",
+       "zone_mid_pct"
+      ]
+     },
+     "path": "regime/latest.json",
+     "sha256": "2b9278c3fc9dc3c032bf82ad8818f20ac8854d168faf64d3095e4d82c73225f6"
+    },
+    {
+     "keys": {
+      "DELIVERABLE": [
+       "yield_curve_shape_pca_pca_health_vol_match_multipliers_pc2",
+       "yield_curve_shape_pca_pca_health_vol_match_multipliers_pc3"
+      ],
+      "OPT_QUOTE": [
+       "fed_path_target_mid",
+       "market_gamma_context_recon_regime_last",
+       "playbook_progress_zone_mid_pct",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_age_calendar_days",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_age_grid_intervals",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_as_of",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_basis",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_change_bp",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_elapsed_calendar_days",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_elapsed_grid_intervals",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_historical_availability_qualified",
+       "rate_inflation_transmission_yield_momentum_series_10y_last_observed_is_current_grid_row"
+      ]
+     },
+     "path": "signal_archive/us_regime.parquet",
+     "sha256": "4db8fc51370f78c6e94ad85f6b5dca71ea77254af7f4660a048bd7b5017c3d98"
+    }
+   ],
+   "files": 3,
+   "list_digest_sha256": "a2f7b15a36dfaacd82b46a49a388c73ddb276e273fdb9a46d574c95a86ef5d28"
+  }
+ },
+ "errors": {},
+ "files_scanned_by_kind": {
+  "csv": 11,
+  "json_like": 39180,
+  "parquet": 25246,
+  "spreadsheet_unscanned": 14
+ },
+ "group_files_by_top_dir": {
+  "DELIVERABLE": {
+   "china_sector_cycles": 1,
+   "country_cycles": 1,
+   "cycle_ontology": 1,
+   "index_gex_history": 1,
+   "neuralweb": 1,
+   "regime": 1,
+   "sector_cycles": 1,
+   "signal_archive": 2,
+   "smart_money": 47,
+   "themes_heatmap": 1,
+   "transmission": 1
+  },
+  "DIV_AMOUNT": {},
+  "DIV_DECL": {
+   "biocatalyst": 2,
+   "experiments": 3,
+   "government_revenue": 24,
+   "neuralweb": 9,
+   "prophet": 14,
+   "qledger": 3,
+   "release_forecast": 5,
+   "research": 18,
+   "research_factory": 6,
+   "rule_experiments": 5,
+   "us_prophet_rank": 52,
+   "vector": 3
+  },
+  "DIV_EXDATE": {},
+  "EXERCISE": {},
+  "OPT_CONTRACT_ID": {
+   "biocatalyst": 23,
+   "options_signal_campaign": 1,
+   "options_signal_episode": 9,
+   "polygon_gex": 28,
+   "prophet": 1,
+   "seasonality": 1,
+   "sector_intelligence": 21
+  },
+  "OPT_QUOTE": {
+   "baskets": 2814,
+   "china_stocks": 1875,
+   "china_stocks_raw": 1868,
+   "hk_stocks": 158,
+   "options_flow": 393,
+   "options_session": 75,
+   "prophet": 45,
+   "seasonality": 2692,
+   "stocks": 251,
+   "tape_flow": 392,
+   "us_prophet_rank": 105,
+   "yahoo": 6546
+  },
+  "SETTLEMENT": {
+   "altdata": 1,
+   "cboe": 2,
+   "finra": 3,
+   "market_structure": 1,
+   "neuralweb": 1,
+   "us_prophet_rank": 4
+  }
+ },
+ "group_key_names": {
+  "DELIVERABLE": {
+   "contract_multiplier": 1,
+   "recal_multiplier": 4,
+   "subtheme_growth_multiplier": 1,
+   "value_multiplier": 47,
+   "vol_match_multipliers": 3,
+   "yield_curve_shape_pca_pca_health_vol_match_multipliers_pc2": 2,
+   "yield_curve_shape_pca_pca_health_vol_match_multipliers_pc3": 2
+  },
+  "DIV_AMOUNT": {},
+  "DIV_DECL": {
+   "announce": 3,
+   "announce_date": 3,
+   "announced_at": 2,
+   "as_known_at": 1,
+   "declaration_bytes": 5,
+   "declaration_schema": 3,
+   "declaration_sha256": 5,
+   "declared": 2,
+   "declared_at": 7,
+   "declared_bias_direction": 3,
+   "declared_budget": 8,
+   "declared_direction": 14,
+   "declared_horizon_d": 3,
+   "declares_feature": 3,
+   "event_known_at": 2,
+   "first_known_at": 2,
+   "graph_known_at": 7,
+   "index_announce_within_63d_post_t0": 2,
+   "index_announce_within_63d_pre_t0": 2,
+   "known_at": 87,
+   "n_trials_declared": 7,
+   "planned_maintenance_must_be_declared_before_soak": 1,
+   "sign_matches_declared": 14,
+   "undeclared_reasons": 14,
+   "vintage_is_prereg_declared": 14
+  },
+  "DIV_EXDATE": {},
+  "EXERCISE": {},
+  "OPT_CONTRACT_ID": {
+   "contract_id": 44,
+   "diff_contract_id": 2,
+   "match_contract_id_stem": 1,
+   "option": 10,
+   "option_contract": 1,
+   "strike_ticker": 28
+  },
+  "OPT_QUOTE": {
+   "ask_side_call_premium": 392,
+   "ask_side_call_premium_z252": 392,
+   "ask_side_put_premium": 392,
+   "ask_side_put_premium_z252": 392,
+   "bid_side_call_premium": 392,
+   "bid_side_call_premium_z252": 392,
+   "bid_side_put_premium": 392,
+   "bid_side_put_premium_z252": 392,
+   "close": 13808,
+   "close_price": 6546,
+   "dte_0d_net_premium": 392,
+   "dte_0d_net_premium_z252": 392,
+   "dte_1_7d_net_premium": 392,
+   "dte_1_7d_net_premium_z252": 392,
+   "dte_31_90d_net_premium": 392,
+   "dte_31_90d_net_premium_z252": 392,
+   "dte_8_30d_net_premium": 392,
+   "dte_8_30d_net_premium_z252": 392,
+   "dte_90p_net_premium": 392,
+   "dte_90p_net_premium_z252": 392,
+   "gross_premium": 392,
+   "gross_premium_z252": 392,
+   "last_complete_year": 2692,
+   "money_atm_net_premium": 392,
+   "money_atm_net_premium_z252": 392
+  },
+  "SETTLEMENT": {
+   "first_settlement": 1,
+   "front_settle": 1,
+   "horizon_settled": 1,
+   "last_settlement": 1,
+   "m1_settle": 1,
+   "m2_settle": 1,
+   "m3_settle": 1,
+   "m4_settle": 1,
+   "m5_settle": 1,
+   "m6_settle": 1,
+   "primary_window_settled": 1,
+   "settle": 1,
+   "settle_offset_by_horizon": 1,
+   "settle_offset_sessions": 1,
+   "settlement": 1,
+   "settlement_date": 2,
+   "settlements": 1,
+   "short_int__settlement_date": 4,
+   "window_settled": 1
+  }
+ },
+ "inventory_digest_sha256": "d8ec7a5f46ca3c526bb263b8de5aa957d023e79e16395d5bd7ac3c84b158a2cc",
+ "inventory_files": 71672,
+ "liftable_stage_sources": {
+  "stage4_exercise_style": {
+   "examples": [],
+   "files": 0
+  },
+  "stage5_deliverable_multiplier": {
+   "examples": [
+    "index_gex_history/_manifest.json",
+    "regime/latest.json",
+    "signal_archive/us_regime.parquet"
+   ],
+   "files": 3
+  },
+  "stage6_settlement_clock": {
+   "examples": [],
+   "files": 0
+  },
+  "stage7_pit_dividend_schedule": {
+   "examples": [],
+   "files": 0
+  }
+ },
+ "scope": "file names, parquet schemas, csv header lines, json/jsonl/gz keys in the first 8388608 bytes; spreadsheets not scanned; no row values read",
+ "skipped_extensions": {
+  "1": 1,
+  "fired": 572,
+  "gitignore": 2,
+  "gitkeep": 18,
+  "html": 26,
+  "lock": 2,
+  "md": 107,
+  "pdf": 1744,
+  "png": 2010,
+  "svg": 2453,
+  "txt": 277,
+  "version": 1,
+  "yml": 8
+ },
+ "token_groups": {
+  "DELIVERABLE": "deliverable|shares_per|multiplier|contract_size|underlying_shares",
+  "DIV_AMOUNT": "cash_amount|dividend_amount|div_amount|amount_per_share|per_share_amount|dividend_per_share|dividend.*amount|amount.*dividend|(^|_)dps($|_)",
+  "DIV_DECL": "declar|known_at|announce|record_date|pay_date|payable",
+  "DIV_EXDATE": "(^|[_\\s-])ex[_\\s-]?(div|date)",
+  "EXERCISE": "exercis|option_style|american|european",
+  "OPT_CONTRACT_ID": "strike_ticker|option_contract|option_symbol|(^|_)(occ|osi)(_|$)|contract_id|contract_symbol|contract_ticker|options?_ticker|(^|_)option$",
+  "OPT_QUOTE": "(^|_)(bid|ask|mid|mark|last|last_price|last_trade|nbbo|close)($|_)|^c$|^vw$|premium|option_price|option_trade_price",
+  "SETTLEMENT": "settle|am_pm|expiration_type"
+ },
+ "unscanned_spreadsheets": [
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/04efdb5ce4e53015120e3c7209ed1d3a2b8a1bb31b4844f04751db5859bc5052.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/06a742e81e7e295200b17fe5ebf780bf2457a649f6fc94ad2a9b167c1da3a211.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/486c5aaf478f7651e5dbd8fb3364d2341813391fc2cff343abbdf09ea23abae0.xls",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/579b374381f4fe41004431f3003b7ac703dda5c056868fe69e2f9dd4a08204c4.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/714c2eea755aabc8617c46cde6172f867b16a6a95395233b58630260c2cff35e.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/84f0340b22339ae6408028b3818a4025d01db70a99b4f65ff3e82b3a0f3be819.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/8efe0123c5e29b19e6923798a2c6e4def67570880b707bf2b2e3605fb457af23.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/a3d1db6bdf29f8dd35d8ce5a466d2086d29471e987c3a85e5271fe9f22fdd44c.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/a9a32ddf7c14739a8ef784b3e1047bcb2746d4e88a021752b829fed81df21710.xls",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/c702d8a7a78eb0f7b0cb5c67f67155c8159062f700e1011e78e5b7ecbb9eee76.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/da0e3f6840a2bc60436a9ad8c11bdfdb21e76cb2dc14e7e849c2be0d1236cd95.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/e0be78a5ef590d22552abcb40df07b0aab0e12e1ca45e6e0bb4cb31ec2e2ece1.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/f10566560bd23f4f7f6354fda01c3a4acd3bff26634c41733199ab3c70c32493.xlsx",
+  "release_forecast/cpi_truth/official_table1_archive/documents/sha256/f7fa6474d70b43ceb50202ef31bcbb36567fcdd08f873b01cd399be0eec0d0ba.xlsx"
+ ]
+}

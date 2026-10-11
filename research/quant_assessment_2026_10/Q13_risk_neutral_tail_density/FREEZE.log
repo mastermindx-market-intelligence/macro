@@ -1,0 +1,5 @@
+PREREG_SHA256=e1da1304507c2755c1c8de627965ad98a49d313fdcdd3b5bd72342bd08facd17
+FROZEN_AT_UTC=2026-10-09T09:54:31Z
+UTC_SOURCE=date -u +%Y-%m-%dT%H:%M:%SZ
+FILE=research/quant_assessment_2026_10/Q13_risk_neutral_tail_density/PREREG.md
+NOTE=Frozen before any evaluation outcome was computed or read. No evaluate.py stage had run at freeze time.

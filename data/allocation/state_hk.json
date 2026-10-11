@@ -9,12 +9,12 @@
     "hk_tech_hardware"
   ],
   "held": [
-    "hk_dividend",
     "hk_banks",
     "hk_energy",
+    "hk_dividend",
     "hk_tech_hardware"
   ],
-  "leader": "hk_miners",
+  "leader": "hk_banks",
   "names": {
     "hk_banks": "Banks (H + HK)",
     "hk_biotech": "Biotech, Pharma & CXO",

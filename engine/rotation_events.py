@@ -32,7 +32,7 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -1113,6 +1113,469 @@ def closed_recent(ledger_path, n_sessions: int = 5) -> list:
     return list(reversed(rows))
 
 
+
+
+_HISTORY_MODES = frozenset({"all", "replay", "ledger_unmarked"})
+
+
+def _history_iso_date(value, *, field: str) -> str:
+    if not isinstance(value, str):
+        raise ValueError(field)
+    try:
+        parsed = datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        raise ValueError(field) from None
+    if parsed.strftime("%Y-%m-%d") != value:
+        raise ValueError(field)
+    return value
+
+
+def _history_leg_key(value) -> str | None:
+    if isinstance(value, str) and value:
+        return value
+    if isinstance(value, dict):
+        key = value.get("key")
+        if isinstance(key, str) and key:
+            return key
+    return None
+
+
+def _history_invalid(
+    *,
+    source_sha256: str,
+    mode: str,
+    through: str | None,
+    limit: int | None,
+    line: int,
+    code: str,
+    inspected_nonblank_lines: int,
+) -> dict:
+    coverage = {
+        "selected_rows": 0,
+        "event_counts": {"created": 0, "closed": 0},
+        "mode_counts": {
+            "RECONSTRUCTED_REPLAY": 0,
+            "RETAINED_LEDGER_UNMARKED": 0,
+        },
+        "invalid_rows": 1,
+        "inspected_nonblank_lines": inspected_nonblank_lines,
+        "stopped_by": "invalid",
+        "first_uninspected_line": None,
+        "first_observation": None,
+        "last_observation": None,
+    }
+    coverage.update(_history_diagnostics([], through))
+    return {
+        "status": "INVALID",
+        "source_sha256": source_sha256,
+        "query": {"mode": mode, "through": through, "limit": limit},
+        "rows": [],
+        "coverage": coverage,
+        "error": {"code": code, "line": line},
+    }
+
+
+def _history_diagnostics(selected: list[dict], through: str | None) -> dict:
+    native_replayed_true_rows = 0
+    native_replayed_other_rows = 0
+    native_replayed_absent_rows = 0
+    naive_record_clock_rows = 0
+    recorded_after_observation_rows = 0
+    recorded_before_observation_rows = 0
+    skew_days_list: list[int] = []
+    recorded_after_through_rows: int | None = 0 if through is not None else None
+    max_after_through_days_list: list[int] = []
+    repeated_lifecycle_event_rows = 0
+    seen_lifecycle_event: set[tuple[str, str]] = set()
+    through_date = date.fromisoformat(through) if through is not None else None
+
+    for entry in selected:
+        row = entry["row"]
+        if "replayed" not in row:
+            native_replayed_absent_rows += 1
+        elif row["replayed"] is True:
+            native_replayed_true_rows += 1
+        else:
+            native_replayed_other_rows += 1
+
+        ts = pd.Timestamp(entry["recorded_at"])
+        if ts.tzinfo is not None:
+            record_date = ts.tz_convert("UTC").date()
+        else:
+            record_date = ts.date()
+            naive_record_clock_rows += 1
+
+        observation_date = date.fromisoformat(entry["observation_date"])
+        skew_days = (record_date - observation_date).days
+        skew_days_list.append(skew_days)
+        if skew_days > 0:
+            recorded_after_observation_rows += 1
+        elif skew_days < 0:
+            recorded_before_observation_rows += 1
+
+        if through_date is not None and record_date > through_date:
+            recorded_after_through_rows += 1
+            max_after_through_days_list.append(
+                (record_date - through_date).days
+            )
+
+        event = row.get("event")
+        lifecycle_id = entry["lifecycle_id"]
+        pair = (lifecycle_id, event)
+        if pair in seen_lifecycle_event:
+            repeated_lifecycle_event_rows += 1
+        else:
+            seen_lifecycle_event.add(pair)
+
+    min_skew_days = min(skew_days_list) if skew_days_list else None
+    max_skew_days = max(skew_days_list) if skew_days_list else None
+    max_recorded_after_through_days = None
+    if (
+        through is not None
+        and recorded_after_through_rows
+        and recorded_after_through_rows > 0
+    ):
+        max_recorded_after_through_days = max(max_after_through_days_list)
+
+    return {
+        "replay_metadata": {
+            "native_replayed_true_rows": native_replayed_true_rows,
+            "native_replayed_other_rows": native_replayed_other_rows,
+            "native_replayed_absent_rows": native_replayed_absent_rows,
+            "absent_means": "UNKNOWN_NOT_EVIDENCE_OF_NOT_REPLAYED",
+        },
+        "clock_skew": {
+            "basis": "RECORD_DATE_UTC_MINUS_OBSERVATION_DATE_DAYS",
+            "naive_record_clock_rows": naive_record_clock_rows,
+            "recorded_after_observation_rows": recorded_after_observation_rows,
+            "recorded_before_observation_rows": recorded_before_observation_rows,
+            "min_skew_days": min_skew_days,
+            "max_skew_days": max_skew_days,
+            "recorded_after_through_rows": recorded_after_through_rows,
+            "max_recorded_after_through_days": max_recorded_after_through_days,
+        },
+        "repeated_lifecycle_event_rows": repeated_lifecycle_event_rows,
+    }
+
+
+def read_ledger_history(
+    ledger_path,
+    *,
+    mode: str = "all",
+    through: str | None = None,
+    limit: int | None = None,
+) -> dict:
+    """Strict read-only query over the incumbent Rotation Command JSONL ledger.
+
+    This is a historical reader, not a second ledger or lifecycle owner. It
+    preserves native source rows and their two clocks, keeps reconstructed
+    replay distinct from retained-but-unmarked observations, and fails closed
+    instead of silently shrinking malformed history.
+
+    ``through`` is an observation-date boundary (created ``asof`` / closed
+    ``closed_asof``). Once the first later observation is reached, later rows
+    are not semantically parsed. ``limit`` likewise stops after the requested
+    number of selected rows. Source bytes are hashed for provenance but never
+    modified.
+
+    Coverage diagnostics count selected rows only. A missing native ``replayed``
+    field is unknown and is not evidence that a row was not replayed.
+    ``through`` bounds the observation clock only — rows written after
+    ``through`` are still returned and are counted in clock_skew. Whether a
+    leg belonged to a cohort as of an observation date is a consumer join
+    against the cohort surfaces, not a claim this reader makes.
+    ``repeated_lifecycle_event_rows`` is not a deduplicated lifecycle count and
+    the reader never deduplicates.
+    """
+    import pathlib
+
+    if mode not in _HISTORY_MODES:
+        raise ValueError("mode must be all, replay, or ledger_unmarked")
+    if through is not None:
+        try:
+            through = _history_iso_date(through, field="through")
+        except ValueError:
+            raise ValueError("through must be YYYY-MM-DD") from None
+    if limit is not None and (
+        isinstance(limit, bool) or not isinstance(limit, int) or limit <= 0
+    ):
+        raise ValueError("limit must be a positive integer")
+
+    path = pathlib.Path(ledger_path)
+    base_coverage = {
+        "selected_rows": 0,
+        "event_counts": {"created": 0, "closed": 0},
+        "mode_counts": {
+            "RECONSTRUCTED_REPLAY": 0,
+            "RETAINED_LEDGER_UNMARKED": 0,
+        },
+        "invalid_rows": 0,
+        "inspected_nonblank_lines": 0,
+        "stopped_by": None,
+        "first_uninspected_line": None,
+        "first_observation": None,
+        "last_observation": None,
+    }
+    query = {"mode": mode, "through": through, "limit": limit}
+
+    if not path.exists():
+        missing_coverage = dict(base_coverage)
+        missing_coverage.update(_history_diagnostics([], through))
+        return {
+            "status": "MISSING",
+            "source_sha256": None,
+            "query": query,
+            "rows": [],
+            "coverage": missing_coverage,
+            "error": None,
+        }
+
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        coverage = dict(base_coverage)
+        coverage["stopped_by"] = "unreadable"
+        coverage.update(_history_diagnostics([], through))
+        return {
+            "status": "UNREADABLE",
+            "source_sha256": None,
+            "query": query,
+            "rows": [],
+            "coverage": coverage,
+            "error": {"code": "UNREADABLE_SOURCE", "line": None},
+        }
+
+    source_sha256 = hashlib.sha256(raw).hexdigest()
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return _history_invalid(
+            source_sha256=source_sha256,
+            mode=mode,
+            through=through,
+            limit=limit,
+            line=1,
+            code="INVALID_UTF8",
+            inspected_nonblank_lines=0,
+        )
+
+    physical_lines = text.splitlines()
+    if not any(line.strip() for line in physical_lines):
+        empty_coverage = dict(base_coverage)
+        empty_coverage.update(_history_diagnostics([], through))
+        return {
+            "status": "EMPTY",
+            "source_sha256": source_sha256,
+            "query": query,
+            "rows": [],
+            "coverage": empty_coverage,
+            "error": None,
+        }
+
+    selected: list[dict] = []
+    event_counts = {"created": 0, "closed": 0}
+    mode_counts = {
+        "RECONSTRUCTED_REPLAY": 0,
+        "RETAINED_LEDGER_UNMARKED": 0,
+    }
+    inspected = 0
+    stopped_by = None
+    first_uninspected_line = None
+
+    for line_no, line in enumerate(physical_lines, start=1):
+        if not line.strip():
+            continue
+        inspected += 1
+        try:
+            row = json.loads(line)
+        except Exception:  # noqa: BLE001
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="INVALID_JSON",
+                inspected_nonblank_lines=inspected,
+            )
+        if not isinstance(row, dict):
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="INVALID_ROW",
+                inspected_nonblank_lines=inspected,
+            )
+
+        event = row.get("event")
+        if event not in {"created", "closed"}:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="INVALID_EVENT_KIND",
+                inspected_nonblank_lines=inspected,
+            )
+
+        obs_field = "asof" if event == "created" else "closed_asof"
+        try:
+            observation_date = _history_iso_date(
+                row.get(obs_field), field="observation_clock"
+            )
+        except ValueError:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_OBSERVATION_CLOCK",
+                inspected_nonblank_lines=inspected,
+            )
+
+        if through is not None and observation_date > through:
+            stopped_by = "through"
+            first_uninspected_line = (
+                line_no + 1 if line_no < len(physical_lines) else None
+            )
+            break
+
+        native_id = row.get("id") if event == "created" else row.get("pair_id")
+        if not isinstance(native_id, str) or not native_id:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_IDENTITY",
+                inspected_nonblank_lines=inspected,
+            )
+
+        started = row.get("started")
+        try:
+            started = _history_iso_date(started, field="started")
+        except ValueError:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_STARTED",
+                inspected_nonblank_lines=inspected,
+            )
+
+        from_key = (
+            _history_leg_key(row.get("from_leg"))
+            or _history_leg_key(row.get("donor"))
+            or _history_leg_key(row.get("from_sector"))
+        )
+        to_key = (
+            _history_leg_key(row.get("to_leg"))
+            or _history_leg_key(row.get("receiver"))
+            or _history_leg_key(row.get("to_sector"))
+        )
+        if from_key is None or to_key is None:
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_DIRECTION",
+                inspected_nonblank_lines=inspected,
+            )
+
+        recorded_at = row.get("ts")
+        if not isinstance(recorded_at, str) or not recorded_at.strip():
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_RECORD_CLOCK",
+                inspected_nonblank_lines=inspected,
+            )
+        try:
+            pd.Timestamp(recorded_at)
+        except Exception:  # noqa: BLE001
+            return _history_invalid(
+                source_sha256=source_sha256,
+                mode=mode,
+                through=through,
+                limit=limit,
+                line=line_no,
+                code="MISSING_RECORD_CLOCK",
+                inspected_nonblank_lines=inspected,
+            )
+
+        row_mode = (
+            "RECONSTRUCTED_REPLAY"
+            if row.get("replayed") is True
+            else "RETAINED_LEDGER_UNMARKED"
+        )
+        include = (
+            mode == "all"
+            or (mode == "replay" and row_mode == "RECONSTRUCTED_REPLAY")
+            or (
+                mode == "ledger_unmarked"
+                and row_mode == "RETAINED_LEDGER_UNMARKED"
+            )
+        )
+        if not include:
+            continue
+
+        selected.append({
+            "line": line_no,
+            "line_sha256": hashlib.sha256(line.encode("utf-8")).hexdigest(),
+            "mode": row_mode,
+            "observation_date": observation_date,
+            "recorded_at": recorded_at,
+            "native_id": native_id,
+            "lifecycle_id": f"{native_id}@{started}",
+            "from_key": from_key,
+            "to_key": to_key,
+            "row": row,
+        })
+        event_counts[event] += 1
+        mode_counts[row_mode] += 1
+
+        if limit is not None and len(selected) >= limit:
+            stopped_by = "limit"
+            first_uninspected_line = (
+                line_no + 1 if line_no < len(physical_lines) else None
+            )
+            break
+
+    observations = [entry["observation_date"] for entry in selected]
+    ok_coverage = {
+        "selected_rows": len(selected),
+        "event_counts": event_counts,
+        "mode_counts": mode_counts,
+        "invalid_rows": 0,
+        "inspected_nonblank_lines": inspected,
+        "stopped_by": stopped_by,
+        "first_uninspected_line": first_uninspected_line,
+        "first_observation": observations[0] if observations else None,
+        "last_observation": observations[-1] if observations else None,
+    }
+    ok_coverage.update(_history_diagnostics(selected, through))
+    return {
+        "status": "OK",
+        "source_sha256": source_sha256,
+        "query": query,
+        "rows": selected,
+        "coverage": ok_coverage,
+        "error": None,
+    }
+
+
 def _label_index(sectors: dict | None = None, universe: dict | None = None) -> dict:
     """{leg-or-series key: (name_en, name_zh)} over every registered v1 leg and v2 series."""
     out: dict = {}
@@ -1219,6 +1682,190 @@ def emit_v2(
     out["contagion"] = contagion_rows or []
     out["velocity_board"] = velocity_board_data
     out["closed_recent"] = closed_recent_rows or []
+    return out
+
+
+
+# ------------------------------------------------------------------ early relative context ----
+
+def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
+    """Project registered price receipts without macro input or event mutation.
+
+    A positive two-session relative move is a descriptive shift. Retailer detail
+    does not count as sector confirmation. All price observations share one
+    conservative dependency group; no probability, severity or risk score exists.
+    """
+    from copy import deepcopy
+    from lib import nyse_calendar
+
+    groups = ("defensive_sector", "retailer_context", "broadening_proxy")
+    out = {
+        "schema": "rotation_early_context/v1",
+        "definition_id": "rotation_early_context/1",
+        "as_of": as_of, "display_only": True, "state": None,
+        "reason_codes": [], "pairs": [], "prior_loser_constituent_claim": False,
+        "coverage": {
+            "registered_pairs": 0, "evaluable_2s": 0, "positive_2s": 0,
+            "missing_pair_ids": [],
+            "groups": {g: {"registered": 0, "evaluable_2s": 0, "positive_2s": 0}
+                       for g in groups},
+        },
+        "availability": {"status": "UNKNOWN", "available_at": None},
+        "lineage": {
+            "definition_id": "rotation_early_context/1", "status": "UNKNOWN",
+            "roots": [], "revisions": {}, "dependency_groups": ["equity_price"],
+            "derived_from": ["oracle.ratio_lens"],
+        },
+    }
+    try:
+        end = nyse_calendar.last_session_on_or_before(date.fromisoformat(as_of)).isoformat()
+    except (TypeError, ValueError):
+        out["reason_codes"] = ["INVALID_CONTEXT_CUTOFF"]
+        return out
+    if (not isinstance(receipts, dict)
+            or receipts.get("schema") != "ratio_lens.short_horizons/v1"
+            or receipts.get("as_of") != as_of
+            or not isinstance(receipts.get("pairs"), list)
+            or len(receipts["pairs"]) > 256
+            or (receipts.get("reason_codes") is not None
+                and (not isinstance(receipts["reason_codes"], list)
+                     or not all(isinstance(code, str) for code in receipts["reason_codes"])))):
+        out["reason_codes"] = ["INVALID_SHORT_HORIZON_ENVELOPE"]
+        return out
+
+    reasons = set(receipts.get("reason_codes") or [])
+    canonical = {}
+    conflicts = set()
+    for row in receipts["pairs"]:
+        if (not isinstance(row, dict) or row.get("schema") != "ratio_lens.short_horizon.v1"
+                or row.get("context_group") not in groups
+                or not all(isinstance(row.get(k), str) and row[k] for k in ("pair_id", "num", "den"))
+                or not isinstance(row.get("horizons"), dict)
+                or not all(isinstance(window, dict) for window in row["horizons"].values())
+                or (row.get("reason_codes") is not None
+                    and (not isinstance(row["reason_codes"], list)
+                         or not all(isinstance(code, str) for code in row["reason_codes"])))):
+            reasons.add("INVALID_PAIR_OBSERVATION")
+            continue
+        key = (row["num"], row["den"])
+        # Alias names/IDs are transport details, not additional economic evidence.
+        try:
+            signature = json.dumps({k: v for k, v in row.items()
+                                    if k not in ("pair_id", "name_en", "name_zh")},
+                                   sort_keys=True, separators=(",", ":"), allow_nan=False)
+        except (TypeError, ValueError):
+            reasons.add("INVALID_PAIR_OBSERVATION")
+            continue
+        if key in canonical:
+            if canonical[key][0] != signature:
+                conflicts.add(key)
+            elif row["pair_id"] < canonical[key][1]["pair_id"]:
+                canonical[key] = (signature, deepcopy(row))
+        else:
+            canonical[key] = (signature, deepcopy(row))
+    if conflicts:
+        reasons.add("CONFLICTING_PAIR_OBSERVATIONS")
+
+    complete = not reasons and not conflicts
+    known = False
+    roots = set()
+    revisions = {}
+    for key in sorted(canonical, key=lambda k: (groups.index(canonical[k][1]["context_group"]), k)):
+        row = canonical[key][1]
+        group = row["context_group"]
+        counts = out["coverage"]["groups"][group]
+        counts["registered"] += 1
+        window = (row.get("horizons") or {}).get("2s") or {}
+        values = [window.get(k) for k in
+                  ("numerator_return_pct", "denominator_return_pct", "ratio_return_pct")]
+        eligible = (key not in conflicts and window.get("eligible") is True
+                    and row.get("requested_as_of") == as_of
+                    and row.get("value_as_of") == end
+                    and window.get("end") == end and window.get("sessions") == 2
+                    and all(isinstance(v, (float, int)) and not isinstance(v, bool)
+                            and np.isfinite(v) for v in values))
+        row_reasons = set(row.get("reason_codes") or [])
+        if key in conflicts:
+            row_reasons.add("CONFLICTING_PAIR_OBSERVATIONS")
+        if eligible:
+            counts["evaluable_2s"] += 1
+            relative = window["ratio_return_pct"]
+            if relative > 0:
+                counts["positive_2s"] += 1
+                row["interpretation"] = (
+                    "RELATIVE_RESILIENCE" if window.get("shape") == "BOTH_DOWN"
+                    else "DIVERGENT_PRICE_ACTION" if window.get("shape") == "RECEIVER_UP_DONOR_DOWN"
+                    else "EARLY_RELATIVE_STRENGTH"
+                )
+            else:
+                row["interpretation"] = "NO_POSITIVE_RELATIVE_SHIFT"
+            for horizon in ("1s", "5s", "20s"):
+                other = (row.get("horizons") or {}).get(horizon) or {}
+                value = other.get("ratio_return_pct")
+                if (other.get("eligible") is True and isinstance(value, (float, int))
+                        and not isinstance(value, bool) and np.isfinite(value)
+                        and relative * value < 0):
+                    row_reasons.add(f"2S_VS_{horizon.upper()}_SIGN_CONFLICT")
+        else:
+            row["interpretation"] = None
+            row_reasons.add("TWO_SESSION_CONTEXT_UNAVAILABLE")
+            out["coverage"]["missing_pair_ids"].append(row["pair_id"])
+        row["eligible_2s"] = eligible
+        row["reason_codes"] = sorted(row_reasons)
+        out["pairs"].append(row)
+
+        lineage = row.get("lineage")
+        if not isinstance(lineage, dict):
+            lineage = {}
+        lroots = lineage.get("roots") or []
+        if not isinstance(lroots, list):
+            lroots = []
+        if (lineage.get("status") == "COMPLETE" and lroots
+                and all(isinstance(r, str) and r for r in lroots)):
+            known = True
+        else:
+            complete = False
+            known |= bool(lroots)
+        roots.update(r for r in lroots if isinstance(r, str) and r)
+        lrevisions = lineage.get("revisions")
+        if not isinstance(lrevisions, dict):
+            lrevisions = {}
+        for observation, revision in lrevisions.items():
+            if observation in revisions and revisions[observation] != revision:
+                complete = False
+                reasons.add("PRICE_REVISION_CONFLICT")
+            elif isinstance(observation, str) and isinstance(revision, str):
+                revisions[observation] = revision
+
+    coverage = out["coverage"]
+    for field in ("registered", "evaluable_2s", "positive_2s"):
+        total = sum(coverage["groups"][g][field] for g in groups)
+        coverage["registered_pairs" if field == "registered" else field] = total
+    coverage["missing_pair_ids"].sort()
+    if coverage["missing_pair_ids"]:
+        reasons.add("PARTIAL_PAIR_COVERAGE")
+    d, b = coverage["groups"]["defensive_sector"], coverage["groups"]["broadening_proxy"]
+    if d["positive_2s"] and b["positive_2s"]:
+        out["state"] = "MIXED_ROTATION"
+    elif d["positive_2s"]:
+        out["state"] = "DEFENSIVE_RELATIVE_STRENGTH"
+    elif b["positive_2s"]:
+        out["state"] = "BROADENING"
+    elif (d["registered"] and b["registered"]
+          and d["evaluable_2s"] == d["registered"]
+          and b["evaluable_2s"] == b["registered"]):
+        out["state"] = "NO_EARLY_SHIFT"
+    if not coverage["registered_pairs"]:
+        reasons.add("NO_REGISTERED_PAIR_COVERAGE")
+    if coverage["groups"]["retailer_context"]["positive_2s"]:
+        reasons.add("RETAILER_CONTEXT_IS_NOT_SECTOR_CONFIRMATION")
+    if b["positive_2s"]:
+        reasons.add("BROAD_INDEX_PROXY_NOT_PRIOR_LOSER_PORTFOLIO")
+    out["reason_codes"] = sorted(reasons)
+    out["lineage"].update({
+        "status": "COMPLETE" if complete and known else "PARTIAL" if known else "UNKNOWN",
+        "roots": sorted(roots), "revisions": dict(sorted(revisions.items())),
+    })
     return out
 
 
@@ -1385,6 +2032,19 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
                 **cb,
             })
 
+    # Receipts and early context use the resolved benchmark observation clock.
+    # A confirmed event may retain an older confirmation date.
+    context_asof = as_of
+    try:
+        from lib import nyse_calendar
+        valid_bench = bench_close.dropna()
+        if not valid_bench.empty:
+            context_asof = nyse_calendar.last_session_on_or_before(
+                valid_bench.index[-1].date()).isoformat()
+    except Exception as exc:
+        log.warning("rotation receipt cutoff unavailable: %s", exc)
+        context_asof = None
+
     # velocity board
     from engine.rotation_velocity import velocity_board as _vb
     from engine.rotation_flows import flow_receipt_for_series
@@ -1392,8 +2052,9 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
     flow_receipts = {}
     for key in universe.get("velocity_series", []):
         spec = series_index.get(key)
-        if spec:
-            flow_receipts[key] = flow_receipt_for_series(spec, data_dir)
+        if spec and context_asof is not None:
+            flow_receipts[key] = flow_receipt_for_series(
+                spec, data_dir, as_of=context_asof)
 
     vboard = _vb(universe, closes, flow_receipts, bench_key)
 
@@ -1408,6 +2069,18 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
                       velocity_board_data=vboard,
                       closed_recent_rows=cr_rows,
                       n_cross_pairs_scanned=n_cross)
+    # US-only additive descriptive context. Existing confirmed event/state/ledger
+    # code above is untouched; this reader does not advance any history.
+    try:
+        from engine.oracle.ratio_lens import registered_short_horizon_context
+        short = registered_short_horizon_context(data_dir, as_of=context_asof)
+        payload["early_context"] = early_rotation_context(short, as_of=context_asof)
+    except Exception as exc:  # additive source quality never breaks confirmed RC
+        log.warning("rotation early context unavailable: %s", exc)
+        payload["early_context"] = early_rotation_context({
+            "schema": "ratio_lens.short_horizons/v1", "as_of": context_asof,
+            "pairs": [], "reason_codes": ["EARLY_CONTEXT_SOURCE_UNAVAILABLE"],
+        }, as_of=context_asof)
     return payload
 
 

@@ -322,7 +322,7 @@ def _july_30_fetcher(spec, prior, timeout):
             last_modified="Thu, 30 Jul 2026 12:30:03 GMT",
         )
     if spec.source_id == "dol_claims":
-        assert spec.url == "https://www.dol.gov/newsroom/releases/eta"
+        assert spec.url == "https://www.dol.gov/index.php/newsroom/releases/eta"
         return _http_result(
             DOL_JULY_30_LISTING,
             last_modified="Thu, 30 Jul 2026 12:30:04 GMT",
@@ -843,7 +843,7 @@ def test_fomc_watcher_publishes_verified_decision_facts():
     assert publication["data_ready"] is True
     assert publication["scheduled_at"] == "2026-07-29T14:00:00-04:00"
     assert publication["source_released_at"] == "2026-07-29T18:00:15+00:00"
-    assert publication["parser"] == {"name": "fomc", "version": 1}
+    assert publication["parser"] == {"name": "fomc", "version": 2}
     assert publication["source_url"].endswith("/monetary20260729a.htm")
     assert publication["actual"] == {
         "kind": "policy_rate",
@@ -1256,6 +1256,102 @@ def test_command_can_publish_private_state_outside_public_root(tmp_path: Path):
     assert result.status == "ok"
     assert result.published == ("quotes_full.json",)
     assert target.stat().st_mode & 0o777 == 0o600
+
+
+def test_snapshot_lane_requests_private_quote_provenance(tmp_path: Path):
+    orch = vlo.Orchestrator(
+        live_dir=tmp_path / "public" / "live",
+        state_dir=tmp_path / "state",
+        data_dir=tmp_path / "data",
+    )
+    calls: list[tuple[str, str, list[str]]] = []
+
+    def module(name, module, args, **kwargs):
+        calls.append((name, module, list(args)))
+        if name == "full_quotes":
+            target = orch.state_dir / "quotes_full.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(
+                json.dumps(
+                    {
+                        "quotes": {"AAPL": {"price": 100.0}},
+                        "meta": {"requested": 100, "resolved": 100},
+                    }
+                )
+            )
+        return vlo.TaskResult(name, "ok", 0.0)
+
+    orch.module = module  # type: ignore[method-assign]
+    orch.snapshot()
+
+    full = next(call for call in calls if call[0] == "full_quotes")
+    assert full[0:2] == ("full_quotes", "scripts.build_live_quotes")
+    assert "--private-provenance" in full[2]
+    assert [name for name, _module, args in calls
+            if "--private-provenance" in args] == ["full_quotes"]
+
+
+def test_private_full_snapshot_does_not_disclose_provenance_in_public_intraday_output(
+    tmp_path: Path, monkeypatch,
+):
+    from scripts import build_intraday_flow_quotes as public_quotes
+    from scripts import build_live_quotes as full_quotes
+
+    raw = {
+        "REAL": {"price": 100.0, "quote_ts": "2026-10-08T14:30:00+00:00",
+                 "quote_ts_synthetic": False, "source": "fixture",
+                 "price_basis": "trade", "prev_close": 99.0, "currency": "USD",
+                 "delay_min": 1.0, "day_volume": 1000, "day_high": 101.0,
+                 "day_low": 98.0},
+        "SYNTH": {"price": 50.0, "quote_ts": "2026-10-08T14:30:01+00:00",
+                  "quote_ts_synthetic": True, "source": "fixture",
+                  "price_basis": "day", "prev_close": 50.0, "currency": "USD",
+                  "delay_min": 0.0},
+        "UNDISCLOSED": {"price": 25.0, "quote_ts": "2026-10-08T14:30:00+00:00",
+                        "quote_ts_synthetic": False},
+    }
+    snapshot = {
+        "ts": 1791469800000, "asof": "2026-10-08T14:30:00+00:00",
+        "source": "snapshot",
+        "quotes": full_quotes.to_worker_quotes(raw, include_private_provenance=True),
+        "meta": {"requested": 3, "resolved": 3},
+    }
+    snapshot["quotes"]["REAL"]["internal_owner_receipt"] = "private-sentinel"
+    original_snapshot = json.loads(json.dumps(snapshot))
+    base_path = tmp_path / "base.json"
+    private_path = tmp_path / "quotes_full.json"
+    public_path = tmp_path / "public" / "intraday_quotes.json"
+    base_path.write_text(json.dumps({"leaders": [{"ticker": "REAL"},
+                                               {"ticker": "SYNTH"}]}))
+    private_path.write_text(json.dumps(snapshot))
+    private_bytes = private_path.read_bytes()
+    monkeypatch.setattr(sys, "argv", ["build_intraday_flow_quotes", "--base",
+                       str(base_path), "--quotes", str(private_path), "--out",
+                       str(public_path)])
+
+    assert public_quotes.main() == 0
+    published = json.loads(public_path.read_text())
+
+    assert set(published["quotes"]) == {"REAL", "SYNTH"}
+    for row in published["quotes"].values():
+        assert "quote_ts" not in row
+        assert "quote_ts_synthetic" not in row
+        assert "internal_owner_receipt" not in row
+    assert published["quotes"]["REAL"] == {
+        "price": 100.0, "ts": 1791469800000, "source": "fixture", "basis": "trade",
+        "prevClose": 99.0, "changePct": 1.01, "currency": "USD", "delayMin": 1.0,
+        "vol": 1000, "hi": 101.0, "lo": 98.0,
+    }
+    assert published["quotes"]["SYNTH"] == {
+        "price": 50.0, "ts": None, "source": "fixture", "basis": "day",
+        "prevClose": 50.0, "changePct": 0.0, "currency": "USD", "delayMin": 0.0,
+        "tsSynthetic": True,
+    }
+    assert published["ts"] == snapshot["ts"]
+    assert published["asof"] == snapshot["asof"]
+    assert published["meta"]["requested"] == published["meta"]["resolved"] == 2
+    assert json.loads(private_path.read_text()) == original_snapshot
+    assert private_path.read_bytes() == private_bytes
 
 
 def test_command_does_not_publish_stale_required_output(tmp_path: Path):
@@ -1895,3 +1991,206 @@ def test_live_data_orphan_push_clears_the_index_sparse_safely(tmp_path):
     commands = [l for l in body.splitlines() if not l.lstrip().startswith("#")]
     assert not [l for l in commands if "git rm -rf --cached" in l], (
         "the sparse-unsafe index clear is back in live-quotes.yml")
+
+
+# Regression coverage for the 2026-09-16 production FOMC parser miss. Kept in this
+# existing CI-owned suite so publication recovery does not mutate CI authority merely
+# to make its regression executable.
+FOMC_SEPTEMBER_16_RECOVERY_STATEMENT = b"""
+<html><body>
+<p>September 16, 2026</p>
+<p>The Federal Open Market Committee approved the following statement for release
+by a 12 - 0 vote:</p>
+<p>The Committee decided to raise the target range for the federal funds rate by
+1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's
+dual mandate.</p>
+</body></html>
+"""
+
+CLAIMS_SEPTEMBER_10_RECOVERY_LISTING = b"""
+<div class="view-content"><div class="dol-feed-block">
+  <div data-history-node-id="fixture"
+       about="/newsroom/releases/eta/eta20260910">
+    <p class="dol-date-text">September 10, 2026</p>
+    <a href="/newsroom/releases/eta/eta20260910">
+      <h3><span>Unemployment Insurance Weekly Claims Report</span></h3>
+    </a>
+    <div class="field--name-field-press-body">
+      <p>In the week ending September 5, the advance figure for seasonally adjusted
+      initial claims was 206,000, a decrease of 1,000 from the previous week's
+      revised level. The 4-week moving average was 206,000.</p>
+    </div>
+  </div>
+</div></div>
+"""
+
+
+def _recovery_claims_event() -> dict[str, object]:
+    return {
+        "event_id": "claims:2026-09-10",
+        "type": "CLAIMS",
+        "date": "2026-09-10",
+        "time_et": "08:30",
+        "scheduled_at": "2026-09-10T08:30:00-04:00",
+        "label": "Initial jobless claims",
+        "label_zh": "初请失业金人数",
+        "schedule_source": "computed",
+        "is_context_only": True,
+    }
+
+
+def _recovery_fomc_event() -> dict[str, object]:
+    return {
+        "event_id": "fomc:2026-09-16",
+        "type": "FOMC",
+        "date": "2026-09-16",
+        "time_et": "14:00",
+        "scheduled_at": "2026-09-16T14:00:00-04:00",
+        "label": "FOMC rate decision",
+        "label_zh": "美联储议息会议",
+        "schedule_source": "federal_reserve",
+        "is_context_only": True,
+    }
+
+
+def _recovery_claims_state() -> dict[str, object]:
+    return {
+        "schema": "release_publication_state.v2",
+        "coverage_started_at_by_type": {
+            "CLAIMS": "2026-09-10T12:00:00+00:00",
+        },
+        "sources": {},
+        "publications": {},
+    }
+
+
+def test_fomc_parser_accepts_explicit_change_size_before_target_range() -> None:
+    actual = wrp.parse_fomc_actual(FOMC_SEPTEMBER_16_RECOVERY_STATEMENT)
+
+    assert actual is not None
+    assert actual["action"] == "hike"
+    assert actual["target_low"] == 3.75
+    assert actual["target_high"] == 4.0
+    assert actual["vote_for"] == 12
+    assert actual["vote_against"] == 0
+
+
+def test_fomc_change_size_statement_publishes_with_parser_v2(monkeypatch) -> None:
+    event = _recovery_fomc_event()
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [event])
+
+    def fetcher(spec, prior, timeout):
+        assert spec.source_id == "fed_fomc"
+        return _http_result(FOMC_SEPTEMBER_16_RECOVERY_STATEMENT)
+
+    _, payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 3, tzinfo=timezone.utc),
+        state={},
+        fetcher=fetcher,
+    )
+
+    publication = payload["publications"][0]
+    assert publication["status"] == "published"
+    assert publication["actual"]["action"] == "hike"
+    assert publication["parser"] == {"name": "fomc", "version": 2}
+
+
+def test_dol_overdue_release_retries_through_retention_and_self_heals(monkeypatch) -> None:
+    event = _recovery_claims_event()
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [event])
+    calls = []
+
+    def fetcher(spec, prior, timeout):
+        calls.append(spec.url)
+        assert spec.source_id == "dol_claims"
+        assert spec.url == "https://www.dol.gov/index.php/newsroom/releases/eta"
+        return _http_result(CLAIMS_SEPTEMBER_10_RECOVERY_LISTING)
+
+    new_state, payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 15, tzinfo=timezone.utc),
+        state=_recovery_claims_state(),
+        fetcher=fetcher,
+    )
+
+    assert calls == ["https://www.dol.gov/index.php/newsroom/releases/eta"]
+    publication = next(
+        row for row in payload["publications"]
+        if row["event_id"] == "claims:2026-09-10"
+    )
+    assert publication["status"] == "published"
+    assert publication["data_ready"] is True
+    assert publication["actual"]["initial_claims"] == 206_000
+    assert publication["actual"]["change"] == -1_000
+    assert publication["source_url"] == (
+        "https://www.dol.gov/index.php/newsroom/releases/eta/eta20260910"
+    )
+
+    source = new_state["sources"]["dol_claims:claims:2026-09-10"]
+    assert source["attempt_count"] == 1
+    assert source["first_attempt_at"] == "2026-09-16T18:15:00+00:00"
+    assert source["last_attempt_at"] == "2026-09-16T18:15:00+00:00"
+    assert source["last_attempt_status"] == "ok"
+    assert source["last_success_at"] == "2026-09-16T18:15:00+00:00"
+
+
+def test_overdue_source_failure_lineage_survives_then_recovers(monkeypatch) -> None:
+    event = _recovery_claims_event()
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *args, **kwargs: [event])
+    first_tick = datetime(2026, 9, 16, 18, 15, tzinfo=timezone.utc)
+
+    def failing_fetcher(spec, prior, timeout):
+        raise TimeoutError("official source timed out")
+
+    failed_state, failed_payload = wrp.detect(
+        now=first_tick,
+        state=_recovery_claims_state(),
+        fetcher=failing_fetcher,
+    )
+
+    key = "dol_claims:claims:2026-09-10"
+    failed = failed_state["sources"][key]
+    assert failed["attempt_count"] == 1
+    assert failed["first_attempt_at"] == first_tick.isoformat()
+    assert failed["last_attempt_at"] == first_tick.isoformat()
+    assert failed["last_attempt_status"] == "error"
+    assert failed["last_error"] == "TimeoutError"
+    assert failed["last_error_at"] == first_tick.isoformat()
+    assert failed_payload["source_health"] == [
+        {
+            "source_id": "dol_claims",
+            "event_id": "claims:2026-09-10",
+            "status": "error",
+            "error": "TimeoutError",
+        }
+    ]
+
+    def unexpected_fetcher(spec, prior, timeout):
+        raise AssertionError("non-periodic ticks must not hot-loop an overdue source")
+
+    retained_state, retained_payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 16, tzinfo=timezone.utc),
+        state=failed_state,
+        fetcher=unexpected_fetcher,
+    )
+    assert retained_state["sources"][key] == failed
+    assert retained_payload["source_health"] == []
+
+    def recovering_fetcher(spec, prior, timeout):
+        return _http_result(CLAIMS_SEPTEMBER_10_RECOVERY_LISTING)
+
+    recovered_state, recovered_payload = wrp.detect(
+        now=datetime(2026, 9, 16, 18, 30, tzinfo=timezone.utc),
+        state=retained_state,
+        fetcher=recovering_fetcher,
+    )
+    recovered = recovered_state["sources"][key]
+    assert recovered["attempt_count"] == 2
+    assert recovered["last_attempt_status"] == "ok"
+    assert recovered["last_success_at"] == "2026-09-16T18:30:00+00:00"
+    assert recovered["last_error"] == "TimeoutError"
+    assert recovered["last_error_at"] == first_tick.isoformat()
+    publication = next(
+        row for row in recovered_payload["publications"]
+        if row["event_id"] == "claims:2026-09-10"
+    )
+    assert publication["status"] == "published"

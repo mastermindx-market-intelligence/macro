@@ -93,13 +93,31 @@ def _resolve(node_id: str, master_inputs: ir.MasterInputs, etf_symbols: frozense
 
 
 # ---------------------------------------------------------------------------
-# §2 — row scope: 2,806 company nodes at pin, every one gets a row
+# §2 — row scope: 2,806 company nodes at pin + post-freeze merged duplicates (DEC)
 # ---------------------------------------------------------------------------
 
+# DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE — enumerated D2A re-pin.
+POST_FREEZE_MERGED_DUPLICATES = frozenset({"co:us:VMRK"})
+FROZEN_COMPANY_NODE_COUNT = 2806
+
+
 def test_the_committed_graph_carries_exactly_2806_company_nodes(company_nodes):
-    """The contract's own pinned count (§1/§9) — if this drifts, the graph moved under
-    the frozen contract and the fixture table below needs re-pinning, not silent trust."""
-    assert len(company_nodes) == 2806
+    """Physical company count = frozen pin + lifecycle-merged duplicates (DEC re-pin)."""
+    expected = FROZEN_COMPANY_NODE_COUNT + len(POST_FREEZE_MERGED_DUPLICATES)
+    assert len(company_nodes) == expected
+    dups = POST_FREEZE_MERGED_DUPLICATES
+    assert dups <= set(company_nodes["node_id"].astype(str))
+    lc = store.read_node_lifecycle(latest=True)
+    for dup in dups:
+        hit = lc[lc["node_id"].astype(str) == dup]
+        assert len(hit) == 1, f"{dup} must have exactly one latest lifecycle row"
+        row = hit.iloc[0]
+        assert row["status"] == "merged"
+        merged_into = str(row["merged_into"])
+        assert merged_into in set(company_nodes["node_id"].astype(str))
+        if merged_into in set(lc["node_id"].astype(str)):
+            target_lc = lc[lc["node_id"].astype(str) == merged_into].iloc[0]
+            assert target_lc["status"] not in store.RETIRED_LIKE_STATUSES
 
 
 def test_every_company_node_gets_a_row(nodes, company_nodes, master_inputs, etf_symbols):
@@ -111,9 +129,14 @@ def test_every_company_node_gets_a_row(nodes, company_nodes, master_inputs, etf_
     rows = ir.derive_rows(
         nodes.to_dict("records"), resolution_asof="2026-08-14",
         computed_at="2026-08-18T00:00:00Z", engine_version=store.ENGINE_VERSION)
-    assert len(rows) == len(company_nodes) == 2806
+    expected_count = FROZEN_COMPANY_NODE_COUNT + len(POST_FREEZE_MERGED_DUPLICATES)
+    assert len(rows) == len(company_nodes) == expected_count
     assert {r["node_id"] for r in rows} == set(company_nodes["node_id"].astype(str))
     by_id = {r["node_id"]: r for r in rows}
+    vmrk_row = by_id.get("co:us:VMRK")
+    assert vmrk_row is not None, "co:us:VMRK derive_rows row for EVIDENCE"
+    assert vmrk_row["resolution_state"] == "RESOLVED"
+    assert vmrk_row["security_id"] == "SEC:US-XNYS-EQR"
     assert by_id["co:us:IBIT"]["resolution_state"] == "ENTITY_TYPE_CONFLICT", (
         "rule 4 must be LIVE in this derivation — the etf:IBIT node is in the full "
         "list passed to derive_rows")
@@ -250,10 +273,26 @@ class TestSection6HostileCases:
         assert row["resolution_state"] == "RESOLVED"
         assert row["security_id"] == "SEC:US-XNYS-CTRA"
 
+    def test_admitted_bats_name_resolves_from_master(self, master_inputs, etf_symbols):
+        """BATS admission replaces CBOE's former zero-master-row fixture premise."""
+        row = _resolve("co:us:CBOE", master_inputs, etf_symbols)
+        assert row["resolution_state"] == "RESOLVED"
+        assert row["security_id"] == "SEC:US-BATS-CBOE"
+        assert row["issuer_id"] == "ISS:US-BATS-CBOE"
+        assert row["listing_key"] == "US-BATS-CBOE"
+        assert row["join_method"] == "master_inception_exact"
+        assert row["refusal_reason"] is None
+        assert json.loads(row["source_receipts"]) == {
+            "master_inception_code": "CBOE", "security_id": "SEC:US-BATS-CBOE",
+        }
+        assert row["master_generated_at"] == master_inputs.generated_at
+        assert row["master_symbol_directory_snapshot"] == master_inputs.symbol_directory_snapshot
+        assert row["master_code_version"] == master_inputs.code_version
+
     @pytest.mark.parametrize("symbol", [
-        "ANGPY", "BLD", "CBOE", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
+        "ANGPY", "BLD", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
     ])
-    def test_the_eight_not_in_master_names(self, symbol, master_inputs, etf_symbols):
+    def test_remaining_not_in_master_names(self, symbol, master_inputs, etf_symbols):
         row = _resolve(f"co:us:{symbol}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER", row
         assert row["security_id"] is None
@@ -416,8 +455,9 @@ class TestMutations:
         MUST land NOT_IN_MASTER, never RESOLVED-by-coincidence."""
         bogus = "ZZZNOSUCHTICKERXYZ"
         assert bogus not in master_inputs.master_by_code
-        assert not any(master_inputs.alias_table.resolve(v, bogus, on=date(2026, 8, 14))
-                       for v in master_inputs.vendors)
+        assert not any(master_inputs.alias_table.resolve(
+            v, bogus, on=date(2026, 8, 14), decision_at="2026-08-14T23:59:59Z")
+            for v in master_inputs.vendors)
         row = _resolve(f"co:us:{bogus}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER"
         assert row["security_id"] is None
@@ -805,9 +845,27 @@ def test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parque
     assert avb["resolution_state"] == "RESOLVED"
     assert avb["security_id"] == "SEC:US-XNYS-AVB"
 
-    # 3. NO co:us:VMRK node is created — graph node minting is the theme graph's
-    #    own lane, forbidden to this bridge.
-    assert "co:us:VMRK" not in by_node
+    # 3. co:us:VMRK is lifecycle-merged into co:us:EQR; sidecar resolves to EQR security;
+    #    VMRK has no open MEMBER_OF; EQR has exactly one open us_sector_realestate edge.
+    vmrk = by_node.get("co:us:VMRK")
+    assert vmrk is not None, "co:us:VMRK must have a sidecar row after duplicate_mint merge"
+    assert vmrk["security_id"] == eqr["security_id"] == "SEC:US-XNYS-EQR"
+    assert vmrk["security_id"] != "SEC:US-XNYS-VMRK"
+    lc = store.read_node_lifecycle(latest=True)
+    vmrk_lc = lc[lc["node_id"].astype(str) == "co:us:VMRK"].iloc[0]
+    assert vmrk_lc["status"] == "merged" and str(vmrk_lc["merged_into"]) == "co:us:EQR"
+    live_edges = store.read_edges(latest_belief=True)
+    vmrk_open = live_edges[
+        (live_edges["type"].astype(str) == "MEMBER_OF")
+        & (live_edges["src"].astype(str) == "co:us:VMRK")
+        & (live_edges["valid_to"].isna())]
+    assert len(vmrk_open) == 0
+    eqr_open = live_edges[
+        (live_edges["type"].astype(str) == "MEMBER_OF")
+        & (live_edges["src"].astype(str) == "co:us:EQR")
+        & (live_edges["dst"].astype(str) == "basket:baskets:us_sector_realestate")
+        & (live_edges["valid_to"].isna())]
+    assert len(eqr_open) == 1
 
     # 4. Zero sidecar cells reference the superseded SEC:US-XNYS-VMRK id at all.
     assert not (current_view["security_id"] == "SEC:US-XNYS-VMRK").any()

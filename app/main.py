@@ -949,20 +949,31 @@ def status() -> dict:
 
 
 # ---- auth: secretless — verify the access token against Supabase ------------
-def require_user(authorization: str | None = Header(default=None)) -> dict:
+def require_user(authorization: str | None = Header(default=None),
+                 request: Request = None) -> dict:
     """Verify a Supabase access token without any server-side secret.
 
-    Identity is the existing paywall token cache (``app.paywall._fresh_identity``
-    / ``_AUTH_CACHE``): ``sha256(token)`` key, TTL clamped 1–60s. A cached valid
-    record is served through a vendor blip for that TTL only. Invalid or expired
-    tokens are cached as rejected and never become a bypass. Concurrent upstream
-    calls are semaphore-bounded so a slow vendor sheds instead of pinning the
-    thread pool (and ``/api/health`` with it). No second auth cache is minted
-    here — two divergent identity paths was the MMX-004 finding.
+    Accepts EITHER a ``Bearer <token>`` header OR the shared Supabase session cookie
+    (``sb-<ref>-auth-token``) via ``_mm_supabase_access_token`` — the same reader
+    ``paywall`` and ``regwall`` and ``collect`` already use for the beacon. No second
+    auth cache is minted here — two divergent identity paths was the MMX-004 finding.
     """
-    if not authorization or not authorization.startswith("Bearer "):
+    # Try Bearer header first.
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ", 1)[1]
+    elif request is not None:
+        # No Bearer: try the session cookie (same reader paywall/regwall/collect use).
+        token = _mm_supabase_access_token(request)
+        if token:
+            authorization = f"Bearer {token}"
+        else:
+            token = None
+    else:
+        token = None
+
+    if not token:
         raise HTTPException(401, "missing bearer token")
-    token = authorization.split(" ", 1)[1]
+
     from app.paywall import _resolve_identity  # noqa: PLC0415 — shared cache, not a second one
 
     ident = _resolve_identity(token)
@@ -976,7 +987,10 @@ def require_user(authorization: str | None = Header(default=None)) -> dict:
         raise HTTPException(502, "auth check failed, please try again") from None
     if not ident.uid or not isinstance(ident.record, dict):
         raise HTTPException(401, "invalid token")
-    return dict(ident.record)
+    record = dict(ident.record)
+    # Inject the raw token so callers (account_actions) know what was used.
+    record["_access_token"] = token
+    return record
 
 
 def require_site_full_user(user: dict = Depends(require_user)) -> dict:
@@ -1061,8 +1075,13 @@ def account(user: dict = Depends(require_user),
         # convention as `from app import billing` four lines up.
         from lib import team_membership  # noqa: PLC0415
         from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
+        # Use the resolved token from require_user (which handles both Bearer and cookie).
+        # authorization Header may be absent when only the session cookie was present.
+        # Fall back to extracting from the header when callers bypass require_user (direct
+        # route-level tests; production path always passes through require_user).
+        caller_token = user.get("_access_token") or team_membership.extract_bearer(authorization)
         teams = team_membership.fetch_caller_teams(
-            team_membership.extract_bearer(authorization),
+            caller_token,
             str(user.get("id") or ""),
             _supabase(),
         )
@@ -1681,11 +1700,15 @@ def brain_threads(user: dict = Depends(require_user)):
     """Return thread list for the authenticated user.
 
     Response: {threads: [{id, title, lane, updated_at}]}
-    Empty list when thread store is absent or user has no threads.
+    Empty list only after a successful empty read; store failure is HTTP 503.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    threads = gw.list_threads(user_id)
+    try:
+        threads = gw.list_threads(user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     return {"threads": threads}
 
 
@@ -1694,11 +1717,15 @@ def brain_thread_detail(thread_id: str, user: dict = Depends(require_user)):
     """Return thread + messages for thread_id owned by the authenticated user.
 
     Response: {thread: {...}, messages: [{role, content, created_at}]}
-    HTTP 404 if not found or not owner.
+    HTTP 404 if not found or not owner; HTTP 503 if history cannot be read.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    result = gw.get_thread(thread_id, user_id)
+    try:
+        result = gw.get_thread(thread_id, user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     if result is None:
         raise HTTPException(404, "thread not found or not authorized")
     return result
@@ -1810,7 +1837,8 @@ def _portfolio_load_holdings(uid: str) -> tuple[list[dict], str]:
     Positions mode first: open portfolio_positions (status=open) → shares + entry_price
     (exactly like brain_gateway._tool_get_watchlist). When there are no open positions,
     fall back to the watchlist symbols (equal-weight; shares/entry_price None). Reads via
-    the gateway's service-role _sb_get; any error → empty list (→ empty-book brief).
+    the gateway's service-role `_sb_get`; a failed read returns `unspecified`, and
+    the consuming endpoint fails closed before composing or caching a brief.
 
     W6 / packet amendment A8: this function is the ONLY place that knows which of the two
     queries answered, so it is the only place that can name the population. It is
@@ -1875,7 +1903,8 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     """Pro-only personalized daily portfolio brief (portfolio_brief.v2).
 
     401 (require_user) → not signed in. 403 {error:pro_required,tier} → not Pro.
-    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt.
+    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt;
+    503 {error:portfolio_store_unavailable} → private holdings did not answer.
     Cache: in-process per (uid, ctx-file-mtime, holdings fingerprint), TTL 300s;
     Cache-Control private,no-store.
     """
@@ -1902,6 +1931,15 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     # Holdings first: the population they carry is part of the cache key (see
     # _holdings_fingerprint), so the lookup cannot happen before the load.
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        # The private store did not answer. An unknown book is NOT an empty book: a
+        # 200 here would be composed (and cached for 5 min) as "add names to your
+        # watchlist" — the exact seam Terminal#169 / macro#6819 (C2, 2026-10-04)
+        # named. Fail closed before composing or caching; the Terminal maps 503 to
+        # its existing "unavailable" state and never shows an empty-book CTA.
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
 
     now = time.monotonic()
     ckey = (uid, mtime, _holdings_fingerprint(holdings, population))
@@ -1962,7 +2000,8 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
     Body: {"previous": <state_digest from an earlier brief>}. A missing/blank previous
     is a FIRST visit and returns an empty change list — never a fabricated "everything
     is new". 401 → not signed in. 403 {error:pro_required,tier} → not Pro (same gate as
-    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx unavailable.
+    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx or private holdings
+    unavailable; no change digest is emitted from unknown state.
     """
     response.headers["Cache-Control"] = "private, no-store"
     uid = user.get("id") or user.get("email") or ""
@@ -1988,6 +2027,12 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
         raise HTTPException(503, "portfolio changes unavailable") from exc
 
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        # Same boundary as the brief: a failed read must not diff as "every name
+        # left your book" against the client's stored digest.
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
     tickers = [r.get("ticker") for r in holdings if isinstance(r, dict)]
     current = snapshot_state(ctx, tickers)
 
@@ -2244,6 +2289,12 @@ app.include_router(earnings_router)
 from app.company_intelligence import router as company_intelligence_router  # noqa: E402
 app.include_router(company_intelligence_router)
 
+# Private low-latency ticker-news reads. The router authenticates + enforces
+# site_full, then independently fails closed on feed-specific display rights
+# before opening the qbus store read-only.
+from app.ticker_news import router as ticker_news_router  # noqa: E402
+app.include_router(ticker_news_router)
+
 # Bounded localhost projection of ONE regular-session quote for the static
 # stock dossiers.  Market-data authority stays with the Terminal Quote Plane —
 # this owns no store, socket, scheduler, or vendor credential, and it may only
@@ -2264,6 +2315,14 @@ app.include_router(intel_hub_market_pulse_router)
 # site-full entitlement and carries an all-false authority block on every read.
 from app.market_memory import router as market_memory_router  # noqa: E402
 app.include_router(market_memory_router)
+
+# F04-X1 WTI Live Trace. /ontology.html is a public shell holding no current
+# value; this is the only route that serves one, behind the same
+# require_user -> enforce_site_full(always=True) authority as the desks above.
+# It composes read-only over the existing transmission artifacts and owns no
+# store, cache, scheduler or second evaluation.
+from app.ontology_explorer import router as ontology_explorer_router  # noqa: E402
+app.include_router(ontology_explorer_router)
 
 # Filing Forensics private state transport. The public page is only a shell;
 # this route enforces the same authenticated site_full entitlement as the paid
@@ -2305,6 +2364,12 @@ try:
     app.include_router(capital_structure_router)
 except Exception as _capital_structure_exc:  # noqa: BLE001
     log.warning("capital structure router not mounted: %r", _capital_structure_exc)
+
+try:
+    from app.integrated_answer import router as integrated_answer_router  # noqa: E402
+    app.include_router(integrated_answer_router)
+except Exception as _integrated_answer_exc:  # noqa: BLE001
+    log.warning("integrated answer router not mounted: %r", _integrated_answer_exc)
 
 # Warm the SHARED corpus cache off the request path (Analyst OS W4). The chat
 # tool's mode="report" and the vault routes now read one process-wide copy
@@ -2408,6 +2473,25 @@ try:
 except Exception as _prefs_exc:  # noqa: BLE001
     import logging as _logging  # noqa: PLC0415
     _logging.getLogger("macro.api").warning("account prefs router not mounted: %r", _prefs_exc)
+
+# ---------------------------------------------------------------------------
+# Account actions (MO-B F12-13 — app/account_actions.py): POST
+# /api/account/{password,email,signout-everywhere,delete}. The other four calls
+# templates/account.js has been making since the account card shipped, none of
+# which had a handler here — so every control on the panel was dead. Bearer-authed
+# through require_user and mounted right after account_prefs, for the same reason:
+# both must sit AFTER that definition so the router can lazily reuse the canonical
+# Supabase bearer verifier without an import cycle.
+# ---------------------------------------------------------------------------
+try:
+    from app.account_actions import router as account_actions_router  # noqa: E402
+    app.include_router(account_actions_router)
+except Exception as _account_actions_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning(
+        "account actions router not mounted (account panel controls unavailable): %r",
+        _account_actions_exc,
+    )
 
 # ---------------------------------------------------------------------------
 # Private Options Issue Desk (R6.2-A): bearer-authenticated operator review only.

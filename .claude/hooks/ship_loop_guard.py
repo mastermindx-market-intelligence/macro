@@ -22,20 +22,24 @@ green on the other lane). Ownership is parsed from both workflows at Stop time �
 ``_render_lane_filters`` — never transcribed here, so the guard cannot drift from
 the split.
 
-ARMING ``merge-on-green`` IS NOT AN EXIT (operator ruling 2026-08-12). The label
-still works and the sweeper may still perform the merge — that is a convenience,
-not a transfer of ownership. A session owns its work through
-commit -> push -> PR -> CI -> squash-merge -> live verification, so ``unmerged``
-is satisfied by an actually-merged pull request and by nothing else. The earlier
-rule released a session the moment its pull request carried the label with no
-concluded red; in the field that turned an unfinished job into a reported-complete
-one — a session stopped on a label while its pull request sat ``merge-blocked`` on
-a red check, and the work had to be reopened by hand. What the armed pull request
-still buys is a better BLOCK: ``_armed_pull_status`` names the reds the sweeper
-will refuse, so the session is told what to fix instead of merely that it may not
-leave. The merge-on-CONCLUDED-checks law is unchanged — a pending check is not a
-pass, and an ``--admin`` merge mid-flight destroyed the pull request's own proof
-run (#3867).
+ARMING ``merge-on-green`` IS NOT BY ITSELF AN EXIT (operator ruling
+2026-08-12). The label still works and the sweeper may still perform the merge —
+that is a convenience, not proof that the merge happened. The earlier rule released
+a session the moment its pull request carried the label with no concluded red; in
+the field that turned an unfinished job into a reported-complete one — a session
+stopped on a label while its pull request sat ``merge-blocked`` on a red check,
+and the work had to be reopened by hand.
+
+There is one narrower continuation-safe release. If the session explicitly declares
+``SESSION END: DURABLE_EXECUTION_RUNNING`` and the exact local HEAD is an armed
+pull request whose live verdict is the benign ``unmerged`` wait, the Stop hook may
+release it to the existing merge-on-green controller. A genuine head-owned red is
+``ci_failed_unmerged`` and still blocks, as do an unarmed pull request, a head
+mismatch, dirty bytes, or unpushed commits. This preserves the 2026-08-12 safety
+ruling while preventing the measured 9/10/20+ Stop-hook loops on CI that is already
+owned by durable machinery. The merge-on-CONCLUDED-checks law is unchanged — a
+pending check is not a pass, and an ``--admin`` merge mid-flight destroyed the
+pull request's own proof run (#3867).
 
 THE GUARD MAY NOT WEDGE THE TREE IT IS JUDGING. Its own ``git status`` used to be
 run under a plain ``subprocess`` timeout, whose expiry is a SIGKILL git cannot
@@ -477,6 +481,275 @@ def _repo_root(payload: dict[str, Any]) -> Path | None:
         except Exception:
             continue
     return None
+
+
+# A resumed Claude Desktop/Code conversation can outlive the linked worktree it was
+# born in. Upstream Desktop resume bugs have also been observed rebinding an existing
+# conversation to the repository's primary checkout. The ship loop cannot repair that
+# by changing a shell cwd: the durable session root is already wrong. Quarantine such
+# sessions BEFORE their first modifying tool instead of discovering the mismatch at
+# Stop after work has happened.
+_ROOT_ADMISSION_VERSION = 1
+_ROOT_QUARANTINE_READ_ONLY_TOOLS = frozenset({
+    "Read",
+    "Glob",
+    "Grep",
+    "WebFetch",
+    "WebSearch",
+    "AskUserQuestion",
+})
+# EnterWorktree is the in-session form of the repair this quarantine demands: it
+# moves the conversation's durable root onto a linked worktree. Denying it left a
+# session rooted in the designated local root -- a linked worktree that the
+# workspace law keeps on `main` -- with no in-session exit at all, because every
+# tool able to relocate it was itself quarantined (measured 2026-10-07, Research
+# Vault seat 0e657eec: a live seat frozen mid-program until the Chairman
+# intervened). Admission is still recomputed from the live cwd on every later
+# effectful call, so entering a tree that is not an admissible claude/* worktree
+# simply stays quarantined.
+_ROOT_QUARANTINE_REPAIR_TOOLS = frozenset({
+    "EnterWorktree",
+    # A conversation already sitting in a native `.claude/worktrees/<name>` tree
+    # must leave it before it can enter the admissible one; keeping the tree is
+    # non-destructive, so the exit is part of the same repair (2026-10-10).
+    "ExitWorktree",
+})
+
+# The remedy the quarantine demands is a Bash act the quarantine used to deny
+# (Chairman ruling 2026-10-10: a Meta-CEO seat ended on EXACT_HUMAN_GATE handing
+# the Chairman the mint command the session could run itself --
+# DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR). These
+# anchored shapes admit exactly the host storage-helper mint, the project hook
+# mint, non-destructive git inspection/worktree administration, and read-only
+# host inspection. Tokens exclude shell metacharacters, so pipes other than the
+# one feeding the mint, redirects, substitutions, chaining and newlines all stay
+# denied; a quoted token may not carry `$` or a backtick. The guard still
+# recomputes admission on the next effectful call, so a mint that produced an
+# inadmissible tree changes nothing.
+_Q_TOKEN = r"(?:[^ \t\r\n'\"|;&<>`$()]+|'[^'\r\n]*'|\"[^\"$`\r\n]*\")"
+_Q_ARGS = r"(?:[ \t]+" + _Q_TOKEN + r")*"
+_Q_WS = r"[ \t]*"
+
+
+def _q_script(basename: str) -> str:
+    bare = r"[^ \t\r\n'\"|;&<>`$()]*" + basename
+    return (
+        r"(?:" + bare + r"|'[^'\r\n]*" + basename + r"'|\"[^\"$`\r\n]*" + basename + r"\")"
+    )
+
+
+_Q_FEED = r"(?:(?:echo|printf)" + _Q_ARGS + _Q_WS + r"\|" + _Q_WS + r")?"
+_ROOT_QUARANTINE_REMEDY_BASH = tuple(
+    re.compile(pattern)
+    for pattern in (
+        r"\A" + _Q_WS + _Q_FEED + r"python3?[ \t]+" + _q_script(r"worktree_storage\.py")
+        + r"(?:[ \t]+--config[ \t]+" + _Q_TOKEN + r")?"
+        + r"[ \t]+(?:create|check|check-path|session-start)" + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + _Q_FEED + r"python3?[ \t]+" + _q_script(r"worktree_create_sparse\.py")
+        + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + r"git[ \t]+(?:worktree[ \t]+(?:list|add|lock|unlock)|fetch"
+        r"|branch[ \t]+--(?:show-current|list)|rev-parse|status|remote[ \t]+-v"
+        r"|ls-remote|config[ \t]+--get)" + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + r"(?:pwd|ls|df|du|cat|head|tail|wc|stat|echo|printf|which|test"
+        r"|id|whoami|date|hostname|mount|diskutil|grep)" + _Q_ARGS + _Q_WS + r"\Z",
+    )
+)
+_QUARANTINE_STORAGE_HELPER = (
+    Path.home() / ".local" / "lib" / "mastermind" / "worktree-storage" / "worktree_storage.py"
+)
+_QUARANTINE_STORAGE_POLICY = Path.home() / ".config" / "mastermind" / "worktree-storage.json"
+_QUARANTINE_PROJECT_HOOK = Path(__file__).resolve().parent / "worktree_create_sparse.py"
+
+
+def _tool_command(payload: dict[str, Any]) -> str:
+    tool_input = payload.get("tool_input")
+    if isinstance(tool_input, dict):
+        command = tool_input.get("command")
+        if isinstance(command, str):
+            return command
+    return ""
+
+
+def _is_quarantine_remedy_command(command: str) -> bool:
+    if not command or "\n" in command or "\r" in command:
+        return False
+    return any(pattern.match(command) for pattern in _ROOT_QUARANTINE_REMEDY_BASH)
+
+
+def _quarantine_suggested_name(root: Path) -> str:
+    name = re.sub(r"[^A-Za-z0-9._-]+", "-", root.name)
+    name = re.sub(r"^worktree-", "", name).strip("-._")
+    if not name:
+        return "seat"
+    if not name[0].isalnum():
+        name = "s" + name
+    return name[:80]
+
+
+def _root_is_native_session_tree(root: Path) -> bool:
+    parent = root.parent
+    return parent.name == "worktrees" and parent.parent.name == ".claude"
+
+
+def _quarantine_remedy_text(root: Path, payload: dict[str, Any]) -> str:
+    """The in-session repair, spelled out with this session's own values.
+
+    The text is the whole point: a denial that only says "start a fresh session"
+    reads as an order to stop, and that is how a live Meta-CEO seat ended on an
+    administrative blocker it could clear in seconds (2026-10-10). Every value a
+    session needs -- root, name, session id, helper path -- is filled in, and the
+    shape printed is one `_is_quarantine_remedy_command` admits.
+    """
+    session_id = str(payload.get("session_id") or "") or "<session_id>"
+    request = json.dumps(
+        {"cwd": str(root), "name": _quarantine_suggested_name(root), "session_id": session_id}
+    )
+    quoted = "'" + request.replace("'", "'\\''") + "'"
+    if _QUARANTINE_STORAGE_HELPER.is_file() and _QUARANTINE_STORAGE_POLICY.is_file():
+        mint = "printf '%s' " + quoted + " | python3 " + str(_QUARANTINE_STORAGE_HELPER) + " create"
+        where = "on the external SSD under the host storage policy"
+    else:
+        mint = "printf '%s' " + quoted + " | python3 " + str(_QUARANTINE_PROJECT_HOOK)
+        where = "under this checkout's .claude/worktrees/ (no host storage policy is installed)"
+    exit_step = (
+        "this conversation sits in a native session worktree, so first call ExitWorktree "
+        "keeping the tree, then "
+        if _root_is_native_session_tree(root)
+        else ""
+    )
+    return (
+        "REMEDY -- perform it yourself in this session; never hand it to the operator "
+        "and never end the session on this blocker: (1) mint an admissible tree "
+        + where + " with `" + mint + "` -- it prints the new path; the mint is "
+        "idempotent, and a refusal names its cause (mount, free space, policy, "
+        "receipt): fix that cause and rerun, never fall back to internal disk. (2) "
+        + exit_step + "call EnterWorktree with the printed path. (3) continue the "
+        "normal ship loop there. While quarantined this guard allows exactly that "
+        "mint shape, read-only inspection, and git worktree/fetch/branch/rev-parse/"
+        "status; shell cd, change_directory, a hand branch rename, or repointing the "
+        "shared checkout are not repairs (an unpublished native .claude/worktrees/"
+        "<name> tree on worktree-<name> is already adopted automatically). A fresh "
+        "worktree-backed Claude session (`claude --worktree <name>` or the Desktop "
+        "worktree flow) is the fallback only when EnterWorktree is unavailable."
+    )
+
+
+def _resolved_git_path(root: Path, raw: str) -> Path:
+    path = Path(raw)
+    if not path.is_absolute():
+        path = root / path
+    return path.resolve()
+
+
+def _delivery_root_admission(root: Path) -> tuple[bool, str]:
+    """Admit only a linked worktree on a claude/* branch for delivery work.
+
+    A branch name alone is insufficient: the shared primary checkout can itself
+    be put on a claude/* branch, which would still let one session mutate the root
+    used by every other process. Conversely, being a linked worktree alone is not
+    enough because the ship loop's ownership chain is defined on claude/*.
+
+    Unknown git identity fails closed. This is admission, not completion: the
+    existing Stop chain still owns every delivery/CI/merge/live proof after a
+    session has been admitted.
+    """
+    try:
+        branch = _run(root, "git", "branch", "--show-current")
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+    except Exception as exc:
+        return False, f"git identity unavailable ({type(exc).__name__})"
+
+    reasons: list[str] = []
+    if git_dir == common_dir:
+        reasons.append("cwd is the primary/shared checkout, not a linked worktree")
+    if not branch.startswith("claude/"):
+        reasons.append(f"branch {branch or 'detached HEAD'} is not claude/*")
+    if reasons:
+        return False, "; ".join(reasons)
+    return True, ""
+
+
+# Claude Code's native worktree flow -- and every copy of the WorktreeCreate hook
+# older than its 2026-10-09 BRANCH NAME switch -- mints `.claude/worktrees/<name>`
+# on `worktree-<name>`. Hooks launch from $CLAUDE_PROJECT_DIR, so a host checkout
+# that has not fast-forwarded keeps minting the legacy name long after origin/main
+# moved to `claude/<name>`, while this guard (delegated to the fresh tree) demands
+# claude/*. The result was a session quarantined from its very first tool call in
+# a tree it had just been handed (measured 2026-10-10: two consecutive Desktop /
+# EnterWorktree mints in one seat, both read-only before any work). A tree in
+# exactly that shape is the session's own unpublished carrier, not a shared
+# checkout, so the guard adopts it under the name the current mint hook would
+# have chosen. Everything else -- the primary, the designated local root, a pushed
+# branch, a tree outside `.claude/worktrees/`, a branch that does not match its
+# directory -- stays quarantined, and a hand rename is still not a repair.
+_NATIVE_SESSION_BRANCH_PREFIX = "worktree-"
+
+
+def _adopt_native_session_branch(root: Path) -> str:
+    """Rename an unpublished native ``worktree-<name>`` branch to ``claude/<name>``.
+
+    Returns the adopted branch, or "" when ``root`` is not exactly a native session
+    tree. Every condition must hold: ``root`` is a linked worktree whose directory
+    sits directly in a ``.claude/worktrees/`` folder, its branch is
+    ``worktree-<directory name>``, that branch has no upstream and no
+    remote-tracking copy (so no PR or sibling can know it by that name), and
+    ``claude/<directory name>`` is a valid, unused branch. ``git branch -m``
+    without ``-M`` refuses to clobber a branch created in the meantime.
+
+    Never raises. Admission is recomputed by the caller afterwards and still fails
+    closed, so a failed or skipped adoption leaves the session exactly as
+    quarantined as it was.
+    """
+    try:
+        root = root.resolve()
+        name = root.name
+        if root.parent.name != "worktrees" or root.parent.parent.name != ".claude":
+            return ""
+        legacy = _NATIVE_SESSION_BRANCH_PREFIX + name
+        if _run(root, "git", "branch", "--show-current") != legacy:
+            return ""
+        if Path(_run(root, "git", "rev-parse", "--show-toplevel")).resolve() != root:
+            return ""
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+        if git_dir == common_dir:
+            return ""
+        if _capture(
+            root, ("git", "config", "--get", f"branch.{legacy}.remote"), 45
+        ).stdout.strip():
+            return ""
+        if _run(
+            root,
+            "git",
+            "for-each-ref",
+            "--format=%(refname)",
+            f"refs/remotes/*/{legacy}",
+        ):
+            return ""
+        adopted = f"claude/{name}"
+        if _capture(root, ("git", "check-ref-format", "--branch", adopted), 45).returncode:
+            return ""
+        # Compare case-insensitively across every local branch. On a
+        # case-insensitive volume (default APFS) an exact-name probe misses a
+        # PACKED `claude/<Name>`, and the rename would then write a loose ref whose
+        # file shadows it -- two branch names resolving to one file.
+        wanted = f"refs/heads/{adopted}".casefold()
+        if any(
+            ref.casefold() == wanted
+            for ref in _run(
+                root, "git", "for-each-ref", "--format=%(refname)", "refs/heads/"
+            ).splitlines()
+        ):
+            return ""
+        _run(root, "git", "branch", "-m", legacy, adopted)
+        return adopted
+    except Exception:
+        return ""
 
 
 def _state_path(root: Path, payload: dict[str, Any]) -> Path:
@@ -1812,6 +2085,9 @@ def _is_spurious_check(name: str) -> bool:
 #: so on every one of them this context is red BY DESIGN. It is retarget-invalidation
 #: state, not a verdict. `ci-authority/main` stays binding everywhere.
 CI_AUTHORITY_INACTIVE_CONTEXT = "ci-authority/codex/merge-queue-pilot"
+# External Vercel quota failures are not repository proof. Keep this exact-name
+# exclusion mirrored with scripts/merge_on_green.py.
+VERCEL_STATUS_CONTEXT = "Vercel"
 
 
 def _is_non_binding_check(name: str) -> bool:
@@ -1837,7 +2113,12 @@ def _is_non_binding_check(name: str) -> bool:
     "widening is a RULING, not a refactor" contract; this adds exactly one name, and
     that name's redness is a documented property of the workflow that emits it.
     """
-    return _is_spurious_check(name) or str(name or "") == CI_AUTHORITY_INACTIVE_CONTEXT
+    check = str(name or "")
+    return (
+        _is_spurious_check(check)
+        or check == VERCEL_STATUS_CONTEXT
+        or check == CI_AUTHORITY_INACTIVE_CONTEXT
+    )
 
 
 def _open_pull(owner: str, repo: str, branch: str) -> dict[str, Any] | None:
@@ -1899,6 +2180,136 @@ def _split_head_runs(
         elif run.get("conclusion") == "success":
             passed.append(name)
     return red, pending, passed
+
+
+#: The repository-owned proof anchors `scripts/merge_on_green.py` will not merge
+#: without: its `REQUIRED_CI_GATE`, `REQUIRED_FENCE_ANCHOR`,
+#: `REQUIRED_FORK_FENCE_ANCHORS` and `REQUIRED_CI_ANCHORS`. They are literals here
+#: for the reason `_is_spurious_check` gives: this hook is loaded by file path and
+#: may not acquire the sweeper's import graph to answer one question. Change them
+#: here and in the sweeper together, or in neither. `tests/test_ship_loop_guard.py`
+#: compares both the constants and the two verdict functions.
+PROOF_CI_GATE_ANCHOR = "ci-gate"
+PROOF_FENCE_ANCHOR = "fence-pack"
+PROOF_FORK_FENCE_ANCHORS = frozenset({"self-mod-fence", "capability-broker", "grader-manifest"})
+PROOF_CI_PACK_ANCHORS = frozenset(f"ci-pack-{index}" for index in range(12))
+_PROOF_PACK_RE = re.compile(r"^ci-pack-\d+$")
+#: The sweeper's `{"success"} | CLEAN_CONCLUSIONS | INCOMPLETE_CONCLUSIONS`. An
+#: anchor concluding anything else is `blocked`, not merely unproven.
+_PROOF_UNBLOCKED_CONCLUSIONS = frozenset({"success", "neutral", "skipped", "cancelled", "stale"})
+
+
+def _is_actions_check(run: dict[str, Any]) -> bool:
+    """Only GitHub Actions can publish a proof anchor (the sweeper's `is_actions_check`)."""
+    return str(((run.get("app") or {}).get("slug")) or "").lower() == "github-actions"
+
+
+def _proof_anchor_runs(runs: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Newest Actions check run per proof-anchor name (the sweeper's `proof_anchor_runs`)."""
+    anchors: dict[str, dict[str, Any]] = {}
+    wanted = (
+        PROOF_CI_PACK_ANCHORS
+        | {PROOF_FENCE_ANCHOR, PROOF_CI_GATE_ANCHOR}
+        | PROOF_FORK_FENCE_ANCHORS
+    )
+    for run in runs:
+        name = str(run.get("name") or "")
+        if name not in wanted or not _is_actions_check(run):
+            continue
+        previous = anchors.get(name)
+        if previous is None or int(run.get("id") or 0) >= int(previous.get("id") or 0):
+            anchors[name] = run
+    return anchors
+
+
+def _proof_anchor_verdict(runs: list[dict[str, Any]]) -> tuple[str, list[str]]:
+    """The sweeper's affirmative-proof question, asked of the rollup already fetched.
+
+    A copy of `proof_anchor_verdict` in `scripts/merge_on_green.py`, with the same
+    ``(verdict, names)`` answer: ``clean`` only when `ci-gate`, every SCHEDULED
+    `ci-pack-N` and a fence anchor (`fence-pack`, or the three fork fences standing
+    in for a skipped one) concluded `success`.
+
+    The hook needs it because `_split_head_runs` only sorts check runs that EXIST.
+    While a head's ci.yml run is still `pending` (queued behind the same PR's
+    previous-head run in its concurrency group), ci.yml has published nothing, so
+    the fast workflows are the whole rollup and all of them have concluded. #7969
+    was told "every check has concluded clean; the next sweep should merge it" in
+    exactly that state, at ~00:50Z on 2026-09-25, with eleven light checks and no
+    ci.yml check at all. The sweeper refused, because it asks this question; the
+    hook now asks it too. The answer is read off ``runs``, so it costs no REST call.
+
+    The sweeper requires `ci-gate` on EVERY head it considers. ci.yml's `paths:`
+    list includes `**`, and its #5555 comment gives the reason: a faster workflow
+    can otherwise be the only proof visible. Mirroring it therefore means no
+    separate "does ci.yml apply to this PR" test here, either.
+    """
+    anchors = _proof_anchor_runs(runs)
+    required = {
+        str(run.get("name") or "")
+        for run in runs
+        if _PROOF_PACK_RE.match(str(run.get("name") or "")) and _is_actions_check(run)
+    } | {PROOF_CI_GATE_ANCHOR}
+    standard_fence = anchors.get(PROOF_FENCE_ANCHOR)
+    fork_fences_present = PROOF_FORK_FENCE_ANCHORS <= anchors.keys()
+    if standard_fence is not None and (
+        standard_fence.get("conclusion") != "skipped" or not fork_fences_present
+    ):
+        required.add(PROOF_FENCE_ANCHOR)
+    elif fork_fences_present:
+        required.update(PROOF_FORK_FENCE_ANCHORS)
+    else:
+        required.add(PROOF_FENCE_ANCHOR)
+
+    missing = sorted(required - anchors.keys())
+    if missing:
+        return "incomplete", missing
+    pending = sorted(name for name in required if anchors[name].get("status") != "completed")
+    if pending:
+        return "pending", pending
+    bad = sorted(
+        f"{name} ({anchors[name].get('conclusion')})"
+        for name in required
+        if anchors[name].get("conclusion") not in _PROOF_UNBLOCKED_CONCLUSIONS
+    )
+    if bad:
+        return "blocked", bad
+    incomplete = sorted(
+        name for name in required if anchors[name].get("conclusion") != "success"
+    )
+    if incomplete:
+        return "incomplete", incomplete
+    return "clean", sorted(required)
+
+
+def _proof_anchor_gap(runs: list[dict[str, Any]], names: list[str]) -> str:
+    """Why the sweeper will not merge a head, given `_proof_anchor_verdict`'s names.
+
+    Leads with `ci-gate`, the anchor whose absence is the #7969 shape. It is the
+    last proof ci.yml publishes, so while it is missing nothing from the pack run
+    is in the rollup.
+    """
+    gate = _proof_anchor_runs(runs).get(PROOF_CI_GATE_ANCHOR)
+    others = [name for name in names if name.split(" (", 1)[0] != PROOF_CI_GATE_ANCHOR]
+    if gate is None:
+        gap = (
+            "ci.yml has not started or published ci-gate for this head yet — the "
+            "sweeper will not merge until ci-gate concludes"
+        )
+    elif gate.get("status") != "completed" or gate.get("conclusion") != "success":
+        state = gate.get("conclusion") or gate.get("status") or "unknown"
+        gap = (
+            f"ci-gate has not concluded `success` on this head ({state}) — the sweeper "
+            "will not merge until it does"
+        )
+    else:
+        return (
+            f"the sweeper's proof anchors are incomplete on this head "
+            f"({', '.join(others[:8])}) — it will not merge until they conclude `success`"
+        )
+    if others:
+        gap = f"{gap} (also incomplete: {', '.join(others[:8])})"
+    return gap
 
 
 def _main_proof_reds(owner: str, repo: str, reference: str) -> dict[str, str]:
@@ -2072,13 +2483,35 @@ def _base_red_block(number: Any, excused: dict[str, str], pending: list[str]) ->
         f"and its red is INHERITED FROM MAIN, not yours: {cited}.{tail} Do not start healing "
         "a pack you did not break — under a fleet-wide red every armed session sees this "
         "same failure, and two partial heals of one pack can never both go green (CLAUDE.md "
-        "§'Healing a red pack'). The sweeper drains an inherited backlog by itself once main "
-        "is proven again; the lever is `gh workflow run ci.yml --ref main`, and it is "
-        "DESTRUCTIVE over a live baseline — preflight `gh run list --workflow ci.yml "
-        "--branch main --json databaseId,status --jq '[.[]|select(.status!=\"completed\")]'` "
-        "and WATCH an in-flight run (`gh run watch <id> --interval 60`) instead of "
-        "re-dispatching over it. You still own this pull request until the merge lands."
+        "§'Healing a red pack'). The merge-on-green controller drains an inherited "
+        "backlog by itself and owns any bounded main re-proof it needs. Do not dispatch "
+        "another baseline or start a shell/REST polling loop from this session; that "
+        "duplicates the controller and spends shared quota without changing the verdict."
     )
+
+
+def _armed_wait_has_durable_owner(code: str, detail: str) -> bool:
+    """Whether an armed unmerged verdict names machinery that can advance it.
+
+    unmerged also covers fail-closed proof gaps where no CI run may have been
+    scheduled at all. Those are intentionally NOT durable waits: the hook itself
+    says no sweep will ever merge such a head. Keep this positive-list narrow and
+    tied only to verdicts whose generated detail names an actual controller wake or
+    independently healing inherited-red path.
+    """
+    if code != "unmerged":
+        return False
+    text = detail.lower()
+    durable_markers = (
+        "still running:",
+        "still running here:",
+        "while checks run:",
+        "next sweep should merge it",
+        "next sweep owns prooffreshness and merge",
+        "sweeper still applies prooffreshness before merging",
+        "drains an inherited backlog by itself",
+    )
+    return any(marker in text for marker in durable_markers)
 
 
 def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[str, str]:
@@ -2099,7 +2532,10 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         exists to prevent is not also the cheapest one to leave.
       ``unmerged`` — armed and not merged, with nothing red that is THIS head's:
         checks pending, all clean, nothing non-spurious at all, or every red
-        provably inherited from main (`_base_side_pre_merge`). The label means the
+        provably inherited from main (`_base_side_pre_merge`). "All clean" means
+        the sweeper's proof anchors are satisfied (`_proof_anchor_verdict`), not
+        merely that every check in the rollup concluded: before ci.yml starts, the
+        rollup holds only the fast workflows (#7969). The label means the
         sweeper MAY perform the merge; it does not mean this session has finished.
         Stay with the pull request until the merge lands.
 
@@ -2239,22 +2675,49 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         return CI_FAILED_UNMERGED, detail
     if pending:
         state = "still running: " + ", ".join(pending[:8])
-    elif passed:
-        state = "every check has concluded clean; the next sweep should merge it"
     else:
-        state = (
-            "nothing non-spurious has checked this head, so no sweep will ever merge it "
-            "(an absence of red is not a pass) — push a change CI can see, or merge by hand"
-        )
-    return "unmerged", (
+        # The buckets above only sort check runs that EXIST. A ci.yml run still queued
+        # in its concurrency group has published none (#7969), so "nothing pending,
+        # something passed" is not the sweeper's clean. Ask its anchor question of the
+        # same rollup instead: no extra REST call.
+        anchor_verdict, anchor_names = _proof_anchor_verdict(runs)
+        probe = f"`gh run list --workflow ci.yml --branch {branch} --limit 3`"
+        if anchor_verdict == "clean":
+            state = "every check has concluded clean; the next sweep should merge it"
+        elif passed:
+            state = (
+                f"{_proof_anchor_gap(runs, anchor_names)}. The checks that have concluded "
+                "are not the whole proof, so this head is NOT concluded-green: never merge "
+                "it by hand before the missing proof concludes (CLAUDE.md 'Merge on "
+                "CONCLUDED checks, never mid-flight', #3867). A queued ci.yml run shows in "
+                f"{probe}, not in the rollup"
+            )
+        else:
+            state = (
+                f"{_proof_anchor_gap(runs, anchor_names)}. No non-spurious check has "
+                f"passed on this head, and an absence of red is not a pass: if {probe} "
+                "shows its ci.yml run queued, wait for it; if none was ever scheduled (a "
+                "dropped webhook, `[skip ci]`), no sweep will ever merge it — push a "
+                "change CI can see"
+            )
+    detail = (
         f"Pull request #{number} is armed with `{MERGE_ON_GREEN_LABEL}` but is NOT merged "
-        f"yet — {state}. Arming the label buys a merge you do not have to perform; it does "
-        "not end this session. You own this work through commit -> push -> PR -> CI -> "
-        "squash-merge -> live verification, so stay with it until the merge lands. Watch "
-        "on ONE slow watcher (`gh run watch <id> --interval 60`; a run here takes 30-34 "
-        "minutes) and preflight `gh api rate_limit` — the 5,000/hr REST pool is shared "
-        "with every other session and with this hook, which fails closed when it is spent."
+        f"yet — {state}."
     )
+    if _armed_wait_has_durable_owner("unmerged", detail):
+        detail += (
+            " The label is not proof of completion, but the existing merge-on-green "
+            "controller owns this benign wait and wakes from proof-workflow completion. "
+            "Do not start a shell watcher or repeatedly poll GitHub from this session; "
+            "that duplicates the controller and burns shared REST quota."
+        )
+    else:
+        detail += (
+            " This is not yet a durable wait: the required proof has not been observed. "
+            "Check the named proof gap once; if the run was never scheduled, repair that "
+            "cause rather than polling an unchanged state."
+        )
+    return "unmerged", detail
 
 
 def _failing_ci_message(display: list[str]) -> str:
@@ -3803,6 +4266,211 @@ def _transcript_final_message(payload: dict[str, Any]) -> str:
     return ""
 
 
+# --------------------------------------------------------------------------------------
+# Execution continuation law (2026-09-17). Pure functions, no I/O, no inference.
+#
+# Every gate below judges the SHIP CHAIN of a session that already produced a commit.
+# None of them can see the failure family that ends missions BEFORE that chain is ever
+# reached: a session that stops while authorized work remains. Observed repeatedly —
+# one blocked review or tool lane treated as the end of the whole mission; a
+# checkpoint, status note or continuation record mistaken for the outcome it only
+# describes; a
+# principal seat spending itself re-polling a queue a durable watcher already owns; a
+# delegation surface being unavailable read as "execution is impossible" when lawful
+# direct bounded execution remained; accepted work redone with no material
+# invalidator; and an upstream acknowledgement reported as though it were START,
+# RUNNING, MERGED or ACCEPTANCE.
+#
+# The guard cannot observe lanes, custody, delegation scope or carriers, and it must
+# not try: inferring them would make this hook a control plane, which repository law
+# forbids. What it CAN do is exactly two things, and this section is limited to them.
+#
+# 1. REFUSE one self-declared state. `MORE_WORK_EXISTS` is, by the session's own
+#    admission, not a finished mission. The session writes that token itself, so the
+#    refusal has no false positives by construction, and `_block`'s any-code ladder
+#    (10 consecutive / 15 total) keeps it from ever trapping a session.
+# 2. CORRECT the advice every other block carries. The old body said the same
+#    sentence on block 1 and on block 25 — "Continue the task and complete
+#    commit -> ... -> live verification" — which is exactly what taught sessions to
+#    answer a wait with one more poll. `.claude/hooks/gh_quota_guard.py` shape 7
+#    documents that mechanism and measured ~25 consecutive Stop cycles of it in one
+#    session that already had a watcher armed. A repeat of the same code is a
+#    no-delta cycle and now reads as one.
+#
+# Everything the hook cannot observe stays law rather than code, on the surfaces that
+# already carry fleet law: CLAUDE.md and AGENTS.md § "Execution continuation law",
+# `.cursor/rules/execution-continuation.mdc`, and
+# `DEC:EXECUTION-CONTINUATION-INVARIANTS`.
+# --------------------------------------------------------------------------------------
+
+# The closed set of states a substantial session may classify itself into before it
+# ends. Closed on purpose: an open vocabulary is how "checkpoint written", "records
+# note posted" and "context rotated" each came to be reported as though they were the
+# outcome those artifacts only describe.
+SESSION_END_STATES = (
+    "PROVEN_OUTCOME",
+    "EXACT_HUMAN_GATE",
+    "EFFECT_UNKNOWN",
+    "PLATFORM_FAILURE",
+    "ALL_SCOPED_LANES_BLOCKED",
+    "DURABLE_EXECUTION_RUNNING",
+    "MORE_WORK_EXISTS",
+)
+# These members are diagnostics, never lawful terminal states. The guard does not infer
+# whether lanes are really blocked; it only refuses a token the session declared about
+# itself. That keeps enforcement auditable without turning this hook into a control plane.
+NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS", "ALL_SCOPED_LANES_BLOCKED"})
+MORE_WORK_EXISTS = "more_work_exists"
+ALL_SCOPED_LANES_BLOCKED = "all_scoped_lanes_blocked"
+DURABLE_WAIT_EXIT_GUIDANCE = (
+    " Durable machinery owns this exact wait. If no other authorized work remains, "
+    "finish with `SESSION END: DURABLE_EXECUTION_RUNNING`; do not spend another "
+    "turn polling the same state."
+)
+
+# A DECLARATION, never a mention. The marker is required so that a session quoting
+# the law ("MORE_WORK_EXISTS is not a valid stopping state") in its own final message
+# cannot block itself. Same shape as the `SHIP LOOP BLOCKED:` report the escape ladder
+# already reads, and for the same reason: an explicit token is auditable, a prose
+# match is not.
+_SESSION_END_DECLARATION = re.compile(
+    r"(?im)^[\s>*_`#-]*SESSION[ _-]?END(?:[ _-]?STATE)?\s*[:=]\s*[\s*_`]*(?P<state>[A-Z_]{4,})"
+)
+
+# The delivery rungs, weakest to strongest. Each is a DISTINCT fact and none implies
+# the next: a queued job has not started, a returned packet has not passed CI, a
+# merged pull request is not production proof, and production proof is not acceptance
+# by the authority that commissioned the work.
+DELIVERY_LADDER = (
+    "ACK",
+    "QUEUED",
+    "START",
+    "RUNNING",
+    "DELIVERED",
+    "CI",
+    "MERGED",
+    "PRODUCTION_PROOF",
+    "ACCEPTANCE",
+)
+# Tokens whose ALL-CAPS appearance in a final message is a delivery CLAIM rather than
+# ordinary prose. "CI" and "ACK" are deliberately absent: both occur constantly in
+# ordinary sentences about check runs and acknowledgements, and this mapping only ever
+# appends an advisory line to a block that was already going to be filed — a wrong
+# advisory line is cheap, but it is not free, so the ambiguous tokens stay out.
+_DELIVERY_CLAIM_TOKENS = {
+    "QUEUED": "QUEUED",
+    "RUNNING": "RUNNING",
+    "DELIVERED": "DELIVERED",
+    "MERGED": "MERGED",
+    "PRODUCTION_PROOF": "PRODUCTION_PROOF",
+    "SHIPPED": "PRODUCTION_PROOF",
+    "ACCEPTANCE": "ACCEPTANCE",
+    "ACCEPTED": "ACCEPTANCE",
+}
+_DELIVERY_CLAIM_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_])(" + "|".join(sorted(_DELIVERY_CLAIM_TOKENS, key=len, reverse=True)) + r")(?![A-Za-z0-9_])"
+)
+# The strongest rung each block code PROVES. A code absent from this map proves
+# nothing about delivery (the probe itself failed), so it never produces a conflation
+# line — silence is the fail-open direction for advice.
+_PROVEN_STAGE_BY_BLOCKER = {
+    "uncommitted": "RUNNING",
+    "unsafe_branch": "RUNNING",
+    "unpushed": "RUNNING",
+    MORE_WORK_EXISTS: "RUNNING",
+    "unmerged": "CI",
+    CI_FAILED_UNMERGED: "CI",
+    "ci_failed": "MERGED",
+    "render_pending": "MERGED",
+    "render_failed": "MERGED",
+    "live_stale": "MERGED",
+    "live_unreachable": "MERGED",
+}
+# Blocks whose resolution is owned by machinery OUTSIDE this session — a check run, a
+# render lane, the merge sweeper, GitHub's own rate window. Re-reading them cannot
+# change them, which is the whole content of the shape 7 incident.
+WAITING_BLOCKERS = frozenset(
+    {"unmerged", "ci_failed", CI_FAILED_UNMERGED, "render_pending", "live_stale", "github_rate_limited"}
+)
+
+
+def declared_session_end_state(text: str) -> str:
+    """Return the session-end state a final message DECLARES, or "".
+
+    A message carrying several declarations is a confused one, so the resolution is
+    fail-closed toward continuing work: if any declaration is non-terminal, that is
+    the operative one. Otherwise the last declaration wins, which is what lets a
+    session revise its own classification within one message.
+    """
+    found = [
+        match.group("state").upper()
+        for match in _SESSION_END_DECLARATION.finditer(text or "")
+        if match.group("state").upper() in SESSION_END_STATES
+    ]
+    if not found:
+        return ""
+    for state in found:
+        if state in NON_TERMINAL_SESSION_END_STATES:
+            return state
+    return found[-1]
+
+
+def strongest_delivery_claim(text: str) -> str:
+    """Return the highest delivery rung a final message asserts, or ""."""
+    best = ""
+    for token in _DELIVERY_CLAIM_PATTERN.findall(text or ""):
+        rung = _DELIVERY_CLAIM_TOKENS[token]
+        if not best or DELIVERY_LADDER.index(rung) > DELIVERY_LADDER.index(best):
+            best = rung
+    return best
+
+
+def delivery_claim_conflation(code: str, claimed: str) -> str:
+    """Name the gap when a final message claims a rung the evidence does not reach."""
+    proven = _PROVEN_STAGE_BY_BLOCKER.get(code, "")
+    if not proven or not claimed or claimed not in DELIVERY_LADDER:
+        return ""
+    if DELIVERY_LADDER.index(claimed) <= DELIVERY_LADDER.index(proven):
+        return ""
+    return (
+        f"Your report claims `{claimed}`; this session's evidence reaches only "
+        f"`{proven}`. The rungs "
+        + " -> ".join(DELIVERY_LADDER)
+        + " are distinct facts and none implies the next: report the proven rung."
+    )
+
+
+def continuation_directive(code: str, repeat: int, claimed: str = "") -> str:
+    """Compose the lawful next move for one block, from facts the guard already holds.
+
+    `repeat` is the CONSECUTIVE count of this same code, straight off `_block`'s own
+    ledger, and `claimed` is the strongest delivery rung the final message asserts.
+    Nothing here probes anything: every clause is derived from a fact already measured
+    by the caller, which is what keeps this a message correction rather than a second
+    control plane.
+    """
+    parts = [
+        "Freeze the blocked lane only. Independent authorized lanes continue, and a "
+        "blocker in one lane is never a finished mission."
+    ]
+    if code in WAITING_BLOCKERS:
+        parts.append(
+            "This block is a WAIT owned outside this session. Re-reading it cannot "
+            "change it and does not answer this block; a one-line hold note does. "
+            "Spend the interval on an independent lane, never on the queue."
+        )
+    if repeat >= 2:
+        parts.append(
+            f"No-delta cycle {repeat} on `{code}`: the previous attempt changed "
+            "nothing observable, so a third identical attempt is banned. Change "
+            "tactic, change lane, or change owner."
+        )
+    conflation = delivery_claim_conflation(code, claimed)
+    if conflation:
+        parts.append(conflation)
+    return " ".join(parts)
+
+
 def _block(
     path: Path,
     state: dict[str, Any],
@@ -3918,7 +4586,14 @@ def _block(
     body = (
         f"SHIP LOOP {code}: {reason}\n"
         "Continue the task and complete commit → push → PR → CI → squash-merge → "
-        "render/deploy → live verification."
+        "render/deploy → live verification.\n"
+        # The old body ended here, saying the same sentence on block 1 and block 25.
+        # That is the sentence shape 7 of `gh_quota_guard.py` measured turning into
+        # ~25 consecutive Stop cycles of single CI polls: an unchanging instruction
+        # invites an unchanging response. The directive is composed from this
+        # guard's OWN ledger (the consecutive count) and the final message it has
+        # already read, so it costs nothing and it changes when the state does.
+        + continuation_directive(code, count, strongest_delivery_claim(final))
     )
     if escape_hint:
         body += (
@@ -3928,35 +4603,199 @@ def _block(
     _emit({"decision": "block", "reason": body})
 
 
+def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
+    return {
+        "root": str(root),
+        "start_head": _run(root, "git", "rev-parse", "HEAD"),
+        # A quarantined root is read-only, so paying for a full fingerprint of
+        # the shared checkout is both needless and capable of adding fleet noise.
+        "baseline": _fingerprint(root) if admitted else {},
+        # False only for a record BORN quarantined: its start_head/baseline are
+        # deferred to the moment the root is first admitted. A record that was ever
+        # admitted keeps its pre-work snapshot through any later quarantine flip.
+        "baseline_captured": admitted,
+        "last_blocker": "",
+        "blocker_count": 0,
+        "total_blocks": 0,
+        "external_blocks": 0,
+    }
+
+
+def _capture_deferred_baseline(root: Path, state: dict[str, Any]) -> None:
+    """Take the pre-work snapshot a quarantined birth deliberately skipped.
+
+    Only a record whose ``baseline_captured`` is exactly False is refreshed: it was
+    born quarantined, so nothing between its birth and this first admission could
+    have been the session's own work. A record that was admitted at any point --
+    including one later flipped to quarantined by a resume/compact on a detached
+    HEAD or a transient git-identity failure -- keeps its start_head, baseline and
+    block counters. Re-capturing those would absorb the session's own commits into
+    start_head and its dirt into the baseline, and Stop would release unshipped work.
+    Legacy records without the field keep everything too, which fails closed.
+    """
+    if state.get("baseline_captured") is False:
+        state["start_head"] = _run(root, "git", "rev-parse", "HEAD")
+        state["baseline"] = _fingerprint(root)
+        state["baseline_captured"] = True
+
+
 def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     source = str(payload.get("source") or "")
+    adopted = _adopt_native_session_branch(root)
+    admitted, admission_reason = _delivery_root_admission(root)
     state = _load(path)
     if state is None or source in {"startup", "clear"}:
-        state = {
-            "root": str(root),
-            "start_head": _run(root, "git", "rev-parse", "HEAD"),
-            "baseline": _fingerprint(root),
-            "last_blocker": "",
-            "blocker_count": 0,
-            "total_blocks": 0,
-            "external_blocks": 0,
-        }
-        _save(path, state)
+        state = _initial_state(root, admitted)
+    elif admitted:
+        _capture_deferred_baseline(root, state)
+    # Refresh on every startup/resume/compact. A Desktop conversation can retain
+    # its session identity while its durable cwd changes underneath it.
+    state["root_admission_v"] = _ROOT_ADMISSION_VERSION
+    state["root_admitted"] = admitted
+    state["root_admission_reason"] = admission_reason
+    _save(path, state)
+
+    ship_loop_context = (
+        "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
+        "commit, push, pull request, CI repair, same-day squash merge, deploy "
+        "waiting, and real-live verification. Work only in a fresh "
+        ".claude/worktrees/ claude/* branch. Do not stop at a local change, "
+        "commit, or open PR. This session's starting dirty files were recorded "
+        "and are excluded from enforcement.\n"
+        "EXECUTION CONTINUATION LAW: A blocker freezes the affected lane "
+        "only - check independent authorized lanes and continue. If no "
+        "worker started and lawful principal tools and custody remain, "
+        "with no conflicting owner and no EFFECT_UNKNOWN, bounded direct "
+        "execution may continue; a delegation surface being unavailable "
+        "is not a reason to stop. A wait on external machinery is handed "
+        "to a durable watcher or owner while you do parallel work - never "
+        "spend principal capacity polling. Two equivalent no-delta cycles "
+        "means change tactic, lane, or owner. Accepted work is "
+        "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
+        "reconciled on the same carrier, never by blind retry or "
+        "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "
+        "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
+        "implies the next. Before a substantial session ends, state one "
+        "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
+        "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, PLATFORM_FAILURE, "
+        "ALL_SCOPED_LANES_BLOCKED, DURABLE_EXECUTION_RUNNING, "
+        "MORE_WORK_EXISTS - and MORE_WORK_EXISTS plus "
+        "ALL_SCOPED_LANES_BLOCKED are never valid stopping states. "
+        "The latter is a diagnostic: internal blockers must be resolved, "
+        "routed to their canonical owner, or bound to real durable execution."
+    )
+    if not admitted:
+        context = (
+            "SESSION ROOT QUARANTINE: This conversation is attached to a repository "
+            "root that is not an admissible linked claude/* worktree ("
+            + admission_reason
+            + "). Treat this session as READ-ONLY until you have moved it. "
+            + _quarantine_remedy_text(root, payload)
+            + "\n"
+            + ship_loop_context
+        )
+    else:
+        context = ship_loop_context
+    if adopted:
+        context = (
+            "SESSION BRANCH ADOPTED: this unpublished native session worktree was "
+            "minted on " + _NATIVE_SESSION_BRANCH_PREFIX + root.name + "; the guard "
+            "renamed it to " + adopted + ", the name the current WorktreeCreate hook "
+            "mints, so the session is admitted for delivery work.\n" + context
+        )
     _emit(
         {
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
-                "additionalContext": (
-                    "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
-                    "commit, push, pull request, CI repair, same-day squash merge, deploy "
-                    "waiting, and real-live verification. Work only in a fresh "
-                    ".claude/worktrees/ claude/* branch. Do not stop at a local change, "
-                    "commit, or open PR. This session's starting dirty files were recorded "
-                    "and are excluded from enforcement."
+                "additionalContext": context,
+            }
+        }
+    )
+
+
+def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
+    """Make a silently rebound/primary-root session read-only before side effects.
+
+    This hook intentionally re-evaluates the live cwd on every wired effectful
+    tool call instead of trusting SessionStart state. If Desktop loses or rebinds a worktree between
+    turns, the next modifying tool is stopped at admission rather than discovered
+    much later by the Stop hook.
+    """
+    admitted, reason = _delivery_root_admission(root)
+    if not admitted:
+        # Recompute even when this call adopted nothing: a concurrent hook process
+        # may have won the rename between the two probes, and its loser must not
+        # deny a tree that is already admissible.
+        _adopt_native_session_branch(root)
+        admitted, reason = _delivery_root_admission(root)
+    if admitted:
+        _seed_relocated_state(root, path)
+        return
+    tool = str(payload.get("tool_name") or "")
+    if tool in _ROOT_QUARANTINE_READ_ONLY_TOOLS or tool in _ROOT_QUARANTINE_REPAIR_TOOLS:
+        return
+    if tool == "Bash" and _is_quarantine_remedy_command(_tool_command(payload)):
+        return
+    _emit(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": (
+                    "SESSION ROOT QUARANTINE: refusing tool "
+                    + (tool or "<unknown>")
+                    + " because this conversation is not attached to a linked "
+                    "claude/* worktree (" + reason + "). "
+                    + _quarantine_remedy_text(root, payload)
                 ),
             }
         }
     )
+
+
+def _seed_relocated_state(root: Path, path: Path) -> None:
+    """Give a session that moved itself with EnterWorktree a completion record.
+
+    Completion state is keyed by root, and SessionStart only ever wrote one for the
+    root the conversation was born in. A session relocated onto an admissible
+    worktree therefore reached Stop with no state here, and Stop treats a missing
+    record as nothing to enforce -- so the repair path would have silently exempted
+    the very carrier the ship loop is meant to bind. Seed the record at the first
+    admitted effectful call: start_head and the dirty baseline are captured before
+    that call's side effect, which is the same moment SessionStart would have used.
+    Admission never depends on this write; a failure here leaves the tool allowed.
+
+    A record that says this same root is QUARANTINED is re-admitted too. Stop skips
+    enforcement entirely for ``root_admitted: False``, so a root that became
+    admissible in place -- native branch adoption, or a git-identity probe that
+    failed transiently at SessionStart -- would otherwise mutate with no ship loop
+    behind it. Re-admission is a flag flip, never a fresh record: only a record
+    born quarantined has its snapshot taken now (``_capture_deferred_baseline``),
+    while one that was admitted before a resume/compact quarantined it keeps the
+    start_head and baseline that already hold the session's own work.
+    """
+    try:
+        existing = _load(path)
+        quarantined = (
+            existing is not None
+            and existing.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+            and existing.get("root_admitted") is False
+        )
+        if existing is not None and not quarantined:
+            return
+        if existing is None:
+            state = _initial_state(root, True)
+            state["seeded_by"] = "pre_tool_use_relocation"
+        else:
+            state = existing
+            _capture_deferred_baseline(root, state)
+            state["seeded_by"] = "pre_tool_use_admission"
+        state["root_admission_v"] = _ROOT_ADMISSION_VERSION
+        state["root_admitted"] = True
+        state["root_admission_reason"] = ""
+        _save(path, state)
+    except Exception:
+        return
 
 
 def _fast_forwarded_onto_main(root: Path) -> bool:
@@ -3995,14 +4834,132 @@ def _fast_forwarded_onto_main(root: Path) -> bool:
     and a zero ahead-count, and nothing here can tell them apart. The second one
     genuinely shipped something, so exempting it would skip the render and live
     gates on live work — fail-open, which this guard may never be. Running the
-    branch check first leaves that session blocking on `unsafe_branch` and makes
-    the exemption reachable only from a claude/* worktree branch, where a zero
-    ahead-count really does mean nothing shippable exists.
+    branch check first is what keeps POSITION from ever exempting `main` on its
+    own: inside that gate, `main` stops only when `_head_moved_only_by_sync` ALSO
+    proves authorship from this worktree's HEAD reflog — every move since
+    start_head a fast-forward sync or a reset to origin/main — so the session that
+    committed on main and pushed still blocks on `unsafe_branch`, its `commit:`
+    entry sitting in that window. Every other non-claude/* branch blocks there
+    unconditionally, which leaves this helper's own stand-down exemption below the
+    gate reachable only from a claude/* worktree branch, where a zero ahead-count
+    really does mean nothing shippable exists.
     """
     try:
         _run(root, "git", "fetch", "origin", "main", timeout=90)
         _run(root, "git", "merge-base", "--is-ancestor", "HEAD", "origin/main")
         return _run(root, "git", "rev-list", "--count", "origin/main..HEAD") == "0"
+    except Exception:
+        return False
+
+
+# The only HEAD-reflog subjects accepted as a sync, every one naming origin/main:
+# the law's own `git merge --ff-only origin/main`, a fast-forward `git pull` that
+# names `origin main` (flags only before it), a bare fast-forward `git pull`
+# (flags only) — accepted only while `main`'s configured upstream IS origin/main —
+# and a reset to origin/main. Everything else declines, deliberately including
+# `merge FETCH_HEAD`, `merge <sha>` (what git writes for a FETCH_HEAD merge) and
+# `merge <any other ref>`: a fast-forward onto a LOCAL ref is how a commit made
+# off HEAD's reflog (`commit-tree` + `update-ref`, or another worktree) would
+# reach main and then be pushed. See `_head_moved_only_by_sync`.
+_SYNC_MERGE_SUBJECT = "merge origin/main: Fast-forward"
+_SYNC_PULL_NAMED_SUBJECT = re.compile(r"^pull(?: --?\S+)* origin main: Fast-forward$")
+_SYNC_PULL_BARE_SUBJECT = re.compile(r"^pull(?: --?\S+)*: Fast-forward$")
+_SYNC_RESET_SUBJECT = "reset: moving to origin/main"
+
+
+def _head_moved_only_by_sync(root: Path, start_head: str, head: str) -> bool:
+    """Whether every HEAD move since ``start_head`` was a sync onto origin/main.
+
+    Repository law makes the designated local root a checkout of `main` itself and
+    requires `git fetch origin && git merge --ff-only origin/main` at session
+    start. That fast-forward walks HEAD off the start_head this guard recorded, so
+    the no-op exemption stops matching and the branch gate used to file
+    `unsafe_branch` against a session that authored nothing. Measured 2026-10-06 in
+    seat session 0e657eec-8307-4654-afae-0f4463a1243c: guard state
+    start_head=3a99670fac0bde192df82bb4e9320359badf6d62, HEAD
+    ccabe51c9509a8b4d503d9730190b174a7e90f6b, total_blocks=31 — and the worktree's
+    HEAD reflog between the two held exactly two entries, both
+    `merge origin/main: Fast-forward`.
+
+    POSITION cannot clear such a session; `_fast_forwarded_onto_main` explains why:
+    syncing to someone else's commits and committing on main then pushing straight
+    to origin/main both end at origin's tip with a zero ahead-count. This
+    worktree's HEAD reflog CAN tell them apart, because the two leave different
+    trails. A sync writes only a fast-forward merge/pull of origin/main or
+    `reset: moving to origin/main`; any authored commit writes a `commit`-class
+    entry (`commit`, `commit (amend)`, `cherry-pick`, `rebase …`, `revert`, a
+    non-fast-forward merge), and a branch switch writes `checkout: …`. So the
+    window strictly newer than start_head's entry must consist only of sync
+    subjects (`_SYNC_MERGE_SUBJECT`, `_SYNC_PULL_NAMED_SUBJECT`,
+    `_SYNC_PULL_BARE_SUBJECT`, `_SYNC_RESET_SUBJECT`), and every sha in it must
+    also be an ancestor of origin/main — the subject is the authorship test, the
+    ancestry is belt-and-braces that each step landed somewhere origin already
+    holds. The ref a sync names must be origin/main itself, because a
+    fast-forward onto a local ref is how a direct push to main would hide its
+    commit: `commit-tree` + `update-ref refs/heads/scratch`, then
+    `merge --ff-only scratch` and `push origin main`, leaves only
+    `merge scratch: Fast-forward` in this reflog, every sha an ancestor of
+    origin/main once pushed. A bare `pull` names no ref, so it counts only while
+    `main`'s configured upstream is origin/main — read once, and only when such an
+    entry is in the window. The caller has just fetched origin/main inside
+    `_fast_forwarded_onto_main`; this helper does not fetch again.
+
+    The window is bounded by the OLDEST entry naming start_head, never the newest.
+    HEAD can revisit start_head inside the session — commit on main, push, reset
+    back, then fast-forward onto the pushed commit — and bounding at the newer
+    visit would hide that `commit:` entry and exempt a direct push to main. The
+    oldest entry can only widen the window, and a wider window only declines.
+
+    Fail-CLOSED throughout, because a decline only restores the old block: a
+    reflog git cannot read, a newest entry that is not HEAD (the branch moved
+    without this worktree logging it — another worktree's update-ref, or
+    `core.logAllRefUpdates` off), or a start_head with no entry at all all return
+    False. That last case is reflog EXPIRY: `gc` prunes old entries (90 days by
+    default, sooner when configured), and once start_head's entry is gone nothing
+    can prove what happened since, so the trail is treated as untrustworthy rather
+    than as clean. Every git failure and every exception reads as "not a sync".
+    """
+    if not start_head or not head:
+        return False
+    if head == start_head:
+        # Unreachable from `_stop` (the no-op exemption returns first), and an
+        # empty window holds nothing authored.
+        return True
+    try:
+        # `_run_raw`, not `_run`: stripping the whole listing eats the trailing
+        # tab of an oldest entry whose subject is empty (a real entry in the
+        # operator root's reflog), so a line without a tab is read as an empty
+        # subject — which never matches a sync subject and so still declines if
+        # it falls inside the window.
+        listing = _run_raw(root, "git", "reflog", "show", "--format=%H%x09%gs", "HEAD")
+        entries: list[tuple[str, str]] = []
+        for line in listing.splitlines():
+            sha, _tab, subject = line.partition("\t")
+            entries.append((sha.strip(), subject))
+        if not entries or entries[0][0] != head:
+            return False
+        starts = [index for index, (sha, _subject) in enumerate(entries) if sha == start_head]
+        if not starts:
+            return False
+        window = entries[: starts[-1]]
+        upstream_is_origin_main: bool | None = None
+        for _sha, subject in window:
+            if subject in (_SYNC_MERGE_SUBJECT, _SYNC_RESET_SUBJECT):
+                continue
+            if _SYNC_PULL_NAMED_SUBJECT.match(subject):
+                continue
+            if _SYNC_PULL_BARE_SUBJECT.match(subject):
+                if upstream_is_origin_main is None:
+                    upstream = _run(
+                        root, "git", "for-each-ref", "--format=%(upstream:short)", "refs/heads/main"
+                    )
+                    upstream_is_origin_main = upstream == "origin/main"
+                if upstream_is_origin_main:
+                    continue
+            return False
+        for sha in dict.fromkeys(sha for sha, _subject in window):
+            _run(root, "git", "merge-base", "--is-ancestor", sha, "origin/main")
+        return True
     except Exception:
         return False
 
@@ -4056,7 +5013,8 @@ def _branch_was_pushed(root: Path, branch: str) -> bool:
 def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     """Judge the completion chain, in the order the cheapest evidence answers it.
 
-    Dirty tree -> no-op exemption -> branch -> stand-down -> pushed -> merged pull
+    Dirty tree -> no-op exemption -> branch (exempting only a sync-only `main`;
+    see `_head_moved_only_by_sync`) -> stand-down -> pushed -> merged pull
     request -> CI -> origin/main -> render -> live. Each gate blocks with a code
     `_block` can count, and every gate that proved something durable stores a
     proof so a later Stop turn does not re-poll GitHub for it.
@@ -4066,17 +5024,82 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     `_render_status`). The VPS pulls main every 3 minutes, so that merge is live
     regardless, and house law forbids a waiting session from touching the lane.
 
-    THE MERGE ITSELF IS NOT SUCH A GATE. An open pull request carrying
+    THE LABEL ITSELF IS NOT SUCH A GATE. An open pull request carrying
     `merge-on-green` used to release the session here; the operator removed that
-    on 2026-08-12 after it reported an unfinished job as complete. The label lets
-    the sweeper PERFORM the merge — it does not transfer ownership — so the
-    `if not pull:` branch now always blocks, and only chooses which block to file
-    (see `_armed_pull_status`).
+    on 2026-08-12 after it reported an unfinished job as complete. The narrow
+    exception is an explicit `DURABLE_EXECUTION_RUNNING` declaration after
+    `_armed_pull_status` has proved this exact head is armed and in its benign
+    `unmerged` wait. Head-owned red (`ci_failed_unmerged`) still blocks. That
+    distinction lets durable machinery own a wait without turning its label into
+    a false success receipt.
     """
     state = _load(path)
     # Hooks can be installed during an already-running session. Fail open once so
     # that pre-hook work is not misclassified; every later session is enforced.
     if state is None:
+        return
+
+    # A post-admission quarantined session could not lawfully run a modifying tool
+    # through the repository's wired effectful surfaces: PreToolUse covers Bash,
+    # file writes, agent/workflow launches, skills, EnterWorktree and MCP tools.
+    # Do not then run the delivery chain against an independently moving shared
+    # checkout and manufacture ten cycles of unsafe_branch. Legacy state without
+    # this versioned marker keeps the old fail-closed behavior during rollout.
+    if (
+        state.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+        and state.get("root_admitted") is False
+    ):
+        return
+
+    # A session's OWN declared end state is the single continuation fact this guard
+    # can read without inferring lanes, custody or carriers. `MORE_WORK_EXISTS` is,
+    # by the session's own admission, unfinished authorized work, so it is refused
+    # before any tree or GitHub evidence is gathered - it is the one block that must
+    # also cover the no-commit path below, where a session that never touched the
+    # tree stops after a checkpoint, a status note, or a failed delegation attempt.
+    #
+    # Deliberately NOT falling back to `_transcript_final_message`: that reads up to
+    # a 4 MB transcript tail, and a clean Stop pays for nothing else today. An absent
+    # `last_assistant_message` therefore fails OPEN here. The declaration is an
+    # explicit, auditable act by the session; no false positive is reachable, and
+    # `_block`'s any-code ladder (10 consecutive / 15 total) keeps it from trapping.
+    #
+    # Ordering note for the hold adapter: this block sets `last_blocker` to
+    # `more_work_exists`, and `ship_loop_hold_wrapper._hold_probe` only considers an
+    # ordinary `claude/*` hold candidate while `last_blocker` is `unmerged`. So a
+    # lawfully held session that ALSO declares unfinished work gets this block instead
+    # of `HOLD-FOR-SOL WAITING` - which is the correct message, because by its own
+    # account the work is not done. It is self-healing rather than sticky: the next
+    # Stop without the declaration falls through to the ordinary chain, `last_blocker`
+    # becomes `unmerged` again, and the hold interception resumes. A `sol/*` authority
+    # branch is unaffected either way; the wrapper probes it before any delegation.
+    declared = declared_session_end_state(str(payload.get("last_assistant_message") or ""))
+    if declared in NON_TERMINAL_SESSION_END_STATES:
+        code = (
+            ALL_SCOPED_LANES_BLOCKED
+            if declared == "ALL_SCOPED_LANES_BLOCKED"
+            else MORE_WORK_EXISTS
+        )
+        if declared == "ALL_SCOPED_LANES_BLOCKED":
+            reason = (
+                "This session classified every current lane as blocked. That is a "
+                "diagnostic, not a stopping state. Internal dependencies are work: "
+                "resolve one, route it to the canonical owner, or prove a real durable "
+                "running owner plus return path. 'Not my lane' forbids conflicting "
+                "mutation; it does not finish the mission. A bounded worker may return "
+                "BLOCKED to its parent. A principal may stop only on PROVEN_OUTCOME, "
+                "an exact external boundary (EXACT_HUMAN_GATE, PLATFORM_FAILURE, "
+                "EFFECT_UNKNOWN), or DURABLE_EXECUTION_RUNNING."
+            )
+        else:
+            reason = (
+                f"This session classified its own end state as {declared}: authorized "
+                "work remains in scope. That is not a stopping state. Either finish the "
+                "remaining work, route/own its internal blockers, or reclassify honestly "
+                "as PROVEN_OUTCOME, EXACT_HUMAN_GATE, PLATFORM_FAILURE, EFFECT_UNKNOWN "
+                "or DURABLE_EXECUTION_RUNNING."
+            )
+        _block(path, state, payload, code, reason)
         return
 
     baseline = state.get("baseline") or {}
@@ -4101,6 +5124,18 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
 
     branch = _run(root, "git", "branch", "--show-current")
     if not branch.startswith("claude/"):
+        # The designated local root is a checkout of `main` that repository law
+        # syncs with `git merge --ff-only origin/main` at session start, which
+        # moves HEAD off start_head with nothing authored. Position alone cannot
+        # clear it (see `_fast_forwarded_onto_main`); this worktree's HEAD reflog
+        # can, and declines on any authored entry or any doubt. Exactly `main`:
+        # never a detached HEAD, never sol/* or any other branch.
+        if (
+            branch == "main"
+            and _fast_forwarded_onto_main(root)
+            and _head_moved_only_by_sync(root, str(state.get("start_head") or ""), head)
+        ):
+            return
         location = branch or "detached HEAD"
         _block(
             path,
@@ -4209,12 +5244,13 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
             }
             _remember_proof(path, state, "merged_pull", pull_key, pull)
     if not pull:
-        # There is no merged pull request, so this session is NOT done — arming
-        # `merge-on-green` is a merge convenience, never an exit (operator ruling
-        # 2026-08-12; see the module docstring). The only question left is which
-        # block to file: an armed head with concluded reds gets `ci_failed` and the
-        # names, because "your sweeper will refuse this" is the fact the old
-        # release path used to hide.
+        # There is no merged pull request, so the label alone is not completion.
+        # The one continuation-safe release is explicit: when the session declares
+        # DURABLE_EXECUTION_RUNNING and the live armed-head verdict is the benign
+        # `unmerged` wait, release the Stop to the existing merge-on-green
+        # controller. This is narrower than the pre-2026-08-12 rule: a genuine
+        # concluded head-owned red is `ci_failed_unmerged` and still blocks, while
+        # an unarmed/mismatched head falls through and blocks normally.
         #
         # Fail-closed in every direction: a probe that raises, a pull request
         # without the label, or a head that does not match the local HEAD all fall
@@ -4224,7 +5260,14 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
             armed_code, armed_detail = _armed_pull_status(owner, repo, branch, head)
         except Exception:
             armed_code, armed_detail = "none", ""
+        if (
+            declared == "DURABLE_EXECUTION_RUNNING"
+            and _armed_wait_has_durable_owner(armed_code, armed_detail)
+        ):
+            return
         if armed_code != "none":
+            if _armed_wait_has_durable_owner(armed_code, armed_detail):
+                armed_detail += DURABLE_WAIT_EXIT_GUIDANCE
             _block(path, state, payload, armed_code, armed_detail)
             return
 
@@ -4348,6 +5391,19 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
         return
     live_ok, live_detail = _live_gate(root, merge_sha, start_head, head, health)
     if not live_ok:
+        # A pull-only merge is already owned by the durable VPS checkout loop; it
+        # requires no process restart and there is no session-side action that makes
+        # it arrive faster. When the session explicitly classifies the wait as
+        # DURABLE_EXECUTION_RUNNING, hand that wait to the existing owner instead
+        # of generating repeated live_stale Stop turns. API-code merges are different:
+        # only a restarted process proves them live, so those remain blocking.
+        pull_only = _live_health_fields(root, merge_sha, start_head, head) != (
+            _LIVE_PROCESS_FIELD,
+        )
+        if declared == "DURABLE_EXECUTION_RUNNING" and pull_only:
+            return
+        if pull_only:
+            live_detail += DURABLE_WAIT_EXIT_GUIDANCE
         _block(
             path,
             state,
@@ -4564,6 +5620,32 @@ def _delegate_to_evaluated_hook(payload: dict[str, Any], raw: bytes) -> bool:
     return True
 
 
+
+def _agentos_assist(root: Path, payload: dict[str, Any]) -> None:
+    """Best-effort PostToolUse annotation; isolated from Stop and its private state."""
+    try:
+        # Most Bash calls are unrelated. Avoid a Python child/store scan for those.
+        command = (payload.get("tool_input") or {}).get("command", "")
+        if payload.get("hook_event_name") != "PostToolUse" or not isinstance(command, str) or not command.startswith("gh pr create "):
+            return
+        result = subprocess.run(
+            [sys.executable, str(root / "scripts/agentos.py"), "ship-capture", "--hook"],
+            cwd=root, input=json.dumps(payload), text=True, capture_output=True, timeout=5,
+        )
+        if result.returncode or len(result.stdout) > 16384:
+            raise ValueError("capture report unavailable")
+        report = json.loads(result.stdout)
+        if report.get("schema") != "agentos.ship_capture.v1" or report.get("enforcement") != "REPORT_ONLY":
+            raise ValueError("unsupported capture report")
+        if report.get("code") == "CAPTURE_UNSUPPORTED":
+            return
+        context = "AGENT OS REPORT_ONLY: " + str(report.get("code")) + ". " + str(report.get("message", ""))
+        _emit({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": context[:2048]}})
+    except Exception:
+        # No guard_error path, no _block, no state file, no authority inference.
+        print("AGENT OS REPORT_ONLY: capture result unavailable; inspect the record before retrying.", file=sys.stderr)
+
+
 def main() -> None:
     payload, raw = _load_payload_and_raw()
     if payload is None:
@@ -4573,11 +5655,16 @@ def main() -> None:
     root = _repo_root(payload)
     if root is None:
         return
-    path = _state_path(root, payload)
     event = str(payload.get("hook_event_name") or "")
+    if event == "PostToolUse":
+        _agentos_assist(root, payload)
+        return
+    path = _state_path(root, payload)
     try:
         if event == "SessionStart":
             _session_start(root, path, payload)
+        elif event == "PreToolUse":
+            _pre_tool_use(root, path, payload)
         elif event == "Stop":
             _stop(root, path, payload)
     except Exception as exc:

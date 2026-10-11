@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from lib.forex_kinematics_view import project_kinematics  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_forex")
@@ -655,7 +656,14 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
     else:
         headline_en, headline_zh = "Dollar mixed", "美元分化"
 
-    # plain sentence (≤14 words) from direction + top-2 headwind + top-1 tailwind
+    # plain sentence (≤14 words). Ripple-table contract
+    # (templates/forex.html.j2:473/:494/:495), column "If USD rises":
+    #   headwind_for → "Leaning on it" / 压制中
+    #   tailwind_for → "Giving it a lift" / 提振中
+    # Correlation is linear and symmetric, so a falling dollar inverts the verbs:
+    #   USD firm: leans on headwind_for, lifts tailwind_for
+    #   USD soft: lifts headwind_for, leans on tailwind_for
+    # Quiet only when direction is mixed/flat or both lists are empty.
     hw = headwind_for or []
     tw = tailwind_for or []
     hw_names = [_PLAIN_ASSET_EN.get(k, k) for k in hw[:2]]
@@ -668,16 +676,25 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
                       else "mixed"))
     dir_word_zh = "走强" if dir_word == "firm" else ("偏软" if dir_word == "soft" else "走势分化")
 
-    if hw_names and dir_word != "mixed":
-        parts = " and ".join(hw_names)
-        sentence_en = f"A {dir_word} dollar is leaning on {parts}."
-        parts_zh = "与".join(hw_names_zh)
-        sentence_zh = f"美元{dir_word_zh}，正压制{parts_zh}。"
-    elif tw_names and dir_word != "mixed":
-        parts = tw_names[0]
-        sentence_en = f"A {dir_word} dollar is giving {parts} a lift."
-        parts_zh = tw_names_zh[0] if tw_names_zh else ""
-        sentence_zh = f"美元{dir_word_zh}，正提振{parts_zh}。"
+    if dir_word == "firm":
+        lean_en, lean_zh = hw_names, hw_names_zh
+        lift_en, lift_zh = tw_names, tw_names_zh
+    elif dir_word == "soft":
+        lean_en, lean_zh = tw_names, tw_names_zh
+        lift_en, lift_zh = hw_names, hw_names_zh
+    else:
+        lean_en, lean_zh, lift_en, lift_zh = [], [], [], []
+
+    # Firm prefers lean (existing, both-lists tape). Soft prefers lift so a
+    # typical inverse-only tape is not a false "quiet" beside "Dollar soft".
+    use_lift = bool(lift_en) and (dir_word == "soft" or not lean_en)
+    use_lean = bool(lean_en) and not use_lift
+    if use_lift:
+        sentence_en = f"A {dir_word} dollar is giving {' and '.join(lift_en)} a lift."
+        sentence_zh = f"美元{dir_word_zh}，正提振{'与'.join(lift_zh)}。"
+    elif use_lean:
+        sentence_en = f"A {dir_word} dollar is leaning on {' and '.join(lean_en)}."
+        sentence_zh = f"美元{dir_word_zh}，正压制{'与'.join(lean_zh)}。"
     else:
         sentence_en = "The dollar is quiet today."
         sentence_zh = "美元今日平静。"
@@ -1169,6 +1186,8 @@ def main() -> int:
     cal_span = f"{min(results[p].index.min() for p in order).date()}..{max(results[p].index.max() for p in order).date()}"
     cot_ok = any("pos_pctile" in results[p].columns and results[p]["pos_pctile"].notna().any() for p in order)
 
+    # One validated display projection serves both the page and machine snapshot.
+    kinematics_view = project_kinematics(kinematics, cfg)
     from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
@@ -1176,7 +1195,7 @@ def main() -> int:
         C=C, as_of=as_of, built=built, cal_span=cal_span,
         dollar=dollar, desk=desk, real_rate_chart=real_rate_chart,
         transmission=transmission, strength=strength, scorecards=scorecards,
-        regime=regime, kinematics=kinematics,
+        regime=regime, kinematics=kinematics, kinematics_view=kinematics_view,
         pairs=pairs, sections=sections, carry_table=ctable, cot_ok=cot_ok,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
         # B1.4 new view-model vars (populated in the new template; stub values for
@@ -1285,6 +1304,8 @@ def main() -> int:
         "transmission": _transmission_latest(transmission),
         # MSX-1: strength meter forwarded verbatim (was display-dead-end)
         "strength": strength if strength else {},
+        # R12: existing computed values, explicit units and unknown per-metric clocks.
+        "kinematics": kinematics_view,
         # MSX-1: regime_radar gains 'scenarios' compact receipts (additive)
         "regime_radar": ({"as_of": regime.get("as_of"), "dominant": regime.get("dominant"),
                           "active": [s["key"] for s in regime.get("scenarios", []) if s.get("active")],

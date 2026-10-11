@@ -43,8 +43,10 @@ import json
 import logging
 import os
 import shutil
+import sqlite3
 import subprocess
 import tempfile
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -560,6 +562,17 @@ def _refresh_sidecars(store, cat: dict, conn, id_to_pdf_key: dict[str, str],
 # shrinks.
 REEXTRACT_MAX = 50
 
+# Per-run bounds on the catalog-gap backfill. Each candidate costs one strict
+# vault GET of a multi-MB PDF plus a pdftotext subprocess, and the hourly job
+# has a 15-minute timeout it shares with the ingest itself. The vault ingest
+# step already measures about 6.5 minutes with zero new documents (run
+# 37555306807: 01:09:14 to 01:15:49Z), so this pass keeps a 150-row / 150-second
+# ceiling rather than trying to drain the whole gap inside the time that is
+# left. Small on purpose: the pass is self-quiescing (an inserted row stops
+# being a candidate), so a backlog only ever shrinks.
+BACKFILL_MAX = 150
+BACKFILL_BUDGET_S = 150.0
+
 
 def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
     """Re-extract the body of published rows whose text never made it in.
@@ -584,12 +597,22 @@ def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
     measured facts at all — but they are ordered LAST because, unlike the
     ``unavailable`` rows, they are not user-visibly broken.
 
+    Blank-thin rows sit between those two groups: published rows stamped
+    ``text_layer='thin'`` whose stored body is only whitespace or form feeds.
+    ``pdftotext`` on an image-only PDF emits one form feed per page, so
+    ``text_facts`` used to classify those rows ``thin`` (chars > 0) instead of
+    the honest ``none``. They are not ``unavailable`` and they are not NULL, so
+    the original query never revisited them. Re-measuring them restamps
+    ``text_layer='none'`` (or fills a real body if the PDF now yields text) and
+    they drop out of candidacy — quiescence holds.
+
     Load-bearing rules:
 
     - **Fill-only for ``body``.** A row that already holds text keeps it
-      byte-for-byte; only an empty/NULL body is written. A NULL-``text_layer`` row
-      is usually a fine pre-v2 row that simply was never measured, and re-extraction
-      must not be allowed to shorten (or otherwise rewrite) text already published.
+      byte-for-byte; only an empty/NULL/whitespace-only body is written. A
+      NULL-``text_layer`` row is usually a fine pre-v2 row that simply was never
+      measured, and re-extraction must not be allowed to shorten (or otherwise
+      rewrite) text already published.
     - **Facts are ALWAYS stamped** (every measured value, not just the body). Even
       a scan-only PDF gets its measured columns, which re-classifies it to
       ``text_layer='none'`` — the honest "this document has no text" state — and
@@ -627,9 +650,15 @@ def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
         rows = conn.execute(
             "SELECT doc_id, body, text_layer FROM documents "
             "WHERE text_layer = 'unavailable' OR text_layer IS NULL "
-            # 'unavailable' first (user-visibly broken), NULL after (never
-            # measured); newest published_at first inside each group.
-            "ORDER BY (text_layer IS NULL) ASC, published_at DESC"
+            "OR (text_layer = 'thin' "
+            "AND trim(COALESCE(body,''), ' ' || char(9,10,11,12,13)) = '') "
+            # 'unavailable' first (user-visibly broken), blank-thin next
+            # (misclassified scans), NULL last (never measured); newest
+            # published_at first inside each group.
+            "ORDER BY CASE "
+            "WHEN text_layer = 'unavailable' THEN 0 "
+            "WHEN text_layer = 'thin' THEN 1 "
+            "ELSE 2 END, published_at DESC"
         ).fetchall()
     except Exception as e:  # noqa: BLE001 — an unreadable corpus is not fatal here
         log.warning("research_vault: body re-extraction query failed: %s", e)
@@ -675,7 +704,7 @@ def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
             params: list = []
             stored_body = row["body"] or ""
             new_body = (raw_text or "")[:corpus_mod.BODY_MAX_CHARS]
-            filled = not stored_body and bool(new_body)
+            filled = not stored_body.strip() and bool(new_body.strip())
             if filled:
                 sets.append("body=?")
                 params.append(new_body)
@@ -712,6 +741,146 @@ def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
     return out
 
 
+def _backfill_missing_rows(store, cat: dict, conn, cap: int = BACKFILL_MAX,
+                           budget_s: float = BACKFILL_BUDGET_S,
+                           clock=time.monotonic) -> dict:
+    """Insert corpus rows for catalog items that have none.
+
+    WHY this exists — the FOURTH published-row repair, and the one the other
+    three cannot do. Receipts are never deleted, so ``_ingest_one`` never sees
+    a document again once it has been receipted. ``_reextract_bodies`` selects
+    only rows ALREADY in the corpus, so a catalog item whose corpus row was
+    lost (or never written) stays invisible to body search forever. The private
+    corpus held 353 rows against a published catalog of 2,778: 2,425 catalog
+    items had no corpus row, every one of their canonical vault PDFs was
+    present, and the excerpt snapshot refused every hour because the searchable
+    body set had collapsed. This pass is the only writer that can close that
+    gap without deleting a receipt.
+
+    Candidacy is the catalog minus the corpus: a dict item with a truthy ``id``
+    whose id is not already a ``doc_id``. First occurrence wins; later
+    duplicates are ignored. Order is ``published_at`` DESC, with an empty or
+    missing date sorting last, then ``id`` ASC — the newest invisible report
+    is filled first when the cap or the budget stops the pass.
+
+    Load-bearing rules:
+
+    - **Read the canonical PDF with ``get_bytes_strict`` only.** A raise is an
+      outage, not absence: set ``aborted='store_unavailable'``, log a warning,
+      and stop. Read nothing further and write no row. ``None`` or empty bytes
+      is a storage gap (``pdf_missing``); no row is written, because a missing
+      object is not a fact about the document. This pass never calls
+      ``get_bytes``.
+    - **A dead extractor aborts the whole pass.** ``extract_pdf_text`` returning
+      None means the host tool never ran. Set ``aborted='tool_unavailable'``
+      and stop. No row is written from an extraction that never ran, and every
+      further GET would burn a multi-MB download to learn the same thing.
+    - **Facts are built exactly as ``_ingest_one`` builds them**, then the row
+      is inserted with ``corpus_mod.upsert``. The catalog item is shallow-copied
+      and never mutated. The catalog title is already the resolved authority —
+      this pass does not re-resolve it.
+    - **One bad item never stops the pass.** Any other exception (probe,
+      upsert, …) increments ``failed``, logs a warning, and continues.
+    - **Cap and budget are checked before each candidate.** ``remaining`` is
+      the number of candidates never attempted, whether the cap, the budget, or
+      an abort stopped the loop. An inserted row is a ``doc_id`` next run, so
+      the pass is self-quiescing and a backlog only shrinks.
+
+    Returns ``{candidates, rows, pdf_missing, failed, remaining, aborted}``.
+    ``aborted`` is None, ``"store_unavailable"``, or ``"tool_unavailable"``.
+    Never raises — a repair is never worth failing the hourly job. Writes
+    nothing except corpus rows via :func:`corpus_mod.upsert`: no receipts, no
+    catalog changes, no inbox reads, no ``put_bytes``, no ``delete``.
+    """
+    out = {"candidates": 0, "rows": 0, "pdf_missing": 0, "failed": 0,
+           "remaining": 0, "aborted": None}
+
+    try:
+        have_ids = {row[0] for row in conn.execute("SELECT doc_id FROM documents")}
+    except Exception as e:  # noqa: BLE001 — an unreadable corpus is not fatal here
+        log.warning("research_vault: backfill candidate query failed: %s", e)
+        return out
+
+    seen: set = set()
+    candidates: list[dict] = []
+    for item in cat.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        doc_id = item.get("id")
+        if not doc_id:
+            continue
+        try:
+            # JSON can reload an id as a list. Membership would raise, and a
+            # raise here aborts the hourly run — the same fault the sidecar
+            # refresh already refuses to let one bad catalog row cause.
+            if doc_id in have_ids or doc_id in seen:
+                continue
+        except TypeError:
+            continue
+        seen.add(doc_id)
+        candidates.append(item)
+
+    # Stable: id ASC first, then published_at DESC. An empty or missing date is
+    # "", which sorts last under a descending string order, and equal dates keep
+    # the id order.
+    def _published_at(it: dict) -> str:
+        published = it.get("published_at")
+        if isinstance(published, str) and published:
+            return published
+        return ""
+
+    candidates.sort(key=lambda it: str(it.get("id") or ""))
+    candidates.sort(key=_published_at, reverse=True)
+    out["candidates"] = len(candidates)
+
+    start = clock()
+    attempted = 0
+    for item in candidates:
+        if attempted >= cap or clock() - start >= budget_s:
+            break
+        attempted += 1
+        doc_id = item.get("id")
+        try:
+            pdf_bytes = store.get_bytes_strict(f"{VAULT_PREFIX}{doc_id}.pdf")
+        except Exception as e:  # noqa: BLE001 — an outage is not absence
+            out["aborted"] = "store_unavailable"
+            log.warning("research_vault: backfill aborted — vault read failed for "
+                        "%s (%s); no further rows written", doc_id, e)
+            break
+        if not pdf_bytes:
+            out["pdf_missing"] += 1
+            log.warning("research_vault: %s has no vault PDF — backfill skipped "
+                        "(no row written)", doc_id)
+            continue
+        try:
+            raw = extract_pdf_text(pdf_bytes)
+            if raw is None:
+                # HOST fault. Stop before this row, and before every later one:
+                # no row may be inserted from an extraction that did not run.
+                out["aborted"] = "tool_unavailable"
+                log.warning("research_vault: pdftotext unavailable — backfill "
+                            "aborted (no row written from an extraction that "
+                            "never ran)")
+                break
+            facts = probe_mod.probe(pdf_bytes)
+            facts.update(probe_mod.text_facts(raw, facts.get("pages")))
+            if not facts.get("pages"):
+                facts["pages"] = item.get("pages")
+            facts["language"] = item.get("language") or ""
+            # Shallow copy: upsert must not be able to write back into the
+            # catalog item the caller still holds. The title is already the
+            # resolved authority and is not re-derived here.
+            row_item = dict(item)
+            corpus_mod.upsert(conn, row_item, raw or "", facts=facts)
+            out["rows"] += 1
+        except Exception as e:  # noqa: BLE001 — one bad item never stops the pass
+            out["failed"] += 1
+            log.warning("research_vault: backfill failed for %s: %s", doc_id, e)
+
+    out["remaining"] = len(candidates) - attempted
+    return out
+
+
 # ---------------------------------------------------------------------------
 # corpus restore (the store copy is the source of truth)
 # ---------------------------------------------------------------------------
@@ -720,11 +889,14 @@ def _restore_corpus(store, corpus_path: str | Path) -> str:
     """Restore the canonical ``corpus.sqlite`` from the store to ``corpus_path``.
 
     Returns:
-      - ``"fresh"``    — no store copy yet (first run); any stale local file is
-                          cleared so we never publish leftover local state.
-      - ``"restored"`` — the store copy was written locally.
-      - ``"error"``    — a store copy EXISTS but could not be written locally; the
-                          caller MUST NOT publish, to avoid clobbering it.
+      - ``"fresh"`` - the strict store authoritatively reported absence;
+                        stale local scratch is cleared, but run() must still
+                        refuse bootstrap over a nonempty published catalog.
+      - ``"restored"`` - exact bytes passed SQLite structural validation and
+                           replaced the local scratch copy.
+      - ``"error"`` - strict-read support, authoritative read, byte validation,
+                        SQLite integrity or local replacement failed. The caller
+                        MUST NOT publish from an incomplete source view.
 
     Why this exists: the run skips already-processed PDFs (idempotency), so it only
     upserts the NEW documents. The store copy is therefore the source of truth and
@@ -735,28 +907,52 @@ def _restore_corpus(store, corpus_path: str | Path) -> str:
     """
     p = Path(corpus_path)
     _sidecars = (f"{p}-wal", f"{p}-shm", f"{p}-journal")
-    data = store.get_bytes(CORPUS_KEY)
-    if not data:
+    strict_get = getattr(store, "get_bytes_strict", None)
+    if not callable(strict_get):
+        log.error("research_vault: corpus restore requires a strict-read store")
+        return "error"
+    try:
+        data = strict_get(CORPUS_KEY)
+    except Exception as exc:  # noqa: BLE001 - outage is not authoritative absence
+        log.error("research_vault: authoritative corpus read failed (%s)", exc)
+        return "error"
+    if data is None:
         for cand in (str(p), *_sidecars):
             try:
                 Path(cand).unlink()
             except OSError:
                 pass
         return "fresh"
+    if type(data) is not bytes or not data:
+        log.error("research_vault: corpus read returned empty or invalid bytes")
+        return "error"
+    tmp = p.with_suffix(p.suffix + ".restore.tmp")
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
-        for s in _sidecars:
+        tmp.write_bytes(data)
+        # Validate the downloaded SQLite before replacing even a local recovery
+        # copy. Read-only mode cannot create or repair a corrupt source artifact.
+        check = sqlite3.connect(tmp.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        try:
+            if check.execute("PRAGMA quick_check(1)").fetchall() != [("ok",)]:
+                raise ValueError("restored corpus failed SQLite integrity check")
+        finally:
+            check.close()
+        for sidecar in _sidecars:
             try:
-                Path(s).unlink()
+                Path(sidecar).unlink()
             except OSError:
                 pass
-        tmp = p.with_suffix(p.suffix + ".restore.tmp")
-        tmp.write_bytes(data)
         os.replace(tmp, p)
         return "restored"
     except Exception as e:  # noqa: BLE001 — protect the published corpus
         log.error("research_vault: corpus restore failed (%s)", e)
         return "error"
+    finally:
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 # ---------------------------------------------------------------------------
@@ -869,8 +1065,12 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         would republish a truncated catalog over it. Nothing was read, written, or
         receipted; recover from the last known-good snapshot (see
         :func:`_vault_history`).
-      * ``error='corpus_restore_failed'`` — a store corpus exists but could not be
-        restored locally; publishing would clobber it with a truncated rebuild.
+      * ``error='corpus_restore_failed'`` - the strict corpus read, byte/type
+        validation, SQLite integrity check or local restore failed. Publication
+        cannot proceed from an unknown or invalid source snapshot.
+      * ``error='corpus_history_unavailable'`` - a nonempty authoritative catalog
+        has no restored corpus rows. The normal receipt-idempotent pipeline is
+        not a corpus rebuild tool, so this empty restart refuses publication.
       * ``error='corpus_publish_failed'`` / ``'catalog_publish_failed'`` — the
         publication commit did not complete. ``corpus_published`` /
         ``catalog_published`` say exactly how far it got, and
@@ -904,16 +1104,15 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # Restore the published corpus before we upsert onto it (see _restore_corpus).
     restore = _restore_corpus(store, corpus_path)
     if restore == "error":
-        # A store copy exists but could not be restored — refuse to proceed so we
+        # The corpus could not be authoritatively read and validated — refuse to proceed so we
         # never overwrite the good published corpus with a truncated rebuild. No
         # receipts are written, so the next run retries the whole batch cleanly.
         # Bare print, NOT log.error: GitHub only parses a workflow command when
         # "::" STARTS the line, and every entry point that runs this module
         # (build_research_vault, ingest_research) logs with a "%(levelname)s "
         # prefix, which silently drops the annotation.
-        print("::error::research_vault: corpus restore FAILED with an existing "
-              "store copy — skipping this run to protect the published corpus",
-              flush=True)
+        print("::error::research_vault: authoritative corpus restore FAILED - "
+              "skipping this run to protect the published corpus", flush=True)
         summary["error"] = "corpus_restore_failed"
         return summary
 
@@ -996,12 +1195,28 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         summary["catalog_state"] = "bootstrap"
         cat = cat if cat is not None else catalog_mod.empty()
 
+    # A valid nonempty catalog is itself published history. Even an explicit
+    # corpus 404 is not permission to start from zero: receipted reports would
+    # be skipped forever, and a read/publish cycle would freeze that data loss.
+    # A degraded but nonzero corpus remains usable and can be repaired in place.
+    if (cat.get("items") or []) and _corpus_row_count(corpus_path) == 0:
+        history = _vault_history(store, corpus_restored=(restore == "restored"))
+        history["corpus_rows"] = 0
+        summary["vault_history"] = history
+        summary["error"] = "corpus_history_unavailable"
+        print("::error title=research_vault::nonempty published catalog has no "
+              "restorable corpus rows - refusing an empty-corpus publication; "
+              "receipts are unchanged and bounded corpus recovery is required",
+              flush=True)
+        return summary
+
     conn = corpus_mod.open_db(corpus_path)
     pending_receipts: list = []  # (key, body) — flushed only after a publish
     try:
-        # Titles already published can only be healed on load (receipted docs never
-        # re-ingest); read_strict does not do it, so run the same repair here.
-        catalog_mod.heal_titles(cat)
+        # Display fields already published can only be healed on load (receipted
+        # docs never re-ingest); read_strict does not do it, so run the same
+        # repair here (titles, summary markdown/splits, institution spellings).
+        catalog_mod.heal_display(cat)
 
         # Heal filename-shaped titles already in the catalog (receipted docs are
         # never re-ingested, so this is the only path that reaches them).
@@ -1138,6 +1353,22 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             summary["reextract_remaining"] = rex["remaining"]
             if rex["aborted_tool_unavailable"]:
                 summary["reextract_aborted"] = True
+
+            # Catalog items with no corpus row. Same gate as reextract: a dry
+            # run publishes nothing, so it must not insert rows it will never
+            # publish.
+            bf = _backfill_missing_rows(store, cat, conn)
+            summary["backfill_candidates"] = bf["candidates"]
+            summary["backfill_rows"] = bf["rows"]
+            summary["backfill_pdf_missing"] = bf["pdf_missing"]
+            summary["backfill_failed"] = bf["failed"]
+            summary["backfill_remaining"] = bf["remaining"]
+            if bf["aborted"] is not None:
+                summary["backfill_aborted"] = bf["aborted"]
+            log.info("research_vault: backfill candidates=%s rows=%s "
+                     "pdf_missing=%s failed=%s remaining=%s aborted=%s",
+                     bf["candidates"], bf["rows"], bf["pdf_missing"],
+                     bf["failed"], bf["remaining"], bf["aborted"])
 
         # Per-field fill rate over the FINAL catalog — reported whether or not this
         # run ingested anything, because a dead contract field is a standing state,
