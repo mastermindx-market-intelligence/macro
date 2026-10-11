@@ -5477,12 +5477,14 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     on jobs that already ride templates/index.html: main wri-risk-core
     43 -> 44 and unrun-grading-board 29 -> 34 (+6); the carrier
     signal-contract 146 -> 148, tier-gate 41 -> 49 and unrun-intl-libraries
-    101 -> 122 (+31: the native-identity suite added to signal-contract's K1
-    step, the T09 paid-transport step added to tier-gate, and the T01, T02,
-    T03 and T07/T08 steps added to unrun-intl-libraries; the T10/T10b suites
-    ride ``unrun-subsector-themes``, which is ``scope: exclusive`` and rides
-    none of the three probes). Each side alone is under the
-    bound. Measured locally, full manifest, inference on (sparse checkout
+    101 -> 122 (+31: tests/test_semiconductor_native_identity.py added to
+    the run line of signal-contract's K1 step, the T09 paid-transport step
+    added to tier-gate, and the T01, T02, T03 and T07/T08 steps added to
+    unrun-intl-libraries; the split is each job's declared-weight delta,
+    not a per-step measurement; the T10/T10b suites ride
+    ``unrun-subsector-themes``, which is ``scope: exclusive`` and does not
+    ride templates/index.html). Each side alone is under the bound.
+    Measured locally, full manifest, inference on (sparse checkout
     omitting data/, mockups/ and verify_shots/, none of which this
     measurement reads), merge-base 363b4e6296b7 / main / carrier -> merged:
 
@@ -5500,13 +5502,12 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     job enters or leaves the probe, the +37 is declared-weight growth on
     five jobs already riding templates/index.html on both sides, and
     curating any of the three carrier jobs ``scope: exclusive`` needs the
-    whole-job closure audit the entry above requires before a path list can
-    replace a job's inferred coverage, which a base-sync merge on a carrier
-    under review does not perform. This is the decision the #8322 entry
+    whole-job closure audit the #8656 entry requires and the 2026-09-23 wave
+    performed before a path list can replace a job's inferred coverage, which
+    a base-sync merge on a carrier under review does not perform. This is the decision the #8322 entry
     said the next weight delta would need: the templates/index.html WEIGHT
-    ceiling moves to the
-    exact merged measurement, 5,801, with no padding (the #8656 shape for
-    job ceilings). The other two weight ceilings, all three job ceilings
+    ceiling moves to the exact merged measurement, 5,801, with no padding
+    (the #8656 shape for job ceilings). The other two weight ceilings, all three job ceilings
     and the 10-pack bound stay unmoved (packs are 10 / 10 / 10). No suite,
     registration, assertion, selector or declared weight is reduced to fit:
     a declared weight is a measurement, and lowering one to clear the bound
@@ -5514,7 +5515,9 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     The incident this file bounds is still ~1,550 weight-seconds away; the
     headroom under the new ceiling is zero, so the next weight delta on this
     probe needs its own decision recorded here: curate at the source, or
-    raise again on evidence.
+    raise again on evidence. The named follow-up is the #7870 release-head
+    merge, which re-measures this probe and records either a curation of
+    the three carrier jobs or a second raise on evidence.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
