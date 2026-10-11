@@ -399,10 +399,14 @@
    "missing_descriptors": [
     "known_at_evidence",
     "unit_currency",
-    "definition_version"
+    "definition_version",
+    "correction_refusal_state"
    ],
    "refusal_code": null,
-   "evidence_rows": 3032
+   "evidence_rows": 3032,
+   "descriptor_notes": {
+    "correction_refusal_state": "SERIES_RE_ADJUSTED_EVERY_FETCH_NO_REVISION_LEDGER"
+   }
   },
   "market_data_daily.hkd_9988": {
    "status": "PARTIAL",
@@ -414,10 +418,14 @@
    "missing_descriptors": [
     "known_at_evidence",
     "unit_currency",
-    "definition_version"
+    "definition_version",
+    "correction_refusal_state"
    ],
    "refusal_code": null,
-   "evidence_rows": 1681
+   "evidence_rows": 1681,
+   "descriptor_notes": {
+    "correction_refusal_state": "SERIES_RE_ADJUSTED_EVERY_FETCH_NO_REVISION_LEDGER"
+   }
   },
   "market_data_daily.rmb_89988": {
    "status": "NO_OWNER",
@@ -802,7 +810,8 @@
    "blocking_missing_descriptors": [
     "known_at_evidence",
     "unit_currency",
-    "definition_version"
+    "definition_version",
+    "correction_refusal_state"
    ],
    "would_be_owner": "collectors/hk_stock_prices.py / collectors/yahoo.py / collectors/massive_stock_day.py recording a known-at column, a declared currency and a definition version (profile names no would_be_owner for these descriptors; pack-named)"
   }

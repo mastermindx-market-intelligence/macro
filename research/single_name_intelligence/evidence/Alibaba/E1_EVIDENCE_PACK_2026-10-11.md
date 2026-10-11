@@ -38,8 +38,10 @@ Descriptors: (1) issuer subject, (2) reporting period, (3) known-at evidence, (4
   `issuer_id=='ISS:US-XNYS-BABA'`; `pd.read_parquet('data/reference/vendor_aliases.parquet')`
   → 5 Alibaba alias rows; `json.load(open('data/reference/_receipt.json'))`.
 - **C3** `from engine.theme_graph import identity_resolution as ir;
-  ir.read_identity_resolution(latest=False)` → history rows per node: `co:us:BABA` = 61,
-  `co:hk:9988.HK` = 61 (re-run 2026-10-11; the default `latest=True` call returns ONE row per
+  ir.read_identity_resolution(latest=False)` → history rows per node: `co:us:BABA` = 61
+  (NOT_IN_MASTER 7 rows resolution_asof 2026-08-18..2026-08-21 with join_method `refused`, then
+  RESOLVED 54 rows 2026-08-21..2026-10-09), `co:hk:9988.HK` = 61 (NOT_IN_MASTER 5 rows
+  2026-08-18..2026-08-20, then RESOLVED 56 rows via vendor_alias with issuer_id null) (re-run 2026-10-11; the default `latest=True` call returns ONE row per
   node — 2,807 rows store-wide — and is never cited for a history count);
   `ir.resolve_graph_node_identity('co:hk:9988.HK')`; `ir.resolve_graph_node_identity('co:us:BABA')`.
 - **C4** `from engine import hk_filing_bus as fb; fil = fb._load_filings()` (3,906 rows);
@@ -170,9 +172,9 @@ queried as a control and is ALSO labeled "HKD" — the defect is store-wide, not
 
 | metric_id | status | issuer subject | period | known-at | unit/curr | dimensions | acct basis | source span | def version | correction/refusal |
 |---|---|---|---|---|---|---|---|---|---|---|
-| market_data_daily.hkd_9988 | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version) | file-keyed subject `9988.HK` (collector writes one file per symbol; profile links it to `SEC:HK-XHKG-09988` via vendor alias `theme_graph_native 9988.HK`) | DatetimeIndex `Date`, session dates 2019-11-26..2026-10-09 (1,681 rows) | **MISSING** — no collection/publication timestamp column; owner clock = HK session date (profile) | **MISSING** — prices carry no currency column or constant; HKD is implied by the counter only | open/high/low/close/volume | price basis recorded in collector contract: `auto_adjust=True` total-return adjusted only, `overwrite_overlap=True` re-adjusts the refresh window (`collectors/hk_stock_prices.py:25`, 64d4708cf626); no raw series | data/hk_stocks/9988.HK.parquet blob 2792f4bc5685; closes_deep.parquet 0ed0dc4075e3 (wide store, `9988.HK` column) | **MISSING** | adjustment-vintage drift documented by owner-adjacent DSC:HK-DEEP-PANEL-SPLICES-ADJUSTMENT-VINTAGES (profile): a frozen return window can drift between collector runs; vintage must be pinned by consumers |
+| market_data_daily.hkd_9988 | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version, correction_refusal_state) | file-keyed subject `9988.HK` (collector writes one file per symbol; profile links it to `SEC:HK-XHKG-09988` via vendor alias `theme_graph_native 9988.HK`) | DatetimeIndex `Date`, session dates 2019-11-26..2026-10-09 (1,681 rows) | **MISSING** — no collection/publication timestamp column; owner clock = HK session date (profile) | **MISSING** — prices carry no currency column or constant; HKD is implied by the counter only | open/high/low/close/volume | price basis recorded in collector contract: `auto_adjust=True` total-return adjusted only, `overwrite_overlap=True` re-adjusts the refresh window (`collectors/hk_stock_prices.py:25`, 64d4708cf626); no raw series | data/hk_stocks/9988.HK.parquet blob 2792f4bc5685; closes_deep.parquet 0ed0dc4075e3 (wide store, `9988.HK` column) | **MISSING** | **MISSING** (SERIES_RE_ADJUSTED_EVERY_FETCH_NO_REVISION_LEDGER: `overwrite_overlap=True` re-adjusts the refresh window in place and no revision/correction record is kept) — adjustment-vintage drift documented by owner-adjacent DSC:HK-DEEP-PANEL-SPLICES-ADJUSTMENT-VINTAGES (profile): a frozen return window can drift between collector runs; vintage must be pinned by consumers |
 | market_data_daily.rmb_89988 | **NO_OWNER** | — | — | — | — | — | — | `ls data/hk_stocks` → no 89988 file; closes_deep has no 89988 column | — | would-be owner `collectors/hk_stock_prices.py` (universe via collectors/hk_universe.py) after a Data OS counter security_id exists; never substitute the HKD counter |
-| market_data_daily.adr_baba | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version) | file-keyed subject `BABA` (collector per-symbol file) | DatetimeIndex `Date`, 2014-09-19..2026-10-09 (3,032 rows) | **MISSING** — no collection/publication timestamp column | **MISSING** — USD implied, not declared; price semantics ARE declared: dual basis per collector W1.3 (`collectors/yahoo.py:6-15`, c4a16844e604): `close` = split+dividend adjusted (total return), `close_price` = split-adjusted dividend-unadjusted | close, close_price, volume | dual price basis recorded in owner code (above); "both stored bases are re-adjusted by Yahoo at every fetch" (collector line 15) | data/yahoo/BABA.parquet blob 2c627eecb86b; massive_stock_day manifest 17e8338575a1 spans the US universe but `ls data/massive_stock_day | grep -ci baba` → 0 (no BABA file) | **MISSING** | data/stock_identity/ohlcv/BABA.parquet is the HISTORICAL August pilot copy, not an owner (profile family_notes) |
+| market_data_daily.adr_baba | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version, correction_refusal_state) | file-keyed subject `BABA` (collector per-symbol file) | DatetimeIndex `Date`, 2014-09-19..2026-10-09 (3,032 rows) | **MISSING** — no collection/publication timestamp column | **MISSING** — USD implied, not declared; price semantics ARE declared: dual basis per collector W1.3 (`collectors/yahoo.py:6-15`, c4a16844e604): `close` = split+dividend adjusted (total return), `close_price` = split-adjusted dividend-unadjusted | close, close_price, volume | dual price basis recorded in owner code (above); "both stored bases are re-adjusted by Yahoo at every fetch" (collector line 15) | data/yahoo/BABA.parquet blob 2c627eecb86b; massive_stock_day manifest 17e8338575a1 spans the US universe but `ls data/massive_stock_day \| grep -ci baba` → 0 (no BABA file); data/stock_identity/ohlcv/BABA.parquet is the HISTORICAL August pilot copy, not an owner (profile family_notes) | **MISSING** | **MISSING** (SERIES_RE_ADJUSTED_EVERY_FETCH_NO_REVISION_LEDGER: both stored bases are re-adjusted at every fetch and no revision/correction record is kept) |
 
 Sample rows (exact): 9988.HK 2026-10-09 open 104.5 / close 107.0 / high 107.30000305175781 /
 low 104.30000305175781 / volume 72349748.0; 2026-10-08 close 104.30000305175781 / volume
@@ -193,8 +195,7 @@ volume 271879400.0.
 
 | metric_id | status | evidence + refusal state |
 |---|---|---|
-| corporate_actions_adjustment.hkd_9988 | **ABSENT** | owners queried, no explicit action rows: `data/hk_placements/events.parquet` (d3d63e03a478, 811 rows; re-run 2026-10-11: `date`
-2026-03-05..2026-10-11, `announced_at` 2026-03-05 06:05:00..2026-10-11 18:25:00) → 0 rows for this counter — the collector keys on the 'placing' headline category and missed the 9988 HK$80bn placing that HKEXnews filed under general_mandate (profile + verified here); no dividend/split rows in any HK store; adjustment factors not stored (implicit in `auto_adjust=True`). Would-be: an explicit HK corporate-action ledger |
+| corporate_actions_adjustment.hkd_9988 | **ABSENT** | owners queried, no explicit action rows: `data/hk_placements/events.parquet` (d3d63e03a478, 811 rows; re-run 2026-10-11: `date` 2026-03-05..2026-10-11, `announced_at` 2026-03-05 06:05:00..2026-10-11 18:25:00) → 0 rows for this counter — the collector keys on the 'placing' headline category and missed the 9988 HK$80bn placing that HKEXnews filed under general_mandate (profile + verified here); no dividend/split rows in any HK store; adjustment factors not stored (implicit in `auto_adjust=True`). Would-be: an explicit HK corporate-action ledger |
 | corporate_actions_adjustment.rmb_89988 | **NO_OWNER** | no corporate-action or adjustment ledger for the RMB counter (no prices to adjust); would-be `collectors/hk_stock_prices.py` + counter security_id |
 | corporate_actions_adjustment.adr_baba | **PARTIAL** (missing: known_at_evidence, definition_version) | cumulative dividend factor derivable from two owner-recorded columns as `close/close_price` (derivation documented in collector W1.3); sample from C7: first row 88.35541534423828/93.88999938964844 = 0.941064…, last row 111.37000274658203/111.37000274658203 = 1.0; NO explicit corporate-action rows; `data/capital_structure` has 0 BABA rows (C13); ADS-ratio changes carried by no owner (profile). Factor rows are a derivation from owner columns, never an owner row — hence PARTIAL |
 
@@ -301,7 +302,7 @@ identity_listing.adr_baba only. Machine-readable twin: `a33_required_source_clas
 | financials | **NO — GAP** | financials.hkd_9988 | PARTIAL | issuer_subject, known_at_evidence, unit_currency, accounting_basis, source_span, definition_version, correction_refusal_state | Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a new issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py (binds issuer_subject only; no owner exists for the remaining descriptor gaps) |
 | company_events_earnings_calendar | **NO — GAP** | company_events_earnings_calendar.adr_baba | PARTIAL | definition_version | collectors/hk_hkexnews.py + engine/hk_filing_bus.py once the category taxonomy carries a version id, a correction/retraction field exists, and the subject binds through the Data OS identity axis |
 | corporate_actions_adjustment | **NO — GAP** | corporate_actions_adjustment.adr_baba | PARTIAL | known_at_evidence, definition_version | collectors/yahoo.py-class adjustment metadata carrying known-at stamps and a definition version, plus an explicit HK corporate-action ledger (profile names no would_be_owner for this class; pack-named) |
-| market_data_daily | **NO — GAP** | market_data_daily.adr_baba | PARTIAL | known_at_evidence, unit_currency, definition_version | collectors/hk_stock_prices.py / collectors/yahoo.py / collectors/massive_stock_day.py recording a known-at column, a declared currency and a definition version (profile names no would_be_owner for these descriptors; pack-named) |
+| market_data_daily | **NO — GAP** | market_data_daily.adr_baba | PARTIAL | known_at_evidence, unit_currency, definition_version, correction_refusal_state | collectors/hk_stock_prices.py / collectors/yahoo.py / collectors/massive_stock_day.py recording a known-at column, a declared currency and a definition version (profile names no would_be_owner for these descriptors; pack-named) |
 
 No cell was upgraded to OWNER_NATIVE to satisfy A33; the hkd_9988 identity cell is REFUSED (the
 owner's own NO_ISSUER_EVIDENCE), and the five GAPs above are the honest answer to the class
@@ -377,9 +378,10 @@ A33 class gaps (5):
   ledger plus collectors/yahoo.py-class adjustment metadata with known-at stamps and a
   definition version (pack-named).
 - market_data_daily — best cell market_data_daily.adr_baba, PARTIAL; blocking known_at_evidence,
-  unit_currency, definition_version; would-be owner collectors/hk_stock_prices.py /
-  collectors/yahoo.py / collectors/massive_stock_day.py recording a known-at column, a declared
-  currency and a definition version (pack-named).
+  unit_currency, definition_version, correction_refusal_state; would-be owner
+  collectors/hk_stock_prices.py / collectors/yahoo.py / collectors/massive_stock_day.py recording
+  a known-at column, a declared currency, a definition version and a per-fetch revision ledger
+  (pack-named).
 
 Standing DEC note: BABA has 0 rows in every FIF / fundamental_forensics / capital-structure
 artifact (C13) and 0 FINRA rows (C12); the would-be owners above are gated by
@@ -445,3 +447,15 @@ each REPAIR below is binding and was applied in this edit):
   do not apply to this pack: the substring-scan form is kept for 89988 (no id-shaped string is
   written for it — confirmed by the report's id-literal scan) and forecast values stay
   uncarried.
+
+- **O2 artifact-judge finding J1 (post-repair, 2026-10-11): market_data_daily.adr_baba and
+  market_data_daily.hkd_9988 dropped the frozen `correction_refusal_state` descriptor: REPAIRED.**
+  Both cells now carry missing [known_at_evidence, unit_currency, definition_version,
+  correction_refusal_state] with note SERIES_RE_ADJUSTED_EVERY_FETCH_NO_REVISION_LEDGER
+  (`collectors/yahoo.py:6-15` states both stored bases are re-adjusted at every fetch;
+  `collectors/hk_stock_prices.py` writes `auto_adjust=True` with `overwrite_overlap=True`; neither
+  keeps a revision or correction record, so no per-value correction state exists). The A33
+  market_data_daily blocking list and the GAPS class line carry the same four descriptors.
+  Status and counts are unchanged (both cells stay PARTIAL). The C3 history count now states its
+  composition: the 61 rows per node include the pre-inception NOT_IN_MASTER snapshots, so the
+  RESOLVED reading is point-in-time true only from 2026-08-21 (BABA) / 2026-08-20 (9988.HK).
