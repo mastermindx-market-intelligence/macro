@@ -30,5 +30,16 @@
     "Absent membership remains unknown; absent qualification stays unqualified; malformed inputs are structured refusals",
     "No runtime owner registration, provider read, Saved/DDL/API/mount, merge, deployment or visual/live acceptance",
     "Recovered current bytes match original retained report hashes; no historical producer seal claimed"
-  ]
+  ],
+  "publication_origin_companion": {
+    "status": "ACCEPTED_PARENT_REVIEWED_SOURCE_ONLY",
+    "files": {
+      "scripts/build_intl.py": "4c372f0be1751114d12983beea92afc6af61a4316355bad150bf762a34e4d6c2",
+      "tests/test_intl_publication_origin.py": "d7453a251c43b4e57c5b05df976a0b5919efe5fd4e378b6bdb9efbd9149c9149"
+    },
+    "behavior": "Companion retains actual decision_ref only after existing admission returns qualified and both permissions allowed; old field-only API is unchanged. Null publication/rights clocks and disclosed per-field observation date remain distinct.",
+    "validation": "13 new repository tests pass. Existing57 admission tests and4 old/new field-equality controls reused from exact candidate author proof; parent reviewed full delta/tests and actual admission owner. Canonical dependency closure238files, zero uncovered paths in existing foundation job.",
+    "limits": "No actual caller/bridge wiring or live publication. Genuine trusted context and missing clocks remain unsupplied.",
+    "evidence": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/intl-publication-origin-r1/PARENT_ADJUDICATION.json"
+  }
 }
