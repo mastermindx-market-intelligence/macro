@@ -1379,3 +1379,43 @@ def test_legacy_import_preview_is_pure_and_deterministic(limits):
     assert not hasattr(imp, "register")
     assert not hasattr(imp, "materialize_plan")
     assert not hasattr(imp, "commit")
+
+
+def test_legacy_import_preview_index_capacity_rollover_is_bounded():
+    """A 4-level index keeps 256 parts exactly and refuses part 257.
+
+    Native-format qualification is an immutable preview only; the part,
+    page, catalog, inventory and logical digest must all agree before an
+    admitted publisher may even consider a candidate. This uses ~1 MiB
+    synthetic bytes and no actual ledger, source checkout or Git effect.
+    """
+    limits = p.ProtocolLimits(
+        base_bytes=0, part_bytes=4096, page_bytes=4096, root_bytes=4096,
+        descriptor_bytes=1024, leaf_entries=4, fanout=4, index_levels=3,
+        history_operations=32, reference_visits=4096, snapshot_members=1024,
+        snapshot_bytes=4 * 1024 * 1024, logical_bytes=2 * 1024 * 1024,
+        input_rows=1024, publication_objects=1024, git_blob_bytes=16384,
+    )
+
+    def row(i):
+        prefix = b'{"seq":' + str(i).encode() + b',"same_id":"dupe","payload":"'
+        suffix = b'"}\n'
+        return prefix + b"Z" * (1024 - len(prefix) - len(suffix)) + suffix
+
+    history = b"".join(row(i) for i in range(1024))
+    assert len(history) == 1_048_576
+    accepted = _preview(history, limits)
+    assert accepted.input_sha256 == accepted.logical_sha256 == digest(history)
+    assert accepted.row_occurrences == 1024
+    assert accepted.native_base_bytes == 0
+    assert len(accepted.part_sizes) == 256
+    assert set(accepted.part_sizes) == {4096}
+    assert accepted.candidate_members > len(accepted.part_sizes)
+    assert accepted.eligible_for_cutover is False
+
+    # One additional record exceeds the exact 4*4**3 extent-tree limit.
+    # It must never silently truncate or return a partly qualified view.
+    overflow = history + row(1024)
+    with pytest.raises(p.SnapshotIntegrityError) as exc:
+        _preview(overflow, replace(limits, input_rows=1025))
+    assert exc.value.code == "CAPACITY"
