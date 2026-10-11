@@ -15891,6 +15891,12 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py --help
           python -m pytest tests/test_r4_v2_receipt.py -q
+      # EVAL-1 challenger trial identity (ITP B6). Name the checker CLI as
+      # well as its suite; the suite loads the checker by file path.
+      - name: information-to-price EVAL-1 challenger trial identity
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
+          python -m pytest tests/test_eval1_challenger_identity.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
