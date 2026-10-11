@@ -486,7 +486,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | U01 step 1B | RUNNING — admitted 18:20:45Z via bt8w3juhp (launch_when_admitted, fix_build, alarm 14400); grok operator live; artifacts dir named in `leads/U01/step1B_pool.log` |
 | D16a | CI — Macro PR #8856 at `c93aa900` (review REQUEST_REPAIR F1/F2 → seat repair, D42); gate 145; consumer suite no regression (7 pre-existing); `merge-on-green`; app bound; production proof = next natural m1 resolver call logs a resolved store |
 | V01 | CI — Macro PR #8851 at `479b16df2a7a` (audit REQUEST_REPAIR → seat repair `f51bda96804f` + `479b16df2a7a`, D39); gate 351 passed; `merge-on-green`; app PR monitor bound; pilot red = O-4 by design; production proof = first natural flow-surface cycle on m1 after merge |
-| OC | QUEUED → armed 18:36Z on bnwojs7jx (launch_when_admitted, build-bounded, alarm 12600, wait budget 10800 s); takes the next slot 1B or D16a frees (max_active 2) |
+| OC | RUNNING — admitted 18:48:21Z (ATTEMPT 1, load1 14.16) via bnwojs7jx (build-bounded, alarm 12600); `oc_sim.py` last modified 19:11:50Z; artifacts dir named in `leads/OC/pool.log` |
 | F01, M01 | QUEUED — commissions frozen |
 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
@@ -683,3 +683,5 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   `c93aa900` with 10 new tests. Two of them are red at the first delivery, and T9 is red with the backfill guard disabled. Gate 145. The consumer suite
   shows no regression.
 - Macro PR #8856 is labelled `merge-on-green`. V01 #8851 was still OPEN at 19:12Z (mergeStateStatus UNKNOWN), merge-on-green.
+- RETRACTION: the 19:00Z entry said OC was waiting for load1 < 15. In fact OC was admitted at 18:48:21Z (`leads/OC/pool.log.attempts`).
+  1B and OC now fill both slots (max_active 2), so F01/M01 wait for one of them to exit. load1 was 55.6 at 19:13Z.
