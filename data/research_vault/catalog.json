@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T22:36:56.039794+00:00",
-  "count": 2835,
+  "generated_at": "2026-10-11T23:07:02.188658+00:00",
+  "count": 2837,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -223,6 +223,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 44,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mhalr7cfzpz-7353f6",
+      "title": "Article thecaseforasianequities ltr",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T03:04:59Z",
+      "summary_points": [
+        "AI Supply Chain Dominance: Asia central to global AI ecosystem with Mag 7 (TSMC, Samsung, SK Hynix) and regional suppliers capturing $2T AI capex (2026-2027), enabling effective AI deployment.",
+        "Semiconductor Dominance & Asia Valuation Opportunity: TSMC/SK Hynix gross margins confirm AI chip supply chain dominance (Hynix: 50% HBM revenue, TSMC: 90% leading-edge logic); Asia offers differentiated earnings at reasonable valuations vs. elevated U.S.",
+        "tech.",
+        "AI Capex Flow & Geopolitical Shifts: Active AI capex cycle flowing through Asia (not projected), driven by Korea’s Corporate Value-Up program (Nov 2025) and China’s tech/healthcare growth, with India’s structural opportunities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
@@ -986,6 +1006,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kenfn5dbluf-b08e2d",
+      "title": "Ecofin ready to bounce october 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-09T23:29:38Z",
+      "summary_points": [
+        "Post-Rate Peak Performance: GRI strategy delivered 10% avg return 6 months post-US 10-Y Treasury yield peaks (e.g., 10.4% Oct 2023), with minimal declines (<2%) post-troughs, signaling rebound potential.",
+        "Valuation-Earnings Mismatch: US utilities trading at 10-year low 1-yr fwd PE despite 9.4% projected EPS CAGR (2024–2028E), up from 1.5% (2018–2023), creating bullish opportunity.",
+        "M&A Catalysts & Premiums: Sector downturns drive 42% avg acquisition premiums (e.g., Renewable Japan 93% MBO premium), with undervalued targets like Ormat (36.3x PE vs. 3-year avg 37.4x) offering private equity entry points.",
+        "Accelerated Earnings Growth: US utilities’ EPS growth outlook surged to 9.4% CAGR (2024–2028E), fueled by strong H1 results and sector revisions, contrasting with depressed valuations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },

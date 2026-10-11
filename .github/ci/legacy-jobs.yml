@@ -21559,6 +21559,34 @@ jobs:
       - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
       - tests/test_dataos_prospective_reference.py
+      # Tiingo raw-vintage/read-only research proofs; no live provider calls.
+      - .github/workflows/ci.yml
+      - collectors/__init__.py
+      - collectors/tiingo_archive.py
+      - scripts/tiingo_ingest.py
+      - scripts/build_ext_quotes.py
+      - tests/test_tiingo_boats_display.py
+      - tests/test_build_ext_quotes.py
+      - scripts/tiingo_materialize.py
+      - scripts/tiingo_vendor_cohort.py
+      - requirements/tiingo.txt
+      - tests/test_tiingo_archive.py
+      - tests/test_tiingo_views.py
+      - tests/test_tiingo_reader.py
+      - tests/test_tiingo_history.py
+      - tests/test_tiingo_research_query.py
+      - tests/test_tiingo_boats_tape.py
+      - tests/test_tiingo_boats_stream_chain.py
+      - lib/dataos/tiingo_boats_tape.py
+      - scripts/tiingo_research_query.py
+      - tests/test_tiingo_vendor_cohort.py
+      - tests/test_tiingo_ingestion_integrity.py
+      - scripts/tiingo_reference_audit.py
+      - tests/test_tiingo_reference_audit.py
+      - tests/test_tiingo_planning.py
+      - scripts/tiingo_corpus_audit.py
+      - tests/test_tiingo_corpus_audit.py
+      - tests/test_tiingo_additional_history.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21569,7 +21597,16 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: prospective reference clocks, refusals and consumer compatibility
-        run: python -m pytest tests/test_dataos_prospective_reference.py -q
+        run: >-
+          python -m pytest tests/test_dataos_prospective_reference.py
+          tests/test_tiingo_archive.py tests/test_tiingo_views.py
+          tests/test_tiingo_reader.py tests/test_tiingo_history.py
+          tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
+          tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
+          tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
+          tests/test_tiingo_ingestion_integrity.py
+          tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
+          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q
 
 
   dataos-web-workspace:
