@@ -315,9 +315,10 @@ read credential files or shim logs.
    `/run/lock/macro-update.lock` was held by another seat's Terminal build (`terminal-build.sh --target-sha …`
    -> `npm run build`): designed serialization, never kill. Remaining run proof = the 18:30:03Z trigger
    (first run under the new budget) ending `Result=success` with wall << 600 s; one bounded read >= 18:34Z.
-3. Covering main proof ci.yml run 38162041313 on f1ae1e0365fc (descendant of #8830 + #8838; dispatched
-   18:01:07Z over a clear field; watcher `blq7tnv8m`): in flight at commit time (18:2xZ, started 18:01Z; the watcher's MAINPROOF-CONCLUDED verdict lands in the next records commit). On SUCCESS both authority freezes
-   clear; on failure read failing job NAMES only, diagnose, never re-dispatch over an in-flight run. The
+3. Covering main proof ci.yml run 38162040929 (a same-second sibling dispatch 38162041313 is still in flight —
+   left alone, never cancelled) on f1ae1e0365fc (descendant of #8830 + #8838; dispatched
+   18:01:07Z over a clear field; watcher `blq7tnv8m`): concluded SUCCESS 18:28:59Z (watcher line `MAINPROOF-CONCLUDED 38162040929 success f1ae1e0365fc`) — both authority freezes (#8830 scripts/, #8838 .github/workflows/) CLEAR. Nothing further is owed on the freezes; the sibling
+   run concludes on its own. The
    structural identity runway (memoize `_project_snapshot` / load store metadata once) stays a later lane
    with a before/after CPU-second gate — #8841 bought headroom (165 s of 600), not the fix.
 4. Post-nightly proofs (B, D-experience) on 10-12 after the ~02:0xZ nightly + first :53 tick;

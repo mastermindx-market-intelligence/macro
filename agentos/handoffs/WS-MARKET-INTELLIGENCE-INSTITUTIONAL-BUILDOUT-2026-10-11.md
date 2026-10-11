@@ -307,5 +307,6 @@ cmp → systemd-analyze verify → install → daemon-reload → timer restart);
 `CPUQuotaPerSecUSec=1s`, NeedDaemonReload=no — PRODUCTION_PROOF for the install. The 17:30:25Z run (the last
 under 180 s / 50%) ended Result=success at 165 s wall / 81.96 CPU-s; the first run under the new budget is the
 18:30:03Z trigger and its `Result=success` is the remaining run proof.
-Covering main proof ci.yml run 38162041313 on f1ae1e0365fc (descendant of the #8830 and #8838
-merges; dispatched 18:01:07Z over a clear field; watcher `blq7tnv8m` at 120 s): in flight at commit time (18:2xZ, started 18:01Z; the watcher's MAINPROOF-CONCLUDED verdict lands in the next records commit)
+Covering main proof ci.yml run 38162040929 (a same-second sibling dispatch, 38162041313, is still in flight and is
+left alone — never cancel a proof run) on f1ae1e0365fc (descendant of the #8830 and #8838
+merges; dispatched 18:01:07Z over a clear field; watcher `blq7tnv8m` at 120 s): concluded SUCCESS 18:28:59Z (watcher line `MAINPROOF-CONCLUDED 38162040929 success f1ae1e0365fc`) — both authority freezes (#8830 scripts/, #8838 .github/workflows/) CLEAR
