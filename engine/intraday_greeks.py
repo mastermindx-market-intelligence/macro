@@ -104,11 +104,12 @@ def kernel_applicability(*, exercise_style, right, seconds_to_economic_expiry,
     """Whether this European BSM kernel may price a contract — refusal only, no pricing.
 
     Rules apply in order and the first match decides: an invalid right; an unknown
-    (None / non-finite) economic clock; a clock at or past expiry; a clock inside MIN_T;
-    then by exercise style. European exercise is supported. An American put is refused
-    (early exercise has value the kernel cannot see). An American call is supported as its
-    European equivalent only when no discrete dividend falls before expiry; True refuses
-    it and anything but a strict bool is an unknown schedule. Any other style is refused.
+    (None / bool / non-numeric / non-finite) economic clock; a clock at or past expiry;
+    a clock inside MIN_T; then by exercise style. European exercise is supported. An
+    American put is refused (early exercise has value the kernel cannot see). An American
+    call is supported as its European equivalent only when no discrete dividend falls
+    before expiry; True refuses it and anything but a strict bool is an unknown schedule.
+    Any other style is refused.
     Returns {"status": "supported" | "refused", "reason": <rule>, "model": <name> | None}.
     """
     def refused(reason):
@@ -117,9 +118,11 @@ def kernel_applicability(*, exercise_style, right, seconds_to_economic_expiry,
     r = _RIGHTS.get(right.strip().upper()) if isinstance(right, str) else None
     if r is None:
         return refused("invalid_right")
+    if isinstance(seconds_to_economic_expiry, (bool, np.bool_)):
+        return refused("unknown_economic_clock")
     try:
         seconds = float(seconds_to_economic_expiry)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return refused("unknown_economic_clock")
     if not np.isfinite(seconds):
         return refused("unknown_economic_clock")
@@ -328,7 +331,8 @@ def implied_vol_vec(mid, S, K, T, is_call, r=DEFAULT_R, q=DEFAULT_Q):
         # denominator even though step_ok would discard the result: vega is exactly 0.0
         # whenever _pdf(d1) UNDERFLOWS (|d1| > ~38.6 → exp(-d1²/2) == 0.0 in float64), which
         # a late-day 0DTE wing reaches routinely — T at MIN_T (1 minute, the shortest clock
-        # the solve accepts) makes σ·√T ≈ 4e-4, so a strike merely ~2% out of the money gives |d1| ≈ 49. That raised a
+        # the solve accepts) makes σ·√T ≈ 4e-4, so a strike merely ~2% out of the money
+        # gives |d1| ≈ 49. That raised a
         # live `RuntimeWarning: divide by zero encountered in divide` on the M1 poller
         # (2026-07-29, during RTH), once per Newton iteration. Masking the denominator (the
         # same "compute on a safe copy, then mask" idiom as bs_greeks_vec above) is
