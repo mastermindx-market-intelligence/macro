@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T18:21:15.998850+00:00",
-  "count": 2823,
+  "generated_at": "2026-10-11T19:06:58.640144+00:00",
+  "count": 2825,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -535,6 +535,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rny4a7uvgrw-27efed",
+      "title": "Commodity Monthly Review September 2026",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:26:50Z",
+      "summary_points": [
+        "Energy dominance drives BCOM near highs: Energy (+14.2%) led BCOM rebound (WTI +7.6%, Brent +14.2%), sustaining index near yearly highs despite softs decline (-9.4%); OPEC+ unable to offset supply gaps from US-Iran conflict disrupting Strait of Hormuz (Brent $109/bbl peak).",
+        "Copper physical demand dominates tariff volatility: LME copper hit $17,875/t (all-time high) as tight concentrate markets (Chilean output -12.8% yoy) and robust Chinese buying offset tariff concerns; Yangshan premium at $119/t (4-yr high) signals strong demand.",
+        "Cocoa structural bearishness: Cocoa fell -20.7% due to liquidation, origin hedging, and 2025/26 surplus; elevated stocks-to-use ratios and muted demand create bearish market structure.",
+        "Gold ETF divergence signals downside risk: Gold fell 6.6% despite ETF inflows (rare disconnect; 52 prior instances since 2000s), with Fed rate hike (3.75-4.00%) and Middle East tensions amplifying macro headwinds.",
+        "Nickel demand-supply disconnect: Nickel underperformed (-5.5% mom) due to weak stainless steel demand and Indonesian oversupply (ore output 173.8 Mt), disconnecting from Chinese industrial recovery."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-j5oetpn8fjm-352e21",
       "title": "Credit Strategy Weekly Même pas peur",
       "institution": "Societe Generale",
@@ -634,6 +655,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qjmprmfzu7z-4f1d32",
+      "title": "BofA The European Credit Strategist OATflows and outbreaks 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:07:08Z",
+      "summary_points": [
+        "French fiscal vulnerability: No primary budget surplus since 1974, private debt/GDP (214%) exceeds US (140%), sovereign debt/GDP near US levels, and pension strain signal systemic risk to credit markets.",
+        "Corporate credit curve inversion: 70% of Euro IG 2s5s curves inverted (vs 0% in US), indicating severe corporate stress and critical risk factor for credit portfolios.",
+        "Global negative spread expansion: Negative corporate-sovereign spreads now widespread (incl.",
+        "EMs), driven by diverging net interest payments, undermining \"corporates safer\" narrative and altering credit positioning dynamics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
