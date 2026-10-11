@@ -1,0 +1,46 @@
+{
+  "source_head": "6d920952dc07731139cefc8a41cbd9bf92be5acf",
+  "basis": "existing synthetic fixture; no live data or provider calls",
+  "rights_results": [
+    {
+      "input_rights_state": "internal_allowed",
+      "research_state": "READY_FOR_RESEARCH_COMPARISON",
+      "emitted_acceleration": 0.25,
+      "financial_authority_flags_all_false": true
+    },
+    {
+      "input_rights_state": "RIGHTS_BLOCKED",
+      "research_state": "UNAVAILABLE",
+      "emitted_acceleration": 0.25,
+      "financial_authority_flags_all_false": true
+    },
+    {
+      "input_rights_state": "UNAVAILABLE",
+      "research_state": "UNAVAILABLE",
+      "emitted_acceleration": 0.25,
+      "financial_authority_flags_all_false": true
+    },
+    {
+      "input_rights_state": "UNKNOWN",
+      "research_state": "READY_FOR_RESEARCH_COMPARISON",
+      "emitted_acceleration": 0.25,
+      "financial_authority_flags_all_false": true
+    },
+    {
+      "input_rights_state": "REVOKED",
+      "research_state": "READY_FOR_RESEARCH_COMPARISON",
+      "emitted_acceleration": 0.25,
+      "financial_authority_flags_all_false": true
+    },
+    {
+      "input_rights_state": "rights_blocked",
+      "research_state": "READY_FOR_RESEARCH_COMPARISON",
+      "emitted_acceleration": 0.25,
+      "financial_authority_flags_all_false": true
+    }
+  ],
+  "null_acceleration": {
+    "accepted": false,
+    "error": "theme_acceleration_invalid"
+  }
+}

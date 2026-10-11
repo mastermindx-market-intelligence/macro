@@ -1,0 +1,114 @@
+{
+  "initial_macro_pin": "bebcb24db8707f93c3acca470590fead13e78dbd",
+  "final_macro_pin": "3d9969c15bba0f57b64da7592c0731cc8a0f2eac",
+  "changed_root_subtrees": [
+    {
+      "path": "site",
+      "prior_sha": "1e5f2116840bf5c9c584a7b9eef7ec5afc6bfbbe",
+      "current_sha": "5669e1340de69ab5968f5bd052cb805d150593b6"
+    }
+  ],
+  "unchanged_root_subtrees": [
+    ".agents",
+    ".claude",
+    ".codex",
+    ".cursor",
+    ".env.example",
+    ".gitattributes",
+    ".github",
+    ".gitignore",
+    ".grok",
+    ".warp",
+    "ACCOUNTS_SETUP.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "DECISIONS.md",
+    "LIMITATIONS.md",
+    "MIGRATION.md",
+    "README.md",
+    "WATCHLIST.md",
+    "admin",
+    "agentos",
+    "app",
+    "browser",
+    "calibration",
+    "collectors",
+    "config.yml",
+    "config",
+    "content",
+    "contracts",
+    "data",
+    "docs",
+    "engine",
+    "finviz_themes",
+    "knowledge",
+    "lib",
+    "mockups",
+    "ops",
+    "orch",
+    "properties",
+    "reports",
+    "requirements.txt",
+    "requirements",
+    "research",
+    "scripts",
+    "templates",
+    "tests",
+    "tools",
+    "ux-evidence",
+    "vercel.json",
+    "verify_shots",
+    "worker",
+    "wrangler.toml"
+  ],
+  "final_procedure_pin": "cb8398a30b27ef6f0c369d803daab45bb28c337e",
+  "protected": true,
+  "procedure_semantic_delta": "none in the required fetched procedure set; only terminal-newline normalization on some fetches",
+  "required_procedures": [
+    {
+      "path": "docs/sol_skills/INDEX.md",
+      "blob_sha": "4b0189a75d559d963365097485e8509a49c70e23"
+    },
+    {
+      "path": "docs/sol_skills/COLD_START.md",
+      "blob_sha": "b11e58f083040144933cf2ddab76bf6c60a7e542"
+    },
+    {
+      "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+      "blob_sha": "9fed10f7cc7a2f4323d039b406f7c0715445e22e"
+    },
+    {
+      "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+      "blob_sha": "2073a33f05506268b15f0b5ce292ce57d5b60ed3"
+    },
+    {
+      "path": "docs/sol_skills/RECONCILE_STATE.md",
+      "blob_sha": "1373b72a13fb4a084b0331eb2bcf2d4a680d9738"
+    },
+    {
+      "path": "docs/sol_skills/REVIEW_RETURN.md",
+      "blob_sha": "f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00"
+    },
+    {
+      "path": "docs/sol_skills/CLOSEOUT.md",
+      "blob_sha": "4a9ec3782da001322604e977dbe91b9cf371f0b9"
+    },
+    {
+      "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "blob_sha": "5bfb9bbc91177e2400da596b45ec809d294a3242"
+    }
+  ],
+  "terminal_pin": "41b8af2da46614cedd2a485214e53003d4f030fc",
+  "terminal_unchanged": true,
+  "site_rechecks": [
+    {
+      "path": "site/basketdata/narrative_emergence.json",
+      "sha": "ad13c2372696886901bf6eb58d8228ec950285a1"
+    },
+    {
+      "path": "site/neuralwebdata/theme_state.json",
+      "sha": "21382140b7db689919d39e8215ebe1910a7637c2"
+    }
+  ],
+  "source_recheck_note": "GitHub compare returned its 300-file cap; unchanged non-site trees were established independently from both root trees. No whole-repository production acceptance is asserted."
+}
