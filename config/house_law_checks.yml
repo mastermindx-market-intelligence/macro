@@ -2606,11 +2606,13 @@ checks:
     selftest: false
     selftest_exempt_reason: >
       Non-gating post-publish detector (exit 0 always, CSP-R1); functional
-      coverage provided by tests/test_check_ledger_advance.py (16 cases: advance
+      coverage provided by tests/test_check_ledger_advance.py (21 cases: advance
       silent, stall+render, stall without render, weekend skip, double-run
       idempotent, missing file skipped, state persistence, multiple stalls,
       corrupt state fail-open, push_ops_alert failure fail-open, stalled_since
-      preservation, main() exit-0, render-happened flag, asof/date field fallback).
+      preservation, main() exit-0, render-happened flag, asof/date field fallback,
+      and an open stall surviving a same-day rerun, a no-render night, an
+      unreadable ledger and a regressed asof while changed ledger data clears it).
     allowlist: null
     ratchet: null
     known_limits:
