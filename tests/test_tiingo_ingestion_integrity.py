@@ -104,3 +104,81 @@ def test_receipt_context_must_match_output_rows(lake):
     with pytest.raises(TiingoViewRefusal):
         read_research_view("eod-bars", "2026-10-09", saved.get("receipt_id", saved["raw_sha256"]),
                            root=lake.root, check_mount=False)
+
+
+@pytest.mark.parametrize("clock", ["2026-10-09T12:00:00+00:60", "2026-10-09T12:00:00+01:99"])
+def test_invalid_timezone_offset_must_not_normalize(lake, clock):
+    with pytest.raises(a.TiingoArchiveError):
+        capture(lake, at=clock)
+
+
+def test_corrupt_manifest_without_output_never_reports_written(lake):
+    _, rec = capture(lake)
+    out = materialize_one(lake.root, rec, free_floor=0)
+    (lake.root / out["path"]).unlink()
+    manifest = next((lake.root / "manifests").rglob("*.json"))
+    manifest.write_text('{"garbage":"yes"}')
+    with pytest.raises(a.TiingoArchiveError):
+        materialize_one(lake.root, rec, free_floor=0)
+    assert manifest.read_text() == '{"garbage":"yes"}'
+    assert not (lake.root / out["path"]).exists()
+
+
+def test_unrelated_daily_receipts_do_not_invalidate_exact_view(lake):
+    saved, rec = capture(lake)
+    materialize_one(lake.root, rec, free_floor=0)
+    parent = next((lake.root / "receipts").rglob("*.json")).parent
+    for index in range(2048):
+        unrelated = dict(rec, raw_sha256=f"{index:064x}")
+        unrelated["receipt_id"] = a.receipt_identity(unrelated)
+        (parent / f"unrelated-{index:064x}.json").write_text(json.dumps(unrelated))
+    view = read_research_view("eod-bars", "2026-10-09", saved["raw_sha256"],
+                              root=lake.root, check_mount=False)
+    assert view.rows[0]["ticker_vendor"] == "AMD"
+    assert materialize_one(lake.root, rec, free_floor=0)["status"] == "EXISTS"
+
+
+def test_valid_legacy_v2_view_keeps_original_bytes(lake):
+    import hashlib
+    import pyarrow as pa
+    saved, rec = capture(lake)
+    out = materialize_one(lake.root, rec, free_floor=0)
+    # Represent the already accepted v1 L0/v2 L1 shape: none had receipt IDs.
+    rec.pop("receipt_id")
+    receipt_path = next((lake.root / "receipts").rglob("*.json"))
+    receipt_path.write_text(json.dumps(rec))
+    artifact = lake.root / out["path"]
+    rows = pq.read_table(artifact).to_pylist()
+    for row in rows:
+        row.pop("source_receipt_id")
+    pq.write_table(pa.Table.from_pylist(rows), artifact, compression="zstd")
+    manifest_path = next((lake.root / "manifests").rglob("*.json"))
+    manifest = json.loads(manifest_path.read_text())
+    manifest.pop("source_receipt_id")
+    manifest["columns"].remove("source_receipt_id")
+    manifest["output_sha256"] = hashlib.sha256(artifact.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    before = artifact.read_bytes(), manifest_path.read_bytes(), receipt_path.read_bytes()
+    view = read_research_view("eod-bars", "2026-10-09", saved["raw_sha256"],
+                              root=lake.root, check_mount=False)
+    assert view.rows[0]["close_raw"] == 10
+    assert materialize_one(lake.root, rec, free_floor=0)["status"] == "EXISTS"
+    assert before == (artifact.read_bytes(), manifest_path.read_bytes(), receipt_path.read_bytes())
+    # Legacy compatibility never permits an explicitly false row identity.
+    rows[0]["source_receipt_id"] = "0" * 64
+    pq.write_table(pa.Table.from_pylist(rows), artifact, compression="zstd")
+    manifest["output_sha256"] = hashlib.sha256(artifact.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(TiingoViewRefusal):
+        read_research_view("eod-bars", "2026-10-09", a.receipt_identity(rec),
+                           root=lake.root, check_mount=False)
+    with pytest.raises(a.TiingoArchiveError):
+        materialize_one(lake.root, rec, free_floor=0)
+    artifact.write_bytes(before[0])
+    manifest_path.write_bytes(before[1])
+    manifest = json.loads(manifest_path.read_text())
+    manifest["source_receipt_id"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(TiingoViewRefusal):
+        read_research_view("eod-bars", "2026-10-09", saved["raw_sha256"],
+                           root=lake.root, check_mount=False)

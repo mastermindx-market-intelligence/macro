@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from collectors.tiingo_archive import (
     DEFAULT_ARCHIVE, MIN_FREE_BYTES, TiingoArchiveError, _publish_once,
-    require_external_root, require_space,
+    require_external_root, require_space, validate_receipt, receipt_identity, capture_day,
 )
 from lib.dataos.tiingo_views import SCHEMA_VERSION, research_rows
 
@@ -51,6 +51,7 @@ def verified_raw(archive_root: Path, receipt: dict[str, Any]) -> bytes:
         raise TiingoArchiveError("raw uncompressed partition exceeds research batch limit")
     if hashlib.sha256(raw).hexdigest() != receipt["raw_sha256"]:
         raise TiingoArchiveError("raw source digest mismatch")
+    validate_receipt(receipt)
     return raw
 
 
@@ -71,16 +72,48 @@ def materialize_one(root: Path, receipt: dict[str, Any], *,
     if not rows:
         return {"status": "EMPTY_NORMALIZED", "rows": 0,
                 "source": receipt.get("source")}
-    day = (receipt.get("observed_at_utc")
-           or receipt.get("first_received_at_utc") or "undated")[:10]
+    day = capture_day(receipt.get("observed_at_utc") or receipt.get("first_received_at_utc"))
     source = receipt.get("source") or "boats-firehose"
     digest = receipt["raw_sha256"]
-    dest = root / "normalized" / source / day / (digest + ".parquet")
-    manifest_path = root / "manifests" / source / day / (digest + ".json")
+    identity = receipt_identity(receipt)
+    # Retain established content paths when unambiguous; context collisions use
+    # the exact receipt identity. Never replace or rewrite an older view.
+    content_manifest = root / "manifests" / source / day / (digest + ".json")
+    previous = None
+    if content_manifest.is_symlink() or not content_manifest.resolve().is_relative_to(root.resolve()):
+        raise TiingoArchiveError("materialized path escapes archive")
+    if content_manifest.is_file():
+        try:
+            previous = json.loads(content_manifest.read_text())
+        except (OSError, ValueError) as exc:
+            raise TiingoArchiveError("existing materialized manifest is corrupt") from exc
+        if not isinstance(previous, dict):
+            raise TiingoArchiveError("existing materialized manifest is invalid")
+    collision = False
+    for index, file in enumerate((root / "receipts" / source / day).glob(f"*{digest[:24]}*.json")):
+        if index >= 2048:
+            raise TiingoArchiveError("too many candidate source contexts")
+        if file.is_symlink() or not file.resolve().is_relative_to(root.resolve()) or file.stat().st_size > 1_000_000:
+            raise TiingoArchiveError("source receipt escapes bounded archive evidence")
+        try:
+            candidate = json.loads(file.read_text())
+        except (OSError, ValueError) as exc:
+            raise TiingoArchiveError("source context receipt is unreadable") from exc
+        if candidate.get("raw_sha256") == digest and validate_receipt(candidate) != identity:
+            collision = True
+    artifact_id = digest
+    if previous and previous.get("source_receipt_id") == identity:
+        pass
+    elif collision or (previous and previous.get("source_receipt_id") not in (None, identity)):
+        artifact_id = identity
+    dest = root / "normalized" / source / day / (artifact_id + ".parquet")
+    manifest_path = root / "manifests" / source / day / (artifact_id + ".json")
+    for target in (dest, manifest_path):
+        if target.is_symlink() or not target.resolve().is_relative_to(root.resolve()):
+            raise TiingoArchiveError("materialized path escapes archive")
     file_exists = dest.is_file()
-    if file_exists and manifest_path.is_file():
-        return {"status": "EXISTS", "rows": len(rows),
-                "source": source, "path": dest.relative_to(root).as_posix()}
+    if manifest_path.is_file() and not file_exists:
+        raise TiingoArchiveError("retained manifest lacks its original Parquet; no rewrite")
     if dry_run:
         return {"status": "WOULD_REPAIR" if file_exists else "WOULD_WRITE",
                 "rows": len(rows), "source": source,
@@ -95,6 +128,25 @@ def materialize_one(root: Path, receipt: dict[str, Any], *,
     # drops fields present only in later rows (loss of sale-condition or quotes).
     keys = sorted({k for row in rows for k in row})
     table = pa.Table.from_pylist([{k: row.get(k) for k in keys} for row in rows])
+    if file_exists and manifest_path.is_file():
+        try:
+            manifest = json.loads(manifest_path.read_text())
+            legacy = "source_receipt_id" not in manifest and "receipt_id" not in receipt
+            expected_rows = table.to_pylist()
+            if legacy:
+                expected_rows = [{k: v for k, v in row.items() if k != "source_receipt_id"}
+                                 for row in expected_rows]
+            if (manifest.get("source_sha256") != digest
+                    or (not legacy and manifest.get("source_receipt_id") != identity)
+                    or manifest.get("source_observed_at_utc") != (receipt.get("observed_at_utc") or receipt.get("first_received_at_utc"))
+                    or manifest.get("output_path") != dest.relative_to(root).as_posix()
+                    or manifest.get("output_sha256") != hashlib.sha256(dest.read_bytes()).hexdigest()
+                    or pq.read_table(dest).to_pylist() != expected_rows):
+                raise TiingoArchiveError("existing materialized view disagrees with original source")
+        except (OSError, ValueError, TypeError, AttributeError) as exc:
+            raise TiingoArchiveError("existing materialized view is corrupt") from exc
+        return {"status": "EXISTS", "rows": len(rows), "source": source,
+                "path": dest.relative_to(root).as_posix(), "receipt_id": identity}
     if file_exists:
         # A crash may leave a fully written Parquet without its manifest.
         # Repair only after comparing exact normalized source row content.
@@ -121,25 +173,31 @@ def materialize_one(root: Path, receipt: dict[str, Any], *,
     out = {"status": "WRITTEN" if created else "REPAIRED_MANIFEST",
            "source": source, "rows": len(rows),
            "path": dest.relative_to(root).as_posix()}
-    if created or not manifest_path.is_file():
-        manifest = {
-            "schema": "mastermind.tiingo.materialized_receipt.v1",
-            "source_sha256": digest,
-            "source_receipt_schema": receipt["schema"],
-            "source_vendor": "tiingo",
-            "view_schema": SCHEMA_VERSION,
-            "output_path": out["path"],
-            "output_sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
-            "rows": len(rows), "columns": keys,
-            "dataos_identity_admitted": False,
-            "pit_backtest_eligible": False,
-            "redistribution_admitted": False,
-            "source_observed_at_utc": receipt.get("observed_at_utc")
-                                      or receipt.get("first_received_at_utc"),
-        }
-        _publish_once(
-            manifest_path,
-            (json.dumps(manifest, sort_keys=True) + "\n").encode("utf-8"))
+    manifest = {
+        "schema": "mastermind.tiingo.materialized_receipt.v1",
+        "source_sha256": digest,
+        "source_receipt_id": identity,
+        "source_receipt_schema": receipt["schema"],
+        "source_vendor": "tiingo",
+        "view_schema": SCHEMA_VERSION,
+        "output_path": out["path"],
+        "output_sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
+        "rows": len(rows), "columns": keys,
+        "dataos_identity_admitted": False,
+        "pit_backtest_eligible": False,
+        "redistribution_admitted": False,
+        "source_observed_at_utc": receipt.get("observed_at_utc")
+                                  or receipt.get("first_received_at_utc"),
+    }
+    _publish_once(
+        manifest_path,
+        (json.dumps(manifest, sort_keys=True) + "\n").encode("utf-8"))
+    try:
+        published = json.loads(manifest_path.read_text())
+        if published != manifest:
+            raise TiingoArchiveError("published manifest disagrees with original source")
+    except (OSError, ValueError) as exc:
+        raise TiingoArchiveError("published manifest is corrupt") from exc
     return out
 
 

@@ -21,7 +21,7 @@ from datetime import datetime
 from typing import Any, Iterable
 from urllib.parse import parse_qs, urlsplit
 
-from collectors.tiingo_archive import decode_boats
+from collectors.tiingo_archive import decode_boats, receipt_identity
 
 SCHEMA_VERSION = "mastermind.tiingo.research_views.v2"
 
@@ -39,6 +39,7 @@ def receipt_context(receipt: dict[str, Any]) -> dict[str, Any]:
         "source_vendor": "tiingo",
         "dataset_source": receipt.get("source", "boats-firehose"),
         "source_sha256": receipt["raw_sha256"],
+        "source_receipt_id": receipt_identity(receipt),
         "source_observed_at_utc": receipt.get("observed_at_utc")
                                  or receipt.get("first_received_at_utc"),
         "source_rights_admitted": False,

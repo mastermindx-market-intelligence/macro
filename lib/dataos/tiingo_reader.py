@@ -17,7 +17,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from collectors.tiingo_archive import DEFAULT_ARCHIVE, SOURCES, TiingoArchiveError, require_external_root
+from collectors.tiingo_archive import (DEFAULT_ARCHIVE, SOURCES, TiingoArchiveError,
+    require_external_root, validate_receipt, receipt_identity)
 from scripts.tiingo_materialize import verified_raw
 from lib.dataos.tiingo_views import SCHEMA_VERSION
 
@@ -60,7 +61,7 @@ def _hashed_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def _unique_raw_context(base: Path, source: str, day: str, digest: str) -> dict[str, Any]:
+def _unique_raw_context(base: Path, source: str, day: str, digest: str, *, receipt_id: str | None = None) -> dict[str, Any]:
     """Quarantine v1 content-key collisions; do not repair or rewrite source data.
 
     The current producer uses content-only output names. Until that producer is
@@ -69,17 +70,32 @@ def _unique_raw_context(base: Path, source: str, day: str, digest: str) -> dict[
     """
     parent = base / "receipts" / source / day
     contexts: dict[tuple[Any, ...], dict[str, Any]] = {}
-    for index, file in enumerate(parent.glob(f"*{digest[:24]}*.json")):
-        if index >= 2048:
-            raise TiingoViewRefusal("too many candidate source contexts")
+    matching = 0
+    files = list(parent.glob(f"*{digest[:24]}*.json"))
+    if not files:
+        # Exact receipt IDs can also select a retained legacy content path.
+        files = parent.glob("*.json")
+    for file in files:
         if not file.resolve().is_relative_to(base.resolve()) or file.stat().st_size > 1_000_000:
             raise TiingoViewRefusal("source receipt escapes bounded archive evidence")
         try:
             record = json.loads(file.read_text())
         except (ValueError, OSError) as exc:
             raise TiingoViewRefusal("unreadable source context receipt") from exc
-        if not isinstance(record, dict) or record.get("raw_sha256") != digest:
+        if not isinstance(record, dict):
+            raise TiingoViewRefusal("invalid source context receipt")
+        identity = receipt_identity(record)
+        if record.get("raw_sha256") != digest and identity != digest:
             continue
+        if receipt_id is not None and identity != receipt_id:
+            continue
+        matching += 1
+        if matching > 2048:
+            raise TiingoViewRefusal("too many candidate source contexts")
+        try:
+            validate_receipt(record)
+        except (TiingoArchiveError, TypeError, ValueError, KeyError) as exc:
+            raise TiingoViewRefusal("source receipt identity/context mismatch") from exc
         receipt_source = record.get("source", "boats-firehose")
         if record.get("vendor") != "tiingo" or receipt_source != source:
             raise TiingoViewRefusal("source receipt vendor/family mismatch")
@@ -87,7 +103,7 @@ def _unique_raw_context(base: Path, source: str, day: str, digest: str) -> dict[
         key = (receipt_source, record.get("symbol"), record.get("request_path"), clock)
         contexts[key] = record
     if not contexts:
-        raise TiingoViewRefusal("source view lacks raw-context evidence")
+        raise TiingoViewRefusal("source view lacks artifact-bound raw-context evidence")
     if len(contexts) != 1:
         raise TiingoViewRefusal("ambiguous raw contexts; upstream archive repair required")
     return next(iter(contexts.values()))
@@ -111,7 +127,27 @@ def read_research_view(source: str, day: str, sha256: str, *,
     if purpose not in PURPOSES or max_rows < 1 or max_rows > 1_000_000:
         raise TiingoViewRefusal("invalid reader purpose or cap")
     base = require_external_root(root, check_mount=check_mount)
-    rel = Path(source) / day / (sha256 + ".parquet")
+    lookup_digest, selected_receipt = sha256, None
+    direct_manifest = base / "manifests" / source / day / (sha256 + ".json")
+    if direct_manifest.is_symlink() or not direct_manifest.resolve().is_relative_to(base.resolve()):
+        raise TiingoViewRefusal("research source view path is not confined to the archive")
+    if direct_manifest.is_file():
+        try:
+            direct = json.loads(direct_manifest.read_text())
+        except (OSError, ValueError) as exc:
+            raise TiingoViewRefusal("invalid source manifest") from exc
+        if isinstance(direct, dict) and direct.get("source_receipt_id") == sha256:
+            lookup_digest, selected_receipt = direct.get("source_sha256"), sha256
+            if not isinstance(lookup_digest, str) or not SHA.fullmatch(lookup_digest):
+                raise TiingoViewRefusal("source view content/manifest integrity mismatch")
+    context = _unique_raw_context(base, source, day, lookup_digest, receipt_id=selected_receipt)
+    identity = receipt_identity(context)
+    raw_digest = context["raw_sha256"]
+    artifact_id = sha256
+    if not (base / "manifests" / source / day / (artifact_id + ".json")).is_file():
+        # An exact receipt may select a retained unambiguous legacy content path.
+        artifact_id = raw_digest if sha256 == identity else identity
+    rel = Path(source) / day / (artifact_id + ".parquet")
     path = base / "normalized" / rel
     manifest_file = base / "manifests" / rel.with_suffix(".json")
     # A locally editable manifest/hash is not sufficient if a symlink can
@@ -130,7 +166,25 @@ def read_research_view(source: str, day: str, sha256: str, *,
     if not isinstance(manifest, dict) or manifest.get("view_schema") != SCHEMA_VERSION:
         raise TiingoViewRefusal("unsupported research view schema; read-only refusal, no migration")
     expected = (Path("normalized") / rel).as_posix()
-    if (manifest.get("source_sha256") != sha256
+    if source == "boats-firehose":
+        from lib.dataos.temporal import utc
+        try:
+            if utc(context["last_received_at_utc"]) < utc(context["first_received_at_utc"]):
+                raise ValueError("inverted source interval")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise TiingoViewRefusal("BOATS source receipt bounds invalid") from exc
+        try:
+            body = verified_raw(base, context)
+        except (TiingoArchiveError, OSError, ValueError, EOFError) as exc:
+            raise TiingoViewRefusal("BOATS source raw integrity invalid") from exc
+        counts = context.get("counts")
+        if (not isinstance(counts, dict)
+                or any(type(v) is not int or v < 0 for v in counts.values())
+                or sum(counts.values()) != len(body.splitlines())):
+            raise TiingoViewRefusal("BOATS source raw line count differs from receipt")
+    legacy = "source_receipt_id" not in manifest and "receipt_id" not in context
+    if (manifest.get("source_sha256") != raw_digest
+            or (not legacy and manifest.get("source_receipt_id") != identity)
             or manifest.get("output_path") != expected
             or manifest.get("output_sha256") != _hashed_file(path)
             or manifest.get("source_vendor") != "tiingo"):
@@ -154,7 +208,6 @@ def read_research_view(source: str, day: str, sha256: str, *,
         import pyarrow.parquet as pq  # type: ignore[import-not-found]
     except ImportError as exc:
         raise TiingoViewRefusal("pyarrow missing") from exc
-    context = _unique_raw_context(base, source, day, sha256)
     # The original raw receipt must STILL resolve to byte-identical source
     # evidence. A valid Parquet/manifest pair cannot hide corrupted raw gzip.
     # This invokes only the already-existing bounded, read-only verifier;
@@ -173,7 +226,9 @@ def read_research_view(source: str, day: str, sha256: str, *,
     observed = context.get("observed_at_utc") or context.get("first_received_at_utc")
     if (len(rows) != manifest.get("rows")
             or manifest.get("source_observed_at_utc") != observed
-            or any(row.get("source_sha256") != sha256
+            or any(row.get("source_sha256") != raw_digest
+                   or (legacy and "source_receipt_id" in row)
+                   or (not legacy and row.get("source_receipt_id") != identity)
                    or row.get("source_view_schema") != SCHEMA_VERSION
                    or row.get("source_vendor") != "tiingo"
                    or row.get("dataset_source") != source
@@ -189,7 +244,7 @@ def read_research_view(source: str, day: str, sha256: str, *,
     ):
         raise TiingoViewRefusal("view ticker disagrees with the source context")
     return TiingoView(
-        source=source, source_sha256=sha256,
+        source=source, source_sha256=raw_digest,
         source_observed_at_utc=manifest.get("source_observed_at_utc"),
         purpose=purpose, pit_backtest_eligible=pit,
         redistribution_admitted=False,
@@ -364,7 +419,7 @@ def read_research_history(
             # date roles, market identity, units or vendor adjustment fields.
             def economic_fields(r: dict[str, Any]) -> dict[str, Any]:
                 return {k: v for k, v in r.items() if k not in {
-                    "source_sha256", "source_observed_at_utc", "adjustment_asof_utc"
+                    "source_sha256", "source_receipt_id", "source_observed_at_utc", "adjustment_asof_utc"
                 }}
             try:
                 signature = json.dumps(
@@ -577,7 +632,7 @@ def read_research_statement_timeline(
             report_rows.sort(key=lambda r: r["metric_code"])
             def economic_fields(row: dict[str, Any]) -> dict[str, Any]:
                 return {k: v for k, v in row.items() if k not in {
-                    "source_sha256", "source_observed_at_utc",
+                    "source_sha256", "source_receipt_id", "source_observed_at_utc",
                     "source_vintage_observed_at_utc",
                 }}
             try:

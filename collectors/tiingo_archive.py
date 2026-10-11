@@ -117,6 +117,56 @@ def request_path(source: str, symbol: str | None, params: dict[str, Any] | None 
     return path + ("?" + query if query else "")
 
 
+def capture_day(value: str) -> str:
+    """Validate an aware capture instant before deriving a confined UTC partition."""
+    if not isinstance(value, str) or not re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9](?:\.[0-9]{1,9})?)?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])", value
+    ):
+        raise TiingoArchiveError("capture clock must be a timezone-aware ISO instant")
+    try:
+        clock = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise TiingoArchiveError("invalid capture clock") from exc
+    return clock.astimezone(timezone.utc).date().isoformat()
+
+
+def validate_request(source: str, symbol: str | None, path: str) -> None:
+    """Bind a relative documented endpoint and every query dimension to its source."""
+    if not isinstance(path, str):
+        raise TiingoArchiveError("invalid request path")
+    try:
+        parts = urllib.parse.urlsplit(path)
+        query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True, strict_parsing=True)
+        if parts.scheme or parts.netloc or parts.fragment or len(dict(query)) != len(query):
+            raise ValueError("ambiguous request")
+        if request_path(source, symbol, dict(query)) != path:
+            raise ValueError("noncanonical endpoint or query")
+    except (TypeError, ValueError) as exc:
+        raise TiingoArchiveError("source endpoint/request context mismatch") from exc
+
+
+def receipt_identity(receipt: dict[str, Any]) -> str:
+    """Content address the ORIGINAL full receipt, independently of its raw payload."""
+    original = {k: v for k, v in receipt.items() if k != "receipt_id"}
+    return hashlib.sha256(json.dumps(original, sort_keys=True, separators=(",", ":"),
+                                     allow_nan=False).encode()).hexdigest()
+
+
+def validate_receipt(receipt: dict[str, Any]) -> str:
+    if not isinstance(receipt, dict):
+        raise TiingoArchiveError("invalid original receipt")
+    if receipt.get("vendor") != "tiingo":
+        raise TiingoArchiveError("non-Tiingo receipt")
+    source = receipt.get("source", "boats-firehose")
+    if source != "boats-firehose":
+        validate_request(source, receipt.get("symbol"), receipt.get("request_path"))
+    capture_day(receipt.get("observed_at_utc") or receipt.get("first_received_at_utc"))
+    identity = receipt_identity(receipt)
+    if "receipt_id" in receipt and receipt["receipt_id"] != identity:
+        raise TiingoArchiveError("original receipt identity mismatch")
+    return identity
+
+
 def require_external_root(root: Path, *, check_mount: bool = True) -> Path:
     path = root.resolve()
     mount = EXTERNAL_MOUNT.resolve()
@@ -213,17 +263,29 @@ class Archive:
                        ) -> dict[str, Any]:
         if source not in SOURCES or SOURCES[source].symbol != bool(symbol):
             raise ValueError("invalid source/symbol")
-        if not path.startswith(SOURCES[source].path.split("{symbol}")[0]):
-            raise ValueError("source path mismatch")
+        validate_request(source, symbol, path)
         require_space(self.root, floor=self.free_floor)
         received_at = received_at or utc_now()
-        day = received_at[:10]
+        day = capture_day(received_at)
+        if not isinstance(raw, bytes) or len(raw) > MAX_RESPONSE_BYTES:
+            raise TiingoArchiveError("raw response exceeds bounded archive input")
         safe_symbol = symbol_path(symbol) if symbol else "all"
         fingerprint = hashlib.sha256(raw).hexdigest()
         request_hash = hashlib.sha256(path.encode("utf-8")).hexdigest()[:16]
         rel = Path("raw") / source / day / safe_symbol / f"{request_hash}-{fingerprint[:24]}.raw.gz"
         blob = gzip.compress(raw, mtime=0)
-        added = _publish_once(self.root / rel, blob)
+        raw_target = self.root / rel
+        if raw_target.is_symlink() or not raw_target.resolve().is_relative_to(self.root):
+            raise TiingoArchiveError("raw target escapes archive")
+        added = _publish_once(raw_target, blob)
+        if not added:
+            try:
+                with gzip.open(raw_target, "rb") as fp:
+                    existing = fp.read(len(raw) + 1)
+                if existing != raw:
+                    raise TiingoArchiveError("existing raw source disagrees with response")
+            except (OSError, EOFError) as exc:
+                raise TiingoArchiveError("existing raw source is corrupt") from exc
         count = None
         if "json" in content_type.lower() and len(raw) < 50 * 1024 * 1024:
             try:
@@ -244,10 +306,26 @@ class Archive:
             "correction_policy": "APPEND_VINTAGE_NEVER_IN_PLACE",
             "price_basis_policy": "PRESERVE_VENDOR_RAW_AND_ADJUSTED_AS_DIFFERENT_FIELDS",
         }
-        _publish_once(self.root / "receipts" / source / day /
-                      f"{request_hash}-{fingerprint[:24]}.json",
-                      (json.dumps(receipt, sort_keys=True) + "\n").encode())
+        receipt["receipt_id"] = receipt_identity(receipt)
+        receipt_path = self.root / "receipts" / source / day / f"{request_hash}-{fingerprint[:24]}.json"
+        if receipt_path.is_symlink() or not receipt_path.resolve().is_relative_to(self.root):
+            raise TiingoArchiveError("receipt target escapes archive")
+        if not added and not receipt_path.is_file():
+            raise TiingoArchiveError("existing raw lacks its original observation receipt")
+        _publish_once(receipt_path, (json.dumps(receipt, sort_keys=True) + "\n").encode())
+        try:
+            original = json.loads(receipt_path.read_text())
+            identity = validate_receipt(original)
+            for key in ("source", "vendor", "symbol", "request_path", "raw_path",
+                        "raw_sha256", "raw_bytes", "http_status", "content_type"):
+                if original.get(key) != receipt.get(key):
+                    raise TiingoArchiveError("existing receipt context disagrees with response")
+            if capture_day(original["observed_at_utc"]) != day:
+                raise TiingoArchiveError("original receipt partition mismatch")
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise TiingoArchiveError("existing receipt is corrupt") from exc
         return {"new_raw": added, "raw_sha256": fingerprint, "path": rel.as_posix(),
+                "receipt_id": identity, "observed_at_utc": original["observed_at_utc"],
                 "rows_hint": count, "raw_bytes": len(raw)}
 
     def store_boats_batch(self, messages: Iterable[tuple[str, str]]) -> dict[str, Any]:

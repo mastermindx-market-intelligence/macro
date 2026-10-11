@@ -1185,3 +1185,68 @@ in force and were not bypassed. The same 11 failing producer tests
 must be repaired under a genuinely permitted mechanism before live
 ingestion, canonical source admission or PR release. Do not create
 another collector, forked runtime or false Done receipt.
+
+
+### 2026-10-11 UTC — Codex producer integrity repair and independent review
+
+The Chairman directly assigned end-to-end completion on the existing PR #8698
+carrier, branch sol/tiingo-data-archive-20261009, from source
+56bff034dc28101dcfbc50d1ad0fc0ec6ab5826a. After clarification that the earlier
+blocks belonged to ChatGPT Web, this Codex session submitted the in-scope source
+writes to its own actual permission mechanism; those writes were approved and
+succeeded. This is evidence of the current permitted source effects, not a claim
+that another session's denial or an unsettled effect was cleared. The unpublished
+CEO completion handoff remains untracked and was not published by another route.
+No vendor request, credential read, production deployment or background stream
+has occurred in this repair phase.
+
+Repaired the original eleven producer failures without changing their assertions:
+exact endpoint/ticker/query context, strict aware capture clocks, original immutable
+receipt identity and capture time, corrupt existing raw/Parquet refusal, and
+receipt-specific projection identity for identical vendor bytes. Content-only legacy
+v2 paths remain readable and byte-preserved only for genuine legacy receipt,
+manifest and row shapes. Matching receipt scans no longer impose a false 2048 total
+daily receipt ceiling. A retained manifest without its output refuses before writes,
+and a competing manifest at publication is checked against the expected source.
+Economic history comparisons ignore capture-local receipt identity while retaining
+conflicting economic revisions. PIT, rights and canonical identity refusals remain.
+
+Independent read-only reviewer tiingo_integrity_review checked the exact baseline
+producer and repaired five-file diff. Its four initial findings were repaired and
+independently rechecked: legacy-byte compatibility, receipt-count scaling, manifest
+publication integrity and invalid timezone offsets. The final review found explicit
+false row identity accepted under legacy mode. This was reproduced (one failing
+regression), repaired by requiring legacy row identity absence, and verified with
+the reviewer's requested affected compatibility/integrity checks (122 passed).
+No native labor child was started under the subsequently updated routing policy.
+The inherited directory-swap TOCTOU limitation is not race-proof confinement;
+archive directories must remain trusted under one active writer, with no concurrent
+directory renaming. The reviewer did not treat that inherited limitation as a new
+blocker for this bounded repair.
+
+Actual retained pytest evidence is under docs/tiingo-evidence/20261011-producer-integrity/:
+- Original integrity baseline: 11 failed, 1 passed.
+- Complete Tiingo plus Data OS registry suite after the principal repairs:
+  431 passed, exit 0, command `PYTHONDONTWRITEBYTECODE=1 python3 -m pytest
+  tests/test_tiingo_*.py tests/test_dataos_registry.py -p no:cacheprovider
+  --basetemp /private/tmp/tiingo-8698-review-green-01a12ab6 -q --tb=short`.
+- Final independently identified legacy row regression: 1 failed before repair.
+- Final affected suite: 122 passed, exit 0, command `PYTHONDONTWRITEBYTECODE=1
+  python3 -m pytest tests/test_tiingo_ingestion_integrity.py tests/test_tiingo_reader.py
+  tests/test_tiingo_views.py -p no:cacheprovider
+  --basetemp /private/tmp/tiingo-8698-final-green-2 -q --tb=short`.
+
+- `ingestion-integrity.log` SHA-256 `e82cd636ffcc19a294bddff450805d098611735215c934d9e2f5780ee5ef9f0c`
+- `review-repairs-tests.log` SHA-256 `44eea92014f41547c02acbf4b4c29a02576e504f3520e7acb7ed912bd9c421d8`
+- `final-review-red.log` SHA-256 `303fbc41dea403b8252a2a3fd85e0f7047dcc333fa99fa5ebd815ab18bf98245`
+- `final-review-green.log` SHA-256 `11e700d74b671cc8883060fac7f49063e8745cc3005ee5c51e38ce654bb34054`
+
+Next acceptance frontier: publish this same carrier and observe exact-head hosted
+CI before live ingestion. Executive Fabric at 2026-10-11T11:55:41Z reported
+ceo_submit_armed=false; no new Executive intent or dispatch was claimed. All 24
+Tiingo datasets remain PROPOSED. BOATS requires authentic subscription and actual
+Q/T/B, retention/gap and L0-to-L1 proof; EOD/fundamentals require a measured pilot,
+original/as-reported/restated context and cohort history. Existing Terminal Quote
+Hub remains the overnight price owner, and News PR #8697 remains separate.
+Production and browser acceptance remain outstanding. A green source suite alone
+is not completion of the Chairman's end-to-end assignment.
