@@ -2,6 +2,40 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-10",
+      "tickers": [
+        "AMG",
+        "APG",
+        "ASML",
+        "ATR",
+        "AVR",
+        "BNL",
+        "BORR",
+        "CCOI",
+        "COKE",
+        "CTVA",
+        "DAL",
+        "EGBN",
+        "ELF",
+        "EXTR",
+        "HCC",
+        "IRDM",
+        "JOE",
+        "LFUS",
+        "LOPE",
+        "LPG",
+        "MTUS",
+        "PDFS",
+        "PDI",
+        "PHK",
+        "TNDM",
+        "TRMB",
+        "WH",
+        "WS",
+        "YOU"
+      ]
+    },
+    {
       "as_of": "2026-10-09",
       "tickers": [
         "ATO",
@@ -180,32 +214,6 @@
         "TNDM",
         "TRIP",
         "VOO"
-      ]
-    },
-    {
-      "as_of": "2026-10-03",
-      "tickers": [
-        "ATR",
-        "CR",
-        "DEI",
-        "ELF",
-        "ENS",
-        "FTI",
-        "GBR",
-        "GME",
-        "LFUS",
-        "LMAT",
-        "LOPE",
-        "MRSH",
-        "ORCL",
-        "PORT.U",
-        "PTC",
-        "PVH",
-        "SHO",
-        "SHOO",
-        "TJX",
-        "WING",
-        "WRLD"
       ]
     }
   ]

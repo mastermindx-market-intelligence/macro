@@ -1,6 +1,6 @@
 {
   "schema": "marketing.state/v1",
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-10",
   "lobe": {
     "id": "marketing",
     "name": "Marketing",
@@ -82,12 +82,12 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 317,
+    "opportunity_queue_depth": 315,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
       "last_review": null,
-      "next_review": "2026-10-16"
+      "next_review": "2026-10-17"
     },
     "guardrails": {
       "self_deception_checks": [
@@ -206,7 +206,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Retire if a simpler governance mechanism achieves equivalent attribution accuracy with lower inference cost over 90 days.",
       "scorecard": {
@@ -301,7 +301,7 @@
       "clock": {
         "cadence": "daily",
         "last_review": null,
-        "next_review": "2026-10-10"
+        "next_review": "2026-10-11"
       },
       "retirement_test": "Retire if a managed external execution platform provides equivalent reliability, auditability, and cost transparency.",
       "scorecard": {
@@ -397,7 +397,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Retire if opportunity detection recall falls below 60% on major events for two consecutive quarters.",
       "scorecard": {
@@ -503,7 +503,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Retire a specific product when it generates fewer than 10 qualified acquisition events per month for 60 days.",
       "scorecard": {
@@ -609,7 +609,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Retire if creative output fails distinctness checks or produces zero qualified-reach events for 30 consecutive days.",
       "scorecard": {
@@ -730,7 +730,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Retire a channel adapter if it produces warnings, policy flags, or zero qualified-reach events for 60 days.",
       "scorecard": {
@@ -831,7 +831,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Redesign if day-30 retained-contribution forecast is negative for two consecutive cohort reviews.",
       "scorecard": {
@@ -931,7 +931,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Retire a partner if they produce zero incremental retained contributions after two payout cycles.",
       "scorecard": {
@@ -1047,7 +1047,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Redesign if attribution methodology fails holdout validation on two consecutive quarter reviews.",
       "scorecard": {
@@ -1153,7 +1153,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "The auditor is never retired; it may be redesigned if it generates more than 5% false-positive quarantines per month.",
       "scorecard": {
@@ -1250,7 +1250,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-16"
+        "next_review": "2026-10-17"
       },
       "retirement_test": "Retire if indexed dossier pages produce fewer than 10 qualified organic acquisition events per month for 60 consecutive days.",
       "scorecard": {
@@ -1690,30 +1690,30 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 317,
-      "scored": 509,
+      "open": 315,
+      "scored": 501,
       "newest": [
         {
-          "id": "radar-stage-ACA-2026-10-09",
-          "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 52w in stage",
-          "expected_value": 0.4,
-          "score": 0.374157,
+          "id": "radar-confluence-LLY-2026-10-10",
+          "problem_or_desire": "$LLY: confluence combo Weekly short-term uptrend + 21/100 golden cross + reclaims 100-day line firing, test WR 66%",
+          "expected_value": 0.55,
+          "score": 0.523543,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
         {
-          "id": "radar-stage-ACU-2026-10-09",
-          "problem_or_desire": "$ACU: stage 2D_extended_run, SATA 9, 26w in stage",
-          "expected_value": 0.4,
-          "score": 0.374157,
+          "id": "radar-confluence-STX-2026-10-10",
+          "problem_or_desire": "$STX: confluence combo Weekly short-term uptrend + 21/100 golden cross + reclaims 100-day line firing, test WR 66%",
+          "expected_value": 0.55,
+          "score": 0.523543,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
         {
-          "id": "radar-stage-CDNA-2026-10-09",
-          "problem_or_desire": "$CDNA: stage 2D_extended_run, SATA 10, 34w in stage",
-          "expected_value": 0.4,
-          "score": 0.374157,
+          "id": "radar-confluence-SW-2026-10-10",
+          "problem_or_desire": "$SW: confluence combo Weekly reclaims 100-day line + weekly RSI stack curls up + RSI-21 washed out firing, test WR 65%",
+          "expected_value": 0.55,
+          "score": 0.523543,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 1731,
-      "receipts": 1731,
+      "total": 1755,
+      "receipts": 1755,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-10-09-3dad121103",
+          "id": "pub-ob-2026-10-10-c893c41a63",
           "channel": "x",
-          "account": "mastermind_news",
+          "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-09T09:18:38Z"
+          "published_at": "2026-10-10T06:26:08Z"
         },
         {
-          "id": "pub-ob-2026-10-08-4fc0aab441",
+          "id": "pub-ob-2026-10-09-fae4b6e0c6",
           "channel": "x",
-          "account": "kelly",
+          "account": "meagan",
           "status": "clean",
-          "published_at": "2026-10-09T03:03:30Z"
+          "published_at": "2026-10-10T01:39:29Z"
         },
         {
-          "id": "pub-ob-2026-10-08-fcf3012ba0",
+          "id": "pub-ob-2026-10-09-26956447fe",
           "channel": "x",
-          "account": "sophia",
+          "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-09T03:03:30Z"
+          "published_at": "2026-10-10T01:39:29Z"
         }
       ]
     },
@@ -1985,12 +1985,12 @@
     }
   ],
   "content": {
-    "total_posts": 30,
-    "signal_posts": 9,
-    "charts": 188,
+    "total_posts": 37,
+    "signal_posts": 5,
+    "charts": 175,
     "accounts": 13,
     "state": "present",
-    "as_of": "2026-10-09"
+    "as_of": "2026-10-10"
   },
   "notes": [
     "deterministic v1 substrate; agent actuation staged",
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-09T16:11:15Z",
-  "inputs_hash": "sha256:9839b21404e1e8df35d010205a107a1b6355e8c009d0650f5af709a11b3cc97f",
+  "produced_at": "2026-10-10T11:56:55Z",
+  "inputs_hash": "sha256:e4798bae936255b326c229c4d8f6d73f36e0050cd7451d50bb80ed8c0a991a47",
   "tier": "display"
 }

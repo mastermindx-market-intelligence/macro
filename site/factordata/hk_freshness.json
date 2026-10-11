@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-09T19:29:47+00:00",
+  "checked_at": "2026-10-10T15:51:36+00:00",
   "expected_session": "2026-10-09",
   "stores": {
     "cache": {
@@ -35,11 +35,11 @@
       "calendar_verified": true
     },
     "southbound": {
-      "asof": "2026-10-08",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-10-09",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true,
       "expected_session": "2026-10-09"
     }
