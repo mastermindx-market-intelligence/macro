@@ -219,31 +219,49 @@
 </div>
 {% endif %}
 
-{# ── Market regime ─────────────────────────────────────────────────────────── #}
-{% if block.key == 'market_state' %}
+{# ── Owner regime readings ────────────────────────────────────────────────── #}
+{% if block.key in ('market_state', 'regime') %}
+{% set _regime_usable = block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') %}
+{% set _regime_chip = (
+  ('live', t('Current', '当前')) if block.state == 'CURRENT'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('pre', t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
 <div class="panel">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-    <h2 style="margin:0">{{ t('Market regime', '市场周期') }}</h2>
-    {{ help(
-      'Overall market regime: Risk-on (uptrend / positive momentum) or Risk-off (downtrend / negative momentum).',
-      '整体市场周期：风险偏好（上涨趋势/正向动能）或风险规避（下跌趋势/负向动能）。'
-    ) }}
+  <div class="mx-block-header">
+    <h2>{{ t('Market regime', '市场周期') if block.key == 'market_state' else t('Macroeconomic regime', '宏观周期') }}</h2>
+    <span class="mx-chip-slot"><span class="dtp-chip dtp-chip--{{ _regime_chip[0] }}">{{ _regime_chip[1] }}</span></span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('as of', '数据截至') }} {{ block.source_as_of[:10] if block.source_as_of_precision == 'day' else block.source_as_of[:16] }}</span>
+    {% endif %}
+    {% if block.key == 'market_state' %}
+    {{ help('Market state and posture from the existing market-state reading.', '由现有市场状态读数提供的市场状态与姿态。') }}
+    {% else %}
+    {{ help('Macroeconomic cycle from the existing regime reading, separate from market posture.', '由现有宏观周期读数提供的经济周期，与市场姿态分别展示。') }}
+    {% endif %}
   </div>
-  {% if block.state == 'CURRENT' and block.rows %}
+  {% if block.state_reason_en or block.state_reason_zh %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or 'Source limitation available in Chinese.', block.state_reason_zh or '数据源限制的中文说明暂缺。') }}</div>
+  {% endif %}
+  {% if _regime_usable and block.rows %}
     {% for row in block.rows %}
     <div class="ctx-strip">
       <span class="ctx-chip regime">
-        {{ t(row.label_en or 'Regime unavailable',
-             row.label_zh or row.label_en or '周期状态不可用') }}
+        {% if block.key == 'market_state' %}
+        {{ t(row.label_en or 'Regime unavailable', row.label_zh or '中文周期标签暂缺') }}
+        {% else %}
+        {{ t(row.quad_name_en or 'Regime unavailable', row.quad_name_zh or '中文周期标签暂缺') }}
+        {% endif %}
       </span>
-      {% if row.posture_en or row.posture_zh %}
+      {% if block.key == 'market_state' and (row.posture_en or row.posture_zh) %}
       <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span>
-        {{ t(row.posture_en or '', row.posture_zh or row.posture_en or '') }}</span>
+        {{ t(row.posture_en or 'Posture unavailable', row.posture_zh or '中文姿态说明暂缺') }}</span>
       {% endif %}
     </div>
-    {% if row.headline_en or row.headline_zh %}
-    <p class="muted sm" style="margin-top:6px">{{ t(row.headline_en or '',
-                                                     row.headline_zh or row.headline_en or '') }}</p>
+    {% if block.key == 'market_state' and (row.headline_en or row.headline_zh) %}
+    <p class="muted sm">{{ t(row.headline_en or 'Summary unavailable', row.headline_zh or '中文摘要暂缺') }}</p>
     {% endif %}
     {% endfor %}
   {% else %}
