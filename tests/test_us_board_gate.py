@@ -997,6 +997,75 @@ def test_candidate_pool_payload_writer_uses_same_auth_contract(tmp_path):
     assert 'data-ticker="AMD"' in data["candidate_pool_html"]
 
 
+@pytest.mark.parametrize("board_gated,panels_gated", [(True, True), (True, False), (False, False)])
+def test_fast_preview_preserves_stock_entitlement_boundary(tmp_path, monkeypatch,
+                                                          board_gated, panels_gated):
+    """A cached full VM must not overwrite the public page with protected rows.
+
+    Only unrelated news/signals templates use inert fixtures. The dashboard,
+    its partials, cache reader, page writer and payload writer are real.
+    """
+    import pickle
+    from copy import deepcopy
+    from jinja2 import ChoiceLoader, DictLoader, FileSystemLoader
+    from scripts import render_macro_fast as fast
+    from tests.test_dashboard_template_render import _prophet_book
+
+    pytest.importorskip("pandas")
+    pytest.importorskip("plotly")
+
+    def row_tickers(html):
+        class Rows(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.tickers = []
+
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == "div" and "ucp-row" in attrs.get("class", "").split():
+                    self.tickers.append(attrs["data-ticker"])
+
+        rows = Rows()
+        rows.feed(html)
+        return rows.tickers
+
+    vm = _base_vm()
+    vm.update(_candidate_visibility_vm())
+    vm["top_setups"] = {}
+    vm["us_prophet_book"] = _prophet_book([])
+    vm["us_standouts"] = {"buy": [_board_row(ticker="PUBLIC"),
+                                     _board_row(ticker="PAID")], "eligible": 2}
+    pool = vm["us_candidate_visibility"]
+    pool["rows"][0].update(ticker="PAID", name="Withheld company")
+    pool["rows"][1].update(ticker="PUBLIC", name="Public company")
+    before = deepcopy(vm)
+    cache = tmp_path / "_dev_macro_vm.pkl"
+    cache.write_bytes(pickle.dumps({"vm": vm, "generated": "synthetic-retained"}))
+    site = tmp_path / "site"
+    site.mkdir()
+    cfg = {"storage": {"site_dir": str(site)}, "us_board_gate": {
+        "gated": board_gated, "preview_rows": 1, "today_preview_rows": 1,
+        "panels": panels_gated, "panel_preview_rows": 3}}
+    monkeypatch.setattr(fast.config, "load", lambda: cfg)
+    monkeypatch.setattr(fast.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(fast, "FileSystemLoader", lambda path: ChoiceLoader([
+        DictLoader({"news.html.j2": "<html><head></head><body>news fixture</body></html>",
+                    "macro_signals.html.j2": "<html><head></head><body>signals fixture</body></html>"}),
+        FileSystemLoader(path)]))
+
+    assert fast.main() == 0
+    html = (site / "us_stocks.html").read_text()
+    public_tickers = row_tickers(html)
+    assert public_tickers == ([] if board_gated else ["PAID", "PUBLIC"])
+    payload = json.loads((site / "premiumdata" / "us_stocks.json").read_text())
+    protected_tickers = row_tickers(payload.get("candidate_pool_html", ""))
+    assert public_tickers + protected_tickers == ["PAID", "PUBLIC"]
+    assert payload["schema"] == "tier_payload.v1"
+    assert payload["built"] == "synthetic-retained"
+    assert pickle.loads(cache.read_bytes())["vm"] == before
+    assert (site / "macro.html").exists()
+
+
 def test_candidate_visibility_empty_and_unavailable_are_distinct():
     from engine.us_candidate_lanes import project_candidate_visibility
     env = _env()
