@@ -23,6 +23,70 @@ The producer packet backing `SUPPORTED` includes `schema="catalyst.public_event/
 
 **Public eligibility invariant:** `SUPPORTED` requires `source.display_rights="ALLOWED"` and nonempty `rights_receipt_id` for every displayed source; every numerical/causal claim **including the headline** refers to at least one displayed source/evidence ID; corrected generations replace eligibility of older generations without rewriting historical-as-known. If not provable return RIGHTS_BLOCKED/UNAVAILABLE (with no body). Unknown indirect links remain UNKNOWN/NOT_COVERED. No model-originated numbers, probabilities, stock ranking, buy/sell call or market-engine scoring.
 
+## Stage A consumer decision — earnings pilot clocks and completeness (2026-10-10)
+
+**Disposition: implementation contract accepted by Session 00; producer migration and
+source-owner admission pending.** This section supersedes the requirement above that
+every SEC filing must have an independently known official publication timestamp. It
+does not change the current v1 runtime: its publication field must not be populated
+with an acceptance or processing clock to get past the existing gate. Session 01
+#8700 owns the producer migration; 00 consumes its committed return and updates the
+HTTP contract together. Until that migration and its review, v1 stays fail-closed.
+
+The first pilot is **earnings-only, event-first**. Suggestions must be direct issuers
+from actually admitted current `edgar_8k_202` events. A known ticker is not evidence
+of an event. No promised 30–50-name coverage, arbitrary-ticker success, indirect
+AI-capex/semiconductor expansion, ranking or publication-latency claim is admitted.
+
+The [SEC Webmaster FAQ](https://www.sec.gov/about/webmaster-frequently-asked-questions)
+separates acceptance from website availability and says it does not expose a first
+availability timestamp. The replacement consumer contract therefore requires:
+
+| Clock | Meaning and required provenance |
+| --- | --- |
+| SEC accepted | Original SEC acceptance timestamp normalized by the existing owner, retaining its source and timezone semantics; not document publication or earnings occurrence time. |
+| Mastermind first verified availability | Earliest retained successful observation by the incumbent source owner of the exact displayed document, bound to URL/document digest, receipt and observation clock. It is not the SEC's first-publication time. A new read cannot reconstruct a missing historical first observation. |
+| Checked as of | Current source/rights assessment clock. Reprocessing cannot advance the first-observation clock or make an old filing recent. |
+| Official publication | Nullable unless independently evidenced for this exact document. Never backfill from SEC acceptance, Atom `updated`, processing `when`, filesystem time or snapshot build time. |
+
+The existing producer's `when_semantics=processing_wall_clock` alone is insufficient
+for the document-observation receipt. Its adapter must bind a successful retained
+document read, including version/digest, through the incumbent ingestion owner.
+Correction or changed document bytes require new version evidence and renewed rights;
+historical observations remain historical. The seven-day pilot lookback uses the
+source's filing acceptance clock, with separate current observation/rights checks.
+Missing, naive, future or inconsistent clocks refuse qualification; tolerance and
+freshness limits must be explicit in the reviewed producer contract, never guessed
+by the anonymous request handler.
+
+Completeness is separate from positive event evidence. A trusted owner read must
+identify its issuer set, exact window, retained snapshot/version, fetched/checked
+clock, outcome and whether pagination/event limits truncated it. A complete-empty
+outcome may describe **no qualifying earnings event in that checked window**, never
+no market event or no filing of any kind. The current 20-event limit cannot establish
+negative coverage for omitted issuers. Missing receipt, partial/truncated read,
+outage and stale source must remain unavailable. Known unsupported symbols remain
+not covered. Neither state receives claims or an opt-in scan receipt. Do not promote
+`recent_events=[]`, a selective marketing outbox, or a historical backfill `ok` to a
+successful current-window check. The current v1 status enum has no complete-empty
+state; a coordinated producer/HTTP change is required before exposing one.
+
+Each displayed document still needs the existing GMI owner's current exact-URL or
+equivalent digest-bound `public_anonymous` grant, including attachment classification,
+expiry, withdrawal and supersession. A family row or accession alone is insufficient.
+Only existing retained source callbacks may be bound; no additional SEC client,
+registry, store or scheduler. `sec_edgar` remains held on #7870 until its own foundation
+and Finance compatibility gates are accepted. This decision grants neither rights
+nor approval to deploy, enable flags, run consent SQL, email or distribute assets.
+
+**Required joined proof:** two documents in one accession do not share grants;
+third-party/expired/withdrawn/corrected documents refuse; poisoned URLs never become
+public packets; acceptance and observed-availability clocks stay distinct; absent
+publication remains null; processing cannot refresh an old event; complete-empty,
+unknown, failed and truncated windows are discriminated by real owner receipts.
+Hosted 320px/desktop, keyboard, CSP, no-JS and withdrawal proof follows source admission
+at an explicitly authorized origin. Stage B and Stage C retain their independent gates.
+
 ## RECONCILED 00 HTTP + 02 secure funnel interfaces (00 owns route mounts)
 
 The initial one-shot `POST /api/catalyst/optin` with user-asserted event/tickers and scope `catalyst_event_updates/v1` was **RETIRED before deployment**. After reviewing actual Session 02 [Draft/HOLD #8682](https://github.com/mastermindx-market-intelligence/macro/pull/8682), 00 adopted its stronger signed scan-proof and OTP-backed API. The accepted isolated 01 and 02 source blobs **are now incorporated unchanged** into the single Session 00 Draft/HOLD assembly branch; their original builder PRs/branches remain independent and unmodified. No merge to Macro main, publication, deployment or real user/SMTP effects occurred.

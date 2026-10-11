@@ -4,13 +4,49 @@ import json
 from pathlib import Path
 from datetime import datetime, timezone
 from types import SimpleNamespace
+from urllib.parse import quote
 
 import pytest
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 from app import catalyst_integration as ci
+from engine.marketing.catalyst_lifecycle import FunnelGate, PublicRevision, format_revision
 
 NOW = datetime(2026, 10, 9, 3, 30, tzinfo=timezone.utc)
+
+
+def _synthetic_revision_with_url(url):
+    # Formatting only: these booleans model a fixture, never a live rights grant.
+    return PublicRevision(
+        event_id="fixture-earnings-20261008", generation=2,
+        as_of_utc="2026-10-09T03:00:00Z",
+        published_at_utc="2026-10-09T02:00:00Z", ticker="NVDA",
+        headline="Synthetic company update", what_changed="Synthetic revised result.",
+        source_urls=(url,), material=True, public_safe=True,
+        external_rights_confirmed=True, operator_approved=True,
+    )
+
+
+@pytest.mark.parametrize("key", ["token", "session_id", "client_secret", "credential"])
+@pytest.mark.parametrize("depth", range(1, 9))
+def test_integrated_lifecycle_never_formats_nested_private_source_urls(key, depth):
+    value = "ok&" + key + "=synthetic-private-value"
+    for _ in range(depth):
+        value = quote(value, safe="")
+    revision = _synthetic_revision_with_url(
+        "https://www.sec.gov/Archives/edgar/data/123/filing.htm?ref=" + value)
+    with pytest.raises(FunnelGate) as error:
+        format_revision(revision, "https://www.mastermind-x.com/unsubscribe")
+    assert error.value.code == "SOURCE_RIGHTS_UNPROVEN"
+
+
+@pytest.mark.parametrize("suffix", ["", "?view=full", "#item-202", "?ref=annual%20report"])
+def test_integrated_lifecycle_preserves_ordinary_public_source_links(suffix):
+    url = "https://www.sec.gov/Archives/edgar/data/123/filing.htm" + suffix
+    subject, html, text = format_revision(
+        _synthetic_revision_with_url(url), "https://www.mastermind-x.com/unsubscribe")
+    assert url in text and "Synthetic company update" in subject
+    assert "synthetic-private-value" not in html
 
 
 def packet():
