@@ -7671,6 +7671,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: qledger cluster-honest Wilson CI unit tests
         run: python -m pytest tests/test_qledger_cluster_honest_ci.py -q
+      - name: qledger US nightly batch-registration contract (W2)
+        run: python -m pytest tests/test_backfill_qledger_us.py -q
       # P0a — the explicit horizon-clock contract. STEP PLACEMENT IS DELIBERATE:
       # run_ci_pack.py returns on the FIRST non-zero step, so a step placed first
       # MASKS its siblings and one placed last goes DARK behind an earlier red.
