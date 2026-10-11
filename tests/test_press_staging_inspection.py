@@ -1,5 +1,9 @@
 """A staging inspection must not generate, publish, or silently pass emptiness."""
 import json
+import os
+import subprocess
+import sys
+from pathlib import Path
 
 from engine.press import desk_planner, validators
 from scripts import inspect_press_staging as I
@@ -28,6 +32,28 @@ def test_current_validation_is_read_only_and_not_approval(tmp_path):
     assert report["validation_current"] == 1
     assert report["publication_approved"] is False
     assert len(report["items"][0]["sha256"]) == 64
+    assert _snapshot(root) == before
+
+
+def test_direct_execution_outside_repo_ignores_foreign_repo_packages(tmp_path):
+    root = F.fixture_root(tmp_path)
+    _stage(root)
+    before = _snapshot(root)
+    foreign = tmp_path / "foreign"
+    for package in ("engine", "scripts"):
+        package_dir = foreign / package
+        package_dir.mkdir(parents=True)
+        (package_dir / "__init__.py").write_text(
+            'raise RuntimeError("foreign repository package imported")\n')
+    env = dict(os.environ, PYTHONPATH=str(foreign), PYTHONDONTWRITEBYTECODE="1")
+    result = subprocess.run(
+        [sys.executable, str(Path(I.__file__).resolve()), "--root", str(root)],
+        cwd=foreign, env=env, capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+    report = json.loads(result.stdout)
+    assert report["validation_current"] == 1
+    assert report["publication_approved"] is False
     assert _snapshot(root) == before
 
 

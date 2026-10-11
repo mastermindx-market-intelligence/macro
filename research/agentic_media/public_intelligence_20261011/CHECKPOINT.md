@@ -120,10 +120,23 @@ event. A qualified source packet and editorial acceptance remain dependencies.
 - Independent review identified equivalent-host URL and footer/byline link bypasses;
   both were repaired by the same validator worker: ten regressions failed before
   repair and passed afterward; a final browser/Python URL-parser discrepancy was also repaired (four red-to-green cases). The final affected validator suite passed all 92 tests. The parent manually checked that final delta without another broad review.
-- Whole-estate `python -m scripts.build_free_content --check` still reports **50
-  pre-existing non-blog generated-page differences** in learn/tools/legal pages.
-  Those are outside the Press-generated output refresh; do not call global estate
-  validation green or overwrite those unrelated surfaces silently.
+- The inherited free-estate drift was repaired through the existing generator.
+  A fresh main integration preserves the new compounding/DCA calculators and adds
+  the remaining 48 page outputs (commit `4ee8bf7bc55c`, retained source commit
+  `776c532e469c8bdd95df293bd4f45dcb77ea86c0`). Together with the seven blog pages,
+  `python -m scripts.build_free_content --check` now passes: **69 byte-identical
+  files, zero orphans**, three hand-authored exemptions; the integrated
+  `tests/test_free_content.py` suite passed **120 tests**. See `ESTATE_REFRESH.md`.
+- The initial CI run at `ac8fb5318bc636f0fb064de7496659bf4e7e7592` completed
+  eleven packs green and pack 11 red. The sole genuine failure was the new
+  inspection script missing the standard repository-root import pin. The repair
+  uses the existing pin convention and adds an outside-checkout regression with
+  hostile same-named packages. Both the regression and shrink-only guard failed
+  before repair; the inspector/import-hygiene suites then passed **16 tests**,
+  exit 0. No guard baseline or waiver was changed.
+- Restart recovery found the former native workers absent and their partial test
+  change on disk. One bounded recovery worker completed that exact source repair.
+  No previous chat or unconsumed worker status was treated as proof of completion.
 
 ## Live observations, separate from source proof
 
@@ -141,9 +154,11 @@ Logged-out Python `urllib.request.urlopen` GETs on 2026-10-11, with no cookies:
 A follow-up read-only domain check at 09:20 UTC identified Cloudflare as the
 News DNS provider and DNSPod as the flagship zone provider. Research already has
 a CNAME (`blog.mastermind-x.com.eo.dnse3.com`); its target returns NXDOMAIN.
-Direct SNI probes at the documented origin return TLS error 35. These observations
-do not prove the installed Caddy configuration; deployment remains held. See
-`app/deploy/README.md` for the corrected existing sequence.
+Direct SNI probes at the documented origin return TLS error 35. A subsequent read-only SSH check verified the installed Macro revision
+`773d6cc2f18fdbce5441e484abc16eb30d8ba3db`, active Caddy service, commented Press
+vhosts, `cutover: false`, and the two existing served front pages. That establishes
+installed files/configuration, not active publication or a customer journey.
+See `ESTATE_REFRESH.md` and `app/deploy/README.md` for the evidence and sequence.
 
 The AAPL response reports byte-replayed revenue/guidance, `consensus=unlicensed`
 and `reaction=not_joined`. It is an existing public projection, not an immutable
@@ -164,8 +179,9 @@ follow action was performed.
 - `config/press.yml` remains `cutover: false`; News/Research property output and
   their Caddy cutover stay dark. No DNS, TLS, credential, publisher variable or
   production setting was changed.
-- Ten consecutive unedited mixed-desk generated passes, full estate drift
-  acceptance, editorial acceptance and story-specific rights proof remain open.
+- Ten consecutive unedited mixed-desk generated passes, editorial acceptance and
+  story-specific rights proof remain open. Full estate drift now passes locally;
+  its binding CI and installation still need delivery verification.
 - Existing `scripts/stage_earnings_story_press.py` requires exact generation,
   packet and story-revision IDs, then performs a full immutable source replay.
   This shell has no configured R2 client/bucket, and the designated
@@ -206,7 +222,7 @@ follow action was performed.
    canonical dossier, and obtain editorial acceptance under D14. The generic
    earnings emit guard must remain intact until its existing approval dependency
    is delivered.
-4. Resolve inherited estate drift and complete D14 acceptance before publisher
+4. Land the integrated estate repair and complete D14 acceptance before publisher
    release. Repair domain DNS/TLS through their existing deployment owners as part
    of the paired cutover, with the real release controls preserved.
 5. Verify the anonymous story → dossier → signup journey in a serviceable browser;

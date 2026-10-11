@@ -9,7 +9,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine.press import desk_planner, validators
 from scripts.run_press import _is_unverified_earnings_story_stage, _paths

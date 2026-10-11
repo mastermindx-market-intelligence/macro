@@ -1,7 +1,7 @@
 # Free acquisition estate acceptance repair
 
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`.
-This is the next bounded source slice after [Press PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786).
+This is the next bounded source slice, now integrated into [Press PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786).
 It uses the existing generator and shared navigation; no new content, styling,
 publisher, source store or acquisition flow is introduced.
 
@@ -35,8 +35,13 @@ existing generated-blog repairs in PR 8786. This follow-up does not duplicate
 those files. The fresh-base test run is **119 passed, 1 failed**: the sole
 failure is the anti-vacuity orphan-walk sentinel refusing to run over those
 seven blog differences. It must stay red until the dependency lands; no test
-is deselected or weakened. Full estate acceptance requires both source slices
-and a fresh builder/test check after integration. Publication remains disabled.
+is deselected or weakened. Both source slices are now integrated on the original PR carrier after merging
+main `e5c724d204916a6152c89a52a644537a57a09ab4`. The integrated builder check
+passes: **69 files byte-identical, no orphans, three hand-authored exemptions**.
+The count increased with accepted main content; no sentinel was weakened.
+The integrated `python3 -m pytest tests/test_free_content.py -q` run passed all
+**120 tests** (one inherited temporary-directory cleanup warning).
+Publication remains disabled.
 
 ## Installed origin observation
 
@@ -53,6 +58,12 @@ cutover block. The actual served-tree front pages already exist:
 This verifies installed files and the disabled configuration on disk; it does
 not qualify a story, prove every active runtime route, activate either domain,
 or prove a customer signup/follow. No runtime settings were changed.
+
+The isolated refresh is retained at `776c532e469c8bdd95df293bd4f45dcb77ea86c0`.
+It was cherry-picked as `4ee8bf7bc55c` into the original PR carrier; no second PR
+or writer was created. The original 50 local diffs were restored only after an
+exact byte comparison with the saved patch and preservation of the committed
+48-file slice; fresh main supplies the two already-upgraded calculators.
 
 The existing Agent OS workstream and primary checkpoint are carried by PR 8786.
 The story, rights, editorial, mixed-desk and domain-cutover gates remain as
