@@ -292,6 +292,28 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
     - F9: identity versus presence.
     - 14 unassessed call sites.
   - Macro PR #8856 is open at `c93aa900`, labelled `merge-on-green`, and the app bound it.
+- D43 (19:30Z) 1B was killed by the pool's own worker timeout, not by a fault in its work. The seat reconciles it on the same carrier.
+  - Cause, read in source: `sub.sh` sets the grok child timeout from `POOL_CHILD_TIMEOUT_SECONDS`, which defaults to 3600 s
+    (7200 for C3) and has a maximum of 7200. On expiry it returns rc=124. `launch_when_admitted.sh` never set it, so the perl
+    alarm (14400) never bound. 1B was admitted at 18:20:45Z and got `PARENT_SIGNAL signum=15` with rc=124 at 19:20:53Z.
+  - What 1B left: 8 local commits, `988208e10a1e` (7 packet recaptures plus the capturedAtHead stamp). Scope is
+    `terminal/docs/pr-crops/` only (SCOPE_OK, 66 files). The seat pushed them to `claude/ssd-pr-723-c89a753150e1dbd6`
+    (remote was `cd5d50551a3d`). It wrote no return packet.
+  - B2 (judged by the seat from `leads/U01/b2/report.json`):
+    - The guest `/terminal` load fetched 32 JS chunks. The companion literals `mm.optionsCompanion.v1` and
+      `data-options-companion` were found 0 times there, and once in the build's `.next/static/chunks/0w7x7j2hyn373.js`
+      (positive control present).
+    - FINDING for the exact-head review: the generic literals (`<0.01`, the root regex) hit guest chunk `193je1tlykek6.js`
+      because `optionsRoot`/`previousAvailableGexSession` live in `lib/optionsCompanion.ts`, which TerminalShell, ChartPanel and
+      ChartPane import statically. The helper module is in the guest graph; the companion components are not.
+  - B3 (`npm run test:e2e:responsive`, 2062 tests, 1 worker) outlived the operator as an orphan of my lane. It writes to
+    `leads/U01/logs/b3-e2e.log`. It is allowed to finish (killing it would pay the run again), and its side-effect pngs
+    outside the 7 packets (chart-layers-ux, chart-settings-ux, e09, f08-alerts) are restored afterwards and never committed.
+  - B4 (tsc, `npm test`) and `judge_1B.sh` run after B3 and that restore, by the seat under L.7: no worker is on it, the seat
+    holds the worktree, no other writer exists, and the push effect is reconciled (`ls-remote` shows `988208e10a1e`).
+  - F01 and M01 had never launched, so their loops were stopped with no effect. They were re-armed with
+    `launch_when_admitted_v2.sh`, which passes `POOL_CHILD_TIMEOUT_SECONDS=7200`. That is the pool's own documented knob
+    within its own maximum, not a bypass. v1 is left untouched because OC's running loop still executes it.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -446,6 +468,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   and the load comes from other sessions. This is BLOCKED-EXTERNAL and is not routed around (no carrier change, and
   nothing is killed that is not mine). Host-operator controls: m2 pipe-memory exhaustion (reboot or operator) and
   host load.
+- O-16 The pool kills every grok child at `POOL_CHILD_TIMEOUT_SECONDS` (default 3600, max 7200; `sub.sh` ~L537). Work longer
+  than 2 h must be split into packets that fit, not run under a larger alarm. Every launch from 19:30Z on uses
+  `launch_when_admitted_v2.sh`.
 - O-15 Routed findings: `collectors/deribit.py:178` flip-side regime goes to the crypto owner. The F01 `dte` None->0
   coercion is reported by the F01 operator. F-A03a/F-A05a go to #8684/M02. The `pool`/`sub.sh` bash pin goes to
   the fabric owner.
@@ -479,16 +504,16 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(19:25Z snapshot.) Rows superseding older rows below:
+(19:30Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
-| U01 step 1B | RUNNING — admitted 18:20:45Z via bt8w3juhp (launch_when_admitted, fix_build, alarm 14400); grok operator live; artifacts dir named in `leads/U01/step1B_pool.log` |
+| U01 step 1B | KILLED rc=124 at 19:20:53Z by the pool's 3600 s child timeout (D43). Partial: 8 commits pushed at `988208e10a1e`, scope OK. B2 judged PASS with positive control, plus one reachability finding for review. The B3 orphan run is finishing into `leads/U01/logs/b3-e2e.log`. B4 and `judge_1B.sh` are owed to the seat |
 | D16a | CI — Macro PR #8856 at `c93aa900` (review REQUEST_REPAIR F1/F2 → seat repair, D42); gate 145; consumer suite no regression (7 pre-existing); `merge-on-green`; app bound; production proof = next natural m1 resolver call logs a resolved store |
 | V01 | CI — Macro PR #8851 at `479b16df2a7a` (audit REQUEST_REPAIR → seat repair `f51bda96804f` + `479b16df2a7a`, D39); gate 351 passed; `merge-on-green`; app PR monitor bound; pilot red = O-4 by design; production proof = first natural flow-surface cycle on m1 after merge |
-| OC | RUNNING — admitted 18:48:21Z (ATTEMPT 1, load1 14.16) via bnwojs7jx (build-bounded, alarm 12600); `oc_sim.py` last modified 19:11:50Z; artifacts dir named in `leads/OC/pool.log` |
-| F01 | ARMED — `launch_when_admitted` blrzzl887 (fix_build, alarm 7200, wait budget 14400); launches when a slot frees and load1 < 15; log `leads/F01/pool.log` |
-| M01 | ARMED — `launch_when_admitted` bj2hwmddd (fix_build, alarm 7200, wait budget 18000); same admission rule; log `leads/M01/pool.log` |
+| OC | RUNNING — admitted 18:48:21Z (ATTEMPT 1, load1 14.16) via bnwojs7jx (build-bounded, alarm 12600); `oc_sim.py` last modified 19:11:50Z; launched by v1 without `POOL_CHILD_TIMEOUT_SECONDS`, so the pool kills it at about 19:48:21Z (D43); judge what it leaves, then a v2 continuation |
+| F01 | ARMED — `launch_when_admitted_v2` bzn10wigs (fix_build, child timeout 7200, wait budget 14400); blrzzl887 stopped before launch (D43); log `leads/F01/pool.log` |
+| M01 | ARMED — `launch_when_admitted_v2` bmq245vh6 (fix_build, child timeout 7200, wait budget 18000); bj2hwmddd stopped before launch (D43); log `leads/M01/pool.log` |
 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
@@ -694,3 +719,13 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Host load1 was 71.8 at 19:22Z, so admission may wait. A launch is a QUEUED fact until `LAUNCH_EXIT` or a run id appears.
 - #8856 at `c93aa900`: ci-plan, ci-authority, fence-pack, capability-broker, grader-manifest and self-mod-fence are SUCCESS. contract-delta
   and ci-pack-0..11 are pending. The pilot red is by design (O-4). #8851 is still OPEN at `479b16df2a7a`.
+
+### 2026-10-11 19:30Z — 1B killed by the pool child timeout; partial pushed; F01/M01 re-armed; D43
+- RETRACTION of the 19:25Z delta: "load1 71.8 at 19:22Z" was read at about 19:17Z (the next `date -u` read 19:18:08Z), and
+  that delta itself was written at about 19:18Z, not 19:25Z. The load value stands.
+- 1B ended rc=124 at 19:20:53Z. The cause is the pool's 3600 s child timeout (O-16), which the v1 launcher never raised.
+  Its 8 recapture commits are pushed at `988208e10a1e`. B2 is judged PASS with a positive control and one reachability
+  finding. B3 is still running as an orphan of my lane. B4 is owed to the seat (D43).
+- F01 and M01 are re-armed with the v2 launcher (child timeout 7200). OC will likely be killed at about 19:48Z.
+- #8851 is all green but still OPEN (mergeStateStatus UNKNOWN). #8856 has ci-pack-1..6 and 9 in progress. The merge-on-green
+  sweeper is active (run 38167878999 in progress at 19:24:24Z), so it owns the merge wait.
