@@ -135,6 +135,20 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   phase B = REAL recapture of every changed row (defect 10) + guest-route chunk grep (defect 11) + green
   `b_pl_6Batch1Evidence`. NOT DONE UNLESS gates = O8's exact re-checks. The operator never marks ready,
   labels, or merges; the seat reviews the pushed head by artifact.
+- D27 (17:08Z, amends D26 after reading the shared resolver and #723's decoder) (a) C3 lands IN step 1A: the
+  exact resolver blob `terminal/lib/investigationOptionsReference.ts` (sha256 9debfdb1…, `git show eb57a68304:…`,
+  never edited) is added with #723, and `gexLadder.matrixSourceSession` delegates to
+  `readOptionsMatrixSourceSession` (`r.ok ? r.sourceSession : null`). #846/#804 then see a byte-identical
+  add/add (no-op). The new test is `optionsMatrixSession.oneDecoder.test.ts` (#846 owns the
+  `investigationOptionsReference.test.ts` name). (b) O7's "step 3" is eliminated: C3 is in step 1; the cross-owner
+  A01/A03 tests move into the #846 refresh (step 2). Closes O8 defect 9. (c) Step 1 splits: 1A = merge + code
+  (A0–A6, running); 1B = REAL recapture of every RECAPTURE_OWED row, guest-route chunk grep on a production
+  build, `npm run test:e2e:responsive`, green `b_pl_6Batch1Evidence` — a separate later commission against the
+  accepted 1A head. (d) The operator pushes only `claude/ssd-pr-723-c89a753150e1dbd6`; after seat ACCEPT the
+  seat fast-forwards #723's branch `claude/terminal-options-heatmap-20260923` to that head (no force-push, no
+  second writer on the PR branch). (e) Router pick `minimax` overridden to `grok` with a recorded escalation
+  reason (20-path semantic merge across Terminal laws). (f) Master-wide adoption of the one resolver by the
+  other `asof_date` readers is out of 1A scope (O-13).
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -224,6 +238,22 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   review by this seat (4 reviews, all mastermidx4). No #7861 comment carries A05/R1 evidence yet.
 - 16:57Z `pool plan --class execute --need 1` → grant_now=1 on bailian, minimax, grok, cursor, glm, go
   (cluster_active glm 2/24, others 0). Capacity admits again. (`ssh m2` hostname does not resolve from this host.)
+- 17:0xZ Harness model switch: parent is now Opus 5.5 (commit trailer follows). Seat role unchanged (CLAUDE.md:
+  keep the selected parent; a model label does not change the role).
+- 17:0xZ #804 has a live incumbent writer (session 03342a8d, head `302b0c3ff7`); the seat stays off #804.
+- 17:0xZ Decoders: #723 `gexLadder.matrixSourceSession` = `isoSession(matrix?._build_meta?.asof_date)` only;
+  the shared resolver (`readOptionsMatrixSourceSession`, :151) reads own data descriptors of `session` and
+  `_build_meta.asof_date`, refuses `source_session_mismatch`. Master readers using `asof_date` only:
+  `GexDeskView.tsx:1022`, `StrikeExpiryMatrix.tsx:261`, `aggTrend.ts:473`, `HeatSeekerCard.tsx`.
+- 17:04:15Z Step-1A operator LAUNCHED: `pool run grok` class fix_build, background task bjyey2nbm (3 h alarm);
+  SSD worktree `/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/pr-723-c89a753150e1dbd6`, branch
+  `claude/ssd-pr-723-c89a753150e1dbd6` from `b83a9b852a`; packet `leads/U01/step1A_packet.md`; log
+  `leads/U01/step1A_pool.log`; return `leads/U01/step1A_return.md`. START observed (grok pid 92175 under
+  92160→92171). 17:08Z single read: RUNNING, merge in progress with unmerged paths (A1).
+- 17:0xZ D20 fencing claim posted ONCE on #723: issuecomment-6111490519 (O.17 search clean beforehand).
+- 17:08Z ONE #7861 evidence comment posted: issuecomment-6111517903 (A05 table R4(a)/(c) PASS, R4(b) NOT
+  OBSERVED, D22 classification + the four real gates, R1 owed as seat successor PR with both fixtures; identity
+  note). O.17 search beforehand: 6 keyword matches, all older posts by other sessions; 0 comments since 10-10.
 
 ## OPEN
 
@@ -242,26 +272,28 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 - O-8 Guest-bundle B4: static imports clean at the PR head (O8); gate = guest-route chunk grep at the
   integrated head (D26 phase B).
 - O-9 A05 (i)/(c) DONE (D23). Owed: (ii) synthetic `history/` write — source-owner authorization only.
-- O-10 Reframed by D25: ONE #7861 comment carrying R1 + A05 evidence + D22; R1 fix = seat-owned successor PR.
+- O-10 Comment DONE (issuecomment-6111517903). Owed: the R1 fix = seat-owned successor PR after #7861 lands.
 - O-11 O8 defects 4/5/6 (float strikes, silent drop/missing-as-zero, session-only pin) belong to the Research
   Lab lane (#846 step 2 / U02), with D02-A04 as the contract; not a step-1 gate.
-- O-12 #804 `updatedAt` 2026-10-11T09:05Z with unchanged head feabd4447 — inspect the carrier edge before any
-  #804 coordination note.
+- O-12 CLOSED: #804 has a live incumbent writer (03342a8d, head `302b0c3ff7`); the seat stays off #804.
+- O-13 Master-wide one-decoder adoption (`GexDeskView`, `StrikeExpiryMatrix`, `aggTrend`, `HeatSeekerCard` read
+  `asof_date` only): seat-owned successor PR after step 1 lands (D27f).
 
 ## NEXT
 
-1. Launch the D26 step-1 operator (`pool run grok`, packet in scratchpad `leads/O7/U01_step1_refresh_packet.md`);
-   on admitted START post the ONE fencing claim on #723 (D20); arm one watcher (the background exit).
-   If admission is refused → record PENDING_CAPACITY, no route-around (L.7).
-2. Post ONE #7861 comment: A05 (i)/(c) evidence, D22 classification, R1 owed as successor PR (D25). Never
-   a self-approval; never merge.
-3. When the operator returns: judge the pushed #723 head by artifact (tsc/vitest log, chunk grep, recapture
-   diff); ACCEPT → fresh independent review (the T09 approval does not carry), then `merge-on-green` by the
-   seat; REQUEST_REPAIR → numbered defects, one round.
-4. Then U01 step 2 (#846 refresh under this account, D24 defect 8 ruling; O-11 items; lockfile regen).
-5. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
-6. Later waves per D13/D16/D18: OC design commission; D01-A01/R6 lane; #7861 successor PR; expand to
-   O2/O3/O4/O6 only when their inputs clear.
+
+1. Judge the step-1A return by artifact when bjyey2nbm exits (no polling): pushed head of
+   `claude/ssd-pr-723-c89a753150e1dbd6`, merge commit + A2–A4 commits, no conflict markers, tsc 0, only
+   evidence-lock tests failing, the three new/extended test files passing, resolver sha256 9debfdb1…, no
+   hand-edited evidence, RECAPTURE_OWED list. ACCEPT / REQUEST_REPAIR (numbered, one round) / REJECT / ESCALATE.
+2. On ACCEPT: commission step 1B (D27c) against the accepted head; then a fresh independent exact-head review
+   (the T09 approval does not carry), fast-forward #723's branch (D27d), mark ready, `merge-on-green` + armed
+   auto-merge, deploy `--target-sha`, verify live.
+3. Then U01 step 2: #846 refresh under this account (cross-owner A01/A03 tests, Read<T>, optionsReadAccess,
+   three-state copy, VolPayload, lockfile regen, O-11 items).
+4. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
+5. Later waves per D13/D16/D18: OC design commission; D01-A01/R6 lane; #7861 R1 successor PR; O-13 successor;
+   expand to O2/O3/O4/O6 only when their inputs clear. Optional: re-attempt G01 A02 while capacity admits.
 
 ## Lane matrix
 
@@ -273,7 +305,8 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | O5 Q01 | native Opus lead (lead-performed) | scratchpad `leads/O5/` | #8385 | — | JUDGED: ACCEPT as independent methods review; D13 | 1 lead |
 | O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | PLAN ACCEPTED 08:53Z → REQUEST_REPAIR (O8 defects 1–12 + D24 rulings), carried by the refresh commission D26 | 1 lead |
 | O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | DELIVERED 09:3xZ (after one nudge at the 12-turn limit) → JUDGED: ACCEPT as evidence; D24 | 1 auditor |
-| U01 refresh (#723→#846) | fabric operator grok (fix_build), D26 | SSD worktree on `claude/terminal-options-heatmap-20260923` | #723 | background `pool run` exit + log | LAUNCHING (capacity admits; fenced claim posted only on admitted START) | 1 operator |
+| U01 step 1A (#723 refresh) | fabric operator grok (fix_build), D26/D27 | SSD worktree `pr-723-c89a753150e1dbd6`, branch `claude/ssd-pr-723-c89a753150e1dbd6`; packet `leads/U01/step1A_packet.md` | #723 (claim issuecomment-6111490519) | background task bjyey2nbm exit (3 h alarm) + `leads/U01/step1A_return.md` | RUNNING (START 17:04Z; 17:08Z merge in progress) | 1 operator |
+| U01 step 1B (recapture + chunk grep + responsive e2e) | not commissioned (D27c) | accepted 1A head | #723 | — | WAITING on 1A ACCEPT | — |
 
 ## DO_NOT_REDO (this programme)
 
@@ -299,9 +332,9 @@ amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKN
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (WIP commit "O8 judged; D22–D26" on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "step 1A running; #7861 evidence posted; D27" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: launch D26 step-1 refresh operator on #723 (fenced claim on admitted START); post the single #7861 evidence comment
+EXACT_NEXT_ACTION: on bjyey2nbm exit, judge the step-1A return by artifact (NEXT 1); on ACCEPT commission step 1B
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -399,4 +432,9 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Identity finding: seat = `mastermindxryan` (author account of #846/#804/#7861 heads) → D25 reframes D14/D18 obligations.
 - Capacity admits again (grant_now=1 everywhere) → D26 step-1 refresh commission prepared for `pool run grok`.
 - Cost this cycle: ~20 tool calls, 1 native Opus auditor (completed), 0 operators yet.
+### 2026-10-11 17:08Z — step 1A launched and running; #7861 evidence posted; D27
+- D27 amends D26: C3 lands in 1A as the exact resolver blob; step 3 eliminated; 1A/1B split; FF of #723 after ACCEPT.
+- Step-1A operator (grok) launched 17:04:15Z on its own SSD branch; START observed; fencing claim posted once on #723.
+- ONE #7861 evidence comment posted after an O.17 search (no duplicate). O-10 comment done; O-12 closed; O-13 opened.
+- Cost this cycle: ~12 tool calls, 1 fabric operator running, 0 native children.
 
