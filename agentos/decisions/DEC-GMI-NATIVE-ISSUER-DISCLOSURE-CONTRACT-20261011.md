@@ -30,6 +30,8 @@ evidence:
   - "Canonical scripts.run_ci_pack.infer_job_scopes on the changed company-relationship-candidates job:76 declared/inferred paths, zero misses."
   - "Independent native reasoning coordinator reviewed source architecture and repairs; no remaining make-or-break finding in the reviewed paths, not an execution or production attestation."
   - "research/theme_graph/issuer_disclosures_20261011/PRIVATE_CONSUMER_CONTRACT.md."
+  - "python3 -m pytest tests/test_company_issuer_disclosures.py tests/test_company_disclosures_api.py tests/test_company_intelligence_api.py -q:125 passed in4.59s after2 RED issuer-snapshot regressions; independent identity-composition correction review accepted."
+  - "research/theme_graph/issuer_disclosures_20261011/SELECTION_BINDING_VALIDATION.json: exact source pins and correction evidence."
 affects:
   - "WS:GMI-THEME-GRAPH"
   - "Company Intelligence native disclosure owner and F04 private consumer"
@@ -54,3 +56,13 @@ identity or immutable correction chain, if a required fact species has different
 meaning, or if real Store/transport evidence refutes the bounded conditional
 contract. Amend through the existing owners; never silently coerce a new species
 into this one or restamp date-only evidence as an instant.
+
+The fixed private Macro HTTP boundary now uses the incumbent Bearer/shared-cookie
+authentication and fresh actual feature entitlement. Trusted metadata admission
+precedes lazy Store construction; HTTP callers cannot choose purpose, audience,
+identity or a Store. Issuer-scoped discovery carries exact fact/edition references
+and generation, and requires each fact admission's explicit subject identity
+binding to match the issuer/CIK/snapshot before private I/O. The actual source
+decision must bind that tuple; equality of unverified hashes is insufficient.
+No Data OS snapshot schema is invented or relabelled. The private generation
+producer, actual source-owner records and runtime wiring remain uninstalled.
