@@ -28,7 +28,15 @@
    Synthetic hydration is labelled here and in README.md: two cloned rows with
    tokens ZZTEST13/ZZTEST14 are appended so the "one" state has a deterministic
    single match. Synthetic query/hydration on a real built page; local server;
-   not production. */
+   not production.
+
+   r5: theme and language are set BEFORE navigation via `context.addInitScript`
+   (localStorage `theme`/`lang`, `themeAuto` removed), so the page's own <head>
+   boot script applies data-theme/data-lang before tablesort.js initializes —
+   the path a returning zh user takes. No setTheme/setLang after load. Gates
+   per context: data-theme/data-lang equal the requested values and zero
+   `langchange` events reached the page; in the nomatch state the reset label
+   equals `Clear filter` / `清除筛选`, still with zero `langchange` events. */
 const fs = require('node:fs');
 const path = require('node:path');
 const {chromium} = require('playwright');
@@ -106,6 +114,15 @@ async function main() {
     for (const lang of LANGS) {
       for (const [vwName, vp] of VWS) {
         const context = await browser.newContext({viewport: {width: vp[0], height: vp[1]}});
+        await context.addInitScript(({theme, lang}) => {
+          try {
+            localStorage.setItem('theme', theme);
+            localStorage.removeItem('themeAuto');
+            localStorage.setItem('lang', lang);
+          } catch (e) {}
+          window.__s2LangChanges = 0;
+          document.addEventListener('langchange', () => { window.__s2LangChanges++; }, true);
+        }, {theme, lang});
         const page = await context.newPage();
         page.setDefaultTimeout(30000);
         page.on('response', r => {
@@ -120,10 +137,14 @@ async function main() {
         });
         await page.goto(BASE + PAGE_PATH, {waitUntil: 'load'});
         await page.waitForTimeout(1000);
-        await page.evaluate(t => window.setTheme(t), theme);
-        await page.waitForTimeout(1200); // theme transition
-        await page.evaluate(l => window.setLang(l), lang);
-        await page.waitForTimeout(300);
+        const boot = await page.evaluate(() => ({
+          theme: document.documentElement.getAttribute('data-theme'),
+          lang: document.documentElement.getAttribute('data-lang'),
+          langchanges: window.__s2LangChanges,
+        }));
+        if (boot.theme !== theme || boot.lang !== lang || boot.langchanges !== 0) {
+          throw new Error('pre-load gate failed ' + theme + '/' + lang + '/' + vwName + ': ' + JSON.stringify(boot));
+        }
         // The complete page keeps the sector table inside the hkx-dlg-sector
         // modal (display:none until opened) — open it like the page's own
         // trigger card does, then let the entrance settle.
@@ -177,6 +198,15 @@ async function main() {
         await input.pressSequentially('qqqnomatchqqq', {delay: 15});
         await waitStatus(page, NO_MATCH[lang] + '15');
         await page.waitForTimeout(150);
+        const reset = await page.evaluate(() => {
+          const b = document.querySelector('.tbl-filter button[data-tablesort-reset]');
+          return {label: b ? b.textContent : null, langchanges: window.__s2LangChanges};
+        });
+        const wantLabel = lang === 'zh' ? '清除筛选' : 'Clear filter';
+        if (reset.label !== wantLabel || reset.langchanges !== 0) {
+          throw new Error('nomatch label gate failed ' + theme + '/' + lang + '/' + vwName + ': ' + JSON.stringify(reset));
+        }
+        console.log('gate ok ' + theme + ' ' + lang + ' ' + vwName + ' data-lang=' + boot.lang + ' langchanges=0 reset=' + reset.label);
         await page.screenshot({clip: await cropRect(page),
           path: path.join(OUT_DIR, 'nomatch--' + theme + '--' + lang + '--' + vwName + '.png')});
         n++;

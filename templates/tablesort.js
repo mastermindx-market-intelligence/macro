@@ -208,7 +208,9 @@
     resetBtn.type = 'button';
     resetBtn.className = 'gbtn gbtn-sm gbtn-quiet';
     resetBtn.setAttribute('data-tablesort-reset', '1');
-    resetBtn.textContent = 'Clear filter';
+    // localized at creation: theme.js sets data-lang in <head> without a
+    // langchange, so a returning zh user must not wait for an event (site20 S2 r5)
+    resetBtn.textContent = isZh() ? '清除筛选' : 'Clear filter';
 
     function isZh() {
       return document.documentElement.getAttribute('data-lang') === 'zh';
@@ -252,8 +254,18 @@
       var shown = 0;
       rows.forEach(function (r) {
         var hit = !q || (r.textContent || '').toLowerCase().indexOf(q) !== -1;
-        r.style.display = hit ? '' : 'none';
-        if (hit) shown++;
+        // touch only rows this filter hid itself (marked): a row the PAGE hid
+        // inline is never un-hidden by a re-apply (site20 S2 r5)
+        if (hit) {
+          if (r.hasAttribute('data-tablesort-hidden')) {
+            r.style.display = '';
+            r.removeAttribute('data-tablesort-hidden');
+          }
+          shown++;
+        } else if (r.style.display !== 'none') {
+          r.style.display = 'none';
+          r.setAttribute('data-tablesort-hidden', '1');
+        }
       });
       if (immediate) { writeStatus(); return; }
       // rows update now; the announcement trails the typing by one debounce

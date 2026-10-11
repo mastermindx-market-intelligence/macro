@@ -22113,6 +22113,7 @@ jobs:
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
       - "tests/test_unified_dashboard_b2w2.py"
+      - "tests/test_macro_mtf_sort_key.py"
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
@@ -22261,7 +22262,8 @@ jobs:
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
-          tests/test_vsb_surface.py -q
+          tests/test_vsb_surface.py
+          tests/test_macro_mtf_sort_key.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

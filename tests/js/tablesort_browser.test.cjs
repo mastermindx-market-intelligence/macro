@@ -678,3 +678,98 @@ test('S2-04: composed #7502 — placeholder AND noMatch status both localize', a
     assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').textContent(), '清除筛选');
   });
 });
+
+/* ---------------- site20 S2 r5: review repairs (F1, NIT, F2 consumer) ---------------- */
+
+// <html data-lang="…"> present BEFORE tablesort.js initializes — what theme.js's
+// <head> boot script does for a returning zh user (it dispatches no langchange)
+function docLang(lang, body) {
+  return '<!doctype html><html data-lang="' + lang + '"><head><meta charset="utf-8"></head><body>' + body + '</body></html>';
+}
+async function hiddenState(page) {
+  return page.evaluate(() => {
+    const rows = Array.prototype.slice.call(document.querySelectorAll('table')[0].tBodies[0].rows);
+    return {
+      hidden: rows.filter(r => r.style.display === 'none').map(r => r.cells[0].textContent).sort(),
+      marked: rows.filter(r => r.hasAttribute('data-tablesort-hidden')).map(r => r.cells[0].textContent).sort(),
+    };
+  });
+}
+
+test('S2-04 r5 (F1): zh set in <head> before init, no langchange — reset label is 清除筛选 from creation', async () => {
+  await withPage(docLang('zh', bigTable(12)), async page => {
+    const input = page.locator('.tbl-filter input');
+    await input.fill('qqqnomatchqqq');
+    await settleCount(page, '无匹配行 · 0 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').textContent(), '清除筛选');
+    // the langchange toggle path still works both ways
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'en');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').textContent(), 'Clear filter');
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'zh');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').textContent(), '清除筛选');
+  });
+});
+
+test('S2-04 r5 (NIT): a row the page hid inline stays hidden through a population change, a query, a clear and a matching query', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    // the PAGE hides name3 itself, before any query
+    await page.evaluate(() => {
+      const rows = document.querySelectorAll('table')[0].tBodies[0].rows;
+      Array.prototype.find.call(rows, r => r.cells[0].textContent === 'name3').style.display = 'none';
+    });
+    // population change with no query ever typed: the observer re-applies the (empty) filter
+    await page.evaluate(() => {
+      const body = document.querySelectorAll('table')[0].tBodies[0];
+      const tr = body.rows[0].cloneNode(true);
+      tr.cells[0].textContent = 'name13'; tr.cells[1].textContent = '130';
+      body.appendChild(tr);
+    });
+    await page.waitForTimeout(100);
+    assert.deepEqual(await hiddenState(page), {hidden: ['name3'], marked: []});
+    // a query: the filter hides and MARKS only the misses it hid itself; name3 is never marked
+    const input = page.locator('.tbl-filter input');
+    await input.fill('name1');
+    await settleCount(page, '5 / 13');
+    const q = await hiddenState(page);
+    assert.deepEqual(q.hidden, ['name2', 'name3', 'name4', 'name5', 'name6', 'name7', 'name8', 'name9']);
+    assert.deepEqual(q.marked, ['name2', 'name4', 'name5', 'name6', 'name7', 'name8', 'name9']);
+    // clear: every row the filter hid comes back, the page-hidden row does not
+    await input.fill('');
+    await page.waitForTimeout(100);
+    assert.deepEqual(await hiddenState(page), {hidden: ['name3'], marked: []});
+    // a query that MATCHES the page-hidden row still does not un-hide it
+    await input.fill('name3');
+    await page.waitForTimeout(100);
+    assert.deepEqual((await hiddenState(page)).hidden.includes('name3'), true);
+  });
+});
+
+test('S2-01 r5 (F2 consumer): macro MTF-tape cells (arrow + RSI with a data-sort key) sort numerically, missing last', async () => {
+  const cell = (key, inner) => '<td data-sort="' + key + '">' + inner + '</td>';
+  const rsi = (arrow, v) => '<span class="ms-cell2"><span class="ar">' + arrow + '</span><span class="rsi">' + v + '</span></span>';
+  const flat = '<span class="ms-cell2 flat"><span class="ar">·</span></span>';
+  const rows = [['SPX', cell('61', rsi('▲', '61'))], ['NDX', cell('8', rsi('▼', '8'))],
+                ['RUT', cell('', rsi('▲', '·'))], ['DJI', cell('45', rsi('▶', '45'))], ['VIX', cell('', flat)]];
+  const mk = withKey => '<table class="mx5-dlg-mtf-tbl"><thead><tr><th>Index</th><th>1D</th></tr></thead><tbody>' +
+    rows.map(r => '<tr><td>' + r[0] + '</td>' + (withKey ? r[1] : r[1].replace(/ data-sort="[^"]*"/, '')) + '</tr>').join('') +
+    '</tbody></table>';
+  await withPage(doc(mk(true)), async page => {
+    await clickHeader(page, 0, 1);
+    assert.equal(await dirOf(page, 0, 1), 'desc');               // numeric columns open descending
+    assert.deepEqual(await colKeys(page, 0, 0), ['SPX', 'DJI', 'NDX', 'RUT', 'VIX']);
+    await clickHeader(page, 0, 1);
+    assert.equal(await dirOf(page, 0, 1), 'asc');
+    assert.deepEqual(await colKeys(page, 0, 0), ['NDX', 'DJI', 'SPX', 'RUT', 'VIX']);
+  });
+  // control — the pre-F2 markup (no key): "▲61" is text, so the column opens ascending as text
+  await withPage(doc(mk(false)), async page => {
+    await clickHeader(page, 0, 1);
+    assert.equal(await dirOf(page, 0, 1), 'asc');
+  });
+});
