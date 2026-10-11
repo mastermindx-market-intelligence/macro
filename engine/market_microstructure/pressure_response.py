@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from bisect import bisect_left
 from collections import Counter, defaultdict
-from decimal import Decimal, InvalidOperation, Context
+from decimal import Decimal, InvalidOperation, Inexact, Context
 
 SCHEMA = "equity.pressure_response_observation/v0"
 MODES = frozenset({"ACTUAL_AS_SEEN", "HISTORICAL_RECEIVABILITY", "FINAL_VINTAGE"})
@@ -22,6 +22,8 @@ VENUES = frozenset({"LIT", "TRF", "UNKNOWN"})
 ACTIONS = frozenset({"ORIGINAL", "REPLACE", "CANCEL"})
 MAX_FIXED_DECIMAL_CHARS = 128  # native input width, BEFORE fixed-point rendering
 _EXACT_PRECISION = 2 * MAX_FIXED_DECIMAL_CHARS + 16
+_MAX_TRADE_SIZE_BITS = 425
+_MAX_TRADE_SIZE_DIGITS = len(str((1 << _MAX_TRADE_SIZE_BITS) - 1))
 
 
 def _bounded_decimal(value: Decimal, name: str, *, max_width=MAX_FIXED_DECIMAL_CHARS) -> Decimal:
@@ -85,7 +87,7 @@ def _int(value, name):
 
 
 def _positive_int(value, name):
-    if type(value) is not int or value <= 0 or value.bit_length() > 425:
+    if type(value) is not int or value <= 0 or value.bit_length() > _MAX_TRADE_SIZE_BITS:
         raise ValueError(f"{name} must be a bounded positive integer")
     return value
 
@@ -311,55 +313,68 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
     if len(policy_refs) > 1:
         raise ValueError("mixed trade-condition policies require separate measurement windows")
     buy = sell = unknown = Decimal(0)
-    exact = Context(prec=_EXACT_PRECISION)
+    # Price * integer shares needs both the largest integer part and the
+    # smallest admitted quantum (1e-126), plus carry for this finite list.
+    # Keep this separate from midpoint precision and the private wire budget.
+    notional_precision = (MAX_FIXED_DECIMAL_CHARS + _MAX_TRADE_SIZE_DIGITS
+                          + (MAX_FIXED_DECIMAL_CHARS - 2)
+                          + len(str(max(1, len(active)))))
+    exact = Context(prec=notional_precision)
+    exact.traps[Inexact] = True
     counts = Counter()
     prints = []
-    for trade in active:
-        notional = exact.multiply(trade["price"], Decimal(trade["size"]))
-        side = "UNKNOWN"
-        quote_id = None
-        age_ns = None
-        if trade["venue_class"] != "LIT":
-            reason = "OFF_EXCHANGE_OR_UNKNOWN_VENUE"
-        else:
-            q, reason = _prior_quote(q_seen, q_times, trade["sip_ns"],
-                                     max_age_ns=max_quote_age_ns, require_exact_order=True)
-            if (q is not None and evidence_mode != "FINAL_VINTAGE"
-                    and q["available_ns"] > trade["available_ns"]):
-                # A SIP-prior quote that arrived only after the print was not
-                # available for contemporaneous pressure classification.
-                # Later final-vintage research remains separately labeled.
-                # Never fall back to an older quote as if the newer update
-                # did not happen in the market.
-                q = None
-                reason = "QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT"
-            if q is not None:
-                quote_id = q["id"]
-                age_ns = trade["sip_ns"] - q["sip_ns"]
-                if trade["price"] > q["ask"] or trade["price"] < q["bid"]:
-                    reason = "OUTSIDE_NBBO"
-                else:
-                    mid = _midpoint(q)
-                    if trade["price"] > mid:
-                        side = "BUY_PROXY"
-                        reason = None
-                    elif trade["price"] < mid:
-                        side = "SELL_PROXY"
-                        reason = None
+    try:
+        for trade in active:
+            notional = exact.multiply(trade["price"], Decimal(trade["size"]))
+            side = "UNKNOWN"
+            quote_id = None
+            age_ns = None
+            if trade["venue_class"] != "LIT":
+                reason = "OFF_EXCHANGE_OR_UNKNOWN_VENUE"
+            else:
+                q, reason = _prior_quote(q_seen, q_times, trade["sip_ns"],
+                                         max_age_ns=max_quote_age_ns, require_exact_order=True)
+                if (q is not None and evidence_mode != "FINAL_VINTAGE"
+                        and q["available_ns"] > trade["available_ns"]):
+                    # A SIP-prior quote that arrived only after the print was not
+                    # available for contemporaneous pressure classification.
+                    # Later final-vintage research remains separately labeled.
+                    # Never fall back to an older quote as if the newer update
+                    # did not happen in the market.
+                    q = None
+                    reason = "QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT"
+                if q is not None:
+                    quote_id = q["id"]
+                    age_ns = trade["sip_ns"] - q["sip_ns"]
+                    if trade["price"] > q["ask"] or trade["price"] < q["bid"]:
+                        reason = "OUTSIDE_NBBO"
                     else:
-                        reason = "MIDPOINT_AMBIGUOUS"
-        if side == "BUY_PROXY":
-            buy = exact.add(buy, notional)
-        elif side == "SELL_PROXY":
-            sell = exact.add(sell, notional)
-        else:
-            unknown = exact.add(unknown, notional)
-            counts[reason] += 1
-        prints.append({"trade_id": trade["id"], "revision": trade["revision"],
-                       "side_proxy": side, "reason": reason, "quote_id": quote_id,
-                       "quote_age_ns": age_ns, "venue_class": trade["venue_class"],
-                       "source_receipt": trade["source_receipt"],
-                       "quote_source_receipt": q["source_receipt"] if quote_id else None})
+                        mid = _midpoint(q)
+                        if trade["price"] > mid:
+                            side = "BUY_PROXY"
+                            reason = None
+                        elif trade["price"] < mid:
+                            side = "SELL_PROXY"
+                            reason = None
+                        else:
+                            reason = "MIDPOINT_AMBIGUOUS"
+            if side == "BUY_PROXY":
+                buy = exact.add(buy, notional)
+            elif side == "SELL_PROXY":
+                sell = exact.add(sell, notional)
+            else:
+                unknown = exact.add(unknown, notional)
+                counts[reason] += 1
+            prints.append({"trade_id": trade["id"], "revision": trade["revision"],
+                           "side_proxy": side, "reason": reason, "quote_id": quote_id,
+                           "quote_age_ns": age_ns, "venue_class": trade["venue_class"],
+                           "source_receipt": trade["source_receipt"],
+                           "quote_source_receipt": q["source_receipt"] if quote_id else None})
+        classified = exact.add(buy, sell)
+        gross = exact.add(classified, unknown)
+        pressure_numerator = exact.subtract(buy, sell)
+    except Inexact as exc:
+        raise ValueError("notional arithmetic exceeded its exact precision bound") from exc
     start_q, start_reason = _prior_quote(q_seen, q_times, start_ns, max_age_ns=max_quote_age_ns)
     end_q, end_reason = _prior_quote(q_seen, q_times, end_ns, max_age_ns=max_quote_age_ns)
     response = None
@@ -367,8 +382,6 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
         start_mid = _midpoint(start_q)
         end_mid = _midpoint(end_q)
         response = _fmt(_midpoint_change_bps(start_mid, end_mid))
-    classified = exact.add(buy, sell)
-    gross = exact.add(classified, unknown)
     return {
         "schema": SCHEMA, "authority": "RESEARCH_ONLY", "state": "MEASURED" if active else "NO_ELIGIBLE_PRINTS",
         "ticker": ticker, "session": session, "start_ns": start_ns, "end_ns": end_ns,
@@ -381,7 +394,7 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
         "buy_proxy_notional_usd": _fmt(buy), "sell_proxy_notional_usd": _fmt(sell),
         "unknown_notional_usd": _fmt(unknown), "gross_active_notional_usd": _fmt(gross),
         "classified_notional_coverage": _fmt(classified / gross) if gross else None,
-        "pressure_balance": _fmt(exact.subtract(buy, sell) / classified) if classified else None,
+        "pressure_balance": _fmt(pressure_numerator / classified) if classified else None,
         "midpoint_response_bps": response,
         "response_null_reason": ({"start": start_reason, "end": end_reason} if response is None else None),
         "bid_size_recovery": _recovery(q_seen, start_q, start_ns, end_ns, "bid", max_age_ns=max_quote_age_ns),

@@ -81,6 +81,67 @@ def test_research_large_and_small_print_totals_remain_exact():
     assert r["sell_proxy_notional_usd"] == "1"
 
 
+def test_research_opposite_side_extreme_notionals_preserve_small_trade():
+    # Both prices occupy at most 128 fixed-point characters. Multiplication by
+    # admitted shares makes the sum span 381 significant digits.
+    r = measure(trades=[t("big", 130, price="1e127", size=10**127),
+                        t("tiny", 180, price="1e-126", size=1)],
+                quotes=[q("prior", 90, bid="1e-126", ask="1e127")],
+                max_quote_age_ns=1000)
+    expected = "1" + "0" * 254 + "." + "0" * 125 + "1"
+    assert r["state"] == "MEASURED"
+    assert [p["side_proxy"] for p in r["print_diagnostics_private_only"]] == [
+        "BUY_PROXY", "SELL_PROXY"]
+    assert r["gross_active_notional_usd"] == expected
+    assert r["buy_proxy_notional_usd"] == "1" + "0" * 254
+    assert r["sell_proxy_notional_usd"] == "0." + "0" * 125 + "1"
+
+
+def test_research_same_side_extreme_notionals_preserve_small_trade():
+    r = measure(trades=[t("big", 130, price="1e127", size=10**127),
+                        t("tiny", 180, price="2e-126", size=1)],
+                quotes=[q("large", 90, bid="5e126", ask="1e127"),
+                        q("small", 170, bid="1e-126", ask="2e-126")],
+                max_quote_age_ns=1000)
+    expected = "1" + "0" * 254 + "." + "0" * 125 + "2"
+    assert [p["side_proxy"] for p in r["print_diagnostics_private_only"]] == [
+        "BUY_PROXY", "BUY_PROXY"]
+    assert r["buy_proxy_notional_usd"] == expected
+    assert r["gross_active_notional_usd"] == expected
+    assert r["sell_proxy_notional_usd"] == "0"
+    assert r["unknown_notional_usd"] == "0"
+
+
+def test_research_unknown_extreme_notionals_preserve_small_trade():
+    r = measure(trades=[t("big", 130, price="1e127", size=10**127, venue="TRF"),
+                        t("tiny", 180, price="1e-126", size=1, venue="TRF")],
+                quotes=[])
+    expected = "1" + "0" * 254 + "." + "0" * 125 + "1"
+    assert r["unknown_notional_usd"] == expected
+    assert r["gross_active_notional_usd"] == expected
+    assert r["pressure_balance"] is None
+    assert r["classified_notional_coverage"] == "0"
+    assert r["n_unclassified"] == {"OFF_EXCHANGE_OR_UNKNOWN_VENUE": 2}
+
+
+def test_research_maximum_products_and_count_carry_preserve_small_trade():
+    maximum_price = "9" * 128
+    maximum_size = (1 << 425) - 1
+    trades = [t("big-" + str(i), 130 + i, price=maximum_price, size=maximum_size)
+              for i in range(10)]
+    trades.append(t("tiny", 180, price="1e-126", size=1))
+    r = measure(trades=trades,
+                quotes=[q("prior", 90, bid="1e-126", ask=maximum_price)],
+                max_quote_age_ns=1000)
+    # Integer arithmetic supplies an independent exact oracle, including carry.
+    expected_integer = str(10 * int(maximum_price) * maximum_size)
+    expected = expected_integer + "." + "0" * 125 + "1"
+    assert r["n_active_prints"] == 11
+    assert r["buy_proxy_notional_usd"] == expected_integer
+    assert r["sell_proxy_notional_usd"] == "0." + "0" * 125 + "1"
+    assert r["gross_active_notional_usd"] == expected
+
+
 def test_research_source_decimal_exponents_cannot_expand_unbounded_fixed_strings():
     from engine.market_microstructure.pressure_response import _amount
     for exponent in ("1e+999999999", "1e-999999999"):
