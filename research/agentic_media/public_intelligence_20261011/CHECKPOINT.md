@@ -37,7 +37,10 @@ Mission complete: **false**. Publication approved: **false**.
    hashes staged bytes/config. Empty or invalid staging returns nonzero. It
    explicitly reports no publication approval and no independent source-freshness
    verification. Staged facts, peer content and rights still need their owners.
-4. Seven existing `site/blog` pages were regenerated through the existing builder
+4. The existing Press cutover runbook now identifies the current DNS providers
+   and observed failures. It removes the stale Spaceship instruction and preserves
+   the paired cutover and deployment controls.
+5. Seven existing `site/blog` pages were regenerated through the existing builder
    to match accepted shared navigation source (Glossary, Morning Edition, Help).
    No shared navigation design/source or sibling acquisition system was changed.
 
@@ -80,6 +83,7 @@ accounting side effects.
   including both cutover modes and replacement of a stale validator report.
 - Integrated suite after the first review repairs: **337 passed**, one inherited pytest
   temporary-directory cleanup warning; full command is in `test_results.txt`.
+- `python -m scripts.build_press_properties --check`: no drift across both publications.
 - Blog replay plus inspection/workflow integration: **33 passed** after the generated
   output refresh and CI registration of the new inspection tests.
 - Independent review identified equivalent-host URL and footer/byline link bypasses;
@@ -99,9 +103,16 @@ Logged-out Python `urllib.request.urlopen` GETs on 2026-10-11, with no cookies:
 | `https://www.mastermind-x.com/stocks/TTWO.html` | HTTP 200, 186,405 bytes; canonical matches exact URL | Existing public dossier is reachable |
 | `https://app.mastermind-x.com/terminal?signup=1` | HTTP 200, 96,235 bytes | Existing signup entry responds; interaction and conversion not proven |
 | `https://mastermindx.ai/` | HTTP 525 | News property is not usable at this origin |
-| `https://blog.mastermind-x.com/` | DNS resolution failure | Research property is not reachable from this host |
+| `https://blog.mastermind-x.com/` | Existing DNSPod CNAME target returns NXDOMAIN | Research property is not reachable from this host |
 | `/api/event-workspace/TTWO` | HTTP 404 | No public event workspace for this candidate |
 | `/api/event-workspace/AAPL` | HTTP 200 | Existing `event_workspace_public_glance.v1`, context-only, generation `b027c10d075adf94a9fd5301` |
+
+A follow-up read-only domain check at 09:20 UTC identified Cloudflare as the
+News DNS provider and DNSPod as the flagship zone provider. Research already has
+a CNAME (`blog.mastermind-x.com.eo.dnse3.com`); its target returns NXDOMAIN.
+Direct SNI probes at the documented origin return TLS error 35. These observations
+do not prove the installed Caddy configuration; deployment remains held. See
+`app/deploy/README.md` for the corrected existing sequence.
 
 The AAPL response reports byte-replayed revenue/guidance, `consensus=unlicensed`
 and `reaction=not_joined`. It is an existing public projection, not an immutable
