@@ -149,9 +149,10 @@ def test_desktop_tabs_and_controls_are_separate_rows_with_public_count():
     actions = sorted(node.attrs["data-im-action"] for node in selects)
     assert actions == ["set_basis", "set_horizon", "set_view"]
     context_line = one(root, "class", "intl-workspace__context-line")
-    assert "7 covered markets" in visible_text(context_line)
+    assert "Research universe: 7 markets" in visible_text(context_line)
+    assert "covered markets" not in visible_text(context_line)
     assert "Price return" in visible_text(context_line)
-    assert "覆盖市场 7 个" in visible_text(context_line) and "价格回报" in visible_text(context_line)
+    assert "研究范围：7 个市场" in visible_text(context_line) and "价格回报" in visible_text(context_line)
     options = [node for node in walk(one(root, "class", "intl-workspace__view-select")) if node.tag == "option"]
     assert len(options) == 6
 
@@ -249,6 +250,24 @@ def test_css_keeps_token_discipline_and_tab_underline_treatment():
     assert '[data-theme="light"] .intl-workspace button[aria-pressed="true"] { background:var(--panel2); }' in css
     for selector in (".intl-overview__coverage", ".intl-overview__focus-footer", ".intl-workspace__deeper", ".intl-overview__stats"):
         assert selector in css
-    assert "var(--ink-up)" in css and "var(--ink-down)" in css
+    assert "var(--ink-up, var(--up))" in css and "var(--ink-down, var(--down))" in css
     for frozen_owner in (".intl-library", ".intl-inspector", ".intl-compare"):
         assert frozen_owner in css
+
+
+def test_summary_paragraph_reset_preserves_the_limitation_footer_pin():
+    css = CSS_PATH.read_text(encoding="utf-8")
+    paragraph = re.search(r"\.intl-overview__summary p\s*\{([^}]*)\}", css).group(1)
+    limitation = re.search(r"\.intl-overview__limitation\s*\{([^}]*)\}", css).group(1)
+    assert not re.search(r"(?:^|;)\s*margin(?:-block|-block-start)?\s*:", paragraph)
+    assert "margin-block-start:auto" in limitation
+
+
+def test_universe_count_does_not_claim_projection_coverage():
+    html, root = rendered_shell(AVAILABLE_OVERVIEW)
+    context = visible_text(one(root, "class", "intl-workspace__context-line"))
+    assert "Research universe: 7 markets" in context
+    assert "研究范围：7 个市场" in context
+    assert "covered markets" not in context and "覆盖市场" not in context
+    # The projection has two observations; its count remains its own truth.
+    assert "All 2 covered markets" in html
