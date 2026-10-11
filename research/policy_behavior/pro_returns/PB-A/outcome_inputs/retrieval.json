@@ -1,0 +1,56 @@
+[
+  {
+    "id": "DFEDTARU",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFEDTARU&cosd=2018-01-01&coed=2025-01-10",
+    "bytes": 41098,
+    "sha256": "9b37fccf4fab63ee892b744a06c9bce1ead3b7c00dc403f050de267b992632cf",
+    "content_type": "application/csv",
+    "first_line": "observation_date,DFEDTARU",
+    "retrieved_at_utc": "2026-10-07T02:51:24.288502+00:00"
+  },
+  {
+    "id": "DFEDTARL",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFEDTARL&cosd=2018-01-01&coed=2025-01-10",
+    "bytes": 41098,
+    "sha256": "84785eaecd20d60da72bedc16051cc4a35d610f69f83691e1ea173152430c7fe",
+    "content_type": "application/csv",
+    "first_line": "observation_date,DFEDTARL",
+    "retrieved_at_utc": "2026-10-07T02:51:24.377731+00:00"
+  },
+  {
+    "id": "DGS2",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2&cosd=2018-01-01&coed=2025-01-10",
+    "bytes": 29058,
+    "sha256": "4b7d16bd2e28cc2b0b9e98a35a9b123930b7375f1ad151eccb9e26c8045d7a9b",
+    "content_type": "application/csv",
+    "first_line": "observation_date,DGS2",
+    "retrieved_at_utc": "2026-10-07T02:51:24.127585+00:00"
+  },
+  {
+    "id": "DGS10",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2018-01-01&coed=2025-01-10",
+    "bytes": 29059,
+    "sha256": "032cbdaa76944acd7aab2cbbe04667486c73a72245c528358f9b2776a66006cb",
+    "content_type": "application/csv",
+    "first_line": "observation_date,DGS10",
+    "retrieved_at_utc": "2026-10-07T02:51:24.168657+00:00"
+  },
+  {
+    "id": "DFII10",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFII10&cosd=2018-01-01&coed=2025-01-10",
+    "bytes": 29626,
+    "sha256": "6e6066d30e7a2d79a30bbe83537d9e36998cd9083bbe8f6636673413588c6644",
+    "content_type": "application/csv",
+    "first_line": "observation_date,DFII10",
+    "retrieved_at_utc": "2026-10-07T02:51:24.022088+00:00"
+  },
+  {
+    "id": "T10YIE",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=T10YIE&cosd=2018-01-01&coed=2025-01-10",
+    "bytes": 29060,
+    "sha256": "fc6cad9f13a43c6567e6f9445bd64edb28ee63613576f7031295b948b0ef9684",
+    "content_type": "application/csv",
+    "first_line": "observation_date,T10YIE",
+    "retrieved_at_utc": "2026-10-07T02:51:24.183115+00:00"
+  }
+]

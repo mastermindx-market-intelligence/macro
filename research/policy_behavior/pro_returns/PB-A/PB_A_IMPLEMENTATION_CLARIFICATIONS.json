@@ -1,0 +1,64 @@
+{
+  "schema": "mastermind.pb_a_implementation_clarifications.v1",
+  "frozen_at_utc": "2026-10-07T02:57:53Z",
+  "protocol_freeze_commit": "99253212652ba7d1248a587c249da44ec6e3b9b6",
+  "protocol_changed": false,
+  "items": [
+    {
+      "id": "C01",
+      "rule": "Month arithmetic uses cut's America/New_York calendar date +1/+3/+6 months, day clamped to last valid calendar day. Endpoint is end of that date. Policy rates are daily seven-day observations; missing exact horizon policy date is an error/quarantine, never carry forward silently."
+    },
+    {
+      "id": "C02",
+      "rule": "A new policy-rate decision is a focal FOMC/Fed rate-decision release, including a formal hold. Operating maintenance directives and existing targets mentioned in speeches/facilities are NOT new rate decisions. October11 2019, March23 2020, AIT, Jackson Hole, BTFP, and every Treasury focal episode therefore have no new rate decision."
+    },
+    {
+      "id": "C03",
+      "rule": "M0 uses focal contemporaneous FORWARD rate communication, without opportunistically carrying prior guidance into a non-rate episode. October11 no-change-in-current-stance language is ABSTAIN for a future-rate target. December2021 mixed conditional/annual horizons remain ABSTAIN. All other clean coded path directions are mechanically extrapolated equally to1m/3m/6m, with horizon extrapolation explicitly labeled."
+    },
+    {
+      "id": "C04",
+      "rule": "Score primary net movement from the latest DECIDED target publicly known by cut, including decisions not yet effective. For non-rate focal episodes reconstruct the anchor from the latest public FOMC decision, never treating an already-announced next-day change as forecast success. Policy endpoints are effective range midpoints. Secondary is first CHANGE publicly decided strictly after cut and effective by the horizon, HOLD if absent, not first FOMC meeting/decision."
+    },
+    {
+      "id": "C05",
+      "rule": "Forecast probability vectors use class order DOWN,HOLD,UP; constant modal0.6/other0.2. M1 HOLD has no unique opposite and abstains. Brier is unnormalized multiclass sum of squared errors. Accuracy, Brier and NLL are algebraically linked for this fixed-confidence pilot, not independent validations. No calibration slope or statistical significance claim."
+    },
+    {
+      "id": "C06",
+      "rule": "Report exact episode IDs, true-class counts and regimes for every own/pairwise/all-three comparison. Different intersections cannot be used as one model league table. Primary and deliberate challenge cohorts never pool. Chronological slice is not unseen validation."
+    },
+    {
+      "id": "C07",
+      "rule": "Historical documentary PIT certification admits original official dated/timed content at declared clock precision; it does not certify historical served bytes, actual first-server availability, realized loan/settlement flows, market pricing or causal identification. Source timing inferred solely from a parent attachment link is separately flagged; attachment-only facts may be quarantined without losing the timed headline episode."
+    },
+    {
+      "id": "C08",
+      "rule": "M2 is explicitly minimal rate-decision persistence plus a conventional-floor assumption, not a fully estimated revealed-preference model. The negative-rate floor is an operating assumption, not legal impossibility. All recorded motive/distribution/alternatives text is excluded from predictor input."
+    },
+    {
+      "id": "C09",
+      "rule": "The separately selected June14 2023 pause challenge was requested to seek an adverse case for action persistence before scoring. It is outside fixed24 selection and excluded from primary metrics. No additional case is added because of its scored return."
+    },
+    {
+      "id": "C10",
+      "rule": "Forecast generation reads ONLY PB_A_DECISION_INPUTS.json and protocol. Outcome join reads a frozen forecast artifact plus public outcome sources. It must verify the decision-input SHA, protocol SHA, code SHA and forecasts' content before scoring."
+    }
+  ],
+  "rate_precision": {
+    "equality_tolerance_percentage_points": 1e-9,
+    "source_units": "percent",
+    "change_units": "basis_points",
+    "multiplier": 100
+  },
+  "market_context": {
+    "rule": "At each cut take latest valid daily yield observation whose civil observation date is strictly before cut's New York date. At the horizon take latest valid observation on or before horizon, record both actual dates and staleness; require <=7 calendar days. These are descriptive daily drift observations, not intraday surprises or matched abnormal returns.",
+    "decomposition": "Delta10y nominal = delta10y TIPS real + delta10y breakeven, up to source rounding. Breakeven is inflation compensation, not a pure inflation-expectation measurement.",
+    "forecasts": "All market targets abstain unless a separately frozen source-grounded mapping exists. No such mapping is fitted in this pilot."
+  },
+  "uncertainty": {
+    "regimes": 4,
+    "cluster_resampling": "Enumerate all K^K regime-with-replacement draws for paired contrasts, maximum4^4=256; central95% descriptive interval only. Also leave-one-regime-out. Overlap and four clusters prevent reliable inference."
+  }
+}
+
