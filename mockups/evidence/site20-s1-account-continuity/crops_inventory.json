@@ -1,7 +1,7 @@
 {
   "variant": "fix",
   "page": "site/alerts.html",
-  "account_js_sha256": "7f8abff1c31b4ec75bb435577e485fae65dc161921aa6122651165469656c215",
+  "account_js_sha256": "77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586",
   "crops": [
     {
       "file": "shots/s1_unavailable_dark_en_1440.png",
@@ -9,8 +9,8 @@
       "theme": "dark",
       "lang": "en",
       "viewport": "1440x900",
-      "bytes": 20192,
-      "sha256": "7b504a65910776babf499ad2c1313d2654a5b06c9041430db86612f7775fec93",
+      "bytes": 20034,
+      "sha256": "4af457cc1684836ae2c8e17581063d3de97ba0a1f9ef0d220f949bf8fae92534",
       "page_errors": 0
     },
     {
@@ -19,8 +19,8 @@
       "theme": "dark",
       "lang": "en",
       "viewport": "1440x900",
-      "bytes": 73885,
-      "sha256": "32d80b5eb5c81cd66a53cda6de1013209a59f531d847a6b1a71136f1f5f6437e",
+      "bytes": 73805,
+      "sha256": "6ba00446d6fe59e8c0546d7caa3281dd469bec873a761e702b0a546e97e00013",
       "page_errors": 0
     },
     {
@@ -29,8 +29,8 @@
       "theme": "dark",
       "lang": "en",
       "viewport": "390x844",
-      "bytes": 28335,
-      "sha256": "6d167bbfa442cd368961711b62ba1a9d1371805bcd19b4f01758b5effea655b0",
+      "bytes": 29148,
+      "sha256": "158960734566ea73e5020a9051582ccd76052a035d4aa241894d0563faa10987",
       "page_errors": 0
     },
     {
@@ -39,8 +39,8 @@
       "theme": "dark",
       "lang": "en",
       "viewport": "390x844",
-      "bytes": 76973,
-      "sha256": "94cd8b1371ca19f09f9a9933a7a8dd61290f8734f9d0c63fca40a58e85809d0e",
+      "bytes": 76968,
+      "sha256": "fff4e752340196398d614d13efbe310e1cc2af26a826471c5084da86bcac30f7",
       "page_errors": 0
     },
     {
@@ -49,8 +49,8 @@
       "theme": "dark",
       "lang": "zh",
       "viewport": "1440x900",
-      "bytes": 19620,
-      "sha256": "2d84a55bf27aea53b73fa24487a1d6c12e5f760149ac9140f3d617868790ecb2",
+      "bytes": 19568,
+      "sha256": "3f64eb847e9fb74d70a91ec0c55b0990ce6d6a6837fdaef8a91f56eb0f9ce21e",
       "page_errors": 0
     },
     {
@@ -59,8 +59,8 @@
       "theme": "dark",
       "lang": "zh",
       "viewport": "1440x900",
-      "bytes": 82438,
-      "sha256": "1081eb0ca1300a5ee88d5ef178c4ddef50ca71106e25e678b5cedf6524c89582",
+      "bytes": 82454,
+      "sha256": "3e434a4a7759ea455991b4367a5e1b1601b48bb49ba70f7ac457dfeab44e1f69",
       "page_errors": 0
     },
     {
@@ -69,8 +69,8 @@
       "theme": "dark",
       "lang": "zh",
       "viewport": "390x844",
-      "bytes": 26802,
-      "sha256": "895d73766e6c001549ca18a16b757a125746186195c68ac25326b3e9a4ff8e4d",
+      "bytes": 27768,
+      "sha256": "9d3e97aa97248d19c2a48dee78de2286d310ec234020cb127ef3a3cef4573e41",
       "page_errors": 0
     },
     {
@@ -79,8 +79,8 @@
       "theme": "dark",
       "lang": "zh",
       "viewport": "390x844",
-      "bytes": 86198,
-      "sha256": "79c4265b3300cfa7b07d0218105c8e574683651d08f70c0637a43b39ea127a0b",
+      "bytes": 86357,
+      "sha256": "9b9b10f5551880089693b91f10ebf76af8e8726fe35e2c714573c743ed3dabcd",
       "page_errors": 0
     },
     {
@@ -99,8 +99,8 @@
       "theme": "light",
       "lang": "en",
       "viewport": "1440x900",
-      "bytes": 69797,
-      "sha256": "fb0528980a530873e20b1e6f9de393871d72ae14cb1b02a4522e96b317c7d332",
+      "bytes": 60080,
+      "sha256": "fcac60ee2c447c1b789c5404388565f78fc474d6ff020dc44a596a78eb87d2f9",
       "page_errors": 0
     },
     {
@@ -109,8 +109,8 @@
       "theme": "light",
       "lang": "en",
       "viewport": "390x844",
-      "bytes": 28134,
-      "sha256": "32e532d9e51f03bf680d2aa86fe4e20e27f8e523fbb846be0b92d83acc5c3547",
+      "bytes": 28921,
+      "sha256": "af7c929ee215152808899d42eadb5672423aa231deee4559298c41cb37b8680a",
       "page_errors": 0
     },
     {
@@ -119,8 +119,8 @@
       "theme": "light",
       "lang": "en",
       "viewport": "390x844",
-      "bytes": 72665,
-      "sha256": "9116574d6b6995e4310b3c8f30c57309c7692f3d5115cca69f0ad9227c3c7b80",
+      "bytes": 72632,
+      "sha256": "53043d7c80629e9f81d72973397e07ebdb6b5245ae4a7d40bb0cdebe852e08f7",
       "page_errors": 0
     },
     {
@@ -139,8 +139,8 @@
       "theme": "light",
       "lang": "zh",
       "viewport": "1440x900",
-      "bytes": 79122,
-      "sha256": "906e44068de7bb97dfbe098f588cd7406311f221a457b34a5400fa1ea7c7ef8c",
+      "bytes": 78950,
+      "sha256": "40fcdd326f70450dd4a772ee3188b98d157a40a2ca054420b17371675fed25bf",
       "page_errors": 0
     },
     {
@@ -149,8 +149,8 @@
       "theme": "light",
       "lang": "zh",
       "viewport": "390x844",
-      "bytes": 27194,
-      "sha256": "ef616aa7fd92cf4eed92ce21bf7a82f69efc515f4658292fa5d654b77cd95f03",
+      "bytes": 28206,
+      "sha256": "1a003cd7b2f8afcbbe2ddb20d54f0c4eb63c85403f4f46855b9ef399bf03d074",
       "page_errors": 0
     },
     {
@@ -159,8 +159,8 @@
       "theme": "light",
       "lang": "zh",
       "viewport": "390x844",
-      "bytes": 81369,
-      "sha256": "d60ab36d078f4f1b18c16755ec00d0ede130d419af79d792576087d29dcbc232",
+      "bytes": 81281,
+      "sha256": "f36986a5f0d2f7af5001ab32e503073611c3a3d82fbcf78fa71ee11b16f4eb73",
       "page_errors": 0
     }
   ]

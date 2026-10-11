@@ -1,4 +1,4 @@
-# account.js sha256 7f8abff1c31b4ec75bb435577e485fae65dc161921aa6122651165469656c215
+# account.js sha256 77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586
 # S1-04 sign-out-everywhere outcome browser acceptance — variant=fix page=site/alerts.html (local-only, fictional fixtures)
 # result: 8 pass / 0 fail
 PASS M 500 {}: message shown, NO local sign-out, dialog open, one request :: ('We couldn’t confirm that your other devices were signed out. You’re still signed in here — try again later.', 0, True, 1)

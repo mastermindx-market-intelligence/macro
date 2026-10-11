@@ -88,7 +88,8 @@ def make_handler(mock: Mock, variant: str, main_js: str):
         p = u.path
         if p.endswith("supabase.js"):
             return await route.abort()
-        if variant == "main" and p.endswith("/account.js"):
+        # main: the red reference; fix + --candidate-js: candidate bytes before they are committed
+        if (variant == "main" or main_js) and p.endswith("/account.js"):
             return await route.fulfill(status=200, content_type="application/javascript", body=main_js)
         if p == "/api/account":
             mock.acct_reads += 1
@@ -643,16 +644,18 @@ async def main() -> int:
     ap.add_argument("--main-js", default="")
     ap.add_argument("--out", required=True)
     ap.add_argument("--no-crops", action="store_true")
+    ap.add_argument("--candidate-js", default="", help="fix variant: serve these bytes as account.js")
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
-    main_js = Path(a.main_js).read_text(encoding="utf-8") if a.variant == "main" else ""
+    main_js = (Path(a.main_js).read_text(encoding="utf-8") if a.variant == "main"
+               else Path(a.candidate_js).read_text(encoding="utf-8") if a.candidate_js else "")
     srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT), "--bind", "127.0.0.1",
                             "--directory", str(TREE_SITE)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         await asyncio.sleep(1.0)
         served = TREE_SITE / "account.js"
         meta = {"variant": a.variant, "page": f"site/{PAGE}",
-                "account_js_sha256": hashlib.sha256((main_js.encode() if a.variant == "main" else served.read_bytes())).hexdigest()}
+                "account_js_sha256": hashlib.sha256((main_js.encode() if main_js else served.read_bytes())).hexdigest()}
         async with async_playwright() as pw:
             browser = await pw.chromium.launch()
             total_p = total_f = 0

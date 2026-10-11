@@ -1,4 +1,4 @@
-# account.js sha256 7f8abff1c31b4ec75bb435577e485fae65dc161921aa6122651165469656c215
+# account.js sha256 77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586
 # S1-01 theme/language preference persistence browser acceptance — variant=fix page=site/alerts.html (local-only, fictional fixtures)
 # result: 20 pass / 0 fail
 PASS J1 Esc closes the account dialog :: 

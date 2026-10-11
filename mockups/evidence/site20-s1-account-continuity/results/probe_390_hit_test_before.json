@@ -1,6 +1,6 @@
 {
- "label": "ref2",
- "account_js_sha256": "77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586",
+ "label": "head",
+ "account_js_sha256": "7f8abff1c31b4ec75bb435577e485fae65dc161921aa6122651165469656c215",
  "rows": [
   {
    "theme": "dark",
@@ -13,9 +13,9 @@
     844
    ],
    "target": [
-    16,
+    288,
     784,
-    102,
+    374,
     814
    ],
    "orb": [
@@ -24,40 +24,13 @@
     365,
     819
    ],
-   "target_hit": true,
-   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "target_hit": false,
+   "topmost_at_target": "DIV#.mmb-orb",
    "vw": 390,
    "vh": 844,
    "P3": {
-    "ok": true,
-    "acct_reads_before": 1,
-    "acct_reads_after": 2,
-    "state": {
-     "open": true,
-     "unavailable": false,
-     "name": "Pat Fictional",
-     "noReload": "kept"
-    }
-   },
-   "signout_all": {
-    "target": [
-     219,
-     631,
-     374,
-     661
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
-   },
-   "show_delete": {
-    "target": [
-     200,
-     750,
-     374,
-     777
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+    "ok": false,
+    "error": "TimeoutError('Page.click: Timeout 3000ms exceeded.\\nCall log:\\n  - waiting for locator(\"[data-act=retry-load]\")\\n    - locator resolved to <button type=\"button\" data-act=\"retry-load\" class=\"mmacc-btn mmacc-ghost\">Try again</button>\\n  - att"
    },
    "page_errors": []
   },
@@ -72,9 +45,9 @@
     844
    ],
    "target": [
-    16,
+    319,
     784,
-    71,
+    374,
     814
    ],
    "orb": [
@@ -83,40 +56,13 @@
     365,
     819
    ],
-   "target_hit": true,
-   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "target_hit": false,
+   "topmost_at_target": "path#.[object SVGAnimatedString]",
    "vw": 390,
    "vh": 844,
    "P3": {
-    "ok": true,
-    "acct_reads_before": 1,
-    "acct_reads_after": 2,
-    "state": {
-     "open": true,
-     "unavailable": false,
-     "name": "Pat Fictional",
-     "noReload": "kept"
-    }
-   },
-   "signout_all": {
-    "target": [
-     219,
-     631,
-     374,
-     661
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
-   },
-   "show_delete": {
-    "target": [
-     200,
-     750,
-     374,
-     777
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+    "ok": false,
+    "error": "TimeoutError('Page.click: Timeout 3000ms exceeded.\\nCall log:\\n  - waiting for locator(\"[data-act=retry-load]\")\\n    - locator resolved to <button type=\"button\" data-act=\"retry-load\" class=\"mmacc-btn mmacc-ghost\">重试</button>\\n  - attempting"
    },
    "page_errors": []
   },
@@ -131,9 +77,9 @@
     844
    ],
    "target": [
-    16,
+    288,
     784,
-    102,
+    374,
     814
    ],
    "orb": [
@@ -142,40 +88,13 @@
     365,
     819
    ],
-   "target_hit": true,
-   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "target_hit": false,
+   "topmost_at_target": "DIV#.mmb-orb",
    "vw": 390,
    "vh": 844,
    "P3": {
-    "ok": true,
-    "acct_reads_before": 1,
-    "acct_reads_after": 2,
-    "state": {
-     "open": true,
-     "unavailable": false,
-     "name": "Pat Fictional",
-     "noReload": "kept"
-    }
-   },
-   "signout_all": {
-    "target": [
-     219,
-     631,
-     374,
-     661
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
-   },
-   "show_delete": {
-    "target": [
-     200,
-     750,
-     374,
-     777
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+    "ok": false,
+    "error": "TimeoutError('Page.click: Timeout 3000ms exceeded.\\nCall log:\\n  - waiting for locator(\"[data-act=retry-load]\")\\n    - locator resolved to <button type=\"button\" data-act=\"retry-load\" class=\"mmacc-btn mmacc-ghost\">Try again</button>\\n  - att"
    },
    "page_errors": []
   },
@@ -190,9 +109,9 @@
     844
    ],
    "target": [
-    16,
+    319,
     784,
-    71,
+    374,
     814
    ],
    "orb": [
@@ -201,40 +120,13 @@
     365,
     819
    ],
-   "target_hit": true,
-   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "target_hit": false,
+   "topmost_at_target": "path#.[object SVGAnimatedString]",
    "vw": 390,
    "vh": 844,
    "P3": {
-    "ok": true,
-    "acct_reads_before": 1,
-    "acct_reads_after": 2,
-    "state": {
-     "open": true,
-     "unavailable": false,
-     "name": "Pat Fictional",
-     "noReload": "kept"
-    }
-   },
-   "signout_all": {
-    "target": [
-     219,
-     631,
-     374,
-     661
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
-   },
-   "show_delete": {
-    "target": [
-     200,
-     750,
-     374,
-     777
-    ],
-    "target_hit": true,
-    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+    "ok": false,
+    "error": "TimeoutError('Page.click: Timeout 3000ms exceeded.\\nCall log:\\n  - waiting for locator(\"[data-act=retry-load]\")\\n    - locator resolved to <button type=\"button\" data-act=\"retry-load\" class=\"mmacc-btn mmacc-ghost\">重试</button>\\n  - attempting"
    },
    "page_errors": []
   },
@@ -475,8 +367,8 @@
    "page_errors": []
   }
  ],
- "all_hit": true,
- "all_signout_all_hit": true,
- "all_P3_ok": true,
- "all_show_delete_hit": true
+ "all_hit": false,
+ "all_signout_all_hit": false,
+ "all_P3_ok": false,
+ "all_show_delete_hit": false
 }

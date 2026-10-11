@@ -1,4 +1,4 @@
-# account.js sha256 7f8abff1c31b4ec75bb435577e485fae65dc161921aa6122651165469656c215
+# account.js sha256 77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586
 # S1-02 notification-preference acknowledgements browser acceptance — variant=fix page=site/alerts.html (local-only, fictional fixtures)
 # result: 19 pass / 0 fail
 PASS T1 first ack records ITS submitted value as acked (data-prev) :: America/New_York

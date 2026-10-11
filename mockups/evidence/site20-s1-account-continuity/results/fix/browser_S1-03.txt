@@ -1,4 +1,4 @@
-# account.js sha256 7f8abff1c31b4ec75bb435577e485fae65dc161921aa6122651165469656c215
+# account.js sha256 77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586
 # S1-03 failed account read vs signed-out browser acceptance — variant=fix page=site/alerts.html (local-only, fictional fixtures)
 # result: 10 pass / 0 fail
 PASS K 503 -> unavailable (not guest, not account) :: {'unavail': True, 'name': False, 'guest': False, 'text': 'Account✕Can’t load your account right nowThis is a connection problem, not a sign-out. Nothing has changed — try again in a moment.Try again'}
