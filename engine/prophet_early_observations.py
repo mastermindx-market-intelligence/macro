@@ -37,25 +37,40 @@ def _relation(state, reason, *, episode_id=None, generation_id=None):
             "generation_id": generation_id}
 
 
-def _episode_relation(event_id, receipt, security, snapshot):
+def _index_episode_snapshot(snapshot):
+    """Index only this request's fully validated B1 snapshot; never cache it.
+
+    Keep every event/suppression so duplicate keys remain ambiguous. The B1
+    reader still validates the current HEAD and all generation files each time.
+    """
+    if snapshot is None:
+        return None
+    events, suppressions, episodes = {}, {}, {}
+    for rows, index in ((snapshot.generation.events, events),
+                        (snapshot.generation.suppressions, suppressions)):
+        for row in rows:
+            if (row.get("source_system") == "turn_watch"
+                    and row.get("source_schema") == TURN_WATCH_SCHEMA):
+                key = (row.get("source_event_id"), row.get("source_receipt"))
+                index.setdefault(key, []).append(row)
+    for row in snapshot.generation.episodes:
+        # Preserve the prior first matching episode lookup, without another scan.
+        episodes.setdefault(row["episode_id"], row)
+    return snapshot.generation_id, events, suppressions, episodes
+
+
+def _episode_relation(event_id, receipt, security, index):
     if security is None:
         return _relation("IDENTITY_UNRESOLVED", "CANONICAL_IDENTITY_UNAVAILABLE")
-    if snapshot is None:
+    if index is None:
         return _relation("EPISODE_JOIN_UNAVAILABLE", "B1_SNAPSHOT_UNAVAILABLE")
-    generation = snapshot.generation
-    gid = snapshot.generation_id
+    gid, event_index, suppression_index, episode_index = index
     # Match the immutable source key AND receipt. A same-security episode or a
     # later correction cannot silently stand in for this observation's relation.
-    def matches(row):
-        return (row.get("source_system") == "turn_watch"
-                and row.get("source_schema") == TURN_WATCH_SCHEMA
-                and row.get("source_event_id") == event_id
-                and row.get("source_receipt") == receipt)
-    events = [row for row in generation.events if matches(row)]
-    suppressions = [row for row in generation.suppressions if matches(row)]
+    events = event_index.get((event_id, receipt), ())
+    suppressions = suppression_index.get((event_id, receipt), ())
     if len(events) == 1 and not suppressions:
-        episode = next((r for r in generation.episodes
-                        if r["episode_id"] == events[0]["episode_id"]), None)
+        episode = episode_index.get(events[0]["episode_id"])
         if episode is not None and episode["security_id"] == security:
             return _relation("EXACT_EPISODE", "EXACT_B1_SOURCE_RECEIPT",
                              episode_id=episode["episode_id"], generation_id=gid)
@@ -155,6 +170,7 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
             snapshot = load_candidate_episode_store_snapshot(episode_root)
         except (OSError, ValueError, EpisodeContractError):
             pass
+    relation_index = _index_episode_snapshot(snapshot)
     projected = []
     seen = set()
     for row in rows:
@@ -200,7 +216,7 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
                               "source_event_id": event_id, "source_artifact_receipt": doc.get("source_artifact_sha256"),
                               "selection_era": doc.get("selection_era"), "anchor_era": doc.get("anchor_era"),
                               "prior_receipt": None, "correction_available_at": None},
-                          "episode_relation": _episode_relation(event_id, receipt, security, snapshot),
+                          "episode_relation": _episode_relation(event_id, receipt, security, relation_index),
                           "authority": dict(AUTHORITY)})
     out.update(status="CURRENT_SESSION" if session == reference_session else "RETAINED_PREVIOUS_SESSION",
                reason=None, source_receipt=receipt, rows=projected, coverage=coverage)

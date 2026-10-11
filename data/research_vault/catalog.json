@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T16:42:07.512412+00:00",
-  "count": 2818,
+  "generated_at": "2026-10-11T17:21:24.249634+00:00",
+  "count": 2820,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -640,6 +640,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-knlhga8u3os-507462",
+      "title": "BofA CMBS Weekly 6 is the new 5 higher Treasury yields weigh on issuance and refinance success 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:05:26Z",
+      "summary_points": [
+        "Floating Rate CMBS Surge: Rising Treasury yields make fixed-rate financing unviable, driving strong floating-rate issuance despite widening spreads; resilience attributed to persistent \"Fed-speak\" and rate volatility.",
+        "Refinance Risk Escalation: Class B/C properties face severe refinance hurdles due to cash-flow gaps and higher interest rates, threatening loan refinancing viability, transaction volume, and price appreciation.",
+        "Geopolitical & Policy Uncertainty: Middle East war, AI trade monetization risks, and Fed's loose stance amid strong economic data drive rate turbulence; credit spreads (CDX IG/HY) widen as yields rise.",
+        "Fed Rate Hike Probability Drop: Market probability of October rate hike fell to 19% (from 70%) due to Fed's limited guidance and hawkish-but-not-urgent comments, with real/nominal Treasury yields rising.",
+        "mREITs Under Rate Pressure: Blackstone Mortgage Trust down 42% YTD as rising rates strain collateral performance and refinancing, forcing higher risk premiums for mREIT equity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-qtq09kmuctq-baf3cc",
       "title": "BofA Follow The Flow Seeking shelter 2026 10 09",
       "institution": "Bank of America",
@@ -758,6 +779,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ew0ppxbxlje-a94864",
+      "title": "Emerging market bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-09T23:19:58Z",
+      "summary_points": [
+        "Credit Risk Categorization: UBS defines credit risk tiers (Very low <2% non-payment, Medium 2-20%, High ≥20%) with regulatory intervention as key risk trigger, directly impacting issuer outlook (Improving/Stable/Deteriorating).",
+        "Relative Value Bond Ratings: \"Attractive\" (total return > peers), \"Fair\" (in line), \"Expensive\" (return < peers) ratings assess issuer credit, call risk, coupon deferral, and regulatory factors over 6-12 months.",
+        "EM Credit Rating Framework: S&P/Moody's investment grade (AAA-BB+) vs. non-investment grade (BB- to C) with \"Watch\"/\"Negative\" outlooks signaling heightened default risk volatility in emerging markets.",
+        "Outlook-Driven Allocation: \"Negative\" and \"Watch\" outlooks indicate downgrade risks requiring tactical EM credit adjustments, while \"Positive\" signals upgrade potential for portfolio positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },

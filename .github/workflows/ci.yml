@@ -2200,6 +2200,9 @@ on:
       - "scripts/build_leader_radar.py"
       - "tests/test_leader_lifecycle.py"
       - "tests/test_build_leader_radar.py"
+      # Leader lineage descriptor (read-only, additive; research/leader_lineage/SPEC_V1.md)
+      - "engine/leader_lineage.py"
+      - "tests/test_leader_lineage.py"
       # OEU M-PRO display-tier options context: the shared loader/vocabulary, the two
       # Prophet-side consumers, and the fence suite. A change to any of them must
       # retrigger the fence tests even when nothing else in this filter moved.
