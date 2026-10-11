@@ -234,23 +234,27 @@ waves:
     status: todo
     depends_on: [k6]
 next_action: >
-  Information-to-Price build-out closed 2026-10-06; the seat is closing the remaining
-  owner gates itself under the Chairman's administrative-override ruling
-  (DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06). R1 is COMPLETE IN
-  DEGRADED FORM (#8582, 49741404; DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07): this workstream owns
-  data/reference/, data/symbol_directory/, data/openfigi/, the expectation revisions parquets and
-  collectors/equity_revisions.py, and every spec (e) exclusion stays in force. R5 is CLOSED-NOT-BUILT
-  (DEC:ITP-R5-NO-DURABLE-APPEND-2026-10-07): no existing data/ ledger admits a K3E receipt row and a
-  new store is excluded, so R5-BUILD does not open and the receipt stays reproducible on demand via
-  scripts/query_k3e_expectation_surface.py. In flight: EVAL-1 preregistration PR-1 (#8584, seat as
-  custodian under Chairman directive, never as Sol), then PR-2 owner acceptance + activation at or
-  after the first NYSE open after the PR-1 squash, then the forward evaluator; consuming the single
-  budgeted trial needs a separate seat ruling. Package E semantic/provider seams build under the
-  owner ruling on #8309, converting only the matching E1 xfails; GAP-E-RIGHTS stays with the #7870
-  rights-vocabulary owner unless an on-main vocabulary is reusable unchanged. Absolute gates: vendor
-  PIT procurement and capital/rank authority. No K3-E merge authorizes consumer wiring, Market OS UI,
-  rank, gate, size, trade or deployment; financial_influence, k3e_admissible and promotion_eligible
-  stay false.
+  Information-to-Price seat round of 2026-10-07 to 2026-10-11 closed every gate the seat could lawfully
+  resolve (handoff agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-07-program-ceo-autonomous.md;
+  research/INFORMATION_TO_PRICE_CONTINUATION_HANDOFF_2026-10-06.md sections 33-41). On main: R1
+  COMPLETE_DEGRADED (#8582), EVAL-1 prereg (#8584) + acceptance and activation receipts (#8599, merged
+  after boundary_at), forward scoring core (#8603), R5 CLOSED-NOT-BUILT (#8591), Package E BASIS (#8604)
+  and ALIAS (#8615), R4 v2 admission receipt + issuer-axis clock DEC (#8619, R4_INSUFFICIENT_N_PRE_BOUNDARY),
+  issuer universe admits the S&P 400/600 constituents forward-only (#8626,
+  DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07), the frozen challenger trial identity (#8630,
+  DEC:K3E-EVAL1-CHALLENGER-TRIAL-IDENTITY-2026-10-07; the single budgeted trial is SPENT 1/1 as of
+  2026-10-11T12:12:51Z, before any F_DEV label read) and the EVAL-1 partition clock receipt builder (#8805, squash 413e253a, DEC:K3E-EVAL1-PARTITION-CLOCK-UNIT-2026-10-07; the five ITP receipt suites now run in the exclusive CI job information-to-price-eval-receipts).
+  Next, in order: (1) EVAL-1 forward window accrues from boundary_at 2026-10-07T13:30Z; partitions close
+  on issuer overlap clusters (DEC:K3E-EVAL1-PARTITION-CLOCK-UNIT-2026-10-07) and the only counter is
+  eval1_partition_clock.py read at a fresh origin/main. B0/B6/challenger are fit on F_DEV only, after
+  F_DEV closes at 100 clusters, by the single evaluator (engine/k3e_eval1_forward.py); F_HOLD stays
+  locked; no tuning loop. (2) After the first nightly that runs the widened builder, re-run
+  r1_readiness_probe at a post-build cutoff and issue the prospective owner receipt upgrading the
+  resolved names from DEGRADED_ACCEPTED to CLOSED (R1 DEC upgrade path); never re-label rows at or
+  before 2026-10-03T06:31:51Z. (3) R4 predictive admission re-runs only when the forward N floor can
+  be met on post-boundary data. Absolute gates: vendor PIT procurement, capital/rank authority
+  (Chairman). No K3-E merge authorizes consumer wiring, Market OS UI, rank, gate, size, trade or
+  deployment; financial_influence, k3e_admissible and promotion_eligible stay false.
 ---
 
 # Alpha Intelligence Expansion — integration workstream
