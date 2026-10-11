@@ -1,8 +1,8 @@
 {
   "files": {
     "README.md": {
-      "bytes": 3691,
-      "sha256": "7973b31ba800368763b486ef58da02d109c085086703f093f5943e0e79e79b25"
+      "bytes": 4390,
+      "sha256": "ef01c7bec1bc5fe0897aa365dca9ae8f0b86a55320b03cc8a3d54f123dbeb250"
     },
     "boats-consumer-i18n-base-integration-review.txt": {
       "bytes": 5250,
@@ -36,6 +36,14 @@
       "bytes": 1050,
       "sha256": "ad7ac77ba3e6d5816c46ae5a64e6aa9dbd4b76f074e64b1b54c560caef47554e"
     },
+    "macro-integrated-trigger-closure.log": {
+      "bytes": 305,
+      "sha256": "14984fdff63f7651985a26dc5a74397646cd93e33d36a668bb2d09a2684df391"
+    },
+    "macro-integrated-workflow-yaml.log": {
+      "bytes": 56,
+      "sha256": "b786bad22ddb2164d65ec232d63b99e61d396f2414ece352fa08603d8b6fff70"
+    },
     "previous-live-anchor-rows.tsv": {
       "bytes": 2041,
       "sha256": "7fd848949036208a95ee75abc510bfd2d1efc4b1e908c743365f9f9454c39ed8"
@@ -52,6 +60,22 @@
       "bytes": 827,
       "sha256": "d5f6c3f383c8cb2ae335706c075c60b449ac073fad6f8e7b6c52203e0af4c7d0"
     },
+    "protected-base-integrated-tests-red.log": {
+      "bytes": 3568,
+      "sha256": "3df827724736e56a2a2fced76dc2407be15123663bedf3c48b3822df228ef775"
+    },
+    "protected-base-live-pin-delta.json": {
+      "bytes": 40616,
+      "sha256": "281d96a4e36298f8e6264c2f4dceee702045f88c061de1b936e7f638d62c08dc"
+    },
+    "protected-base-live-pin-independent-review.txt": {
+      "bytes": 5773,
+      "sha256": "d7ae07de6ef700142fb62ac884b1657d0655016f0a8800c15e590798327a21c6"
+    },
+    "protected-base-registry-green.log": {
+      "bytes": 99,
+      "sha256": "ccf88a925a8b51a8fbc92c95d3b79497e7f217849d3ece8e5b4a29b55adaa2ac"
+    },
     "qualified-consumer-live-pins.json": {
       "bytes": 2539,
       "sha256": "72502bf5a6fd86a5ab17cb75bc1cb5bf8c3bdc96c36bc3df361c66e3b512eb0c"
@@ -63,6 +87,10 @@
     "r2-existing-relay-preflight.json": {
       "bytes": 464,
       "sha256": "23f47824c7dfe2b9703c8d8dfd39912349538df67da78c2e1e6989ba3cc6930d"
+    },
+    "red-log-format-receipt.json": {
+      "bytes": 468,
+      "sha256": "a67e92ee00166563db0cedd65bd9e6350c17a9961f97442d62f179839ed9a4b0"
     },
     "registry-consumer-refresh-tests.log": {
       "bytes": 99,
@@ -101,6 +129,6 @@
       "sha256": "dc13f371f889920d0b0bbf9f3ecd7dc096d50aa781fb2f48eacd057ab92c7922"
     }
   },
-  "observed_at_utc": "2026-10-11T22:49:03.120300+00:00",
+  "observed_at_utc": "2026-10-11T22:57:42.026021+00:00",
   "schema": "tiingo_boats_source_evidence_manifest.v1"
 }

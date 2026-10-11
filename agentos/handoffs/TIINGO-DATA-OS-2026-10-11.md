@@ -80,6 +80,21 @@ verified:
   result: '2026-10-11T22:38:54.032836Z: 4,386 nonempty EOD histories / 8,919,835 bars / 4,403 receipts;
     all raw/context/lineage/date/overlap checks pass. Identical-body ticker pairs remain separate receipt
     identities. Report retained; no complete history or PIT claim.'
+- claim: Original wave-four batch settled with 999 retained bodies and one known timeout, then materialization
+    settled.
+  command: Attended original 161-request continuation; audit-final.py plan SHA 8a4f6051; existing python3
+    -m scripts.tiingo_materialize --max-receipts 5500.
+  result: '161/161 continuation success, no failures, 343,787 row hints / 80,194,781 bytes / 368.882s.
+    Combined exact audit: 996 nonempty / three empty / one NOT_FOUND BAFE, 4,564 receipts scanned and
+    999 raw hashes verified. Materializer rc=0; final full archive qualification running.'
+- claim: Protected-base integration preserves accepted source and qualified registry references.
+  command: git merge --no-edit origin/main at 3a92cf50888d5348e3f957846e489a088d8b82e3; integrated affected
+    pytest; existing workflow YAML and closure guards; existing 21-check classification suite after qualified
+    refresh.
+  result: ORT commit cbf2eaae, accepted producer bytes unchanged. 568 integrated passes plus two stale
+    LIVE-pin failures; independent review d7ae07de accepted five actual hashes/counts and three unique
+    unchanged anchor relocations; repaired classification suite 21 passed. 102 workflow files parse /
+    2,363 closures reachable / zero trigger gaps. Hosted current-head gates pending.
 unverified:
 - claim: Full served fundamentals scope.
   what_would_verify: Resolve actual-key AMD ticker/permanent-ID HTTP 400 evaluation/Dow 30/limit discrepancy
@@ -106,8 +121,8 @@ unresolved:
 - 'Current Terminal #955 source 3e8fe8ad required hosted gates are pending; previous copyguard and historical-lock
   failures are repaired without waivers or screenshot restamps.'
 - Wave-four writer ended on technical TimeoutError with 838 retained responses. Full archive proof passed.
-  One active attended 161-request continuation preserves the original plan and combined cap, skipping
-  the timed-out BAFE request.
+  The 161-request continuation settled and materialization passed; final full lineage qualification is
+  running, with no raw writer. BAFE remains absent within the original combined cap.
 - Correct intended browser is already signed in; the earlier login request is obsolete. Actual-key AMD
   fundamentals HTTP 400 remains a separate service diagnosis.
 - Normal BOATS window starts 2026-10-12T00:00:00Z / Sunday 17:00 PDT / 20:00 ET. Closed-window controls

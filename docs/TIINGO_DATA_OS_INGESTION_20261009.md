@@ -33,7 +33,7 @@ historical observations; the prior blocked untracked CEO handoff is not publishe
 | Terminal provenance #945 | DEPLOYED_HEALTHY | Merged d0973ef6e7521f775801401a345792fc7c4cb3e2, existing VPS builder rc=0, source/marker/public identity agree, active Hub/Terminal and responsive production pages |
 | BOATS consumer #955 | ACCEPTED_SOURCE_CI_REPAIR | Existing Hub, full-replacement/capture/generation ordering, source eligibility, API allowlist and generic-route exclusion; 116 Hub/48 focused/13 responsive passes and independent PASS; feature-copy repair passes 554 files / 9,141 tests, type, unchanged guard and six EN/ZH browser cases at 3e8fe8ad; protected current-head CI, landing and release pending |
 | Producer runtime/publication | NOT_ADMITTED | Earlier combined publisher/launchd persistent change was auto-review rejected; ops unchanged. Source-only approval does not clear scheduling/installation/publication effects |
-| Current collection | ATTENDED_WAVE4_CONTINUATION | Original timeout and partial proof preserved. One finite continuation attempts the 161 unattempted requests under the same 1,000 combined cap, skipping BAFE; qualification will follow settlement. No unattended wake or retry queue |
+| Current collection | WAVE4_SETTLED_MATERIALIZED | Original timeout and partial proof preserved. All 161 unattempted requests succeeded: 999 retained responses / one absent BAFE request. Existing materializer settled rc=0; final full archive qualification is running. No raw writer, unattended wake or retry queue |
 
 Safe exact evidence is in `tiingo-evidence/20261011-boats-source/`,
 `tiingo-evidence/20261011-history-wave2/`, `tiingo-evidence/20261011-history-wave3/` and `tiingo-evidence/20261011-history-wave4/`.
@@ -1418,3 +1418,5 @@ still returned HTTP 400 with free/Dow 30/limit terms, while allowed AAPL history
 returned 200. No support message, subscription change or credential switch was made.
 Actual BOATS controls/history remain the prior bounded proof; Q/T/B live-session
 traffic and gap/break/condition retention still need genuine captures.
+
+Protected source integration, 2026-10-11 22:57 UTC: accepted source checkpoint cd4a8109a9c512ff3416dc51791b6d6d9db90c91 merged protected main 3a92cf50888d5348e3f957846e489a088d8b82e3 by ORT at cbf2eaae4fbd2d6f185ef9afb1d5962b838a95b4. Five changed LIVE source receipts and three unchanged stock-library anchors were independently qualified before refresh. Integrated suite: 568 passed / two stale-pin failures, then existing 21-check classification suite passed after exact repair; 102 workflows parse and all 2,363 gated suite closures are reachable. Existing source-vintage CI lane now runs both BOATS display and ext-quote pure tests, removing no assertions. Current-head hosted acceptance remains pending.

@@ -20810,6 +20810,9 @@ jobs:
       - collectors/__init__.py
       - collectors/tiingo_archive.py
       - scripts/tiingo_ingest.py
+      - scripts/build_ext_quotes.py
+      - tests/test_tiingo_boats_display.py
+      - tests/test_build_ext_quotes.py
       - scripts/tiingo_materialize.py
       - scripts/tiingo_vendor_cohort.py
       - requirements/tiingo.txt
@@ -20846,6 +20849,7 @@ jobs:
           tests/test_tiingo_reader.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
+          tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q

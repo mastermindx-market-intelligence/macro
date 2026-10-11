@@ -4388,6 +4388,7 @@ on:
       - "tests/test_tiingo_research_query.py"
       - "tests/test_tiingo_boats_tape.py"
       - "tests/test_tiingo_boats_stream_chain.py"
+      - "tests/test_tiingo_boats_display.py"
       - "lib/dataos/tiingo_boats_tape.py"
       - "scripts/tiingo_research_query.py"
       - "tests/test_tiingo_vendor_cohort.py"
