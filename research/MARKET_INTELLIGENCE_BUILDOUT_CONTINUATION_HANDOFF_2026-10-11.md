@@ -73,7 +73,7 @@ orchestrator outputs `$S/../tasks/<id>.output`; fabric kit
 | MM-B #8807 | `616b1b8703fa` | MERGED, VPS pulled; proof after 10-12 nightly | ORCH-OPS `a5ccb27d864b1f6cb` |
 | MM-E #8812 | `c782664b6361` | PRODUCTION_PROOF (14:42:07Z tick: 2 MB-cap error gone; remaining red = #8748 intake breach) | — |
 | MM-DX #8816 | `3657d0ebc075` | MERGED; activation waits on MM-B proof | ORCH-OPS |
-| MM-DID #8819 | head `a95921b01a93` | CI concluded GREEN 14:46Z → seat merge | seat |
+| MM-DID #8819 | `b8a839236ddd` (squash of `a95921b01a93`) | MERGED 14:50:31Z, 2/2 blobs verified; proof = identity timer 15:30:50Z after VPS pull | ORCH-OPS reads once |
 | MM-DO #8818 | head `d319fde9b192` | DELIVERED, DOPTR review RUNNING | ORCH-OPS, watchers `byrdworsi` + `b8gmgn1xm` |
 | F #7711 | `d1b93722ec41` | MERGED | — |
 | W8 records #8820 | `4a27bedaabe9` | MERGED | — |
@@ -239,7 +239,7 @@ read credential files or shim logs.
 | MM-B | technicals replay after the 10-12 nightly | ORCH-OPS | read the first :53 tick after ~02:0xZ; no hand-start |
 | MM-E | first sentinel tick after the pull | ORCH-OPS (`bjaodhbad`) | accept the tick receipt |
 | MM-DX | W2C activation by update.sh after MM-B proof | ORCH-OPS | read the experience tick receipt |
-| MM-DID | #8819 CI green at a95921b0 | ORCH-OPS (`bp44dlgk8`) → seat | judge vs DEC T1–T3; ready + merge; proof = next hourly run accrues past 08-19 |
+| MM-DID | first identity run after the VPS pulls b8a8392 (15:30:50Z) | ORCH-OPS | accept the journald receipt: typed counts + divergence_count, no KeyError |
 | MM-DO | #8818 DOPTR PASS + CI | ORCH-OPS (`byrdworsi`, `b8gmgn1xm`) → seat | ready + merge at d319fde9; proof = next scheduled run's stage token |
 | main proof | run 38147853042 exit | seat (`bynlnkdgt`) | SUCCESS → freeze clears; FAILURE → diagnose by job name, claim lane first |
 | W8-records-2 | this PR | seat | PR → concluded checks → merge → blob-verify |
@@ -249,7 +249,7 @@ read credential files or shim logs.
 1. #8823 MERGED `d39672a34aaa` (14:48:18Z; 6/6 blobs match origin/main). Notify ORCH-N.
 2. SKYD-IDENTITY PR → judge → merge → ORCH-N P2 (`--check/--install/--arm` + canary after the VPS pull)
    → P3 drop-in only on a live canary with growing rows across two reads ≥10 min apart.
-3. #8818 (DOPTR PASS + CI) and #8819 (CI green) → ready + merge → blob-verify → scheduled-run proofs.
+3. #8819 MERGED `b8a839236ddd` (14:50:31Z; T1–T3 judged on the diff). #8818 (DOPTR PASS + CI) → ready + merge → blob-verify → scheduled-run proofs.
 4. This records PR → merge → blob-verify. Main proof exit → act once.
 5. Post-nightly proofs (B, D-experience) on 10-12; ONE #1202 checkpoint at the W8/W9 boundary;
    memory refresh; Chairman blocker list LAST; `SESSION END: <STATE>`.

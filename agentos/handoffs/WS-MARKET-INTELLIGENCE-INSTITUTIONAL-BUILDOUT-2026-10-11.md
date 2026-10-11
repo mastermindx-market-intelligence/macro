@@ -30,6 +30,8 @@ changed:
   - path: "research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-11.md"
     what: "W8 program file: lane matrix (ORCH-N, ORCH-OPS and their fabric lanes), DECIDED D0–D6 + seat rulings, FACTS, lane recipes, gates by owner, NEXT, Chairman blocker list"
 verified:
+  - claim: "PR #8819 (identity ingest idempotent over captured dates) MERGED 2026-10-11T14:50:31Z as b8a839236ddd; both changed paths blob-identical to origin/main; diff carries DEC T1/T2/T3 tests plus the every-date-diverges repair"
+    command: "gh pr diff 8819; gh pr ready 8819 && gh pr merge 8819 --squash --match-head-commit a95921b0…; git fetch origin; per-path git rev-parse compare"
   - claim: "PR #8823 (alpaca provider hardening) MERGED 2026-10-11T14:48:18Z as d39672a34aaa; all 6 changed paths blob-identical to origin/main"
     command: "gh pr ready 8823 && gh pr merge 8823 --squash --match-head-commit af1b3e10…; git fetch origin; per-path git rev-parse origin/main:<p> vs af1b3e10:<p>"
   - claim: "#8812 PRODUCTION_PROOF: 14:42:07Z sentinel tick no longer reports the 2 MB served-body cap for prophet_us/us_standouts; the remaining exit 1 is the #8748 intake identity breach"
@@ -88,7 +90,6 @@ unverified:
     what_would_verify: "the next SCHEDULED run's journald line for each unit (experience tick after timers re-arm; hourly identity run shows accrual past 2026-08-19 with one upstream_rewrite_after_capture receipt; option-OI run completes or reports stage=<class>)"
 unresolved:
   - "#8818 (D-options, d319fde9b192) DRAFT: DOPTR independent review RUNNING on ubuntu3 (watcher byrdworsi) + CI watcher b8gmgn1xm; seat merges on PASS + concluded checks"
-  - "#8819 (D-identity, a95921b01a93) DRAFT, unarmed: CI re-running under watcher bp44dlgk8; ORCH-OPS returns READY_FOR_SEAT_MERGE at that head; seat judges vs DEC T1–T3 then ready + merge"
   - "SKYD-IDENTITY lane (claude/mi-skyd-identity-rename-20261011, ubuntu3, watcher bjwwbonx8) RUNNING; its PR gates P2 (VPS enable + canary) and then P3 (Terminal rail)"
   - "Main proof ci.yml run 38147853042 at 186dbdce5aad IN FLIGHT (dispatched by a sibling 14:36:11Z; seat watcher bynlnkdgt at 300 s): SUCCESS clears the authority freeze on #8812/#8818/#8819's scripts/** edits; FAILURE is diagnosed by job name, never re-dispatched over"
   - "Option-OI R2 cause class is unknown until #8818's stage token ships and the next scheduled run reports it; 401/403 ⇒ vendor entitlement (EXACT_HUMAN_GATE)"
