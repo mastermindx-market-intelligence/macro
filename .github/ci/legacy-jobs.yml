@@ -1573,6 +1573,7 @@ jobs:
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/industrials_profiles.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/identity.py"
@@ -10499,6 +10500,7 @@ jobs:
       - engine/company_intelligence/health.py
       - engine/company_intelligence/identity.py
       - engine/company_intelligence/issuer_profiles.py
+      - engine/company_intelligence/industrials_profiles.py
       - engine/company_intelligence/pg_envelope.py
       - engine/company_intelligence/pg_profile.py
       - engine/company_intelligence/qa_exchange.py
@@ -17078,6 +17080,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/industrials_profiles.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       # 2026-08-26 widening (PR #6454): #6376 (E3-B AAPL canonical
@@ -18134,6 +18137,7 @@ jobs:
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/economic_observations.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/industrials_profiles.py"
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/views.py"
@@ -18194,6 +18198,7 @@ jobs:
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/economic_observations.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/industrials_profiles.py"
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/views.py"
@@ -21277,6 +21282,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/industrials_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
@@ -22709,6 +22715,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/industrials_profiles.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/qa_exchange.py"
@@ -22869,6 +22876,8 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/industrials_profiles.py"
+      - "tests/test_industrials_issuer_enrollment.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
@@ -22918,7 +22927,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_issuer_enrollment.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py -q
 
   house-law-registry-code:
     if: ${{ false }}
