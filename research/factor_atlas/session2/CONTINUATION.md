@@ -446,3 +446,59 @@ production UI, alert, ranking, sizing, trade, merge or deploy.
 Next: publish this bounded original-branch research source and
 verify exact remote blobs; consume new-head CI; only original
 source/data/model owners can admit real empirical studies.
+
+## Source-shaped minute owner intake bridge — phase after paired OOS
+
+**Active original research branch head before effect:**
+`cb622ddaad4005113285990321373271fb0e8ac7`, PR #8677
+DRAFT/HOLD, not merged/deployed. Current protected Mastermind
+`8d62a8571d2a6ad9da9d50e5e4624de6eecaac4c`,
+compatible 1.0.1, protected skill blobs unchanged.
+
+**Done / independently verified:** S2-P2 source-shape research bridge
+`session2/prototype/intake_bridge.py`, 32 deterministic tests,
+`SOURCE_BRIDGE_PROTOCOL.md` and fabricated witness. It composes
+existing original `source_preflight` + `pressure.Bar` validation +
+`window_pressure.measure_windows` without new provider, reader,
+selector, rights/admission, calendar, factor identity or publisher.
+Metadata complete/claimed hash is NEVER source admission.
+Only `input_class=SYNTHETIC_FIXTURE` runs preview calculations;
+`OWNER_UNVERIFIED` returns NO CALCULATION even at 12/12 complete
+claimed slots. Missing, invalid basis, clock and prior revision
+collision withhold; conservative reader/source nanosecond receipts
+are CEILED to the next full second for native Bar known-at.
+Explicit zero-volume is retained separately. Four-name fabricated
+AAPL/MSFT/NVDA+SPY sample produces synthetic 3030 + 9090 USD
+gross for two static fake factors. NOT market flow measurements.
+
+**Tests and evidence:** TDD missing method RED, 20 core GREEN,
+12 adversarial cases GREEN. The exact existing read-only hosted
+workflow now names TWELVE research suites; **357/357 native local
+Python 3.12 tests passed**. Source/witness/log digests under
+`evidence/native_intake_bridge_tests.json`. The previous accepted
+PR-head focused tests and fences were SUCCESS, full Macro CI
+FAILURE only from unrelated `washout-turn-organ` board quote
+coverage, 320/320 cap and uncovered tier badges. No fix attempted
+to another owner's live-quote surface. The next head must be
+observed separately; no hosted result is yet claimed.
+
+**Hard gate:** source owner Terminal #844 and Macro #8623 still
+DRAFT/unmerged at last verified read. Actual one-minute bar,
+source/reader first-seen, PIT listing/calendar, corporate-action
+and volume basis, exchange/quote conditions and dataset-specific
+rights remain S2-P1 NOT_ADMITTED. The adapter is NOT a real
+market-data ingestion or production reader. All rank/alert/
+size/trade/publish permissions FALSE; no new job, webhook,
+source purchase, deployment, merge, data store or market request.
+
+**DO_NOT_REDO:** four named source files explicitly denied,
+benchmark edit denied, fresh-main/base compare denied, and
+separate S2-P4 read-model code-patch explicitly denied. The
+two uncommitted failing WIP read-model files were not modified
+or added to accepted git, CI or package. They still fail four
+adversarial integrity tests. No account/tool/worker routing
+around the denials occurred. This bridge is independent upstream
+source-normalization, not the same denied calculation.
+**Next:** single original-branch source/evidence commit and
+GitHub immutable readback; consume new-head checks and
+maintain owner-led S2-P1 admission requirement.

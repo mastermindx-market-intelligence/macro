@@ -1,0 +1,44 @@
+{
+  "approved_source_class": "SYNTHETIC_FIXTURE_ONLY",
+  "controlled_preview": {
+    "earliest_owner_known_ceil_utc_s": 1780320661,
+    "factor_refs": [
+      "F_ETF",
+      "F_TECH"
+    ],
+    "gross_proxy": [
+      3030.0,
+      9090.0
+    ],
+    "latest_owner_known_ceil_utc_s": 1780320781,
+    "may_trade": false,
+    "model_input_digest": "14e038ad4503cf46197c72c95f94c353434cbeed4dff51f5f888fad934ca5c63",
+    "observed": 12,
+    "preflight_expected": 12,
+    "stage": "SYNTHETIC_WINDOW_PREVIEW",
+    "status": "NOT_ADMITTED",
+    "window_digest": "13bb1ee0ae70ce2929c229717b51ce1af4db17d04c083cf0d8e4b569acb0f1b5"
+  },
+  "customer_publication_authorized": false,
+  "incumbent_owner_admission_proven": false,
+  "market_pilot_admitted": false,
+  "missing_source_case": {
+    "expected": 12,
+    "missing": 12,
+    "stage": "INCOMPLETE_OR_UNPROVEN_INTAKE",
+    "window_is_null": true
+  },
+  "precision_cutoff_case": {
+    "metadata_complete": true,
+    "stage": "CUTOFF_PRECISION_WITHHELD",
+    "window_is_null": true
+  },
+  "schema": "factor_atlas.intake_bridge_controlled_witness.v1",
+  "source": "FABRICATED_UNVERIFIED_OWNER_SHAPED_METADATA_NOT_MARKET_DATA",
+  "source_rights_proven": false,
+  "unverified_real_class": {
+    "metadata_complete": true,
+    "stage": "OWNER_ADMISSION_REQUIRED",
+    "window_is_null": true
+  }
+}

@@ -2,15 +2,15 @@
   "ci_registration_receipt": "session2/evidence/ci_registration_preflight.json",
   "customer_publication_authorized": false,
   "external_ci_workflow_path": ".github/workflows/factor-atlas-reference.yml",
-  "external_ci_workflow_sha256": "5143b074d944be21615289aaa368e96958aa8c4470b5b2f50d9b9a8f423d3307",
+  "external_ci_workflow_sha256": "fbe64e1220a6955c301b15e64f5b3ebd0c3ca667570cb369cd0667de5f12068a",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 101085,
-      "sha256": "649a7ec80560d500b2e841668e701802675fdfbc0ccc33d3db56d0ec2cb79b6a"
+      "bytes": 105413,
+      "sha256": "ddbbd72304fdff0c31728cf8fa73d214da5c4875fa4401b17e34d948638c8cc9"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 29100,
-      "sha256": "5722a7d309de2b658a66cd7d588468c6c7679984a183413288fd10ec46fda2e6"
+      "bytes": 32179,
+      "sha256": "aca148af30e5c4143908ae886ba4fa250640762bcbeb71e7549f6f31389a795e"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 2197,
@@ -35,6 +35,10 @@
     "session2/READ_CONTRACT_CANDIDATE.md": {
       "bytes": 5761,
       "sha256": "8b7082cabb4b9860b4408d5138d17d84becf5d86c8e154ff20235cae66d49083"
+    },
+    "session2/SOURCE_BRIDGE_PROTOCOL.md": {
+      "bytes": 6137,
+      "sha256": "8f3f90b8ac404a703090504d41ba5916bb1cde99d5ac46f40ce4ac5745be7428"
     },
     "session2/SOURCE_INTAKE_PREFLIGHT.md": {
       "bytes": 9998,
@@ -67,6 +71,10 @@
     "session2/evidence/native_calibration_tests.json": {
       "bytes": 2295,
       "sha256": "03f280221712df2f37b0636644459aec2b8e16fa1d462f0cdb5dede3aab791df"
+    },
+    "session2/evidence/native_intake_bridge_tests.json": {
+      "bytes": 3523,
+      "sha256": "abfc08da7f6cd46b3c1bddac9bfc28dba7e2ed93b38f88d2c7729066f4dd7baa"
     },
     "session2/evidence/native_pressure_oos_tests.json": {
       "bytes": 3673,
@@ -104,6 +112,10 @@
       "bytes": 3415,
       "sha256": "9e3159c097bb4c9cff9eacf9c166368ebaf23a2f7cd3adaf46ffb6954f848e38"
     },
+    "session2/evidence/source_bridge_synthetic_witness.json": {
+      "bytes": 1333,
+      "sha256": "1d1b7c43e1ae71c9fdada525c4e777fd7446de6b15201657003972a669f26928"
+    },
     "session2/evidence/source_intake_witness.json": {
       "bytes": 1099,
       "sha256": "1b660a613f2d203cf222d606615c10d764c7ac959a3fb46ca971dfef8ba48c18"
@@ -115,6 +127,10 @@
     "session2/evidence/window_pipeline.json": {
       "bytes": 1964,
       "sha256": "9234d008af2724849ad70a61cd01327ef93202eb35199d353dd570b43cc5db07"
+    },
+    "session2/prototype/intake_bridge.py": {
+      "bytes": 6423,
+      "sha256": "2c3ff10736696d7ff23c56d0b9effdf42d82b2e662eb513f871ee6a9bb823dff"
     },
     "session2/prototype/mutation_check.py": {
       "bytes": 2387,
@@ -147,6 +163,10 @@
     "session2/prototype/test_disclosed_profile.py": {
       "bytes": 3083,
       "sha256": "cf70779f659d5e4f22abfbbe5687cdbb73cdbc0b83cb1290211f7e99ac8f426b"
+    },
+    "session2/prototype/test_intake_bridge.py": {
+      "bytes": 12632,
+      "sha256": "cd79fe2022169d8282e1ce7a656d2a97c0b3b0e9489ee412d67b5c2a7735540d"
     },
     "session2/prototype/test_pressure.py": {
       "bytes": 15906,
@@ -207,20 +227,21 @@
   },
   "market_pilot_admitted": false,
   "native_calibration_test_receipt": "session2/evidence/native_calibration_tests.json",
+  "native_intake_bridge_receipt": "session2/evidence/native_intake_bridge_tests.json",
   "native_preflight_test_receipt": "session2/evidence/native_source_preflight_tests.json",
   "native_pressure_oos_test_receipt": "session2/evidence/native_pressure_oos_tests.json",
   "native_quote_study_receipt": "session2/evidence/native_quote_study_tests.json",
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_read_contract_test_receipt": "session2/evidence/native_read_contract_tests.json",
-  "native_scoped_tests_passed": 325,
+  "native_scoped_tests_passed": 357,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "c0d3f40e40a44ac6439e7951682694c959970424",
-  "prepared_at_utc": "2026-10-09T20:37:32.206745+00:00",
+  "predecessor_commit": "cb622ddaad4005113285990321373271fb0e8ac7",
+  "prepared_at_utc": "2026-10-11T08:51:44.475986+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 26
+    "numbered_sections": 27
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }
