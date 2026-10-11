@@ -10,13 +10,42 @@
     if (cell.dataset && cell.dataset.sort !== undefined) return cell.dataset.sort;
     return (cell.textContent || '').trim();
   }
-  // parse a number out of "+3.2%", "1,240", "12.5×", "—" → number | null
+  // tokens that mean "no value here" — shared by classification and sorting
+  function isMissing(v) {
+    return v === '' || v === '—' || v === '–' || v === '-' || v === '--' ||
+           v === 'n/a' || v === 'N/A' || v === '…';
+  }
+  // One anchored grammar for a display number: optional comparator (~, ≈, ≥…),
+  // optional sign, optional currency (US$1.2B keeps its scale), mantissa,
+  // optional exponent (data-sort machine keys like 1.2e9), optional scale
+  // suffix (K/M/B/T/bn/mn/tn/万/亿/万亿; bare lowercase m/b/t only with a
+  // currency, so "5m" stays a duration), optional unit suffix (% × bp pt σ…).
+  // Anything else is text — no partial guesses: "0700.HK", "2024-01-05",
+  // "1.2.3", "12abc" all fail here.
+  var NUM_RE = /^([<>≤≥~≈])?([+\-])?(US\$|HK\$|CA\$|C\$|A\$|S\$|\$|¥|€|£)?([+\-])?(\d+(?:\.\d+)?|\.\d+)([eE][+-]?\d+)?\s*(万亿|bn|mn|tn|[KkMBT]|万|亿|[mbt])?\s*(bps|bp|pts|pt|pp|%|×|[xX]|σ|d)?$/;
+  var SCALES = { K: 1e3, k: 1e3, M: 1e6, B: 1e9, T: 1e12,
+                 bn: 1e9, mn: 1e6, tn: 1e12, '万': 1e4, '亿': 1e8, '万亿': 1e12,
+                 m: 1e6, b: 1e9, t: 1e12 };
+  // parse a number out of "≥ US$1.2B", "(12.5%)", "−3.0%", "9,800万" → finite number | null
   function num(s) {
     if (s == null) return null;
-    s = String(s).replace(/−/g, '-');
-    var m = s.replace(/[,%×$\s ]/g, '').replace(/[^0-9.+\-eE]/g, '');
-    if (m === '' || m === '+' || m === '-' || m === '.') return null;
-    var n = parseFloat(m);
+    s = String(s).trim();
+    s = s.replace(/−/g, '-').replace(/[   ]/g, ''); // U+2212 minus; NBSP/narrow/thin spaces
+    s = s.replace(/(\d),(?=\d{3}\b)/g, '$1');       // thousands commas only
+    var acc = /^\((.+)\)$/.exec(s);                 // accounting negative: (12.5%) → -12.5
+    if (acc) {
+      if (/[+\-]/.test(acc[1])) return null;        // inner text must carry no sign of its own
+      var inner = num(acc[1]);
+      return inner === null ? null : -inner;
+    }
+    var m = NUM_RE.exec(s);
+    if (!m) return null;
+    if (m[2] && m[4]) return null;                  // at most one sign, before or after the currency
+    if (!m[3] && (m[7] === 'm' || m[7] === 'b' || m[7] === 't')) return null; // "5m" is not money
+    var n = parseFloat(m[5] + (m[6] || ''));
+    if (!isFinite(n)) return null;
+    if (m[2] === '-' || m[4] === '-') n = -n;
+    if (m[7]) n *= SCALES[m[7]];
     return isFinite(n) ? n : null;
   }
   function headerRow(table) {
@@ -35,7 +64,7 @@
       var c = rows[k].cells[i];
       if (!c) continue;
       var v = txt(c);
-      if (v === '' || v === '—' || v === '-' || v === 'n/a') continue; // blanks ok
+      if (isMissing(v)) continue; // blanks ok
       if (num(v) === null) return false;
       seen++;
     }
@@ -51,9 +80,15 @@
       var va = ca ? txt(ca) : '', vb = cb ? txt(cb) : '';
       if (numeric) {
         var na = num(va), nb = num(vb);
-        if (na === null) na = -Infinity;
-        if (nb === null) nb = -Infinity;
-        return dir * (na - nb);
+        if (na === null && nb === null) return 0; // both missing keep prior order
+        if (na === null) return 1;                // missing sinks to the END in both directions
+        if (nb === null) return -1;
+        return na === nb ? 0 : dir * (na - nb);   // equal keys keep prior order (stable sort)
+      }
+      var ka = isMissing(va), kb = isMissing(vb);
+      if (ka || kb) {
+        if (ka && kb) return 0;
+        return ka ? 1 : -1;                       // missing last in both directions
       }
       return dir * va.localeCompare(vb, undefined, { numeric: true, sensitivity: 'base' });
     });
