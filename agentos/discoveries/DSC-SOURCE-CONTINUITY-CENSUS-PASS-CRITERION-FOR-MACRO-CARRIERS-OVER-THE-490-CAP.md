@@ -16,7 +16,8 @@ claim: >
   REMOTE_COMPLETE_VERIFIED receipt is obtainable for any Macro carrier until the Mastermind #346
   census-envelope series lands or the roster falls to 490 or fewer. The seat's recorded pass
   criterion for a substitute, as posted (#7870 comments 6106134520 section 1 (i)-(v) and
-  6106495383 sections 3 and 5), has five legs, each checkable by command: (1) head identity,
+  6106495383 sections 1 and 2; its section 3 applies leg (5) to #8250), has five legs, each
+  checkable by command: (1) head identity,
   git ls-remote == local HEAD == pulls/N head and the GitHub commit tree == HEAD^{tree};
   (2) ownership, fully paginated pulls/N/files == git diff --name-only <merge-base>..<head>,
   with the count; (3) attribution, an open-PR count above 490 read immediately BEFORE and
@@ -25,11 +26,13 @@ claim: >
   (4) fingerprint, sha256 of the recorded external-effect artifact (the git ls-remote line plus
   the pulls/N head/state/draft read at that head), NOT of the census, which the verifier checks
   for shape only (control_plane/source_continuity.py:26, ^[0-9a-f]{64}$); (5) one substitute
-  per carrier per head, re-recorded at every head move. Two tightenings are the seat's own,
-  written in this record after 6106495383 and NOT on the carrier: under leg (3) also record
-  the run's logical-call and byte totals against the #346 envelope (1,152 logical HTTP calls,
-  128 MiB, 300 s); under leg (4) also post the exact artifact bytes the fingerprint hashes, so
-  a reader other than the poster can recompute it. The acc72f3f run on #7870 does not satisfy
+  per carrier per head, re-recorded at every head move. One tightening is the seat's own,
+  written in this record after 6106495383 and NOT on the carrier: under leg (3) also record the
+  run's logical-call and byte totals against the #346 envelope (1,152 logical HTTP calls, 128
+  MiB, 300 s). Posting the exact artifact bytes the fingerprint hashes, so a reader other than
+  the poster can recompute it, is already on the carrier, not a seat extra: 6106495383 section 2
+  makes the binding "the DECISION's own obligation, checkable by recomputing the sha256 from the
+  artifact quoted there". The acc72f3f run on #7870 does not satisfy
   leg (3); #8250's substitute at 1db9cad1 (#8250 comment 6106395498) satisfies legs (1), (2)
   and (5) and leg (4) by shape only, because the hashed ls-remote line is paraphrased and the
   pulls/8250 read is summarized there.
@@ -93,6 +96,8 @@ The criterion is the seat's recorded request, not a ruling, and this record gate
 DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL: #7870 and #8250 each stand at
 RELEASE_BLOCKED_PENDING_NON_SEAT_RULING on this gate until the Chairman or Sol accepts a
 substitute by cited id, and a head move voids the substitute recorded for the previous head.
-Other Macro carriers are outside that gate set and land under their own owners' gates (78 PRs
-merged to main on 2026-10-11 through 19:01:12Z, read 19:01:15Z; the enumerating command is in
-the 2026-10-11 base-sync-delta-review handoff's verified block).
+Other Macro carriers are outside that gate set and keep merging (82 PRs merged on 2026-10-11
+through 19:06:43Z, every one with base main under both a base=main query filter and a .base.ref
+read, read 19:11:32Z to 19:13:02Z; the enumerating commands are in the 2026-10-11
+base-sync-delta-review handoff's verified block). That they land under their own owners' gates
+is this record's inference from the gate set, not something the enumeration shows.
