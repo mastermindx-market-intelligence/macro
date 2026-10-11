@@ -167,7 +167,7 @@ danger_areas:
   - /Users/chriswong/Documents/Cluade/macro-main/data is read-only for research regeneration; run with COLLECT_LANE unset and hash stores before/after.
   - The served radar.json is sign-in locked; live proof uses the anonymous page HTML, never a credential.
   - The lineage lane edits CI-authority paths; its merged head is authority-frozen until a main-descendant ci.yml run is green.
-prs: [8750, 8767]
+prs: [8750, 8767, 8802]
 discoveries:
   - DSC:A-CLAUDE-SESSION-CANNOT-CHECK-OUT-A-SOL-PR-BRANCH
   - DSC:THE-DESKTOP-WORKTREE-ISOLATION-HOOK-REFUSES-HEREDOCS-GIT-SUBSTRINGS-AND-COMPLEX-JQ
@@ -186,7 +186,7 @@ The Chairman's lineage requirement is implemented as a separate read-only descri
 (engine/leader_lineage.py, schema leader_lineage.v1) with its own suite, frozen SPEC_V1
 and integrated consumer specification, registered in the leader-radar CI job. It is
 descriptive, display-tier, AUTHORITY all false, and is not represented as 8750
-functionality or as live. Its PR is opened from branch claude/ssd-rs-leader-lineage-306ae39d82ed23df (number added to the prs list once known); merge state must be read from GitHub, never from this file.
+functionality or as live. Its PR is opened from branch claude/ssd-rs-leader-lineage-306ae39d82ed23df as PR 8802; merge state must be read from GitHub, never from this file.
 
 The four preserved boundaries (refused UI write, unknown audit, source/CI protection,
 refused handoff publication) were not replayed, split, rerouted or delegated.
