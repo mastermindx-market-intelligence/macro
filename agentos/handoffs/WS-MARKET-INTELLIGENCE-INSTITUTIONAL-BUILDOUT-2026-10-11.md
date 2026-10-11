@@ -403,3 +403,56 @@ blob-verify). Chairman/owner-only list (LAST; press-feeds restart REMOVED): Mass
 entitlement (money); MCP OAuth (mastermind-executive, linear-server, figma); direct Benzinga contract only
 for body/image display; Sol acceptance of the #7711 prereg v2 charter; F2–F5 / R / ITP / F-c downstream
 owners; twitterapi.io press_stream 403 (marketing-lane owner / billing, observed).
+
+## Checkpoint W9-6 (2026-10-11 21:15Z)
+
+Records W9-5 = PR #8863 MERGED (squash 68c3638d057b). Carrier read 21:15Z: no counterpart edge on #1202 after
+the W9-5 comment.
+ORCH-D `ad812dc60c846701f` DELIVERED PR #8864 `fix(deploy): W2C owner-replay refusal freezes its lane instead
+of aborting the deploy` (branch claude/mi-update-sh-w2c-lane-freeze-20261011, head e04e880ddc01, one commit;
+files app/deploy/update.sh, tests/test_market_memory_experience_deploy.py, tests/test_deploy_update_self_heal.py).
+Judged by artifact in the records worktree at e04e880ddc01 (not by its report): `bash -n` clean; 289 passed
+across the two deploy test files (74 s); the two NEW tests
+(`test_owner_replay_refusal_freezes_w2c_lane_and_still_restarts_ticker_news`,
+`test_w2c_lane_freeze_brackets_only_the_w2c_dependent_region`) FAIL with origin/main's update.sh swapped in
+(2 failed, 24 deselected) — discriminating; main had not touched the three files since merge-base bffa6392;
+hunks (L448+, L1493+) are disjoint from Sol's #7992 (L15/L368) and #6943 — neither touched. Mechanism: a
+`W2C_LANE_FREEZE` block defines `freeze_w2c_lane` (sets W2C_LANE_FROZEN=1, DEPLOY_EXIT_STATUS=1, first reason
+wins); all 15 W2C refusal `exit 1` sites in W2C_RUNTIME_ATTESTATION / W2C_DEFERRED_REPLAY /
+W1B5_TIMER_FINALIZATION now freeze; the W2C-dependent region (production-record writer, option-OI canary,
+API-fence transaction, reciprocal receipt, timer finalization) is skipped when frozen; the
+`W2C_LANE_FROZEN_CONTINUE` block disarms the option-OI timer eagerly (abort with exit 1 only if THAT disarm
+fails) and the lane-independent tail (press feeds, ticker news, …) runs; the file ends `exit
+"${DEPLOY_EXIT_STATUS:-0}"` so a frozen run still exits 1 and the EXIT trap's second disarm is a latched
+no-op. CI run 38171959825: run 38171959825 SUCCESS at head e04e880d (21 SUCCESS / 4 SKIPPED / 1 FAILURE = ci-authority/codex/merge-queue-pilot, excluded by name); ci-gate contract-delta clear. MERGED by hand `--match-head-commit e04e880ddc01d38d6faf1253578e980f28bc42af`
+at 2026-10-11T20:50:48Z (squash eb3df04e64fd8f4d74cf3f2f3bb1045c5c84ef35); bare `git fetch origin` then per-path blob compare of the three files against
+origin/main: identical. PRODUCTION_PROOF 2026-10-11T21:13:16Z: PRODUCTION_PROOF — VPS read 2026-10-11T21:13:16Z (/opt/macro head c1f29a2feb0a): /usr/local/bin/macro-update carries W2C_LANE_FROZEN_CONTINUE (count 2, cmp equal to app/deploy/update.sh); last 200 updater log lines: 29 'refusing W2C activation before owner replay completion' lines, 7 'W2C lane frozen — … continuing lane-independent deploy steps' lines, 7 terminal 'deploy finished with status 1 (frozen lanes: w2c)' lines (one per */3 tick since the merge), and the biocatalyst-runtime step is logged AFTER the frozen line on every run (lane-independent region now executes); macro-api was restarted by the deploy at 20:51:13Z (MainPID 3160877) — the daemon-restart block the old early exit used to skip; macro-ticker-news MainPID 3111697 (19:24:41Z) and marketing-press-feeds MainPID 3129081 (19:56:24Z) untouched; macro-market-memory-options.timer inactive after each frozen run BY DESIGN — the W9-5 expectation 'options timer no longer disarmed every 3 min' is RETRACTED by name; the W2C technicals owner replay still fails by design until the 10-12 nightly.
+RETRACTED by name (§7.5): W9-4/W9-5's expectation "`macro-market-memory-options.timer` is no longer disarmed
+every 3 min" (continuation §7 item 1, WS next_action). The design keeps the fail-closed disarm once per
+frozen run (eager in CONTINUE + the latched trap), so the timer IS still disarmed each tick until the W2C
+owner replay completes at the 10-12 nightly; that is by design, not a defect, and the live proof is the two
+new `macro-update:` lines plus the final `deploy finished with status 1 (frozen lanes: w2c)` line, not the
+timer state. The W9-5 standing rule "until it lands a merged PR touching a source service needs a seat
+restart under the updater lock" is RETIRED by this merge.
+Package N ACCEPTANCE-grade extras: (2) DONE — VPS read 20:22:27Z (58 min after the 19:24:41Z writer restart):
+health.json state=live provider=alpaca source=benzinga connect_attempts=1 disconnects=0 catchups_failed=0
+gap_unresolved=False last_stream_event_at=19:45:06.89Z last_successful_catchup=20:22:14.92Z (advancing);
+qbus.sqlite3 news_deliveries=4 (2 since restart), 4 real Benzinga items FDS 18:45Z / BLK 19:15Z / GS 19:30Z /
+UNH 19:45Z (SEC:US-XNYS-*; publish→receive 0.2–1.3 s, stream path); cursor alpaca-rest=1791750165; the writer
+prints stats only at exit (run_qbus_news.py:615) so journal silence is expected. GAP narrowed: REST catch-up
+runs and succeeds every cycle; a catch-up-SOURCED item needs a stream gap to exercise (none has occurred).
+(1) BLOCKED on this seat — claude-in-chrome `tabs_context_mcp` (20:24Z) and `navigate` (20:25Z) both failed
+"PreToolUse hook did not respond before its timeout"; two no-delta cycles, no third (L.4). Server-side instead:
+anonymous GET /api/ticker-news/AAPL and /changes → 401 (require_site_full_user, app/ticker_news.py:82);
+macro-api journal since the 19:05:03Z rail flip = 5 × 401, all seat probes; zero signed-in production reads yet
+(Saturday); panel mounts only when loggedIn && TICKER_NEWS_RAIL==="1" && railTab==="news" (charting-app
+TerminalShell.tsx:5781, app/terminal/page.tsx:74). Recipe for any seat/operator with a browser: sign in at
+app.mastermind-x.com/terminal → select UNH → News rail tab → panel `data-testid="ticker-news-panel"` shows
+≥1 headline + live dot. GAP carried: signed-in rail render unobserved in production.
+Open next: post-nightly proofs on 10-12 (B #8807 first :53 technicals tick; D-experience #8816 W2C activation
+— the first /opt/macro tick after a matching manifest should print no refusal and no frozen line; #8828
+roster; data-health.yml). Chairman/owner-only list (LAST): Massive options-snapshot entitlement (money); MCP
+OAuth (mastermind-executive, linear-server, figma); direct Benzinga contract only for body/image display; Sol
+acceptance of the #7711 prereg v2 charter; F2–F5 / R / ITP / F-c downstream owners; twitterapi.io press_stream
+403 (marketing-lane owner / billing, observed); signed-in Terminal rail browser check (any browser-capable
+seat or the operator, minutes).
