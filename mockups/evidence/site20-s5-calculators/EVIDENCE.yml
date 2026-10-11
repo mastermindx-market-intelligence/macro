@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/calculators/compounding.html.j2
+  - templates/calculators/dollar_cost_averaging.html.j2
+  - site/tools/calculators/compounding.html
+  - site/tools/calculators/dollar-cost-averaging.html
+  - site/assets/css/449e4bdf.css
+  - site/assets/css/7c678f79.css
+manifest: mockups/evidence/site20-s5-calculators/manifest.json
