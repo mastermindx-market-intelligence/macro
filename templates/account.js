@@ -1175,7 +1175,7 @@
   '.mmacc-msg{font-size:11.5px;line-height:1.4;max-height:0;overflow:hidden;transition:max-height .2s ease;margin:0}' +
   '.mmacc-msg.show{max-height:60px;margin:0 0 8px}' +
   '.mmacc-msg.ok{color:var(--ink-ok, var(--ok,#3da564))}' +
-  '.mmacc-msg.bad{color:var(--ink-act, var(--act,#e06464))}' +
+  '.mmacc-msg.bad{color:var(--ink-act, var(--act))}' +
   '.mmacc-signin-title{font-size:15px;font-weight:800;color:var(--text,var(--ink))}' +
   '.mmacc-signin-sub{font-size:12px;color:var(--muted,var(--ink-3));line-height:1.5;margin:5px 0 12px}' +
   '.mmacc-loading{padding:26px;text-align:center;color:var(--muted,var(--ink-3))}' +

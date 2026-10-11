@@ -1,6 +1,6 @@
 {
- "label": "ref2",
- "account_js_sha256": "77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586",
+ "label": "ref3",
+ "account_js_sha256": "6c14fe90aab48eb5f2a54284922e55e027411488646c52c36865ad97016d56ca",
  "rows": [
   {
    "theme": "dark",
@@ -314,10 +314,10 @@
     247
    ],
    "orb": [
-    1256,
-    831,
+    1255,
+    830,
     1294,
-    869
+    870
    ],
    "target_hit": true,
    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",

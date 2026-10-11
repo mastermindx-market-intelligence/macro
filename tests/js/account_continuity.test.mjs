@@ -804,7 +804,7 @@ test('S1-03 red: on the mobile sheet the unavailable retry is start-aligned, cle
 });
 
 test('S1-04 red: error copy uses the severity token, which does not swap in ZH', () => {
-  assert.match(SRC, /\.mmacc-msg\.bad\{color:var\(--ink-act, var\(--act,#e06464\)\)\}/);
+  assert.match(SRC, /\.mmacc-msg\.bad\{color:var\(--ink-act, var\(--act\)\)\}/);
   assert.doesNotMatch(SRC, /\.mmacc-msg\.bad\{color:var\(--ink-down/);
 });
 
