@@ -17,7 +17,7 @@ index only — it duplicates no architecture.
 | `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` | Fable seat resumption file for the pullback operation: wave plan + exit gates, lane matrix, DECIDED / FACTS / OPEN / NEXT, denial register. Updated at wave boundaries. |
 | `GREY_DEER_FABLE_HANDOFF_2026-10-11.md` | Sol's end-to-end handoff packet — PR #8772 (DRAFT, not on main as of 2026-10-11; the seat consumed the same packet from the Chairman-delivered zip): frontier table, collision pairs, pinned revisions. |
 | `PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md` | O1/T02 versioned eligible-input manifest v1.0.0: per-input producer, rights, vintage, basis and disposition; evidence classes; frozen qualified sample; open determinations G1–G6 routed to owners. An owner projection, not a source store. |
-| `incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md` | O7/T03 publication-health note: QLedger GH001 headroom (routed to the QLedger owner), #8042 throughput is not size proof, and the heartbeat stall-marker repair with its production replay. The held 2026-10-08 note lives in PR #8648 and is not written here. |
+| `incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md` | O7/T03 publication-health note: the QLedger GH001 block on the US nightly collection (routed to the QLedger owner), #8042 throughput is not size proof, and the heartbeat stall-marker repair with its production replay. The held 2026-10-08 note lives in PR #8648 and is not written here. |
 
 AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 `agentos/decisions/DEC-RISK-*.md` / `DEC-PROPHET-RANK-*` / `DEC-REPAIR-*` / `DEC-PORTFOLIO-*` /

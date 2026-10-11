@@ -377,7 +377,8 @@ next_action: >
   research/grey_deer/incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md:
   the heartbeat stall marker now clears only on a strictly newer asof
   (scripts/check_ledger_advance.py + 5 regression tests); QLedger GH001 has
-  336,226 B of headroom on claims.jsonl and is routed to the QLedger owner
+  blocked the US nightly collection push since 10-10 (no US collection on main
+  after the one labelled 2026-10-09) and is routed to the QLedger owner
   (PR 8042 is throughput, not size proof). T03 closes when the first
   trading-day daily run after merge writes data/ci/ledger_heartbeat_state.json
   under the repaired rule. Then O8/T22: the preregistration that freezes the

@@ -1,4 +1,4 @@
-# Publication health: QLedger GH001 headroom and the heartbeat stall-marker repair (O7/T03)
+# Publication health: the QLedger GH001 block and the heartbeat stall-marker repair (O7/T03)
 
 **Program:** `WS:GREY-DEER-RISK-INTELLIGENCE` / MAS-258 · **Operation:** `risk-radar-pullback-20261009`
 · **Lane:** O7/T03 · **Seat:** Fable principal, session `da1ad7ad` · **Measured:** 2026-10-11 against
@@ -18,7 +18,7 @@ the existing heartbeat owner" (its lines 27–45). The continuation handoff's ea
 
 | Issue | What it is | Owner | This seat's act |
 |---|---|---|---|
-| QLedger GH001 file size | `data/qledger/claims.jsonl` approaches GitHub's 100 MiB per-file limit; one push was rejected on 10-08 | QLedger + nightly source owners (#8042 → #8669 lineage; `research/QLEDGER_CONTINUITY_SOURCE_PLAN_2026-10-09.md`) | measured and routed; no repair |
+| QLedger GH001 file size | GitHub's 100 MiB per-file limit has rejected the US nightly collection push since 10-10, so no US collection has landed on main since the one labelled 2026-10-09; smaller lanes still push `data/qledger/claims.jsonl` with 336,226 B to spare | QLedger + nightly source owners (#8042 → #8669 lineage; `research/QLEDGER_CONTINUITY_SOURCE_PLAN_2026-10-09.md`) | measured and routed; no repair |
 | #8042 batching | bounds QLedger US nightly scan cost | #8042 owner | routed; not size proof |
 | Heartbeat `stalled_since` erasure | a same-day rerun wiped an open stall marker | `scripts/check_ledger_advance.py` (CSP-W6) | repaired in this PR with regression tests |
 
@@ -26,7 +26,7 @@ The held note already says the heartbeat incident is independent of QLedger GH00
 the three separate on purpose: a throughput patch is not file-size proof, and a green nightly is not
 publication proof.
 
-## 2. QLedger GH001: current headroom
+## 2. QLedger GH001: the US nightly tail is already blocked
 
 GitHub rejects any single file above 104,857,600 B. `claims.jsonl` blob sizes on main:
 
@@ -38,17 +38,34 @@ GitHub rejects any single file above 104,857,600 B. `claims.jsonl` blob sizes on
 | `f71defd249e4` | 2026-10-10 22:46 | 104,468,672 |
 | `8b58a9f9fbff` | 2026-10-11 05:59 | 104,521,374 (current at `565d883c2657`) |
 
-Headroom now: **336,226 B**.
+Main's headroom is **336,226 B**. That number governs only the lanes that still push.
 
-- Ordinary growth is about 62 KB per day (+117,484 B from `f3d3210cb5b5` to `8b58a9f9fbff`, about
-  45.5 h). At that pace the limit is about five days away.
-- A single burst day already exceeded the remaining headroom: +1,016,105 B from 10-08 to 10-09.
-  So one heavy night can trip GH001 on any of those days.
-- The 10-08 failure (run 37716729584, head `a7220102c116`) was not durable. The file landed on main
-  on 10-09, 10-10 and 10-11. Recurrence is a days-scale certainty, not a resolved incident.
+- **The US nightly has not published since 10-09.** The newest US collection on main is
+  `data: daily collection 2026-10-09` (`4e76cc3c34e2` and `cdab77c46a9e`, committed 10-09 04:46Z and
+  05:07Z). The collection labelled 2026-10-10, for the Friday 10-09 session, is absent. Saturday-labelled
+  collections landed on 09-19, 09-26 and 10-03, so this is not a weekend pattern.
+- **The owner reports the cause.** On #8042 (comment 2026-10-11T01:51Z) the QLedger owner reports that
+  both 10-10 collect_tail pushes were rejected by GH001 with `claims.jsonl` at 120.75 MB and
+  122.73 MB. In the same units main's copy is 99.68 MB, so the rejected file was about 21 MB larger.
+  Why the US increment is that large is the owner's question; this seat does not diagnose it.
+- **The growth on main since 10-09 came from other lanes.** All 12 `claims.jsonl` commits on main
+  after the last US collection are asia collection, asia dashboards, stock-briefs, whitehouse or
+  regime-update commits. Those lanes add about
+  62 KB per day (+117,484 B from `f3d3210cb5b5` to `8b58a9f9fbff`, about 45.5 h). At that pace they
+  reach the limit in about five days as well.
+- **A rejected collection push loses the whole commit, not just the ledger.** A US collection commit
+  carries about 4,300 to 9,900 files across yahoo, baskets, stocks, etf_holdings, fred, cboe and
+  others. `data/fred` and `data/stocks` have no commits on main since 10-09. Some yahoo prices still
+  landed through `engine: regime update 2026-10-10` (`679d1657fa9f`, 741 files).
+- **The 10-08 rejection looked transient and was not.** The first recorded rejection was run
+  37716729584 on 10-08 (head `a7220102c116`). The collection labelled 2026-10-09 landed after it,
+  adding 1,016,105 B. The 10-10 attempts were then over the limit. This corrects the W0 handoff's
+  reading that the failure "was not durable": the `claims.jsonl` commits it cited came from the lanes
+  above, not from the US nightly.
 - `daily.yml` runs `scripts/backfill_qledger_us` with `set +e` and a non-fatal warning (line ~1797),
   then stages `data/` wholesale. A green `daily` run therefore says nothing about whether
-  `claims.jsonl` published.
+  `claims.jsonl` published. Runs 38017284947 (started 10-10) and 38103820170 (started 10-11)
+  concluded `success`, and no US collection landed after either.
 - Second watch item, same owner: `data/qledger/grades.jsonl` is 76,734,696 B on main.
 
 **Routed, not repaired.** The size partition belongs to the QLedger owner. The repair must keep
