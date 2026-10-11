@@ -933,6 +933,8 @@ class DelayedChunkResponse(TracedStore):
     def __init__(self, inner, *, readback="absent"):
         super().__init__(inner)
         self.readback = readback
+        self.conflicting_write = None
+        self.failed_read_keys = []
 
     def put_bytes_strict_conditional(self, key, data, **options):
         if "/commits/" in key:
@@ -941,13 +943,14 @@ class DelayedChunkResponse(TracedStore):
         self.pending = (key, data, options.copy())
         if self.readback == "conflicting":
             corrupt = bytes([data[0] ^ 1]) + data[1:]
-            assert self.inner.put_bytes_strict_conditional(key, corrupt, **options) is True
+            self.conflicting_write = self.inner.put_bytes_strict_conditional(key, corrupt, **options)
         # The real payload is never committed; the attempt is unresolved.
         raise TimeoutError("private-host-path must never escape")
 
     def get_bytes_strict_bounded(self, key, **options):
         if (self.readback == "unreadable" and self.pending is not None
                 and key == self.pending[0]):
+            self.failed_read_keys.append(key)
             raise RuntimeError("private-host-path must never escape")
         return super().get_bytes_strict_bounded(key, **options)
 
@@ -968,6 +971,8 @@ def test_delayed_chunk_timeout_with_absent_readback_is_component_write_effect_un
     assert result["reference"] is None and result["expected_reference"] is None
     assert result["inspection"] is None and result["review_provenance"] is None
     assert result["effect_state"] == "COMPONENT_WRITE_EFFECT_UNKNOWN"
+    assert result["integrity_status"] == "NOT_ESTABLISHED"
+    assert result["replay_status"] == "NOT_PERFORMED"
     assert "private-host-path" not in json.dumps(result)
     assert not list((root / subject.PREFIX / "commits").rglob("*.json"))
     # Pending chunk was recorded; the readback is truly missing.
@@ -997,17 +1002,31 @@ def test_delayed_chunk_timeout_with_conflicting_or_unreadable_readback_is_compon
     assert result["reference"] is None and result["expected_reference"] is None
     assert result["inspection"] is None and result["review_provenance"] is None
     assert result["effect_state"] == "COMPONENT_WRITE_EFFECT_UNKNOWN"
+    assert result["integrity_status"] == "NOT_ESTABLISHED"
+    assert result["replay_status"] == "NOT_PERFORMED"
     assert "private-host-path" not in json.dumps(result)
     assert not list((root / subject.PREFIX / "commits").rglob("*.json"))
     assert store.pending is not None
-    # Conflicting readback writes same-length different bytes; unreadable would
-    # surface as STORE_READ_FAILED on a subsequent read attempt.
     pending_key, pending_data, _ = store.pending
     if readback == "conflicting":
+        assert store.conflicting_write is True
         observed = normal.inner.get_bytes_strict_bounded(
             pending_key, expected_byte_length=len(pending_data), max_byte_length=16384,
         )
         assert observed is not None and len(observed) == len(pending_data) and observed != pending_data
+        # Original create-only completion cannot replace the observed collision.
+        assert _complete_pending(store, store.pending) is False
+        later = subject.append_relationship_observation(normal, **supplied)
+        assert later["status"] == "REFUSED"
+        assert later["refusal"]["code"] == "EXISTING_OBJECT_CORRUPT"
+    else:
+        assert store.failed_read_keys == [pending_key]
+        # Read failure is distinct from an absent readable object; it cannot
+        # establish component integrity or authorize another modifying attempt.
+        with pytest.raises(RuntimeError, match="private-host-path"):
+            store.get_bytes_strict_bounded(
+                pending_key, expected_byte_length=len(pending_data), max_byte_length=16384,
+            )
     assert_boundaries(result)
 
 
@@ -1017,13 +1036,19 @@ def test_delayed_chunk_matching_lost_ack_still_commits(tmp_path):
     normal, _ = local_store(tmp_path)
 
     class LostAckChunk(TracedStore):
+        def __init__(self, inner):
+            super().__init__(inner)
+            self.completed_chunks = []
+
         def put_bytes_strict_conditional(self, key, data, **options):
             if "/commits/" in key:
                 return super().put_bytes_strict_conditional(key, data, **options)
-            assert super().put_bytes_strict_conditional(key, data, **options) is True
+            self.completed_chunks.append(super().put_bytes_strict_conditional(key, data, **options))
             raise TimeoutError("private-host-path must never escape")
 
-    result = subject.append_relationship_observation(LostAckChunk(normal.inner), **bundle())
+    store = LostAckChunk(normal.inner)
+    result = subject.append_relationship_observation(store, **bundle())
+    assert store.completed_chunks and all(value is True for value in store.completed_chunks)
     assert result["status"] == "COMMITTED"
     assert subject.read_relationship_observation(normal, result["reference"])["status"] == "VERIFIED"
 
@@ -1039,5 +1064,53 @@ def test_chunk_put_returning_false_without_exception_remains_refused(tmp_path):
     failed = subject.append_relationship_observation(store, **supplied)
     assert failed["status"] == "REFUSED"
     assert failed["reference"] is None and failed["expected_reference"] is None
-    assert failed["refusal"]["code"] != "COMPONENT_EFFECT_UNKNOWN"
+    assert failed["refusal"]["code"] == "COMPONENT_NOT_AVAILABLE_AT_READBACK"
+    assert failed["effect_state"] == "NO_MANIFEST_ATTEMPT_BY_THIS_CALL"
     assert not list((root / subject.PREFIX / "commits").rglob("*.json"))
+
+
+@pytest.mark.parametrize("readback,code", [
+    ("raises", "STORE_READ_FAILED"),
+    ("wrong_type", "STORE_PROTOCOL_INVALID"),
+    ("wrong_length", "STORE_LENGTH_MISMATCH"),
+])
+def test_confirmed_chunk_conflict_with_failed_readback_is_not_unknown_write(tmp_path, readback, code):
+    normal, root = local_store(tmp_path)
+
+    class ConfirmedConflict(TracedStore):
+        blocked_key = None
+        competing_write = None
+        own_write = None
+        failed_reads = 0
+
+        def put_bytes_strict_conditional(self, key, data, **options):
+            # Another writer creates the same chunk after the absence probe.
+            self.competing_write = self.inner.put_bytes_strict_conditional(key, data, **options)
+            self.own_write = super().put_bytes_strict_conditional(key, data, **options)
+            self.blocked_key = key
+            return self.own_write
+
+        def get_bytes_strict_bounded(self, key, **options):
+            if key == self.blocked_key:
+                self.failed_reads += 1
+                if readback == "raises":
+                    raise RuntimeError("private-host-path must never escape")
+                if readback == "wrong_type":
+                    return "not bytes"
+                return b""
+            return super().get_bytes_strict_bounded(key, **options)
+
+    store = ConfirmedConflict(normal.inner)
+    result = subject.append_relationship_observation(store, **bundle())
+    # The real LocalStore, not the injected read failure, proves no own write.
+    assert store.competing_write is True and store.own_write is False
+    assert store.failed_reads == 1
+    assert result["status"] == "REFUSED"
+    assert result["refusal"]["code"] == code
+    assert result["effect_state"] == "NO_MANIFEST_ATTEMPT_BY_THIS_CALL"
+    assert result["reference"] is None and result["expected_reference"] is None
+    assert result["integrity_status"] == "NOT_ESTABLISHED"
+    assert result["replay_status"] == "NOT_PERFORMED"
+    assert not list((root / subject.PREFIX / "commits").rglob("*.json"))
+    assert "private-host-path" not in json.dumps(result)
+    assert_boundaries(result)

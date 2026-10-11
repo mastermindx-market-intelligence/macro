@@ -672,6 +672,10 @@ def _create_only(store: Any, key: str, raw: bytes, *, final: bool = False) -> No
     try:
         observed = _exact_read(store, key, len(raw))
     except _Refusal:
+        if not final and not write_raised:
+            # A completed component response does not become an unknown write
+            # because verification fails. Preserve the actual read refusal.
+            raise
         raise _Refusal("MANIFEST_EFFECT_UNKNOWN" if final else "COMPONENT_EFFECT_UNKNOWN",
                        effect_unknown=True) from None
     if write_raised and observed != raw:
