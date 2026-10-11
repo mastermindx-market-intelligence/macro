@@ -6196,7 +6196,7 @@
     if (open(trigger, details, row) === true) e.preventDefault();
   });
   // Existing owner events. The detail never decides entitlement or fetches a missing row.
-  /* Hydration replaces the board it just validated, and an auth/tier turn can take
+  /* Hydration replaces the current board, and an auth/tier turn can take
      entitlement away with it: both end any journey. A language turn does not — the
      action carries its own EN/ZH pair — but the open detail still returns to its row. */
   document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); }, true);
