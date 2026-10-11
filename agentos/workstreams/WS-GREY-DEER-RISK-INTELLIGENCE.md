@@ -348,15 +348,15 @@ waves:
     depends_on: [GD-UI-RADAR-1]
   - id: GD-PB-W0
     title: Pullback operation - Fable seat W0 reconcile and admit (records)
-    status: in_progress
+    status: done
     depends_on: [GD-3]
   - id: GD-PB-T02
     title: Pullback source-clock-basis-rights qualification (O1/T02)
-    status: todo
+    status: done
     depends_on: [GD-PB-W0]
   - id: GD-PB-T03
     title: Publication-health note and GH001/heartbeat owner routing (O7/T01+T03)
-    status: todo
+    status: in_progress
     depends_on: [GD-PB-W0]
   - id: GD-PB-T22
     title: Observed-move preregistration, frozen before outcome inspection (O8/T22)
@@ -371,11 +371,20 @@ waves:
     status: todo
     depends_on: [GD-PB-W2, GD-PB-T03]
 next_action: >
-  Merge the Fable seat W0 records PR (branch
-  claude/grey-deer-fable-w0-records-20261011), then write and merge
-  research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md (O1/T02)
-  before any observed-move primitive is coded. Operation
-  risk-radar-pullback-20261009 under carrier key
+  W0 (PR 8785) and O1/T02 (PR 8833, squash 565d883c2657; manifest v1.0.0 in
+  research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md) are
+  merged. O7/T03 is recorded in
+  research/grey_deer/incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md:
+  the heartbeat stall marker now clears only on a strictly newer asof
+  (scripts/check_ledger_advance.py + 5 regression tests); QLedger GH001 has
+  blocked the US nightly collection push since 10-10 (no US collection on main
+  after the one labelled 2026-10-09) and is routed to the QLedger owner
+  (PR 8042 is throughput, not size proof). T03 closes when the first
+  trading-day daily run after merge writes data/ci/ledger_heartbeat_state.json
+  under the repaired rule. Then O8/T22: the preregistration that freezes the
+  manifest's qualified sample with sha256 before any outcome inspection.
+  The held 2026-10-08 incident note belongs to PR 8648 and is never written here.
+  Operation risk-radar-pullback-20261009 under carrier key
   grey-deer-fable-orchestration-20261003-001 (ACK Slack 1791707775.860299);
   incumbents PR 8721 (live writer) and PR 8188 (HOLD-FOR-SOL) are read-only.
   Resumption file: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md;
