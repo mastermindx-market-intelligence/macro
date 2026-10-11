@@ -40,8 +40,15 @@
   var _loadGen = 0, _wgen = 0, _soAllBusy = false;
   var _prefPending = {}, _prefOwner = '', _prefFlight = null, _prefState = {};
   var _alertQueued = {}, _alertInflight = {};
+  // theme.js applies the signed-in account's saved theme/lang on SIGNED_IN (setTheme/setLang
+  // inside the 'mdx-auth' dispatch). Those are not user edits, so they must not echo a save.
+  var _authApplying = false;
   function _acctKey(a) { return (a && a.authenticated) ? 'u:' + String(a.email || '').toLowerCase() : ''; }
-  function _saveOk(res) { return !!(res && res.ok && res.data && res.data.ok === true); }
+  // The server answers ok:true when only the email_prefs mirror stored a lang
+  // (metadata:false). /api/account reads user_metadata back, so that is not a saved pref.
+  function _saveOk(res) {
+    return !!(res && res.ok && res.data && res.data.ok === true && res.data.metadata !== false);
+  }
   function _dropPendingWrites() {
     _wgen++; _prefPending = {}; _prefOwner = ''; _prefFlight = null;
     clearTimeout(_prefTimer); _prefTimer = null;
@@ -356,7 +363,7 @@
   // sent single-flight; each field is marked queued -> sent -> acked|failed on the root.
   function _setPrefState(key, s) { _prefState[key] = s; if (_root) _root.setAttribute('data-pref-' + key, s); }
   function persistPref(key, val) {
-    if (_hydrating || !state.acct || !state.acct.authenticated) return;
+    if (_hydrating || _authApplying || !state.acct || !state.acct.authenticated) return;
     var owner = _acctKey(state.acct);
     if (_prefOwner !== owner) { _prefPending = {}; _prefOwner = owner; }
     _prefPending[key] = val; _setPrefState(key, 'queued');
@@ -989,6 +996,17 @@
     document.head.appendChild(st);
   }
   function wirePrefSync() {
+    // window is the target of 'mdx-auth', so this capture listener runs before every bubble
+    // listener there, theme.js's server-pref apply included, whatever the load order. The
+    // apply is synchronous inside the dispatch; a microtask lifts the fence after it.
+    if (window.addEventListener) {
+      window.addEventListener('mdx-auth', function (e) {
+        var d = e && e.detail;
+        if (!(d && d.event === 'SIGNED_IN' && d.user)) return;
+        _authApplying = true;
+        Promise.resolve().then(function () { _authApplying = false; });
+      }, true);
+    }
     document.addEventListener('themechange', function (e) { persistPref('theme', e.detail || curTheme()); });
     document.addEventListener('langchange', function (e) {
       persistPref('lang', e.detail || lang());
@@ -1157,10 +1175,11 @@
   '.mmacc-msg{font-size:11.5px;line-height:1.4;max-height:0;overflow:hidden;transition:max-height .2s ease;margin:0}' +
   '.mmacc-msg.show{max-height:60px;margin:0 0 8px}' +
   '.mmacc-msg.ok{color:var(--ink-ok, var(--ok,#3da564))}' +
-  '.mmacc-msg.bad{color:var(--ink-down, var(--down,#e06464))}' +
+  '.mmacc-msg.bad{color:var(--ink-act, var(--act,#e06464))}' +
   '.mmacc-signin-title{font-size:15px;font-weight:800;color:var(--text,var(--ink))}' +
   '.mmacc-signin-sub{font-size:12px;color:var(--muted,var(--ink-3));line-height:1.5;margin:5px 0 12px}' +
   '.mmacc-loading{padding:26px;text-align:center;color:var(--muted,var(--ink-3))}' +
+  '@media (max-width:560px){.mmacc-group[data-acct-state="unavailable"] .mmacc-btnrow{justify-content:flex-start}}' +
   '@media (max-width:560px){.mmacc{top:auto;bottom:0;left:0;right:0;width:100%;max-width:none;max-height:88vh;border-radius:18px 18px 0 0;transform-origin:bottom center;transform:translateY(16px)}.mmacc.open{transform:none}.mmacc-scrim.open{background:color-mix(in srgb,var(--bg,#0f1115) 52%,transparent)}}' +
   '@media (prefers-reduced-motion:reduce){.mmacc{transition:opacity .15s ease,visibility 0s linear .15s;transform:none}.mmacc.open{transform:none;transition:opacity .15s ease}.mmacc-field{transition:none}}';
 

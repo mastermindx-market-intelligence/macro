@@ -399,6 +399,21 @@ export function makeEnv(opts = {}) {
     Event: class { constructor(type, init = {}) { Object.assign(this, makeEvent(type, init)); } },
   };
   win.window = win; win.self = win; win.globalThis = win;
+  win._ls = [];
+  win.addEventListener = (type, fn, o) => addListener(win, type, fn, o);
+  win.removeEventListener = (type, fn, o) => removeListener(win, type, fn, o);
+  // window is the event target: capture listeners first, then bubble (DOM at-target order).
+  win.dispatchEvent = (ev) => { ev.target = ev.target || win; callListeners(win, ev, 'capture'); callListeners(win, ev, 'bubble'); return !ev.defaultPrevented; };
+  // theme.js registers its SIGNED_IN server-pref apply before account.js loads.
+  if (opts.serverPrefsOnSignIn) {
+    win.addEventListener('mdx-auth', (e) => {
+      const d = e && e.detail;
+      if (!(d && d.event === 'SIGNED_IN' && d.user)) return;
+      const m = d.user.user_metadata || {};
+      if (m.theme && m.theme !== doc.documentElement.getAttribute('data-theme')) win.setTheme(m.theme);
+      if (m.lang && m.lang !== doc.documentElement.getAttribute('data-lang')) win.setLang(m.lang);
+    });
+  }
   win.setTheme = (t) => { doc.documentElement.setAttribute('data-theme', t); doc.dispatchEvent(makeEvent('themechange', { detail: t })); };
   win.setLang = (l) => { doc.documentElement.setAttribute('data-lang', l); doc.dispatchEvent(makeEvent('langchange', { detail: l })); };
 
@@ -436,6 +451,11 @@ export function makeEnv(opts = {}) {
     },
     fail(call) { assert.ok(call && !call.done, 'fail(): no pending request'); call.done = true; call.reject(new TypeError('Failed to fetch')); },
     authEvent(evt, user) { auth.user = user; for (const cb of auth.cbs.slice()) cb(user, evt); },
+    emitAuth(evt, user) {
+      auth.user = user;
+      win.dispatchEvent(makeEvent('mdx-auth', { detail: { user, event: evt } }));
+      for (const cb of auth.cbs.slice()) cb(user, evt);
+    },
     panel() { return doc.querySelector('.mmacc'); },
     panelText() { const p = doc.querySelector('.mmacc'); return p ? p.textContent : ''; },
     q(sel) { return doc.querySelector(sel); },
@@ -728,6 +748,64 @@ test('S1-01 positive: a language change re-renders the open panel in ZH', async 
   env.win.setLang('zh'); await env.settle();
   assert.ok(env.panelText().includes('你的时区'), 'panel did not re-render in ZH');
   assert.ok(env.panelText().includes(ACCT_A.email));
+});
+
+test('S1-01 red: a theme+lang save stored only in the email mirror is failed, not acked', async () => {
+  const env = makeEnv();
+  await openSignedIn(env);
+  env.win.setTheme('light');
+  env.win.setLang('zh');
+  await env.advance(1000);
+  const posts = env.posts(PREFS);
+  assert.equal(posts.length, 1);
+  assert.deepEqual(posts[0].body, { theme: 'light', lang: 'zh' });
+  // app/account_prefs.py save_prefs: user_metadata write failed, email_prefs.lang mirror took it
+  env.respond(posts[0], 200, { ok: true, prefs: { theme: 'light', lang: 'zh' }, metadata: false, email_prefs: true });
+  await env.settle();
+  assert.equal(prefState(env, 'theme'), 'failed', 'theme acked although the account record did not store it');
+  assert.equal(prefState(env, 'lang'), 'failed', 'lang acked although /api/account will not read it back');
+});
+
+test('S1-01 positive: a save the account record took is acked', async () => {
+  const env = makeEnv();
+  await openSignedIn(env);
+  env.win.setTheme('light');
+  await env.advance(1000);
+  env.respond(env.posts(PREFS)[0], 200, { ok: true, prefs: { theme: 'light' }, metadata: true, email_prefs: false });
+  await env.settle();
+  assert.equal(prefState(env, 'theme'), 'acked');
+});
+
+test('S1-01 red: theme.js applying saved prefs on a same-account SIGNED_IN does not echo a save', async () => {
+  const env = makeEnv({ serverPrefsOnSignIn: true });
+  await openSignedIn(env);
+  env.emitAuth('SIGNED_IN', { id: 'user-a-fictional', email: ACCT_A.email, user_metadata: { theme: 'light', lang: 'zh' } });
+  await env.settle();
+  assert.equal(env.doc.documentElement.getAttribute('data-theme'), 'light', 'server theme not applied');
+  assert.equal(env.doc.documentElement.getAttribute('data-lang'), 'zh', 'server lang not applied');
+  await env.advance(1000);
+  assert.equal(env.posts(PREFS).length, 0, 'sign-in pref apply echoed a save');
+});
+
+test('S1-01 positive: a user edit after the sign-in pref apply still saves', async () => {
+  const env = makeEnv({ serverPrefsOnSignIn: true });
+  await openSignedIn(env);
+  env.emitAuth('SIGNED_IN', { id: 'user-a-fictional', email: ACCT_A.email, user_metadata: { theme: 'light' } });
+  await env.settle();
+  env.win.setTheme('dark');
+  await env.advance(1000);
+  const posts = env.posts(PREFS);
+  assert.equal(posts.length, 1, 'the fence swallowed a real edit');
+  assert.deepEqual(posts[0].body, { theme: 'dark' });
+});
+
+test('S1-03 red: on the mobile sheet the unavailable retry is start-aligned, clear of the chat launcher', () => {
+  assert.match(SRC, /@media \(max-width:560px\)\{\.mmacc-group\[data-acct-state="unavailable"\] \.mmacc-btnrow\{justify-content:flex-start\}\}/);
+});
+
+test('S1-04 red: error copy uses the severity token, which does not swap in ZH', () => {
+  assert.match(SRC, /\.mmacc-msg\.bad\{color:var\(--ink-act, var\(--act,#e06464\)\)\}/);
+  assert.doesNotMatch(SRC, /\.mmacc-msg\.bad\{color:var\(--ink-down/);
 });
 
 // ================================== S1-02 (notification-preference callbacks) ==
