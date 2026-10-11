@@ -1,0 +1,28 @@
+{
+  "all_107_research_files_preserved": true,
+  "all_71_owner_inputs_preserved": true,
+  "all_other_upstream_jobs_and_top_fields_preserved": true,
+  "candidate_before": "42174563149254d2399e23e101baafd8b06f9b1e",
+  "finished_at": "2026-10-09T13:30:01.832963+00:00",
+  "git_push_performed": false,
+  "head_after": "1a1f4a2db62afd5d943a86a391e104f9dad560a1",
+  "hooks_policy_and_verification_not_overridden": true,
+  "merge_exit_code": 0,
+  "merge_head_cleared": true,
+  "merge_summary_disabled_only": true,
+  "no_ignored_paths": true,
+  "no_index_lock": true,
+  "owner_job_preserved": true,
+  "parents": [
+    "1a1f4a2db62afd5d943a86a391e104f9dad560a1",
+    "42174563149254d2399e23e101baafd8b06f9b1e",
+    "3bb1ee47939d9caa1db10a4e764365d3a2ee5b77"
+  ],
+  "preflight_sha256": "7f444d65183974f4c130c8cc939036a53952319b8452243d6e780bb375473b9b",
+  "schema": "economic_network.normal_current_main_refresh/v1",
+  "started_at": "2026-10-09T13:30:00.980425+00:00",
+  "status": "",
+  "stderr": "",
+  "stdout": "Auto-merging .github/ci/legacy-jobs.yml\nMerge made by the 'ort' strategy.\n",
+  "upstream": "3bb1ee47939d9caa1db10a4e764365d3a2ee5b77"
+}

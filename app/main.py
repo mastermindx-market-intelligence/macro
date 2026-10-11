@@ -2367,6 +2367,10 @@ app.include_router(biocatalyst_router)
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
 
+# B03 reads the existing uncapped observation input only after site_full auth.
+from app.prophet_observations import router as prophet_observations_router  # noqa: E402
+app.include_router(prophet_observations_router)
+
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not
 # calculate financing terms, capacity, runway, or probability in the API tier.

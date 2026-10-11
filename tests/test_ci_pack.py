@@ -4659,6 +4659,13 @@ CURATED_EXCLUSIVE = {
     # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
     # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
     "dataos-web-workspace",
+    # 2026-10-11 #8805: the Information-to-Price receipt suites (SRC-A1, PIT
+    # conformance, R4 V2 admission, EVAL-1 partition clock, EVAL-1 challenger
+    # identity) leave unrun-factor-research, whose opaque engine/** and
+    # collectors/** fallback smeared them onto templates/index.html and pushed
+    # that probe to 5,802 (main) / 5,805 (this head) against its 5,800 ceiling.
+    # Register the reviewed 18-path owner; closure audits and ceilings stay fixed.
+    "information-to-price-eval-receipts",
 }
 
 
@@ -4826,8 +4833,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_801),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 135, 5_827),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_602),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5518,6 +5525,44 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     raise again on evidence. The named follow-up is the #7870 release-head
     merge, which re-measures this probe and records either a curation of
     the three carrier jobs or a second raise on evidence.
+
+    2026-10-11 (#8805, EVAL-1 partition clock receipt): the fifth
+    Information-to-Price receipt suite registered in unrun-factor-research
+    took templates/index.html from 5,802 (already over the ceiling; main run
+    38139442230 failed this test) to 5,805. The five ITP steps now live in the
+    exclusive information-to-price-eval-receipts job with their measured
+    closure, so the probe reads 5,793 (head) against 5,805 before
+    the move. No ceiling moves; no suite, registration, assertion or selector
+    is removed or weakened.
+
+    2026-10-11 (#7870, second base-sync: origin/main c50af4eb0421 merged
+    into the carrier at 36e2064d5639). Summing each manifest's declared
+    weights over the merged selection: main alone 5,796 on
+    templates/index.html and 5,571 on scripts/build_free_content.py (under
+    its 5,800 / 5,600; the #8805 entry above measured 5,793 at its own
+    head), the carrier alone 5,801 and 5,591 (equal to its measured values,
+    so the merged selection is the carrier's: 135 and 133 jobs, no job
+    enters or leaves any probe), merged 5,827 and 5,602, measured on the
+    merged tree. scripts/run_ci_pack.py is identical on both sides, so the
+    weights are comparable. Main's +26 since 3ab976f5 is leader-radar-unit
+    +15, prophet-lab +9, dataos-identity-seams +3, collector-registry +2,
+    washout-turn-organ +2, billing-emails +1 and unrun-factor-research -6
+    (the #8805 curation); the carrier's +31 is the same signal-contract +2,
+    tier-gate +8 and unrun-intl-libraries +21 as the #7870 entry above.
+    Each side alone is under its bound; the breach again arises only from
+    summing two green sides. Per the rule that entry recorded, this is a
+    second raise on evidence to the exact merged measurements with no
+    padding: templates/index.html WEIGHT 5,801 -> 5,827 and
+    scripts/build_free_content.py WEIGHT 5,600 -> 5,602 (the first move of
+    that ceiling). engine/prophet/plan_book.py reads 5,562 under 5,600 and
+    stays; all three job ceilings and the 10-pack bound stay (packs are
+    10 / 10 / 10). No suite, registration, assertion, selector or declared
+    weight is reduced to fit. Both raises on this carrier remain recorded by
+    the seat and owed to the CI-contract owner's acceptance. Headroom is
+    again zero on both raised probes, so the #7870 release-head merge still
+    owes the curation-or-raise decision for the three carrier jobs; the
+    #8805 shape (move the added suites into an exclusive job with their
+    measured closure) is the curation candidate.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
