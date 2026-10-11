@@ -1,17 +1,13 @@
 {
-  "cash": 0.0,
+  "cash": 0.5,
   "crash": false,
   "eligible": [
     "cn_banks",
-    "cn_coal",
-    "cn_pharma_cxo",
-    "cn_semis"
+    "cn_coal"
   ],
   "held": [
     "cn_banks",
-    "cn_pharma_cxo",
-    "cn_coal",
-    "cn_semis"
+    "cn_coal"
   ],
   "leader": "cn_banks",
   "names": {

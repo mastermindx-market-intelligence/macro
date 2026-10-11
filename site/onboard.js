@@ -287,6 +287,7 @@
 
     // step 4 — billing
     billTitle:    ["Add your card", "添加银行卡"],
+    ecbSourceNotice: ["ECB deposit-rate data shown in International is also available free from the <a href='https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV' target='_blank' rel='noopener'>European Central Bank</a>.", "国际市场页面中的欧洲央行存款利率数据也可在<a href='https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV' target='_blank' rel='noopener'>欧洲央行网站</a>免费获取。"],
     billSub:      ["Your 7-day trial starts now. Cancel any time before it ends and you pay nothing.", "7 天试用现在开始。在结束前随时取消，分文不收。"],
     billSubNoTrial:["Your plan starts as soon as you confirm. Cancel any time from your account.", "确认后方案立即生效。可随时在账户中取消。"],
     billPerMo:    ["/mo", "/月"],
@@ -2196,7 +2197,9 @@
     var note = T("p", "obm-up-note", trialing ? "upConfirmTrial" : "upConfirmProrate");
     var goBtn = T("button", "obm-btn", "upConfirmGo", { type: "button" });
     var msg = h("div", "obm-err obm-up-msg"); msg.style.display = "none";
-    confirm.appendChild(note); confirm.appendChild(goBtn); confirm.appendChild(msg);
+    confirm.appendChild(note);
+    confirm.appendChild(T("p", "obm-up-note", "ecbSourceNotice"));
+    confirm.appendChild(goBtn); confirm.appendChild(msg);
     card.appendChild(confirm);
 
     card.addEventListener("click", function (e) {
@@ -2335,6 +2338,7 @@
     root.appendChild(T("p", "obm-sub", planHasTrial(S.plan) ? "billSub" : "billSubNoTrial"));
     if (S.mode === "upgrade") root.appendChild(upgradeRail("billing"));
     root.appendChild(orderCard());
+    root.appendChild(T("p", "obm-caption", "ecbSourceNotice"));
     var host = h("div", "", { "data-obm-billhost": "" });
     root.appendChild(host);
     footNav({ back: true, onBack: backFromBilling, dots: S.mode !== "upgrade" });

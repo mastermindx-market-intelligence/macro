@@ -4,6 +4,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -486,3 +487,100 @@ def test_t16_unknown_and_forbidden_keys_refused_on_every_tool():
             assert mcp_env["structuredContent"] == expected, (tool, extra)
             assert mcp_env["isError"] is True
             assert spy.calls == 0, (tool, extra)
+
+
+# Hostile canonical probed on this base: one FOUND passage, start_char 677,
+# match_start_char 1521, end_char 1576. Decomposed e + U+0301 is written with
+# an escape so the source cannot be NFC-folded into a single code point.
+HOST = "x\U0001F600y e\u0301t \uff21\uff22\uff23 stra\u00dfe \ufb01nal\tcol\tB\r\nline "
+FILL = "lorem ipsum dolor " * 80
+UNICODE_CANONICAL = "Head " + HOST + FILL + HOST + "pre zephyrine post " + HOST + "tail"
+
+
+def _assert_hostile_offsets(canonical, result, stage):
+    """Pin char, byte, match and hash offsets for one evidence-result stage."""
+    assert result["ok"] is True, stage
+    assert result["evidence_state"] == "FOUND", stage
+    passages = result["passages"]
+    assert passages, stage
+    canonical_utf8 = canonical.encode("utf-8")
+    canonical_sha = hashlib.sha256(canonical_utf8).hexdigest()
+    zephyrine_at = canonical.index("zephyrine")
+    for index, p in enumerate(passages):
+        where = f"{stage} passage[{index}]"
+        assert canonical[p["start_char"]:p["end_char"]] == p["text"], f"A1-char-slice {where}"
+        assert canonical_utf8[p["start_byte"]:p["end_byte"]] == p["text"].encode("utf-8"), (
+            f"A2-byte-slice {where}"
+        )
+        assert 0 <= p["start_char"] < p["end_char"] <= len(canonical), f"A3-char-bounds {where}"
+        assert 0 <= p["start_byte"] < p["end_byte"] <= len(canonical_utf8), f"A4-byte-bounds {where}"
+        assert (
+            canonical[p["match_start_char"]:p["match_end_char"]] == p["match_text"]
+            and p["start_char"] <= p["match_start_char"] < p["match_end_char"] <= p["end_char"]
+        ), f"A5-match-slice {where}"
+        assert p["match_start_char"] == zephyrine_at and p["match_text"] == "zephyrine", (
+            f"A6-match-anchor {where}"
+        )
+        assert p["extracted_text_sha256"] == canonical_sha, f"A7-extracted-hash {where}"
+        assert p["passage_text_sha256"] == hashlib.sha256(p["text"].encode("utf-8")).hexdigest(), (
+            f"A8-passage-hash {where}"
+        )
+        assert (
+            "\U0001F600" in p["text"]
+            and "e\u0301" in p["text"]
+            and "\r\n" in p["text"]
+            and canonical.index("\U0001F600") < p["start_char"]
+        ), f"A9-hostile-coverage {where}"
+        assert p["source_pdf_sha256"] == PDF_SHA, f"source_pdf_sha256 {where}"
+
+
+def test_t20_evidence_offsets_survive_json_roundtrip_through_both_adapters_under_hostile_unicode(
+    tmp_path,
+):
+    canonical = UNICODE_CANONICAL
+    assert "\U0001F600" in canonical, "precondition non-BMP present"
+    assert len(canonical.encode("utf-16-le")) // 2 != len(canonical), "precondition utf-16 length differs"
+    assert len(canonical.encode("utf-8")) != len(canonical), "precondition utf-8 length differs"
+    assert unicodedata.normalize("NFC", canonical) != canonical, "precondition not NFC"
+    assert "\t" in canonical and "\r\n" in canonical, "precondition tab and CRLF"
+    assert "\u00df" in canonical or "\ufb01" in canonical, "precondition casefold expansion"
+    assert canonical.count("zephyrine") == 1, "precondition single zephyrine"
+    canonical_sha_before = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    record = _extracted("alpha-report", text=UNICODE_CANONICAL)
+    svc = _service(
+        tmp_path,
+        items=_fresh_items(),
+        extracted={"alpha-report": record},
+        digest=PDF_SHA,
+        preview=["alpha-report"],
+    )
+    brain, mcp = _adapters(svc)
+    ctx = _ctx("pro")
+    args = {"report_id": "alpha-report", "query": "zephyrine", "max_passages": 3}
+    brain_env = brain.call("research_find_evidence", args, server_context=ctx)
+    mcp_env = mcp.call_tool("research_find_evidence", args, server_context=ctx)
+    brain_result = brain_env["result"]
+    mcp_structured = mcp_env["structuredContent"]
+    after_brain_ascii = json.loads(json.dumps(brain_result, ensure_ascii=True))
+    after_brain_utf8 = json.loads(json.dumps(brain_result, ensure_ascii=False))
+    after_mcp_wire = json.loads(mcp_env["content"][0]["text"])
+    assert brain_result == mcp_structured, "before/brain == before/mcp"
+    assert after_brain_ascii == brain_result, "after/brain-json-ascii == before/brain"
+    assert after_brain_utf8 == brain_result, "after/brain-json-utf8 == before/brain"
+    assert after_mcp_wire == mcp_structured, "after/mcp-wire == before/mcp"
+
+    stages = (
+        ("before/brain", brain_result),
+        ("before/mcp", mcp_structured),
+        ("after/brain-json-ascii", after_brain_ascii),
+        ("after/brain-json-utf8", after_brain_utf8),
+        ("after/mcp-wire", after_mcp_wire),
+    )
+    for stage, result in stages:
+        _assert_hostile_offsets(canonical, result, stage)
+
+    assert hashlib.sha256(UNICODE_CANONICAL.encode("utf-8")).hexdigest() == canonical_sha_before, (
+        "A10-canonical-unchanged"
+    )
+    assert record["text"] == UNICODE_CANONICAL, "A10-canonical-unchanged extracted text"

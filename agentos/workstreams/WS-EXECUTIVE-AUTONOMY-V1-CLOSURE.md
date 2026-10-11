@@ -68,124 +68,146 @@ waves:
       reproducibility gaps and one unproven root git-archive/safe.directory finding are recorded in
       the program file for the host owner.
   - id: P3
-    title: Canonical worker execution — #811 immutable-commission repair, attempt-bound transport, two governed workers
+    title: Two Personal-Pro realms qualified; governed multi-worker admission and execution remain downstream
     status: todo
     depends_on: [P1]
     wait:
       kind: external_action
-      review_after: 2026-10-06
+      review_after: 2026-10-10
       condition: >
-        HELD_BY_CHAIRMAN_RULING — Mastermind #1143 issuecomment-5976964871 (2026-10-04T05:33Z)
-        holds multi-worker concurrency and full Autonomy V1 until the parenting-loop canary is
-        proven. Lifts when the #1143 owner re-sequences #811 or the hold is withdrawn on the carrier.
+        Installed release is 326c8469a21d7f50fc9ecb1848196bf1c6e66685. KRIS KE /
+        chatgpt2 / codex-pro-02 and Y7 Elevate Retail / chatgpt3 / codex-pro-03 are
+        Personal-Pro READY after their first enrollment and first readiness tests.
+        Pro02 passed at 2026-10-09T23:58:40Z, sealed receipt SHA256
+        ccd7753afd6ebdd2940705061f5e1588507e9805fcebf1d700c95822d2cd59b5;
+        Pro03 passed at 2026-10-10T00:01:14Z, receipt SHA256
+        7c61909be339ab8d8cd9e6ff3239f96f7c0e482146aa8977f2aceeb6edd63ed9.
+        Both bindings expire at the Chairman-approved 2026-10-10T23:30:00Z.
+        ModernLuxe / ChatGPT1 / pro01 remains ENROLLED_NOT_READY with retained failure.
+        Legacy company-worker identity refusal remains unresolved; its prior readiness
+        expired at 2026-10-09T09:35:11Z. AVAILABLE is not company-worker READY.
+        The two Personal-Pro receipts do not establish company readiness, Capacity
+        admission or governed multi-worker execution, and do not clear prior failures.
     next_action: >
-      Parked under the ruling: the principal commissions no #811 repair lane; at the 2026-10-04T06:30Z
-      custody tripwire it records custody state only. The 7-step repair spec stays in Mastermind #811
-      issuecomment-5976714641 for the incumbent writer (mastermindx-2). #1145 merges on its own gates
-      outside the train. The second governed worker realm (codex-pro-01..03 unproven;
-      CF2-H0/CF2-P0/CF2-I) belongs to WS:EXECUTIVE-CAPACITY-FABRIC and needs human
-      realm-authentication ceremonies.
+      Existing Capacity owners consume the two independently read-back Personal-Pro
+      identity/canary/metadata/expiry receipts through their dedicated-worker policy;
+      preserve separate company-workspace, H0 preparation and CF2 admission gates.
+      Existing failure-disposition owners reconcile legacy and Pro01 evidence on their
+      original carriers before any permitted new effect. No enrollment/MFA/readiness
+      test replay, automatic expiry extension, credential copying, company-auth Pro
+      substitution or raw worker start. Qualified P3 preparation remains independent
+      of P4 and P5; consume lawful Capacity admission before final two-worker execution.
+      Governed multi-worker execution and company readiness remain unproven.
   - id: P4
-    title: Arm the CEO ingress lawfully under the separation law
+    title: Prove lawful CEO ingress and full-autonomy coexistence at installed runtime
     status: todo
-    depends_on: [P3]
+    depends_on: [P1]
     wait:
       kind: external_action
-      review_after: 2026-10-06
+      review_after: 2026-10-10
       condition: >
-        HELD_BY_CHAIRMAN_RULING — Mastermind #1143 issuecomment-5976964871 (2026-10-04T05:33Z):
-        "Current priority is not to expand Session Bridge or Autonomy V1"; full Autonomy V1 is held
-        until the parenting-loop canary (ChatGPT parent → one exact already-running child → governed
-        CONTINUE → correlated RESULT → same parent) is proven. The 2026-10-04 coexistence ruling
-        request (options a/b/c on Slack 1791083562.416539 and #1143) is superseded while the hold
-        stands and re-opens when it lifts. UPDATE 2026-10-04T09:10Z: the host owner armed the
-        CEO-submit sink on accepted a2646f45 (receipt ceo-submit-state-v1.json: CEO_SUBMIT_ARMED,
-        transaction autonomy-f236038098b1, digest 4c27e71c…; coo_autonomy, COO operator-harness and
-        worker-harness all false) — the lawful separation-law state, verified read-only by the seat
-        (Mastermind #1143 issuecomment-5978400215). The arm half of P4 is closed by its owner; root
-        admission for the acceptance operation stays held by the ruling. UPDATE 2026-10-04T22:06Z:
-        after the #1191 successor install the host owner migrated the config and armed CEO-submit
-        canonically on installed 5b244a2b (transaction autonomy-582e4c15d334; receipt schema
-        mastermind.executive_ceo_submit_receipt/v1 nests the flags under `projection`), seat-verified
-        read-only; the a2646f45 arm was not replayed.
+        Historical source mutual exclusion is superseded by accepted #1283. #1286 and
+        #1298 are merged; exact 326c8469a21d7f50fc9ecb1848196bf1c6e66685 is installed.
+        Control, Codex Worker, C1, A2 and MCP were restored RUNNING at the retained
+        2026-10-09T17:29:47Z install checkpoint; current 2026-10-10T00:03:08Z readback
+        confirms no intentional outage. Canonical disarm/interlock recovery and core/
+        readside restoration completed once at 23:46Z; current status UNARMED/refusal
+        null/service_state DEGRADED is not full acceptance. CEO-ingress app and
+        privileged-readiness arms are true; CEO-submit, COO autonomy/operator harness,
+        worker operator harness, dialogue and terminal-return execution arms remain
+        false. Full 326c acceptance is NOT_STARTED; last full accepted host is
+        7d82b9adb839d54e4ab25378ca333e498dd83fcc. Acceptance-lane PICKUP is not START.
     next_action: >
-      Never seat-arm or seat-disarm; read the host receipts only. When the hold lifts, re-open the coexistence ruling on the carrier;
-      DSC:CEO-SUBMIT-SINK-AND-ARMED-HARNESS-ARE-MUTUALLY-EXCLUSIVE-ON-MASTER stays binding; never
-      seat-author the widening; a PARTIAL rehearsal never records AUTONOMY_V1_PROVEN_LIVE.
+      Only the unstarted 326c host-acceptance orchestration/recovery/execution lane was
+      released to and picked up by receiving chat 01a1230a-abcd-7ef3-bf23-d7bda2b564c0,
+      under original root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311 (#1143/6091328703).
+      No active acceptance execution is observed. Receiver retains that lane pending
+      lawful authoritative company-worker failure disposition, exact permitted operation/
+      access, private baseline/carry/config and independent Gate B release; existing
+      protected-read/root-health denials remain final, with no alternate principal.
+      Then use the existing exact 326c descriptor for one admitted stop/acceptance/
+      restore phase with health readback. Original native parent retains broader
+      production/integration/final adjudication and the later coupled COO/worker full-arm
+      transaction and CEO-submit coexistence gate. No credential, source-writer, STARTed
+      operation, Runtime Job/Attempt or browser lane transferred. Do not replay completed
+      install, disarm/restore, C1/A2 rebind or MCP publication, hand-edit flags or infer
+      Runtime admission here. P4 does not wait for final two-worker proof.
   - id: P5
-    title: Live acceptance operation (17 steps) on one bounded Chairman Control Room UI slice
+    title: Real original-parent Autonomy V1 production acceptance
     status: todo
     depends_on: [P4]
     wait:
       kind: external_action
-      review_after: 2026-10-06
+      review_after: 2026-10-10
       condition: >
-        Held by the same Chairman convergence ruling as P4. XH chain state (Mastermind #1143
-        issuecomment-5978404256, 5991567681): XH-1 DONE — #1191 merged 2026-10-04T20:59Z as master
-        5b244a2b with the three convergence blockers closed; XH-2 DONE — #1241 merged as 28be2ce2;
-        XH-3 DONE — release 5b244a2b installed by the incumbent release owner (host acceptance PASS,
-        issuecomment-5984877127) and credential-free A2 host preparation reconciled
-        (A2_DISABLE_PREPARED, transaction autonomy-634882dbc6fa; issuecomment-5985262783). Sol
-        lifecycle lane SOURCE MERGED 2026-10-05T09:42Z as Mastermind #1257 (master 1df1367f; code
-        75/effect_unknown only after an attempted modifying launchctl verb; Sol APPROVE 5412288374)
-        together with #1250 Control-UID pre-arm quiescence (master 877b1e7f); installed generation
-        5b244a2b is now behind master on ops/executive_os, so the host owner's install/qualify of a
-        generation at or after 877b1e7f is owed before activation. UPDATE 2026-10-06: master moved to d8c302b8 (#1225 OS consumer, accepts V3 1.4.0/1.5.0; merged 05:39Z) and 7c12c394 (#1251 V3 1.5.0 reconcile_ceo_request; merged ~06:34Z after the one-file server.py union predicted by the seat pre-check #1251 issuecomment-6009775212), so installed 5b244a2b is now also behind on the MCP entry/server; the owed install is a generation at or after 7c12c394 or the #1219 merge SHA. UPDATE 2026-10-06 23:30Z: #1219 MERGED 22:46:47Z as 760f51b5 (MastermindX1 exact-head APPROVE 5435142290 citing C3 issuecomment-6025565788); protected master 2d590c51 (#1071). A Chairman-assigned release/install owner (Mastermind #1143 issuecomment-6027192883) holds the install until the open #1220 findings close (#1220 issuecomment-6027163987); packet-01 structural preflight at 2d590c51 PASS with two human controls pending (cutover authorization; device-auth revalidation deadline 30-60 min ahead, issuecomment-6027198246); packet 04 source-qualified, live pilot held (installed 5b244a2b / 1.4.0, client 7 tools, worker LaunchDaemon absent, issuecomment-6027202762); packet 02 held until the 1.5.0 / 12-tool proof (issuecomment-6026742046, -6026773008); Python runtime seal repaired without reprovisioning (issuecomment-6026597374). STILL BLOCKED at the HUMAN
-        Slack-admin ceremony (Sol fresh read 2026-10-05T09:16Z: no Mastermind Relay bot,
-        #agent-dispatch 17 members without it, M2 agent-relay token/json/plist absent, launchd relay
-        absent 113): app A0BUDHZ137A carries an inactive connections:write app-level token and no
-        bot identity; DEC:A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN ruled that receipt
-        criterion. UPDATE 2026-10-07 00:34Z: Mastermind #1265 merged as 6a85e0d6. By Chairman intent, A2 now
-        reuses the existing Mastermind Executive Relay app, and DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST
-        supersedes the dedicated-app criterion. The host owner installs a release at or after 6a85e0d6 first.
-        Then it rebinds C1 to that generation with #784 rebind-release; the live C1 runs its own 4c148709
-        generation, and install.sh never rebinds it (#1143 issuecomment-6028474958; amended C3 note
-        issuecomment-6028181298). Then the Slack admin adds channels:history to the existing app and
-        reinstalls it. Then C1 verify. The Chairman confirmed the A0BUDHZ137A cleanup done (token revoked,
-        Socket Mode off, two scopes; release owner 6027192883 edit 00:52Z). Then: host operator runs enroll-shared --expected-bot-user-id
-        U0BT71H4FQE --enable-w3c on the native host; it reads the enrolled C1 credential locally, so no
-        token is typed → verify → start-agent-relay → target re-census (no summon) → one parenting
-        canary on an EXISTING queued acceptance root (JOB-003 or JOB-013; never a new Job, never
-        JOB-002 — Sol issuecomment-5991883687) → only then session_summon/delegation expansion.
-        Seat role per Sol issuecomment-5991567681: C3 integration/acceptance only. ChatGPT product
-        gate: Business cannot refresh a published app in place, so a fresh custom MCP app is
-        recreated and republished on the existing tunnel/OAuth resource with the then-installed tool
-        inventory (installed V3 1.4.0 = 10 spec tools today, 11 published with the host reply-read; protected master a6d40ff6 carries #1251 → V3 1.5.0 with 11 spec tools plus the host-configured session_reply_read from executive_mcp_entry, i.e. 12 published actions expected after the next install per the writer census v3-1.5-tool-census.json sha256 d7c5395e… (Mastermind #1143 issuecomment-6012064580); the catalog refresh waits for that install receipt and accepts only a 12-action scan; the #1219 writer also recorded a private workspace plugin mastermind-web-ceo v0.1.1 (Plugin_3703046d…) over the same tunnel/OAuth backend as CREATED_NOT_CONNECTED (Mastermind #1143 issuecomment-6012219622 and -6012315310), but a 2026-10-06 metadata read returned NOT_FOUND and current discovery did not resolve it, so its visibility/connection in this workspace is UNVERIFIED: it is not a ready-to-connect path and is never recreated blindly, Mastermind #1143 issuecomment-6025513145), admin acknowledgement
-        and Auth0 entry all human (issuecomment-5984271681); first acceptance read-only in a new
-        conversation. Remote Control toggle for this seat's session only if a Claude-native child
-        is ever the canary target. The draft product slice (render EFFECT_UNKNOWN roots distinctly)
-        was refuted 2026-10-04 — master already renders it
-        (app/static/chairman_control/control_room.js:1498-1666); a replacement slice is chosen only
-        after the hold lifts.
+        Original-parent useful production operation, correlated return/consumption,
+        governed two-worker execution and independent Packet-07 acceptance are NOT_PROVEN.
+        Installed 326c C1/A2 rebind and service start plus MCP 1.5.0 backend publication
+        are complete; this does not prove a new live Slack verification or selected
+        Business exact-12-tool catalog. The existing Business foreground/Ready response
+        remains pending; current selected app/account/target adoption is unproven.
+        Full 326c maintenance acceptance is NOT_STARTED, execution arms remain false,
+        and legacy/Pro01 failures remain held. Two Personal-Pro READY receipts are
+        qualified preparation, not Capacity admission, company-worker readiness or a
+        useful original-parent operation. Historical host Jobs and AVAILABLE do not
+        substitute for production consumption.
     next_action: >
-      Freeze the spec only after written Sol/Chairman acceptance of the narrower equivalents for
-      steps 5, 7, 11, 12 and 14 and a carrier (or ASD-A2 release) for step 8; require the host
-      owner's current arm receipt on the installed release (5b244a2b, autonomy-582e4c15d334) and
-      the disarm/arm rehearsal (S0') before the root; run the B1 qualification canary first; shape = root via the sink → planner → one write
-      child on codex-01 → two READ-only children in parallel (B1 review 1440/390 + independent
-      source review) → repair or null → aggregate.
+      Native parent root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311 consumes the existing
+      Business availability response or a genuinely qualified availability event, then
+      requalifies the exact account/app/version/target and selected V3 1.5 exact-12-tool
+      catalog through its existing authorized Business path. Do not repeat the pending
+      question, switch accounts or bypass login/approval/input refusals. Consume the
+      assigned P4 receiver's lawful acceptance return; after full-acceptance/company-
+      readiness/arm prerequisites, run one useful normal authorized CEO-parent to
+      governed-child to correlated RESULT to SAME original-parent consumption journey
+      with typed lost-response reconciliation and no duplicate effect. JOB-002/003/013
+      remain historical; JOB-014/015/016/017 host proofs are not that useful operation.
+      P3 preparation is not a gate on the first one-child journey; qualified P3 identity/
+      readiness and Capacity admission are required before final two-worker execution.
+      Prove independent review/repair, browser/review/decision/return, governed recovery/
+      disarm/re-arm and capacity/fairness before AUTONOMY_V1_PROVEN_LIVE. Current native
+      evidence: Mastermind #1143/6070565507, frontier 2026-10-10T00:13:09Z, updated
+      2026-10-10T00:13:11Z. Observer returns #1143/6091157199 and #1143/6091166704 are
+      supporting read-only evidence, not execution owners; their older readiness census
+      is superseded by the two sealed Personal-Pro receipts.
 next_action: >
-  Integrator on the XH chain (C3 integration/acceptance only, Sol issuecomment-5991567681): consume
-  the Slack ceremony receipt against DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST (shared Executive Relay path by Chairman intent, Mastermind #1265 at 6a85e0d6; fields in Mastermind #1143 issuecomment-6028181298; the dedicated-path delta issuecomment-6027309991 applies only if the Chairman re-selects A0BUDHZ137A), and only after the install and the C1 rebind (#784 rebind-release, a new source dependency); consume
-  the install receipt for the exact-source install of the generation that contains the #784 merge (Mastermind #1143 issuecomment-6032388623).
-  Status on 2026-10-07: #1220 merged as ee120e80 and #811 merged as 1fc040f. A Sol session installed control 1fc040f on M2
-  (issuecomment-6032187810) before #784 merged. A read-only launchctl check shows C1 still on its own 4c148709 generation
-  and the network MCP still on 5b244a2b / 1.4.0.
-  #784's runbook runs rebind-release from the installed release tree it binds to, never from a source checkout,
-  so 1fc040f cannot host the rebind. Control and C1 stay unloaded from that install until the rebind completes.
-  Then verify read-only: Gate B, the receipt, and, after the network MCP release owner publishes V3 1.5, the live
-  1.5.0 / 12-tool census against v3-1.5-tool-census.json d7c5395e.
-  Keep one bounded watcher on #1143, the terminal state of #784 and mission-path master. No reviews or queue actions on
-  others' PRs, and no lane on the host, the Slack app or service-control.sh. Final acceptance at the XH-5 outcome. No host act.
+  CURRENT FRONTIER 2026-10-10 / installed 326c8469a21d7f50fc9ecb1848196bf1c6e66685:
+  #1286/#1298 release/install, C1/A2 rebind, five-service restoration and MCP 1.5.0
+  backend publication are DONE; canonical disarm/interlock recovery and restoration
+  also completed once. Do not repeat. P1/P2 remain unchanged historical source epochs.
+  Pro02/pro03 Personal-Pro READY receipts now qualify two dedicated realms until
+  2026-10-10T23:30:00Z; do not reenroll, repeat tests or extend expiry automatically.
+  Existing legacy identity refusal and Pro01 ENROLLED_NOT_READY remain held; AVAILABLE
+  is not company-worker READY. Company readiness, lawful Capacity admission and governed
+  multi-worker execution remain unproven. Qualified P3 preparation remains independent
+  of P4/P5; Personal-Pro preparation does not bypass company-policy or refused effects.
+  Full 326c acceptance is NOT_STARTED; last full accepted host is 7d82. CEO-ingress
+  app and privileged-readiness arms are true; CEO-submit/COO/worker-harness/dialogue/
+  terminal-return execution arms remain false. Only the unstarted full-326c acceptance
+  lane is released and PICKED_UP by chat 01a1230a-abcd-7ef3-bf23-d7bda2b564c0 under
+  original root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311; no execution START is observed.
+  Receiver retains lawful failure-disposition/access/private-input/Gate B prerequisites
+  and existing denials. Original native parent
+  mastermind-os-frontier-company-convergence-20260925-sol-001 retains broader production/
+  integration/final adjudication, Business and the useful original-parent journey.
+  Current checkpoint #1143/6070565507 frontier 2026-10-10T00:13:09Z / updated
+  2026-10-10T00:13:11Z; receiver PICKUP #1143/6091328703. Business consumes its existing
+  pending foreground/Ready reply or qualified availability, then requalifies exact
+  selected V3 1.5/12-tool adoption; no repeated question, blind input or account switch.
+  MISSION_COMPLETE:false; AUTONOMY_V1_PROVEN_LIVE=false. Original #633 Auth0 DCR remains
+  EFFECT_UNKNOWN; preserve #1275/#1145 source custody and all refused effects. This is
+  organizational projection only, never Runtime admission or source-writer transfer.
 landmines:
-  - Full Autonomy V1, multi-worker concurrency, consultation and session_summon are held by the Chairman convergence ruling (Mastermind #1143 issuecomment-5976964871) until the parenting loop is proven; a green PR or an installed release does not lift it.
-  - "QUEUED is admission only; delivery is not ACK; ACK is not START; CI is not acceptance; merged is not installed; installed is not armed."
-  - "The CEO-submit sink and the armed operator harness are mutually exclusive on current source; the runtime sink's not-yet-integrated eligibility gate is not permission."
-  - "autonomy-state-v1.json and ceo-submit-state-v1.json are host-owner receipts; the seat reads them and never writes, arms, disarms or restarts."
-  - "Live Agent Relay activation (start-agent-relay) stays HELD: the Sol lifecycle lane merged as Mastermind #1257 (master 1df1367f, 2026-10-05T09:42Z) but is not installed; activation needs the host owner install of a generation at or after master 7c12c394 (or the #1219 merge SHA) plus the human ceremony and native-TTY enrollment. #1241/#1257 merged is not activation readiness."
-  - "A release-SHA change never replays the CEO-submit arm; the host owner migrates the live config and arms canonically (autonomy-582e4c15d334 on 5b244a2b). Historical JOB-003/JOB-006 are preserved, never rewritten or replayed."
-  - "Never add channels:history to the Executive Relay app before C1 is rebound (#784 rebind-release) to an installed release at or after 6a85e0d6. The live C1 runs its own 4c148709 generation, which install.sh never rebinds. That generation refuses any scope set other than chat:write + groups:history at every start (C1_SLACK_IDENTITY_REFUSED), so SOL_STATE publication would stop at the next C1 start. Never enroll A2 by both the shared and the dedicated route (DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST)."
-  - "The Slack-admin ceremony is a human/UI gate. On the current shared path it is: add channels:history to the existing Executive Relay app and reinstall, after the 6a85e0d6+ install and the C1 rebind. On a Chairman-re-selected dedicated path it is: app-level token deletion, two-scope reinstall, bot invite. The A2 enrollment (enroll-shared on the native host, or the bot token on stdin/native TTY for the dedicated path; --enable-w3c) and the ChatGPT Business app recreate+republish (or connecting the private mastermind-web-ceo plugin, if a fresh read ever shows it visible; it is UNVERIFIED after a NOT_FOUND metadata read, Mastermind #1143 issuecomment-6025513145) are human/UI gates; a Web or seat session stops before them and never routes around them."
+  - "MISSION_COMPLETE:false. Original Auth0 DCR f70314691a5d6549d6265509baee7d3b5a733bc6084e0018558cad80d40667d7 remains EFFECT_UNKNOWN on #633; no retry, alternate client or carrier is authorized by this records repair."
+  - "AUTONOMY_V1_PROVEN_LIVE requires one useful original-parent/child/return/consumption journey plus multi-worker and recovery evidence; source merge, CI, installed host acceptance, Slack transport and JOB-014/015 are not final proof."
+  - "Source mutual-exclusion finding is historical: accepted #1283 at installed 6b supersedes the old code limitation. Do not bypass present CAS, transaction/admission, source authority or exact current Sol target fences."
+  - "The existing shared Slack Executive Relay app A0BTCKA7GSY, bot U0BT71H4FQE, completed the exact three-scope ceremony. Installed 326c C1/A2 rebind and service start are complete; do not repeat reinstall, request a token, or infer a new live Slack verification from service proof."
+  - "Mastermind #1286 and #1298 are merged and exact 326c is installed with five services restored. Preserve accepted reviews/releases/installs; full 326c acceptance is NOT_STARTED and installed-generation proof is not final Autonomy acceptance."
+  - "Prior accepted host epochs are historical and must not be replayed. Installed network MCP now reports 1.5.0 on 326c; selected Business exact-12-tool adoption remains unproven. Last full accepted host is 7d82; the existing 326c descriptor is not a full acceptance receipt."
+  - "Legacy company readiness expired at 2026-10-09T09:35:11Z and identity refusal remains unresolved; Pro01 stays ENROLLED_NOT_READY. Pro02/pro03 have qualified Personal-Pro READY receipts ccd7753a/7c61909b until Chairman-approved 2026-10-10T23:30:00Z. Do not repeat enrollment/readiness/MFA or automatically extend expiry; these do not clear prior failures, convert company policy or prove Capacity admission/governed multi-worker execution. AVAILABLE is not company READY."
+  - "JOB-002, JOB-003 and JOB-013 are historical acceptance/proof roots and must not be repurposed, retried or requeued as the normal-useful-parent canary."
+  - "Original parent owns the active operation. A Slack watcher, branch, PR, Agent OS claim or fresh chat cannot transfer an active native writer or unknown effect. Existing Executive OS remains sole Job/Attempt/Worker/Event authority."
+  - "Public Mastermind OS DNS/edge/Auth0 adoption is an additional product rollout gate; it cannot be implied by this separate Executive Autonomy V1 cutover or substitute for the original-parent canary."
 do_not_redo:
   - "Do not re-post the C3 1fc040f readback (Mastermind #1143 issuecomment-6032388623); amend it in place only. Do not treat the 1fc040f control install as the C1-rebind install, and never run rebind-release from a source checkout."
   - "Do not re-post the #1219 C3 acceptance (Mastermind #1219 issuecomment-6025565788) the Slack receipt delta (Mastermind #1143 issuecomment-6027309991) or the shared-relay integration note (Mastermind #1143 issuecomment-6028181298); #1219 is merged as 760f51b5 and its controller hardening is not reopened."
@@ -199,7 +221,7 @@ do_not_redo:
   - "Do not revive Mastermind #1227 (closed unmerged 2026-10-04T08:29Z, superseded by #1191 commit 3149fe6f); its review criteria reach #1191 only through the incumbent writer."
   - "Do not re-post the #1227 review (pullrequestreview-5404908792) or the #1241 integration read (issuecomment-5978317957)."
   - "Do not re-file reviews on #1219 or #1251 while Sol (MastermindX1) owns their review gates; do not re-post the seat #1251 review (pullrequestreview-5408951316), the #1219 adjudication (issuecomment-5990732208) or the #1257 x #1219 merge pre-check (issuecomment-5991833933)."
-  - "Do not enqueue, re-approve or re-merge Mastermind #1257 (merged 2026-10-05T09:42:52Z as 1df1367f) and do not create another canary Job: JOB-003 / JOB-013 are the natural acceptance roots (Sol issuecomment-5991883687); JOB-002 is never repurposed."
+  - "Do not enqueue, re-approve or re-merge Mastermind #1257 (merged 2026-10-05T09:42:52Z as 1df1367f). Packet-07 #1143 issuecomment-6032160245 supersedes the old canary advice in issuecomment-5991883687: JOB-002, JOB-003 and JOB-013 are historical evidence, never canary targets or replay candidates. Use a useful operation through the normal product flow after the installation, catalog and relay gates; never manufacture a root solely for acceptance."
   - "Do not re-post the seat integration notes #1219 issuecomment-6005154414 / issuecomment-6011249322 or #1251 issuecomment-6009775212; do not resolve #1219 master re-merges for its writer (Sol is the active writer on the carrier); #1225 was owned by a different session on the shared mastermindxryan identity — never treat it as a seat artifact."
 ---
 
@@ -219,3 +241,14 @@ record only sequences their outputs into the acceptance operation.
 `MISSION_COMPLETE: true` only with `AUTONOMY_V1_PROVEN_LIVE` from one complete real production
 acceptance operation. A PARTIAL rehearsal, a merged release, an armed host or a green CI run is
 never that proof.
+
+## Canary instruction correction — 2026-10-08
+
+The current continuation and `do_not_redo` above follow the newer independent
+[Packet-07 preflight on Mastermind #1143](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1143#issuecomment-6032160245).
+The earlier recommendation to use JOB-003 or JOB-013 was superseded. JOB-002, JOB-003
+and JOB-013 remain historical evidence; no historical lifecycle state is changed by
+this record correction. Verification: `gh api repos/mastermindx-market-intelligence/Mastermind/issues/comments/6032160245`
+returns the 2026-10-07T06:14:10Z acceptance preflight. A useful normal product operation
+still requires the current installed generation, exact client catalog, relay readiness,
+original-parent consumption, lost-response reconciliation and independent acceptance.

@@ -1,0 +1,17 @@
+{
+ "coverage_gap": {
+  "aci": 0.00286,
+  "fixed": 0.010215,
+  "rolling": 0.00109
+ },
+ "criteria": {
+  "c1_relative_effect": false,
+  "c2_coverage_gap": true,
+  "c3_width_cap": true,
+  "c4_beats_rolling": false,
+  "c5_controls_and_maturity": true
+ },
+ "honest_test_blocks": 134,
+ "maturity_violations_total": 0,
+ "verdict": "REJECT"
+}

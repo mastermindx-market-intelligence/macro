@@ -1,13 +1,13 @@
 {
   "appended": 0,
-  "asof": "2026-10-05",
+  "asof": "2026-10-08",
   "candidates": {
-    "R": 2,
+    "R": 3,
     "T": 8,
     "W": 4
   },
   "deduped": {
-    "R": 2,
+    "R": 3,
     "T": 8,
     "W": 4
   },
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1493,
+  "n_universe": 1491,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-06 15:59:12",
-  "runtime_s": 101.9,
+  "run_utc": "2026-10-11 06:13:33",
+  "runtime_s": 106.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-10-06",
-    "n_members": 127,
+    "asof": "2026-10-09",
+    "n_members": 126,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.009,
+        "emerging_score": 2.764,
         "rank": 1,
-        "theme": "Biometrics"
-      },
-      {
-        "emerging_score": 2.492,
-        "rank": 2,
-        "theme": "Semiconductors"
-      },
-      {
-        "emerging_score": 1.838,
-        "rank": 3,
-        "theme": "Industrial Automation"
-      },
-      {
-        "emerging_score": 1.552,
-        "rank": 4,
         "theme": "Education Technology"
       },
       {
-        "emerging_score": 1.381,
+        "emerging_score": 2.268,
+        "rank": 2,
+        "theme": "Healthy Food & Nutrition"
+      },
+      {
+        "emerging_score": 2.006,
+        "rank": 3,
+        "theme": "Consumer Goods"
+      },
+      {
+        "emerging_score": 1.885,
+        "rank": 4,
+        "theme": "E-commerce"
+      },
+      {
+        "emerging_score": 1.686,
         "rank": 5,
-        "theme": "Social Media"
+        "theme": "Commodities Agriculture"
       }
     ]
   },
@@ -130,15 +130,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-10-05",
+    "asof_max": "2026-10-08",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-05",
+    "asof_run": "2026-10-08",
     "evaluated": 713,
     "fresh": 5,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.3,
+    "runtime_s": 19.6,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 61,

@@ -209,63 +209,17 @@ def load_registration_v2(repository_root: str | Path) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def _read_sealed_bar(source_root: Path, *, session: date) -> dict[str, Any] | None:
-    """Read opportunity-eligible sealed bar for session from sources-spy-rest-v1."""
-    from scripts.capture_market_memory_technicals_v2 import (  # noqa: PLC0415
-        validate_spy_rest_source_root,
-    )
+def _read_sealed_bar(
+    source_root: Path, *, session: date, generation_id: str | None = None,
+) -> dict[str, Any] | None:
+    """Use the same verified owner selection as the technical projector."""
     from engine.neuralweb.market_memory_sources_spy import (  # noqa: PLC0415
-        SPY_FAMILY,
-        _validate_spy_rest_receipt,
-        _read_receipt_copies_by_validate,
-        _read_store_object,
-        _object_path,
-        _MAX_OBJECT_BYTES,
+        MarketMemorySourceError, read_verified_spy_rest_bar,
     )
-    from engine.neuralweb.market_memory_source_kernel import (  # noqa: PLC0415
-        _load_store_state,
-        SourceNotFound,
-        SourceStoreError,
-        _store_manifest_path,
-    )
-    from engine.neuralweb import market_memory as _mm  # noqa: PLC0415
-
-    validated = validate_spy_rest_source_root(source_root)
-    if not _store_manifest_path(validated).exists():
-        return None
     try:
-        state = _load_store_state(validated, family=SPY_FAMILY, authority=dict(_mm.AUTHORITY))
-    except Exception:  # noqa: BLE001
-        return None
-    session_str = session.isoformat()
-    for entry in reversed(state.generation["receipts"]):
-        try:
-            receipt, _ = _read_receipt_copies_by_validate(
-                validated, entry,
-                store_id=state.manifest["store_id"],
-                validate_fn=_validate_spy_rest_receipt,
-            )
-        except Exception:  # noqa: BLE001
-            continue
-        if receipt.get("session") != session_str:
-            continue
-        if not receipt.get("quality", {}).get("opportunity_eligible", False):
-            continue
-        try:
-            artifact, _ = _read_store_object(
-                _object_path(validated, receipt["artifact_sha256"]),
-                limit=_MAX_OBJECT_BYTES,
-                label="SPY REST source object",
-            )
-        except Exception:  # noqa: BLE001
-            continue
-        if artifact.get("results"):
-            return {
-                "session": session_str,
-                "bar": artifact["results"][0],
-                "source_generation_id": state.generation["generation_id"],
-            }
-    return None
+        return read_verified_spy_rest_bar(source_root, session=session, generation_id=generation_id)
+    except (MarketMemorySourceError, OSError, ValueError) as exc:
+        raise ExperienceV2SourceError(f"sealed SPY REST binding refused: {exc}") from exc
 
 
 def _read_technical_capture(
@@ -477,8 +431,14 @@ def accrue_spy_experience_v2(
             "record": existing,
         }
 
-    # Read sealed bar
-    sealed = _read_sealed_bar(source_path, session=session)
+    # An existing technical capture owns the immutable source selection.
+    # Current HEAD only authenticates that pin's published ancestry; unrelated
+    # appends and later-known corrections are not new eligibility conditions.
+    tech_capture = _read_technical_capture(tech_path, session=session)
+    sealed = _read_sealed_bar(
+        source_path, session=session,
+        generation_id=tech_capture["source_generation_id"] if tech_capture is not None else None,
+    )
     if sealed is None:
         record = {
             "schema": EXPERIENCE_V2_RECORD_SCHEMA,
@@ -497,8 +457,6 @@ def accrue_spy_experience_v2(
             "message": f"no sealed bar for {session_str}",
         }
 
-    # Read technicals
-    tech_capture = _read_technical_capture(tech_path, session=session)
     if tech_capture is None:
         record = {
             "schema": EXPERIENCE_V2_RECORD_SCHEMA,
@@ -516,6 +474,14 @@ def accrue_spy_experience_v2(
             "registration_id": registration_id,
             "message": f"no technicals-v2 capture for {session_str}",
         }
+
+    from scripts.capture_market_memory_technicals_v2 import (  # noqa: PLC0415
+        TechnicalsV2Error, validate_capture_source_binding,
+    )
+    try:
+        validate_capture_source_binding(tech_capture, sealed, session=session, as_of=now)
+    except TechnicalsV2Error as exc:
+        raise ExperienceV2SourceError(f"technical/source binding refused: {exc}") from exc
 
     feature_obj = tech_capture.get("feature_object", {})
     close_ratio = feature_obj.get("state", {}).get("price", {}).get(
@@ -553,8 +519,8 @@ def accrue_spy_experience_v2(
             "session": session_str,
             "profile": "market_memory.private.spy_experience_accrual.v2",
             "ticker": "SPY",
-            "regular_session_close_authenticated": False,
-            "price_basis": "unadjusted_daily_aggregate_sealed_rest_bar",
+            "regular_session_close_authenticated": feature_obj["regular_session_close_authenticated"],
+            "price_basis": feature_obj["price_basis"],
             "price_raw_close_ratio_20_sessions": close_ratio,
         },
         "recorded_at": now.isoformat().replace("+00:00", "Z"),

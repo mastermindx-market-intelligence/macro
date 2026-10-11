@@ -1163,6 +1163,9 @@ def _actual_fresh_board_condition(prior, fresh, *, prior_view=None, fresh_view=N
         "_fresh_su": fresh,
         "_prior_as_of": prior.get("as_of"),
         "_prior_stale": prior.get("staleness") or {},
+        # This candidate-pool fixture holds the independent W3C inputs fixed.
+        # The real predicate now compares them even when the pool is unchanged.
+        "_fresh_w3c_binding": None, "_us_w3c_binding": None, "_fresh_w3c": None,
         "_fresh_candidate_visibility": fresh_view if fresh_view is not None else project_candidate_visibility(fresh),
         "vm": {"us_standouts": prior,
                "us_candidate_visibility": prior_view if prior_view is not None else project_candidate_visibility(prior)},
