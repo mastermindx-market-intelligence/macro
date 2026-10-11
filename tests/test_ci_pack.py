@@ -4676,6 +4676,8 @@ CURATED_EXCLUSIVE = {
     # the closure against a FULL checkout: the two site/ JSON literals are
     # invisible on a sparse tree, exactly as the options-estate-guards note warns.
     "leader-radar-unit",
+    # The private runtime boundary has a closed helper/unit/updater/test scope.
+    "company-intelligence-private-runtime",
 }
 
 
