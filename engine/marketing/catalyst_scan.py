@@ -285,7 +285,9 @@ def _complete_current_coverage(receipt: SourceCoverageReceipt | None,
                 or packet.get("schema_version") != 2):
             return False
         primary = packet.get("primary_subject")
-        if not isinstance(primary, Mapping):
+        if (not isinstance(primary, Mapping)
+                or primary.get("ticker") not in receipt.issuer_tickers
+                or packet.get("source_snapshot_version") != receipt.snapshot_version):
             return False
         affected = packet.get("affected_tickers")
         if not isinstance(affected, list):

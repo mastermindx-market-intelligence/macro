@@ -64,6 +64,7 @@ def verified_packet(**changes):
         owner_ref="test-incumbent-source-reader",
         first_verified_at_utc="2026-08-04T11:03:10Z",
         checked_at_utc=NOW,
+        source_snapshot_version="test-snapshot-001",
         official_published_at_utc=None,
     )
     def version_rights(sid, now):
@@ -248,6 +249,7 @@ def test_stage_a_observed_first_availability_and_nullable_publication_survive_sc
         owner_ref="test-incumbent-edgar-owner",
         first_verified_at_utc="2026-08-04T11:03:10Z",
         checked_at_utc=NOW,
+        source_snapshot_version="test-snapshot-001",
         official_published_at_utc=None,
     )
     def version_rights(sid, now):
@@ -376,3 +378,18 @@ def test_twenty_event_truncation_cannot_claim_complete_current_issuer_coverage()
                           as_of=NOW, coverage=incomplete)
     assert result["publication_state"] == "UNAVAILABLE"
     assert result["results"][0]["what_changed"] == []
+
+
+def test_stage_a_current_window_cannot_certify_old_snapshot_or_uncovered_issuer():
+    from dataclasses import replace
+    row = verified_packet()
+    wrong_snapshot = replace(coverage_receipt(), snapshot_version="new-source-generation")
+    rejected = compose_scan(["PFE"], packets=[row], issuers=UNIVERSE,
+                            as_of=NOW, coverage=wrong_snapshot)
+    assert rejected["publication_state"] == "UNAVAILABLE"
+    assert rejected["results"][0]["what_changed"] == []
+    wrong_scope = replace(coverage_receipt(), issuer_tickers=frozenset({"TST", "OTH"}))
+    rejected = compose_scan(["TST"], packets=[row], issuers=UNIVERSE,
+                            as_of=NOW, coverage=wrong_scope)
+    assert rejected["publication_state"] == "UNAVAILABLE"
+    assert rejected["results"][0]["sources"] == []

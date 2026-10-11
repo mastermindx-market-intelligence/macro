@@ -404,6 +404,7 @@ def stage_a_receipt(*, first="2026-08-04T11:03:10Z",
         owner_ref="test-ingestion-owner-not-publication",
         first_verified_at_utc=first,
         checked_at_utc=checked,
+        source_snapshot_version="test-snapshot-001",
         status="verified",
         official_published_at_utc=published,
         official_publication_ref=pub_ref,
@@ -555,3 +556,18 @@ def test_withdrawn_or_naive_verified_document_read_is_not_source_attestation():
                     rights_resolver=versioned_rights)
         assert pkt["public_safe"] is False
         assert pkt["sources"] == pkt["what_changed"] == []
+
+
+def test_stage_a_verified_document_requires_typed_source_snapshot_version():
+    from dataclasses import replace
+    raw = event()
+    raw.pop("publication_time_utc")
+    for bad in ("", "https://not-a-snapshot", "reader@example.com", 123):
+        result = build(raw, document_observation=replace(
+            stage_a_receipt(), source_snapshot_version=bad),
+            rights_resolver=versioned_rights)
+        assert result["public_safe"] is False
+        assert "unqualified_verified_document_observation" in result["missing_data"]
+    good = build(raw, document_observation=stage_a_receipt(),
+                 rights_resolver=versioned_rights)
+    assert good["source_snapshot_version"] == "test-snapshot-001"

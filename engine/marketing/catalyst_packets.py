@@ -98,12 +98,15 @@ class VerifiedDocumentObservation:
     owner_ref: str
     first_verified_at_utc: datetime
     checked_at_utc: datetime
+    # Common retained source-reader snapshot/version for packet→window join.
+    source_snapshot_version: str = ""
     status: str = "verified"
     official_published_at_utc: datetime | None = None
     official_publication_ref: str = ""
 
 
 _SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
+_SNAPSHOT_VERSION = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$")
 
 
 RightsResolver = Callable[[str, datetime], PublicSourceGrant | None]
@@ -356,6 +359,8 @@ def build_event_packet(
                 or not isinstance(receipt.receipt_id, str)
                 or not 0 < len(receipt.receipt_id.strip()) <= 128
                 or not isinstance(receipt.owner_ref, str) or not receipt.owner_ref.strip()
+                or not isinstance(receipt.source_snapshot_version, str)
+                or not _SNAPSHOT_VERSION.fullmatch(receipt.source_snapshot_version)
                 or first is None or checked is None
                 or first < event_time - timedelta(minutes=2)
                 or first > checked or checked > now + timedelta(minutes=2)
@@ -372,6 +377,7 @@ def build_event_packet(
         observation = receipt
         observed = first
         out["observation_receipt_id"] = receipt.receipt_id
+        out["source_snapshot_version"] = receipt.source_snapshot_version
         out["document_sha256"] = receipt.document_sha256
         out["document_checked_at_utc"] = _stamp(checked)
         out["processing_time_utc"] = _stamp(processing)
