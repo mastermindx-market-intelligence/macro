@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-10-10",
+  "as_of": "2026-10-11",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "equity-leadership",
       "driver": "ai_semis",
       "pathway_role": "primary",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-11",
       "direction_en": "AI/semis unwind — tech-led de-rating",
       "direction_zh": "AI/半导体回吐 — 科技主导的回调",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_ai_semis",
-          "as_of": "2026-10-10",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "ai_semis",
@@ -58,7 +58,7 @@
         },
         {
           "node_id": "leg_ai_semis_0",
-          "as_of": "2026-10-10",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "semis RS",
@@ -78,7 +78,7 @@
         },
         {
           "node_id": "leg_ai_semis_1",
-          "as_of": "2026-10-10",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "tech vs utilities",
@@ -98,7 +98,7 @@
         },
         {
           "node_id": "leg_ai_semis_2",
-          "as_of": "2026-10-10",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "cap-weight vs equal-weight",
@@ -160,7 +160,7 @@
       "family": "liquidity",
       "driver": "liquidity_impulse",
       "pathway_role": "alternate",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-11",
       "direction_en": "net liquidity draining — risk headwind",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -170,7 +170,7 @@
       "nodes": [
         {
           "node_id": "driver_liquidity_impulse",
-          "as_of": "2026-10-10",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "liquidity_impulse",
@@ -196,7 +196,7 @@
       "family": "crypto",
       "driver": "crypto_liquidity",
       "pathway_role": "alternate",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-11",
       "direction_en": "crypto liquidity draining — BTC/ETH lead down",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -206,7 +206,7 @@
       "nodes": [
         {
           "node_id": "driver_crypto_liquidity",
-          "as_of": "2026-10-10",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "crypto_liquidity",

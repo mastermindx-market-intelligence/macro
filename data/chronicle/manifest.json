@@ -43,20 +43,20 @@
       "retracted_by_authority": 0
     }
   },
-  "as_of": "2026-10-10",
+  "as_of": "2026-10-11",
   "coverage": {
     "end": "2026-10-08",
     "note": "16771 events across 823 distinct date(s)",
     "start": "2013-04-02"
   },
-  "elapsed_s": 2.195,
+  "elapsed_s": 2.344,
   "gap_notes": [
     "earnings: coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
     "earnings_call: score projection sync: score_store_absent",
     "macro_release: 32/32 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:c2045c8eeb1b3f79eca5202d859de2ee44c2a088151cf6fe27b5dc67a350fe1d",
+  "inputs_hash": "sha256:de69a5f434a0643e85047b83f2a8b2bb310e61f5242cf2be2b6d9e184e58dd27",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
@@ -77,7 +77,7 @@
       "sha256": "sha256:d36f03cb70873b874106049065081d698412cb3e9de1c3fea85753a73c067e99"
     }
   },
-  "produced_at": "2026-10-10T11:20:56Z",
+  "produced_at": "2026-10-11T05:15:29Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,
@@ -112,7 +112,7 @@
     },
     "data/research_vault/catalog.json": {
       "present": true,
-      "sha256": "sha256:ce61577af6ce9f0a678f61b1e35ebafb9c12a4121f74b08d7c2635de1fbaa33a"
+      "sha256": "sha256:1e15722a8f507e1b264cda546870345dfdf5a82ee6016847272ba147ff63c30f"
     },
     "data/risk_radar/forward_log.jsonl": {
       "present": true,
