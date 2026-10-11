@@ -2556,3 +2556,38 @@ try:
 except Exception as _marketing_exc:  # noqa: BLE001
     import logging as _logging  # noqa: PLC0415
     _logging.getLogger("macro.api").warning("marketing sweeper not armed: %r", _marketing_exc)
+
+
+# ---------------------------------------------------------------------------
+# Catalyst Loop Session 00 — anonymous public scan bridge (default OFF).
+# Read-only producer; the opt-in owner alone performs secure consent writes.
+# No automatic emailing or deployment is enabled by mounting the router.
+# ---------------------------------------------------------------------------
+try:
+    from app.catalyst_integration import router as catalyst_router  # noqa: E402
+    app.include_router(catalyst_router)
+except Exception as _catalyst_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").error(
+        "catalyst public bridge not mounted (fail closed): %r", _catalyst_exc)
+
+
+# Session 02 secure Catalyst opt-in router (DRAFT/HOLD sibling source).
+# Mount only the existing owner-backed request/verify API WHEN its source lands.
+# Do not auto-configure a consent service, allocate email state or send messages.
+# The Session 02 router remains fail-closed (503) until its verified owner/RPC,
+# scan receipt authority and revision authority are all explicitly admitted.
+try:
+    from app.catalyst_optin import router as catalyst_secure_optin_router  # noqa: E402
+    app.include_router(catalyst_secure_optin_router)
+except ModuleNotFoundError as _catalyst_module_exc:  # noqa: BLE001
+    if _catalyst_module_exc.name != "app.catalyst_optin":
+        import logging as _logging  # noqa: PLC0415
+        _logging.getLogger("macro.api").error(
+            "catalyst opt-in dependencies missing, consent unavailable: %r",
+            _catalyst_module_exc)
+except Exception as _catalyst_secure_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").error(
+        "catalyst secure opt-in router unavailable (fail closed): %r",
+        _catalyst_secure_exc)

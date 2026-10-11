@@ -1,0 +1,129 @@
+{# Catalyst Loop Session 03: independent public scan-first page.
+   This template is not routed or published by this PR. Session 00 owns admission,
+   canonical route, SEO, feature flags and build-site registration. #}
+<!doctype html>
+<html lang="en" data-theme="dark" data-catalyst-page="v1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Examine public, source-linked earnings evidence for one to ten stocks before deciding whether to subscribe to event updates.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Earnings Risk Scan | MastermindX">
+  <meta property="og:description" content="Source-linked earnings evidence and candid coverage limits. No signup required to scan.">
+  <title>Earnings Risk Scan — MastermindX</title>
+  <link rel="stylesheet" href="{{ asset_base|default('') }}theme.css">
+  <link rel="stylesheet" href="{{ asset_base|default('') }}catalyst_scan.css">
+  <script src="{{ asset_base|default('') }}catalyst_scan.js" defer></script>
+</head>
+<body>
+  <a class="cs-skip" href="#main">Skip to scan</a>
+  <header class="cs-topbar">
+    <div class="cs-container cs-top-inner">
+      <a class="cs-wordmark" href="/" aria-label="MastermindX home">
+        <span class="cs-brandmark" aria-hidden="true">M<span class="cs-brand-dot">.</span></span>
+        <span>MASTERMIND<span class="cs-wordmark-x">X</span></span>
+      </a>
+      <nav class="cs-nav" aria-label="Site">
+        <a href="/us_stocks.html">Stock dossiers</a>
+        <a href="/news.html">Market intelligence</a>
+      </nav>
+      <span class="cs-top-label"><span class="cs-live-dot" aria-hidden="true"></span> EVIDENCE DESK</span>
+    </div>
+  </header>
+  <div class="cs-preview-banner" role="note">{{ preview_banner|default('OFFLINE UI PREVIEW · No live market-data or email service is connected to this page.') }}</div>
+
+  <main id="main" class="cs-container">
+    <section class="cs-hero" aria-labelledby="cs-title">
+      <div class="cs-eyebrow"><span class="cs-segment">PUBLIC INTELLIGENCE</span><span class="cs-eyebrow-line"></span><span>01 / EARNINGS</span></div>
+      <div class="cs-hero-grid">
+        <div>
+          <h1 id="cs-title">Understand the event.<br><em>Not just the price.</em></h1>
+          <p class="cs-lead">Find what a filing actually says, which companies it affects, and what would challenge the thesis. Every supported finding links to its source.</p>
+          <div class="cs-hero-points" aria-label="Scan features">
+            <span><span aria-hidden="true">&#10003;</span> No account required</span>
+            <span><span aria-hidden="true">&#10003;</span> Verifiable source links</span>
+            <span><span aria-hidden="true">&#10003;</span> Explicit gaps and corrections</span>
+          </div>
+        </div>
+        <aside class="cs-hero-aside" aria-label="Evidence standards">
+          <div class="cs-hero-aside-head"><span class="cs-mono">EVIDENCE STANDARD</span><span aria-hidden="true" class="cs-rule-icon">01—03</span></div>
+          <ol class="cs-standard-list">
+            <li><span>01</span> <div><b>Primary evidence</b><small>Source, publisher and UTC clock</small></div></li>
+            <li><span>02</span> <div><b>What changed</b><small>Claims tied to that evidence</small></div></li>
+            <li><span>03</span> <div><b>What could invalidate it</b><small>Known limits, scenarios, counterevidence</small></div></li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <div id="cs-js-needed" class="cs-nojs-banner" role="note"><strong>Interactive scan not loaded.</strong> Controls remain disabled until browser scripting is available; no information has been submitted. {% if no_js_path is defined %}<a href="{{ no_js_path }}">Use the basic no-JavaScript scan</a>{% else %}<a href="/us_stocks.html">Browse stock dossiers</a>{% endif %}.</div>
+
+    <section class="cs-workspace" aria-labelledby="cs-panel-title">
+      <div class="cs-panel-head">
+        <div><span class="cs-mono">01 / RUN A SCAN</span><h2 id="cs-panel-title">Earnings event intelligence</h2></div>
+        <span class="cs-coverage-chip"><span aria-hidden="true" class="cs-ring"></span> Rights-qualified sources only</span>
+      </div>
+      <form id="cs-scan-form" class="cs-scan-form" novalidate method="post"><fieldset id="cs-scan-controls" disabled>
+        <label class="cs-field-label" for="cs-tickers">Stock tickers <span>1–10 symbols</span></label>
+        <div class="cs-inputrow">
+          <input id="cs-tickers" name="tickers" list="cs-ticker-suggestions" type="text" maxlength="120" placeholder="NVDA, AMD, MSFT" autocapitalize="characters" spellcheck="false" autocomplete="off" aria-describedby="cs-ticker-help cs-scan-error" required>
+          <datalist id="cs-ticker-suggestions">
+            <option value="NVDA"></option><option value="AAPL"></option>
+            <option value="AMD"></option><option value="MSFT"></option>
+            <option value="AMZN"></option><option value="META"></option>
+          </datalist>
+          <button id="cs-scan-submit" class="cs-button cs-button-main" type="submit"><span>Scan evidence</span><span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="cs-input-foot"><span id="cs-ticker-help">Separate symbols with commas or spaces. Examples are suggestions, not coverage promises.</span><span>Public first value · No signup</span></div>
+        <p id="cs-scan-error" class="cs-feedback cs-error" role="alert" hidden></p>
+      </fieldset></form>
+      <div id="cs-progress" class="cs-progress" aria-live="polite" role="status" hidden><span class="cs-spinner" aria-hidden="true"></span> Checking source coverage and evidence...</div>
+    </section>
+
+    <section id="cs-results" class="cs-results" aria-labelledby="cs-results-title" hidden>
+      <div class="cs-results-head">
+        <div><span class="cs-mono">02 / YOUR RESULTS</span><h2 id="cs-results-title">Event coverage</h2></div>
+        <button class="cs-button cs-button-quiet" id="cs-copy-link" type="button">Copy ticker link ↗</button>
+      </div>
+      <div class="cs-summary">
+        <div><span class="cs-mono">COVERAGE</span><p id="cs-summary-status">Limited evidence</p></div>
+        <div><span class="cs-mono">AS OF · UTC</span><p id="cs-summary-clock">Not available</p></div>
+        <div><span class="cs-mono">EVENT / GENERATION</span><p id="cs-summary-event">Not available</p></div>
+      </div>
+      <p id="cs-results-note" class="cs-note">Only independently qualified public sources are eligible. Missing coverage does not imply a neutral market view.</p>
+      <div id="cs-result-cards" class="cs-result-cards" aria-live="polite"></div>
+    </section>
+
+    <section id="cs-optin" class="cs-optin" aria-labelledby="cs-optin-title" hidden>
+      <div class="cs-optin-decoration" aria-hidden="true">02</div>
+      <div class="cs-optin-top"><span class="cs-mono">03 / OPTIONAL MONITORING</span><span class="cs-optin-tag">YOU CHOOSE</span></div>
+      <h2 id="cs-optin-title">Get the next material update.</h2>
+      <p class="cs-optin-intro">You already have your scan. If a later, source-supported change becomes available for a covered ticker, request a scoped email update. No general marketing subscription.</p>
+      <form id="cs-optin-form" method="post" novalidate>
+        <label class="cs-field-label" for="cs-email">Email for verification</label>
+        <div class="cs-optin-fields">
+          <input id="cs-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="you@example.com" required>
+          <button id="cs-optin-submit" class="cs-button cs-button-main" type="submit">Request verification <span aria-hidden="true">→</span></button>
+        </div>
+        <label class="cs-consent"><input id="cs-consent" type="checkbox" value="yes" required><span>I explicitly request emails about <strong>material updates to this scanned earnings event</strong>. This does not subscribe me to general marketing. I can unsubscribe at any time.</span></label>
+        <p class="cs-tiny">Verification is required. Delivery depends on source rights, suppression and current coverage. We never claim an email was delivered just because the service accepted a request.</p>
+      </form>
+      <form id="cs-verify-form" class="cs-verify-form" method="post" novalidate hidden>
+        <label class="cs-field-label" for="cs-otp">Enter your email verification code</label>
+        <div class="cs-optin-fields"><input id="cs-otp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" maxlength="8" placeholder="6–8 digit code" required><button id="cs-verify-submit" class="cs-button cs-button-main" type="submit">Verify request <span aria-hidden="true">→</span></button></div>
+      </form>
+      <p id="cs-optin-status" class="cs-feedback" role="status" aria-live="polite" hidden></p>
+    </section>
+
+    <section class="cs-footer-note" aria-labelledby="cs-disclaimer">
+      <div class="cs-mono" id="cs-disclaimer">READER'S NOTE</div>
+      <p>Source availability, filings, issuer identity, redistribution permission and correction state determine coverage. This tool does not infer missing evidence, promise real-time updates or provide personalized investment advice. Evidence times are shown in UTC.</p>
+      <a href="/us_stocks.html">Explore stock dossiers <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+  <noscript><div class="cs-container cs-noscript" role="note"><strong>JavaScript is required for the interactive scan.</strong> Nothing has been submitted. You can still {% if no_js_path is defined %}<a href="{{ no_js_path }}">use the basic scan</a>{% else %}<a href="/us_stocks.html">browse stock dossiers</a>{% endif %} without signing up.</div></noscript>
+  <footer class="cs-global-footer"><div class="cs-container"><span>© MastermindX · Research with receipts</span><span>Evidence, not a guarantee.</span></div></footer>
+</body>
+</html>

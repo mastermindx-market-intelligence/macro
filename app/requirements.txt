@@ -5,6 +5,9 @@
 fastapi>=0.115,<1.0
 uvicorn[standard]>=0.30
 pydantic>=2.0,<3.0
+# The staged Catalyst first-value page renders a first-party Jinja2 template
+# on demand; serve-tier venv must provide it on a clean API installation.
+Jinja2>=3.1,<4.0
 # The public Company Intelligence reader verifies immutable R2 objects with a
 # bounded server-side requests stream.  It is imported by the public ticker
 # context router at API startup, so this is a serving-tier dependency rather

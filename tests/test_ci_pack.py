@@ -4652,6 +4652,10 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # 2026-10-10 Catalyst Loop #8678: eight focused suites have one
+    # gate:code exclusive CI home with a measured transitive source closure.
+    # Keep the curated contract aligned; do not loosen pack ceilings.
+    "catalyst-loop-integrated",
 }
 
 

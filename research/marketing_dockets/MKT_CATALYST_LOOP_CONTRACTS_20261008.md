@@ -1,0 +1,161 @@
+# Catalyst Loop — integrated public scan and consent contracts v1.2 (Session 00)
+
+**Operation** `MMX-ACQ-CATALYST-INT-20261008` · **status** `DRAFT/HOLD` · **authority** current direct Chairman delivery; not permission to deploy, merge, send, or contact a partner.
+
+## Source pins and custody
+
+- Protected Mastermind `master`: `732cf7be88e7159b4995a8885fbd381cd1484e3e` (INDEX schema `mastermind.sol_skillpack.v1`, version `1.0.1`, bootstrap major `1`). Loaded COLD_START, ACTIVE_EXECUTION, SESSION_RELIABILITY, WEB_CEO_DELEGATION, COMMISSION_WAVE, WORKER_AVENUE_ROUTING and the two universal dialogue/routing source laws from **that** commit.
+- Macro branch cut: `4fd2d0e2b2fb0eeb5d98222e01c4a8b36d9e9396`; resumed/main-reconciled branch base: `3d90aad6d83152dfeeaf8345bc995826ac9d3139`. Protected Mastermind procedure re-pinned at `326c8469a21d7f50fc9ecb1848196bf1c6e66685` on this resumed turn (same compatible INDEX blob/version).
+- Commission source: `research/marketing_dockets/MKT_CATALYST_LOOP_CHATGPT_WEB_FANOUT_20261008.md` at `49a72c605ad910b4116e6b942d00a72ff6c210eb`, Sections 0–4 and 11.
+- GitHub owns implementation evidence; incumbent producer, authentication, consent, mailer, UTM and publication owners are unchanged. All Session 00 files/commits stay on `sol/mmx-acq-catalyst-int-20261008`, never in a sibling branch.
+- Public `app/ticker_news.py` is **not** a free source: it requires authenticated site-full entitlement and a separate rights receipt. Do not fetch or rehost its body, scores, or text in this scan. `engine/marketing/earnings_feed.py` best-effort Finviz/free-poll items likewise lack a verified public-display rights receipt; ingestion alone does not authorize publication.
+- `engine/marketing/attribution.py` already owns nightly-first-touch ledger joins (`utm_content=post_id`; opaque `user_ref`); `engine/marketing/links.py::canonical_link` owns UTM formatting. `app/mailer.py` owns ledger-first sending, suppression and uncertain SMTP outcomes; `app/unsubscribe.py` owns public HMAC unsubscribe. `email_prefs.marketing_opt_out=false` is **not** affirmative Catalyst consent.
+
+## FROZEN public producer → scan contract (01 → 00, 03, 04)
+
+**Authoritative read:** `engine.marketing.catalyst_scan.scan_tickers(tickers: list[str], *, event_id: str | None = None, now_utc: datetime | None = None) -> dict`. This is a **read-only** service, not a second event database. Missing/not-admitted source returns a typed `temporarily_unavailable` response, never demo text in production. No arbitrary feed URL, filename, requester identity or rights override argument.
+
+**JSON envelope** `schema="catalyst.scan/v1"`, `schema_version=1`, `as_of_utc` (ISO-8601 UTC), `requested_tickers` (1–10 uppercase, deduped, order kept), `results` (one per requested ticker), `event_id` (stable source-backed ID or null), `generation` (monotonic event revision or null), `coverage_note` and `publication_state` (`PUBLIC_QUALIFIED|PARTIAL|UNAVAILABLE`). All fields are machine-readable; extra internal/PII fields are stripped at the **00 public serialization boundary**.
+
+Each result: `ticker`, `status` in `SUPPORTED|NOT_COVERED|TEMPORARILY_UNAVAILABLE|RIGHTS_BLOCKED`, optional `relationship` in `DIRECT|EVIDENCED_INDIRECT|UNKNOWN`, optional `relationship_evidence_ids`, `headline`, `headline_evidence_ids` (nonempty IDs of public source receipts supporting every material headline), `what_changed` (array of `{text,evidence_ids}`), `scenarios` (array of `{case,trigger,evidence_ids}`, case BULL|BASE|BEAR), `invalidators` (array of `{text,evidence_ids}`), `sources` (array of `{source_id,url,title,published_at_utc,display_rights,rights_receipt_id}`), `as_of_utc`, `dossier_path` (public output uses the actual Macro canonical `/stocks/<TICKER>.html` or null; input accepts only exact legacy `/stocks/<TICKER>/` or canonical spelling, then normalizes to `.html`), `correction_state` (`CURRENT|CORRECTED|RETRACTED`) and `coverage_note`. For unsupported, blocked, stale or retracted results, all material claim arrays MUST be empty, and never include private body or numerical scores. Session 00 replaces all producer `coverage_note` text with fixed, public-safe status phrases; even a rights-blocked note is not blindly copied. The current scan/result `as_of_utc` must be UTC and within seven days at serialization (older becomes unavailable); independently dated source publication can be older, provided the qualified scan has a current as-of.
+
+The producer packet backing `SUPPORTED` includes `schema="catalyst.public_event/v1"`, stable `event_id`, `event_kind`, `primary_subject`, `event_time_utc`, `first_observed_at_utc`, `as_of_utc`, separately known `publication_time_utc`, qualified `sources`, explicit `relationship_evidence_ids`, `generation`, `correction_state`, `public_safe=true` and explicit `partial_reason`. Unverified/unlicensed, ambiguous, outdated or retracted evidence MUST not enter a SUPPORTED public result. No private qbus feed read can upgrade `display_rights` to ALLOWED.
+
+**Public eligibility invariant:** `SUPPORTED` requires `source.display_rights="ALLOWED"` and nonempty `rights_receipt_id` for every displayed source; every numerical/causal claim **including the headline** refers to at least one displayed source/evidence ID; corrected generations replace eligibility of older generations without rewriting historical-as-known. If not provable return RIGHTS_BLOCKED/UNAVAILABLE (with no body). Unknown indirect links remain UNKNOWN/NOT_COVERED. No model-originated numbers, probabilities, stock ranking, buy/sell call or market-engine scoring.
+
+## Stage A consumer decision — earnings pilot clocks and completeness (2026-10-10)
+
+**Disposition: implementation contract accepted by Session 00; producer migration and
+source-owner admission pending.** This section supersedes the requirement above that
+every SEC filing must have an independently known official publication timestamp. It
+does not change the current v1 runtime: its publication field must not be populated
+with an acceptance or processing clock to get past the existing gate. Session 01
+#8700 owns the producer migration; 00 consumes its committed return and updates the
+HTTP contract together. Until that migration and its review, v1 stays fail-closed.
+
+The first pilot is **earnings-only, event-first**. Suggestions must be direct issuers
+from actually admitted current `edgar_8k_202` events. A known ticker is not evidence
+of an event. No promised 30–50-name coverage, arbitrary-ticker success, indirect
+AI-capex/semiconductor expansion, ranking or publication-latency claim is admitted.
+
+The [SEC Webmaster FAQ](https://www.sec.gov/about/webmaster-frequently-asked-questions)
+separates acceptance from website availability and says it does not expose a first
+availability timestamp. The replacement consumer contract therefore requires:
+
+| Clock | Meaning and required provenance |
+| --- | --- |
+| SEC accepted | Original SEC acceptance timestamp normalized by the existing owner, retaining its source and timezone semantics; not document publication or earnings occurrence time. |
+| Mastermind first verified availability | Earliest retained successful observation by the incumbent source owner of the exact displayed document, bound to URL/document digest, receipt and observation clock. It is not the SEC's first-publication time. A new read cannot reconstruct a missing historical first observation. |
+| Checked as of | Current source/rights assessment clock. Reprocessing cannot advance the first-observation clock or make an old filing recent. |
+| Official publication | Nullable unless independently evidenced for this exact document. Never backfill from SEC acceptance, Atom `updated`, processing `when`, filesystem time or snapshot build time. |
+
+The existing producer's `when_semantics=processing_wall_clock` alone is insufficient
+for the document-observation receipt. Its adapter must bind a successful retained
+document read, including version/digest, through the incumbent ingestion owner.
+Correction or changed document bytes require new version evidence and renewed rights;
+historical observations remain historical. The seven-day pilot lookback uses the
+source's filing acceptance clock, with separate current observation/rights checks.
+Missing, naive, future or inconsistent clocks refuse qualification; tolerance and
+freshness limits must be explicit in the reviewed producer contract, never guessed
+by the anonymous request handler.
+
+Completeness is separate from positive event evidence. A trusted owner read must
+identify its issuer set, exact window, retained snapshot/version, fetched/checked
+clock, outcome and whether pagination/event limits truncated it. A complete-empty
+outcome may describe **no qualifying earnings event in that checked window**, never
+no market event or no filing of any kind. The current 20-event limit cannot establish
+negative coverage for omitted issuers. Missing receipt, partial/truncated read,
+outage and stale source must remain unavailable. Known unsupported symbols remain
+not covered. Neither state receives claims or an opt-in scan receipt. Do not promote
+`recent_events=[]`, a selective marketing outbox, or a historical backfill `ok` to a
+successful current-window check. The current v1 status enum has no complete-empty
+state; a coordinated producer/HTTP change is required before exposing one.
+
+Each displayed document still needs the existing GMI owner's current exact-URL or
+equivalent digest-bound `public_anonymous` grant, including attachment classification,
+expiry, withdrawal and supersession. A family row or accession alone is insufficient.
+Only existing retained source callbacks may be bound; no additional SEC client,
+registry, store or scheduler. `sec_edgar` remains held on #7870 until its own foundation
+and Finance compatibility gates are accepted. This decision grants neither rights
+nor approval to deploy, enable flags, run consent SQL, email or distribute assets.
+
+**Required joined proof:** two documents in one accession do not share grants;
+third-party/expired/withdrawn/corrected documents refuse; poisoned URLs never become
+public packets; acceptance and observed-availability clocks stay distinct; absent
+publication remains null; processing cannot refresh an old event; complete-empty,
+unknown, failed and truncated windows are discriminated by real owner receipts.
+Hosted 320px/desktop, keyboard, CSP, no-JS and withdrawal proof follows source admission
+at an explicitly authorized origin. Stage B and Stage C retain their independent gates.
+
+## RECONCILED 00 HTTP + 02 secure funnel interfaces (00 owns route mounts)
+
+The initial one-shot `POST /api/catalyst/optin` with user-asserted event/tickers and scope `catalyst_event_updates/v1` was **RETIRED before deployment**. After reviewing actual Session 02 [Draft/HOLD #8682](https://github.com/mastermindx-market-intelligence/macro/pull/8682), 00 adopted its stronger signed scan-proof and OTP-backed API. The accepted isolated 01 and 02 source blobs **are now incorporated unchanged** into the single Session 00 Draft/HOLD assembly branch; their original builder PRs/branches remain independent and unmodified. No merge to Macro main, publication, deployment or real user/SMTP effects occurred.
+
+- `POST /api/catalyst/scan` JSON `{"tickers":["NVDA","UNLISTED"],"event_id":null}`. Anonymous, 1–10 validated distinct tickers; returns only the public scan envelope or 400 invalid / 503 source unavailable. `GET /api/catalyst/scan?tickers=NVDA,UNLISTED` is shareable, ticker-only JSON. `GET /api/catalyst?tickers=...` is an accessible no-JS first-value HTML fallback; no registration required. All send no-store. Existing shell/Caddy registration and hosted-browser proof remain separate release gates.
+- `scan_receipt` is an **optional** additional JSON envelope field, never required for an anonymous first result. When `CATALYST_SCAN_RECEIPT_SECRET` contains at least 32 characters and the scan contains current `SUPPORTED` results, 00's `app.catalyst_scan_authority.ScanReceiptAuthority.issue(scan)` signs an event ID, ordered supported tickers, generation, as-of UTC and issue clock, *without PII*. It expires after 20 minutes. With no secret, no eligible rights/current source or unqualified ticker, no proof is issued. The signed proof is NOT email verification or approval to send.
+- Session 02 [Draft/HOLD #8682](https://github.com/mastermindx-market-intelligence/macro/pull/8682) **most recently returned at head `490a2d1afe283141aef42d91a799378a13115dc6`**: `app.catalyst_optin.request_optin(body:dict)` is a **private callback**, not a public route. The required scope is now **`catalyst_event_updates/v1`**. 00 alone registers `POST /api/catalyst/optin/request` (public flag and separate `CATALYST_OPTIN_ENABLED=1` flag; 4 KiB cap), accepts only JSON, forwards to 02 callback, and only returns HTTP 202 `{"status":"VERIFICATION_REQUIRED","public_ref":"opaque"}` if 02 accepted. Required body fields: `email`, `scan_receipt`, `consent_checked=true`, `scope="catalyst_event_updates/v1"`, `first_touch`, empty honeypot and `form_elapsed_ms>=3000`. Any missing/unadmitted source/consent/identity owner or failed callback returns a denial, not a verification success.
+- Session 02 `app.catalyst_optin.router` alone owns `POST /api/catalyst/optin/verify`, expects `email`, `otp`, `public_ref`; only real GoTrue OTP confirmation and atomic positive scoped-consent RPC may return verified. 00 mounts this router conditionally when the sibling module is present, but never automatically initializes service or sender. It is not a second route for requesting opt-in.
+- The sole 02 initializer remains `configure(build_existing_owner_service(...))` after source/current revision, scoped-consent RPC, GoTrue and operator permissions are actually verified. Missing/incompatible RPC is a 503 fail-closed gate. An unsigned ticker/event request is never proof of a public scan.
+- Session 02's sole allowed second-value seam is `FunnelService.deliver(PublicRevision, *, limit, now)` called by the **admitted private producer/operator lane**, never a public route. Its accepted source revision must be current, material, source- and operator-approved. Critically, `RevisionAuthority.read_public_rights(revision, at_utc)` must **re-attest every source URL, exact event+generation+ticker, public-anonymous display rights AND explicit email redistribution rights, with a fresh decision immediately before the roster and each send**. A frozen `external_rights_confirmed` boolean or merely `is_current` is never sufficient; missing/revoked/expired/unknown rights fail closed. Only the incumbent `app.mailer.send(cls="marketing", strict_ledger=True)` may send, rechecking suppression and honoring `email_log` idempotency and `EFFECT_UNKNOWN` stop. Revocation comes from the existing authenticated unsubscribe owner.
+- 04 draft asset seam remains `engine.marketing.catalyst_partner_pack.build_partner_pack(packet, partner, *, preview_only=True)` as an integrator-proposed handshake subject to an actual returned 04 PR. Use existing `engine.marketing.links.canonical_link`, preserve `utm_content` as the source post ID, accept only approved real partner identities, and never infer agreement, endorsement, outreach or publication.
+
+**Strict first-touch caveat:** `first_touch` arriving from a browser is a **sanitized untrusted claim**, not verified partner credit. Session 02's actual consent owner must preserve first admitted touch and Marketing's D07 attribution owner must reconcile it to genuine campaign/post evidence; no automatic payout, lead qualification or reported conversion from a client-supplied UTM.
+
+## Cross-branch acceptance / safety matrix
+
+| Case | Required behavior |
+|---|---|
+| Direct rights-qualified event | Anonymously readable, as-of UTC, independently clickable sources, useful evidence before registration |
+| Evidenced indirect relationship | Must carry relation evidence IDs and cannot invent an issuer connection |
+| Unsupported or unknown ticker | NOT_COVERED, no synthetic score or implied coverage |
+| Unqualified rights or private qbus | RIGHTS_BLOCKED without protected text/claims |
+| Stale / correction / retraction | UNAVAILABLE or corrected generation, no earlier-as-known overwrite, no stale mail |
+| Invalid or 11 tickers | HTTP 400; no downstream producer invocation |
+| Signed scan receipt not backed by current rights/revision | No opt-in request; re-check producer, reject revoked rights, old generation and expired proof |
+| Unverified or opted-out address | No send, no conversion qualification, no PII in public/UTM/analytics |
+| Provider uncertain after DATA | No duplicate resend; classify EFFECT_UNKNOWN, do not call it failed |
+| Partner link | Existing canonical UTM, only valid public source and approved real partner, no implied endorsement |
+
+**Collision check at freeze:** #8302 editorial, #7489 outbox/media, #7493 marketing config, #6842 landing/shell build, #7258 activation-report, #8057 intelligence desk, #8186 Events & News, #7949 shared shell are still open at this pin. Their changed-path manifests do not include `app/main.py`, `app/catalyst_integration.py`, or the new integration-only tests/contract; this is NOT a lease for any other shared path. Recheck right before merging.
+
+## Integration proof and hold
+
+00 integrates real sibling heads **only when actual PR/head and explicit return evidence exist**; do not import proposed paths as if they exist. A staged test can inject a synthetic, conspicuously non-live source fixture to prove shape and denial behavior, but must never be relabeled real producer proof. Production still requires individually verified source rights, secure consent store, sender credentials/authority with unsubscribe, registered public page/edge gate, end-to-end hosted browser + email return, security/legal review, independent adversarial review, first operator-approved distribution and admission. **Never auto-deploy, send or merge this HOLD branch.**
+
+## First assembled increment / security controls
+
+00 implements the anonymous public scan bridge (`app/catalyst_integration.py`), signed scan-proof authority (`app/catalyst_scan_authority.py`), a conditional secure Session 02 router mount in `app/main.py`, portable fixture and focused tests. The public scan requires separate operator `CATALYST_PUBLIC_ENABLED=1`; the proof needs separate strong `CATALYST_SCAN_RECEIPT_SECRET`. The Session 01 producer implementation is now **importable on this Draft branch**, but its default rights-qualified live read remains deliberately unbound and therefore responds 503 rather than inventing a public event. Session 02 is likewise importable, but positive scoped-consent RPCs and `configure(build_existing_owner_service(...))` are unadmitted, so verified real opt-in and email delivery cannot proceed. No 00 shadow identity, consent store, mailer, signup proxy, or unsecured 202 response exists.
+
+- Anonymous scan limits: 8 KiB POST JSON, 1–10 tickers, 30 visitor scans/minute and a separate 2,400/minute trusted Caddy-peer budget. The two-key per-process guard resists direct-to-origin forged visitor headers; it does not replace the edge/distributed abuse owner. 00 applies its existing request throttle to opt-in requests; Session 02 reuses canonical support abuse protection for OTP verification; 00 no longer owns an opt-in rate plane.
+- Rights/source sanitizer strips all nonallowlisted producer fields (PII/private body/scores), replaces coverage notes with fixed public-safe status messages, requires public source receipts, cited headline and material claims, valid generation/current UTC clocks, never forwards denied material, refuses duplicate source IDs or PII-bearing source URLs. This remains structural, not independent cryptographic verification of external display licenses.
+- Receipt security: HMAC binding to public event+generation+supported ticker subset, 20-minute expiration, constant-time signature comparison and live re-query of source rights/current revision before Session 02 may proceed; no supported source or missing secret means no receipt. A valid scan receipt is NOT identity proof, consent confirmation or send authorization.
+- Tests: `tests/test_catalyst_integration.py`, `tests/test_catalyst_scan_authority.py` and portable `tests/fixtures/catalyst_scan_contract_v1.json`. All are **explicitly synthetic**, never real event or provider rights receipts. An earlier isolated Session 00 run reported 25 passing tests on a prior head; an independent immutable-source overlay reported 177 focused tests (not committed to this branch), while Session 02 owner reported 93 tests on its own exact current head. Neither is exact-head full GitHub CI on the currently assembled Session 00 branch. All six Catalyst suites are now enrolled in Macro's existing `support-email-spine` job; exact-head CI and the synthetic composed journey's result must be read directly from that head. Real rights, consent RPC, OTP, sender, browser and external partner validation are separate gates.
+- Integrated exact 02 source: [Draft/HOLD #8682](https://github.com/mastermindx-market-intelligence/macro/pull/8682) head `490a2d1afe283141aef42d91a799378a13115dc6`; four owner-authored files copied by verified Git blobs to the existing #8678 branch, including no-retry/strict-ledger semantics and source rights-at-send. These source copies are implementation evidence, **not** production permission or ownership transfer.
+
+Browser acceptance is **not satisfied**: headless Chromium refused localhost navigation with `ERR_BLOCKED_BY_ADMINISTRATOR`; do not work around the platform restriction or claim rendered-browser proof. The installed real module's current service authority, production GoTrue and scoped Supabase consent RPC, marketing email recipient/suppression checks, production edge+Caddy/SEO, partner approval and independently reviewed hosted consumer path remain explicit admission gates. No deploy, merge or send.
+
+**Return vocabulary:** `SPEC_ONLY` for documented siblings; `BUILT_NOT_PROVEN` for tested code without hosted/full-path proof; `PROVEN_LIVE` only with current consumer and email/browser receipts.
+## Current assembled execution and proof frontier (October 9)
+
+- **Canonical implementation carrier:** [#8678](https://github.com/mastermindx-market-intelligence/macro/pull/8678) `sol/mmx-acq-catalyst-int-20261008`; current DRAFT/HOLD integration source includes 17 changed paths after a verified two-parent commit `08f7c78da3d0bd3d8e08b3f418771fcea24135f7` merged **Macro main into the branch only**. GitHub marked it mergeable against current main, with no unrelated changed paths. Do not merge it into main or arm deployment.
+- **01 source:** [#8700](https://github.com/mastermindx-market-intelligence/macro/pull/8700) head `c065ac735e14d5dcace6bd6a1a3212dbe96751c9`; `engine.marketing.catalyst_packets.build_event_packet`, `engine.marketing.catalyst_scan.compose_scan/scan_tickers`. First publication uses integer generation **zero**. Source grants in fixtures are explicitly synthetic; live `read_qualified_event_context` needs incumbent issuer/public rights admission.
+- **02 source:** [#8682](https://github.com/mastermindx-market-intelligence/macro/pull/8682) head `490a2d1afe283141aef42d91a799378a13115dc6`; four exact returned source+test blobs in #8678. Signed public scan receipt → anonymous consent request → private pending intent and GoTrue OTP → scoped positive Supabase consent → authorized material correction update → `app.mailer` and D07 opaque join. **No positive-consent RPCs are installed** according to latest independent read-only DB metadata; no live recipients are subscribed/sent here.
+- **04/05:** [#8683](https://github.com/mastermindx-market-intelligence/macro/pull/8683) partner factory/private synthetic previews and [#8681](https://github.com/mastermindx-market-intelligence/macro/pull/8681) distributor research only; neither is an approved public partner relationship or consumer placement.
+- **Security / usability:** 00's sanitizer includes deep-decoded URL PII filters, invalid Base64 typed refusal, UTC timestamp comparison, generation zero, strict JSON-only POST and shared abuse checks, and accessible HTML displaying source clocks/scenarios/invalidators. The dossier href is normalized to actual `/stocks/<TICKER>.html`. The independent #8686 mailer-log privacy carrier remains outside this integrator and awaits its actual source owner.
+- **Tests:** `tests/test_catalyst_integration.py::test_actual_packet_scan_signed_optin_and_source_retraction_are_composed` exercises real 01→00→02 code with synthetic source grants, fake OTP+pending scoped consent, a documented correction (generation one), fake sender acceptance, source rights read at roster and send, first-touch attribution and subsequent scoped revoke. It asserts no real email/PII or unauthorized second sends. This is reproducible **offline contract proof only**; even if it passes, it is not a real provider/source, a production consent grant, inbox delivery or a hosted-browser acceptance. The six focused suites + current `app/deploy/update.sh` restart closure are enrolled in Macro CI.
+- **Precise production-only blockers:** independently admitted current public source/issuer/rights reader; rights-at-send owner with **email reuse permission** for the exact source URLs; reviewed service-role-only `catalyst_consent_{contract,begin,resolve,confirm,current,interested,revoke}` RPCs/RLS; GoTrue and SMTP real authorized test identity/receipt; canonical unsubscribe→scoped grant and D07 attribution owner wiring; real public Caddy/regwall/page rendering and mobile+desktop browser acceptance; security/legal/independent acceptance; operator-admitted deployment and first external partner action. Flags remain OFF. Do not infer these from passing synthetic tests.
+- **Next bounded action:** consume #8678 latest exact-head CI and address only actual red Catalyst or integration failures on this branch, then obtain independent acceptance for the assembled source and route the production-only rights/consent/edge gates to incumbent owners. Never merge or deploy automatically.
+
+**Status:** `BUILT_NOT_PROVEN` assembled code with production source/consent rights held. A current CI success, if observed, would prove tested code, not user/product acceptance.
+
+## October 10 integration continuation — bounded production admission
+
+**Candidate source branch:** `sol/mmx-acq-catalyst-int-20261008`; after the latest source adapter, head `cdf6ca3d74e49ab7d2eef7ed04c1510c43842779` (verify fresh PR head before any subsequent effect). Mastermind protected procedure `326c8469a21d7f50fc9ecb1848196bf1c6e66685` / INDEX v1.0.1. Session03's primary CSS/JS and SQL review candidate remain in this **one** Draft/HOLD PR; original sibling PRs unchanged.
+
+**Consumer capability:** `engine.marketing.catalyst_admission.AdmittedEdgarSource` is a private process-local **read adapter**, not an alternate rights registry or SEC fetcher. After incumbent source and issuer owners return reviewed callbacks, only admitted server startup code may call `catalyst_admission.configure(AdmittedEdgarSource(issuer_universe, recent_events, public_grant))`. Before invoking any callback, the adapter requires the existing GMI `assert_public_emission_allowed("sec_edgar")`; it accepts at most twenty current, owner-provided `edgar_8k_202` events and delegates every event to the existing Session01 `build_event_packet` with the actual source-specific `PublicSourceGrant` resolver. No browser-supplied path, URL, issuer ID, or self-signed entitlement. If unconfigured or either rights layer refuses, `scan_tickers` remains unavailable and the public route returns 503. The `sec_edgar` family has **not** been added to `config/theme_sources.yml` by Session00. Separate source-email reuse rights are still required from `RevisionAuthority.read_public_rights` before a follow-up.
+
+**Exact-head tests:** The combined eight original-path Catalyst suites, including `tests/test_catalyst_admission.py`, passed **210**, with 9 non-failing warnings, on a SHA-isolated Mac Studio archive of `cdf6ca3d74e49ab7d2eef7ed04c1510c43842779`. Existing design checker reports **zero** added CSS blocking decisions. Jinja2 serving dependency, the 72 explicit CI import-closure paths, source-specific CI enrollment, and macro-api restart-trigger closure are committed; the focused suite and Bash/Node syntax checks pass. This is not whole CI or real/browser-hosted acceptance.
+
+**Consent candidate:** `research/marketing_dockets/MKT_CATALYST_CONSENT_RPC_V2_REVIEW_ONLY.sql` remains **unapplied**, now with individual anon/auth EXECUTE revokes under actual Supabase-like direct default ACLs, unlinking expirable pending HMAC bodies from immutable granted nonce audit, irreversible global address and per-user opt-out triggers, and fixed-order transaction advisory locks shared with `catalyst_consent_confirm`. `python3.12 -m scripts.test_catalyst_consent_rpc_review` passed on an isolated Unix-socket-only PostgreSQL17 scratch instance at `a68ae95221c4c61edc5105e775e5b9f392df8233`, including three overlapping unsubscribe/confirm races and explicit unsafe RLS-policy refusal. **It is not installed** in Supabase and does not supersede incumbent consent/SQL/GoTrue owners. The admitted SQL owner must independently review triggers, PostgREST argument shape, email changes/aliases, multi-actor deadlocks, RLS, service role and approved staging concurrency before manual migration authority.
+
+**Release HOLD and actual stop condition:** no real public-anonymous SEC source family/per-document display receipt, no distinct email redistribution grant, no approved source-provided issuer/events/grant callbacks, no production `catalyst_consent_*` RPCs, no authorized real GoTrue/SMTP+one-click unsubscribe return, no hosted 320px/desktop consumer proof, no accepted partner/financial-communications review, and no deployment admission. Default-OFF public/UX/opt-in/mail switches remain unchanged. The new source and consent code are ready for **existing-owner** source/SQL qualification; source authorizations cannot be manufactured in this integration carrier. `BUILT_NOT_PROVEN / DRAFT_HOLD`.
