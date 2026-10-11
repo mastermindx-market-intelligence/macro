@@ -210,7 +210,7 @@ def test_real_leader_radar_builder_publishes_rs_watch_and_html(tmp_path):
 
     from jinja2 import Environment, FileSystemLoader
 
-    from test_build_leader_radar import _build_fixture_root
+    from tests.test_build_leader_radar import _build_fixture_root
     from scripts.build_leader_radar import build
 
     root = _build_fixture_root(tmp_path, ["AAPL", "MSFT"])

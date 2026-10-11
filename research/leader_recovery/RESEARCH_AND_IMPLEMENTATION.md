@@ -37,7 +37,7 @@ The new recovery-specific UI partial has **not** been created: its direct host w
 
 ## Executed validation and actual findings
 
-- 333 focused tests passed on the connected Mac with the branch's staged source over a read-only host dependency checkout. This comprises new recovery/outcome/producer tests and legacy lifecycle/builder suites. Eight existing pytest temporary-directory cleanup warnings were non-failing. This is not exact-head hosted CI.
+- 396 focused tests passed on the connected Mac with the branch's staged source over a read-only host dependency checkout. This comprises new recovery/outcome/producer, policy, expectations, first-observed capture tests, original RS-high tests and legacy lifecycle/builder suites. Eight existing pytest temporary-directory cleanup warnings were non-failing. This is not exact-head hosted CI.
 - A three-name real producer fixture showed complete incumbent payload equality after removing only the two new recovery projections and pre-existing volatile build timestamps. The express build did not modify any fixture data-store bytes. The optional-failure test retains all original ticker rows.
 - Six deliberately introduced temporal/state defects were each caught by the core regression suite; the mutation method and result are preserved separately. This is adversarial author verification, not independent acceptance.
 - The actual source census covers 173 incumbent members plus explicit non-recovery examples, 176 unique names, through October 8. It produced 1,756 horizon-label rows from observations starting January 2024. Current membership is survivorship-biased and is not a point-in-time historical population.
@@ -50,7 +50,7 @@ See `CENSUS_SUMMARY.json`, `test_receipt.json`, and `producer_parity.json` for a
 
 ## Remaining empirical and acceptance work
 
-The next exploratory comparison uses one shared endpoint per correction and keeps no-entry cases in the denominator: immediate correction entry versus fixed waits, a simple moving-average reclaim, and the richer repair/re-ignition condition. Execution must occur after observation, and cost sensitivity and exposure time must be disclosed. This tests whether the extra conditions add timing value rather than rewarding a longer horizon or quietly removing failures.
+The common-endpoint comparison below has now been implemented and executed. No thresholds were retuned to improve its disappointing incremental-return result.
 
 Predictive promotion additionally requires actual historical universe membership including delistings, first-seen/revision-consistent source vintages, matched market/sector regimes, clustered uncertainty, a declared untouched/prospective evaluation, and realistic spreads/slippage. Source implementation is not evidence that these requirements are already met. Fundamental thesis health requires issuer- and publication-time-qualified data from its existing owner, not a price-only guess.
 
@@ -61,3 +61,51 @@ Source release still requires current candidate CI and the applicable independen
 An independent READ-ONLY audit was submitted exactly once through Executive session_summon using operation `rs-leader-deep-recovery-independent-audit-20261010`. It returned EFFECT_UNKNOWN. Original-operation reply lookup returned unavailable; there is no dispatch/start/return proof and no resubmission or alternate worker. This unresolved audit effect is fenced and does not authorize another audit. The implementation and empirical work above do not depend on it.
 
 DO_NOT_REDO: the incumbent RS-high feature, old shallow-pullback engine, completed failure/repair source tests, and the original refused UI write. Continue with source publication/readback, exact-head verification, and the finite-endpoint research comparison. Do not replace current source custody or declare 'live' from these files.
+
+
+## Completed common-endpoint timing comparison
+
+`engine/leader_recovery_policy_research.py` and `scripts/research/leader_recovery_policy_study.py` compare six policies: immediate, fixed 5-session wait, fixed 10-session wait, 50-day-average reclaim, multi-session repair, and multi-session re-ignition. Every policy uses the same landmark-plus-horizon endpoint, observes a signal before its next-close entry reference, and keeps NO_ENTRY cases in the denominator at zero cash return. The policies share source-gap and censoring rules. Event identity prevents borrowing a later episode's signal. There are 13 direct invariance/regression tests.
+
+The study froze the available cut at October 8, 2026. It evaluates the first DAMAGED observation per issuer/episode/calendar month, from January 2024, over 21/63/126-session horizons and 20/50 basis-point round-trip cost scenarios: **2,774 landmarks and 99,864 policy-result rows**. These are not 99,864 independent experiments; monthly landmarks and issuers are strongly correlated. Current membership and adjusted vintages remain survivorship-biased. No causal or prospective edge claim is justified.
+
+At 63 sessions and 20bp costs, there are 2,455 complete shared landmarks across 170 issuers and 319 right-censored landmarks. Median net return was approximately +4.44% for immediate entry, +2.06% for simple 50-day reclaim, and 0% for both stricter policies because no-entry cash remains included. Entry rates were 100%, 94.9%, 80.9%, and 58.6%, respectively. The richer policies reduced time in market and the adverse excursion of entered positions, but gave up returns.
+
+The **paired** median net-return difference, on identical landmarks/endpoints, was approximately -1.08 percentage points for repair versus the simple moving-average reclaim, and -2.40 points for re-ignition versus that reclaim. Versus immediate entry the paired differences were -4.54 and -6.13 points. These are paired deltas, not differences of separate sample medians. Cost sensitivity, yearly splits, equal-issuer means, complete/no-entry/censored counts, and PLTR landmarks are retained in `POLICY_SUMMARY.json`.
+
+**Decision:** ship the research and descriptive evidence capability for review; do not promote the richer repair label into a superior return/ranking/buy gate. Reduced downside due partly to reduced exposure is not free alpha. The result supports separate damage, recovery, opportunity-cost, and entry-context reporting rather than a single confident trade score.
+
+## Existing-owner expectation context now implemented
+
+`engine/leader_recovery_expectations.py` consumes the incumbent `data/revisions/latest.parquet` snapshot as an independent optional input in the Leader Radar builder. It refuses future-dated snapshots, missing source dates, ambiguous ticker duplicates, and invalid numeric values. Unit and denominator meanings were checked against `collectors/equity_revisions.py`: estimate drift is already percent, breadth is net/(up+down), and n_analysts is the reviser count while n_covering is the coverage count. Negative breadth is legal. Coverage-normalized net revisions are not the fraction of all analysts that upgraded.
+
+For PLTR the available snapshot is October 6, at the October 8 price cut: 3 net upward revisions among 3 revisers, 28 covering analysts, coverage-normalized net revisions 0.1071, 30-day forward EPS estimate change +1.29%, 90-day +11.92%, and forward revenue-growth estimate 49.67%. The last figure is a forecast, not actual reported revenue growth. These are positive expectation observations, **not** certification of an intact company thesis. They cannot be backdated into June. First-seen, historical identity and freshness qualification are explicitly not inferred from the snapshot's date.
+
+Twelve expectation regressions include the observed numpy-boolean coercion defect, repaired so True is not reported as a real numeric forecast. Optional expectation failure does not remove the ticker or destroy its independent price recovery projection.
+
+## Prospective observation preservation: implemented, opt-in, not activated
+
+`engine/leader_recovery_observations.py` adds compact optional observation fields to the existing Leader Radar `state_history.parquet` rows, through the same incumbent nightly writer. It does not create a store, calendar, ticker identity, event ID, or scheduler. `leader_radar.recovery_capture_enabled` must be the boolean true; default is disabled and no production configuration was changed.
+
+When explicitly enabled later, the first observed descriptor for a native (date,ticker) row retains its actual UTC observation timestamp, definition/source fingerprints, state, frozen recovery references and expectation source summary. Reruns and corrected inputs cannot overwrite that captured observation. Disarming stops new captures without deleting old ones. A pure `read_captured_observation` reader refuses to expose an observation before its knowledge timestamp. This proves what this system recorded, **not** when a vendor first knew the underlying market data. The source-first-seen-proven flag stays false.
+
+A native nightly fixture verified first capture, same-day idempotence and preservation after disarm; dedicated tests also cover absent rows, corruption, incomplete seals, duplicate identities, knowledge clocks, parquet roundtrip, nonmutation and future knowledge exclusion. The current express full-source proof did not activate capture or alter any operational store.
+
+## Real producer proof and release status
+
+A read-only full-source run of the actual builder processed **173 incumbent names**, produced a **1,808,031-byte** radar JSON carrying recovery descriptors plus expectation context, decoded it back and matched the returned projection, and rendered the existing Leader Radar HTML. A Python audit hook recorded zero prohibited network/process/out-of-scratch write attempts during the run. The 177 existing Leader Radar/RS-history operational files hashed before/after were byte-identical. These observations are bounded proof, not an OS-wide audit or public deployment.
+
+`REAL_PRODUCER_RECEIPT.json` carries the actual counts, PLTR descriptor and source clocks. PLTR was REIGNITING, EXTENDED, with positive October-6 expectation observations. The recovery-specific panel remains absent because its original write was refused; only the existing previously implemented RS-high page was rendered. A missing scratch copy of the existing data_base.js helper was supplied and the existing page re-rendered; no substitute recovery UI was written.
+
+The earlier published candidate's hosted CI genuinely selected the new Leader Radar step, then failed collection on a bare `test_build_leader_radar` import. The ordinary-package fixture import is now `tests.test_build_leader_radar` in both affected tests. `CI_FAILURE_AND_REPAIR.json` retains the failing run/head/job; 396 focused tests now pass without an artificial tests-directory sys.path insertion. `MUTATION_RECEIPT.json` records all six deliberately defective variants caught on the current core. Exact final-head hosted CI and independent acceptance remain distinct from these author checks.
+
+## Final scoped delivery checklist
+
+- Research definitions, counterexamples, finite-horizon censoring and common-endpoint comparison: implemented and executed.
+- Former-leader damage/repair/failed-repair descriptor and source-vintage fingerprints: implemented and tested.
+- Existing producer JSON integration, independent expectation observations and default-off first-observation capture/reader: implemented and tested.
+- Existing consumer non-regression, explicit native CI selection, real producer proof: performed at the scopes stated above.
+- New recovery UI: blocked by the original explicit tool refusal; no alternate-carrier retry.
+- Source review/CI release, capture enrollment, deployment and natural production/API/browser acceptance: not implied by implementation and remain gated.
+
+Do not endlessly tune this cohort to make a winning PLTR story. Preserve the negative incremental-return result, keep entry authority false, and use genuinely held-out/PIT/rights-qualified evidence before any promotion.

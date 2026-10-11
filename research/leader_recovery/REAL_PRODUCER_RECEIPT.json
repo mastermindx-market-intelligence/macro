@@ -1,0 +1,273 @@
+{
+  "n_rows": 173,
+  "as_of": "2026-10-08",
+  "recovery_counts": {
+    "UNAVAILABLE": 3,
+    "NO_PRIOR_LEADER": 3,
+    "ACTIVE_LEADER": 5,
+    "CORRECTING": 2,
+    "DAMAGED": 67,
+    "REBUILDING": 5,
+    "REIGNITING": 39,
+    "REPAIR_PAUSED": 49,
+    "PRICE_RECOVERED_RS_LAGGING": 0,
+    "LEADERSHIP_REESTABLISHED": 0,
+    "FAILED_REPAIR": 0
+  },
+  "elapsed_seconds": 75.906,
+  "operational_stores_hashed": 177,
+  "operational_store_bytes_unchanged": true,
+  "audited_external_effect_attempts": [],
+  "json_bytes": 1808031,
+  "existing_html_rendered": true,
+  "new_recovery_ui_created": false,
+  "pltr": {
+    "as_of": "2026-10-08",
+    "state": "REIGNITING",
+    "reason": "multi_session_fast_slow_and_relative_repair",
+    "prior_leader_on": "2025-08-08",
+    "latest_leader_proxy_on": "2025-11-03",
+    "leader_evidence": "PRICE_RS_PROXY",
+    "episode": {
+      "peak_on": "2025-08-12",
+      "peak_price": 186.97000122070312,
+      "reference_rs": 0.2974057135944237,
+      "prior_leader_on": "2025-08-08",
+      "opened_on": "2025-08-19",
+      "trough_on": "2026-06-25",
+      "trough_price": 107.2699966430664,
+      "price_high_water": 207.17999267578125,
+      "price_high_water_on": "2025-11-03",
+      "max_drawdown_from_high_water": -0.48223767,
+      "max_drawdown_peak_price": 207.17999267578125,
+      "max_drawdown_peak_on": "2025-11-03",
+      "max_drawdown_trough_price": 107.2699966430664,
+      "max_drawdown_trough_on": "2026-06-25",
+      "max_drawdown": -0.42627162,
+      "underwater_sessions": 287,
+      "below_200_sessions": 129,
+      "failed_repairs": 3,
+      "repair_floor": 107.2699966430664,
+      "repair_started_on": "2026-08-06",
+      "last_failure_on": "2026-06-12",
+      "history_complete": true,
+      "recovered_on": null,
+      "drawdown_from_high_water": -0.04054443,
+      "original_price_target_recovered": true,
+      "price_recovered": false,
+      "rs_recovered": false,
+      "rebound_from_low": 0.85308106,
+      "status": "open"
+    },
+    "price": 198.77999878,
+    "relative_return_21": 0.15220632,
+    "extension_vs_50": 0.13430547,
+    "entry_context": "EXTENDED",
+    "thesis_state": "UNKNOWN",
+    "ma_fast": 175.24379883,
+    "ma_slow": 152.25582462,
+    "fast_confirmation_sessions": 18,
+    "slow_confirmation_sessions": 18,
+    "last_completed_episode": {
+      "peak_on": "2025-02-18",
+      "peak_price": 124.62000274658203,
+      "reference_rs": 0.20780104716038275,
+      "prior_leader_on": "2025-02-18",
+      "opened_on": "2025-02-19",
+      "trough_on": "2025-04-04",
+      "trough_price": 74.01000213623047,
+      "price_high_water": 133.1699981689453,
+      "price_high_water_on": "2025-06-03",
+      "max_drawdown_from_high_water": -0.40611458,
+      "max_drawdown_peak_price": 124.62000274658203,
+      "max_drawdown_peak_on": "2025-02-18",
+      "max_drawdown_trough_price": 74.01000213623047,
+      "max_drawdown_trough_on": "2025-04-04",
+      "max_drawdown": -0.40611458,
+      "underwater_sessions": 73,
+      "below_200_sessions": 0,
+      "failed_repairs": 0,
+      "repair_floor": 74.01000213623047,
+      "repair_started_on": "2025-04-24",
+      "last_failure_on": null,
+      "history_complete": true,
+      "recovered_on": "2025-06-03",
+      "drawdown_from_high_water": 0.0,
+      "original_price_target_recovered": true,
+      "price_recovered": true,
+      "rs_recovered": true,
+      "rebound_from_low": 0.79935136
+    },
+    "schema": "leader_recovery.v1",
+    "era": "leader-recovery-descriptive-2026-10-10",
+    "label": "Trend and relative strength repairing",
+    "source_fingerprint_sha256": "b55fb74792a425c4ed687b4b6cb77f77478fd73e48c36a6d847b3a0751287df2",
+    "sampling_basis": "completed_daily_close",
+    "authority": {
+      "may_rank": false,
+      "may_gate": false,
+      "may_size": false,
+      "may_trade": false,
+      "may_alert": false
+    },
+    "definition": {
+      "high_window": 252,
+      "fast_window": 50,
+      "slow_window": 200,
+      "rs_window": 21,
+      "confirm_sessions": 3,
+      "correction_fraction": 0.1,
+      "deep_fraction": 0.2,
+      "rebound_fraction": 0.15,
+      "extension_fraction": 0.1
+    },
+    "definition_sha256": "ca0b72ba626018d6431e3299ca4d522014b4e6d969253809ae7ec36697f2bfdc",
+    "source_ref": "data/baskets/ohlcv/PLTR.parquet + data/yahoo/SPY.parquet",
+    "evidence_mode": "RECONSTRUCTED_CURRENT_VINTAGE",
+    "first_seen_qualified": false,
+    "historical_membership_qualified": false,
+    "fundamental_thesis": {
+      "state": "UNKNOWN",
+      "reason": "requires_source_dated_fundamental_owner"
+    },
+    "transitions": [
+      {
+        "as_of": "2026-03-20",
+        "from": "REBUILDING",
+        "to": "DAMAGED",
+        "reason": "deep_drawdown_or_below_long_trend"
+      },
+      {
+        "as_of": "2026-03-25",
+        "from": "DAMAGED",
+        "to": "REBUILDING",
+        "reason": "multi_session_fast_and_relative_repair"
+      },
+      {
+        "as_of": "2026-03-26",
+        "from": "REBUILDING",
+        "to": "DAMAGED",
+        "reason": "deep_drawdown_or_below_long_trend"
+      },
+      {
+        "as_of": "2026-04-10",
+        "from": "DAMAGED",
+        "to": "FAILED_REPAIR",
+        "reason": "close_breached_frozen_repair_floor"
+      },
+      {
+        "as_of": "2026-04-13",
+        "from": "FAILED_REPAIR",
+        "to": "DAMAGED",
+        "reason": "deep_drawdown_or_below_long_trend"
+      },
+      {
+        "as_of": "2026-06-02",
+        "from": "DAMAGED",
+        "to": "REBUILDING",
+        "reason": "multi_session_fast_and_relative_repair"
+      },
+      {
+        "as_of": "2026-06-03",
+        "from": "REBUILDING",
+        "to": "DAMAGED",
+        "reason": "deep_drawdown_or_below_long_trend"
+      },
+      {
+        "as_of": "2026-06-12",
+        "from": "DAMAGED",
+        "to": "FAILED_REPAIR",
+        "reason": "close_breached_frozen_repair_floor"
+      },
+      {
+        "as_of": "2026-06-15",
+        "from": "FAILED_REPAIR",
+        "to": "DAMAGED",
+        "reason": "deep_drawdown_or_below_long_trend"
+      },
+      {
+        "as_of": "2026-08-06",
+        "from": "DAMAGED",
+        "to": "REIGNITING",
+        "reason": "multi_session_fast_slow_and_relative_repair"
+      },
+      {
+        "as_of": "2026-09-08",
+        "from": "REIGNITING",
+        "to": "REPAIR_PAUSED",
+        "reason": "prior_repair_above_long_trend_but_confirmation_missing"
+      },
+      {
+        "as_of": "2026-09-17",
+        "from": "REPAIR_PAUSED",
+        "to": "REIGNITING",
+        "reason": "multi_session_fast_slow_and_relative_repair"
+      }
+    ],
+    "transitions_total": 83,
+    "expectations": {
+      "schema": "leader_recovery_expectations.v1",
+      "ticker": "PLTR",
+      "as_of": "2026-10-08",
+      "availability": "SOURCE_DATED_OBSERVATIONS",
+      "reason": null,
+      "source": "data/revisions/latest.parquet",
+      "source_date": "2026-10-06",
+      "source_age_sessions": 2,
+      "readings": {
+        "net_revisions_30d": {
+          "value": 3.0,
+          "unit": "count"
+        },
+        "reviser_count_30d": {
+          "value": 3.0,
+          "unit": "count"
+        },
+        "covering_analysts": {
+          "value": 28.0,
+          "unit": "count"
+        },
+        "net_reviser_breadth": {
+          "value": 1.0,
+          "unit": "ratio_minus1_to1"
+        },
+        "coverage_normalized_net_revisions": {
+          "value": 0.1071,
+          "unit": "ratio"
+        },
+        "eps_estimate_change_30d": {
+          "value": 1.29,
+          "unit": "percent"
+        },
+        "eps_estimate_change_90d": {
+          "value": 11.92,
+          "unit": "percent"
+        },
+        "forward_revenue_growth_estimate": {
+          "value": 49.67,
+          "unit": "percent"
+        },
+        "eps_estimate_dispersion": {
+          "value": 0.4181,
+          "unit": "nonnegative_ratio"
+        },
+        "revenue_estimate_analysts": {
+          "value": 29.0,
+          "unit": "count"
+        }
+      },
+      "quality_flags": [],
+      "revision_direction": "POSITIVE_OBSERVATIONS",
+      "thesis_state": "UNKNOWN",
+      "first_seen_qualified": false,
+      "historical_identity_qualified": false,
+      "freshness_adjudicated": false,
+      "basis": "forward_fiscal_year_consensus_estimates",
+      "disclosure": "Snapshot observations, not actual reported revenue growth or a thesis verdict.",
+      "source_fingerprint_sha256": "9cf6a636d0383765375dc3a0e267265055202cbca09c505af82bd3eb1eed0e77"
+    }
+  },
+  "existing_html_support_copy_verified": true,
+  "data_base_js_sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+  "existing_html_sha256": "18c826de4f4e2df0150e2a4437c572cecd316c1b9ad97d588c53eff6276c23b7"
+}

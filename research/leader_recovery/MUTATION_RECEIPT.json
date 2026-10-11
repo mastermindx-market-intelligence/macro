@@ -1,0 +1,31 @@
+{
+  "source_sha256": "dfcf917dbc73390f91d3b62a90c81d1fa5c77fc1a3b78be270d495f86e29e578",
+  "test_sha256": "80c07db6b3903a59d820f408702a760e4ef91d680429876d3d5fde0e16d22b57",
+  "method": "six deliberate in-scope source mutations; author-run adversarial regression, not independent review",
+  "mutations": {
+    "ignore_history_gaps": {
+      "caught": true,
+      "summary": "1 failed, 39 passed in 1.08s"
+    },
+    "forget_old_leader": {
+      "caught": true,
+      "summary": "24 failed, 16 passed in 0.62s"
+    },
+    "declare_rs_restored": {
+      "caught": true,
+      "summary": "4 failed, 36 passed in 0.52s"
+    },
+    "permit_future_duplicates": {
+      "caught": true,
+      "summary": "2 failed, 38 passed in 0.51s"
+    },
+    "erase_failed_repairs": {
+      "caught": true,
+      "summary": "2 failed, 38 passed in 0.52s"
+    },
+    "rolling_peak_loss": {
+      "caught": true,
+      "summary": "5 failed, 35 passed in 0.57s"
+    }
+  }
+}

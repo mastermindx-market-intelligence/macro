@@ -1,0 +1,19 @@
+{
+  "subject_head": "2dfc6953f0939f3480db4835c482005cb782bb21",
+  "tested_merge": "1697114ab567ab1897eab765faa9e4ebe7f50849",
+  "tested_base": "c12ecb86c312542a5f00f9d6e419cdc3542a3503",
+  "run_id": 38103314008,
+  "job_id": 114364119719,
+  "job": "ci-pack-10",
+  "selected_owner_job": "leader-radar-unit",
+  "new_step_selected": true,
+  "failure": "ModuleNotFoundError: No module named test_build_leader_radar",
+  "location": "tests/test_leader_recovery_integration.py:7",
+  "repair": "Use package-qualified tests.test_build_leader_radar import in integration and original RS-high test",
+  "repair_staged": true,
+  "hosted_fix_verified": false,
+  "legacy_suites_passed": {
+    "lifecycle": 141,
+    "builder": 138
+  }
+}

@@ -11,5 +11,6 @@
     "elapsed_s"
   ],
   "baseline_builder_sha256": "e514c39fa28c9d8317cb36bb00a8bcdd40df49ea075de912a0685d15381289df",
-  "candidate_builder_sha256": "00338ef7d8788c6114c5f27875d286dc738d2e644e994a90448296c5dfac44cd"
+  "candidate_builder_sha256": "cde093c371412daec6500acb3a4ea89404a49bee25aa074792e34752a7876ed4",
+  "capture_default_disabled": true
 }

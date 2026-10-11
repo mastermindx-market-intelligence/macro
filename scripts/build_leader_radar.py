@@ -2749,6 +2749,40 @@ def build(
             continue
 
     # ── Persist data/ stores (nightly lane only — HOUSE-U5) ───────────────────
+    # Recovery is an additive projection, after incumbent states/fires are fixed.
+    # It never changes admission, hysteresis, ordering, or any data/ writer.
+    from engine.leader_recovery import describe_recovery, recovery_roster
+    from engine.leader_recovery_expectations import project_expectations
+    from lib.nyse_calendar import sessions_between as _recovery_sessions
+    _recovery_calendar = (
+        _recovery_sessions(pd.Timestamp(spy.index.min()).date(), today)
+        if not spy.empty else []
+    )
+    for _row in rows:
+        _t = _row["ticker"]
+        _bars = ohlcv_map.get(_t)
+        try:
+            _recovery = describe_recovery(
+                _bars["close"] if _bars is not None else pd.Series(dtype=float),
+                spy, as_of=today, sessions=_recovery_calendar,
+                source_ref=f"data/baskets/ohlcv/{_t}.parquet + data/yahoo/SPY.parquet",
+            )
+        except Exception as _exc:  # preserve incumbent ticker visibility on optional-lens failure
+            log.warning("leader recovery unavailable for %s: %s", _t, _exc)
+            _recovery = {"schema": "leader_recovery.v1", "as_of": as_of,
+                         "state": "UNAVAILABLE", "reason": "projection_error",
+                         "thesis_state": "UNKNOWN", "episode": None}
+        try:
+            _recovery["expectations"] = project_expectations(
+                _t, revisions_df, as_of=today, sessions=_recovery_calendar,
+            )
+        except Exception as _exc:
+            log.warning("recovery expectations unavailable for %s: %s", _t, _exc)
+            _recovery["expectations"] = {"availability": "UNAVAILABLE", "reason": "projection_error",
+                                         "thesis_state": "UNKNOWN"}
+        _row.setdefault("display_chips", {})["leader_recovery"] = _recovery
+
+
     # Writes merge onto the UNCAPPED frames (state_df_full / fire_log_df_full):
     # the PIT cap is a read-side view, and _merge_history_frame already drops
     # today's rows before appending. Merging the capped view would delete any row
@@ -2758,6 +2792,12 @@ def build(
         if new_state_rows:
             try:
                 updated = _merge_history_frame(state_df_full, new_state_rows, today)
+                from engine.leader_recovery_observations import merge_recovery_observations
+                updated = merge_recovery_observations(
+                    state_df_full, updated, rows, as_of=today,
+                    observed_at=built_at,
+                    enabled=lr_cfg.get("recovery_capture_enabled") is True,
+                )
                 _write_state_history(updated, data_root)
                 log.info("build_leader_radar: state_history: %d total rows", len(updated))
             except Exception as e:  # noqa: BLE001
@@ -2947,30 +2987,6 @@ def build(
     )
     near_trigger = _build_near_trigger(rows)
     fire_history = _build_fire_history(fire_log_df, data_root)
-
-    # Recovery is an additive projection, after incumbent states/fires are fixed.
-    # It never changes admission, hysteresis, ordering, or any data/ writer.
-    from engine.leader_recovery import describe_recovery, recovery_roster
-    from lib.nyse_calendar import sessions_between as _recovery_sessions
-    _recovery_calendar = (
-        _recovery_sessions(pd.Timestamp(spy.index.min()).date(), today)
-        if not spy.empty else []
-    )
-    for _row in rows:
-        _t = _row["ticker"]
-        _bars = ohlcv_map.get(_t)
-        try:
-            _recovery = describe_recovery(
-                _bars["close"] if _bars is not None else pd.Series(dtype=float),
-                spy, as_of=today, sessions=_recovery_calendar,
-                source_ref=f"data/baskets/ohlcv/{_t}.parquet + data/yahoo/SPY.parquet",
-            )
-        except Exception as _exc:  # preserve incumbent ticker visibility on optional-lens failure
-            log.warning("leader recovery unavailable for %s: %s", _t, _exc)
-            _recovery = {"schema": "leader_recovery.v1", "as_of": as_of,
-                         "state": "UNAVAILABLE", "reason": "projection_error",
-                         "thesis_state": "UNKNOWN", "episode": None}
-        _row.setdefault("display_chips", {})["leader_recovery"] = _recovery
 
     # ── Payload ───────────────────────────────────────────────────────────────
     elapsed = time.monotonic() - t0
