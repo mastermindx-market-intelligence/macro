@@ -9,6 +9,7 @@
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
 {% from "_risk_envelope_band.html.j2" import risk_button_context %}
+{% import "_options_compare.html.j2" as ocx with context %}
 {% macro help(en, zh='') -%}
 <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -13760,6 +13761,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% endif %}
         </div>{# /riskdlg-leadership #}
 
+        {{ ocx.teaser(options_compare if options_compare is defined else none) }}
+
         <details class="riskdlg-method" id="riskdlg-method">
           <summary>{{ t('Method & track record','方法与历史记录') }}</summary>
           {% if _rk_rd and _rk_rd.state %}
@@ -13829,6 +13832,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
   </div>
   {% endif %}{# /market_state — dlg-risk #}
+
+  {{ ocx.dialog(options_compare if options_compare is defined else none) }}
 
 
   {# dlg-policy: Policy Monitor — full redesign (spec §4b) #}
