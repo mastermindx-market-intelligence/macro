@@ -23,7 +23,7 @@
 
 # Homebrew Bash 5.3.9 can deadlock on large heredocs on macstudio.
 # Enter the macOS system Bash before sourced helpers or any heredoc executes.
-if [ "$(uname -s)" = "Darwin" ] && [ "${BASH:-}" != "/bin/bash" ]; then
+if [ "$(uname -s)" = "Darwin" ] && [ "${BASH:-}" != "/bin/bash" ] && [ "${BASH_SOURCE[0]}" = "$0" ]; then
   exec /bin/bash "$0" "$@"
 fi
 
