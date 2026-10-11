@@ -58,6 +58,7 @@
    --up/--down under html[data-lang="zh"], Asia convention).
    ============================================================================ #}
 {% import "_risk_radar_card.html.j2" as rrc %}
+{% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
 
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
@@ -99,6 +100,19 @@
       <button class="{{ _dcl }}-close" type="button" onclick="{{ _dcx }}" aria-label="Close">&#xd7;</button>
     </div>
     <div class="{{ _dcl }}-body rrd">
+
+      {#- China only: measured settled-close damage leads when the canonical
+          observation confirms an active decline; the radar below stays as the
+          forward-risk evidence. HK / CA dialogs are unchanged. -#}
+      {%- set _pbv = c.get('pullback_view') if (mkt == 'cn' and c.get('pullback_view') is mapping) else none -%}
+      {#- The fragment's own qualification decides; one rule, not two. -#}
+      {%- set _pb_active = _pbv is not none and (pb_depth.lead('cn', _pbv)|trim) == '1' -%}
+      {% if _pb_active %}
+      {{ pb_depth.detail('cn', _pbv) }}
+      <script>{% include "_risk_radar_pullback_depth.js.j2" %}</script>
+      <details class="riskdlg-legacy-details">
+        <summary>{{ t('Forward risk and drivers','前瞻风险与驱动因素') }}</summary>
+      {% endif %}
 
       {# ── 1. Headline: what is loudest, how loud, what to do about it ─────── #}
       <div class="rrd-hd tone-{{ _tone }}">
@@ -415,6 +429,7 @@
         <span class="l-en">These are windows, not certainties — re-drawn nightly. The response is sizing, not stock picking; forward records are still accruing.</span>
         <span class="l-zh">这些是概率窗口而非定论——每晚重算。应对是仓位控制而非选股；前瞻记录仍在积累中。</span>
       </div>
+      {%- if _pb_active %}</details>{% endif %}
 
     </div>
   </div>

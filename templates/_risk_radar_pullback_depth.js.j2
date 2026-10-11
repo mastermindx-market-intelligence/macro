@@ -1,0 +1,35 @@
+/* Observation expiry owner for the measured Risk Radar section. Presentation
+   only: no fetch, polling feed, recomputation or trading decision. At the
+   producer's valid_until the section stops claiming a current assessment and
+   shows its expiry notice; the measured figures are hidden by pb-expired. */
+(function () {
+  'use strict';
+  var timer;
+  function expire() {
+    window.clearTimeout(timer);
+    var now = Date.now(), next = Infinity;
+    document.querySelectorAll('.rrp.pbx[data-pb-valid-until]').forEach(function (root) {
+      var end = Date.parse(root.getAttribute('data-pb-valid-until') || '');
+      if (!Number.isFinite(end) || now >= end) {
+        root.classList.add('pb-expired');
+        root.setAttribute('data-pb-phase', 'unavailable');
+        var heading = root.querySelector('.pbx-heading h2');
+        if (heading) {
+          var en = heading.querySelector('.l-en'), zh = heading.querySelector('.l-zh');
+          if (en) en.textContent = 'Price update needed';
+          if (zh) zh.textContent = '价格数据待更新';
+        }
+      } else {
+        next = Math.min(next, end);
+      }
+    });
+    // One-shot at the producer-owned deadline; visibility restores delayed tabs.
+    if (Number.isFinite(next)) timer = window.setTimeout(expire, Math.min(2147483647, Math.max(1, next - now + 10)));
+  }
+  function start() {
+    expire();
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) expire(); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+})();

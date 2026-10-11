@@ -50,6 +50,7 @@ _MODULES = (
     "tushare_valuation",   # real mktcaps (feeds the ==30亿 sentinel fix)
     "tushare_moneyflow",   # sector moneyflow (china_radar)
     "tushare_margin",      # per-name margin (crowding froth, normalized by circ_mv)
+    "tushare_index_daily", # benchmark index closes (Risk Radar measured pullback)
     "tushare_chips",       # chip distribution
     "tushare_broker",      # broker seats
     "tushare_forecast",    # earnings guidance
@@ -71,7 +72,7 @@ class ChinaTushareAdapter(Adapter):
         if not tushare_client.enabled():
             raise RuntimeError("TUSHARE_TOKEN absent — gated tushare plane skipped")
         # Other China adapters in the same collect process also use this shared client.
-        # Diagnose only failures produced inside THIS adapter's seven-module window; a
+        # Diagnose only failures produced inside THIS adapter's module window; a
         # stale ConnectionError from an earlier consumer must not relabel an import or
         # entitlement miss here as a transport outage. Auth remains latched separately.
         tushare_client.clear_transport_error()
@@ -146,8 +147,8 @@ class ChinaTushareAdapter(Adapter):
             # expired membership, exhausted 积分, or a denied endpoint just as
             # readily as for a genuinely empty response. Every module returning
             # 0 means the gate was OPEN (a closed gate raises above, before this
-            # line) and the API still handed back nothing across seven distinct
-            # endpoints — an outage, not a quiet day. A snapshot module re-fetches
+            # line) and the API still handed back nothing across every distinct
+            # endpoint — an outage, not a quiet day. A snapshot module re-fetches
             # its whole cross-section every run and reports thousands of rows even
             # on a weekend, so an all-zero pass is anomalous by construction.
             #

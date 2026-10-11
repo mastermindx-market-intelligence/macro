@@ -120,3 +120,109 @@ def test_illustration_stylesheet_is_published_beside_the_macro_page():
     root = Path(__file__).resolve().parents[1]
     assert (root / "templates" / "illus.css").is_file()
     assert '"illus.css"' in (root / "scripts" / "build_site.py").read_text()
+
+
+
+# A popup-shaped tree in the order the shipped dialog renders it. `shown` is what
+# getClientRects reports: Chrome still reports boxes for a closed <details>' content
+# (it is content-visibility skipped, not display:none), which defeated a box-only
+# filter in the served-page keyboard check.
+FAKE_DIALOG_JS = r"""
+const assert = require('node:assert/strict');
+const doc = {activeElement: null};
+function el(tag, opts = {}) {
+  return {tag, open: !!opts.open, shown: opts.shown !== false, tabIndex: opts.tabIndex ?? 0,
+          name: opts.name || tag, children: [], parentElement: null,
+          getClientRects() { return this.shown ? [{}] : []; },
+          focus() { doc.activeElement = this; },
+          contains(o) { for (let n = o; n; n = n.parentElement) if (n === this) return true; return false; },
+          closest(sel) {
+            if (sel === '[inert]') return null;
+            assert.equal(sel, 'details:not([open])');
+            for (let n = this; n; n = n.parentElement) if (n.tag === 'details' && !n.open) return n;
+            return null;
+          },
+          querySelector(sel) {
+            assert.equal(sel, ':scope > summary');
+            return this.children.find(c => c.tag === 'summary') || null;
+          },
+          querySelectorAll(sel) {
+            const parts = sel.split(','), out = [];
+            const hit = c => parts.some(p => p === c.tag || p.startsWith(c.tag + ':')
+                                        || (c.tag === 'a' && p === 'a[href]'));
+            (function walk(n) { for (const c of n.children) { if (hit(c)) out.push(c); walk(c); } })(this);
+            return out;
+          }};
+}
+function add(parent, child) { child.parentElement = parent; parent.children.push(child); return child; }
+const dlg = el('div');
+const close = add(dlg, el('button', {name: 'close'}));
+add(dlg, el('button', {name: 'decorative', tabIndex: -1}));
+add(dlg, el('button', {name: 'unrendered', shown: false}));
+const why = add(dlg, el('details'));
+const whySummary = add(why, el('summary', {name: 'why no estimate'}));
+add(why, el('a', {name: 'why link'}));
+const legacy = add(dlg, el('details'));
+const legacySummary = add(legacy, el('summary', {name: 'forward risk and drivers'}));
+const body = add(legacy, el('div'));
+const driver = add(body, el('button', {name: 'driver'}));
+const method = add(body, el('details'));
+const methodSummary = add(method, el('summary', {name: 'method'}));
+add(method, el('a', {name: 'method link'}));
+const names = list => list.map(n => n.name);
+"""
+
+
+def _node(script: str, stdin: str) -> None:
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is required to execute the shipped dialog keyboard helper")
+    result = subprocess.run([node, "-e", FAKE_DIALOG_JS + script], input=stdin, text=True,
+                            capture_output=True, timeout=20)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def _between(path: str, start: str, end: str) -> str:
+    from pathlib import Path
+    page = (Path(__file__).resolve().parents[1] / path).read_text()
+    a = page.index(start)
+    return page[a:page.index(end, a)]
+
+
+def test_tab_trap_wraps_over_the_closed_forward_risk_disclosure():
+    """Run the shipped `_tabStop`/`_trapTab` bodies against the popup's stop order.
+
+    The forward-risk evidence now sits in a closed <details>. A trap that counts its
+    hidden controls never sees focus reach `last`, so Tab walks out of the modal."""
+    src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const trap = new Function('document', src + '; return _trapTab;')(doc);
+function tab(from, shift = false) {
+  doc.activeElement = from;
+  const e = {key: 'Tab', shiftKey: shift, prevented: false, preventDefault() { this.prevented = true; }};
+  trap(dlg, e);
+  return e;
+}
+// Closed disclosures: the forward-risk summary is the last stop, so Tab wraps.
+let e = tab(legacySummary);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+e = tab(close, true);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, legacySummary);
+// Opened: its own controls become stops, a nested closed disclosure keeps only its summary.
+legacy.open = true;
+e = tab(legacySummary);
+assert.equal(e.prevented, false);
+e = tab(methodSummary);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+// Non-Tab keys are never intercepted.
+doc.activeElement = legacySummary;
+const esc = {key: 'Escape', shiftKey: false, prevented: false, preventDefault() { this.prevented = true; }};
+trap(dlg, esc);
+assert.equal(esc.prevented, false);
+""", src)

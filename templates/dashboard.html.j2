@@ -12864,6 +12864,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
              links its published stylesheet only when that chart can render. #}
           {% if _us_pbv.get('detail_chart_html') %}<link rel="stylesheet" href="illus.css">{% endif %}
           {{ pb_depth.detail('us', _us_pbv) }}
+          <script>{% include "_risk_radar_pullback_depth.js.j2" %}</script>
           <details class="riskdlg-legacy-details">
             <summary>{{ t('Forward risk and drivers','前瞻风险与驱动因素') }}</summary>
         {% endif %}
@@ -15208,10 +15209,26 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(focusable.length) focusable[0].focus();
     }
 
+    /* A stop the keyboard can reach. A closed <details> keeps its controls in the
+       DOM and Chrome still reports layout boxes for them, so ask the disclosure
+       rather than the box; only its own <summary> stays reachable. */
+    function _tabStop(el){
+      if(el.tabIndex < 0 || el.getClientRects().length === 0) return false;
+      for(var d = el.closest('details:not([open])'); d;
+          d = d.parentElement && d.parentElement.closest('details:not([open])')){
+        var s = d.querySelector(':scope > summary');
+        if(!s || !s.contains(el)) return false;
+      }
+      return true;
+    }
+
     function _trapTab(dlg, e){
       if(e.key !== 'Tab') return;
-      var focusable = Array.prototype.slice.call(
-        dlg.querySelectorAll('button:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'));
+      /* Counting the hidden forward-risk controls made `last` unreachable, so Tab
+         walked out of the dialog. */
+      var focusable = Array.prototype.filter.call(
+        dlg.querySelectorAll('button:not([disabled]),a[href],summary,[tabindex]:not([tabindex="-1"])'),
+        _tabStop);
       if(!focusable.length) return;
       var first = focusable[0], last = focusable[focusable.length-1];
       if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
