@@ -25,5 +25,26 @@
   "effect_state": "unsettled_provider_call_no_replay",
   "publication_approved": false,
   "acceptance_credit": false,
-  "limitation": "One provider accounting row survives; no new staged record or completed run summary. This is not proof of successful generation, validation, source rights, or publication. Preserve accounting and recover the same attempt if retained output becomes available."
+  "limitation": "One provider accounting row survives; no new staged record or completed run summary. This is not proof of successful generation, validation, source rights, or publication. Preserve accounting and recover the same attempt if retained output becomes available.",
+  "preserved_accounting": [
+    {
+      "source": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-staging-cohort-20261011-f95888901b9489c4/data/ai_costs/provider_health.jsonl",
+      "retained": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-interrupted-staging-accounting-20261011-1207/provider_health.jsonl",
+      "sha256": "5d606c2c57658db7c3875358699b5894f780e29ecedc57de94ad1630aae15f12",
+      "bytes": 544
+    },
+    {
+      "source": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-staging-cohort-20261011-f95888901b9489c4/data/ai_costs/usage.jsonl",
+      "retained": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-interrupted-staging-accounting-20261011-1207/usage.jsonl",
+      "sha256": "f725fc2f4ba59a99c8ca82f46306c16e2a429af9aec756fec486d4626dbad099",
+      "bytes": 331
+    },
+    {
+      "source": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-staging-cohort-20261011-f95888901b9489c4/data/metabolism/key_ledger.jsonl",
+      "retained": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-interrupted-staging-accounting-20261011-1207/key_ledger.jsonl",
+      "sha256": "6b0da3305241bd2916f93bda8176f564fc7c345728286e11fb9093885d2da6ed",
+      "bytes": 166
+    }
+  ],
+  "source_history_recovery": "After byte-identical backup in this operation-owned sibling directory, materialized canonical tracked accounting history in the implementation worktree so current main could merge. Original primary dirty accounting was not changed."
 }
