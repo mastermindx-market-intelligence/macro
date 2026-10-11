@@ -683,7 +683,10 @@ next_action: >
   unknown. The new bounded repair removes repeated envelope validation and final
   per-episode relation scans without weakening any per-request integrity check.
   Parent190 affected tests pass; full371-row retained-input result is identical
-  and independent exact-diff review approved. Complete normal CI/merge/adoption
+  and independent exact-diff review approved. PR8845's first exact plan exposed
+  a CI ownership gap: B1's four-suite command was in a nightly-only data job.
+  The same branch moves that unchanged proof to the existing Prophet code job
+  and tightens unique-owner/source-selector regression tests. Complete normal CI/merge/adoption
   and live B03 proof; candidate return still awaits coherent generated HTML.
   Earlier progress below is historical and does not reopen closed evidence.
   2026-10-11 B03 runtime continuation: use

@@ -4443,6 +4443,14 @@ jobs:
       - "tests/test_prophet_early_observations.py"
       - "tests/test_prophet_observations_api.py"
       - "tests/test_prophet_observations_browser.py"
+      - "engine/us_candidate_episode.py"
+      - "engine/us_candidate_episode_intake.py"
+      - "scripts/reconcile_us_candidate_episodes.py"
+      - "tests/test_us_candidate_episode.py"
+      - "tests/test_us_candidate_episode_intake.py"
+      - "tests/test_us_candidate_episode_reconciler.py"
+      - "tests/test_us_candidate_episode_wiring.py"
+      - "tests/fixtures/us_candidate_episode/**"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4470,6 +4478,11 @@ jobs:
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
 
+      # B1's hermetic source, intake and generation contracts guard the reader
+      # used by this projection. Keep their existing proof in the PR code gate;
+      # the context-and-grades data job only runs after merge.
+      - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
+        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
@@ -18329,12 +18342,8 @@ jobs:
       # check on prophet_bridge.select_candidates.
       - name: US candidate-pool lanes (lossless partition + store columns + no authority leak)
         run: python -m pytest tests/test_us_candidate_lanes.py -q
-      # V4-B1 canonical candidate episodes: pure event contract, source-specific intake,
-      # immutable-generation/atomic-HEAD publication, and this workflow/registry authority
-      # fence. TURN WATCH's own discovery suite stays in its existing engine owner; B1 reads
-      # its sidecar and does not absorb the producer.
-      - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
-        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
+      # The hermetic B1 contract/intake/reconciler/wiring proof belongs to the
+      # existing prophet-lab code gate. TURN WATCH retains its separate owner.
       # W1.5 board-session anchor (#5303/#5307): the earnings-blackout gate and the
       # display-tier chip read the BOARD's session, never the render host's wall
       # clock — hosts straddling local midnight flipped membership (78 vs 81 buy

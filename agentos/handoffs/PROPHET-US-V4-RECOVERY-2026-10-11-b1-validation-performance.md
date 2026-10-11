@@ -19,8 +19,31 @@ changed:
 - path: tests/test_us_candidate_episode_reconciler.py
   what: Count fresh validation per request; exercise same-HEAD corruption, cross-month event/suppression
     collisions, malformed readdressed envelope and missing causal correction/retraction parents.
-prs: []
+- path: .github/ci/legacy-jobs.yml
+  what: Move the unchanged four-suite B1 proof from the nightly data job to the existing Prophet code
+    job, with exact source/test/fixture selectors. Preserve the data job gate and all other proofs.
+- path: tests/test_us_candidate_episode_wiring.py
+  what: Require exactly one executing code owner and verify that each B1 source or regression edit
+    selects it through the real pack selector.
+prs:
+- https://github.com/mastermindx-market-intelligence/macro/pull/8845
 verified:
+- claim: The original PR plan excluded the B1 regressions despite their existing manifest command.
+  command: Download ci-semantic-plan-38162600935-1, verify archive SHA9025fddbbddfe53c04844e57e1b77193629b0196caaf4e32a77497e75fc41b10
+    and authoritative plan digest5bcc52e1e3aa116848d4446415699050e5c296ec712de925fdd2606cadf12aa6;
+    inspect eligible jobs and unchanged B1 proof owner. Run tightened ownership tests before manifest repair.
+  result: Exact ebf7c2d plan included Prophet B03 but excluded prophet-us-context-and-grades because its
+    gate is data. All eight tightened ownership/selector cases failed before the move. A command in
+    that job was not PR-time proof; original CI cannot establish B1 regression coverage.
+- claim: The relocated proof has one code owner, and source/test/fixture edits select it.
+  command: python3 -m pytest tests/test_us_candidate_episode_wiring.py -q; then final selector-case
+    addition and python3 -m pytest tests/test_us_candidate_episode_wiring.py -q -k 'code_ci_job or executing_code_gate'.
+  result: Full wiring suite23 passed; final unique-owner plus eight-selector cases9 passed/15 intentionally
+    deselected. The sets overlap and are not additive. Canonical run_ci_pack --validate-only accepts205 code jobs.
+- claim: Independent bounded reasoning review approves the CI proof move and fixture-selector amendment.
+  command: /root/b03_runtime_read_reasoning read-only review and parent git hash-object readback.
+  result: APPROVE manifestf0fc200ba8d26b5ee9845a7b13767c4ba7cf3f8e and wiring7f2fc814c4b5d144fa75b276bfa3c2e2ab86b656.
+    Existing four-suite command and proof name unchanged, exactly one owner; data job remains data.
 - claim: Complexity tests distinguish the old repeated work while six semantic controls pass.
   command: Run current tests against git show HEAD:engine/us_candidate_episode.py loaded in an isolated
     Python process; b1-combined-red-20261011.txt.
@@ -53,7 +76,7 @@ unresolved:
 - 'Return to candidate requires coherent generated HTML: served theme includes8827 but last inline USProphetSource
   owner did not. Render38141694842 is still in progress at scheduled18:00 read.'
 next_actions:
-- Publish original fresh B1 repair branch, consume exact semantic CI and required gates once, reconcile
+- Publish the CI ownership repair on the same PR8845 branch, consume exact semantic CI and required gates once, reconcile
   current-main source/proof compatibility and normal expected-head squash.
 - Verify normal API adoption then entitled B03; independently consume actual render source/generated commit
   and live candidate-return journey.
