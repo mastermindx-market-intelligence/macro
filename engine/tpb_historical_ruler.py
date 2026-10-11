@@ -286,9 +286,24 @@ def measure_source_snapshot(snapshot):
                 group = [item]
         if len(group) >= 2:
             clusters.append(group)
+    # The non-overlapping anchored groups above count discrete bursts, but
+    # their first-print anchor need not contain the LARGEST <=60s window:
+    # a smaller early print could exclude a much larger later valid pair.
+    # Evaluate every same-level rolling window without double-counting
+    # print notional, preserving exact source Decimal precision.
     with localcontext() as ctx:
         ctx.prec = exact_precision
-        cluster_notionals = [sum((r[5] for r in g), Decimal(0)) for g in clusters]
+        cluster_notionals = []
+        for level in by_level.values():
+            left = 0
+            running = Decimal(0)
+            for right, item in enumerate(level):
+                running += item[5]
+                while item[0] - level[left][0] > CLUSTER_NS:
+                    running -= level[left][5]
+                    left += 1
+                if right > left:
+                    cluster_notionals.append(running)
     tiers = {str(t): sum(n >= t for n in prints) for t in _BLOCK_TIERS}
     with localcontext() as ctx:
         ctx.prec = exact_precision
@@ -403,7 +418,10 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
         names.add(marker)
         if record.get("ticker") != target["ticker"] or marker >= target["session"]:
             exclusions["TICKER_OR_CAUSAL_DATE_MISMATCH"] += 1
-        elif record.get("asof_ns", evaluation_ns+1) > evaluation_ns:
+        elif (type(record.get("asof_ns")) is not int
+              or record["asof_ns"] > target["asof_ns"]):
+            # The target's original read is frozen. Research run later
+            # cannot backfill an amended historical vintage at that decision.
             exclusions["HISTORICAL_REVISION_NOT_AVAILABLE"] += 1
         elif record.get("source_scope") != "RTH":
             exclusions["HISTORICAL_SCOPE_UNQUALIFIED"] += 1
@@ -416,6 +434,25 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
         else:
             eligible.append(record)
     eligible.sort(key=lambda x: x["session"])
+    # An early-close session can be fully covered yet contain materially
+    # fewer trading minutes than a normal RTH day. It is not a same-length
+    # daily print/cluster/total reference. Its *qualified* 10:00 prefix can
+    # still be compared with other 10:00 cumulative prefixes below.
+    target_length_ns = target["end_ns"] - target["start_ns"]
+    daily_eligible = [
+        r for r in eligible
+        if r.get("full_rth_covered") is True
+        and type(r.get("start_ns")) is int
+        and type(r.get("end_ns")) is int
+        and r["end_ns"] - r["start_ns"] == target_length_ns
+    ]
+    n_daily_duration_mismatch = sum(
+        r.get("full_rth_covered") is True
+        and type(r.get("start_ns")) is int
+        and type(r.get("end_ns")) is int
+        and r["end_ns"] - r["start_ns"] != target_length_ns
+        for r in eligible
+    )
     daily = {}
     labels = (
         ("SINGLE_PRINT", "largest_individual_print_usd"),
@@ -424,8 +461,7 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
     )
     for kind, field in labels:
         value = target.get(field)
-        vals = [r[field] for r in eligible
-                if r.get("full_rth_covered") is True and r.get(field) is not None]
+        vals = [r[field] for r in daily_eligible if r.get(field) is not None]
         state = ("NOT_FULL_RTH" if target["full_rth_covered"] is not True else
                  "INSUFFICIENT_COMPARABLE_HISTORY" if len(vals) < minimum else
                  "NO_OBSERVED_OBJECT" if value is None else "OBSERVED_COVERAGE_ONLY")
@@ -440,8 +476,8 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
                 "n_equal_prior": equal,
                 "strict_new_record_in_observed_sample": higher == 0 and equal == 0,
                 "n_prior": len(hist),
-                "coverage_start": min(r["session"] for r in eligible
-                                      if r.get("full_rth_covered") and r.get(field) is not None),
+                "coverage_start": min(r["session"] for r in daily_eligible
+                                      if r.get(field) is not None),
                 "source_metric": field,
             }
         else:
@@ -494,6 +530,8 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
         "basis_vintage_sha256": target["split_basis_vintage_sha256"],
         "split_segment": target["split_segment"],
         "n_candidate_previous": len(previous), "n_comparable_previous": len(eligible),
+        "n_daily_session_duration_matches": len(daily_eligible),
+        "n_daily_session_duration_mismatches": n_daily_duration_mismatch,
         "excluded_previous": dict(sorted(exclusions.items())),
         "daily_object_ranks": daily,
         "minute_conditioned_baseline": minute,

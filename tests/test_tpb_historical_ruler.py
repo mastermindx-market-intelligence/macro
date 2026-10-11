@@ -119,6 +119,25 @@ def test_no_transitive_level_cluster_beyond_first_window():
     assert obj["largest_cluster_usd"]=="110000"
 
 
+def test_largest_cluster_uses_maximum_rolling_60_second_window():
+    # Three same-price prints can chain across 60 seconds. The first anchored
+    # group is NOT necessarily the maximum valid <=60-second cluster.
+    origin = BASE + 30 * MINUTE_NS + 3_000_000
+    rows = []
+    for uid, delay_s, shares in (("a", 0, "10"), ("b", 50, "20"), ("c", 61, "100")):
+        row = trade(uid, 30, price="100", shares=shares)
+        stamp = origin + delay_s * 1_000_000_000
+        row.update(sip_ns=stamp, original_available_ns=stamp + 2_000_000,
+                   participant_ns=stamp - 2_000_000,
+                   trf_report_ns=stamp - 1_000_000)
+        rows.append(row)
+    result = measured(rows=rows)
+    assert result["largest_individual_print_usd"] == "10000"
+    assert result["largest_cluster_usd"] == "12000"
+    assert result["n_clusters"] == 1  # anchored count differs from rolling maximum
+    assert result["oe_source_notional_usd"] == "13000"
+
+
 def test_empty_source_is_not_claimed_zero_market_volume():
     empty=measured(rows=[],points=[])
     assert empty["state"]=="NO_SAMPLED_PRINTS"
@@ -245,6 +264,37 @@ def test_rank_three_distinct_objects_and_strict_record_semantics():
     assert result["public_delivery_allowed"] is False
 
 
+def test_early_close_daily_rank_does_not_compare_regular_length_sessions():
+    # 210-minute early-close daily TRF total is not a 390-minute daily
+    # observation. Their 10:00 cumulative prefixes MAY remain comparable.
+    regular_end = BASE + 390 * MINUTE_NS
+    full_days = []
+    for i in range(4):
+        full_days.append(measure_source_snapshot(packet(
+            "2026-09-" + str(i+1).zfill(2),
+            end_ns=regular_end, asof_ns=regular_end + MINUTE_NS,
+            watermark_complete_ns=regular_end,
+            watermark_available_ns=regular_end + 1_000_000,
+            prints=[trade("old"+str(i), 30, shares="2000")],
+            minutes=[point(30, "20", "100"),
+                     point(209, "200", "500"),
+                     point(389, "300", "600")],
+        )))
+    # Fixture sessions share an artificial UTC base. Keep their as-of
+    # receipts no later than the target cutoff, isolating the duration test.
+    target = measured(asof_ns=regular_end + MINUTE_NS)
+    out = calibrate_history(
+        target=target, previous=full_days, minute_index=30,
+        evaluation_ns=regular_end + 2 * MINUTE_NS, min_history=3)
+    assert out["n_comparable_previous"] == 4
+    assert out["n_daily_session_duration_matches"] == 0
+    assert out["n_daily_session_duration_mismatches"] == 4
+    assert out["daily_object_ranks"]["DAILY_TOTAL"]["n_prior"] == 0
+    assert out["daily_object_ranks"]["DAILY_TOTAL"]["state"] == "INSUFFICIENT_COMPARABLE_HISTORY"
+    assert out["minute_conditioned_baseline"]["n_prior"] == 4
+    assert out["minute_conditioned_baseline"]["state"] == "NO_ROBUST_DISPERSION"
+
+
 def test_tied_best_print_is_not_strict_record():
     target=measured(rows=[trade("A",30,shares="1000")])
     prev=history(3,min_print=1000)
@@ -309,6 +359,24 @@ def test_causal_availability_and_duplicate_revision_seam():
         calibrate_history(target=measured(),previous=[prev[0],prev[0]],
                           minute_index=30,evaluation_ns=END+90_000_000_000,
                           min_history=2)
+
+
+def test_later_historical_revision_cannot_backfill_original_target_baseline():
+    target = measured()
+    prior = history(4)
+    # The later researcher asks after a revision was received, but the
+    # target source snapshot had already closed. Never retroactively let
+    # the amended historical observation affect an as-seen target rank.
+    later = copy.deepcopy(prior[0])
+    later["asof_ns"] = target["asof_ns"] + 20_000_000_000
+    prior[0] = later
+    out = calibrate_history(
+        target=target, previous=prior, minute_index=30,
+        evaluation_ns=target["asof_ns"] + 30_000_000_000,
+        min_history=3)
+    assert out["excluded_previous"]["HISTORICAL_REVISION_NOT_AVAILABLE"] == 1
+    assert out["n_comparable_previous"] == 3
+    assert out["minute_conditioned_baseline"]["n_prior"] == 3
 
 
 def test_thin_history_and_zero_mad_are_not_invented():
