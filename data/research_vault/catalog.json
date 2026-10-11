@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T12:50:39.953150+00:00",
-  "count": 2807,
+  "generated_at": "2026-10-11T13:20:35.601730+00:00",
+  "count": 2808,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -450,6 +450,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 33,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sqrt8axv7hx-6c9390",
+      "title": "Week Ahead in Economics US inflation on the rise as central bankers head to IMF World Bank meetings",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:23:14Z",
+      "summary_points": [
+        "US Fed Policy Outlook: Hawkish FOMC minutes confirm inflation concerns (energy, tariffs, AI demand); no rate hike until December, 25bp hike in December, terminal rate 4.375% by March 2027.",
+        "China Imports YoY (Sep): Consensus 24.0% vs previous 21.5%, substantial upward revision signaling robust demand and inflationary pressures.",
+        "Brazil Election Fiscal Impact: Conservative gains strengthen fiscal credibility, enabling deeper BCB rate cuts in 2027-28 and improving debt dynamics.",
+        "ECB Tightening & BoE Dovish Pivot: ECB hikes to 2.75% (Dec 2026) with structural refinancing (2028); BoE cuts to 3.00% (Q4 2027), impacting global liquidity and EM flows.",
+        "Spain Election Dynamics: Nov 29 election targeting housing discontent; polls favor PP victory without majority, enabling Vox to form government, with corruption scrutiny critical."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
