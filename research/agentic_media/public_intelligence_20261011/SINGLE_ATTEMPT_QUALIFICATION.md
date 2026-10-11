@@ -11,8 +11,9 @@ after that one adapter invocation. Default scheduled behavior, planner/revision 
 validation, accounting, rights and emit authority are unchanged. The option
 applies per planned slot; `--max-slots 1` bounds the run to one slot.
 
-This is source prepared for later integration. It is not yet in PR #8786, main,
-the installed service or a real generated draft. The earlier lost provider
+This source is now integrated locally with the audit-discovery slice and current
+main at `1c7b997f92fbe611d84a5e0c48a16291c90a6f1f` for the same PR #8786.
+Protected landing, installation and a real generated draft remain unproven. The earlier lost provider
 response remains unsettled; the new option does not authorize its replay or
 claim globally exactly-once execution. The Codex adapter launches one CLI turn,
 but does not forward this SDK retry setting or explicitly bound the CLI's

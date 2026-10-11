@@ -33,14 +33,14 @@ unverified:
 unresolved:
   - Existing Brief and Research drafts fail current combined-batch acceptance on overlap; preserve the unchanged threshold.
   - Exact admitted immutable earnings packet and permitted read path unavailable in current evidence.
-  - Fable replied on Mastermind issue 1243 comment 6108389713; the actual story owner is Earnings Intelligence OS, and the exact qualified packet and permitted read path remain unavailable.
+  - Root now owns qualification directly under the Chairman continuation; historical owner labels do not gate work. Actual immutable source, rights and permitted read-only admission still need qualification.
   - The retained ordinary feed route has no qualified current primary-source stock event, and Brief currently consumes Chronicle rather than PRESS-FEEDS artifacts.
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Let the existing protected controller refresh and land PR 8786 after its freshness/capacity gate, then verify installed source and public browser behavior. Current exact-head CI 38161506271 passed all binding checks at 24bad; the former import-closure failure is repaired.
-  - Integrate single-attempt staging commit 2343aaec13bb after PR 8786 lands; its local evidence and recovery branch are in SINGLE_ATTEMPT_QUALIFICATION.md.
-  - Obtain the existing source owner's qualified packet/revision receipt and permitted immutable read path, then use scripts/stage_earnings_story_press.py without creating a second compiler.
+  - Finish the substantive same-carrier integration on disarmed PR 8786, then fresh CI, protected landing, installed source and browser checks. CI 38161506271 passed the previous exact head 24bad; it does not prove the new integrated candidate.
+  - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
+  - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
 do_not_redo:
   - Do not replay the two completed provider generations merely to reconstruct evidence.
