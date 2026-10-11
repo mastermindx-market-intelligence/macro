@@ -615,3 +615,68 @@ rights **NOT_ADMITTED**, no customer, rank, alert, size or trade
 authority. Next: same-carrier publish + remote readback of this
 accepted ABI delta; exact new-head hosted CI; source-owner
 selected input-bundle admission when genuinely supported.
+
+## S2-P3 minute-coverage anti-selection-bias study gate R2
+
+Original accepted PR #8677 HEAD `8235a335ae866b51484bac8de81383cfce81e745` (Draft/HOLD, no merge).
+Protected Mastermind `f381af6758533906865361373addbb0514f86d7d`
+compatible Skillpack v1.0.1/bootstrap1, same-commit INDEX,
+COLD_START, ACTIVE_EXECUTION, SESSION_RELIABILITY, WEB_CEO_DELEGATION,
+CLOSEOUT verified. Exact old customer/source/release denials preserved.
+
+**Genuine independently observed scientific issue:** existing
+`quote_study.py` disclosed `DESCRIPTIVE_STABILITY_AVAILABLE`
+for only 3/300 (1%) registered comparable slots across three days.
+Three days alone do not qualify a massively selected sample.
+Owner-supplied expected slot grid is the denominator; quote
+classification share of *observed* print notional cannot replace
+the eligible-minute sampling denominator.
+
+**Safe same-code owner fix:** frozen `StudyPolicy`
+`min_comparable_slot_coverage=0.8` (finite, >0, <=1) both
+global and within EACH expected day. Added observed
+`comparable_slot_coverage` and sorted `low_coverage_sessions`;
+`INSUFFICIENT_COMPARABLE_COVERAGE` withholds aggregate
+day-equal discrepancy and leave-one-day-out values when not
+qualified; zero/minimum-3-days status and all negative/not-admitted
+authorities remain. Threshold changes are explicit preregistered
+sensitivity inputs; original quote + price ratio validation intact.
+
+**TDD/verification:** 10 targeted adversarial cases failed before
+implementation; 45/45 quote tests (11 new test cases) and all
+403/403 full **13 named native** research tests passed locally
+M2 Python 3.12. Refresh original synthetic quote fixture plus
+`evidence/quote_day_cluster_coverage_witness.json` documenting
+1% withheld, 90% fully eligible, unsampled fourth day withheld.
+Source/receipt/log SHA-256 in
+`evidence/native_quote_study_tests.json`. Original source writer
+unchanged; no real data, rights, publisher or source handoff.
+
+**Independent reviewer summon effect remains UNKNOWN:** the
+one exact `Mastermind_Executive_V3.session_summon`
+operation key
+`factor-atlas-s2-independent-science-audit-20261011-sol-001`
+returned `effect_unknown`. A single canonical session_targets
+read was empty and Fabric roots enumeration had no new proven
+root; they do NOT prove the request never executed. Do not retry
+this same operation or create a substitute reviewer without exact
+original-state reconciliation. It is read-only research-only if
+ultimately admitted, and no modifying source custody was granted.
+Executive OS still reports `readonly` and
+`ceo_submit_armed:false`.
+
+**DO_NOT_REDO:** previous four explicit source reads, original
+benchmark/interpreter update, denied fresh-main source comparison,
+and the separately blocked S2-P4 `factor_read_model.py` integrity
+patch. The latter two uncommitted WIP files remain locally present
+with four red tests and EXCLUDED from Git and accepted manifest.
+This new fix is specifically to the already admitted quote-study
+scientific summary, NOT the denied S2-P4 code.
+
+**Actual frontier:** single exact-head source/evidence commit on
+original branch, remote content readback and current-head CI;
+then independent scientific review/owner-issued source-qualified
+AAPL/MSFT/NVDA+SPY minute/trade/NBBO/PIT adjustment-basis,
+true source/reader receipt and dataset-rights. Owner PRs
+Terminal #844 and Macro #8623 still held. Real S2-P1/S2-P2 pilot
+NOT_ADMITTED, no rank/alert/size/trade/consumer publication.

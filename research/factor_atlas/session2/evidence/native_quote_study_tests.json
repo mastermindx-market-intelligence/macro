@@ -1,32 +1,48 @@
 {
   "actual_market_data_admitted": false,
   "calibrated_statistical_accuracy": false,
-  "created_at_utc": "2026-10-09T10:04:55.006137+00:00",
+  "coverage_gate_denies_sparse_samples": true,
+  "coverage_gate_regime": "BOTH_OVERALL_AND_EACH_EXPECTED_SESSION",
+  "coverage_policy_research_default": 0.8,
+  "created_at_utc": "2026-10-11T09:41:23.441022+00:00",
+  "critical_original_denial_unchanged": true,
   "customer_publication_authorized": false,
   "full_ten_suite_local_passed": 284,
+  "full_thirteen_suite_local_passed": 403,
+  "historical_initial_milestone": {
+    "full_ten_suite_passed": 284,
+    "quote_tests_passed": 34
+  },
   "is_confidence_interval": false,
-  "new_scoped_study_tests_passed": 34,
+  "new_scoped_study_tests_passed": 45,
   "parent_accepted_head": "003d4b0e33e8443f07dca0ecda087ac505194bee",
+  "phase_predecessor_commit": "8235a335ae866b51484bac8de81383cfce81e745",
   "prior_blocked_readmodel_patch_was_not_retried": true,
-  "protected_mastermind": "7d82b9adb839d54e4ab25378ca333e498dd83fcc",
+  "protected_mastermind": "f381af6758533906865361373addbb0514f86d7d",
+  "real_source_admitted": false,
   "schema": "factor_atlas.quote_day_cluster_native_receipt.v1",
+  "selection_bias_red_test_cases": 10,
   "source_class": "SYNTHETIC_ONLY_NO_TAPE_TRUTH",
   "source_files": {
     "session2/QUOTE_STUDY_PROTOCOL.md": {
-      "bytes": 6212,
-      "sha256": "8ce803a41288e37292810141c0005a6e43616335e7048a253072a799e5bb6ca0"
+      "bytes": 8635,
+      "sha256": "8fd1dafaf846ee35d1f57da50e56ca3507b2652e6306f0b9d43ef49a398b8f33"
+    },
+    "session2/evidence/quote_day_cluster_coverage_witness.json": {
+      "bytes": 5814,
+      "sha256": "3d7532e05f6abc6dc92f15576ea94f21459010f69c7afd38cf228c61e1e7001a"
     },
     "session2/evidence/quote_day_cluster_synthetic.json": {
-      "bytes": 3415,
-      "sha256": "9e3159c097bb4c9cff9eacf9c166368ebaf23a2f7cd3adaf46ffb6954f848e38"
+      "bytes": 3619,
+      "sha256": "1b55b9961476fae54f3839a5a58759ae6bcaa4511170449e767bf4e72fdf962f"
     },
     "session2/prototype/quote_study.py": {
-      "bytes": 10118,
-      "sha256": "52b21a8eff9e39e1e023dff0c32860dd4ca344c6dc9b8f6c073aa4d8444c18c4"
+      "bytes": 10867,
+      "sha256": "090b36528e70b286d192c71a222217898fcd4efc94e77d2e0839b3bae1e69fcd"
     },
     "session2/prototype/test_quote_study.py": {
-      "bytes": 10850,
-      "sha256": "2cb8d36c9937058b6725c9146903d294fbeb52bab800cde24fdbe55c3be2f86c"
+      "bytes": 14882,
+      "sha256": "61c921660e820f9a04e6e5cbb9fb14343d9f201c4fda370231c9f7451d63828a"
     }
   },
   "tdd_initial_implementation_red": 1,
@@ -34,6 +50,18 @@
     "quote-study-adversarial.txt": {
       "bytes": 99,
       "sha256": "021e305444025655ded9c7f249fc61e8b04fb1da04c8636a3a7bfa42c5cc8350"
+    },
+    "quote-study-coverage-full-green.txt": {
+      "bytes": 500,
+      "sha256": "3ee695f3fc97fff9c009df2012f6fded5d53e3da575a95377406e5252fcad8dd"
+    },
+    "quote-study-coverage-green.txt": {
+      "bytes": 99,
+      "sha256": "bfc985343e110a04ef0eae2c0999821705b89ba8bbda9f6015d33b1eb0130eeb"
+    },
+    "quote-study-coverage-red.txt": {
+      "bytes": 14996,
+      "sha256": "126cda9149f18dbfb4b9054abad0b372f05f4281cc95a70ce78a1a23b6363d7d"
     },
     "quote-study-first.txt": {
       "bytes": 73003,

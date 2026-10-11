@@ -275,3 +275,84 @@ def test_day_cluster_result_has_an_explicit_noninferential_stability_range():
     assert r.leave_one_day_out_low==pytest.approx(.15)
     assert r.leave_one_day_out_high==pytest.approx(.25)
     assert r.is_confidence_interval is False
+
+
+def test_one_percent_comparable_minutes_cannot_expose_day_cluster_mean():
+    """Three represented days are NOT sufficient when 99% of slots are missing."""
+    slots=[slot(day,minute=i) for day in DAYS[:3] for i in range(100)]
+    cells=[tagged(slot(day)) for day in DAYS[:3]]
+    result=study(slots,cells)
+    assert result.expected_minutes==300 and result.comparable_minutes==3
+    assert result.session_clusters_with_comparables==3
+    assert result.comparable_slot_coverage==pytest.approx(.01)
+    assert result.low_coverage_sessions==DAYS[:3]
+    assert result.status=="INSUFFICIENT_COMPARABLE_COVERAGE"
+    assert result.equal_day_mean_proxy_disagreement is None
+    assert result.leave_one_day_out_low is None
+    assert result.leave_one_day_out_high is None
+    assert result.quote_classified_share_observed=="1"
+    assert not result.market_pilot_admitted and not result.customer_publishable
+
+
+def test_at_least_eighty_percent_within_every_session_allows_descriptive_mean():
+    all_slots=[slot(day,minute=i) for day in DAYS[:3] for i in range(10)]
+    cells=[tagged(s) for s in all_slots if (s.start_utc_s-slot(s.session_id).start_utc_s)//60<9]
+    v=study(all_slots,cells)
+    assert v.comparable_minutes==27
+    assert v.comparable_slot_coverage==pytest.approx(.9)
+    assert v.low_coverage_sessions==()
+    assert v.status=="DESCRIPTIVE_STABILITY_AVAILABLE"
+    assert v.equal_day_mean_proxy_disagreement==pytest.approx(.1)
+
+
+def test_one_undersampled_day_blocks_stability_even_when_three_days_present():
+    all_slots=[slot(day,minute=i) for day in DAYS[:3] for i in range(10)]
+    cells=[tagged(s) for s in all_slots if s.session_id!=DAYS[2] or s.start_utc_s==slot(DAYS[2]).start_utc_s]
+    v=study(all_slots,cells)
+    assert v.session_clusters_with_comparables==3
+    assert v.comparable_slot_coverage==pytest.approx(.7)
+    assert v.low_coverage_sessions==(DAYS[2],)
+    assert v.status=="INSUFFICIENT_COMPARABLE_COVERAGE"
+    assert v.equal_day_mean_proxy_disagreement is None
+
+
+def test_unsampled_fourth_session_cannot_be_ignored_from_expected_denominator():
+    all_slots=[slot(day,minute=i) for day in DAYS[:4] for i in range(10)]
+    cells=[tagged(s) for s in all_slots if s.session_id in DAYS[:3]]
+    v=study(all_slots,cells)
+    assert v.session_clusters_with_comparables==3
+    assert v.expected_session_clusters==4
+    assert v.comparable_slot_coverage==pytest.approx(.75)
+    assert v.low_coverage_sessions==(DAYS[3],)
+    assert v.status=="INSUFFICIENT_COMPARABLE_COVERAGE"
+    assert v.equal_day_mean_proxy_disagreement is None
+
+
+def test_preregistered_less_strict_coverage_can_be_tested_as_sensitivity_only():
+    all_slots=[slot(day,minute=i) for day in DAYS[:3] for i in range(10)]
+    cells=[tagged(s) for s in all_slots if
+           (s.start_utc_s-slot(s.session_id).start_utc_s)//60<6]
+    strict=study(all_slots,cells)
+    sensitivity=study(all_slots,cells,min_comparable_slot_coverage=.6)
+    assert strict.status=="INSUFFICIENT_COMPARABLE_COVERAGE"
+    assert sensitivity.status=="DESCRIPTIVE_STABILITY_AVAILABLE"
+    assert sensitivity.comparable_slot_coverage==pytest.approx(.6)
+    assert sensitivity.market_pilot_admitted is False
+    assert sensitivity.is_confidence_interval is False
+    assert sensitivity.input_digest!=strict.input_digest
+
+
+@pytest.mark.parametrize("threshold",[-1,0,1.2,float("nan"),True])
+def test_comparable_slot_coverage_policy_is_numeric_finite_and_positive(threshold):
+    with pytest.raises(ValueError,match="comparable_slot_coverage"):
+        study(min_comparable_slot_coverage=threshold)
+
+
+def test_quoted_notional_coverage_is_not_calendar_minute_coverage():
+    all_slots=[slot(day,minute=i) for day in DAYS[:3] for i in range(20)]
+    cells=[tagged(slot(day)) for day in DAYS[:3]]
+    result=study(all_slots,cells)
+    assert result.quote_classified_share_observed=="1"
+    assert result.comparable_slot_coverage==pytest.approx(.05)
+    assert result.status=="INSUFFICIENT_COMPARABLE_COVERAGE"
+    assert result.is_statistical_accuracy_study is False

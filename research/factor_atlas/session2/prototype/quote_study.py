@@ -60,11 +60,16 @@ class TaggedComparison:
 @dataclass(frozen=True)
 class StudyPolicy:
     min_session_clusters: int=3
+    min_comparable_slot_coverage: float=.8
 
     def validate(self) -> None:
         if (type(self.min_session_clusters) is not int or
             not 3<=self.min_session_clusters<=252):
             raise ValueError("min_session_clusters_invalid")
+        value=self.min_comparable_slot_coverage
+        if (type(value) not in (int,float) or not math.isfinite(value)
+                or not 0<value<=1):
+            raise ValueError("min_comparable_slot_coverage_invalid")
 
 
 @dataclass(frozen=True)
@@ -77,6 +82,8 @@ class StudyResult:
     not_comparable_minutes: int
     expected_session_clusters: int
     session_clusters_with_comparables: int
+    comparable_slot_coverage: float
+    low_coverage_sessions: tuple[str,...]
     per_day: tuple[tuple[str,int,int,float|None],...]
     status_counts: tuple[tuple[str,int],...]
     quote_eligible_gross_observed_usd: str
@@ -221,9 +228,15 @@ def assess_quote_study(expected_slots: Iterable[ExpectedSlot],
             day_mean[day]=mean
         per_day.append((day,len(vals),day_denominator[day],mean))
     clusters=len(day_mean)
-    status=("DESCRIPTIVE_STABILITY_AVAILABLE"
-            if clusters>=policy.min_session_clusters
-            else "INSUFFICIENT_SESSION_CLUSTERS")
+    coverage=sum(len(v) for v in daily_means.values())/len(expected)
+    low_coverage_sessions=tuple(sorted(day for day,count in day_denominator.items()
+        if len(daily_means.get(day,()))/count < policy.min_comparable_slot_coverage))
+    if clusters<policy.min_session_clusters:
+        status="INSUFFICIENT_SESSION_CLUSTERS"
+    elif (coverage<policy.min_comparable_slot_coverage or low_coverage_sessions):
+        status="INSUFFICIENT_COMPARABLE_COVERAGE"
+    else:
+        status="DESCRIPTIVE_STABILITY_AVAILABLE"
     aggregate=low=high=None
     if status=="DESCRIPTIVE_STABILITY_AVAILABLE":
         means=[day_mean[day] for day in sorted(day_mean)]
@@ -236,8 +249,8 @@ def assess_quote_study(expected_slots: Iterable[ExpectedSlot],
         status,len(expected),len(seen),len(expected)-len(seen),
         sum(len(x) for x in daily_means.values()),
         len(seen)-sum(len(x) for x in daily_means.values()),
-        len(day_denominator),clusters,tuple(per_day),
-        tuple(sorted(counts.items())),
+        len(day_denominator),clusters,coverage,low_coverage_sessions,
+        tuple(per_day),tuple(sorted(counts.items())),
         _str(eligible),_str(classified),_str(unknown),ratios,
         aggregate,low,high,False,False,False,False,False,False,
         "BAR_VS_QUOTE_PROXY_DISAGREEMENT_NOT_TAPE_TRUTH",
