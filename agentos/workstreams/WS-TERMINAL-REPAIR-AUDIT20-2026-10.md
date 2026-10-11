@@ -7,11 +7,9 @@ objective: Review the twenty supplied Terminal repair missions through the admit
 status: active
 blocked_by:
 - PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
-- Phone Replay PR914 mergedcaf/source/exact CI are qualified; canonical remains34d. Approved volume migration resolves root capacity:16667484160 available above retained10GiB. Actual921 guard merge/CI, canonical914+917+921 installation and paid phone proof remain.
-- IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
-- Settings PR917 mergedfc76 at08:00:12 from881d; whole head/merge tree equal and exact three required CI38121240817 are SUCCESS. B source/merge obligation complete; never reuse completed917 branch. Canonical install/live Settings proof remain after storage and release gates; no #761 authenticated closure.
-- Approved storage operation complete: terminal-storage50GB5USD/month UUID71dc6155-3f93-4370-a971-b89a6d87a203 binds live tree at/opt/terminal. Independent recovery/restore rehearsal and17.41GiB snapshot qualified; verified oldrootcopy removed. Fourservices active/defaultguard0/maintenanceflag absent. New921 sourceguard qualified scoped; actual existing CI observer result and canonical release/live proof remain.
-- A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
+- IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. Its SQL0030-32 remain unapplied and operator/rights/release/API+SQL holds remain. PR946 single-function0032 is a distinct, explicitly admitted repair and does not release IW2.
+- A11 cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW, MoneySCP/OAuth EFFECT_UNKNOWN and other security/source/rights paths remain unqualified; scoped paid render/ordinary UI proof does not satisfy them.
+- Actual873 scheduled publication remains unobserved; configured schedule is not a publication event. Consume only the existing producer's actual return, with no manual replay.
 program: terminal-charting
 repos:
 - terminal
@@ -27,7 +25,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: "Consume only actual existing921 observer material return. After exact qualified merged source/required CI, run guarded canonical new generation including914+917+921, then owning paid phone/Settings proof. Storage operation complete: never retry purchase/snapshot/migration/root reclamation/controller; no unchanged34d/source/paid replay. Independent781/IW2/SQL/rights/887/security/EFFECT_UNKNOWN/A19 holds remain."
+next_action: "Proposal-function946 source/review/required CI/merge/install and normal AcceptA/RejectB are complete. Exactly the two existing disposable theses remain archived, with thesis/history/proposal-content hashes unchanged. Consume actual original-owner review/platform/rights/producer release events for remaining Audit20 obligations; no replay of settled releases/SQL/UI effects, frozen refusals or uncertain effects. SAME8545twofiles retain continuity; whole Audit20 remains incomplete."
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -966,3 +964,56 @@ One new independent tasktab1925917593 in SAME authenticated Chris profile opened
 Own tab emulation cleared to2080x1170, originalEN/west/dark/nonfullscreen retained, tasktabclosed18:21:07.816Z. Occupieduser/Options tabs untouched; no browser/VPS cleanup owed. Both disposable theses remain ArchivedA3/B2 with retained history/Suggested proposals; actual single Accept failure/premature revision note stay qualified at292 observations. No extra testrecords/RPCretry/SQLmigration. B owns bounded forward0032 alias-only source repair after actual installed0025 ambiguity reproduced in isolated PostgreSQL17, not broaderIW2/source/grant work. Necessary settledinstall/paid result sent once toB via firstparty accepted/noerror under actual standinghumanconsent; no recipientACK invented.
 
 Evidence: marketontology-release-consumers-20261011/bc28e47-installed-source-guards-health-parent-qualification.json7234B/970be0cc9510d4ee3603e0b9f7cdfca00f38bafdd8c96838136255870276cccd and paid-bc28e47-alerts-parent-qualification-20261011.json3053B/d7c9514dc18626d8f93abd45ed3c8849ad0346f256a09c8fddd630e8e67c4028 under /Volumes/Mastermind/evidence/terminal-audit20-01a10f92. Three cropped public JPGs and sanitized observations bound in paid receipt. Frontier current_capability_frontier_20261011T1821; all historical JSON objects/rawprefix retained exceptcurrentpointer. 8545Draft/disarmed, no newstore/Terminalmirror/memorywrites. WholeAudit20 incomplete. All781/IW2/SQL/rights/security/887/EFFECT_UNKNOWN/A19/873 holds unchanged, completed storage/707/abf/292/bc28/producer/controllers/proofs never replayed. Next actual reviewed/released/admitted B0032 return or realplatform/producer event; no routine polling/repeated questions/plannerreceipt/idleprincipal/notice-onlydelegation.
+
+
+Current capability frontier — 2026-10-11 19:16Z (`current_capability_frontier_20261011T1916`).
+
+PR946 is independently reviewed and merged at `2957bd64eec9ac3246a52789acb0f7de55400144`
+from head `32955c95f68ddf2b93d80b49d96606cfc8bd3e41`; all five changed paths and the full
+head/squash tree agree. Exact CI38162831378/suite103395106233/attempt1 has all ten jobs
+successful, including five browser shards and the three strict app15368 required checks.
+Its empty run pull_requests array is explicitly qualified, without an invented direct PR binding.
+Independent review6112062907 and original owner PostgreSQL RED/repair checks are consumed,
+not rerun. The alias-only SQL is 4064 bytes/SHA256
+`819cd6f0228c3b3d3ed8ea6c9aac0ac0e7db5b233afbb82977c12636e9994411`.
+
+The sole B owner applied one released function replacement at19:04:03Z through the existing
+per-file ManagementAPI. Parent qualification compared the actual pre/post function body and
+unchanged owner, security, search_path, ACL, signature and result shape. No tables, grants,
+policies, unrelated migration or application rebuild changed. Current application source remains
+previously qualified bc28; the new installed database function is the PR946 release. This distinct
+single-function0032 admission does not release the separate IW2 SQL/security/rights holds.
+
+The root verified the later direct human instruction in B's existing chat to exercise Accept and
+Reject on the existing test theses. One normal Accept on A (`988274e8-b335-4887-89bf-556564c16f3c`)
+completed as Accepted; one normal Reject on B (`899ce795-0af0-4af5-9085-a246d6aad8fd`) completed
+as Declined in the UI and rejected in the database. Normal reload and selection retained both
+results. Both records stayed archived throughout: A version3/history3 and B version2/history2.
+The final readback matches every other returned field and SHA256 for the thesis rows, ordered
+history and immutable proposal content. No new records, proposals, revisions, Reopen, repeated
+archive, statement publication or mutating request replay occurred. The historical failure and
+premature note-only save remain preserved as their original observations.
+
+Accept's unsaved editor prefill was discarded through the normal dialog. The extension timed out
+before dismissing it and its dialog getter returned undefined; supported native CUA exposed the
+still-open confirmation in the root's named Audit20 tab. Native OK completed the existing B
+selection, after which the same extension tab resumed. No browser restart, forced claim, account
+or profile switch, private hook, or safety/consent bypass was used. The final two PNGs are actual
+Accepted/Declined plus Archived views. Cleanup returned MU3D/four studies, Replay off,
+Settings closed and nonfullscreen; tasktab1925917606 closed19:15:14.921Z, with no viewport
+override and no browser/VPS restoration owed. Private watchlist rows from one raw cleanup tool
+output are excluded from retained observation evidence; no holdings, weights or credentials files
+were exported.
+
+Parent sealed evidence is `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/proposal-function-live-parent-qualification-20261011.json`
+(6421 bytes/SHA256 `0f427f788461423c9726c4c8488eeffd44eb6292dc4786a984c92b2d361631e5`).
+It binds human admission, exact source/CI/install qualification, actual UI artifacts, cleanup and
+B's final readback. Scoped ordinary proposal-function behavior is accepted; delayed races,
+full lifecycle, scientific/math/rights claims and whole Audit20 are not.
+
+GMI's existing owner asked for a temporary voluntary defer of discretionary new Macro
+records-only PRs/refreshes during its cap-limited kernel admission. Root accepted that narrow
+request; no run cancellation, second observer or release waiver followed. This required material
+save stays on the same Draft/disarmed8545 two-file carrier. Whole Audit20 remains incomplete
+on the independent original review/platform/rights/unknown-effect and producer outcomes.
+Settled source/CI/SQL/UI/storage/releases are closed and must not be replayed.

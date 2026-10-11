@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1821",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1916",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -8635,6 +8635,104 @@
     "coordination": "Necessary settledinstall/paidproof return sent once through firstpartyB tool under standinghumanconsent, accepted/noerror; no ACK claim or unchanged status ping.",
     "independent_holds": "781 reservednumeric/IW2explicitcyberHUMAN/SQL/rights/security/887exactALLOW/MoneySCP+OAuthEFFECT_UNKNOWN/A19/873actualpublication unchanged. Original931Fabricreview unresolved/unaccepted, human-authorized independent review qualified source separately. All completedstorage/707/abf/292/bc28 release/controllers/builds/producer/schedules/observers/acceptedproofs never replayed.",
     "next_ready_phase": "Actual B0032 reviewed/released source/admission return or realplatform/producer event. No routineCI/runtime/provider/credential/browserpolls, repeatedquestions, plannerreceipts, idleprincipal or notice-onlydelegation. Wholemission acceptance still requires independent held paths.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1916": {
+    "observed_at": "2026-10-11T19:17:52.384654+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "T1821 pending proposal-function repair/release/SQL admission and old Suggested state for the two existing disposable proposals. Prior source, release, proof, failure and note-only observations retain original scopes.",
+    "material": "Human-authorized PR946 source/review/required CI/merge and single installed alias-only function qualified. Normal authenticated AcceptA and RejectB completed once; reload/selection and exact database hashes prove terminal states with both existing theses still archived.",
+    "human_admission": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/proposal-function-postrepair-human-admission-20261011.json",
+      "bytes": 2100,
+      "sha256": "84a0a4102ab3f70d882dc8a3aa6dac3a06cbbef8665e7268910ca60ce37fdd3f"
+    },
+    "source_CI_installed_function": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/proposal-function-release-20261011/946-source-required-ci-installed-function-parent-qualification.json",
+      "bytes": 4767,
+      "sha256": "d5d23222400e67d6d0871d1473170ec8e9f10826c3519ee5cdca05281463492e"
+    },
+    "release": {
+      "PR": 946,
+      "head": "32955c95f68ddf2b93d80b49d96606cfc8bd3e41",
+      "squash": "2957bd64eec9ac3246a52789acb0f7de55400144",
+      "SQL_SHA256": "819cd6f0228c3b3d3ed8ea6c9aac0ac0e7db5b233afbb82977c12636e9994411",
+      "installed_once_at": "2026-10-11T19:04:03Z",
+      "application_source": "bc28e47ee54f13eac3094c76a47ec7e71b689330",
+      "app_rebuild": false
+    },
+    "live_parent_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/proposal-function-live-parent-qualification-20261011.json",
+      "bytes": 6421,
+      "sha256": "0f427f788461423c9726c4c8488eeffd44eb6292dc4786a984c92b2d361631e5"
+    },
+    "source_summary": "946 merged19:02:37Z head32955c95f68ddf2b93d80b49d96606cfc8bd3e41/squash2957bd64eec9ac3246a52789acb0f7de55400144/parentbc28/fulltree59391fbe5fca4c1b9571b45ca085f5b2d53b85af equal/all5path blobs match. ExactCI38162831378/suite103395106233/attempt1/pull_request/ci.yml all10SUCCESS incl5browsers; strictapp15368 Terminal114549467974/Quote114539235669/Ingest114539235503 exacthead/suite/job bindings SUCCESS; runPR[]EMPTY qualified. Independent review6112062907 ACCEPT consumed; PG17 original42702 RED and24combinedPG+1applierregression owner checks retain original scope, not parent rerun.",
+    "SQL_install": "B soleowner applied ONE released4064B/819cd6f0228c3b3d3ed8ea6c9aac0ac0e7db5b233afbb82977c12636e9994411 CREATEORREPLACE at19:04:03Z through existing per-file ManagementAPI. Parent compared actual pre/postbody to released SQL/original0025 and catalog equality: postgres owner, SECURITYDEFINER, search_path, signature/resultshape and ACL unchanged. No app rebuild, grant/policy/table/data change or broad migration/IW2 SQL admission.",
+    "live_effects": [
+      {
+        "thesis_id": "988274e8-b335-4887-89bf-556564c16f3c",
+        "proposal_id": "dedf6514-7474-4c27-9125-bfbb3141be36",
+        "normal_control": "Accept",
+        "issued_once": true,
+        "UI_after_completion_and_reentry": "Accepted",
+        "database_state": "accepted",
+        "final_lifecycle": "archived",
+        "version": 3,
+        "history_count": 3
+      },
+      {
+        "thesis_id": "899ce795-0af0-4af5-9085-a246d6aad8fd",
+        "proposal_id": "815fef9e-9749-48ac-a6b2-481601b00c88",
+        "normal_control": "Reject",
+        "issued_once": true,
+        "UI_after_completion_and_reload": "Declined",
+        "database_state": "rejected",
+        "final_lifecycle": "archived",
+        "version": 2,
+        "history_count": 2
+      }
+    ],
+    "readback": {
+      "before": {
+        "path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/marketontology-consumer/proposal-state-sql/disposable-records-after-0032-before-ui.json",
+        "bytes": 1049,
+        "sha256": "34db82023b747725b6629f04d0e5f06a28751cca270ef69de88b0096698185fb"
+      },
+      "after_A": {
+        "path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/marketontology-consumer/proposal-state-sql/disposable-records-after-A-accept.json",
+        "bytes": 1244,
+        "sha256": "00cd0c7fff7866c07213d8c9e706986ca4b84083ae2620e6d4d15f192e145192"
+      },
+      "final": {
+        "path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/marketontology-consumer/proposal-state-sql/disposable-records-final-accept-reject.json",
+        "bytes": 1244,
+        "sha256": "373d857b5fb5c513631d8328d733cb89187e4629c46768cd7f70cdf4a68e6884"
+      },
+      "parent_comparison": "Exactly two rows. Only proposal_state differs; thesis rows, ordered history, immutable proposal content and every other returned field equal baseline. No duplicate SQL query by parent."
+    },
+    "browser_recovery": "Extension click opened real native confirm but confirm.accept timed out before dismissal; getJsDialog incorrectly returned undefined. Supported CUA native Google Chrome became available, switched only own named Audit20 group/tab and observed still-open draft discard dialog. Actual OK completed B selection; same extension tab then resumed. No browser restart, new profile, forced claim or safety refusal bypass.",
+    "browser_cleanup": {
+      "at": "2026-10-11T19:15:14.921Z",
+      "tabId": "1925917606",
+      "closed": true,
+      "viewportOverrideUsed": false,
+      "restore": "MU3D/fourstudies/ReplayOFF/Settingsclosed/nonfullscreen",
+      "prefs": "EN/west/dark retained",
+      "preexistingTabs": "No data/input changes to user/Options tabs; native switched only to own Audit20 tab to resolve pending dialog.",
+      "cleanupOwed": false
+    },
+    "qualification": "Normal Chris authenticated same-tab completion, reload and selection reads. A accepted-prefill draft discarded through normal existing confirm; no statement publish/save, Reopen, repeated archive, new thesis/proposal/revision or request replay. Both remained archived throughout. No race/fault/interception manufactured. Old failure and note-only history preserved.",
+    "sanitization": "Synthetic disposable thesis snapshots/crops only. Raw final chart tool output contained private watchlist rows; they were removed from retained observation artifact. No holdings, weights, credentials or private existing alert records exported.",
+    "coordination": "Meaningful first-party B source/live/cleanup returns sent under standing human msg-anyone consent; final DB readback consumed, no ACK claim. GMI owner01a12842 asked bounded voluntary defer of discretionary new Macro records-only PRs/refreshes during existing cap-limited kernel admission. Root accepted narrow defer, no cancellation/newobserver/waiver; required material save uses SAME8545twofiles, no new PR.",
+    "completed_never_replay": "946 source/review/CI/merge and SQLapply, AAccept/BReject, existing two archived identities and all storage/707/abf/292/bc28 release/controllers/builds/inputhandoff/producers/schedules/settledobservers and earlier935939Replayproofs. No repeat status/CI/browser/provider queries solely checkpoint.",
+    "independent_holds": "781 reserved numeric review; IW2 explicit cyber HUMAN and its SQL/access/rights/release holds; exact887 ALLOW; MoneySCP/OAuth EFFECT_UNKNOWN; A19 operational first-intake; actual873 publication and other original unqualified paths retained. All settled releases/storage/provider/build/producer/observer effects never replayed.",
+    "untriggered": [
+      "delayed selection/late Accept or mutation-readback races",
+      "whole MarketOntology lifecycle/science/math/rights/A11/#761",
+      "whole Audit20"
+    ],
+    "next_ready_phase": "Consume only actual relevant original-owner review/platform/rights/producer release events. 781 reserved numeric review, IW2 explicit cyber human platform resolution,887exactALLOW,MoneySCP/OAuthUNKNOWN,A19operationalfirstintake and actual873 publication remain unresolved; no repeated questions/polls/idleprincipal/notice-onlydelegation or refused-effect retry. Continue admitted independent ready work when a real new event arrives.",
     "whole_audit20_complete": false
   }
 }
