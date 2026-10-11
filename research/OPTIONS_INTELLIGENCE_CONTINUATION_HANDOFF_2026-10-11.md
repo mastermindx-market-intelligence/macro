@@ -231,6 +231,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   V01: Q1 minimal guard; Q2 accept final-minute NaN; Q3 R1 Theta receipt 2026-10-12 RTH on the existing Theta
   Terminal host. F-A03a/F-A05a (surface pm/vex label, spot clock) are routed as M02 inputs to the #8684 carrier.
   Launch order when admitted (max_active 2): V01, 1B, then D16a, F01, M01, OC as slots free.
+- D36 (18:10Z, L.7 direct work) Fabric admission has been refused for about 20 minutes. Load is 49 from other sessions, so BLOCKED-EXTERNAL
+  (O-14). V01 meets all four L.7 conditions: no worker ever started on it, the seat holds the worktree, there is no other owner,
+  and nothing is EFFECT_UNKNOWN. So the seat executes the frozen V01 commission directly, niced, with no change to the commission.
+  V01 is REMOVED from the fabric launch queue (one writer). 1B and the others stay queued for admission. Acceptance still
+  needs an independent Opus READ_ONLY exact-head review before the PR.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -433,7 +438,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | O4 V01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O4/` (`V01_lead.md` + `_common_verify_lead.md`) | #599 | agent completion notification | DELIVERED → JUDGED: ACCEPT (D35); return persisted in `leads/O2|O3|O4/return.md` | 1 lead |
 | O2 F01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O2/` | #599 (coordination with Macro #8660) | agent completion notification | DELIVERED → JUDGED: ACCEPT (D35); return persisted in `leads/O2|O3|O4/return.md` | 1 lead |
 | O3 M01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O3/` | #599 | agent completion notification | DELIVERED → JUDGED: ACCEPT (D35); return persisted in `leads/O2|O3|O4/return.md` | 1 lead |
-| V01 slice 1 Greek-kernel provenance + MIN_T refusal | fabric operator grok (fix_build), D35 | SSD worktree `v01-greek-kernel-provenance-a0c3b30a02c397b8` @ `0a47364446e6`; `leads/V01/commission.md` | Macro PR (seat opens after ACCEPT + review) | b41wsvrgy (admission) → task exit + `leads/V01/return.md` | QUEUED — commission frozen; launch #1 on admission | 1 operator |
+| V01 slice 1 Greek-kernel provenance + MIN_T refusal | fabric operator grok (fix_build), D35 | SSD worktree `v01-greek-kernel-provenance-a0c3b30a02c397b8` @ `0a47364446e6`; `leads/V01/commission.md` | Macro PR (seat opens after ACCEPT + review) | b41wsvrgy (admission) → task exit + `leads/V01/return.md` | IN PROGRESS — seat direct (D36, L.7); removed from fabric queue | seat |
 | F01 slice 1 chain-heat unknown-null + measured_location | fabric operator grok (fix_build), D35 | SSD worktree `f01-chain-heat-unknown-null-79b82035c4cbdf68` @ `f1ae1e0365fc`; `leads/F01/commission.md` | Macro PR (coordinate with #8660 owner) | task exit + `leads/F01/return.md` | QUEUED — commission frozen | 1 operator |
 | M01 Macro-1 regime consumer + hub completeness | fabric operator grok (fix_build), D35 | SSD worktree `m01-gamma-regime-consumer-3d2881905e5f1a3f` @ `f1ae1e0365fc`; `leads/M01/commission.md` | Macro PR | task exit + `leads/M01/return.md` | QUEUED — commission frozen | 1 operator |
 
