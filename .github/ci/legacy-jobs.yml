@@ -7805,6 +7805,11 @@ jobs:
       # read-side guard that stops a focus refetch from reverting a just-made edit.
       - name: watchlist workspace — entry parser, stage map, focus-refetch guard (W2)
         run: python -m pytest tests/test_watchlist_workspace_js.py -q
+      # site20 S3: templates/stockdata.js — index validated before it is cached,
+      # one in-flight US index read, regional/ticker transient failures retried on a
+      # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
+      - name: stockdata.js cache resilience — index validation, dedupe, transient TTL (site20 S3)
+        run: node --test tests/js/stockdata_cache_resilience.test.mjs
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
@@ -14744,6 +14749,8 @@ jobs:
       # ledgers and would otherwise fail for a borrowed reason.
       # No dependency widened: probed at RUN time, both load only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
+      - name: Prophet source clocks and immutable correction provenance
+        run: python -m pytest tests/test_prophet_plan_chronology_audit.py tests/test_prophet_integrity.py -q
       - name: grade_us_board outcome ledgers + tenure stamp + the strip it renders
         run: python -m pytest tests/test_board_tenure_stamp.py tests/test_us_board_outcomes.py tests/test_us_board_outcomes_strip.py tests/test_entry_status_stamping.py tests/test_us_board_price_basis_era.py -q
       - name: grade_us_board zero-accrual + truncated-history alarms
@@ -19264,6 +19271,8 @@ jobs:
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/*"
+      - "scripts/__init__.py"
+      - "scripts/build_themes_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
@@ -19272,6 +19281,7 @@ jobs:
       - "site/basketdata/foresight_cascade.json"
       - "site/factordata/**"
       - "site/marketdata/subsector_confluence.json"
+      - "site/marketdata/themes_heatmap.json"
       - "site/state_of_themes.html"
       - "templates/_navlinks.html.j2"
       - "templates/chat.html"
@@ -19283,6 +19293,7 @@ jobs:
       - "tests/test_subsector_scan.py"
       - "tests/test_subsector_turn.py"
       - "tests/test_themes_heatmap.py"
+      - "tests/test_principal_receipt_ambiguity.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -19295,7 +19306,7 @@ jobs:
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across

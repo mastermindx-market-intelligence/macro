@@ -312,28 +312,35 @@
       '五个跨资产背景面（利率、美元、信用、商品、国际），由各自的主理产出读取。滞后行展示最新已知值并给出日期原因。'
     ) }}
   </div>
-  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
-  {% if block.state == 'STALE_WITH_LAST_KNOWN' and (block.state_reason_en or block.state_reason_zh) %}
+  {% set _cp_available_rows = block.rows | selectattr('state', 'in', ('CURRENT', 'STALE_WITH_LAST_KNOWN')) | list %}
+  {% if _cp_available_rows %}
+  {% if block.state_reason_en or block.state_reason_zh %}
   <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
   {% endif %}
     {% for row in block.rows %}
     {% set _plane_tag = _PLANE_WORDS.get(row.plane, ('', '')) %}
+    {% set _row_available = row.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') %}
     <div class="mx-cp-row">
       <span class="ctx-row">
         <span class="ctx-label">{{ t(_plane_tag[0], _plane_tag[1]) }}</span>
-        {% if row.label_en or row.label_zh %}
+        {% if _row_available and (row.label_en or row.label_zh) %}
         <span>{{ t(row.label_en or '', row.label_zh or row.label_en or '') }}</span>
         {% endif %}
       </span>
-      {% if row.read_en or row.read_zh %}
+      {% if _row_available and (row.read_en or row.read_zh) %}
       <div class="mx-cp-read">
         {{ t(row.read_en or '', row.read_zh or row.read_en or '') }}
       </div>
       {% endif %}
+      {% if not _row_available and not (row.state_reason_en or row.state_reason_zh) %}
+      <div class="mx-cp-read">{{ t('Reading unavailable.', '读数暂不可用。') }}</div>
+      {% endif %}
+      {% if (_row_available and row.as_of) or row.state_reason_en or row.state_reason_zh %}
       <span class="mx-cp-meta">
-        {% if row.as_of %}{{ t('as of', '数据截至') }} {{ row.as_of[:16] }}{% endif %}
-        {% if row.state == 'STALE_WITH_LAST_KNOWN' and row.state_reason_en %} — {{ t(row.state_reason_en, row.state_reason_zh or row.state_reason_en) }}{% endif %}
+        {% if _row_available and row.as_of %}{{ t('as of', '数据截至') }} {{ row.as_of[:16] }}{% if row.state_reason_en or row.state_reason_zh %} — {% endif %}{% endif %}
+        {% if row.state_reason_en or row.state_reason_zh %}{{ t(row.state_reason_en or '', row.state_reason_zh or row.state_reason_en or '') }}{% endif %}
       </span>
+      {% endif %}
     </div>
     {% endfor %}
   {% else %}

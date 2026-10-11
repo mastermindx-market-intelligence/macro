@@ -509,7 +509,129 @@ _ROOT_QUARANTINE_READ_ONLY_TOOLS = frozenset({
 # simply stays quarantined.
 _ROOT_QUARANTINE_REPAIR_TOOLS = frozenset({
     "EnterWorktree",
+    # A conversation already sitting in a native `.claude/worktrees/<name>` tree
+    # must leave it before it can enter the admissible one; keeping the tree is
+    # non-destructive, so the exit is part of the same repair (2026-10-10).
+    "ExitWorktree",
 })
+
+# The remedy the quarantine demands is a Bash act the quarantine used to deny
+# (Chairman ruling 2026-10-10: a Meta-CEO seat ended on EXACT_HUMAN_GATE handing
+# the Chairman the mint command the session could run itself --
+# DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR). These
+# anchored shapes admit exactly the host storage-helper mint, the project hook
+# mint, non-destructive git inspection/worktree administration, and read-only
+# host inspection. Tokens exclude shell metacharacters, so pipes other than the
+# one feeding the mint, redirects, substitutions, chaining and newlines all stay
+# denied; a quoted token may not carry `$` or a backtick. The guard still
+# recomputes admission on the next effectful call, so a mint that produced an
+# inadmissible tree changes nothing.
+_Q_TOKEN = r"(?:[^ \t\r\n'\"|;&<>`$()]+|'[^'\r\n]*'|\"[^\"$`\r\n]*\")"
+_Q_ARGS = r"(?:[ \t]+" + _Q_TOKEN + r")*"
+_Q_WS = r"[ \t]*"
+
+
+def _q_script(basename: str) -> str:
+    bare = r"[^ \t\r\n'\"|;&<>`$()]*" + basename
+    return (
+        r"(?:" + bare + r"|'[^'\r\n]*" + basename + r"'|\"[^\"$`\r\n]*" + basename + r"\")"
+    )
+
+
+_Q_FEED = r"(?:(?:echo|printf)" + _Q_ARGS + _Q_WS + r"\|" + _Q_WS + r")?"
+_ROOT_QUARANTINE_REMEDY_BASH = tuple(
+    re.compile(pattern)
+    for pattern in (
+        r"\A" + _Q_WS + _Q_FEED + r"python3?[ \t]+" + _q_script(r"worktree_storage\.py")
+        + r"(?:[ \t]+--config[ \t]+" + _Q_TOKEN + r")?"
+        + r"[ \t]+(?:create|check|check-path|session-start)" + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + _Q_FEED + r"python3?[ \t]+" + _q_script(r"worktree_create_sparse\.py")
+        + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + r"git[ \t]+(?:worktree[ \t]+(?:list|add|lock|unlock)|fetch"
+        r"|branch[ \t]+--(?:show-current|list)|rev-parse|status|remote[ \t]+-v"
+        r"|ls-remote|config[ \t]+--get)" + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + r"(?:pwd|ls|df|du|cat|head|tail|wc|stat|echo|printf|which|test"
+        r"|id|whoami|date|hostname|mount|diskutil|grep)" + _Q_ARGS + _Q_WS + r"\Z",
+    )
+)
+_QUARANTINE_STORAGE_HELPER = (
+    Path.home() / ".local" / "lib" / "mastermind" / "worktree-storage" / "worktree_storage.py"
+)
+_QUARANTINE_STORAGE_POLICY = Path.home() / ".config" / "mastermind" / "worktree-storage.json"
+_QUARANTINE_PROJECT_HOOK = Path(__file__).resolve().parent / "worktree_create_sparse.py"
+
+
+def _tool_command(payload: dict[str, Any]) -> str:
+    tool_input = payload.get("tool_input")
+    if isinstance(tool_input, dict):
+        command = tool_input.get("command")
+        if isinstance(command, str):
+            return command
+    return ""
+
+
+def _is_quarantine_remedy_command(command: str) -> bool:
+    if not command or "\n" in command or "\r" in command:
+        return False
+    return any(pattern.match(command) for pattern in _ROOT_QUARANTINE_REMEDY_BASH)
+
+
+def _quarantine_suggested_name(root: Path) -> str:
+    name = re.sub(r"[^A-Za-z0-9._-]+", "-", root.name)
+    name = re.sub(r"^worktree-", "", name).strip("-._")
+    if not name:
+        return "seat"
+    if not name[0].isalnum():
+        name = "s" + name
+    return name[:80]
+
+
+def _root_is_native_session_tree(root: Path) -> bool:
+    parent = root.parent
+    return parent.name == "worktrees" and parent.parent.name == ".claude"
+
+
+def _quarantine_remedy_text(root: Path, payload: dict[str, Any]) -> str:
+    """The in-session repair, spelled out with this session's own values.
+
+    The text is the whole point: a denial that only says "start a fresh session"
+    reads as an order to stop, and that is how a live Meta-CEO seat ended on an
+    administrative blocker it could clear in seconds (2026-10-10). Every value a
+    session needs -- root, name, session id, helper path -- is filled in, and the
+    shape printed is one `_is_quarantine_remedy_command` admits.
+    """
+    session_id = str(payload.get("session_id") or "") or "<session_id>"
+    request = json.dumps(
+        {"cwd": str(root), "name": _quarantine_suggested_name(root), "session_id": session_id}
+    )
+    quoted = "'" + request.replace("'", "'\\''") + "'"
+    if _QUARANTINE_STORAGE_HELPER.is_file() and _QUARANTINE_STORAGE_POLICY.is_file():
+        mint = "printf '%s' " + quoted + " | python3 " + str(_QUARANTINE_STORAGE_HELPER) + " create"
+        where = "on the external SSD under the host storage policy"
+    else:
+        mint = "printf '%s' " + quoted + " | python3 " + str(_QUARANTINE_PROJECT_HOOK)
+        where = "under this checkout's .claude/worktrees/ (no host storage policy is installed)"
+    exit_step = (
+        "this conversation sits in a native session worktree, so first call ExitWorktree "
+        "keeping the tree, then "
+        if _root_is_native_session_tree(root)
+        else ""
+    )
+    return (
+        "REMEDY -- perform it yourself in this session; never hand it to the operator "
+        "and never end the session on this blocker: (1) mint an admissible tree "
+        + where + " with `" + mint + "` -- it prints the new path; the mint is "
+        "idempotent, and a refusal names its cause (mount, free space, policy, "
+        "receipt): fix that cause and rerun, never fall back to internal disk. (2) "
+        + exit_step + "call EnterWorktree with the printed path. (3) continue the "
+        "normal ship loop there. While quarantined this guard allows exactly that "
+        "mint shape, read-only inspection, and git worktree/fetch/branch/rev-parse/"
+        "status; shell cd, change_directory, a hand branch rename, or repointing the "
+        "shared checkout are not repairs (an unpublished native .claude/worktrees/"
+        "<name> tree on worktree-<name> is already adopted automatically). A fresh "
+        "worktree-backed Claude session (`claude --worktree <name>` or the Desktop "
+        "worktree flow) is the fallback only when EnterWorktree is unavailable."
+    )
 
 
 def _resolved_git_path(root: Path, raw: str) -> Path:
@@ -4567,14 +4689,9 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
             "SESSION ROOT QUARANTINE: This conversation is attached to a repository "
             "root that is not an admissible linked claude/* worktree ("
             + admission_reason
-            + "). Treat this session as READ-ONLY. Do not use shell cd, "
-            "change_directory, or a branch rename as a repair: those do not make the "
-            "durable session root a safe carrier. Start a fresh worktree-backed Claude "
-            "session (for example `claude --worktree <name>` or the Desktop worktree "
-            "flow), or move this conversation with EnterWorktree onto a linked claude/* "
-            "worktree, before any modifying work. Otherwise use this conversation only for read-only "
-            "diagnosis or a continuation packet. The normal ship loop belongs to the "
-            "fresh worktree-backed carrier.\n"
+            + "). Treat this session as READ-ONLY until you have moved it. "
+            + _quarantine_remedy_text(root, payload)
+            + "\n"
             + ship_loop_context
         )
     else:
@@ -4617,6 +4734,8 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     tool = str(payload.get("tool_name") or "")
     if tool in _ROOT_QUARANTINE_READ_ONLY_TOOLS or tool in _ROOT_QUARANTINE_REPAIR_TOOLS:
         return
+    if tool == "Bash" and _is_quarantine_remedy_command(_tool_command(payload)):
+        return
     _emit(
         {
             "hookSpecificOutput": {
@@ -4626,12 +4745,8 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     "SESSION ROOT QUARANTINE: refusing tool "
                     + (tool or "<unknown>")
                     + " because this conversation is not attached to a linked "
-                    "claude/* worktree (" + reason + "). Do not repair this with "
-                    "cd/change_directory, a hand branch rename, or by repointing the "
-                    "shared checkout (an unpublished native .claude/worktrees/<name> "
-                    "tree on worktree-<name> is already adopted automatically). Start "
-                    "a fresh worktree-backed Claude session and continue there, or "
-                    "move this one with EnterWorktree onto a linked claude/* worktree."
+                    "claude/* worktree (" + reason + "). "
+                    + _quarantine_remedy_text(root, payload)
                 ),
             }
         }

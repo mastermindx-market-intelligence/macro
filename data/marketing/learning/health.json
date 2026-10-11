@@ -66,9 +66,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 39,
-          "n_recent": 2,
-          "reason": "recent n=2, baseline n=39 — need 5 of each",
+          "n_baseline": 40,
+          "n_recent": 1,
+          "reason": "recent n=1, baseline n=40 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -377,7 +377,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-10-10T11:57:13Z",
+  "as_of": "2026-10-11T05:37:12Z",
   "halted": [],
   "metrics": [
     "approval_rate",
