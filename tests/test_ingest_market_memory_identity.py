@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -20,6 +21,28 @@ from scripts import ingest_market_memory_identity as INGEST
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOTS = ROOT / "data" / "symbol_directory" / "snapshots"
+
+_OPEN_TRACE: list[str] | None = None
+
+
+def _record_open(event: str, args: tuple) -> None:
+    if event != "open" or not isinstance(_OPEN_TRACE, list):
+        return
+    target = args[0]
+    if isinstance(target, int):
+        return
+    _OPEN_TRACE.append(os.fsdecode(os.fspath(target)))
+
+
+sys.addaudithook(_record_open)
+
+
+def _pyc_to_py(path: Path) -> Path:
+    if path.parent.name == "__pycache__":
+        match = re.fullmatch(r"(?P<stem>.+)\.cpython-[^.]+\.pyc", path.name)
+        if match:
+            return path.parent.parent / f"{match['stem']}.py"
+    return path
 
 
 def _git(root: Path, *args: str) -> str:
@@ -402,6 +425,156 @@ def test_ingest_fails_closed_when_the_checkout_moves_a_loaded_module(
         STORE,
         "capture_spy_listing_observation",
         _capture_with_mid_run_commit(commit_loaded_module_edit),
+    )
+
+    with pytest.raises(INGEST.IdentityIngestError, match="changed during"):
+        INGEST.ingest_identity_observations(
+            repository,
+            store_root=tmp_path / "identity-store",
+        )
+
+
+def test_completion_paths_cover_every_checkout_file_the_ingest_opens(
+    tmp_path: Path,
+) -> None:
+    global _OPEN_TRACE
+    repository, _receipt = _operational_repository(tmp_path)
+    RECEIPTS._validator.cache_clear()
+    store_root = (tmp_path / "trace-store").resolve()
+    _OPEN_TRACE = []
+    try:
+        INGEST.ingest_identity_observations(repository, store_root=store_root)
+    finally:
+        trace = _OPEN_TRACE
+        _OPEN_TRACE = None
+    assert isinstance(trace, list)
+
+    entries = INGEST._IDENTITY_INPUT_PATHS
+    modules = {root: set(INGEST._loaded_checkout_modules(root)) for root in (repository, ROOT)}
+    covered: set[str] = set()
+    uncovered: list[str] = []
+    for raw in trace:
+        path = _pyc_to_py(Path(raw).resolve())
+        posix = path.as_posix()
+        if path.is_relative_to(store_root) or "/.git/" in posix:
+            continue
+        for root in (repository, ROOT):
+            try:
+                rel = path.relative_to(root.resolve()).as_posix()
+            except ValueError:
+                continue
+            if any(rel == entry or rel.startswith(entry + "/") for entry in entries) or rel in modules[root]:
+                covered.add(rel)
+            else:
+                uncovered.append(rel)
+            break
+
+    assert not uncovered, f"unopened-coverage checkout paths: {sorted(uncovered)}"
+    assert any(
+        rel.startswith("data/symbol_directory/snapshots/") and rel.endswith(".parquet")
+        for rel in covered
+    )
+    assert any(
+        rel.startswith("data/symbol_directory/receipts/snapshots/")
+        and rel.endswith(".json")
+        for rel in covered
+    )
+    assert "config/market_memory_canary.v1.json" in covered
+    assert (
+        "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+        in covered
+    )
+    print("COVERED_PATHS_BEGIN")
+    for rel in sorted(covered):
+        print(f"COVERED {rel}")
+    print("COVERED_PATHS_END")
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "config/market_memory_canary.v1.json",
+        "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
+    ],
+    ids=("config", "schema"),
+)
+def test_ingest_fails_closed_when_the_checkout_moves_a_non_module_input(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    path: str,
+) -> None:
+    repository = _temporary_repository(tmp_path)
+
+    def commit_non_module_input() -> None:
+        target = repository / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / path, target)
+        _git(repository, "add", path)
+        _git(repository, "commit", "-qm", f"track {path}")
+
+    monkeypatch.setattr(
+        STORE,
+        "capture_spy_listing_observation",
+        _capture_with_mid_run_commit(commit_non_module_input),
+    )
+
+    with pytest.raises(
+        INGEST.IdentityIngestError,
+        match="changed during.*identity path",
+    ):
+        INGEST.ingest_identity_observations(
+            repository,
+            store_root=tmp_path / "identity-store",
+        )
+
+
+def test_ingest_fails_closed_when_the_checkout_reverts_an_identity_input_mid_run(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    snapshots = repository / "data" / "symbol_directory" / "snapshots"
+    key = "data/symbol_directory/snapshots/2030-01-01.parquet"
+
+    def commit_then_revert_an_identity_input() -> None:
+        shutil.copyfile(min(snapshots.glob("*.parquet")), snapshots / "2030-01-01.parquet")
+        _git(repository, "add", key)
+        _git(repository, "commit", "-qm", "track an extra identity snapshot")
+        _git(repository, "rm", "-q", key)
+        _git(repository, "commit", "-qm", "revert the extra identity snapshot")
+
+    monkeypatch.setattr(
+        STORE,
+        "capture_spy_listing_observation",
+        _capture_with_mid_run_commit(commit_then_revert_an_identity_input),
+    )
+
+    with pytest.raises(
+        INGEST.IdentityIngestError,
+        match="changed during.*identity path",
+    ):
+        INGEST.ingest_identity_observations(
+            repository,
+            store_root=tmp_path / "identity-store",
+        )
+
+
+def test_ingest_fails_closed_when_the_checkout_moves_backwards(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    (repository / "unrelated.txt").write_text("deployed head marker\n", encoding="utf-8")
+    _git(repository, "add", "unrelated.txt")
+    _git(repository, "commit", "-qm", "deployed head")
+
+    def move_the_checkout_backwards() -> None:
+        _git(repository, "reset", "--hard", "HEAD~1")
+
+    monkeypatch.setattr(
+        STORE,
+        "capture_spy_listing_observation",
+        _capture_with_mid_run_commit(move_the_checkout_backwards),
     )
 
     with pytest.raises(INGEST.IdentityIngestError, match="changed during"):

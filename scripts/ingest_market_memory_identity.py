@@ -23,9 +23,26 @@ _SNAPSHOT_KEY = re.compile(
 _LISTING_RECEIPT_KEY = re.compile(
     r"data/symbol_directory/receipts/snapshots/(\d{4}-\d{2}-\d{2})\.json\Z"
 )
+# Every checkout input the ingest opens, named by its reader (file:function):
+#   - data/symbol_directory/snapshots is read by
+#     market_memory_identity_observation.build_spy_listing_observation and
+#     byte-verified per key against the pinned commit by this ingest.
+#   - data/symbol_directory/receipts/snapshots is read by
+#     market_memory_identity_observation.build_spy_listing_observation.
+#   - config/market_memory_canary.v1.json is read on every key by
+#     market_memory_identity_observation._load_anchor; the ingest never passes
+#     config_path, so it defaults to market_memory_identity.DEFAULT_CONFIG_PATH.
+#   - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+#     is read once per process by symbol_directory_receipts._validator, reached
+#     from market_memory_identity_observation for receipt-bound snapshots.
+# The loaded modules are added at completion time by _loaded_checkout_modules;
+# test_completion_paths_cover_every_checkout_file_the_ingest_opens enforces
+# that every checkout file the ingest opens is covered here.
 _IDENTITY_INPUT_PATHS = (
     "data/symbol_directory/snapshots",
     "data/symbol_directory/receipts/snapshots",
+    "config/market_memory_canary.v1.json",
+    "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
 )
 
 
@@ -76,38 +93,42 @@ def _loaded_checkout_modules(root: Path) -> tuple[str, ...]:
 
 
 def _completion_commit(root: Path, deployed_commit: str) -> str:
-    """Accept a moved HEAD only when no identity input or module changed."""
+    """Accept a moved HEAD only on a fast-forward whose commits touch no identity input or loaded module."""
 
     current = _repository_commit(root)
     if current == deployed_commit:
         return current
     paths = (*_IDENTITY_INPUT_PATHS, *_loaded_checkout_modules(root))
     try:
-        changed = [
-            line
-            for line in str(
-                _git(
-                    root,
-                    "diff",
-                    "--name-only",
-                    "--no-renames",
-                    deployed_commit,
-                    current,
-                    "--",
-                    *paths,
-                    text=True,
-                )
-            ).splitlines()
-            if line
-        ]
+        _git(root, "merge-base", "--is-ancestor", deployed_commit, current)
+        touched = sorted(
+            {
+                line
+                for line in str(
+                    _git(
+                        root,
+                        "log",
+                        "--name-only",
+                        "--format=",
+                        "--no-renames",
+                        "--full-history",
+                        f"{deployed_commit}..{current}",
+                        "--",
+                        *paths,
+                        text=True,
+                    )
+                ).splitlines()
+                if line
+            }
+        )
     except IdentityIngestError as exc:
         raise IdentityIngestError(
             "deployed checkout changed during identity intake"
         ) from exc
-    if changed:
+    if touched:
         raise IdentityIngestError(
             "deployed checkout changed during identity intake: "
-            f"{len(changed)} identity path(s) differ between "
+            f"{len(touched)} identity path(s) changed between "
             f"{deployed_commit[:12]} and {current[:12]}"
         )
     return current
