@@ -1,0 +1,62 @@
+{
+  "config/single_name_intelligence/coverage_profiles/alibaba.yml": {
+    "blob": "0914dd8bdf9330a77c442cf5015315235a7878e7",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "config/single_name_intelligence/coverage_profiles/tencent.yml": {
+    "blob": "d5f952887b82a254a6ec3cf3d816ba22ca366f97",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "data/earnings/earnings.parquet": {
+    "blob": "8f0575464ba0a1abed7cee7799e90b8fab7bd6fc",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "data/hk_filings/events.parquet": {
+    "blob": "be30a5bc5ecbb8d007c248f0a26d51010c5027ab",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "data/hk_stocks/0700.HK.parquet": {
+    "blob": "b439ba667ff8bfcdd35d854b7d461ff624a48df9",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "data/hk_stocks/9988.HK.parquet": {
+    "blob": "2792f4bc5685cd13ceabcdac25acf37a43acb199",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "data/reference/security_master.parquet": {
+    "blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "data/yahoo/BABA.parquet": {
+    "blob": "2c627eecb86b92f20c969498fed2d127e032b3b6",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "data/yahoo/SPY.parquet": {
+    "blob": "9b306b50884279e4155030298627faa26e5c6d9a",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "research/single_name_intelligence/evidence/Alibaba/E1_ADVERSARIAL_CASES_2026-10-11.md": {
+    "blob": "49225d3e71ea3d141aef837dc6f351ac1cbb7544",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "research/single_name_intelligence/evidence/Alibaba/E1_COVERAGE_REPORT_2026-10-11.json": {
+    "blob": "11170a7406abcb70386a8827d5acf5e8b5a5ca0b",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md": {
+    "blob": "fde534f8fb912738fde8e2d9b3ebd03881b5ffa4",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md": {
+    "blob": "817f8eefda838cb17300beac98f43133041d6631",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "research/single_name_intelligence/evidence/Tencent/E2_COVERAGE_REPORT_2026-10-11.json": {
+    "blob": "5c29370884099389454f336ed1dd794b97ce7901",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  },
+  "research/single_name_intelligence/evidence/Tencent/E2_EVIDENCE_PACK_2026-10-11.md": {
+    "blob": "47ec0d812c7fd5d160b6658b69858ed3f298ad81",
+    "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
+  }
+}
