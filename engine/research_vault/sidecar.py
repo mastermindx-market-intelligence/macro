@@ -344,7 +344,11 @@ def _strip_trailing_calendar_date(s: str) -> str:
     stripped = _TRAILING_DAY_MON_YEAR.sub("", s)
     stripped = _TRAILING_MON_DAY_YEAR.sub("", stripped).strip()
     if stripped and stripped != s and len(stripped.split()) >= 2:
-        return stripped
+        # A source title such as "The Point for Europe Thursday, Oct 1 2026"
+        # leaves a dangling separator after calendar-date removal. Strip it
+        # ONLY when a date was actually removed; never alter a standalone
+        # comma or move the original clean_title/slug identity.
+        return stripped.rstrip(" ,")
     return s
 
 
