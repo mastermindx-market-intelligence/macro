@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T18:51:21.744115+00:00",
-  "count": 2824,
+  "generated_at": "2026-10-11T19:06:58.640144+00:00",
+  "count": 2825,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -655,6 +655,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qjmprmfzu7z-4f1d32",
+      "title": "BofA The European Credit Strategist OATflows and outbreaks 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:07:08Z",
+      "summary_points": [
+        "French fiscal vulnerability: No primary budget surplus since 1974, private debt/GDP (214%) exceeds US (140%), sovereign debt/GDP near US levels, and pension strain signal systemic risk to credit markets.",
+        "Corporate credit curve inversion: 70% of Euro IG 2s5s curves inverted (vs 0% in US), indicating severe corporate stress and critical risk factor for credit portfolios.",
+        "Global negative spread expansion: Negative corporate-sovereign spreads now widespread (incl.",
+        "EMs), driven by diverging net interest payments, undermining \"corporates safer\" narrative and altering credit positioning dynamics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
