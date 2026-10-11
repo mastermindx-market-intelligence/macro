@@ -920,3 +920,81 @@ price-response/outcome maturity remain NOT PROVEN. No authenticated
 Tiingo probe or denied writer effect was reattempted, reframed,
 delegated or rerouted. Macro PR #8698 remains DRAFT/HOLD,
 all 24 Tiingo registry contracts remain PROPOSED.
+
+
+### October 11 UTC — Chairman BOATS license ruling, genuine offline L0→L1 proof
+
+The Chairman has expressly confirmed in the current session that **Tiingo
+BOATS Real-time is already purchased and fully licensed for Mastermind use**,
+with the existing Tiingo Business Advanced/full-redistribution attestation
+retained. Do not request another purchase, blanket approval, or entitlement
+procurement. The current governing source-registry entry for
+vendor.tiingo.raw.boats now records the purchase, licensed use and
+redistribution as CHAIRMAN_ATTESTED. The dataset remains status PROPOSED:
+a licensing authorization alone is not a documented successful WebSocket
+handshake, a completed historical capture, a quality-qualified event source,
+a validated production publisher or a proof of particular endpoint responses.
+The downstream L1 research dataset also remains PROPOSED and noncanonical.
+
+The existing BOATS source path has been exercised **end-to-end locally** with
+a deliberately fake WebSocket implementation, a dummy nonsecret token and a
+temporary isolated archive, without any vendor/API connection:
+  scripts/tiingo_ingest.py::boats_stream (unchanged)
+      -> collectors/tiingo_archive.py::Archive.store_boats_batch (unchanged)
+      -> external-drive simulation in test tmp path
+      -> immutable raw NDJSON/gzip and source receipt
+      -> scripts/tiingo_materialize.py::materialize_one (unchanged)
+      -> L1 Parquet + research manifest
+      -> lib/dataos/tiingo_reader.py::read_research_view
+      -> lib/dataos/tiingo_boats_tape.py::audit_boats_tape
+
+The new tests/test_tiingo_boats_stream_chain.py exercises:
+- One mocked Q/T/B/opaque segment and its exact SHA-256, source counts,
+  preservation of four sale-condition slots, source release/capture clocks,
+  separate T and B share counters and incomplete-coverage/non-NBBO flags;
+- An interrupted mock WebSocket session across two connections, distinct
+  immutable raw receipts and a correctly absent cross-segment quote join;
+- A mock vendor subscription rejection after an earlier accepted Q,
+  preserving partial raw evidence, never logging vendor-private text or
+  claiming uninterrupted transport;
+- The exact Chairman-attested, still-PROPOSED Data OS source entry and
+  its existing L1 noncanonical relationship.
+
+The new tests have been enrolled in the existing
+dataos-prospective-reference CI job and workflow triggers, with no added
+ingestor, raw writer, service registration, scheduler, quote truth or control
+plane. CI dependency proof: 52 inferred concrete paths, zero uncovered,
+zero unwired suites, and the exact BOATS test/collector/registry paths are
+in the incumbent job. The focused new chain 4/4 passed. The full Tiingo and
+Data OS registry tests: **398 passed, the exact same 11 producer-integrity
+regressions still fail** (pytest exit 1; no skipped/waived cases).
+External-volume log:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-boats-source-chain-20261011.log
+SHA-256 41796750cda54ce9fdc217ea1466a98d259d238a7a18bceb22cd76a7eb9de6e8.
+
+Untouched source hashes:
+  collectors/tiingo_archive.py:
+    1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d
+  scripts/tiingo_ingest.py:
+    1364af1c3ce08c2c91b57a6415e0a099064918306dfbf4fc2729e55b72e11797
+  scripts/tiingo_materialize.py:
+    0b54f919a2a57e1014ff10ea001acbdb4cfa9937be5b97bcecb7919848b41969
+  tests/test_tiingo_ingestion_integrity.py:
+    c1a1e6c3e312ce84179f25e47f9dc493d8440f25efb33e8f96cf931279dbec12
+
+The two prior platform safety denials were specifically a core raw-writer
+rewrite and an authenticated vendor probe. This direct current Chairman
+license ruling settles business authorization but does NOT lift platform
+safety controls. Neither denied effect has been retried or delegated. The
+new test uses only synthetic fixtures through the **existing** raw writer
+in tmp, not a replacement producer. The intended live Tiingo archive on
+M2 is still absent and no live WebSocket connection has been attempted.
+
+Done when remains full production BOATS + deep history: resolve genuine
+platform source-write and authenticated-probe constraints without bypass,
+fix the 11 red producer integrity regressions, validate genuine endpoint
+data and capture costs/rights mapping, start an admitted existing-runtime
+owned collector, backfill eligible history with storage/throughput guards,
+and verify canonical downstream machine and Terminal users. The
+current Macro PR #8698 remains DRAFT / NOT READY, its existing source
+carrier and worktree retained; 24 Data OS Tiingo datasets remain PROPOSED.

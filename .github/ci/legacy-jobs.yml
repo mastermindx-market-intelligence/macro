@@ -20124,6 +20124,7 @@ jobs:
       - tests/test_tiingo_history.py
       - tests/test_tiingo_research_query.py
       - tests/test_tiingo_boats_tape.py
+      - tests/test_tiingo_boats_stream_chain.py
       - lib/dataos/tiingo_boats_tape.py
       - scripts/tiingo_research_query.py
       - tests/test_tiingo_vendor_cohort.py
@@ -20149,7 +20150,7 @@ jobs:
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
-          tests/test_tiingo_vendor_cohort.py
+          tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q

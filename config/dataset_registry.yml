@@ -1005,11 +1005,15 @@ datasets:
     conflict_policy: DOMAIN_AUTHORITY
     quality_checks: [checksum, completeness, temporal_integrity, continuity]
     version: "0.1.0"
-    licensing: boats_realtime_addon_and_redistribution_not_verified
+    licensing: chairman_attested_boats_realtime_purchased_licensed_full_redistribution_runtime_unproven
     notes: >
-      BOATS is one ATS venue, not national best bid/offer; Q/T/B raw event envelopes
-      and MEMOIR conditions are retained. No active websocket or historical tick
-      corpus is attested by a code-only path.
+      The Chairman directly confirms BOATS Real-time has been purchased, and Mastermind
+      has licensed use and redistribution. This is accepted operator authority;
+      do not request a second purchase or repeat contract procurement. A separate
+      authenticated vendor connection, successful feed messages, endpoint account
+      activation, archival evidence and publication-path verification remain unproven.
+      BOATS is one ATS venue, never national best bid/offer; preserve raw Q/T/B and
+      MEMOIR conditions. The L0/L1 datasets stay PROPOSED until live integration proof.
 
   - dataset_id: vendor.tiingo.research.eod
     layer: L1
