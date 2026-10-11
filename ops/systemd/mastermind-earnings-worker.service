@@ -1,0 +1,40 @@
+[Unit]
+Description=Mastermind earnings qualitative producer (Qwen-first)
+After=network-online.target mastermind-inference-guard.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=longr
+Group=longr
+WorkingDirectory=/opt/mastermind-earnings/macro
+Environment=HOME=/home/longr
+Environment=EARNINGS_OPS_ROOT=/opt/mastermind-earnings/macro
+Environment=EARNINGS_PYTHON=/opt/mastermind-earnings/venv/bin/python
+Environment=EARNINGS_RUNTIME_ROOT=/var/lib/mastermind-earnings
+Environment=EARNINGS_LOCK_DIR=/run/lock/mastermind-earnings-worker.lock
+ExecStart=/opt/mastermind-earnings/macro/ops/launchd/run_with_env.sh /etc/mastermind/earnings-worker.env /opt/mastermind-earnings/macro/ops/launchd/run_earnings_worker.sh
+Slice=mastermind-inference.slice
+Nice=10
+IOSchedulingClass=idle
+CPUWeight=10
+IOWeight=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/opt/mastermind-earnings/macro /var/lib/mastermind-earnings /run/lock
+TimeoutStartSec=2h
+
+[Install]
+WantedBy=multi-user.target
