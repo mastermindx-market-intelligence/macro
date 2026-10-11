@@ -15891,6 +15891,12 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py --help
           python -m pytest tests/test_r4_v2_receipt.py -q
+      # EVAL-1 partition clock receipt (ITP A9). Name the validator
+      # CLI as well as its suite; the suite loads the validator by file path.
+      - name: information-to-price EVAL-1 partition clock receipt
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock_check.py --help
+          python -m pytest tests/test_eval1_partition_clock.py -q
       # EVAL-1 challenger trial identity (ITP B6). Name the checker CLI as
       # well as its suite; the suite loads the checker by file path.
       - name: information-to-price EVAL-1 challenger trial identity
