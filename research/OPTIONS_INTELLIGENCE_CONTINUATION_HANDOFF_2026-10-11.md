@@ -191,6 +191,23 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   route on a `next build` + `next start`, with a mandatory positive control in `.next/static/chunks/` (O8 defect 11);
   B3 full `npm run test:e2e:responsive`; B4 tsc 0 + `npm test` 0. No product-code or test edits; pushes only its own
   branch; never marks ready. Packet `leads/U01/step1B_packet.md`.
+- D32 (17:43Z, fill while 1B/D16a/OC run) D02's crosswalk is ACCEPTED as the frozen conformance input for O2/O3/O4
+  at its pinned revisions; its contradictions A02–A05 stay OWED producer fixes (D18) and bind downstream leads
+  as current constraints, never as fixed. O2 (F01), O3 (M01) and O4 (V01) therefore start their packet step 1
+  (read current source, map every acceptance vector to existing tests, verify/adopt before build) as three
+  native `mastermind-opus-orchestrator` leads (model opus, ROUTE: ORCHESTRATION, MODE: READ_ONLY), each
+  returning a vector table + failing-test specs + ONE draft operator commission or `NO_EXECUTABLE_SLICE`.
+  Inputs were pinned by the seat (git archive, read-only): Macro `b79cd12239e5` → `src/macro-b79cd122/`,
+  Terminal master `292357daa865` → `src/terminal-292357da/`, #723 head `cd5d50551a3d` →
+  `src/terminal-723-cd5d5055/`, and the Macro #8660 / #8684 diffs + bodies → `src/prs/`. Critical-path order:
+  V01 feeds M02, V02 and N01; F01 feeds F02; both feed U03. M01 is completeness work, and its Terminal edits wait for #723.
+- D33 (17:43Z, R05 disposition) R05's charter step is already DONE on its own carrier: Macro PR #7711 merged on
+  2026-10-11 as `d1b93722ec41`, per `WS-OPTIONS-CONTEXT-AUDIT-PREREG-V2` at Macro main `b79cd122`. The next gate
+  is Sol's acceptance of that preregistration charter, which belongs to the holding authority and not this
+  seat. Implementation is a separately keyed later child, and the bound is sized from the live capacity refresh
+  (29,509 rows / 50,889,496 B). There is nothing for this seat to execute; R05 is reported as
+  GATED(Sol acceptance). Q05 also stays gated, on the explicit #8555/#7328 holding-authority ruling, and no
+  crosswalk work starts against held carriers.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -354,6 +371,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | D16a resolver unmounted-volume refusal | fabric operator grok (fix_build), D28 | SSD worktree `thetadata-unmounted-refusal-ff0dcf1f0bf22254`, branch `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`; packet `leads/D16a/packet.md` | Macro PR (seat opens after ACCEPT) | background task bdofouo42 exit (2 h alarm) + `leads/D16a/return.md` | RUNNING (START 17:16:46Z; ECONOMIC_POLICY allowed) | 1 operator |
 | OC data-free operating-characteristics package | fabric operator grok (build-bounded), D29 | scratchpad `leads/OC/` only; packet `leads/OC/packet.md` | #8385 (non-normative input; Macro research PR after ACCEPT) | background task bocvhjvo5 exit (3.5 h alarm) + `leads/OC/return.md` | RUNNING (launched 17:22:12Z; a first attempt under class `research` was refused before effect: unknown_task_class) | 1 operator |
 | U01 step 1B (recapture + chunk grep + responsive e2e) | fabric operator grok (fix_build), D31 | same SSD worktree/branch at cd5d50551a3d; packet `leads/U01/step1B_packet.md` | #723 | background task bk5q9soqc exit (4 h alarm) + `leads/U01/step1B_return.md`; log `leads/U01/step1B_pool.log` | QUEUED→launched 17:34:56Z (no refusal in log at launch) | 1 operator |
+| O4 V01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O4/` (`V01_lead.md` + `_common_verify_lead.md`) | #599 | agent completion notification | RUNNING (launched 17:43Z) | 1 lead |
+| O2 F01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O2/` | #599 (coordination with Macro #8660) | agent completion notification | RUNNING (launched 17:43Z) | 1 lead |
+| O3 M01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O3/` | #599 | agent completion notification | RUNNING (launched 17:43Z) | 1 lead |
 
 ## DO_NOT_REDO (this programme)
 
@@ -499,4 +519,5 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   observed with their stale source named. ACCEPT (D30).
 - 1B packet written (seven packets incl. the ungated companion EVIDENCE.json; guest chunk grep with positive control;
   full responsive e2e) (D31).
+- (17:43Z) D32/D33: O2/O3/O4 verify leads launched on pinned snapshots; R05 = charter done (#7711), gated on Sol; Q05 gated on #8555/#7328 holders.
 
