@@ -1,7 +1,8 @@
 # Options Context Audit preregistration v2 charter
 
-Status: `CHARTER ACCEPTED FOR IMPLEMENTATION PLANNING / IMPLEMENTATION HELD`
+Status: `CHARTER PROPOSED — PENDING SEAT ACCEPTANCE / IMPLEMENTATION HELD` (the implementation scaffold, PR #7728, stays parked)
 Workstream: `WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2`
+Governing records: `DEC:W2C-V1-CONTEXT-OWNER-DECOUPLED-FROM-OPTIONS-AUDIT` · `DSC:OPTIONS-CONTEXT-AUDIT-V1-TIMEOUT-PRECEDES-4096-REFUSAL` · `DNR:KILL-OPTIONS-CONTEXT-AUDIT-OWNER-EVICTION`
 Mission: design a complete-population successor to the byte-pinned v1 context audit. This packet freezes the implementation boundary and acceptance contract; it does not implement or activate v2.
 
 ## Exact source and incumbent boundaries
@@ -10,7 +11,7 @@ This packet was designed against Macro `origin/main` at:
 
 `dea0a794ac63df21d5dcdceef90b427de0f6b62a`
 
-The source identity was refreshed after the initial charter commit. The v1 and adjacent artifact byte hashes and row counts were re-read at this head; the h60 digest above is corrected to its full 64-hex value. No implementation claim follows from this refresh.
+The source identity was refreshed after the initial charter commit. The v1 and adjacent artifact byte hashes and row counts were re-read at this head; the h60 digest in the census table below is corrected to its full 64-hex value. No implementation claim follows from this refresh.
 
 The protected Mastermind procedure used for the commissioning and review boundary was Skillpack commit:
 
@@ -18,13 +19,13 @@ The protected Mastermind procedure used for the commissioning and review boundar
 
 The Skillpack index at that commit is `mastermind.sol_skillpack.v1`, version `1.0.1`, minimum bootstrap major `1`. The v1 context validator remains byte-pinned. Its `_MAX_REFERENCES` is still `4_096`; the independent auditor retains its historical unpinned `25_000` row / `48 MiB` read ceiling; the service remains `TimeoutStartSec=180` and `CPUQuota=50%`.
 
-PR #6691 remains the incumbent records-only carrier at head `8b4136575be759a53c9f6fe7d7d104cc9c2af572`. It is open, non-draft, unstable, and has no submitted review. This packet does not edit its files, replace it, or duplicate its owner correction.
+PR #6691 was the incumbent records-only carrier at head `8b4136575be759a53c9f6fe7d7d104cc9c2af572`. It was squash-merged on 2026-09-24T07:57:34Z (re-checked 2026-10-11), so its owner correction is on `main`. This packet does not edit its files, replace it, or duplicate its owner correction.
 
 No implementation PR, shadow validator, second audit authority, trusted-context recoupling, owner eviction, window, truncation, timeout increase, CPU increase, or v1 byte change is authorized by this packet.
 
-## Current corpus census
+## Corpus census at the design SHA (historical)
 
-The census was performed from immutable blobs at the exact Macro source SHA above. These are measurements, not a future growth forecast.
+The census was performed from immutable blobs at the exact Macro source SHA above. These are measurements, not a future growth forecast. They are superseded as capacity evidence by the capacity refresh below.
 
 | v1 input or adjacent artifact | rows | bytes | SHA-256 | v1 treatment |
 |---|---:|---:|---|---|
@@ -48,6 +49,38 @@ The v2 context-audit owner population is the complete set of episode owners plus
 `data/options_signal_campaign/campaigns.jsonl`, `data/options_signal_campaign/outcomes.jsonl`, `data/options_signal_episode/outcomes_session.jsonl`, and `data/options_signal_campaign/checkpoint.json` are adjacent derivation/dependency artifacts, not independent context owners. They must nevertheless be included in the immutable source-generation manifest with path, digest, bytes, rows, checkpoint identity, and an explicit exclusion reason. Any change to one of these excluded inputs between the bound source snapshot and validation forces a new generation or a typed refusal; an excluded artifact may never mutate silently while the audit reports healthy. The live campaign-v2 path is therefore not silently enumerated as complete and is not silently merged with the frozen legacy path.
 
 The current live campaign output is stale: its durable checkpoint binds an 8,872-row episode prefix while the episode ledger contains 9,641 rows, its campaign writer commit predates the latest episode writer by four days, and 769 current episodes have no campaign member. The v2 audit must return `CAMPAIGN_OUTPUT_STALE` / `DERIVATION_PENDING` for that state rather than re-deriving campaigns or manufacturing owner coverage.
+
+## Capacity refresh at current main (2026-10-11)
+
+The design-SHA census above is historical. The governed corpus roughly tripled after it was taken. Re-measured from immutable blobs at Macro `origin/main` `f8dc4bb05eceb4e2be0f1e1e5c6c87e12a2e9b07` (rows = newline count, bytes = blob size):
+
+| artifact | rows | bytes | SHA-256 | rows at design SHA |
+|---|---:|---:|---|---:|
+| `data/options_signal_episode/episodes.jsonl` | 29,509 | 45,982,874 | `a7c53ed59a9fd268470f9b107c8b9665707e31192e23331d2ad9e736f9270652` | 9,641 |
+| `data/options_signal_episode/outcomes_h60.jsonl` | 25,338 | 50,889,496 | `617039e5e1a45f9e9a70682060e156b8e778a49c58a85d0a96bd89f8f4c69fa4` | 7,843 |
+| `data/options_signal_episode/campaigns.jsonl` | 8 | 10,492 | `db326f5c772ab417c43b8579ad50abb0434916922bda3a13c2da5b8303813910` | 8 |
+| `data/options_signal_episode/outcomes_session.jsonl` | 30,327 | 100,471,221 | `fc02c3f6d224ada2179f89fcf09d63866567e4132d6d6738ccc90c012c9b6311` | 30,327 |
+| `data/options_signal_campaign/campaigns.jsonl` | 8,385 | 17,571,990 | `0c242957703d4a3a0031f0bf7322195c6d41f665391380e30626aea31bf95514` | 8,385 |
+| `data/options_signal_campaign/outcomes.jsonl` | 28,423 | 67,324,077 | `bfde356d4e54265164840e46f06e391afbed3c35449cda4786013eb95f432160` | 28,423 |
+
+Episode `session_date` spans 2026-08-10 to 2026-09-25 (28 sessions); the newest episode row belongs to session 2026-09-25. The last five sessions carried 2026-09-21: 5,598; 2026-09-22: 2,161; 2026-09-23: 2,280; 2026-09-24: 2,319; 2026-09-25: 2,544 rows. These counts show the observed production rate while the producer is active; they are not a forecast.
+
+The current corpus already exceeds every capacity figure the incumbent stack carries. These refusals are correct fail-closed behaviour, not defects to route around:
+
+1. v1 `_MAX_REFERENCES = 4_096` (`engine/options_market_memory_context.py`): 29,517 owner references (29,509 episode owners plus eight frozen campaign owners) is 7.2 times the pinned ceiling.
+2. The independent auditor's historical 25,000-row / 48 MiB read ceiling: episodes 29,509 rows > 25,000; h60 50,889,496 bytes > 48 MiB (50,331,648 bytes).
+3. `MAX_SOURCE_ROWS = 25_000` in `engine/neuralweb/market_memory_production_records.py`: the production-records capture refuses with "owner source artifact exceeds its row bound" on the live corpus (observed on the production host 2026-10-10 and 2026-10-11).
+
+Whether any of these bounds moves is a preregistration contract decision for the commissioning seat, recorded as a `DEC:` record. This charter raises none of them and never passes one by windowing, eviction, or truncation (`DNR:KILL-OPTIONS-CONTEXT-AUDIT-OWNER-EVICTION`).
+
+### Declared growth envelope (proposed for seat acceptance)
+
+The stale 25,000-row / 48 MiB figure is replaced by a stated envelope, not by silence:
+
+- **Design capacity:** the acceptance fixture covers at least four times the refreshed corpus — 118,036 episode rows / 183,931,496 bytes and 101,352 h60 rows / 203,557,984 bytes — with the adjacent artifacts scaled by the same factor.
+- **Horizon statement:** the implementation's benchmark receipt states its measured in-envelope ceiling and the date the observed production rate reaches it. At the median recent rate of 2,319 episode rows per active session, four times the current corpus is about 39 active sessions away; a design whose ceiling is weeks out must say so in its receipt.
+- **Past the ceiling:** an input above the measured ceiling produces a `RESOURCE_LIMIT` refusal — visible and receipted — never a kill, a truncated audit, or a healthy empty result.
+- **Construction freedom, fixed budget:** within the fixed service class the implementation may meet the envelope with a full scan or with prefix-incremental generations (each run's work bounded by the appended suffix, the receipt chain binding every prior prefix digest). The choice is the implementation child's; the budget is not.
 
 ## Existing algorithm and measured lower bound
 
@@ -97,6 +130,7 @@ The new v2 schema, builder, and receipt are a new preregistration triad. v1 rema
 - run manifest with run digests, run count, rows, bytes, ordering and temporary-disk high-water;
 - observed peak RSS, CPU seconds, wall seconds, input/output bytes, and receipt bytes;
 - reference-set digest and canonical count;
+- per-source counts of rows accepted as prospective, classified retrospective, abstained, or refused, broken down by reason code, so an all-abstain or all-retrospective run is visible in the receipt itself (nulls printed, never implied);
 - correction/replay lineage (`supersedes`, old/new source hashes, and generation IDs);
 - typed refusal code when no receipt is emitted.
 
@@ -114,7 +148,7 @@ A cross-file snapshot is mandatory. Stable-read checks on individual files are i
 
 ## Resource envelope and refusal contract
 
-The implementation child must benchmark the current 9,641/7,843 corpus and a declared growth envelope before freezing numeric limits. The benchmark must measure at least:
+The implementation child must benchmark the corpus as re-measured in the capacity refresh above (or a newer re-measurement at its own source head) and the declared growth envelope before freezing numeric limits. The benchmark must measure at least:
 
 - input rows and bytes per source;
 - JSON parse and validation CPU seconds;
@@ -144,6 +178,27 @@ The implementation must fail closed, emit no receipt, and leave no accepted heal
 Refusal codes must be machine-readable, stable, and included in the implementation acceptance tests. Failures must not be swallowed, windowed, sampled, truncated, evicted, or converted into a healthy empty result.
 The initial refusal vocabulary is frozen: `SOURCE_MANIFEST_INCOMPLETE`, `SOURCE_SNAPSHOT_UNSTABLE`, `SOURCE_MUTATED`, `MALFORMED_ROW`, `PREFIX_MISMATCH`, `CHECKPOINT_STALE`, `CAMPAIGN_OUTPUT_STALE`, `DERIVATION_PENDING`, `CAMPAIGN_REPLAY_MISMATCH`, `OWNER_MISSING`, `DUPLICATE_OWNER_CONFLICT`, `CORRECTION_LINEAGE_MISSING`, `DEPENDENCY_MISMATCH`, `BOUNDARY_INVALID`, `NONDETERMINISTIC_OUTPUT`, `REPLAY_MISMATCH`, `RESOURCE_LIMIT`, `RECEIPT_OVERFLOW`, and `AUTHORITY_VIOLATION`. Each refusal records the operation ID, source-generation ID, per-source digests/counts, checkpoint IDs, and the first failing stage.
 
+### Refusal before kill: the service envelope is fixed
+
+`app/deploy/macro-market-memory-options-context-audit.service` carries `TimeoutStartSec=180`, `CPUQuota=50%`, `MemoryHigh=256M`, `MemoryMax=512M`, `Nice=10`, and `IOWeight=20`; v2 raises none of them. `DSC:OPTIONS-CONTEXT-AUDIT-V1-TIMEOUT-PRECEDES-4096-REFUSAL` records that v1's O(N) construction is killed by the timeout before its own 4,096-reference refusal can fire. A kill leaves no receipt and no refusal code, which makes it indistinguishable from a run that never started. v2 must invert that ordering:
+
+1. **In-process limits fire first.** Every resource limit is enforced inside the process and trips before its systemd counterpart: wall budget at most 150 seconds (a 30-second margin under `TimeoutStartSec=180` to serialize the refusal record); CPU budgeting that treats `CPUQuota=50%` as halving available CPU (a stage measured at T unthrottled CPU-seconds costs about 2T wall-seconds); RSS budget at most 224 MiB, below `MemoryHigh=256M` (throttling) and well below `MemoryMax=512M` (OOM kill).
+2. **Checked where the work is.** Budgets are checked at every stage boundary and at bounded intervals inside each parse, run-emit, and merge loop, so an over-budget input ends in `RESOURCE_LIMIT` with the first failing stage recorded — not in a timeout, a throttle stall, or an OOM kill.
+3. **The disposable benchmark already crosses one line.** Its peak RSS of 274,907,136 bytes (about 262 MiB, macOS `ru_maxrss`) was measured on the design-SHA corpus and already exceeds `MemoryHigh`. The implementation benchmark must run under the real service class (the unit itself on a test host, or `systemd-run` with the same properties) at both the refreshed corpus and the growth envelope.
+4. **Acceptance.** An over-envelope fixture run under the real service class yields a `RESOURCE_LIMIT` refusal record and an exit status distinct from success; journal evidence shows no SIGKILL, timeout, or OOM. This extends acceptance test 6.
+
+## Binding constraints (do not redo)
+
+These bind the charter and the implementation child. Each is a closed decision; reopening one requires a material invalidator recorded by the commissioning seat.
+
+- No widening of `_MAX_REFERENCES` (`engine/options_market_memory_context.py:43` stays `4_096`; v1 stays byte-pinned by `research/options_estate/sparse_selector_preregistration_receipt_v1.json`).
+- No raise of `TimeoutStartSec`, `CPUQuota`, `MemoryHigh`, or `MemoryMax` on the audit unit.
+- No owner eviction, windowing, rotation, sampling, or truncation (`DNR:KILL-OPTIONS-CONTEXT-AUDIT-OWNER-EVICTION`).
+- No swallowing: a refusal exits visibly and is never converted into a healthy empty result.
+- No shadow validator and no second audit authority.
+- No recoupling into `macro-market-memory-context.service`: the W2C context owner stays decoupled from the options audit (`DEC:W2C-V1-CONTEXT-OWNER-DECOUPLED-FROM-OPTIONS-AUDIT`); recoupling re-breaks W2C.
+- No v2 implementation inside a W2C pull request.
+
 ## Acceptance tests for the implementation child
 
 The later implementation PR is acceptable only when an independent reviewer can verify all of the following against its exact source head:
@@ -153,7 +208,7 @@ The later implementation PR is acceptable only when an independent reviewer can 
 3. **Determinism:** input reorder, chunk-size changes, run partition changes, and repeated replay produce identical canonical references, set hash, and receipt bytes; same-byte duplicates are idempotent and conflicting duplicates refuse.
 4. **Correction safety:** append correction creates a new generation and preserves the prior receipt; backdated insertion, shrink, reorder, prefix mutation, and in-place edit refuse without publishing a partial receipt.
 5. **Freshness/session law:** pre-boundary rows cannot enter the forward cohort; stale or drifted source refuses; source start/end identity and hash checks are enforced.
-6. **Resource truth:** benchmark receipts include measured RSS, CPU, wall, I/O, run and disk high-water; limits are enforced under a current-corpus and growth-envelope fixture; exceeding any limit refuses without truncation.
+6. **Resource truth:** benchmark receipts include measured RSS, CPU, wall, I/O, run and disk high-water; limits are enforced under a current-corpus and growth-envelope fixture; exceeding any limit refuses without truncation. The over-envelope case runs under the real service class and must end in a recorded `RESOURCE_LIMIT` refusal, never a timeout, throttle stall, or OOM kill (see “Refusal before kill”).
 7. **Authority isolation:** v1 files and bytes remain unchanged; no shadow validator or second audit authority exists; trusted-context publication remains decoupled; all authority, scoring, ranking, selection, execution, trade, and publication flags remain false.
 8. **Receipt integrity:** reference, audit, receipt, and HEAD schemas validate; hashes and counts reconcile; atomic publication occurs only after final validation; no failed run leaves a misleading healthy receipt.
 
@@ -165,6 +220,6 @@ A disposable benchmark over the current v1 inputs (9,641 episodes, 7,843 h60 row
 
 The independent adversarial review added these make-or-break requirements: cross-file snapshot mutation tests; stale checkpoint and missing latest-prefix refusal; explicit inclusion/exclusion of campaign-v2 ledgers and `outcomes_session.jsonl`; correction lineage or explicit refusal; deterministic replay under shuffled maps, chunk sizes, run partitions, and interrupted writes; and resource tests beyond the historical 25k/48 MiB assumptions.
 
-The charter decision is now frozen for implementation planning. The bounded benchmark, adversarial review, source-manifest classification, stale-campaign refusal, correction/replay requirements, deterministic session rule, anti-vacuity tests, and refusal vocabulary are part of the implementation contract. Numeric production limits remain a mandatory implementation precondition: the implementation child must attach a benchmark receipt covering the current corpus, campaign/session growth, context-store resolution, and the declared growth envelope before code limits are accepted.
+The charter decision is proposed for implementation planning and binds only once the commissioning seat accepts it. The bounded benchmark, adversarial review, source-manifest classification, stale-campaign refusal, correction/replay requirements, deterministic session rule, anti-vacuity tests, and refusal vocabulary are part of the implementation contract. Numeric production limits remain a mandatory implementation precondition: the implementation child must attach a benchmark receipt covering the current corpus, campaign/session growth, context-store resolution, and the declared growth envelope before code limits are accepted.
 
 The implementation child is therefore separately admitted and remains held. This packet does not claim v2 implementation, merge, installation, deployment, production proof, or live acceptance.
