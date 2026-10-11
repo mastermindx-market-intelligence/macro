@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1129",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1145",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -7032,5 +7032,281 @@
       }
     ],
     "next_action": "Consume SAME child exact observer actual requiredCI/merge result; after qualified merged source fresh writer/source/mount/resource gates, NEW guarded canonical generation and owning paid phone badge/fullscreen/three-size proof."
+  },
+  "current_capability_frontier_20261011T1145": {
+    "observed_at": "2026-10-11T11:45:20.213278+00:00",
+    "supersedes": "current_capability_frontier_20261011T1129",
+    "supersession_scope": "Actual incoming B release-consumer edge and bounded exact935/939 source qualifications only. PR931 draft reported hold and940/CI/merge/install/paid NOT extended; T1129 badge source/sole940 observer retained.",
+    "whole_original_mission_accepted": false,
+    "release_consumers": {
+      "observed_at": "2026-10-11T11:45:20.213278+00:00",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "incoming_coordination": "Actual B source-thread01a128b7-bd2b-7a91-891d-39d38f74ad55 release-consumer message. Incoming request is not outgoing-message permission; no ACK/status or peer send. No new budget/storage/builder/deploy action.",
+      "qualified_source_consumers": {
+        "935": {
+          "observed_at": "2026-10-11T11:45:20.213278+00:00",
+          "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+          "kind": "SCOPED_SOURCE_RELEASE_CONSUMER_ONLY",
+          "source_observer": "Existing native /root/phone_replay_badge_layout completed exact-head read-only source qualification; parent consumes its actual completed return without duplicate source/test/CI reads.",
+          "pr": 935,
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/935",
+          "head": "fd388b671ea666a6f3374cca41525a8dd491e20a",
+          "parents": [
+            "cc07a5c1738c057a6b15fbb2c74d97d7bef7774e",
+            "0e8de334d3a772d3c8b035a1ce01d04b1316274a"
+          ],
+          "production_change": "Exactly two ThesisWorkspace.module.css declarations switch --regime-up to --state-accepted: list/history Active labels and expanded inspector header. Archived --warn and Invalidated --danger overrides retained; label text/lifecycle/API/persistence/math unchanged. Semantic accepted token #26c281 not redefined by East/red-up market conventions.",
+          "source_path": "terminal/components/workspaces/ThesisWorkspace.module.css",
+          "source_sha256": "c7fcd07d13cf3d7453bb51cd47ffb13c80af05e327bf9662368e97988023320c",
+          "source_binding": "Native child independently computed pinned stylesheet digest and matched both updated evidence manifests. Informational capture head01d86f9ba9401d1495879336531c79a34373ad33; layout digest remains source lock.",
+          "other_delta": "Two EVIDENCE.yml files/13 changedPNG paths and three-line existing capture_f11_4_research_views.cjs readiness wait for settled requested-language thesis empty-state; no second product behavior.",
+          "reported_proof": "B reports72 controlledChromium colorcases/6token checks/20research crops/8proposal crops. Native child read test definitions: token existence checks not computed-color invariance;10packet/source-lock checks declare fixture transport. No parent/child test rerun, PNG byte/visual inspection or production acceptance.",
+          "future_live_obligation": "After actual B exact merged-source/requiredCI return and generation binding, approved authenticated /analysis?view=theses normal reads/list/history/version inspector on actually available Active records, EN/ZH/three sizes and actual supported market-color setting. Active remains accepted-color while Archived/Invalidated distinctions and market convention remain. Do not create real thesis/alert/portfolio data to manufacture proof; controlled path requires actual separate admission.",
+          "falsifiers": [
+            "Active affected label turns red under East/red-up",
+            "Archived/Invalidated overrides lost",
+            "Selected release does not carry exact qualifying stylesheet",
+            "Actual phone normal list/detail/inspector unusable"
+          ],
+          "ci_merge_install_paid": "NOT qualified; source and requiredCI/MOG lane remains B-owned, no parent CI query/second observer.",
+          "whole_marketontology_761_or_audit20_accepted": false
+        },
+        "939": {
+          "observed_at": "2026-10-11T11:42:57.622013+00:00",
+          "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+          "kind": "SCOPED_SOURCE_RELEASE_CONSUMER_ONLY",
+          "source_metadata": {
+            "observed_at": "2026-10-11T11:41:20.063532+00:00",
+            "number": 939,
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/939",
+            "state": "open",
+            "draft": false,
+            "merged": false,
+            "merged_at": null,
+            "merge_commit_sha": "3ed69b222a4292347f54403a0aeeaccc53aa0e7a",
+            "head": "2f6af73a66baa13b3e0d4a83fa84c6ae54cbc55a",
+            "base": "0e8de334d3a772d3c8b035a1ce01d04b1316274a",
+            "expected_input_head": "2f6af73a66baa13b3e0d4a83fa84c6ae54cbc55a",
+            "exact_input_head_current": true,
+            "paths": [
+              {
+                "path": "terminal/components/settings/SectionPortfolioTargets.tsx",
+                "status": "modified",
+                "additions": 5,
+                "deletions": 5
+              },
+              {
+                "path": "terminal/components/settings/__tests__/SectionPortfolioTargets.summary.test.tsx",
+                "status": "added",
+                "additions": 201,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/README.md",
+                "status": "added",
+                "additions": 22,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/desktop-en-recovered.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/desktop-en-unusable.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/desktop-zh-recovered.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/desktop-zh-unusable.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/evidence.json",
+                "status": "added",
+                "additions": 174,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/mobile-en-recovered.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/mobile-en-unusable.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/mobile-zh-recovered.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/mobile-zh-unusable.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/tablet-en-recovered.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/tablet-en-unusable.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/tablet-zh-recovered.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/docs/pr-crops/b-f08-target-summary-integrity/tablet-zh-unusable.png",
+                "status": "added",
+                "additions": 0,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/e2e/settings-targets-summary.spec.ts",
+                "status": "added",
+                "additions": 59,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/lib/__tests__/portfolioTargetsSummary.test.ts",
+                "status": "added",
+                "additions": 64,
+                "deletions": 0
+              },
+              {
+                "path": "terminal/lib/portfolioTargets.ts",
+                "status": "modified",
+                "additions": 27,
+                "deletions": 0
+              }
+            ]
+          },
+          "source_bindings": {
+            "terminal/components/settings/SectionPortfolioTargets.tsx": {
+              "git_blob": "1216ecfbbedc89a90fc28971dc1551e26a33b8ae",
+              "bytes": 11141,
+              "sha256": "c15e26b2bb23842b057d44926c062d713b2ca2507934e33e39694465535f302c"
+            },
+            "terminal/lib/portfolioTargets.ts": {
+              "git_blob": "51f411e06e3e65f290fd4c4bbbcff31d94cd85cf",
+              "bytes": 20432,
+              "sha256": "9b498033cc66f4c71e277a331a5cc0a95c9f841e138416a70d3d7c4c06a144a5"
+            },
+            "terminal/docs/pr-crops/b-f08-target-summary-integrity/evidence.json": {
+              "git_blob": "c11f2adb1fa73982a4cdf45fa7adb2e3139d00a3",
+              "bytes": 6678,
+              "sha256": "0413479206111a1552d818c713a1156740ecc11f17a4ea70aa12a4ca6804c06b"
+            }
+          },
+          "parent_semantic_qualification": "Actual 27-line predicate addition checks portfolio_targets.v1/cost basis, nullable finite totals/weights/drift, typed arrays/rows/tickers/statuses. Two Settings read paths accept only that shape. Malformed HTTP200 stays unreadable, never valid-empty; valid empty/null weights remain valid. Unusable mutation readback uses existing reloadKey authoritative GET fallback and leaves one POST/owner-generation/newest-intent fences unchanged. No producer arithmetic/weight calculation/route/auth/entitlement delta. Existing queued A POST and cross-tab ordering limitation are not repaired or accepted by this predicate.",
+          "native_test_and_capture_claims": {
+            "reported_by": "B source return and immutable committed evidence manifest, no parent rerun",
+            "targeted_checks": 199,
+            "responsive_cases": 6,
+            "pngs": 12,
+            "capture_head": "9573d60ab12ff593b6e6764e75e2cf0ec9e049cc",
+            "verification": {
+              "next_typegen_exit_code": 0,
+              "full_terminal_typecheck_exit_code": 0,
+              "browser_exit_code": 0,
+              "browser_passed": 6,
+              "browser_failed": 0,
+              "browser_flaky": 0,
+              "browser_duration_seconds": 35.6,
+              "prior_targeted_tests_reused": 199,
+              "reviewed_five_source_files_unchanged": true,
+              "assertions": [
+                "Malformed successful response stays unreadable with localized Retry; no loaded or empty readout.",
+                "Retry accepts valid empty producer shape via exactly one additional GET.",
+                "No target writes, zero page errors, no horizontal document overflow."
+              ],
+              "visual_inspection": [
+                "desktop-en-unusable.png",
+                "desktop-en-recovered.png",
+                "mobile-zh-unusable.png",
+                "mobile-zh-recovered.png"
+              ]
+            },
+            "bound_product_files": "Two parent-read production file SHA256 values equal manifest; remaining source/PNG hashes are reported artifact claims, no parent byte/visual recapture."
+          },
+          "future_live_obligations": "After actual B qualified merged-source/exact-requiredCI return and selected guarded canonical installation, bind those exact two files and release generation; use approved authenticated normal Portfolio targets GET/UI and three-size no-overflow/public-state read. Reuse prior707 proof only for unchanged inputs. Malformed200/POST-readback recovery remains local fixture proof unless an explicitly admitted controlled test-user/fault path exists; do not mutate real target/alert data or synthesize destructive failures.",
+          "falsifiers": [
+            "A malformed summary paints loaded/empty",
+            "A valid nullable producer book is rejected",
+            "Readback recovery replays POST",
+            "Selected generation lacks exact two qualified source files"
+          ],
+          "ci_merge_install_paid": "NOT qualified; B retains sole source/CI/MOG lane. Parent source metadata read OPEN/head2f6 at11:41; merge_commit_sha field while merged=false is NOT an accepted merge SHA. No CI query/second observer.",
+          "whole_marketontology_or_761_accepted": false,
+          "whole_original_audit20_accepted": false
+        }
+      },
+      "931_retained_report_only": {
+        "head": "4fe6eb8882ffedb337e7a3e8eb1155bdb73ddada",
+        "state": "B reports DRAFT/original retained review recovery and remaining desktopCI; parent no source/CI query/qualification",
+        "behavior_report": "Deletion remains absent after staleGET; latecreate ACK preserves newer draft. Source/review/merge/installed/live closure unqualified; no alternate reviewer or waiver."
+      },
+      "release_admission": "Retain935/939 as pending consumers of next suitable parent-owned canonical generation ONLY after B actual verified mergedSHA/exactrequiredCI receipts and actual selected-generation/source/writer/mount/resource gates. Parent owns install and normal authenticated read/UI proof. No destructive failure synthesis or real portfolio/alert write to recreate races.",
+      "#761_or_whole_marketontology_accepted": false,
+      "whole_original_mission_accepted": false,
+      "existing_940": "Sole exact5439 observer exec21927/PID85311 remains last actual launch event; no new result/CI/merge observed or queried. Existing source/capture qualificationT1129 unchanged.",
+      "existing_runtime": "Completed storage and707/install/scoped paid proofs preserved; no ownpause/restore owed and no effects/replay in this event.",
+      "material_artifacts": [
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/935-parent-source-consumption.json",
+          "bytes": 2908,
+          "sha256": "6c99ba95006c9b309fd8456e710e770b0c5e709cebf8d0641081235269a2c238"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/939-parent-source-qualification.json",
+          "bytes": 7958,
+          "sha256": "10b1b0263808fcdebc9c1e11cf0ec27385b0c4befd8bbb66fc01f06fdad5f3a1"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/939-source-read.json",
+          "bytes": 52449,
+          "sha256": "46093b6df8df75f4dfa6f260bf0f7a0eba251bd3abf73812a6ccadf551d935e5"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/939-source-bindings.json",
+          "bytes": 679,
+          "sha256": "2e006af7411b84a5408f3cd164b125c61d268afe09d678bdc70e5d2e9e2cffd9"
+        }
+      ],
+      "independent_holds": "All781reservednumericreview/IW2explicitcyber/SQL/rights/security/887/EFFECT_UNKNOWN/A19/873publication boundaries retained.",
+      "next_action": "Consume actual same940 observer/B merged-source returns, qualify actual requiredCI and integrated source, then new guarded canonical release and owning paid badge/normal-read consumer proofs after real gates."
+    },
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-935-939-release-consumers-parent-qualification-20261011.json",
+        "bytes": 14843,
+        "sha256": "d14a7ff46ac801186663189ba08b12df8ff4ed745bb02104cff349c6796f4722"
+      }
+    ],
+    "next_action": "Consume actual same940 observer/B merged-source returns, qualify actual requiredCI and integrated source, then new guarded canonical release and owning paid badge/normal-read consumer proofs after real gates."
   }
 }
