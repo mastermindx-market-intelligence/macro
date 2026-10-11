@@ -163,6 +163,15 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   or folded into the #7861 R1 successor PR. Merging D16a to Macro `main` installs nothing on m1 (the ops
   worktrees are pinned); no host contact in this lane. Lane routing: cursor refused locally
   (`LOCAL_SEAT_REMOTE_REQUIRED host=m2`, exit 78, before any effect); relaunched on grok.
+- D29 (executes D13 O-C residual) The data-free OC package is commissioned now as fill work: one fabric operator
+  (grok, class `build-bounded`) builds a synthetic simulation in scratchpad `leads/OC/` only (no repo, no data,
+  no network, `nice -n 19`, ≤2 processes, ≤2.5 h). Scope = methods-review re-derivation items 4 and 5 plus F18 and
+  F20: ECE false-fail and S1 agreement under overlapping-window dependence; monotonicity false-kill/power with
+  b ∈ {L,2L,4L}, adjacent-only vs all-pairs; dependence-beyond-b distortion; the F12 few-cluster counterexample;
+  a feasibility-T table. Positive controls (reproduce the i.i.d. F14 table; ~5% flat false-kill at i.i.d.) gate
+  everything else. The package selects NO parameter and registers NO gate: alpha_ff, delta*, power, b-rule and the
+  dependence envelope stay the statistics owner's, fixed before any `calibration_eval` label read (D13, DR-5).
+  Persistence after ACCEPT: a non-normative Macro research PR for the #8385 owner; #8385 itself is not touched.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -309,7 +318,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 5. Judge the D16a return by artifact when bdofouo42 exits: diff limited to the three owned files and the resolver
    region; T2/T3 shown failing before and passing after; gate suite 128+N passed; `scripts/` import check. On
    ACCEPT the seat opens the Macro PR, adds `merge-on-green`, and reads CI once.
-6. Later waves per D13/D16b/D18: OC design commission; D16b (after #7861); #7861 R1 successor PR; O-13 successor;
+6. Judge the OC return by artifact when bocvhjvo5 exits: positive controls reproduced; rerun `oc_sim.py --quick`
+   and one full cell myself; no sentence selects a parameter. On ACCEPT persist as a Macro research PR.
+7. Later waves per D16b/D18: D16b (after #7861); #7861 R1 successor PR; O-13 successor;
    expand to O2/O3/O4/O6 only when their inputs clear. Optional: re-attempt G01 A02 while capacity admits.
 
 ## Lane matrix
@@ -324,6 +335,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | DELIVERED 09:3xZ (after one nudge at the 12-turn limit) → JUDGED: ACCEPT as evidence; D24 | 1 auditor |
 | U01 step 1A (#723 refresh) | fabric operator grok (fix_build), D26/D27 | SSD worktree `pr-723-c89a753150e1dbd6`, branch `claude/ssd-pr-723-c89a753150e1dbd6`; packet `leads/U01/step1A_packet.md` | #723 (claim issuecomment-6111490519) | background task bjyey2nbm exit (3 h alarm) + `leads/U01/step1A_return.md` | RUNNING (START 17:04Z; 17:08Z merge in progress) | 1 operator |
 | D16a resolver unmounted-volume refusal | fabric operator grok (fix_build), D28 | SSD worktree `thetadata-unmounted-refusal-ff0dcf1f0bf22254`, branch `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`; packet `leads/D16a/packet.md` | Macro PR (seat opens after ACCEPT) | background task bdofouo42 exit (2 h alarm) + `leads/D16a/return.md` | RUNNING (START 17:16:46Z; ECONOMIC_POLICY allowed) | 1 operator |
+| OC data-free operating-characteristics package | fabric operator grok (build-bounded), D29 | scratchpad `leads/OC/` only; packet `leads/OC/packet.md` | #8385 (non-normative input; Macro research PR after ACCEPT) | background task bocvhjvo5 exit (3.5 h alarm) + `leads/OC/return.md` | RUNNING (launched 17:22:12Z; a first attempt under class `research` was refused before effect: unknown_task_class) | 1 operator |
 | U01 step 1B (recapture + chunk grep + responsive e2e) | not commissioned (D27c) | accepted 1A head | #723 | — | WAITING on 1A ACCEPT | — |
 
 ## DO_NOT_REDO (this programme)
@@ -350,9 +362,9 @@ amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKN
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (WIP commit "D16a running; D28" on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "OC package running; D29" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: on bjyey2nbm exit judge step 1A (NEXT 1); on bdofouo42 exit judge D16a (NEXT 5)
+EXACT_NEXT_ACTION: on bjyey2nbm exit judge step 1A (NEXT 1); on bdofouo42 exit judge D16a (NEXT 5); on bocvhjvo5 exit judge OC (NEXT 6)
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -460,4 +472,9 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Baseline measured once by the seat: 128 passed across the three resolver/store/runtime-roots test files.
 - cursor lane refused before effect (exit 78, local-only lanes are grok and ocfree); relaunched on grok 17:16:46Z.
 - Two operators running (step 1A, D16a), disjoint repos and files. 0 native children.
+### 2026-10-11 17:23Z — OC package launched; D29
+- D29: D13's O-C residual commissioned as a data-free simulation lane (grok, build-bounded); first attempt refused
+  before effect on an unknown class name, relaunched under an admitted class.
+- Three operators running (step 1A, D16a, OC), each in its own workspace. Host load ~20 on 24 cores; the OC lane is
+  niced and capped at two processes.
 
