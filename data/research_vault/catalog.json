@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T20:51:42.191246+00:00",
-  "count": 2830,
+  "generated_at": "2026-10-11T21:06:44.573398+00:00",
+  "count": 2831,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -49,6 +49,7 @@
     "ING",
     "Incrementum",
     "J.P. Morgan",
+    "JPM Eye on the Market",
     "Jefferies",
     "KKR",
     "LSEG",
@@ -119,6 +120,28 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1rcik5ibo7a-4fb6ef",
+      "title": "JPM EOTM Oct 8 Califoreboding",
+      "institution": "JPM Eye on the Market",
+      "side": "sell",
+      "desk": "Cembalest",
+      "published_at": "2026-10-11T03:40:20Z",
+      "summary_points": [
+        "US Budget Deficit Exceeds 5% of GDP: Deficit worsens during economic expansion (worse than 1970s), signaling urgent need for fiscal restructuring amid deteriorating fundamentals.",
+        "AI Concentration Dominates S&P 500: 42 AI stocks drive 67% of price returns, 58% of earnings growth, and 81% of capex/R&D since Jan 2024; 60% of S&P 500 stocks down 20%+ from highs.",
+        "Private Credit Stress Metrics: Cliffwater stress at ~5% vs.",
+        "JPM BDC universe at ~15%; 70% of amended PIK loans never return to cash pay, with key risks including maturity extensions and debt-to-equity conversions."
+      ],
+      "tags": [
+        "Cembalest"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
