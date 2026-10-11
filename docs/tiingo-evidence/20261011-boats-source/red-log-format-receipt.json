@@ -1,0 +1,8 @@
+{
+  "schema": "tiingo_evidence_format_normalization.v1",
+  "original_artifact": "tiingo-phase1/macro-integrated-source-tests.log",
+  "original_sha256": "efa309853740aed88324b92f60f3eefbbc53e96f54b138870b1286b31a7ac65c",
+  "git_copy_sha256": "3df827724736e56a2a2fced76dc2407be15123663bedf3c48b3822df228ef775",
+  "normalization": "trailing whitespace stripped only; original live log retained unchanged",
+  "test_result_unchanged": "568 passed; two LIVE pin failures"
+}
