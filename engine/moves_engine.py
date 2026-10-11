@@ -116,6 +116,7 @@ def moves_payload(
     root: str, asof: str, spot: float | None, atm_iv_pct: float | None,
     calibration: dict | None = None, learned_band_mult: dict | None = None,
     regime: str | None = None, band_mult: float = DEFAULT_BAND_MULT,
+    input_source: str | None = None,
 ) -> dict:
     """Build the ``options_hub.moves/v1`` payload for one root.
 
@@ -123,6 +124,11 @@ def moves_payload(
     vol-plane ATM IV expressed in PERCENT (e.g. 13.71 for 13.71% — options_hub.vol/v1's
     ``atm_iv``); the band math needs a decimal, so we convert internally. The payload stores it
     in percent for display-consistency with the vol plane.
+
+    ``input_source`` names the current same-source spot/IV pair selected by the nightly
+    publisher (normally ``thetadata_eod``; ``thetadata_snapshot`` is the current-session
+    fallback when the settled EOD greeks plane has no usable pair). It is provenance only and never
+    changes the band math.
 
     ``calibration`` is the per-ticker historical containment of the same-multiplier band
     (per_ticker_calibration). HONEST CAVEAT: the live band uses the 30-day ATM IV, while the
@@ -139,6 +145,7 @@ def moves_payload(
         "schema": SCHEMA,
         "asof": asof,
         "root": root,
+        "input_source": input_source if isinstance(input_source, str) and input_source else None,
         "spot_ref": _num(spot),
         "atm_iv": _num(atm_iv_pct),   # percent, matching options_hub.vol/v1
         "regime": regime,
