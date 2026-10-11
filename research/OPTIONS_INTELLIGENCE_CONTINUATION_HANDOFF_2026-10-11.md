@@ -97,7 +97,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
 | G00 ownership + interface map | Fable seat | this file | #599 | — | IN_PROGRESS | — |
-| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus, model claude-opus-5-5) → `pool run grok` operator | scratchpad `g01_canary/` | this file | agent completion notification | ROUND3_RUNNING | 20 min |
+| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus, model claude-opus-5-5) → `pool run grok` operator | scratchpad `g01_canary/` | this file | agent completion notification | WAITING_EXTERNAL (m2 load gate) | — |
 | O1 D01→D02→D03 | native Opus lead → pool operators | macro worktree (new per lane) | #7861 / #599 | agent notification | NOT_STARTED | — |
 | O5 Q01 | native Opus lead → pool operator + independent review | #8385 head `0234ea19cb` | #8385 | agent notification | NOT_STARTED | — |
 | O7/O8 U01 + integration | native Opus lead → pool operators | terminal worktree (new per lane) | #599 | agent notification | NOT_STARTED | — |
@@ -178,3 +178,20 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Seat decision (L.4 honoured: rounds 1 and 2 were different refusals, each yielding a new fact; round 3 changes
   the parameters the filter itself names, not the provider/account/host): round 3 = grok with class `audit` and
   the seat's escalation reason; a refusal there ends G01-A02 for this seat and is reported as a blocked gate.
+
+### 2026-10-11 08:31Z — G01 canary round 3 (grok, class audit + escalation reason)
+- Economic filter passed: `ECONOMIC_POLICY {"allowed":true,"reason":"leaf_labor_escalation_recorded",
+  "task_class":"audit","tier":"leaf-labor"}`. Then lane admission refused before any operator existed, exit 75
+  (EX_TEMPFAIL): `LANE_ADMISSION_REFUSED {"active_count":0,"allowed":false,"cpu_count":24,"load1":67.958,
+  "load_ratio_limit":0.667,"max_active":2,"reasons":["host_load_at_or_above_limit"]}`. Seat read-back at
+  09:33Z: load averages 51.0/51.1/40.5 on 24 CPUs (limit ≈16) — sustained, not a spike. No run id, no
+  `operator_return.md`; child decision REJECT (0/5); child released after round 3 (3 rounds, 2 tool calls last).
+- **G01 disposition:** A01 PASS, A03 PASS, A04 PASS (three different gates each stopped the effect without a
+  reroute); **A02 WAITING_EXTERNAL** on m2 lane-admission capacity — not a topology or policy defect. The
+  admitted local recipe is now fully known and dry-checked; only host load blocks the START rung.
+- Watcher armed (one, bounded 45 min, 120 s cadence) on load1 < 15 → sentinel `g01_canary/load_gate_open.txt`;
+  the seat relaunches the identical operator once when it fires; timeout → A02 stays deferred, reported as such.
+- Seat decision: start the first-wave leads now (masterplan §5: O1/O5/integration owner progress immediately
+  after custody/topology checks; recovery + judgment phases need no operator START). Leads attempt each operator
+  launch once; exit 75 → packet kept PENDING_CAPACITY, lead continues recovery/judgment; refusal 78 → stop that
+  effect. Load on m2 is other tenants' work: not diagnosed further, nothing killed.
