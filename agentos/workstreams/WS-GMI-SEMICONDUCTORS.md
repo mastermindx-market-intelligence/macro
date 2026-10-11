@@ -35,7 +35,7 @@ landmines:
 do_not_redo:
   - "H1 is ruled (B) and implemented at acc72f3f; do not re-open the registry identity grammar on #7870. Option A is a separate carrier."
   - "C1 (SBD-41..48) is DEFERRED by ruling; V1.1 (object.subject_role optional) is PROPOSED_NOT_BUILT; rights qualification is QUEUED_NOT_STARTED and blocked on the Robotics R1 corpus."
-  - "The merge-queue pilot is NOT a gate for this carrier: ci-authority/codex/merge-queue-pilot was the failure conclusion on the head sha of every PR merged to main on 2026-10-11 (#8755, #8758, #8760, #8768, #8769, #8771), and no check is GitHub-required on main (readback 2026-10-11T07:39:39Z, verified block of handoff GMI-SEMICONDUCTORS-2026-10-11-meta-ceo-consolidation)."
+  - "The merge-queue pilot is NOT a gate for this carrier: ci-authority/codex/merge-queue-pilot concluded failure on the head sha of all 14 PRs merged to main on 2026-10-11 through 08:26:47Z (list read 2026-10-11T08:34:57Z, conclusions read 08:35:20Z, verified block of handoff GMI-SEMICONDUCTORS-2026-10-11-meta-ceo-consolidation), and no check is GitHub-required on main (readback 2026-10-11T07:39:39Z, same verified block)."
 waves:
   - id: SB-W1
     title: "Shared foundation carrier #7870 at approved scope: H1 ruled B, b76551be audit and acc72f3f delta review consumed, hosted checks owed"
