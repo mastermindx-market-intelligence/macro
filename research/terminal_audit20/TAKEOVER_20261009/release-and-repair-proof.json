@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1033",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1103",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -6799,5 +6799,80 @@
       }
     ],
     "next_action": "Consume actual newbadge source repair/requiredCI/merge, admit fresh same-guardedcanonicaldelivery only after actualsource/writer/resource gates, then owningphone badge/regression proof. No unchangedReplaycontrols/Settings recapture/secondCIobserver."
+  },
+  "current_capability_frontier_20261011T1103": {
+    "observed_at": "2026-10-11T11:04:39.884058+00:00",
+    "supersedes": "current_capability_frontier_20261011T1033",
+    "supersession_scope": "NEW phonebadge sourcecommit/tests and actualsix exactsourcehash failures plus boundednecessary freshcapture repair. Canonical707/storage/paidscopes andindependentholds retained.",
+    "whole_original_mission_accepted": false,
+    "source_validation": {
+      "recorded_at": "2026-10-11T11:03:42.694466+00:00",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "worker": "/root/phone_replay_badge_repair",
+      "workspace": "/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/phone-replay-statusline-20261011-99c9aa2d3ee460d7",
+      "source_commit": "7e2c19610fe30df2cc68d84fe725a3aef70d085c",
+      "source_remote_pushed": "nativechild actual return; recoverable branchclaude/phone-replay-statusline-20261011, noPR yet",
+      "source_files": {
+        "terminal/app/globals.css": {
+          "bytes": 445940,
+          "sha256": "06e122f87cc402a9021d3a357e95c9c9a1cd7f4e622a25e2b24e8f7bc7ee6cd9",
+          "working_bytes_match": true
+        },
+        "terminal/components/ChartPanel.tsx": {
+          "bytes": 656908,
+          "sha256": "f6011591fe4481deacd8e7f5d3fc1b895e00a075886deb78f367b50878e5d473",
+          "working_bytes_match": true
+        },
+        "terminal/e2e/replay-statusline-responsive.spec.ts": {
+          "bytes": 7164,
+          "sha256": "a4856efed1c8e22cebfed25493207556084a98164d4f632306e211058b10dc74",
+          "working_bytes_match": true
+        }
+      },
+      "parent_review": "One proportionate semanticreview16CSS+12ChartPanel productionlines; narrowphone-web layout/nonshrinkingchips/readablewrappedfields/observedheightlegendclearance, app-shell/tablet/desktop preserved; no engine/math/auth/entitlement delta. Newdiscriminatingregression reviewed.",
+      "source_capture_binding": "15 responsivecases used reviewedworkingproductbytes matchingcommitted7e2 productblobs; outputPath-onlytestdelta afterward. Not unmodifiedfutureHEAD captures orproductionproof.",
+      "responsive": {
+        "startTime": "2026-10-11T10:48:26.603Z",
+        "duration": 112808.86300000001,
+        "expected": 15,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "geometry_states": 22,
+      "screenshots": 8,
+      "typecheck": "actual nativechild return nexttypegen+TSC0",
+      "full_unit": {
+        "files_passed": 523,
+        "files_failed": 6,
+        "tests_passed": 8601,
+        "tests_failed": 6,
+        "todo": 4,
+        "seconds": 640.75,
+        "source": "nativechild actualsettlednpmtest, originalredlog retained; noassertionfailuresoutsideexactsourcehashlocks",
+        "failed_guards": [
+          "conductorFitBadgeZhEvidence",
+          "gexLevelsHeatmapLoadFailureEvidence",
+          "eodHeatmapFlowdeskLoadFailureEvidence",
+          "optionsLevelAxisEvidence",
+          "b_pl_6Batch1Evidence",
+          "visualIntelligenceEvidence"
+        ]
+      },
+      "guard_repair_scope": "SAMEsoleworker actualexisting source-hashinvalidatedpacketPNGs/manifests/neededlocalcapturetoolrepair; checkactualwritersonce, preserveguards, actualrecaptures atowningfixtures/viewports/locales/sourceblobs, nohash-onlyrestamp/oldPNG/futureHEADclaims/numeric781/math/auth/rights edits. NoPR/MOGuntilknownredresolved.",
+      "visual_manifest_ruling": "Exacthistorical379files/6093tests/4todo receipt retained explicitlyunderhistory withpriorheadb04c73152254e985cb50941c64c269ba8409fae9/capturetime/originalGitartifact. Actualnewcurrentunit/browser/typecheckseparate; guard unchanged. New30cases+crosshair1/6PNGs+sourcehashes required. Literalpresence never claimed asnewsourcepass.",
+      "conductor_tool_failure": "Firstactualcapture3FAIL/3PASS; failedframesidlePlaydemo+AIobjects0. Existingtool DOMloaded+400msclick hydrationcondition beingrepaired withboundedrealvisibleplatefeedback/onlyenabledidleclick; no restartPlaying/productlogicchange. Currentcapture-r2 exec11197 is childowned, noparentsecondobserver.",
+      "pr_ci_merge_install": "Not qualified/nonewPR yet; installed707 remainsowningpaidbadgefailure.",
+      "whole_original_mission_accepted": false,
+      "next_action": "Completeactualsixfreshpackets/focusedguards withoriginalsourceinvariants; singleNEWPR/requiredCI/MOGmerge observer, parent freshguardedcanonicaldelivery andowningphoneproof."
+    },
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-pre-PR-source-validation-parent-consumption-20261011.json",
+        "bytes": 3768,
+        "sha256": "1a248c8f7742be51d8539dfcde9454ed4c747d093660d6686bf53aef5b2a35d0"
+      }
+    ],
+    "next_action": "Sameworker actualsixsourcehash-invalidatedcaptures/focusedguards; newPR/oneactualsuccessful CIobserver/requiredCI/MOGmerge; parentguardednewgeneration+owningpaidphoneproof. No unchangedsource/CI/runtime/paid/storage replay."
   }
 }
