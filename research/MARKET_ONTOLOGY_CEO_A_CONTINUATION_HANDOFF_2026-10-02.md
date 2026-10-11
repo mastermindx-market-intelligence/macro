@@ -770,8 +770,10 @@ a working checkpoint, not a new control plane or a claim of mission completion.
   No updater remained running13:46:54, and the latest log ends at13:45:20
   with `W2C installation and terminal state were not authenticated`. The
   existing updater exits before the independent admin reconciliation block.
-  A owns source-order PR#8821, head `de00e5765b6e6f24fc82ca82fa52bae5906654c7`,
-  on fresh branch
+  A owns source-order PR#8821. Reviewed source head
+  `de00e5765b6e6f24fc82ca82fa52bae5906654c7` was normally refreshed to CI head
+  `8370d5dd1a9032f18f6814771e8a45ac5689a14d`; both source postimages are unchanged.
+  The fresh branch is
   `claude/ssd-f04-admin-order-01a128b5-4913511afaca83d4`; the admin block is
   relocated unchanged after API adoption and before W2C attestation. All
   W2C/Options guards remain byte-identical. Existing #8807/#8816 repairs keep

@@ -55,7 +55,7 @@ unverified:
   what_would_verify: Existing infrastructure owners current admission/runtime/returnproof;12total advertised
     and usableattendedFabric do not satisfy this.
 unresolved:
-- Independent admin orderingrepair PR8821/headde00e5765b6e on solefreshcarrier claude/ssd-f04-admin-order-01a128b5-4913511afaca83d4;
+- Independent admin orderingrepair PR8821/CI-head8370d5dd1a90 (reviewed source unchanged from de00e5765b6e) on solefreshcarrier claude/ssd-f04-admin-order-01a128b5-4913511afaca83d4;
   incumbentW2C#8807/#8816 and allrefusals preserved.
 - Samepaidconsumerbuild mo-a-f04-private-build-01a128b5-v1 active on originalroot, sixnewTerminalfilesonly;
   do notresubmit unsettledoperation.
