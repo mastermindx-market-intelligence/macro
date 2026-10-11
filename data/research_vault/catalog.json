@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T21:06:44.573398+00:00",
-  "count": 2831,
+  "generated_at": "2026-10-11T21:51:49.504862+00:00",
+  "count": 2833,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -289,6 +289,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rc9hi0toy31-75d4dc",
+      "title": "Jefferies Wood GREED and fear Election rout pending and credit tremors 1 Oct 2026",
+      "institution": "Greed and Fear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:47:36Z",
+      "summary_points": [
+        "US Consumer Confidence Index Decline: Conference Board index fell to 81.9 (lowest since 2014), down 6.7 points, signaling heightened political uncertainty ahead of midterms.",
+        "S&P500 Earnings Growth Surge: Q3 2026 consensus forecasts 30.2% YoY earnings growth (vs 16.1% last Oct), driven by AI capex; IT sector (semiconductors) leads at 131.7% growth.",
+        "Bond Yield Surge & Structural Bear Market: 10Y/30Y Treasury yields at 5.34%/5.69% (highest since 2002); 2Y yield at 4.96% (108bp above Fed funds rate) implies further rate hikes and duration risk.",
+        "Geopolitical Risk Escalation: Iran’s UN envoy move signals negotiation intent, but US polling shows 62% disapproval of strikes and 67% disapproval of Trump’s economy handling, heightening market volatility.",
+        "China Real Estate Fundamentals Deterioration: MSCI China Real Estate Index shows sustained decline since Jan-22; household loans down 1.6% YoY (Rmb1.03tn drop in first 8 months), signaling sector collapse."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-kfjyotw4egb-a35dda",
       "title": "Global Economics Wrap Up October 9, 2026",
       "institution": "Goldman Sachs",
@@ -447,6 +468,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-u8luwnsc2xy-810a75",
+      "title": "Global Rates Trader Establishing a Foothold",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:18Z",
+      "summary_points": [
+        "US Rate Positioning: Investor-base better hedged against yield rises; mortgage convexity near zero reduces payoff, with asset managers underweight duration (fundamentals/flows).",
+        "China Treasury Holdings Decline: Negative 12m TIC data signals reduced foreign demand, posing geopolitical risk to US debt markets and potential yield volatility.",
+        "CFTC Positioning Divergence: Speculators net short across all contracts (avg. 50.0), dealers net long (e.g., SFR 64.5), indicating bearish speculator vs bullish dealer sentiment (flows).",
+        "US Rate Hike Expectation Gap: Market forecasts ~0.25pp hikes vs Goldman Sachs’ ~0.50pp, signaling market underestimation of US rate hikes (policy/fundamentals)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
