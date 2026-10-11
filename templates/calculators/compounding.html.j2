@@ -210,7 +210,7 @@
 
   function plainSentence(d){
     return {
-      en: "After " + d.n + " years, " + d.contributed + " in contributions grow to " + d.fv + " — the extra " + d.growth + " is compounding doing the work.",
+      en: "After " + d.n + (Number(d.n) === 1 ? " year, " : " years, ") + d.contributed + " in contributions grow to " + d.fv + " — the extra " + d.growth + " is compounding doing the work.",
       zh: d.n + " 年后，" + d.contributed + " 的投入增长至 " + d.fv + "——多出的 " + d.growth + " 来自复利。"
     };
   }

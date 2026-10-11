@@ -395,6 +395,12 @@ test('plainSentence EN matches worked-example English; ZH keeps numbers and has 
   assert.equal(LATIN_WORD.test(compZhRest), false, compZhRest);
 });
 
+test('plainSentence EN compounding 1-year scenario uses singular year', () => {
+  const { plainSentence: compPlain } = loadTemplate(COMP_SRC, ['plainSentence']);
+  const one = compPlain({ n: '1', contributed: '$1,000', fv: '$1,105', growth: '$105' });
+  assert.ok(one.en.startsWith('After 1 year, '), one.en);
+});
+
 test('copyText includes identity, inputs, results; ZH has no latin; neither language has a URL', () => {
   const { copyText: dcaCopy } = loadTemplate(DCA_SRC, ['copyText']);
   const dcaEnD = {
