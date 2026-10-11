@@ -2632,6 +2632,12 @@ jobs:
       - "scripts/sparse_guard.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      # Base-sync 2 (merge of origin/main c50af4eb into 36e2064d, 2026-10-11):
+      # main's app/prophet_observations.py (reached through app.main, which
+      # the transport suites import) names this artifact, so the union tree's
+      # closure gained a file neither side reached alone. contract-delta job
+      # 114527295194 / ci-pack-0 job 114527512551 at 1eb871d6 named it.
+      - "site/turn_watch/turn_watch.json"
       # The vertical's own subjects first, then the app.main import closure the
       # transport suites drag in — the same glob closure `defense-rail-laws`
       # (gate: code, also imports app.main) declares, minus that job's own
