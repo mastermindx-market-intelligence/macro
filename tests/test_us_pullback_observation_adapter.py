@@ -493,14 +493,17 @@ def _evidence_text(view):
 
 
 def _young(n, phase="underway"):
-    """A valid window of n closes ending today: the peak, then a 5% shock
-    (the owner's onset rule can confirm underway one session after the peak)."""
+    """A valid window of n closes ending today, in a shape the owner emits: a new
+    high today (n=1) or shallow monitoring; developing on today's first close
+    2-5% under the high (5% would confirm); underway confirmed by today's 5%
+    shock, which makes today the episode low."""
     dates = PATH["dates"][-n:]
-    vals = [0.0] + [-5.0] * (n - 1)
-    over = dict(peak_session=dates[0], close=95.0, low_close=95.0, low_session=dates[-1])
-    if n == 1:  # a new high today: nothing below it yet
-        over.update(close=100.0, low_close=None, low_session=None)
-    if phase in ("monitoring", "developing"):
+    tail = {"monitoring": -1.0, "developing": -3.0, "underway": -5.0}[phase]
+    vals = [0.0] + [-1.0] * (n - 2) + [tail] if n > 1 else [0.0]
+    over = dict(peak_session=dates[0], close=100.0 + vals[-1])
+    if phase == "underway":
+        over.update(low_close=100.0 + vals[-1], low_session=dates[-1])
+    else:
         over.update(active=False, low_close=None, low_session=None)
     return _qualified({"dates": list(PATH["dates"][:-n]) + dates,
                        "vals": [-3.0] * (len(PATH["dates"]) - n) + vals},
@@ -522,6 +525,15 @@ def test_a_young_window_says_it_is_short_not_that_history_fails_the_figures(monk
 def test_four_closes_from_the_reference_high_draw(monkeypatch):
     seen, view = _drawn(monkeypatch, _young(4))
     assert len(seen) == 1 and view["detail_withheld"] is None
+
+
+@pytest.mark.parametrize("index, value", [(-1, -3.0), (-2, -1.0)])
+def test_a_short_window_that_disagrees_with_the_figures_is_uncovered_not_short(monkeypatch, index, value):
+    """Every coverage check runs before the length check: being young is not a pass."""
+    obs = _young(2)
+    obs["price_path"]["vals"][index] = value  # the end misses the metric / the peak is not 0
+    seen, view = _drawn(monkeypatch, obs)
+    assert seen == [] and view["detail_withheld"] == "uncovered"
 
 
 def test_an_uncovered_window_says_the_history_does_not_support_the_figures():
