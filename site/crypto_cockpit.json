@@ -2,12 +2,12 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-09",
-  "generated_at": "2026-10-10T02:59:24+00:00",
+  "as_of": "2026-10-10",
+  "generated_at": "2026-10-11T01:40:54+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 82540.03,
-    "change_24h_pct": 0.54,
+    "price": 82482.12,
+    "change_24h_pct": 0.47,
     "stance_en": "STRONG RISK-ON",
     "stance_zh": "强烈偏多",
     "summary_en": "The big picture reads strongly risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
@@ -134,9 +134,9 @@
           "label_en": "Coinbase premium",
           "label_zh": "Coinbase 溢价",
           "source": "master.board.premium",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Healthy demand",
+          "state_zh": "健康需求",
+          "tone": "bull",
           "grade": "EXTREMES"
         }
       ]

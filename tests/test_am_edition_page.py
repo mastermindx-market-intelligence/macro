@@ -1184,3 +1184,46 @@ def test_f01_m2_t5_balance_per_rw_text_one_en_one_zh(tmp_path):
         assert zh_count == 1, (
             f"row {i} carries {zh_count} l-zh spans inside .mx-rw-text; expected 1"
         )
+
+
+@pytest.mark.parametrize("missing_state", ["NOT_COVERED", "UNAVAILABLE"])
+def test_context_planes_partial_rows_remain_visible(tmp_path, missing_state):
+    blocks = _make_fresh_blocks(tmp_path)
+    context = blocks[0]
+    context["state"] = missing_state
+    context["state_reason_en"] = "Some context planes are not yet covered."
+    context["state_reason_zh"] = "部分背景面尚未覆盖。"
+    context["rows"][1]["state"] = "STALE_WITH_LAST_KNOWN"
+    context["rows"][1]["state_reason_en"] = "Latest known commodity reading."
+    context["rows"][1]["state_reason_zh"] = "最新已知商品读数。"
+    context["rows"].append({
+        "plane": "credit", "state": missing_state,
+        "label_en": "MUST_NOT_RENDER_UNAVAILABLE_LABEL",
+        "read_en": "MUST_NOT_RENDER_UNAVAILABLE_READING",
+        "state_reason_en": "Credit reading is not available.",
+        "state_reason_zh": "信用读数暂不可用。",
+    })
+    html = _render_am_edition(_build_payload(tmp_path, blocks))
+    text = _strip_html(html)
+    assert "Rates are steady this morning." in text
+    assert "今晨利率保持稳定。" in text
+    assert "Commodity complex is steady with a soft bid." in text
+    assert "Latest known commodity reading." in text
+    assert "最新已知商品读数。" in text
+    assert "Credit reading is not available." in text
+    assert "信用读数暂不可用。" in text
+    assert "MUST_NOT_RENDER_UNAVAILABLE" not in text
+    assert html.count('class="mx-cp-row"') == 3
+    assert context["state_reason_en"] in text
+
+
+def test_context_planes_current_row_keeps_partial_source_reason(tmp_path):
+    blocks = _make_fresh_blocks(tmp_path)
+    row = blocks[0]["rows"][0]
+    row["plane"] = "international"
+    row["state_reason_en"] = "Hong Kong reading unavailable."
+    row["state_reason_zh"] = "香港读数不可用。"
+    text = _strip_html(_render_am_edition(_build_payload(tmp_path, blocks)))
+    assert "Rates are steady this morning." in text
+    assert "Hong Kong reading unavailable." in text
+    assert "香港读数不可用。" in text

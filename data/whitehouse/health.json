@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-10T00:50:21.947626+00:00",
-  "posts_seen": 18,
-  "seen_total": 281,
-  "evaluated": 1,
+  "as_of": "2026-10-11T01:52:45.935311+00:00",
+  "posts_seen": 14,
+  "seen_total": 282,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-10-09-presidential-message-on-leif-erikson-day",
-      "importance": 10,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }

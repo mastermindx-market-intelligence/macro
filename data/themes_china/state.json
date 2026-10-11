@@ -70,7 +70,7 @@
     "label": "deteriorating",
     "name": "Brokers & Securities",
     "name_zh": "\u5238\u5546",
-    "rank": 17,
+    "rank": 18,
     "reco": "avoid",
     "score": 32
   },
@@ -91,12 +91,12 @@
     "score": 20
   },
   "cn_defense": {
-    "label": "deteriorating",
+    "label": "fading",
     "name": "Defense & Aerospace",
     "name_zh": "\u519b\u5de5\u822a\u5929",
-    "rank": 18,
-    "reco": "avoid",
-    "score": 29
+    "rank": 17,
+    "reco": "trim",
+    "score": 32
   },
   "cn_food_bev": {
     "label": "emerging",

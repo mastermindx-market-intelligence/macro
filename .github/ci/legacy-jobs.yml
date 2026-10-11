@@ -400,6 +400,29 @@ jobs:
       - name: annotations must start the line (bare print, never a logger)
         run: python -m pytest tests/test_gh_annotation_line_start.py -q
 
+  quant-q01-arbfree-surface:
+    if: ${{ false }}
+    gate: code
+    # Q01 bid/ask-aware arbitrage-constrained surface reference: req1-req6 invariants + no-silent-activation contract
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, scipy.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_arbfree_surface.py"
+      - "tests/test_options_arbfree_surface.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q01 arbitrage-constrained surface hermetic suite
+        run: python -m pytest tests/test_options_arbfree_surface.py -q
+
   am-edition-producer:
     if: ${{ false }}
     gate: code
@@ -8129,6 +8152,11 @@ jobs:
       # read-side guard that stops a focus refetch from reverting a just-made edit.
       - name: watchlist workspace — entry parser, stage map, focus-refetch guard (W2)
         run: python -m pytest tests/test_watchlist_workspace_js.py -q
+      # site20 S3: templates/stockdata.js — index validated before it is cached,
+      # one in-flight US index read, regional/ticker transient failures retried on a
+      # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
+      - name: stockdata.js cache resilience — index validation, dedupe, transient TTL (site20 S3)
+        run: node --test tests/js/stockdata_cache_resilience.test.mjs
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
@@ -8272,6 +8300,29 @@ jobs:
       # a guard printing zero.
       - name: append-only law mutation + negative controls
         run: python -m pytest tests/test_append_only_assertions.py -q
+
+  quant-q08-cov-shrinkage:
+    if: ${{ false }}
+    gate: code
+    # Q08 pins basis/support guards, PSD/zero-structure, PR bounds/intervals, shrinkage losses, no-authority contract
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/covariance_shrinkage_diagnostics.py"
+      - "tests/test_covariance_shrinkage_diagnostics.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q08 covariance shrinkage diagnostics suite
+        run: python -m pytest tests/test_covariance_shrinkage_diagnostics.py -q
 
   research-screener:
     if: ${{ false }}
@@ -11624,6 +11675,21 @@ jobs:
       - "templates/_curve_panel.html.j2"
       - "templates/_macro_suite_shell.html.j2"
 
+  quant-q12-parity-forward:
+    if: ${{ false }}
+    gate: code
+    # Q12 parity forward interval: identity, band interval, quote-quality refusal, incompatibility, American/carry limits, no relabel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q12 options parity forward interval suite
+        run: python -m pytest tests/test_options_parity_forward_interval.py -q
+
   ccw-w6-study-s1:
     if: ${{ false }}
     gate: code
@@ -12209,6 +12275,29 @@ jobs:
         run: pip install pytest fastapi pyyaml requests
       - name: identity capture unit tests
         run: python -m pytest tests/test_collect_identity.py -v
+
+  quant-q13-rn-tail-density:
+    if: ${{ false }}
+    gate: code
+    # Q13 pins RN tail-density accounting, reintegration, basis, truncation, perturbation and Q-not-P contracts
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest, scipy.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_rn_tail_density.py"
+      - "tests/test_options_rn_tail_density.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: run Q13 RN tail-density contract tests
+        run: python -m pytest tests/test_options_rn_tail_density.py -q
 
   research-vault:
     if: ${{ false }}
@@ -13566,6 +13655,29 @@ jobs:
           python -m pytest
           tests/test_biocatalyst_drugs_at_fda.py -q
 
+  quant-q14-horizon-vrp:
+    if: ${{ false }}
+    gate: code
+    # Q14 pins horizon-matched variance-premium measurement contract
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/vol_horizon_variance_premium.py"
+      - "tests/test_vol_horizon_variance_premium.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q14 horizon variance premium tests
+        run: python -m pytest tests/test_vol_horizon_variance_premium.py -q
+
   marketing-social-publisher:
     if: ${{ false }}
     gate: code
@@ -14664,6 +14776,29 @@ jobs:
             tests/test_control_room_caddy.py \
             tests/test_publish_control_room_active_builds.py -q
 
+  quant-q15-noise-robust-rv:
+    if: ${{ false }}
+    gate: code
+    # Q15 pins noise-aware realized variance: noise-free IV recovery, bid/ask bounce flagged not counted, declared gap/overnight treatment, bias/variance vs simple controls, as-of label immutability, no silent activation
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/vol_noise_robust_realized.py"
+      - "tests/test_vol_noise_robust_realized.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q15 noise-robust realized variance requirement suite
+        run: python -m pytest tests/test_vol_noise_robust_realized.py -q
+
   free-content-estate:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: data
@@ -14984,6 +15119,8 @@ jobs:
       # ledgers and would otherwise fail for a borrowed reason.
       # No dependency widened: probed at RUN time, both load only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
+      - name: Prophet source clocks and immutable correction provenance
+        run: python -m pytest tests/test_prophet_plan_chronology_audit.py tests/test_prophet_integrity.py -q
       - name: grade_us_board outcome ledgers + tenure stamp + the strip it renders
         run: python -m pytest tests/test_board_tenure_stamp.py tests/test_us_board_outcomes.py tests/test_us_board_outcomes_strip.py tests/test_entry_status_stamping.py tests/test_us_board_price_basis_era.py -q
       - name: grade_us_board zero-accrual + truncated-history alarms
@@ -15563,6 +15700,21 @@ jobs:
       - name: SBIR/STTR progression evidence lane — collector + engine rail (#5012)
         proof_id: sbir-sttr-progression-evidence-post-amount-semantics
         run: python -m pytest tests/test_sbir_awards.py -q
+
+  quant-q16-delayed-aci:
+    if: ${{ false }}
+    gate: code
+    # Q16 delayed-feedback interval calibration: maturity clock, honest blocks, interval score, shift controls, regime support, no activation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q16 delayed interval calibration research suite
+        run: python -m pytest tests/test_interval_delayed_calibration.py -q
 
   govrev-company-bridge:
     if: ${{ false }}
@@ -16490,6 +16642,21 @@ jobs:
       # panels/view-models. Deselected from public-render-fastlane's step (see that job).
       - name: scripts/build_site.py's help page call shape (B-F13-3 BLOCKER-1 regression guard)
         run: python -m pytest tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model -q
+
+  quant-q17-stable-whitening:
+    if: ${{ false }}
+    gate: code
+    # Q17 stable factor whitening: bounded amplification, missing-leg labelling, permutation symmetry, resampling instability, sparse fallback, no silent activation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q17 stable factor whitening tests
+        run: python -m pytest tests/test_factor_stable_whitening.py -q
 
   unrun-release-forecast:
     # the macro-release forecast producer — projections, benchmarks and the graded forward ledger.
@@ -18093,6 +18260,29 @@ jobs:
         run: python -m pytest tests/test_international_macro_dossier.py -q
       - name: international macro dossier page child (MO-PAID-006 PAGE R1)
         run: python -m pytest tests/test_international_macro_dossier_page.py -q
+  quant-q18-async-session-cov:
+    if: ${{ false }}
+    gate: code
+    # Q18 pins async-session HY interval qualification contract (UTC clocks, states, no lag search, MBB/NW, PSD report-only)
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pandas, pytest.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/async_session_covariance.py"
+      - "tests/test_async_session_covariance.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: run Q18 async session covariance suite
+        run: python -m pytest tests/test_async_session_covariance.py -q
+
   prophet-us-b4-prereg-registration:
     # PROPHET US B4 entry-policy calibration PREREGISTRATION (R6 wave 1, seat ruling
     # R6-PREREG-01, PR #7823). tests/test_b4_entry_policy_calibration_prereg.py pins the
@@ -18904,6 +19094,29 @@ jobs:
       - name: gex board state merge + IV-rank band color + session digest + flow desk
         run: python -m pytest tests/test_gex_board_state_merge.py tests/test_gex_js_iv_rank_color.py tests/test_session_digest.py tests/test_flow_desk.py tests/test_gex_board_session_date.py -q
 
+  quant-q19-first-passage-ambiguity:
+    if: ${{ false }}
+    gate: code
+    # Q19 first-passage ambiguity bounds, attrition classes, admissibility gate, AJ fail-to-bounds
+    # Curated scope: the suite's importlib import check otherwise
+    # widens inference to whole-tree fallback roots. The module imports only
+    # stdlib + numpy, so this is its exact closure.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/outcome_first_passage_ambiguity.py"
+      - "tests/test_outcome_first_passage_ambiguity.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q19 first-passage ambiguity tests
+        run: python -m pytest tests/test_outcome_first_passage_ambiguity.py -q
+
   unrun-publish-ops:
     # publish/transport, asset pipeline, ticker pages and the nightly ops tripwires.
     if: ${{ false }}
@@ -19479,6 +19692,8 @@ jobs:
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/*"
+      - "scripts/__init__.py"
+      - "scripts/build_themes_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
@@ -19487,6 +19702,7 @@ jobs:
       - "site/basketdata/foresight_cascade.json"
       - "site/factordata/**"
       - "site/marketdata/subsector_confluence.json"
+      - "site/marketdata/themes_heatmap.json"
       - "site/state_of_themes.html"
       - "templates/_navlinks.html.j2"
       - "templates/chat.html"
@@ -19513,6 +19729,7 @@ jobs:
       - "tests/test_subsector_scan.py"
       - "tests/test_subsector_turn.py"
       - "tests/test_themes_heatmap.py"
+      - "tests/test_principal_receipt_ambiguity.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -19525,7 +19742,7 @@ jobs:
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py -q
       # Semiconductor B T10 (2026-09-24): the generic paid theme-research client
       # mounted hidden on the Theme Tracker page — node-shelled contract cases
       # (same-origin fetch, typed refusals, closed bilingual error codes, no
@@ -19574,6 +19791,29 @@ jobs:
         run: python -m pytest tests/test_check_ohlc_basis_coherence.py -q
       - name: guard selftest
         run: python scripts/check_ohlc_basis_coherence.py --selftest
+
+  quant-q20-spa-challenger:
+    if: ${{ false }}
+    gate: code
+    # Q20 pins dependence-aware SPA challenger comparison: generation-time trial mapping, common-index stationary bootstrap + block sensitivity, chronological holdout over PBO, monotone trial budget, reused-window disclosure, no promotion/no silent activation
+    # Curated scope: the suite's subprocess import guard otherwise
+    # widens inference to whole-tree fallback roots. The module imports only
+    # stdlib + numpy + scipy, so this is its exact closure.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/challenger_spa_comparison.py"
+      - "tests/test_challenger_spa_comparison.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q20 challenger SPA comparison hermetic suite
+        run: python -m pytest tests/test_challenger_spa_comparison.py -q
 
   unrun-government-revenue-grader:
     # Wave 9G prospective candidate grader — the instrument that is allowed to
@@ -20864,6 +21104,74 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: prospective reference clocks, refusals and consumer compatibility
         run: python -m pytest tests/test_dataos_prospective_reference.py -q
+
+
+  dataos-web-workspace:
+    # Stored-data readers and the bounded canonical Lab adapter are optional
+    # consumers of the pure Data OS foundation. Keep its pytest/pyyaml-only
+    # canary intact; these suites need the numerical and Parquet stack.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/ci.yml
+      - config/dataset_registry.yml
+      - config/web_data_workspace.studio.json
+      - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/indicators.py
+      - engine/lab.py
+      - engine/ma_crosses.py
+      - engine/predictive_signals.py
+      - engine/rsi_signals.py
+      - engine/stock_technicals.py
+      - engine/strategy_signals.py
+      - engine/tech_catalog.py
+      - engine/tech_stars.py
+      - engine/technicals.py
+      - engine/trial_ledger.py
+      - engine/validation.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/store.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_lab.py
+      - lib/dataos/web_lab_worker.py
+      - lib/dataos/web_readers.py
+      - lib/dataos/web_workspace.py
+      - scripts/data_workspace.py
+      # Canonical catalog artifact references present in the full CI tree.
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
+      - tests/test_dataos_web_api.py
+      - tests/test_dataos_web_lab.py
+      - tests/test_dataos_web_lab_worker.py
+      - tests/test_dataos_web_readers.py
+      - tests/test_dataos_web_workspace.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install bounded data and Lab test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: web data access, source clocks, reader limits and canonical Lab isolation
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
+          tests/test_dataos_web_workspace.py -q -rs
 
   dataos-foundation:
     scope: exclusive
