@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1600",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1646",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -8018,6 +8018,47 @@
     "retained_boundaries": "Future eligible NEW attended file-output work under actual existing grants only. Explicit verified original root/exact parent discipline retained. All prior refused/uncertain runs, A12 ARTIFACT_MODE_UNAVAILABLE and home export refusals, original drawing-readiness unverified same-carrier run, OAuth/MoneySCP EFFECT_UNKNOWN and native Wake/security/review holds remain unreplayed. No replacement, retry, cancellation, lease change, account/sandbox/carrier weakening or outgoing peer message.",
     "product_state": "T1547 qualified935 remains next-suitable-release consumer, not installed. T1502 abf installation and scoped paid Replay retain original observations. ONE pending browser restoration request and939normalGET/UI unchanged; no browser/VPS/CI/producer/source effect or repeated human question.931 original review unresolved, B941 owning integration pending.",
     "next_ready_phase": "Actual browser restoration/native-capability event for939 normalGET/3size UI+cleanup, or actual new owning source/platform/producer return. Eligible NEW useful attended Fabric artifact work only when independently needed and admitted; no notice-only dispatch.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1646": {
+    "observed_at": "2026-10-11T16:46:34.547896+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "Audit20-only custody of three proposed shared host paths; no independent E20 ownership or other product/effect hold released.",
+    "material": "Explicit bounded Audit20 no-reservation ruling for TerminalShell, MegaPane and AnalysisWorkspace in response to actual integration custody question.",
+    "scope_paths": [
+      "terminal/components/TerminalShell.tsx",
+      "terminal/components/fin/MegaPane.tsx",
+      "terminal/components/workspaces/AnalysisWorkspace.tsx"
+    ],
+    "ruling": "This Audit20 principal owns no active modifying writer or reservation for these three product paths. Any residual Audit20-only planning reservation for this bounded scope is released. This ruling has no authority over another mission or incumbent writer.",
+    "actual_own_scope": {
+      "native_agents_snapshot": "One live agent: /root running; no native child source writer",
+      "current_parent_work": "Knowledge/evidence publication only, not Terminal application edits",
+      "knowledge_pr": 8545,
+      "knowledge_workspace": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/macro-terminal-audit20-01a10f92-fed0fcce78dc426d",
+      "knowledge_branch": "claude/ssd-macro-terminal-audit20-01a10f92-fed0fcce78dc426d",
+      "knowledge_head_before_ruling": "f87b6e7eebbe8ca8264643d49fc3c9c4722459f1",
+      "knowledge_clean_before_ruling": true,
+      "knowledge_paths": [
+        "agentos/workstreams/WS-TERMINAL-REPAIR-AUDIT20-2026-10.md",
+        "research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json"
+      ],
+      "terminal_lane": "Own940 merged abf97e and source branch/workspace closed; observers/builders settled. No reopen or source read/test/CI replay.",
+      "unverified_fabric": "Original drawing-readiness retained run was supplied-text verification only; no product path write grant or reservation inferred."
+    },
+    "independent_E20_scope": "Referenced request preserves936/922/919 and calls940 owner distinct. This Audit20 ruling does not identify or release that separate E20 owner; current E20 session/writer pointer unverified. PR metadata or historical labels do not prove active writer custody.",
+    "integration_boundary": "A must independently reconcile actual E20/other current writers before shared edits. This bounded Audit20 no-reservation is not a global vacancy,944 source/contract/review admission, integration approval, reserved numeric review or deployment grant. A owns its isolated controller/presenter work and proposed shell UUID/current store query/unmount lifecycle; no duplicate implementation by Audit20.",
+    "retained_custody": "Audit20 retains its existing guarded VPS release and owning paid browser/live acceptance scope. Pending one-time browser restoration and939normalGET/three-size UI remain;935 qualified source/requiredCI stays future suitable consumer. No VPS or browser effects from this ruling.",
+    "delivery": "Ruling saved to existing knowledge carrier and answer in this chat only. No issue comment, outgoing cross-chat message or ACK. Incoming peer question alone is not human send authorization.",
+    "evidence": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/audit20-shared-host-bounded-no-reservation-20261011T1646.json",
+      "bytes": 3294,
+      "sha256": "eae3eda26cc63c7839ba65a31b125405574978008b2d8279d30e3f5d2991138a"
+    },
+    "retained_product_frontier": "current_capability_frontier_20261011T1547",
+    "retained_fabric_frontier": "current_capability_frontier_20261011T1600",
+    "next_ready_phase": "Same actual restoration/capability or suitable released-source/platform/producer event gates. No outgoing peer send without human authorization; no duplicate host writer or global vacancy assertion.",
     "whole_audit20_complete": false
   }
 }
