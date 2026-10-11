@@ -1,10 +1,10 @@
 {
   "exit_code": 0,
   "counts": {
-    "passed": 396
+    "passed": 398
   },
   "python": "3.14.7",
-  "elapsed_seconds": 17.558,
+  "elapsed_seconds": 13.732,
   "mode": "staged exact feature files over readonly host dependency checkout; not full hosted CI",
   "host_dependency_checkout": "cdab62686e79c76b6d431b02dec49c41a290f4c2",
   "test_files": [
@@ -29,17 +29,17 @@
     ".github/ci/legacy-jobs.yml": "58a1540acb62142b5216dcfcaea24ef8fe81bbd5dfe629221754ccde6e3186e7",
     "engine/leader_recovery.py": "dfcf917dbc73390f91d3b62a90c81d1fa5c77fc1a3b78be270d495f86e29e578",
     "engine/leader_recovery_expectations.py": "7063fc43ba9b28caa066337c40a0b5143eb0f0d8e2c49ad35160f2028242ce6f",
-    "engine/leader_recovery_observations.py": "13b4cf7cef05cffa3898e05205140b7de598cb1d8a74e9f473e90633bbc5253b",
+    "engine/leader_recovery_observations.py": "3cfe79c96a52f97a4a09ffb9593c1d8697338a9c24b3412be21b24ff3eab5b91",
     "engine/leader_recovery_outcomes.py": "d9f29c7ce35e89dccd293e71c16644ee10ee1a3abd72223eb94a7f27881e7e7e",
     "engine/leader_recovery_policy_research.py": "6dd5d6bf18219343e346e504add001cb700fa87dc68ccab837490cebdecbc3e4",
     "scripts/build_leader_radar.py": "cde093c371412daec6500acb3a4ea89404a49bee25aa074792e34752a7876ed4",
     "tests/test_leader_recovery.py": "80c07db6b3903a59d820f408702a760e4ef91d680429876d3d5fde0e16d22b57",
     "tests/test_leader_recovery_expectations.py": "6d9bab318c6e864999e50d8d0181ff84685ca0e2a9d151d2bc21c27123e2a29f",
     "tests/test_leader_recovery_integration.py": "9394b34c13d5aacaf601c5eec10bc1dca6b3e771d221ff742ed3d3ab118b375c",
-    "tests/test_leader_recovery_observations.py": "9396db235a58ec091a54ea5354a270ba504c556d51c010970c95297cdee553cf",
+    "tests/test_leader_recovery_observations.py": "4e14e321596adae11f7fe075b5a38119a68905a147755dfadfe7c3eabed0f151",
     "tests/test_leader_recovery_outcomes.py": "c9accfcd867b3676e469bbfcdc5355d12384a753dc21c34408b32131824bce80",
     "tests/test_leader_recovery_policy_research.py": "1a0975a7192397ce6bb91752056e5bb2c36e0def851660378df8e09ed03d2a5c",
     "tests/test_rs_leader_highs.py": "7a9bc8ffa9bfd19472a449c490e27ddba94811d5e664367c52de78ee2137bf96"
   },
-  "test_nodeids_sha256": "e1faf05eae38b0844bbd97eac2f892455beeb308c86ced877d9d6b9774cec93b"
+  "test_nodeids_sha256": "95d5e027fad0bdb1432711c83af411d7fc8833f855f948ae686a9c134443e4fe"
 }

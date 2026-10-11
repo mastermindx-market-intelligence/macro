@@ -37,7 +37,7 @@ The new recovery-specific UI partial has **not** been created: its direct host w
 
 ## Executed validation and actual findings
 
-- 396 focused tests passed on the connected Mac with the branch's staged source over a read-only host dependency checkout. This comprises new recovery/outcome/producer, policy, expectations, first-observed capture tests, original RS-high tests and legacy lifecycle/builder suites. Eight existing pytest temporary-directory cleanup warnings were non-failing. This is not exact-head hosted CI.
+- 398 focused tests passed on the connected Mac with the branch's staged source over a read-only host dependency checkout. This comprises new recovery/outcome/producer, policy, expectations, first-observed capture tests, original RS-high tests and legacy lifecycle/builder suites. Eight existing pytest temporary-directory cleanup warnings were non-failing. This is not exact-head hosted CI.
 - A three-name real producer fixture showed complete incumbent payload equality after removing only the two new recovery projections and pre-existing volatile build timestamps. The express build did not modify any fixture data-store bytes. The optional-failure test retains all original ticker rows.
 - Six deliberately introduced temporal/state defects were each caught by the core regression suite; the mutation method and result are preserved separately. This is adversarial author verification, not independent acceptance.
 - The actual source census covers 173 incumbent members plus explicit non-recovery examples, 176 unique names, through October 8. It produced 1,756 horizon-label rows from observations starting January 2024. Current membership is survivorship-biased and is not a point-in-time historical population.
@@ -97,7 +97,7 @@ A read-only full-source run of the actual builder processed **173 incumbent name
 
 `REAL_PRODUCER_RECEIPT.json` carries the actual counts, PLTR descriptor and source clocks. PLTR was REIGNITING, EXTENDED, with positive October-6 expectation observations. The recovery-specific panel remains absent because its original write was refused; only the existing previously implemented RS-high page was rendered. A missing scratch copy of the existing data_base.js helper was supplied and the existing page re-rendered; no substitute recovery UI was written.
 
-The earlier published candidate's hosted CI genuinely selected the new Leader Radar step, then failed collection on a bare `test_build_leader_radar` import. The ordinary-package fixture import is now `tests.test_build_leader_radar` in both affected tests. `CI_FAILURE_AND_REPAIR.json` retains the failing run/head/job; 396 focused tests now pass without an artificial tests-directory sys.path insertion. `MUTATION_RECEIPT.json` records all six deliberately defective variants caught on the current core. Exact final-head hosted CI and independent acceptance remain distinct from these author checks.
+The earlier published candidate's hosted CI genuinely selected the new Leader Radar step, then failed collection on a bare `test_build_leader_radar` import. The ordinary-package fixture import is now `tests.test_build_leader_radar` in both affected tests. `CI_FAILURE_AND_REPAIR.json` retains the failing run/head/job; 398 focused tests now pass without an artificial tests-directory sys.path insertion. `MUTATION_RECEIPT.json` records all six deliberately defective variants caught on the current core. Exact final-head hosted CI and independent acceptance remain distinct from these author checks.
 
 ## Final scoped delivery checklist
 

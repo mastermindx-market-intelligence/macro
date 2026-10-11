@@ -60,7 +60,9 @@ def _capture(ticker: str, day: str, descriptor: dict, known_at: str) -> dict:
     ep = descriptor.get('episode') or {}
     selected['episode'] = {k:ep.get(k) for k in (
         'opened_on','peak_on','peak_price','reference_rs','price_high_water',
-        'max_drawdown_from_high_water','repair_floor','repair_started_on',
+        'max_drawdown_from_high_water','max_drawdown_peak_price','max_drawdown_peak_on',
+        'max_drawdown_trough_price','max_drawdown_trough_on','price_high_water_on',
+        'trough_price','trough_on','repair_floor','repair_started_on',
         'last_failure_on','failed_repairs','history_complete','recovered_on')}
     expectations=descriptor.get('expectations') or {}
     selected['expectations']={k:expectations.get(k) for k in (
@@ -128,7 +130,10 @@ def read_captured_observation(history: pd.DataFrame, *, ticker: str,
     """Read only the exact first captured descriptor knowable by the requested time."""
     cut=pd.Timestamp(known_at)
     if pd.isna(cut) or cut.tzinfo is None:raise ValueError('knowledge_cut_requires_timezone')
-    day=pd.Timestamp(source_session).date().isoformat()
+    session=pd.Timestamp(source_session)
+    if pd.isna(session) or session.tzinfo is not None or session!=session.normalize():
+        raise ValueError('source_session_requires_unambiguous_date')
+    day=session.date().isoformat()
     matches=[row for row in history.to_dict('records') if _key(row)==(day,ticker)]
     if len(matches)>1:raise ValueError('duplicate_history_identity')
     if not matches or not _validate_seal(matches[0]):

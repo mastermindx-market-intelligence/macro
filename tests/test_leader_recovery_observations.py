@@ -123,3 +123,19 @@ def test_reader_rejects_ambiguous_or_corrupted_capture():
 def test_aware_knowledge_cut_required_for_reader():
     from engine.leader_recovery_observations import read_captured_observation
     with pytest.raises(ValueError):read_captured_observation(merge(),ticker='PLTR',source_session=DAY,known_at='2026-10-09')
+
+
+def test_capture_preserves_paired_drawdown_references_not_only_the_number():
+    rows=descriptors();ep=rows[0]['display_chips']['leader_recovery']['episode']
+    ep.update(max_drawdown_from_high_water=-.4,max_drawdown_peak_price=200.,max_drawdown_peak_on='2026-01-05',max_drawdown_trough_price=120.,max_drawdown_trough_on='2026-06-25',price_high_water=210.,price_high_water_on='2026-09-30')
+    captured=json.loads(merge(rows=rows).iloc[0][COLUMNS[1]])['descriptor']['episode']
+    assert captured['max_drawdown_peak_price']==200.
+    assert captured['max_drawdown_trough_price']==120.
+    assert captured['price_high_water']==210.
+    assert captured['max_drawdown_peak_on']<captured['max_drawdown_trough_on']<captured['price_high_water_on']
+
+
+def test_reader_refuses_ambiguous_source_session_timestamp():
+    from engine.leader_recovery_observations import read_captured_observation
+    with pytest.raises(ValueError,match='unambiguous_date'):
+        read_captured_observation(merge(),ticker='PLTR',source_session='2026-10-08T13:00:00',known_at=CLOCK)
