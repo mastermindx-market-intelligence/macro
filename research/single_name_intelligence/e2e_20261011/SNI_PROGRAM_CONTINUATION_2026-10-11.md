@@ -34,9 +34,9 @@ Execution shape: Fable seat → native Opus orchestrators (`orchestrator`, model
 - O-10 OPEN — the commission masterplan is not on main (PR #8773 DRAFT, Sol/Chairman-owned); seat lanes read it from the commission zip.
 
 ## NEXT
-1. #8834 (V0/U0) MERGED + LANDED. Ship #8837 (E0/M0, re-armed at `e0c8ce8afe1e` after two repairs): sweeper or seat merges on concluded checks; landing check = bare `git fetch origin` (rc checked) then per-path blob compare vs origin/main.
+1. #8834 (V0/U0) MERGED + LANDED. Ship #8837 (E0/M0, re-armed at `b79c0d132785` after three repairs): sweeper or seat merges on concluded checks; landing check = bare `git fetch origin` (rc checked) then per-path blob compare vs origin/main.
 2. Judge O2's E1/E2 return and O3's S0 return by artifact; ship each as an ordinary PR.
-3. S1 after S0 accepted; S2 after S0 + E1 + E2 accepted.
+3. S1 after S0 accepted; S2 after S0 + E1 + E2 accepted. Both commissions are pre-drafted against MASTERPLAN §8 and acceptance cases A22–A25. Each sends by SendMessage to O3 once its placeholders are filled from the accepted S0/E1/E2 heads.
 4. On the Chairman's R1 ruling only: act on (i)/(ii) for #6613, SJ-2 for #6615, then launch the R2 builder (frame prepared, DO NOT LAUNCH before the ruling) and create `agentos/workstreams/WS-SINGLE-NAME-INTELLIGENCE-OS.md`.
 5. Handoff `agentos/handoffs/SINGLE-NAME-INTELLIGENCE-OS-<date>.md` when the seat stops.
 
@@ -47,8 +47,9 @@ Execution shape: Fable seat → native Opus orchestrators (`orchestrator`, model
 | O2 a03f47f8e0f17fe1e | native Opus orchestrator | seat | E0/M0 → PR #8837 (accepted); NOW E1/E2 on `claude/sni-e1-alibaba-evidence-20261011` / `claude/sni-e2-tencent-evidence-20261011` (push, no PR) | Agent task notification | E0/M0 ACCEPTED; E1/E2 RUNNING since ~17:2xZ (≤2 fabric lanes) |
 | O3 af1916951ca5ecc58 | native Opus orchestrator | seat | V0/U0 → PR #8834 (accepted); NOW S0 on `claude/sni-s0-protocols-20261011` (push, no PR) | Agent task notification | V0/U0 ACCEPTED; S0 RUNNING since ~17:2xZ (≤1 fabric lane) |
 | PR #8834 | ship | seat | 6 SNI_V0_/SNI_U0_ docs | — | MERGED + LANDED (6/6 blob-equal on origin/main 5abdab24ca63) |
-| PR #8837 | ship | seat | E0/M0 profiles, schema, test, 2 docs, legacy-jobs owner `single-name-coverage-profiles` | Monitor (seat) | READY + re-armed at e0c8ce8afe1e after 2 repairs; checks running |
+| PR #8837 | ship | seat | E0/M0 profiles, schema, test, 2 docs, legacy-jobs owner `single-name-coverage-profiles` | Monitor (seat) | READY + re-armed at b79c0d132785 after 3 repairs; ci 38164517888 + fences 38164517468 running |
 | PR #8839 | records | seat | this ledger + DSC-FABRIC-POOL-ADMISSION-IS-PER-HOST-NOT-PER-ENGINE | — | MERGED + LANDED (2/2 blob-equal on origin/main 5abdab24ca63) |
+| PR #8843 | records-2 | seat | this ledger (fold of cycle 17:5xZ–18:0xZ) | — | MERGED by hand (--match-head-commit e36a56cb) + LANDED (1/1 blob-equal on origin/main 8156a0b38c39) |
 
 Seat-wide caps: ≤2 concurrent Opus orchestrators running labor coordination, ≤3 fabric lanes.
 
@@ -86,3 +87,15 @@ Seat-wide caps: ≤2 concurrent Opus orchestrators running labor coordination, �
 - MERGED + LANDED (~17:55Z): #8834 (V0+U0 docs, head 9b0f29158248, squash by hand with `--match-head-commit`). Landing: 6/6 paths blob-equal on origin/main 5abdab24ca63. V0+U0 = ACCEPTED, rung MERGED (docs-only; no production surface).
 - MERGED + LANDED (~17:55Z): #8839 (records: this ledger + DSC-FABRIC-POOL-ADMISSION-IS-PER-HOST-NOT-PER-ENGINE). Landing: 2/2 paths blob-equal on origin/main 5abdab24ca63.
 - REPAIR-2 #8837 (~18:0xZ): after the 79c90487 push only ci-authority ran; ci/fences pull_request runs were NOT created because the PR had a content conflict in `.github/ci/legacy-jobs.yml` (main tail-appended `site20-s4-chart-brief-js` and amended the company-relationship step). Diagnosed locally with `git merge-tree --write-tree` (no PR read). Disarm marker issuecomment-6111902219 → merged origin/main (kept main's step + site20 job, SNI job appended after) → census 0/0, suite 24 passed → pushed e0c8ce8afe1e → ci 38161553660 + fences 38161553185 created → re-armed. Lesson: "a push produced only ci-authority" on a PR = check mergeability first; every tail-append to legacy-jobs.yml conflicts with any other tail-append.
+
+## Seat cycle 2026-10-11 ~18:2xZ–18:5xZ
+- MERGED + LANDED (~18:2xZ): #8843 (records-2: fold of the 17:5xZ–18:0xZ cycle). Squashed by hand with `--match-head-commit e36a56cb`. Landing: 1/1 blob-equal on origin/main 8156a0b38c39. The first landing read printed MISSING because a compound `git fetch origin; echo` was refused and left origin/main stale; a plain `git fetch origin` then gave 1/1. Re-fetch before believing a MISSING verdict.
+- REPAIR-3 #8837 (~18:4xZ): ci-pack-0 job `ci-control-plane-contracts` went red on `tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared` (AssertionError `['single-name-coverage-profiles']`). The red is genuinely ours: an exclusive legacy-jobs job must also be pinned in `CURATED_EXCLUSIVE` in `tests/test_ci_pack.py`.
+  - Disarm marker issuecomment-6112263307.
+  - Added the id with a provenance comment. Main had not drifted on either file and the merge-tree was clean.
+  - Local run: 7 passed (`-k 'curated or exclusive'`).
+  - Pushed b79c0d132785; ci 38164517888 and fences 38164517468 were created.
+  - Re-armed with issuecomment-6112331008.
+  - Lesson for every SNI lane that adds an exclusive job: `legacy-jobs.yml` AND `CURATED_EXCLUSIVE` in the same commit (this extends the REPAIR lesson above).
+- PREPARED (seat): S1 and S2 commission frames, held in seat scratch and sent on acceptance. They carry the A22–A25 gates verbatim, a single-lane fabric budget, and the full forbidden list (no causal or news-impact framing of residuals, no default 50/50, no forecast store or grader, no trade authority, nothing R1-gated).
+- CARRIER READ (~18:4xZ): #6613 has no comment after the R1 packet 6111497311. O-7 stays EXACT_HUMAN_GATE.
