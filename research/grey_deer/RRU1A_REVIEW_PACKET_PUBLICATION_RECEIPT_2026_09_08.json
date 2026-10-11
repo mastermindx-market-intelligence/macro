@@ -1,0 +1,8 @@
+{
+  "delivered_packet_sha256": "43906db736e0f68615c85b21e7fab827e562e49266104406b25fbfa4f10e3890",
+  "published_packet_sha256": "755e29f1e1a9533423a35daabd7eb06515c5cefb5b78566ba17ca47d642fe28f",
+  "normalization": "trailing spaces/tabs only; no non-whitespace content changed",
+  "changed_lines": 14,
+  "raw_local_preserved": "research/grey_deer/RRU1A_INDEPENDENT_REVIEW2_PACKET_DELIVERED_RAW_2026_09_08.txt",
+  "raw_is_not_staged": true
+}

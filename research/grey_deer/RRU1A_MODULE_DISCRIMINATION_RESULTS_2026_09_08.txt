@@ -1,0 +1,22 @@
+............                                                             [100%]
+12 passed in 5.05s
+DISCRIMINATION_RECEIPT {"binding_preserved": true, "calls": 8, "candidate_sha256": "d33e7425be4981f731fa5ec5d6bac6f70a117c419cbd1bfdac4c4d350ea63b38", "mode": "candidate", "profiles_reached": ["ca", "cn", "hk", "kr"], "pytest_exit": 0, "source_unchanged": true}
+..F.F.......                                                             [100%]
+=================================== FAILURES ===================================
+______________________ test_parabolic_gate_opens_above_ma ______________________
+tests/test_risk_radar_intl_profiles.py:304: in test_parabolic_gate_opens_above_ma
+    assert state_ungated in ("elevated", "risk-off"), (
+E   AssertionError: Stress fixture must reach elevated or risk-off; got state_ungated=calm (top_score=0). If this fails, the fixture no longer produces a loud ungated band — check the stress fixture shape.
+E   assert 'calm' in ('elevated', 'risk-off')
+_________________________ test_legacy_gate_still_caps __________________________
+tests/test_risk_radar_intl_profiles.py:414: in test_legacy_gate_still_caps
+    assert state_ungated in ("elevated", "risk-off"), (
+E   AssertionError: Stress fixture must yield elevated/risk-off ungated; got calm. If this fails the fixture no longer exercises the cap.
+E   assert 'calm' in ('elevated', 'risk-off')
+
+NOTE: sparse worktree — .agents, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, finviz_themes, knowledge, mockups, ops, properties, reports, requirements, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_risk_radar_intl_profiles.py::test_parabolic_gate_opens_above_ma
+FAILED tests/test_risk_radar_intl_profiles.py::test_legacy_gate_still_caps - ...
+2 failed, 10 passed in 1.85s
+DISCRIMINATION_RECEIPT {"binding_preserved": true, "calls": 8, "candidate_sha256": "d33e7425be4981f731fa5ec5d6bac6f70a117c419cbd1bfdac4c4d350ea63b38", "mode": "mutant_zero", "profiles_reached": ["ca", "cn", "hk", "kr"], "pytest_exit": 1, "source_unchanged": true}
