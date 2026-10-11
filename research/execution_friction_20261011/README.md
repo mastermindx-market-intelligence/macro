@@ -78,3 +78,37 @@ raising the byte cap or importing the entire old guide would preserve the bloat.
 Source publication, protected merge, local checkout update, fresh-session loading
 and observed execution behavior are distinct. No running conversation reload,
 company-wide adoption or completed parent mission is claimed by this patch.
+
+## Resumed parent review — remove the permanent prose freeze
+
+The active parent commission recovered this existing operation at head
+`7d07168a08db2e9fb84cff56455114a944451385`, verified a clean Git working tree and no
+open handles on the two scoped files, and continued the test-only repair. The
+workspace status wrapper reported PRESERVED_DIRTY while direct Git status was clean;
+that discrepancy was retained rather than treated as permission or source liveness.
+
+The original migration equality check was appropriate as one-time evidence, but
+running it permanently in CI would reject every later authorized instruction edit.
+Two discriminating regressions reproduced that defect: appending a harmless
+clarification or adding a unique domain section failed the old test. The ongoing
+contract now allows those changes while retaining the original required sections,
+uniqueness, ordering, loaded-prefix budget, navigation and release/effect controls.
+Explicit negative tests still reject missing or duplicate operating sections.
+
+Verification: `python3.11 -m unittest discover -s tests -p test_instruction_budget_order.py -v`
+went from 7 cases with 2 failures to **9 passed, 0 failed**. Logs:
+`/tmp/execution-macro-hash-red-20261011.log` and
+`/tmp/execution-macro-hash-green-20261011.log`. The original baseline digest remains
+unchanged in instruction_order_baseline.json. No AGENTS.md, CLAUDE.md, hook,
+permission, settings, runtime, worker or memory bytes changed during this repair.
+
+Review comment `5483271673` on PR #8795 records both the now-repaired permanent-hash
+trap and the separate unresolved contradiction that describes real permission
+prompts as administrative. The GitHub connector was the PR author's account, so
+this comment is not an independent approval or a formal change-request gate. The
+attempted formal change request returned GitHub 422 with no review effect; it was
+not resubmitted under another account.
+
+The instruction-order fix still requires its actual review/release conditions and
+fresh-loading proof. The unsafe blanket permission wording remains a distinct held
+policy issue; no blocked policy-retirement action was replayed by this test repair.
