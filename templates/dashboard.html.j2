@@ -16772,10 +16772,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          used to be filed under Blocked beside the falling knives and so was invisible
          (missed-ignitions audit D18). Watch words only: this shelf never says buy. #}
       {%- set _stage_order = ['live','setting_up','ran','basing','blocked'] -%}
-      {%- set _stage_en  = {'live':'Live now','setting_up':'Setting up','ran':'Ran — don’t chase','basing':'Basing','blocked':'Blocked'} -%}
-      {%- set _stage_zh  = {'live':'现在可操作','setting_up':'形成中','ran':'已启动 — 勿追','basing':'筑底中','blocked':'受阻'} -%}
-      {%- set _stage_sub_en = {'live':'entry window is open','setting_up':'not there yet — get ready','ran':'the move already started','basing':'no entry signal yet — watch, don’t chase','blocked':'stand aside for now'} -%}
-      {%- set _stage_sub_zh = {'live':'入场窗口已打开','setting_up':'尚未触发 — 做好准备','ran':'行情已经启动','basing':'尚无入场信号 — 观察，勿追高','blocked':'暂时观望'} -%}
+      {%- set _stage_en  = {'live':'Active setups','setting_up':'Setting up','ran':'Ran — don’t chase','basing':'Basing','blocked':'Blocked'} -%}
+      {%- set _stage_zh  = {'live':'活跃形态','setting_up':'形成中','ran':'已启动 — 勿追','basing':'筑底中','blocked':'受阻'} -%}
+      {%- set _stage_sub_en = {'live':'Check each card’s dated entry read','setting_up':'not there yet — get ready','ran':'the move already started','basing':'no entry signal yet — watch, don’t chase','blocked':'stand aside for now'} -%}
+      {%- set _stage_sub_zh = {'live':'请查看每张卡片的入场判读及日期','setting_up':'尚未触发 — 做好准备','ran':'行情已经启动','basing':'尚无入场信号 — 观察，勿追高','blocked':'暂时观望'} -%}
       {# Tier-2 receipts. One shared sentence carries the honest framing on every bucket:
          the ordering is a readiness rank, NOT a return forecast (§G0.7). #}
       {%- set _pri_en = ' Higher Priority means the setup is more ready today, not more likely to win.' -%}
@@ -16802,13 +16802,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _rw_zh = ('今晚无法检查' ~ (('全部 ' ~ _rw_n ~ ' 只股票') if _rw_n else '这些股票')
             ~ '的上行空间，因此这一项不加分。') if _rw_dead else '' -%}
       {%- set _stage_tip_en = {
-           'live':'The entry window is open now.' ~ _pri_en,
+           'live':'This group includes Buy and Near. Near requires confirmation; check each card’s dated entry read.' ~ _pri_en,
            'setting_up':'The setup is taking shape, but the signals do not agree yet. Get ready; there is nothing to do now.' ~ _pri_en,
            'ran':'The move has already started and the original entry has passed. Wait for a new setup.' ~ _pri_en,
            'basing':'These stocks may be building a low, but no entry has fired. Watch them; do not chase.' ~ _pri_en,
            'blocked':'The trend or entry is not healthy enough. Stand aside for now.' ~ _pri_en } -%}
       {%- set _stage_tip_zh = {
-           'live':'入场窗口现在已经打开。' ~ _pri_zh,
+           'live':'本组包含买入与临近；临近仍需确认。请查看每张卡片的入场判读及日期。' ~ _pri_zh,
            'setting_up':'形态正在形成，但信号尚未一致。做好准备，现在无需操作。' ~ _pri_zh,
            'ran':'行情已经启动，原有入场窗口已过。等待下一次机会。' ~ _pri_zh,
            'basing':'这些股票可能正在筑底，但尚无入场信号。观察，勿追高。' ~ _pri_zh,

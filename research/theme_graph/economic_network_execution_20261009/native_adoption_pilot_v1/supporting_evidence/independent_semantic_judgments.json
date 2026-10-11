@@ -1,0 +1,213 @@
+{
+  "admission": "NOT_ADMITTED",
+  "authority": {
+    "gate": false,
+    "prediction": false,
+    "rank": false,
+    "size": false,
+    "trade": false
+  },
+  "candidate_headers_or_canonical_ids_created": false,
+  "current_native_source_phase": "principal_context_separate_from_semantic_review",
+  "graph1_projection": null,
+  "independent_judgment_frozen_at": "2026-10-09T09:57:56+00:00",
+  "native_candidate_or_review_execution_by_this_lane": false,
+  "new_native_source_capture": false,
+  "peer_records_read_before_freeze": false,
+  "primary_sources_independently_opened": 6,
+  "rows": [
+    {
+      "case_id": "C01",
+      "direction": "Micron memory product into named NVIDIA accelerator configuration",
+      "lifecycle": "planned",
+      "native_eligibility": "SUITABLE_UNADMITTED_MANUAL_CANDIDATE_WITH_EXISTING_SOURCE_BINDING",
+      "native_kind": "product_integration",
+      "native_kind_semantic_fit": true,
+      "party_roles": {
+        "Micron": "announcing_memory_product_supplier",
+        "NVIDIA": "named_downstream_product_company"
+      },
+      "primary_url": "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx",
+      "quantity_basis": "product specification; shipment and revenue magnitudes undisclosed",
+      "required_qualifiers": [
+        "planned",
+        "configuration_specific",
+        "source_labels_not_canonical_entities",
+        "null_magnitude"
+      ],
+      "revision": "No later fulfillment or current state inferred; retain original future-tense observation",
+      "scope": "24GB 8H HBM3E / H200; source announcement only",
+      "source_meaning": "SUPPORTED_PLANNED_PRODUCT_INTEGRATION",
+      "source_representation_observed": "WEB_RENDERED_HTML_WITH_SEPARATE_RETAINED_INPUT_PROVENANCE",
+      "unsupported_inferences": [
+        "completed_customer_shipments",
+        "all_NVIDIA_products",
+        "exclusivity",
+        "supplier_revenue_share",
+        "current_procurement_allocation"
+      ]
+    },
+    {
+      "case_id": "C02",
+      "direction": "seller to source-defined buyer group; no duplicated exposure",
+      "lifecycle": "historical_announced_signed_framework; current_in_force_unverified",
+      "native_eligibility": "HOLD_RAW_PDF_FORMAT_AND_MULTIPARTY_CANONICAL_ADOPTION",
+      "native_kind": "framework_agreement",
+      "native_kind_semantic_fit": true,
+      "party_roles": {
+        "Tesla, Inc.": "one_named_buyer_party",
+        "宁德时代新能源科技股份有限公司": "seller",
+        "特斯拉（上海）有限公司": "one_named_buyer_party"
+      },
+      "primary_url": "https://static.cninfo.com.cn/finalpage/2021-06-28/1210355996.PDF",
+      "quantity_basis": "orders and actual settlement; fixed amounts, volumes and allocations not disclosed",
+      "required_qualifiers": [
+        "buyer_party_group",
+        "order_dependent",
+        "historical_contract_term",
+        "original_Chinese_legal_labels",
+        "derivative_text_requires_separate_provenance"
+      ],
+      "revision": "New framework references prior 2020 arrangement; no automatic legal supersession or all-commerce termination",
+      "scope": "lithium-ion traction batteries; signed 2021-06-25, disclosed 2021-06-28, supply term 2022-01-01 through 2025-12-31",
+      "source_meaning": "SUPPORTED_ORDER_DEPENDENT_SUPPLY_FRAMEWORK",
+      "source_representation_observed": "WEB_EXTRACTED_PDF_AND_SCREENSHOT_REFERENCES",
+      "unsupported_inferences": [
+        "guaranteed_minimum_purchases",
+        "two_independent_fully_allocated_buyers",
+        "current_2026_contract",
+        "all_commerce_ended",
+        "signed_date_equals_public_availability"
+      ]
+    },
+    {
+      "case_id": "C03",
+      "direction": "listed supplier for Apple; not Apple supplying roster members",
+      "lifecycle": "listed_in_specified_roster",
+      "native_eligibility": "HOLD_RAW_PDF_FORMAT",
+      "native_kind": "supplier_roster",
+      "native_kind_semantic_fit": true,
+      "party_roles": {
+        "3M": "listed_supplier_label",
+        "Advanced Semiconductor Engineering Technology Holding Co., Ltd.": "listed_supplier_label",
+        "Apple": "publishing_customer_and_roster_owner"
+      },
+      "primary_url": "https://www.supplychainreports.apple/files/doc_downloads/2024/04/Apple-Supplier-List.pdf",
+      "quantity_basis": "98 percent is aggregate roster coverage; no individual supplier weight",
+      "required_qualifiers": [
+        "fiscal_2023",
+        "aggregate_coverage_denominator",
+        "listed_not_exclusive_or_continuously_current",
+        "source_labels_not_canonical_facilities"
+      ],
+      "revision": "Later omission does not establish termination; URL directory does not prove publication time",
+      "scope": "fiscal 2023 direct materials/manufacturing/assembly spend; manufacturing locations as labelled",
+      "source_meaning": "SUPPORTED_FISCAL_SUPPLIER_ROSTER_OBSERVATION",
+      "source_representation_observed": "WEB_EXTRACTED_PDF_AND_SCREENSHOT_REFERENCES",
+      "unsupported_inferences": [
+        "98_percent_per_supplier",
+        "equal_spend_weights",
+        "supplier_revenue_dependence",
+        "supplier_to_supplier_trade",
+        "later_omission_equals_termination"
+      ]
+    },
+    {
+      "case_id": "C04",
+      "direction": "owner/investor to acquired interest; no supplier flow",
+      "lifecycle": "completed_acquisition_at_stated_closing",
+      "native_eligibility": "REFUSE_CURRENT_KIND_OWNERSHIP_NOT_REPRESENTED",
+      "native_kind": null,
+      "native_kind_semantic_fit": false,
+      "party_roles": {
+        "Brookfield partnership including institutional partners": "acquiring_group_per_source",
+        "Cameco": "acquiring_equity_interest",
+        "Westinghouse": "acquired_business_interest"
+      },
+      "primary_url": "https://www.cameco.com/media/news/cameco-and-brookfield-complete-acquisition-of-westinghouse-electric-company",
+      "quantity_basis": "49/51 percent equity interests; not revenue or single-security allocations",
+      "required_qualifiers": [
+        "equity_denominator",
+        "partnership_and_institutional_partner_perimeter",
+        "historical_closing",
+        "governance_rights_not_inferred_from_percentage_alone"
+      ],
+      "revision": "Current ownership and later accounting/cash-flow rights not reverified",
+      "scope": "acquisition closing 2023-11-07; limited-partnership perimeter and qualified governance",
+      "source_meaning": "SUPPORTED_HISTORICAL_OWNERSHIP_CHANGE",
+      "source_representation_observed": "WEB_RENDERED_HTML",
+      "unsupported_inferences": [
+        "supplier_relationship",
+        "49_percent_Cameco_revenue",
+        "51_percent_for_one_listed_Brookfield_security",
+        "administrative_role_substitution",
+        "current_ownership_without_new_source"
+      ]
+    },
+    {
+      "case_id": "C05",
+      "direction": "issuer reports segment metrics; no bilateral commercial predicate",
+      "lifecycle": "reported_financial_observation_not_relationship_lifecycle",
+      "native_eligibility": "REFUSE_CURRENT_KIND_SEGMENT_ACCOUNTING_NOT_REPRESENTED",
+      "native_kind": null,
+      "native_kind_semantic_fit": false,
+      "party_roles": {
+        "AMD": "reporting_issuer",
+        "Data Center / Client / Gaming / Embedded": "accounting_segments_not_counterparties"
+      },
+      "primary_url": "https://ir.amd.com/news-events/press-releases/detail/1236/amd-reports-fourth-quarter-and-full-year-2024-financial-results",
+      "quantity_basis": "reported rounded USD-billion segment revenue and YoY rates; detailed-table precision distinct; no CPU-only or theme allocation",
+      "required_qualifiers": [
+        "reporting_vintage",
+        "currency_and_unit",
+        "rounded_versus_table_precision",
+        "Data_Center_combines_Instinct_and_EPYC"
+      ],
+      "revision": "Preserve original segment definitions, fiscal period and disclosure vintage; later recast is separate",
+      "scope": "FY2024 original release on 2025-02-04; year ended 2024-12-28",
+      "source_meaning": "SUPPORTED_HETEROGENEOUS_SEGMENT_ACCOUNTING",
+      "source_representation_observed": "WEB_RENDERED_HTML_TABLES",
+      "unsupported_inferences": [
+        "growth_is_exposure_share",
+        "Data_Center_is_CPU_only",
+        "invented_counterparty",
+        "exact_micro_theme_allocation_from_rounded_values",
+        "prior_December_knowledge_from_FY_label"
+      ]
+    },
+    {
+      "case_id": "C06",
+      "direction": "reported investment flows / obligations; no named supplier allocation",
+      "lifecycle": "different_measure_states_not_one_relationship_lifecycle",
+      "native_eligibility": "REFUSE_CURRENT_KIND_ACCOUNTING_COMMITMENTS_NOT_REPRESENTED",
+      "native_kind": null,
+      "native_kind_semantic_fit": false,
+      "party_roles": {
+        "Microsoft": "reporting_issuer",
+        "recipient_counterparties": "unestablished_for_these_aggregate_measures"
+      },
+      "primary_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+      "quantity_basis": "USD millions: cash PPE -64551; finance lease ROU 20511; construction commitments 32149; purchase commitments 109953; basis and sign distinct",
+      "required_qualifiers": [
+        "cash_flow_sign",
+        "flow_versus_balance_date",
+        "noncash_lease_basis",
+        "commitments_not_vendor_revenue",
+        "purchase_commitments_exclude_construction_category_in_footnote"
+      ],
+      "revision": "Cash payment, lease recognition, order/delivery and later recast require their own events/vintages",
+      "scope": "FY2025 flows versus outstanding obligations at 2025-06-30",
+      "source_meaning": "SUPPORTED_DISTINCT_ACCOUNTING_FLOWS_AND_OBLIGATIONS",
+      "source_representation_observed": "WEB_RENDERED_HTML_STATEMENTS_AND_NOTES",
+      "unsupported_inferences": [
+        "all_amounts_are_AI",
+        "named_NVIDIA_recipient",
+        "guessed_GPU_share",
+        "sum_as_contemporaneous_supplier_revenue",
+        "blanket_assertion_that_no_correctly_defined_financial_subtotal_is_possible"
+      ]
+    }
+  ],
+  "schema": "research.independent_semantic_judgments/v1",
+  "scope": "six_purposively_selected_original_cases_not_statistical_cohort"
+}
