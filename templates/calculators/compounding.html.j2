@@ -208,6 +208,17 @@
     });
   }
 
+  function showCopyFallback(box, ta, text){
+    ta.value = text;
+    box.hidden = false;
+    ta.rows = 4;
+    while (ta.scrollHeight > ta.clientHeight && ta.rows < 8) ta.rows = ta.rows + 1;
+    try { ta.focus({preventScroll: true}); } catch (e) { ta.focus(); }
+    ta.select();
+    ta.scrollTop = 0;
+    if (box.scrollIntoView) box.scrollIntoView({block: "center"});
+  }
+
   function plainSentence(d){
     return {
       en: "After " + d.n + (Number(d.n) === 1 ? " year, " : " years, ") + d.contributed + " in contributions grow to " + d.fv + " — the extra " + d.growth + " is compounding doing the work.",
@@ -233,12 +244,12 @@
   // ── pure compute (CONTRACT §7 — ordinary annuity) ──────────────────────────
   function compute(inp){
     var P=inp.P, c=inp.c, f=inp.f, r=inp.r, n=inp.n;
-    if(!(P>=0)) return {ok:false, msg:{en:"Enter a starting principal (0 or more).", zh:"请输入初始本金（0 或以上）。"}};
-    if(!(c>=0)) return {ok:false, msg:{en:"Enter a contribution amount (0 or more).", zh:"请输入每期投入金额（0 或以上）。"}};
+    if(!(P>=0)) return {ok:false, field:"principal", msg:{en:"Enter a starting principal (0 or more).", zh:"请输入初始本金（0 或以上）。"}};
+    if(!(c>=0)) return {ok:false, field:"contrib", msg:{en:"Enter a contribution amount (0 or more).", zh:"请输入每期投入金额（0 或以上）。"}};
     if(!(f>0))  return {ok:false, msg:{en:"Select a contribution frequency.", zh:"请选择投入频率。"}};
-    if(!(r>=0)) return {ok:false, msg:{en:"Enter an annual return rate (0 or more).", zh:"请输入年化收益率（0 或以上）。"}};
-    if(!(n>=1)) return {ok:false, msg:{en:"Enter a holding period of at least 1 year.", zh:"请输入至少 1 年的持有期。"}};
-    if(n>50)    return {ok:false, msg:{en:"The table is capped at 50 years.", zh:"表格最多显示 50 年。"}};
+    if(!(r>=0)) return {ok:false, field:"rate", msg:{en:"Enter an annual return rate (0 or more).", zh:"请输入年化收益率（0 或以上）。"}};
+    if(!(n>=1)) return {ok:false, field:"years", msg:{en:"Enter a holding period of at least 1 year.", zh:"请输入至少 1 年的持有期。"}};
+    if(n>50)    return {ok:false, field:"years", msg:{en:"The table is capped at 50 years.", zh:"表格最多显示 50 年。"}};
     var i = r / 100 / f;
     var m = Math.round(n * f);
     var pow = Math.pow(1 + i, m);
@@ -431,6 +442,10 @@
         dash();
         setBi(outPlain, res.msg.en, res.msg.zh);
         outPlain.className = res.overflow ? "co-plain warn" : "co-plain";
+        if(res.field && isFinite(parsed[res.field])){
+          els[res.field].setAttribute("aria-invalid", "true");
+          els[res.field].setAttribute("aria-describedby", "out-plain");
+        }
         tableWrap.style.display = "none";
         clearCurve();
         return;
@@ -495,11 +510,8 @@
           copied.classList.add("show");
           setTimeout(function(){ copied.classList.remove("show"); }, 1600);
         } else {
-          if(copyFallbackText){
-            copyFallbackText.value = text;
-            if(copyFallback) copyFallback.hidden = false;
-            copyFallbackText.focus();
-            copyFallbackText.select();
+          if(copyFallbackText && copyFallback){
+            showCopyFallback(copyFallback, copyFallbackText, text);
           }
         }
       });

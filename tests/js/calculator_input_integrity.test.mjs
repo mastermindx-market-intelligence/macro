@@ -361,7 +361,7 @@ function srcOf(source, name) {
 }
 
 test('curLang, echoNum and tryCopy source text is byte-identical in both templates', () => {
-  for (const name of ['curLang', 'echoNum', 'tryCopy']) {
+  for (const name of ['curLang', 'echoNum', 'tryCopy', 'showCopyFallback']) {
     assert.equal(srcOf(COMP_SRC, name), srcOf(DCA_SRC, name), name);
   }
 });
@@ -459,6 +459,90 @@ function loadTryCopy(source, extras) {
   vm.runInContext(fnSrc, context);
   return context.tryCopy;
 }
+
+function makeFakeTextarea(contentLines) {
+  const ta = {
+    value: '',
+    rows: 4,
+    scrollTop: 0,
+    selectionStart: 0,
+    selectionEnd: 0,
+    focusCalls: [],
+    focus(opts) {
+      this.focusCalls.push(opts);
+    },
+    select() {
+      this.selectionStart = 0;
+      this.selectionEnd = this.value.length;
+      this.scrollTop = this.scrollHeight - this.clientHeight;
+    },
+  };
+  Object.defineProperty(ta, 'clientHeight', {
+    get() { return this.rows * 21; },
+  });
+  Object.defineProperty(ta, 'scrollHeight', {
+    get() { return contentLines * 21; },
+  });
+  return ta;
+}
+
+function makeFakeBox() {
+  return {
+    hidden: true,
+    scrollIntoViewArgs: [],
+    scrollIntoView(args) {
+      this.scrollIntoViewArgs.push(args);
+    },
+  };
+}
+
+test('showCopyFallback grows rows, resets scrollTop, focuses and selects', () => {
+  const { showCopyFallback } = loadTemplate(DCA_SRC, ['showCopyFallback']);
+  const sixText = 'L1\nL2\nL3\nL4\nL5\nL6';
+  const ta6 = makeFakeTextarea(6);
+  const box6 = makeFakeBox();
+  showCopyFallback(box6, ta6, sixText);
+  assert.equal(ta6.rows, 6);
+  assert.equal(ta6.scrollTop, 0);
+  assert.equal(ta6.focusCalls.length > 0, true);
+  assert.equal(ta6.selectionStart, 0);
+  assert.equal(ta6.selectionEnd, sixText.length);
+  assert.equal(box6.hidden, false);
+  assert.equal(box6.scrollIntoViewArgs.length, 1);
+  assert.equal(box6.scrollIntoViewArgs[0].block, 'center');
+
+  const twelveText = Array.from({ length: 12 }, (_, i) => `L${i + 1}`).join('\n');
+  const ta12 = makeFakeTextarea(12);
+  const box12 = makeFakeBox();
+  showCopyFallback(box12, ta12, twelveText);
+  assert.equal(ta12.rows, 8);
+  assert.equal(ta12.scrollTop, 0);
+});
+
+test('compounding compute domain errors name the responsible field', () => {
+  const { compute } = loadTemplate(COMP_SRC, ['compute']);
+  assert.equal(compute({ P: -5, c: 0, f: 12, r: 7, n: 10 }).field, 'principal');
+  assert.equal(compute({ P: 1000, c: -1, f: 12, r: 7, n: 10 }).field, 'contrib');
+  assert.equal(compute({ P: 1000, c: 0, f: 12, r: -1, n: 10 }).field, 'rate');
+  assert.equal(compute({ P: 1000, c: 0, f: 12, r: 7, n: 0 }).field, 'years');
+  assert.equal(compute({ P: 1000, c: 0, f: 12, r: 7, n: 60 }).field, 'years');
+  assert.equal(compute({ P: 1000, c: 0, f: 0, r: 7, n: 10 }).field, undefined);
+  const overflow = compute({ P: 1e300, c: 0, f: 12, r: 7, n: 50 });
+  assert.equal(overflow.ok, false);
+  assert.equal(overflow.field, undefined);
+});
+
+test('dca compute domain errors name the responsible field', () => {
+  const { compute } = loadTemplate(DCA_SRC, ['compute']);
+  assert.equal(compute({ c: 0, f: 12, yrs: 5, r: 8 }).field, 'contrib');
+  assert.equal(compute({ c: 500, f: 12, yrs: 0, r: 8 }).field, 'years');
+  assert.equal(compute({ c: 500, f: 12, yrs: 5, r: NaN }).field, 'rate');
+  assert.equal(compute({ c: 500, f: 12, yrs: 0.01, r: 8 }).field, 'years');
+  assert.equal(compute({ c: 500, f: 0, yrs: 5, r: 8 }).field, undefined);
+  const overflow = compute({ c: 1e300, f: 12, yrs: 5, r: 8 });
+  assert.equal(overflow.ok, false);
+  assert.equal(overflow.field, undefined);
+});
 
 test('tryCopy reports success only on an acknowledged write', async () => {
   const src = DCA_SRC;

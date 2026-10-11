@@ -165,6 +165,17 @@
     });
   }
 
+  function showCopyFallback(box, ta, text){
+    ta.value = text;
+    box.hidden = false;
+    ta.rows = 4;
+    while (ta.scrollHeight > ta.clientHeight && ta.rows < 8) ta.rows = ta.rows + 1;
+    try { ta.focus({preventScroll: true}); } catch (e) { ta.focus(); }
+    ta.select();
+    ta.scrollTop = 0;
+    if (box.scrollIntoView) box.scrollIntoView({block: "center"});
+  }
+
   function plainSentence(d){
     return {
       en: "Investing " + d.c + " across " + d.N + " buys projects to " + d.fv + " — " + d.invested + " invested plus " + d.gain + " of growth at this hypothetical rate.",
@@ -192,12 +203,12 @@
   // an outputs object, or {ok:false, msg} for invalid input. No NaN/Infinity.
   function compute(inp){
     var c=inp.c, f=inp.f, yrs=inp.yrs, r=inp.r;
-    if(!(c>0)) return {ok:false, msg:{en:"Enter a contribution above zero.", zh:"请输入大于零的每期投入。"}};
+    if(!(c>0)) return {ok:false, field:"contrib", msg:{en:"Enter a contribution above zero.", zh:"请输入大于零的每期投入。"}};
     if(!(f>0)) return {ok:false, msg:{en:"Pick how often you invest.", zh:"请选择投入频率。"}};
-    if(!(yrs>0)) return {ok:false, msg:{en:"Enter how many years you'll invest.", zh:"请输入投入年数。"}};
-    if(!isFinite(r)) return {ok:false, msg:{en:"Enter an expected annual return.", zh:"请输入预期年化回报。"}};
+    if(!(yrs>0)) return {ok:false, field:"years", msg:{en:"Enter how many years you'll invest.", zh:"请输入投入年数。"}};
+    if(!isFinite(r)) return {ok:false, field:"rate", msg:{en:"Enter an expected annual return.", zh:"请输入预期年化回报。"}};
     var N = Math.round(yrs * f);
-    if(!(N>0)) return {ok:false, msg:{en:"That horizon is too short to make a single contribution.", zh:"这个期限太短，连一次投入都无法完成。"}};
+    if(!(N>0)) return {ok:false, field:"years", msg:{en:"That horizon is too short to make a single contribution.", zh:"这个期限太短，连一次投入都无法完成。"}};
     var i = r / 100 / f;
     var fv = (i === 0) ? (c * N) : (c * (Math.pow(1 + i, N) - 1) / i);
     var invested = c * N;
@@ -293,6 +304,10 @@
         dash();
         setBi(outPlain, res.msg.en, res.msg.zh);
         outPlain.className = res.overflow ? "co-plain warn" : "co-plain";
+        if(res.field && isFinite(parsed[res.field])){
+          els[res.field].setAttribute("aria-invalid", "true");
+          els[res.field].setAttribute("aria-describedby", "out-plain");
+        }
         return;
       }
       outMain.textContent = money0(res.fv);
@@ -347,11 +362,8 @@
           copied.classList.add("show");
           setTimeout(function(){ copied.classList.remove("show"); }, 1600);
         } else {
-          if(copyFallbackText){
-            copyFallbackText.value = text;
-            if(copyFallback) copyFallback.hidden = false;
-            copyFallbackText.focus();
-            copyFallbackText.select();
+          if(copyFallbackText && copyFallback){
+            showCopyFallback(copyFallback, copyFallbackText, text);
           }
         }
       });
