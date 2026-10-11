@@ -15,7 +15,9 @@ silently promoted or reimplemented here. Q10/Q11 likewise remain research-only.
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from datetime import date, datetime, time
 from decimal import Decimal, InvalidOperation, localcontext
+from zoneinfo import ZoneInfo
 from hashlib import sha256
 import json
 import re
@@ -81,6 +83,23 @@ def _sha(x, label):
     return x
 
 
+def _rth_open_ns(session):
+    """Expected US stock RTH opening UTC nanoseconds, DST aware.
+
+    An actual open/early close/holiday still needs the incumbent calendar
+    owner's independently verified original session/vintage receipt.
+    """
+    if not isinstance(session, str) or _DAY.fullmatch(session) is None:
+        return None
+    try:
+        day = date.fromisoformat(session[:10])
+    except ValueError:
+        return None
+    opening = datetime.combine(
+        day, time(9, 30), tzinfo=ZoneInfo("America/New_York"))
+    return int(opening.timestamp()) * 1_000_000_000
+
+
 def _amount(x, label, *, zero=False, max_width=MAX_DECIMAL_WIDTH):
     if type(max_width) is not int or not 1 <= max_width <= MAX_DERIVED_DECIMAL_WIDTH:
         raise HistoricalRulerRefusal(f"{label} invalid decimal width budget")
@@ -120,7 +139,6 @@ def measure_source_snapshot(snapshot):
     interpret upstream correction chains. Source generations remain immutable;
     a revised/cancelled generation requires an externally held predecessor ref.
     """
-    from datetime import date
     if not isinstance(snapshot, dict) or set(snapshot) != _SNAPSHOT_KEYS:
         raise HistoricalRulerRefusal("snapshot must use strict frozen owner contract")
     s = snapshot
@@ -137,6 +155,10 @@ def measure_source_snapshot(snapshot):
     except ValueError as exc:
         raise HistoricalRulerRefusal("invalid session calendar date") from exc
     start = _integer(s["start_ns"], "start_ns", minimum=1)
+    # Session labels cannot be detached from the NY market-opening clock.
+    # The source owner separately verifies the actual trading calendar.
+    if start != _rth_open_ns(session):
+        raise HistoricalRulerRefusal("RTH session date and source clock disagree")
     end = _integer(s["end_ns"], "end_ns", minimum=1)
     cutoff = _integer(s["asof_ns"], "asof_ns", minimum=1)
     through = _integer(s["watermark_complete_ns"], "watermark_complete_ns", minimum=1)
@@ -383,6 +405,7 @@ def _safe_minute_points(record):
     if (not isinstance(points, list) or len(points) > MAX_MINUTES
             or any(type(x) is not int for x in (start, end, cutoff))
             or not 0 < start < end or cutoff < start
+            or end-start > MAX_MINUTES*MINUTE_NS
             or start % MINUTE_NS or end % MINUTE_NS):
         return False
     prior = -1
@@ -502,6 +525,7 @@ def _safe_measurement(record):
             and record.get("schema") == SCHEMA
             and record.get("authority") == "RESEARCH_MEASUREMENT_ONLY"
             and record.get("source_scope") == "RTH"
+            and record.get("start_ns") == _rth_open_ns(record.get("session"))
             and record.get("public_delivery_allowed") is False
             and record.get("ranking_trading_alert_authority") is False
             and record.get("source_receipts_authenticated") is False

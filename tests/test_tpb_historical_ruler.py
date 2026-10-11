@@ -1,5 +1,7 @@
 """Hermetic TP-B historical-calibration contract tests; no licensed data or I/O."""
 import copy
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -8,8 +10,17 @@ from engine.tpb_historical_ruler import (
     measure_source_snapshot, calibrate_history,
 )
 
-BASE = 1_791_417_600_000_000_000
-BASE -= BASE % MINUTE_NS
+NY = ZoneInfo("America/New_York")
+
+
+def rth_start_ns(day):
+    d = datetime.fromisoformat(day)
+    return int(d.replace(hour=9, minute=30, second=0, microsecond=0,
+                         tzinfo=NY).timestamp()) * 1_000_000_000
+
+
+BASE = rth_start_ns("2026-10-08")
+assert BASE % MINUTE_NS == 0
 END = BASE + 210 * MINUTE_NS
 SHA_A = "a" * 64
 SHA_B = "b" * 64
@@ -61,6 +72,23 @@ def packet(day="2026-10-08", *, rows=None, points=None, **changes):
             if points is None else points,
     )
     d.update(changes)
+    if day != "2026-10-08":
+        # Every *original* source time must belong to its own historical
+        # session. Tests previously relabeled October clocks as September,
+        # which could make an invalid source snapshot appear comparable.
+        shift = rth_start_ns(day) - BASE
+        for key in ("start_ns", "end_ns", "asof_ns",
+                    "watermark_complete_ns", "watermark_available_ns"):
+            d[key] += shift
+        d["prints"] = copy.deepcopy(d["prints"])
+        d["minutes"] = copy.deepcopy(d["minutes"])
+        for row in d["prints"]:
+            for key in ("sip_ns", "original_available_ns",
+                        "participant_ns", "trf_report_ns"):
+                if row[key] is not None:
+                    row[key] += shift
+        for minute in d["minutes"]:
+            minute["source_available_ns"] += shift
     return d
 
 
@@ -239,10 +267,71 @@ def test_minute_points_are_cumulative_and_require_source_receipt():
         measured(points=[dict(point(30),source_receipt_sha256="BAD")])
 
 
+def test_source_session_date_and_real_rth_clock_must_agree():
+    # Never relabel captured October timestamps as a prior September session.
+    # RTH begins at 09:30 New York time, with UTC DST adjustment. An
+    # external calendar owner still decides actual trading/early-close days.
+    wrong = packet()
+    wrong["session"] = "2026-09-28:RTH"
+    with pytest.raises(HistoricalRulerRefusal, match="RTH session.*clock"):
+        measure_source_snapshot(wrong)
+    with pytest.raises(HistoricalRulerRefusal, match="RTH session.*clock"):
+        measured(start_ns=BASE + MINUTE_NS)
+    winter = measured("2026-11-09")
+    assert winter["start_ns"] == rth_start_ns("2026-11-09")
+    assert winter["start_ns"] != BASE
+    assert rth_start_ns("2026-11-09") - rth_start_ns("2026-10-08") > 0
+    # DST switches UTC RTH open from 14:30 in winter to 13:30 in summer;
+    # a naive fixed UTC offset cannot be used to invent source sessions.
+    march_before = datetime.fromtimestamp(
+        rth_start_ns("2026-03-06")//1_000_000_000, tz=timezone.utc)
+    march_after = datetime.fromtimestamp(
+        rth_start_ns("2026-03-09")//1_000_000_000, tz=timezone.utc)
+    assert (march_before.hour, march_before.minute) == (14, 30)
+    assert (march_after.hour, march_after.minute) == (13, 30)
+    wrong = packet("2026-11-09")
+    wrong["start_ns"] -= 3_600_000_000_000
+    with pytest.raises(HistoricalRulerRefusal, match="RTH session.*clock"):
+        measure_source_snapshot(wrong)
+
+
+def test_derived_history_cannot_relabel_original_market_session_date():
+    target = measured()
+    wrong_target = copy.deepcopy(target)
+    wrong_target["session"] = "2026-10-07:RTH"
+    with pytest.raises(HistoricalRulerRefusal, match="target source/authority"):
+        calibrate_history(target=wrong_target, previous=history(4),
+                          minute_index=30, evaluation_ns=END+90_000_000_000,
+                          min_history=3)
+    prior = history(4)
+    prior[0] = copy.deepcopy(prior[0])
+    prior[0]["session"] = "2026-08-30:RTH"
+    result = calibrate_history(target=target, previous=prior,
+                               minute_index=30, evaluation_ns=END+90_000_000_000,
+                               min_history=3)
+    assert result["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 1
+
+
+def test_derived_session_outside_maximum_rth_span_is_rejected():
+    target = measured()
+    forged = copy.deepcopy(target)
+    forged["end_ns"] = forged["start_ns"] + 500*MINUTE_NS
+    forged["asof_ns"] = forged["end_ns"] + 1_000_000_000
+    with pytest.raises(HistoricalRulerRefusal, match="target source/authority"):
+        calibrate_history(target=forged, previous=history(4), minute_index=30,
+                          evaluation_ns=END+600*MINUTE_NS, min_history=3)
+    prior = history(4)
+    prior[0] = copy.deepcopy(prior[0])
+    prior[0]["end_ns"] = prior[0]["start_ns"] + 500*MINUTE_NS
+    out = calibrate_history(target=target, previous=prior, minute_index=30,
+                            evaluation_ns=END+90_000_000_000, min_history=3)
+    assert out["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 1
+
+
 def test_wrong_time_or_unqualified_full_rth_refused():
     with pytest.raises(HistoricalRulerRefusal,match="full RTH"):
         measured(watermark_complete_ns=END-1)
-    with pytest.raises(HistoricalRulerRefusal,match="calendar"):
+    with pytest.raises(HistoricalRulerRefusal,match="RTH session.*clock"):
         measured(start_ns=BASE+1)
     with pytest.raises(HistoricalRulerRefusal,match="future minute"):
         measured(points=[point(30,available=END+120_000_000_000)])
