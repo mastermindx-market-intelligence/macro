@@ -154,3 +154,64 @@ assert.deepEqual(stops(), ['close', 'why no estimate', 'forward risk and drivers
     keydown = (ROOT / "templates" / "china.html.j2").read_text()
     assert ".filter(_riskTabStop);" in keydown
     assert "getClientRects().length>0;});" not in keydown
+
+
+def test_china_tab_handler_wraps_and_pulls_stray_focus_back_into_the_dialog():
+    """Execute the shipped `_riskTrapTab`, selector and all, not just its stop filter."""
+    from tests.test_us_pullback_modal_integration import _between, _node
+
+    src = _between("templates/china.html.j2", "function _riskTabStop(el){", "function cnxOpenDlg(")
+    src = src.replace("var _RISK_STOPS=", "var _RISK_STOPS=globalThis.RISK_STOPS=", 1)
+    _node(r"""
+let riskOpen = true;
+doc.querySelector = sel => {
+  if (sel === '.hm-ov') return null;
+  assert.equal(sel, '#cnx-dlg-risk.open:not(.cnx-closing)');
+  return riskOpen ? dlg : null;
+};
+const trap = new Function('document', require('node:fs').readFileSync(0, 'utf8') + '; return _riskTrapTab;')(doc);
+assert.match(globalThis.RISK_STOPS, /^button:not\(:disabled\),a\[href\],input:not\(:disabled\)/);
+const outside = el('button', {name: 'after the dialog'});
+function tab(from, shift = false) {
+  doc.activeElement = from;
+  const e = {key: 'Tab', shiftKey: shift, prevented: false, preventDefault() { this.prevented = true; }};
+  trap(e);
+  return e;
+}
+// Closed disclosure: its summary is the last stop and Tab wraps both ways.
+let e = tab(legacySummary);
+assert.equal(e.prevented, true); assert.equal(doc.activeElement, close);
+e = tab(close, true);
+assert.equal(e.prevented, true); assert.equal(doc.activeElement, legacySummary);
+// A middle stop is left to the browser.
+e = tab(whySummary);
+assert.equal(e.prevented, false); assert.equal(doc.activeElement, whySummary);
+// Focus that escaped the dialog is pulled back to the near end.
+e = tab(outside);
+assert.equal(e.prevented, true); assert.equal(doc.activeElement, close);
+e = tab(outside, true);
+assert.equal(e.prevented, true); assert.equal(doc.activeElement, legacySummary);
+// Opened: the nested method summary becomes last.
+legacy.open = true;
+e = tab(methodSummary);
+assert.equal(e.prevented, true); assert.equal(doc.activeElement, close);
+// No open dialog: Tab is never intercepted.
+riskOpen = false;
+e = tab(outside);
+assert.equal(e.prevented, false); assert.equal(doc.activeElement, outside);
+""", src)
+
+
+def test_china_dialog_rechecks_expiry_and_cancels_a_pending_close_on_open():
+    page = (ROOT / "templates" / "china.html.j2").read_text()
+    opener = _between_text(page, "function cnxOpenDlg(id){", "function cnxCloseDlg(){")
+    assert "if(id==='cnx-dlg-risk'&&window.mmPbExpire)window.mmPbExpire();" in opener
+    assert "if(d._cnxCancelClose)d._cnxCancelClose();" in opener
+    closer = _between_text(page, "function cnxCloseDlg(){", "function cnxTogglePop(")
+    assert "if(el._cnxCancelClose)el._cnxCancelClose();" in closer
+    assert "el._cnxCancelClose=stop;" in closer and "clearTimeout(timer)" in closer
+
+
+def _between_text(page: str, start: str, end: str) -> str:
+    a = page.index(start)
+    return page[a:page.index(end, a)]

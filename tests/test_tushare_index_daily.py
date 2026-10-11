@@ -81,13 +81,41 @@ def test_no_new_session_leaves_the_store_untouched(store, monkeypatch):
     assert store.read_bytes() == before
 
 
-def test_a_disagreeing_vendor_close_keeps_the_last_good_store(store, monkeypatch):
+def test_a_disagreeing_vendor_close_keeps_the_last_good_store(store, monkeypatch, capsys):
     _serve(monkeypatch, _vendor([("20261009", 3300.0)]))
     tid.refresh(today=date(2026, 10, 9))
     before = store.read_bytes()
+    capsys.readouterr()
     _serve(monkeypatch, _vendor([("20261009", 3333.0), ("20261012", 3310.0)]))
     assert tid.refresh(today=date(2026, 10, 12)) == 0
     assert store.read_bytes() == before
+    # The refusal names the session and both closes at line start, so a frozen
+    # store is never silent, and it says how to accept the revision.
+    out = capsys.readouterr().out
+    line = next(l for l in out.splitlines() if l.startswith("::warning"))
+    assert "session 2026-10-09" in line
+    assert "holds 3300.0" in line and "prints 3333.0" in line
+    assert "delete data/tushare/index_daily.parquet" in line and "2023-01-01" in line
+
+
+def test_a_deleted_store_rebuilds_from_the_anchor_with_the_revised_close(store, monkeypatch):
+    _serve(monkeypatch, _vendor([("20261009", 3300.0)]))
+    tid.refresh(today=date(2026, 10, 9))
+    store.unlink()
+    seen = _serve(monkeypatch, _vendor([("20261009", 3333.0), ("20261012", 3310.0)]))
+    assert tid.refresh(today=date(2026, 10, 12)) == 2
+    assert seen[-1][2]["start_date"] == "20230101"
+    held = pd.read_parquet(store)
+    assert dict(zip(held["trade_date"], held["close"])) == {"2026-10-09": 3333.0,
+                                                           "2026-10-12": 3310.0}
+
+
+def test_first_disagreement_is_none_when_overlap_agrees():
+    held = pd.DataFrame({"ticker": ["000001.SS"], "trade_date": ["2026-10-09"],
+                         "close": [3300.0], "first_seen": ["x"]})
+    fetched = tid.normalize(_vendor([("20261009", 3300.0), ("20261012", 3310.0)]))
+    assert tid.first_disagreement(held, fetched) is None
+    assert tid.first_disagreement(None, fetched) is None
 
 
 @pytest.mark.parametrize("frame", [
@@ -109,3 +137,22 @@ def test_inadmissible_responses_write_nothing(store, monkeypatch, frame):
 def test_identical_duplicate_rows_collapse(store, monkeypatch):
     _serve(monkeypatch, _vendor([("20261009", 3300.0), ("20261009", 3300.0)]))
     assert tid.refresh(today=date(2026, 10, 11)) == 1
+
+
+def test_a_cold_index_store_is_named_by_the_advisory_tripwire(store, monkeypatch, capsys):
+    """The popup goes unavailable when the store freezes; the asia-close tripwire
+    must say which leg froze rather than leave the section silently missing."""
+    from datetime import datetime, timezone
+
+    import scripts.check_tushare_freshness as fresh
+
+    assert (store.relative_to(store.parents[1]).as_posix(), "tushare_index_daily") in fresh.STORES
+    _serve(monkeypatch, _vendor([("20260901", 3300.0)]))
+    assert tid.refresh(today=date(2026, 9, 1)) == 1
+    monkeypatch.setattr(fresh.config, "data_dir", lambda: store.parents[1])
+    assert fresh._latest_date("tushare/index_daily.parquet") == "2026-09-01"
+    assert fresh.run(now=datetime(2026, 10, 12, 12, tzinfo=timezone.utc)) == 0
+    warning = capsys.readouterr().out
+    assert warning.startswith("::warning") or "\n::warning" in warning
+    assert "tushare/index_daily.parquet at 2026-09-01" in warning
+    assert "(filled by tushare_index_daily)" in warning

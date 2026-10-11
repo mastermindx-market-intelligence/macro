@@ -2,6 +2,8 @@
 from datetime import datetime, timezone
 from inspect import getsource
 
+import pytest
+
 from lib import pullback_observation, us_pullback_observation
 from scripts import build_site
 
@@ -42,3 +44,22 @@ def test_page_builder_binds_the_one_view_to_both_existing_page_render_calls():
     assert 'vm["us_pullback_view"] = _us_pullback_risk_popup(' in source
     assert source.count('vm["us_pullback_view"] = _us_pullback_risk_popup(') == 1
     assert source.index('vm["us_pullback_view"] = _us_pullback_risk_popup(') < source.index('env.get_template("dashboard.html.j2").render(**vm, mode="macro")')
+
+
+@pytest.mark.parametrize("error", [RuntimeError, ImportError, AttributeError, AssertionError])
+def test_any_adapter_error_leaves_the_existing_popup_not_a_broken_build(monkeypatch, caplog, error):
+    """An additive section must never take the page down: not only source errors,
+    but an adapter bug or a missing symbol too. Only the error's type is logged."""
+    def boom(**_):
+        raise error("adapter-detail-not-logged")
+
+    monkeypatch.setattr(us_pullback_observation, "snapshot", boom)
+    with caplog.at_level("WARNING"):
+        assert build_site._us_pullback_risk_popup(now=NOW) is None
+    assert "US pullback presentation unavailable: " + error.__name__ in caplog.text
+    assert "adapter-detail-not-logged" not in caplog.text
+
+
+def test_an_unimportable_episode_owner_leaves_the_existing_popup(monkeypatch):
+    monkeypatch.delattr(pullback_observation, "observe")
+    assert build_site._us_pullback_risk_popup(now=NOW) is None

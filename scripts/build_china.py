@@ -1022,15 +1022,16 @@ def _cn_pullback_risk_popup(*, now: datetime) -> dict | None:
     """Read-only China Risk Radar observation for the shared Risk Radar dialog.
 
     Same shape as the US hook in build_site: the licensed benchmark-index reader
-    and the single episode owner are bound here; any failure leaves the view
-    unavailable without breaking the page.
+    and the single episode owner are bound here. Any failure, including an
+    import or programming error in the adapters, leaves the view unavailable
+    and the existing popup in place without breaking the page.
     """
-    from lib import cn_pullback_observation as pb
-    from lib.pullback_observation import observe
     try:
+        from lib import cn_pullback_observation as pb
+        from lib.pullback_observation import observe
         return pb.present(pb.snapshot(now=now, read=pb.licensed_index_closes,
                                       observer=observe))
-    except (OSError, ValueError, TypeError, KeyError, ArithmeticError) as exc:
+    except Exception as exc:  # noqa: BLE001 — additive popup section, never fatal
         log.warning("CN pullback presentation unavailable: %s", type(exc).__name__)
         return None
 

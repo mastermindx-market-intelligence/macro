@@ -5878,15 +5878,16 @@ def _us_pullback_risk_popup(*, now: datetime) -> dict | None:
     """Read-only US Risk Radar observation for the existing shared popup.
 
     Keep the original observer, source store, NYSE calendar and page renderer.
-    The licensed SPY reader and the single episode owner are bound here; any
-    failure leaves the view unavailable without breaking builds.
+    The licensed SPY reader and the single episode owner are bound here. Any
+    failure, including an import or programming error in the adapters, leaves
+    the view unavailable without breaking builds.
     """
-    from lib import us_pullback_observation as pb
-    from lib.pullback_observation import observe
     try:
+        from lib import us_pullback_observation as pb
+        from lib.pullback_observation import observe
         return pb.present(pb.snapshot(now=now, read=pb.licensed_spy_closes,
                                       observer=observe))
-    except (OSError, ValueError, TypeError, KeyError, ArithmeticError) as exc:
+    except Exception as exc:  # noqa: BLE001 — additive popup section, never fatal
         log.warning("US pullback presentation unavailable: %s", type(exc).__name__)
         return None
 

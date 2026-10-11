@@ -5,11 +5,15 @@
 (function () {
   'use strict';
   var timer;
+  /* Only a stamp with an explicit offset is a deadline; a bare local time would
+     move with the viewer's zone, so it counts as expired. */
+  var ZONED = /(?:Z|[+-]\d\d:\d\d)$/;
   function expire() {
     window.clearTimeout(timer);
     var now = Date.now(), next = Infinity;
     document.querySelectorAll('.rrp.pbx[data-pb-valid-until]').forEach(function (root) {
-      var end = Date.parse(root.getAttribute('data-pb-valid-until') || '');
+      var raw = root.getAttribute('data-pb-valid-until') || '';
+      var end = ZONED.test(raw) ? Date.parse(raw) : NaN;
       if (!Number.isFinite(end) || now >= end) {
         root.classList.add('pb-expired');
         root.setAttribute('data-pb-phase', 'unavailable');
@@ -28,8 +32,13 @@
   }
   function start() {
     expire();
+    /* A sleeping laptop pauses the timer without hiding the tab, so check again
+       whenever the page can be seen; the dialogs also call this as they open. */
     document.addEventListener('visibilitychange', function () { if (!document.hidden) expire(); });
+    window.addEventListener('pageshow', expire);
+    window.addEventListener('focus', expire);
   }
+  window.mmPbExpire = expire;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
   else start();
 })();

@@ -252,3 +252,75 @@ def test_lead_gate_uses_the_fragments_own_qualification(change, lead):
     env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=False)
     got = env.from_string('{% import "_risk_radar_pullback_depth.html.j2" as p %}{{ p.lead("us", v) }}').render(v=v)
     assert got.strip() == lead
+
+
+EXPIRY_JS = r"""
+const assert = require('node:assert/strict');
+let now = Date.parse('2026-10-11T00:00:00Z');
+Date.now = () => now;
+const timers = [], listeners = {document: {}, window: {}};
+function section(stamp) {
+  const attrs = {'data-pb-valid-until': stamp, 'data-pb-phase': 'underway'}, classes = new Set(['rrp', 'pbx']);
+  const en = {textContent: 'Pullback underway'}, zh = {textContent: '回调进行中'};
+  const heading = {querySelector: s => ({'.l-en': en, '.l-zh': zh})[s] || null};
+  return {en, zh, attrs, classes,
+          getAttribute: k => (k in attrs ? attrs[k] : null), setAttribute: (k, v) => { attrs[k] = String(v); },
+          classList: {add: c => classes.add(c)},
+          querySelector: s => (s === '.pbx-heading h2' ? heading : null)};
+}
+const sections = {
+  zoned: section('2026-10-12T09:00:00+00:00'), utc: section('2026-10-12T09:00:00Z'),
+  naive: section('2026-10-12T09:00:00'), past: section('2026-10-10T09:00:00+00:00'), empty: section(''),
+};
+const document = {
+  readyState: 'complete', hidden: false,
+  querySelectorAll(sel) { assert.equal(sel, '.rrp.pbx[data-pb-valid-until]'); return Object.values(sections); },
+  addEventListener(type, fn) { listeners.document[type] = fn; },
+};
+const window = {
+  setTimeout(fn, ms) { timers.push({fn, ms}); return timers.length; }, clearTimeout() {},
+  addEventListener(type, fn) { listeners.window[type] = fn; },
+};
+new Function('window', 'document', require('node:fs').readFileSync(0, 'utf8'))(window, document);
+const expired = k => sections[k].classes.has('pb-expired');
+// Only a stamp with an explicit offset is a deadline.
+assert.equal(expired('zoned'), false); assert.equal(expired('utc'), false);
+for (const k of ['naive', 'past', 'empty']) {
+  assert.equal(expired(k), true, k);
+  assert.equal(sections[k].attrs['data-pb-phase'], 'unavailable');
+  assert.equal(sections[k].en.textContent, 'Price update needed');
+  assert.equal(sections[k].zh.textContent, '价格数据待更新');
+}
+assert.equal(sections.zoned.en.textContent, 'Pullback underway');
+// One timer, aimed just past the nearest live deadline.
+assert.equal(timers.length, 1);
+assert.equal(timers[0].ms, Date.parse('2026-10-12T09:00:00Z') - now + 10);
+// A slept timer never fires: every wake path re-checks against the clock.
+assert.equal(typeof window.mmPbExpire, 'function');
+for (const [owner, type] of [['document', 'visibilitychange'], ['window', 'pageshow'], ['window', 'focus']]) {
+  assert.equal(typeof listeners[owner][type], 'function', type);
+}
+now = Date.parse('2026-10-12T09:00:01Z');
+listeners.window.focus();
+assert.equal(expired('zoned'), true); assert.equal(expired('utc'), true);
+assert.equal(sections.zoned.attrs['data-pb-phase'], 'unavailable');
+assert.equal(sections.zoned.en.textContent, 'Price update needed');
+assert.equal(timers.length, 1, 'nothing left to schedule once every section has expired');
+"""
+
+
+def test_expiry_script_honours_only_zoned_deadlines_and_rechecks_on_wake():
+    """Execute the shipped expiry owner against a fake clock, document and timers."""
+    from tests.test_us_pullback_modal_integration import _node_raw
+
+    _node_raw(EXPIRY_JS, (ROOT / "templates/_risk_radar_pullback_depth.js.j2").read_text())
+
+
+def test_both_risk_dialogs_recheck_expiry_as_they_open():
+    us = (ROOT / "templates/dashboard.html.j2").read_text()
+    opener = us[us.index("window.mx5OpenDlg = function(id){"):]
+    opener = opener[:opener.index("\n    };")]
+    assert "if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();" in opener
+    cn = (ROOT / "templates/china.html.j2").read_text()
+    cn_open = cn[cn.index("function cnxOpenDlg(id){"):cn.index("function cnxCloseDlg(){")]
+    assert "if(id==='cnx-dlg-risk'&&window.mmPbExpire)window.mmPbExpire();" in cn_open

@@ -4651,12 +4651,30 @@ window.__CHART_SWAP__ = {
     }
     return true;
   }
+  /* Tab wraps inside the open Risk Radar dialog and pulls stray focus back in.
+     The same stop rule as the Macro page's _trapTab. */
+  var _RISK_STOPS='button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])';
+  function _riskTrapTab(e){
+    var act=document.activeElement;
+    if(document.querySelector('.hm-ov')||(act&&act.closest&&act.closest('.lens-pop.open')))return;
+    var risk=document.querySelector('#cnx-dlg-risk.open:not(.cnx-closing)');
+    if(!risk)return;
+    var focusable=Array.from(risk.querySelectorAll(_RISK_STOPS)).filter(_riskTabStop);
+    if(!focusable.length)return;
+    var first=focusable[0],last=focusable[focusable.length-1];
+    if(e.shiftKey&&(act===first||!risk.contains(act))){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&(act===last||!risk.contains(act))){e.preventDefault();first.focus();}
+  }
   function cnxOpenDlg(id){
     var el=document.getElementById(id);
     if(!el)return;
-    if(id==='cnx-dlg-risk'&&!el.classList.contains('open'))_riskReturnFocus=document.activeElement;
+    /* A dialog still closing counts as closed: remember the new opener, and cancel
+       its pending close so it cannot shut this open or move focus away. */
+    if(id==='cnx-dlg-risk'&&(!el.classList.contains('open')||el.classList.contains('cnx-closing'))&&!el.contains(document.activeElement))_riskReturnFocus=document.activeElement;
+    document.querySelectorAll('.cnx-dlg').forEach(function(d){if(d._cnxCancelClose)d._cnxCancelClose();});
     document.querySelectorAll('.cnx-dlg.open').forEach(function(d){d.classList.remove('open','cnx-in','cnx-closing');});
     el.classList.add('open');
+    if(id==='cnx-dlg-risk'&&window.mmPbExpire)window.mmPbExpire();
     document.body.style.overflow='hidden';
     history.replaceState(null,'',location.pathname+'#'+id);
     /* Add .cnx-in on the next frame (after .open paints the start state) so the
@@ -4687,11 +4705,14 @@ window.__CHART_SWAP__ = {
     document.querySelectorAll('.cnx-dlg.open').forEach(function(el){
       var panel=el.querySelector('.cnx-dlg-panel');
       el.classList.add('cnx-closing');el.classList.remove('cnx-in');
-      var fired=false;
-      var done=function(){if(fired)return;fired=true;if(panel)panel.removeEventListener('transitionend',onEnd);el.classList.remove('open','cnx-closing');if(el.id==='cnx-dlg-risk'&&_riskReturnFocus&&_riskReturnFocus.isConnected){_riskReturnFocus.focus({preventScroll:true});_riskReturnFocus=null;}};
+      if(el._cnxCancelClose)el._cnxCancelClose();
+      var fired=false,timer;
+      var stop=function(){fired=true;clearTimeout(timer);if(panel)panel.removeEventListener('transitionend',onEnd);if(el._cnxCancelClose===stop)delete el._cnxCancelClose;};
+      var done=function(){if(fired)return;stop();el.classList.remove('open','cnx-closing');if(el.id==='cnx-dlg-risk'&&_riskReturnFocus&&_riskReturnFocus.isConnected){_riskReturnFocus.focus({preventScroll:true});_riskReturnFocus=null;}};
       var onEnd=function(e){if(e.target===panel)done();};
       if(panel)panel.addEventListener('transitionend',onEnd);
-      setTimeout(done,360); /* fallback for reduced-motion / no transitionend */
+      timer=setTimeout(done,360); /* fallback for reduced-motion / no transitionend */
+      el._cnxCancelClose=stop;
     });
     document.body.style.overflow='';
     history.replaceState(null,'',location.pathname);
@@ -4732,18 +4753,7 @@ window.__CHART_SWAP__ = {
   /* Escape: if the fullscreen heatmap overlay is open, let ITS own handler close it
      (don't also close the Markets dialog underneath). */
   document.addEventListener('keydown',function(e){
-    var act=document.activeElement;
-    if(e.key==='Tab'&&!document.querySelector('.hm-ov')&&!(act&&act.closest&&act.closest('.lens-pop.open'))){
-      var risk=document.querySelector('#cnx-dlg-risk.open:not(.cnx-closing)');
-      if(risk){
-        var focusable=Array.from(risk.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')).filter(_riskTabStop);
-        if(focusable.length){var first=focusable[0],last=focusable[focusable.length-1];
-          if(e.shiftKey&&(act===first||!risk.contains(act))){e.preventDefault();last.focus();}
-          else if(!e.shiftKey&&(act===last||!risk.contains(act))){e.preventDefault();first.focus();}
-        }
-      }
-      return;
-    }
+    if(e.key==='Tab'){_riskTrapTab(e);return;}
     if(e.key!=='Escape')return;
     if(document.querySelector('.hm-ov'))return;
     if(document.querySelector('.lens-pop.open'))return;

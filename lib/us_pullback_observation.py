@@ -1,9 +1,10 @@
-"""US settled-price pullback adapter; consumes the single existing raw-close observer.
+"""US settled-price pullback adapter over the shared raw-close episode owner.
 
 No new episode ledger, forecast, source feed, or capital policy. The episode
-owner is lib.pullback_observation.observe(); this module never imports it. The
-builder admits it by passing it to snapshot() as ``observer``; without one,
-every snapshot is unavailable and no source is read.
+owner is lib.pullback_observation.observe(), shared with the China adapter.
+This module does not import it: build_site binds it by passing it to
+snapshot() as ``observer``, and without one every snapshot is unavailable and
+no source is read.
 
 Prices come only from the licensed whole-market daily store plus the same
 vendor's same-session regular-hours close (both raw prints, one basis). The

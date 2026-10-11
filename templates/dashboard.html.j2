@@ -15213,7 +15213,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
        DOM and Chrome still reports layout boxes for them, so ask the disclosure
        rather than the box; only its own <summary> stays reachable. */
     function _tabStop(el){
-      if(el.tabIndex < 0 || el.getClientRects().length === 0) return false;
+      if(el.tabIndex < 0 || el.closest('[inert]') || el.getClientRects().length === 0) return false;
       for(var d = el.closest('details:not([open])'); d;
           d = d.parentElement && d.parentElement.closest('details:not([open])')){
         var s = d.querySelector(':scope > summary');
@@ -15227,7 +15227,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       /* Counting the hidden forward-risk controls made `last` unreachable, so Tab
          walked out of the dialog. */
       var focusable = Array.prototype.filter.call(
-        dlg.querySelectorAll('button:not([disabled]),a[href],summary,[tabindex]:not([tabindex="-1"])'),
+        dlg.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])'),
         _tabStop);
       if(!focusable.length) return;
       var first = focusable[0], last = focusable[focusable.length-1];
@@ -15310,6 +15310,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         }); });
       }
       _focusFirst(dlg);
+      if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();
       dlg._trapHandler = function(e){ _trapTab(dlg, e); };
       dlg.addEventListener('keydown', dlg._trapHandler);
       /* backdrop click */

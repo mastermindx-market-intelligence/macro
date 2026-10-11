@@ -137,7 +137,7 @@ function el(tag, opts = {}) {
           focus() { doc.activeElement = this; },
           contains(o) { for (let n = o; n; n = n.parentElement) if (n === this) return true; return false; },
           closest(sel) {
-            if (sel === '[inert]') return null;
+            if (sel === '[inert]' || sel === '.lens-pop.open') return null;
             assert.equal(sel, 'details:not([open])');
             for (let n = this; n; n = n.parentElement) if (n.tag === 'details' && !n.open) return n;
             return null;
@@ -174,12 +174,20 @@ const names = list => list.map(n => n.name);
 
 
 def _node(script: str, stdin: str) -> None:
+    _node_raw(FAKE_DIALOG_JS + script, stdin)
+
+
+def _node_raw(script: str, stdin: str) -> None:
+    import os
     import shutil
     import subprocess
     node = shutil.which("node")
     if not node:
-        pytest.skip("Node is required to execute the shipped dialog keyboard helper")
-    result = subprocess.run([node, "-e", FAKE_DIALOG_JS + script], input=stdin, text=True,
+        # A skip would turn these regressions green without running them.
+        if os.environ.get("CI"):
+            pytest.fail("Node is required in CI to execute the shipped dialog scripts")
+        pytest.skip("Node is required to execute the shipped dialog scripts")
+    result = subprocess.run([node, "-e", script], input=stdin, text=True,
                             capture_output=True, timeout=20)
     assert result.returncode == 0, result.stdout + result.stderr
 

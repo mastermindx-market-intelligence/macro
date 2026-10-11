@@ -2,6 +2,8 @@
 from datetime import datetime, timezone
 from inspect import getsource
 
+import pytest
+
 from lib import cn_pullback_observation, pullback_observation
 from scripts import build_china
 
@@ -54,3 +56,22 @@ def test_view_rides_the_dialog_ctx_once_before_the_page_renders():
     assert source.count(bind) == 1
     assert source.index('vm["radar_dlg"] = _radar_dlg_vm(vm, latest)') < source.index(bind)
     assert source.index(bind) < source.index('env.get_template("china.html.j2")')
+
+
+@pytest.mark.parametrize("error", [RuntimeError, ImportError, AttributeError, AssertionError])
+def test_any_adapter_error_leaves_the_existing_popup_not_a_broken_build(monkeypatch, caplog, error):
+    """An additive section must never take the page down: not only source errors,
+    but an adapter bug or a missing symbol too. Only the error's type is logged."""
+    def boom(**_):
+        raise error("adapter-detail-not-logged")
+
+    monkeypatch.setattr(cn_pullback_observation, "snapshot", boom)
+    with caplog.at_level("WARNING"):
+        assert build_china._cn_pullback_risk_popup(now=NOW) is None
+    assert "CN pullback presentation unavailable: " + error.__name__ in caplog.text
+    assert "adapter-detail-not-logged" not in caplog.text
+
+
+def test_an_unimportable_episode_owner_leaves_the_existing_popup(monkeypatch):
+    monkeypatch.delattr(pullback_observation, "observe")
+    assert build_china._cn_pullback_risk_popup(now=NOW) is None

@@ -14,7 +14,9 @@ STORE (merge by session, refuse disagreement):
   is empty and otherwise re-reads a short overlap. A vendor close that disagrees
   with a held session rejects the whole fetch: the last-good store is kept and
   the reader's session check turns the popup unavailable rather than mixing
-  two series.
+  two series. The run prints a ``::warning`` naming the session and both
+  closes. To accept a vendor revision, delete the store in a reviewed commit;
+  the next asia-close run rebuilds it from the anchor.
 
 DISPLAY/CONTEXT-ONLY — an observation of closes that already settled; no score,
 forecast or sizing reads it.
@@ -80,14 +82,27 @@ def normalize(raw: pd.DataFrame | None) -> pd.DataFrame | None:
     return pd.DataFrame({"trade_date": list(closes), "close": list(closes.values())})
 
 
+def first_disagreement(held: pd.DataFrame | None,
+                       fetched: pd.DataFrame) -> tuple[str, float, float] | None:
+    """(session, held close, vendor close) for the first held session the vendor
+    now prints differently, or None when every overlapping session agrees."""
+    if held is None:
+        return None
+    known = dict(zip(held["trade_date"], held["close"]))
+    for day, price in zip(fetched["trade_date"], fetched["close"]):
+        if day in known and round(float(known[day]), _CLOSE_DP) != price:
+            return day, round(float(known[day]), _CLOSE_DP), price
+    return None
+
+
 def merge(held: pd.DataFrame | None, fetched: pd.DataFrame, *, first_seen: str) -> pd.DataFrame | None:
     """Keep every held row; add new sessions. None if any held session disagrees."""
+    if first_disagreement(held, fetched) is not None:
+        return None
     known = {} if held is None else dict(zip(held["trade_date"], held["close"]))
     fresh = []
     for day, price in zip(fetched["trade_date"], fetched["close"]):
         if day in known:
-            if round(float(known[day]), _CLOSE_DP) != price:
-                return None
             continue
         fresh.append({"ticker": TICKER, "trade_date": day, "close": price,
                       "first_seen": first_seen})
@@ -112,10 +127,22 @@ def refresh(*, today: date | None = None) -> int:
     if fetched is None:
         log.warning("tushare index_daily: no admissible %s closes; last-good store retained", TICKER)
         return 0
+    clash = first_disagreement(held, fetched)
+    if clash is not None:
+        day, kept, revised = clash
+        # Bare line-start print: a logger prefix would drop the annotation, and a
+        # refusal that only logs leaves the store frozen with nobody told why.
+        print("::warning title=China index store refused a revised close::"
+              f"{OUT.name} holds {kept} for {TICKER} session {day}; the vendor now "
+              f"prints {revised}. The last-good store is kept and no new session is "
+              "added, so the China pullback section goes unavailable as the store "
+              f"ages. To accept the revision, delete data/tushare/{OUT.name} in a "
+              f"reviewed commit; the next asia-close run rebuilds it from {ANCHOR}.",
+              flush=True)
+        return 0
     out = merge(held, fetched, first_seen=datetime.now(timezone.utc).isoformat())
     if out is None:
-        log.warning("tushare index_daily: vendor close disagrees with a held session; "
-                     "last-good store retained")
+        log.warning("tushare index_daily: nothing admissible to merge; last-good store retained")
         return 0
     added = len(out) - (0 if held is None else len(held))
     if added == 0:
