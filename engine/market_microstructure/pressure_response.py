@@ -55,6 +55,28 @@ def _midpoint(quote):
     return exact.divide(exact.add(quote["bid"], quote["ask"]), Decimal(2))
 
 
+def _midpoint_change_bps(first: Decimal, last: Decimal) -> Decimal:
+    """Preserve normal legacy markout bytes while avoiding a false zero.
+
+    The original 28-digit ratio-first presentation is retained for ordinary
+    cases. When ratio-first rounds a real narrow-spread price change to zero,
+    recalculate from the exact numerator before division. No predictive or
+    execution authority is conferred by this deterministic research value.
+    """
+    compatible = Context(prec=28)
+    bps = compatible.multiply(
+        compatible.subtract(compatible.divide(last, first), Decimal(1)),
+        Decimal(10000),
+    )
+    if bps == 0 and last != first:
+        exact = Context(prec=_EXACT_PRECISION)
+        return exact.multiply(
+            exact.divide(exact.subtract(last, first), first),
+            Decimal(10000),
+        )
+    return bps
+
+
 
 def _int(value, name):
     if type(value) is not int or value < 0:
@@ -344,7 +366,7 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
     if start_q is not None and end_q is not None:
         start_mid = _midpoint(start_q)
         end_mid = _midpoint(end_q)
-        response = _fmt(((end_mid / start_mid) - 1) * Decimal(10000))
+        response = _fmt(_midpoint_change_bps(start_mid, end_mid))
     classified = exact.add(buy, sell)
     gross = exact.add(classified, unknown)
     return {

@@ -88,6 +88,20 @@ def test_research_source_decimal_exponents_cannot_expand_unbounded_fixed_strings
             _amount(exponent, "source-price")
 
 
+def test_standalone_research_response_preserves_tiny_nonzero_markout():
+    # The exact bid/ask update changed the midpoint by a nonzero amount.
+    # Default 28-digit ratio rounding must not turn that into zero bps.
+    start_bid="1.00000000000000000000000000000"
+    start_ask="1.00000000000000000000000000006"
+    end_bid="1.00000000000000000000000000004"
+    end_ask="1.00000000000000000000000000010"
+    r=measure(trades=[],quotes=[
+        q("initial",90,bid=start_bid,ask=start_ask),
+        q("final",250,bid=end_bid,ask=end_ask)])
+    assert r["state"]=="NO_ELIGIBLE_PRINTS"
+    assert Decimal(r["midpoint_response_bps"])>0
+
+
 def test_window_not_mature_when_event_watermark_lags():
     r = measure(watermark_ns=299)
     assert r["state"] == "NOT_MATURE"
@@ -389,6 +403,18 @@ def test_matured_response_produces_evaluation_only():
     assert o["forward_label_not_available_to_original_decision"] is True
     assert o["absorption_signal"] is None and o["trade_fill"] is None
     assert o["execution_adjusted_return"] is None
+
+
+def test_matured_research_label_preserves_tiny_nonzero_markout():
+    first_bid="1.00000000000000000000000000000"
+    first_ask="1.00000000000000000000000000006"
+    last_bid="1.00000000000000000000000000004"
+    last_ask="1.00000000000000000000000000010"
+    r=label(quotes=[
+        q("anchor",120,available=121,bid=first_bid,ask=first_ask),
+        q("future",190,available=220,bid=last_bid,ask=last_ask)])
+    assert r["state"]=="MATURED_EVALUATION_LABEL"
+    assert Decimal(r["midpoint_response_bps"])>0
 
 
 def test_future_label_does_not_exist_before_horizon():
