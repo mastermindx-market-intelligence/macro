@@ -1,0 +1,23 @@
+{
+  "schema": "gmi.current_context_runtime_source_qualification/v1",
+  "scope": "local incumbent committed source qualification only",
+  "production_accepted": false,
+  "private_io": false,
+  "elapsed_seconds": 1.776,
+  "qualified": true,
+  "generation": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+  "sources": {
+    "security_master": {
+      "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+      "byte_length": 79534
+    },
+    "vendor_aliases": {
+      "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f",
+      "byte_length": 50724
+    },
+    "issuer_master": {
+      "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402",
+      "byte_length": 43844
+    }
+  }
+}

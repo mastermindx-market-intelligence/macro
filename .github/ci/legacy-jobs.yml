@@ -3394,6 +3394,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -12866,6 +12869,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -13560,6 +13566,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -15137,7 +15146,7 @@ jobs:
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
-        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
+        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
       # WS:COMMERCIAL-ACTIVATION CA1A (2026-09-04): the event-spine acceptance
       # battery — registry-as-whitelist derivation (W2-1), envelope-v1 eid/schema/
       # meta validation and replay identity through the mounted /api/collect route,
@@ -15801,6 +15810,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
@@ -16207,6 +16219,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -20249,6 +20264,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -21726,8 +21744,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "config/issuer_group_allowlist.yml"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "app/company_disclosures.py"
       - "engine/company_intelligence/current_company_context.py"
+      - "engine/company_intelligence/current_context_runtime.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
       - "engine/company_intelligence/issuer_disclosures.py"
       # B03 coverage reads the exact producer preview partition.

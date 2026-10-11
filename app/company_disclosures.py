@@ -96,7 +96,6 @@ class PrivateDisclosureReader:
     authority: native.DisclosureAuthority
     store_factory: Callable[[], object]
     selection_owner: selection.SelectionOwner | None = None
-    context_owner: context.CompanyContextOwner | None = None
 
     def read(self, request: native.Request) -> dict:
         admission = native.preflight(self.authority, request)
@@ -166,11 +165,11 @@ def company_context(request: Request, _user: dict = Depends(require_private_user
     items = list(request.query_params.multi_items())
     if len(items) != 1 or items[0][0] != 'symbol' or not context._SYMBOL.fullmatch(items[0][1]):
         return _error(400, "REQUEST_INVALID")
-    reader = getattr(request.app.state, "company_disclosure_reader", None)
-    if type(reader) is not PrivateDisclosureReader or reader.context_owner is None:
+    owner = getattr(request.app.state, "company_context_owner", None)
+    if owner is None:
         return _error(503, "SOURCE_RUNTIME_UNAVAILABLE")
     try:
-        value = context.read_company_context(reader.context_owner, items[0][1], purpose=PURPOSE, audience=AUDIENCE)
+        value = context.read_company_context(owner, items[0][1], purpose=PURPOSE, audience=AUDIENCE)
     except native.DisclosureError:
         return _error(503, "PRIVATE_SOURCE_UNAVAILABLE")
     return JSONResponse(value, headers=_HEADERS)

@@ -380,8 +380,18 @@ def context_fixture(boundary):
             return self.replacement if self.calls>1 and self.replacement else self.value
     owner=Owner()
     client=boundary[0]
-    client.app.state.company_disclosure_reader=replace(client.app.state.company_disclosure_reader,context_owner=owner)
+    client.app.state.company_context_owner=owner
     return client, owner, records, bundle
+
+
+def test_context_runtime_needs_no_disclosure_capability(context_fixture, boundary):
+    client, owner, *_ = context_fixture
+    client.app.state.company_context_owner = owner
+    del client.app.state.company_disclosure_reader
+    response = context_get(context_fixture)
+    assert response.status_code == 200, response.text
+    assert boundary[4].calls == 0 and 'private_store' not in boundary[3]
+    private_headers(response)
 
 
 def context_get(fixture, query='?symbol=AAA'):

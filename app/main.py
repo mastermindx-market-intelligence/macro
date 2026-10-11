@@ -2292,6 +2292,10 @@ app.include_router(company_intelligence_router)
 # Authenticated private facts retain their independent entitlement and source-owner gate.
 from app.company_disclosures import router as company_disclosures_router  # noqa: E402
 app.include_router(company_disclosures_router)
+# Current identity consumes the incumbent committed Data OS generation. This
+# independent capability creates no disclosure authority or private Store.
+from engine.company_intelligence.current_context_runtime import CommittedCompanyContextOwner  # noqa: E402
+app.state.company_context_owner = CommittedCompanyContextOwner(REPO)
 
 # Private low-latency ticker-news reads. The router authenticates + enforces
 # site_full, then independently fails closed on feed-specific display rights

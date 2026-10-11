@@ -83,3 +83,15 @@ resolution, exact BRK.B/^NDX refusal, and shared GOOG/GOOGL receipt parity. Proo
 and `CURRENT_CONTEXT_REFERENCE_QUALIFICATION.json`. Owner installation, source
 purpose and private publication remain unaccepted; native PR kernel dependency
 hold remains. F04 owns isolated consumer composition and compares full bindings.
+
+
+Current identity runtime continuation: separate `company_context_owner` from the
+disclosure capability, and consume the incumbent installed protected source and
+producer receipt read-only. Follow the committed reference generation and current
+registry on every resolution, prohibit lazy fetching and Git environment source
+redirection, validate canonical IDs and the producer's active issuer census, and
+recheck source selection. This requires no disclosure admission. Five runtime
+review counterexamples plus one resolved-without-CIK case reproduced RED; the
+corrected affected suite passes190 cases. The final correction is independently
+accepted at source architecture level. Real installed-source/authenticated proof
+remains open; C01 remains NOT_ADMITTED. See CURRENT_CONTEXT_RUNTIME_VALIDATION.json.

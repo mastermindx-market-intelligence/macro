@@ -294,7 +294,7 @@ is at most16KiB and references the larger artifacts rather than relabeling them.
 It deliberately excludes the query, security and evaluation time: share classes
 of one issuer in the same bundle receive the same issuer receipt.
 
-The installed `PrivateDisclosureReader.context_owner` supplies a currently
+The independent installed `app.state.company_context_owner` supplies a currently
 qualified `IdentityBundle` via `current_identity_bundle(purpose, audience)`. It
 must establish exact compatible source-tree bytes before supplying the bundle
 and re-resolve its current generation on every call; a constructor or hash alone
@@ -327,3 +327,37 @@ checked for current MU/NVDA/GOOG/GOOGL/BRK-B resolution, exact BRK.B/^NDX refusa
 and shared GOOG/GOOGL issuer receipt equality. This is source/reference metadata
 qualification only; no current owner is installed and no C01 rights or private
 publication have been admitted.
+
+
+Installed identity owner source continuation (2026-10-11): the HTTP context route
+now has its own capability slot. `CommittedCompanyContextOwner(REPO)` is wired
+alongside the existing router without constructing a disclosure authority,
+selection owner or private Store. Its configured repository is the incumbent
+application deployment root, not an HTTP input. Constructor installation performs
+no I/O; authentication and the actual feature check still precede all Git reads.
+
+On each resolution the owner verifies installed HEAD against the existing
+`origin/main`, including detached protected installs. It selects the latest commit
+touching the three references or their producer receipt, reads immutable objects,
+and verifies all four blob IDs against installed HEAD. Thus unrelated source
+installs do not change the identity receipt, while receipt-only corrections do.
+The installed registry is independently checked for current adoption on every
+resolution. Its exact contracts, producer receipt authority/consumer and counts,
+whole-bundle canonical identifiers, alias references and active issuer census
+must qualify. Superseded security rows remain stored but do not contribute to
+issuer membership. Missing CIK on unresolved members is allowed; resolved or
+evidenced active links require positive ten-digit matching CIKs.
+
+Git repository/object/config environment redirection is removed. Explicit
+`--no-lazy-fetch` and `--no-replace-objects` guards, bounded local objects and
+command deadlines prevent a request from fetching or reconstructing source.
+Missing objects, unsupported guards, unprotected ancestry, incompatible evidence
+or a changing installed HEAD refuse. Cached immutable bundles remain contingent
+on the current selector, all four object identities and the current registry.
+The existing context reader also rechecks the owner and UTC date before return.
+
+This adds the runtime implementation, not a VPS installation attestation. Real
+postmerge installed-source selection and an authenticated context response still
+must be verified. The context receipt must be bound by any future disclosure
+owner; no disclosure purpose, C01 artifact, qualified empty selection or private
+publication is created here. The response schema and fields are unchanged.
