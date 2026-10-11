@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T16:42:07.512412+00:00",
-  "count": 2818,
+  "generated_at": "2026-10-11T17:06:11.741001+00:00",
+  "count": 2819,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -758,6 +758,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ew0ppxbxlje-a94864",
+      "title": "Emerging market bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-09T23:19:58Z",
+      "summary_points": [
+        "Credit Risk Categorization: UBS defines credit risk tiers (Very low <2% non-payment, Medium 2-20%, High ≥20%) with regulatory intervention as key risk trigger, directly impacting issuer outlook (Improving/Stable/Deteriorating).",
+        "Relative Value Bond Ratings: \"Attractive\" (total return > peers), \"Fair\" (in line), \"Expensive\" (return < peers) ratings assess issuer credit, call risk, coupon deferral, and regulatory factors over 6-12 months.",
+        "EM Credit Rating Framework: S&P/Moody's investment grade (AAA-BB+) vs. non-investment grade (BB- to C) with \"Watch\"/\"Negative\" outlooks signaling heightened default risk volatility in emerging markets.",
+        "Outlook-Driven Allocation: \"Negative\" and \"Watch\" outlooks indicate downgrade risks requiring tactical EM credit adjustments, while \"Positive\" signals upgrade potential for portfolio positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },

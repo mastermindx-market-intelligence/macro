@@ -31,8 +31,8 @@ counterpart edge, then resumes in one cycle. It is updated at wave boundaries; i
 
 | Wave | Content | Exit gate (observable) | State |
 |---|---|---|---|
-| W0 Reconcile + admit | carrier edges, incumbents, capability matrix, records | ACK + START posted once; records PR MERGED; `python3 scripts/agentos.py validate` 0 errors | records PR in flight |
-| W1 Foundations | O1/T02 source-clock-basis-rights qualification; O7/T03 publication-health note; O8/T22 preregistration | three docs MERGED; every pullback feed has a rights disposition (`recorded` / `source_unavailable`); prereg frozen with sha256 before any outcome inspection; GH001 + heartbeat repairs routed to owners on their carriers | next |
+| W0 Reconcile + admit | carrier edges, incumbents, capability matrix, records | ACK + START posted once; records PR MERGED; `python3 scripts/agentos.py validate` 0 errors | DONE (PR #8785 merged `2dd5f5078cba`) |
+| W1 Foundations | O1/T02 source-clock-basis-rights qualification; O7/T03 publication-health note; O8/T22 preregistration | three docs MERGED; every pullback feed has a rights disposition (`recorded` / `source_unavailable`); prereg frozen with sha256 before any outcome inspection; GH001 + heartbeat repairs routed to owners on their carriers | RUNNING (O1/T02 written) |
 | W2 Observed-move primitives | PIT, basis-correct 5/10/21-session local-move primitives + tests, off the render path | MERGED, CI green, no `data/`/`site/` writes from the render budget, nulls printed | after W1 |
 | W3 Consumer qualification | evaluate under the frozen prereg; #8721 consumed read-only through CI | results doc with honest episode N, blocked OOS + purge, abstention rate, negative results preserved; Opus READ_ONLY red-team before presenting | after W2 |
 | W4 Integration + acceptance | warning-delivery dependency (#8132 lineage) only after publication continuity is proven; HOLDs intact | production proof on the live surface (authenticated HTTP 200, four authority booleans false); Sol/Chairman checkpoints per the wave matrix §6 | after W3 |
@@ -49,8 +49,8 @@ seat posts for this key → search the key before every once-per-operation act.
 
 | Lane | Owner | Artifact(s) | Watcher | State |
 |---|---|---|---|---|
-| W0 records | this seat (principal) | `agentos/handoffs/…-2026-10-11-FABLE-W0.md`, WS `next_action`, this file, `research/grey_deer/README.md` | records PR + one `gh` watcher ≥60 s / sweeper | writing |
-| O1/T02 qualification | this seat (principal; data-source owner for rights determinations) | `research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md` | PR | next |
+| W0 records | this seat (principal) | `agentos/handoffs/…-2026-10-11-FABLE-W0.md`, WS `next_action`, this file, `research/grey_deer/README.md` | records PR + one `gh` watcher ≥60 s / sweeper | MERGED (PR #8785, `2dd5f5078cba`) |
+| O1/T02 qualification | this seat (principal; data-source owner for rights determinations) | `research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md` | PR | written (manifest v1.0.0); PR in flight |
 | O7/T03 publication health | this seat (note); QLedger owner (GH001 repair); CI/heartbeat owner (`stalled_since`) | note under `research/grey_deer/incidents/`; routing comments on #8128 / #8042 lineage | PR | next |
 | O8/T22 preregistration | this seat (design); Opus READ_ONLY audit before freeze | `research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md` + sha256 in the WS record | PR | next |
 | Fabric dispatch | Executive OS | — | — | BLOCKED (enrollment gate; named, not routed around) |
@@ -82,8 +82,8 @@ seat posts for this key → search the key before every once-per-operation act.
 - O-e Executive ingress enrollment — user-only OAuth step; lane blocker, not a mission stop.
 
 **NEXT (in order)**
-1. Post START on the carrier (once), then open the W0 records PR and own it to MERGED; verify against bare-fetched `origin/main`.
-2. O1/T02 qualification doc → PR → merge.
+1. ~~Post START on the carrier (once), then open the W0 records PR and own it to MERGED.~~ DONE: START `1791709498.229729`; PR #8785 merged `2dd5f5078cba`; MERGED edge `1791710983.487829`.
+2. O1/T02 qualification doc → PR → merge. Doc written (manifest v1.0.0); ship chain in flight.
 3. O7/T03 publication-health note + owner routing comments → PR → merge.
 4. O8/T22 preregistration → Opus READ_ONLY audit → freeze (sha256) → PR → merge.
 5. W2 primitives only after 2–4 are MERGED.

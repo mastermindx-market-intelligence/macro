@@ -352,7 +352,7 @@ waves:
     depends_on: [GD-3]
   - id: GD-PB-T02
     title: Pullback source-clock-basis-rights qualification (O1/T02)
-    status: todo
+    status: done
     depends_on: [GD-PB-W0]
   - id: GD-PB-T03
     title: Publication-health note and GH001/heartbeat owner routing (O7/T01+T03)
@@ -371,11 +371,14 @@ waves:
     status: todo
     depends_on: [GD-PB-W2, GD-PB-T03]
 next_action: >
-  Merge the Fable seat W0 records PR (branch
-  claude/grey-deer-fable-w0-records-20261011), then write and merge
-  research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md (O1/T02)
-  before any observed-move primitive is coded. Operation
-  risk-radar-pullback-20261009 under carrier key
+  O1/T02 is recorded in
+  research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md
+  (eligible-input manifest v1.0.0; only US SPY on the licensed Massive RAW
+  store from 2021-07-06 qualifies; Yahoo and live radar inputs stay
+  diagnostic). Next: write and merge the O7/T03 publication-health note under
+  research/grey_deer/incidents/, then the O8/T22 preregistration that freezes
+  the manifest's qualified sample with sha256 before any outcome inspection.
+  Operation risk-radar-pullback-20261009 under carrier key
   grey-deer-fable-orchestration-20261003-001 (ACK Slack 1791707775.860299);
   incumbents PR 8721 (live writer) and PR 8188 (HOLD-FOR-SOL) are read-only.
   Resumption file: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md;
