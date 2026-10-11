@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T19:51:56.203743+00:00",
-  "count": 2827,
+  "generated_at": "2026-10-11T20:06:39.148452+00:00",
+  "count": 2828,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -302,6 +302,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5djprswngqv-9cbb43",
+      "title": "India Weekly Kickstart NIFTY settled flat w w",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:45:03Z",
+      "summary_points": [
+        "RBI's calibrated tightening & commodity margin pressure: Repo rate hiked to 5.50% amid supply-side shock concerns; commodity inflation (US-Iran war, oil prices) pressures margins in autos, metals, mining, and FMCG sectors.",
+        "FII outflow & India's valuation premium: $31bn FII net outflow YTD 2025; MSCI India trades at 94% premium to MAXAPJ, signaling significant overvaluation vs Asia-Pacific.",
+        "Non-commodity earnings growth vs margin pressure: Consensus expects 15% yoy profit growth for MSCI India ex-commodities (Q2 FY27/Q3 CY26), but net profit margin expected to cut to 9.8%.",
+        "Tech sector disconnect: MXINOT (Tech) shows -29% YTD price performance vs consensus 30% ROE and 10% EPS growth, indicating potential mispricing or sector-specific risks.",
+        "Domestic inflows surge vs FII outflows: Active domestic equity fund inflows rose 19% to $3.1bn in August (SIP-driven), offsetting $31bn FII outflow YTD."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },
