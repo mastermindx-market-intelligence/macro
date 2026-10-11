@@ -6,6 +6,13 @@ from unittest.mock import patch
 import pytest
 from tests.test_build_leader_radar import _build_fixture_root
 from scripts.build_leader_radar import build
+import re
+
+import numpy as np
+import pandas as pd
+from jinja2 import Environment, FileSystemLoader
+
+from engine.leader_recovery import LABELS, RecoverySpec, describe_recovery, recovery_roster
 
 
 def test_builder_emits_recovery_without_advancing_data_stores(tmp_path):
@@ -191,3 +198,191 @@ def test_additive_clock_ignores_issuer_rows_after_spy_cut(tmp_path, ahead_ticker
     assert after_clock == before_clock
     assert after_meta == before_meta
     assert observe_rs_highs(after_frames["MSFT"]["close"], spy, as_of=after_clock) == before_watch
+
+
+# ---------------------------------------------------------------------------
+# WP2: the recovery panel on leader_radar.html consumes leader_recovery.v1 /
+# leader_recovery_roster.v1 as a descriptive observation tier. These tests pin
+# that the page renders plain words with paired dates for every episode state,
+# discloses empty / stale / partial / behind-clock honestly, disappears without
+# the roster schema, and that its order is navigation rather than authority.
+# ---------------------------------------------------------------------------
+
+_REPO = Path(__file__).resolve().parents[1]
+_SPEC = RecoverySpec(high_window=60, fast_window=10, slow_window=40, rs_window=5, confirm_sessions=3)
+_CFG = {
+    "storage": {"data_dir": "data", "site_dir": "site"},
+    "leader_radar": {"enabled": True, "basket_keys": ["mag7"], "dow30": []},
+}
+_PANEL_START = 'aria-label="Deep corrections and recovery"'
+_ZH = {
+    "UNAVAILABLE": "修复证据不可用",
+    "NO_PRIOR_LEADER": "未观察到先前领导地位",
+    "ACTIVE_LEADER": "观察到领导地位",
+    "CORRECTING": "领导股回调中",
+    "DAMAGED": "领导地位受损",
+    "REBUILDING": "修复尝试中",
+    "REIGNITING": "趋势与相对强度修复中",
+    "REPAIR_PAUSED": "修复暂停，领导地位未确认",
+    "PRICE_RECOVERED_RS_LAGGING": "价格已恢复，相对领导地位未恢复",
+    "LEADERSHIP_REESTABLISHED": "价格与相对领导地位已恢复",
+    "FAILED_REPAIR": "修复尝试失败",
+}
+_TAILS = {
+    "DAMAGED": (np.r_[np.linspace(99, 55, 25), np.full(100, 55.0)], None),
+    "FAILED_REPAIR": (np.r_[np.linspace(99, 55, 30), np.linspace(56, 85, 20), 54], None),
+    "PRICE_RECOVERED_RS_LAGGING": (
+        np.r_[np.linspace(99, 55, 30), np.linspace(56, 115, 40)],
+        np.linspace(100, 145, 40),
+    ),
+    "RESTORED": (np.r_[np.linspace(99, 55, 30), np.linspace(56, 110, 40)], None),
+}
+_EXPECTATIONS = {
+    "schema": "leader_recovery_expectations.v1",
+    "availability": "SOURCE_DATED_OBSERVATIONS",
+    "reason": None,
+    "source": "revisions_snapshot",
+    "source_date": "2026-09-30",
+    "source_age_sessions": 7,
+    "readings": {"rev_fy1_30d": 0.03},
+    "quality_flags": [],
+    "revision_direction": "POSITIVE_OBSERVATIONS",
+    "thesis_state": "UNKNOWN",
+    "basis": "fixture",
+    "disclosure": "Snapshot observations, not actual reported revenue growth or a thesis verdict.",
+}
+
+
+def _render(payload):
+    env = Environment(loader=FileSystemLoader(str(_REPO / "templates")), autoescape=False)
+    return env.get_template("leader_radar.html.j2").render(leader_radar=payload)
+
+
+def _panel(html):
+    start = html.find(_PANEL_START)
+    if start < 0:
+        return ""
+    return html[start : html.find("</section>", start)]
+
+
+def _artifact(tmp_path):
+    root = _build_fixture_root(tmp_path, ["AAPL", "MSFT"])
+    with (
+        patch("lib.config.ROOT", root),
+        patch("lib.config.data_dir", lambda: root / "data"),
+        patch("lib.config.load", lambda: _CFG),
+        patch.dict(os.environ, {"COLLECT_LANE": "express"}),
+    ):
+        build(data_root=root / "data", site_root=root / "site")
+    return json.loads((root / "site" / "leaderradar" / "radar.json").read_text())
+
+
+def _synthetic(tail, bench_tail=None, end="2026-10-09"):
+    values = np.r_[np.linspace(50, 100, 90), np.asarray(tail)]
+    idx = pd.bdate_range(end=end, periods=len(values))
+    close = pd.Series(values, index=idx)
+    bench = pd.Series(100.0, index=idx)
+    if bench_tail is not None:
+        bench.iloc[-len(bench_tail) :] = np.asarray(bench_tail)
+    return describe_recovery(close, bench, as_of=close.index[-1].date(), sessions=list(close.index.date), spec=_SPEC)
+
+
+def _payload(recs, *, stale=False, clock=None):
+    rows = [{"ticker": ticker, "display_chips": {"leader_recovery": rec}} for ticker, rec in recs]
+    roster = recovery_roster(rows, as_of="2026-10-09", stale=stale)
+    if clock is not None:
+        roster["additive_clock"] = clock
+    return {"as_of": "2026-10-09", "rows": rows, "recovery_roster": roster}
+
+
+def test_recovery_panel_renders_from_builder_artifact(tmp_path):
+    disk = _artifact(tmp_path)
+    roster = disk["recovery_roster"]
+    assert roster["schema"] == "leader_recovery_roster.v1"
+    panel = _panel(_render(disk))
+    assert panel, "recovery panel missing from the rendered page"
+    assert f'<span class="section-count">{len(roster["rows"])}</span>' in panel
+    assert ('class="lr-rec-row"' in panel) or ("mx-empty-line" in panel)
+    assert "Reconstructed from today's data, not first-seen." in panel
+    assert "It sets no rank, size, alert or entry." in panel
+    # the page never promotes the descriptive tier: no authority flag is rendered true
+    assert "authority" not in panel.lower() or "true" not in panel.lower()
+
+
+@pytest.mark.parametrize("name", ["DAMAGED", "FAILED_REPAIR", "PRICE_RECOVERED_RS_LAGGING", "RESTORED"])
+def test_recovery_panel_states_render_plain_words_and_paired_dates(name):
+    tail, bench_tail = _TAILS[name]
+    rec = _synthetic(tail, bench_tail)
+    rec["expectations"] = dict(_EXPECTATIONS)
+    expected = {"ACTIVE_LEADER", "LEADERSHIP_REESTABLISHED"} if name == "RESTORED" else {name}
+    assert rec["state"] in expected
+    episode = rec["episode"]
+    panel = _panel(_render(_payload([("TEST", rec)])))
+    start = panel.find('data-ticker="TEST"')
+    assert start >= 0
+    row = panel[start:]
+    assert f'data-state="{rec["state"]}"' in row
+    assert 'class="rs-highs-ticker" href="us_stocks.html#TEST"' in row
+    assert LABELS[rec["state"]] in row
+    assert _ZH[rec["state"]] in row
+    # the raw state key appears only in the data attribute, never as visible copy
+    assert row.replace(f'data-state="{rec["state"]}"', "").count(rec["state"]) == 0
+    # paired dates: the leadership peak and the trough it fell to
+    assert episode["peak_on"] in row and episode["trough_on"] in row
+    assert "Failed attempts" in row
+    assert f'<b>{episode["failed_repairs"]}' in row
+    if name in {"DAMAGED", "FAILED_REPAIR"}:
+        assert "Stand aside" in row
+    else:
+        assert "Watch, don't chase" in row
+    # dated estimate evidence is shown as observations with its source date, never as a thesis verdict
+    assert "Source dated 2026-09-30" in row
+    assert "rising" in row
+    assert "Snapshot observations, not actual reported revenue growth or a thesis verdict." in row
+    assert "Fundamental read not sourced." in row
+
+
+def test_recovery_panel_discloses_empty_stale_clock_and_partial():
+    clock = {
+        "as_of": "2026-10-09",
+        "incumbent_as_of": "2026-10-08",
+        "lag_sessions": 1,
+        "basis": "fixture",
+        "universe_rows": 1,
+        "rows_at_or_after_clock": 1,
+        "rows_behind_clock": 0,
+    }
+    unavailable = {"schema": "leader_recovery.v1", "state": "UNAVAILABLE"}
+    panel = _panel(_render(_payload([("UNAV", unavailable)], stale=True, clock=clock)))
+    assert panel
+    assert 'class="lr-rec-row"' not in panel
+    assert "No deep corrections on record" in panel
+    assert "mx-empty-why" in panel
+    assert "Source stale" in panel
+    assert "session behind" in panel
+    assert "Recovery evidence unavailable for 1 name(s)." in panel
+
+
+def test_recovery_panel_absent_without_roster_schema():
+    assert _panel(_render({})) == ""
+    assert _panel(_render(None)) == ""
+    foreign = {"as_of": "2026-10-09", "rows": [], "recovery_roster": {"schema": "something_else.v9", "rows": []}}
+    assert _panel(_render(foreign)) == ""
+
+
+def test_recovery_panel_order_is_navigation_not_authority():
+    recs = []
+    for name in ("DAMAGED", "FAILED_REPAIR", "PRICE_RECOVERED_RS_LAGGING"):
+        tail, bench_tail = _TAILS[name]
+        recs.append((name[:4], _synthetic(tail, bench_tail)))
+    panel = _panel(_render(_payload(recs)))
+    found = re.findall(r'data-ticker="([A-Z]+)"[^>]*data-depth="([0-9.]+)"', panel)
+    assert len(found) == 3
+    depths = [float(depth) for _, depth in found]
+    assert depths == sorted(depths, reverse=True), "default order is deepest correction first"
+    assert "Order by" in panel
+    assert "Order is navigation, not a ranking." in panel
+    visible = re.sub(r"<[^>]+>", " ", panel)
+    for banned in ("validated", "falsifier", "refuted", "z-score", "percentile", "score", "buy", "sell"):
+        assert not re.search(rf"\b{re.escape(banned)}\b", visible), banned
+    assert "证伪" not in visible
