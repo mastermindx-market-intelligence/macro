@@ -1,0 +1,91 @@
+{
+  "CI": {
+    "registered_suite_count": 16,
+    "sha256": "deb915d3d3715c94ac39fa0e02e3c8f641c38f95a854d15fe11500188b99142f",
+    "suite_paths": [
+      "research/factor_atlas/session2/prototype/test_cross_session_contract.py",
+      "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+      "research/factor_atlas/session2/prototype/test_intake_bridge.py",
+      "research/factor_atlas/session2/prototype/test_owner_reader_abi.py",
+      "research/factor_atlas/session2/prototype/test_pressure.py",
+      "research/factor_atlas/session2/prototype/test_pressure_oos.py",
+      "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+      "research/factor_atlas/session2/prototype/test_quote_reference.py",
+      "research/factor_atlas/session2/prototype/test_quote_study.py",
+      "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+      "research/factor_atlas/session2/prototype/test_source_preflight.py",
+      "research/factor_atlas/session2/prototype/test_tiingo_pit_alias.py",
+      "research/factor_atlas/session2/prototype/test_tiingo_source_fitness.py",
+      "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+      "research/factor_atlas/session2/prototype/test_window_pressure.py",
+      "research/factor_atlas/session2/prototype/test_witnesses.py"
+    ],
+    "workflow_path": ".github/workflows/factor-atlas-reference.yml"
+  },
+  "actual_vendor_price_rows_exported_to_GitHub": false,
+  "all_authority_flags_false": true,
+  "all_sixteen_suite_local_tests_passed": 517,
+  "created_at_utc": "2026-10-11T23:48:04.853894+00:00",
+  "customer_publication_authorized": false,
+  "dataos_identity_source_git_blob": "ea8485596e57fd1e686bfdb9d75708a3a3845fda",
+  "dataos_identity_source_head": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+  "dataos_identity_source_pr": "macro#8698",
+  "identity_owner_source_or_canonical_registry_modified": false,
+  "market_capital_pressure_pilot_authorized": false,
+  "native_original_alias_sha_semantics_parity_cases": 4,
+  "native_original_resolution_synthetic_late_known_refused_by_downstream": true,
+  "new_accepted_files": {
+    "session2/TIINGO_PIT_ALIAS_BOUNDARY.md": {
+      "bytes": 7197,
+      "sha256": "5aba494a72b253daf6617ac55fd1bbddbd1d213c70852ecc89688f36b822e16d"
+    },
+    "session2/evidence/tiingo_pit_alias_synthetic.json": {
+      "bytes": 4467,
+      "sha256": "d7b76906d94ee042bd08fe5d4edabf507e6322c671d54984898e70f90eac148a"
+    },
+    "session2/prototype/test_tiingo_pit_alias.py": {
+      "bytes": 9270,
+      "sha256": "88c9933a61013e7255132b64d43c8e9e06a021d28ab36307ce3a61f729cc8d32"
+    },
+    "session2/prototype/tiingo_pit_alias.py": {
+      "bytes": 9961,
+      "sha256": "1538142c00c82d1e9b9daf9ffac2685b22fafb778b719c511df76d32a5212a28"
+    }
+  },
+  "new_alias_resolver_created": false,
+  "new_tiingo_PIT_alias_tests_passed": 25,
+  "observed_Tiingo_vendor_aliases_in_pilot": 0,
+  "observed_original_S1_S2_SPY_listing_selection": false,
+  "observed_original_vendor_alias_rows": 6046,
+  "original_alias_snapshot_bytes_not_copied_into_PR": true,
+  "original_effect_unknown_reviewer_retried": false,
+  "original_factor_atlas_parent": "0d22918f5e6a0d49cd33fbf0ab0aa955b085a266",
+  "original_pr": 8677,
+  "original_reference_snapshot_generated_at_unqualified_clock": "2026-10-09T05:05:32",
+  "original_reference_snapshot_receipt_sha256": "a7481353bc7e21f8420772c7223749b971fb23e706ddd9cc244cf31bf2163b2b",
+  "original_unrelated_platform_denials_retried": false,
+  "protected_mastermind": "1f5befa44487ffb7ac2a0ca44ccd85c7c9da1355",
+  "schema": "factor_atlas.native_tiingo_pit_alias_gate_receipt.v1",
+  "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_identity_or_rights_admitted": false,
+  "test_first_missing_implementation_red": true,
+  "test_first_nano_clock_known_at_red": true,
+  "test_logs": {
+    "all_16_suite_517_green": {
+      "bytes": 661,
+      "sha256": "68694f98967743ef00d2c032b8d3f4bf9060322fb248846a19ca17de973691ad"
+    },
+    "focused_25_green": {
+      "bytes": 99,
+      "sha256": "01d6efa4d3993f8964679d542ff662b23f04e4e7592efd27c65c15e621fe6931"
+    },
+    "implementation_missing_red": {
+      "bytes": 1324,
+      "sha256": "6d5a61938b171c485587d22fd29ed186eca856184d078ed01e8470fe14f028b3"
+    },
+    "nanosecond_lookahead_red": {
+      "bytes": 5933,
+      "sha256": "9902a6a3f40d608af4780a19409b13f04635fdf2dcb6a7c7107adfbe302638ca"
+    }
+  }
+}

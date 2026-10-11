@@ -1184,3 +1184,99 @@ verify exact new remote head and current CI,
 then advance admitted source rights/basis
 and real cohort quality through existing Data
 OS owners only. No second provider requested.
+
+## Original Data OS Tiingo selected PIT alias negative gate — bounded native S2 consumer
+
+**Original accountable head at entry:** `0d22918f5e6a0d49cd33fbf0ab0aa955b085a266`,
+Macro Factor Atlas S2 PR #8677 original branch DRAFT/HOLD.
+Protected Mastermind `1f5befa44487ffb7ac2a0ca44ccd85c7c9da1355`
+and compatible pinned 1.0.1/bootstrap1 Sol procedures.
+No source ownership, rights, publication, identity or runtime
+control plane was newly created.
+
+**Named real blocker directly recovered:** the original
+Data OS identity resolver/source at merged Tiingo owner
+PR #8698 head
+`2a08250fe61aa59ad3e1581149f0b93e9d5a17cf`
+blob `ea8485596e57fd1e686bfdb9d75708a3a3845fda`
+handles historical vendor naming; it is not a general
+event-knowledge-time entitlement. Source snapshot
+`data/reference/_receipt.json` from October 9
+05:05:32 (source file SHA256
+`a7481353bc7e21f8420772c7223749b971fb23e706ddd9cc244cf31bf2163b2b`)
+contains 6,046 vendor alias rows and **ZERO
+vendor=tiingo rows** for the four-name source
+cohort. Original `VendorAliasTable.resolve`
+returns NULL for each. AAPL/MSFT/NVDA
+other-vendor candidates do not establish Tiingo
+source PIT selection; SPY is absent from the
+examined security master/listing snapshot.
+No aliases or IDs were invented or modified.
+
+**Native independent S2 acceptance seam:** source-only
+`prototype/tiingo_pit_alias.py` consumes only
+owner-PRESELECTED Tiingo alias tuples, not
+the entire vendor registry. It checks original
+SHA256 semantic binding, inclusive/exclusive
+valid dates, strict explicit UTC decision/source
+`known_at`, duplicate identifiers and missing
+SPY; never self-admits original identity,
+dataset-use rights, price/volume action-basis
+or any four-stock market pilot. A synthetic
+alias known Oct11 can be resolved for historical
+naming on Oct9 by original Data OS generic
+vendor resolver, while S2 correctly withholds
+with `SELECTED_ALIASES_NOT_KNOWN_AT_DECISION`.
+Native source SHA semantic parity verified with
+the ORIGINAL `identity.alias_binding_sha256`
+for four synthetic cases. Known-at with more
+than microsecond precision is conservatively
+CEILED exactly as native source; decision
+cutoff never rounded forward. An original
+SPY synthetic ID is clearly identified as
+INVENTED and never used to mint a real ETF.
+
+**TDD/validation:** first missing module red and
+an independent nanosecond known-at red,
+then 25/25 scoped alias tests PASSED and
+**517/517 full 16-suite local research tests PASSED**
+on M2 Python3.12; repository-native unrun auditor
+recognized all 16 suites. Existing read-only
+GitHub Actions job now triggers on incumbent
+`lib/dataos/identity.py` and
+`scripts/build_security_master.py` source
+changes. Sanitized actual negative state and
+synthetic positive/late-known controls only
+in `evidence/tiingo_pit_alias_synthetic.json`
+and SHA pinned
+`evidence/native_tiingo_pit_alias_tests.json`.
+No real data prices, source alias raw rows or
+private vendor payload copied to source tree.
+
+**DO_NOT_REDO:** previous explicit four source
+read refusals, benchmark fix, current-main
+comparison, denied S2-P4 read-model patch,
+denied S2-P6 forecast-decision patch and
+the previously platform-denied BOATS
+real-source packaging attempt. Original
+independent reviewer summons remains
+EFFECT_UNKNOWN, no retry/duplicate worker.
+No consumer trading, ranking, alerts,
+sizing, customer publication, merge or
+deployment permitted.
+
+**Real remaining source gates:** Tiingo source
+and L1 retained real 4,063 minute rows in the
+existing external archive as of October 11,
+but source first-known is October 11 and
+event time was October 9; retroactive
+download cannot be live PIT observation.
+Original Data OS canonical PIT aliases
+and ETF SPY identity, exact volume units/
+split basis, first-known revision and
+dataset-use rights require source owner
+selection before BVC/quote/scientific
+pilot. Source-only accepted PR remains
+Draft/HOLD. Next publish this bounded
+original-branch pure checker, remote
+readback and exact-head hosted checks.

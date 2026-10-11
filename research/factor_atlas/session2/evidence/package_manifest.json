@@ -2,15 +2,15 @@
   "ci_registration_receipt": "session2/evidence/ci_registration_preflight.json",
   "customer_publication_authorized": false,
   "external_ci_workflow_path": ".github/workflows/factor-atlas-reference.yml",
-  "external_ci_workflow_sha256": "3e2213d59a03bf0d275bb1d5c7f57c396610a0f3f4e9eacabba01f025dd97c69",
+  "external_ci_workflow_sha256": "deb915d3d3715c94ac39fa0e02e3c8f641c38f95a854d15fe11500188b99142f",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 135897,
-      "sha256": "31de4c14cca2aef2d73ab8e00cc09d503b5ed2894329501d06ce05d0a5cf83d1"
+      "bytes": 140621,
+      "sha256": "1b4a19229c7cddcdac0fed9bc0be53b0c6b343dc79313676e7cd04e7d5a72972"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 65169,
-      "sha256": "e556cf5c75ebee8be4bcfac110aa544fc7ca6258b97094dc330b41d8cad2f3ca"
+      "bytes": 69163,
+      "sha256": "9c405df202e007c6b9eb713dc97aacc664ef0cb5329241ee65603a158348d321"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 5261,
@@ -51,6 +51,10 @@
     "session2/SOURCE_INTAKE_PREFLIGHT.md": {
       "bytes": 9998,
       "sha256": "1f6354c6fb870c33eb10e905895216f0d02a854a2d6b6f22420f7d8199b5c1e6"
+    },
+    "session2/TIINGO_PIT_ALIAS_BOUNDARY.md": {
+      "bytes": 7197,
+      "sha256": "5aba494a72b253daf6617ac55fd1bbddbd1d213c70852ecc89688f36b822e16d"
     },
     "session2/TIINGO_SOURCE_FIT_CONTRACT.md": {
       "bytes": 17778,
@@ -120,6 +124,10 @@
       "bytes": 2861,
       "sha256": "a6962c99cac4de1e20183146f0e28d2a3c2dbcc8b0f9584b12cb57087f8d7c99"
     },
+    "session2/evidence/native_tiingo_pit_alias_tests.json": {
+      "bytes": 4437,
+      "sha256": "f2c3546f4d8a35a32109b99c1a6e0a30b0adc9a75c7934f8fe0271043576104b"
+    },
     "session2/evidence/native_tiingo_source_fitness_tests.json": {
       "bytes": 7356,
       "sha256": "008ae05295d513a2bb0ac790a4f51d5312152782f99c4e5d93cb32bdba9e1820"
@@ -171,6 +179,10 @@
     "session2/evidence/source_intake_witness.json": {
       "bytes": 1099,
       "sha256": "1b660a613f2d203cf222d606615c10d764c7ac959a3fb46ca971dfef8ba48c18"
+    },
+    "session2/evidence/tiingo_pit_alias_synthetic.json": {
+      "bytes": 4467,
+      "sha256": "d7b76906d94ee042bd08fe5d4edabf507e6322c671d54984898e70f90eac148a"
     },
     "session2/evidence/tiingo_source_fitness_synthetic.json": {
       "bytes": 33765,
@@ -272,6 +284,10 @@
       "bytes": 10144,
       "sha256": "c90b4dbd04e62dec18c7a0069450d330f963301f02174e43b9e48e58a9cfed9c"
     },
+    "session2/prototype/test_tiingo_pit_alias.py": {
+      "bytes": 9270,
+      "sha256": "88c9933a61013e7255132b64d43c8e9e06a021d28ab36307ce3a61f729cc8d32"
+    },
     "session2/prototype/test_tiingo_source_fitness.py": {
       "bytes": 23933,
       "sha256": "187af5a94466417b98206731d443db397bf2bd97bbefa952ba807910d362c5f0"
@@ -287,6 +303,10 @@
     "session2/prototype/test_witnesses.py": {
       "bytes": 1362,
       "sha256": "5f428647df39eceb2668d67ddc11f844bfd5d261efa3c8ab599f1ad963334f74"
+    },
+    "session2/prototype/tiingo_pit_alias.py": {
+      "bytes": 9961,
+      "sha256": "1538142c00c82d1e9b9daf9ffac2685b22fafb778b719c511df76d32a5212a28"
     },
     "session2/prototype/tiingo_source_fitness.py": {
       "bytes": 20161,
@@ -322,18 +342,19 @@
   "native_quote_study_receipt": "session2/evidence/native_quote_study_tests.json",
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_read_contract_test_receipt": "session2/evidence/native_read_contract_tests.json",
-  "native_scoped_tests_passed": 492,
+  "native_scoped_tests_passed": 517,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
+  "native_tiingo_alias_admission_receipt": "session2/evidence/native_tiingo_pit_alias_tests.json",
   "native_tiingo_source_fitness_receipt": "session2/evidence/native_tiingo_source_fitness_tests.json",
   "native_window_cache_test_receipt": "session2/evidence/native_window_cache_tests.json",
   "original_source_effect_owner_PR": "macro#8698 comment 6115007538",
-  "predecessor_commit": "d6bf034337d7f8b12770f69b216291e10ddb9439",
-  "prepared_at_utc": "2026-10-11T23:22:45.740314+00:00",
+  "predecessor_commit": "0d22918f5e6a0d49cd33fbf0ab0aa955b085a266",
+  "prepared_at_utc": "2026-10-11T23:48:04.902722+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 36
+    "numbered_sections": 37
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }
