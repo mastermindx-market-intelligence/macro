@@ -299,24 +299,27 @@ read credential files or shim logs.
 
 ## 7. NEXT (critical path first)
 
-1. #8838 deploy-alpaca-secrets.yml: merge on concluded green (armed; watcher `bbyqxi0ml`) ->
-   `gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=false` (a branch
-   dispatch answered 404: workflow_dispatch resolves against the default branch) -> on success
-   SendMessage ORCH-N CONTINUE (`ticker-news-setup.sh --disarm` then `--arm`; canary after the VPS
-   pull) -> P3 drop-in only on a live canary with growing rows across two reads >=10 min apart; proof
-   `newsRailEnabled":true` at `.deployment-id 707648d52014`. Seat judges READY_FOR_SEAT_PROOF by
-   artifact and records PRODUCTION_PROOF for Package N (#8828 is MERGED c50af4eb0421; its proof is
-   this canary). marketing-press-feeds stays un-restarted until its cursor/dedupe semantics are read.
-2. DIDC #8830 MERGED 17:26:55Z as 8a75b657d821 and PRODUCTION_PROOF at 17:33:10Z (the 17:30Z
-   timer run saw HEAD move 8a75b657->b79cd122 mid-run, exit 0, completion_commit != deployed_commit;
-   ORCH-OPS read, seat-judged; ORCH-OPS ended 0/2 lanes). Then the covering main proof: `gh workflow
-   run ci.yml --ref main` only after run 38158841888 concludes and #8838 merges (the authority freeze
-   on #8830 and #8838 clears on one main-descendant SUCCESS; never dispatch over an in-flight run).
-   NEW: identity-unit budget lift — both runs used ~165 s of TimeoutStartSec=180 at CPUQuota=50%
-   (`app/deploy/macro-market-memory-identity.service`); small unit-file PR before it times out.
-3. Seat decision after the DIDC proof: identity timeout runway (5-20 days at 69 keys, 78-93% of
-   180 s) — memoize `_project_snapshot` / load store metadata once; never a TimeoutStartSec or
-   CPUQuota raise. Commission as its own lane with a before/after CPU-second measurement gate.
+1. Package N production proof under ORCH-N (`ad8bb35435bc5fe52`, resumed 18:06Z): the VPS Alpaca pair
+   is refreshed (#8838 MERGED 0a47364446e6; dispatch run 38162037064 SUCCESS 18:03Z; HTTP 200 probe) and
+   `macro-ticker-news.service` is loaded/active/running since 16:55:34Z (NRestarts=0) — the W9-2
+   "ticker-news.service not-found" read used the wrong unit name and is retracted. Canary x2 >=10 min
+   apart with growing benzinga-only rows -> P3 drop-in + ONE terminal restart; proof `newsRailEnabled":true`
+   at the LIVE `.deployment-id` (bc28e47ee54f since another seat's Terminal deploy restarted
+   terminal.service 18:18:44Z; 707648d52014 is its ancestor, so the rail code is in the live build). Seat judges READY_FOR_SEAT_PROOF by artifact (the two canary reads +
+   the rail line) and records PRODUCTION_PROOF for Package N (#8828 c50af4eb0421 proves through it).
+   marketing-press-feeds stays un-restarted: Chairman/marketing-owner act,
+   `gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=true`.
+2. #8841 identity-unit budget (TimeoutStartSec=600 / CPUQuota=100%) MERGED 18:11:43Z as f20602fdf5e6
+   (blob-verified) and INSTALLED on the VPS 18:27:36Z (`cmp` IDENTICAL, `TimeoutStartUSec=10min`,
+   `CPUQuotaPerSecUSec=1s`, NeedDaemonReload=no) — the 3-min pull had skipped 18:12-18:24Z while
+   `/run/lock/macro-update.lock` was held by another seat's Terminal build (`terminal-build.sh --target-sha …`
+   -> `npm run build`): designed serialization, never kill. Remaining run proof = the 18:30:03Z trigger
+   (first run under the new budget) ending `Result=success` with wall << 600 s; one bounded read >= 18:34Z.
+3. Covering main proof ci.yml run 38162041313 on f1ae1e0365fc (descendant of #8830 + #8838; dispatched
+   18:01:07Z over a clear field; watcher `blq7tnv8m`): in flight at commit time (18:2xZ, started 18:01Z; the watcher's MAINPROOF-CONCLUDED verdict lands in the next records commit). On SUCCESS both authority freezes
+   clear; on failure read failing job NAMES only, diagnose, never re-dispatch over an in-flight run. The
+   structural identity runway (memoize `_project_snapshot` / load store metadata once) stays a later lane
+   with a before/after CPU-second gate — #8841 bought headroom (165 s of 600), not the fix.
 4. Post-nightly proofs (B, D-experience) on 10-12 after the ~02:0xZ nightly + first :53 tick;
    data-health.yml's next main run after c50af4eb0421 should green on the regenerated artifacts.
 5. This records PR -> merge -> blob-verify; ONE #1202 checkpoint at the W8/W9 boundary once P2 or

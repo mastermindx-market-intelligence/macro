@@ -19,6 +19,10 @@ state_before: >-
   on a store refusal, option-OI capture failing before persistence since 2026-08-11, freshness
   sentinel refusing a served body over 8 MiB, us_board_provisional stale over the weekend.
 changed:
+  - path: "app/deploy/macro-market-memory-identity.service"
+    what: "W9-3 (#8841): TimeoutStartSec 180->600 and CPUQuota 50%->100% for the identity intake unit; the deploy test pins 600"
+  - path: "agentos/discoveries/DSC-WORKFLOW-DISPATCH-RESOLVES-AGAINST-THE-DEFAULT-BRANCH.md"
+    what: "W9-3: workflow_dispatch resolves the workflow FILE against the default branch, so a new .github/workflows file cannot be dispatched from its own PR branch; verified both ways on deploy-alpaca-secrets.yml"
   - path: "agentos/decisions/DEC-TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS.md"
     what: "Package N rights basis: the writer ingests Benzinga-sourced headlines through Alpaca's official news API under a committed headline-tier receipt; direct Benzinga stays a procurement option"
   - path: "agentos/decisions/DEC-MM-IDENTITY-INGEST-IDEMPOTENT-OVER-CAPTURED-DATES.md"
@@ -30,6 +34,12 @@ changed:
   - path: "research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-11.md"
     what: "W8 program file: lane matrix (ORCH-N, ORCH-OPS and their fabric lanes), DECIDED D0–D6 + seat rulings, FACTS, lane recipes, gates by owner, NEXT, Chairman blocker list"
 verified:
+  - claim: "PR #8838 (deploy-alpaca-secrets.yml) MERGED 2026-10-11T17:58:30Z as 0a47364446e6; dispatch run 38162037064 from main concluded SUCCESS 18:03Z; VPS /etc/macro-live.env + /etc/macro-ticker-news.env rotated (mtime 18:01:08Z, keylen 26 / seclen 44, mode 600, .bak-alpaca-20261011T180108Z kept) and the data.alpaca.markets news probe answers HTTP 200 — no secret value read"
+    command: "gh pr merge 8838 --squash --match-head-commit …; gh workflow run deploy-alpaca-secrets.yml --ref main; gh run view 38162037064 --json conclusion; ssh root@146.190.142.17 stat/grep -c/curl -o /dev/null -w %{http_code} (length and presence only)"
+  - claim: "PR #8841 (identity unit budget 600 s / 100%) MERGED 2026-10-11T18:11:43Z on exact head f1aa81a17b7a as f20602fdf5e6; both changed blobs identical on origin/main; needle TimeoutStartSec=600 x1. VPS install still pending at 18:17Z: /opt/macro HEAD f1ae1e0365fc because /run/lock/macro-update.lock is held by an in-flight Terminal build (flock -n skip)"
+    command: "gh pr merge 8841 --squash --match-head-commit f1aa81a17b7a; git fetch origin; git rev-parse origin/main:<path> per path; git grep TimeoutStartSec=600 origin/main -- app/deploy; ssh root@146.190.142.17 git -C /opt/macro rev-parse HEAD; lslocks / ps on the lock holder (read-only)"
+  - claim: "macro-ticker-news.service (the Package N writer) is loaded/active/running since 2026-10-11T16:55:34Z, NRestarts=0 — the W9-2 note 'ticker-news.service not-found' used the wrong unit name and is retracted"
+    command: "ssh root@146.190.142.17 systemctl show macro-ticker-news.service -p LoadState -p ActiveState -p SubState -p NRestarts -p ExecMainStartTimestamp -p FragmentPath"
   - claim: "PR #8819 (identity ingest idempotent over captured dates) MERGED 2026-10-11T14:50:31Z as b8a839236ddd; both changed paths blob-identical to origin/main; diff carries DEC T1/T2/T3 tests plus the every-date-diverges repair"
     command: "gh pr diff 8819; gh pr ready 8819 && gh pr merge 8819 --squash --match-head-commit a95921b0…; git fetch origin; per-path git rev-parse compare"
   - claim: "PR #8823 (alpaca provider hardening) MERGED 2026-10-11T14:48:18Z as d39672a34aaa; all 6 changed paths blob-identical to origin/main"
@@ -255,3 +265,47 @@ completion_commit ≠ deployed_commit — exactly the case #8830 fixes — so D-
 PRODUCTION_PROOF and ORCH-OPS has ended (0/2 lanes). New OPEN item from that read: both runs took
 ~165 s wall for ~82 s CPU under CPUQuota=50% against TimeoutStartSec=180 (92% of the budget) — the
 identity unit needs a budget lift before the growing corpus times it out.
+
+## Checkpoint W9-3 (2026-10-11 18:2xZ)
+
+Alpaca activation unblocked. #8838 (`.github/workflows/deploy-alpaca-secrets.yml`) MERGED by the
+sweeper 17:58:30Z as 0a47364446e6 (head dbdf75a58f00 unchanged, 25/25 clean; blob verified on
+origin/main). The seat dispatched it from main at 18:01:03Z with `restart_press_feeds=false`: run
+38162037064 concluded SUCCESS 18:03Z; job log (counts only): both env files `key_id_lines=1
+secret_lines=1 cr_lines=0`, backups `*.bak-alpaca-20261011T180108Z` 0600. VPS proof (presence,
+length, diff only — values never read): /etc/macro-live.env and /etc/macro-ticker-news.env mtime
+18:01:08Z, keylen 26 / seclen 44, each CHANGED against its backup, the two files' pairs identical;
+an auth probe from the VPS (`GET /v1beta1/news?limit=1`, HTTP code only) answered 200 on the first
+attempt — the 401 class that froze the press-feeds cursor on 2026-08-04 is gone. The seat did NOT
+restart marketing-press-feeds.service (outward-facing marketing emitter; it loads the env at
+service start, its 401 path is stateless, and its catch-up is bounded to one newest-first page of
+≤50 items): the restart is a Chairman/marketing-owner act, `gh workflow run
+deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=true`. ORCH-N (`ad8bb35435bc5fe52`)
+resumed 18:06Z with the P2 rulings (`ticker-news-setup.sh --check/--install/--arm`; canary ×2 ≥10 min,
+source=benzinga only; P3 drop-in + one terminal restart, proof `newsRailEnabled":true` at
+.deployment-id = the LIVE id (bc28e47ee54f since another seat's Terminal deploy restarted terminal.service 18:18:44Z; 707648d52014 is its ancestor, so the rail code is in the live build); G3 → GLM build lane). RETRACTED from W9-2: "ticker-news.service
+not-found" used the wrong unit name — the writer unit is `macro-ticker-news.service`, loaded/active/
+running since 16:55:34Z (NRestarts=0, pid 3024662 `run_qbus_news.py --run`, cgroup
+`system.slice/macro-ticker-news.service`), so P2 install already happened before the key refresh. ORCH-N interim 18:2xZ: because the writer
+reads its env only at start, it re-armed it with the rotated pair through the committed script
+(`--disarm` → `--check` → `--install` → `--arm`, 18:20:21–18:20:59Z, all rc=0, secret_hits=0; the disarm is
+required because install refuses while active — recorded as a DEVIATION, accepted: the script IS the admitted
+lifecycle). Canary read 1b 18:25:47Z: health state=live, catchups_failed=0, connect_attempts=1,
+disconnects=0, last_successful_catchup 18:25:32Z, e406=0, anon /api/ticker-news/AAPL=401, revisions=0 (fresh
+start looks back 300 s; Sunday flow is thin) — growth sentinel every 600 s, max 12 reads. G3 health-codes
+lane g3-health-codes-20261011-r1 launched 18:24Z on ubuntu1 (glm-5.3).
+#8841 (`app/deploy/macro-market-memory-identity.service` TimeoutStartSec 180→600, CPUQuota 50%→100%;
+the deploy test pins 600) MERGED by hand 18:11:43Z on exact head f1aa81a17b7a as f20602fdf5e6
+(watcher 25/25 clean; both blobs SAME on origin/main; `TimeoutStartSec=600` needle ×1). VPS proof is
+pending: at 18:17Z /opt/macro HEAD was still f1ae1e0365fc because the 3-min pull had been skipping
+since 18:12Z — `/run/lock/macro-update.lock` (flock -n, exit 0 on contention) was held by an in-flight
+Terminal build from another seat's ssh session (`python3 -` heredoc → `terminal-build.sh --target-sha …`
+→ `npm run build`, started ~18:11:56Z). That is the lock's designed serialization, not a wedge; the seat
+left it alone. The install lands on the first `macro-update` tick after release (update.sh L819-862:
+cmp → systemd-analyze verify → install → daemon-reload → timer restart); INSTALLED 18:27:36Z: the build released the lock
+(no holder, 0 build processes), /opt/macro HEAD 8156a0b38c39, `cmp` IDENTICAL, `TimeoutStartUSec=10min`,
+`CPUQuotaPerSecUSec=1s`, NeedDaemonReload=no — PRODUCTION_PROOF for the install. The 17:30:25Z run (the last
+under 180 s / 50%) ended Result=success at 165 s wall / 81.96 CPU-s; the first run under the new budget is the
+18:30:03Z trigger and its `Result=success` is the remaining run proof.
+Covering main proof ci.yml run 38162041313 on f1ae1e0365fc (descendant of the #8830 and #8838
+merges; dispatched 18:01:07Z over a clear field; watcher `blq7tnv8m` at 120 s): in flight at commit time (18:2xZ, started 18:01Z; the watcher's MAINPROOF-CONCLUDED verdict lands in the next records commit)
