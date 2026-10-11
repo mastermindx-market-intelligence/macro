@@ -102,6 +102,7 @@ def _render(**overrides) -> str:
             "cards": [],
         },
         "imce_prospective": {"available": False},
+        "verdict_preservation": {"available": False},
         "seasonality_record": {
             "available": False,
             "registered": 0,

@@ -1547,6 +1547,150 @@
       "at": "2026-10-03T08:05:54.785908+00:00",
       "activated": true,
       "importance": 62
+    },
+    "https://www.whitehouse.gov/?p=52188": {
+      "id": "wh-2026-10-04-us-leads-international-coalition-to-endorse-kyoto-vision-for-a-golden-age-of-sci",
+      "at": "2026-10-04T13:11:44.878204+00:00",
+      "activated": false,
+      "importance": 35
+    },
+    "https://www.whitehouse.gov/?p=52201": {
+      "id": "wh-2026-10-02-presidential-message-on-down-syndrome-awareness-month-6778",
+      "at": "2026-10-05T15:59:45.065167+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52273": {
+      "id": "wh-2026-10-05-president-trump-and-republicans-are-delivering-real-results-for-nebraska",
+      "at": "2026-10-05T22:36:58.800296+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "tw-2026-09-30-tga-release": {
+      "id": "tw-2026-09-30-tga-release",
+      "at": "2026-10-05T22:37:09.534536+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=52309": {
+      "id": "wh-2026-10-06-emergency-tax-relief-on-diesel-fuel",
+      "at": "2026-10-06T02:58:19.050226+00:00",
+      "activated": true,
+      "importance": 62
+    },
+    "https://www.whitehouse.gov/?p=52306": {
+      "id": "wh-2026-10-06-presidential-message-on-child-health-day-c67c",
+      "at": "2026-10-06T02:58:25.840887+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=52304": {
+      "id": "wh-2026-10-06-presidential-message-on-fire-prevention-week",
+      "at": "2026-10-06T02:58:27.288019+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=52298": {
+      "id": "wh-2026-10-06-president-trump-takes-decisive-action-to-lower-diesel-costs-for-american-trucker",
+      "at": "2026-10-06T02:58:42.401348+00:00",
+      "activated": true,
+      "importance": 68
+    },
+    "https://www.whitehouse.gov/?p=52293": {
+      "id": "wh-2026-10-06-fact-sheet-president-donald-j-trump-promotes-diesel-affordability",
+      "at": "2026-10-06T02:59:05.386100+00:00",
+      "activated": true,
+      "importance": 68
+    },
+    "https://www.whitehouse.gov/?p=52325": {
+      "id": "wh-2026-10-06-what-they-are-saying-president-trump-delivers-immediate-diesel-relief-saving-ame",
+      "at": "2026-10-06T17:11:08.713808+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=52337": {
+      "id": "wh-2026-10-06-presidential-message-on-german-american-day",
+      "at": "2026-10-06T21:40:02.723775+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52408": {
+      "id": "wh-2026-10-07-national-energy-dominance-month-2026",
+      "at": "2026-10-07T21:58:50.508672+00:00",
+      "activated": true,
+      "importance": 68
+    },
+    "https://www.whitehouse.gov/?p=52410": {
+      "id": "wh-2026-10-07-congressional-bills-h-r-5345-and-s-766-signed-into-law",
+      "at": "2026-10-07T21:59:00.149339+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52406": {
+      "id": "wh-2026-10-07-columbus-day-2026",
+      "at": "2026-10-07T21:59:01.516148+00:00",
+      "activated": false,
+      "importance": 2
+    },
+    "https://www.whitehouse.gov/?p=52402": {
+      "id": "wh-2026-10-07-lower-taxes-safer-streets-stronger-border-president-trumps-texas-record",
+      "at": "2026-10-07T21:59:02.902168+00:00",
+      "activated": false,
+      "importance": 20
+    },
+    "https://www.whitehouse.gov/?p=52418": {
+      "id": "wh-2026-10-08-a-financial-stake-in-the-future-for-nearly-70-million-american-children-trump-ac",
+      "at": "2026-10-08T01:55:34.196060+00:00",
+      "activated": true,
+      "importance": 67
+    },
+    "https://www.whitehouse.gov/?p=52455": {
+      "id": "wh-2026-10-08-fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-init",
+      "at": "2026-10-08T16:28:52.915936+00:00",
+      "activated": true,
+      "importance": 74
+    },
+    "https://www.whitehouse.gov/?p=52465": {
+      "id": "wh-2026-10-08-president-trump-is-putting-american-industry-jobs-and-paychecks-back-on-the-map",
+      "at": "2026-10-08T22:04:14.296166+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=52459": {
+      "id": "wh-2026-10-08-president-trump-presents-national-medals-of-science-and-national-medals-of-techn",
+      "at": "2026-10-08T22:04:24.521984+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52528": {
+      "id": "wh-2026-10-09-congressional-bills-s-195-signed-into-law",
+      "at": "2026-10-09T20:59:05.253227+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52513": {
+      "id": "wh-2026-10-09-remarks-by-director-michael-kratsios-at-the-science-a-new-golden-age-summit",
+      "at": "2026-10-09T20:59:06.792494+00:00",
+      "activated": false,
+      "importance": 35
+    },
+    "https://www.whitehouse.gov/?p=52486": {
+      "id": "wh-2026-10-08-establishment-of-a-committee-of-inquiry-to-investigate-allegations-of-false-stat",
+      "at": "2026-10-09T20:59:15.835466+00:00",
+      "activated": true,
+      "importance": 78
+    },
+    "https://www.whitehouse.gov/?p=52542": {
+      "id": "wh-2026-10-09-presidential-message-on-leif-erikson-day",
+      "at": "2026-10-10T00:50:21.944863+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=52545": {
+      "id": "wh-2026-10-10-the-state-of-american-manufacturing",
+      "at": "2026-10-10T22:31:23.517298+00:00",
+      "activated": false,
+      "importance": 35
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

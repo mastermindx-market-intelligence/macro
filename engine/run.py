@@ -579,7 +579,7 @@ def run(force: bool = False) -> dict:
     # read — shape (level/slope/curvature + the Litterman-Scheinkman PCA variance), every
     # canonical slope + its momentum, the bull/bear × steepener/flattener regime with its
     # Fed-cycle phase and asset map, the recession dashboard (near-term forward spread +
-    # NY-Fed probit + un-inversion + TP-adjusted), forward rates with carry/roll-down, and
+    # NY-Fed probit + un-inversion + legacy TP10 heuristic), forward rates with carry/roll-down, and
     # four typed signal families (core-macro / sector / stock-factor / market-tendency).
     # DISPLAY-ONLY leaf (engine/yield_curve.py) reusing the bond-engine curve primitives;
     # the scored-leg gate found NO curve leg robust enough to score. Never fatal.

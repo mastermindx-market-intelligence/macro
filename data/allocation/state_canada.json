@@ -8,17 +8,16 @@
     "ca_insurers",
     "ca_oil_gas",
     "ca_pipelines",
-    "ca_rails_ind",
     "ca_silver_royalty",
     "ca_tech"
   ],
   "held": [
-    "ca_base_metals",
     "ca_oil_gas",
     "ca_gold",
+    "ca_base_metals",
     "ca_banks"
   ],
-  "leader": "ca_base_metals",
+  "leader": "ca_oil_gas",
   "names": {
     "ca_asset_mgrs": "Asset Managers & Alternatives",
     "ca_banks": "Big Banks",

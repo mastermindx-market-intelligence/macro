@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-10-02",
-  "generated_at": "2026-10-03T17:39:50.709017+00:00",
+  "as_of": "2026-10-08",
+  "generated_at": "2026-10-11T05:14:11.777808+00:00",
   "is_context_only": true,
-  "n_snapshots": 1084,
-  "n_days": 37,
+  "n_snapshots": 1191,
+  "n_days": 40,
   "horizons": {
     "5": {
-      "n_matured": 976,
+      "n_matured": 1084,
       "by_stage": {
         "running": {
-          "n": 902,
-          "mean_fwd_rel": -0.0065,
-          "hit_rate": 0.417
+          "n": 1010,
+          "mean_fwd_rel": -0.006,
+          "hit_rate": 0.415
         },
         "coiling": {
           "n": 36,
@@ -21,22 +21,22 @@
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0114,
+          "mean_fwd_rel": 0.0117,
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0132,
-      "running_ic_t_hac": -0.185,
+      "running_ic": -0.0029,
+      "running_ic_t_hac": -0.041,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 891,
+      "n_matured": 976,
       "by_stage": {
         "running": {
-          "n": 817,
-          "mean_fwd_rel": -0.0116,
-          "hit_rate": 0.368
+          "n": 902,
+          "mean_fwd_rel": -0.0105,
+          "hit_rate": 0.379
         },
         "coiling": {
           "n": 36,
@@ -45,22 +45,22 @@
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0142,
+          "mean_fwd_rel": 0.0148,
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0263,
-      "running_ic_t_hac": -0.411,
+      "running_ic": -0.0066,
+      "running_ic_t_hac": -0.101,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 714,
+      "n_matured": 818,
       "by_stage": {
         "running": {
-          "n": 640,
-          "mean_fwd_rel": -0.025,
-          "hit_rate": 0.317
+          "n": 744,
+          "mean_fwd_rel": -0.027,
+          "hit_rate": 0.305
         },
         "coiling": {
           "n": 36,
@@ -69,31 +69,31 @@
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0183,
+          "mean_fwd_rel": 0.0197,
           "hit_rate": 0.605
         }
       },
-      "running_ic": -0.0007,
-      "running_ic_t_hac": -0.018,
+      "running_ic": 0.0195,
+      "running_ic_t_hac": 0.48,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 65,
+      "n_matured": 177,
       "by_stage": {
         "running": {
-          "n": 56,
-          "mean_fwd_rel": -0.0442,
-          "hit_rate": 0.339
+          "n": 165,
+          "mean_fwd_rel": -0.0491,
+          "hit_rate": 0.309
         },
         "coiling": {
-          "n": 8,
-          "mean_fwd_rel": -0.0796,
-          "hit_rate": 0.25
+          "n": 10,
+          "mean_fwd_rel": -0.071,
+          "hit_rate": 0.2
         },
         "coiling_primed": {
-          "n": 1,
-          "mean_fwd_rel": -0.0704,
+          "n": 2,
+          "mean_fwd_rel": -0.0446,
           "hit_rate": 0.0
         }
       },
@@ -116,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-09-11",
-      "id": "russell:oil-gas-equipment-services",
-      "name": "Oil & Gas Equipment & Services",
+      "date": "2026-09-17",
+      "id": "baskets:silver-miners",
+      "name": "Silver Miners",
       "stage": "running",
-      "fwd_rel": -0.1003,
+      "fwd_rel": -0.1396,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:oil-gas-e-p",
-      "name": "Oil & Gas E&P",
+      "date": "2026-09-17",
+      "id": "baskets:gold-miners",
+      "name": "Gold Miners",
       "stage": "running",
-      "fwd_rel": -0.0988,
+      "fwd_rel": -0.1278,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:building-products-equipment",
-      "name": "Building Products & Equipment",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.0811,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-11",
-      "id": "russell:auto-truck-dealerships",
-      "name": "Auto & Truck Dealerships",
+      "date": "2026-09-17",
+      "id": "subsectors:agricultural-inputs",
+      "name": "Agricultural Inputs",
       "stage": "running",
-      "fwd_rel": -0.0793,
+      "fwd_rel": -0.1008,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
+      "date": "2026-09-17",
+      "id": "baskets:crypto",
+      "name": "Crypto & Digital Assets",
+      "stage": "running",
+      "fwd_rel": -0.069,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-17",
+      "id": "russell:reit-healthcare-facilities",
+      "name": "REIT - Healthcare Facilities",
+      "stage": "running",
+      "fwd_rel": -0.0689,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-17",
       "id": "subsectors:auto-manufacturers",
       "name": "Auto Manufacturers",
       "stage": "running",
-      "fwd_rel": -0.078,
+      "fwd_rel": -0.0595,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:insurance-life",
-      "name": "Insurance - Life",
+      "date": "2026-09-17",
+      "id": "russell:building-products-equipment",
+      "name": "Building Products & Equipment",
       "stage": "running",
-      "fwd_rel": -0.0735,
+      "fwd_rel": -0.0557,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:broadcasting",
-      "name": "Broadcasting",
+      "date": "2026-09-17",
+      "id": "subsectors:farm-heavy-construction-machinery",
+      "name": "Farm & Heavy Construction Machinery",
       "stage": "running",
-      "fwd_rel": -0.0724,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-11",
-      "id": "baskets:us-sector-comm",
-      "name": "Communication Services (Equal-Weight)",
-      "stage": "running",
-      "fwd_rel": -0.0631,
+      "fwd_rel": -0.0556,
       "horizon_d": 21
     }
   ],

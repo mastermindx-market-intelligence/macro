@@ -1,0 +1,206 @@
+{
+  "archive": {
+    "byte_length": 1244583,
+    "sha256": "0a89ad296ac36a6732f75bb669d2051bf9ad19ff67da656a86897b4447bf7916"
+  },
+  "entries": [
+    {
+      "archive_name": "native_receipts/pro003-ci-archive-native-readback-006.json",
+      "byte_length": 32284,
+      "sha256": "5085be0c6463ab78530ce7de820202aa6fb88fc7a0cf6e35c4ac1acf93f2649f",
+      "source": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro003-ci-archive-native-readback-006.json"
+    },
+    {
+      "archive_name": "native_receipts/pro003-explicit-required-blob-fetch-010.json",
+      "byte_length": 2902,
+      "sha256": "cdd3c6c9ea3c5dcd6e585d4cdb7639a236ac52738b486c9d79a37441358c94ae",
+      "source": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro003-explicit-required-blob-fetch-010.json"
+    },
+    {
+      "archive_name": "native_receipts/pro003-final-release-gate-004.json",
+      "byte_length": 16593,
+      "sha256": "4ab9519a63a6194708225dbb24585c900df1e048f41f5c6e04693ac0d8f7aabb",
+      "source": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro003-final-release-gate-004.json"
+    },
+    {
+      "archive_name": "native_receipts/pro003-integration-refusal-reconciliation-008.json",
+      "byte_length": 5131746,
+      "sha256": "0d18207ebba7973c7e3d3ac2a85aab068872772b67cd4bb20b459f47b99a081b",
+      "source": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro003-integration-refusal-reconciliation-008.json"
+    },
+    {
+      "archive_name": "native_receipts/pro003-main-refresh-integration-006.json",
+      "byte_length": 1222,
+      "sha256": "23d2841738a1d34f0119709779fd4b244dc253a1b74aba695f5c33917519771a",
+      "source": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro003-main-refresh-integration-006.json"
+    },
+    {
+      "archive_name": "native_receipts/pro003-main-refresh-integration-011.json",
+      "byte_length": 1618,
+      "sha256": "a40b57c1b4e64bdea6ef7408ad949bc361f62c1bcea6927eda3ae6e74fadbce7",
+      "source": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro003-main-refresh-integration-011.json"
+    },
+    {
+      "archive_name": "native_receipts/pro003-main-refresh-preflight-006.json",
+      "byte_length": 916286,
+      "sha256": "e3e8aa9112ccd1fd7c3ce107f83c7b2834afb6c0f5afaf8c69057de78457c6b8",
+      "source": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/pro003-main-refresh-preflight-006.json"
+    },
+    {
+      "archive_name": "process_returns/CI_NATIVE_READBACK_COMPLETION_006.json",
+      "byte_length": 681,
+      "sha256": "27039837fca35e65954a97679f8e779859e952c55b9c6ddb4671c8c160679a40",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/CI_NATIVE_READBACK_START_006.json",
+      "byte_length": 353,
+      "sha256": "b6ffdca70e08bec6849b3084f9bc4ac30b218487c7a3bbd2035c47d1a855508f",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/EXPLICIT_BLOB_FETCH_COMPLETION_010.json",
+      "byte_length": 1757,
+      "sha256": "610a3ea1bc598b808e7c71ab82562f28bedf6ebb9475e212d14c9bc70ac011fc",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/EXPLICIT_BLOB_FETCH_START_010.json",
+      "byte_length": 353,
+      "sha256": "874589127a2e0699a018de2bdd37c35ce5632acf7e9b44e5bea398333be9a597",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/INTEGRATION_COMPLETION_006.json",
+      "byte_length": 824,
+      "sha256": "11c3b97a88db59eee4d4a1de965a856578a644829ecd93e5f11b79d827b5e1ae",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/INTEGRATION_START_006.json",
+      "byte_length": 353,
+      "sha256": "6d63139b6b4f7702614e15c1de87ba50e60a14de62ea2714130d0fa2e30679b2",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/LOCAL_WRITE_STALL_635.json",
+      "byte_length": 385,
+      "sha256": "5ae00b22be81485846e873b83c18bb1145f72a4525ed22672b2dfcc5cfb2a184",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/NORMAL_INTEGRATION_COMPLETION_011.json",
+      "byte_length": 1177,
+      "sha256": "3c89a506c2aef01f5ee31bd6304e27fb33200992b022546823f3fb4c41aaad40",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/NORMAL_INTEGRATION_START_011.json",
+      "byte_length": 665,
+      "sha256": "752f652933dc5488616474abc87b9672944c9d29105cfb41cf7e21306450f713",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/PREFLIGHT_PRINCIPAL_OBSERVATION_NOT_RAW_006.json",
+      "byte_length": 309,
+      "sha256": "c00b763ab0befa1dad5b73a8d65bebf080f32c4d7636bf45f5e14e548db6cfa6",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/PREFLIGHT_START_006.json",
+      "byte_length": 353,
+      "sha256": "897d7c297ff50634941969d0e7988833216884245ac00b54c3c8e7e550119745",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/REFUSAL_RECONCILIATION_COMPLETION_007.json",
+      "byte_length": 1253,
+      "sha256": "7b8d74905786a8bb992b9ad9c2326a830c6672e090e3ac36fd2d4bedf967d68d",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/REFUSAL_RECONCILIATION_COMPLETION_008.json",
+      "byte_length": 2534,
+      "sha256": "dd00daaa0d667b464afd6d39721ad2137af7d4a047b37b5a05d0d9b166432ace",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/REFUSAL_RECONCILIATION_START_007.json",
+      "byte_length": 353,
+      "sha256": "7f65cdc7a7bdb05fa5c971b9c75f173e0d8277e2aaf7083aadbeac13153d1cac",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "process_returns/REFUSAL_RECONCILIATION_START_008.json",
+      "byte_length": 353,
+      "sha256": "08d522de20947d81742e47abb201cc6e72d97ca433ada0632d0a886ca7ef8579",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/CI_NATIVE_READBACK_SCRIPT_006.py",
+      "byte_length": 52883,
+      "sha256": "def34463c418b3648316a9c2c0167f9d70f0d0d5a3dd8ee3958555853acf8fde",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/EXPLICIT_REQUIRED_BLOB_FETCH_SCRIPT_009_UNEXECUTED.py",
+      "byte_length": 8148,
+      "sha256": "7cd8f10ca8ca8fef416b545fb5e24a94dedf07cbcb5ee322bee7ad8332909de6",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/EXPLICIT_REQUIRED_BLOB_FETCH_SCRIPT_010.py",
+      "byte_length": 8179,
+      "sha256": "bb9a075b60317e210f69c9e0d318f79663c45df6212e8383b78f82dc0e0ccae7",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/NORMAL_INTEGRATION_LAUNCH_011.py",
+      "byte_length": 5642,
+      "sha256": "612eb8e7a886fbb9f83bc9f881f03270df6bc4200850fc3104b2ad32237a6407",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/NORMAL_INTEGRATION_SCRIPT_006.py",
+      "byte_length": 4137,
+      "sha256": "839f67d8b25a1a5cc6c72f60cf7455cd99fcfaa7dc509fca1865fa1b8928c687",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/NORMAL_INTEGRATION_SCRIPT_011.py",
+      "byte_length": 5017,
+      "sha256": "aa08e58d8f71cf5d5294c03d251d443e0f5dbe413f75e917bf0a8a83fcba989a",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/PREFLIGHT_SCRIPT_006.py",
+      "byte_length": 13066,
+      "sha256": "85a7c2a59c8959e0897394c0c4633ec53526e0d8ec67925a05e51ea66077ba7f",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/REFUSAL_RECONCILIATION_SCRIPT_007.py",
+      "byte_length": 6533,
+      "sha256": "5d10b85628505b6cce2a327e126047fd76b1684256b53ece41aa955128b31917",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "scripts/REFUSAL_RECONCILIATION_SCRIPT_008.py",
+      "byte_length": 6636,
+      "sha256": "5d2b9a25f36f8130c8cb528f558df7c256157b1291006818ef154420151da44d",
+      "source": "exact principal functions-store text via verified Git transport"
+    },
+    {
+      "archive_name": "transport/CORE_TRANSPORT_PAYLOAD_012.json",
+      "byte_length": 198662,
+      "sha256": "37b3748dc3e0cdd43fa9e48bb4e1a0ae97a8654a853b5c186d8afe829a3ed223",
+      "source": "Git blob ac24abc38084ec24c7ec06f8b7af29f7b84bc838"
+    }
+  ],
+  "member_count": 32,
+  "schema": "economic_network.native_recovery_archive/v1",
+  "supplement_63_file_archive_included": false,
+  "supplement_transfer_state": "Pending local carrier; not relabeled included",
+  "uncompressed_bytes": 6423257,
+  "verification": "Every original native identity and every archive member checked; no archived script execution"
+}

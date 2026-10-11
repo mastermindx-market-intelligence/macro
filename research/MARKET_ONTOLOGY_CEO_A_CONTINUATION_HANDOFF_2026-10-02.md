@@ -5,6 +5,8 @@ macro#6819 (CEO A packet comment 5946048717; census 5946068837; CEO B packet 594
 the seat goes, at resumption grain. A cold successor resumes from §1 (carrier), §3 (lane matrix) and
 §4 (ledger) in that order. Dates are absolute (UTC).
 
+**Latest continuation checkpoint: §8 (2026-10-11).** The current A/B roots and delivered product-priority addendum below supersede historical account names and labor caps; existing held operations and proof boundaries remain.
+
 ## 0 Mission and exit gate
 
 Own F01–F05 (macro/markets, policy/geopolitics, options expression, ontology/transmission, event
@@ -27,6 +29,16 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
   `claude/ceo-a-marketontology-handoff-22e67c` (records only so far).
 - Pins read 2026-10-02: macro origin/main `9e9f64b099b4`; Mastermind origin/master `b3627c580dd3`
   (sol_skills INDEX 1.0.1 read from that commit); Terminal origin/master `c35b9a1d50ca`.
+- **SEAT TRANSFER 2026-10-10 ~22:0xZ (Chairman order, D97).** The CEO A seat moves from session
+  `587e986f-b055-4df2-a9ed-ca3a709fcc5b` (Claude6) to a fresh session on the **Claude3** account under a
+  **full-throttle mandate** ("run on full throttle to get as much done as possible"). The outgoing
+  session stops acting the moment RECORDS_W15 is merged and the one seat-transfer notice is on #6819;
+  from then on, one seat = one writer = the Claude3 session. The successor resumes from §7 (successor
+  brief), then §3 → §4 → §5 → §6. The seat kit (the merge recipe, the one-watcher recipe, the FENCE file) is
+  at `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/ceo-a-marketontology-2026-10-10/`.
+- Slack `read_thread` has failed on EVERY tick since 2026-10-05 05:06Z (the host PreToolUse hook times
+  out before the call runs). So **#6819 is the effective carrier.** Re-try the Slack thread once per
+  tick, and if it ever answers, read it from ts `1790922338.230299`.
 
 ## 2 Wave plan
 
@@ -44,7 +56,12 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | W8 006 PAGE chain + O28 + F00 packet records | #8300 (006 page R1–R4d) · #8307 (O28 R1–R5) · records W8 #8314 | every PR merged on CONCLUDED checks + blob-verified; Sol's F00 single-writer packet (D59–D72) in main's ledger; O32 natural-run read | **DONE 08:15:54Z 10-03** — #8307 `05bd9aac513a` 07:02Z, #8300 `3565430d3cb6` 08:03:45Z, #8314 `e72c6b85d82e` 08:15:54Z; O32 PROVEN 08:12:01Z (D73) |
 | W9 records (006/008 PRODUCTION_PROOF restamps + 007 scheduler owner + O32 proof + 032 window) | seat-executed RECORDS_W9 (L.7), one PR, stage 1 committed before the covering render concluded, stage 2 after `served_proof_8300.sh` + sanctions_map CSS needles | restamps cite served `.com` needles only (no render = no restamp); union-only wave so `OUTSIDE_UNION_SHA256` unchanged; pin test gains W9 assertions; merged on concluded checks + blob-verified | DONE — #8331 MERGED `33b2ffdde727` 10:47:31Z (D73–D78; readback 5968436346) |
 | W10 records (R4e evidence-tool hardening record + W9 landing + 032 window read) | seat-executed RECORDS_W10 (L.7), one PR, after #8334 MERGED | records cite merged shas, CI and served facts only; 032 cites the natural run's own step output or its absence | DONE — #8340 MERGED `ec6a90103783` 11:14:13Z (D79–D80; readback 5968627537) |
-| W11 records (W10 landing + MO-PAID-032 dormant natural-run receipt + D81/D82 FIXBIND-01 admission + MO-DELTA-007 F13 receipts) | seat-executed RECORDS_W11 (L.7, sole F00 writer), one PR | records cite the natural run's own step output, merged shas and carrier ids only; no state promotion without proof (032 and 007 both stay PARTIAL) | 22:1xZ 10-03 (D81–D84) → this PR |
+| W11 records (W10 landing + MO-PAID-032 dormant natural-run receipt + D81/D82 FIXBIND-01 admission + MO-DELTA-007 F13 receipts) | seat-executed RECORDS_W11 (L.7, sole F00 writer), one PR | records cite the natural run's own step output, merged shas and carrier ids only; no state promotion without proof (032 and 007 both stay PARTIAL) | DONE — #8369 MERGED `bd82585f653b` 22:27:13Z 10-03 (D81–D84; readback 5974140047) |
+| W12 records (W11 landing + MO-DELTA-007 INSTALLED/BUILT_NOT_PROVEN + CEO B row evidence batches 5978004918/5978053351 recorded on union rows 059/002/054/021 + F12 correction 5978166980: MO-PAID-056/MO-DELTA-038 NOT_BUILT → BUILT_NOT_PROVEN; part 2 5978248217: 055/084 → BUILT_NOT_PROVEN, 052 → PARTIAL; digest re-pinned; part 3 5978485628: MO-PAID-032 PARTIAL → BUILT_NOT_PROVEN on a union row + F11/F08 evidence on 046/053/054/047/003/027) | seat-executed RECORDS_W12 (L.7, sole F00 writer), one PR | every B claim re-verified by A on origin/main + the live site before writing; union rows only (OUTSIDE_UNION_SHA256 unchanged); the only state moves are F12 rows on A-verified merged+applied+served facts — 056/038 → BUILT_NOT_PROVEN (D87), 055/084 → BUILT_NOT_PROVEN and 052 → PARTIAL (D88) — plus one F11 vocabulary alignment on unchanged facts, 032 PARTIAL → BUILT_NOT_PROVEN (D89, union row; Sol ruled 'implementation present / activation + natural proof missing' without naming the word); 021/054/003/027 stay PARTIAL, 046/053/047 stay BUILT_NOT_PROVEN, 002/059 stay PROVEN_LIVE | DONE — #8425 MERGED `6dbfad8766f4` 10:10:46Z 10-04 from exact head `0920ae7c1bc5` (D85–D89; readback 5978922287) |
+| W13 records (W12 landing + FIXBIND-01 MERGED (D90) + #8434 facts and the MO-PAID-027 evidence note (D91) + CEO B 5987672592 evidence: MO-DELTA-007's first natural exercise, MO-DELTA-003 / Terminal #805, Terminal #806 facts (D92)) | seat-executed RECORDS_W13 (L.7, sole F00 writer), one PR | union rows only (OUTSIDE_UNION_SHA256 unchanged); NO state moves — 006 stays PROVEN_LIVE; 027/003/007 stay PARTIAL (007's rung stays BUILT_NOT_PROVEN per D85: the installed worker does not yet score); #8434/#806 map to no admitted row (FACTS only) | DONE — #8465 MERGED `c35996123e3f` 05:05:30Z 10-05 (D90–D92; readback 5988458120) |
+| W14 records (W13 landing + CEO B 6004683154 F13-WS natural-run result on MO-DELTA-007, #820 on MO-PAID-054 and #807 on MO-DELTA-003 by its own body's lineage (D93); CEO B's other Terminal lanes #816/#817/#818/#822/#823/#830 as FACTS, Add Symbol / Watchlist import as OPEN for Sol (D94)) | seat-executed RECORDS_W14 (L.7, sole F00 writer), one PR | union rows only (OUTSIDE_UNION_SHA256 unchanged); NO state moves — 003/007/054 stay PARTIAL (007: the worker now completes at natural cadence, but no authorized real claim has been scored); a row is written only when the PR body names it or names its recorded lineage | **DONE** — #8496 MERGED `543e6513453b` 00:05:43Z 10-06 (exact head `2ca63534`, `--match-head-commit`), blob-verified; readback #6819 6006069622; B ACCEPT 6006318924 |
+| W15 records + SEAT TRANSFER (consumed edges 10-06→10-10 as FACTS (D95), MO-PAID-032 10-10 natural run CANCELLED before its producer step (D96), CEO A seat → Claude3 under a full-throttle mandate (D97), successor brief §7) | seat-executed RECORDS_W15 (L.7, sole F00 writer), one PR | NO ledger row moves (no edge since W14 names an admitted F01–F05 row; 032 had no observation); records cite carrier ids, run ids and merged shas only | 22:0xZ 10-10 → this PR, then hand-off |
+| W16 product resumption + source/local proof | CEO A root `01a128b5-e26b-7b12-94b5-231bfe0b8036`; sole F00 writer; B verifies | Six union-row evidence updates, no state promotion; J1 #8769, F01 #8771/#8778, F05 #8775, B Settings #917 and bounded dependency returns | SOURCE RECORDS MERGED #8779 ea7fa5bbb44be1c3938abd03b9fbf9f378c42b2b; §9 qualifies remaining publication |
 
 ## 3 Lane matrix
 
@@ -58,7 +75,7 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | TX_ANCHOR_PR | seat-executed (L.7; `gh pr list` shows no open PR on `templates/transmission.html.j2` besides none) | `…/ceo-a-tx-anchor-3ad6721c0b8f4890` branch `claude/ssd-ceo-a-tx-anchor-3ad6721c0b8f4890` | main `32d8835c92dc` | adds `id="tx-chain-{{ ch.id }}"` to the Cascade Monitor `cm-row` + test pin; the pin promised to B (#6819 5947067308 §1) | 1 PR | **PR #8262** head `2779362ae794`, armed 07:18Z (arm-last); watcher `out/WATCH_8262.out` 300 s × 23 | CI |
 | MO-PAID-023_UK_DIAG | read-only diagnosis (Opus `reviewer`, verification framing) | `…/ceo-a-uk-diag-3d63d441605130fc` (main `32d8835c92dc`) | main | `.lane/MO-PAID-023_UK_DIAG_R1.md`; sentinel `MO-PAID-023_UK_DIAG: <V> <HEAD12>`; page = `policy_watch.html` (live 177,153 B, `data-uk-state="model_unavailable"` 07:20Z) | ~24 turns | RUNNING 07:19Z |
 | F05_017_BUILD | external lane (remote_sub.sh → m1/mini2; m2 admits no local glm/minimax) | TBD | main | Candidate A per `.lane/F05_017_SPEC_R1.md`; owned files impact.py, news.html.j2, test_chronicle_impact.py, test_news_page_render.py | 1 PR | packet `pkts/F05_017_BUILD_R1.pkt` (17 KB, frozen spec inlined); host_pick 07:26Z: glm NONE, **minimax → mini2 (0.69) / m1 (0.56)**, cursor → ubuntu1; dispatch via `remote_sub.sh mini2 minimax` next |
-| RECIPROCAL_ATTENTION | CronCreate `83db50fe` hourly :13 (session-only, 7-day expiry) | — | — | reads Slack thread since ts 1790922338.230299 + #6819 comments since 5946701303 | hourly | WATCH_ARMED 06:58Z |
+| RECIPROCAL_ATTENTION | CronCreate `83db50fe` hourly :13 (session-only, 7-day expiry) | — | — | reads Slack thread since ts 1790922338.230299 + #6819 comments since 5946701303 | hourly | WATCH_ARMED 06:58Z → **ENDS with session 587e986f at the 10-10 transfer**; the successor arms its own tick (text in §7) |
 
 | MO-PAID-023_FIX_R1 | external MiniMax (m1) | m1 `.claude/worktrees/mo-paid-023-uk-desk-fallback-92e3c028` | main | `rs_20261002T072352Z_44341` | 2 h | **FAILED/REJECTED** 07:38Z — spawned a native Sonnet child, killed at the 600 s ceiling, zero artifacts → ruling D14 |
 | MO-PAID-023_FIX_R2 | external MiniMax (m1), D14 block | same worktree reused | main `dc4fd0766709` | `rs_20261002T074141Z_79887`; `MO-PAID-023_FIX_R1: PASS e2c6df52e35` | 2 h | **DELIVERED** 08:01Z → **PR #8267** DRAFT head `e2c6df52e35e` (2 owned files; 27 passed full + minimal venv; curated_exclusive 2; llm_auth control 80) → Opus RO review → REQUEST_REPAIR |
@@ -117,6 +134,12 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | R4E_GUARD (006 evidence tool) | seat-executed (L.7: F02 artifact, no worker on it, no EFFECT_UNKNOWN) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-006-capture-finalize-guard-53a4e5986bad7930` branch `claude/ssd-ceo-a-006-capture-finalize-guard-53a4e5986bad7930` (mockups materialized) | main `a8b9c84aecd1` | PR #8334, watcher `b9zhv0lhv` (300 s, 2 h) → `out/watch_8334.log` | 2 h | MERGED `8f10ba66426f` 10:53:32Z 10-03 from exact head `e0ae8e169fb7`, blob-verified |
 | RECORDS_W10 | seat-executed (L.7) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-records-w10-9a4d3e64e716ecb2` branch `claude/ssd-ceo-a-records-w10-9a4d3e64e716ecb2` | main `8f10ba66426f` | PR #8340, watcher `bqivoo7oe` (300 s, 2 h) → `out/watch_8340.log` | 2 h | MERGED `ec6a90103783` 11:14:13Z 10-03 from exact head `0dcb80e56314`, blob-verified |
 | FIXBIND_01 (006 fixture-page/image-binding guard on the finalize-only path) | fabric worker **C4 — sole implementation owner** (D81 5969182533; clauses 4/6 clarified D82 5973874679); C3 read-review advisory; C1 ZIP → C4 only; A reviews (Opus RO) + releases | C4's own admitted workspace (none established yet); exactly two owned files: `mockups/evidence/mo-paid-006-dossier-page/capture.py` + `tests/test_international_macro_dossier_page.py` | C4 pinned read-only main `97248942de05` | none — awaiting C4 `START` on #6819; then a DRAFT PR via `--body-file`, no `merge-on-green`, no body edit | START bound 2026-10-04 21:00Z, then A re-adjudicates the owner | ADMITTED, NOT STARTED |
+| RECORDS_W11 | seat-executed (L.7) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-records-w11-196b55ca261d6646` branch `claude/ssd-ceo-a-records-w11-196b55ca261d6646` | main `7084e176a8d5` | PR #8369, watcher `be3m1ejyr` (300 s, 2 h) → `out/watch_8369.log` | 2 h | MERGED `bd82585f653b` 22:27:13Z 10-03 from exact head `471cb8faae6b`, blob-verified |
+| RECORDS_W12 | seat-executed (L.7) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-records-w12-7a2610f8473a94a3` branch `claude/ssd-ceo-a-records-w12-7a2610f8473a94a3` | base at merge `0bbc246fe1c0` | PR #8425, watchers `bz3bjeb6w` → `out/watch_8425.log`, then `out/watch_8425b.log` (300 s, 2 h each) | 2 h | MERGED `6dbfad8766f4` 10:10:46Z 10-04 from exact head `0920ae7c1bc5`, blob-verified |
+| FIXBIND_01 | seat-direct (L.7, D90 — C4 NOT_STARTED at the D82 bound) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-fixbind-01-52e26768a28330f7` branch `claude/ssd-ceo-a-fixbind-01-52e26768a28330f7` | main `8cf8f73296e2` | PR #8464 (DRAFT, never armed, body never edited), watcher `bydqn3gtr` (300 s, 2 h) → `out/watch_8464.log` | 2 h | MERGED `a7ea7e2487d1` 04:40:16Z 10-05 from exact head `53ddc99a7909`, blob-verified |
+| RECORDS_W13 | seat-executed (L.7) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-records-w13-ed7642b30984f74e` branch `claude/ssd-ceo-a-records-w13-ed7642b30984f74e` | main at merge | PR #8465 (never armed, merged by hand on concluded checks via `merge_pr.sh`) | 2 h | MERGED `c35996123e3f` 05:05:30Z 10-05, blob-verified |
+| RECORDS_W14 | seat-executed (L.7) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-records-w14-1cca72bfdf75e363` branch `claude/ssd-ceo-a-records-w14-1cca72bfdf75e363` | main `c4a3d939e817` | PR #8496, watcher `bq1ski5qx` | 2 h | **MERGED** `543e6513453b` 00:05:43Z 10-06, blob-verified |
+| RECORDS_W15 | seat-executed (L.7) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-records-w15-2a2ddeeeba3c5023` branch `claude/ssd-ceo-a-records-w15-2a2ddeeeba3c5023` | main `9bcdbb4d887f` | this PR, one watcher (kit `watch_pr_checks.sh`) | 2 h | IN FLIGHT — merged by hand on concluded checks by the OUTGOING seat; if that session dies first, the successor merges it with the kit `merge_pr.sh` |
 Packets are in the seat scratchpad `pkts/` (copied here only if a successor needs them). Lanes never
 post, label, ready or merge; the seat does. Kit: `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/sub.sh`.
 
@@ -219,6 +242,42 @@ DECIDED
 - D82 (22:1xZ 10-03, #6819 5973874679) **D81 clauses 4/6 clarified — ratifies C2 5973424579 on C4's 5973211298; no weakening.** Clause 4: literal byte identity is impossible because `capture.py` self-hashes its own module (`tool.module_sha256`, `capture_tool_module_sha256`); proof = controlled parity (intercept ONLY the module-file read feeding the two self-hash fields, identical immutable baseline bytes, interception path/count asserted, nothing else stubbed → rc 0 + whole-output byte equality) AND natural identity (uninstrumented candidate: both fields == SHA256 of its actual bytes; outputs differ only in those two values; `source_commit` stays `40fe05769d1c9f0c38fc71638b5d18a23d6bf5e7`, never HEAD; idempotent). Clause 6: baseline outcomes classified (a) old accept+write → zero-write refusal, (b) old exception → clean defect-specific refusal, (c) existing rc 2 → retained; each negative fails its OWN oracle on the baseline. Clauses 3/5 detail adopted (alias-then-containment path discriminator; same-length corruption; `bool` rejected as byte count; write spy + recursive inventory; repeated under `--allow-dirty-template`; source-binding refusal precedes fixture validation; excluded rows need no PNG). START bound: no C4 `START` by 2026-10-04 21:00Z → A re-adjudicates ownership (seat-direct under L.7 then lawful).
 - D83 (22:1xZ 10-03, #6819 5973874679) **MO-PAID-032 natural weekly run read ONCE — DORMANT, state UNCHANGED.** `weekly.yml` run 37141524333 (`schedule` event; created 17:42:51Z — 3h43m after the 14:00Z cron, the fifth consecutive Saturday of 2.5–3.7 h lag; job 19:24→21:55Z `success`; head `f78c8accb895`): step 'recurring briefs producer' at 21:22:10Z shows `RECURRING_BRIEFS_ENABLE:` empty and prints `DORMANT (RECURRING_BRIEFS_ENABLE unset) — 0 reads, 0 writes`. Row stays PARTIAL/BUILT_DORMANT; the only gap remains the operator's provisioning of the existing secret (EXACT_HUMAN_GATE). Nothing dispatched; receipt recorded once.
 - D84 (22:1xZ 10-03, #6819 5973874679) **MO-DELTA-007 F13 receipts consumed from CEO B (5972802964, 5973692759; C2 5973799935) — state stays PARTIAL.** Terminal #787 squash `886700d5` MERGED, bundle wiring live (`terminal-data` line 78 after `refresh_ohlc.py`, cron `30 21 * * *` unchanged, no second scheduler); audit defect found before the first natural run (worker reads Supabase env from `process.env`, `terminal-data` sources only `/opt/terminal/.env` → service client null → exit 2 swallowed → the nightly would never score); fix #790 squash `bab52a49` MERGED 21:26:01Z, NOT deployed — every Terminal deploy since 19:17Z stops at release-preflight `IGNORED_IMPLEMENTATION_CANDIDATE` on the git-ignored dist bundle; deploy owner = Terminal #793 (first-adoption route; B will not open a second fix). BUILT_NOT_PROVEN only after #793's deploy installs the bundle; PROVEN_LIVE only on a natural 21:30Z scoring of an authorized real claim (#761 EXACT_HUMAN_GATE); no release deadline asserted. A records, never builds, here.
+- D85 (09:0xZ 10-04; CEO B 5974671805 / 5975875288 / 5977422061, C2 5974768521) **MO-DELTA-007 (F13 personal-accuracy scoring) rung → BUILT_NOT_PROVEN; state column stays PARTIAL.** Terminal #793 (Codex lane) MERGED 2026-10-03T22:35:17Z squash `8fc1d1a038932c20dbb3d677a614f79445f90d0e` (contains #790 `bab52a49`); the owner's first-adoption deploy installed `/opt/terminal/terminal/scripts/dist/score_personal_accuracy.mjs` (15,052 B, mtime 22:51:14Z, `hydrateWorkerEnv` needles) with the live edge at `data-dpl-id=8fc1d1a03893`. Tonight's worker ran 22:10:54Z on the OLD bundle (`service client unavailable`), so nothing was exercised; the first natural exercise is 2026-10-04 ≈22:10Z and B reads the worker's own lines once ≈22:37Z. Wrapper defect: `ops/terminal-data` `run()` logged `exited 0` for every failure (`$(ts)` reset `$?`); C2 reproduced it, B fixed it in Terminal #794 (MERGED 2026-10-04T02:41:08Z `9e2f0bd94a2ee876c7dbafacb072414635277a36`), and the #798 deploy (06:0xZ) installed both the fixed wrapper and the bundle, so tonight's receipt has real exit codes. PROVEN_LIVE still requires a natural scoring of an authorized real claim behind #761 (EXACT_HUMAN_GATE). A records, never builds, here. **Fact correction:** W11 recorded B's #762 heal as blocked on `m1 lacks claude, codex, or gh auth`; B 5976075322 corrects it — m1 has all three; the 17:50–19:16Z refusals were a hung volume (`~/lanes` → `/Volumes/STORAGE/Offloaded/m1-20260917/lanes`, every read EINTR) = PLATFORM_FAILURE, operator's to restore.
+- D86 (09:0xZ 10-04; CEO B 5978004918 + 5978053351 'row evidence for the F00 writer') **four union rows amended after A re-verified every claim; no state moves.** (a) MO-PAID-059 (pair MO-DELTA-018): NATURAL CADENCE recorded — `.github/workflows/debt-maturity-drip.yml` (#7121 MERGED 09-19 `cc32ad62441f`) scheduled runs on main 36400613137 / 36547056541 / 36693477050 / 36842767526 / 36987463019 / 37110192347 (09-28→10-03) all `success` (A: `gh run list`); AAPL `id="debt-maturity"` present on the live page (A read). Recorded on 059 ONLY — MO-DELTA-018 sits outside the pin test's union set, already reads PROVEN_LIVE (D62), and editing it would move `OUTSIDE_UNION_SHA256` for no state change. B's 'census BA stale' refers to PR #8264's census cells, not this ledger, which D62 corrected on 10-03. (b) MO-DELTA-002: the D61 residual 'cadence not read by A' is CLOSED — live `research_screener.html` HTTP 200, `last-modified 2026-10-04T03:39:20Z`, title 'Research list — 2026-10-02', plain-word nulls present (A read); cadence = dag node `build_research_screener` after `build_site` + `scripts/ci/daily_engine_regime_dashboard.sh` (B). (c) MO-PAID-054: census BB current; the remaining binding is IN FLIGHT as macro #7100 (B's F11-6 lane, r7 `8c109559`, DRAFT / HOLD-FOR-SOL, OPEN per GraphQL) — cited, stays PARTIAL. (d) MO-DELTA-021: the 2026-09-20 reason and citations were WRONG — #7163 and #7215 are unrelated and both CLOSED unmerged (GraphQL), there is no render-lane red; `engine/covenant_headroom.py` is on main, `templates/capital_structure.html.j2:121-122` guards the block with `{% if covenant_headroom %}`, and `scripts/build_capital_structure_page.py` has ZERO `covenant_headroom` references (`git grep` on origin/main), so the live page (HTTP 200, 08:15:26Z) carries zero 'covenant' text: view-model built, page builder not wired; next child = wiring + served typed refusal (substrate 0/2999), owner F09/B. B's module sweep found no producer for 022/024/026/027/028/030/040-layer/041/061/063/065/068/069 — those cells stand untouched.
+- D87 (09:2xZ 10-04; CEO B 5978166980 'CORRECTION: MO-PAID-056 / MO-DELTA-038 (F12)', A-verified) **MO-PAID-056 and MO-DELTA-038: NOT_BUILT → BUILT_NOT_PROVEN; digest re-pinned (both rows sit outside the union set).** B withdrew its 5966674775 line by name (wrong capability — row 056 is OUTBOUND webhook delivery, 'inbound Stripe' was the 08-28 crosswalk's reference pattern — and wrong fact: `app/billing.py` on main carries the `stripe_events` ledger at lines 20/1448/1456, A `git grep`). A re-verified on the Terminal repo (`mastermindx-market-intelligence/mastermind-terminal`, GraphQL): #549 `[MO-BB3] B-F12-7: Outbound signed webhooks v1 …` MERGED 2026-09-10T19:06:57Z squash `cd1269feb616473301cba37bc9b455a259640eb5`; migration `0018_webhook_delivery` APPLIED in production 2026-09-10T20:58:44Z (DDL receipt, terminal #549 comment 5625353856, both tables + dedupe/due indexes present post-readback); #582 `[MO-B F12-11] … producer wiring (MO-PAID-056 + MO-DELTA-038)` OPEN DRAFT head `a1445ea65c07`, idle since 2026-09-19T03:54:57Z, no hold text. Live, anonymous, A read 10-04 ~09:1xZ: `GET /api/webhooks` → 401, `GET /api/webhooks/<uuid>` → 405 — routes served, auth-gated. NOT proven: the box-side worker cron (Terminal `DEPLOY.md:101-110`) was never installed — an OPERATOR act (the worker reads host env; no seat touches host env or cron); master enqueues TEST deliveries only; no natural `webhook_deliveries` row has ever been delivered, so no cadence proof exists. 038 is the adjudicated fold into 056 and was built in the same PR (signature/retry/dedupe), so it moves with it. What moves 056 to PROVEN_LIVE is operational, not a build: (1) operator installs the worker cron; (2) #582 producer wiring lands; (3) one natural delivered row. Owner F12 (CEO B). B's census doc rows (merged in #8264) carry the same error and are corrected in B's own #8423 (OPEN, armed, head `e2b141a05aa8`) — B's PR, never touched from this seat. **Governance fact recorded, not ruled (§5):** handoffs 2026-09-07/09-08 said 'Do not build B-F12-7 (public API refused in #6925)'; #549 shipped B-F12-7 as `[MO-BB3]` on 09-10 after seat-ruled rounds, and `W9_W9B_REC_NS_2026-09-13.md:171-172` records the 0018 reservation as taken by packet B-F12-7 pr=549 merged. A records merged + applied + served as capability facts; whether the build was lawfully admitted is Sol's reading.
+- D88 (09:5xZ 10-04; CEO B 5978248217 'F12 census correction, part 2', A-verified) **MO-PAID-055 and MO-PAID-084: NOT_BUILT → BUILT_NOT_PROVEN; MO-PAID-052: NOT_BUILT → PARTIAL; MO-DELTA-039 stays NOT_BUILT; 081/082 evidence widened; digest re-pinned again.** B withdrew its 5966674775 NOT_BUILT cells for 055/084/052 by name. A re-verified on `mastermind-terminal` (GraphQL) and live, anonymous status probes (10-04 ~09:4xZ): #581 `[MO-BW6] B-F12-10: Public API v1 — personal read-only keys …` MERGED 2026-09-19T04:58:44Z `c938159320e5` (055 routes `/api/v1/{me,watchlists,theses,alerts,claims,positions,dislocations,openapi.json}`; 084 `app/api/account/api-keys/{route,[id]/route}.ts` mint/list/revoke); live `GET /api/v1/me|watchlists|openapi.json` → 401 with the EN+ZH JSON body 'did not include a valid personal API key', `GET /api/account/api-keys` → 401. #548 `[MO-BB5] B-F12-B5-1: Explicit grants — share a watchlist read-only …` MERGED 2026-09-11T02:00:51Z `bad423f529d8` with DDL 0021 applied (terminal #548 comment 5630176531, 05:59:53Z) and #555 `[MO-BB5] B-F12-B5-2: Team-shared saved workspaces` MERGED 2026-09-09T20:01:07Z `6cdbaa0a892f` (DDL 0022 applied 2026-09-13T06:57:09Z per B's kit receipt); live `/api/grants`, `/api/layouts` → 401 — two of 052's four halves (watchlists, workspaces) shipped; `0021_resource_grants.sql` checks `resource_kind in ('watchlist')` only, so scenarios/analyses/coverage sharing is NOT built → PARTIAL. 039: v1 transport exists but no impact-analyze / portfolio-impact / scenario-comparison endpoint → NOT_BUILT unchanged. 081 += #526 `83424c63f053` (B-F12-3, merged 09-07) and #588 `dafc016e4e9e` (F12-17 invite link, merged 09-19); 082 (union row, notes only) += #550 `3cdcd746b86d` (B-F12-8 roles v1, 0019 applied) and #557 `29257a43c507` (B-F12-9 ownership transfer, 0020 applied) — both remain BUILT_NOT_PROVEN. **DDL 0027 (api_keys) caveat carried verbatim on 084:** Terminal `RESERVATIONS.json` records 0027 `applied_in_production: true` (2026-09-19); B's kit `ddl/receipt_0027.json` records `applied_at 2026-09-19T05:02:24Z`, 46 statements, no failed statement, no error, but tool `status: failed_readback` attributed to the apply tool's object-name matcher; B's direct catalog readback at 05:05Z listed `api_keys_pkey`, `api_keys_user_active`, `api_key_events_*`, `api_key_usage_pkey`; no macro-side receipt, no later 0027 repair PR. A fresh production catalog readback is a credential act — operator or a Sol-admitted seat — and is the missing proof on 084. What moves 055/084/052 to PROVEN_LIVE is a signed-in human journey each (mint a key → one v1 read; share a watchlist → grantee reads; share a workspace → member opens) — EXACT_HUMAN_GATE for both seats; none is on #582's path. **Governance facts recorded, not ruled (§5):** 055/084 carried the ledger's DEFER and the `#6609` HOLD table and were shipped by #581 as `[MO-BW6]`; 052 was an adjudicated fold and #548/#555 shipped two of its halves as `[MO-BB5]`. B's F10–F13 counts after parts 1+2: PROVEN_LIVE 4 · BUILT_NOT_PROVEN 17 · PARTIAL 6 · SPEC_ONLY 3 · NOT_BUILT 5 — B's tally of its census doc (#8423 head `ecf2fd644f95`), not a ledger count.
+- D89 (09:4xZ 10-04; CEO B 5978485628 'readback … one new F11 state change', items 3–7, A-verified) **MO-PAID-032 (recurring briefs): PARTIAL → BUILT_NOT_PROVEN — a vocabulary alignment on UNCHANGED facts; F11/F08 evidence widened on union rows only; OUTSIDE_UNION_SHA256 unchanged.** B proposed the move in its census doc (#8431, MERGED `5ea8b012106c` 09:36:55Z) withdrawing its 5966674775 032 cell by name. A's reasoning as writer: Sol 5966291701 / 5966652470 ruled the row 'remains incomplete … implementation present / production activation + natural delivery proof missing' and 'keep this incomplete' — Sol never named the state word; D63's PARTIAL was A's own choice ('BUILT_DORMANT inside PARTIAL'); W12's D87/D88 then used BUILT_NOT_PROVEN for exactly 'shipped code whose production activation or proof is an operator/credential act' (056's worker cron, 084's catalog readback), so holding 032 at PARTIAL would make the ledger inconsistent on identical facts. Nothing on 032 is unbuilt: the producer and both gated steps are on origin/main (`146d78ee879` 2026-09-13 and `f95b2cc5807` 2026-09-19 are ancestors of `5ea8b012106c`; `daily.yml:4237-4244` `--cadence daily_after_us_close`, `weekly.yml:198-205` `--cadence weekly_saturday`, both `# Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.`) and the intake/inbox is Terminal #579 `[MO-BW6] B-F11-7` MERGED 2026-09-19T03:15:10Z `82bee14ba3d7` (GraphQL) with DDL 0024 applied 2026-09-19 (B's kit receipt, `failed_readback` = the same matcher artifact as 0027). Gap text, EXACT_HUMAN_GATE (operator provisions the existing secret), Sol's 032 gate note (record dormancy once, never self-enable, never manual-dispatch a fake scheduled proof) and `next_bounded_child` (ACTIVATION, not BUILD_NEW) are all unchanged; the 10-03 D83 DORMANT read stands as the newest natural read. **Evidence-only (states unchanged):** MO-PAID-046 / 053 BUILT_NOT_PROVEN += Terminal #744 `[MO-B F11-10b]` MERGED 2026-09-24T23:44:34Z `54eb1caa799b` — anonymous phase A of the thesis journey 5/5 against served release `65a24f29`; its body records 'Phase B has never been run. No signed-in acceptance is claimed.' (signed-in proof = #761 gate). MO-PAID-054 PARTIAL += Terminal #798 MERGED `1c708450` as the Terminal half of the binding (macro half #7100 DRAFT/HOLD-FOR-SOL), #577 `4169e0cfc1b7` re-confirmed. MO-PAID-047 BUILT_NOT_PROVEN += Terminal #762 `[MO-B F11-11b-pre-2]` (alerts cockpit shows the thesis-condition producer's own EN/ZH summary) MERGED 2026-10-04T08:59:47Z `a7447db07c50` (GraphQL), deployed `--target-sha` with identity + health verified and anonymous 307→`/terminal`→200 per B — rung PRODUCTION_PROOF (anonymous) for the consumer surface; 047's owed proof (a dated `delivered_at` for a FIRED window) is unchanged. F08 (B's item 3 re-sweep, 'states HOLD'): MO-DELTA-003 += #586 `7f81c551d459` MERGED 2026-09-19T13:11:28Z + anonymous `GET /api/portfolio/targets` → 401; MO-PAID-027 += Terminal #513 `[MO-BB1T] B-F08-2` `be898be59a76` (2026-09-06) and #517 `[MO-BB2] B-F08-3` `ee88afaf0bc1` (2026-09-07) + anonymous `/api/alerts`, `/api/alerts/receipts` → 401 — all A-read 10-04 ~09:3xZ. **MO-PAID-085's evidence (#545 `173690777748`, #551 `ee320e390f9c`, `/api/account/alert-prefs` → 401) is recorded in FACTS, not on the row:** 085's raw line is pinned by the B-REC-3 wave-boundary fence and a notes-only edit would force a third fence re-pin; it lands with 085's next state move. B's item 7 (#582 v0 scope) → §5 OPEN for Sol.
+- D90 (03:38Z 10-05, carrier 5987670342; DELIVERED 5987967359) **F02-006-FIXBIND-01: ownership → CEO A seat-direct (C4 NOT_STARTED at the D82 bound); MERGED.** Macro #8464 (two D81 files only) squash `a7ea7e2487d1` 2026-10-05T04:40:16Z from exact head `53ddc99a790925fe59b8383a0138dbc4650c35c5` (base `8cf8f73296e2`). `capture.py --finalize-only` now validates the receipt AFTER the R4e source-binding refusal and BEFORE any git read or write, and returns rc 2 with nothing written and every defect named for (a) an absent/malformed fixture/page/route binding, (b) a kept image missing (exact-name membership, so a case-insensitive filesystem cannot mask it) or escaping `cells/` (absolute, traversal, nested, foreign prefix, symlink — even when a same-basename image exists), (c) an image whose sha256 or length no longer matches (same-length corruption caught; `bool` is not a byte count). Expected-miss rows that finalize moves to `excluded` need no PNG; `finalize_manifest` unchanged; no provenance field invented. Proof in the PR body: 28 negatives × {strict, --allow-dirty-template} = 56 runs, baseline passes its own oracle in 0, candidate in 56 (D82 classes a 54 / b 2 / c 0); clause-4 (i) controlled parity byte-equal with exactly one module-read interception, (ii) natural identity differs only in the two tool self-hash fields, second pass byte-identical; suite 97 passed. Review: the multi-agent review launch died on a host hook timeout twice; the main-loop adversarial pass (10-04 ruling) found and fixed the case-insensitive gap before push. MO-PAID-006 stays PROVEN_LIVE; its 'fixture-page/image-binding validation stays a separate unowned item' residual is CLOSED (structure + file integrity only — nothing proves the pixels came from the declared fixture). The receipt of record is NOT re-finalized: it still names the tool bytes it was captured with. Post-merge (04:4xZ 10-05): blob verify against freshly fetched origin/main = 0 differing paths; the same proof script re-run on main `a7ea7e2487d1` reproduces the pre-merge output line-for-line (56 runs, problems 0, (i) byte-equal sha256 `1205620e6c68a2b0`, (ii) self-hash `03b0db3588d5dcfd`, canonical receipt untouched) — PRODUCTION_PROOF for a capture tool is main's bytes behaving as proven; no served surface changes.
+- D91 (04:4xZ 10-05; writer's note 5979973441) **Macro #8434 (CEO B's Portfolio-Aware brief) = FACTS only; MO-PAID-027 evidence-only note.** A verified by artifact: MERGED squash `2114b7f6033e0769a39914b9f68b9d7ee0f2d980` 2026-10-04T11:41:33Z from head `1aaf3c560a1c`; anonymous `GET /api/health` 12:30:40Z → `{"status":"ok","commit":"2114b7f6033","checkout":"2114b7f6033"}`, anonymous `GET /api/portfolio/brief` → 401 (PRODUCTION_PROOF at the API-process rung). The five paths serve `/api/portfolio/brief`, `/api/portfolio/changes`, `engine/portfolio_brief.py` and the Brain tool `get_portfolio_brief` — the Portfolio-Aware Intelligence program, which carries no `MO-` id, so no admitted F08 row moves. MO-PAID-027 records that `/api/portfolio/changes` (`portfolio_changes.v1`, the 'since your last visit' display spine, fail-closed on an unanswered holdings read) is NOT the alert_outbox material-change journey 027 is missing; PARTIAL unchanged. 085 untouched (B-REC-3 fence).
+- D92 (04:4xZ 10-05; CEO B 5987672592 §1–§3 + 5987817413, recorded as B's worker lines — A did not read the VPS) **evidence only, no state moves.** (a) **MO-DELTA-007:** the installed bundle's first natural exercise 2026-10-04 22:21:55Z hydrated its env from `.env.local` (log line 352 — the #790 wiring at PRODUCTION_PROOF) and then exited 1 before any settled/undetermined/skipped summary: supabase-js 2.108.2's RealtimeClient evaluates `WebSocketFactory.getWebSocketConstructor()` and throws on Node 20 with no global `WebSocket`. Repair F13-WS = Terminal #815 (CEO B custody); its proof is the next NATURAL nightly (10-05 ≈22:1xZ), never dispatched. Rung stays BUILT_NOT_PROVEN and the state column PARTIAL (D85) — the worker is installed but does not yet score; PROVEN_LIVE still needs a natural scoring of an authorized real claim (#761 EXACT_HUMAN_GATE). (b) **MO-DELTA-003:** Terminal #805 (F08 Settings Portfolio-targets readback fence + 0028 ledger heal) MERGED 2026-10-04T13:43:53Z squash `a885200ff7b30ebf8621e8c9ea93d970f7be3dd1`, deployed `--target-sha a885200f`; A's anonymous re-read 14:29:19Z showed `data-dpl-id` = the squash (PRODUCTION_PROOF at the anonymous-edge rung); the signed-in readback stays #761; PARTIAL unchanged (role half absent). (c) **Terminal #806** (F12 Sync status truth) MERGED 14:44:03Z squash `8bab55563d24`, deployed, an ancestor of live `2ca21c44` — no admitted row names it (5979973441), FACTS only. (d) #807 / #815 / #816 / #817 / #818 were at the CI rung when this wave was written — recorded when B reports them MERGED.
+- D93 (23:3xZ 10-05; CEO B 6004683154 / 5992111093 / 5989082641 / 5989500803, recorded as B's worker and edge lines — A did not read the VPS. A verified each merge and PR body by GraphQL at 23:30Z. A's own anonymous Terminal read at 23:31Z was refused at the edge (`mastermindx.ai/terminal` → 525, `www.mastermind-x.com/terminal` → 401), so B's `data-dpl-id` reads stand as B's lines) **evidence only, no state moves.** (a) **MO-DELTA-007:** F13-WS = Terminal #815 (its body names MO-DELTA-007) MERGED 2026-10-05T06:32:11Z squash `a89ae219cb33`, deployed (B 5989500803). The natural nightly at 2026-10-05 22:38:47Z (B's log lines 1033–1036) ran `score_personal_accuracy.mjs`, hydrated its env from `.env.local` (key names only) and printed `settled 0, undetermined 0, skipped 0`. There was no Node-20 WebSocket throw, and the wrapper moved on to the next step. That is PRODUCTION_PROOF at natural cadence for the crash D92 recorded. Nothing was due, so the settle path for a real due claim is unexercised. The state column stays PARTIAL (D85): PROVEN_LIVE still needs a natural scoring of an authorized real claim (#761 EXACT_HUMAN_GATE). (b) **MO-PAID-054:** Terminal #820 (the Thesis Suggested-changes read is bound to the thesis on screen; an unanswered read never says none; its body names MO-PAID-054 and the #577 lineage) MERGED 2026-10-05T09:00:04Z `61fe025abc5e`, deployed, PRODUCTION_PROOF at the app level per B 5992111093. The binding's macro half stays #7100 DRAFT / HOLD-FOR-SOL; PARTIAL unchanged. (c) **MO-DELTA-003:** Terminal #807's own body calls it the page-side exposure of the ordering defect B-F08-13 closed in Settings → Portfolio targets (#805, recorded on 003 by D92), so it lands on the same row. It gives the Portfolio page one mutation chain for position and target writes, and the newest read wins. MERGED 2026-10-05T05:56:44Z `5dcaf15f320b`, deployed; B's anonymous read showed `data-dpl-id=5dcaf15f` (5989082641). The signed-in readback stays #761; PARTIAL unchanged (role half absent).
+- D94 (23:3xZ 10-05) **CEO B's other Terminal lanes map to no admitted row: FACTS only.** None of these PR bodies names an `MO-` id or a recorded lineage, and B named no row: #816 F12-PERSIST (`df7a4da38926`, 07:08:49Z), #818 F12-CLIPBOARD (`ab460b26e2a2`, 07:44:54Z), #817 F08-ALERTCOUNT (`77133b4955be`, 08:22:01Z), #822 F08-REARM (`99a7d973d12b`, 09:37:03Z, merged with C4's REQUEST_CHANGES 5991393156 unconsumed), its repair #823 F08-REARM r2 (`8885866c82cf`, 11:00:54Z), and #830 F08-RAIL (`1c78e496eafc`, 16:11:24Z). Each is MERGED (GraphQL, all on 2026-10-05) and at PRODUCTION_PROOF at the app level per B; signed-in behaviour is #761. A family label is not a row id, so none is written onto an F08 or F12 row. The C4/C2 findings, SearchModal Add Symbol (5988227669) and delayed Watchlist import after list deletion (C4 5993627763, C2 5994757193), are unadmitted; their placement is Sol's (C2 5989578037). §5 OPEN.
+- D95 (22:0xZ 10-10) **Counterpart edges 10-06 → 10-10 consumed: none maps to an admitted F01–F05 row, so A writes nothing and posts nothing (row-mapping rule: a row is written only when a PR body names it or its recorded lineage; a family label is not a row id).** Edges in order:
+  - B 6006318924: ACCEPT of W14, no counter.
+  - C4 6041866838: Watchlist read-failure finding. It belongs to the unadmitted Watchlist family that is OPEN for Sol under C2 5989578037, next to D94.
+  - C2 6069681746 + B 6070191151, Audit20 6071901852 / 6072162236, B 6072879900: Terminal #851, an F08 calendar repair.
+  - C2 6073882128: macro #8673 DRAFT, F09 capital-structure.
+  - C2 6076995179: F08 Settings GET-retry on the Terminal #805 carrier.
+  - C4 6083598726 + C3 6083693499: SearchModal empty-to-populated ArrowDown repair. C3 took it under its routine assignment. "SearchModal placement unassigned under F00" is a Sol placement question, not a ledger write.
+  - C2 6089317076: F08 stock-library recovery.
+  - C4 6091394282 / 6091529927: SPEC_ONLY Alerts returns to B/F08.
+- D96 (22:0xZ 10-10) **MO-PAID-032: the 10-10 natural weekly run was CANCELLED before its producer step. There is no observation, and the state is UNCHANGED (BUILT_NOT_PROVEN).**
+  - Run: `weekly.yml` 38074714177. Event `schedule`, created 18:10:31Z, which is 4h10m after the 14:00Z cron. Runner `mac-builder-light`, head `49c047861d60`.
+  - Step 9 'weekly collect + recalibrate + build' ended `cancelled` at 19:46:16Z, 95 min into a 300-min job cap.
+  - Concurrency group `pipeline-batch` has `cancel-in-progress: false`, so this was an external cancel. A did not establish who cancelled; `triggering_actor` is the shared fleet account.
+  - Step 10 'recurring briefs producer (F11 …)' was `skipped`.
+  - Whether the secret is provisioned is therefore unknowable this week.
+  - Read ONCE with one `gh run list` and one `…/runs/38074714177/jobs` call. Nothing dispatched, cancelled or re-run from this seat. The weekly lane itself is not this seat's, so it is flagged to the operator, not repaired here.
+  - Next natural read: Saturday 2026-10-17 at or after 22:30Z.
+- D97 (22:0xZ 10-10, Chairman order relayed in the seat's own session) **SEAT TRANSFER: CEO A → a fresh session on the Claude3 account, under a FULL-THROTTLE mandate.**
+  - **Authority does not change.** The new session holds exactly CEO A's scope: F01–F05 owner, and sole F00C writer with CEO B as verifier. It holds nothing from B's families (F06–F13) and no Sol rulings.
+  - **Full throttle** means: keep every lawful lane of §7 moving in parallel and never idle on one wait. It does NOT mean new authority, skipping gates, manufacturing proof, or touching never-touch artifacts.
+  - **Labor law stays as the Chairman ruled.**
+    - 10-04: no Opus/Sonnet/Haiku native labor subagents; reviews happen in the main loop.
+    - 10-06: Opus 5.5 orchestrators may administrate fabric lanes, at most 2 concurrent, with no native children under them.
+    - Labor goes through the `ext/sub.sh` fabric kit.
+    - Ultracode-style workflow fan-out of native agents CONFLICTS with these rulings, and the rulings win.
+  - **No re-ACK, no re-START.** The 10-02 ACK/START stands. The outgoing session posts ONE transfer notice on #6819 and stops acting.
 FACTS (verified this session, command named)
 - Live receipts 07:08Z (`curl -s https://www.mastermind-x.com/...`): `transmission.html` 141,208 B, `class="cm-row` 0, `id="tx-chain-` 0, `id="cos-q-` 0, `cm-card`/`cm-eyebrow`/`cm-quiet` 1 each; apex `/transmission.html` → `301 https://www.mastermind-x.com/transmission.html`. `us_stocks.html` 707,512 B carries NO `data-uk-*`/`id="uk-*"` marker and no `id="regime-read"` — the UK desk's page is to be confirmed by the diagnosis lane (the census grepped a rendered page at HEAD, not necessarily `us_stocks.html`).
 - Open-PR collision check (`gh pr list --state open --limit 60 --json files`, 07:08Z): only #8261 touches `engine/transmission_company_continuation.py`; nothing open touches `engine/chronicle/impact.py`, `templates/news.html.j2`, or `templates/transmission.html.j2`.
@@ -288,7 +347,27 @@ FACTS (verified this session, command named)
 - F `weekly.yml`'s Saturday 14:00Z cron CREATED its run at 16:28/16:40/16:58/17:34Z (Sept 5–26) and 17:42:51Z (Oct 3): an empty 14–17Z window is GitHub schedule lag, never a missing run — arm a Saturday reader to reach ≥ 22:30Z (the 10-03 job also queued 100 min on the busy self-hosted runner and ran 2h31m; 09-26 ran 3h07m). Never dispatch for a cadence proof.
 - F #6819 is an ISSUE, not a PR: `gh pr comment 6819` resolves nothing (GraphQL `Could not resolve to a PullRequest`) — post with `gh api -X POST repos/…/issues/6819/comments -F body=@file`.
 - F Run 37141524333 step output (21:22:10Z): `env: SUPABASE_SERVICE_ROLE_KEY: *** / RECURRING_BRIEFS_ENABLE:` (empty) → `recurring briefs: DORMANT (RECURRING_BRIEFS_ENABLE unset) — no subscription read, no decisions, no writes` + `##[notice]DORMANT … 0 reads, 0 writes`.
-- F CEO B's #762 (F11 heal) is BLOCKED on a host-credential refusal (`m1 lacks claude, codex, or gh auth`, 20 attempts 17:50–19:16Z) — an operator act, not A's lane.
+- F CEO B's #762 (F11 heal) was blocked 10-03 by a HUNG VOLUME on m1, not by credentials (CORRECTED 10-04 from B 5976075322 — W11's 'm1 lacks claude, codex, or gh auth' line was wrong): `~/lanes` → `/Volumes/STORAGE/Offloaded/m1-20260917/lanes`, every read EINTR, PLATFORM_FAILURE, operator's to restore; B later reported #762 READY on head `a2213474` (5978004918).
+- F Terminal #798 (B's F11-6 Lane T) MERGED 2026-10-04T06:03:39Z `1c708450187755160e1a5889b69598a2fcb1f0d1` and deployed via `terminal-build.sh --target-sha` → PRODUCTION_PROOF (anonymous 200); the same build installed `score_personal_accuracy.mjs` (covers #794's wrapper fix) and `suite_alerts.mjs`.
+- F A's 10-04 verification receipts behind D86: `git grep covenant_headroom origin/main -- scripts/build_capital_structure_page.py` → 0 hits; template guard at `templates/capital_structure.html.j2:121-122`; GraphQL: #7163 CLOSED, #7215 CLOSED, #7121 MERGED `cc32ad62441f`, #6921 MERGED `12e8bfd369a6`, #7100 OPEN DRAFT `8c109559`; `gh run list --workflow debt-maturity-drip.yml --branch main --event schedule` → six `success` runs 09-28→10-03; live reads: research_screener.html 200 (03:39:20Z, 'Research list — 2026-10-02'), capital_structure.html 200 (08:15:26Z, 0× 'covenant'), stocks/AAPL.html `id="debt-maturity"` ×1.
+- F No F00C row exists for F11-6 / #7100 / #798 by id; the chat↔thesis binding lives in MO-PAID-054 (grep of the ledger on origin/main, 10-04).
+- F Terminal #762 (CEO B's `[MO-B F11-11b-pre-2]`, alerts cockpit shows the thesis-condition producer's own EN/ZH summary) MERGED 2026-10-04T08:59:47Z squash `a7447db07c50` = `origin/master` head (A: GraphQL state + mergedAt); deployed `--target-sha a7447db0…` (`BUILD_ID build-TfctsWXpff2fKS`, identity intended=marker, health OK) and anonymous live 307 → `/terminal` → 200 are B's receipts (5978485628 item 6) — rung PRODUCTION_PROOF (anonymous); signed-in acceptance behind #761. Recorded on MO-PAID-047 notes (D89). The 10-03 'blocked by a hung m1 volume' line above is history, not state.
+- F CEO B's census docs all landed 10-04: #8423 MERGED `596aa45af820` 09:19:46Z; #8426 MERGED `1b9bdfd2620e` 09:03:38Z; #8429 MERGED `ad9fbf0eebf6` 09:25:57Z; #8431 (part 3 — the 032 proposal + 054/046/053 evidence) MERGED `5ea8b012106c` 09:36:55Z. Their file lists (GraphQL) are only `research/market_intelligence_productization/CEO_B_CENSUS_F06_F09_ROW_EVIDENCE_2026-10-02.md` and `…/CEO_B_CENSUS_F10_F13_ROW_EVIDENCE_2026-10-02.md` — none touches the F00C ledger or its pin tests, so W12 merges over them without conflict (mergeable MERGEABLE at 09:4xZ).
+- F MO-PAID-085 F08 evidence from CEO B 5978485628 item 3 — Terminal #545 `[MO-BB1] B-F08-6` alert delivery preferences MERGED 2026-09-09T18:18:08Z `173690777748`; #551 `[MO-BB1] B-F08-7b` fenced preference writes MERGED 2026-09-10T17:33:02Z `ee320e390f9c` (A: GraphQL); anonymous `GET /api/account/alert-prefs` → 401 (A read 10-04 ~09:3xZ) — is NOT written to the ledger row in W12: 085's raw CSV line is pinned by the B-REC-3 wave-boundary fence (`tests/test_b_rec3_wave_boundary_records.py` `_UNTOUCHED_F12_ROWS_AT_BASE`), and a notes-only edit would force a third fence re-pin for no state change. It lands on the row with 085's next state move, which must re-pin the fence in the same PR (D88 precedent for 084). State PARTIAL unchanged (B: 'states HOLD').
+- F `tests/test_b_rec3_wave_boundary_records.py` (B-REC-3 wave-boundary fence) pins the RAW CSV LINE and state word of MO-PAID-084/085/088; it went red on D88 (ci-pack-2, run 37191244316, head `a906ae68`) and was re-pinned for 084 exactly as it was re-pinned for 085/088 after #7335 on 2026-09-19. Any future state move on 085 needs the same re-pin in the same PR.
+- F Macro #8464 (F02-006-FIXBIND-01) MERGED 2026-10-05T04:40:16Z squash `a7ea7e2487d1f920f39e62f5a40302e556232999` from exact head `53ddc99a790925fe59b8383a0138dbc4650c35c5`; blob-verified against freshly fetched origin/main (D90).
+- F Macro #8434 MERGED 2026-10-04T11:41:33Z squash `2114b7f6033e`; anonymous `/api/health` commit `2114b7f6033` at 12:30:40Z (A read); no admitted row (D91).
+- F Terminal #805 MERGED 2026-10-04T13:43:53Z squash `a885200ff7b3`; live `data-dpl-id` = squash at 14:29:19Z (A read). Terminal #806 MERGED 14:44:03Z `8bab55563d24` (B receipt 5987672592 §2). C4's three proposals became CEO B lanes F12-PERSIST #816 / F08-ALERTCOUNT #817 / F12-CLIPBOARD #818 (B 5987817413, ceiling BUILT_NOT_PROVEN).
+- F MO-DELTA-007's natural run 2026-10-04 22:21:55Z: env hydrated, then exit 1 on Node 20 Realtime `WebSocket` (B's VPS log lines 351–358, 5987672592 §1); F13-WS = Terminal #815.
+- F (04:4xZ 10-05) #6819 comment 5988227669 (04:40:14Z) = a C4 evidence-only Terminal source finding — SearchModal Add Symbol: Enter on a settled no-match query falls back to adding the active ticker (P2, unrun regression contract), addressed to the incumbent Terminal/watchlist owner; no implementation started. It maps to NO F01–F05 admitted row (MO-PAID-005's watchlist mention is Macro `watchlist_risk.js` consuming TXI chains — a different artifact) and A takes no action on it. It landed 2 s before #8464's merge (04:40:16Z) after `merge_pr.sh`'s fence had read `[]`; its content touches neither of #8464's two files, so the merge stands. Consumed; fence moves to `>5988227669`.
+- F Macro #8465 (records W13) MERGED 2026-10-05T05:05:30Z squash `c35996123e3f` (GraphQL); blob-verified; readback 5988458120.
+- F Terminal merges on 2026-10-05 (GraphQL 23:30Z): #807 `5dcaf15f320b` 05:56:44Z, #815 `a89ae219cb33` 06:32:11Z, #816 `df7a4da38926` 07:08:49Z, #818 `ab460b26e2a2` 07:44:54Z, #817 `77133b4955be` 08:22:01Z, #820 `61fe025abc5e` 09:00:04Z, #822 `99a7d973d12b` 09:37:03Z, #823 `8885866c82cf` 11:00:54Z, #830 `1c78e496eafc` 16:11:24Z. Only #815 (MO-DELTA-007) and #820 (MO-PAID-054) name an admitted row in their bodies; #807 names #805's lineage (D93/D94).
+- F MO-DELTA-007's natural run 2026-10-05 22:38:47Z: env hydrated, `settled 0, undetermined 0, skipped 0`, no WebSocket throw (B's VPS log lines 1033–1036, 6004683154). Live Terminal deployment `e17622b1` (the intraday seat's T-CHART-2b) has both `a89ae219` and `1c78e496` as ancestors, per B. A's anonymous edge read at 23:31Z: `mastermindx.ai/terminal` 525, `www.mastermind-x.com/terminal` 401.
+- F (00:2xZ 10-06, A-observed) `curl -sL https://app.mastermind-x.com/terminal` → 200, 95,531 B, `<title>Mastermind Terminal</title>`, `data-dpl-id=e17622b1a05fc8891e44bc3bac2d2a178c1820d7` = Terminal master tip (GraphQL; committed 2026-10-05T17:11:54Z); compare API: #807 `5dcaf15f320b`, #815 `a89ae219cb33`, #820 `61fe025abc5e` are ancestors (behind_by 0). **Host correction:** the anonymous Terminal host is `app.mastermind-x.com/terminal` (B 6006318924) — D93's 525/401 edge refusals were reads of the wrong hosts (`mastermindx.ai`, `www.mastermind-x.com`); D93's deploy claims are now A-observed at the right host.
+- F Terminal #851 (C2, F08 calendar-unreadable fail-closed repair) MERGED squash `505edf78` (head `f9eea521`, tree-identical); canonical VPS release settled rc=0 (Audit20 6071901852 / 6072162236); live `a70cf2ad` (= `505edf78` + #855) app-layer PRODUCTION_PROOF per B 6072879900 (anon `/terminal` 200, route chunk carries "bad ticker row", `/api/event-impact` 401); signed-in render BUILT_NOT_PROVEN behind #761. Names no `MO-` row.
+- F macro #8673 DRAFT `2efd0ac9` (C2 6073882128; F09 capital-structure issuer-context repair; `capital_structure.js` site+template pair + 2 tests). Names no `MO-` row; F09 is B's family.
+- F `weekly.yml` 38074714177 (10-10): as D96 — step 9 `cancelled` 19:46:16Z, step 10 (recurring briefs producer) `skipped`; `.github/workflows/weekly.yml:19` `timeout-minutes: 300`, `:10-14` group `pipeline-batch`, `cancel-in-progress: false` (read from main `9bcdbb4d887f`).
+- F Seat kit for the successor: `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/ceo-a-marketontology-2026-10-10/` — `merge_pr.sh <pr> <head40>` (fence #6819 from `FENCE`, REST state+head, `gh pr merge --squash --match-head-commit`, bare `git fetch origin main`, per-path blob verify), `watch_pr_checks.sh <pr> <head40>` (one GraphQL rollup read / 300 s, exits on ALL CONCLUDED / head moved / timeout; standing reds excluded by name), `FENCE` (`SINCE=2026-10-10T00:20:00Z`, `ID=6091529927`).
 OPEN
 - O1 CEO B binding/ACK not yet observed; A1 ruling awaits B (flip condition cleared by #763 file list).
 - O2 CLOSED 07:03Z (review posted; pilot red classified by design). Sol's repair response on #8260 is the next counterpart edge.
@@ -360,6 +439,10 @@ NEXT
 - N-W9 (08:3xZ 10-03) Records wave 9 = this PR: stage 1 (D73 O32 proof on 011, D74 scheduler owner on 007) committed; stage 2 (006 PROVEN_LIVE, 008 PRODUCTION_PROOF) on the render watcher's SUCCESS + served needles; then push → PR → ONE watcher → merge by hand on concluded checks (`merge_pr.sh` fence rebased to the newest consumed #6819 id) → blob verify → readback on #6819. After W9: MO-PAID-032 14:00Z window read (W10 if it lands after W9 is armed); 006/008 PRODUCTION_PROOF notes on their PRs; next bounded F01–F05 child from the ledger's `next_bounded_child` column (F02 006 has NONE left after PROVEN_LIVE except rights-gated leadership; F01 011 blocks 3/5 behind their data owners; F05 017 per-family consequence interface is a product ruling, not a build).
 - N-W10 (10:5xZ 10-03) Records wave 10 = this PR (D79–D80). Then: MO-PAID-032 — fold the 14:00Z natural-run read into the next wave only if its state changes; fixture-page/image-binding validation = bounded F02 child when a carrier names it (same file as R4e — never a second concurrent PR on `capture.py`); F01–F05 frontier otherwise DEFER/HOLD/rights/dependency-gated (census 08:3xZ) — no executable product child today; keep one records PR in flight at a time.
 - N-W11 (22:1xZ 10-03) Records wave 11 = this PR (D81–D84). Then: FIXBIND-01 — wait for C4's `START` (bound 2026-10-04 21:00Z), review its DELIVERED DRAFT PR by artifact (Opus read-only), ready + merge on concluded checks, fold into W12; MO-PAID-032 — nothing until the operator provisions the secret (next natural weekly run Saturday 10-10, arm the reader for ≥ 22:30Z); MO-DELTA-007 — record B's #793 deploy / natural-scoring receipts when posted; F01–F05 frontier otherwise DEFER/HOLD/rights/dependency-gated — keep one records PR in flight at a time.
+- N-W12 (09:4xZ 10-04) Records wave 12 = this PR (D85–D89). Tonight (10-04): 21:05Z one-shot = FIXBIND-01 C4 START bound (record START, or re-adjudicate ownership per D82); 23:07Z one-shot = read B's F13 natural-exercise receipt (worker ≈22:10Z, B reads ≈22:37Z) and open W13 with it + the bound outcome. MO-PAID-032: next natural weekly run Saturday 10-10 (reader ≥ 22:30Z). F01–F05 frontier otherwise DEFER/HOLD/rights/dependency-gated — one records PR in flight at a time.
+- N-W13 (04:4xZ 10-05) Records wave 13 = this PR (D90–D92). FIXBIND-01 is closed. Next writes: MO-DELTA-007 when B reports F13-WS (#815) MERGED + its natural run (10-05 ≈22:1xZ, B reads); B's #807/#816/#817/#818 only where they map to an admitted row. MO-PAID-032: next natural weekly run Saturday 10-10 (reader ≥ 22:30Z), never dispatched.
+- N-W14 (23:3xZ 10-05) Records wave 14 = this PR (D93–D94). Next writes: MO-DELTA-007 only on a natural scoring of an authorized real claim (#761 EXACT_HUMAN_GATE) or a nightly that settles a due claim; CEO B's Terminal lanes only where a PR body names an admitted row; Add Symbol / Watchlist import only after Sol places them. MO-PAID-032: next natural weekly run Saturday 10-10 (reader ≥ 22:30Z), never dispatched.
+- N-W15 (22:0xZ 10-10) Records wave 15 = this PR (D95–D97) + the seat transfer. Next: the successor runs §7 at full throttle. Records wave 16 opens on the first of: a §7 lane landing (merged + served proof), a census row turning RIPE, a counterpart edge naming an admitted row, or the 10-17 032 read.
 ## 5 Open rulings / holds
 
 - #8260: no hold; Sol-owned draft. Do not arm, ready or merge from this seat.
@@ -375,6 +458,20 @@ NEXT
 - 10:5xZ 10-03: no seat hold is live on any open PR. #8331 (W9) and #8334 (R4e) are MERGED; the seat's only in-flight change is RECORDS_W10 (this PR), unarmed, under one watcher.
 
 - 22:1xZ 10-03: no seat hold is live on any open PR. #8331, #8334 and #8340 are MERGED; the seat's only in-flight change is RECORDS_W11 (this PR), unarmed, under one watcher. FIXBIND-01 custody sits with C4 until the START bound.
+
+- 09:0xZ 10-04: no seat hold is live on any open PR; #8331/#8334/#8340/#8369 MERGED; the seat's only in-flight change is RECORDS_W12 (this PR), unarmed, under one watcher. FIXBIND-01 custody sits with C4 until 21:00Z today. #7100 (B's) is HOLD-FOR-SOL — never arm, ready or merge it from this seat.
+- 04:4xZ 10-05: no seat hold is live on any open PR; #8425 and #8464 MERGED; the seat's only in-flight change is RECORDS_W13 (this PR), unarmed, under one watcher. #7100 (B's) is HOLD-FOR-SOL — never arm, ready or merge it from this seat.
+- 23:3xZ 10-05: no seat hold is live on any open PR; #8465 MERGED; the seat's only in-flight change is RECORDS_W14 (this PR), unarmed, under one watcher. #7100 (B's) is HOLD-FOR-SOL — never arm, ready or merge it from this seat.
+
+- OPEN for Sol (09:2xZ 10-04, D87): governance reading of Terminal #549 — B-F12-7 (outbound webhooks) was recorded 'do not build … refused for v0 in #6925' in the 09-07/09-08 Meta-CEO B handoffs and then shipped as `[MO-BB3]` on 09-10 (merged `cd1269feb616`, migration 0018 applied 20:58:44Z). The F00C ledger records the capability facts (056/038 BUILT_NOT_PROVEN); A takes no position on the admission. No hold is placed on anything — the code is merged and applied; the question is a record, not a merge path. **Widened 09:5xZ (D88):** the same reading is open for #581 `[MO-BW6]` shipping MO-PAID-055/084 inside the ledger's DEFER + `#6609` HOLD table, and for #548/#555 `[MO-BB5]` shipping two halves of the MO-PAID-052 fold. One question, four PRs, Sol's.
+
+- OPEN for Sol (09:4xZ 10-04, D89; CEO B 5978485628 item 7): **is outbound-webhook DELIVERY in v0 scope?** Terminal #582 (worker wiring for the #549 tables, DRAFT, 17 ahead / 233 behind `master`, untouched since 2026-09-19) is the artifact; B-F12-7 was refused for v0 in #6925 (CLOSED unmerged) and #549 then shipped the tables/routes. A's reading as F00 writer: this is the same admission question already OPEN above (B-F12-7 / #549), so it is Sol's ruling, not the ledger's. Both branches B offered are recorded: YES → B resumes #582 via merge-master (never rebase) and MO-PAID-056 stays BUILT_NOT_PROVEN because the worker cron + DDL 0026 remain operator/credential acts; NO → B closes #582 with a pointer to the ruling and 056 still stays BUILT_NOT_PROVEN with the worker-less residual named in its `missing_contract_or_proof`. No ledger state moves on the answer alone; A takes no position on scope and places no hold.
+- OPEN for Sol (23:3xZ 10-05, D94): placement of two unadmitted Terminal findings, both under C2's placement request 5989578037: SearchModal Add Symbol falling back to the active ticker (C4 5988227669), and delayed Watchlist import after list deletion (C4 5993627763, C2 5994757193). A's position is unchanged from 5988458120 §3: neither maps to an F01–F05 row, and A writes no row until Sol places them. Nothing else waits on this.
+- 22:0xZ 10-10 (transfer): **no seat hold is live on any open PR.** #8496 is MERGED. The seat's only in-flight change is RECORDS_W15 (this PR), unarmed, under one watcher. #7100 (B's) is HOLD-FOR-SOL, so never arm, ready or merge it. Items still OPEN for Sol, unchanged:
+  - D87/D88: governance reading of Terminal #549 / #581 / #548 / #555.
+  - D89: is outbound-webhook delivery (#582) in v0 scope?
+  - D94: placement of Add Symbol and Watchlist import. Now joined by C4 6041866838 (Watchlist read failure) and C4 6083598726 (SearchModal ArrowDown), all under C2 5989578037.
+  - The successor never rules any of these.
 
 ## 6 Do-not-redo
 
@@ -421,3 +518,305 @@ NEXT
 - MO-PAID-032's 10-03 natural run (37141524333) was read ONCE and recorded (D83, #6819 5973874679) — never re-read it, never re-post it, never `workflow_dispatch` weekly.yml as a cadence proof; the next read is Saturday 10-10 ≥ 22:30Z, and only if the secret has been provisioned does the state move.
 - FIXBIND-01 is C4's (D81 5969182533 / D82 5973874679) — never build, re-admit or re-clarify it from this seat before the 2026-10-04 21:00Z START bound; never arm `merge-on-green` on its PR; A reviews and releases only.
 - W10 (#8340) is MERGED and its readback POSTED (5968627537) — never re-fence #6819 below 5973874679.
+- CEO B's row-evidence batches 5978004918 / 5978053351 are RECORDED (D86) — never re-record them; MO-DELTA-018's cadence evidence lives on its pair row MO-PAID-059 by design (018 is outside the union set) — never edit 018 for the same evidence.
+- MO-DELTA-007's install receipt is RECORDED (D85) — never re-record #793/#794/#798 facts; W13 records only the natural-exercise result and anything newer.
+- W11 (#8369) is MERGED and its readback POSTED (5974140047) — never re-fence #6819 below 5978053351.
+- MO-PAID-056 / MO-DELTA-038's correction is RECORDED (D87, from CEO B 5978166980) — never re-record #549/#582/0018 facts; the next write on either row is the operator's worker-cron install, #582 landing, or a natural delivered row, as B's receipt states it.
+- MO-PAID-055 / 084 / 052 / MO-DELTA-039 / 081 / 082 part-2 evidence is RECORDED (D88, from CEO B 5978248217) — never re-record #581/#548/#555/#526/#588/#550/#557 or the 0027 caveat; the next write on 055/084/052 is a signed-in human-journey receipt or a production catalog readback for 0027.
+- MO-PAID-032's state word is BUILT_NOT_PROVEN as of D89 (CEO B 5978485628 item 4; same facts as D63/D83) — never re-argue PARTIAL vs BUILT_NOT_PROVEN on the same facts, never self-enable `RECURRING_BRIEFS_ENABLE`, never dispatch `daily.yml`/`weekly.yml` for a proof; the next write is a natural non-dormant step read or the operator's enablement receipt.
+- F11/F08 evidence from CEO B 5978485628 items 3/5/6 is RECORDED (D89) on 046/053/054/047/003/027 — never re-record #744/#798/#762/#586/#513/#517; MO-PAID-085's #545/#551 evidence is deliberately carried in FACTS (rec3 fence) — write it onto the row only with 085's next state move + fence re-pin.
+- B's item 7 (#582 v0 scope) is answered as a writer's reading in §5 and in the W12 readback — never rule it from this seat; Sol owns it.
+- FIXBIND-01 is MERGED (D90, #8464) — never re-open its scope (structure + file integrity only; no pixel provenance, no invented image-row field) and never re-finalize the receipt of record just to restamp the tool hash.
+- #8434 and Terminal #806 map to no admitted row (D91/D92) — never write them onto an F08/F12 row; MO-PAID-027's `portfolio_changes.v1` note is RECORDED — never re-record.
+- MO-DELTA-007's first natural exercise (10-04 22:21:55Z, exit 1) and MO-DELTA-003's #805 PRODUCTION_PROOF are RECORDED (D92) — the next 007 write is F13-WS's natural-run result, never a re-record of 22:21:55Z.
+- MO-DELTA-007's F13-WS natural-run result (10-05 22:38:47Z), #820 on MO-PAID-054 and #807 on MO-DELTA-003 are RECORDED (D93) — never re-record; the next 007 write is a natural scoring of a real due claim. #816/#817/#818/#822/#823/#830 map to no admitted row (D94) — never write them onto an F08/F12 row.
+- W14 (#8496) is MERGED `543e6513453b`, its readback is POSTED (6006069622) and B ACCEPTED (6006318924). Never re-fence #6819 below 6091529927; the kit `FENCE` file is the live fence.
+- The 10-06 → 10-10 edges (D95) are CONSUMED. Never re-adjudicate them, never write them onto a row, never answer them from this seat. They are B's/F08/F09 items or unadmitted Sol-placement items.
+- MO-PAID-032's 10-10 natural run 38074714177 was read ONCE (D96). Never re-read it, never `workflow_dispatch` weekly.yml, never cancel or re-run the weekly lane from this seat, and never self-enable `RECURRING_BRIEFS_ENABLE`. Next read: Saturday 10-17 at or after 22:30Z, using that run's own step-10 output.
+- The seat transfer (D97) is one act. The successor never re-posts it and never re-ACKs or re-STARTs the seat. The outgoing session 587e986f never acts after the transfer notice.
+- D93's "anonymous Terminal edge refused" read was the wrong host. Read the anonymous Terminal at `app.mastermind-x.com/terminal`, never at `mastermindx.ai` or `www.mastermind-x.com`.
+
+## 7 Successor brief (Claude3 session, full throttle — D97)
+
+**Who you are:** CEO A, the F01–F05 owner and sole F00C ledger writer, with CEO B (seat 3add8c61, F06–F13) as verifier. Hold the seat in fable-mode (S.1–S.8): judgment stays in your main loop, labor goes to the fabric, and state goes into this file as you go. `MISSION_COMPLETE: false` until §0's exit gate holds for every F01–F05 row.
+
+**First hour, in this order:**
+1. **Bind.**
+   - `git fetch origin main` and read this file from `origin/main`.
+   - If RECORDS_W15 is still open and its checks have concluded, merge it with the kit's `merge_pr.sh` from inside its worktree (§3).
+   - Fence #6819 with `FENCE` (`since=2026-10-10T00:20:00Z`, `id>6091529927`) and adjudicate anything newer before any other act.
+   - Try the Slack thread once.
+2. **Arm the reciprocal-attention tick** (one hourly cron). Its text: "CEO A tick. Fence #6819 from the kit FENCE and adjudicate CEO B/Sol posts first. Re-try Slack C0BTG1BMY8K thread 1790918549.460609 once. Reconcile armed lanes once by artifact; never tail. If nothing is new, reply in one line. Never re-ACK or re-START." Advance `FENCE` after every consumed edge.
+3. **Launch the F01–F05 dependency re-census.** One read-only fabric lane, administered by an Opus orchestrator if you want one. Every DEFER/HOLD cell below was ruled on 2026-10-02..05 facts, and a week of fleet merges may have ripened some. For each row, report RIPE / NOT_RIPE with a receipt for its named gate:
+   - D2C placement (`WS-GMI-THEME-GRAPH`). The GMI theme-graph hierarchy program merged a lot of work 10-05..10-07, so this is the likeliest unlock: MO-DELTA-004, MO-PAID-005.
+   - RIC F1–F7 / F3 (`WS:RATES-INFLATION-COMMAND`): MO-PAID-002, MO-DELTA-012.
+   - #6514 Sol status: MO-PAID-016.
+   - K2-C / K3-D / K5 + Eval-OS acceptance: MO-PAID-018 / 024 / 033 / 042 / 044.
+   - Intraday PR-4: MO-PAID-012 / 014.
+   - R2 `live_flow/events` date past 2026-09-25: MO-PAID-077, MO-DELTA-035, MO-PAID-015 / 075.
+   - Stock Identity W3: context only.
+   - Every RIPE row becomes a bounded lane in the same cycle.
+
+**Lanes lawful NOW under CEO A authority.** Run them in parallel and path-disjoint, one PR each. Every PR merges by hand on concluded checks and gets served/natural proof where the row says so:
+- **F05 MO-PAID-017.** The per-family consequence interface over the live fair glance (#8265, D49).
+  - Uncalibrated display tier; K5-gated claims stay gated.
+  - Freeze the design spec in your main loop first: dark and light art direction, EN/ZH, 1440/390, `docs/DESIGN_DOCTRINE.md`. Then have the fabric build it on `engine/chronicle/impact.py` + `templates/news.html.j2`.
+  - Any new module-level import in `impact.py` joins the admin restart regex in the same PR (§6).
+- **F01 MO-PAID-011.** Block 3 (rates/credit/commodity/intl) and the block-5 regime sub-panel of the AM edition.
+  - Wire only artifacts their data owners already publish. No new scoring; honest display-tier nulls stay.
+  - Census which producers exist before you freeze anything.
+- **F01 MO-DELTA-008 (+013).** The module-body read is discharged, so the scoped dedicated HY/IG credit page child is now an F01-owner decision.
+  - It reuses the live `bonds.html` `#corpcredit` spread gauges and ORCL chip. No second credit engine.
+  - Check `research/DO_NOT_REBUILD.md` and `docs/ACTIVE_BUILD_MAP.md` first.
+  - If you rule it RIPE, record the ruling as a D-entry before you launch.
+- **F03 MO-PAID-077 / MO-DELTA-035 / MO-PAID-015 / 075.** These are proof rows, never manufactured proof.
+  - Re-read the W3-1b gate from main's committed `latest.json` history.
+  - If `session_date` is still frozen at 2026-09-25, the live_flow events producer has been stalled about two weeks. Route that to its owner (`WS:INTRADAY-FLOW-P0-RECOVERY`) as a named incident; do not fix it from F03.
+  - Natural-RTH reads: Monday 2026-10-12, 13:30–20:00Z.
+- **F00C records.** RECORDS_W16 opens on the first landing, ripening or row-naming edge. Union rows only (OUTSIDE_UNION_SHA256 unchanged), and the regression test stays green.
+
+**Human / external gates. Name them once and never chase them:**
+- MO-PAID-032 secret provisioning (operator). Read again 10-17 at or after 22:30Z.
+- MO-PAID-003/004: commercial rights DEC (Yahoo personal-use, EIA SPR).
+- MO-PAID-048/049/050: licensing gate.
+- MO-PAID-025: no FX desk owner and no CIP collector.
+- Signed-in proofs behind Terminal #761.
+- The Sol-OPEN items in §5.
+
+**Never touch:**
+- #8260 (Sol draft), #8250, #7100 (B, HOLD-FOR-SOL), #8434.
+- B's Terminal PRs.
+- Terminal #582 / #759 / #761 / #762 / #763 / #793 / #794 / #798.
+- Any F06–F13 row except as the writer recording B's named evidence.
+
+**Kit hard laws (binding, verbatim):** never read/print/copy credentials (~/.opencode-go, ~/.glm, ~/.minimax, ~/.bailian, ~/.codex/auth*, any .token, ext/glm_shim/.token, ext/go_shim/.token); never open shim logs (ext/glm_shim/shim.log, usage.jsonl); GitHub quota is one shared bucket — no `gh` in loops sleeping <90 s, never `gh run watch` under --interval 60, never --paginate check-runs, never re-dispatch a workflow over one in flight; never `git add -A`, force-push, rebase, or bare `git stash`; never `pkill -f`; never mutate the primary clone's checkout or branch; never write under `data/`, `site/`, `verify_shots/` (sparse — a write TRUNCATES a committed artifact).
+
+**Ship mechanics (measured, binding):**
+- New worktrees come from the SSD helper: `python3 ~/.local/lib/mastermind/worktree-storage/worktree_storage.py create` with stdin `{"cwd","name","session_id"}`.
+- Seat PRs are never armed. Merge by hand on CONCLUDED checks with `--match-head-commit`. Exclude `Workers Builds: macro` and the standing `ci-authority/codex/merge-queue-pilot` FAILURE by name.
+- Edit a PR body at most ONCE per ci-authority run.
+- Use one watcher per head (kit). The CI wait guard blocks a repeat read inside 300 s; use the REST `pulls/N` and `pulls/N/files` endpoints for content.
+- After a merge, run `git fetch origin main` alone, then blob-verify per path.
+- Post on #6819 through the REST `issues/6819/comments` endpoint, fenced first.
+- Every merged lane ends with a served or natural proof read before you call it PRODUCTION_PROOF.
+
+
+## 8 Current CEO A checkpoint — 2026-10-11
+
+### Binding and priority
+
+- Current CEO A/root: `01a128b5-e26b-7b12-94b5-231bfe0b8036`, directly commissioned by Chris in Codex; B/root `01a128b7-bd2b-7a91-891d-39d38f74ad55`. Chris authorized communication with any session. No new ACK/START or transfer act was minted.
+- The Chairman's delivered product addenda (relay chat `01a129bb-400e-7d91-8d6f-6d450b379da8`; CEO_A_PRODUCT_DELIVERY_ADDENDUM.md) make existing F04/J1 the flagship inside the full F01–F05 mandate, with independent F01/F05 work continuing. Native hierarchy is not a blanket predecessor. A owns market observations/clocks/company references/return target; B owns Analysis/Thesis/private state. Existing owners retain upstream intelligence, release and human-only acceptance gates.
+- Historical §7's two-orchestrator/native-labor restrictions are superseded by the current Chairman instructions: Sol default, optional Astra coordination, configured native ceiling16 and useful nesting through four levels, subject to tools/account admission and unchanged original-root/provider/host grants. Sidebar chats or provider CLIs are not substitute workers. This is configuration/authority, not proof of live capacity.
+- Effective carrier remains macro#6819; consumed through A material return `6106975318` at `2026-10-11T08:07:35Z`. Seat kit FENCE updated to that edge. No hourly automation was newly created. Existing exact-head CI observers are singular; use retained sessions/logs rather than starting duplicates.
+
+### D98–D103 and source increments
+
+- **D98 — continuation priority.** Continue already-authorized product work directly when eligible delegation is unavailable. Preserve incumbent Fabric repair and original effects; do not reopen closed OS/controller/config reviews. Native tools remain absent in this A session despite the installed16-child configuration. Mastermind #1327 hierarchy/v6 source and #1321 config/relay source remain with B's CI observer and the CEO Integrator's installation/migration ownership. Neither is a live hierarchy acceptance claim.
+- **D99 — J1 and F01 truthful clocks/coverage.** #8769 (`7f1b688cdbebfb9bc4cc0c12e86414599d4eec98`) repairs invalid/missing/mismatched chain clocks in the existing TXI Cascade Monitor company continuation. 12 negative regressions failed before repair;89 targeted checks pass after. B accepted the source,13 consumer-module assertions and2 mounted Analysis/Thesis/return/symbol-clear fixtures. #8769 merged2026-10-11T07:37:13Z as `cd06b9ae010c17a0d8cb60989730fa766c89a724`; all26checks concluded and all3source blobs match fresh main. The natural producer is now observed (D102); signed-in J1 remains unproved. #8771 (`683ad507288b0f33da79aebe4d969e19d52d895a`) repairs AM Edition context suppression: the committed Oct9 payload carries four CURRENT rows while aggregate NOT_COVERED hid all of them. Three regressions failed before;45 page+75 producer tests and eight saved-payload browser cases pass after; B accepted source. #8771 merged2026-10-11T07:48:54Z as `3ab976f5e6ca63c2a6438e01d2d9e69b71c811ab`; all26checks concluded and bothsource blobs match fresh main. Credit remains missing. The separate regime consumer repair (D103) is progressing. No new scoring or owner data.
+- **D100 — F05 bounded product freeze.** PR #8775 (`c40a856e04b3fcaf21497597eb9a8122cf77d0f6`) extends existing `glance_consequence_surface` with six per-family views over the same qualified/collapsed/sorted pre-cap buckets, at most4 rows each and available-display-record counts separate from source-event counts. Existing eight-card overview selection remains unchanged. Six native details reuse existing dark/light News materials and the same card macro. Four regressions failed before,137 existing+new targeted tests pass after. Eight resting+eight real keyboard-open EN/ZH1440/390 dark/light states plus one saved-corpus mobile case captured; B accepted the exact four source hashes. Committed evidence is `mockups/evidence/news-family-inspection/`. MERGED2026-10-11T08:09:22Z as `9ebe0fe088126267c6a4fb64ff2dab54a268da56` after26checks concluded; all25changed blobs match fresh main. Covering render/served pending; no causal/calibrated claims, source advancement or K5 release. Held Tiingo #8697 touches disjoint headline/attribution/template regions and appended tests; its carrier, rights hold and source are untouched.
+- **D101 — B Settings evidence only.** B supplied #917 (`881d9ad2b`) with41 native tests, TypeScript and6 mounted EN/ZH1440/820/390 cases;12 captures committed. Exact lineage is MO-DELTA-003 (#586/#805/#807), supporting read/recovery reliability only. Role dimension remains absent and PARTIAL unchanged. #917 MERGED2026-10-11T08:00:12Z as `fc76cf495781e5f53254aa3c457411de0cb64654` from881d9ad2b; B sent the exact source to the existing Terminal release owner. The existing Terminal release owner retains maintenance/spend/deployment decision, and #761 owns signed-in proof.
+
+- **D102 — natural J1 producer and bounded dependency returns.** At07:48:54Z an anonymous real-browser read of `https://www.mastermind-x.com/transmission.html` found the natural arming `dollar_spike_em_multinational` chain,419company links and `tx-chain-dollar_spike_em_multinational` on its actual `div.cm-main`. Clicking the company disclosure made the canonical AAPL/em_revenue_exposure link visible with SEC:US-XNAS-AAPL and mo_asof2026-10-08. HTML SHA256 `eb12623aa991755e3e0591592efd405079337022b52d3a19c27598fc60a56cce`; Last-Modified02:24:26Z, so this is the pre-repair served build. B passed30consumer assertions on five actual source samples. No Analysis navigation or private-state write occurred; current repair served and full signed-in journey remain unproved. Evidence: `j1-natural-browser.json`, `j1-natural-producer.png`, and B `j1-natural-consumer.json` under the two seat evidence roots. GMI owner confirms D2C#8432 (`0b1fe88730547207475ad3c04118d2e771a9b949`) and D2D#8435 (`79b566f5c0ccba878ab963084a239993d3116aa9`) already merged: no placement predecessor for the narrow existing F04 consumer. Shock/theme binding must still be caller-declared and owner-accepted, with native PIT, identity, lawful provenance and typed refusal; no guessed mapping or research-only rights laundering. D2E#8540 natural prospective window remains held. F03 current catalyst artifact generated05:10:05Z Oct11 still reads the Sep25R2session (2544events,189BOUND=7.429percent); eight successive generations carry that same session. MO-PAID-077 remains NOT_RIPE. Existing Options Intelligence session is investigating the original producer/age incident; no replacement feed or RTH proof was manufactured.
+- **D103 — F01 last-known regime consumer.** Existing saved Oct9 payload contains last-known Oct8 market_state Mixed and macroeconomic Reflation. PR #8778 (`bfb0973c41983ebe8b6092f4cc435161b658c0eb`) renders both with distinct headings, original source date precision and freshness/translation limitations; unusable rows remain hidden.11 regressions failed before repair;131 page/producer tests pass, plus final56page checks after day-precision correction. Eight dark/light EN/ZH1440/390 browser states verify both panels with no overflow/errors. No producer/scoring/CSS change. B accepted the exact two-file hashes and four representative captures; contract delta0/0. Published; exact-head CI/merge and served proof remain. Committed evidence is `mockups/evidence/am-regime-context/` in the candidate workspace.
+
+### W16 custody and retained evidence
+
+Six edited union rows: MO-PAID-005, MO-PAID-011, MO-PAID-017, MO-DELTA-003, MO-DELTA-004, MO-PAID-077. All capability states unchanged; CSV retains15 columns and CRLF; outside-union SHA256 remains `a5f263439ac32778504c887db876ad5391961eb86ec41de533e81628424ba3ea`. The MO-PAID-005 consumer wording is corrected against current source plus D7/D19: `transmission.html` contains the TXI Cascade Monitor alongside RIC, so the inherited no-TXI-page prose was stale. D102 separately records accepted D2C placement and natural active producer proof; neither is full authenticated J1 acceptance.
+
+Current isolated workspaces (all minted by the SSD helper under the original A root):
+
+- J1: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-a-j1-chain-clock-1430f29676d2c310`.
+- F01: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-a-am-partial-context-02a45e3f0fcb703e`.
+- F01 regime: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-a-am-regime-context-1c9a3c196e414807`.
+- F05: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-a-f05-family-consequences-93b199036e248116`.
+- W16 sole records writer: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-a-records-w16-fe4492fd26ff4ebd`.
+
+Local evidence root: `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5/product-resumption/`. J1/F01 partial-context/F05 contract-delta checks passed with zero introduced/inherited gaps. `pr8769-watch.log` and `pr8771-watch.log` concluded before their exact-head merges. F05 #8775 CI observer concluded before its exact-head merge. F01 #8778 retains its CI observer and the product increments share one covering render observer; no auto-merge on A seat PRs. Preserve the original CI observers while advancing distinct work. After concluded checks, consume new #6819 edges, use the exact-head seat merge recipe, fetch and verify every changed blob, then inspect covering render and served bytes. Local screenshots and source tests are not served acceptance.
+
+Fabric child `mo-a-f01-producer-census-01a128b5-v1` failed with provider/client connection reset. Its retained156 bytes were delivered completely and normal process cleanup was proven; never accept or replay it. Fabric owner root `01a11e90-4b5d-7f53-b966-8aaaad38701f` verified that the canonical ledger retained A's original root and repaired the failed-status projection so status now reports it. Provider recovery remains unproved; the SDK's unrecognized-model annotation alone is not unsupported-model proof. Prior accepted two-worker overlap11.458seconds remains a narrow attended-concurrency proof, not live16/nested-Sol proof.
+
+### Next ready dependencies and unchanged gates
+
+Finish the four A product increments through their actual CI/release/served boundaries; publish W16 with B's exact-row verification once material results are folded. Continue the existing F01 regime source lane and consume the Options owner incident return; the bounded dependency re-census is complete. Do not rebuild accepted owners. F03 natural RTH remains Monday2026-10-12 13:30–20:00Z; MO-PAID-032 next natural weekly read is Saturday2026-10-17 at/after22:30Z. Do not dispatch/enable/retry a replacement observation. #8260/#8250/#7100/#8434, the named held Terminal carriers and Sol-OPEN D87/D88/D89/D94 stay with their owners. MISSION_COMPLETE remains false.
+
+
+## 9. W17 — native delegation acceptance and truthful publication boundary (2026-10-11)
+
+This is the next cumulative CEO A checkpoint, original root
+`01a128b5-e26b-7b12-94b5-231bfe0b8036`, at protected Macro
+`488cb027751ee644c681e2579c6fcc23ca9b3e9f`. It supersedes §8's pending source merges
+and absent-native-tool observation only. Existing product/rights/held-work laws remain.
+A remains the sole F00C writer. B retains F06–F13 and signed-in J1 consumers.
+
+### D104–D108
+
+- **D104 — existing credit source honesty delivered in source.** #8780 head
+  `1a2987e4886c8ef710814511606ec96bf4525f6b` merged as
+  `6f4e215d26b127bdf97e82e62ffcbfde8946773d` at09:00:06Z. All27checks concluded
+  with no nonstanding failure; all15changed blobs matched freshmain.127targeted
+  checks and8dark/light EN/ZH1440/390 browser states plus valid-input controls
+  passed; attended Fabric exact-patch review was explicitly ACCEPTED. Missing,
+  malformed, null and empty root snapshots are unavailable instead of low-stress
+  or zero-maturity observations. This does not launch the dedicated credit page,
+  refresh the Sep10 artifact, or prove this source is published.
+- **D105 — useful native hierarchy accepted, capacity bounded.** Native collaboration
+  tools became available in the same original A chat. Two `sol-coordinator` children
+  each spawned two explicit `gpt-6.1-sol` workers; `collaboration.list_agents` observed
+  root plus all six descendants running concurrently. Both coordinator results
+  returned through the native hierarchy and were consumed and accepted by A.
+  Runtime instruction exposes12total slots including root. This is three-level
+  useful delegation, not16children, saturation, four-level recursion or Executive
+  RuntimeBinding/Wake proof. Receipt `NATIVE_HIERARCHY_ACCEPTANCE_2026-10-11.json`
+  under the existing evidence root. The Fabric parent then relayed the Chairman's
+  cost correction: consume already-running native children; future eligible leaf
+  work uses paid GLM/Qwen/Grok Fabric, Sol coordinates/reviews. No more native leaf
+  fanout merely because tools are present. Existing infrastructure owner retains
+  the12-versus16 discrepancy. Current V3 read is serviceable, but the Fabric owner
+  verified `ceo_submit_armed:false` at11:24:47Z; no trial Job was submitted. The
+  existing attended stable-handle adapter remains the admitted new Macro labor path.
+- **D106 — source publication remains unaccepted.** All five increments8769,
+  8771,8775,8778,8780 and W16#8779 are merged. #8778 merged
+  `3f5e0307b889d31b27612914532cb7ebb60cc72b` at08:26:47Z after28concluded checks
+  and24blob matches. At11:12:19Z Transmission/AM/News/Bonds wereHTTP200 and
+  byte-matched generatedmain `b88076e83581972595a7371f8a184817317e4fb7`, while
+  new AM partial-context/regime and News family markup remained absent. Current
+  valid Transmission/credit inputs do not discriminate the repaired negative
+  branches. Existing source tests/reviews remain accepted. Engine38123814331 failed
+  Git checkout before builders;38126841768 cancelled without jobs;38120613686
+  cancelled before commit. Successful engine38120613697 actually built at
+  `478103d5e8bae869edca77efdcba41239a0739b7`, before all five, then rebased outputs
+  onto newer source: ancestry is not generation proof. Preserve existing render
+  38131898513/pending38133349439. Old observer55376 is dead; replacement58860
+  launched11:19:01Z at300-second cadence and returns to this root. No new dispatch,
+  cancel or rerun. Separate News JSON-builder null defect is reproduced offline;
+  #8797 head `5f00bfe636ae` contains one guard, actual-producer regression and
+  existing-CI enrollment,152checksPASS, Sol reviewPASS, CI/merge still pending.
+  `build_news` writes JSON side artifacts; `build_site` produces News HTML earlier.
+  Do not attribute the absent family HTML solely to this null dereference.
+- **D107 — F04 private-consumer source contract accepted, interface not invented.**
+  Terminal protectedmaster `0e8de334d3a772d3c8b035a1ce01d04b1316274a` supplies
+  auth-before-I/O and authoritative `/api/me` patterns. Existing public Company
+  Intelligence/event-workspace routes are not newly classified as security defects.
+  GMI acknowledged consumer-contract SHA256
+  `09837391e08a476fbd0b862427dad933a03dcc8b2c6112f89437af24d2ebcc1b` and retained
+  actual private endpoint/safe metadata, purpose/adoption/identity/time/correction
+  resolver, and source-owned current artifact selection obligations in its original
+  continuation. C01 remains private and NOT_ADMITTED. CI entitlement needs actual
+  authority; options entitlement is not a substitute. No generic refusal stub,
+  fabricated receipt/grant, private source read or production admission was created.
+- **D108 — credit architecture readiness does not establish launch rights.**
+  The module-body precondition is discharged; same Bonds renderer/context can
+  support a bounded dedicated route. Technical readiness is accepted, but new
+  public/product display is NOT_ESTABLISHED as RIPE. Generic
+  `macro.fred.observations` licensing `public_domain` does not resolve the F01
+  wiring trace's explicitly ungranted FRED/ICE/Yahoo redistribution, IMCE FRED
+  transport/storage freeze or selected third-module lineage. No series-specific
+  purpose record/superseding ruling was found for BAMLH0A0HYM2/BAMLC0A0CM.
+  The existing source/rights owner must supply that record; no new licence ruling
+  is made here. DerivedSep10 uses Sep8data_session while primary FRED series reach
+  Oct7. Currentness separately needs incumbent producer/publication proof. The
+  page remains unlaunched; freshness diagnosis may proceed read-only on existing
+  producers through paid Fabric. MO-DELTA-013 is outside the current union fence
+  and stays byte-identical; this paired evidence is recorded on008 and here.
+
+### Records and continuation
+
+Only MO-PAID-011 and MO-DELTA-008 receive W17 ledger evidence/gap updates. All
+capability states,15columns,CRLF and all other row bytes stay unchanged. Outside-union
+SHA256 stays `a5f263439ac32778504c887db876ad5391961eb86ec41de533e81628424ba3ea`.
+
+Canonical carrier:
+https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-6108478545
+Evidence root: `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5`;
+`publication-acceptance-1110/`, `f04-private-adoption/`, `f01-credit-page-scope/`.
+The Agent OS checkpoint is
+`agentos/handoffs/MARKET-OS-2026-10-11-ceo-a-w17.md`.
+
+Next: finish #8797's exact-head checks/manual merge, then qualify immutable actual
+builder checkout/output/publication from the existing covering render and make one
+fresh served feature readback. Independently consume the paid credit-producer
+diagnosis `mo-a-credit-producer-diagnosis-01a128b5-v1`; do not replay unknown/refused
+operations or turn a diagnosis into collector/rebuild authority. Existing GMI owner
+retains its private-native inputs. F03 and MO-PAID-032 natural-time gates and all
+named held/Sol-OPEN work in §8 remain. MISSION_COMPLETE:false. This is a checkpoint,
+not a claim of autonomous wake or program completion.
+
+## 10. W18 — private issuer foundation and actual deployment boundary (2026-10-11)
+
+The original root remains `01a128b5-e26b-7b12-94b5-231bfe0b8036`. A owns
+F01–F05 and the sole F00C writer; B retains F06–F13 and signed-in J1. This is
+a working checkpoint, not a new control plane or a claim of mission completion.
+
+- **D109 — issuer source landed; account adoption remains separate.** Macro
+  #8808 reviewed head `efc418564fe17f6ca6ba76d170767d8e73f03009` merged as
+  `5b7513b3b5995a5634b5ea66e55fcff737cde19d` at13:43:46Z.27 checks concluded
+  with no nonstanding failure and all9changed blobs matched fresh main.169
+  catalog/billing checks and258 deployment checks passed; the reload repair
+  had4discriminating baseline failures. The existing Pro plan now declares
+  `company_intelligence_private_read`, and both cached catalog consumers have
+  source reload triggers. This changes no existing entitlement row. The real
+  account baseline is Pro/active/comp/lifetime with the original3features and
+  no private feature. The mapped Stripe customer is null in the successful
+  canonical roster read; this is not a universal claim about Stripe. No grant,
+  cancellation, force action or private artifact read has occurred.
+- **D110 — installed API proof does not prove admin adoption.** The13:45:33Z
+  read-only VPS receipt pins checkout5b7513, installed catalog SHA256
+  `cc7de54a72dcf5c9deee5f0396dd6901a0ada9b9f03e4d258e578cab5fc17477`,
+  updater SHA256 `6f01f561a1eb24d9b79c14ae0c0e1d57f481da039ceed22a43cd5741c94f8496`.
+  API PID2915728
+  started13:45:16. Admin remained PID2719081/start08:12:21, generation
+  `2026-08-09-prophet-integrity-v1`; installed unit differs from source.
+  No updater remained running13:46:54, and the latest log ends at13:45:20
+  with `W2C installation and terminal state were not authenticated`. The
+  existing updater exits before the independent admin reconciliation block.
+  A owns source-order PR#8821. Reviewed source head
+  `de00e5765b6e6f24fc82ca82fa52bae5906654c7` was normally refreshed to CI head
+  `8370d5dd1a9032f18f6814771e8a45ac5689a14d`; both source postimages are unchanged.
+  The fresh branch is
+  `claude/ssd-f04-admin-order-01a128b5-4913511afaca83d4`; the admin block is
+  relocated unchanged after API adoption and before W2C attestation. All
+  W2C/Options guards remain byte-identical. Existing #8807/#8816 repairs keep
+  their owners; no manual timer/service workaround is authorized by this record.
+- **D111 — concrete native contract and bounded consumer source.** GMI #8810
+  now publishes exact `9bf268e2035886a5efa086d6c4a1f2f31c102f1f`, with a
+  GMI-owned merge hold pending kernel#8803. Its current issuer selection is
+  owner-resolved, bounded to16sorted unique facts, with exact issuer/CIK/
+  snapshot binding; fact reads pin original full Admission through retrieval.
+  GMI retains current generation, lawful purpose, resolver and actual private
+  artifact installation. C01 remainsNOT_ADMITTED. A's Sol coordinator uses
+  stable Fabric child `mo-a-f04-private-build-01a128b5-v1` on the original root,
+  one request/lease/launch. Six new Terminal decoder/proxy/test files are the
+  only source scope on `claude/ssd-f04-private-consumer-01a128b5-8b0f9f674ee81012`.
+  The slice supports current mode only, explicitly refuses historical query
+  overrides, authenticates before fresh canonical entitlement before native
+  I/O, and retains private/no-store bounded closed responses. B confirmed no
+  competing B writer on this private scope; shared auth/UI and other owners'
+  #804/#915/ChartPanel remain untouched. Source implementation is permitted
+  independently of the later real grant and production-positive gates.
+- **D112 — publication and infrastructure boundaries remain distinct.** News
+  #8797 landed `69d6326bec3f155fb769ab1839409c232ad23e44` at12:04:47Z with
+ 26concludedchecks,3blobmatches and152focusedPASS. W17#8799 landed
+  `abce5baaa235ca29d8d3d096d9e31cdd8797ea6e` at11:57:46Z. Neither proves
+  covering page publication. Prophet retains sole observation of existing
+  render38141694842; prior38137913516 had runner_id0/no steps for
+  `render-linux`, and repo-visible runners were four online Macs. Org inventory
+  returned403 and is not retried or interpreted as org absence. The existing
+  runner-mitigation owner holds that dependency; A creates no dispatch/observer.
+  Attended Fabric returns are usable and accepted; the native runtime still
+  advertises12total slots, not16children. Executive arms/full acceptance and
+  original-parent Wake remain with their existing infrastructure owners.
+
+Only MO-PAID-005 and MO-DELTA-004 receive W18 evidence/gap updates. Their
+capability states, all other rows,15columns and CRLF remain unchanged. This
+private foundation does not satisfy shock-to-company mapping or signed-in J1.
+Canonical checkpoint: https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-6109871544.
+Evidence stays under `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5/`,
+particularly `f04-private-adoption/entitlement-qualification/issuer-runtime-postmerge-20261011.json`,
+`admin-deploy-order/`, `consumer-source/`, and the existing source/CI receipts.
+The next source release must follow exact-head concluded CI, manual seat merge
+and fresh blob comparison, followed by updater-mediated admin adoption. Then
+qualify the actual account action and fresh /api/me, native owner installation,
+and authenticated consumer journey separately. Preserve F03/MO-PAID-032 natural
+time gates, held carriers and all earlier do_not_redo obligations.
+MISSION_COMPLETE: false.

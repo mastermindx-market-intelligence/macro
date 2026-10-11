@@ -1,0 +1,37 @@
+{
+ "code_baseline": {
+  "cases": 28,
+  "degenerate_input_returns_nan": true,
+  "max_abs_diff": {
+   "charm": 0.0,
+   "delta": 0.0,
+   "gamma": 0.0,
+   "vanna": 0.0
+  },
+  "reference": "engine/greeks.py bs_greeks (incumbent European continuous-yield formula)",
+  "reproduced": true,
+  "tolerance": 1e-12,
+  "worst": 0.0
+ },
+ "empirical_baseline_B1": {
+  "absence_reason": "no chain file carries bid/ask/mid/last; the vendor iv column is a vendor-model output and is never used as a price",
+  "chain_columns_union": [
+   "K",
+   "T",
+   "asof",
+   "delta",
+   "expiry",
+   "gamma",
+   "is_call",
+   "iv",
+   "oi",
+   "spot",
+   "strike_ticker",
+   "underlying",
+   "volume"
+  ],
+  "definition": "European continuous-yield BS (engine/greeks.py formula, q = 0) inverted to the observed option mid price",
+  "price_columns_present": [],
+  "reproducible": false
+ }
+}

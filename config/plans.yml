@@ -19,13 +19,22 @@ currency: usd
 #   site_full             -> the premium HTML/JSON wall (W3)
 #   terminal_live_options -> the Terminal live-options surface (Terminal repo; paid + trialing)
 #   chat_opus             -> the Mastermind Pro (Opus) chat lane
+#   company_intelligence_private_read -> private Company Intelligence owner reads;
+#       consumers require this explicit /api/me.features capability, not a tier label.
+# Billing display labels use `name` / optional `name_zh`; untranslated labels use `name`.
 features:
   - key: site_full
     name: Full site access
+    name_zh: 整站访问权限
   - key: terminal_live_options
     name: Terminal live options
+    name_zh: 终端实时期权数据
   - key: chat_opus
     name: Mastermind Pro chat (Opus)
+    name_zh: Opus 模型的 Mastermind 对话
+  - key: company_intelligence_private_read
+    name: Private Company Intelligence access
+    name_zh: 私有公司情报访问权限
 
 # Display contract for the Terminal indicator library. The Terminal gates advanced
 # modules directly from the account tier (free < essential < pro); this block lets the
@@ -69,7 +78,7 @@ products:
     tier: pro
     name: Pro
     trial_days: 7
-    features: [site_full, terminal_live_options, chat_opus]
+    features: [site_full, terminal_live_options, chat_opus, company_intelligence_private_read]
     legacy_lookup_keys:
       - pro_monthly
       - pro_annual

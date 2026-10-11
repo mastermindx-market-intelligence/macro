@@ -1,0 +1,181 @@
+{
+  "context": {
+    "horizon": "1m",
+    "currency_basis": "usd_unhedged",
+    "return_basis": "price",
+    "source_reference": "synthetic:inspector-source",
+    "source_reference_reason": null
+  },
+  "configured_count": 2,
+  "eligible_count": 2,
+  "ranking_count": 2,
+  "ranking_status": "available",
+  "ranking_reason": null,
+  "focus_ids": [
+    "GB",
+    "JP"
+  ],
+  "rows": [
+    {
+      "slot": 0,
+      "market_id": "JP",
+      "name_en": "Japan",
+      "name_zh": "\u65e5\u672c",
+      "index_id": "^N225",
+      "index_label": "Nikkei 225",
+      "metric": {
+        "value": -12.306610407876228,
+        "unit": "percent",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      },
+      "local": {
+        "value": 19.444444444444443,
+        "unit": "percent",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      },
+      "usd": {
+        "value": -12.306610407876228,
+        "unit": "percent",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      },
+      "fx_contribution": {
+        "value": -31.75105485232067,
+        "unit": "percentage_points",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      }
+    },
+    {
+      "slot": 1,
+      "market_id": "GB",
+      "name_en": "United Kingdom",
+      "name_zh": "\u82f1\u56fd",
+      "index_id": "^FTSE",
+      "index_label": "FTSE 100",
+      "metric": {
+        "value": 42.66975308641974,
+        "unit": "percent",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      },
+      "local": {
+        "value": 19.444444444444443,
+        "unit": "percent",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      },
+      "usd": {
+        "value": 42.66975308641974,
+        "unit": "percent",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      },
+      "fx_contribution": {
+        "value": 23.225308641975296,
+        "unit": "percentage_points",
+        "quality": "qualified",
+        "reason": null,
+        "window": {
+          "start": "2025-12-18T00:00:00",
+          "end": "2026-01-08T00:00:00",
+          "calendar_policy": "owner_union_forward_fill",
+          "endpoint_observations": {
+            "price_start": "2025-12-18T00:00:00",
+            "price_end": "2026-01-08T00:00:00",
+            "fx_start": "2025-12-18T00:00:00",
+            "fx_end": "2026-01-08T00:00:00"
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "kind": "highest_lowest_returns",
+    "highest_market_id": "GB",
+    "lowest_market_id": "JP",
+    "positive_count": 1,
+    "fx_detracted_count": 1,
+    "fx_eligible_count": 2,
+    "reason": null
+  }
+}

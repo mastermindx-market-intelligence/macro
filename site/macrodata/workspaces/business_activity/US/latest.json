@@ -91,10 +91,10 @@
           "en": "Leading tier",
           "zh": "领先层"
         },
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "required": true,
         "source_asof": "2026-10-31",
-        "status": "PARTIAL"
+        "status": "PRESENT"
       },
       {
         "component_id": "coincident_tier",
@@ -131,8 +131,8 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": null,
-        "delta": null,
+        "current_value": 0.7547507202355774,
+        "delta": -0.1825,
         "metric_id": "leading_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.9372992907410378
@@ -169,18 +169,18 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
-    "predecessor_generation_id": "business_activity-US-318ebaef1261d5dc"
+    "predecessor_generation_id": "business_activity-US-884829ebf715518f"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-10-03T17:06:57Z",
+    "built_at": "2026-10-11T03:40:41Z",
     "calculation_as_of": "2026-10-31",
-    "code_version": "34a3b19628ca449fe8c10d108c1661a4e34272fa",
-    "content_sha256": "cc2b96cb5bd03b1bdc7df8ea39f83746597988e2a1e82d8e938fd1ac55bf04ed",
-    "generation_id": "business_activity-US-cc2b96cb5bd03b1b",
+    "code_version": "49319de9aafa51427b9c50cbb653d73d35d5288b",
+    "content_sha256": "60b2378af9f966e2a7fc263753ce983743731b78baa766053dbcc1fd7ea87bce",
+    "generation_id": "business_activity-US-60b2378af9f966e2",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -276,8 +276,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.5173337840059276, direction rising, breadth 66.66666666666667 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.5173337840059276，方向 rising，广度 66.66666666666667（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.7547507202355774, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.7547507202355774，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -420,7 +420,7 @@
         "basis": "rebased_100_composite",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.index",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
@@ -428,7 +428,7 @@
         "market_session": null,
         "metric_id": "leading_tier_index",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-10-31",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_index",
@@ -440,14 +440,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "leading tier: standardized-leg cumulative composite, rebased to 100 at first valid month (Conference-Board method)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "index_pt",
-        "value": null,
+        "value": 95.3651934793005,
         "value_type": "index"
       },
       {
@@ -456,7 +456,7 @@
         "basis": "6m_change",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.mom6",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -464,7 +464,7 @@
         "market_session": null,
         "metric_id": "leading_tier_momentum_6m",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-10-31",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_momentum_6m",
@@ -476,14 +476,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "tier index level minus its value 6 months prior (CB '6-month change', red line)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "index_pt",
-        "value": null,
+        "value": 0.7547507202355774,
         "value_type": "number"
       },
       {
@@ -492,7 +492,7 @@
         "basis": "ema_of_6m_change",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.trend",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -500,7 +500,7 @@
         "market_session": null,
         "metric_id": "leading_tier_trend",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-10-31",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_trend",
@@ -512,14 +512,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "EMA smoothing of the 6-month momentum series (blue line)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "index_pt",
-        "value": null,
+        "value": 0.8297866340706598,
         "value_type": "number"
       },
       {
@@ -528,7 +528,7 @@
         "basis": "share_of_legs_rising_6m",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.diffusion",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader",
@@ -536,7 +536,7 @@
         "market_session": null,
         "metric_id": "leading_tier_diffusion",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-10-31",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_diffusion",
@@ -548,14 +548,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "share of the tier's sign-adjusted legs that rose over the diffusion window (CB breadth, 0-100)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "pct",
-        "value": null,
+        "value": 75.0,
         "value_type": "score_0_100"
       },
       {
@@ -564,7 +564,7 @@
         "basis": "sign_of_6m_momentum",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.direction",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
@@ -572,7 +572,7 @@
         "market_session": null,
         "metric_id": "leading_tier_direction",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-10-31",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_direction",
@@ -584,14 +584,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "'rising' if 6-month momentum > 0 else 'falling'",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": null,
-        "value": null,
+        "value": "rising",
         "value_type": "categorical"
       },
       {
@@ -600,7 +600,7 @@
         "basis": "count_of_available_legs",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.n_legs",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader_input_coverage",
@@ -627,7 +627,7 @@
           "value": null
         },
         "unit": "legs",
-        "value": 3,
+        "value": 4,
         "value_type": "count"
       },
       {

@@ -1,0 +1,241 @@
+{
+  "pins": {
+    "macro_main": "81eb0c9b399327c6989c54a86fe99d2c542a7b3d",
+    "pr_8455_head": "029fe5b17f0f94ab7cdd1dad19444149f0d4a9a6",
+    "pr_8417_head": "d02ebf451f1d53699499994825362cb23c85af73",
+    "terminal_epoch": "2ca21c44718a9f44c5ab74baaa42afbd14623399"
+  },
+  "c0_writer": {
+    "module": "scripts/build_thematic_state.py",
+    "function": "build",
+    "write_call": "scripts/build_thematic_state.py:108-111 (_atomic_write_json)",
+    "compose": "engine/neuralweb/thematic_state.py:448",
+    "artifact": "site/neuralwebdata/theme_state.json",
+    "commit": "81eb0c9b399327c6989c54a86fe99d2c542a7b3d"
+  },
+  "producers": [
+    {
+      "producer": "scripts/build_thematic_state.py:65-111",
+      "compose": "engine/neuralweb/thematic_state.py:448",
+      "artifacts": [
+        "data/neuralweb/theme_state.json",
+        "site/neuralwebdata/theme_state.json",
+        "data/neuralweb/theme_phase_history.jsonl"
+      ],
+      "contract": "neuralweb.theme_state.v1 (engine/neuralweb/thematic_state.py:45)",
+      "workflow": ".github/workflows/daily.yml:4646"
+    },
+    {
+      "producer": "engine/neuralweb/theme_thesis.py:892 run_stage",
+      "artifacts": ["site/neuralwebdata/theme_thesis.json"],
+      "contract": "TIL thesis in-module",
+      "workflow": "scripts/build_thematic_state.py:173 run_optional_stages (after daily build_thematic_state)"
+    },
+    {
+      "producer": "engine/neuralweb/theme_pathways.py:591 run_stage",
+      "artifacts": [
+        "data/neuralweb/theme_pathways.json",
+        "site/neuralwebdata/theme_pathways.json"
+      ],
+      "contract": "TIL pathways in-module",
+      "workflow": "optional stage via build_thematic_state"
+    },
+    {
+      "producer": "engine/neuralweb/theme_asymmetry.py:1310 run_stage",
+      "artifacts": ["site/neuralwebdata/theme_asymmetry.json"],
+      "contract": "TIL asymmetry in-module",
+      "workflow": "optional stage via build_thematic_state"
+    },
+    {
+      "producer": "scripts/build_theme_graph.py:293-314",
+      "store_writes": "engine/theme_graph/store.py:472-522",
+      "artifacts": [
+        "data/theme_graph/nodes.parquet",
+        "data/theme_graph/edges.parquet",
+        "data/theme_graph/evidence.parquet",
+        "data/theme_graph/capability.parquet",
+        "data/theme_graph/_meta.json"
+      ],
+      "contract": "contracts/theme_graph/*.v1.schema.json",
+      "workflow": ".github/workflows/daily.yml:3244 → scripts/ci/daily_engine_regional_desk_builders.sh:119"
+    },
+    {
+      "producer": "scripts/build_company_theme_exposure.py:24",
+      "engine": "engine/company_theme_exposure/views.py:259 build_bundle",
+      "artifacts": ["data/company_theme_exposure/generations/*"],
+      "contract": "company_theme_exposure.v1 (engine/company_theme_exposure/contracts.py:18)",
+      "workflow": ".github/workflows/company-intelligence.yml:137"
+    },
+    {
+      "producer": "scripts/publish_company_theme_exposure_r2.py:139 publish",
+      "artifacts": ["R2:company_theme_exposure/manifest.json", "R2:company_theme_exposure/generations/*"],
+      "contract": "company_theme_exposure.v1",
+      "workflow": ".github/workflows/company-intelligence.yml:143"
+    }
+  ],
+  "endpoints": [
+    {
+      "route": "POST /api/ask",
+      "handler": "app/main.py:1130 → engine/neuralweb/ask_brain.py:1547 _tool_read_theme_state",
+      "artifact": "data/neuralweb/theme_state.json"
+    },
+    {
+      "route": "POST /api/ask/stream",
+      "handler": "app/main.py:1160",
+      "artifact": "data/neuralweb/theme_state.json"
+    },
+    {
+      "route": "POST /api/brain/stream (and related /api/brain/*)",
+      "handler": "engine/neuralweb/brain_gateway.py → cortex/ask_brain read_theme_state",
+      "artifact": "data/neuralweb/theme_state.json"
+    }
+  ],
+  "contract_surface": {
+    "main_contract_files": [
+      "contracts/theme_graph/README.md",
+      "contracts/theme_graph/capability.v1.schema.json",
+      "contracts/theme_graph/cn_limit_rules.v1.schema.json",
+      "contracts/theme_graph/edges.v1.schema.json",
+      "contracts/theme_graph/evidence.v1.schema.json",
+      "contracts/theme_graph/identity_resolution.v1.schema.json",
+      "contracts/theme_graph/node_lifecycle.v1.schema.json",
+      "contracts/theme_graph/nodes.v1.schema.json",
+      "contracts/theme_graph/ontology_change_report.v1.schema.json",
+      "contracts/theme_graph/ontology_inventory.v1.schema.json",
+      "contracts/theme_graph/ontology_neighborhood.v1.schema.json",
+      "contracts/theme_graph/ontology_overlap_evidence.v1.schema.json",
+      "contracts/theme_graph/ontology_proposal_review.v1.schema.json",
+      "contracts/theme_graph/probation_proposal.v1.schema.json",
+      "contracts/theme_graph/proposal_worklist.v1.schema.json",
+      "contracts/theme_graph/security_neighborhoods.v1.schema.json",
+      "contracts/theme_graph/structural_context.v1.schema.json",
+      "contracts/theme_graph/theme_state.v1.schema.json"
+    ],
+    "pr_8455_additions": {
+      "schemas": [
+        "contracts/theme_graph/selection_cohort_read.v1.schema.json",
+        "contracts/theme_graph/selection_cohort_source.v1.schema.json",
+        "contracts/theme_graph/theme_state.v2.schema.json",
+        "contracts/theme_graph/theme_state_generation.v1.schema.json",
+        "contracts/theme_graph/theme_state_generation_read.v1.schema.json",
+        "contracts/theme_graph/theme_state_generation_read.v2.schema.json",
+        "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      ],
+      "public_reads": [
+        "engine/theme_graph/theme_state_production.py:308 read_subject",
+        "engine/theme_graph/theme_state_production.py:333 validate_read_receipt",
+        "engine/theme_graph/theme_state_use_reader.py:21 read_subject_at_use",
+        "engine/theme_graph/theme_state_use_reader.py:52 validate_read_receipt_at_use",
+        "engine/theme_graph/selection_cohort.py:261 validate_selection_cohort",
+        "engine/theme_graph/selection_cohort.py:370 compose_selection_cohort",
+        "engine/theme_graph/selection_cohort_publication.py:314 read_finalized_cohort"
+      ],
+      "versions": ["selection_cohort v1", "theme_state v2", "theme_state_generation v1", "theme_state_generation_read v1/v2", "theme_state_use_read v1"]
+    },
+    "pr_8417_additions": {
+      "schemas": [
+        "contracts/theme_graph/selection_cohort_read.v1.schema.json",
+        "contracts/theme_graph/selection_cohort_source.v1.schema.json"
+      ],
+      "modules": [
+        "engine/theme_graph/selection_cohort.py",
+        "engine/theme_graph/selection_cohort_publication.py"
+      ],
+      "versions": ["selection_cohort v1"]
+    }
+  },
+  "terminal_consumers": [
+    {
+      "path": "terminal/lib/sectorIntelligence.ts:63",
+      "artifact": "/neuralwebdata/theme_state.json",
+      "fields": ["schema", "themes[].theme_id", "themes[].name_en", "themes[].foresight.entry_ready", "stale_legs"]
+    },
+    {
+      "path": "terminal/app/api/sector-intelligence/route.ts:16",
+      "artifact": "NW_BASE + /neuralwebdata/theme_state.json",
+      "fields": ["full JSON body + SHA-256"]
+    },
+    {
+      "path": "terminal/lib/companyThemeExposure.ts:498",
+      "artifact": "R2 company_theme_exposure/*",
+      "fields": ["company_theme_exposure.v1", "theme_state receipt"]
+    },
+    {
+      "path": "terminal/app/api/company-theme-context/[symbol]/route.ts:9",
+      "artifact": "R2 via resolveCompanyThemeExposureFromR2",
+      "fields": ["normalized CTE bundle"]
+    },
+    {
+      "path": "terminal/components/fin/CompanyThemeContextCard.tsx:154",
+      "artifact": "CTE context object",
+      "fields": ["theme_state.status", "theme_state.as_of", "theme_state.sha256"]
+    },
+    {
+      "path": "terminal/app/api/brain/[...path]/route.ts:37",
+      "artifact": "Macro /api/brain/* (tool read_theme_state)",
+      "fields": ["compact theme summary from data/neuralweb/theme_state.json"]
+    }
+  ],
+  "verdicts": [
+    {
+      "consumer": "terminal/lib/sectorIntelligence.ts:63",
+      "artifact": "neuralweb.theme_state.v1 site mirror",
+      "verdict": "MATCH",
+      "reason": "Schema and theme row shape match neuralweb producer on main pin."
+    },
+    {
+      "consumer": "terminal/app/api/sector-intelligence/route.ts:16",
+      "artifact": "neuralweb.theme_state.v1 site mirror",
+      "verdict": "MATCH",
+      "reason": "Proxies same artifact; envelope rules align with producer."
+    },
+    {
+      "consumer": "terminal/lib/companyThemeExposure.ts:265",
+      "artifact": "company_theme_exposure.v1 + embedded theme_state receipt",
+      "verdict": "MATCH",
+      "reason": "Receipt rules mirror engine/company_theme_exposure/views.py:32-65 on main."
+    },
+    {
+      "consumer": "terminal/app/api/company-theme-context/[symbol]/route.ts:9",
+      "artifact": "R2 CTE",
+      "verdict": "MATCH",
+      "reason": "Uses same normalizer as lib/companyThemeExposure.ts."
+    },
+    {
+      "consumer": "terminal/components/fin/CompanyThemeContextCard.tsx:154",
+      "artifact": "CTE theme_state receipt",
+      "verdict": "MATCH",
+      "reason": "UI fields subset of CTE contract."
+    },
+    {
+      "consumer": "terminal/app/api/brain/[...path]/route.ts:37",
+      "artifact": "Macro brain read_theme_state tool",
+      "verdict": "MATCH",
+      "reason": "Tool reads data/neuralweb/theme_state.json produced nightly."
+    },
+    {
+      "consumer": "terminal/(none) selection_cohort",
+      "artifact": "selection_cohort publications",
+      "verdict": "UNKNOWN",
+      "reason": "rg 'selection_cohort' terminal/ @ 2ca21c44718a returned no production consumers."
+    }
+  ],
+  "site_pages": [
+    {
+      "page": "site/state_of_themes.html",
+      "artifact": "site/neuralwebdata/theme_state.json (+ thesis, asymmetry, pathways)",
+      "template": "scripts/build_state_of_themes.py:739 → templates/state_of_themes.html.j2:460"
+    },
+    {
+      "page": "site/basketdata/theme_lanes.json",
+      "artifact": "derived from theme_state compose context",
+      "template": "scripts/build_state_of_themes.py:8120 via scripts/build_site.py:8110"
+    }
+  ],
+  "gaps": [
+    "No Terminal consumer for GMI theme_state/v2 or selection_cohort on epoch 2ca21c44718a.",
+    "No macro HTTP route for CTE on main; Terminal reads R2 directly.",
+    "PR branch name in spec for #8417 differs from GitHub headRefName; SHA matches.",
+    "site/ verified via git ls-tree only (sparse worktree)."
+  ]
+}
