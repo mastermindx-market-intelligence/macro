@@ -872,3 +872,84 @@ research fix is publishable as DRAFT evidence; the
 licensed four-stock pilot and production customer capability
 are not. Next original same-branch commit/push, remote
 readback, exact-head hosted CI. Keep HOLD.
+
+## S1→S2 native factor-history and capital-pressure non-join gate
+
+Original research owner/source branch at `d4b18bbc8b41e208209b06be41922077a35af033` on
+Macro PR #8677 DRAFT/HOLD (not merged/deployed).
+Protected Mastermind `26b6acd3a17fdea65cc1d27c7344ef2c85549deb`,
+compatible Sol Skillpack 1.0.1/bootstrap1 same-commit
+INDEX, COLD_START, ACTIVE_EXECUTION, SESSION_RELIABILITY,
+WEB_CEO_DELEGATION and CLOSEOUT.
+
+**Cross-program owner reconciliation:** Macro S1 original held
+PR #8680, exact head
+`ddf1f07f2059caebb4bfa6b1db6c4008dd97859c`,
+owns factor membership/identity via incumbent Data OS
+`engine/factor_atlas_sources.py`, and `factor_atlas_read.v1`
+TRADJ gross total-return regular-session equal/monthly
+index, not traded dollar flows. Its emitted
+`source_refs.cohorts` is a REDUCED summary with only
+`effective_close,members,snapshot_ref`; the original
+PIT `known_at`, correction, identity/alias, valid-time
+and membership selection receipts are absent. S2's
+`WindowPressure` is likewise NOT original raw-minute
+bar/corporate-action rights proof. Avoid joining on
+coincident ticker strings or multiplying index levels
+by S2 raw volume.
+
+**Independent accepted implementation:** pure
+`prototype/cross_session_contract.py` reports
+`factor_atlas.s1_s2_boundary_review.v1` with
+fail-closed mismatched PIT/history/rules, source
+version/digest self consistency, roster equality but
+NO source authentication. Every output remains
+`HOLD_SEPARATE_READ_MODELS`, no numeric join,
+no S1 TRADJ feeding S2 unadjusted price-volume,
+no customer/rank/alert/size/trade authority. No
+new source/membership registry, Data OS owner
+or source admission plane was created.
+
+**Native tests:** 29/29 cross-session contract tests,
+complete focused GitHub Actions enrollment 14 suites
+**449/449 local Python3.12 PASS**. The exact
+original S1 synthetic native fixture blob
+`3590dc40e3116834b79ae17628b399d4be01a18f`
+was inspected only in ignored local reproduction,
+SHA256
+`6860786ee663c394e0d33b18e241592879501a6bc5335a09faed6d66b0b42626`;
+its internal original S1 digest matched and its current
+roster/PIT and factor/timing identity was correctly
+REFUSED. Source bytes NOT mirrored into this accepted
+S2 package. Exact proof in
+`evidence/native_cross_session_contract_tests.json`
+and `evidence/s1_s2_native_boundary_synthetic.json`.
+Methods at `S1_S2_METHOD_BOUNDARY.md`.
+
+**Existing source/reader blockers unchanged:** Terminal
+#844 and Macro #8623 retain original source custody.
+Authentic four-name selected AAPL/MSFT/NVDA/SPY true
+1m/quote/trade, original source+reader clocks,
+corporate-action and volume basis, PIT listing,
+selected correction and dataset rights NOT_ADMITTED.
+S1 #8680/S6 #8696/Terminal #928 remain separately
+held. Evaluation OS has not preregistered market
+accuracy and no independent reviewer return exists.
+
+**DO_NOT_REDO:** four denied named source reads,
+benchmark interpreter patch, denied current-main
+comparison, separately denied S2-P4 downstream
+read-model integrity patch and NEW denied
+S2-P6 future-forecast-decision defect corrective
+edit. Both sets of red local WIP are held in
+ignored original M2 proof only; do NOT retry or
+route alternate carrier/account/worker. The
+Executive independent reviewer summon exact
+operation `factor-atlas-s2-independent-science-audit-20261011-sol-001`
+is effect-unknown, no duplicate. No customer,
+market-data, production or trading effects.
+
+**Next:** source-only same-branch staging/publication of
+14-suite cross-session contract + exact source evidence;
+remote readback and exact head hosted CI; original
+owner PIT/price-source admission remains critical.
