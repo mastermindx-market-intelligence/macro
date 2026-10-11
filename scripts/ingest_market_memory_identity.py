@@ -93,42 +93,44 @@ def _loaded_checkout_modules(root: Path) -> tuple[str, ...]:
 
 
 def _completion_commit(root: Path, deployed_commit: str) -> str:
-    """Accept a moved HEAD only on a fast-forward whose commits touch no identity input or loaded module."""
+    """Accept a moved HEAD only when no identity input or loaded module differs between the deployed and current trees.
+
+    The deploy pull fetches main at depth 1 and resets the checkout to the tip
+    (app/deploy/update.sh), so the checkout is a shallow clone that only ever holds
+    the deployed tree and the current tree. A net tree diff compares exactly what
+    the run could have read. Commit ancestry is not available to walk.
+    """
 
     current = _repository_commit(root)
     if current == deployed_commit:
         return current
     paths = (*_IDENTITY_INPUT_PATHS, *_loaded_checkout_modules(root))
     try:
-        _git(root, "merge-base", "--is-ancestor", deployed_commit, current)
-        touched = sorted(
-            {
-                line
-                for line in str(
-                    _git(
-                        root,
-                        "log",
-                        "--name-only",
-                        "--format=",
-                        "--no-renames",
-                        "--full-history",
-                        f"{deployed_commit}..{current}",
-                        "--",
-                        *paths,
-                        text=True,
-                    )
-                ).splitlines()
-                if line
-            }
-        )
+        changed = [
+            line
+            for line in str(
+                _git(
+                    root,
+                    "diff",
+                    "--name-only",
+                    "--no-renames",
+                    deployed_commit,
+                    current,
+                    "--",
+                    *paths,
+                    text=True,
+                )
+            ).splitlines()
+            if line
+        ]
     except IdentityIngestError as exc:
         raise IdentityIngestError(
             "deployed checkout changed during identity intake"
         ) from exc
-    if touched:
+    if changed:
         raise IdentityIngestError(
             "deployed checkout changed during identity intake: "
-            f"{len(touched)} identity path(s) changed between "
+            f"{len(changed)} identity path(s) differ between "
             f"{deployed_commit[:12]} and {current[:12]}"
         )
     return current

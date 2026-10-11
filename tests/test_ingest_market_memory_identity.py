@@ -528,60 +528,62 @@ def test_ingest_fails_closed_when_the_checkout_moves_a_non_module_input(
         )
 
 
-def test_ingest_fails_closed_when_the_checkout_reverts_an_identity_input_mid_run(
+@pytest.mark.parametrize(
+    "moved",
+    ["unrelated", "config"],
+    ids=("unrelated", "config"),
+)
+def test_ingest_on_a_depth_one_deployed_clone_judges_the_tree_not_the_history(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    moved: str,
 ) -> None:
-    repository = _temporary_repository(tmp_path)
-    snapshots = repository / "data" / "symbol_directory" / "snapshots"
-    key = "data/symbol_directory/snapshots/2030-01-01.parquet"
+    origin = _temporary_repository(tmp_path)
+    branch = _git(origin, "rev-parse", "--abbrev-ref", "HEAD")
+    deployed = tmp_path / "deployed"
+    _git(tmp_path, "clone", "-q", "--depth", "1", f"file://{origin}", str(deployed))
+    _git(deployed, "config", "user.email", "tests@example.invalid")
+    _git(deployed, "config", "user.name", "Market Memory Tests")
+    assert _git(deployed, "rev-parse", "--is-shallow-repository") == "true"
+    before = INGEST._repository_commit(deployed)
 
-    def commit_then_revert_an_identity_input() -> None:
-        shutil.copyfile(min(snapshots.glob("*.parquet")), snapshots / "2030-01-01.parquet")
-        _git(repository, "add", key)
-        _git(repository, "commit", "-qm", "track an extra identity snapshot")
-        _git(repository, "rm", "-q", key)
-        _git(repository, "commit", "-qm", "revert the extra identity snapshot")
+    def deploy_pull() -> None:
+        if moved == "unrelated":
+            (origin / "unrelated.txt").write_text("unrelated\n", encoding="utf-8")
+            _git(origin, "add", "unrelated.txt")
+        else:
+            canary = origin / "config" / "market_memory_canary.v1.json"
+            canary.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / "config" / "market_memory_canary.v1.json", canary)
+            _git(origin, "add", "config/market_memory_canary.v1.json")
+        _git(origin, "commit", "-qm", "push a new deployed tip")
+        _git(deployed, "fetch", "--depth", "1", "-q", "origin", branch)
+        _git(deployed, "reset", "--hard", "-q", "FETCH_HEAD")
+        assert _git(deployed, "rev-list", "--count", "HEAD") == "1"
 
     monkeypatch.setattr(
         STORE,
         "capture_spy_listing_observation",
-        _capture_with_mid_run_commit(commit_then_revert_an_identity_input),
+        _capture_with_mid_run_commit(deploy_pull),
     )
 
-    with pytest.raises(
-        INGEST.IdentityIngestError,
-        match="changed during.*identity path",
-    ):
-        INGEST.ingest_identity_observations(
-            repository,
+    if moved == "unrelated":
+        result = INGEST.ingest_identity_observations(
+            deployed,
             store_root=tmp_path / "identity-store",
         )
-
-
-def test_ingest_fails_closed_when_the_checkout_moves_backwards(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    repository = _temporary_repository(tmp_path)
-    (repository / "unrelated.txt").write_text("deployed head marker\n", encoding="utf-8")
-    _git(repository, "add", "unrelated.txt")
-    _git(repository, "commit", "-qm", "deployed head")
-
-    def move_the_checkout_backwards() -> None:
-        _git(repository, "reset", "--hard", "HEAD~1")
-
-    monkeypatch.setattr(
-        STORE,
-        "capture_spy_listing_observation",
-        _capture_with_mid_run_commit(move_the_checkout_backwards),
-    )
-
-    with pytest.raises(INGEST.IdentityIngestError, match="changed during"):
-        INGEST.ingest_identity_observations(
-            repository,
-            store_root=tmp_path / "identity-store",
-        )
+        assert result["deployed_commit"] == before
+        assert result["completion_commit"] == _git(deployed, "rev-parse", "HEAD")
+        assert result["completion_commit"] != before
+    else:
+        with pytest.raises(
+            INGEST.IdentityIngestError,
+            match="changed during.*identity path",
+        ):
+            INGEST.ingest_identity_observations(
+                deployed,
+                store_root=tmp_path / "identity-store",
+            )
 
 
 def test_loaded_checkout_modules_lists_only_files_inside_the_root(
