@@ -95,10 +95,16 @@
     rows.forEach(function (r) { body.appendChild(r); }); // header stays at index 0
   }
 
+  function isRowish(n) {
+    return !!n && n.nodeType === 1 && (n.tagName === 'TR' || n.tagName === 'TBODY');
+  }
+
   function enhance(table) {
     var header = headerRow(table);
     if (!header) return;
     var rows = dataRows(table);
+    var sortObserver = null;
+    var applyFilter = null;
 
     Array.prototype.forEach.call(header.cells, function (th, i) {
       th.classList.add('th-sort');
@@ -112,7 +118,7 @@
         if (e.target.closest('.help')) return; // let tooltips be tooltips
         var cur = th.getAttribute('data-dir');
         var dir = cur ? (cur === 'desc' ? 1 : -1)
-                      : (isNumericCol(rows, i) ? -1 : 1); // numeric → high-first
+                      : (isNumericCol(dataRows(table), i) ? -1 : 1); // numeric → high-first (live rows)
         Array.prototype.forEach.call(header.cells, function (o) {
           o.removeAttribute('data-dir'); o.classList.remove('sorted');
           var a = o.querySelector('.sarrow'); if (a) a.textContent = '↕';
@@ -121,15 +127,45 @@
         th.classList.add('sorted');
         arrow.textContent = dir === -1 ? '↓' : '↑';
         sortBy(table, i, dir);
+        if (sortObserver) sortObserver.takeRecords(); // our own re-order is not a population change
       });
     });
 
+    // rows appended or replaced after hydration (live refreshes): keep the active
+    // sort and filter pointed at the LIVE population — one observer per table
+    if (typeof MutationObserver === 'function') {
+      sortObserver = new MutationObserver(function (records) {
+        var population = false;
+        for (var k = 0; k < records.length && !population; k++) {
+          var rec = records[k];
+          if (rec.type !== 'childList') continue;
+          var t = rec.target;
+          // the table's own rows only: direct children of the table (a tbody
+          // swap) or of its tbody; nested tooltip tables, cell rewrites and
+          // attribute changes are not population changes
+          if (!(t === table || (t.tagName === 'TBODY' && t.parentNode === table))) continue;
+          population = Array.prototype.some.call(rec.addedNodes, isRowish) ||
+                       Array.prototype.some.call(rec.removedNodes, isRowish);
+        }
+        if (!population) return;
+        var head = headerRow(table);
+        if (head) {
+          for (var ci = 0; ci < head.cells.length; ci++) {
+            var d = head.cells[ci].getAttribute('data-dir');
+            if (d) { sortBy(table, ci, d === 'desc' ? -1 : 1); break; } // sort survives a refresh
+          }
+        }
+        if (applyFilter) applyFilter();
+        sortObserver.takeRecords(); // drop the records our own re-sort just produced
+      });
+      sortObserver.observe(table, { childList: true, subtree: true });
+    }
+
     // long tables get a live filter box
-    if (rows.length >= 12) addFilter(table);
+    if (rows.length >= 12) applyFilter = addFilter(table);
   }
 
   function addFilter(table) {
-    var rows = dataRows(table);
     var wrap = document.createElement('div');
     wrap.className = 'tbl-filter';
     var input = document.createElement('input');
@@ -146,6 +182,7 @@
     anchor.parentNode.insertBefore(wrap, anchor);
 
     function apply() {
+      var rows = dataRows(table); // the LIVE population — rows can appear and disappear
       var q = input.value.trim().toLowerCase();
       var shown = 0;
       rows.forEach(function (r) {
@@ -156,6 +193,7 @@
       cnt.textContent = q ? (shown + ' / ' + rows.length) : '';
     }
     input.addEventListener('input', apply);
+    return apply;
   }
 
   function initAll() {
@@ -164,6 +202,8 @@
       if (t.classList && t.classList.contains('sb-table')) return; // self-managed screener (own sort/toggle)
       if (t.classList && t.classList.contains('st-table')) return; // StockTable (own sort/filter/cols)
       if (dataRows(t).length < 2) return;       // nothing to sort
+      if (t.getAttribute('data-tablesort') === '1') return; // already enhanced (script loaded twice)
+      t.setAttribute('data-tablesort', '1');
       enhance(t);
     });
   }
