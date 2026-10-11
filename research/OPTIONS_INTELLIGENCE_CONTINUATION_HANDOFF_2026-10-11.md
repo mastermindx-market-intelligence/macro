@@ -76,8 +76,8 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## OPEN
 
-- O-1 G01 canary (native Opus `general-purpose`/opus → one `pool run` operator → consumption): RUNNING,
-  launched 08:2xZ, budget 25 min, artifacts under the seat scratchpad `g01_canary/`.
+- O-1 G01 canary: round 1 PARTIAL (see delta log); round 2 re-commissioned on grok (policy-permitted local
+  engine) at ~08:30Z, budget 20 min; artifacts under the seat scratchpad `g01_canary/`.
 - O-2 D01 current M1 source serviceability (read-only census; owner receipts only).
 - O-3 Q01 independence: Opus methods review + Fable ruling; no floor imposed on the six-pilot programme.
 - O-4 Which macro checks are actually gating for #7861 given `main` has no protection (merge-queue-pilot
@@ -97,7 +97,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
 | G00 ownership + interface map | Fable seat | this file | #599 | — | IN_PROGRESS | — |
-| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus) → pool operator | scratchpad `g01_canary/` | this file | agent completion notification | RUNNING | 25 min |
+| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus, model claude-opus-5-5) → `pool run grok` operator | scratchpad `g01_canary/` | this file | agent completion notification | ROUND2_RUNNING | 20 min |
 | O1 D01→D02→D03 | native Opus lead → pool operators | macro worktree (new per lane) | #7861 / #599 | agent notification | NOT_STARTED | — |
 | O5 Q01 | native Opus lead → pool operator + independent review | #8385 head `0234ea19cb` | #8385 | agent notification | NOT_STARTED | — |
 | O7/O8 U01 + integration | native Opus lead → pool operators | terminal worktree (new per lane) | #599 | agent notification | NOT_STARTED | — |
@@ -124,3 +124,33 @@ UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's;
 EXACT_NEXT_ACTION: consume G01 canary return, then dispatch O1/O5/O7-O8 leads
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
+
+## Delta log
+
+### 2026-10-11 08:22Z — G01 canary round 1 (native Opus child, general-purpose/opus)
+- Child identity observed: model `claude-opus-5-5`, Claude Code general-purpose subagent, no Agent/Task tool;
+  tools observed (not assumed): Bash, Read, Edit, Write, Skill, ToolSearch, Artifact + session/browser MCP;
+  `mastermind-executive` unauthenticated. **G01-A01 PASS.**
+- Pool surface reached from the child: `pool plan --class audit --need 1` grant_now=1 on bailian/minimax/grok/
+  cursor/glm/go/ocfree, `claude-native grant_now=0`; `pool pick audit` → minimax (burn-down first).
+- `pool run minimax` refused immediately (rc 78, no run id, no operator start):
+  `LOCAL_SEAT_REMOTE_REQUIRED host=m2 pool=minimax family=minimax local_only=grok,ocfree` — on the seat host
+  only grok/ocfree engines run locally; other families go via `pool remote <host|auto> <pool> <packet_file>
+  <remote_cwd>`. `pool placement --mode minimax` → advisory ubuntu3 (ubuntu1 eligible), PROVIDER_SLOTS
+  NOT_SUPPLIED, ROUTE_QUALIFICATION UNPROVEN. Child stopped without rerouting. **G01-A04 PASS; G01-A03 PASS
+  (no native swarm); G01-A02 NOT YET DEMONSTRATED** (no operator return existed to consume).
+- Route defect for the leads: `pool pick` is not seat-policy-aware on m2; leads must use `pool run grok`
+  (operator tier) or `pool run oc-free` locally, or the remote route for minimax/bailian/glm/cursor.
+- Child's own read of #8385 draft `0234ea19cb` (SHA256 matches `15a1ff0a…`), labelled as its own, not
+  operator evidence: "DRAFT — NOT RATIFIED — NOT EXECUTABLE POLICY"; weighting law = frozen FS-3 global-
+  concurrency weights, effective N = Σw (not Kish); weights installed on parent population P, never recomputed
+  in evaluation subset E; candidate floors ≥20 effective per occupied bin and ≥200 for E, marked "NOT
+  RECOMMENDED FOR RATIFICATION AS WRITTEN"; the draft's own anchor-years table reads **4.7 / 17.4 / 50.5**
+  (packet E15's 4.8/17.5/50.8 is N·L/252, a different bound); bins = ≤10 contiguous whole-tie bins minimising
+  Σ(W_j − W/B)² subject to floors (explicitly changes the literal ten-equal-mass rule); ties never split,
+  exact fsum comparisons; monotonicity via block bootstrap (9,999 attempts, ≥9,500 valid) instead of a fixed
+  tolerance. Cited `research/OPTIONS_ALPHA_FLOW_SCORE_AMENDMENT.md` and
+  `research/FLOW_SIGNAL_ML_MASTERPLAN_BY_FABLE.md` EXIST at macro `50a7771721`; FS-5 cited only as a concept
+  (#8377). Carry to O5 as input; Opus statistics review still owed.
+- Seat decision: round 2 = the same operator task once on grok (the refusal's named permitted engine; not a
+  provider/account bypass). No third run from this seat if grok also refuses.
