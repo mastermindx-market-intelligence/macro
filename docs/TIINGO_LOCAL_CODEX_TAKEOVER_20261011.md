@@ -60,3 +60,55 @@ This local Codex call is an **independent, permitted read-side implementation/re
 Production target \`/Volumes/Mastermind/market-data/tiingo\` does not exist. On 2026-10-11 M2 external drive ~292 GiB free, collector reserves ≥35 GiB; no measured full-history/BOATS retention pilot. Collector unchanged SHA256 \`1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d\`. Macro PR #8698 open DRAFT, last known head \`303cdcef643b78d63e2d882844cbab87889c4f0a\`, 414 passing and 11 active failures, CI not fully accepted. Business purchase is settled; technical, platform, source, real-data and product acceptance are not.
 
 **DO_NOT_REDO:** no accepted acquisitions; no alternative collector/control plane; no waived producer tests; no fabricated live status or PIT; no privileged tool or worker workaround; no parallel source modifiers. A local Codex result is a worker result to be reviewed, not full mission acceptance.
+
+
+## Codex first bounded result — 2026-10-11 11:04 UTC
+
+**Actual local execution**, not a queued intent: operation
+tiingo-8698-local-codex-20261011-001, native Codex CLI PID 92727,
+thread 01a12a9f-53be-7e10-b19f-39627ff7db69,
+requested model gpt-6.1-sol/high, workspace-write sandbox,
+sanitized environment, external MCPs disabled, exit code **0**.
+The exact source start and uncommitted worker return were
+8d021e6418c52f29ddc6bef3c5cf59ff0a59c844.
+The worker ended; no child is still running and no automated return is
+promised. Local output is retained at
+/Volumes/Mastermind/evidence/tiingo-8698-local-codex-20261011-001/review.md.
+
+**Independent source correctness result:** The BOATS read-only
+tape analyzer used the all-symbol Q/T/B interarrival scan to flag a
+backward source-receipt timestamp, but a ticker-filtered quote-age
+matcher retained a previously observed AMD quote when an intervening
+NVDA source event regressed. It could incorrectly label a later AMD
+trade as having a fresh prior BOATS quote, despite the timing
+uncertainty. Codex reproduced the wrong fresh_quote count in a new
+synthetic regression, then cleared the prior quote candidate whenever
+the existing all-symbol source receipt scan detects such a regression.
+No source-origin timestamps, venue semantics or market claims changed.
+
+Worker changed **only** the allowlisted
+lib/dataos/tiingo_boats_tape.py and tests/test_tiingo_boats_tape.py.
+The parent inspected the exact Git diff, verified the two-file
+boundary and unchanged protected producer fingerprints, and separately
+reran the new regression (1 passed) before committing to the
+existing PR. Worker focused BOATS/query suites: 78 passed.
+Worker full Tiingo+Data OS registry: **415 passed and the same
+11 previously known producer/context-integrity failures**, pytest
+exit 1. Native event log records the exact 11 failing case IDs
+and shows the red test preceding the minimal repair; diff --check
+passed. Nothing was waived or marked expected-fail.
+
+The original platform safety denials against the authenticated Tiingo
+probe and core writer rewrite remain EFFECT_NONE and DO_NOT_RETRY
+via this worker or another carrier. Real Tiingo/BOATS data remains
+absent from the intended M2 archive; no provider call, token read,
+new producer, runtime installation, deployment, merge or production
+acceptance occurred. The Chairman-purchased BOATS license remains
+accepted but is not evidence of successful runtime data collection.
+
+**Outcome of this one child:** completed permitted scoped fix, no
+continuing worker obligation. **Root project: still incomplete.**
+The next essential gate is a genuinely permitted resolution of the
+source writer/probe denials, repairs proven by all 11 red cases,
+authenticated vendor qualification, measured history/BOATS archive,
+existing Hub/consumer integration, hosted CI and browser proof.

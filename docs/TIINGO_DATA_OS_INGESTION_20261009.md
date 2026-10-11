@@ -1130,3 +1130,58 @@ refusals, direct source-integrity repair against the 11 red cases,
 authenticated BOATS/EOD/fundamental capture qualification, and measured
 storage/runtime/Terminal integration under incumbent owners. No substitute
 collector or new control plane is authorized as a workaround.
+
+
+### October 11 local Codex takeover result and accepted two-file repair
+
+The Chairman explicitly instructed a local Codex handoff. A
+source-local full program/authority/DO_NOT_REDO packet is committed
+at docs/TIINGO_LOCAL_CODEX_TAKEOVER_20261011.md, initially built
+from Macro PR #8698 source head
+303cdcef643b78d63e2d882844cbab87889c4f0a.
+The packet committed as
+8d021e6418c52f29ddc6bef3c5cf59ff0a59c844.
+
+A real local Codex CLI high-reasoning source worker was launched
+at that exact head and terminated successfully at 2026-10-11
+11:04:16 UTC: operation tiingo-8698-local-codex-20261011-001,
+thread 01a12a9f-53be-7e10-b19f-39627ff7db69,
+model gpt-6.1-sol, workspace-write sandbox, sanitized environment,
+no credential/network/provider permission. This was **one bounded
+source phase**, not a lasting background daemon or blanket license
+to finish platform-refused effects.
+
+Discriminating defect (real offline): BOATS tape source Q/T/B
+arrival-order regression for NVDA occurred after an AMD Q and
+before an AMD T; ticker-filtered quote-age state failed to
+invalidate the prior AMD Q, incorrectly claiming fresh quote
+evidence. Codex first reproduced that false claim in
+tests/test_tiingo_boats_tape.py. A minimal three-line read-only
+change in lib/dataos/tiingo_boats_tape.py now clears the same-
+segment prior quote when any symbol has a source-arrival regression.
+The BOATS venue, trade-break, NBBO and PIT refusal contracts remain
+unchanged. No core producer, live collection, normalized writer,
+failed integrity test or registry status was edited.
+
+Worker BOATS/query suite: 78 passed. Worker full Tiingo and Data OS
+registry suite: **415 passed, SAME 11 pre-existing producer-integrity
+failures, exit 1**. The parent inspected the exact two-file diff
+and separately verified the new focused regression (1 passed)
+and git diff --check. The original SHA-256 frozen collector
+fingerprint remained
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+Local Codex result/effect evidence is retained on the external
+drive under
+/Volumes/Mastermind/evidence/tiingo-8698-local-codex-20261011-001/.
+No secrets are included in this source checkpoint.
+
+DURABLE FRONTIER: one Codex child completed; the parent is again
+the source modification custodian. Macro PR #8698 remains draft,
+no real Tiingo archive, no BOATS stream, no historical data pilot,
+no production Terminal browser proof. BOATS purchased/licensed
+authorization is accepted. The two distinct platform denials for
+authenticated Tiingo probing and the raw collector rewrite remain
+in force and were not bypassed. The same 11 failing producer tests
+must be repaired under a genuinely permitted mechanism before live
+ingestion, canonical source admission or PR release. Do not create
+another collector, forked runtime or false Done receipt.

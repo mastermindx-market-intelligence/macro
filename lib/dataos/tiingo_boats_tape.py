@@ -276,6 +276,9 @@ def audit_boats_tape(
                 interval_ns = current_QTB_arrival_ns - prior_QTB_arrival_ns
                 if interval_ns < 0:
                     source_arrival_regressions_all_tickers += 1
+                    # All symbols share the capture clock. A filtered-out
+                    # frame's regression also invalidates prior-quote timing.
+                    latest_prior_venue_quote = None
                 else:
                     max_within_segment_qtb_gap_ms = max(
                         max_within_segment_qtb_gap_ms, interval_ns // 1_000_000

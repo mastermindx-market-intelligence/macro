@@ -411,6 +411,28 @@ def test_quote_from_another_vendor_symbol_never_counts_as_prior_venue_quote(lake
     assert x["trade_initiator_side_proven"] is False
 
 
+def test_other_symbol_arrival_regression_invalidates_prior_quote_age(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.200Z",
+         frame("T", event_at="2026-10-09T01:00:00Z", ticker="NVDA")),
+        ("2026-10-09T01:00:00.500Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z", ticker="AMD")),
+        ("2026-10-09T01:00:00.400Z",
+         frame("T", event_at="2026-10-09T01:00:00.100Z", ticker="NVDA")),
+        ("2026-10-09T01:00:00.600Z",
+         frame("T", event_at="2026-10-09T01:00:00.300Z", ticker="AMD")),
+    ])
+    out = audit(lake, [ref])
+    assert out["capture_observation_gaps"]["raw_QTB_arrival_timestamp_regressions"] == 1
+    assert out["selected_kind_counts"] == {"Q": 1, "T": 1, "B": 0}
+    ages = out["trade_quote_age_diagnostics"]
+    assert ages["fresh_prior_venue_quote"] == 0
+    assert ages["no_prior_quote"] == 1
+    assert ages["fresh_quote_age_p95_ms"] is None
+    assert out["transport_continuity_proven"] is False
+    assert out["point_in_time_backtest_eligible"] is False
+
+
 
 def test_tape_gap_metadata_exposes_unobserved_between_segments(lake):
     first = saved(lake, [
