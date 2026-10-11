@@ -172,7 +172,7 @@
             if (d) { sortBy(table, ci, d === 'desc' ? -1 : 1); break; } // sort survives a refresh
           }
         }
-        if (applyFilter) applyFilter();
+        if (applyFilter) applyFilter(true); // population changed: status written immediately
         sortObserver.takeRecords(); // drop the records our own re-sort just produced
       });
       sortObserver.observe(table, { childList: true, subtree: true });
@@ -191,6 +191,8 @@
     input.setAttribute('aria-label', 'Filter table rows');
     var cnt = document.createElement('span');
     cnt.className = 'cnt';
+    cnt.setAttribute('role', 'status');     // screen readers announce the count (site20 S2-04)
+    cnt.setAttribute('aria-atomic', 'true');
     wrap.appendChild(input); wrap.appendChild(cnt);
     // if the table is inside a horizontal-scroll wrapper (theme.js wrapTables), put the
     // filter ABOVE the wrapper so it stays fixed while the table scrolls sideways
@@ -198,7 +200,53 @@
       ? table.parentNode : table;
     anchor.parentNode.insertBefore(wrap, anchor);
 
-    function apply() {
+    // one status writer, fed by the LIVE population at call time. Typing defers it
+    // by a single trailing 250 ms debounce; every other path (reset, langchange,
+    // population re-apply, init) writes immediately and cancels the pending timer.
+    var statusTimer = null;
+    var resetBtn = document.createElement('button');
+    resetBtn.type = 'button';
+    resetBtn.className = 'gbtn gbtn-sm gbtn-quiet';
+    resetBtn.setAttribute('data-tablesort-reset', '1');
+    resetBtn.textContent = 'Clear filter';
+
+    function isZh() {
+      return document.documentElement.getAttribute('data-lang') === 'zh';
+    }
+    function liveCount() {
+      var q = input.value.trim().toLowerCase();
+      var rows = dataRows(table); // the LIVE population — rows can appear and disappear
+      var shown = 0;
+      rows.forEach(function (r) {
+        if (!q || (r.textContent || '').toLowerCase().indexOf(q) !== -1) shown++;
+      });
+      return {q: q, shown: shown, total: rows.length};
+    }
+    function statusText(st) {
+      if (!st.q) return '';
+      if (!st.total) return isZh() ? '暂无可筛选的行' : 'No rows to filter';
+      if (st.shown >= 1) return st.shown + ' / ' + st.total;
+      return (isZh() ? '无匹配行 · 0 / ' : 'No matching rows · 0 / ') + st.total;
+    }
+    function writeStatus() {
+      if (statusTimer !== null) { clearTimeout(statusTimer); statusTimer = null; }
+      var st = liveCount();
+      cnt.textContent = statusText(st);
+      // the reset affordance exists ONLY in the noMatch state — attached after the
+      // count span while needed, removed the moment any row is shown again
+      if (st.q && st.total > 0 && st.shown === 0) {
+        if (!resetBtn.parentNode) wrap.appendChild(resetBtn);
+      } else if (resetBtn.parentNode) {
+        resetBtn.remove();
+      }
+    }
+    resetBtn.addEventListener('click', function () {
+      input.value = '';
+      input.focus(); // focus FIRST, then re-apply
+      apply(true);
+    });
+
+    function apply(immediate) {
       var rows = dataRows(table); // the LIVE population — rows can appear and disappear
       var q = input.value.trim().toLowerCase();
       var shown = 0;
@@ -207,11 +255,29 @@
         r.style.display = hit ? '' : 'none';
         if (hit) shown++;
       });
-      cnt.textContent = q ? (shown + ' / ' + rows.length) : '';
+      if (immediate) { writeStatus(); return; }
+      // rows update now; the announcement trails the typing by one debounce
+      if (statusTimer !== null) clearTimeout(statusTimer);
+      statusTimer = setTimeout(function () { statusTimer = null; writeStatus(); }, 250);
     }
-    input.addEventListener('input', apply);
+    input.addEventListener('input', function () { apply(false); });
+    filterCtrls.push({
+      onLang: function () { // rewrite copy in place, no re-typing, no debounce
+        resetBtn.textContent = isZh() ? '清除筛选' : 'Clear filter';
+        writeStatus();
+      }
+    });
+    writeStatus(); // initialization writes immediately
     return apply;
   }
+
+  // one registry + one module-scope listener (site20 S2-04): a language flip
+  // rewrites every filter's status text and reset label immediately. #7502's
+  // own copy refresh is a separate listener and coexists with this one.
+  var filterCtrls = [];
+  document.addEventListener('langchange', function () {
+    filterCtrls.forEach(function (c) { c.onLang(); });
+  });
 
   function initAll() {
     Array.prototype.forEach.call(document.querySelectorAll('table'), function (t) {

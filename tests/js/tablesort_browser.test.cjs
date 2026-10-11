@@ -229,7 +229,7 @@ test('S2-03: rows appended after init are filtered and counted (0 / 14, 1 / 14)'
     await settleCount(page, ''); // no query yet: 14 live rows, all shown
     const input = page.locator('.tbl-filter input');
     await input.fill('qqqnomatchqqq');
-    await settleCount(page, '0 / 14');
+    await settleCount(page, 'No matching rows · 0 / 14'); // S2-04 noMatch copy
     assert.deepEqual(await visibleKeys(page, 0, 0), []);
     await input.fill('ZZTEST13');
     await settleCount(page, '1 / 14');
@@ -482,3 +482,199 @@ test('S2-02: Enter on a focused .help inside a header does not sort', async () =
 
 
 
+/* ---------- S2-04: status announcement + no-results recovery ---------- */
+
+test('S2-04: count span is an announced atomic status region', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    const cnt = page.locator('.tbl-filter .cnt');
+    assert.equal(await cnt.getAttribute('role'), 'status');
+    assert.equal(await cnt.getAttribute('aria-atomic'), 'true');
+  });
+});
+
+test('S2-04: status and reset button track the live population', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    await page.evaluate(() => { // dynamic population: +2 appended, 2 removed → 12 live
+      const tb = document.querySelector('table').tBodies[0];
+      ['ZZTEST13', 'ZZTEST14'].forEach((name, k) => {
+        const tr = document.createElement('tr');
+        const a = document.createElement('td'); a.textContent = name;
+        const b = document.createElement('td'); b.textContent = String(130 + k);
+        tr.appendChild(a); tr.appendChild(b); tb.appendChild(tr);
+      });
+      tb.removeChild(tb.rows[0]); // name1
+      tb.removeChild(tb.rows[0]); // name2 (shifted into place by the removal above)
+    });
+    await page.waitForTimeout(100);
+    const input = page.locator('.tbl-filter input');
+    await input.fill('name');
+    await settleCount(page, '10 / 12'); // many matches, live denominator
+    await input.fill('name7');
+    await settleCount(page, '1 / 12');  // exactly one
+    await input.fill('qqqnomatchqqq');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    const btn = page.locator('.tbl-filter button[data-tablesort-reset]');
+    assert.equal(await btn.count(), 1);                       // present ONLY in noMatch
+    assert.equal(await btn.getAttribute('type'), 'button');
+    assert.equal(await btn.getAttribute('class'), 'gbtn gbtn-sm gbtn-quiet');
+    assert.equal(await btn.textContent(), 'Clear filter');
+    await input.fill('name7');                                // back to a match
+    await settleCount(page, '1 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 0);
+  });
+});
+
+test('S2-04: empty population — No rows to filter, no reset button', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    await page.evaluate(() => {
+      const tb = document.querySelector('table').tBodies[0];
+      while (tb.rows.length) tb.removeChild(tb.rows[0]);
+    });
+    const input = page.locator('.tbl-filter input');
+    await input.fill('zz');
+    await settleCount(page, 'No rows to filter');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 0);
+  });
+});
+
+test('S2-04: typing filters rows immediately but announces once, after the debounce', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    await page.evaluate(() => { // count TEXT changes of the count span
+      window.__ch = 0;
+      window.__last = document.querySelector('.tbl-filter .cnt').textContent;
+      const el = document.querySelector('.tbl-filter .cnt');
+      new MutationObserver(() => {
+        const t = el.textContent;
+        if (t !== window.__last) { window.__ch++; window.__last = t; }
+      }).observe(el, {childList: true, characterData: true, subtree: true});
+    });
+    const input = page.locator('.tbl-filter input');
+    await input.click();
+    await input.pressSequentially('ame123', {delay: 30}); // ~180 ms of typing, prefixes 12→4→1→0 matches
+    // rows are already filtered right after the keystrokes, BEFORE the 250 ms debounce
+    const visibleNow = await page.evaluate(() => {
+      const tb = document.querySelector('table').tBodies[0];
+      return Array.prototype.filter.call(tb.rows, r => r.style.display !== 'none').length;
+    });
+    assert.equal(visibleNow, 0, 'rows already filtered before the debounce fires');
+    const statusBefore = await page.evaluate(() => document.querySelector('.tbl-filter .cnt').textContent);
+    assert.notEqual(statusBefore, 'No matching rows · 0 / 12', 'status not yet announced');
+    await page.waitForTimeout(600);
+    const after = await page.evaluate(() => ({
+      text: document.querySelector('.tbl-filter .cnt').textContent,
+      changes: window.__ch,
+    }));
+    assert.equal(after.text, 'No matching rows · 0 / 12');
+    assert.ok(after.changes <= 2, 'status changed ' + after.changes + ' times (want ≤ 2)');
+  });
+});
+
+test('S2-04: reset by mouse clears the query, focuses the input, restores all rows', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    const input = page.locator('.tbl-filter input');
+    await input.fill('qqqnomatchqqq');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 1);
+    await page.locator('.tbl-filter button[data-tablesort-reset]').click();
+    const state = await page.evaluate(() => {
+      const tb = document.querySelector('table').tBodies[0];
+      return {
+        value: document.querySelector('.tbl-filter input').value,
+        activeIsInput: document.activeElement === document.querySelector('.tbl-filter input'),
+        visible: Array.prototype.filter.call(tb.rows, r => r.style.display !== 'none').length,
+        status: document.querySelector('.tbl-filter .cnt').textContent,
+        buttons: document.querySelectorAll('.tbl-filter button[data-tablesort-reset]').length,
+      };
+    });
+    assert.equal(state.value, '');
+    assert.equal(state.activeIsInput, true, 'focus moved to the input');
+    assert.equal(state.visible, 12, 'all live rows visible again');
+    assert.equal(state.status, '');
+    assert.equal(state.buttons, 0, 'button detached');
+  });
+});
+
+test('S2-04: reset by keyboard — Tab from the input reaches the button, Enter resets', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    const input = page.locator('.tbl-filter input');
+    await input.fill('qqqnomatchqqq');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    await input.click();
+    await page.keyboard.press('Tab'); // input → count span (not tabbable) → reset button
+    assert.equal(await page.evaluate(() =>
+      document.activeElement && document.activeElement.hasAttribute('data-tablesort-reset')), true,
+      'Tab landed on the reset button');
+    await page.keyboard.press('Enter');
+    const state = await page.evaluate(() => {
+      const tb = document.querySelector('table').tBodies[0];
+      return {
+        value: document.querySelector('.tbl-filter input').value,
+        activeIsInput: document.activeElement === document.querySelector('.tbl-filter input'),
+        visible: Array.prototype.filter.call(tb.rows, r => r.style.display !== 'none').length,
+        status: document.querySelector('.tbl-filter .cnt').textContent,
+        buttons: document.querySelectorAll('.tbl-filter button[data-tablesort-reset]').length,
+      };
+    });
+    assert.equal(state.value, '');
+    assert.equal(state.activeIsInput, true, 'focus moved to the input');
+    assert.equal(state.visible, 12);
+    assert.equal(state.status, '');
+    assert.equal(state.buttons, 0);
+  });
+});
+
+test('S2-04: langchange rewrites the noMatch status and reset label in place', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    const input = page.locator('.tbl-filter input');
+    await input.fill('qqqnomatchqqq');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'zh');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    // immediate — no re-typing, no debounce
+    assert.equal(await page.locator('.tbl-filter .cnt').textContent(), '无匹配行 · 0 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').textContent(), '清除筛选');
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'en');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    assert.equal(await page.locator('.tbl-filter .cnt').textContent(), 'No matching rows · 0 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').textContent(), 'Clear filter');
+  });
+});
+
+test('S2-04: second injection adds no second reset button or status writer', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    await page.addScriptTag({content: SOURCE}); // second injection
+    await page.waitForTimeout(30);
+    const input = page.locator('.tbl-filter input');
+    await input.fill('qqqnomatchqqq');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 1);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'zh');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    assert.equal(await page.locator('.tbl-filter .cnt').textContent(), '无匹配行 · 0 / 12');
+  });
+});
+
+test('S2-04: composed #7502 — placeholder AND noMatch status both localize', async (t) => {
+  if (!SOURCE.includes('refreshFilterCopy')) {
+    t.skip('source has no refreshFilterCopy (main bytes) — composed-only case');
+    return;
+  }
+  await withPage(doc(bigTable(12)), async page => {
+    const input = page.locator('.tbl-filter input');
+    await input.fill('qqqnomatchqqq');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'zh');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    assert.equal(await input.getAttribute('placeholder'), '筛选…'); // #7502's copy
+    assert.equal(await page.locator('.tbl-filter .cnt').textContent(), '无匹配行 · 0 / 12'); // ours
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').textContent(), '清除筛选');
+  });
+});
