@@ -3,12 +3,20 @@
 Fixture-only — nothing registers here. The §8 sector_profile entry_kind is
 pending adjudication in PR #7780 (comment 5828668393); point (a) of that
 comment asks for a registration adapter that conforms to the shared
-research shell (PR #7870 head 6cd958e92b259f7221690547e7076f4a0de4ed33).
+research shell (PR #7870; the shell's record is
+``engine.market_ontology.theme_research_registry.VerticalRegistration``).
 
 This module is the Finance side of that contract: every name here is frozen
-to the §8 dispatch values, and every callable is a placeholder. Once §8 is
-adjudicated, switching from fixture-only to a real registration is a copy of
-ONE frozen constant — :data:`FINANCE_REGISTRATION_FACTS`.
+to the §8 dispatch values, and every callable is a placeholder. The shell
+keys every registration on a canonical ``anchor_theme_id`` plus non-empty
+``slice_keys``; Finance's §8 facts are a ``sector_profile`` with neither, so
+:func:`registration_entry_or_refusal` raises the typed hold
+``vertical_registration_held:sector_profile`` before construction (H1 ruling,
+option B, #7870 2026-10-11). Retiring that hold is NOT a one-constant edit:
+it needs the §8 ``sector_profile`` migration on the shell side (accepted
+anchor/slice semantics for a sector entry, plus the shell's ``view_keys`` and
+``build_query`` fields that this adapter deliberately does not forward — see
+``_VERTICAL_REGISTRATION_FIELDS``). Never invent an anchor to pass the hold.
 
 Constraints:
 
@@ -180,8 +188,9 @@ def _import_shell_research_refusal() -> type[ValueError] | None:
 #: Every code on this set raises the shell's :class:`ResearchRefusal` when
 #: the shell is importable, and the adapter's :class:`FinanceRegistrationRefusal`
 #: otherwise. Codes absent from this set — ``shared_shell_unavailable``,
-#: ``sealed_input_unavailable:*``, ``vertical_registration_refused:*``,
-#: ``finance_owner_loader_pending`` — stay typed as the adapter refusal.
+#: ``sealed_input_unavailable:*``, ``vertical_registration_held:sector_profile``,
+#: ``vertical_registration_refused:*``, ``finance_owner_loader_pending`` —
+#: stay typed as the adapter refusal.
 _SHELL_SHARED_REFUSAL_CODES: frozenset[str] = frozenset({
     "generation_changed",
     "not_available",
@@ -1020,10 +1029,23 @@ FINANCE_REGISTRATION_FACTS = FinanceRegistrationFacts(
 )
 
 
-# VerticalRegistration field set (12), in the shell's exact order. The facts
-# table above carries additional §8 columns (entry_kind, profile_id,
-# sector_ref, anchor_theme_id, slice_keys, views); the share with the shell
-# is exactly this tuple.
+#: Typed HOLD code (H1 ruling, option B, #7870 2026-10-11). The shared shell
+#: keys every registration on a canonical ``anchor_theme_id`` plus a non-empty
+#: ``slice_keys`` tuple; Finance's §8 facts are a ``sector_profile`` with no
+#: theme anchor and no slices, so Finance is NOT registered on the shell. The
+#: hold is raised BEFORE the shell constructor is reached, so it names the
+#: real cause (entry_kind semantics still pending) rather than whatever
+#: structural gap the constructor would report. Retired only by the §8
+#: sector_profile migration that supplies accepted anchor/slice semantics.
+VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE: str = "vertical_registration_held:sector_profile"
+
+# The 12-field share with the shell's VerticalRegistration, in the shell's
+# field order. The shell itself carries 14 fields: the two it adds
+# (``view_keys``, ``build_query``) are NOT forwarded by this adapter, and the
+# exact gap is pinned by
+# tests/test_finance_research_registration.py::test_real_shell_field_gap_is_exactly_view_keys_and_build_query.
+# The facts table above carries additional §8 columns (entry_kind,
+# profile_id, sector_ref, views) that are not part of the share.
 _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
     "anchor_theme_id",
     "slice_keys",
@@ -1052,38 +1074,57 @@ def _resolve_vertical_registration_class() -> Any:
     return cls
 
 
-def registration_entry_or_refusal() -> Any:
+def _facts_are_theme_registrable(facts: FinanceRegistrationFacts) -> bool:
+    """True only when the facts carry what the theme-keyed shell requires:
+    a string ``anchor_theme_id`` and a non-empty ``slice_keys`` tuple. The
+    shell's own grammar guards still run on construction; this only decides
+    whether construction is attempted at all."""
+    return isinstance(facts.anchor_theme_id, str) and bool(facts.slice_keys)
+
+
+def registration_entry_or_refusal(
+    facts: FinanceRegistrationFacts = FINANCE_REGISTRATION_FACTS,
+) -> Any:
     """Return the entry the shared shell expects. Refusals (all adapter
     codes — neither the shell's refusal nor a bare ``ValueError`` leak
-    through):
+    through), in precedence order:
 
     * ``shared_shell_unavailable`` — the shell is not on the carrier. This
-      is the EXPECTED state on this worktree (§8 is pending adjudication).
-    * ``vertical_registration_refused:<ExcType>`` — the shell is present but
-      construction raised a non-``TypeError`` exception.
-    * ``TypeError`` — propagate the shell's structural error so the carrier
-      diagnoses the signature gap, exactly as the shell's design
-      requires. The adapter never silently coerces.
+      is the state on origin/main until #7870 merges.
+    * ``vertical_registration_held:sector_profile`` — the shell is present
+      but ``facts`` carry no theme anchor / slices (the §8 ``sector_profile``
+      entry_kind is pending). Raised before any construction, so the hold
+      is independent of the shell's field count.
+    * ``vertical_registration_refused:<ExcType>`` — the shell is present,
+      the facts are theme-registrable, and construction raised a
+      non-``TypeError`` exception.
+    * ``TypeError`` — propagated uncaught when theme-registrable facts reach
+      a shell whose signature the adapter does not satisfy, so the carrier
+      sees the structural gap. The real Finance facts never reach this
+      branch (they are held first); the 12-vs-14 field gap is pinned by the
+      field-gap test instead. The adapter never silently coerces.
 
-    The structural construction is performed BEFORE any IO so a TypeError
-    surfaces immediately and the carrier classifies it.
+    ``facts`` defaults to :data:`FINANCE_REGISTRATION_FACTS`; tests inject
+    a theme-registrable double to exercise the construction branches.
     """
     cls = _resolve_vertical_registration_class()
     if cls is None:
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
+    if not _facts_are_theme_registrable(facts):
+        raise FinanceRegistrationRefusal("vertical_registration_held:sector_profile")
     kwargs = {
-        "anchor_theme_id": FINANCE_REGISTRATION_FACTS.anchor_theme_id,
-        "slice_keys": FINANCE_REGISTRATION_FACTS.slice_keys,
-        "schema_id": FINANCE_REGISTRATION_FACTS.schema_id,
-        "evidence_schema_id": FINANCE_REGISTRATION_FACTS.evidence_schema_id,
-        "definition_version": FINANCE_REGISTRATION_FACTS.definition_version,
-        "compose": FINANCE_REGISTRATION_FACTS.compose,
-        "select_evidence": FINANCE_REGISTRATION_FACTS.select_evidence,
-        "load_bundle": FINANCE_REGISTRATION_FACTS.load_bundle,
-        "title_en": FINANCE_REGISTRATION_FACTS.title_en,
-        "title_zh": FINANCE_REGISTRATION_FACTS.title_zh,
-        "note_en": FINANCE_REGISTRATION_FACTS.note_en,
-        "note_zh": FINANCE_REGISTRATION_FACTS.note_zh,
+        "anchor_theme_id": facts.anchor_theme_id,
+        "slice_keys": facts.slice_keys,
+        "schema_id": facts.schema_id,
+        "evidence_schema_id": facts.evidence_schema_id,
+        "definition_version": facts.definition_version,
+        "compose": facts.compose,
+        "select_evidence": facts.select_evidence,
+        "load_bundle": facts.load_bundle,
+        "title_en": facts.title_en,
+        "title_zh": facts.title_zh,
+        "note_en": facts.note_en,
+        "note_zh": facts.note_zh,
     }
     try:
         return cls(**kwargs)
@@ -1117,6 +1158,7 @@ __all__ = (
     "FinanceRegistrationFacts",
     "FINANCE_REGISTRATION_FACTS",
     "_VERTICAL_REGISTRATION_FIELDS",
+    "VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE",
     "compose",
     "select_evidence",
     "load_bundle",

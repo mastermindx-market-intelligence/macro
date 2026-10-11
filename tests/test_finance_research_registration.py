@@ -214,27 +214,126 @@ def test_view_field_list_quotes_shell_field_names_in_order():
 
 
 # ---------------------------------------------------------------------------
-# 2. Round-trip — pinned strict xfail (shell absent on main)
+# 2. Round-trip — exact refusal codes on both shell states (H1 ruling B, #7870)
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=False, raises=ValueError,
-                   reason="§8 sector_profile pending (#7780 5828668393)")
-def test_shared_shell_registration_roundtrip_pinned_to_7870():
-    """§8 sector_profile pending (#7780 comment 5828668393). The shell
-    module ``engine.market_ontology.theme_research_registry`` is NOT on
-    origin/main; the round-trip MUST yield a typed
-    :class:`FinanceRegistrationRefusal` rather than a bare
-    ``ModuleNotFoundError``.
+def _theme_registrable_facts(reg):
+    """A facts double that passes the adapter's pre-construction hold (string
+    anchor, non-empty slices), for tests of the construction branches. The
+    values follow the shell's canonical id grammar (lowercase a-z, 0-9,
+    underscore) so the double is not itself a grammar violation; it still
+    deliberately departs from the real facts' declared ``anchor_theme_id:
+    None``. Every construction-branch test injects a fake registry, so the
+    real shell's guards are never the subject here. The real Finance facts
+    are a ``sector_profile`` and are held before construction (HOLD tests)."""
+    import dataclasses
+    return dataclasses.replace(
+        reg.FINANCE_REGISTRATION_FACTS,
+        anchor_theme_id="finance_test_double",
+        slice_keys=("test_slice",),
+    )
 
-    The marker is ``strict=False`` (R6 amendment): a strict XPASS would
-    turn red whichever carrier lands the §8 fix, and that carrier may
-    belong to another owner. Finance integration removes the marker.
-    ``raises=ValueError`` stays — the marker is shell-type-agnostic,
-    matching R3.
+
+def test_shared_shell_registration_roundtrip_pinned_to_7870():
+    """Checkout-state witness, no marker. Whatever this checkout holds, the
+    round-trip MUST refuse with exactly one of the two typed codes, and the
+    code must match the shell state actually observed — ``shared_shell_unavailable``
+    while ``engine.market_ontology.theme_research_registry`` is absent
+    (origin/main before #7870), ``vertical_registration_held:sector_profile``
+    once it is present (#7870 and after). The inherited marker
+    (``raises=ValueError``) could not tell those two states apart because the
+    adapter's refusal subclasses ``ValueError``; the exact-string assertion
+    below can.
     """
+    import importlib.util
     reg = _import_reg()
-    reg.registration_entry_or_refusal()
+    # Presence is decided by an instrument INDEPENDENT of the resolver under
+    # test, so a resolver that wrongly reports "absent" on a carrier that has
+    # the shell cannot hand this test its own expected answer.
+    shell_present = importlib.util.find_spec(reg._SHELL_REGISTRY_MODULE) is not None
+    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+        reg.registration_entry_or_refusal()
+    expected = (
+        "vertical_registration_held:sector_profile"
+        if shell_present
+        else "shared_shell_unavailable"
+    )
+    assert str(excinfo.value) == expected
+
+
+def test_shell_present_sector_profile_facts_are_held_before_construction():
+    """With a present shell and the REAL Finance facts (``sector_profile``,
+    ``anchor_theme_id=None``, ``slice_keys=()``), the adapter raises the typed
+    hold and never constructs the shell's record — the hold does not depend
+    on the shell's field count."""
+    reg = _import_reg()
+    constructed: list = []
+
+    class FakeRegistration:
+        def __init__(self, **kwargs: Any) -> None:
+            constructed.append(kwargs)
+
+    fake_registry = types.ModuleType("engine.market_ontology.theme_research_registry")
+    fake_registry.VerticalRegistration = FakeRegistration
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
+        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+            reg.registration_entry_or_refusal()
+    assert str(excinfo.value) == "vertical_registration_held:sector_profile"
+    assert reg.VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE == str(excinfo.value)
+    assert constructed == []
+
+
+@pytest.mark.parametrize(
+    "anchor_theme_id, slice_keys",
+    [
+        pytest.param("finance_test_double", (), id="string-anchor-empty-slices"),
+        pytest.param(None, ("test_slice",), id="none-anchor-nonempty-slices"),
+    ],
+)
+def test_hold_requires_both_anchor_and_slices(anchor_theme_id, slice_keys):
+    """Each half of the hold predicate is load-bearing on its own: facts that
+    satisfy only one half are still held before construction."""
+    import dataclasses
+    reg = _import_reg()
+    constructed: list = []
+
+    class FakeRegistration:
+        def __init__(self, **kwargs: Any) -> None:
+            constructed.append(kwargs)
+
+    fake_registry = types.ModuleType("engine.market_ontology.theme_research_registry")
+    fake_registry.VerticalRegistration = FakeRegistration
+    facts = dataclasses.replace(
+        reg.FINANCE_REGISTRATION_FACTS,
+        anchor_theme_id=anchor_theme_id,
+        slice_keys=slice_keys,
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
+        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+            reg.registration_entry_or_refusal(facts=facts)
+    assert str(excinfo.value) == "vertical_registration_held:sector_profile"
+    assert constructed == []
+
+
+def test_real_shell_field_gap_is_exactly_view_keys_and_build_query():
+    """Pins the known share gap instead of hiding it. When the real shell
+    resolves, its record carries exactly two fields beyond the adapter's
+    quoted share — ``view_keys`` and ``build_query`` — and nothing in the
+    share is missing from the shell. When the shell is absent this asserts
+    that absence, so the test is informative on both states."""
+    import dataclasses
+    reg = _import_reg()
+    cls = reg._resolve_vertical_registration_class()
+    if cls is None:
+        assert reg._import_shell_module(reg._SHELL_REGISTRY_MODULE) is None
+        return
+    shell_fields = {f.name for f in dataclasses.fields(cls)}
+    share = set(reg._VERTICAL_REGISTRATION_FIELDS)
+    assert shell_fields - share == {"view_keys", "build_query"}
+    assert share - shell_fields == set()
 
 
 def test_roundtrip_exact_refusal_code_is_shared_shell_unavailable(shell_absent):
@@ -259,7 +358,7 @@ def test_roundtrip_injected_registry_raising_value_error_yields_refusal_with_exc
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
         with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
-            reg.registration_entry_or_refusal()
+            reg.registration_entry_or_refusal(facts=_theme_registrable_facts(reg))
     assert str(excinfo.value) == "vertical_registration_refused:ValueError"
 
 
@@ -275,7 +374,7 @@ def test_roundtrip_typeerror_propagates_uncaught():
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
         with pytest.raises(TypeError):
-            reg.registration_entry_or_refusal()
+            reg.registration_entry_or_refusal(facts=_theme_registrable_facts(reg))
 
 
 def test_roundtrip_accepting_shell_returns_entry_with_kwargs_subset():
@@ -291,15 +390,17 @@ def test_roundtrip_accepting_shell_returns_entry_with_kwargs_subset():
     fake_registry.VerticalRegistration = FakeRegistration
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
-        entry = reg.registration_entry_or_refusal()
+        entry = reg.registration_entry_or_refusal(facts=_theme_registrable_facts(reg))
     assert isinstance(entry, FakeRegistration)
     expected_keys = set(reg._VERTICAL_REGISTRATION_FIELDS)
     assert set(captured) == expected_keys
     assert captured["schema_id"] == reg.PROFILE_ID
     assert captured["evidence_schema_id"] == reg.EVIDENCE_SCHEMA_ID
     assert captured["definition_version"] == reg.DEFINITION_VERSION
-    assert captured["anchor_theme_id"] is None
-    assert captured["slice_keys"] == ()
+    # The adapter forwards the facts it was handed verbatim; anchorless facts
+    # never reach this branch (held before construction, H1 ruling B).
+    assert captured["anchor_theme_id"] == "finance_test_double"
+    assert captured["slice_keys"] == ("test_slice",)
 
 
 # ---------------------------------------------------------------------------

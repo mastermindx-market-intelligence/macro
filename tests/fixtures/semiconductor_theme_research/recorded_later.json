@@ -1,0 +1,177 @@
+{
+  "case_key": "recorded_later",
+  "expected_regression": "Archival source-history allowed only with retrospective label; system replay refuses",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T08"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "capacity",
+    "time_mode": "source_history",
+    "source_cutoff": "2026-06-30T00:00:00Z",
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_1f66f2251edf1e39ce1502e5c20ba409"
+      ],
+      [
+        "identity",
+        "identity-vintage-011"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_1f66f2251edf1e39ce1502e5c20ba409",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Capacity Holder Chi",
+              "model": null,
+              "selector": "fac:chi-line",
+              "source_label": "Chi capacity line"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "monthly capacity construction",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "a February note, retained by the archive only in May"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "any claim the system knew it in February"
+          ],
+          "establishes": [
+            "a February publication retained in May"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Chi line capacity note"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_month",
+          "value": 22,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "foundry capacity",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "archival disclosure"
+        },
+        "source": {
+          "available_at": "2026-02-10T09:30:00Z",
+          "locator": "para-9",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-05-20T09:00:00Z",
+          "published_at": "2026-02-10",
+          "published_at_grain": "date",
+          "publisher": "Example Trade Wire",
+          "retained_at": "2026-05-20T10:00:00Z",
+          "retention_ref": "retention:recorded-later/chi-archival-note",
+          "source_uri": "https://example.invalid/recorded-later/chi-archival-note"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Capacity Holder Chi",
+          "source_platform_label": null,
+          "source_product_label": "Chi line capacity note"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_chi",
+        "source_business_label": "Synthetic Capacity Holder Chi",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "source_history": {
+      "included": true,
+      "retrospective": true
+    },
+    "latest": {
+      "included": true,
+      "retrospective": false
+    },
+    "system_replay": {
+      "included": "depends on both cutoffs"
+    }
+  }
+}

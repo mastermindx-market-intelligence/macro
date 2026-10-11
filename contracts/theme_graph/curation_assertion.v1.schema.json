@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/curation_assertion.v1.schema.json",
+  "title": "GMI theme-graph curation assertion v1",
+  "description": "One CURATED STATEMENT about a theme participant, as its own tamper-evident artifact — the payload behind a non-null evidence-row curation_assertion cell. Shared by every vertical (Robotics plan Task 1; Semiconductor plan §3.1): there is exactly ONE grammar, and vertical-specific meaning lives in closed optional extensions (industrial_context), never in renamed fields. The revision (curation_revision) is a pure function of the payload's content minus the revision itself, so two statements that differ in ANY retained byte are two revisions, and an edit is always a new row — nothing nets, nothing is superseded in place. Authority is structurally absent: every can_* flag is const false, in the schema AND in code; an assertion may inform a human, never rank, gate, size, originate or open.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "curation_revision",
+    "review",
+    "source",
+    "subject",
+    "object",
+    "predicate",
+    "statement_mode",
+    "scope",
+    "observation",
+    "temporal",
+    "limitations",
+    "correction",
+    "authority"
+  ],
+  "properties": {
+    "schema": {
+      "const": "theme_graph.curation_assertion.v1",
+      "description": "Frozen schema id string."
+    },
+    "curation_revision": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^gmirca_[0-9a-f]{32}$"}
+      ],
+      "description": "Content stamp: 'gmirca_' + sha256(canonical JSON of the payload WITHOUT this field)[:32]. Null only while unstamped (validate_assertion allow_unstamped=True); every encoded assertion carries a real stamp, and decode refuses a stamp that does not match the recomputed content hash (curation_revision_mismatch)."
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disposition", "reviewed_at", "reviewer", "review_due_at"],
+      "properties": {
+        "disposition": {
+          "enum": ["accepted", "held", "rejected"],
+          "description": "The reviewer's disposition of the STATEMENT's retention, never of any market action."
+        },
+        "reviewed_at": {"$ref": "#/$defs/clock"},
+        "reviewer": {"type": "string", "minLength": 1},
+        "review_due_at": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/clock"}],
+          "description": "When the retention is due for re-review; null when no due date was set (the frozen Robotics reference payload carries null). Null is never a fabricated date."
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher", "source_uri", "locator", "published_at", "published_at_grain",
+        "observed_at", "retained_at", "retention_ref", "native_digest"
+      ],
+      "properties": {
+        "publisher": {"type": "string", "minLength": 1},
+        "source_uri": {"type": "string", "minLength": 1},
+        "locator": {
+          "type": "string", "minLength": 1,
+          "description": "Where in the source the statement lives (paragraph, table, page). Two statements at different locators of the same document are DIFFERENT assertions with different revisions."
+        },
+        "published_at": {
+          "anyOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2}))?$"}
+          ],
+          "description": "When the source published the statement, at the grain published_at_grain says. An UNKNOWN publication stays null — it is never borrowed from observed_at or reviewed_at, and the validator enforces grain/date consistency."
+        },
+        "published_at_grain": {"enum": ["unknown", "date", "instant"]},
+        "observed_at": {"$ref": "#/$defs/clock", "description": "When the analyst saw the source. Never a substitute for a publication date."},
+        "retained_at": {"$ref": "#/$defs/clock", "description": "When the artifact was retained. Changing it changes the revision — retention is content."},
+        "retention_ref": {
+          "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
+          "description": "Pointer at the retained artifact (archive path, bucket key); null when retention_ref is carried elsewhere."
+        },
+        "native_digest": {
+          "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
+          "description": "Digest of the retained native artifact (e.g. sha256 hex); null when no digest could be computed for the retained artifact — an unknown digest stays unknown and is never fabricated (frozen Robotics reference: unknown date/digest stays unknown). Changing the digest (including null -> value) changes the revision."
+        },
+        "available_at": {
+          "anyOf": [
+            {"const": "unknown"},
+            {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"}
+          ],
+          "description": "Semiconductor extension, OPTIONAL: when the source artifact became available, when that differs from publication (embargo, feed lag) — the literal string 'unknown' when it cannot be dated. NEVER a repurposing of published_at/published_at_grain. Absent when the distinction does not arise."
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["company_node_id", "source_business_label", "source_product_label", "source_platform_label", "configuration"],
+      "properties": {
+        "company_node_id": {
+          "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
+          "description": "The graph node when identity is resolved; null when it is not. A source-only business stays null — the validator never fabricates a co:* node."
+        },
+        "source_business_label": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "source_product_label": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "source_platform_label": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "configuration": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]}
+      }
+    },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_product_label", "configuration"],
+      "properties": {
+        "source_product_label": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "configuration": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]}
+      }
+    },
+    "predicate": {
+      "enum": [
+        "PRODUCT_CAPABILITY",
+        "DOCUMENTED_PRODUCT_INCLUSION",
+        "ANNOUNCED_DEVELOPMENT_AGREEMENT",
+        "DEPLOYMENT_TARGET",
+        "REPORTED_DEPLOYMENT",
+        "OWNERSHIP_EVENT",
+        "REPORTED_FINANCIAL_MEASURE",
+        "REPORTED_OPERATING_MEASURE"
+      ],
+      "description": "What the statement claims, closed vocabulary. Pairing with statement_mode is constrained in code (e.g. a FORWARD_TARGET mode cannot carry REPORTED_DEPLOYMENT, and a REPORTED_FACT cannot carry DEPLOYMENT_TARGET)."
+    },
+    "statement_mode": {
+      "enum": ["REPORTED_FACT", "CATALOG_DESCRIPTION", "ANNOUNCED_ARRANGEMENT", "FORWARD_TARGET", "ATTRIBUTED_INTERPRETATION"],
+      "description": "How the source said it. Forward-looking modes stay forward-looking: no date or validator transition ever rewrites one."
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical_theme_id", "application", "technology_facet", "region", "period", "denominator"],
+      "properties": {
+        "canonical_theme_id": {
+          "type": "string", "minLength": 1,
+          "description": "The canonical theme the assertion belongs to (e.g. theme:semiconductors). source_ref_for builds the curation ref from THIS field — the vertical never hardcodes it (shared decision R1)."
+        },
+        "application": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "technology_facet": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "region": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "period": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "denominator": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "value_high", "unit", "quantity_basis", "gross_net_basis", "stock_flow", "estimate_status", "precision"],
+      "properties": {
+        "value": {
+          "anyOf": [{"type": "null"}, {"type": "number"}],
+          "description": "The quantity observed, when the statement carries one. Must be finite and non-negative (code-enforced); NaN/inf can never round-trip the canonical JSON."
+        },
+        "value_high": {
+          "anyOf": [{"type": "null"}, {"type": "number"}],
+          "description": "Upper bound of a range; same finite/non-negative law as value."
+        },
+        "unit": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+        "quantity_basis": {
+          "enum": ["per_robot", "per_joint", "per_hand", "per_cell", "per_installation", "per_unit", "per_wafer", "per_package", "per_device", "per_period", "absolute"],
+          "description": "What the value counts per. A non-null value REQUIRES this basis (code-enforced: quantity_basis_required)."
+        },
+        "gross_net_basis": {"enum": ["gross", "net", null]},
+        "stock_flow": {"enum": ["stock", "flow", null]},
+        "estimate_status": {"enum": ["reported", "estimated", "target"]},
+        "precision": {"enum": ["integer", "decimal", "range", "approximate"]}
+      }
+    },
+    "temporal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["business_valid_from", "business_valid_to"],
+      "properties": {
+        "business_valid_from": {"$ref": "#/$defs/nullable_date"},
+        "business_valid_to": {
+          "$ref": "#/$defs/nullable_date",
+          "description": "When the statement's validity window closed, if it did. Expiry is recorded, never inferred: a target whose window passed is still a target."
+        }
+      }
+    },
+    "limitations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["establishes", "does_not_establish", "coverage", "source_dependence", "expiry_trigger"],
+      "properties": {
+        "establishes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "does_not_establish": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "coverage": {
+          "type": "string", "minLength": 1,
+          "description": "What slice of reality the source covered. Source text that reads like an instruction ('rank this company first') is DATA here — it validates, and authority stays all-false."
+        },
+        "source_dependence": {"type": "string", "minLength": 1},
+        "expiry_trigger": {
+          "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
+          "description": "The observable event that would end the assertion's validity; null when none applies."
+        }
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predecessor_revision", "reason"],
+      "properties": {
+        "predecessor_revision": {
+          "anyOf": [{"type": "null"}, {"type": "string", "pattern": "^gmirca_[0-9a-f]{32}$"}],
+          "description": "The revision this one corrects. Setting it changes THIS payload's revision, never the predecessor's — a correction is a new row, not an edit."
+        },
+        "reason": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["can_rank", "can_gate", "can_size", "can_originate", "can_open_entry"],
+      "properties": {
+        "can_rank": {"const": false, "description": "Literal false, schema AND code. An assertion never ranks."},
+        "can_gate": {"const": false, "description": "Literal false, schema AND code. An assertion never gates."},
+        "can_size": {"const": false, "description": "Literal false, schema AND code. An assertion never sizes."},
+        "can_originate": {"const": false, "description": "Literal false, schema AND code. An assertion never originates a signal."},
+        "can_open_entry": {"const": false, "description": "Literal false, schema AND code. An assertion never opens an entry."}
+      }
+    },
+    "industrial_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["local_objects", "relation", "stage", "stage_source_language", "measure_scope", "lineage_refs", "interpretation"],
+      "description": "Semiconductor extension, OPTIONAL as a whole: the industrial grounding of the statement — objects named LOCALLY (no global ids minted), one relation, a maturity stage quoted verbatim, the measure's scope, lineage to native revisions/evidence rows, and a falsifiable interpretation. Absent on assertions that carry none of it.",
+      "properties": {
+        "local_objects": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["selector", "kind", "source_label", "manufacturer", "model", "configuration"],
+            "properties": {
+              "selector": {
+                "type": "string", "minLength": 1,
+                "description": "Local, assertion-scoped handle. Unique within the assertion (code-enforced: duplicate_local_selector). Never a global id."
+              },
+              "kind": {"enum": ["product", "process", "facility", "business", "material", "equipment", "configuration"]},
+              "source_label": {"type": "string", "minLength": 1},
+              "manufacturer": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+              "model": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+              "configuration": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]}
+            }
+          }
+        },
+        "relation": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["src_selector", "dst_selector", "kind"],
+              "properties": {
+                "src_selector": {"type": "string", "minLength": 1},
+                "dst_selector": {"type": "string", "minLength": 1},
+                "kind": {"enum": ["contains", "requires_process", "catalog_compatible", "documented_supply", "announced_agreement", "ownership", "operating_observation"]}
+              },
+              "description": "Endpoints are existing local selectors OR immutable native assertion references (gmirca_…), code-enforced (relation_endpoint_missing). Reciprocal commercial relations across two assertions are ALLOWED."
+            }
+          ]
+        },
+        "stage": {
+          "anyOf": [
+            {"type": "null"},
+            {"enum": ["catalog", "announced", "target", "sample", "qualified", "reported_operation", "reported_output", "reported_shipment"]}
+          ],
+          "description": "Maturity stage AT THE SOURCE'S WORDING. No date-triggered transition: a target whose business_valid_to is past stays 'target' — the validator records, it never ages."
+        },
+        "stage_source_language": {
+          "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
+          "description": "The exact source wording the stage was read from, preserved separately from the classification."
+        },
+        "measure_scope": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["value_basis", "denominator", "period_kind", "period_start", "period_end", "stock_flow", "gross_net", "wafer_diameter_mm", "currency", "precision", "estimate_status", "purchase_boundary"],
+              "properties": {
+                "value_basis": {"type": "string", "minLength": 1, "description": "What the number measures (e.g. 'purchase total'). The VALUES stay in observation."},
+                "denominator": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+                "period_kind": {"anyOf": [{"type": "null"}, {"enum": ["quarter", "half", "year", "ttm", "instant", "other"]}]},
+                "period_start": {"$ref": "#/$defs/nullable_date"},
+                "period_end": {"$ref": "#/$defs/nullable_date"},
+                "stock_flow": {"anyOf": [{"type": "null"}, {"enum": ["stock", "flow"]}]},
+                "gross_net": {"anyOf": [{"type": "null"}, {"enum": ["gross", "net"]}]},
+                "wafer_diameter_mm": {"anyOf": [{"type": "null"}, {"enum": [150, 200, 300]}]},
+                "currency": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z]{3}$"}]},
+                "precision": {"enum": ["integer", "decimal", "range", "approximate"]},
+                "estimate_status": {"enum": ["reported", "estimated", "target"]},
+                "purchase_boundary": {
+                  "anyOf": [{"type": "null"}, {"enum": ["integrated_assembly", "contained_component", "standalone"]}],
+                  "description": "Where the measured purchase stops. integrated_assembly totals are the double-count hazard the validator refuses (purchase_boundary_double_count)."
+                }
+              }
+            }
+          ]
+        },
+        "lineage_refs": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "relation"],
+            "properties": {
+              "ref": {
+                "type": "string", "minLength": 1,
+                "description": "An immutable native assertion revision (gmirca_…) or an existing evidence_id. Deliberately NOT resolvable inside the validator — lineage is a citation, not a join the validator performs."
+              },
+              "relation": {"enum": ["supports", "contradicts", "corrects", "supersedes", "repeats"]}
+            },
+            "description": "No 'verified_independent' field may exist — independence is never self-asserted (additionalProperties: false closes it)."
+          }
+        },
+        "interpretation": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mechanism", "offset", "missing_measurement", "falsifier", "input_revisions", "freshness"],
+              "properties": {
+                "mechanism": {"type": "string", "minLength": 1},
+                "offset": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+                "missing_measurement": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+                "falsifier": {"type": "string", "minLength": 1, "description": "What observation would break this reading. Required — an interpretation that cannot fail is an opinion."},
+                "input_revisions": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {"type": "string", "pattern": "^gmirca_[0-9a-f]{32}$"}
+                },
+                "freshness": {"enum": ["current", "stale", "unknown"]}
+              },
+              "description": "A mechanism with a falsifier, never a score: no numeric confidence/score field may exist (additionalProperties: false closes it)."
+            }
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "nullable_date": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+      ]
+    },
+    "clock": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    }
+  }
+}
