@@ -9,6 +9,7 @@ blocked_by:
 - PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
 - Phone Replay PR914 mergedcaf/source and exact CI are qualified; last observed canonical remains34d. Actual05:08 storage available8752930816 is1984487424 below retained10GiB reserve. Capacity check is a local pre-effect validator; it is not a platform permission denial. Canonical installation and paid phone proof remain.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
+- B Settings Retry/owner-generation PR917 source881d is published againstcaf and matches the retained C2 proposal hashes. B owns fresh CI/merge; actual merged receipt, canonical installation and live Settings proof remain. No #761 authenticated closure.
 - DigitalOcean authenticated exact580786327 quote verified:24USD/month current80GB plan;48USD/month proposed160GB/4vCPU/8GB (+24USD/month), temporarysnapshot allowance up to6USD/month while retained. Chairman spend/permanentdisk/shared-VPS maintenance decision pending. Login step satisfied; no paid snapshot/resize/poweroff/deployment yet. Preserve10GiB and existing Git/private/current/rollback data.
 - A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
 program: terminal-charting
@@ -676,3 +677,15 @@ Evidence bindings:
 
 - `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-authenticated-resize-proposal-parent-qualification-20261011T0659.json` — 5399B / SHA256 `375d0781c5e727780ea00307aa354901d6fb7921130894ce4eb231f1bcaf1582`.
 - `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-resize-quote-20261011T0650.jpg` — 219013B / SHA256 `ca7c6296f14a5e0c5d38f51a9be15cbff309f255f9da2f42d3f8c7464dd0376d`.
+
+## 20261011T0727 — Settings source return included in pending release scope
+
+The latest frontier is `current_capability_frontier_20261011T0727`, superseding T0659 only for the actual Settings source return. The authenticated VPS proposal, pending spending/maintenance decision and all historical evidence remain retained.
+
+- B published non-draft PR917, `881d9ad2b371fcaceb690c84c4068b5dd3cde672`, against `caf202fd5ac63c44ed09ddc758cab53d0c259beb`. Actual GitHub read is OPEN/not merged/mergeable. Seventeen paths comprise one product component, its native tests, one E2E, README/manifest and twelve PNGs. B retains its source and fresh CI/merge-on-green lane; no new writer or observer.
+- Parent read immutable component/native tests/E2E/manifest/README and the component diff. Component SHA256 `2ffd3c0a7a3c15d80ccf5c52902e19d1cad05fdc28c6b7747c3144681448e8c0` and native-test SHA256 `a1b6596ff18269d428da95b6f38976759a44660a8bbf779bcb4222e8341e302e` exactly match the executed #805 C2 proposal6077827461. Three source hashes match the committed manifest. This retains bounded semantics and is not current CI/integration or production acceptance.
+- Existing localized Retry re-reads with GET, preserves unavailable versus valid empty and does not replay a save. Generation fences retire obsolete A→B→A readback/recovery paint. Authentication, persistence, serialization and queued-POST policy are unchanged. Old queued A POSTs may still execute on returning A; displayed data may stay stale until current-generation work completes. No full lifecycle repair or #761 authenticated closure.
+- B reports41 native tests/TSC/6 mounted EN-ZH responsive cases passing; committed E2E asserts one additional GET/no POST/no overflow. Parent did not rerun tests, hash PNG bytes or perform new visual/production proof. Twelve PNG paths and manifest hashes are observed source artifacts, not live authenticated captures.
+- Verdict: source-only continuation qualified; hosted CI, actual merge receipt, canonical installed generation and live Settings behavior remain unproven. Consume B's actual merge receipt without duplicate CI polling. Include the exact qualified merged change in the existing canonical release after actual capacity and release gates pass. Peer message grants no new paid action or shared-VPS outage. No outgoing peer message was authorized or sent.
+
+Evidence: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/Settings-917-source-return-parent-qualification-20261011T0727.json` — 6923B / SHA256 `98f1c667ed6b7ee0f3dfeaed9d8fb8e4a06a517da4608cc3ad9784770d11ecd6`.
