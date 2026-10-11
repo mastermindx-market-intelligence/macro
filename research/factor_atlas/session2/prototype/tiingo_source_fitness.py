@@ -57,6 +57,21 @@ class OvernightRequestCoverage:
 
 
 @dataclass(frozen=True)
+class DaytimeClockCoverage:
+    """Nominal ET clock-grid accounting; NOT an exchange-calendar admission."""
+    date_et: str
+    nominal_rth_slots: int
+    observed_rth_unique_minutes: int
+    nominal_rth_missing_minutes: int
+    nominal_rth_grid_complete: bool
+    observed_pre_minutes: int
+    observed_ah_minutes: int
+    observed_before_04_minutes: int
+    observed_after_20_minutes: int
+    exchange_calendar_attested: bool = False
+
+
+@dataclass(frozen=True)
 class TiingoSourceFitness:
     schema: str
     status: str
@@ -76,6 +91,7 @@ class TiingoSourceFitness:
     vendor_volume_present: int
     vendor_zero_volume_rows: int
     overnight_sessions: tuple[OvernightRequestCoverage,...]
+    daytime_clock_coverage: tuple[DaytimeClockCoverage,...]
     refusals: tuple[str,...]
     source_admitted: bool
     pit_backtest_eligible: bool
@@ -98,6 +114,8 @@ class TiingoCohortFitness:
     pilot_symbols_not_in_examined_partitions: tuple[str,...]
     outside_pilot_sampled_symbols: tuple[str,...]
     unexamined_archives_are_unknown: bool
+    all_four_nominal_RTH_grids_complete_in_sample: bool
+    calendar_and_volume_rights_admitted: bool
     qualified_four_stock_daytime_source: bool
     all_dataos_rights_admitted: bool
     customer_publishable: bool
@@ -248,8 +266,9 @@ def assess_tiingo_view(view: object, *,
         reasons.add("SINGLE_EXCHANGE_NOT_CONSOLIDATED")
     else:
         reasons.update({"CONSOLIDATED_VOLUME_UNIT_UNQUALIFIED",
-                        "BETA_INTRADAY_SOURCE_NOT_INSTALLED_OR_ADMITTED"})
-    seen=set(); overnight=defaultdict(list); volumecount=zero=0
+                        "BETA_INTRADAY_SOURCE_NOT_CANONICALLY_ADMITTED"})
+    seen=set(); overnight=defaultdict(list); daytime=defaultdict(Counter)
+    volumecount=zero=0
     for raw in rows:
         if not isinstance(raw,Mapping):
             raise ValueError("owner_research_row_mapping_required")
@@ -311,8 +330,24 @@ def assess_tiingo_view(view: object, *,
                 raise ValueError("outside_overnight")
             end_date=local.date()+(timedelta(days=1) if local.hour>=20 else timedelta())
             overnight[end_date.isoformat()].append((stamp,vol))
-        elif not(4<=local.hour<20):
-            reasons.add("NOT_REGISTERED_DAYTIME_PHASE")
+        else:
+            # Only source-family appropriate one-minute rows enter the nominal
+            # daytime grid. Do not fabricate an exchange calendar or source
+            # permission from apparent clock completeness.
+            minute_of_day=local.hour*60+local.minute
+            day_counter=daytime[local.date().isoformat()]
+            if minute_of_day<240:
+                day_counter["before_04"]+=1
+                reasons.add("NOT_REGISTERED_DAYTIME_PHASE")
+            elif minute_of_day<570:
+                day_counter["pre"]+=1
+            elif minute_of_day<960:
+                day_counter["rth"]+=1
+            elif minute_of_day<1200:
+                day_counter["ah"]+=1
+            else:
+                day_counter["after_20"]+=1
+                reasons.add("NOT_REGISTERED_DAYTIME_PHASE")
     sess=[]
     for day,items in sorted(overnight.items()):
         expected,left,right=_request_clip(day,start,end)
@@ -322,6 +357,16 @@ def assess_tiingo_view(view: object, *,
         sess.append(OvernightRequestCoverage(
           day,expected,observed,expected-observed,
           sum(v==0 for _,v in items),sum(v is None for _,v in items),left,right))
+    day_report=[]
+    if source in ("iex-bars","equity-intraday-bars"):
+        for day,clock in sorted(daytime.items()):
+            rth=clock["rth"]
+            if rth>390:
+                raise ValueError("nominal_rth_clock_grid_invalid")
+            day_report.append(DaytimeClockCoverage(
+                day,390,rth,390-rth,rth==390,
+                clock["pre"],clock["ah"],clock["before_04"],
+                clock["after_20"],False))
     if source!="eod-bars" and not rows:
         reasons.add("NO_RETAINED_MINUTE_ROWS_IN_PARTITION")
     if source not in ("boats-bars","eod-bars") and rows:
@@ -348,7 +393,8 @@ def assess_tiingo_view(view: object, *,
         "RESEARCH_L1_NOT_CANONICAL",selected["source_observed_at_utc"],
         selected["purpose"],"tiingo",venue,scope,pilot,in_pilot,absent,
         (vendor_symbol,) if rows else (),len(rows),volumecount,zero,
-        tuple(sess),tuple(sorted(reasons)),False,False,False,False,False,False,
+        tuple(sess),tuple(day_report),tuple(sorted(reasons)),
+        False,False,False,False,False,False,
         "RETROSPECTIVE_VENDOR_BAR_COVERAGE_NOT_CAPITAL_PRESSURE",
         fingerprint)
 
@@ -375,10 +421,32 @@ def aggregate_cohort_fitness(reviews: Iterable[TiingoSourceFitness], *,
     participating=tuple(x for x in pilot if x in one_minute_symbols)
     missing=tuple(x for x in pilot if x not in one_minute_symbols)
     outside=tuple(s for s in symbols if s not in pilot)
+    # Clock-only four-name completeness is useful to prioritize owner
+    # qualification, but does not authenticate PIT, venue reach, price/volume
+    # adjustment, historic source availability, or redistribution rights.
+    # Never cherry-pick competing partitions or dates to claim a full panel.
+    consolidated=[x for x in material if x.source=="equity-intraday-bars"]
+    single={}
+    selected_days=[]
+    for item in consolidated:
+        if (len(item.observed_vendor_symbols)!=1 or
+                len(item.daytime_clock_coverage)!=1):
+            continue
+        symbol=item.observed_vendor_symbols[0]
+        if symbol in single:
+            single[symbol]=None  # competing revisions need original owner selection
+            continue
+        single[symbol]=item
+        selected_days.append(item.daytime_clock_coverage[0].date_et)
+    complete=(len(consolidated)==len(pilot)
+              and all(single.get(x) is not None and
+                      single[x].daytime_clock_coverage[0].nominal_rth_grid_complete
+                      for x in pilot)
+              and len(set(selected_days))==1)
     result_hash=m.digest({"pilot":pilot,"audits":[
         (x.source,x.source_sha256,x.evidence_digest) for x in
         sorted(material,key=lambda x:(x.source,x.source_sha256,x.evidence_digest))]})
     return TiingoCohortFitness(
        "factor_atlas.tiingo_cohort_fitness.v1",
        len(material),symbols,pilot,participating,missing,outside,
-       True,False,False,False,False,result_hash)
+       True,complete,False,False,False,False,False,result_hash)

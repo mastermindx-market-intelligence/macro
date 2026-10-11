@@ -364,3 +364,169 @@ def test_real_volume_rich_EOD_history_cannot_satisfy_any_one_minute_pilot_member
     assert cohort.pilot_symbols_with_retained_rows==()
     assert cohort.pilot_symbols_not_in_examined_partitions==COHORT
     assert cohort.qualified_four_stock_daytime_source is False
+
+
+
+def _synthetic_rth(symbol="AAPL",*,omit=(),source="equity-intraday-bars"):
+    """Nominal 09:30-16:00 ET minute fixture; NO exchange holiday proof."""
+    from zoneinfo import ZoneInfo
+    start=datetime(2026,10,9,9,30,tzinfo=ZoneInfo("America/New_York"))
+    names={
+      "equity-intraday-bars":(None,"vendor_equity_reference","unqualified","unqualified"),
+      "iex-bars":("IEX","single_exchange","vendor_request_session","shares")}
+    venue,scope,session,unit=names[source]
+    slots=tuple(row(at=(start+timedelta(minutes=i)).isoformat(),symbol=symbol,
+       source=source,venue=venue,scope=scope,session=session,unit=unit)
+       for i in range(390) if i not in omit)
+    path=("/tiingo/equity/intraday/" if source=="equity-intraday-bars" else "/iex/")+symbol+(
+      "/prices?startDate=2026-10-09&endDate=2026-10-09&resampleFreq=1min&columns=open,high,low,close,volume&afterHours=true&forceFill=false")
+    return view(rows=slots,source=source,source_request_path=path)
+
+
+def test_full_nominal_rth_grid_does_not_prove_exchange_calendar_or_source_rights():
+    a=assess(_synthetic_rth())
+    assert len(a.daytime_clock_coverage)==1
+    row=a.daytime_clock_coverage[0]
+    assert row.date_et=="2026-10-09"
+    assert row.nominal_rth_slots==390
+    assert row.observed_rth_unique_minutes==390
+    assert row.nominal_rth_missing_minutes==0
+    assert row.nominal_rth_grid_complete is True
+    assert row.observed_pre_minutes==0 and row.observed_ah_minutes==0
+    assert row.observed_before_04_minutes==0
+    assert row.exchange_calendar_attested is False
+    assert a.status=="CONSOLIDATED_BETA_CANDIDATE_NOT_ADMITTED"
+    assert a.source_admitted is False and not a.may_compute_daytime_pressure
+
+
+def test_missing_one_rth_minute_is_explicit_gap_not_zero_volume():
+    a=assess(_synthetic_rth(omit=(37,)))
+    x=a.daytime_clock_coverage[0]
+    assert x.observed_rth_unique_minutes==389
+    assert x.nominal_rth_missing_minutes==1
+    assert x.nominal_rth_grid_complete is False
+    assert x.exchange_calendar_attested is False
+
+
+def test_extended_and_midnight_vendor_rows_are_distinguished():
+    src=_synthetic_rth()
+    later=(
+      row(at="2026-10-09T00:12:00-04:00",source="equity-intraday-bars",
+          venue=None,scope="vendor_equity_reference",session="unqualified",unit="unqualified"),
+      row(at="2026-10-09T05:10:00-04:00",source="equity-intraday-bars",
+          venue=None,scope="vendor_equity_reference",session="unqualified",unit="unqualified"),
+      row(at="2026-10-09T18:47:00-04:00",source="equity-intraday-bars",
+          venue=None,scope="vendor_equity_reference",session="unqualified",unit="unqualified"))
+    a=assess(replace(src,rows=(*src.rows,*later)))
+    cov=a.daytime_clock_coverage[0]
+    assert cov.observed_rth_unique_minutes==390
+    assert cov.observed_pre_minutes==1
+    assert cov.observed_ah_minutes==1
+    assert cov.observed_before_04_minutes==1
+    assert cov.observed_after_20_minutes==0
+    assert cov.nominal_rth_grid_complete is True
+    assert "NOT_REGISTERED_DAYTIME_PHASE" in a.refusals
+
+
+def test_four_nominal_complete_rth_research_partitions_are_not_an_admitted_cohort():
+    samples=[]
+    for ticker,marker in (("AAPL","a"),("MSFT","c"),("NVDA","d"),("SPY","e")):
+      s=_synthetic_rth(ticker)
+      records=[]
+      for x in s.rows:
+        y=dict(x)
+        y["source_sha256"]=marker*64
+        y["source_receipt_id"]="f"*64
+        records.append(y)
+      samples.append(assess(replace(s,source_sha256=marker*64,rows=tuple(records))))
+    cohort=aggregate_cohort_fitness(samples)
+    assert cohort.pilot_symbols_with_retained_rows==COHORT
+    assert cohort.all_four_nominal_RTH_grids_complete_in_sample is True
+    assert cohort.calendar_and_volume_rights_admitted is False
+    assert cohort.qualified_four_stock_daytime_source is False
+    assert cohort.all_dataos_rights_admitted is False
+    assert cohort.customer_publishable is False
+
+
+def test_four_complete_iex_grids_do_not_prove_consolidated_equity():
+    samples=[]
+    for ticker,marker in (("AAPL","a"),("MSFT","c"),("NVDA","d"),("SPY","e")):
+      s=_synthetic_rth(ticker,source="iex-bars")
+      items=[dict(x,source_sha256=marker*64,source_receipt_id="f"*64) for x in s.rows]
+      samples.append(assess(replace(s,rows=tuple(items),source_sha256=marker*64)))
+    c=aggregate_cohort_fitness(samples)
+    assert c.all_four_nominal_RTH_grids_complete_in_sample is False
+    assert c.qualified_four_stock_daytime_source is False
+
+
+def test_regular_clock_grid_completeness_is_not_PIT_admission():
+    s=assess(_synthetic_rth())
+    assert s.daytime_clock_coverage[0].nominal_rth_grid_complete
+    assert s.daytime_clock_coverage[0].exchange_calendar_attested is False
+    assert s.read_purpose=="RETROSPECTIVE_EXPLORATORY"
+    assert not s.pit_backtest_eligible
+    assert not s.redistribution_admitted
+
+
+def test_four_perfect_nominal_rth_grids_on_different_dates_cannot_be_pooled():
+    sources=[]
+    for symbol,mark in (("AAPL","a"),("MSFT","c"),("NVDA","d"),("SPY","e")):
+        obj=_synthetic_rth(symbol)
+        rows=[]
+        for item in obj.rows:
+            item=dict(item)
+            if symbol=="SPY":
+                item["bar_at_vendor"]=item["bar_at_vendor"].replace("2026-10-09","2026-10-10")
+            item["source_sha256"]=mark*64
+            item["source_receipt_id"]="f"*64
+            rows.append(item)
+        path=obj.source_request_path
+        if symbol=="SPY":
+            path=path.replace("2026-10-09","2026-10-10")
+        sources.append(assess(replace(obj,rows=tuple(rows),
+                                      source_sha256=mark*64,
+                                      source_request_path=path)))
+    a=aggregate_cohort_fitness(sources)
+    assert a.pilot_symbols_with_retained_rows==COHORT
+    assert a.all_four_nominal_RTH_grids_complete_in_sample is False
+    assert a.qualified_four_stock_daytime_source is False
+
+
+def test_competing_revisions_for_same_symbol_cannot_be_selected_by_cohort_reader():
+    sources=[]
+    for symbol,mark in (("AAPL","a"),("MSFT","c"),("NVDA","d"),("SPY","e")):
+        obj=_synthetic_rth(symbol)
+        rows=tuple(dict(x,source_sha256=mark*64,source_receipt_id="f"*64)
+                   for x in obj.rows)
+        sources.append(assess(replace(obj,rows=rows,source_sha256=mark*64)))
+    duplicated=sources[0]
+    duplicate=replace(duplicated,source_sha256="0"*64,
+                      evidence_digest="0"*64)
+    a=aggregate_cohort_fitness((*sources,duplicate))
+    assert a.all_four_nominal_RTH_grids_complete_in_sample is False
+    assert a.qualified_four_stock_daytime_source is False
+    assert a.calendar_and_volume_rights_admitted is False
+
+
+def test_390_clock_complete_with_one_unknown_volume_still_is_not_source_admitted():
+    source=_synthetic_rth()
+    rows=list(source.rows)
+    rows[30]=dict(rows[30],vendor_volume=None,volume_available=False)
+    a=assess(replace(source,rows=tuple(rows)))
+    assert a.daytime_clock_coverage[0].nominal_rth_grid_complete is True
+    assert a.vendor_volume_present==389
+    assert "BAR_VOLUME_MISSING" in a.refusals
+    assert a.source_admitted is False and not a.may_compute_daytime_pressure
+
+
+def test_retained_beta_source_may_exist_without_being_canonically_admitted():
+    x=row(at="2026-10-09T09:30:00-04:00",source="equity-intraday-bars",
+          venue=None,scope="vendor_equity_reference",session="unqualified",
+          unit="unqualified")
+    s=view(rows=(x,),source="equity-intraday-bars",
+        source_request_path="/tiingo/equity/intraday/AAPL/prices?startDate=2026-10-09&endDate=2026-10-09&resampleFreq=1min&columns=open,high,low,close,volume&afterHours=true&forceFill=false")
+    result=assess(s)
+    assert result.status=="CONSOLIDATED_BETA_CANDIDATE_NOT_ADMITTED"
+    assert "BETA_INTRADAY_SOURCE_NOT_CANONICALLY_ADMITTED" in result.refusals
+    assert "BETA_INTRADAY_SOURCE_NOT_INSTALLED_OR_ADMITTED" not in result.refusals
+    assert result.source_admitted is False

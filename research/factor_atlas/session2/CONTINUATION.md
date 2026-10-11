@@ -1067,3 +1067,120 @@ consolidated 1m selection only when a genuine
 existing Tiingo/Data OS owner receipt allows
 it, without retrying the blocked real read
 packaging operation.
+
+
+## Four authentic consolidated Tiingo sources — RTH clock evidence, no source admission
+
+**Original accountable source before change:** Macro Factor Atlas S2
+PR #8677 `d6bf034337d7f8b12770f69b216291e10ddb9439`, Draft/HOLD, unmerged. Protected
+Mastermind `1f5befa44487ffb7ac2a0ca44ccd85c7c9da1355`,
+same-SHA compatible Sol Skillpack 1.0.1/bootstrap1.
+Original Tiingo producer has MERGED under source
+`2a08250fe61aa59ad3e1581149f0b93e9d5a17cf`,
+reuse the original `scripts.tiingo_ingest.collect` and
+`scripts.tiingo_materialize`, existing mounted
+`/Volumes/Mastermind/market-data/tiingo` archive
+and original reader. No alternate network client,
+key, runner, registry, auth plane, new scheduler
+or release route created.
+
+**Actual source effect PROVEN:** one bounded source collection
+of 1 AAPL and one subsequent bounded 3-symbol MSFT/NVDA/SPY
+request, total 4/4 HTTP success and 438,057 original
+raw response bytes, each with exact 2026-10-09
+1min OHLCV, afterHours true, forceFill false.
+Four immutable raw receipts and four research L1
+Parquet projections were written/verified by original
+Data OS. All actual source metadata, original
+source/receipt SHA-256 identities, capture clocks and
+qualified/nonqualified source interpretation persist
+on ORIGINAL Tiingo merged PR #8698
+comment `6115007538`; vendor source PRICE ROWS
+remain exclusively external archive. No source
+payload or per-market calculated flow copied here.
+
+**Direct original Data OS read-only verification:** four
+retrospective exploratory source views, total
+4,063 unique vendor one-minute timestamps.
+AAPL 1,010, MSFT 842, NVDA 1,146, SPY 1,065.
+Nominal regular 09:30-16:00 ET October 9:
+390/390 for each, total 1,560/1,560 clock
+slots. The additional 00:00-04:00 ET source
+rows are 939 in total and excluded from
+registered S2 04:00-20:00 ET phases. Actual
+original known-at is Oct11 23:09-23:11 UTC
+AFTER Oct9 event; cannot backdate to live
+Oct9 `as_observed` replay. Tiingo L1 marks
+`volume_unit_vendor=unqualified`,
+`canonical_price_basis_admitted=false`,
+`pit_backtest_eligible=false`,
+`source_rights_admitted=false` and
+`redistribution_admitted=false`. The
+Chairman's already-purchased license is
+separate from DATASET-SPECIFIC Data OS
+consumer admission.
+
+**New independent accepted RTH quality code:** expanded
+`prototype/tiingo_source_fitness.py` with
+`DaytimeClockCoverage` per day:
+separate nominal 390 RTH expected/observed,
+pre/after/00-04, missing, calendar_attested=false.
+Cohort result `all_four_nominal_RTH_grids_complete_in_sample`
+detects a full matching date only with one
+consolidated source partition per exact symbol;
+mixing dates, competing revisions, single-venue
+IEX, empty volume, or synthetic permissions
+cannot mint canonical PIT/price/rights proof.
+Accurate source refusal now
+`BETA_INTRADAY_SOURCE_NOT_CANONICALLY_ADMITTED`
+rather than stale "not installed"; research
+archive now exists, but is not source admitted.
+
+**TDD/proof:** six red new RTH fields, corrected
+39 focused green, three source-adversarial
+tests ->42, one source-status red, corrected
+43/43 Tiingo focused tests and **492/492**
+complete existing 15-suite native M2 Python3.12
+tests green. Repository unrun auditor: 0
+unwired suites. Updated synthetic-only witness
+and native SHA-256 receipt under
+`evidence/tiingo_source_fitness_synthetic.json`
+and `evidence/native_tiingo_source_fitness_tests.json`;
+no actual licensed numeric row values included
+and previously DENIED BOATS live-read packaging
+output still absent.
+
+**DO_NOT_REDO:** previous four blocked specific
+source reads, original benchmark repair,
+current-main changed-path compare, separately
+blocked S2-P4 read-model repair, blocked
+S2-P6 future-decision correction, and exact
+previous BOATS live-result packaging command.
+The reviewer summon operation remains
+effect_unknown and un-retried; no duplicate
+worker. Two S2-P4 WIP source/test files remain
+locally uncommitted with 4 red cases and
+EXCLUDED from accepted PR/hosted CI.
+
+**Critical remaining product gates:** original
+Data OS rights/identity/price/calendar owner
+must attest intraday interval share-volume
+semantics, corporate actions/price vs volume
+basis, actual observed-vs-retrospective
+known-at, selected revision, PIT security
+listing and fully effective source-use
+rights. Real S2 BVC pressure/quote/historical
+PIT pilot remains NOT_ADMITTED; no customer
+ranking, alert, sizing, trading or published
+response permitted. Reuse existing Tiingo
+L1, S2 source_preflight/window reducer,
+S6 evaluation and private Terminal owners
+after actual source admission.
+
+**Next:** same original PR branch commit for
+RTH clock-only source-quality source/tests/
+synthetic witness/protocol/report and receipt,
+verify exact new remote head and current CI,
+then advance admitted source rights/basis
+and real cohort quality through existing Data
+OS owners only. No second provider requested.

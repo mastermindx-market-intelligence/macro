@@ -1,52 +1,70 @@
 {
   "PIT_source_eligibility_proven": false,
-  "all_fifteen_suite_local_passed": 482,
+  "actual_four_stock_consolidated_research_partitions_retained_and_read": true,
+  "additional_Tiingo_fitness_tests_passed": 10,
+  "all_fifteen_suite_local_passed": 492,
   "all_input_data_S2_business_admitted": false,
   "boats_may_prove_US_consolidated_daytime_volume": false,
   "customer_publication": false,
-  "equity_intraday_beta_source_installed_at_examined_archive": false,
-  "focus_new_tests_passed": 33,
+  "dataos_canonical_PIT_or_monetary_basis_admitted": false,
+  "equity_intraday_beta_source_installed_at_examined_archive": true,
+  "focus_new_tests_passed": 43,
   "iex_may_prove_US_consolidated_daytime_volume": false,
   "independent_summon_effect": "UNKNOWN_NO_RETRY",
   "new_source_and_test_files": {
     "session2/TIINGO_SOURCE_FIT_CONTRACT.md": {
-      "bytes": 11713,
-      "sha256": "7d8bf2f708c5c33c40a814afeebe9ec9ab005ad973daec632e687fa44634093c"
+      "bytes": 17778,
+      "sha256": "53315f473449391b4f8340815b8fafb3de5c43b49580f8c987a45cbbdf347a7a"
     },
     "session2/evidence/tiingo_source_fitness_synthetic.json": {
-      "bytes": 14976,
-      "sha256": "7f3446c27d7f892b654320b7e178b7a18a400ddd0cddfff35256b8df20a299e9"
+      "bytes": 33765,
+      "sha256": "9f828093f12e4e2fd7254d7bab9f270cc89b8b5ebb9a1bd0a8dd798a3ebf5840"
     },
     "session2/prototype/test_tiingo_source_fitness.py": {
-      "bytes": 15995,
-      "sha256": "36978defeb22beca2c9e2ec874e87e05526964259f86ea4b8e5be823b9b6e117"
+      "bytes": 23933,
+      "sha256": "187af5a94466417b98206731d443db397bf2bd97bbefa952ba807910d362c5f0"
     },
     "session2/prototype/tiingo_source_fitness.py": {
-      "bytes": 17182,
-      "sha256": "66f53e856367d2050dca51370fdaadfe37d417c021513ff7a685d73fc2c22887"
+      "bytes": 20161,
+      "sha256": "5492a7eaea3fcd9d20a126eb0d223e4cd0f24bdfb8872be7f998f5e87d9d7a6b"
     }
   },
-  "original_factor_atlas_head": "a2bd1dc91ec3585eed4948c22ad5c3b6f97f2683",
+  "nominal_RTH_expected_and_observed_minutes_each_symbol": 390,
+  "nominal_grid_exchange_calendar_attested": false,
+  "nominal_rth_per_symbol_day_clock_grid_complete": true,
+  "original_factor_atlas_head": "d6bf034337d7f8b12770f69b216291e10ddb9439",
   "original_factor_atlas_pr": 8677,
   "original_tiingo_dataos_ownership": {
     "DO_NOT_RETRY_denied_script": true,
     "L1_projector_blob": "22d6058648bc111313dd0de5e4a679897b7c25e7",
     "actual_original_reader_retrospective_read_once_succeeded": true,
+    "captured_first_known_Oct_11_not_event_Oct_09": true,
     "denied_artifact_output_does_not_exist": true,
     "denied_artifact_script_sha256": "0439cd7b442111c733b5bca9d832304175e607caaf854b05168f9fe702c19de0",
+    "four_source_actual_receipts_on_original_owner_PR": "#8698 comment 6115007538",
+    "no_new_source_plane_created": true,
+    "original_vendor_code_modified": false,
     "owner_sanitized_BOATS_proof_blob": "a85fc4071ac02c9b036ef9323063673579e26162",
     "reader_blob": "73c100cc9ab91f443210a1063c28f7390416f020",
     "real_data_artifact_creation_platform_refused_before_dispatch": true,
     "retained_real_data_not_copied_into_this_PR": true,
     "tiingo_pr_current_read_only_head": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde",
-    "tiingo_pr_initial_successful_reader_head": "fa2580e1615db9cf5bade13ca8c8667f08d3ff6b"
+    "tiingo_pr_initial_successful_reader_head": "fa2580e1615db9cf5bade13ca8c8667f08d3ff6b",
+    "tiingo_source_merged_at": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+    "true_4_name_2026_10_09_research_read_after_capture": true
   },
-  "prepared_at_utc": "2026-10-11T19:42:18.914917+00:00",
+  "prepared_at_utc": "2026-10-11T23:22:45.668575+00:00",
+  "previous_native_TIINGO_milestone": {
+    "all_fifteen_suite_passed": 482,
+    "published_head": "d6bf034337d7f8b12770f69b216291e10ddb9439",
+    "source_tests": 33
+  },
   "previous_platform_denied_actions_unchanged": true,
-  "protected_mastermind": "cbc7503536b6853ec7c35c2192abdfaccb87b561",
+  "protected_mastermind": "1f5befa44487ffb7ac2a0ca44ccd85c7c9da1355",
   "python": "3.12",
   "query_identity_and_EOD_test_first_negative_confirmed": true,
   "real_market_pilot_executed": false,
+  "real_vendor_rows_in_accepted_S2_Git": false,
   "runtime_packages": {
     "numpy": "2.5.1",
     "pytest": "9.1.1",
@@ -54,7 +72,31 @@
   },
   "schema": "factor_atlas.native_tiingo_source_fitness_receipt.v1",
   "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
-  "source_class": "TIINGO_L1_SOURCE_FIT_RESEARCH_NOT_ADMISSION",
+  "source_class": "TIINGO_FOUR_REAL_RESEARCH_PARTITIONS_VERIFIED_COVERAGE_NOT_ADMITTED",
+  "source_fitness_RTH_clock_classification": {
+    "2026-10-09": {
+      "AAPL": {
+        "00_to_04": 231,
+        "nominal_RTH": 390,
+        "raw_vendor_minutes": 1010
+      },
+      "MSFT": {
+        "00_to_04": 228,
+        "nominal_RTH": 390,
+        "raw_vendor_minutes": 842
+      },
+      "NVDA": {
+        "00_to_04": 240,
+        "nominal_RTH": 390,
+        "raw_vendor_minutes": 1146
+      },
+      "SPY": {
+        "00_to_04": 240,
+        "nominal_RTH": 390,
+        "raw_vendor_minutes": 1065
+      }
+    }
+  },
   "test_first_original_missing_implementation_failed": true,
   "test_logs": {
     "EOD_not_one_minute_red": {
@@ -73,18 +115,39 @@
       "bytes": 1041,
       "sha256": "383501e2f7523cc0f7b3e77be5d37fa9d585756bd485729fa92e482aa1b2c933"
     },
+    "first_RTH_39_green": {
+      "bytes": 99,
+      "sha256": "e781d72ea3d19ed7c1c99ab4f63c9711124a15dab2928989927f0484eaf59e9c"
+    },
     "focused_33_green": {
       "bytes": 99,
       "sha256": "e75d5527c2fe5a35b692c68a8d3ae50411c52ade4bbea2c804e26130ef004eda"
     },
+    "full_15_suite_492_green": {
+      "bytes": 581,
+      "sha256": "4c242e7f963ba171a221f016c00bbe4130888d8480ed6c7bc6223cd3da33ed72"
+    },
     "missing_implementation": {
       "bytes": 1701,
       "sha256": "7f202d77f8f586c6bb379eecbb6169ea19fc277cf82d1aa8d28983b3cf7a7b00"
+    },
+    "relabel_source_red": {
+      "bytes": 2094,
+      "sha256": "3cb303e97e7dcb8f7a3d1514989ffdac9152065ae232366ea7d59601a18ea295"
+    },
+    "six_initial_RTH_red": {
+      "bytes": 5273,
+      "sha256": "3bf5f65077fee6d01a9de13a07f6615bd063ee5f6aa0d6c7361452d9bf8850a4"
+    },
+    "three_adversarial_42_green": {
+      "bytes": 99,
+      "sha256": "fb22ae9833ebd9dec5ec8e65a63ffa2f9b0560bd14f712dda01256b75e66546c"
     }
   },
   "tiingo_eod_may_fill_intraday_minutes": false,
   "trading_authority": false,
   "uncommitted_denied_read_models_excluded": true,
+  "vendor_raw_real_prices_retained_exclusively_original_archive": true,
   "workflow": {
     "path": ".github/workflows/factor-atlas-reference.yml",
     "registered_suite_count": 15,
