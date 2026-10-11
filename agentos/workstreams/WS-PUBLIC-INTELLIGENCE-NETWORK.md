@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Deliver reviewed and locally verified Press source through Macro PR 8786 and binding CI; obtain the exact admitted earnings packet/revision receipt and permitted read-only path before staging the rights-qualified story.
+next_action: Deliver reviewed and locally verified Press source through Macro PR 8786 and binding CI; obtain the exact admitted earnings packet/revision receipt and permitted read-only path before staging the rights-qualified story. The two-desk batch inspection currently blocks the earlier TTWO draft on self-similarity; preserve that evidence and the unchanged threshold.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md

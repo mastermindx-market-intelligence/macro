@@ -75,6 +75,37 @@ preserved, outside this source patch. The mocked staging test establishes the
 content/site publication boundary; it does not prove a real provider has no
 accounting side effects.
 
+## Second desk execution and current batch result
+
+A second real bounded run on the same source used:
+
+```sh
+PRESS_RUN_TOKEN_BUDGET=12000 PRESS_CIRCUIT_BREAKER_FAILURES=1 \
+  python3 -m scripts.run_press --staging --desks research_desk \
+  --as-of 2026-10-11 --max-slots 1
+```
+
+The existing Vanda Research landing page returned logged-out HTTP 200 before this
+run. It generated `press-research_desk-2026-10-11-81675c403cda` in one provider call,
+3,099 reported tokens, 508 words and 21 anchored receipts; its 17 checks passed.
+Exact bytes and summary are retained as `research_stage.json` and
+`research_run_summary.json`. Staging SHA-256:
+`ae72a0afdce3e0ffc261d38f8de71b330f989597fe3c25abef4191ae55bbff3b`.
+
+**The combined batch is not currently valid.** A subsequent read-only
+`python -m scripts.inspect_press_staging` returned exit 1: Research passes,
+but the earlier TTWO draft fails self-similarity against the new peer (0.381
+versus the unchanged 0.18 limit). The original TTWO bytes remain unchanged.
+`two_desk_inspection.json` retains that current replay. Its earlier individual
+pass and the linked candidate's earlier pass are historical observations; neither
+is a current batch approval. No draft was emitted or manually edited to force a
+pass. The ten consecutive unedited mixed-desk acceptance remains unmet.
+
+The source planner's `first_party` classification for a vault-backed source is
+not an independent rights ruling. The Research draft has no publication approval,
+and the available report does not unblock the requested rights-qualified market
+event. A qualified source packet and editorial acceptance remain dependencies.
+
 ## Verification
 
 - Baseline: 132 passed, one failed (`test_render_replay_is_idempotent_against_the_committed_estate`).
@@ -164,7 +195,9 @@ follow action was performed.
 ## Next executable actions
 
 1. The review repairs and targeted tests are complete. Deliver this source carrier
-   through its binding CI and existing protected landing controls.
+   through its binding CI and existing protected landing controls. Preserve the
+   failed combined-batch result; improve or replace overlapping candidates through
+   the existing writer/editorial path without weakening self-similarity thresholds.
 2. Obtain the existing story owner's exact admitted packet/revision receipt for
    generation `a0e1546fe97bac31fdf076c8c50f35f4` (or its qualified successor). Use
    the existing read-only admission credentials and one-call staging workflow;
