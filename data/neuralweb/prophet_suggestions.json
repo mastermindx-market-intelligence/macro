@@ -1,34 +1,34 @@
 {
   "schema": "prophet.suggestions/v1",
-  "as_of": "2026-10-10T11:32:46+00:00",
+  "as_of": "2026-10-11T05:20:25+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "suggestions": [
     {
       "code": "stale_us_audit_scoreboard_us",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "us-audit-scoreboard is 1524h old (SLA 48.0h) [US]",
+      "detail": "us-audit-scoreboard is 1541h old (SLA 48.0h) [US]",
       "market": "us",
       "first_seen": "2026-08-10",
-      "asof": "2026-10-10"
+      "asof": "2026-10-11"
     },
     {
       "code": "stale_us_board_outcomes_us",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "us-board-outcomes is 372h old (SLA 48h) [US]",
+      "detail": "us-board-outcomes is 389h old (SLA 48h) [US]",
       "market": "us",
       "first_seen": "2026-09-27",
-      "asof": "2026-10-10"
+      "asof": "2026-10-11"
     },
     {
-      "code": "stale_site_china_standouts_cn",
+      "code": "stale_intl_setups_intl",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "site-china-standouts is 36h old (SLA 30.0h) [CN]",
-      "market": "cn",
-      "first_seen": "2026-10-10",
-      "asof": "2026-10-10"
+      "detail": "intl-setups is 53h old (SLA 48h) [INTL]",
+      "market": "intl",
+      "first_seen": "2026-10-11",
+      "asof": "2026-10-11"
     }
   ]
 }
