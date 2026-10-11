@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T15:35:56.633784+00:00",
-  "count": 2815,
+  "generated_at": "2026-10-11T16:20:59.182634+00:00",
+  "count": 2817,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -267,6 +267,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-zdgovsqm1rt-f5c455",
+      "title": "Asia Pacific Weekly Kickstart MXAPJ fell another 1 , as higher oil prices and US rates continued to drive outflows and press...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:45:20Z",
+      "summary_points": [
+        "Concentration Risk & Index Dominance: Top 10 stocks now 41% of regional index cap; Taiwan/Korea comprise 50% of MSCI AC Asia Pacific ex Japan weight, displacing China as dominant market; IT sector holds 43% weight.",
+        "Rebalancing Pressure & Flows: $22bn net global equity selling in October (Asia: $9.2bn), SAA rebalancing ranking 14th percentile since 2020; Korea leveraged ETFs down to $22.3bn (from $55.3bn peak) with consistent outflows.",
+        "Tech Hardware Momentum & Valuation: MXAPJ tech hardware sector up 58.1% YTD; 34% 2026-2030 profit growth CAGR (vs. 6% 2011-2025); 12.3x forward P/E target implies 28% USD return (price target $1,120).",
+        "Hyperscaler Capex Surge: $6T total hyperscaler capex (2026-2030), driving cloud infrastructure investment and tech sector growth tailwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-kxbwngqw2bx-e44c86",
       "title": "GS TWIG Notes This Week in Global Research October 9, 2026",
       "institution": "Goldman Sachs",
@@ -304,6 +324,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-e7d5iff1tfg-b85f48",
+      "title": "Asia Pacific Weekly Kickstart MXAPJ fell another 1 , as higher oil prices and US rates continued to drive outflows and press...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:39Z",
+      "summary_points": [
+        "Concentration Risk & Index Dominance: Top 10 stocks now 41% of regional index cap; Taiwan/Korea comprise 50% of MSCI AC Asia Pacific ex Japan weight, displacing China as dominant market; IT sector holds 43% weight.",
+        "Rebalancing Pressure & Flows: $22bn net global equity selling in October (Asia: $9.2bn), SAA rebalancing ranking 14th percentile since 2020; Korea leveraged ETFs down to $22.3bn (from $55.3bn peak) with consistent outflows.",
+        "Tech Hardware Momentum & Valuation: MXAPJ tech hardware sector up 58.1% YTD; 34% 2026-2030 profit growth CAGR (vs. 6% 2011-2025); 12.3x forward P/E target implies 28% USD return (price target $1,120).",
+        "Hyperscaler Capex Surge: $6T total hyperscaler capex (2026-2030), driving cloud infrastructure investment and tech sector growth tailwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
       "language": "en",
       "needs_metadata": false
     },
