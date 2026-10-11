@@ -149,6 +149,20 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   second writer on the PR branch). (e) Router pick `minimax` overridden to `grok` with a recorded escalation
   reason (20-path semantic merge across Terminal laws). (f) Master-wide adoption of the one resolver by the
   other `asof_date` readers is out of 1A scope (O-13).
+- D28 (amends D16) D16 splits by file ownership. **D16a** = resolver refusal of a store on an unmounted
+  volume, launched now: owned `engine/thetadata_store.py` resolver region only (constants through
+  `resolve_thetadata_store`, never `_default_store_root` and below, which #8684 edits), the
+  `scripts/backfill_thetadata_eod.py` guard block, and appended tests in `tests/test_thetadata_resolver.py`.
+  New verdict `_UNMOUNTED` (not resolvable); a candidate whose path or tier entries realpath under `/Volumes/<vol>`
+  with `<vol>` not a mount point is refused and the candidate chain STOPS (no fallthrough to `data_dir`/ops-wt);
+  `unmounted_store_candidates()` makes the backfill guard refuse to mint a second store. An OSError fails open to
+  `_UNKNOWN`, so a real mount cannot be falsely blocked by a stat error. Fixtures: positive, negative-A
+  (dangling links, data_dir holds roots → None, `required=True` raises naming the volume), negative-B (leftover
+  dir at the mount point). Seat-measured baseline 128 passed on main 565d883c2657. **D16b** = R6 runner bounded
+  gate read with stderr in `ops/launchd/run_options_matrix.sh`: DEFERRED until #7861 lands (it edits that file)
+  or folded into the #7861 R1 successor PR. Merging D16a to Macro `main` installs nothing on m1 (the ops
+  worktrees are pinned); no host contact in this lane. Lane routing: cursor refused locally
+  (`LOCAL_SEAT_REMOTE_REQUIRED host=m2`, exit 78, before any effect); relaunched on grok.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -292,7 +306,10 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 3. Then U01 step 2: #846 refresh under this account (cross-owner A01/A03 tests, Read<T>, optionsReadAccess,
    three-state copy, VolPayload, lockfile regen, O-11 items).
 4. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
-5. Later waves per D13/D16/D18: OC design commission; D01-A01/R6 lane; #7861 R1 successor PR; O-13 successor;
+5. Judge the D16a return by artifact when bdofouo42 exits: diff limited to the three owned files and the resolver
+   region; T2/T3 shown failing before and passing after; gate suite 128+N passed; `scripts/` import check. On
+   ACCEPT the seat opens the Macro PR, adds `merge-on-green`, and reads CI once.
+6. Later waves per D13/D16b/D18: OC design commission; D16b (after #7861); #7861 R1 successor PR; O-13 successor;
    expand to O2/O3/O4/O6 only when their inputs clear. Optional: re-attempt G01 A02 while capacity admits.
 
 ## Lane matrix
@@ -306,6 +323,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | PLAN ACCEPTED 08:53Z → REQUEST_REPAIR (O8 defects 1–12 + D24 rulings), carried by the refresh commission D26 | 1 lead |
 | O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | DELIVERED 09:3xZ (after one nudge at the 12-turn limit) → JUDGED: ACCEPT as evidence; D24 | 1 auditor |
 | U01 step 1A (#723 refresh) | fabric operator grok (fix_build), D26/D27 | SSD worktree `pr-723-c89a753150e1dbd6`, branch `claude/ssd-pr-723-c89a753150e1dbd6`; packet `leads/U01/step1A_packet.md` | #723 (claim issuecomment-6111490519) | background task bjyey2nbm exit (3 h alarm) + `leads/U01/step1A_return.md` | RUNNING (START 17:04Z; 17:08Z merge in progress) | 1 operator |
+| D16a resolver unmounted-volume refusal | fabric operator grok (fix_build), D28 | SSD worktree `thetadata-unmounted-refusal-ff0dcf1f0bf22254`, branch `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`; packet `leads/D16a/packet.md` | Macro PR (seat opens after ACCEPT) | background task bdofouo42 exit (2 h alarm) + `leads/D16a/return.md` | RUNNING (START 17:16:46Z; ECONOMIC_POLICY allowed) | 1 operator |
 | U01 step 1B (recapture + chunk grep + responsive e2e) | not commissioned (D27c) | accepted 1A head | #723 | — | WAITING on 1A ACCEPT | — |
 
 ## DO_NOT_REDO (this programme)
@@ -332,9 +350,9 @@ amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKN
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (WIP commit "step 1A running; #7861 evidence posted; D27" on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "D16a running; D28" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: on bjyey2nbm exit, judge the step-1A return by artifact (NEXT 1); on ACCEPT commission step 1B
+EXACT_NEXT_ACTION: on bjyey2nbm exit judge step 1A (NEXT 1); on bdofouo42 exit judge D16a (NEXT 5)
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -437,4 +455,9 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Step-1A operator (grok) launched 17:04:15Z on its own SSD branch; START observed; fencing claim posted once on #723.
 - ONE #7861 evidence comment posted after an O.17 search (no duplicate). O-10 comment done; O-12 closed; O-13 opened.
 - Cost this cycle: ~12 tool calls, 1 fabric operator running, 0 native children.
+### 2026-10-11 17:18Z — D16a launched; D28
+- D28: D16 split by ownership; D16a (resolver refusal) launched, D16b (runner) deferred behind #7861.
+- Baseline measured once by the seat: 128 passed across the three resolver/store/runtime-roots test files.
+- cursor lane refused before effect (exit 78, local-only lanes are grok and ocfree); relaunched on grok 17:16:46Z.
+- Two operators running (step 1A, D16a), disjoint repos and files. 0 native children.
 
