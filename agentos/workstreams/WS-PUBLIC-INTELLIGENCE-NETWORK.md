@@ -21,8 +21,9 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Finish reviewed Press validation and dossier-link repairs, run their targeted suite, and land the source carrier; recover the immutable qualified story packet through the existing earnings admission owner before any publication.
+next_action: Deliver reviewed and locally verified Press source through Macro PR 8786 and binding CI; obtain the exact admitted earnings packet/revision receipt and permitted read-only path before staging the rights-qualified story.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
   - research/agentic_media/public_intelligence_20261011/CHECKPOINT.md
 do_not_redo:

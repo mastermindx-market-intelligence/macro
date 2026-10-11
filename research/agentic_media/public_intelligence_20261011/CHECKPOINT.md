@@ -6,6 +6,10 @@ Mission complete: **false**. Publication approved: **false**.
 ## Source and custody
 
 - Macro starting main: `1f3b82a01ea57749a9021b7c331cf6b2efe137b5`.
+- Implementation commit: `ccf9d39d95b59591b9a2f2a53199b1f84b761b0a`.
+- Delivery carrier: [Macro PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786).
+  Binding CI and protected landing are pending at this checkpoint; no merged or
+  installed claim follows from the pushed branch.
 - Working branch: `claude/mmx-public-intelligence-press-20261011` in
   `/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main`.
 - Governing Mastermind protected master: `8d62a8571d2a6ad9da9d50e5e4624de6eecaac4c`;
@@ -105,7 +109,12 @@ Press admission packet or permission to rewrite a full earnings story.
 
 The live blog index still shows the original six educational articles. The new
 TTWO draft was not published. In-app-browser signup interaction returned
-`net::ERR_BLOCKED_BY_CLIENT`; no account or follow action was performed.
+`net::ERR_BLOCKED_BY_CLIENT`. A subsequent Chrome check rendered the TTWO dossier
+and its existing Terminal continuation overlay; the embedded Terminal was blocked
+by Chrome, and a top-level signup navigation also returned
+`net::ERR_BLOCKED_BY_CLIENT`. This establishes a browser verification barrier, not
+a diagnosed product outage. No browser control was weakened, and no account or
+follow action was performed.
 
 ## Publication readiness and exact remaining dependencies
 
@@ -133,7 +142,10 @@ TTWO draft was not published. In-app-browser signup interaction returned
 - `earnings-story-press-stage.yml` had no runs. The existing story projection run
   [38120449838](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38120449838)
   concluded success at source `f921658d383be04540b6285d9045bffc7024fcf6` but uploaded
-  no artifacts. Success alone does not establish a qualified current packet.
+  no artifacts. Its retained log, read with `gh run view 38120449838 --log`, reports
+  29,959 evidence events/prior packets and generation
+  `a0e1546fe97bac31fdf076c8c50f35f4` as a true no-op. It gives no exact admitted
+  packet/revision pair. Success alone does not establish a qualified current packet.
 - Signup and persisted ticker follow are distinct. Existing watchlist mutation
   needs authentication and an explicit list; do not label a signup link as a
   completed follow. Reuse that owner and PR 8678's qualified interfaces.
@@ -142,8 +154,8 @@ TTWO draft was not published. In-app-browser signup interaction returned
 
 1. The review repairs and targeted tests are complete. Deliver this source carrier
    through its binding CI and existing protected landing controls.
-2. Read the existing story projection run's retained qualification output to locate
-   the exact current immutable packet, or obtain its source-owner receipt. Use
+2. Obtain the existing story owner's exact admitted packet/revision receipt for
+   generation `a0e1546fe97bac31fdf076c8c50f35f4` (or its qualified successor). Use
    the existing read-only admission credentials and one-call staging workflow;
    do not create a new compiler, event store or approval authority.
 3. Stage that rights-qualified packet, retain its receipt, attach only its existing
