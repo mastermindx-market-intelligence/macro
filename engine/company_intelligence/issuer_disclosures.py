@@ -500,9 +500,14 @@ def publish_disclosure(store: object, authority: DisclosureAuthority, request: R
             "conditional_objects_observed": writes, "automatic_retry_permitted": False}
 
 
-def read_disclosure(store: object, authority: DisclosureAuthority, request: Request) -> dict:
-    """Owner-selected private fact read after the F04 authentication boundary."""
+def read_disclosure(store: object, authority: DisclosureAuthority, request: Request, *,
+                    expected_admission: Admission | None = None) -> dict:
+    """Owner-selected private fact read, optionally pinned by a composing caller."""
+    _require(expected_admission is None or type(expected_admission) is Admission,
+             "ADMISSION_INVALID")
     admission = preflight(authority, request)
+    _require(expected_admission is None or admission == expected_admission,
+             "ADMISSION_CHANGED")
     fact = _load(store, admission.reference)
     _subject_binding(fact, admission)
     _require(fact["fact_id"] == request.fact_id and fact["edition"] == admission.edition.payload()

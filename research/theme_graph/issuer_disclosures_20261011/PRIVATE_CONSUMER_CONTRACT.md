@@ -225,3 +225,34 @@ Production must verify the immutable subject decision record itself binds the
 issuer/CIK/snapshot tuple; equality of unverified hashes is insufficient. The
 installed production slice must provide this binding on publication and reads,
 even though the base native API keeps it optional for existing callers.
+
+The HTTP slice enforces that subject binding before Store construction. Both
+HTTP and issuer composition pin the native reader to their original complete
+Admission with `expected_admission`; a fresh owner preflight must match before
+the first artifact read. A final equality check alone was insufficient: a
+transient A-to-B-to-B-to-A downgrade could omit the native optional binding and
+restore it before serialization. Both routes reproduced that failure, and now
+refuse it before artifact retrieval. The affected native/private suite passed
+108 cases in3.93s after repair; unchanged public API proof is reused. Independent
+review accepted the pinning correction. The base native API remains compatible
+with older callers, without weakening the production HTTP slice.
+
+## Owner integration decision
+
+Use one Company Intelligence adapter for `DisclosureAuthority` and
+`SelectionOwner`, backed by the same qualified current generation. Reuse
+`lib/dataos/registry.py` (validate before lookup), its incumbent temporal
+vocabulary, `IssuerMaster` for evidenced current identity, and the bounded
+versioned/CAS Store implementation. There is no adopted native disclosure
+dataset row yet. Neither Research Vault's default Store factory nor its rights
+catalog authorizes this domain's private bucket, audience or source.
+
+The owner generation must reference and verify original dataset/adoption,
+purpose, identity, temporal and correction records, exact published native
+objects and issuer membership. An authorized producer advances the current
+pointer only after native publication; the HTTP adapter receives read authority
+only. Revocation, expiry, identity change and corrections must invalidate the
+current metadata and final rechecks. No indefinitely cached startup allow,
+caller-supplied grant or second rights registry is acceptable. This integration
+requires real owner records and an approved private transport; no always-refusing
+adapter constitutes production completion.

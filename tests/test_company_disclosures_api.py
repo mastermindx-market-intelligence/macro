@@ -17,7 +17,9 @@ def boundary(sample, monkeypatch, tmp_path):
     from app import main, billing, paywall
     body, edition, fact, _, authority, _ = sample
     request = native.Request(fact['fact_id'], api.PURPOSE, api.AUDIENCE)
-    authority.admission = replace(authority.admission, request=request)
+    authority.admission = replace(authority.admission, request=request,
+        subject_binding=native.SubjectIdentityBinding(fact['subject_id'], '0000000001',
+            'synthetic.issuer_snapshot/v1', '9'*64, 200, fact['subject_identity']))
     store = LocalStore(tmp_path / 'private')
     native.publish_disclosure(store, authority, request, edition=edition, fact=fact,
                               source_reader=SyntheticSourceReader(body))
@@ -301,3 +303,45 @@ def test_matching_snapshot_cannot_hide_wrong_fact_identity_decision(selection_bo
     assert response.status_code == 503
     assert 'private_store' in boundary[3]  # Exact content read is needed to falsify the owner decision.
     assert 'fact' not in response.json()
+
+
+def test_private_fact_runtime_requires_subject_binding_before_store(boundary):
+    boundary[4].admission = replace(boundary[4].admission, subject_binding=None)
+    response = get(boundary)
+    assert response.status_code == 503
+    assert 'private_store' not in boundary[3]
+
+
+def test_subject_binding_revoked_during_store_construction_never_serializes(boundary):
+    client, _, _, _, authority, store, _ = boundary
+    def changed_factory():
+        authority.admission = replace(authority.admission, subject_binding=None)
+        return store
+    client.app.state.company_disclosure_reader = api.PrivateDisclosureReader(authority, changed_factory)
+    response = get(boundary)
+    assert response.status_code == 503
+    assert 'fact' not in response.json()
+
+
+@pytest.mark.parametrize('route', ['fact', 'selection'])
+def test_transient_binding_downgrade_cannot_skip_original_fact_decision(selection_boundary, monkeypatch, route):
+    boundary, _, _ = selection_boundary
+    authority = boundary[4]
+    original = replace(authority.admission,
+                       subject_binding=replace(authority.admission.subject_binding, decision_revision='a'*64))
+    downgraded = replace(original, subject_binding=None)
+    sequence = iter((original, downgraded, downgraded, original))
+    monkeypatch.setattr(authority, 'resolve', lambda request: next(sequence))
+    reads = []
+    incumbent = boundary[5].get_bytes_strict_bounded
+    def read(*args, **kwargs):
+        reads.append(True)
+        return incumbent(*args, **kwargs)
+    monkeypatch.setattr(boundary[5], 'get_bytes_strict_bounded', read)
+    if route == 'fact':
+        url = '/api/company-intelligence/private/product-integrations/' + original.request.fact_id
+        response = boundary[0].get(url, headers={'Authorization':'Bearer synthetic-token'})
+    else:
+        response = selection_get(selection_boundary)
+    assert response.status_code == 503
+    assert not reads

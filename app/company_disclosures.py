@@ -97,9 +97,16 @@ class PrivateDisclosureReader:
     selection_owner: selection.SelectionOwner | None = None
 
     def read(self, request: native.Request) -> dict:
-        native.preflight(self.authority, request)
+        admission = native.preflight(self.authority, request)
+        # This production slice requires the subject binding even though the
+        # base native API keeps it optional for earlier non-HTTP callers.
+        native._require(type(admission.subject_binding) is native.SubjectIdentityBinding,
+                        "SUBJECT_IDENTITY_REQUIRED")
         store = self.store_factory()
-        return native.read_disclosure(store, self.authority, request)
+        result = native.read_disclosure(store, self.authority, request, expected_admission=admission)
+        native._require(native.preflight(self.authority, request) == admission,
+                        "ADMISSION_CHANGED")
+        return result
 
 
 @router.get("/product-integrations/{fact_id:path}")

@@ -111,8 +111,8 @@ def read_issuer_selection(owner: SelectionOwner, authority: native.DisclosureAut
                         "SELECTION_IDENTITY_MISMATCH")
         requests.append(req); admissions.append(admission)
     store = store_factory() if requests else None
-    for entry, req in zip(snapshot.selections, requests):
-        result = native.read_disclosure(store, authority, req)
+    for entry, req, admission in zip(snapshot.selections, requests, admissions):
+        result = native.read_disclosure(store, authority, req, expected_admission=admission)
         native._require(result['reference'] == entry.fact_reference.payload()
                         and result['edition'] == entry.edition_reference.payload()
                         and result['generation'] == snapshot.generation
