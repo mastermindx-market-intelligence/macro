@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T11:50:27.149244+00:00",
-  "count": 2804,
+  "generated_at": "2026-10-11T12:50:39.953150+00:00",
+  "count": 2807,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -266,6 +266,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yrrua7uxrl0-566dd6",
+      "title": "GS TWIG Notes This Week in Global Research October 9, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:43:56Z",
+      "summary_points": [
+        "Asia/EM Market Evolution & China Exports: Asia equity markets now 50% tech-heavy with 10% EPS CAGR (100bp higher), driving EM strategy overweight North Asia/Tech + Brazil/SA/Greece/Hungary; China exports growth strong but demand sustainability hinges on trading partners’ growth.",
+        "Europe Sovereign Stress & Credit Pressures: Tightening financial conditions (e.g., French 10-yr spreads) reduce ECB rate hike urgency; sovereign risk tied to fiscal issues, not monetary policy, pressuring Eurozone IG/HY credit spreads amid growth/inflation trade-offs.",
+        "US Rates & GDP Impact: Persistent high Treasury yields drag ~0.5pp from GDP; FOMC remains \"open mind\" on policy, directly impacting macro risk exposure and portfolio positioning.",
+        "Energy & Tech Sector Shifts: Favor COP, OXY, PR, DUK, PWR, BKR, GLNG, DINO, TRP, AR; lithium supply chain shifts to 8-18% surplus (2027-2028E) from EV/ESS softening, altering sector flows.",
+        "AI & Green Capex Shifts: AI macro implications (India webinar) and Green Capex as policy-driven growth areas critical for sector allocation, with sustainability-focused portfolios prioritizing these themes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xyyijkslpal-b997fb",
       "title": "Q4 2026 Corporate Bond Market Outlook",
       "institution": "Other",
@@ -329,6 +350,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-h1z7giwlyvk-a2f2f7",
+      "title": "TDAGeneric NAM",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-10T02:02:55Z",
+      "summary_points": [
+        "Banks' Q3 Earnings Focus: JPMorgan (dealmaking/trading), Goldman Sachs (M&A recovery), BlackRock (bond yields), and Bank of America (customer interest payments) drive sector fundamentals and flows ahead of Fed meeting.",
+        "Core CPI Data: Core CPI at 0.2% MoM (2.5% YoY) signals cooling inflation, critical for Fed policy decisions and rate hike expectations.",
+        "Geopolitical Oil Volatility: Middle East tensions (Iran) and Hurricane Isaias disrupt Gulf production (1.3M barrels/day), spiking oil prices and triggering gold’s 1.46% rise.",
+        "Rising Yields Technical: 10-year yields near 5.35% signal potential yield surge, creating feedback loops and forcing investors to lock in yields near 2001-era levels.",
+        "AI-Driven Earnings Surge: S&P 500 earnings up 31% YoY (tech-led), driving tech portfolio allocations and investor flows despite Fed policy uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fg8tauh9ukf-843430",
       "title": "UBP House View",
       "institution": "Other",
@@ -387,6 +429,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-k09ycnr296c-ac8009",
+      "title": "Global EM Weekly Worsening technicals backdrop compound challenges for EM FX",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:24:26Z",
+      "summary_points": [
+        "India RBI 25bp hike & INR fragility: RBI hikes to 6.00% terminal rate, persistent USD strength, foreign outflows erasing June inflows; INR ranks highest in EM for 3m carry/vol ratio signaling vulnerability.",
+        "EM portfolio flows surge out of Asia: $19.2bn equity outflows (Sep) and $7bn debt outflows concentrated in Asia (China dominant), worsening technicals compound year-end de-risking risks.",
+        "EM FX-DXY correlation at -86%: Tight linkages amplify EM FX vulnerability to USD moves; energy/bond sell-offs elevate EM FX beta to USD, penalizing twin deficit economies.",
+        "Turkey CBR rate policy shift: CBR holds rates at 37% with dovish MPC, 100bp cut expected Dec; lira weakness amid global risks and policy cornerstone.",
+        "Nigeria CBN policy shift: Cuts policy rate 350bp to 23% signaling faster easing cycle amid elections, fiscal loosening risks undermining inflation outlook."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 33,
       "language": "en",
       "needs_metadata": false
     },

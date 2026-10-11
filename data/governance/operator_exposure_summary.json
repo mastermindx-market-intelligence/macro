@@ -1,15 +1,9 @@
 {
   "schema": "operator_exposure_summary.v1",
-  "generated_at": "2026-10-10T15:19:30.609444+00:00",
+  "generated_at": "2026-10-11T12:59:28.788989+00:00",
   "window_days": 90,
-  "n_rows_in_window": 453,
+  "n_rows_in_window": 454,
   "by_day": [
-    {
-      "as_of": "2026-10-06",
-      "counts": {
-        "alert_wh": 1
-      }
-    },
     {
       "as_of": "2026-10-08",
       "counts": {
@@ -19,9 +13,9 @@
       }
     },
     {
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-11",
       "counts": {
-        "experiment": 290
+        "experiment": 292
       }
     }
   ]

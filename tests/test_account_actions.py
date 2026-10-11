@@ -77,7 +77,7 @@ AUTHZ = f"Bearer {CALLER_TOKEN}"
 USER = {"id": "9c1f-user", "email": "reader@example.com",
         "user_metadata": {"display_name": "Ada"}}
 
-RELEASE_KEY = "20260913-account-actions"
+RELEASE_KEY = "20261010-account-continuity"
 PASSWORD = "a-long-enough-secret"
 NEW_EMAIL = "new@example.com"
 FOUR_ROUTES = ("/api/account/password", "/api/account/email",
@@ -1034,31 +1034,34 @@ def test_t12_bearer_only_http_succeeds_without_require_user_patch(monkeypatch):
         assert recorder.only().authorization == AUTHZ, path
 
 
-def test_t13_doSignOutAll_shows_errText_on_non_2xx_and_does_not_sign_out_on_401_429_502():
-    """MINOR-1: doSignOutAll shows the server EN/ZH sentence on non-2xx.
+def test_t13_doSignOutAll_signs_out_only_on_authoritative_success():
+    """MINOR-1 (tightened by site-20 S1-04): only an authoritative global success signs out.
 
-    At the old head, the failure handler always called doSignOut regardless of status,
-    so a 401/429/502 signed the reader out of the current session.  At the new head,
-    doSignOutAll reads ``r.status`` and calls doSignOut only on 2xx or on a status that
-    is not 401/429/502 — so the server's plain-word sentence is shown instead.
+    The first fix stopped a 401/429/502 from signing the reader out, but every other
+    failure (a 500, an unreadable body, a transport rejection) still fell through to the
+    local sign-out — which looks exactly like "all sessions revoked" when it is not.
+    doSignOutAll now signs out locally ONLY on a 2xx whose JSON says ``ok === true``; a
+    server error shows the server's EN/ZH sentence (errText), and anything uncertain
+    shows the plain "we couldn't confirm" line (so_all_unknown). The behaviour is pinned
+    end-to-end in tests/js/account_continuity.test.mjs (S1-04); this guards the shape.
     """
     src = ACCOUNT_JS.read_text(encoding="utf-8")
 
-    # The doSignOutAll function must contain a non-2xx branch that reads errText.
     assert "doSignOutAll" in src
-    # Find the doSignOutAll function body.
     fn_start = src.find("function doSignOutAll()")
     fn_end = src.find("\n  function ", fn_start + 1)
     body = src[fn_start:fn_end]
 
-    # The success path calls doSignOut; the non-2xx failure path shows errText.
-    assert ".then(doSignOut" not in body, \
-        "doSignOutAll must not unconditionally call doSignOut in the .then() handler"
+    assert "r.data.ok === true" in body, \
+        "doSignOutAll must gate the local sign-out on an authoritative {ok: true} reply"
+    assert ".then(doSignOut" not in body and "}, doSignOut)" not in body, \
+        "neither the success nor the rejection handler may call doSignOut unconditionally"
+    assert body.count("doSignOut()") == 1, \
+        "exactly one local sign-out call, inside the authoritative-success branch"
     assert "errText(r)" in body, \
         "doSignOutAll must call errText(r) to show the server's EN/ZH sentence"
-    # 401/429/502: do NOT sign out — show the server sentence.
-    assert "r.status !== 401" in body and "r.status !== 429" in body and "r.status !== 502" in body, \
-        "doSignOutAll must NOT sign out on 401/429/502 — must show server errText instead"
+    assert "so_all_unknown" in body, \
+        "an uncertain outcome must say so instead of implying global revocation"
 
 
 # --------------------------------------------------------------------------- #
