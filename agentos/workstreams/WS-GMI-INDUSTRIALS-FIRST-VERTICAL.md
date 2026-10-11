@@ -67,11 +67,25 @@ next_action: >
   repaired by merging origin/main f191b7f1 into the carrier (03d29dfea9d8) plus a two-line
   path widening (1db9cad104437dc0c9bb4b27cf45781040302fb2, pushed 2026-10-11, local closure
   check {} and the two curated-scope tests pass locally); it lands on main first per the #7870
-  landing order (comment 6105402719 line 18) once green at that head, the non-author review
-  covers the repair delta and the Source Continuity gate is in hand or accepted by a non-seat
-  authority (it is refused today: 634 open PRs against the protected cap of 490; see
-  WS:GMI-SEMICONDUCTORS gate (4) and #7870 comment 6106057199). The seam gate on issuer_profiles.py is shared with Mining T02 and CDV-1; land
-  order is decided by this seat, not by whichever lane finishes first.
+  landing order (comment 6105402719 line 18) once, at 1db9cad1: ALL_CONCLUDED green from the
+  one bound watcher; a non-author READ_ONLY review of 20e7e9ac..1db9cad1 (the merge commit
+  03d29dfe against each parent plus the two-line commit) is in hand; the Source Continuity
+  gate is in hand or accepted by a non-seat authority under the narrowed rule of #7870 comment
+  6106134520, which requires #8250's own substitute recorded at its release head in its own
+  cited #8250 comment (the verifier has not been run on #8250; it would refuse
+  REMOTE_CENSUS_INCOMPLETE on roster size alone: 634 open PRs per GraphQL
+  pullRequests(states:OPEN).totalCount at 2026-10-11T05:59:21Z and 633 at 06:17:20Z, against
+  _MAX_COLLISION_PRS = 490; see WS:GMI-SEMICONDUCTORS gate (4) and #7870 comments 6106057199
+  and 6106134520); and the custody reconciliation below is done. Custody basis for the seat's
+  two pushes to codex/industrials-t02-issuer-enrollment-20260930-sol-001 (20e7e9ac, 1db9cad1):
+  Ruling C-1 of DECISION 6105015260 names Industrials #7789/#8250 as this seat's, and #8250
+  comment 6105257496 line 22 records the seat's execution of the mechanical rebuild as an
+  exception while the fabric is unreachable; the last child-side edge on #8250 is Sol's
+  CONTINUE 5925110889 (2026-10-01T05:04Z). The Codex child's writer-lease state in Executive
+  OS is UNVERIFIED from this seat (connector unreachable); a custody reconciliation through
+  the Executive owner is owed before #8250's Ready/merge. The seam gate on issuer_profiles.py
+  is shared with Mining T02 and CDV-1; land order is decided by this seat, not by whichever
+  lane finishes first.
   .
   SPECIFICATION AUTHORITY RESOLVED 2026-09-29 - SOL RULING / CONTINUE (#7789 comment
   5894127980), which consumes this seat's asks 5881951284 / 5882425483 / 5894142128.

@@ -54,10 +54,16 @@ waves:
       and resolves its collision set with #8250, which the pairwise comparison of #7870's 102
       fully paginated changed paths against #8250's changed paths (NOT the adapter's census)
       fixes at exactly two paths: engine/company_intelligence/issuer_profiles.py, where the
-      2026-10-11 dry run `git merge-tree --write-tree acc72f3f 20e7e9ac` in the #7870 worktree
-      produced tree 8a957225cc5ca8c3cd589552b336882c38c826af with "CONFLICT (content)" and
+      2026-10-11 dry runs in the #7870 worktree, `git merge-tree --write-tree acc72f3f 20e7e9ac`
+      (tree 8a957225cc5ca8c3cd589552b336882c38c826af) and, at #8250's current head,
+      `git merge-tree --write-tree acc72f3f 1db9cad104437dc0c9bb4b27cf45781040302fb2`
+      (tree 71af057ff8c656f3bf72ab57aec01e5af8984fd3; the short-SHA spelling of the same
+      command yields tree 5b48480be7df630acb683f3880b23442b9fd7155, identical except for the
+      conflict-marker labels), each produced "CONFLICT (content)" and
       `git show <tree>:engine/company_intelligence/issuer_profiles.py | grep -c '^<<<<<<<'`
-      printed 3; and .github/ci/legacy-jobs.yml, auto-merged with 0 markers.
+      printed 3 for both; and .github/ci/legacy-jobs.yml, auto-merged with 0 markers (at
+      1db9cad1 tests/test_ci_pack.py also auto-merges with 0 markers; it is a main-side change
+      between 363b4e62 and f191b7f1 that 1db9cad1 inherits, not an #8250-owned path).
       Green and the delta review at acc72f3f are evidence for the pre-merge tree only.
       Gate set per DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, stated completely: (1) semantic pass:
       the H1 ruling B (#7870 comment 6105015260) plus the consumed independent Opus audit of
@@ -95,19 +101,37 @@ waves:
       this seat (Executive OS unreachable); nothing below is conditioned on that premise.
       Precedent followed, not distinguished: DEC:FABLE-SEAT lines 38 and 41 (Sol blocked
       Mastermind #716 on the missing receipt alone; the seat's own repair head 7dbb4230
-      carried REMOTE_COMPLETE_VERIFIED). Binding form: the verifier is re-run at the
-      post-merge release head from the pinned Mastermind revision with a real
-      evidence-artifact fingerprint (sha256 of the recorded census JSON, not of an assertion)
-      and its JSON is quoted verbatim in the DECISION; REMOTE_COMPLETE_VERIFIED puts gate (4)
-      in hand; ANY refusal means RELEASE_BLOCKED unless a non-seat authority (the Chairman or
-      Sol) accepts the recorded substitute on #7870 by a cited comment or message id before
-      the DECISION. The seat requested that ruling on #7870 (comment 6106057199, 2026-10-11) and
-      does not rule on it. Substitute evidence recorded with commands on 2026-10-11 and
+      carried REMOTE_COMPLETE_VERIFIED). Binding form (narrowed on 2026-10-11 by #7870
+      comment 6106134520, posted before any answer to 6106057199): the verifier is re-run at
+      the post-merge release head from protected Mastermind master at re-run time, with that
+      SHA recorded in the DECISION (not frozen at c7e47c85), with
+      --external-effect-evidence-fingerprint = sha256 of the recorded external-effect artifact
+      (the git ls-remote line plus the pulls/N head/state/draft read at the release head; not
+      of the census), and its JSON is quoted verbatim in the DECISION; REMOTE_COMPLETE_VERIFIED
+      puts gate (4) in hand; ANY refusal means RELEASE_BLOCKED unless a non-seat authority
+      (the Chairman or Sol) accepts the recorded substitute on #7870 by a cited comment or
+      message id before the DECISION, and that acceptance is narrowed to: (i) only
+      REMOTE_CENSUS_INCOMPLETE caused by the open-PR roster exceeding _MAX_COLLISION_PRS = 490
+      (scripts/source_continuity.py:77 and :1337; emitted for acc72f3f at :2614-2615, before
+      the ownership check at :2618-2619); every other refusal code (budget-exhaustion
+      REMOTE_CENSUS_INCOMPLETE at :2679-2680, REMOTE_PROOF_CHANGED, PATH_OUTSIDE_OWNERSHIP,
+      and the control_plane/source_continuity.py:650-662 refusals) is RELEASE_BLOCKED
+      regardless; (ii) a head is covered only if the substitute is re-recorded at that exact
+      head (git ls-remote == HEAD, GitHub commit tree == HEAD^{tree}, fully paginated
+      pulls/N/files == git diff --name-only, a fresh open-PR count and collision census) and
+      quoted in the DECISION; the 2026-10-11 substitute below covers acc72f3f only; (iii)
+      #8250 needs its own substitute at its own release head in its own cited #8250 comment.
+      Roster size is the only observed cause of today's refusal, not the only possible one:
+      with 490 or fewer open PRs the verifier can still refuse on budget exhaustion or on
+      churn in any of the 190 overlapping PRs, and the ownership, local-probe and content
+      checks have never run for this carrier. The seat requested that ruling on #7870
+      (comment 6106057199, 2026-10-11), narrowed it (6106134520) and does not rule on it.
+      Substitute evidence recorded with commands on 2026-10-11 and
       offered for that ruling: git ls-remote origin refs/heads/<branch> == git rev-parse HEAD
       == acc72f3f; the GitHub commit tree cd76b979136ccd77bc4bfd50b14c9f5fa19d4a93 == git
       rev-parse HEAD^{tree}; gh api pulls/7870/files fully paginated (102 paths) == git diff
       --name-only 363b4e62..acc72f3f; the pairwise collision set with #8250 = the two paths
-      above; and the extended open-PR collision census of 2026-10-11 (632 open PRs enumerated at 2026-10-11T05:12Z (634 at 05:59Z; the two newer PRs are not censused), 0 enumeration failures, 190 PRs touch at least one of #7870's 102 owned paths, 139 of them only via .github/ci/legacy-jobs.yml, all 190 diverged from acc72f3f, none stacked; issuer_profiles.py shared only with #8250; census JSON sha256 f51180b7b6e6915ef5e07de6aca663fbf98374a5e94ba05c40e874f3f1ff770c). With
+      above; and the extended open-PR collision census of 2026-10-11 (632 open PRs enumerated at 2026-10-11T05:12Z (634 at 05:59Z; the two newer PRs are not censused), 0 enumeration failures, 190 PRs touch at least one of #7870's 102 owned paths, 139 of them only via .github/ci/legacy-jobs.yml, none of the 190 contains acc72f3f (the census summary's collider fields are compare_status and contains_acc72f3f; stacking on an earlier #7870 commit was not tested by them, and #8002 (ENE-W1) IS stacked on #7870 commit 6cd958e9 through its base branch claude/energy-stack-base-b-6cd958e9: git merge-base acc72f3f 508d8c206357 = 6cd958e92b259f7221690547e7076f4a0de4ed33, an ancestor of acc72f3f and not of origin/main; it has 0 own-path collisions because its diff is measured against that base, so it sits outside the 190 by construction and is retargeted to main only after #7870 lands; 41 open PRs had a base other than main); issuer_profiles.py shared only with #8250; census JSON sha256 f51180b7b6e6915ef5e07de6aca663fbf98374a5e94ba05c40e874f3f1ff770c, retained by the seat, with its per-PR projection durable in #7870 comment 6106134520 section 3). With
       (1)-(4) in hand at the post-merge head: a fresh
       carrier read before EVERY post and act (DEC:FABLE-SEAT line 60), then ONE release
       DECISION in DEC:FABLE-SEAT order (quote the Chairman ruling, cite the consumed audit, the
