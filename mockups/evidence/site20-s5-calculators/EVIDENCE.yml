@@ -6,4 +6,6 @@ changed_paths:
   - site/tools/calculators/dollar-cost-averaging.html
   - site/assets/css/449e4bdf.css
   - site/assets/css/7c678f79.css
+  - tests/js/calculator_input_integrity.test.mjs
+  - .github/ci/legacy-jobs.yml
 manifest: mockups/evidence/site20-s5-calculators/manifest.json
