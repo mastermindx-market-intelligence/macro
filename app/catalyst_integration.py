@@ -353,10 +353,10 @@ def scan_with_reader(tickers: Any, event_id: Any = None, *,
     try:
         result = reader(normalized, event_id=event, now_utc=now_utc)
         return sanitize_public_scan(result, normalized, now_utc=now_utc)
-    except HTTPException:
-        raise
     except Exception as exc:
-        # No raw upstream exceptions/PII/scores/sources can enter public responses.
+        # Reader and serializer failures (including internal HTTPException) are
+        # untrusted errors; only prevalidated visitor input can return HTTP 400.
+        # Never let a source owner's exception detail reach an anonymous user.
         raise HTTPException(503, "Qualified event source unavailable") from exc
 
 

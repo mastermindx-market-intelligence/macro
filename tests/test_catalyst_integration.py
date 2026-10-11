@@ -86,6 +86,34 @@ def test_claims_rights_clock_and_identity_negative(mutation):
     assert "secret" not in str(exc.value.detail).lower()
 
 
+@pytest.mark.parametrize("upstream", [
+    HTTPException(status_code=403, detail="synthetic_private_source_key"),
+    HTTPException(status_code=429, detail="synthetic_internal_rights_refusal"),
+    RuntimeError("synthetic_internal_reader_exception"),
+])
+def test_source_reader_exception_details_never_escape_anonymous_api(upstream, monkeypatch):
+    def broken_reader(*args, **kwargs):
+        raise upstream
+
+    # In-process owner call and the actual anonymous HTTP route both refuse
+    # generically. Visitor validation still happens before calling this reader.
+    with pytest.raises(HTTPException) as error:
+        ci.scan_with_reader(["NVDA"], reader=broken_reader, now_utc=NOW)
+    assert error.value.status_code == 503
+    assert error.value.detail == "Qualified event source unavailable"
+
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setattr(ci, "import_module",
+                        lambda path: SimpleNamespace(scan_tickers=broken_reader))
+    response = client.post("/api/catalyst/scan", json={"tickers": ["NVDA"]})
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Qualified event source unavailable"}
+    assert "synthetic_" not in response.text
+
+
 def test_prevalidate_abuse_and_dedupe_without_calling_producer():
     calls = []
     with pytest.raises(HTTPException) as exc:
