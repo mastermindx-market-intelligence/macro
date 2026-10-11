@@ -27,6 +27,8 @@ owns_paths:
 depends_on:
   - WS:EARNINGS-INTELLIGENCE-OS
   - WS:GMI-THEME-GRAPH
+decisions:
+  - DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11
 waves:
   - id: IND-W1
     title: "T01 synthetic corpus, helper harness, delivery-input validator, gate:code job industrials-result-cash"
@@ -54,6 +56,73 @@ waves:
     depends_on: [IND-W4]
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
+  2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): T02 carrier #8250
+  (codex/industrials-t02-issuer-enrollment-20260930-sol-001) was adjudicated at 20b853e2907e the same
+  day (#8250 comment 6105257496, independent READ_ONLY Opus review consumed by the seat, VERDICT
+  REPAIR_REQUIRED) and rebuilt on e4bce058 as head 20e7e9ac63759099704a46506e85b61d00b487fc
+  (comment 6105272573, Draft, NON_AUTHOR_READ: PENDING at the time; the standalone non-author
+  read of e4bce058..20e7e9ac returned ACCEPT_MANIFEST_COMMIT, consumed in #8250 comment
+  6106622707); hosted checks at 20e7e9ac went RED (run 38110427910: contract-delta,
+  ci-pack-0, ci-gate) on a curated-closure contract that lives only on origin/main
+  (nw-lobe-unfreeze and ticker-news-qbus are scope: exclusive there and declare
+  issuer_profiles.py, whose lazy import of industrials_profiles.py left the closure uncovered);
+  repaired by merging origin/main f191b7f1 into the carrier (03d29dfea9d8) plus a two-line
+  path widening (1db9cad104437dc0c9bb4b27cf45781040302fb2, pushed 2026-10-11, local closure
+  check {} and the two curated-scope tests pass locally); it lands on main first per the #7870
+  landing order (comment 6105402719 line 18) once, at 1db9cad1, four conditions are in hand:
+  (1) ALL_CONCLUDED green from the one bound watcher (in hand: 2026-10-11T06:24:44Z, 26 check runs (1 failure; 4 skipped; 21 success; 6106622707 line 26 wrote 15; the 26 is from 6106264920 line 8 and from the 2026-10-11T07:39:39Z check-runs readback recorded in the verified block of handoff GMI-SEMICONDUCTORS-2026-10-11-meta-ceo-consolidation), the only failure ci-authority/codex/merge-queue-pilot, which is not a gate: no check is GitHub-required on main (readback 2026-10-11T07:39:39Z: GET repos/mastermindx-market-intelligence/macro/branches/main/protection/required_status_checks returned 'HTTP 404 Branch not protected' and GET repos/.../rules/branches/main returned rule types (empty list); that is true of all 26 checks, ci-gate included, so it does not single this one out), and merge-queue-pilot concluded failure on the head sha of all 14 PRs merged to main on 2026-10-11 through 08:26:47Z (#8755, #8760, #8758, #8764, #8670, #8767, #7869, #8768, #8769, #8774, #8771, #8775, #8777, #8778; list read 2026-10-11T08:34:57Z, conclusions read 08:35:20Z, recorded in the verified block of handoff GMI-SEMICONDUCTORS-2026-10-11-meta-ceo-consolidation), so the seat's own gates, not that pilot, decide merge readiness); (2) the
+  non-author READ_ONLY review chain from Sol's reviewed head e4bce058 (REVIEW 5925055036,
+  CONTINUE 5925110889 with REVIEW_REUSE_ALLOWED) to 1db9cad1 (in hand, two legs: the first
+  candidate 20b853e2 was adjudicated REPAIR_REQUIRED by the READ_ONLY audit consumed in #8250
+  comment 6105257496 and is not an ancestor of 20e7e9ac; e4bce058..20e7e9ac, the rebuilt +5
+  manifest commit, returned ACCEPT_MANIFEST_COMMIT in the standalone non-author read consumed
+  in #8250 comment 6106622707 (6105272573 recorded NON_AUTHOR_READ: PENDING and carries no
+  verdict; 6106622707 also corrects the gate-ledger line in 6106321419 that cited it as a
+  manifest ACCEPT); 20e7e9ac..1db9cad1,
+  the merge commit 03d29dfe diffed against origin/main f191b7f1 only, the other side covered by the seat's tree-identity proof b94a9852 == 03d29dfe^{tree} that the reviewer did not re-run, plus the two-line commit, returned
+  ACCEPT_REPAIR, consumed in #8250 comment 6106321419: scope PASS over exactly the 7 owned
+  paths; the tip is the exact two-line widening of the closure lists of jobs nw-lobe-unfreeze
+  (.github/ci/legacy-jobs.yml:10407, unquoted) and ticker-news-qbus (:21058, quoted), not of
+  industrials-result-cash (:22605); 0 conflict markers and each def and table once in
+  issuer_profiles.py; that comment supersedes the earlier 'twins at the Industrials job'
+  wording of comment 6106264920); Sol's CONTINUE 5925110889 grants REVIEW_REUSE_ALLOWED for the accepted product/identity semantics and names exactly one bounded CI-closure repair (the five paths: additions), while 1db9cad1 adds a merge of main plus a second closure repair, neither of which the reuse grant names: the second repair's only non-author cover is 6106321419, and the merge of main (f191b7f1, merged as 03d29dfea9d8) is covered only by 6106321419's diff of the merge commit 03d29dfe against f191b7f1 (6106321419 line 4: 379 lines, exactly the 7 owned paths) plus the seat's own tree-identity proof (merge-tree b94a9852 == 03d29dfe^{tree}), which 6106321419's reviewer did not re-run; and 5925055036 is PASS on product semantics with FINALIZATION_CLASSIFICATION REQUEST_REPAIR, which is why 6106622707 calls it REQUEST_REPAIR and 6105272573 and 6106321419 call it PASS; the release DECISION must state both points; (3) Source Continuity gate (4) applied to #8250 in its own
+  terms (owed): the verifier run at #8250's own release head from protected Mastermind master
+  at re-run time, with --external-effect-evidence-fingerprint = sha256 of #8250's recorded
+  external-effect artifact (the git ls-remote line plus the pulls/8250 head/state/draft read;
+  da6a8c45d80757e2ef3eda821dd56e24db64149c92e8a6c6d3bb231846cc0c06 at 1db9cad1,
+  seat-only-checkable until the exact hashed bytes are posted, because 6106395498 paraphrases
+  the ls-remote line and summarizes the pulls/8250 read), with the verifier's source SHA
+  recorded in the #8250 DECISION and its JSON quoted verbatim there, returning
+  REMOTE_COMPLETE_VERIFIED; or a non-seat acceptance (the Chairman or Sol, by cited id) of
+  #8250's own substitute, quoted in the #8250 release DECISION, recorded at
+  1db9cad1 in #8250 comment 6106395498 (git ls-remote == HEAD; GitHub commit tree
+  7a9ee2b823bcf3058e62dffdea3d4440868c33e9 == HEAD^{tree}; fully paginated pulls/8250/files
+  == git diff --name-only f191b7f1..1db9cad1, 7 paths; open-PR count 634 at 06:31:56Z;
+  own-path collision census of 2026-10-11T06:37:16Z to 06:40:30Z over 634 open PRs with 0
+  enumeration failures: 183 other open PRs touch an owned path, 182 of them only
+  .github/ci/legacy-jobs.yml, #7870 that file plus issuer_profiles.py, none of the 183
+  containing 1db9cad1, 10 with a base other than main; census JSON sha256
+  e039b80f2a41d32091a74d2756a7b806cd9bdf7d6a649e44e98d52d825dc70d8, seat-only-checkable),
+  under the narrowed rule of #7870 comment 6106134520 and its addendum 6106495383 (roster-size
+  REMOTE_CENSUS_INCOMPLETE only, shown by the attribution test around an actual run at that
+  head, the seat's own tightening posted in the addendum and recorded in WS:GMI-SEMICONDUCTORS
+  gate (4); every other refusal code RELEASE_BLOCKED regardless; until one branch is in hand
+  #8250 is RELEASE_BLOCKED on gate (4) exactly as #7870 is, 6106134520 section 1(iii), with the block that continues after #8250's substitute was recorded stated in addendum 6106495383 section 3 (substitute recorded, not accepted) and section 5 (RELEASE: BLOCKED_PENDING_NON_SEAT_RULING for #7870 and #8250); the
+  verifier has not been run on #8250 and would be expected to
+  refuse at the census step, roster 634 > _MAX_COLLISION_PRS = 490 per GraphQL
+  pullRequests(states:OPEN).totalCount at 2026-10-11T05:59:21Z, 633 at 06:17:20Z and 634 at
+  06:31:56Z, which is an expectation, not a run); and (4) the custody reconciliation below
+  (owed). Custody basis for the seat's
+  two pushes to codex/industrials-t02-issuer-enrollment-20260930-sol-001 (20e7e9ac, 1db9cad1):
+  Ruling C-1 of DECISION 6105015260 names Industrials #7789/#8250 as this seat's, and #8250
+  comment 6105257496 line 22 records the seat's execution of the mechanical rebuild as an
+  exception while the fabric is unreachable; the last child-side edge on #8250 is Sol's
+  CONTINUE 5925110889 (2026-10-01T05:04Z). The Codex child's writer-lease state in Executive
+  OS is UNVERIFIED from this seat (connector unreachable); a custody reconciliation through
+  the Executive owner is owed before #8250's Ready/merge. The seam gate on issuer_profiles.py
+  is shared with Mining T02 and CDV-1; land order is decided by this seat, not by whichever
+  lane finishes first.
+  .
   SPECIFICATION AUTHORITY RESOLVED 2026-09-29 - SOL RULING / CONTINUE (#7789 comment
   5894127980), which consumes this seat's asks 5881951284 / 5882425483 / 5894142128.
   RECOVERY SUCCEEDED AND NO RE-SPECIFICATION IS AUTHORIZED OR NEEDED. The original corpus was

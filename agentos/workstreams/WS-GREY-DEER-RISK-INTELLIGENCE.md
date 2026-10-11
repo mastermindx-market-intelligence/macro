@@ -346,15 +346,45 @@ waves:
     title: Source-backed risk-button causes and truthful live provisional context
     status: in_progress
     depends_on: [GD-UI-RADAR-1]
+  - id: GD-PB-W0
+    title: Pullback operation - Fable seat W0 reconcile and admit (records)
+    status: in_progress
+    depends_on: [GD-3]
+  - id: GD-PB-T02
+    title: Pullback source-clock-basis-rights qualification (O1/T02)
+    status: done
+    depends_on: [GD-PB-W0]
+  - id: GD-PB-T03
+    title: Publication-health note and GH001/heartbeat owner routing (O7/T01+T03)
+    status: todo
+    depends_on: [GD-PB-W0]
+  - id: GD-PB-T22
+    title: Observed-move preregistration, frozen before outcome inspection (O8/T22)
+    status: todo
+    depends_on: [GD-PB-T02]
+  - id: GD-PB-W2
+    title: Observed-move primitives (PIT, basis-correct, off the render path)
+    status: todo
+    depends_on: [GD-PB-T02, GD-PB-T22]
+  - id: GD-PB-W3
+    title: Consumer qualification under the frozen prereg (PR 8721 read-only)
+    status: todo
+    depends_on: [GD-PB-W2, GD-PB-T03]
 next_action: >
-  Finish the Chairman-authorized GD-UI-RADAR-2 source-backed button/live-context
-  slice on claude/risk-radar-explanations-live-20260920; exact-source evidence,
-  required CI, merge and production proof remain its release sequence.
-  GD-UI-RADAR-1 is live and DO_NOT_REDO (PR7467, merge96d3ddf6d500).
-  GD-3's accepted four-clock event proof remains complete. This UI continuation
-  does not commission GD-8A/GD-8B/GD-9A, GD-4B/4C, GD-6/7 or Portfolio cutover;
-  GD-5A/B/C remain closed. Latest receipt:
-  agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-20-RADAR-REMOVAL.md.
+  O1/T02 is recorded in
+  research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md
+  (eligible-input manifest v1.0.0; only US SPY on the licensed Massive RAW
+  store from 2021-07-06 qualifies; Yahoo and live radar inputs stay
+  diagnostic). Next: write and merge the O7/T03 publication-health note under
+  research/grey_deer/incidents/, then the O8/T22 preregistration that freezes
+  the manifest's qualified sample with sha256 before any outcome inspection.
+  Operation risk-radar-pullback-20261009 under carrier key
+  grey-deer-fable-orchestration-20261003-001 (ACK Slack 1791707775.860299);
+  incumbents PR 8721 (live writer) and PR 8188 (HOLD-FOR-SOL) are read-only.
+  Resumption file: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md;
+  latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-11-FABLE-W0.md.
+  GD-UI-RADAR-1 is live and DO_NOT_REDO (PR 7467); GD-UI-RADAR-2 keeps its own
+  carrier; GD-3 accepted; GD-5A/B/C closed; GD-6/7/8/9/10 uncommissioned.
 
 ---
 
