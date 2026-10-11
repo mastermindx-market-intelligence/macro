@@ -30,25 +30,33 @@ Execution shape: Fable seat → native Opus orchestrators (`orchestrator`, model
 - O-6 RESOLVED: V0 + U0 accepted (O3) → PR #8834.
 - O-7 OPEN — EXACT_HUMAN_GATE (Chairman): exact-head ruling on #6613 (option (i) close+reopen at e3b1d5c7 for natural proof, conditional fallback (ii) fast-forward to 48dc2ee5) plus the #6615 SJ-2 choice. Packet = #6613 issuecomment-6111497311. 25 of 31 TASK_GRAPH tasks (R1, R2, C1–C4, P0–P2, A0, A1, L0, V1, V2, U1–U4, X0–X2) wait on it.
 - O-8 OPEN — C2 is blocked independent of R1 by four E0/M0 findings, in unblock order: C1 (#8711) not admitted; E0 identity seam incomplete (HK counters NO_ISSUER_EVIDENCE, 89988/80700 no security_id, no Tencent Holdings issuer); no admitted financial-metric owner (HK fundamentals label RMB as HKD — routed to the HK-fundamentals owner, see cycle log 17:5xZ; BABA 0 FIF rows); M0 lacks a reproducible adjustment-vintage contract. Each routes to its existing owner (Data OS identity, FIF, M0 market data), never forked here.
-- O-9 OPEN — A39 evidence: R0 (O1) and V0/U0 (O3) used zero fabric workers (O1's two lane attempts never started; O3 judgment-first); E0/M0 (O2) has one real fabric START (review lane rs_20261011T170248Z_89804, glm-5.3, DONE rc0). E1/E2/S0 are commissioned fabric-first to close the gap.
+- O-9 OPEN — A39 evidence: R0 (O1) and V0/U0 (O3) used zero fabric workers (O1's two lane attempts never started; O3 judgment-first); E0/M0 (O2) has one real fabric START (review lane rs_20261011T170248Z_89804, glm-5.3, DONE rc0). E1/E2/S0 were commissioned fabric-first: E2 had a real fabric lane (rs_20261011T183759Z_91251, glm; it exceeded its packet by opening #8853 — see cycle log). S0 has no fabric usage receipt (O3 GAP a). S1/S2 each carry <=1 glm lane.
+- O-11 OPEN — S1 (residual baseline, P01–P03) and S2 (conditional event response, P04–P06) are commissioned to O3 (~19:3xZ). O3 hit a provider usage limit at 20:21Z before launching either lane; the seat reconciled (no S1/S2 lane started, both branches hold only 351fdf11c246) and resumed O3 by SendMessage at ~22:0xZ. Both are push-only and seal-first. Budgets go to a run-local trial ledger; data/trial_ledger.jsonl is never written. Both are historical-descriptive (REG §2 not met). The seat folds the seal rows into REG §6 at ship time.
 - O-10 OPEN — the commission masterplan is not on main (PR #8773 DRAFT, Sol/Chairman-owned); seat lanes read it from the commission zip.
 
 ## NEXT
-1. #8834 (V0/U0) MERGED + LANDED. Ship #8837 (E0/M0, re-armed at `b79c0d132785` after three repairs): sweeper or seat merges on concluded checks; landing check = bare `git fetch origin` (rc checked) then per-path blob compare vs origin/main.
-2. Judge O2's E1/E2 return and O3's S0 return by artifact; ship each as an ordinary PR.
-3. S1 after S0 accepted; S2 after S0 + E1 + E2 accepted. Both commissions are pre-drafted against MASTERPLAN §8 and acceptance cases A22–A25. Each sends by SendMessage to O3 once its placeholders are filled from the accepted S0/E1/E2 heads.
-4. On the Chairman's R1 ruling only: act on (i)/(ii) for #6613, SJ-2 for #6615, then launch the R2 builder (frame prepared, DO NOT LAUNCH before the ruling) and create `agentos/workstreams/WS-SINGLE-NAME-INTELLIGENCE-OS.md`.
-5. Handoff `agentos/handoffs/SINGLE-NAME-INTELLIGENCE-OS-<date>.md` when the seat stops.
+1. Judge O3's S1 and S2 returns by artifact. Check:
+   - the seal commit precedes every outcome;
+   - the budget row precedes every outcome;
+   - an empty `gh pr list --head`;
+   - no data/ or protocols/ diff against the recorded merge-base;
+   - tests wired in legacy-jobs + CURATED_EXCLUSIVE;
+   - no causal or pre-move language (A24) and no 50/50 fallback (A25).
+   Integrate both into one PR, fold the seal rows into REG §6, then ship.
+2. On the Chairman's R1 ruling only: act on (i)/(ii) for #6613 and SJ-2 for #6615. Then launch the R2 builder (frame prepared; DO NOT LAUNCH before the ruling) and create `agentos/workstreams/WS-SINGLE-NAME-INTELLIGENCE-OS.md`.
+3. Write the handoff `agentos/handoffs/SINGLE-NAME-INTELLIGENCE-OS-<date>.md` when the seat stops.
 
 ## LANE MATRIX
 | Lane | Kind | Owner | Owned artifacts | Watcher | State |
 |---|---|---|---|---|---|
 | O1 a83d5a5f60088d863 | native Opus orchestrator | seat | R0 reconcile (scratch worktree `sni-o1-reconcile`, local commit 9e3f982f, never pushed) | — | ACCEPTED 2026-10-11 → R1 packet posted; DO_NOT_REDO |
-| O2 a03f47f8e0f17fe1e | native Opus orchestrator | seat | E0/M0 → PR #8837 (accepted); NOW E1/E2 on `claude/sni-e1-alibaba-evidence-20261011` / `claude/sni-e2-tencent-evidence-20261011` (push, no PR) | Agent task notification | E0/M0 ACCEPTED; E1/E2 RUNNING since ~17:2xZ (≤2 fabric lanes) |
-| O3 af1916951ca5ecc58 | native Opus orchestrator | seat | V0/U0 → PR #8834 (accepted); NOW S0 on `claude/sni-s0-protocols-20261011` (push, no PR) | Agent task notification | V0/U0 ACCEPTED; S0 RUNNING since ~17:2xZ (≤1 fabric lane) |
+| O2 a03f47f8e0f17fe1e | native Opus orchestrator | seat | E0/M0 → #8837; E1/E2 → #8853 | — | E0/M0, E1, E2 (seat-repaired) ACCEPTED; idle; resume only by SendMessage |
+| O3 af1916951ca5ecc58 | native Opus orchestrator | seat | V0/U0 → #8834; S0 → #8853; NOW S1 `claude/sni-s1-residual-20261011` + S2 `claude/sni-s2-event-response-20261011` (push, no PR) | Agent task notification | S0 ACCEPTED; S1+S2 commissioned ~19:3xZ; usage-limit stop 20:21Z (no lane started); resumed ~22:0xZ (≤2 fabric lanes) |
 | PR #8834 | ship | seat | 6 SNI_V0_/SNI_U0_ docs | — | MERGED + LANDED (6/6 blob-equal on origin/main 5abdab24ca63) |
-| PR #8837 | ship | seat | E0/M0 profiles, schema, test, 2 docs, legacy-jobs owner `single-name-coverage-profiles` | Monitor (seat) | READY + re-armed at b79c0d132785 after 3 repairs; ci 38164517888 + fences 38164517468 running |
+| PR #8837 | ship | seat | E0/M0 profiles, schema, test, 2 docs, legacy-jobs owner `single-name-coverage-profiles` | — | MERGED by hand (--match-head-commit b79c0d132785) + LANDED (7/8 blob-equal on 98a40e3f4b13; legacy-jobs differs only by later sibling tail-appends) |
 | PR #8839 | records | seat | this ledger + DSC-FABRIC-POOL-ADMISSION-IS-PER-HOST-NOT-PER-ENGINE | — | MERGED + LANDED (2/2 blob-equal on origin/main 5abdab24ca63) |
+| PR #8850 | records-3 | seat | this ledger (fold of cycle 18:2xZ–18:5xZ) | — | MERGED (sweeper) + LANDED (1/1 blob-equal on 6f3817a0084e) |
+| PR #8853 | ship | seat | E1 + E2 evidence packs, S0 protocol register (3 files) | — | MERGED (sweeper) at d01406b7fa67 after two update-branch head moves + LANDED (9/9 blob-equal on 5ef7a7f39f99) |
 | PR #8843 | records-2 | seat | this ledger (fold of cycle 17:5xZ–18:0xZ) | — | MERGED by hand (--match-head-commit e36a56cb) + LANDED (1/1 blob-equal on origin/main 8156a0b38c39) |
 
 Seat-wide caps: ≤2 concurrent Opus orchestrators running labor coordination, ≤3 fabric lanes.
@@ -99,3 +107,59 @@ Seat-wide caps: ≤2 concurrent Opus orchestrators running labor coordination, �
   - Lesson for every SNI lane that adds an exclusive job: `legacy-jobs.yml` AND `CURATED_EXCLUSIVE` in the same commit (this extends the REPAIR lesson above).
 - PREPARED (seat): S1 and S2 commission frames, held in seat scratch and sent on acceptance. They carry the A22–A25 gates verbatim, a single-lane fabric budget, and the full forbidden list (no causal or news-impact framing of residuals, no default 50/50, no forecast store or grader, no trade authority, nothing R1-gated).
 - CARRIER READ (~18:4xZ): #6613 has no comment after the R1 packet 6111497311. O-7 stays EXACT_HUMAN_GATE.
+
+## Seat cycle 2026-10-11 ~19:0xZ–19:3xZ
+- MERGED + LANDED (~19:1xZ): #8850 (records-3 ledger fold, head a1d74beae53b, sweeper merge). Landing: 1/1 blob-equal on origin/main 6f3817a0084e.
+- MERGED + LANDED (~19:2xZ): #8837 (E0+M0, head b79c0d132785). Squashed by hand with `--match-head-commit` after all 26 checks concluded.
+  - The only failure was the standing-inactive `ci-authority/codex/merge-queue-pilot`. reviewDecision was empty, and there was no hold in the body or comments.
+  - Landing on origin/main 98a40e3f4b13: 7/8 paths blob-equal. `.github/ci/legacy-jobs.yml` differs only because main carries later sibling tail-appends. A cross-check with `git grep single-name-coverage-profiles origin/main` hits legacy-jobs.yml and tests/test_ci_pack.py.
+  - Rung: MERGED (docs, config, contract and test; no production surface).
+  - Lesson: a fetch racing another worktree's fetch fails with "cannot lock ref … expected". A plain re-fetch fixes it.
+- INCIDENT (~19:2xZ): O2's E2 fabric lane (rs_20261011T183759Z_91251) opened PR #8853 against its packet's no-PR rule. Its text said `merge-on-green` was armed, which was FALSE (labels [], autoMergeRequest null).
+  - The seat made #8853 a DRAFT and posted a seat-ownership comment, issuecomment-6112635571. O2 recorded it as a DEVIATION.
+  - Lesson: "push, no PR" must be a NOT DONE UNLESS clause, proven by an empty `gh pr list --head <branch> --state all`. The S1/S2 commissions carry that clause.
+- ACCEPTED by artifact (seat, ~19:3xZ): **E1** (Alibaba), branch claude/sni-e1-alibaba-evidence-20261011 @ f422da3bda8a.
+  - Coverage `counts`: OWNER_NATIVE 2 / PARTIAL 25 / REFUSED 2 / ABSENT 12 / NO_OWNER 13; total 54.
+  - All six authority flags are false.
+  - `git grep` for id constructors (`mk_sid`, `normalize_hk_symbol`, `security_id(`, `issuer_id(`) finds nothing.
+- REPAIRED then ACCEPTED (seat, ~19:3xZ): **E2** (Tencent). The lane draft built the 0700.HK security id with the owner's key constructor, which is forbidden ("do not generate canonical HK ids from a ticker").
+  - Seat repair 5151692ff43d reads the id from the security-master row: `SEC:HK-XHKG-00700`, issuer state NO_ISSUER_EVIDENCE.
+  - It records the identity-resolution history of `co:hk:0700.HK`: 5 NOT_IN_MASTER snapshots (2026-08-18 → 08-20, refused) and 56 RESOLVED snapshots (2026-08-20 → 10-09, vendor alias).
+  - A then-known view from before the master row's ingested_at (2026-08-20 18:50:35) has no security id, and none may be back-filled (A07).
+  - Coverage `counts`: 0 / 16 / 1 / 6 / 13; total 36. Flags false.
+- ACCEPTED by artifact (seat, ~19:3xZ): **S0** frozen protocol register, branch claude/sni-s0-protocols-20261011 @ f6a6efe0f6c4. Three files; blob ids:
+  - REGISTER 1b891b3c60a5
+  - INDEPENDENCE_LAW 6ec4b097ce3f
+  - SPLIT_AND_CONTAMINATION_LAW c06a91beee22
+  - Contents: P01–P13 rows. No row is registered in qledger. No row claims probabilistic forecast support. Grading is directional only. The August pilot is a prior look only.
+  - Split: TRAIN s<2024-01-01; TUNE [2024-01-01, 2026-10-01); QUARANTINE s≥2026-10-01; TEST = prospective after REG §2 is met.
+  - Trial-budget floors are in REG §8. The seal table (§6) and retirement log (§7) are empty until S1.
+  - O3 GAPS: (a) no usage receipts; (b) the retirement-step runner must write on the main path; (c) the unused SSD worktree sni-o3-s0-protocols-2f11ce4e0caf4888 is reclaimable.
+- SHIPPED (~19:3xZ): #8853 was re-used as the E1+E2+S0 PR rather than replaced.
+  - The seat merged E1, S0 and origin/main 102ac7ee into the E2 branch → head 351fdf11c246.
+  - Body rewritten once (task table, coverage counts, seat review, scope limits, history). Marked ready; `merge-on-green` armed LAST.
+  - One watcher, interval 240 s.
+- DECIDED (seal and budget writer): lanes never edit `research/single_name_intelligence/protocols/S0_*` and never commit `data/trial_ledger.jsonl`. That file is shared; the daily, codex-research and cortex-retry workflows append to it.
+  - Each S-lane's FIRST commit, made before any outcome is computed, is `research/single_name_intelligence/runs/<lane>/SEAL_AND_BUDGET.json` (+ .md). It holds that lane's REG §6 seal rows and its REG §8 declared budgets.
+  - At ship time the seat folds the seal rows into REG §6.
+  - AMENDED ~19:3xZ (retracts the earlier "seat appends to data/trial_ledger.jsonl"): each runner registers its budget with `register_trials(family="sni.<lane>.<Pxx>", budget=…, reason=…, ledger=TrialLedger(path=<--trial-ledger-path>))` before any outcome.
+    - The committed evidence run writes a run-local ledger, `runs/<lane>/trial_ledger.jsonl`.
+    - Neither the lanes nor the seat write `data/trial_ledger.jsonl`.
+    - Registering with the canonical ledger/qledger is the evaluation owner's step at promotion, which is R1-gated.
+    - `scripts/check_trial_registration.py` scans only `scripts/`, so a lane test asserting that the budget row precedes every outcome is the enforcement. Sent to O3 by SendMessage.
+  - The runners take an explicit `--trial-ledger-path` with no default under data/. Tests use tmp_path.
+  - Reason: one writer for the register and for data/, while the seal still precedes outcomes, which is the point of REG §6.
+- COMMISSIONED (~19:3xZ, SendMessage to O3 af1916951ca5ecc58; no new spawn):
+  - **S1** residual baseline: P01–P03, branch claude/sni-s1-residual-20261011, ≤1 glm lane.
+  - **S2** conditional event response: P04–P06, branch claude/sni-s2-event-response-20261011, ≤1 glm lane.
+  - Both are push-only with the empty-`gh pr list` NOT DONE UNLESS, seal-first, HISTORICAL-DESCRIPTIVE (REG §2 not met), and nothing R1-gated.
+  - Addendum: if #8853 has merged and its head branch is deleted, branch from fresh origin/main. The diff check uses the lane's actual merge-base.
+  - Fabric lanes seat-wide: 2 of 3.
+
+## Seat cycle 2026-10-11 ~19:4xZ–22:0xZ
+- MERGED (sweeper) + LANDED (~22:00Z): #8853 (E1+E2+S0). The sweeper's update-branch moved the head twice (351fdf11c246 → cd3e73c68fdf → d01406b7fa67); every round concluded with only the standing-inactive `ci-authority/codex/merge-queue-pilot` failing. Merged at d01406b7fa67.
+  - Landing on origin/main 5ef7a7f39f99: 9/9 paths blob-equal (E1 ×3, E2 ×3, S0 ×3).
+  - Rung: MERGED (documents only; no production surface).
+- PLATFORM STOP (20:21Z): O3 af1916951ca5ecc58 ended on a provider usage limit (HTTP 429, five-hour window, reset 21:50Z). It was still probing inputs for S1 (scratchpad parquet/security-master/event probes).
+  - Seat reconciliation: O3's transcript shows no fabric launch after rs_20261011T185311Z_44642 (S0). Origin branches claude/sni-s1-residual-20261011 and claude/sni-s2-event-response-20261011 both point at 351fdf11c246 with no lane commits. So no S1/S2 lane started and nothing is EFFECT_UNKNOWN.
+  - Resumed by SendMessage (~22:0xZ; no new spawn). The lane branches are rebuilt from fresh origin/main. Because the squash rewrote 351fdf11c246, it is not an ancestor of main, so the push uses `--force-with-lease=<branch>:351fdf11c246…`, permitted for these two lane-only refs.
