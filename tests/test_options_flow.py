@@ -116,3 +116,32 @@ def test_signed_fields_not_gated_when_calibration_passes(monkeypatch):
                    ("O:X260618C00100000", "X", exp, True, 100.0, 2, 2.0, 500)])
     p = of.build_flow("X", mdf, None, 100.0, exp)
     assert p["reliability"]["net_premium_mn"]["gated_out"] is False
+
+
+def test_legacy_flow_requests_are_not_expanded_by_thetadata_rollout(monkeypatch):
+    from datetime import date
+    from types import SimpleNamespace
+    from engine import options_universe
+    from scripts import build_options_flow as builder
+
+    target = date(2026, 9, 28)
+    cfg = {"symbols": ["SPY", "AAPL"], "include_baskets": False,
+           "max_underlyings": 2,
+           "daily_expansion": {"enabled": True, "target_stocks": 1000, "max_total_roots": 1500}}
+    monkeypatch.setattr(builder.config, "load", lambda: {"polygon": {"gex": cfg}})
+    def no_expansion(*args, **kwargs):
+        raise AssertionError("legacy flow attempted expanded membership")
+    monkeypatch.setattr(options_universe, "plan_daily_expansion", no_expansion)
+    monkeypatch.setattr(builder.mf, "probe_available",
+                        lambda *a, **k: SimpleNamespace(available_date=target))
+    requested = []
+    def empty_minute(day, kind, *, underlyings):
+        assert day == target and kind == "minute"
+        requested.append(list(underlyings))
+        return pd.DataFrame()
+    monkeypatch.setattr(builder.mf, "fetch_aggs", empty_minute)
+    result = builder.build(target_session=target)
+    assert requested == [["SPY", "AAPL"]]
+    assert result.reason == "minute_input_empty_or_malformed"
+    assert result.ok is False
+    assert cfg["daily_expansion"]["enabled"] is True
