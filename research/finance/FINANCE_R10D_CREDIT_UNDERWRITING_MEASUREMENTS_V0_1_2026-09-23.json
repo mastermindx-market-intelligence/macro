@@ -1,0 +1,215 @@
+{
+  "schema": "mastermind.research.finance_r10d_credit_constraint_measurements.v0_1",
+  "state": "RESEARCH_ONLY_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "ef92e2dcc6006163a60899a510abddf09bb016cc"
+  },
+  "authority": {
+    "may_create_canonical_identity": false,
+    "may_write_graph": false,
+    "may_admit_source": false,
+    "may_create_basket": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "methodology": {
+    "return_basis": "incumbent adjusted closes; prior observed close base; offset counts non-null observations; no forward fill",
+    "causal_status": "UNMEASURED",
+    "historical_consensus_status": "NOT_ESTABLISHED",
+    "calendar_status": "OBSERVED_DATES_NOT_INDEPENDENTLY_CERTIFIED",
+    "cohort_selection": "frozen before return computation within this tranche"
+  },
+  "rbi": {
+    "case_id": "R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116",
+    "information_date": "2023-11-16",
+    "effect_state": "immediate for risk-weight action; board subsegment limits due by 2024-02-29",
+    "direct_mechanisms": [
+      "consumer_credit_risk_weight_increase",
+      "credit_card_risk_weight_increase",
+      "bank_to_nbfc_risk_weight_increase",
+      "board_exposure_limits"
+    ],
+    "subsequent_system_growth_pct": {
+      "covered_consumer_loans": {
+        "nov_2023": 23.3,
+        "jun_2024": 13.9
+      },
+      "bank_credit_to_nbfcs": {
+        "nov_2023": 18.5,
+        "jun_2024": 8.2
+      },
+      "credit_card_outstandings": {
+        "nov_2023": 34.2,
+        "jun_2024": 23.3
+      }
+    },
+    "frozen_cohorts": {
+      "consumer_nbfc": [
+        "BAJFINANCE.NS",
+        "CHOLAFIN.NS"
+      ],
+      "banks": [
+        "HDFCBANK.NS",
+        "ICICIBANK.NS",
+        "AXISBANK.NS",
+        "KOTAKBANK.NS",
+        "SBIN.NS"
+      ],
+      "direct_mechanism_witness_without_incumbent_price": "SBICARD.NS"
+    },
+    "equal_weight_returns_pct": {
+      "consumer_nbfc": {
+        "0": 0.894,
+        "1": -1.752,
+        "5": -3.2604,
+        "20": 5.3142,
+        "60": -5.7254,
+        "120": 0.8403,
+        "252": 1.5452,
+        "max_drawdown": -22.3386
+      },
+      "banks": {
+        "0": -0.3078,
+        "1": -2.0984,
+        "5": -2.1603,
+        "20": 8.6769,
+        "60": 6.3963,
+        "120": 12.2679,
+        "252": 23.5857,
+        "max_drawdown": -8.5677
+      },
+      "nbfc_minus_banks_pp": {
+        "0": 1.2018,
+        "1": 0.3464,
+        "5": -1.1001,
+        "20": -3.3627,
+        "60": -12.1217,
+        "120": -11.4276,
+        "252": -22.0405
+      }
+    },
+    "company_witnesses": {
+      "bajaj_finance": {
+        "q3_fy24": {
+          "aum_yoy_pct": 35,
+          "nii_yoy_pct": 29,
+          "pat_yoy_pct": 22,
+          "roa_pct": 4.9,
+          "roe_pct": 22,
+          "loan_losses_provisions_yoy_pct": 48,
+          "crar_pct": 23.87,
+          "rbi_risk_weight_crar_impact_bps": 290,
+          "crar_without_change_pct": 26.77
+        },
+        "confounder": "approximately INR 8,800 crore QIP allotted 2023-11-09 before RBI action"
+      },
+      "sbi_cards": {
+        "q3_fy24": {
+          "car_pct": 18.4,
+          "tier1_pct": 16.3,
+          "prior_q2_car_pct": 23.3,
+          "prior_q2_tier1_pct": 20.8,
+          "rbi_crar_impact_bps_approx": 400,
+          "incremental_bank_borrowing_cost_bps": "25-30",
+          "cost_of_funds_pct": 7.6,
+          "gross_credit_cost_pct": 7.5,
+          "roa_pct": 4.1,
+          "pat_yoy_pct": 8
+        },
+        "price_state": "UNAVAILABLE_IN_INCUMBENT_STORE; fresh inspected route HTTP_429"
+      }
+    }
+  },
+  "apra": {
+    "case_id": "R10-AU-APRA-SERVICEABILITY-BUFFER-20211006",
+    "announcement_date": "2021-10-06",
+    "normal_compliance_clock": "by end of October 2021",
+    "parameter": {
+      "old_buffer_pp": 2.5,
+      "new_buffer_pp": 3,
+      "typical_max_borrowing_capacity_effect_pct_approx": -5
+    },
+    "high_dti_share_pct": [
+      {
+        "period": "2021Q3",
+        "value": 23.3
+      },
+      {
+        "period": "2021Q4",
+        "value": 24.4,
+        "note": "APRA releases vary by rounding; highlights later cite 24.3 peak"
+      },
+      {
+        "period": "2022Q1",
+        "value": 23.1
+      },
+      {
+        "period": "2022Q2",
+        "value": 22.1
+      },
+      {
+        "period": "2022Q3",
+        "value": 17.1
+      },
+      {
+        "period": "2022Q4",
+        "value": 11
+      },
+      {
+        "period": "2023Q1",
+        "value": 7.5
+      },
+      {
+        "period": "2023Q2",
+        "value": 6.1
+      }
+    ],
+    "frozen_cohort": [
+      "CBA.AX",
+      "WBC.AX",
+      "NAB.AX",
+      "ANZ.AX"
+    ],
+    "equal_weight_returns_pct": {
+      "0": -1.1244,
+      "1": -0.1305,
+      "5": -0.3953,
+      "20": -0.9262,
+      "60": -2.9417,
+      "120": 5.0382,
+      "252": -1.9655,
+      "max_drawdown": -20.6653
+    },
+    "individual_252_pct": {
+      "CBA.AX": -4.5509,
+      "WBC.AX": -10.5037,
+      "NAB.AX": 14.084,
+      "ANZ.AX": -6.8914
+    },
+    "anz_fy2022": {
+      "statutory_pat_yoy_pct": 16,
+      "cash_profit_continuing_yoy_pct": 5,
+      "cet1_pct": 12.3,
+      "cash_roe_pct": 10.4,
+      "interpretation": "home-loan momentum restored while rising rates aided deposit/capital margins and mortgage pricing competition remained"
+    }
+  },
+  "global_limitations": [
+    "retrospective mechanism research, not outcome-blind experiment",
+    "no historical analyst consensus established",
+    "no independently certified exchange-calendar count",
+    "no causal policy abnormal return",
+    "SBI Cards price missing from incumbent store",
+    "RBI cohorts are exposed to heterogeneous products and other contemporaneous events",
+    "APRA later high-DTI decline overlaps materially with RBA rate tightening and lender policy changes",
+    "no canonical identity/source admission/basket/trading effect"
+  ],
+  "next_action": "R10E: UBS/Credit Suisse completion plus TSE cost-of-capital/governance case."
+}
