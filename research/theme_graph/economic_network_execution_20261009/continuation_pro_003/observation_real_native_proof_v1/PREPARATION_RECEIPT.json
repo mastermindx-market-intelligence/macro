@@ -1,0 +1,90 @@
+{
+  "artifact_storage": "Scratch-only preparation; principal performs authorized repository-backed durable transfer.",
+  "authority_promotions": {
+    "graph1": false,
+    "native_fact": false,
+    "native_history": false,
+    "prediction": false,
+    "production": false,
+    "rights": false
+  },
+  "frozen_at_utc": "2026-10-09T11:30:27.853089+00:00",
+  "frozen_owner_test": {
+    "byte_length": 49406,
+    "method": "byte hash only; no test execution",
+    "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da"
+  },
+  "frozen_sources_rechecked_locally": [
+    {
+      "byte_length": 42756,
+      "local_evidence": "lanes/relationship_observations_v2/relationship_observations.py",
+      "method": "read bytes only; no application import",
+      "path": "engine/company_intelligence/relationship_observations.py",
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    {
+      "byte_length": 45473,
+      "local_evidence": "lanes/review_set_v4/relationship_candidates.py",
+      "method": "read bytes only; no application import",
+      "path": "engine/company_intelligence/relationship_candidates.py",
+      "sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55"
+    }
+  ],
+  "harness": {
+    "byte_length": 62960,
+    "path": "prove_retained_c01_observation.py",
+    "sha256": "871b539f94fb3b55de9c12e11fadd78c99920ea034503e755eb6bb7f1ea57b74"
+  },
+  "harness_lines": 1126,
+  "independent_static_review": {
+    "confirmed_fixed_findings": [
+      "pinned code-file ancestor directory allowance",
+      "permitted pre-open path labels do not claim completed reads"
+    ],
+    "remaining_confirmed_blockers_in_reviewed_paths": [],
+    "reviewed_intermediate_byte_length": 61484,
+    "reviewed_intermediate_sha256": "5293b84f986d288031ea524860afa5def00147e1fcb76d393cb8f618818b7ccf",
+    "reviewer": "/root/ci_release_evidence/harness_static_review",
+    "runtime_or_complete_final_revision_certification": false,
+    "scope": "LocalStore/API/guard/subprocess static compatibility only"
+  },
+  "native_execution": {
+    "application_imports": 0,
+    "application_tests": 0,
+    "git_operations": 0,
+    "native_proof_status": "NOT_RUN",
+    "native_writes": 0,
+    "source_acquisition": 0,
+    "store_operations": 0
+  },
+  "native_read_only_processes": [
+    {
+      "device_id": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+      "exit_code": 0,
+      "full_parent_chain_proven_by_this_prep_read": false,
+      "method": "stdlib regular leaf read with no-follow/stable state; no app import or store action",
+      "observed_at_utc": "2026-10-09T11:11:00.912206+00:00",
+      "pid": 51140,
+      "reconciled": true,
+      "source_byte_length": 47498,
+      "source_path": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-observations-20261009-pro-003/engine/research_vault/r2_store.py",
+      "source_sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+    }
+  ],
+  "owner": "/root/ci_release_evidence",
+  "pending_native_processes": [],
+  "principal": "/root",
+  "principal_followthrough": "Review final harness and exact source manifest; run native proof only in new authorized private locations; reconcile every actual PID and expected reference before any further modifying attempt.",
+  "registry_pin_basis": "Principal-supplied source identity; not independently re-read in this preparation or static sub-review",
+  "retained_inputs": {
+    "actual_input_bytes_not_read_or_materialized_by_this_preparation": true,
+    "expected_role_count": 7
+  },
+  "schema": "economic_network.retained_c01_observation_harness_preparation/v1",
+  "status": "PREPARED_COMPILE_ONLY_NOT_EXECUTED",
+  "syntax_validation": {
+    "method": "compile(exact_bytes,path,exec) plus ast.parse, without exec/import or py_compile",
+    "python_version": "3.12.14",
+    "status": "PASS"
+  }
+}

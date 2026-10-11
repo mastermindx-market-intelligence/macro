@@ -22905,7 +22905,7 @@ jobs:
 
 
   company-relationship-candidates:
-    # Pure analyst inspection; no source ingestion, admission or publication.
+    # Private analyst inspection and immutable retained observation contracts.
     # Curated native imports/reads, package initialization and shared pytest hooks.
     # Avoid broad runtime-input fallbacks selecting this utility for unrelated
     # homepage/strategy changes; contract-delta keeps those packing limits.
@@ -22929,6 +22929,7 @@ jobs:
       - engine/company_intelligence/health.py
       - engine/company_intelligence/pinned_relationship_candidates.py
       - engine/company_intelligence/relationship_candidates.py
+      - engine/company_intelligence/relationship_observations.py
       - engine/company_intelligence/views.py
       - engine/desk_ledger.py
       - engine/earnings_release/__init__.py
@@ -22981,6 +22982,7 @@ jobs:
       - tests/conftest.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
+      - tests/test_company_relationship_observations.py
       - tests/test_company_relationship_review_set.py
     runs-on: ubuntu-latest
     steps:
@@ -22990,8 +22992,8 @@ jobs:
           python-version: "3.12"
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
-      - name: File and pinned-source replay, manual boundary and temporal refusals
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
+      - name: File, pinned-source and immutable observation replay contracts
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
