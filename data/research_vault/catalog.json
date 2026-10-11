@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T14:35:44.780977+00:00",
-  "count": 2812,
+  "generated_at": "2026-10-11T15:05:48.258426+00:00",
+  "count": 2814,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -559,6 +559,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-qtq09kmuctq-baf3cc",
+      "title": "BofA Follow The Flow Seeking shelter 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:03:56Z",
+      "summary_points": [
+        "Sovereign yield-driven asset rotation: Higher sovereign yields and geopolitical uncertainty are driving capital toward government debt (vs. credit), reversing 2024-2025 trends and positioning 2026 as a \"risk-free\" asset preference year.",
+        "Weekly flows divergence: Record inflows into government bond funds (largest since April 2025) contrast with 5th consecutive weekly outflows in high-yield funds and 10th straight weekly inflows in equity ETFs, signaling active risk appetite shifts.",
+        "IG vs HY flow shift: Investment Grade (MM) recorded 2.7% weekly inflows versus High Yield’s -0.3% outflows, reflecting capital reallocation toward safer credit amid volatility.",
+        "ETF flow divergence: IG ETFs (Exhibit 17) show distinct flow patterns versus traditional IG funds, indicating ETF-specific dynamics that could alter portfolio allocation strategies."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-03lzbndnhmc-0969af",
       "title": "BofA Global FX weekly Breadth test 2026 10 09",
       "institution": "Bank of America",
@@ -638,6 +658,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-n23xvzmyfbd-7ceb5f",
+      "title": "Daily US",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-09T23:20:09Z",
+      "summary_points": [
+        "AI Demand Resilience Supported by Consumer Adoption & Semiconductor Data: Meta’s Muse AI (6.6M downloads, 1.8M DAU), TSMC’s 51% quarterly revenue surge, and Samsung’s nine-fold profit jump confirm sustained compute demand fundamentals amid volatility, validating AI infrastructure investment thesis.",
+        "Euro Sell-off Oversold: EURUSD’s 4% drop in 7 weeks indicates overextension; US dollar overpriced, European resilience expected; re-enter long positions targeting recovery to 1.16.",
+        "Fed Rate Hike Timing Flexibility: Hikes not consecutive; next move priced for December; September CPI and Q3 earnings season (TSMC, Samsung, Hon Hai) are critical data triggers for policy path and market positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },

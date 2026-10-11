@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
   "as_of": "2026-10-11",
-  "generated_utc": "2026-10-11T13:40:11Z",
+  "generated_utc": "2026-10-11T15:13:30Z",
   "authority": {
     "tier": "context_only",
     "why": [
