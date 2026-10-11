@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T17:21:24.249634+00:00",
-  "count": 2820,
+  "generated_at": "2026-10-11T18:21:15.998850+00:00",
+  "count": 2823,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -344,6 +344,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vdblf6izm08-39710a",
+      "title": "Vesta (VESTA.MX) 3Q26 Earnings Preview",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:35Z",
+      "summary_points": [
+        "Consensus Downgrades & Earnings Quality: EBITDA/Dividend estimates revised down 3-10% (2027-2028), signaling earnings quality concerns and dividend sustainability risks despite revenue growth projections.",
+        "Sell Rating with 11% Downside: DCF-driven sell rating (P$55/US$32) due to higher WACC (9.7% vs 9.4%), lower terminal cap rate (8.2% vs 8.7%), and declining ROE (5.5%) and NAVPS (1.97).",
+        "MXN Depreciation Impact: Revenue upside from MXN weakness (driving 2026 revenue growth) but simultaneously pressures operating expenses, creating fundamental tension in near-term results."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ud7df184o2n-ddddc0",
+      "title": "Market Intelligence US Morning Update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:02Z",
+      "summary_points": [
+        "Credit Market Pressures: Rate volatility may widen IG/HY spreads; sovereign risk/inflation threaten credit fundamentals despite growth firmness.",
+        "Monitor \"Macro Credit Views\" framework for rate/supply/dispersion dynamics.",
+        "Oil Geopolitics Impact: Brent pricing includes geopolitical risk premium; non-OECD stock levels now critical for sustaining high oil prices amid tensions, overriding traditional supply-demand metrics.",
+        "Consumer Credit Health & Spending: Credit remains constructive (low unemployment, modest leverage); forecast 2027 discretionary cash-flow acceleration.",
+        "Prioritize Buy-rated FICO, DKS, ULTA, CHD, CL, EL, ELF, PEP, MNST, CELH, PM, MO, COF."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
@@ -820,6 +860,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q5qssvhmlip-87170d",
+      "title": "FSA FI Daily Commentary 9 October 2026",
+      "institution": "Safra",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-09T23:18:47Z",
+      "summary_points": [
+        "Philippines Credit Upgrade: Baa2/BBB+ with \"UP\" recommendation, signaling improved sovereign risk profile amid fiscal vulnerabilities (debt-to-GDP 66%, deficit P893.1bn).",
+        "Fed Policy Contradiction: Musalem signals rate hikes over 6 months; Waller confirms further hikes, conflicting with yield decline (10Y/30Y) and shifting rate expectations.",
+        "US-Israel/Iran Geopolitical Escalation: Trump’s non-attack stance amid tanker attacks in Strait of Hormuz/Yemen energy facilities heightens oil volatility and risk sentiment.",
+        "Philippines Fiscal Vulnerability: Inflation at 7.2%, public debt-to-GDP 66% (highest since 2004), IMF projects 5.4% deficit; limits policy flexibility amid peso depreciation and oil sensitivity.",
+        "TSMC AI-Driven Growth: Q2 revenue NT$40.2bn (+12% QoQ), gross margin +1.5pp, operating margin 60.3% YoY; driven by 3nm/5nm tech and wafer shipments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
