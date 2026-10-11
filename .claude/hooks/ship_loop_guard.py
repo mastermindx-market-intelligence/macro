@@ -612,9 +612,17 @@ def _adopt_native_session_branch(root: Path) -> str:
         adopted = f"claude/{name}"
         if _capture(root, ("git", "check-ref-format", "--branch", adopted), 45).returncode:
             return ""
-        if not _capture(
-            root, ("git", "show-ref", "--verify", "--quiet", f"refs/heads/{adopted}"), 45
-        ).returncode:
+        # Compare case-insensitively across every local branch. On a
+        # case-insensitive volume (default APFS) an exact-name probe misses a
+        # PACKED `claude/<Name>`, and the rename would then write a loose ref whose
+        # file shadows it -- two branch names resolving to one file.
+        wanted = f"refs/heads/{adopted}".casefold()
+        if any(
+            ref.casefold() == wanted
+            for ref in _run(
+                root, "git", "for-each-ref", "--format=%(refname)", "refs/heads/"
+            ).splitlines()
+        ):
             return ""
         _run(root, "git", "branch", "-m", legacy, adopted)
         return adopted
@@ -4480,11 +4488,33 @@ def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
         # A quarantined root is read-only, so paying for a full fingerprint of
         # the shared checkout is both needless and capable of adding fleet noise.
         "baseline": _fingerprint(root) if admitted else {},
+        # False only for a record BORN quarantined: its start_head/baseline are
+        # deferred to the moment the root is first admitted. A record that was ever
+        # admitted keeps its pre-work snapshot through any later quarantine flip.
+        "baseline_captured": admitted,
         "last_blocker": "",
         "blocker_count": 0,
         "total_blocks": 0,
         "external_blocks": 0,
     }
+
+
+def _capture_deferred_baseline(root: Path, state: dict[str, Any]) -> None:
+    """Take the pre-work snapshot a quarantined birth deliberately skipped.
+
+    Only a record whose ``baseline_captured`` is exactly False is refreshed: it was
+    born quarantined, so nothing between its birth and this first admission could
+    have been the session's own work. A record that was admitted at any point --
+    including one later flipped to quarantined by a resume/compact on a detached
+    HEAD or a transient git-identity failure -- keeps its start_head, baseline and
+    block counters. Re-capturing those would absorb the session's own commits into
+    start_head and its dirt into the baseline, and Stop would release unshipped work.
+    Legacy records without the field keep everything too, which fails closed.
+    """
+    if state.get("baseline_captured") is False:
+        state["start_head"] = _run(root, "git", "rev-parse", "HEAD")
+        state["baseline"] = _fingerprint(root)
+        state["baseline_captured"] = True
 
 
 def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
@@ -4494,6 +4524,8 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     state = _load(path)
     if state is None or source in {"startup", "clear"}:
         state = _initial_state(root, admitted)
+    elif admitted:
+        _capture_deferred_baseline(root, state)
     # Refresh on every startup/resume/compact. A Desktop conversation can retain
     # its session identity while its durable cwd changes underneath it.
     state["root_admission_v"] = _ROOT_ADMISSION_VERSION
@@ -4573,7 +4605,11 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     much later by the Stop hook.
     """
     admitted, reason = _delivery_root_admission(root)
-    if not admitted and _adopt_native_session_branch(root):
+    if not admitted:
+        # Recompute even when this call adopted nothing: a concurrent hook process
+        # may have won the rename between the two probes, and its loser must not
+        # deny a tree that is already admissible.
+        _adopt_native_session_branch(root)
         admitted, reason = _delivery_root_admission(root)
     if admitted:
         _seed_relocated_state(root, path)
@@ -4614,12 +4650,14 @@ def _seed_relocated_state(root: Path, path: Path) -> None:
     that call's side effect, which is the same moment SessionStart would have used.
     Admission never depends on this write; a failure here leaves the tool allowed.
 
-    A record written while this same root was QUARANTINED is replaced too. Stop
-    skips enforcement entirely for ``root_admitted: False``, so a root that became
+    A record that says this same root is QUARANTINED is re-admitted too. Stop skips
+    enforcement entirely for ``root_admitted: False``, so a root that became
     admissible in place -- native branch adoption, or a git-identity probe that
     failed transiently at SessionStart -- would otherwise mutate with no ship loop
-    behind it. A quarantined session could not have changed anything, so capturing
-    start_head and the baseline now is still the pre-work moment.
+    behind it. Re-admission is a flag flip, never a fresh record: only a record
+    born quarantined has its snapshot taken now (``_capture_deferred_baseline``),
+    while one that was admitted before a resume/compact quarantined it keeps the
+    start_head and baseline that already hold the session's own work.
     """
     try:
         existing = _load(path)
@@ -4630,13 +4668,16 @@ def _seed_relocated_state(root: Path, path: Path) -> None:
         )
         if existing is not None and not quarantined:
             return
-        state = _initial_state(root, True)
+        if existing is None:
+            state = _initial_state(root, True)
+            state["seeded_by"] = "pre_tool_use_relocation"
+        else:
+            state = existing
+            _capture_deferred_baseline(root, state)
+            state["seeded_by"] = "pre_tool_use_admission"
         state["root_admission_v"] = _ROOT_ADMISSION_VERSION
         state["root_admitted"] = True
         state["root_admission_reason"] = ""
-        state["seeded_by"] = (
-            "pre_tool_use_admission" if quarantined else "pre_tool_use_relocation"
-        )
         _save(path, state)
     except Exception:
         return
