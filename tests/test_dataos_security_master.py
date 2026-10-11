@@ -75,6 +75,8 @@ SATS_ID = "SEC:US-XNAS-SATS"
 
 MMC_RENAME = date(2026, 1, 14)
 SATS_RENAME = date(2026, 6, 24)
+PSKY_ID = "SEC:US-XNAS-PSKY"
+SKYD_RENAME = date(2026, 10, 6)
 
 
 # ── committed artifacts ───────────────────────────────────────────────────────
@@ -181,6 +183,66 @@ def test_the_membership_key_DID_move_for_echostar_and_the_table_says_so(
     # called EchoStar SATS, and a table that answers "ECHO" has re-labelled the past.
     assert table.vendor_symbol_for("membership", SATS_ID, date(2026, 1, 1)) == "SATS"
     assert table.vendor_symbol_for("membership", SATS_ID, SATS_RENAME) == "ECHO"
+
+
+# ── THE PSKY BOUNDARY (Skydance, Nasdaq->NYSE listing transfer 2026-10-06) ────
+def test_psky_and_skyd_are_one_security_across_the_venue_transfer(
+    table: VendorAliasTable,
+) -> None:
+    """The production blocker this rename exists for, expressed as an assertion.
+
+    The 2026-10-09 S&P roster re-fetch (data/breadth/constituents.parquet) lists SKYD
+    while the stored/PIT side still keys PSKY, so the membership space needs BOTH legs
+    of the dated pair or the roster resolve fail-closes as ``membership_alias_unresolved``
+    (scripts/build_qbus_news_universe.py, exit 2).  ONE stable id before and after
+    2026-10-06: the Nasdaq->NYSE listing transfer (SEC EDGAR CIK 0002041610, 8-K
+    accession 0001104659-26-113913, Items 2.01/5.03) is joined onto the EXISTING
+    ``SEC:US-XNAS-PSKY`` row by the exact-listing-key SECURITY_SUPERSESSIONS entry —
+    never a second mint.
+    """
+    assert table.resolve("membership", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("membership", "SKYD", SKYD_RENAME) == PSKY_ID
+    assert table.resolve("membership", "SKYD", date(2026, 10, 11)) == PSKY_ID
+
+    # DIFFERENTLY either side — same half-open convention as MMC/SATS: valid_from
+    # INCLUSIVE, valid_to EXCLUSIVE, so the boundary day itself answers SKYD.
+    assert table.resolve("membership", "PSKY", SKYD_RENAME) is None
+    assert table.resolve("membership", "PSKY", date(2026, 10, 11)) is None
+    assert table.resolve("membership", "SKYD", date(2026, 10, 5)) is None
+
+    # `yahoo` is dated because Yahoo follows the exchange spelling.
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("yahoo", "SKYD", date(2026, 10, 11)) == PSKY_ID
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 11)) is None
+
+
+def test_psky_store_and_fetch_keys_did_not_move(table: VendorAliasTable) -> None:
+    """The #4622-protocol store-key migration is a separate act: ``data/stocks/`` and
+    the fetch seam still key PSKY, so the current-catalog spaces keep their committed
+    open PSKY rows for every date and the builder mints no SKYD rows there (the
+    chain-member ratification gate in ``build_alias_rows``)."""
+    for on in (date(2026, 10, 5), SKYD_RENAME, date(2026, 10, 11)):
+        assert table.vendor_symbol_for("store", PSKY_ID, on) == "PSKY"
+        assert table.resolve("store", "PSKY", on) == PSKY_ID
+    assert table.resolve("store", "SKYD", date(2026, 10, 11)) is None
+    assert table.resolve("yahoo_fetch", "SKYD", date(2026, 10, 11)) is None
+
+
+def test_psky_master_keeps_one_row_and_the_registry_joins_the_transfer(
+    master: pd.DataFrame,
+) -> None:
+    rows = master[master["inception_code"].isin(["PSKY", "SKYD"])]
+    assert len(rows) == 1, "never a second stable id for the renamed listing"
+    assert rows.iloc[0]["security_id"] == PSKY_ID
+    entries = {e.listing_key: e for e in BUILD.SECURITY_SUPERSESSIONS}
+    assert entries["US-XNYS-PSKY"].canonical_id == PSKY_ID
+    assert entries["US-XNYS-PSKY"].on == SKYD_RENAME
+    assert "0001104659-26-113913" in entries["US-XNYS-PSKY"].evidence
+
+
+def test_unmodelled_renames_stay_empty_after_the_psky_event() -> None:
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []
 
 
 # ── THE TWO CLOCKS ────────────────────────────────────────────────────────────
@@ -1154,11 +1216,15 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
                 else:
                     assert row["security_state"] == "SUPERSEDED_DUPLICATE_MINT"
     assert receipt["resurrection_refusals"] == []
-    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks are
-    # present and empty in the healthy post-repair state (no unregistered rename
-    # duplicate exists, and no alias row needed pruning this run).
+    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks: no
+    # unregistered rename duplicate exists, and the only lawful prune class is the
+    # AMENDMENT §2 same-id refinement (the PSKY->SKYD first regen prunes exactly the
+    # two committed open PSKY rows this way, receipted; idempotent, so the set is
+    # empty again on every later run — the pin below holds either way).
     assert receipt["unregistered_rename_duplicates"] == []
-    assert receipt["vendor_alias_prunes"] == []
+    prunes = receipt["vendor_alias_prunes"]
+    assert all(p["prune_class"] == "same_id_refinement" for p in prunes)
+    assert all(p["security_id"] == PSKY_ID for p in prunes)
 
 
 # H1 — race replay WITHOUT the RenameEvent: the fence refuses the VMRK mint.
@@ -1330,9 +1396,10 @@ def test_h8_a_resolution_hitting_a_tombstone_is_a_typed_refusal_not_a_resurrecti
 # registry; a RenameEvent-implied bare-code match on a DIFFERENT venue must NEVER
 # auto-tombstone (the reviewer's cross-MIC scenario) — it is disclosed instead.
 def test_m3_the_registry_matches_the_committed_vmrk_entry_exactly() -> None:
-    assert len(BUILD.SECURITY_SUPERSESSIONS) == 1
-    entry = BUILD.SECURITY_SUPERSESSIONS[0]
-    assert entry.listing_key == "US-XNYS-VMRK"
+    assert len(BUILD.SECURITY_SUPERSESSIONS) == 2  # + US-XNYS-PSKY (2026-10-11)
+    entry = next(
+        e for e in BUILD.SECURITY_SUPERSESSIONS if e.listing_key == "US-XNYS-VMRK"
+    )
     assert entry.canonical_id == EQR_ID
     assert "0001140361-26-033377" in entry.evidence
 
@@ -3421,10 +3488,13 @@ def test_us_coverage_scope_holds_through_lawful_admissions(receipt: dict) -> Non
     # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
     # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
     # security row, and QRVO, under the pre-existing KHC pending-transition fence that
-    # the unpatched rebuild also shows).
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): BLFS and TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (both "listed on exchange code 'F'", which has no MIC in
+    # lib/dataos/identity.KNOWN_MICS) on top of the A8-expected CWEN-A/HLX/QRVO.
     assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 13
+    assert receipt["coverage"]["unresolved"] <= 16
     assert receipt["coverage"]["total"] == (
         receipt["coverage"]["resolved"] + receipt["coverage"]["unresolved"])
     assert receipt["issuer"]["state_counts"]["RESOLVED"] >= 699
@@ -3892,10 +3962,13 @@ def test_gmi_us_regression_bands_cn_hk_and_legacy_us(
     # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
     # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
     # security row, and QRVO, under the pre-existing KHC pending-transition fence that
-    # the unpatched rebuild also shows).
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): BLFS and TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (both "listed on exchange code 'F'", which has no MIC in
+    # lib/dataos/identity.KNOWN_MICS) on top of the A8-expected CWEN-A/HLX/QRVO.
     assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 13
+    assert receipt["coverage"]["unresolved"] <= 16
 
 
 # 16: ordinary reruns preserve artifacts and every evidenced refusal. A stable
