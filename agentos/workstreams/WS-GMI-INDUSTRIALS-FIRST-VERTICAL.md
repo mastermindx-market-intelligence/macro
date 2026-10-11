@@ -57,9 +57,20 @@ waves:
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
   2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): T02 carrier #8250
-  (codex/industrials-t02-issuer-enrollment-20260930-sol-001 @20b853e2907e, Draft) is unadjudicated;
-  it needs a fresh non-author exact-head review before any ruling (packet P-IND-1 / #8250
-  re-adjudication). The seam gate on issuer_profiles.py is shared with Mining T02 and CDV-1; land
+  (codex/industrials-t02-issuer-enrollment-20260930-sol-001) was adjudicated at 20b853e2907e the same
+  day (#8250 comment 6105257496, independent READ_ONLY Opus review consumed by the seat, VERDICT
+  REPAIR_REQUIRED) and repaired at head 20e7e9ac63759099704a46506e85b61d00b487fc (comment
+  6105272573, Draft); hosted checks at 20e7e9ac went RED (run 38110427910: contract-delta,
+  ci-pack-0, ci-gate) on a curated-closure contract that lives only on origin/main
+  (nw-lobe-unfreeze and ticker-news-qbus are scope: exclusive there and declare
+  issuer_profiles.py, whose lazy import of industrials_profiles.py left the closure uncovered);
+  repaired by merging origin/main f191b7f1 into the carrier (03d29dfea9d8) plus a two-line
+  path widening (1db9cad104437dc0c9bb4b27cf45781040302fb2, pushed 2026-10-11, local closure
+  check {} and the two curated-scope tests pass locally); it lands on main first per the #7870
+  landing order (comment 6105402719 line 18) once green at that head, the non-author review
+  covers the repair delta and the Source Continuity gate is in hand or accepted by a non-seat
+  authority (it is refused today: 634 open PRs against the protected cap of 490; see
+  WS:GMI-SEMICONDUCTORS gate (4) and #7870 comment 6106057199). The seam gate on issuer_profiles.py is shared with Mining T02 and CDV-1; land
   order is decided by this seat, not by whichever lane finishes first.
   .
   SPECIFICATION AUTHORITY RESOLVED 2026-09-29 - SOL RULING / CONTINUE (#7789 comment
