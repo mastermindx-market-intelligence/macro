@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T16:20:59.182634+00:00",
-  "count": 2817,
+  "generated_at": "2026-10-11T17:06:11.741001+00:00",
+  "count": 2819,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -557,6 +557,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-dx9fx4zrtyf-0ade86",
+      "title": "Morning Briefing 2 October 2026",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:24:25Z",
+      "summary_points": [
+        "Japan CPI Acceleration: September CPI at 2.7% (vs 2.3% forecast) confirms BoJ tightening trajectory, critical for JPY positioning and regional policy expectations.",
+        "US Fed Policy Divergence: Softer headline PCE masked by hotter super core services ex-housing, pushing Fed to tighten to 4.25% before year-end despite mixed data.",
+        "Global Risk Aversion: Credit/equities retreat and dollar strength driven by risk aversion; EUR/USD below 1.1325, iTraxx Xover widened to 319, G10 FX flows (e.g., USD swoon 3.4% since Sept 8).",
+        "China-India Policy Divergence: PBoC eased policy (PSL rate 1.50%) but manufacturing PMI rose to 50.1; India’s INR pressured by $5.8bn FPI outflows despite industrial production acceleration (8.0% yoy)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-sqrt8axv7hx-6c9390",
       "title": "Week Ahead in Economics US inflation on the rise as central bankers head to IMF World Bank meetings",
       "institution": "Societe Generale",
@@ -738,6 +758,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ew0ppxbxlje-a94864",
+      "title": "Emerging market bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-09T23:19:58Z",
+      "summary_points": [
+        "Credit Risk Categorization: UBS defines credit risk tiers (Very low <2% non-payment, Medium 2-20%, High ≥20%) with regulatory intervention as key risk trigger, directly impacting issuer outlook (Improving/Stable/Deteriorating).",
+        "Relative Value Bond Ratings: \"Attractive\" (total return > peers), \"Fair\" (in line), \"Expensive\" (return < peers) ratings assess issuer credit, call risk, coupon deferral, and regulatory factors over 6-12 months.",
+        "EM Credit Rating Framework: S&P/Moody's investment grade (AAA-BB+) vs. non-investment grade (BB- to C) with \"Watch\"/\"Negative\" outlooks signaling heightened default risk volatility in emerging markets.",
+        "Outlook-Driven Allocation: \"Negative\" and \"Watch\" outlooks indicate downgrade risks requiring tactical EM credit adjustments, while \"Positive\" signals upgrade potential for portfolio positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
