@@ -492,6 +492,17 @@ public:
     # exact symptom reported against production, where the HTML answered 200 and
     # these answered 401. Presentation only: no snapshot JSON, no data path, and
     # no prefix or wildcard is promoted with them.
+    # International workspace presentation/controllers only. No data payload,
+    # evidence, saved research, API or future wildcard family is opened here.
+    - /intl_workspace.css
+    - /intl_workspace_macro.css
+    - /intl_workspace_risk.css
+    - /intl_workspace_history.css
+    - /intl_workspace_state.js
+    - /intl_library_search.js
+    - /intl_workspace_scenario.js
+    - /intl_workspace.js
+    - /intl_workspace_entry.js
     - /macro_suite.css
     - /macro_suite_boot.js
     - /macro_suite.js
