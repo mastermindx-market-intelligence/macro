@@ -266,7 +266,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   claim at launch; ort merge-tree conflicts; SSD worktree plus a baseline; launch via `launch_when_admitted`. O8 defect 7
   (the flow cache ignores account identity) is still unassigned.
 
-## OPEN
+## FACTS (observed this session, UTC 2026-10-11)
 
 - macro #7861 OPEN non-draft, head `c095a2b0c8`, mergeState UNKNOWN, no review decision; checks:
   `ci-authority` pass, `ci-authority/main` pass, `ci-authority/codex/merge-queue-pilot` fail (0s);
