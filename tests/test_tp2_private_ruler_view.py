@@ -347,6 +347,111 @@ def test_daily_rank_metric_cannot_be_relabelled_to_another_object():
             view_asof_ns=golden["evaluation_ns"] + 1)
 
 
+TP1_MINUTE_FIXTURE = Path(__file__).parent / "fixtures/tp2_tp1_private_minute.synthetic.v0.json"
+TP1_MINUTE_SHA256 = "61097ef904444751058994e4015b2a4ddaa650c56f0f57ea4e880a097676d60e"
+
+
+def tp1_private_body():
+    """Native TP1 serializer bytes, already verified by its source module."""
+    raw = TP1_MINUTE_FIXTURE.read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == TP1_MINUTE_SHA256
+    assert len(raw) == 2411
+    body = json.loads(raw)
+    assert body["schema"] == "equity.tick_plane.private_minute_artifact/v0"
+    return body
+
+
+def test_canonical_tp1_minute_and_tpb_history_remain_separate_private_layers():
+    obs, cal = originals()
+    body = tp1_private_body()
+    view = build_private_tp2_view(
+        observation=obs, calibration=cal,
+        tp1_private_minute=body, view_asof_ns=cal["evaluation_ns"]+1)
+    assert view["state"] == "PRIVATE_TPB_RESEARCH_CONTEXT_ONLY"
+    assert view["tp1_minute_state"] == "PROVISIONAL_TP1_MINUTE_RESEARCH_HOLD"
+    minute = view["tp1_provisional_minute"]
+    assert minute["ticker"] == "SPY" and minute["session"] == obs["session"]
+    assert minute["minute_start_ns_decimal"] == str(body["start_ns"])
+    assert minute["minute_decision_ns_decimal"] == str(body["decision_ns"])
+    assert minute["sampled_lit_prints"] == 1 and minute["sampled_trf_prints"] == 1
+    assert minute["lit_quote_located_le5s_prints"] == 1
+    assert minute["provisional_trf_any_condition_notional_usd"] == "250000"
+    assert minute["trf_volume_eligibility_proven"] is False
+    assert minute["join_to_tpb_historical_ranks"] is False
+    assert view["observed_source"]["measured_rth_trf_notional_usd"] == "500000"
+    assert minute["provisional_trf_any_condition_notional_usd"] != (
+        view["observed_source"]["measured_rth_trf_notional_usd"])
+    assert view["live_signed_offexchange_flow"] is None
+    assert view["nbbo_classification_coverage"] is None
+    assert view["named_ats_attribution"] is None
+    assert view["public_delivery_allowed"] is False
+
+
+def test_tp1_provisional_minute_can_exist_without_tpb_historical_source():
+    body = tp1_private_body()
+    view = build_private_tp2_view(
+        observation=None, tp1_private_minute=body,
+        view_asof_ns=body["decision_ns"]+1)
+    assert view["state"] == "NO_TPB_OBSERVATION_SOURCE"
+    assert view["tp1_minute_state"] == "PROVISIONAL_TP1_MINUTE_RESEARCH_HOLD"
+    assert view["tp1_provisional_minute"]["sampled_trf_prints"] == 1
+    assert view["historical_ruler"] is None
+
+
+def test_tp1_future_minute_never_leaks_source_provenance_or_counts():
+    body = tp1_private_body()
+    view = build_private_tp2_view(
+        observation=None, tp1_private_minute=body,
+        view_asof_ns=body["decision_ns"]-1)
+    assert view["tp1_minute_state"] == "TP1_MINUTE_NOT_YET_KNOWABLE"
+    assert view["tp1_provisional_minute"] is None
+    assert body["source_observation_sha256"] not in json.dumps(view)
+
+
+@pytest.mark.parametrize("field,bad", [
+    ("public_delivery_allowed", True),
+    ("rank_trade_alert_authority", True),
+    ("source_authenticity", "VENDOR_AUTHENTICATED"),
+    ("live_capture_completeness", "PROVEN"),
+    ("correction_status", "FINAL"),
+    ("source_mode", "FINAL_VINTAGE"),
+    ("distribution_class", "PUBLIC"),
+    ("price_response_bps", "50"),
+    ("absorption_signal", {"buy": True}),
+])
+def test_tp1_provisional_source_authority_cannot_be_promoted(field,bad):
+    original=tp1_private_body()
+    original[field]=bad
+    with pytest.raises(TP2PrivateViewRefusal, match="TP1.*(source|authority)"):
+        build_private_tp2_view(
+            observation=None, tp1_private_minute=original,
+            view_asof_ns=original["decision_ns"]+1)
+
+
+@pytest.mark.parametrize("field,altered", [
+    ("ticker", "QQQ"),
+    ("session", "2026-10-07:RTH"),
+    ("start_ns", 1791466200000000001),
+    ("source_watermark_available_ns", 1791466290000000001),
+])
+def test_tp1_minute_identity_or_clock_disagreement_refused(field,altered):
+    source,cal=originals()
+    minute=tp1_private_body()
+    minute[field]=altered
+    with pytest.raises(TP2PrivateViewRefusal):
+        build_private_tp2_view(
+            observation=source, calibration=cal,
+            tp1_private_minute=minute,view_asof_ns=cal["evaluation_ns"]+1)
+
+
+def test_no_tp1_layer_does_not_create_a_live_source():
+    obs,cal=originals()
+    view=build_private_tp2_view(
+        observation=obs,calibration=cal,view_asof_ns=cal["evaluation_ns"]+1)
+    assert view["tp1_minute_state"] == "TP1_MINUTE_NOT_SUPPLIED"
+    assert view["tp1_provisional_minute"] is None
+
+
 def test_unknown_daily_rank_state_or_invalid_minute_conditioning_refused():
     observation, golden = originals()
     invalid = copy.deepcopy(golden)

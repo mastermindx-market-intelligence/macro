@@ -116,6 +116,126 @@ def _identity(obj, *, schema, role):
     return ticker, session
 
 
+def _tp1_private_provisional(*, minute, cutoff_ns, expected_ticker=None,
+                             expected_session=None, expected_end_ns=None):
+    """View the *existing TP1 verified body*, never redo its byte verification.
+
+    The caller first uses TP1's canonical verify_private_minute_bytes. This
+    independent consumer checks projection/clock/identity boundaries only; no
+    TP1 signer, publisher, R2 client, source custody or auth plane is created.
+    Crucially, source provisional TRF counts/notional cannot join TP-B's
+    final-vintage or condition-qualified historical observations.
+    """
+    if (not isinstance(minute, dict)
+            or minute.get("schema") != "equity.tick_plane.private_minute_artifact/v0"
+            or minute.get("source_schema") != "equity.tick_plane.minute_observation/v0"
+            or minute.get("distribution_class") !=
+               "PRIVATE_SERVICE_HOLD_PENDING_LICENSE_AND_CONSUMER_REVIEW"
+            or minute.get("source_authenticity") !=
+               "EXTERNAL_INCUMBENT_PROOF_REQUIRED"
+            or minute.get("live_capture_completeness") !=
+               "UNVERIFIED_BY_PROJECTION"
+            or minute.get("source_mode") !=
+               "ACTUAL_AS_SEEN_ONLY_WHEN_OWNER_PROVES_RECEIPTS"
+            or minute.get("correction_status") !=
+               "STREAM_PROVISIONAL_UNRECONCILED"
+            or minute.get("public_delivery_allowed") is not False
+            or minute.get("rank_trade_alert_authority") is not False
+            or minute.get("absorption_signal") is not None
+            or minute.get("price_response_bps") is not None):
+        raise TP2PrivateViewRefusal("TP1 source/authority not admitted as provisional")
+    ticker, session = _identity(
+        minute, schema="equity.tick_plane.private_minute_artifact/v0",
+        role="observation")
+    if (expected_ticker is not None and ticker != expected_ticker
+            or expected_session is not None and session != expected_session):
+        raise TP2PrivateViewRefusal("TP1 identity disagrees with TP-B observation")
+    start = _clock(minute.get("start_ns"), "TP1.start_ns")
+    end = _clock(minute.get("end_ns"), "TP1.end_ns")
+    decision = _clock(minute.get("decision_ns"), "TP1.decision_ns")
+    watermark = _clock(minute.get("source_watermark_available_ns"),
+                       "TP1.watermark_available_ns")
+    through = _clock(minute.get("source_complete_through_ns"),
+                     "TP1.source_complete_through_ns")
+    last_seen = _clock(minute.get("source_latest_print_available_ns"),
+                       "TP1.source_latest_print_available_ns")
+    open_ns = _rth_open_ns(session)
+    if (open_ns is None or start < open_ns
+            or start % 60_000_000_000
+            or end-start != 60_000_000_000
+            or end > open_ns+390*60_000_000_000
+            or expected_end_ns is not None and end > expected_end_ns
+            or through < end or watermark < through
+            or last_seen < start or last_seen > decision
+            or watermark > decision or end > decision):
+        raise TP2PrivateViewRefusal("TP1 original minute clocks or RTH scope invalid")
+    if decision > cutoff_ns:
+        # Withhold every source-dependent field. The as-seen reader must not
+        # surface even a digest or native original receipt in the past.
+        return "TP1_MINUTE_NOT_YET_KNOWABLE", None
+    for field in ("source_manifest_sha256", "source_observation_sha256",
+                  "source_watermark_receipt_sha256"):
+        _hex(minute.get(field), "TP1."+field)
+    counts = minute.get("counts")
+    if not isinstance(counts, dict):
+        raise TP2PrivateViewRefusal("TP1 source counts missing")
+    needed = (
+        "n_sampled_prints", "n_lit", "n_trf", "n_unknown_venue",
+        "n_lit_eligible_prints", "n_lit_classified_quote_le5s_prints",
+        "n_lit_unclassified_prints",
+    )
+    if any(type(counts.get(k)) is not int or not 0 <= counts[k] <= 10_000
+           for k in needed):
+        raise TP2PrivateViewRefusal("TP1 source counts invalid")
+    if (counts["n_sampled_prints"] < 1
+            or counts["n_lit"]+counts["n_trf"]+counts["n_unknown_venue"]
+               != counts["n_sampled_prints"]
+            or counts["n_lit_eligible_prints"] > counts["n_lit"]
+            or counts["n_lit_classified_quote_le5s_prints"]
+               > counts["n_lit_eligible_prints"]):
+        raise TP2PrivateViewRefusal("TP1 source counts contradictory")
+    notional = minute.get("notional_usd")
+    if not isinstance(notional, dict):
+        raise TP2PrivateViewRefusal("TP1 source notional missing")
+    def source_amount(key):
+        raw = notional.get(key)
+        if type(raw) is not str or len(raw) > 160:
+            raise TP2PrivateViewRefusal("TP1 source exact amount malformed")
+        try:
+            value = Decimal(raw)
+        except InvalidOperation as exc:
+            raise TP2PrivateViewRefusal("TP1 source amount malformed") from exc
+        if not value.is_finite() or value < 0:
+            raise TP2PrivateViewRefusal("TP1 source amount invalid")
+        fixed = format(value, "f") if -130 <= value.adjusted() <= 130 else None
+        if fixed is None or len(fixed) > 280:
+            raise TP2PrivateViewRefusal("TP1 source exact amount unbounded")
+        return value, fixed
+    total, _ = source_amount("gross_sampled_notional_usd")
+    trf, trf_text = source_amount("trf_gross_notional_usd")
+    if trf > total or (counts["n_trf"] == 0 and trf != 0):
+        raise TP2PrivateViewRefusal("TP1 sampled TRF count/notional contradiction")
+    return "PROVISIONAL_TP1_MINUTE_RESEARCH_HOLD", {
+        "source": "TP1_VERIFIED_PRIVATE_BODY_REQUIRES_EXTERNAL_CUSTODY_PROOF",
+        "ticker": ticker, "session": session,
+        "minute_start_ns_decimal": str(start),
+        "minute_end_ns_decimal": str(end),
+        "minute_decision_ns_decimal": str(decision),
+        "watermark_available_ns_decimal": str(watermark),
+        "source_manifest_sha256": minute["source_manifest_sha256"],
+        "source_observation_sha256": minute["source_observation_sha256"],
+        "sampled_prints": counts["n_sampled_prints"],
+        "sampled_lit_prints": counts["n_lit"],
+        "sampled_trf_prints": counts["n_trf"],
+        "lit_quote_located_le5s_prints": counts["n_lit_classified_quote_le5s_prints"],
+        "provisional_trf_any_condition_notional_usd": trf_text,
+        "trf_volume_eligibility_proven": False,
+        "classification_accuracy_validated": False,
+        "join_to_tpb_historical_ranks": False,
+        "source_authenticity": "EXTERNAL_INCUMBENT_PROOF_REQUIRED",
+    }
+
+
 def _hold(*, state, observed_at_ns, observation=None, reason=None):
     """One truth-preserving response family, including absent/late source."""
     return {
@@ -136,6 +256,10 @@ def _hold(*, state, observed_at_ns, observation=None, reason=None):
             observation["source_manifest_sha256"] if observation is not None else None),
         "observed_source": None,
         "historical_ruler": None,
+        # TP1's *separate* provisional minute is never merged with TP-B
+        # final-vintage ranks or condition-qualified TRF notional.
+        "tp1_minute_state": "TP1_MINUTE_NOT_SUPPLIED",
+        "tp1_provisional_minute": None,
         "intraday_minute_baseline": None,
         # Deliberately no reconstructed per-print tape or price shelves in
         # TP-B's aggregate output. The original owner must supply those.
@@ -155,7 +279,8 @@ def _hold(*, state, observed_at_ns, observation=None, reason=None):
     }
 
 
-def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
+def build_private_tp2_view(*, observation, calibration=None, view_asof_ns,
+                           tp1_private_minute=None):
     """Create a private candidate; no source or authority promotion.
 
     `observation` must be a TP-B source-free result from the incumbent
@@ -164,10 +289,29 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
     supplied dicts, not cryptographic custody of original vendor bytes.
     """
     now = _clock(view_asof_ns, "view_asof_ns")
+
+    def finish(result):
+        if tp1_private_minute is None:
+            return result
+        # Only the incumbent TP1 verifier decodes the original private
+        # artifact; the caller passes its already-verified body. We neither
+        # read raw bytes nor assert a new source-custody/authenticity receipt.
+        tp1_state, tp1_candidate = _tp1_private_provisional(
+            minute=tp1_private_minute, cutoff_ns=now,
+            expected_ticker=observation.get("ticker")
+                            if isinstance(observation, dict) else None,
+            expected_session=observation.get("session")
+                            if isinstance(observation, dict) else None,
+            expected_end_ns=observation.get("end_ns")
+                            if isinstance(observation, dict) else None)
+        result["tp1_minute_state"] = tp1_state
+        result["tp1_provisional_minute"] = tp1_candidate
+        return result
+
     if observation is None:
         if calibration is not None:
             raise TP2PrivateViewRefusal("calibration without an original source")
-        return _hold(state="NO_TPB_OBSERVATION_SOURCE", observed_at_ns=now)
+        return finish(_hold(state="NO_TPB_OBSERVATION_SOURCE", observed_at_ns=now))
     ticker, session = _identity(
         observation, schema=OBS_SCHEMA, role="observation")
     if (observation.get("authority") != "RESEARCH_MEASUREMENT_ONLY"
@@ -194,15 +338,15 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
         # its fields (including source generation/hash and receipt time)
         # existed at this requested decision cutoff. Do not leak them into
         # an as-seen projection, even on a private research interface.
-        return _hold(state="SOURCE_NOT_YET_KNOWABLE", observed_at_ns=now)
+        return finish(_hold(state="SOURCE_NOT_YET_KNOWABLE", observed_at_ns=now))
     state = observation.get("state")
     if state != _SOURCE:
         if state not in ("NO_SAMPLED_PRINTS",
                          "NO_QUALIFIED_OFF_EXCHANGE_OBSERVED"):
             raise TP2PrivateViewRefusal("observation: unknown missingness state")
-        return _hold(state="NO_QUALIFIED_TRF_OBSERVATIONS",
-                     observed_at_ns=now, observation=observation,
-                     reason=state)
+        return finish(_hold(state="NO_QUALIFIED_TRF_OBSERVATIONS",
+                            observed_at_ns=now, observation=observation,
+                            reason=state))
     n = observation.get("n_trf_observed")
     if type(n) is not int or not 0 < n <= 20_000:
         raise TP2PrivateViewRefusal("observation: no qualified TRF cohort")
@@ -237,7 +381,7 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
         "cluster_clock": observation.get("cluster_clock"),
     }
     if calibration is None:
-        return output
+        return finish(output)
     cticker, csession = _identity(
         calibration, schema=CAL_SCHEMA, role="calibration")
     if cticker != ticker or csession != session:
@@ -258,13 +402,13 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
         output["state"] = "CALIBRATION_STALE_SOURCE_GENERATION"
         output["historical_ruler"] = None
         output["intraday_minute_baseline"] = None
-        return output
+        return finish(output)
     evaluation = _clock(calibration.get("evaluation_ns"), "calibration.evaluation_ns")
     if evaluation < asof:
         raise TP2PrivateViewRefusal("calibration: evaluated before source existed")
     if evaluation > now:
         output["state"] = "CALIBRATION_NOT_YET_KNOWABLE"
-        return output
+        return finish(output)
     ranks = calibration.get("daily_object_ranks")
     if not isinstance(ranks, dict) or set(ranks) != set(_KINDS):
         raise TP2PrivateViewRefusal("calibration: incomplete separate object kinds")
@@ -380,4 +524,4 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
         "midrank_percentile": minute.get("midrank_percentile"),
         "history_coverage_start": minute.get("coverage_start"),
     }
-    return output
+    return finish(output)
