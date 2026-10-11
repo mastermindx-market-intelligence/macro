@@ -348,7 +348,9 @@ def scan_with_reader(tickers: Any, event_id: Any = None, *,
     if reader is None:
         try:
             reader = import_module("engine.marketing.catalyst_scan").scan_tickers
-        except (ImportError, AttributeError) as exc:
+        except Exception as exc:
+            # The source module may fail before the reader is bound. Its error
+            # detail is no more public than an exception raised by the reader.
             raise HTTPException(503, "Qualified event source unavailable") from exc
     try:
         result = reader(normalized, event_id=event, now_utc=now_utc)

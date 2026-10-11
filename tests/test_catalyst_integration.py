@@ -114,6 +114,26 @@ def test_source_reader_exception_details_never_escape_anonymous_api(upstream, mo
     assert "synthetic_" not in response.text
 
 
+def test_source_import_http_exception_never_leaks_internal_details(monkeypatch):
+    def broken_import(path):
+        raise HTTPException(status_code=401, detail="synthetic_private_import_token")
+
+    monkeypatch.setattr(ci, "import_module", broken_import)
+    with pytest.raises(HTTPException) as error:
+        ci.scan_with_reader(["NVDA"], now_utc=NOW)
+    assert error.value.status_code == 503
+    assert error.value.detail == "Qualified event source unavailable"
+
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    response = client.post("/api/catalyst/scan", json={"tickers": ["NVDA"]})
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Qualified event source unavailable"}
+    assert "synthetic_private" not in response.text
+
+
 def test_prevalidate_abuse_and_dedupe_without_calling_producer():
     calls = []
     with pytest.raises(HTTPException) as exc:
