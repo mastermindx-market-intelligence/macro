@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T18:06:21.295185+00:00",
-  "count": 2822,
+  "generated_at": "2026-10-11T18:21:15.998850+00:00",
+  "count": 2823,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -344,6 +344,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vdblf6izm08-39710a",
+      "title": "Vesta (VESTA.MX) 3Q26 Earnings Preview",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:35Z",
+      "summary_points": [
+        "Consensus Downgrades & Earnings Quality: EBITDA/Dividend estimates revised down 3-10% (2027-2028), signaling earnings quality concerns and dividend sustainability risks despite revenue growth projections.",
+        "Sell Rating with 11% Downside: DCF-driven sell rating (P$55/US$32) due to higher WACC (9.7% vs 9.4%), lower terminal cap rate (8.2% vs 8.7%), and declining ROE (5.5%) and NAVPS (1.97).",
+        "MXN Depreciation Impact: Revenue upside from MXN weakness (driving 2026 revenue growth) but simultaneously pressures operating expenses, creating fundamental tension in near-term results."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
