@@ -1,0 +1,43 @@
+{
+  "scope": "synthetic C0/P0 preview; not native integration or production proof",
+  "unit_tests": {
+    "command": "python -m unittest -v test_preview_contract",
+    "tests": 55,
+    "passed": 55,
+    "failed": 0
+  },
+  "initial_tdd": {
+    "tests": 42,
+    "passed": 41,
+    "failed": 1,
+    "finding": "Future geometry basis passed an earlier observation clock; corrected at the preview boundary."
+  },
+  "javascript_parse": "PASS",
+  "scenario_count": 10,
+  "audiences": [
+    "public",
+    "private synthetic fixture"
+  ],
+  "browser": {
+    "attempted": true,
+    "completed_cases": 0,
+    "status": "BLOCKED",
+    "error": "Page.goto net::ERR_BLOCKED_BY_ADMINISTRATOR for file:///mnt/data/oli_preview/preview.html",
+    "no_visual_or_browser_acceptance": true,
+    "attempted_candidate": "Initial 49-test preview only; no browser rerun after the strategy/clock patch"
+  },
+  "live_sources": 0,
+  "production_effects": 0,
+  "forecast_values": 0,
+  "strategy_causal_tdd": {
+    "new_test_methods": 6,
+    "initial_failing_methods": 5,
+    "initial_passing_methods": 1,
+    "initial_assertion_failures": 7,
+    "findings": [
+      "Strategy-scoped source and private Plan joins lacked exact owner/id/version binding.",
+      "Matching generation did not enforce dependency-known-at <= entry-known-at."
+    ],
+    "repair": "Closed fixture references bind strategy where applicable; later-known entry dependencies withhold the earlier verdict."
+  }
+}
