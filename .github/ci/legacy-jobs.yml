@@ -23162,3 +23162,28 @@ jobs:
         run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
       - name: same suites against the shipped site/ copies
         run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
+
+  single-name-coverage-profiles:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI E0/M0 (2026-10-11) coverage_profile.v1 qualification files for the
+    # Alibaba/Tencent reference pair. Contract tests only: schema shape, every
+    # first-stage authority flag false, no issuer/security id minted from a
+    # ticker/local code/CIK, every unresolved cell names its closing owner.
+    # Hermetic — reads the committed schema + YAML profiles, no network, no data/.
+    # Wired in the SAME commit as the suite (contract-delta unwired-suite lesson).
+    paths:
+      - "config/single_name_intelligence/**"
+      - "contracts/single_name_intelligence/**"
+      - "tests/test_single_name_coverage_profiles.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install coverage-profile contract test dependencies
+        run: pip install pytest pyyaml jsonschema
+      - name: SNI coverage_profile.v1 contract tests
+        run: python -m pytest tests/test_single_name_coverage_profiles.py -q -p no:cacheprovider
