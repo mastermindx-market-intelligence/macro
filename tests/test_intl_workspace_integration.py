@@ -149,6 +149,17 @@ def test_library_does_not_change_ordinary_stock_page_output():
     assert render_fixture("stocks") == render_fixture("stocks", workspace=False)
 
 
+def test_mounted_workspace_inherits_the_shared_canvas_without_legacy_palette():
+    mounted = render_fixture()
+    assert '<body class="page-intl intl-workspace-page">' in mounted
+    assert "--bg:#0a0c11" not in mounted
+    assert "--bg:#e8ebf1" not in mounted
+    for legacy in (render_fixture(workspace=False), render_fixture("stocks")):
+        assert "--bg:#0a0c11" in legacy
+        assert "--bg:#e8ebf1" in legacy
+        assert '<body class="page-intl intl-workspace-page">' not in legacy
+
+
 def test_stocks_mode_does_not_inherit_macro_workspace_or_hide_stock_tools():
     html = render_fixture("stocks")
     assert 'data-im-workspace' not in html

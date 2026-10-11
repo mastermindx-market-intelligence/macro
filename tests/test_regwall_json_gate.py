@@ -211,3 +211,27 @@ def test_prophet_leader_observation_source_is_early_paid_and_pricing_disclosed()
     assert "1 before signup" in plans
     assert "3 / list / day" in plans
     assert "Full book" in plans
+
+
+def test_international_workspace_assets_are_public_without_promoting_data():
+    """The public HTML must load these exact nine presentation/controller files.
+
+    Production answered 401 for them and left the workspace inert. No data or
+    future asset family is included in this reviewed presentation-only change.
+    """
+    assets = {
+        "/intl_workspace.css", "/intl_workspace_macro.css",
+        "/intl_workspace_risk.css", "/intl_workspace_history.css",
+        "/intl_workspace_state.js", "/intl_library_search.js",
+        "/intl_workspace_scenario.js", "/intl_workspace.js",
+        "/intl_workspace_entry.js",
+    }
+    public = _public_policy_tokens()
+    assert {path for path in public if path.startswith("/intl")} == assets
+    text = _read_caddyfile()
+    protected = {"/intldata/latest.json", "/intl_research/private.json",
+                 "/premiumdata/intl.json", "/intl_workspace_future.js"}
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        paths = _path_tokens(_extract_block(text, matcher))
+        assert assets <= paths, matcher
+        assert not any(fnmatchcase(path, pattern) for path in protected for pattern in paths)

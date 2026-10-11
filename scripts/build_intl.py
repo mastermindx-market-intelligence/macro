@@ -43,7 +43,7 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js")
 
 
-def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+def _ecb_publication_result(materialized, *, evaluated_at, generation):
     """Issue this owner's adopted, byte-bound ECB decision, then qualify it.
 
     The reviewed purchase notices and per-access source notice are publication
@@ -54,6 +54,20 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
     import numpy as np
     from engine.intl_inputs import admit_ecb_deposit_field
 
+    def retained(measure, decision=None):
+        # Only the actual admission verdict can expose its original origin.
+        admitted = (measure.get("quality") == "qualified"
+                    and measure.get("metadata") == "allowed"
+                    and measure.get("value_permission") == "allowed")
+        return {
+            "measure": measure,
+            "origin": ({"qualification_identity": decision["decision_ref"]}
+                       if admitted and decision is not None else None),
+            "clocks": {"published_at": None, "rights_at": None,
+                       "source_observed_at": (measure.get("observation_at")
+                                              if measure.get("metadata") == "allowed" else None)},
+        }
+
     unavailable = {
         "quality": "missing" if materialized["status"] == "missing" else "failed",
         "reason": "not_supplied" if materialized["status"] == "missing" else "source_failed",
@@ -62,11 +76,11 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
         "calculation_at": None, "source_reference": None, "evidence_key": None,
     }
     if materialized["status"] != "ready":
-        return unavailable
+        return retained(unavailable)
     try:
         series = materialized["series"]
         if series.empty:
-            return {**unavailable, "quality": "missing", "reason": "not_supplied"}
+            return retained({**unavailable, "quality": "missing", "reason": "not_supplied"})
         endpoint = series.iloc[-1]
         if type(endpoint) in {np.int8, np.int16, np.int32, np.int64,
                               np.uint8, np.uint16, np.uint32, np.uint64,
@@ -92,14 +106,23 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
                 "value": endpoint, "unit": "percent",
             },
         }
-        return admit_ecb_deposit_field(
+        measure = admit_ecb_deposit_field(
             series, provenance=materialized["provenance"],
             materialized_identity=identity, evaluated_at=evaluated_at,
             publication_decision=decision,
         )
+        return retained(measure, decision)
     except Exception as exc:  # Keep a malformed owned snapshot out of the page.
         log.error("International ECB evidence unavailable (%s)", type(exc).__name__)
-        return unavailable
+        return retained(unavailable)
+
+
+
+def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+    """Preserve the existing field-only presentation API."""
+    return _ecb_publication_result(
+        materialized, evaluated_at=evaluated_at, generation=generation,
+    )["measure"]
 
 
 def _history_publication_sources(receipts):

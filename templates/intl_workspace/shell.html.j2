@@ -1,33 +1,43 @@
 <section class="intl-workspace" data-im-workspace{% if intl_workspace.binding_version is defined %} data-im-binding-version="{{ intl_workspace.binding_version|e }}"{% endif %} data-im-mode="macro" aria-labelledby="intl-workspace-title">
-  <header>
+  <header class="intl-workspace__header">
+    <p class="intl-workspace__eyebrow">{{ t('INTERNATIONAL RESEARCH', '国际研究') }}</p>
     <h1 id="intl-workspace-title" data-im-heading>{{ t('International markets', '国际市场') }}</h1>
-    <p>{{ t('Compare covered markets, understand currency effects and inspect the evidence.', '比较覆盖市场，了解汇率影响，并查看相关依据。') }}</p>
+    <p class="intl-workspace__purpose">{{ t('Compare covered markets, understand currency effects and inspect the evidence.', '比较覆盖市场，了解汇率影响，并查看相关依据。') }}</p>
   </header>
   <fieldset class="intl-workspace__toolbar" data-im-controls disabled>
     <legend id="intl-context-label">{{ t('Research context', '研究范围') }}</legend>
+    {# Desktop: the view navigation owns its own full-width bottom-rule row of
+       label tabs; the research controls sit on a separate compact row below.
+       Mobile keeps the single existing view select — one DOM, CSS reflow only. #}
     <nav class="intl-workspace__view-nav" aria-labelledby="intl-context-label">
       {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
       <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) %} disabled{% endif %}>{{ t(en, zh) }}</button>
       {% endfor %}
     </nav>
-    <label class="intl-workspace__view-select">{{ t('Views', '视图') }}
-      <select data-im-action="set_view">
-        {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
-        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) %} disabled{% endif %}>{{ en|e }}</option>
-        {% endfor %}
-      </select>
-    </label>
-    <label>{{ t('Return horizon', '回报区间') }}
-      <select data-im-action="set_horizon">
-        {% for horizon in intl_workspace.config.horizons %}<option value="{{ horizon|e }}">{{ horizon|e }}</option>{% endfor %}
-      </select>
-    </label>
-    <label>{{ t('Currency basis', '计价币种') }}
-      <select data-im-action="set_basis">
-        <option value="usd_unhedged" data-im-label-en="USD · Unhedged" data-im-label-zh="美元 · 未对冲">USD · Unhedged</option>
-        <option value="local" data-im-label-en="Local currency" data-im-label-zh="本币">Local currency</option>
-      </select>
-    </label>
+    <div class="intl-workspace__controls">
+      <label class="intl-workspace__view-select">{{ t('Views', '视图') }}
+        <select data-im-action="set_view">
+          {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
+          <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) %} disabled{% endif %}>{{ en|e }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>{{ t('Return horizon', '回报区间') }}
+        <select data-im-action="set_horizon">
+          {% for horizon in intl_workspace.config.horizons %}<option value="{{ horizon|e }}">{{ horizon|e }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>{{ t('Currency basis', '计价币种') }}
+        <select data-im-action="set_basis">
+          <option value="usd_unhedged" data-im-label-en="USD · Unhedged" data-im-label-zh="美元 · 未对冲">USD · Unhedged</option>
+          <option value="local" data-im-label-en="Local currency" data-im-label-zh="本币">Local currency</option>
+        </select>
+      </label>
+      <p class="intl-workspace__context-line">
+        <span class="l-en">Research universe: {{ intl_workspace.config.markets|length }} markets · Price return</span>
+        <span class="l-zh" lang="zh">研究范围：{{ intl_workspace.config.markets|length }} 个市场 · 价格回报</span>
+      </p>
+    </div>
   </fieldset>
   <p data-im-issues role="status" aria-live="polite"></p>
   <p data-im-unavailable hidden>{{ t('Data unavailable for this selection. Try another horizon or use the detailed research below.', '此选择暂无可用数据。请尝试其他区间，或查看下方的详细研究。') }}</p>
@@ -52,6 +62,16 @@
   {% if intl_workspace.inspectors|default(none) %}
     {% with inspector_panels=intl_workspace.inspectors, root_context_id='im-workspace', inspector_copy=intl_workspace.inspector_copy %}{% include 'intl_workspace/inspector.html.j2' %}{% endwith %}
   {% endif %}
-  <p><a href="#intl-legacy-research">{{ t('Detailed research and existing tools', '详细研究与现有工具') }}</a> · <a href="intl_stocks.html">{{ t('International stocks', '国际股票') }}</a></p>
+  {# Compact deeper-research strip: existing anchors only, no duplicate ids and
+     no duplicated action handlers — plain links to the same destinations the
+     workspace has always offered. The market inspector disclosures above keep
+     their own owner untouched. #}
+  <aside class="intl-workspace__deeper" aria-labelledby="intl-workspace-deeper-title">
+    <h2 id="intl-workspace-deeper-title" class="intl-workspace__deeper-title">{{ t('Go deeper', '深入研究') }}</h2>
+    <ul class="intl-workspace__deeper-links">
+      <li><a href="#intl-legacy-research">{{ t('Detailed research and existing tools', '详细研究与现有工具') }}</a></li>
+      <li><a href="intl_stocks.html">{{ t('International stocks', '国际股票') }}</a></li>
+    </ul>
+  </aside>
   <script type="application/json" data-im-config>{{ intl_workspace.config|tojson }}</script>
 </section>
