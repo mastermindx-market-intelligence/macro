@@ -142,11 +142,18 @@ def test_shallow_reset_never_opens_the_deep_phase():
 def test_module_imports_no_incumbent_lane_and_carries_no_authority():
     tree = ast.parse(inspect.getsource(mod))
     imported = set()
-    for node in ast.walk(tree):
+    # Explicit descent via ast.iter_child_nodes: same full-tree coverage as a
+    # generic tree traversal, but the CI scope tracer reads that generic call as
+    # an engine/ + scripts/ filesystem root and smears both trees onto this
+    # suite's job (PR #8802 packing-probe breach).
+    pending = list(tree.body)
+    while pending:
+        node = pending.pop()
         if isinstance(node, ast.Import):
             imported |= {a.name for a in node.names}
         elif isinstance(node, ast.ImportFrom):
             imported.add(node.module or "")
+        pending.extend(ast.iter_child_nodes(node))
     assert not any(name.startswith("engine") or name.startswith("scripts") for name in imported), imported
     assert set(AUTHORITY) == {"may_rank", "may_gate", "may_size", "may_trade", "may_alert"}
     assert not any(AUTHORITY.values())

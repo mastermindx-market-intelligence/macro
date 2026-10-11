@@ -8046,6 +8046,7 @@ jobs:
         run: python -m pytest tests/test_research_screener.py -q
 
   leader-radar-unit:
+    scope: exclusive
     if: ${{ false }}
     gate: code
     # LRV-W1: leader lifecycle engine + builder unit tests.
@@ -8054,7 +8055,69 @@ jobs:
     # Builder (test_build_leader_radar.py): RS rank history, insider cluster,
     # options skew, basket corr, early_entry sort, artifact schema additive,
     # analyst buy-share loader + chip wiring + banner render (LRV-R1e; jinja2 needed).
+    # 2026-10-11 lineage wave (#8802): curated `scope: exclusive` for COVERAGE.
+    # Inference smeared three opaque roots onto this job: the builder's jinja
+    # loader (scripts/build_leader_radar.py renders leader_radar.html.j2 from
+    # config.ROOT/templates, read as templates/**), the integration suite's
+    # data/site rglob roots (test_leader_recovery_integration.py) and the
+    # lineage suite's AST import scan (test_leader_lineage.py, read as
+    # engine/** + scripts/**). Every ordinary code PR therefore selected it,
+    # and the lineage step (+3 weight) pushed two packing probes over their
+    # ceilings on the PR's merge ref (templates/index.html 5,806 > 5,800;
+    # scripts/build_free_content.py 5,603 > 5,600). paths: = the measured
+    # 43-path import/read closure plus the template the builder renders by
+    # name and its include chain (_seo_head, _site_nav, _navlinks). Derived
+    # against a FULL checkout (the two site/ JSON literals are invisible on a
+    # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
+    paths:
+      - engine/__init__.py
+      - engine/analyst_revisions.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/cycles.py
+      - engine/indicators.py
+      - engine/leader_lifecycle.py
+      - engine/leader_lineage.py
+      - engine/leader_recovery.py
+      - engine/leader_recovery_expectations.py
+      - engine/leader_recovery_observations.py
+      - engine/leader_recovery_outcomes.py
+      - engine/leader_recovery_policy_research.py
+      - engine/ledger_lane.py
+      - engine/pick_lab/candidates.py
+      - engine/pick_lab/ledger.py
+      - engine/pick_lab/profile.py
+      - engine/pick_lab/registry.py
+      - engine/rs_leader_highs.py
+      - engine/session_anchor.py
+      - engine/technicals.py
+      - engine/vol_forecast.py
+      - engine/vol_regime.py
+      - engine/winner_autopsy.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/nyse_calendar.py
+      - lib/options_context.py
+      - lib/pages.py
+      - lib/store.py
+      - scripts/build_leader_radar.py
+      - site/flowleaders/leaders.json
+      - site/leaderradar/radar.json
+      - templates/leader_radar.html.j2
+      - templates/_seo_head.html.j2
+      - templates/_site_nav.html.j2
+      - templates/_navlinks.html.j2
+      - tests/test_build_leader_radar.py
+      - tests/test_leader_lifecycle.py
+      - tests/test_leader_lineage.py
+      - tests/test_leader_recovery.py
+      - tests/test_leader_recovery_expectations.py
+      - tests/test_leader_recovery_integration.py
+      - tests/test_leader_recovery_observations.py
+      - tests/test_leader_recovery_outcomes.py
+      - tests/test_leader_recovery_policy_research.py
+      - tests/test_rs_leader_highs.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
