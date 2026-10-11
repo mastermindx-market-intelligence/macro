@@ -78,9 +78,9 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "{% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}",
         "{% for face in _todo_shown %}",
         'class="cnx-hero-meta"',
-        'class="v-thesis cnx-thesis"><span class="l-en">{{ _ms_thesis or \'Market-state headline unavailable.\' }}',
+        'class="v-thesis cnx-thesis"><span class="l-en">{{ _ms_truth_en }}',
         'class="cnx-playbook-context"',
-        "{{ t('Model headline','模型原始标题') }}",
+        "{{ t('Current measured read','当前实测解读') }}",
         'class="cnx-row cnx-reason-row',
         'class="cnx-lens lens-q"',
         'data-tip-en="{{ face.tip_en | e }}"',
@@ -319,13 +319,32 @@ def test_playbook_context_never_fabricates_policy_breadth_or_combined_signal() -
 
 
 def test_market_headline_and_playbook_context_have_separate_dom_owners() -> None:
-    # Keep the producer-owned market-state headline on the incumbent .v-thesis
-    # node and render playbook posture as a separately qualified context node.
-    # This publication contract intentionally stays inside the China template
-    # closure; the existing live-plane suite owns live-script behavior.
+    # Keep the presentation-only measured-state projection on the incumbent
+    # .v-thesis node and render playbook posture as separately qualified context.
+    # The live updater must patch this same owner from measured legs, never from
+    # the producer's generic headline.
     assert '<p class="v-thesis cnx-thesis">' in TPL
-    assert "{{ _ms_thesis or 'Market-state headline unavailable.' }}" in TPL
-    assert "{{ _ms_thesis_zh or '市场状态标题暂不可用。' }}" in TPL
+    assert "{{ _ms_truth_en }}" in TPL
+    assert "{{ _ms_truth_zh }}" in TPL
     assert '<div class="cnx-playbook-context">' in TPL
     assert TPL.count("_hero_clause[0]") == 1
     assert TPL.count("_hero_clause[1]") == 1
+
+
+def test_live_market_state_projection_preserves_semantic_truth() -> None:
+    js = (ROOT / "templates" / "china_risk_state_live.js").read_text(encoding="utf-8")
+    site_js = (ROOT / "site" / "china_risk_state_live.js").read_text(encoding="utf-8")
+    assert js == site_js
+    for marker in (
+        "function measuredHeadline(d, disp)",
+        "function boundaryRead(disp)",
+        'legScore(d, "breadth")',
+        'legScore(d, "liquidity")',
+        'legScore(d, "trend")',
+        'document.getElementById("ms-boundary-chip")',
+        "Participation and liquidity are weak; trend remains soft.",
+        "参与度与流动性偏弱；趋势仍然疲软。",
+    ):
+        assert marker in js
+    assert "blk.headline_en" not in js
+    assert "blk.headline_zh" not in js
