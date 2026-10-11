@@ -369,21 +369,23 @@ read credential files or shim logs.
 
 ## 7. NEXT (critical path first)
 
-1. ORCH-D update.sh lane-freeze fix (critical path: every later deploy restart depends on it):
-   judge its RETURN by artifact — full diff, the three deploy test files in full on the branch
-   head, the new test failing on origin/main and passing on the branch, `bash -n`, the overlap
-   check against Sol's #7992 — then merge by hand on concluded checks and prove it live: the
-   first /opt/macro run after the pull prints the two new `macro-update:` lane-freeze lines AND
-   post-L1549 block messages while the W2C refusal still prints; then confirm
-   `macro-market-memory-options.timer` is no longer disarmed every 3 min. Until it lands, any
-   merged PR that touches a source service needs a seat restart under the updater lock (recipe
-   in DSC:UPDATE-SH-W2C-REFUSAL-EXITS-BEFORE-LATER-DEPLOY-BLOCKS).
+1. ORCH-D update.sh lane-freeze fix: DONE — PR #8864 MERGED 2026-10-11T20:50:48Z (squash eb3df04e64fd8f4d74cf3f2f3bb1045c5c84ef35), judged by
+   artifact (289 passed on the branch; the 2 new tests fail on main's update.sh; `bash -n`; no #7992
+   overlap), blob-verified on origin/main, PRODUCTION_PROOF 2026-10-11T21:13:16Z from /var/log/macro-update.log:
+   PRODUCTION_PROOF — VPS read 2026-10-11T21:13:16Z (/opt/macro head c1f29a2feb0a): /usr/local/bin/macro-update carries W2C_LANE_FROZEN_CONTINUE (count 2, cmp equal to app/deploy/update.sh); last 200 updater log lines: 29 'refusing W2C activation before owner replay completion' lines, 7 'W2C lane frozen — … continuing lane-independent deploy steps' lines, 7 terminal 'deploy finished with status 1 (frozen lanes: w2c)' lines (one per */3 tick since the merge), and the biocatalyst-runtime step is logged AFTER the frozen line on every run (lane-independent region now executes); macro-api was restarted by the deploy at 20:51:13Z (MainPID 3160877) — the daemon-restart block the old early exit used to skip; macro-ticker-news MainPID 3111697 (19:24:41Z) and marketing-press-feeds MainPID 3129081 (19:56:24Z) untouched; macro-market-memory-options.timer inactive after each frozen run BY DESIGN — the W9-5 expectation 'options timer no longer disarmed every 3 min' is RETRACTED by name; the W2C technicals owner replay still fails by design until the 10-12 nightly.
+   RETRACTED by name: "confirm `macro-market-memory-options.timer` is no longer disarmed every 3 min" — the
+   design disarms once per frozen run on purpose (eager disarm in W2C_LANE_FROZEN_CONTINUE + latched EXIT
+   trap); the timer re-arms only when the owner replay completes (10-12 nightly). The seat-restart-under-lock
+   rule for merged source-service PRs is RETIRED. Nothing owed.
 2. Package N: PRODUCTION_PROOF, ACCEPTED (ORCH-N RETURN `READY_FOR_SEAT_PROOF` judged by
    artifact; ORCH-N and ORCH-OPS ENDED PROVEN_OUTCOME, nothing to resume). ACCEPTANCE-grade
-   extras only: a bounded signed-in Terminal rail browser check; one later VPS read (>=10 min
-   after the 19:24:41Z writer restart) confirming `last_stream_event_at` /
-   `last_successful_catchup` populate on MainPID 3111697 and `news_deliveries` grew. No
-   polling. marketing-press-feeds: RESOLVED 19:56Z by the seat — restart under the updater lock
+   extras: (2) DONE 20:22Z — health.json state=live, last_stream_event_at 19:45:06Z,
+   last_successful_catchup 20:22:14Z advancing, disconnects 0, catchups_failed 0; 4 real Benzinga items
+   (FDS/BLK/GS/UNH, stream path, 0.2–1.3 s) in qbus.sqlite3; GAP narrowed: a REST-catch-up-SOURCED item
+   needs a stream gap to exercise. (1) signed-in Terminal rail browser check BLOCKED on this seat (browser
+   hook timeout x2); server-side: anon API 401 fails closed, zero signed-in production reads yet; recipe =
+   sign in at app.mastermind-x.com/terminal -> UNH -> News rail tab -> `ticker-news-panel` with >=1
+   headline + live dot (any browser-capable seat/operator). No polling. marketing-press-feeds: RESOLVED 19:56Z by the seat — restart under the updater lock
    with the Alpaca cursor re-primed (DSC:PRESS-FEEDS-RESTART-AFTER-AN-AUTH-GAP-NEEDS-THE-ALPACA-CURSOR-REPRIMED);
    PRODUCTION_PROOF = alpaca-cold-start notice 19:56:27Z, 401 lines since 0, MainPID 3129081. The
    `restart_press_feeds=true` workflow input is a BARE restart and would have replayed — never use
@@ -395,6 +397,13 @@ read credential files or shim logs.
    tick; D-experience (#8816) W2C activation by update.sh once the regenerated manifest matches
    the store; #8828 roster resolution; data-health.yml's next main run should green on the
    regenerated artifacts. One bounded read each, no polling.
+   GATED (22:0xZ): no genuine daily.yml run has completed since 10-09. The M2 runner listeners
+   self-cancel any job longer than ~95 min (collect / collect_tail / engine cut on 10-10 AND 10-11;
+   DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES; #8748 comment 6114287529) and GH001 rejects the
+   commit-tail push (`data/qledger/claims.jsonl` 122.92 MB in-tree vs 104,521,374 B on main; Sol's
+   #8042 / #8756). Cron 15b0b437 reads once at 05:07Z 10-12; if the run was cut again, record the
+   blocker and skip the VPS proofs — never dispatch/cancel daily.yml (hook shape 6), never restart a
+   runner listener (operator setting).
 4. Identity runway lane: DROPPED 19:45Z on measurement (§4.7). The 19:29:44Z run under 600 s /
    100% took 99 s wall / 82.7 CPU-s / 146 MB peak for 69 tracked snapshots (~1.2 s per snapshot,
    ~+1 snapshot/day): headroom is ~500 s of 600. RETRACTED by name: "#8841 bought headroom (97 s
@@ -427,7 +436,25 @@ Human-only, unchanged by any orchestration:
   index exit) sit with their owners; this program dated the rename only.
 - Identity replay ceiling (~150–180 dates under TimeoutStartSec=180 / CPUQuota=50%) is DNR; raising it
   is not this program's call.
-- Org audit log read for the 10-10 nightly canceller (org-admin only).
+- RESOLVED 22:0xZ: the org audit log IS readable with the fleet token and holds no
+  `workflows.cancel_workflow_run` for the 10-10 / 10-11 nightlies — there is no canceller (retracted by name).
+- NEW — Mac Studio runner host (operator act): since 2026-10-09 21:47Z every GitHub broker long-poll
+  from the M2 listeners times out at 100 s (short requests succeed) and, by runner design, the listener
+  cancels its OWN in-flight job on the 10th consecutive failure (~95 min) — collect / collect_tail /
+  engine cut on 10-10 and 10-11, plus a closingbell job 10-10 01:34Z. No GitHub incident matches; the
+  connectivity watchdog is blind to it (runners stay online). Levers: find what drops the idle poll
+  (ExpressVPN / NordVPN / OpenVPN / Tailscale / Little Snitch network extensions, 9 utun interfaces, or
+  the router — packet-capture one `/message` poll); `GITHUB_ACTIONS_RUNNER_HTTP_TIMEOUT` in the runner
+  service env as a stop-gap; teach the watchdog to count `Shutting down JobDispatcher`. Evidence
+  `~/actions-runner-2/_diag/Runner_20261011-031347-utc.log` 04:49:10–04:50:13Z;
+  DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES; #8748 comment 6114287529.
+- NEW — GH001 on the nightly commit tail: `data/qledger/claims.jsonl` is 122.92 MB in the scan tree
+  (104,521,374 B on main), so the push is rejected even when a scan completes; owned by Sol's #8042 /
+  #8756 (DRAFT/HOLD) — needs a Sol release or a Chairman-ordered mitigation. Both items gate the 10-12
+  proofs for B #8807, D-experience #8816, #8828 and data-health.yml.
+- Signed-in Terminal rail browser check (Package N ACCEPTANCE extra #1): this seat's browser tool is
+  dead (PreToolUse hook timeout x2); any browser-capable seat or the operator can close it in minutes with
+  the recipe in §7 item 2. Server side is proven (401 fails closed; writer live).
 - twitterapi.io `press_stream` websocket HTTP 403 (billed X push lane, key env `TWITTERAPI_IO_KEY`;
   since 2026-10-08T23:16Z; 288 journal lines/24 h) — marketing-lane owner / billing; observed by this
   program, not worked, and not cured by the 19:56Z press-feeds restart (which cleared the Alpaca 401).
