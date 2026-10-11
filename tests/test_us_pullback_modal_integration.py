@@ -81,3 +81,39 @@ def test_shared_pullback_css_is_present_in_the_real_us_page():
     html = _render(vm=_vm(), mode="macro")
     assert ".riskdlg-legacy-details" in html
     assert ".rrp-metrics" in html
+
+
+ILLUS_LINK = '<link rel="stylesheet" href="illus.css">'
+
+
+def test_observed_path_chart_loads_the_shared_illustration_stylesheet():
+    # Without the shared stylesheet the chart's stroke path fills black and its
+    # axis labels collapse into one unpositioned run (seen in the served page).
+    vm = _vm()
+    vm["us_pullback_view"] = native_view("us")
+    html = _render(vm=vm, mode="macro")
+    dlg = _dlg(html)
+    assert dlg.count(ILLUS_LINK) == 1
+    assert dlg.index(ILLUS_LINK) < dlg.index('class="ilx')
+
+
+@pytest.mark.parametrize("view", [None, "inactive", "no_chart"])
+def test_macro_page_is_unchanged_when_no_observed_chart_renders(view):
+    vm = _vm()
+    if view == "inactive":
+        v = native_view("us")
+        v["observation"]["quality"] = "delayed"
+        vm["us_pullback_view"] = v
+    elif view == "no_chart":
+        v = native_view("us")
+        v["detail_chart_html"] = ""
+        vm["us_pullback_view"] = v
+        assert dialog(v).select_one("section.rrp") is not None
+    assert ILLUS_LINK not in _render(vm=vm, mode="macro")
+
+
+def test_illustration_stylesheet_is_published_beside_the_macro_page():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    assert (root / "templates" / "illus.css").is_file()
+    assert '"illus.css"' in (root / "scripts" / "build_site.py").read_text()

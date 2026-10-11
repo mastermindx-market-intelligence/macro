@@ -12869,6 +12869,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
              and _us_pbo.get('active') is sameas true %}
         {% if _us_pb_active %}
           {% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
+          {# The observed-path chart is the shared illustration format; this page
+             links its published stylesheet only when that chart can render. #}
+          {% if _us_pbv.get('detail_chart_html') %}<link rel="stylesheet" href="illus.css">{% endif %}
           {{ pb_depth.detail('us', _us_pbv) }}
           <details class="riskdlg-legacy-details">
             <summary>{{ t('Forward risk and drivers','前瞻风险与驱动因素') }}</summary>
