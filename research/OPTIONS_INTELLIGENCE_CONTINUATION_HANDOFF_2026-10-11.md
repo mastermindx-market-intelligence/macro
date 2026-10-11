@@ -832,3 +832,11 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - OC run 1 is PARTIAL (D48). Run 2 is armed.
 - Load1 was 60 at 19:57Z (other sessions' Playwright/vitest, WindowServer, peekaboo), so F01, M01 and OC run 2 are all waiting on
   admission (< 15). That is BLOCKED-EXTERNAL (O-14), not a lane fault.
+
+### D49 (2026-10-11T20:20Z) — D04-A commission NOT launched; one spec defect found; session paused at usage limit
+- Worktrees ready, clean: D04-A `d04a-source-clocks-c806f9326acfb446` @79ba289aee6e; M02 `m02-pin-8684-e23c6b266a18ef7f` reset to 300754c60144; MT `mt-options-tests-17363f4a45d0a8c2` @824387fc245b.
+- DEFECT in D04 item 7 (dead-man): `check_vps_live_health.evaluate` reads `payload["checks"]` from the /api/status endpoint, whose producer is NOT in D04-A's owned files. "Missing source_asof fails" would red production health on deploy unless the status producer surfaces `flow_pulse.source_asof` and the board-quote `meta.source_asof`. Before launching, either (a) add the status producer (locate it: grep for `"flow_pulse"` and `with_bars` builders) to owned files, or (b) use the ABSENT-OK precedent (cn_prophet_live/breadth, check_vps_live_health ~L176-262) for the new clock checks. Existing `_healthy_vps_status()` fixture (tests/test_vps_live_orchestration.py) must be updated in the same commit.
+- Ruled this window: tests APPEND to CI-wired suites (D04-A -> tests/test_vps_live_orchestration.py; N01-F2 -> tests/test_flow_surface.py; Q02-U1 -> tests/test_options_pilot_study_adapter.py; M02 -> tests/test_options_scenario_surface.py). No new test files (contract-delta CI).
+- Route new lanes to minimax (pool pick fix_build); needs launcher v3 (pool arg; rc=78 admission_denied retried like rc=75). Host load1 was 75.8 at 20:18Z, so nothing would admit now.
+- D04-A PR stays unarmed until after the 2026-10-12 21:30Z post-close capture.
+- Still running at pause: F01 + M01 grok lanes (admitted 20:08Z, returns due by ~22:10Z at $S/leads/{F01,M01}/return.md), OC run-2 launcher (retrying), B3 watcher on pid 99401. M02 fencing comment on #8684 NOT posted (lane not launched).
