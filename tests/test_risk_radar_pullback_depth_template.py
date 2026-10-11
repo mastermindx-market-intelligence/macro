@@ -185,3 +185,13 @@ def test_chart_has_bilingual_text_alternative_and_price_history():
     assert caption.select_one('.l-en') and caption.select_one('.l-zh')
     rows = soup.select('.rrp-history tbody tr')
     assert len(rows) == 2 and '2026-09-30' in rows[1].get_text()
+
+
+def test_price_history_table_reads_the_same_window_the_chart_drew():
+    # The table is the chart's text alternative (the chart is aria-hidden).
+    v = native_view()
+    v['observation']['price_path'] = {'dates': ['2026-09-11', '2026-09-14', '2026-09-30'],
+                                      'vals': [-2.0, 0.0, -6.8]}
+    v['detail_path'] = {'dates': ['2026-09-14', '2026-09-30'], 'vals': [0.0, -6.8]}
+    rows = BeautifulSoup(render(v), 'html.parser').select('.rrp-history tbody tr')
+    assert [r.select_one('td').get_text() for r in rows] == ['2026-09-14', '2026-09-30']

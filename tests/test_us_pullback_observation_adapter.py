@@ -352,5 +352,7 @@ def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch, pea
             "vals": [-3.0, -1.0, 0.0, -2.5, -4.0]}
     obs = _qualified(dict(path), peak_session=peak)
     pb.present(obs)
-    assert seen == [{"dates": shown, "vals": path["vals"][-len(shown):]}]
+    window = {"dates": shown, "vals": path["vals"][-len(shown):]}
+    assert seen == [window]
+    assert pb.present(obs)["detail_path"] == window  # the history table's rows
     assert obs["price_path"] == path  # the owner's observation is not rewritten

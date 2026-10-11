@@ -267,11 +267,12 @@ def present(observation: dict, radar: dict | None = None) -> dict:
         "monitoring", "developing", "underway", "stabilizing",
         "recovering", "repaired",
     } else "unavailable"
-    chart = ""
+    chart, shown = "", None
     if phase != "unavailable" and obs.get("price_path"):
         from lib import illus
+        shown = _since_peak(obs["price_path"], obs.get("peak_session"))
         chart = illus.illus(
-            _since_peak(obs["price_path"], obs.get("peak_session")),
+            shown,
             kind="drawdown",
             height=188,
             accent="var(--down)",
@@ -280,4 +281,6 @@ def present(observation: dict, radar: dict | None = None) -> dict:
             aria_en="Observed SPY price closing drawdown from the retained episode high",
             aria_zh="SPY实际收盘价相对本轮参考高点的回撤",
         )
-    return {"observation": obs, "phase": phase, "detail_chart_html": chart}
+    # The table beside the chart is its text alternative; it reads the same window.
+    return {"observation": obs, "phase": phase, "detail_chart_html": chart,
+            "detail_path": shown}
