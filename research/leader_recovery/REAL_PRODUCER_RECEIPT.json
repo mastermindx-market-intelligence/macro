@@ -1,30 +1,73 @@
 {
   "n_rows": 173,
-  "as_of": "2026-10-08",
+  "as_of": "2026-10-09",
+  "additive_clock": {
+    "as_of": "2026-10-08",
+    "incumbent_as_of": "2026-10-09",
+    "lag_sessions": 1,
+    "basis": "universe_majority_completed_session",
+    "universe_rows": 173,
+    "rows_at_or_after_clock": 171,
+    "rows_behind_clock": 2
+  },
+  "store_lag": {
+    "benchmark_store": "data/yahoo/SPY.parquet",
+    "benchmark_store_last_session": "2026-10-09",
+    "issuer_store_majority_last_session": "2026-10-08",
+    "finding": "the incumbent radar date follows the benchmark store; when it leads the issuer stores by a session the recovery descriptors must not be reported as unobserved \u2014 the additive layer now carries its own clock"
+  },
   "recovery_counts": {
     "UNAVAILABLE": 3,
     "NO_PRIOR_LEADER": 3,
-    "ACTIVE_LEADER": 5,
-    "CORRECTING": 2,
-    "DAMAGED": 67,
-    "REBUILDING": 5,
-    "REIGNITING": 39,
-    "REPAIR_PAUSED": 49,
-    "PRICE_RECOVERED_RS_LAGGING": 0,
+    "ACTIVE_LEADER": 8,
+    "CORRECTING": 3,
+    "DAMAGED": 56,
+    "REBUILDING": 2,
+    "REIGNITING": 21,
+    "REPAIR_PAUSED": 20,
+    "PRICE_RECOVERED_RS_LAGGING": 57,
     "LEADERSHIP_REESTABLISHED": 0,
     "FAILED_REPAIR": 0
   },
-  "elapsed_seconds": 75.906,
+  "roster_schema": "leader_recovery_roster.v1",
+  "roster_population_rows": 173,
+  "roster_evidence_mode": "RECONSTRUCTED_CURRENT_VINTAGE",
+  "roster_authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_alert": false
+  },
+  "elapsed_seconds": 79.38,
+  "built_at": "2026-10-11T08:21:37.402706+00:00",
   "operational_stores_hashed": 177,
   "operational_store_bytes_unchanged": true,
-  "audited_external_effect_attempts": [],
-  "json_bytes": 1808031,
+  "operational_store_hash_receipts": {
+    "stores_before": "scratchpad/stores_before.sha256 (177 files)",
+    "stores_after_research": "scratchpad/stores_after_research.sha256 (177 files)",
+    "stores_pre_render2": "scratchpad/stores_pre_render2.sha256 (177 files)",
+    "stores_after": "scratchpad/stores_after.sha256 (177 files)"
+  },
+  "audited_external_effect_attempts": null,
+  "audit_hook_active": false,
+  "audit_hook_note": "the 2026-10-10 run armed a Python audit hook (zero attempts recorded, see git history of this file); the 2026-10-11 re-render did not re-arm it and relies on COLLECT_LANE being unset plus the before/after store hashing above",
+  "json_bytes": 1812269,
+  "radar_json_sha256": "981c7e2e8f4526d1bc91e123a97ba24a628cb6ea8a949a378713d0dc4ba11b42",
+  "baseline_radar_json_bytes": 344622,
+  "baseline_radar_json_sha256": "eacc38693b8b4d95001ef85491cc8450cb7fec51b0e52b3531139631e4356a94",
+  "baseline_builder": "origin/main scripts/build_leader_radar.py (blob 0ff389d12010951ee88857c0595d4050c27910bd), same stores",
+  "candidate_builder_sha256": "7de8837fe95f814be3670c64f391f6c6aeb1bf5d49dca24c3e0a651f31057388",
+  "engine_sha256": "7f1b160fc5a0ff2dde00573f80b7c6fd66ba0d146ce1c22459253360eb02e2db",
+  "rendered_at_utc": "2026-10-11T08:22:56+00:00",
+  "render_method": "read-only scratch render: `build(data_root=<macro-main>/data, site_root=<scratchpad>/site_render)` with COLLECT_LANE unset (every data/ write skipped); site root symlinks the host stockdata; no site/ write",
   "existing_html_rendered": true,
+  "existing_html_bytes": 648156,
   "new_recovery_ui_created": false,
   "pltr": {
     "as_of": "2026-10-08",
-    "state": "REIGNITING",
-    "reason": "multi_session_fast_slow_and_relative_repair",
+    "state": "PRICE_RECOVERED_RS_LAGGING",
+    "reason": "price_target_reclaimed_but_rs_below_frozen_target",
     "prior_leader_on": "2025-08-08",
     "latest_leader_proxy_on": "2025-11-03",
     "leader_evidence": "PRICE_RS_PROXY",
@@ -54,7 +97,7 @@
       "recovered_on": null,
       "drawdown_from_high_water": -0.04054443,
       "original_price_target_recovered": true,
-      "price_recovered": false,
+      "price_recovered": true,
       "rs_recovered": false,
       "rebound_from_low": 0.85308106,
       "status": "open"
@@ -76,31 +119,31 @@
       "opened_on": "2025-02-19",
       "trough_on": "2025-04-04",
       "trough_price": 74.01000213623047,
-      "price_high_water": 133.1699981689453,
-      "price_high_water_on": "2025-06-03",
+      "price_high_water": 130.17999267578125,
+      "price_high_water_on": "2025-05-14",
       "max_drawdown_from_high_water": -0.40611458,
       "max_drawdown_peak_price": 124.62000274658203,
       "max_drawdown_peak_on": "2025-02-18",
       "max_drawdown_trough_price": 74.01000213623047,
       "max_drawdown_trough_on": "2025-04-04",
       "max_drawdown": -0.40611458,
-      "underwater_sessions": 73,
+      "underwater_sessions": 61,
       "below_200_sessions": 0,
       "failed_repairs": 0,
       "repair_floor": 74.01000213623047,
       "repair_started_on": "2025-04-24",
       "last_failure_on": null,
       "history_complete": true,
-      "recovered_on": "2025-06-03",
-      "drawdown_from_high_water": 0.0,
+      "recovered_on": "2025-05-15",
+      "drawdown_from_high_water": -0.01582423,
       "original_price_target_recovered": true,
       "price_recovered": true,
       "rs_recovered": true,
-      "rebound_from_low": 0.79935136
+      "rebound_from_low": 0.7311173
     },
     "schema": "leader_recovery.v1",
     "era": "leader-recovery-descriptive-2026-10-10",
-    "label": "Trend and relative strength repairing",
+    "label": "Price recovered; relative leadership not restored",
     "source_fingerprint_sha256": "b55fb74792a425c4ed687b4b6cb77f77478fd73e48c36a6d847b3a0751287df2",
     "sampling_basis": "completed_daily_close",
     "authority": {
@@ -131,12 +174,6 @@
       "reason": "requires_source_dated_fundamental_owner"
     },
     "transitions": [
-      {
-        "as_of": "2026-03-20",
-        "from": "REBUILDING",
-        "to": "DAMAGED",
-        "reason": "deep_drawdown_or_below_long_trend"
-      },
       {
         "as_of": "2026-03-25",
         "from": "DAMAGED",
@@ -202,9 +239,15 @@
         "from": "REPAIR_PAUSED",
         "to": "REIGNITING",
         "reason": "multi_session_fast_slow_and_relative_repair"
+      },
+      {
+        "as_of": "2026-09-23",
+        "from": "REIGNITING",
+        "to": "PRICE_RECOVERED_RS_LAGGING",
+        "reason": "price_target_reclaimed_but_rs_below_frozen_target"
       }
     ],
-    "transitions_total": 83,
+    "transitions_total": 114,
     "expectations": {
       "schema": "leader_recovery_expectations.v1",
       "ticker": "PLTR",
@@ -268,6 +311,32 @@
     }
   },
   "existing_html_support_copy_verified": true,
+  "existing_html_support_copy_checked": {
+    "behind radar clock": true,
+    "\u843d\u540e\u96f7\u8fbe\u65f6\u949f": true,
+    "rs-highs-ticker": true
+  },
+  "data_base_js_source": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/rs-leader-wp1-1d927f831ec5f94e/templates/data_base.js",
   "data_base_js_sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
-  "existing_html_sha256": "18c826de4f4e2df0150e2a4437c572cecd316c1b9ad97d588c53eff6276c23b7"
+  "existing_html_sha256": "1d6d37d126264eb8417cb38cdab2866e51a8b2b1a6a80db5cde744a584e39d5e",
+  "previous_receipt": {
+    "as_of": "2026-10-08",
+    "json_bytes": 1808031,
+    "pltr_state": "REIGNITING",
+    "recovery_counts": {
+      "UNAVAILABLE": 3,
+      "NO_PRIOR_LEADER": 3,
+      "ACTIVE_LEADER": 5,
+      "CORRECTING": 2,
+      "DAMAGED": 67,
+      "REBUILDING": 5,
+      "REIGNITING": 39,
+      "REPAIR_PAUSED": 49,
+      "PRICE_RECOVERED_RS_LAGGING": 0,
+      "LEADERSHIP_REESTABLISHED": 0,
+      "FAILED_REPAIR": 0
+    },
+    "data_base_js_sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "existing_html_sha256": "18c826de4f4e2df0150e2a4437c572cecd316c1b9ad97d588c53eff6276c23b7"
+  }
 }

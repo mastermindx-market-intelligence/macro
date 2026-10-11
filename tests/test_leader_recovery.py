@@ -209,13 +209,25 @@ def test_old_peak_cannot_roll_off_and_fake_a_recovery():
     assert d['episode']['recovered_on'] is None
 
 
-def test_gap_history_stays_incomplete_even_after_indicators_rewarm():
+def test_gap_history_closes_the_episode_but_carries_incomplete_history():
     c,b=source(np.r_[np.linspace(99,55,30),np.linspace(56,130,100)])
     c.iloc[-80]=np.nan
     d=run(c,b)
-    assert d['state']=='REIGNITING'
-    assert d['episode']['recovered_on'] is None
-    assert not d['episode']['history_complete']
+    # A missing interval is carried on the record, never a permanent bar to
+    # completion: once price, the frozen RS reference and the trend are all
+    # restored with confirmation the episode closes, and history_complete
+    # stays False on the completed copy so the gap remains visible.
+    assert d['state']=='ACTIVE_LEADER'
+    ep=d['episode']
+    assert ep['status']=='completed'
+    assert ep['recovered_on'] is not None
+    assert ep['history_complete'] is False
+    assert d['last_completed_episode']['history_complete'] is False
+    full=replay_recovery(c,b,as_of=c.index[-1].date(),sessions=list(c.index.date),spec=SPEC)
+    rows=[r for r in full if r['state']=='LEADERSHIP_REESTABLISHED']
+    assert len(rows)==1
+    assert rows[0]['reason']=='price_and_pre_correction_rs_restored_gapped_history'
+    assert rows[0]['as_of']==ep['recovered_on']
 
 
 def test_prior_episode_leadership_anchor_does_not_follow_requalification():
@@ -241,11 +253,16 @@ def test_price_high_inside_unresolved_rs_episode_remains_visible():
     c,b=source(np.r_[np.linspace(99,55,30),np.linspace(56,125,35),np.linspace(124,108,15)])
     b.iloc[-50:]=np.linspace(100,160,50)
     d=run(c,b)
-    assert d['episode']['peak_price']==100
-    assert d['episode']['price_high_water']==125
-    assert d['episode']['original_price_target_recovered'] is True
-    assert d['episode']['price_recovered'] is False
-    assert d['state']!='PRICE_RECOVERED_RS_LAGGING'
+    ep=d['episode']
+    assert ep['peak_price']==100
+    assert ep['price_high_water']==125
+    assert ep['original_price_target_recovered'] is True
+    # Restoration references the FIXED pre-correction peak; the advancing
+    # high-water mark is an independently recorded fact, never the bar.
+    assert ep['price_recovered'] is True
+    assert ep['rs_recovered'] is False
+    assert ep['recovered_on'] is None
+    assert d['state']=='PRICE_RECOVERED_RS_LAGGING'
 
 
 def test_past_deep_drawdown_is_not_current_damage_if_trend_is_repaired():
@@ -279,3 +296,25 @@ def test_max_drawdown_dates_remain_paired_after_a_later_higher_high():
     assert ep['max_drawdown_peak_on'] < ep['max_drawdown_trough_on']
     assert ep['max_drawdown_trough_on'] < ep['price_high_water_on']
     assert ep['max_drawdown_from_high_water']==pytest.approx(ep['max_drawdown_trough_price']/ep['max_drawdown_peak_price']-1)
+
+
+def test_reestablishment_references_fixed_peak_not_advancing_high_water():
+    # Price prints a new in-episode high (125) while RS still lags, then
+    # holds a rising plateau just below it as RS crosses the frozen
+    # reference. Under a ratcheting bar no close could ever confirm; with
+    # the fixed pre-correction peak as the bar the episode completes while
+    # the close is still below the recorded high-water mark.
+    c,b=source(np.r_[np.linspace(99,55,30),np.linspace(56,125,35),np.linspace(121,124.5,15)])
+    b.iloc[-50:-15]=np.linspace(100,140,35)
+    b.iloc[-15:]=np.linspace(140,90,15)
+    full=replay_recovery(c,b,as_of=c.index[-1].date(),sessions=list(c.index.date),spec=SPEC)
+    rows=[r for r in full if r['state']=='LEADERSHIP_REESTABLISHED']
+    assert len(rows)==1
+    row=rows[0]
+    assert row['episode']['peak_price']==100
+    assert row['episode']['price_high_water']==125
+    assert 100 <= row['price'] < 125
+    assert row['episode']['recovered_on']==row['as_of']
+    assert full[-1]['state']=='ACTIVE_LEADER'
+    assert full[-1]['last_completed_episode']['price_high_water']==125
+    assert full[-1]['last_completed_episode']['history_complete'] is True

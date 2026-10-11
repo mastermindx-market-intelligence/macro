@@ -2199,7 +2199,79 @@ def _build_fire_history(
     return result
 
 
+def _rs_high_watch_unavailable(as_of, reason: str) -> dict:
+    """UNAVAILABLE ``rs_high_watch`` payload (same shape as observe_rs_highs).
+
+    Used when the observation itself raises so the chip reads UNKNOWN rather
+    than the whole ticker row being skipped. Never a FALSE/no-high verdict.
+    """
+    from engine.rs_leader_highs import DAILY_SESSIONS, SCHEMA, WEEKLY_WEEKS
+    recent = {"last_high_as_of": None, "since_last_high": None,
+              "high_prints_in_window": None, "reason": "unavailable"}
+    return {
+        "schema": SCHEMA, "benchmark": "SPY", "basis": "source_daily_close_ratio",
+        "as_of": as_of.isoformat() if hasattr(as_of, "isoformat") else str(as_of),
+        "error": reason[:200],
+        "daily": {"as_of": None, "lookback_sessions": DAILY_SESSIONS,
+                  "new_high": None, "price_new_high": None,
+                  "rs_leads_price": None, "reason": "unavailable", "recent": dict(recent)},
+        "weekly": {"as_of": None, "lookback_completed_weeks": WEEKLY_WEEKS,
+                   "new_high": None, "price_new_high": None,
+                   "rs_leads_price": None, "reason": "unavailable", "recent": dict(recent)},
+    }
+
+
 # ── Main build ────────────────────────────────────────────────────────────────
+
+def _additive_layer_clock(ohlcv_map: dict, today: date) -> tuple[date, dict]:
+    """Latest completed session the issuer universe actually holds, capped at ``today``.
+
+    The additive RS-high / recovery engines are fail-closed on the as-of session:
+    an issuer missing that session reads UNAVAILABLE / unknown rather than
+    extrapolating. The incumbent clock follows ``data/yahoo/SPY.parquet``, which
+    can lead the issuer stores by a session (measured on main 2026-10-11: SPY
+    2026-10-09, every ``data/baskets/ohlcv`` issuer 2026-10-08) — observing the
+    additive layer at SPY's clock then blanks the whole universe. So the additive
+    layer observes at the latest date that a majority of the loaded universe has
+    completed, never ahead of ``today``. Incumbent ``as_of`` / ``stale`` are
+    untouched; the lag is reported, never hidden.
+    """
+    last_dates: list[date] = []
+    for df in ohlcv_map.values():
+        try:
+            close = df["close"].dropna()
+            if close.empty:
+                continue
+            last = pd.Timestamp(close.index.max())
+            if last.tzinfo is not None:
+                last = last.tz_convert("America/New_York").tz_localize(None)
+            last_dates.append(last.date())
+        except Exception:  # noqa: BLE001 — a malformed store is the per-ticker lens's problem
+            continue
+    meta = {"basis": "incumbent_as_of_fallback", "universe_rows": len(ohlcv_map),
+            "rows_at_or_after_clock": 0, "rows_behind_clock": 0, "lag_sessions": 0}
+    eligible = sorted((d for d in last_dates if d <= today), reverse=True)
+    if not eligible:
+        return today, meta
+    clock = eligible[len(eligible) // 2]  # a majority of the universe has completed this session
+    meta["basis"] = "universe_majority_completed_session"
+    meta["rows_at_or_after_clock"] = sum(d >= clock for d in last_dates)
+    meta["rows_behind_clock"] = sum(d < clock for d in last_dates)
+    meta["lag_sessions"] = len(_nyse_sessions_between(clock + timedelta(days=1), today))
+    return clock, meta
+
+
+def _with_additive_clock(roster: dict, clock: date, meta: dict, *, incumbent_as_of: str) -> dict:
+    """Attach the additive-layer clock receipt to a roster (display-only, no authority)."""
+    roster["additive_clock"] = {
+        "as_of": clock.isoformat(), "incumbent_as_of": incumbent_as_of,
+        "lag_sessions": int(meta["lag_sessions"]), "basis": meta["basis"],
+        "universe_rows": int(meta["universe_rows"]),
+        "rows_at_or_after_clock": int(meta["rows_at_or_after_clock"]),
+        "rows_behind_clock": int(meta["rows_behind_clock"]),
+    }
+    return roster
+
 
 def build(
     data_root: Path | None = None,
@@ -2279,6 +2351,18 @@ def build(
         df = _load_ohlcv(ticker, data_root)
         if df is not None:
             ohlcv_map[ticker] = df
+
+    # ── Additive-layer clock (RS-high watch + recovery lens) ──────────────────
+    # Incumbent as_of follows SPY; the issuer stores can trail it by a session and
+    # the additive engines are fail-closed on the as-of session. Observe at the
+    # latest session the universe actually completed and report the lag.
+    additive_clock, additive_clock_meta = _additive_layer_clock(ohlcv_map, today)
+    if additive_clock_meta["lag_sessions"]:
+        print(f"::warning title=leader_radar_additive_clock::additive layer observes "
+              f"{additive_clock.isoformat()}, {additive_clock_meta['lag_sessions']} session(s) behind "
+              f"incumbent as_of {as_of} (basis={additive_clock_meta['basis']}, "
+              f"{additive_clock_meta['rows_at_or_after_clock']}/{additive_clock_meta['universe_rows']} "
+              f"issuers completed)", flush=True)
 
     # ── Revisions (latest.parquet) ────────────────────────────────────────────
     revisions_df = pd.DataFrame()
@@ -2656,10 +2740,19 @@ def build(
             _display_chips["rs_line_gap_pct"] = _rs_gap
             # Completed-session/weekly RS highs are observation-only. The source
             # ratio uses the incoming adjustment basis, not an IBD 1-99 score.
+            # Isolated: a failure here must degrade THIS chip to its
+            # UNAVAILABLE payload, never drop the incumbent row (the enclosing
+            # per-ticker except skips the whole name).
             from engine.rs_leader_highs import observe_rs_highs
-            _display_chips["rs_high_watch"] = observe_rs_highs(
-                close_series, spy, as_of=today,
-            )
+            try:
+                _display_chips["rs_high_watch"] = observe_rs_highs(
+                    close_series, spy, as_of=additive_clock,
+                )
+            except Exception as _rs_exc:  # noqa: BLE001
+                log.warning("build_leader_radar: rs_high_watch %s failed (chip unavailable): %s",
+                            ticker, _rs_exc)
+                _display_chips["rs_high_watch"] = _rs_high_watch_unavailable(
+                    additive_clock, f"{type(_rs_exc).__name__}: {_rs_exc}")
 
             # LRV-O9: entry-quality read (display-only fence — never a gate or sort key).
             # extension_vs_50dma re-computed here for the receipt number ("+X% vs 50d");
@@ -2764,17 +2857,17 @@ def build(
         try:
             _recovery = describe_recovery(
                 _bars["close"] if _bars is not None else pd.Series(dtype=float),
-                spy, as_of=today, sessions=_recovery_calendar,
+                spy, as_of=additive_clock, sessions=_recovery_calendar,
                 source_ref=f"data/baskets/ohlcv/{_t}.parquet + data/yahoo/SPY.parquet",
             )
         except Exception as _exc:  # preserve incumbent ticker visibility on optional-lens failure
             log.warning("leader recovery unavailable for %s: %s", _t, _exc)
-            _recovery = {"schema": "leader_recovery.v1", "as_of": as_of,
+            _recovery = {"schema": "leader_recovery.v1", "as_of": additive_clock.isoformat(),
                          "state": "UNAVAILABLE", "reason": "projection_error",
                          "thesis_state": "UNKNOWN", "episode": None}
         try:
             _recovery["expectations"] = project_expectations(
-                _t, revisions_df, as_of=today, sessions=_recovery_calendar,
+                _t, revisions_df, as_of=additive_clock, sessions=_recovery_calendar,
             )
         except Exception as _exc:
             log.warning("recovery expectations unavailable for %s: %s", _t, _exc)
@@ -2792,12 +2885,21 @@ def build(
         if new_state_rows:
             try:
                 updated = _merge_history_frame(state_df_full, new_state_rows, today)
-                from engine.leader_recovery_observations import merge_recovery_observations
-                updated = merge_recovery_observations(
-                    state_df_full, updated, rows, as_of=today,
-                    observed_at=built_at,
-                    enabled=lr_cfg.get("recovery_capture_enabled") is True,
-                )
+                # Isolated: the additive recovery-observation enrichment must
+                # never freeze the incumbent state_history advance. On any
+                # failure the incumbent merge is written unchanged.
+                try:
+                    from engine.leader_recovery_observations import merge_recovery_observations
+                    updated = merge_recovery_observations(
+                        state_df_full, updated, rows, as_of=today,
+                        observed_at=built_at,
+                        enabled=lr_cfg.get("recovery_capture_enabled") is True,
+                    )
+                except Exception as _obs_exc:  # noqa: BLE001
+                    log.warning("build_leader_radar: recovery observations skipped: %s", _obs_exc)
+                    print(f"::warning title=leader_radar::recovery observation enrichment "
+                          f"FAILED — incumbent state_history written unchanged: "
+                          f"{type(_obs_exc).__name__}: {_obs_exc}", flush=True)
                 _write_state_history(updated, data_root)
                 log.info("build_leader_radar: state_history: %d total rows", len(updated))
             except Exception as e:  # noqa: BLE001
@@ -3022,8 +3124,12 @@ def build(
         },
         "regime": regime,
         "rows": rows,
-        "rs_high_roster": _build_rs_high_roster(rows, as_of=as_of, stale=stale),
-        "recovery_roster": recovery_roster(rows, as_of=as_of, stale=stale),
+        "rs_high_roster": _with_additive_clock(
+            _build_rs_high_roster(rows, as_of=as_of, stale=stale),
+            additive_clock, additive_clock_meta, incumbent_as_of=as_of),
+        "recovery_roster": _with_additive_clock(
+            recovery_roster(rows, as_of=as_of, stale=stale),
+            additive_clock, additive_clock_meta, incumbent_as_of=as_of),
         "handoff_pairs": handoff_pairs_list,
         "rerating_watch": rerating_watch,
         # LRV-W1 artifacts

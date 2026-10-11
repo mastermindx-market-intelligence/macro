@@ -228,7 +228,14 @@ def replay_recovery(
                 ep["max_drawdown_trough_on"] = day.isoformat()
             ep["original_price_target_recovered"] = c >= ep["peak_price"]
             rebound = c / ep["trough_price"] - 1
-            price_restored = c >= ep["price_high_water"]
+            # Restoration references the FIXED pre-correction peak, never the
+            # advancing high-water mark: an in-episode rally that prints a new
+            # high while RS still lags would otherwise raise the bar it must
+            # clear, and a later close could never satisfy three consecutive
+            # sessions at-or-above a mark that ratchets on each of them.
+            # price_high_water stays an independently recorded fact so the
+            # paired max-drawdown peak/trough is still measured from it.
+            price_restored = ep["original_price_target_recovered"]
             rs_restored = r >= ep["reference_rs"]
             restored_streak = restored_streak + 1 if price_restored and rs_restored and slow_ok else 0
             # A repair needs a material rebound AND multiple completed closes.
@@ -252,10 +259,17 @@ def replay_recovery(
             if repair and ep["repair_floor"] is None and not failure:
                 ep["repair_floor"] = ep["trough_price"]
                 ep["repair_started_on"] = day.isoformat()
-            # A missing interval cannot justify a fully continuous recovery claim.
-            if not ep["history_complete"] and state == "LEADERSHIP_REESTABLISHED":
-                state, state_reason = "REIGNITING", "historical_gap_prevents_episode_completion"
+            # A missing interval is carried on the record (history_complete
+            # stays False for the life of the episode and on its completed
+            # copy); it is not a permanent bar to closing the episode. The
+            # restoration evidence itself is post-gap: the gap cleared every
+            # window and streak, so three confirmed closes at-or-above the
+            # fixed peak and the frozen RS reference are fully observed. What
+            # the gap can hide is intra-episode history (sessions, drawdown
+            # extremes), which is why the flag and reason stay visible.
             if state == "LEADERSHIP_REESTABLISHED":
+                if not ep["history_complete"]:
+                    state_reason = "price_and_pre_correction_rs_restored_gapped_history"
                 ep["recovered_on"] = day.isoformat()
             ep["price_recovered"] = price_restored
             ep["rs_recovered"] = rs_restored

@@ -907,6 +907,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
     <span class="section-title">{{ t('RS highs to watch', '相对强度新高观察') }}</span>
     <span class="section-rule"></span>
     {% if _rsw.stale %}<span class="section-note">{{ t('Source stale', '数据陈旧') }}</span>{% endif %}
+    {% if _rsw.additive_clock is defined and _rsw.additive_clock and _rsw.additive_clock.lag_sessions %}<span class="section-note">{{ t('Observed ' ~ _rsw.additive_clock.as_of ~ ' · ' ~ _rsw.additive_clock.lag_sessions ~ ' session behind radar clock', '观察截至 ' ~ _rsw.additive_clock.as_of ~ '，落后雷达时钟 ' ~ _rsw.additive_clock.lag_sessions ~ ' 个交易日') }}</span>{% endif %}
   </div>
   <p class="rs-highs-description">
     {{ t('Strict new SPY-relative closing highs — not necessarily price highs. Leaders can stay on watch while an entry resets; this is not a buy list.', '相对SPY收盘强度创新高，不一定是股价新高。龙头可持续观察，等待回踩形态；这不是买入清单。') }}
@@ -947,7 +948,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       {% if _recent|length > 0 %}
       <div class="rs-highs-tickers">
         {% for item in _recent[:30] %}
-        <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" title="Last RS high {{ item.last_high_as_of|e }} — review entry state, do not chase">
+        <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" data-tip-en="Last RS high {{ item.last_high_as_of|e }} — review entry state, do not chase" data-tip-zh="最近 RS 新高 {{ item.last_high_as_of|e }} — 先看入场状态，不要追高">
           {{ item.ticker|e }}
           <span class="rs-highs-ticker-date">{{ item.last_high_as_of|e }}</span>
           {{ _rs_entry_stance(item) }}

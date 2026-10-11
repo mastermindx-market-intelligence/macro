@@ -47,6 +47,82 @@
         "diff_check": "git diff --check clean"
       },
       "hosted_fix_verified": false
+    },
+    {
+      "subject_head": "a7189a98f1c1991e3cf5e1e0b4816b6552f238c9",
+      "run_id": 38117862214,
+      "job_id": 114406836084,
+      "job": "ci-pack-8",
+      "failed_jobs": [
+        "design-governance"
+      ],
+      "gate_jobs_concluded_failure": [
+        "ci-pack-8",
+        "ci-gate"
+      ],
+      "previous_failures_cleared": [
+        "unrun-import-hygiene",
+        "design-governance (R0 radius-literal)"
+      ],
+      "failures": [
+        {
+          "check": "scripts/check_ui_visual_evidence.py (design-governance \u2014 visual evidence for a material UI change)",
+          "message": "visual evidence required for a material UI change: templates/leader_radar.html.j2",
+          "repair": "mockups/evidence/rs-leader-highs-watch/ (EVIDENCE.yml + manifest.json + PNG cells) captured with scripts/capture_page_evidence.py against the read-only scratch render of the existing page, including hover/focus force states on .rs-highs-ticker; gate exit 0 locally",
+          "evidence_manifest_totals": {
+            "pages": 1,
+            "states_attempted": 36,
+            "states_captured": 36
+          },
+          "evidence_axes": {
+            "access": [
+              "anonymous"
+            ],
+            "force_states": [
+              "rs_highs_ticker_hover:hover(.rs-highs-ticker)",
+              "rs_highs_ticker_focus:focus(.rs-highs-ticker)"
+            ],
+            "locales": [
+              "en",
+              "zh"
+            ],
+            "themes": [
+              "light",
+              "dark"
+            ],
+            "viewports": {
+              "desktop": [
+                1440,
+                900
+              ],
+              "mobile": [
+                390,
+                844
+              ],
+              "tablet": [
+                820,
+                1180
+              ]
+            }
+          },
+          "evidence_generated_at": "2026-10-11T08:29:31Z"
+        }
+      ],
+      "also_in_this_repair_push": [
+        "engine: restoration target is the fixed pre-correction peak (original_price_target_recovered), not the advancing high-water; gapped-history episodes complete with reason price_and_pre_correction_rs_restored_gapped_history instead of being barred",
+        "builder: recovery_roster.additive_clock (universe-majority completed session) + ::warning leader_radar_additive_clock + template lag section-note; incumbent payload parity 0 differences (producer_parity.json)",
+        "research: census --as-of cut; CENSUS_SUMMARY/POLICY_SUMMARY regenerated at 2026-10-08 under the corrected engine"
+      ],
+      "repair_author": "RS LEADER Meta-CEO session 5ec0472d (Claude Fable 5.1), 2026-10-11, lane tree claude/ssd-rs-leader-wp1-1d927f831ec5f94e pushed by refspec onto the PR branch",
+      "local_checks": {
+        "visual_evidence": "python3 scripts/check_ui_visual_evidence.py -> exit 0 (evidence folder resolves the changed template)",
+        "focused_suite": "401 passed",
+        "producer_parity": "scratchpad/parity.py -> n_differences_outside_exclusions 0 (173 names)",
+        "operational_stores": "177 files hashed before/after research + render -> unchanged",
+        "agentos": "python3 scripts/agentos.py validate --root agentos --quiet (run before commit)",
+        "diff_check": "git diff --check (run before commit)"
+      },
+      "hosted_fix_verified": false
     }
   ]
 }

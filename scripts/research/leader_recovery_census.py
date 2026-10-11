@@ -24,13 +24,17 @@ from lib.nyse_calendar import sessions_between
 from scripts.build_leader_radar import _resolve_universe, _load_spy, _load_ohlcv
 
 
-def run(*, data_root: Path, study_start: date, extras: tuple[str, ...] = ()) -> dict:
+def run(*, data_root: Path, study_start: date, extras: tuple[str, ...] = (), as_of: date | None = None) -> dict:
     started = time.monotonic()
     universe, _ = _resolve_universe(data_root, config.load())
     spy = _load_spy(data_root)
     if spy is None or spy.empty:
         raise ValueError('benchmark_unavailable')
-    cut = spy.index.max().date()
+    # Explicit cut, like the policy study: the benchmark store may lead the issuer stores by a
+    # session, and the census clock must not silently follow the benchmark alone.
+    cut = as_of or spy.index.max().date()
+    if cut > spy.index.max().date():
+        raise ValueError('requested_cut_not_available')
     cal = sessions_between(spy.index.min().date(), cut)
     spec = RecoverySpec()
     events, current, missing, source_hashes = [], [], [], {}
@@ -104,11 +108,12 @@ def main() -> int:
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--study-start',type=date.fromisoformat,default=date(2024,1,1))
     parser.add_argument('--extra',default='PYPL,DOCU,PTON,UPST,INTC')
+    parser.add_argument('--as-of',type=date.fromisoformat,default=None)
     args=parser.parse_args()
     if any(p in {'data','site','site_full'} for p in args.out.parts):
         raise ValueError('research_must_not_write_operational_store')
     result=run(data_root=config.data_dir(),study_start=args.study_start,
-               extras=tuple(x.strip() for x in args.extra.split(',') if x.strip()))
+               extras=tuple(x.strip() for x in args.extra.split(',') if x.strip()),as_of=args.as_of)
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(result,sort_keys=True,indent=2,allow_nan=False))
     print(json.dumps({k:v for k,v in result.items() if k not in {'cases','events','source_hashes'}},indent=2))

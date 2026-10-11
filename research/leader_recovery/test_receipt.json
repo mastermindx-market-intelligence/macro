@@ -1,20 +1,22 @@
 {
   "exit_code": 0,
   "counts": {
-    "passed": 398
+    "passed": 401,
+    "warnings": 1
   },
   "python": "3.14.7",
-  "elapsed_seconds": 13.732,
-  "mode": "staged exact feature files over readonly host dependency checkout; not full hosted CI",
-  "host_dependency_checkout": "cdab62686e79c76b6d431b02dec49c41a290f4c2",
+  "elapsed_seconds": 26.77,
+  "mode": "lane tree claude/ssd-rs-leader-wp1-1d927f831ec5f94e in-repo source (committed head a7189a98f1c1 plus the staged WP1 changes hashed below) run with `python3 -m pytest <files> -q -p no:cacheprovider`; licensed stores read only from the host dependency checkout; not full hosted CI",
+  "host_dependency_checkout": "eb55c8573d94700dde35b6ce5b9af23738c710c0",
+  "host_dependency_checkout_path": "/Users/chriswong/Documents/Cluade/macro-main",
   "test_files": [
-    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery.py",
-    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery_expectations.py",
-    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery_integration.py",
-    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery_observations.py",
-    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery_outcomes.py",
-    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery_policy_research.py",
-    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_rs_leader_highs.py",
+    "tests/test_rs_leader_highs.py",
+    "tests/test_leader_recovery.py",
+    "tests/test_leader_recovery_outcomes.py",
+    "tests/test_leader_recovery_integration.py",
+    "tests/test_leader_recovery_policy_research.py",
+    "tests/test_leader_recovery_expectations.py",
+    "tests/test_leader_recovery_observations.py",
     "tests/test_leader_lifecycle.py",
     "tests/test_build_leader_radar.py"
   ],
@@ -27,19 +29,30 @@
   },
   "source_sha256": {
     ".github/ci/legacy-jobs.yml": "58a1540acb62142b5216dcfcaea24ef8fe81bbd5dfe629221754ccde6e3186e7",
-    "engine/leader_recovery.py": "dfcf917dbc73390f91d3b62a90c81d1fa5c77fc1a3b78be270d495f86e29e578",
+    "engine/leader_recovery.py": "7f1b160fc5a0ff2dde00573f80b7c6fd66ba0d146ce1c22459253360eb02e2db",
     "engine/leader_recovery_expectations.py": "7063fc43ba9b28caa066337c40a0b5143eb0f0d8e2c49ad35160f2028242ce6f",
     "engine/leader_recovery_observations.py": "3cfe79c96a52f97a4a09ffb9593c1d8697338a9c24b3412be21b24ff3eab5b91",
     "engine/leader_recovery_outcomes.py": "d9f29c7ce35e89dccd293e71c16644ee10ee1a3abd72223eb94a7f27881e7e7e",
     "engine/leader_recovery_policy_research.py": "6dd5d6bf18219343e346e504add001cb700fa87dc68ccab837490cebdecbc3e4",
-    "scripts/build_leader_radar.py": "cde093c371412daec6500acb3a4ea89404a49bee25aa074792e34752a7876ed4",
-    "tests/test_leader_recovery.py": "80c07db6b3903a59d820f408702a760e4ef91d680429876d3d5fde0e16d22b57",
+    "scripts/build_leader_radar.py": "7de8837fe95f814be3670c64f391f6c6aeb1bf5d49dca24c3e0a651f31057388",
+    "scripts/research/leader_recovery_census.py": "cb584ee7ff6859bdbb7c59c5510cde13f87467bc9f68fd68517059891de8234d",
+    "scripts/research/leader_recovery_policy_study.py": "f535219c0e2a2f994007d10f5fedd486f1723a943ae9004bc63ba1b1c0de15b0",
+    "templates/leader_radar.html.j2": "83277c6874cc1dc6051f4f974e0bdaa898097c290b2853661e0bf498a23d8c3f",
+    "tests/test_build_leader_radar.py": "bf69218fcfcde0eb2bb83e65ceb33c6fdae3d1ace25a6ac73795d4be4f1cc00c",
+    "tests/test_leader_lifecycle.py": "fb690935643c289fb3e2f23d94c1aac7f9155e6c0f5def4eba2b2d519e2a0667",
+    "tests/test_leader_recovery.py": "386629c53bd95e5c3821d0baeeae463c26a6fdd6c8a97da9cf9c70f9ad3d8b77",
     "tests/test_leader_recovery_expectations.py": "6d9bab318c6e864999e50d8d0181ff84685ca0e2a9d151d2bc21c27123e2a29f",
-    "tests/test_leader_recovery_integration.py": "9394b34c13d5aacaf601c5eec10bc1dca6b3e771d221ff742ed3d3ab118b375c",
+    "tests/test_leader_recovery_integration.py": "befe87b9ff3bcea67d4a113f6af810538f488ddf25fc3ab96c97dfeeafb4c798",
     "tests/test_leader_recovery_observations.py": "4e14e321596adae11f7fe075b5a38119a68905a147755dfadfe7c3eabed0f151",
     "tests/test_leader_recovery_outcomes.py": "c9accfcd867b3676e469bbfcdc5355d12384a753dc21c34408b32131824bce80",
     "tests/test_leader_recovery_policy_research.py": "1a0975a7192397ce6bb91752056e5bb2c36e0def851660378df8e09ed03d2a5c",
     "tests/test_rs_leader_highs.py": "7a9bc8ffa9bfd19472a449c490e27ddba94811d5e664367c52de78ee2137bf96"
   },
-  "test_nodeids_sha256": "95d5e027fad0bdb1432711c83af411d7fc8833f855f948ae686a9c134443e4fe"
+  "test_nodeids_sha256": "24040922d16e662292f97bdb8d335ba9c0f1d491d6c67dccc7c86ff52a728a44",
+  "test_nodeids_count": 401,
+  "test_nodeids_method": "sha256 over the newline-joined node-id lines of `pytest --collect-only -q` (same files, same order)",
+  "logs": {
+    "run": "scratchpad/pytest10.log",
+    "collect": "scratchpad/collect10.log"
+  }
 }

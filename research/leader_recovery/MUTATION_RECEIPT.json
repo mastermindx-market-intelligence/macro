@@ -1,31 +1,32 @@
 {
-  "source_sha256": "dfcf917dbc73390f91d3b62a90c81d1fa5c77fc1a3b78be270d495f86e29e578",
-  "test_sha256": "80c07db6b3903a59d820f408702a760e4ef91d680429876d3d5fde0e16d22b57",
+  "source_sha256": "7f1b160fc5a0ff2dde00573f80b7c6fd66ba0d146ce1c22459253360eb02e2db",
+  "test_sha256": "386629c53bd95e5c3821d0baeeae463c26a6fdd6c8a97da9cf9c70f9ad3d8b77",
   "method": "six deliberate in-scope source mutations; author-run adversarial regression, not independent review",
+  "baseline": "41 passed, 1 warning in 1.98s",
   "mutations": {
     "ignore_history_gaps": {
       "caught": true,
-      "summary": "1 failed, 39 passed in 1.08s"
+      "summary": "10 failed, 31 passed, 1 warning in 1.47s"
     },
     "forget_old_leader": {
       "caught": true,
-      "summary": "24 failed, 16 passed in 0.62s"
+      "summary": "23 failed, 18 passed, 1 warning in 1.39s"
     },
     "declare_rs_restored": {
       "caught": true,
-      "summary": "4 failed, 36 passed in 0.52s"
+      "summary": "5 failed, 36 passed, 1 warning in 1.23s"
     },
     "permit_future_duplicates": {
       "caught": true,
-      "summary": "2 failed, 38 passed in 0.51s"
+      "summary": "3 failed, 38 passed, 1 warning in 1.23s"
     },
     "erase_failed_repairs": {
       "caught": true,
-      "summary": "2 failed, 38 passed in 0.52s"
+      "summary": "2 failed, 39 passed, 1 warning in 1.22s"
     },
     "rolling_peak_loss": {
       "caught": true,
-      "summary": "5 failed, 35 passed in 0.57s"
+      "summary": "2 failed, 39 passed, 1 warning in 1.21s"
     }
   }
 }
