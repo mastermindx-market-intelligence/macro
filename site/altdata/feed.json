@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-11T07:15:34.713450+00:00",
+  "generated_utc": "2026-10-11T13:59:23.701721+00:00",
   "as_of": "2026-10-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28349,10 +28349,10 @@
         },
         {
           "ticker": "COE",
-          "buy_usd": 133514854.0,
+          "buy_usd": 124202047.0,
           "sell_usd": 0.0,
-          "net_usd": 133514854.0,
-          "buyers": 40,
+          "net_usd": 124202047.0,
+          "buyers": 37,
           "sellers": 0
         },
         {
@@ -28494,12 +28494,12 @@
           "sellers": 163
         },
         {
-          "ticker": "UMC",
+          "ticker": "ILMN",
           "buy_usd": 0.0,
-          "sell_usd": 755150200.0,
-          "net_usd": -755150200.0,
+          "sell_usd": 724475263.0,
+          "net_usd": -724475263.0,
           "buyers": 0,
-          "sellers": 7
+          "sellers": 122
         }
       ]
     },
@@ -32009,13 +32009,6 @@
         "last_surprise_pct": -3.3
       },
       {
-        "ticker": "UMC",
-        "next_date": "2026-10-28",
-        "days_to": 17,
-        "eps_forecast": 0.23,
-        "last_surprise_pct": 237.5
-      },
-      {
         "ticker": "URI",
         "next_date": "2026-10-28",
         "days_to": 17,
@@ -32119,6 +32112,13 @@
         "days_to": 18,
         "eps_forecast": 2.55,
         "last_surprise_pct": 2.3
+      },
+      {
+        "ticker": "ILMN",
+        "next_date": "2026-10-29",
+        "days_to": 18,
+        "eps_forecast": 1.36,
+        "last_surprise_pct": 6.5
       },
       {
         "ticker": "IR",
