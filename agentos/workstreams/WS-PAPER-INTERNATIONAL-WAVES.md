@@ -112,12 +112,16 @@ waves:
   - IM00
 - id: IM08
   title: International Investigation adapter
-  status: todo
+  status: in_progress
+  next_action: Pure context candidate has 53 parent tests and strict TypeScript proof; independent review is unsettled.
+    Consume the bounded evidence-adapter return before accepted incumbent kernel composition.
   depends_on:
   - IM00
 - id: IM09
   title: Existing Saved workspace extension
-  status: todo
+  status: in_progress
+  next_action: Consume the pure inventory presentation and selected-detail candidates; preserve Terminal804 source
+    custody, actual dark-only shell and authenticated persistence gates. Worker assertions are not acceptance.
   depends_on:
   - IM08
 - id: IM10
@@ -129,10 +133,10 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Publish the accepted History/scenario integration on PR8527, then qualify source-specific History,
-  Macro, Risk and equity inputs using response coverage and successful artifact-write witnesses. Continue
-  Investigation/Saved and policy comparison through the accepted incumbent interface. Hosted CI, merge,
-  served access and subsequent production publication remain separate acceptance gates.
+next_action: Complete independent review and release of PR8754, which repairs the explicit serving boundary for
+  nine International UI assets after merged PR8527. Verify live controls and subsequent normal publication.
+  Recover the exact stalled pre-start reviews through their existing owner without duplication. Continue source
+  qualification and Investigation/Saved composition through the accepted incumbent interface.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -148,7 +152,7 @@ landmines:
   existing Investigation owner and accepted interface.
 ---
 
-The Chairman delivered all three waves to Astra in root `01a1101f-2a37-7320-9a9b-5df3ce1b890d`. PR #8527 is the sole integration carrier. It remains Draft, without auto-merge or a merge-on-green label. No fixed one-worker programme ceiling remains. Every descendant retains the original root and actual host/provider admission; a role or available quota alone creates no capacity.
+The Chairman delivered all three waves to Astra in root `01a1101f-2a37-7320-9a9b-5df3ce1b890d`. PR #8527 merged as `63245e035e2067f19ef9c75077dc920895b2eb17`; it is retained as the grouped source carrier for the three waves. The current release repair is draft PR #8754 in the canonical workspace operation `paper-waves-01a1101f-release-r2`. The old merged branch is not reused. No fixed one-worker programme ceiling remains. Every descendant retains the original root and actual host/provider admission; a role or available quota alone creates no capacity.
 
 Native Sol CEO `01a11057-3134-76d2-bcd1-784d69cc17d3` has executed under the Chairman-authorized local exception, requested `gpt-6.1-sol`; served model is unattested. Workers are scoped to the existing root and retained run identities; the external CHECKPOINT binds current phase and process evidence. The nested COO-to-worker graph is not proven admitted. No unattended Codex-parent wake is installed.
 
@@ -167,3 +171,11 @@ Macro #7202 remains the incumbent performance carrier. Macro #7870 is a Theme Re
 The Library integration now passes61 actual Chrome tests (20 existing controller,18 Library controller,14 retained-navigation and9 actual-page tests). Python metadata/render/composition checks remain separately recorded. Canonical Library evidence captures48 default/selected-group rest, search-focus, row-hover and link-focus states across dark/light, EN/ZH and1440/390; its final run has no console errors or horizontal page overflow. All screenshots use the actual builder/template with explicitly synthetic empty supplied frames, not live financial data or authenticated access.
 
 The latest failure recovery installed stable native run IDs, classified proven economic prelaunch refusal correctly, reconciled one exact historical prestart failure through authenticated owner proof, and repaired MiniMax's canonical-source read binding. No host/provider cap or quality hold was relaxed. Later full-GLM and Grok returns were rejected when incomplete; parent repaired the bounded Library integration. Sol investigated repeated diff output and found no proven shim replay defect, so no speculative shared shim patch was installed. Final independent controller review and publication remain separate gates.
+
+## Release and Fabric repair, 2026-10-11
+
+Fresh readback (`gh pr view 8527 --repo mastermindx-market-intelligence/macro`) confirms merge. The served new International HTML was read in the authenticated Chrome session, but its nine workspace CSS/JS assets returned401 and the controls remained disabled. PR #8754 adds only those exact public presentation files to the existing policy and four Caddy matchers. Parent validation: `python3 -m pytest tests/test_regwall_json_gate.py -q` (16pass), `python3 -m pytest tests/test_site_access_boundary.py -q` (25pass), plus Caddy adapt/validate. International data and unlisted future files remain outside the asset allowlist. Independent review, merge, deployment and live journey acceptance remain unproven.
+
+The stable Fabric adapter had launched the controller with PATH-selected Homebrew Bash, which reproduced a heredoc deadlock before remote setup. Its two launch sites now use `/bin/bash`; no provider, host, lease, lifecycle or capacity policy changed. Exact installed SHA is `2c8694995a1f18e7f830a99af496208e6dd78e8df87637115eac779181aa7827`. The three new regression cases fail at both old launch sites and pass on the installed repair;22 existing adapter tests pass. Commands and the reversible installation receipt are in `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/fabric-bash-fix-local/`. Existing stalled runs remain unsettled and unreplayed: `paper-01a1101f-im06-provenance-witness-review-r3`, `paper-01a1101f-asset-access-review-r1`, and `paper-01a1101f-im08-context-review-r1`.
+
+The current native Paper read confirms the Saved detail, mobile light and320/200% references with token hash `501cd923`. Exact JSX and read receipt are in the same evidence root under `im09-native-design/`. Terminal's accepted shell remains dark-only under `docs/TERMINAL_UI_DOCTRINE_2026-07-28.md`; those light references do not create a second theme owner. The new pure domain/component candidates are unintegrated. No manifest version, migration, rights grant, save/recovery service or live Saved capability has been added.
