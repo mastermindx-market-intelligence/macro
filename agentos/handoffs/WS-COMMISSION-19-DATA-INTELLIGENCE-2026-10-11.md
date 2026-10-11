@@ -83,7 +83,7 @@ verified:
       lanes collide with no live writer. This is a title/body search, not a file-path search.
     command: >
       for t in integrated_answer query_snapshots macro_release expectation_state MRI; do gh pr list
-      --repo mastermindx-market-intelligence/macro-dashboard --state open --search "$t in:title,body"
+      --repo mastermindx-market-intelligence/macro --state open --search "$t in:title,body"
       --json number,isDraft,title; done
     result: "only #8630 (draft) for expectation_state; empty for the other four terms"
   - claim: >
