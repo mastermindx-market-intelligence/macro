@@ -378,7 +378,7 @@ def normalize_news(payload: Mapping[str, object], *, transport: str,
         # "benzinga"; only the transport/provider differs. No body field is
         # mapped so REST (include_content=false) and WS items of the same
         # article hash to the identical content_hash and revision_id.
-        if "source" in payload and str(payload.get("source")).strip().lower() != "benzinga":
+        if str(payload.get("source") or "").strip().lower() != "benzinga":
             raise NewsContractError("unsupported_source")
         source_item_id = _source_id(payload.get("id"))
         published = _parse_clock(

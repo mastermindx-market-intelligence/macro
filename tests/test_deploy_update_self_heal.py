@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import ast
+import os
+import shlex
 import subprocess
 import urllib.parse
 from collections import deque
@@ -171,6 +173,71 @@ def test_api_restart_transaction_precedes_w2c_runtime_attestation():
     assert "API_RESTART_CONFIRMED=1" in transaction
     assert "mm_write_api_fence_marker" in transaction
     assert "w2c_start_owner_chain" not in transaction
+
+
+@pytest.mark.parametrize(
+    ("unit_differs", "changed", "unit_valid", "expected_restart"),
+    [
+        (True, "", True, True),
+        (False, "config/plans.yml", True, True),
+        (False, "app/billing.py", True, True),
+        (False, "site/news.html", True, False),
+        (True, "", False, False),
+    ],
+)
+def test_admin_adopts_before_unrelated_w2c_failure(
+    tmp_path: Path, unit_differs, changed, unit_valid, expected_restart
+):
+    """Run the actual admin transaction and W2C exit in their source order.
+
+    The old updater exits before installing the admin unit, even on a later
+    empty-CHANGED tick. Keep that W2C refusal while allowing admin to adopt.
+    Only systemd is simulated; comparison and unit installation use real files.
+    """
+    app = tmp_path / "app"
+    source = app / "admin/deploy/admin.service"
+    source.parent.mkdir(parents=True)
+    source.write_text("reviewed admin generation\n")
+    installed = tmp_path / "installed-admin.service"
+    installed.write_text("old generation\n" if unit_differs else source.read_text())
+    events = tmp_path / "events"
+    start = SCRIPT.index("ADMIN_UNIT_UPDATED=0")
+    restart = SCRIPT.index("\tsystemctl is-enabled admin ", start)
+    end = SCRIPT.index("\nfi", restart) + len("\nfi")
+    admin = SCRIPT[start:end].replace(
+        "/etc/systemd/system/admin.service", shlex.quote(str(installed))
+    )
+    failure_start = SCRIPT.index('if [ "${MARKET_MEMORY_EXPERIENCE_ATTESTED:-1}" -ne 1 ]; then')
+    failure_end = SCRIPT.index("# END W1B5_TIMER_FINALIZATION", failure_start)
+    refusal = SCRIPT[failure_start:failure_end]
+    ordered = "\n".join(block for _, block in sorted([(start, admin), (failure_start, refusal)]))
+    harness = f"""
+set -eu
+APP_DIR={shlex.quote(str(app))}
+RECONCILED=0
+MARKET_MEMORY_EXPERIENCE_ATTESTED=0
+OPTIONS_RECONCILIATION_COMPLETE=0
+trap 'echo "exit-options-complete=$OPTIONS_RECONCILIATION_COMPLETE" >> "$EVENTS"' EXIT
+systemctl() {{ echo "$*" >> "$EVENTS"; }}
+systemd-analyze() {{ [ "$UNIT_VALID" = 1 ]; }}
+{ordered}
+"""
+    result = subprocess.run(
+        ["bash", "-c", harness], text=True, capture_output=True,
+        env={**os.environ, "EVENTS": str(events), "CHANGED": changed,
+             "UNIT_VALID": "1" if unit_valid else "0"},
+    )
+    assert result.returncode == 1
+    assert "W2C installation and terminal state were not authenticated" in result.stderr
+    observed = events.read_text().splitlines()
+    assert observed[-1] == "exit-options-complete=0"
+    assert ("restart admin" in observed) is expected_restart
+    assert not any("market-memory" in event or "timer" in event for event in observed)
+    assert installed.read_text() == (
+        source.read_text() if unit_valid or not unit_differs else "old generation\n"
+    )
+    if unit_differs and unit_valid:
+        assert observed.index("daemon-reload") < observed.index("restart admin")
 
 
 # --------------------------------------------------------------------------
