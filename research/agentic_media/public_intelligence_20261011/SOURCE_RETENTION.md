@@ -69,3 +69,15 @@ integrate this accepted producer change from fresh main. The White House/NVIDIA
 editorial candidate remains unadmitted: its real 17-check replay has 12 passes
 and five failures, including zero first-party receipts and zero first-party
 numeric value share. Never relabel government facts to force a D14 pass.
+
+## Candidate document preparation
+
+`replay_event_candidate.py --formatted --peer-root <existing stage root>` now
+adds the existing byline/footer and required document metadata without changing
+reviewed prose or fact tiers. Actual replay: **15 of17 checks pass**, with only
+`our_value` (0% versus40%) and `receipts` (0 versus5) failing. All334 prose words
+remain; both existing stage files retain their hashes.
+`whitehouse_formatted_candidate_validation.json` binds the exact preparation
+script, source, configuration, validator, original candidate and prepared JSON.
+This is a prepared research artifact, not an admitted/staged/public Press article
+or a generated D14 acceptance sample. The original12/17 replay remains retained.

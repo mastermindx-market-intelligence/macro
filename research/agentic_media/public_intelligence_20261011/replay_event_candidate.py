@@ -34,7 +34,7 @@ def bound_file(path: str, expected: str) -> bytes:
     return b
 
 
-def replay(peer_root: Path | None = None) -> dict:
+def replay(peer_root: Path | None = None, *, formatted: bool = False) -> dict:
     receipt_bytes = (HERE / "whitehouse_event_source_receipt.json").read_bytes()
     receipt = json.loads(receipt_bytes)
     retained = receipt["retained_public_source"]
@@ -93,8 +93,20 @@ def replay(peer_root: Path | None = None) -> dict:
                "facts": facts, "raw_documents": [{"ref": source_ref, "text": source["body"]}],
                "primary_source": {"kind": "external", "name": "The White House", "url": source["url"]},
                "allowed_links": [url]}
-    # Full suite is intentionally allowed to report missing publishing metadata
-    # and furniture. This candidate is not silently upgraded into a Press draft.
+    if formatted:
+        # Deterministic document preparation, not a planner slot or stage. Keep
+        # the reviewed prose and third-party fact tiers exactly as they are.
+        draft.update(
+            slug="nvidia-science-commitment-delivery-ledger",
+            description=("NVIDIA's announced science commitment needs delivery evidence. "
+                         "Read the White House figures alongside the distinctions that matter to investors."),
+        )
+        footer = cfg["validators"]["footer_required_text"]
+        draft["body_html"] = (f'<p class="press-byline">{html.escape(context["byline"])}</p>\n'
+                              + draft["body_html"]
+                              + f'\n<p class="press-footer">{html.escape(footer)}</p>')
+    # The full suite retains its content/evidence gates. Formatting cannot
+    # supply first-party receipts, admission, approval or generated-batch credit.
     peer_root = (peer_root or ROOT).resolve()
     peer_inputs = {}
     paths = cfg.get("paths") or {}
@@ -109,6 +121,10 @@ def replay(peer_root: Path | None = None) -> dict:
     return {"kind": "unadmitted_editorial_candidate_replay",
             "tested_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
+            "replay_script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            "formatted": formatted,
+            "prepared_document": draft if formatted else None,
+            "prepared_document_sha256": hashlib.sha256(json.dumps(draft, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
             "peer_root": str(peer_root), "peer_input_hashes": peer_inputs,
             "config_sha256": hashlib.sha256((ROOT / "config/press.yml").read_bytes()).hexdigest(),
             "validator_sha256": hashlib.sha256((ROOT / "engine/press/validators.py").read_bytes()).hexdigest(),
@@ -122,5 +138,6 @@ def replay(peer_root: Path | None = None) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--peer-root", type=Path, help="Read-only existing stage/ledger corpus for overlap checks")
+    parser.add_argument("--formatted", action="store_true", help="Add existing desk furniture and document metadata; never stage or publish")
     args = parser.parse_args()
-    print(json.dumps(replay(args.peer_root), ensure_ascii=False, indent=2))
+    print(json.dumps(replay(args.peer_root, formatted=args.formatted), ensure_ascii=False, indent=2))
