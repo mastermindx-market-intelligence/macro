@@ -1,0 +1,101 @@
+{
+  "schema": "consumer_cyclical.fable_integration_ready.v1",
+  "date": "2026-09-24",
+  "parent_operation": "gmi-consumer-cyclical-research-20260923-sol-001",
+  "intended_child_operation": "gmi-consumer-cyclical-v1-integration-20260924-fable-001",
+  "carrier": {
+    "repo": "mastermindx-market-intelligence/macro",
+    "pr": 7804,
+    "research_only": true,
+    "accepted_review_head": "1183127d24cb9d3654516323f4e4ba530aa15cd1"
+  },
+  "routing": {
+    "preferred_avenue": "Fable",
+    "receiver_binding_mode": "CAPACITY_SELECTABLE",
+    "placement_state": "WAITING_CAPACITY / needs_placement",
+    "receiver_assignment": null,
+    "execution_state": "PRE_START",
+    "dispatch_sent": false,
+    "why_fable": "Principal continuity is required across moving shared transport/rights/private-publication/history/page authorities; routine implementation should be delegated after boundaries freeze."
+  },
+  "procedure": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "commit": "1a7d400294b0d37c460b963b8865b40a23173b58",
+    "skillpack": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "review": {
+    "packet_manifest_digest": "6146906128d5cb09c543b8d954abb4c95205cbe27fc11902eabfb217e809b6fa",
+    "provider_session_id": "e07aaee8-2315-4475-99f6-1af495c9fcc2",
+    "primary_model": "claude-opus-5",
+    "verdict": "ACCEPT_FOR_FABLE_HANDOFF",
+    "blocking_findings": 0,
+    "r12_replay": {
+      "passed": 60,
+      "failed": 0,
+      "proof_level": "research_only"
+    },
+    "r13_replay": {
+      "passed": 9,
+      "failed": 0,
+      "proof_level": "research_only"
+    }
+  },
+  "current_pins": {
+    "macro_main": "c99fdde7302dcc8ce66566802ea319ff3fdb9c11",
+    "pr7870": "3e3a7956d014b8c50be7b197fdbea847cecfa641",
+    "pr7780": "b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb",
+    "pr7669": "6942b2b62bad2dfc9d3b50eb7042e0a126b708c4",
+    "pr7462": "31706d7322af55696dc7b2e746ec511b08bd51d7",
+    "pr7426": "7bc04876747d773861b47519061279ae033a148d",
+    "paywall_blob": "7e1c6861ebb7d27924865b2b8d157e6a9356405d",
+    "paywall_test_blob": "1d958154eed91ee08f9f7ab65b719e1910e2ccd1",
+    "theme_research_blob": "f3c70ffd67ccab5225189ec1a3106bd1ea38c11e",
+    "theme_research_test_blob": "a06d8c2a489fe23ecc11a7c07819951c83e7ec5d",
+    "rights_refresh_test_blob": "bfc04f38066029e46d23c2e61ac4dd1e5aa9acb0",
+    "private_binding_test_blob": "a9c09169d3618abb2bb7df1c842fab0c7c0d1054"
+  },
+  "mission": {
+    "first_vertical": "V1_PLNT",
+    "successors": [
+      "V2_LTH",
+      "V3_LULU",
+      "V4_THEME_COMPANY_JOURNEY"
+    ],
+    "full_program_completed": false,
+    "first_vertical_completed": false
+  },
+  "external_gates": {
+    "T09": "BUILT_NOT_PROVEN__NOT_CONSUMER_ACCEPTED__UNMATCHED_SOURCE_FAMILY_FAIL_OPEN",
+    "T08b": "REVIEW_REJECTED__FIX_QUEUED",
+    "T10e": "QUEUED",
+    "T10f": "QUEUED",
+    "T11a": "REVIEW_REJECTED__FIX_QUEUED",
+    "buildout_ruling_7780": "OPEN",
+    "consumer_profile_registration": "PENDING_SHARED_OWNER_ACCEPTANCE",
+    "lulu_history": "NOT_ACCEPTED",
+    "native_source_admission": false,
+    "browser_proof": false,
+    "production_acceptance": false
+  },
+  "sticky": {
+    "native_staging": "BLOCKED_DO_NOT_RETRY_REPHRASE_REHOME_OR_DELEGATE_WORKAROUND",
+    "research_pr_product_writes": false,
+    "authority": {
+      "rank": false,
+      "gate": false,
+      "size": false,
+      "originate": false,
+      "entry": false
+    }
+  },
+  "do_not_redo": [
+    "R1-R11 research",
+    "shared-foundation archaeology",
+    "existing consultations",
+    "completed first independent review",
+    "R12/R13 research verification absent material invalidator",
+    "R14 owner reconciliation absent material invalidator",
+    "blocked native-staging action"
+  ]
+}
