@@ -9,27 +9,51 @@ temporal.py, registry.py, config/dataset_registry.yml.
 file permissions 0600. Never check secrets into Git or print them.
 **Commercial authority:** Chairman states Business Advanced is live with full redistribution.
 That present attestation is recorded; this is not a request to repurchase or reapprove it.
-Actual endpoint activation, rate limits, historical availability and production proof
-remain technically unverified, distinct from the Chairman's rights attestation.
+Actual endpoint activation and data receipt now have bounded proof below. Full
+fundamentals scope, complete backfill, canonical admission and production consumer
+acceptance remain open, distinct from the Chairman's purchase/rights attestation.
 
-## Current truthful states
+## Current truthful states — verified 2026-10-11 18:17 UTC
 
-| Capability | Current state | Proof vs pending |
+The current producer source is `bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb` on
+[Macro PR #8698](https://github.com/mastermindx-market-intelligence/macro/pull/8698).
+The later dated sections retain historical observations and restrictions from prior
+sessions. Their no-data/eleven-failure statements describe those dates; this current
+checkpoint supersedes them for current capability. It does not clear another
+session's refused or unsettled effect, and the previously blocked untracked CEO
+handoff has not been published through another route.
+
+| Capability | Current state | Actual proof and remaining requirement |
 |---|---|---|
-| Tiingo credentials available to source adapter | BUILT_NOT_PROVEN | Owner-only file exists, but vendor authentication **not attempted successfully** |
-| Historical EOD ingestion | BROKEN | Raw producer exists, but context/corruption/clock regressions block activation; no live response |
-| Fundamentals metadata/statements/daily | PARTIAL | Source routes and offline permaTicker cohorts exist; capture integrity and real history are unproven |
-| BOATS snapshots / historical bars | BUILT_NOT_PROVEN | Vendor path and 1m bar builder; entitlement not verified |
-| BOATS trade/quote/break websocket | BUILT_NOT_PROVEN | Bounded streaming client and immutable segmented raw receipts; not connected |
-| IEX / equity intraday / FX / crypto / news / corporate actions / fund fees | BUILT_NOT_PROVEN | Documented REST source paths, raw archive; no live data |
-| L1 research Parquet | BROKEN | Happy-path fixtures pass, but content-only output names alias distinct tickers/query contexts; reader now quarantines ambiguity |
-| Complete historical corpus / full symbol census | NOT_BUILT | No vendor entitlement probe; no production collector/backfill |
-| Canonical L2 Data OS enrollment | NOT_BUILT | Requires as-of identity/rights/availability/quality and owning consumer gate |
-| Recurring durable capture and research publication | NOT_BUILT | Must use an incumbent runtime / publication owner, not new cron or lifecycle |
+| Tiingo account/key and quotas | VERIFIED_BOUNDED | Signed-in account key matches the provisioned key; Organization and BOATS active; 20,000 requests/hour, 150,000/day, 100 GB/month |
+| Producer integrity | REPAIRED_SOURCE | Original eleven failures repaired; 431 full-suite passes before final one-case repair, then 122 affected passes; bounded independent reviewer condition fulfilled |
+| Producer hosted CI | GREEN_EXACT_HEAD | [Run 38137444247](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38137444247) completed success at bddd8da1; source/release fences green |
+| Historical EOD ingestion | VERIFIED_BOUNDED | 553 nonempty histories, 1,233,237 distinct bars, raw/adjusted/action fields retained, exact hashes and projection lineage verified; two additional empty responses recorded |
+| Fundamentals metadata/definitions | VERIFIED_BOUNDED | 20,352 unique permanent IDs (7,812 active, 12,540 inactive), 85 metric definitions; no canonical dated alias admission |
+| Full fundamentals statements/daily | RESTRICTED_CURRENT_RESPONSE | AAPL three-year true/false/daily responses 200; AMD ticker and permanent-ID requests 400 with free/Dow 30/limit error terms; full activated scope not yet served/proven |
+| BOATS historical bars | VERIFIED_BOUNDED | AMD/AAPL HTTP 200, 1,407 bars with explicit volume, all timestamps in the overnight window; no historical tick/book claim |
+| BOATS WebSocket authentication | VERIFIED_CONTROL_ONLY | Actual H/200, I/200 subscription response and ID presence; zero Q/T/B during Sunday daytime; actual market-frame/gap/break qualification remains |
+| L1 research Parquet | VERIFIED_BOUNDED | 565 raw receipts inspected/materialized; 498 new outputs in the larger batch, zero refusals; empty controls remain empty |
+| Complete historical corpus / full symbol census | INCOMPLETE | 500-response measured expansion and earlier pilots are complete; supported-catalogue/cohort denominators remain larger |
+| Canonical L2 Data OS enrollment | NOT_ADMITTED | Existing identity/rights/availability/quality owner still required; all 24 contracts PROPOSED and PIT eligibility false |
+| Terminal consumer | PREREQUISITE_IMPLEMENTED | [Draft PR #945](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/945), head 7506ef1539c8646e7bf52b65b697a102fd549942, preserves source/basis; actual BOATS Hub provider, independent review, approved VPS release and live browser proof remain |
+| Recurring capture/runtime/publication | NOT_ADMITTED | Attended bounded runs only; no daemon, cron, alternate queue, live publisher or future watcher created |
 
-The authenticated live probe was refused at the connected-tool safety boundary before
-dispatch. Do not infer that a key fails or succeeds and do not reroute/retry the same
-denied effect through another tool/session. Safe independent source/fixture work continued.
+Sanitized actual evidence is [docs/tiingo-evidence/20261011-live-qualification/README.md](tiingo-evidence/20261011-live-qualification/README.md).
+The measured 500-response batch downloaded 250,573,134 bytes in 1,268.838 seconds
+(~0.394 requests/s); the full external archive snapshot occupies 84,029,233 bytes
+and had 273.525 GiB free. The enforced 35 GiB reserve remains. Other writers also
+consume this volume, so that free-space observation is not a future reservation.
+
+The Chairman clarified that the historical platform blocks belonged to ChatGPT
+Web. This Codex session's actual source/archive writes were separately approved
+and succeeded under its own permission controls. No original refused publication
+was retried. Independent Fabric labor is currently unavailable: retained consumer
+operation `tiingo-8698-consumer-contract-20261011-01` failed before launch with
+`no_operator_available`; final review operation
+`tiingo-8698-final-integrity-review-20261011-01` failed before lease/launch with
+`LOG_RESERVATION_FAILED errno=1`. These are not running workers or a basis to
+resubmit, switch carriers or claim independent Terminal review acceptance.
 
 ## Dataset families and semantic traps
 
@@ -108,7 +132,7 @@ Data OS L2 (future, separately verified) should expose:
 - overlays/source comparisons rather than default-winner replacement of
   qualified Yahoo/Massive/SEC source contracts.
 
-## Offline commands that do not require API access
+## Original 2026-10-09 commands and admission context (historical)
 
 Run *inside the exact macro worktree*:
 
@@ -177,7 +201,7 @@ Admission evidence before calling this complete:
 - [ ] Production process admission, continuity/return path, freshness health,
       downstream UI and machine proof, CI/independent review completed.
 
-**No authenticated Tiingo prices/fundamentals or BOATS events have been downloaded.**
+**At the original 2026-10-09 checkpoint, no authenticated Tiingo prices/fundamentals or BOATS events had been downloaded.**
 The later continuation acquired only the public symbol catalogue, recorded below.
 Dummy fixture bytes written by tests are not sourced vendor market data. Data OS registry rows
 should remain PROPOSED until actual production artifacts and valid receipts
@@ -1250,3 +1274,79 @@ original/as-reported/restated context and cohort history. Existing Terminal Quot
 Hub remains the overnight price owner, and News PR #8697 remains separate.
 Production and browser acceptance remain outstanding. A green source suite alone
 is not completion of the Chairman's end-to-end assignment.
+
+
+### 2026-10-11 UTC — actual account, archive and consumer qualification
+
+Actual producer head bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb passed hosted Macro CI
+38137444247, all twelve packs, plan, contract-delta and aggregate gate; current main
+merge-authority run 38137441350 passed its active main authority check. The complementary
+inactive merge-queue-pilot authority check is intentionally disabled by the existing
+workflow, not a Tiingo source failure. PR #8698 remains draft; no merge or deployment
+is claimed.
+
+The existing collector used its provisioned owner-only key at the verified Tiingo
+origin. Actual EOD full-history pilots include AMD (10,976 rows, 1983-03-21), AAPL
+(11,547, 1980-12-12), GE (16,300, 1962-01-02), SPY (8,482, 1993-01-29), and delisted
+SHLDQ (4,910, 2003-05-01 through 2022-10-31), ending 2026-10-09 where active. SHLD's
+recycled/ambiguous identifier was not silently treated as the Sears identity. The
+public catalogue ZIP was reused by hash, not reacquired. Fifty initial stock
+histories and the next 500 exact USD Stock/ETF US-exchange acquisition candidates
+were collected with the original collector. The latter returned 500 HTTP 200
+responses, of which two are empty, and 1,103,194 rows. Empty responses remain in the
+denominator. No acquisition candidate became a historical universe or canonical alias.
+
+Raw EOD prices, dividend/split-adjusted prices, action fields and the actual October
+11 capture vintage are separate in the existing views. The immutable design retains
+future changed captures, but one current download does not prove older adjustment
+vintages or historical availability. AMD's 252-row annual pilot matched its later
+whole-history capture exactly on overlapping economic fields. Full-archive raw and
+nonempty projection checks passed for 553 histories / 1,233,237 distinct bars;
+existing corpus audit independently matched all 500 planned larger-batch responses
+and found 498 RAW_RECORDS_CAPTURED / 2 EMPTY_CAPTURED. Materialization returned
+zero refusals. Exact proof, counts, paths, clocks and content/receipt hashes are in
+the sanitized evidence directory; licensed rows remain on the external archive.
+
+Actual fundamentals metadata returned 20,352 unique permaTicker IDs, including 12,540
+inactive identities. The existing cohort builder retained those identifiers without
+inventing canonical issuer/listing joins. AAPL's three-year original statements
+returned 15 reports / 1,101 metric rows, revised statements 13 / 962, and daily
+metrics 762 dates / 3,810 rows. Forty-five values differ across 962 matched fiscal
+metric keys. Both requests and their vintages remain distinct. Revised response date
+labels empirically land on fiscal quarter ends while original-report labels are
+later; those labels do not prove release/availability clocks. Existing views keep
+PIT eligibility false and original availability unknown.
+
+The logged-in Tiingo account API key equals the provisioned collector key; neither
+value nor its fingerprint is published. Organization and BOATS show active. The
+reported quota allocations are 20,000/hour, 150,000/day and 100 GB/month. Nevertheless,
+AMD fundamentals requests using both ticker and exact permanent ID returned HTTP
+400; the bounded permanent-ID error contains free/Dow 30/limit terms. AAPL's allowed
+three-year responses returned 200. This is a current served-product discrepancy,
+not evidence of absent purchase and not a request to purchase again. No email,
+subscription change, token rotation, account switch or repeated scope-denied request
+was made after that diagnosis.
+
+BOATS history returned 720 AMD and 687 AAPL minute bars. All 1,407 native timestamps
+are distinct per symbol and within 20:00–03:59 ET; volume is explicit in every returned
+bar. The earlier 30-second WebSocket probe authenticated and received actual H/200
+and I/200 controls with subscription ID present. Zero Q/T/B arrived in the closed
+Sunday daytime window. Full session coverage, quote/trade sale conditions, trade-break
+behavior and transport continuity need actual live-session evidence. No price was
+manufactured from the controls or substituted from historical bars.
+
+Terminal consumer head 7506ef1539c8646e7bf52b65b697a102fd549942 on draft PR #945 repairs
+the thin ext-quote proxy's loss of incumbent Hub source/basis. Red reproduction found
+two failures; the affected consumer suites passed 33 checks, TypeScript passed, and
+hosted Quote Hub/unit/type/ingest/invariant checks passed. Responsive browser shards
+were still running at this checkpoint. This prerequisite does not add a second
+BOATS socket, overwrite the Yahoo relay or activate a provider. The existing Mac
+publisher and Hub relay parser currently identify their payloads as Yahoo; that
+owner-preserving provider seam must be qualified before actual BOATS publication.
+
+Remaining delivery obligations are full served fundamentals access, complete measured
+history/dated-identity and revision coverage, authentic live BOATS Q/T/B and gap/break
+proof, accepted independent consumer review, incumbent runtime/provider admission,
+approved VPS deployment and responsive live Terminal/browser acceptance. All 24
+registry entries remain PROPOSED. News carrier #8697 is untouched. Nothing in this
+checkpoint schedules a later wake or claims the end-to-end mission complete.
