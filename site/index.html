@@ -1137,9 +1137,11 @@ LANG.onChange(applyPricing);
   const fill=tier.querySelector('[data-founding-fill]');
   const track=tier.querySelector('.founding-track');
   const setBi=(el,en,cn)=>{ if(!el)return;el.__en=en;el.setAttribute('data-zh',cn);el.innerHTML=LANG.cur()==='zh'?cn:en; };
-  fetch('/api/billing/offers/'+encodeURIComponent(price.dataset.offerKey),{cache:'no-store'})
-    .then(r=>r.ok?r.json():Promise.reject(new Error('offer')))
-    .then(o=>{
+  const offerRequest=window.__mmFoundingOfferRequest||fetch('/api/billing/offers/'+encodeURIComponent(price.dataset.offerKey),{cache:'no-store'})
+    .then(r=>r.ok?r.json():null).catch(()=>null);
+  window.__mmFoundingOfferRequest=offerRequest;
+  offerRequest.then(o=>{
+      if(!o)return;
       price.dataset.offerActive=o.active?'true':'false';
       price.dataset.annual=o.active?'$75':'$109';
       if(!o.active){
