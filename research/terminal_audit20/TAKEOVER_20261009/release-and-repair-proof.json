@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1103",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1129",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -6874,5 +6874,163 @@
       }
     ],
     "next_action": "Sameworker actualsixsourcehash-invalidatedcaptures/focusedguards; newPR/oneactualsuccessful CIobserver/requiredCI/MOGmerge; parentguardednewgeneration+owningpaidphoneproof. No unchangedsource/CI/runtime/paid/storage replay."
+  },
+  "current_capability_frontier_20261011T1129": {
+    "observed_at": "2026-10-11T11:30:15.683922+00:00",
+    "supersedes": "current_capability_frontier_20261011T1103",
+    "supersession_scope": "Actual integrated source/captures/focused guards and ONE new PR940/head-bound native auto/observer launch. No CI/merge/install/paid/whole-mission acceptance. Historical receipts and independent holds preserved.",
+    "whole_original_mission_accepted": false,
+    "source_captures_ci_launch": {
+      "recorded_at": "2026-10-11T11:30:15.683922+00:00",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "worker": "/root/phone_replay_badge_repair",
+      "pr": {
+        "number": 940,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/940",
+        "head": "5439f2e4e754ad968a09aa293baab44831d9b8d0",
+        "base": "0e8de334d3a772d3c8b035a1ce01d04b1316274a",
+        "state": "OPEN/non-draft/mergeable reported by owning native source worker; native auto receipt OPEN/head-bound",
+        "merge": "NOT qualified"
+      },
+      "source": {
+        "capture_source": "495f544179edc95c39c73099d399289c1e357ddf",
+        "files": {
+          "terminal/app/globals.css": {
+            "sha256": "06e122f87cc402a9021d3a357e95c9c9a1cd7f4e622a25e2b24e8f7bc7ee6cd9",
+            "gitBlob": "5e58a54e0e6f404abc529cb2cdc5595cd743556f"
+          },
+          "terminal/components/ChartPanel.tsx": {
+            "sha256": "de3acd70e8e2300d217dc3b4bdbe7d8340f36a77e119046454c795d19ca259d9",
+            "gitBlob": "366581441b382054d47586bf0df093dff1066be8"
+          },
+          "terminal/e2e/replay-statusline-responsive.spec.ts": {
+            "sha256": "a4856efed1c8e22cebfed25493207556084a98164d4f632306e211058b10dc74",
+            "gitBlob": "97fcc3e68f8cf1dd12f3b504c9c739f28e60fa24"
+          }
+        },
+        "parent_binding": "Final PR head product and regression bytes equal actual integrated495 capture-source bytes; all three SHA256 and Git blob IDs independently checked locally. Parent existing28line product review reused only for unchanged own semantic delta versus new master930."
+      },
+      "base_integration": "Normal495 merge preserves origin/master0e8de334d/merged930 ChartPanel study-instance changes. Own16CSS+12ChartPanel+113testlines disjoint. Three artifact conflicts retained master until real fresh capture. Old7e receipts remain historical; no whole930 science/math acceptance.",
+      "browser": {
+        "startTime": "2026-10-11T11:14:07.337Z",
+        "duration": 313985.64400000003,
+        "expected": 48,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "geometry_states": 22,
+      "fixture_screenshots": 8,
+      "typecheck": {
+        "sourceCommit": "495f544179edc95c39c73099d399289c1e357ddf",
+        "execSession": 26126,
+        "exitCode": 0,
+        "typegen": "integrated-typegen.log",
+        "typecheck": "integrated-typecheck.log"
+      },
+      "focused_guards": {
+        "sourceCommit": "495f544179edc95c39c73099d399289c1e357ddf",
+        "execSession": 38729,
+        "exitCode": 0,
+        "files": 6,
+        "tests": 28,
+        "log": "final-capture-guards.log"
+      },
+      "captures": {
+        "conductor-fit-badge-zh": {
+          "captureHead": "7e2c19610fe30df2cc68d84fe725a3aef70d085c",
+          "freshPngCount": 6,
+          "log": "conductor-capture-r2.log",
+          "manifestSha256": "e53fe9d7eb09484fd9400579eb144456887fdb2000bd0025da5eeaa677b6f64c"
+        },
+        "gex-levels-heatmap-load-failure": {
+          "captureHead": "7e2c19610fe30df2cc68d84fe725a3aef70d085c",
+          "freshPngCount": 114,
+          "log": "gex-capture.log",
+          "manifestSha256": "87bd7900008a7edcaa879d42bcfa57978b4bfca6d0e6d32e13d047551d3cf401"
+        },
+        "eod-heatmap-flowdesk-load-failure": {
+          "captureHead": "7e2c19610fe30df2cc68d84fe725a3aef70d085c",
+          "freshPngCount": 126,
+          "log": "eod-capture.log",
+          "manifestSha256": "a8226e3d919e4daa81358922b9138eaa3554003adb2c5b80512084ea432fffd0"
+        },
+        "options-level-axis-labels": {
+          "captureHead": "495f544179edc95c39c73099d399289c1e357ddf",
+          "freshPngCount": 5,
+          "log": "integrated-options-capture.log",
+          "manifestSha256": "17387fcc418d01ed413779f9cd1dcf16c6e110fa491691a08cd1ed821edfcac8"
+        },
+        "b-pl-6-batch-1": {
+          "captureHead": "495f544179edc95c39c73099d399289c1e357ddf",
+          "freshPngCount": 24,
+          "log": "integrated-bpl6-capture-r2.log",
+          "manifestSha256": "290c935a8f5e6f022e4ba5244a12ec3be5ce1731a2fbea1b23c4a101a3fb1f5a"
+        },
+        "terminal-visual-intelligence": {
+          "captureHead": "495f544179edc95c39c73099d399289c1e357ddf",
+          "freshPngCount": 6,
+          "log": "integrated-browser.log",
+          "manifestSha256": "a4630f19e8d96fb93187c59dd68d1a33ea9aed6ca2e25210474cd3520be4fe74"
+        }
+      },
+      "full_native_unit_scope": "Earlier7e native523files/8601testsPASS,6files/6testsFAIL/4TODO were source-hash locks. The six actual fresh packets and28focusedguards now pass; no repeated640s full local suite, no full-native-green claim. Final head required CI pending actual owning result.",
+      "parent_tool_review": "Only new semantic delta: six readiness lines plus expect import in capture_pl6_batch1.cjs require actual SPY identity/exactly4 OHLC fields/each numeric text before the unchanged crop. Preserves930 Options readiness and invariant guards; no sleep or product/math change. Parent inspected exact diff and fresh310x107 ZH phone crop containing identity/OHLC.",
+      "capture_failure_history": {
+        "blank_phone_crop": {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/bpl6-blank-statusline-failure.png",
+          "bytes": 592,
+          "sha256": "07fd5bb660fdf8caaf11f56ed790fae45efd27ba4b54491afe8535a77b5c6981"
+        },
+        "false_positive_manifest": {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/bpl6-false-positive-manifest.yml",
+          "bytes": 2504,
+          "sha256": "e111771bf8176960f86335ff5c862f5edb24af7a5afbe4b86856afe1117e2f76"
+        },
+        "finding": "First integrated BPL statusline SSR crop was592B/310x48 blank despite hash guards. False positive retained. Corrected actual24 captures at same495 source; parent visible crop inspection does not blanket accept every scientific claim."
+      },
+      "visual_manifest_history": "Historical379files/6093tests/4TODO retained separately with old source/time/artifact; current integrated browser/type/28guards truthful. Existing guards unchanged, no old count claimed for current head.",
+      "ci_launch": {
+        "exec_session": 21927,
+        "pid": 85311,
+        "actual_process_verified": "owning child launch receipt",
+        "native_auto_enabled_at": "2026-10-11T11:27:58Z",
+        "mode": "SQUASH/exact-head/required checks",
+        "cursor": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/ci-cursor.json",
+        "result": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/ci-observer-result.json",
+        "observations": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/ci-observations.ndjson",
+        "sole_observer": "installed pr_watch.py owned by SAME child; no parent second observer/API/UI/log polling",
+        "required_ci_merge": "PENDING actual actionable/settled observer return; launch is not green or merge"
+      },
+      "receipts": [
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/final-source-qualification.json",
+          "bytes": 34203,
+          "sha256": "3df2983255704b3ba06843596c44d71937fbffe3e2086ddb2c9bfef22df7f621"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/ci-observer-launch-receipt.json",
+          "bytes": 1742,
+          "sha256": "21dff25ca4a1ebbc95b89ac783bb5d3a32652d3571d0996d51aa10f4fad50b54"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-source-20261011/native-auto-merge-receipt.json",
+          "bytes": 555,
+          "sha256": "e9091873538552eb226d28234c6a0810b73cb01db3b2d3ce48bcd38b38d09c47"
+        }
+      ],
+      "installation_paid": "Installed707 and paid badge clipping retained;940 not installed/paid-accepted. Completed storage/707 operations not replayed; no own pause/restore owed.",
+      "next_action": "Consume SAME child exact observer actual requiredCI/merge result; after qualified merged source fresh writer/source/mount/resource gates, NEW guarded canonical generation and owning paid phone badge/fullscreen/three-size proof.",
+      "whole_original_mission_accepted": false,
+      "independent_holds": "781 reserved review/IW2 explicit cyber/SQL/rights/security/887/EFFECT_UNKNOWN/A19/873 actual publication retained."
+    },
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-statusline-940-source-captures-ci-launch-parent-qualification-20261011.json",
+        "bytes": 8087,
+        "sha256": "8768a410086f2bd7bbc958c1a4545eefbe39440559b48b7ac67d6a6d06f223e1"
+      }
+    ],
+    "next_action": "Consume SAME child exact observer actual requiredCI/merge result; after qualified merged source fresh writer/source/mount/resource gates, NEW guarded canonical generation and owning paid phone badge/fullscreen/three-size proof."
   }
 }
