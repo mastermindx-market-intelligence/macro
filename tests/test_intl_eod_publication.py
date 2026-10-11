@@ -251,3 +251,38 @@ def test_corrupt_parquet_is_withheld_independently_under_real_pyarrow(tmp_path):
     assert overview['eligible_count'] == 6
     japan = next(row for row in overview['rows'] if row.get('market_id') == 'JP')
     assert japan['metric']['value'] is None
+
+
+def test_weekend_collector_receipt_does_not_age_out_without_a_cash_weekday(tmp_path):
+    """A Friday 04:42Z source receipt should still support delayed Wednesday closes
+    on Sunday 08:41Z (52 wall-clock hours, under 24 weekday hours)."""
+    frame, _ = _setup(tmp_path)
+    status_path = tmp_path / "run_status.json"
+    status = json.loads(status_path.read_text())
+    status["sources"]["intl_prices"].update(
+        checked_at="2026-10-09T04:42:46+00:00", last_date="2026-10-09"
+    )
+    status_path.write_text(json.dumps(status))
+    result = build_eod_inputs(
+        frame, data_root=tmp_path, rights=GRANT,
+        evaluated_at="2026-10-11T08:41:00+00:00",
+    )
+    assert result is not None
+    closes, inputs = result
+    assert closes.index[-1] == pd.Timestamp("2026-10-07")
+    assert _panel(_overview(closes, inputs))["eligible_count"] == 7
+
+
+def test_weekday_elapsed_age_still_expires_without_new_receipt(tmp_path):
+    """Weekend grace must not authorize a stale Friday collector on Tuesday."""
+    frame, _ = _setup(tmp_path)
+    status_path = tmp_path / "run_status.json"
+    status = json.loads(status_path.read_text())
+    status["sources"]["intl_prices"].update(
+        checked_at="2026-10-09T04:42:46+00:00", last_date="2026-10-09"
+    )
+    status_path.write_text(json.dumps(status))
+    assert build_eod_inputs(
+        frame, data_root=tmp_path, rights=GRANT,
+        evaluated_at="2026-10-13T08:41:00+00:00",
+    ) is None

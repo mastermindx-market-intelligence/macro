@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, time, timedelta, timezone
 from io import BytesIO
 from pathlib import Path
 
@@ -39,6 +39,28 @@ def _when(value: str) -> datetime:
         raise ValueError("evaluation time needs a UTC offset")
     return result.astimezone(timezone.utc)
 
+
+
+def _weekday_elapsed(start: datetime, end: datetime) -> timedelta:
+    """Elapsed UTC time on weekdays only; never infer foreign holiday opens.
+
+    A verified Friday collector remains eligible through the closed weekend,
+    but an old receipt still expires after 48 actual weekday hours. Both
+    timestamps have already been normalized to UTC by the source gate.
+    """
+    if end < start:
+        raise ValueError("collector clock is later than evaluation")
+    elapsed = timedelta()
+    midnight = datetime.combine(start.date(), time.min, tzinfo=timezone.utc)
+    while midnight < end:
+        tomorrow = midnight + timedelta(days=1)
+        if midnight.weekday() < 5:
+            lo = max(midnight, start)
+            hi = min(tomorrow, end)
+            if lo < hi:
+                elapsed += hi - lo
+        midnight = tomorrow
+    return elapsed
 
 def _source_ids() -> list[str]:
     unique = []
@@ -132,7 +154,9 @@ def build_eod_inputs(
         collected = _when(source["checked_at"])
         source_last = datetime.fromisoformat(source["last_date"]).date()
         if (source["source"] != "intl_prices" or source["status"] != "ok"
-                or collected > evaluated or evaluated - collected > _MAX_COLLECT_AGE
+                or collected > evaluated
+                or evaluated - collected > _MAX_COLLECT_AGE + timedelta(days=2)
+                or _weekday_elapsed(collected, evaluated) > _MAX_COLLECT_AGE
                 or source_last > evaluated.date()
                 or evaluated.date() - source_last > _MAX_TIP_AGE):
             return None
