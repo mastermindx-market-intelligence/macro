@@ -368,6 +368,76 @@ def test_split_basis_is_quarantined_not_rebased_from_jump():
     assert out["minute_conditioned_baseline"]["robust_z"] is None
 
 
+def test_policy_and_calendar_vintage_mismatches_cannot_rank_as_comparable():
+    target = measured()
+    prior = history(5)
+    # Original source may change venue policy, consolidated volume eligibility
+    # or the session/calendar basis without changing the declared split segment.
+    for i, (field, digest) in enumerate((
+        ("volume_policy_sha256", SHA_B),
+        ("exchange_reference_sha256", SHA_A),
+        ("calendar_sha256", SHA_D),
+    )):
+        prior[i] = copy.deepcopy(prior[i])
+        prior[i][field] = digest
+    result = calibrate_history(
+        target=target, previous=prior, minute_index=30,
+        evaluation_ns=END + 90_000_000_000, min_history=2)
+    assert result["excluded_previous"]["HISTORICAL_POLICY_VINTAGE_INCOMPATIBLE"] == 2
+    assert result["excluded_previous"]["HISTORICAL_CALENDAR_VINTAGE_INCOMPATIBLE"] == 1
+    assert result["n_comparable_previous"] == 2
+    assert result["daily_object_ranks"]["DAILY_TOTAL"]["n_prior"] == 2
+    assert result["minute_conditioned_baseline"]["n_prior"] == 2
+
+
+def test_malformed_source_reference_hashes_cannot_enter_ranks():
+    target = measured()
+    for field in (
+        "source_manifest_sha256", "source_generation_sha256",
+        "calendar_sha256", "volume_policy_sha256",
+        "exchange_reference_sha256", "split_basis_vintage_sha256",
+    ):
+        forged = copy.deepcopy(target)
+        forged[field] = "not-an-original-source-hash"
+        with pytest.raises(HistoricalRulerRefusal, match="target source/authority"):
+            calibrate_history(
+                target=forged, previous=history(3), minute_index=30,
+                evaluation_ns=END+90_000_000_000, min_history=2)
+    past = history(3)
+    past[0]["source_manifest_sha256"] = "unqualified"
+    out = calibrate_history(
+        target=target, previous=past, minute_index=30,
+        evaluation_ns=END+90_000_000_000, min_history=2)
+    assert out["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 1
+    assert out["n_comparable_previous"] == 2
+
+
+def test_derived_daily_source_summaries_must_be_internally_consistent():
+    # An immutable original digest is not validation of an altered Python
+    # result dict. The historical reader must independently refuse impossible
+    # sample sizes, daily notional bounds and observed tier counts.
+    target = measured()
+    bad_target = copy.deepcopy(target)
+    bad_target["largest_individual_print_usd"] = "9999999999"
+    with pytest.raises(HistoricalRulerRefusal, match="target source/authority"):
+        calibrate_history(
+            target=bad_target, previous=history(4), minute_index=30,
+            evaluation_ns=END+90_000_000_000, min_history=3)
+    prior = history(4)
+    prior[0] = copy.deepcopy(prior[0])
+    prior[0]["oe_source_notional_usd"] = "1"
+    prior[1] = copy.deepcopy(prior[1])
+    prior[1]["n_trf_observed"] = prior[1]["n_source_rows"] + 1
+    prior[2] = copy.deepcopy(prior[2])
+    prior[2]["absolute_block_tier_counts"]["100000"] = 100
+    result = calibrate_history(
+        target=target, previous=prior, minute_index=30,
+        evaluation_ns=END+90_000_000_000, min_history=3)
+    assert result["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 3
+    assert result["n_comparable_previous"] == 1
+    assert result["daily_object_ranks"]["DAILY_TOTAL"]["n_prior"] == 1
+
+
 def test_tampered_historical_minute_ratio_and_availability_are_quarantined():
     original = measured()
     past = history(5)

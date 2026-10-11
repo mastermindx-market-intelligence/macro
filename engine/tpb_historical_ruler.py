@@ -423,6 +423,79 @@ def _safe_minute_points(record):
     return True
 
 
+def _safe_daily_summary(record):
+    """Reject impossible derived print/tier totals before observed-sample ranks.
+
+    The original trade list stays with its existing source owner. These
+    limited invariants catch contradictory downstream projections, but do
+    NOT authenticate the snapshot SHA or prove complete market coverage.
+    """
+    count_fields = (
+        "n_source_rows", "n_trf_observed", "n_revised_rows",
+        "n_cancelled", "n_unknown_volume_policy", "n_clusters",
+    )
+    if any(type(record.get(k)) is not int
+           or not 0 <= record[k] <= MAX_PRINTS for k in count_fields):
+        return False
+    n = record["n_trf_observed"]
+    if (record["n_source_rows"] < n + record["n_cancelled"]
+            or record["n_revised_rows"] > record["n_source_rows"]
+            or record["n_unknown_volume_policy"] > record["n_source_rows"]
+            or record["n_clusters"] > n // 2):
+        return False
+    if record.get("state") != "SOURCE_OBSERVATIONS_UNVERIFIED_EXTERNALLY" or not n:
+        return False
+    try:
+        shares = _amount(record.get("oe_source_shares"), "oe_source_shares",
+                         max_width=MAX_DERIVED_DECIMAL_WIDTH)
+        total = _amount(record.get("oe_source_notional_usd"), "oe_source_notional_usd",
+                        max_width=MAX_DERIVED_DECIMAL_WIDTH)
+        biggest = _amount(record.get("largest_individual_print_usd"),
+                          "largest_individual_print_usd",
+                          max_width=MAX_DERIVED_DECIMAL_WIDTH)
+        if not shares or biggest > total:
+            return False
+        cluster_text = record.get("largest_cluster_usd")
+        if (cluster_text is None) != (record["n_clusters"] == 0):
+            return False
+        if cluster_text is not None:
+            cluster = _amount(cluster_text, "largest_cluster_usd",
+                              max_width=MAX_DERIVED_DECIMAL_WIDTH)
+            if cluster > total:
+                return False
+    except HistoricalRulerRefusal:
+        return False
+    keys = tuple(map(str, _BLOCK_TIERS))
+    tier_counts = record.get("absolute_block_tier_counts")
+    rates = record.get("absolute_block_tier_rates")
+    fractions = record.get("absolute_block_tier_notional_fractions")
+    if any(not isinstance(v, dict) or set(v) != set(keys)
+           for v in (tier_counts, rates, fractions)):
+        return False
+    previous_count = n
+    previous_fraction = Decimal(1)
+    with localcontext() as ctx:
+        ctx.prec = 2*MAX_DECIMAL_WIDTH + 20
+        for key in keys:
+            count = tier_counts[key]
+            if type(count) is not int or not 0 <= count <= previous_count:
+                return False
+            previous_count = count
+            try:
+                rate = _amount(rates[key], "block_rate", zero=True,
+                               max_width=MAX_DERIVED_DECIMAL_WIDTH)
+                fraction = _amount(fractions[key], "block_fraction", zero=True,
+                                   max_width=MAX_DERIVED_DECIMAL_WIDTH)
+            except HistoricalRulerRefusal:
+                return False
+            if rate != Decimal(count)/Decimal(n):
+                return False
+            if fraction > previous_fraction or fraction > 1:
+                return False
+            previous_fraction = fraction
+    return True
+
+
 def _safe_measurement(record):
     """Permit only the observational output of the TP-B source boundary."""
     return (isinstance(record, dict)
@@ -437,6 +510,22 @@ def _safe_measurement(record):
             and record.get("actor_identity") is None
             and isinstance(record.get("snapshot_sha256"), str)
             and _SHA.fullmatch(record["snapshot_sha256"]) is not None
+            and all(
+                isinstance(record.get(key), str)
+                and _SHA.fullmatch(record[key]) is not None
+                for key in (
+                    "source_manifest_sha256", "source_generation_sha256",
+                    "calendar_sha256", "volume_policy_sha256",
+                    "exchange_reference_sha256", "split_basis_vintage_sha256",
+                )
+            )
+            and all(
+                isinstance(record.get(key), str)
+                and 0 < len(record[key]) <= 180
+                for key in ("split_basis_id", "split_segment")
+            )
+            and type(record.get("full_rth_covered")) is bool
+            and _safe_daily_summary(record)
             and _safe_minute_points(record))
 
 
@@ -490,6 +579,18 @@ def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_hist
                 or record.get("split_basis_vintage_sha256") != target["split_basis_vintage_sha256"]
                 or record.get("split_segment") != target["split_segment"]):
             exclusions["SPLIT_BASIS_INCOMPATIBLE"] += 1
+        elif (record.get("volume_policy_sha256") != target.get("volume_policy_sha256")
+              or record.get("exchange_reference_sha256") != target.get("exchange_reference_sha256")):
+            # Policy vintages are original raw-reference identities, not
+            # semantic equivalence proofs. Until their incumbent owner vouches
+            # for an equivalence crosswalk, abstain from historical comparisons
+            # that would mix source-volume or TRF-route definitions.
+            exclusions["HISTORICAL_POLICY_VINTAGE_INCOMPATIBLE"] += 1
+        elif record.get("calendar_sha256") != target.get("calendar_sha256"):
+            # A 10:00 cumulative minute needs the same externally attested
+            # session-index meaning. Different calendar vintages may be
+            # equivalent, but the supplied evidence has not proved that.
+            exclusions["HISTORICAL_CALENDAR_VINTAGE_INCOMPATIBLE"] += 1
         elif not _safe_measurement(record) or record.get("state") != "SOURCE_OBSERVATIONS_UNVERIFIED_EXTERNALLY":
             exclusions["HISTORICAL_SOURCE_UNQUALIFIED"] += 1
         else:
