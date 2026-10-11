@@ -141,7 +141,8 @@ def _revision_stage(ref: str, receipt_char: str, *, status="passed") -> dict:
         "id": slot["id"], "desk": "brief", "publication": "mastermind_news",
         "as_of": "2026-07-26", "status": status, "sources": [ref],
         "source_revisions": {ref: receipt}, "seed_refs": [],
-        "slug": "aapl-q3-call", "draft": dict(_good_draft(slot), slug="aapl-q3-call"),
+        "slug": "aapl-q3-call",
+        "draft": dict(F.draft_from_slot(slot, extra_filler=-3), slug="aapl-q3-call"),
         "slot": slot, "validator_report": {"ok": True},
     }
 
@@ -165,6 +166,114 @@ def test_staging_writes_nothing_outside_the_staging_dir(tmp_path, monkeypatch):
     assert all(p.startswith("data/press/staging/") for p in new), sorted(new)
     assert not (root / "site").exists()
     assert list((root / "content" / "seo" / "blog").glob("*.md")) == []
+
+
+def test_interrupted_provider_leaves_non_emittable_seed_reservation(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    slot = P.plan(["brief"], as_of="2026-07-26", root=root, cfg=cfg)[0]
+    calls = []
+
+    def interrupt(*args, **kwargs):
+        calls.append(args[0]["id"])
+        raise KeyboardInterrupt("provider response not observed")
+
+    monkeypatch.setattr(R.writer, "write", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+
+    path = root / "data/press/staging" / f"{slot['id']}.json"
+    item = json.loads(path.read_text())
+    assert item["status"] == "in_progress"
+    assert item["progress"] == {"phase": "provider_started", "attempt": 0}
+    assert item["draft"] is None
+    assert set(slot["seed_refs"]).issubset(P.staged_refs(root, cfg)[0])
+    assert slot["id"] not in {s["id"] for s in P.plan(["brief"], as_of="2026-07-26", root=root, cfg=cfg)}
+    before = path.read_bytes()
+    # Even a caller that supplies the same preplanned slot cannot replay it.
+    monkeypatch.setattr(R.desk_planner, "plan", lambda *_a, **_kw: [slot])
+    with pytest.raises(FileExistsError):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    assert calls == [slot["id"]]
+    assert path.read_bytes() == before
+    assert R.run_emit(root, cfg)["emitted"] == 0
+
+
+def test_interrupted_validation_retains_generated_draft_without_passing_it(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    _stub_writer(monkeypatch)
+
+    def interrupt(*_a, **_kw):
+        raise KeyboardInterrupt("validation interrupted")
+
+    monkeypatch.setattr(R.validators, "validate", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    path = next((root / "data/press/staging").glob("press-*.json"))
+    item = json.loads(path.read_text())
+    assert item["status"] == "in_progress"
+    assert item["progress"] == {"phase": "validation_pending", "attempt": 0}
+    assert item["draft"]["body_html"]
+    assert item["provider"] == "stub"
+    assert item["retained_draft_attempt"] == 0
+    assert item["validator_report"] is None
+    assert R.run_emit(root, cfg)["emitted"] == 0
+
+
+def test_stage_checkpoint_storage_failure_prevents_provider_call(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    calls = _stub_writer(monkeypatch)
+
+    def fail_storage(*_a, **_kw):
+        raise OSError("storage durability unavailable")
+
+    monkeypatch.setattr(R.os, "fsync", fail_storage)
+    with pytest.raises(OSError, match="storage durability unavailable"):
+        R.run_staging(root, P.load_config(root), as_of="2026-07-26",
+                      desks=["brief"], max_slots=1)
+    assert calls["n"] == 0
+    assert not list((root / "data/press/staging").iterdir())
+
+
+def test_stage_checkpoint_replace_failure_keeps_previous_complete_record(tmp_path, monkeypatch):
+    path = tmp_path / "slot.json"
+    original = {"status": "in_progress", "progress": {"phase": "provider_started", "attempt": 0}}
+    R._write_stage_checkpoint(path, original, create=True)
+    before = path.read_bytes()
+
+    def fail_replace(*_a, **_kw):
+        raise OSError("atomic replace unavailable")
+
+    monkeypatch.setattr(R.os, "replace", fail_replace)
+    with pytest.raises(OSError, match="atomic replace unavailable"):
+        R._write_stage_checkpoint(path, {"status": "passed"})
+    assert path.read_bytes() == before
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_storage_failure_after_provider_return_blocks_replay(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    slot = P.plan(["brief"], as_of="2026-07-26", root=root, cfg=cfg)[0]
+    calls = _stub_writer(monkeypatch)
+
+    def fail_replace(*_a, **_kw):
+        raise OSError("returned draft could not be persisted")
+
+    monkeypatch.setattr(R.os, "replace", fail_replace)
+    with pytest.raises(OSError, match="returned draft could not be persisted"):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    path = root / "data/press/staging" / f"{slot['id']}.json"
+    before = path.read_bytes()
+    assert json.loads(before)["progress"]["phase"] == "provider_started"
+    assert json.loads(before)["draft"] is None
+    assert calls["n"] == 1
+    monkeypatch.setattr(R.desk_planner, "plan", lambda *_a, **_kw: [slot])
+    with pytest.raises(FileExistsError):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    assert calls["n"] == 1
+    assert path.read_bytes() == before
 
 
 def test_staging_writes_one_json_per_slot_plus_a_run_summary(tmp_path, monkeypatch):
@@ -708,6 +817,64 @@ def test_emit_with_an_empty_staging_dir_is_a_clean_no_op(tmp_path):
     assert R.run_emit(root, P.load_config(root))["emitted"] == 0
 
 
+@pytest.mark.parametrize("cutover", [False, True])
+def test_emit_revalidates_a_draft_modified_after_staging(tmp_path, monkeypatch, cutover):
+    """A saved passing report cannot authorize subsequently edited copy."""
+    root = F.fixture_root(tmp_path, cutover=cutover)
+    cfg = P.load_config(root)
+    _stub_writer(monkeypatch)
+    summary = R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    assert summary["passed"] == 1
+    path = root / "data" / "press" / "staging" / f"{summary['items'][0]['id']}.json"
+    obj = json.loads(path.read_text(encoding="utf-8"))
+    assert obj["validator_report"]["ok"] is True
+    obj["draft"]["body_html"] += "\n<p>Moreover, this copy changed after staging.</p>"
+    path.write_text(json.dumps(obj), encoding="utf-8")
+    before = {p: p.read_bytes() for directory in (root / "content", root / "site")
+              for p in directory.rglob("*") if p.is_file()}
+    ledger = root / "data" / "press" / "published.jsonl"
+    ledger_before = ledger.read_bytes()
+    monkeypatch.setattr(R, "_render_blog_subtree", lambda _root: ([], []))
+
+    result = R.run_emit(root, cfg)
+
+    assert result["emitted"] == 0
+    quarantined = json.loads(path.read_text(encoding="utf-8"))
+    assert quarantined["status"] == "quarantined"
+    assert quarantined["validator_report"]["ok"] is False
+    assert "ai_tells" in quarantined["validator_report"]["failed"]
+    assert "ai_tells" in quarantined["quarantine_reason"]
+    assert {p: p.read_bytes() for directory in (root / "content", root / "site")
+            for p in directory.rglob("*") if p.is_file()} == before
+    assert ledger.read_bytes() == ledger_before
+
+
+def test_emit_records_fresh_validation_without_comparing_draft_to_itself(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path, cutover=False)
+    cfg = P.load_config(root)
+    _stub_writer(monkeypatch)
+    summary = R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    assert summary["passed"] == 1
+    path = root / "data" / "press" / "staging" / f"{summary['items'][0]['id']}.json"
+    obj = json.loads(path.read_text(encoding="utf-8"))
+    obj["draft"]["title"] = "A fresh read of the session"
+    obj["validator_report"] = {"ok": True, "checks": [], "obsolete_staging_report": True}
+    path.write_text(json.dumps(obj), encoding="utf-8")
+    monkeypatch.setattr(R, "_render_blog_subtree", lambda _root: ([], []))
+
+    result = R.run_emit(root, cfg)
+
+    assert result["emitted"] == 1
+    report = result["items"][0]["validator_report"]
+    assert report["ok"] is True
+    assert "obsolete_staging_report" not in report
+    self_similarity = next(c for c in report["checks"] if c["name"] == "self_similarity")
+    assert self_similarity["metrics"]["peers"] == 0
+    committed = json.loads((root / "data" / "press" / "published.jsonl").read_text())
+    assert committed["validator_report"] == report
+    assert committed["title"] == "A fresh read of the session"
+
+
 def test_emit_refuses_source_ready_canonical_story(tmp_path):
     root = F.fixture_root(tmp_path)
     slot = F.slot(
@@ -900,7 +1067,7 @@ def test_emit_never_writes_the_sitemap(tmp_path, monkeypatch):
         "id": "press-brief-x", "desk": "brief", "publication": "mastermind_news",
         "as_of": "2026-07-26", "status": "passed", "sources": ["chronicle:x"],
         "seed_refs": [], "slug": "emit-smoke-note",
-        "draft": dict(_good_draft(F.slot()), slug="emit-smoke-note"),
+        "draft": dict(F.draft_from_slot(F.slot(), extra_filler=-3), slug="emit-smoke-note"),
         "slot": F.slot(), "validator_report": {"ok": True},
     }
     (root / "data" / "press" / "staging" / "x.json").write_text(
@@ -942,7 +1109,7 @@ def _staged_passing(root, name="x.json", slug="emit-smoke-note"):
         "id": f"press-brief-{slug}", "desk": "brief",
         "publication": "mastermind_news", "as_of": "2026-07-26",
         "status": "passed", "sources": ["chronicle:x"], "seed_refs": [],
-        "slug": slug, "draft": dict(_good_draft(F.slot()), slug=slug),
+        "slug": slug, "draft": dict(F.draft_from_slot(F.slot(), extra_filler=-3), slug=slug),
         "slot": F.slot(), "validator_report": {"ok": True},
     }), encoding="utf-8")
 
@@ -1044,7 +1211,7 @@ def test_emit_quarantines_a_slug_that_was_taken_since_staging(tmp_path, monkeypa
     (root / "data" / "press" / "staging" / "x.json").write_text(json.dumps({
         "id": "press-brief-x", "desk": "brief", "publication": "mastermind_news",
         "status": "passed", "sources": [], "seed_refs": [], "slug": "taken-slug",
-        "draft": dict(_good_draft(F.slot()), slug="taken-slug"),
+        "draft": dict(F.draft_from_slot(F.slot(), extra_filler=-3), slug="taken-slug"),
         "slot": F.slot(), "validator_report": {"ok": True},
     }), encoding="utf-8")
     monkeypatch.setattr(R, "_render_blog_subtree", lambda r: ([], []))

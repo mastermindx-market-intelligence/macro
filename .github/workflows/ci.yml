@@ -3922,6 +3922,7 @@ on:
       - ".github/workflows/earnings-story-press-stage.yml"
       - "tests/test_earnings_story_promotion.py"
       - "tests/test_earnings_story_packets.py"
+      - "tests/test_earnings_dossier_link_contract.py"
       - "tests/test_earnings_story_press_workflow.py"
       - "tests/test_earnings_story_press_admission.py"
       - "tests/test_earnings_story_press_ingress.py"

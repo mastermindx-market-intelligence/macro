@@ -13,7 +13,12 @@ Two modes, and the default is the safe one:
            tests/test_press_run.py::test_staging_writes_nothing_outside_staging
            snapshots the tree and fails on any other write.
 
---emit     Takes the staged items whose status is `passed`, writes
+           A non-publishable record precedes each slot's first provider call;
+           returned drafts are retained before validation. An interrupted slot
+           stays reserved by the existing planner until its same attempt is
+           reconciled. Provider-owned accounting may still write its own ledgers.
+
+--emit     Revalidates staged items whose status is `passed`, writes
            content/seo/blog/<slug>.md, renders the estate with the EXISTING
            free-content builder, copies the /blog/ subtree (pages + feed.xml)
            into site/, and appends one row per piece to
@@ -482,6 +487,33 @@ def reconcile_earnings_call_revisions(root: Path, cfg: dict) -> dict:
     }
 
 
+def _write_stage_checkpoint(path: Path, item: dict, *, create: bool = False) -> None:
+    """Durably retain one slot without exposing a partially written JSON record.
+
+    The first write must never replace a prior attempt: even a caller bypassing
+    planner deduplication cannot replay an unsettled provider effect. Later
+    writes belong to that same invocation. These are ordinary staging records,
+    never a publication approval or a separate execution queue.
+    """
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(item, ensure_ascii=False, indent=2, default=str) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        if create:
+            os.link(temporary, path)  # atomic exclusive create, including symlinks
+        else:
+            os.replace(temporary, path)
+        directory = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
+
+
 def _stage_preplanned_slots(
     root: Path,
     cfg: dict,
@@ -518,6 +550,13 @@ def _stage_preplanned_slots(
         attempts: list[dict] = []
         prior: list[str] = []
         passed_payload = None
+        out = staging_dir / f"{slot['id']}.json"
+        checkpoint = _stage_item(slot, None, attempts, run_date,
+                                 admission_receipt=admission_receipt)
+        checkpoint.pop("quarantine_reason", None)
+        checkpoint.update(status="in_progress",
+                          progress={"phase": "provider_started", "attempt": 0})
+        _write_stage_checkpoint(out, checkpoint, create=True)
         writer_kwargs: dict[str, bool] = {}
         if single_provider_attempt:
             writer_kwargs["single_provider_attempt"] = True
@@ -525,6 +564,9 @@ def _stage_preplanned_slots(
             writer_kwargs["admitted_token_cap"] = True
 
         for attempt in range(max_regenerations + 1):
+            if attempt:
+                checkpoint["progress"] = {"phase": "provider_started", "attempt": attempt}
+                _write_stage_checkpoint(out, checkpoint)
             res = writer.write(slot, cfg, state=state, attempt=attempt,
                                prior_failures=prior or None, **writer_kwargs)
             if not res.get("ok"):
@@ -545,6 +587,15 @@ def _stage_preplanned_slots(
             draft = dict(res["draft"])
             draft["slug"] = _unique_slug(draft.get("slug") or slot.get("slug_hint") or "",
                                          slot, taken_slugs)
+            checkpoint.update(draft=draft, slug=draft["slug"],
+                              provider=res.get("provider"), model=res.get("model"),
+                              retained_draft_attempt=attempt,
+                              writer_state=res.get("state"),
+                              progress={"phase": "validation_pending", "attempt": attempt})
+            for key in ("token_cap", "provider_usage"):
+                if key in res:
+                    checkpoint[key] = res[key]
+            _write_stage_checkpoint(out, checkpoint)
             report = validators.validate(draft, slot, cfg, root=root)
             attempt_row = {"attempt": attempt, "ok": bool(report["ok"]),
                            "failed": report["failed"],
@@ -568,9 +619,7 @@ def _stage_preplanned_slots(
             run_date,
             admission_receipt=admission_receipt,
         )
-        out = staging_dir / f"{slot['id']}.json"
-        out.write_text(json.dumps(item, ensure_ascii=False, indent=2, default=str) + "\n",
-                       encoding="utf-8")
+        _write_stage_checkpoint(out, item)
         summary["items"].append({"id": slot["id"], "desk": slot["desk"],
                                  "status": item["status"],
                                  "reason": item.get("quarantine_reason", "")})
@@ -582,9 +631,7 @@ def _stage_preplanned_slots(
                         item.get("quarantine_reason"))
 
     summary["writer_state"] = state.snapshot()
-    (staging_dir / "_run_summary.json").write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2, default=str) + "\n",
-        encoding="utf-8")
+    _write_stage_checkpoint(staging_dir / "_run_summary.json", summary)
 
     _annotate("notice", "press_staging",
               f"press staging: {summary['passed']} passed, "
@@ -930,6 +977,26 @@ def run_emit(root: Path, cfg: dict) -> dict:
                 _annotate(
                     "warning", "press_emit_canonical_approval",
                     f"press emit: canonical slot {obj.get('id')} requires verified approval",
+                )
+                continue
+            # Staging is mutable: its saved report describes the earlier draft,
+            # not necessarily the copy we just loaded. Re-run the same suite
+            # before ANY content/render/ledger write and retain the fresh report
+            # for both quarantine and the eventual ledger row. The validator's
+            # slot-id exclusion keeps this candidate out of its staged peers.
+            report = validators.validate(obj["draft"], slot, cfg, root=root)
+            obj["validator_report"] = report
+            if not report["ok"]:
+                obj["status"] = "quarantined"
+                obj["quarantine_reason"] = "validators at emit: " + ", ".join(report["failed"])
+            path.write_text(
+                json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
+                encoding="utf-8",
+            )
+            if not report["ok"]:
+                _annotate(
+                    "warning", "press_emit_validation",
+                    f"press emit: slot {obj.get('id')} quarantined — {obj['quarantine_reason']}",
                 )
                 continue
             items.append((path, obj))
