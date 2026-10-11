@@ -6,11 +6,11 @@ objective: Review the twenty supplied Terminal repair missions through the admit
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-- PR781 ad5 source recovery and full local tests passed; actual CI terminal result plus reserved mastermindx-3 exact-current-head review and three-thread qualification remain required. No selfapproval or admin bypass.
-- Macro Brain PR8755 46fa source/offline repair passed609 tests and normal MOG is armed; CI/merge/canonical install/paid live-repair proof remain. Optional Fabric artifact review refused before START; no independent review returned or refusal retry.
+- PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
+- Phone Replay PR914 exact9e7 source/local responsive repair is published and armed; required CI, merge, admitted canonical generation and paid phone live proof remain. Brain8755 merged/installed and two paid answers accepted scoped; full Brain data/rights/PIT acceptance remains unproved. Optional review refusal stays frozen.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
 - Terminal fb1/c968 canonical build-reserve refusals remain frozen; no retry, weaker floor, cleanup bypass, alternate carrier or restore owed.
-- A11 phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified.
+- A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
 program: terminal-charting
 repos:
 - terminal
@@ -26,7 +26,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: Consume actual terminal CI/merge events for current781 ad5 and Brain8755 46fa through existing MOG and soleheartbeat; repair genuine failures, qualify delivered source, perform only admitted canonical release and owning paid live verification. Continue independent permitted phases without waiting on orphan labels; preserve frozen effects and reserved gates. Pro test identity is cleared. Checkpoint is not completion.
+next_action: Consume actual PR914 exact9e7 CI/merge events through existing MOG/nativeauto and soleheartbeat, repair genuine failures, qualify delivered source and only admitted independently authorized canonical generation, then verify paid phone Replay. Consume reserved781 currenthead numeric review and three-thread clearance or actual independently authorized producer/platform events. Brain8755 paid answer repair and A12 scoped paid render are recorded; no unchanged replay or principal polling. Preserve frozen releases/refusals/SQL/rights/EFFECT_UNKNOWN gates. Checkpoint is not completion.
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -574,3 +574,30 @@ The latest frontier is `current_capability_frontier_20261011T0038`, superseding 
 - Continue this original root/parent. Paid identity is cleared, so do not repeat identity question or login/gate proof. Existing781 and8755 MOG plus soleheartbeat own terminalCI/merge events. At material event qualify exacthead/source/requiredchecks; repair genuine failures; follow existing canonical release only with actual gates, then owning paid live Brain proof. Do not poll unchanged principals or redo accepted captures/tests. Checkpoint is not completion; reassess permitted source/test/paid phases and stop only at verified outcome or actual protected boundary.
 
 No whole original mission accepted. The four bound receipts above provide exact source, command, browser and parent-adjudication evidence; no credentials were retained.
+
+
+## Paid Brain delivery and phone Replay source repair — 2026-10-11 01:17 UTC
+
+The latest frontier is `current_capability_frontier_20261011T0117`, superseding T0038 only on these actual material deltas. Historical exact receipts remain retained.
+
+- Macro Brain PR8755 merged41c2fd7beeb81be2f4048c1d01dcc26bf3746ba6 after all binding CI green; actual existing-owner install/source hashes and active macro-api qualified. Two paid owning UI requests finished with substantive source-clock/absence qualifiers. Live recovery-branch trigger, financial truth/freshness/rights, full Brain/A08/Audit20 remain unproved; completed branch must not be reused.
+- Terminal PR914 exact9e7faf705ce258f6e38de35a4a687b7f945c56b4 fixes phone Replay entry with the shared engine/gates, 44px controls and counter/fullscreen separation.122 native PASS;13 responsive PASS14 project-specific SKIP plus final3 counter cases PASS across1440x900/820x1180/390x844;TSC/focusedlint/diffcheck0. Source and local fixture repair accepted scoped. MOG/nativeauto armed once; initial owning38100806937 still running with Quote/Ingest green. Exact required CI, merge, admitted canonical generation and paid phone live proof remain; no whole A11 or current installed Replay behavior accepted.
+- PR781 ad5a39f07d35afe6b0fbb67a8b971e73e0c841a3 actual owning38097840484 attempt1 all10 jobs SUCCESS; exact3 required checks SUCCESS, latest Terminal114354168010 completed00:56:38Z. OPEN/CHANGES_REQUESTED; reserved mastermindx-3 exactad5 numeric review replacing5388952130 and three original threads remain. No numeric verdict replacement/selfapproval/admin bypass.
+- A12 paid MU D OrderBlocks plus Volume Peak rendered at three sizes through actual exposed Pro controls; five-closure source and one-bar-later qualifier retained. No horizontal page overflow; phone clipping disclosed. Original3D/four studies/Volume restored and OrderBlocks disabled; scoped paid render only, native closed-volume authority/forming/PIT/full A12 unproved.
+- Paid Brain panel closed after two requests; actual panel visibility false and3D tfbtn on verified. No credential/private chat/watchlist evidence retained. Initial close DOM-count/aria-pressed assumptions corrected by visibility/selected class; no UI replay.
+- T0038 identity/Levels/Heatmap and historical source/CI/runtime scopes retained without replay. Terminal lastqualified34d runtime13:11/13:12; no current114 or9e7 installed phone Replay observation. Firstfb1/c968 reserve refusals remain FROZEN/no retry/weakerfloor/cleanup/rawbuilder/alternatecarrier; no parent release or restore owed. IW2 fifth cyber refusal FROZEN/no poll/retry/rephrase/alternateexecution; supported human platform resolution in existingIW2 chat remains required.0030-32 unapplied/operatorSQL/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/EFFECT_UNKNOWN holds exact.887 exactALLOW pending, not inferred from broad authorization. Optional Brain Fabric contract-mode refusal frozen/no independent review verdict.
+- This source/paid checkpoint does not complete any whole original mission. Continue ready path-disjoint phases only on actual material events/clearance. Existing MOG/nativeauto and sole heartbeat own914 terminalCI/merge;781 exact green does not remove reserved review. No duplicate workers/watchers, source custody invention, polling principals, accepted proof replays or completed branch reuse.
+
+Evidence bindings:
+
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-A12-Peak-parent-qualification-20261011T0049.json` — 6479B / SHA256 `a7ec3fec9f0101d934bba2d8a994c697d618c256821898f0de271e41a4f88fc2`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-source-responsive-parent-qualification-20261011T0115.json` — 7399B / SHA256 `ce69ed07dd6c763ffb3f11ee056c88c62757240abdaf7a4c9116d497a00b719b`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-initial-CI-controller-observation-20261011T0115.json` — 5752B / SHA256 `d81ce74e127d13a86f8d951a4d26c80c693b908bbc35d47ef0e7f5a290d2d95b`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/781-ad5-exact-green-CI-parent-consumption-20261011T0115.json` — 3659B / SHA256 `2c7c959e02a02e2c6a22311ca8205e54cf28ad90e6da2a00cb893ace05dff91d`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/brain-8755-merged-source-CI-parent-qualification-20261011T0105.json` — 5039B / SHA256 `c146b063b845f6261b68a96283392101f1f793d22349dcdc7cb4517a0bc936a3`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/brain-8755-existing-owner-source-install-health-parent-acceptance-20261011T0115.json` — 2026B / SHA256 `e0072a6d2f1415dca24f6e3b3460a628f9786d0b2d9f6b73cc0dacbffc2aca16`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/brain-8755-paid-owning-UI-parent-acceptance-20261011T0115.json` — 4470B / SHA256 `979b9ef000cc6cba405738e0198063fed22fd3f8382fe299945e04e96c9b86d9`.
+
+Brain8755 source508485B/3e518631 and tests357771B/ba1384c7 match actual41c runtime. /opt/macro has unrelated tracked `D site/live/quotes.json`, preserved and disclosed; no whole-checkout-clean claim. macro-api active/running PID2428800 since01:00:21UTC; actual read-only observation01:05:32UTC. Owner CLI exit unobserved; parent did not build/restart/deploy. Two paid replies finished19s and approximately69s; original question was NVDA while chart context MU. Live thinking-only recovery trigger and underlying financial/source correctness unobserved. Original streamed mid-word snapshot was not terminalfailure; final completed text supersedes it. Optional review refusal remains frozen.
+
+Phone initial translator-initialization failure and16px compressed controls were repaired before publication; final visual review found counter obscured by existing fullscreen button and reserved its space. Thirteen responsive tests precede counter-only CSS repair; final three counter/step/exit tests bind final9e7 bytes. Eight visual-intelligence no-explicit-any lint errors reproduce exactbase and remain unwaived; fullapplicationlint PASS not claimed. Final mobile/tablet/activehub fixture images viewed, not installed paid phone proof. No credential retained. No whole original mission accepted.
