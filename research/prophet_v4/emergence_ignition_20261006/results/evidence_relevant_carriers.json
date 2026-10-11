@@ -1,0 +1,82 @@
+[
+  {
+    "number": 8312,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8312",
+    "title": "research: initiate Information→Price and complete native SRC-A1 proof",
+    "state": "closed",
+    "draft": false,
+    "head": "94fc98253dc467e57672474533d28308f5255f7c",
+    "merged_at": "2026-10-06T07:31:46Z",
+    "updated_at": "2026-10-06T07:31:48Z"
+  },
+  {
+    "number": 8189,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8189",
+    "title": "feat(prophet): version earnings evidence semantics without changing C1 default",
+    "state": "closed",
+    "draft": false,
+    "head": "4489096c14ffea6eaf7ca5448acac5f1f91442b5",
+    "merged_at": "2026-10-05T09:41:52Z",
+    "updated_at": "2026-10-05T09:48:18Z"
+  },
+  {
+    "number": 8192,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8192",
+    "title": "feat(prophet): release complete prospective capture and integrity verification",
+    "state": "open",
+    "draft": false,
+    "head": "07136c56ec6f8492067b468f90c6b4372ca649b4",
+    "merged_at": null,
+    "updated_at": "2026-10-05T22:33:25Z"
+  },
+  {
+    "number": 8069,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8069",
+    "title": "research(prophet): Q06 SEC comparable-revenue source contract",
+    "state": "closed",
+    "draft": false,
+    "head": "fcf6ecce5bdcc43bcf35d4bf486b8df7e1c6ffa5",
+    "merged_at": "2026-10-05T09:39:57Z",
+    "updated_at": "2026-10-05T09:41:54Z"
+  },
+  {
+    "number": 7264,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7264",
+    "title": "feat(prophet): native private-Lab earnings research view",
+    "state": "open",
+    "draft": true,
+    "head": "214e0eda8cea910a52aa592a1b7fdecc345748fc",
+    "merged_at": null,
+    "updated_at": "2026-10-06T04:43:48Z"
+  },
+  {
+    "number": 7869,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7869",
+    "title": "research(prophet-us r6/w3): R6-B04-01a dossier-contract amendment A7–A12 draft (after the Opus review of R6-B04-01)",
+    "state": "open",
+    "draft": true,
+    "head": "b6e8f424de1c2f43cb5ddb1a7237254de758c9e4",
+    "merged_at": null,
+    "updated_at": "2026-09-27T21:34:54Z"
+  },
+  {
+    "number": 8004,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8004",
+    "title": "fix(prophet): bind episode security before issuer evidence",
+    "state": "open",
+    "draft": true,
+    "head": "f5898f9b0b90cb317ff1e225ae757406ae0ab558",
+    "merged_at": null,
+    "updated_at": "2026-09-25T08:10:27Z"
+  },
+  {
+    "number": 8454,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8454",
+    "title": "feat(news): end-to-end Terminal ticker feed plan and correctness kernel",
+    "state": "open",
+    "draft": true,
+    "head": "c0c20677bd3d362c27d06bf721b650c723243a6b",
+    "merged_at": null,
+    "updated_at": "2026-10-06T08:41:14Z"
+  }
+]
