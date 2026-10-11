@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T13:20:35.601730+00:00",
-  "count": 2808,
+  "generated_at": "2026-10-11T13:35:36.892882+00:00",
+  "count": 2809,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -596,6 +596,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fyrxjw2flxh-5cd63b",
+      "title": "Yaskawa Electric (6506.T) 2Q above expectations; focus on order trends and procurement production trends from 2H onward; Buy...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-09T14:44:02Z",
+      "summary_points": [
+        "2Q Beat & Revised Guidance: 2Q operating profits (¥13.6 bn) and orders (¥185.4 bn) exceeded estimates; full-year guidance revised down to ¥57.5 bn (still above consensus ¥55.8 bn), signaling resilient fundamentals despite near-term adjustments.",
+        "2H Procurement/Production Risks: Critical supply-demand tightness in FA industry and component procurement uncertainty heading into FY2/28, requiring cautious production volume management to sustain peak cycle growth.",
+        "Revenue & EBITDA Growth Trajectory: Projected revenue growth from ¥542.1 bn (2/26) to ¥681.0 bn (2/29E) and EBITDA expansion from ¥68.4 bn to ¥119.0 bn, driven by widening EBIT margin (8.7% → 13.5%) and operational efficiency.",
+        "Cash Flow Strength & Outperformance: Free cash flow surged from ¥5.9 bn to ¥63.8 bn, supporting robust capital allocation; stock outperformed TOPIX (29.5% absolute return) amid sustainable growth trajectory.",
+        "Key Downside Risks: Semiconductor/AI capex slowdown, delayed cost optimization results, and ERP recovery delays pose material threats to near-term earnings and margin expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
