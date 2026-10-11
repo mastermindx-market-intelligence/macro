@@ -1782,3 +1782,129 @@ def test_k3e_a8_projection_exposes_owner_underlying_reference_but_keeps_it_unqua
         "delta_convention_receipt",
         "immutable_source_projection_receipt",
     } <= set(out["qualification"]["missing"])
+
+
+# --------------------------------------------------------------------------- #
+# Macro Risk Detail — cross-name options pricing map (display-only)
+# --------------------------------------------------------------------------- #
+
+def _compare_history(n_names=30, n_sessions=65):
+    import math
+    dates = pd.bdate_range("2026-07-01", periods=n_sessions)
+    rows = []
+    for k in range(n_names):
+        ticker = f"T{k:02d}"
+        for i, stamp in enumerate(dates):
+            amp = 0.030 if k < 3 else 0.006 + k * 0.0001
+            rows.append({
+                "date": stamp.date().isoformat(),
+                "underlying": ticker,
+                "atm_call_iv": 0.25 + amp * math.sin(i / 2 + k),
+                "skew": 0.02 + amp * 0.6 * math.cos(i / 2.4 + k / 3),
+                "n_strikes": 1000 - k,
+                "spot": 100.0 + k,
+                "tenor_days": 30.0,
+                "source": "thetadata",
+            })
+    return pd.DataFrame(rows), dates
+
+
+def test_options_compare_is_context_only_pit_and_uses_one_complete_session():
+    hist, dates = _compare_history()
+    asof = dates[50].date().isoformat()
+    before = S.build_compare_payload(hist, as_of=asof, today=date(2026, 10, 6))
+
+    future = pd.DataFrame([{
+        "date": "2026-12-31", "underlying": "T00", "atm_call_iv": 9.0,
+        "skew": 9.0, "n_strikes": 1000, "spot": 100.0, "tenor_days": 30.0,
+        "source": "thetadata",
+    }])
+    after = S.build_compare_payload(
+        pd.concat([hist, future], ignore_index=True),
+        as_of=asof,
+        today=date(2026, 10, 6),
+    )
+
+    assert before["schema"] == S.COMPARE_SCHEMA
+    assert before["state"] == "ready"
+    assert before["context_only"] is True and before["scored"] is False
+    assert before["authority"] == "display_only"
+    left = next(row for row in before["rows"] if row["ticker"] == "T00")
+    right = next(row for row in after["rows"] if row["ticker"] == "T00")
+    assert left["trail"] == right["trail"]
+    assert all(row["asof"] == asof for row in before["rows"])
+
+
+def test_options_compare_excludes_cross_source_history_from_percentiles():
+    hist, dates = _compare_history(n_names=1, n_sessions=40)
+    cutoff = dates[15].date().isoformat()
+    old = hist["date"] < cutoff
+    hist.loc[old, "source"] = "polygon_gex"
+    # Make the old-source observations absurd so contamination is obvious.
+    hist.loc[old, "atm_call_iv"] = 9.0
+    hist.loc[old, "skew"] = 9.0
+
+    mixed = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    theta_only = S.build_compare_payload(
+        hist[hist["source"] == "thetadata"].copy(),
+        as_of=dates[-1].date().isoformat(),
+    )
+
+    assert mixed["history_basis"]["kind"] == "same_source_as_current_session"
+    assert len(mixed["rows"]) == 1
+    row = mixed["rows"][0]
+    clean = theta_only["rows"][0]
+    assert row["source"] == "thetadata"
+    assert row["history_n"] == 25
+    assert row["options_pct"] == clean["options_pct"]
+    assert row["protection_pct"] == clean["protection_pct"]
+    assert row["trail"] == clean["trail"]
+
+
+def test_options_compare_caps_at_30_and_fast_is_movement_only_top_decile():
+    hist, dates = _compare_history(n_names=35)
+    payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+
+    assert len(payload["rows"]) == 30
+    assert [row["ticker"] for row in payload["rows"][:3]] == ["T00", "T01", "T02"]
+    fast = [row for row in payload["rows"] if row["zone"] == "fast"]
+    assert len(fast) == 3
+    assert payload["fast_rule"]["fast_n"] == 3
+    assert "not direction or a trade signal" in payload["fast_rule"]["detail"]
+    assert min(row["path_length"] for row in fast) >= max(
+        row["path_length"] for row in payload["rows"] if row["zone"] == "calm"
+    )
+
+
+def test_options_compare_short_or_cross_date_name_stays_absent():
+    hist, dates = _compare_history(n_names=3, n_sessions=30)
+    asof = dates[-1].date().isoformat()
+    hist = hist[~((hist["underlying"] == "T01") & (hist["date"] == asof))]
+    keep_t02 = set(d.date().isoformat() for d in dates[-10:])
+    hist = hist[(hist["underlying"] != "T02") | hist["date"].isin(keep_t02)]
+
+    payload = S.build_compare_payload(hist, as_of=asof)
+    assert {row["ticker"] for row in payload["rows"]} == {"T00"}
+
+
+def test_options_skew_emit_writes_compare_from_the_same_ledger(monkeypatch, tmp_path):
+    from scripts import build_options_skew as builder
+
+    hist, dates = _compare_history(n_names=3, n_sessions=30)
+    asof = dates[-1].date().isoformat()
+    skew_payload = {
+        "schema": S.SCHEMA, "ledger_asof": asof, "n": 3,
+        "scored": False, "gate_status": "measuring",
+    }
+    monkeypatch.setattr(builder.S, "emit_from_ledger", lambda **kwargs: skew_payload)
+    monkeypatch.setattr(builder.S, "load_history", lambda: hist)
+    monkeypatch.setattr(builder.config, "site_dir", lambda: tmp_path)
+
+    returned = builder.emit(today=date(2026, 10, 6))
+    assert returned == skew_payload
+    compare = json.loads((tmp_path / "options_compare.json").read_text())
+    assert compare["schema"] == S.COMPARE_SCHEMA
+    assert compare["as_of"] == asof
+    assert compare["state"] == "ready"
+    assert compare["context_only"] is True and compare["scored"] is False
+

@@ -37,6 +37,333 @@
     detail.appendChild(band);
   }
 
+
+  /* Nightly cross-name options comparison. One static read inside the existing
+     Risk Detail dialog; intentionally no second timer, retry loop or score plane. */
+  var COMPARE_URL = "options_compare.json";
+  var compareLoaded = false, comparePending = false;
+
+  function ocEl(tag, cls, value) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (value != null) node.textContent = String(value);
+    return node;
+  }
+
+  function ocPair(parent, en, zh, tag) {
+    var kind = tag || "span";
+    var a = ocEl(kind, "l-en", en), b = ocEl(kind, "l-zh", zh);
+    parent.appendChild(a); parent.appendChild(b);
+    return parent;
+  }
+
+  function ocSvg(tag, attrs) {
+    var node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    Object.keys(attrs || {}).forEach(function (key) {
+      node.setAttribute(key, String(attrs[key]));
+    });
+    return node;
+  }
+
+  function ocPct(value) {
+    var n = Number(value);
+    return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : null;
+  }
+
+  function ocText(svg, x, y, value, cls, anchor) {
+    var node = ocSvg("text", {
+      x:x, y:y, "text-anchor":anchor || "start", "class":cls || ""
+    });
+    node.textContent = value;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function renderOptionsCompare(payload, body) {
+    if (!payload || payload.schema !== "options_compare.v1" ||
+        payload.state !== "ready" || !Array.isArray(payload.rows) ||
+        payload.rows.length < 2 || !body) return false;
+    if (document.getElementById("riskdlg-options-compare")) return true;
+
+    var rows = payload.rows.filter(function (row) {
+      return row && row.ticker && ocPct(row.options_pct) !== null &&
+        ocPct(row.protection_pct) !== null;
+    });
+    if (rows.length < 2) return false;
+
+    var detail = ocEl("details", "riskdlg-options-compare");
+    detail.id = "riskdlg-options-compare";
+    var summary = ocEl("summary", "ocmp-summary");
+    var summaryCopy = ocEl("span", "ocmp-summary-copy");
+    ocPair(summaryCopy, "Options risk pricing · compare names",
+      "期权风险定价 · 标的对比");
+    summary.appendChild(summaryCopy);
+    var badge = ocEl("span", "ocmp-summary-badge");
+    var fastN = rows.filter(function (row) { return row.zone === "fast"; }).length;
+    ocPair(badge, fastN + " fast · " + (rows.length - fastN) + " calm",
+      fastN + " 个快速 · " + (rows.length - fastN) + " 个平稳");
+    summary.appendChild(badge);
+    detail.appendChild(summary);
+
+    var shell = ocEl("div", "ocmp-shell");
+    var intro = ocEl("div", "ocmp-intro");
+    var title = ocEl("strong", "ocmp-title");
+    ocPair(title, "Where options and protection are getting richer",
+      "期权与下行保护正在变贵的位置");
+    intro.appendChild(title);
+    var expl = ocEl("p", "ocmp-expl");
+    ocPair(expl,
+      "Right = roughly 30-day options are richer than usual for that name. Up = downside protection is richer. Trails show the last five available same-source sessions.",
+      "越靠右＝该标的约30日期权相对自身同源历史更贵；越靠上＝下行保护更贵。轨迹显示最近五个同源可用交易日。");
+    intro.appendChild(expl);
+    var note = ocEl("p", "ocmp-note");
+    ocPair(note,
+      "Fast means one of the biggest five-session moves in this map. Source breaks are excluded. It is not bullish, bearish, or a trade signal.",
+      "“快速”仅表示该标的在此图中的五日移动幅度较大；不同数据源的历史不会混算。它不代表看多、看空或交易信号。");
+    intro.appendChild(note);
+    shell.appendChild(intro);
+
+    var meta = ocEl("div", "ocmp-meta");
+    var stale = Number(payload.source_stale_days);
+    var staleEn = Number.isFinite(stale) && stale > 0 ? " · " + stale + "d old" : "";
+    var staleZh = Number.isFinite(stale) && stale > 0 ? " · 已过去" + stale + "天" : "";
+    ocPair(meta, "Delayed EOD · as of " + (payload.as_of || "—") + staleEn,
+      "延迟收盘数据 · 截至 " + (payload.as_of || "—") + staleZh);
+    shell.appendChild(meta);
+
+    var chartWrap = ocEl("div", "ocmp-chart-wrap");
+    var svg = ocSvg("svg", {
+      viewBox:"0 0 660 430", role:"img",
+      "aria-label":"Options pricing and downside protection comparison"
+    });
+    svg.classList.add("ocmp-chart");
+    var x0 = 58, x1 = 626, y0 = 28, y1 = 354;
+    function x(value) { return x0 + ocPct(value) / 100 * (x1 - x0); }
+    function y(value) { return y1 - ocPct(value) / 100 * (y1 - y0); }
+
+    [0, 25, 50, 75, 100].forEach(function (point) {
+      svg.appendChild(ocSvg("line", {
+        x1:x(point), x2:x(point), y1:y0, y2:y1, "class":"ocmp-grid"
+      }));
+      svg.appendChild(ocSvg("line", {
+        x1:x0, x2:x1, y1:y(point), y2:y(point), "class":"ocmp-grid"
+      }));
+      ocText(svg, x(point), 378, point + "%", "ocmp-tick", "middle");
+      ocText(svg, 47, y(point) + 4, point + "%", "ocmp-tick", "end");
+    });
+    ocText(svg, (x0 + x1) / 2, 410, "Options pricier",
+      "ocmp-axis l-en", "middle");
+    ocText(svg, (x0 + x1) / 2, 410, "期权更贵",
+      "ocmp-axis l-zh", "middle");
+    var yEn = ocText(svg, 16, (y0 + y1) / 2, "Protection pricier",
+      "ocmp-axis l-en", "middle");
+    var yZh = ocText(svg, 16, (y0 + y1) / 2, "下行保护更贵",
+      "ocmp-axis l-zh", "middle");
+    yEn.setAttribute("transform", "rotate(-90 16 " + ((y0 + y1) / 2) + ")");
+    yZh.setAttribute("transform", "rotate(-90 16 " + ((y0 + y1) / 2) + ")");
+
+    var groups = {};
+    rows.forEach(function (row, index) {
+      var trail = Array.isArray(row.trail) ? row.trail.filter(function (point) {
+        return ocPct(point.options_pct) !== null &&
+          ocPct(point.protection_pct) !== null;
+      }) : [];
+      if (trail.length > 1) {
+        var points = trail.map(function (point) {
+          return x(point.options_pct).toFixed(1) + "," +
+            y(point.protection_pct).toFixed(1);
+        }).join(" ");
+        var trailLine = ocSvg("polyline", {
+          points:points,
+          "class":"ocmp-trail ocmp-trail-" +
+            (row.zone === "fast" ? "fast" : "calm")
+        });
+        trailLine.setAttribute("data-ticker", row.ticker);
+        svg.appendChild(trailLine);
+      }
+      var group = ocSvg("g", {
+        "class":"ocmp-point ocmp-point-" +
+          (row.zone === "fast" ? "fast" : "calm"),
+        tabindex:"0", role:"button",
+        "aria-label":row.ticker + ", options " +
+          Math.round(row.options_pct) + " percent, protection " +
+          Math.round(row.protection_pct) + " percent"
+      });
+      group.setAttribute("data-ticker", row.ticker);
+      var cx = x(row.options_pct), cy = y(row.protection_pct);
+      group.appendChild(ocSvg("circle", {
+        cx:cx, cy:cy, r:row.zone === "fast" ? 7 : 6, "class":"ocmp-dot"
+      }));
+      var label = ocSvg("text", {
+        x:cx + 8, y:cy + ((index % 3) - 1) * 7 + 3, "class":"ocmp-label"
+      });
+      label.textContent = row.ticker;
+      group.appendChild(label);
+      var tip = ocSvg("title");
+      tip.textContent = row.ticker + " · options " +
+        Math.round(row.options_pct) + "% · protection " +
+        Math.round(row.protection_pct) + "%";
+      group.appendChild(tip);
+      svg.appendChild(group);
+      groups[row.ticker] = group;
+    });
+    chartWrap.appendChild(svg);
+    shell.appendChild(chartWrap);
+
+    var legend = ocEl("div", "ocmp-legend");
+    var calmKey = ocEl("span", "ocmp-key ocmp-key-calm");
+    ocPair(calmKey, "Calm zone", "平稳区"); legend.appendChild(calmKey);
+    var fastKey = ocEl("span", "ocmp-key ocmp-key-fast");
+    ocPair(fastKey, "Fast zone", "快速区"); legend.appendChild(fastKey);
+    var trailKey = ocEl("span", "ocmp-key ocmp-key-trail");
+    ocPair(trailKey, "Last 5 sessions", "最近5个交易日");
+    legend.appendChild(trailKey);
+    shell.appendChild(legend);
+
+    var readout = ocEl("div", "ocmp-readout");
+    var focusHead = ocEl("div", "ocmp-focus-head");
+    var focusTicker = ocEl("strong", "ocmp-focus-ticker");
+    focusHead.appendChild(focusTicker);
+    var focusState = ocEl("span", "ocmp-focus-state");
+    var focusStateEn = ocEl("span", "l-en");
+    var focusStateZh = ocEl("span", "l-zh");
+    focusState.appendChild(focusStateEn); focusState.appendChild(focusStateZh);
+    focusHead.appendChild(focusState); readout.appendChild(focusHead);
+    var metrics = ocEl("div", "ocmp-metrics");
+
+    function metric(kind) {
+      var box = ocEl("div", "ocmp-metric ocmp-metric--" + kind);
+      var top = ocEl("div", "ocmp-metric-top");
+      var name = ocEl("span", "ocmp-metric-name");
+      var nameEn = ocEl("span", "l-en"), nameZh = ocEl("span", "l-zh");
+      name.appendChild(nameEn); name.appendChild(nameZh);
+      var value = ocEl("strong", "ocmp-metric-value");
+      var bodyText = ocEl("p", "ocmp-metric-copy");
+      var bodyEn = ocEl("span", "l-en"), bodyZh = ocEl("span", "l-zh");
+      bodyText.appendChild(bodyEn); bodyText.appendChild(bodyZh);
+      top.appendChild(name); top.appendChild(value);
+      box.appendChild(top); box.appendChild(bodyText); metrics.appendChild(box);
+      return {
+        nameEn:nameEn, nameZh:nameZh, value:value, bodyEn:bodyEn, bodyZh:bodyZh
+      };
+    }
+
+    var optionsMetric = metric("options");
+    var protectionMetric = metric("protection");
+    readout.appendChild(metrics);
+    var receipt = ocEl("p", "ocmp-receipt");
+    var receiptEn = ocEl("span", "l-en"), receiptZh = ocEl("span", "l-zh");
+    receipt.appendChild(receiptEn); receipt.appendChild(receiptZh);
+    readout.appendChild(receipt);
+    shell.appendChild(readout);
+
+    function select(row) {
+      Object.keys(groups).forEach(function (ticker) {
+        groups[ticker].classList.toggle("is-selected", ticker === row.ticker);
+      });
+      svg.querySelectorAll(".ocmp-trail[data-ticker]").forEach(function (trailLine) {
+        trailLine.classList.toggle(
+          "is-selected", trailLine.getAttribute("data-ticker") === row.ticker
+        );
+      });
+      focusTicker.textContent = row.ticker;
+      focusStateEn.textContent = row.zone === "fast" ? "FAST" : "CALM";
+      focusStateZh.textContent = row.zone === "fast" ? "快速" : "平稳";
+      focusState.className = "ocmp-focus-state ocmp-focus-state-" +
+        (row.zone === "fast" ? "fast" : "calm");
+
+      optionsMetric.nameEn.textContent = row.ticker + " options";
+      optionsMetric.nameZh.textContent = row.ticker + " 期权";
+      optionsMetric.value.textContent = Math.round(row.options_pct) + "%";
+      optionsMetric.bodyEn.textContent =
+        "~30-day ATM-call IV is richer than on " +
+        Math.round(row.options_pct) + "% of the prior sessions in its " +
+        row.history_n + "-session window.";
+      optionsMetric.bodyZh.textContent =
+        "约30日平值看涨隐波高于该标的最近" + row.history_n +
+        "个可用交易日窗口中约" + Math.round(row.options_pct) + "%的此前读数。";
+
+      protectionMetric.nameEn.textContent = row.ticker + " protection";
+      protectionMetric.nameZh.textContent = row.ticker + " 下行保护";
+      protectionMetric.value.textContent =
+        Math.round(row.protection_pct) + "%";
+      protectionMetric.bodyEn.textContent =
+        "25-delta put-over-ATM-call IV skew is richer than on " +
+        Math.round(row.protection_pct) +
+        "% of the prior sessions in the same window.";
+      protectionMetric.bodyZh.textContent =
+        "25Δ看跌相对平值看涨的隐波偏度高于同一窗口中约" +
+        Math.round(row.protection_pct) + "%的此前读数。";
+
+      var iv = Number(row.atm_call_iv_pct), skew = Number(row.protection_skew_volpts);
+      receiptEn.textContent = "Current read: " +
+        (Number.isFinite(iv) ? iv.toFixed(1) + "% ATM-call IV" : "IV unavailable") +
+        " · " +
+        (Number.isFinite(skew) ?
+          (skew >= 0 ? "+" : "") + skew.toFixed(1) + " vol pts protection skew" :
+          "skew unavailable") +
+        " · context only.";
+      receiptZh.textContent = "当前读数：" +
+        (Number.isFinite(iv) ? iv.toFixed(1) + "% 平值看涨隐波" : "隐波不可用") +
+        " · " +
+        (Number.isFinite(skew) ?
+          (skew >= 0 ? "+" : "") + skew.toFixed(1) + " 个波动点保护偏度" :
+          "偏度不可用") +
+        " · 仅作背景参考。";
+    }
+
+    rows.forEach(function (row) {
+      var group = groups[row.ticker];
+      function choose(event) {
+        if (event && event.type === "keydown" &&
+            event.key !== "Enter" && event.key !== " ") return;
+        if (event && event.preventDefault) event.preventDefault();
+        select(row);
+      }
+      group.addEventListener("click", choose);
+      group.addEventListener("keydown", choose);
+    });
+    select(rows.find(function (row) { return row.ticker === "SPY"; }) || rows[0]);
+
+    var foot = ocEl("div", "ocmp-foot");
+    var footCopy = ocEl("span", "ocmp-foot-copy");
+    ocPair(footCopy,
+      "The default view uses market bellwethers; if one is unavailable, a name with deeper selected-expiry chain coverage fills the slot. That fallback is not a liquidity ranking.",
+      "默认视图使用市场代表性标的；若某标的不可用，则以所选到期日链覆盖更深的标的补位。该补位并非流动性排名。");
+    foot.appendChild(footCopy);
+    var link = ocEl("a", "ocmp-link");
+    link.href = "options.html#scanner";
+    ocPair(link, "Open Options workspace →", "打开期权工作台 →");
+    foot.appendChild(link);
+    shell.appendChild(foot);
+
+    detail.appendChild(shell);
+    var volDetail = body.querySelector ? body.querySelector(".riskdlg-vw") : null;
+    if (volDetail && volDetail.parentNode === body) {
+      body.insertBefore(detail, volDetail.nextSibling);
+    } else {
+      var drivers = body.querySelector ? body.querySelector(".riskdlg-drivers") : null;
+      if (drivers) body.insertBefore(detail, drivers);
+      else body.appendChild(detail);
+    }
+    return true;
+  }
+
+  function mountOptionsCompare() {
+    if (compareLoaded || comparePending ||
+        typeof document.querySelector !== "function") return;
+    var body = document.querySelector("#dlg-risk .mx5-dlg-body");
+    if (!body || typeof fetch !== "function") return;
+    comparePending = true;
+    fetch(COMPARE_URL, {cache:"no-store"})
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (payload) {
+        compareLoaded = true; comparePending = false;
+        renderOptionsCompare(payload, body);
+      })
+      .catch(function () { compareLoaded = true; comparePending = false; });
+  }
+
   var lastLiveFeed = null, hadLive = false, requestPending = false;
 
   function contextCopy() {
@@ -292,5 +619,7 @@
 
   if (document.readyState !== "loading") tick();
   else document.addEventListener("DOMContentLoaded", tick);
+  if (document.readyState !== "loading") mountOptionsCompare();
+  else document.addEventListener("DOMContentLoaded", mountOptionsCompare);
   setInterval(tick, Math.max(15, POLL) * 1000);
 })();
