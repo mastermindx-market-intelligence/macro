@@ -331,6 +331,47 @@ def load_prophet_rank_frame(root: Path | str | None = None) -> pd.DataFrame:
     return frame
 
 
+
+class MetadataIntakeRefusal(FusionRefusal):
+    """Typed metadata-intake failure; never render dependency payloads."""
+
+    def __init__(self, code: str, part: str | None = None) -> None:
+        self.code, self.part = code, part
+        super().__init__(code if part is None else f"{code}: {part}")
+
+
+def load_prophet_rank_metadata(root: Path | str | None, *,
+                               columns: Sequence[str],
+                               expected_parts: Mapping[str, Mapping[str, Any]],
+                               months: Iterable[str] | None = None) -> pd.DataFrame:
+    """Native metadata only, before any label construction or three-key dedupe.
+
+    The caller must already have a lawful source grant and catalogue. This is
+    NOT a training-value reader, source-rights check or empirical admission.
+    Preserve all native grade-key columns/rows and the native projection receipt.
+    """
+    if root is None:
+        raise MetadataIntakeRefusal("EXPLICIT_ROOT_REQUIRED")
+    try:
+        from engine import us_prophet_grades as upg
+    except Exception:
+        raise MetadataIntakeRefusal("STRICT_READER_UNAVAILABLE") from None
+    if not hasattr(upg, "GradeMetadataReadError"):
+        raise MetadataIntakeRefusal("STRICT_READER_UNAVAILABLE")
+    try:
+        result = upg.load_grades(root, columns=columns, months=months,
+                                 metadata_only=True, expected_parts=expected_parts)
+    except upg.GradeMetadataReadError as exc:
+        raise MetadataIntakeRefusal(exc.code, exc.part) from None
+    except Exception:
+        raise MetadataIntakeRefusal("NATIVE_METADATA_READ_FAILED") from None
+    receipt = result.attrs.get("grade_metadata_projection") if isinstance(result, pd.DataFrame) else None
+    if (not isinstance(receipt, dict) or receipt.get("catalogue_complete") is not True
+            or type(receipt.get("rows")) is not int or receipt["rows"] != len(result)
+            or receipt.get("requested_columns") != list(result.columns)):
+        raise MetadataIntakeRefusal("NATIVE_METADATA_RECEIPT_INVALID")
+    return result
+
 def load_frame(frame_name: str, *, root: Path | str | None = None,
                path: Path | str | None = None) -> pd.DataFrame:
     """Dispatch a frame name to its loader."""

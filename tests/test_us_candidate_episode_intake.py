@@ -15,6 +15,7 @@ from engine.us_candidate_episode import canonical_json, reconcile_observations
 from engine.us_candidate_episode_intake import (
     candidate_observations,
     door_observations,
+    identity_fields,
     load_identity_spine,
     radar_observations,
     turn_watch_observations,
@@ -59,6 +60,31 @@ def _ids(batch) -> set[str]:
     return {str(row["source_event_id"]) for row in batch.observations} | {
         str(row["source_event_id"]) for row in batch.suppressions
     }
+
+
+def test_identity_fields_are_the_shared_prospective_data_os_projection(tmp_path: Path):
+    data = tmp_path / "data"
+    _identity_spine(data)
+    spine = load_identity_spine(data)
+
+    resolved = identity_fields(spine, "ALFA", "2026-11-27")
+    assert resolved == {
+        "security_id": "SEC:US-XNAS-ALFA",
+        "issuer_id": "ISS:US-XNAS-ALFA",
+        "identity_epoch": "epoch_0",
+        "identity_epoch_state": "provisional",
+        "identity_spec_schema": "stock_identity.fingerprint_spec.v1",
+        "identity_spec_hash": spec_hash(),
+        "identity_capture_state": "RESOLVED",
+        "identity_capture_basis": "DATA_OS_CURRENT_SNAPSHOT_CAPTURED_PROSPECTIVELY",
+    }
+
+    assert identity_fields(spine, "UNKNOWN", "2026-11-27")["identity_capture_state"] == (
+        "SECURITY_UNRESOLVED"
+    )
+    assert identity_fields(spine, "ALFA", "not-a-date")["identity_capture_state"] == (
+        "INVALID_DECISION_DATE"
+    )
 
 
 def test_turn_watch_sidecar_and_identity_spine_open_at_the_nyse_early_close(tmp_path: Path):
