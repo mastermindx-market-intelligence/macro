@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-11T02:06:54.962304+00:00",
+  "observed_at": "2026-10-11 02:59:48 UTC",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T0205",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T0255",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -5641,5 +5641,30 @@
     "knowledge_pointer_correction": "Actual8b43 JSON current_capability_frontier_key still pointedT0038 although T0117 object and WS latestT0117 existed. Initial expectedT0117 marker assertion failed before any writes; exactclean8b43 read qualified stale pointer, corrected toT0205 here. No earlier receipt reacceptance or source/runtime proof extension.",
     "retained_protected_boundaries": "LastqualifiedTerminal34d T1315 only; no114/30e9 installed phoneproof. Frozenfb1/c968 releases/no retry/weakerfloor/cleanup/rawbuilder/alternatecarrier/route refused effect/no restoreowed. Brain8755 scoped install/2paid answers, A12Peak/T0038Levels/Heatmap retained/no replay.781ad5green still reservedmastermindx-3 exactheadnumericreview replacing5388952130+3threads. IW2fifthcyberrefusalFROZEN/human supported platform resolution existingIW2chat required.0030-32 unapplied/operatorSQL/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/EFFECT_UNKNOWN and exact887ALLOW unchanged; optionalBrainFabriccontractmoderefusalFROZEN.",
     "continuation": "Source/local/publish checkpoint not fullA11/fullAudit20 completion. Consume actual30e9 terminal CI/merge and only admitted independently authorized canonical generation before paid phoneproof. No principalpolling/newobserver/duplicatewriter/completedbranchreuse/old-runrefused-logretry. No other safe readyphase from unchanged accepted proof."
+  },
+  "current_capability_frontier_20261011T0255": {
+    "observed_at": "2026-10-11 02:59:48 UTC",
+    "supersedes": "current_capability_frontier_20261011T0205",
+    "supersession_scope": "Only actual914 merged source/exact required CI and current canonical installation gap/reserve observation. Historical local/source/paid scopes retained without replay.",
+    "whole_original_mission_accepted": false,
+    "914_merged_source": "PR914 merged02:44:45Z/head30e9c7c2bd5d54c6794c717be21db131bcefbc19/squashcaf202fd5ac63c44ed09ddc758cab53d0c259beb/base1148477475dbff4ab49397e2ecfc10f7e98ab70a. Fullhead-squashtreeequal417759d93f2b2003d5b2ef58f848988930306c1c; all8 delivered blobs match qualified scopedCSS source/SHA. Actual master refcaf. Normal exact object-only localfetch/no checkout/source edits/clean HEAD30e9 unchanged. Completed914 branch MUST NOT be reused.",
+    "914_latest_required_CI": "Actual latest three required SUCCESS, all owning38103930223/head30e9: Terminal114371873652 completed02:44:19Z/Quote11436533912202:04:25/Ingest11436533893002:04:53. All10 actual owning jobs SUCCESS/each exacthead. Vercel2 StatusContextsFAILURE disclosed. Initial attempt1/mastermindxryan/ci.yml identity retained fromT0205; final run REST metadata/status unobserved after explicit CI-wait-guard refusal. ParentNO approval/dispatch/rearm/merge/PUT/admin/manuallabel removal. Existing controller merged.",
+    "914_followup_metadata_refusal": "Follow-up owning38103930223 REST metadata read rejected REDUNDANT_POLL by installed PreToolUse guard immediately after terminal PR read. FIRSTrefusal freezes this exact metadata retrieval/no timer/API/UI/other tool/carrier/later-mutation retry. Simultaneously issued jobs returned before any adaptive retry; exact3latest rollup+all10head-bound jobs independently returned. Older381008 job114356172586 logretrieval remains independentlyFROZEN.",
+    "914_actual_canonical_installation_gap": "Actual readonly02:57:15.348643Z canonical before+after source/runtime34d52545ac04692ab642942972b29b1379a44a08 clean/Terminal+QuoteHub+rsyslogACTIVE/no matchingbuilder/stagepathsempty. New ReplayTransport.module.css absent; other3 affected runtime files retain old bytes, not qualifiedcaf. Available8818388992/short1919029248 versus retained10GiB10737418240. MERGED_CAF_SOURCE_NOT_INSTALLED; no paidphoneproof ready. Current observation qualifies gap only/no reacceptance unchanged34d/fullhealth/UI/source. No public/browser/replay/test/capture/build.",
+    "retained_protected_boundaries": "T0205 historical scope retained. Frozenfb1/c968 releases/no retry/weakerfloor/cleanup/rawbuilder/alternatecarrier/route refused effect/no parentrestoreowed. Brain8755 scoped install/2paid answers and A12Peak/T0038Levels/Heatmap retained/no replay.781ad5green still requires reservedmastermindx-3 exactheadnumericreview replacing5388952130+3threads. IW2fifthcyberrefusalFROZEN/human supported platform resolution existingIW2chat required.0030-32 unapplied/operatorSQL/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/EFFECT_UNKNOWN and exact887ALLOW unchanged; optionalBrainFabriccontractmoderefusalFROZEN. Both914 CI-read refusals exactFROZEN. Actualcaf merge/gap does not authorize refused release effect.",
+    "knowledge_write_guard": "Initial root observed_at string-count guard also matched same-value nested timestamp and stopped before writes. Corrected exact-line anchoring only; historical records semantically and textually preserved outside root marker/timestamp.",
+    "continuation": "Merged source/CI checkpoint not completion. Only actual independently authorized admitted canonicalcaf/newgeneration enables paidphoneproof. Consume reserved781 exactcurrenthead numericreview+3threads or actual independently authorized producer/platform event. No repeatedmerged914 CI/source fetch/test/runtime/public/browser/reacceptance unchanged34d/completedbranchreuse/polling principal. No other safe readyphase from unchanged accepted proof.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-merged-source-exact-CI-parent-qualification-20261011T0255.json",
+        "bytes": 16190,
+        "sha256": "4b6734e4a1a336cd8fe502faee386b748024c5858194ec60ce47c76039cfa747"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-merged-caf-readonly-installation-gap-parent-consumption-20261011T0255.json",
+        "bytes": 3178,
+        "sha256": "d3f13f88042ed5b4455e08a7392f036ae1900c8e77b57d4863c3c297a562d04a"
+      }
+    ]
   }
 }

@@ -7,7 +7,7 @@ objective: Review the twenty supplied Terminal repair missions through the admit
 status: active
 blocked_by:
 - PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
-- Phone Replay PR914 old9e7 CI failed; scoped CSS repair published30e9 has full529files/8582native and13responsive PASS. Fresh exact38103930223 CI is pending; merge, admitted canonical generation and paid phone live proof remain. Brain8755 scoped paid delivery retained. Old-run log retrieval refusal stays frozen.
+- Phone Replay PR914 mergedcaf with exact3 required CI/all10 owning jobs SUCCESS; actual02:57 canonical remains34d, new Replay styles absent. Available8818388992 is1919029248 below10GiB. Admitted canonical installation and paid phone live proof remain; no frozen release retry. Both914 CI-read refusals remain exact frozen.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
 - Terminal fb1/c968 canonical build-reserve refusals remain frozen; no retry, weaker floor, cleanup bypass, alternate carrier or restore owed.
 - A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
@@ -26,7 +26,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: Consume actual PR914 exact30e9 CI/merge events through existing MOG/nativeauto and soleheartbeat; full local repair is published and fresh owning38103930223 is pending. Qualify delivered source and only admitted independently authorized canonical generation, then verify paid phone Replay. Consume reserved781 currenthead numeric review and three-thread clearance or actual independently authorized producer/platform events. Preserve frozen old914 log retrieval, Terminal releases, IW2/security/SQL/rights/EFFECT_UNKNOWN gates. No principalpolling or accepted proof replay. Checkpoint is not completion.
+next_action: Consume actual independently authorized admitted canonicalcaf/newgeneration before paid phone Replay proof;914 source/CI/merge is qualified but current canonical source/runtime remains34d below10GiB. Consume reserved781 currenthead numeric review and three-thread clearance or actual independently authorized producer/platform events. No merged914 source/CI/test recensus, unchanged34d readback/browser/reacceptance, frozen CI-read/release/IW2 retry, cleanup weakening, alternatecarrier or principalpolling. Checkpoint is not completion.
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -622,3 +622,21 @@ Evidence bindings:
 - `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-TerminalShell-lint-baseline-corrected-parent-comparison-20261011T0157.json` — 2408B / SHA256 `7cfa80dd0a8403e61636972d390032622facf3eb388a959d9683ac548eab1433`.
 - `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-scoped-CSS-source-responsive-parent-qualification-20261011T0205.json` — 11200B / SHA256 `f004e451fd5004c7c2de11ab7c49bd69031d5a6250619d52de650537c7ec7426`.
 - `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-scoped-CSS-publish-initial-CI-parent-consumption-20261011T0205.json` — 9446B / SHA256 `6c9e9b1b005455ffa9fe3b11fab0c5c45e03828243fe3052e8c8181f17edc831`.
+
+
+## 2026-10-11T0255 — phone Replay merged source/CI and installation gap
+
+The latest frontier is `current_capability_frontier_20261011T0255`, superseding T0205 only on actual PR914 merge/exact CI and the current canonical installation gap. Historical exact receipts remain retained.
+
+- PR914 merged02:44:45Z/head30e9c7c2bd5d54c6794c717be21db131bcefbc19/squashcaf202fd5ac63c44ed09ddc758cab53d0c259beb/base1148477475dbff4ab49397e2ecfc10f7e98ab70a. Fullhead-squashtreeequal417759d93f2b2003d5b2ef58f848988930306c1c; all8 delivered blobs match qualified scopedCSS source/SHA. Actual master refcaf. Normal exact object-only localfetch/no checkout/source edits/clean HEAD30e9 unchanged. Completed914 branch MUST NOT be reused.
+- Actual latest three required SUCCESS, all owning38103930223/head30e9: Terminal114371873652 completed02:44:19Z/Quote11436533912202:04:25/Ingest11436533893002:04:53. All10 actual owning jobs SUCCESS/each exacthead. Vercel2 StatusContextsFAILURE disclosed. Initial attempt1/mastermindxryan/ci.yml identity retained fromT0205; final run REST metadata/status unobserved after explicit CI-wait-guard refusal. ParentNO approval/dispatch/rearm/merge/PUT/admin/manuallabel removal. Existing controller merged.
+- Follow-up owning38103930223 REST metadata read rejected REDUNDANT_POLL by installed PreToolUse guard immediately after terminal PR read. FIRSTrefusal freezes this exact metadata retrieval/no timer/API/UI/other tool/carrier/later-mutation retry. Simultaneously issued jobs returned before any adaptive retry; exact3latest rollup+all10head-bound jobs independently returned. Older381008 job114356172586 logretrieval remains independentlyFROZEN.
+- Actual readonly02:57:15.348643Z canonical before+after source/runtime34d52545ac04692ab642942972b29b1379a44a08 clean/Terminal+QuoteHub+rsyslogACTIVE/no matchingbuilder/stagepathsempty. New ReplayTransport.module.css absent; other3 affected runtime files retain old bytes, not qualifiedcaf. Available8818388992/short1919029248 versus retained10GiB10737418240. MERGED_CAF_SOURCE_NOT_INSTALLED; no paidphoneproof ready. Current observation qualifies gap only/no reacceptance unchanged34d/fullhealth/UI/source. No public/browser/replay/test/capture/build.
+- T0205 historical scope retained. Frozenfb1/c968 releases/no retry/weakerfloor/cleanup/rawbuilder/alternatecarrier/route refused effect/no parentrestoreowed. Brain8755 scoped install/2paid answers and A12Peak/T0038Levels/Heatmap retained/no replay.781ad5green still requires reservedmastermindx-3 exactheadnumericreview replacing5388952130+3threads. IW2fifthcyberrefusalFROZEN/human supported platform resolution existingIW2chat required.0030-32 unapplied/operatorSQL/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/EFFECT_UNKNOWN and exact887ALLOW unchanged; optionalBrainFabriccontractmoderefusalFROZEN. Both914 CI-read refusals exactFROZEN. Actualcaf merge/gap does not authorize refused release effect.
+- Initial root observed_at string-count guard also matched same-value nested timestamp and stopped before writes. Corrected exact-line anchoring only; historical records semantically and textually preserved outside root marker/timestamp.
+- Merged source/CI checkpoint not completion. Only actual independently authorized admitted canonicalcaf/newgeneration enables paidphoneproof. Consume reserved781 exactcurrenthead numericreview+3threads or actual independently authorized producer/platform event. No repeatedmerged914 CI/source fetch/test/runtime/public/browser/reacceptance unchanged34d/completedbranchreuse/polling principal. No other safe readyphase from unchanged accepted proof.
+
+Evidence bindings:
+
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-merged-source-exact-CI-parent-qualification-20261011T0255.json` — 16190B / SHA256 `4b6734e4a1a336cd8fe502faee386b748024c5858194ec60ce47c76039cfa747`.
+- `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-merged-caf-readonly-installation-gap-parent-consumption-20261011T0255.json` — 3178B / SHA256 `d3f13f88042ed5b4455e08a7392f036ae1900c8e77b57d4863c3c297a562d04a`.
