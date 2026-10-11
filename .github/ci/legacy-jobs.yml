@@ -20121,6 +20121,7 @@ jobs:
       - tests/test_tiingo_archive.py
       - tests/test_tiingo_views.py
       - tests/test_tiingo_reader.py
+      - tests/test_tiingo_history.py
       - tests/test_tiingo_vendor_cohort.py
       - tests/test_tiingo_ingestion_integrity.py
       - scripts/tiingo_reference_audit.py
@@ -20142,7 +20143,7 @@ jobs:
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
-          tests/test_tiingo_reader.py tests/test_tiingo_vendor_cohort.py
+          tests/test_tiingo_reader.py tests/test_tiingo_history.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q

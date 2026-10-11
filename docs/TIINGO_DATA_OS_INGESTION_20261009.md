@@ -484,3 +484,56 @@ The entire core collector remains at SHA-256
 No source data, key, BOATS session, vendor requests, new scheduler or
 producer-path workaround was touched. Keep all 24 Data OS contracts PROPOSED and
 PR #8698 draft until real entitlement, producer integrity, and runtime evidence.
+
+
+### October 11 UTC — bounded retrospective history research API
+
+Delivered a direct independent research consumer in the *existing* Data OS
+Tiingo reader: TiingoResearchHistory and read_research_history. No alternative
+dataset registry, archive, import queue, job lifecycle or canonical price basis
+was created. A researcher can explicitly select multiple **already existing,
+receipt-verified** EOD or daily-fundamental Parquet partitions, inspect
+historical rows across request windows and retain exact capture-vintage
+lineage. This makes the stored fragments useful for retrospective experiments
+once real captures exist; it is not production collection or true PIT backtesting.
+
+The consumer:
+- Requires the full exact (capture date, SHA-256) reference list, source and
+  vendor symbol, requested market-date bounds, an explicit timezone-aware
+  observed-before cutoff, and acknowledge_hindsight=true.
+- Reuses read_research_view for each partition (real raw receipt context,
+  output hash, research schema v2, source ticker/rights/identity refusal);
+  it never calls Tiingo or reads any API key.
+- Rejects captures after the cutoff, invalid source observation dates,
+  future market dates and rows outside original vendor request-date bounds.
+- Deduplicates only economically identical overlapping market-date records,
+  retaining the latest *captured* provenance within the supplied cutoff.
+  Conflicting source vintages, including adjusted-price corrections or
+  partial changes to a daily-fundamental metric set, fail the entire assembly
+  rather than being silently last-write-wins or synthesized across vintages.
+- Uses exact int64 volumes, daily metric granularity and null versus zero
+  from the existing validated research rows, and bounded input/row budgets.
+- Reports market-session-completeness, historical identity, redistribution
+  and PIT backtest eligibility as FALSE, always. Source-capture time is NOT
+  historically known-at time. This reader does not cover statements yet,
+  infer the full vendor security universe, or claim missing sessions are known.
+
+Verification: 307 passed / **the same 11 known producer-context failures** in
+the full Tiingo + Data OS registry suite (process 92333, exit 1).
+External-drive log:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-history-assembler-accepted-20261011.log
+SHA-256 fe112eced5f52681a29aad68f60719c62ae4ce4f71678a72804af83fa427f8ac
+The new standalone test_tiingo_history.py suite was wired to the pre-existing
+dataos-prospective-reference job and its trigger closure, **not** a new CI lane.
+Independent hosted CI/review is still owed; fixture pass does not certify
+real vendor entitlement, data maturity or corrected production source writer.
+
+The denied core collector rewrite/authenticated Tiingo probe were not replayed
+or reconstructed. The source collector remains unchanged at SHA-256
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+All 24 proposed Data OS contracts remain PROPOSED, and the archive remains
+absent. There is no actual historical corpus, live BOATS capture, collector
+worker, deployment, or release authorization. Keep #8698 draft; Tiingo News
+#8697 remains separately owned. The remaining user-critical gate is a genuinely
+permitted collector repair and authorized vendor qualification, followed by
+storage pilot, full history imports, CI/review and real consumer proof.

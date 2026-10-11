@@ -38,6 +38,7 @@ class TiingoView:
     redistribution_admitted: bool
     rows: tuple[dict[str, Any], ...]
     authority: str = "RESEARCH_ONLY_VENDOR_SOURCE"
+    source_request_path: str | None = None
 
     def metadata(self) -> dict[str, Any]:
         return {
@@ -174,4 +175,210 @@ def read_research_view(source: str, day: str, sha256: str, *,
         purpose=purpose, pit_backtest_eligible=pit,
         redistribution_admitted=False,
         rows=tuple(rows),
+        source_request_path=context.get("request_path"),
+    )
+
+
+@dataclass(frozen=True)
+class TiingoResearchHistory:
+    """A bounded, explicitly referenced retrospective study; never PIT evidence.
+
+    Each partition was independently read through read_research_view. Sources
+    with contradictory revisions refuse the *whole* synthetic series rather
+    than silently splicing corrections into a fabricated market-time vintage.
+    """
+    source: str
+    vendor_symbol: str
+    start_market_date: str
+    end_market_date: str
+    observed_before_utc: str
+    rows: tuple[dict[str, Any], ...]
+    source_partitions: tuple[tuple[str, str], ...]
+    identical_overlap_dates: int
+    authority: str = "RESEARCH_ONLY_RETROSPECTIVE"
+    pit_backtest_eligible: bool = False
+    redistribution_admitted: bool = False
+    historical_identity_admitted: bool = False
+    market_session_completeness_proven: bool = False
+
+    def metadata(self) -> dict[str, Any]:
+        return {
+            "source": self.source,
+            "vendor_symbol": self.vendor_symbol,
+            "start_market_date": self.start_market_date,
+            "end_market_date": self.end_market_date,
+            "observed_before_utc": self.observed_before_utc,
+            "source_partitions": len(self.source_partitions),
+            "rows": len(self.rows),
+            "observed_market_dates": len({row["market_date"] for row in self.rows}),
+            "identical_overlap_dates": self.identical_overlap_dates,
+            "authority": self.authority,
+            "pit_backtest_eligible": False,
+            "redistribution_admitted": False,
+            "historical_identity_admitted": False,
+            "market_session_completeness_proven": False,
+            "availability_clock": "SOURCE_CAPTURE_ONLY_NO_PIT",
+        }
+
+
+def read_research_history(
+    source: str,
+    vendor_symbol: str,
+    refs: list[tuple[str, str]] | tuple[tuple[str, str], ...],
+    start_market_date: str,
+    end_market_date: str,
+    observed_before_utc: str,
+    *,
+    root: Path = DEFAULT_ARCHIVE,
+    acknowledge_hindsight: bool = False,
+    max_partitions: int = 256,
+    max_rows: int = 100_000,
+    check_mount: bool = True,
+) -> TiingoResearchHistory:
+    """Join only caller-selected, authenticated-by-receipt research partitions.
+
+    An observed-before cutoff limits local capture vintages. It is NOT a
+    historically known-at or published-at cutoff. Refuse rather than selecting
+    conflicting historical corrections or filling unknown market sessions.
+    This is not a request planner, download, index, queue or new canonical API.
+    """
+    from lib.dataos.temporal import utc, TemporalError
+
+    if source not in {"eod-bars", "fund-daily"}:
+        raise TiingoViewRefusal("research history currently reviews only EOD or daily fundamentals")
+    if not isinstance(vendor_symbol, str) or not vendor_symbol or len(vendor_symbol) > 96:
+        raise TiingoViewRefusal("exact vendor symbol required for history assembly")
+    if acknowledge_hindsight is not True:
+        raise TiingoViewRefusal("historical lookback requires explicit hindsight acknowledgement")
+    if (type(max_partitions) is not int or not 1 <= max_partitions <= 512
+            or type(max_rows) is not int or not 1 <= max_rows <= 1_000_000):
+        raise TiingoViewRefusal("invalid bounded history reader budget")
+    if not isinstance(refs, (tuple, list)) or not 1 <= len(refs) <= max_partitions:
+        raise TiingoViewRefusal("explicit bounded capture references required")
+    if any(not isinstance(ref, (tuple, list)) or len(ref) != 2 for ref in refs):
+        raise TiingoViewRefusal("invalid partition reference")
+    if any(type(ref[0]) is not str or type(ref[1]) is not str
+           or not SHA.fullmatch(ref[1]) for ref in refs):
+        raise TiingoViewRefusal("invalid partition capture date/digest types")
+    unique_refs = [(ref[0], ref[1]) for ref in refs]
+    if len(unique_refs) != len(set(unique_refs)):
+        raise TiingoViewRefusal("duplicate capture references cannot prove more data")
+    try:
+        begin, end = date.fromisoformat(start_market_date), date.fromisoformat(end_market_date)
+        if (begin.isoformat() != start_market_date or end.isoformat() != end_market_date
+                or begin > end):
+            raise ValueError("noncanonical or reversed market date range")
+        cutoff = utc(observed_before_utc)
+    except (ValueError, TypeError, TemporalError) as exc:
+        raise TiingoViewRefusal("invalid research market/capture date or timezone") from exc
+
+    # Economically identical overlap can be de-duplicated, but two different
+    # vendor vintages for the same market date must be reviewed separately.
+    # No last-write-wins; no current adjusted-price series passed off as PIT.
+    evidence: dict[str, tuple[str, Any, tuple[dict[str, Any], ...]]] = {}
+    captures: list[tuple[Any, tuple[str, str]]] = []
+    overlaps = 0
+    for day, digest in unique_refs:
+        view = read_research_view(
+            source, day, digest, root=root,
+            purpose="RETROSPECTIVE_EXPLORATORY", acknowledge_hindsight=True,
+            max_rows=max_rows, check_mount=check_mount,
+        )
+        if not view.source_observed_at_utc:
+            raise TiingoViewRefusal("capture missing a timezone-aware availability boundary")
+        try:
+            captured = utc(view.source_observed_at_utc)
+        except (ValueError, TemporalError) as exc:
+            raise TiingoViewRefusal("capture has invalid original observation time") from exc
+        if captured > cutoff:
+            raise TiingoViewRefusal("source capture was not observed by the requested cutoff")
+        if captured.date().isoformat() != day:
+            raise TiingoViewRefusal("capture day disagrees with original source observation")
+        captures.append((captured, (day, digest)))
+        from urllib.parse import parse_qs, urlsplit
+        if not view.source_request_path:
+            raise TiingoViewRefusal("missing original research request context")
+        params = parse_qs(urlsplit(view.source_request_path).query, keep_blank_values=True)
+        requested: dict[str, date] = {}
+        for field in ("startDate", "endDate"):
+            if field in params:
+                values = params[field]
+                if len(values) != 1:
+                    raise TiingoViewRefusal("ambiguous original vendor request date bounds")
+                try:
+                    bound = date.fromisoformat(values[0])
+                except ValueError as exc:
+                    raise TiingoViewRefusal("invalid original vendor request date bounds") from exc
+                if bound.isoformat() != values[0]:
+                    raise TiingoViewRefusal("noncanonical original vendor request date bounds")
+                requested[field] = bound
+        daily: dict[str, list[dict[str, Any]]] = {}
+        for row in view.rows:
+            claimed = row.get(
+                "ticker_vendor" if source == "eod-bars" else "ticker_or_permaticker_vendor"
+            )
+            if claimed != vendor_symbol:
+                raise TiingoViewRefusal("history source partition disagrees with requested vendor ID")
+            market_day = row.get("market_date")
+            if not isinstance(market_day, str):
+                raise TiingoViewRefusal("history row missing canonical vendor market date")
+            try:
+                market = date.fromisoformat(market_day)
+            except ValueError as exc:
+                raise TiingoViewRefusal("invalid market date") from exc
+            if market.isoformat() != market_day or market > captured.date():
+                raise TiingoViewRefusal("future or invalid market date in source capture")
+            if (("startDate" in requested and market < requested["startDate"])
+                    or ("endDate" in requested and market > requested["endDate"])):
+                raise TiingoViewRefusal("market date outside original request window")
+            if begin <= market <= end:
+                daily.setdefault(market_day, []).append(row)
+        for market_day, day_rows in daily.items():
+            if source == "eod-bars" and len(day_rows) != 1:
+                raise TiingoViewRefusal("more than one EOD bar per market date")
+            if source == "fund-daily":
+                codes = [r.get("metric_code") for r in day_rows]
+                if any(not isinstance(k, str) or not k for k in codes) or len(codes) != len(set(codes)):
+                    raise TiingoViewRefusal("ambiguous daily fundamental metric membership")
+                day_rows.sort(key=lambda r: r["metric_code"])
+            # Exclude only *capture-local* lineage, not changing economic values,
+            # date roles, market identity, units or vendor adjustment fields.
+            def economic_fields(r: dict[str, Any]) -> dict[str, Any]:
+                return {k: v for k, v in r.items() if k not in {
+                    "source_sha256", "source_observed_at_utc", "adjustment_asof_utc"
+                }}
+            try:
+                signature = json.dumps(
+                    [economic_fields(r) for r in day_rows],
+                    sort_keys=True, separators=(",", ":"), allow_nan=False,
+                )
+            except (TypeError, ValueError) as exc:
+                raise TiingoViewRefusal("unverified research value cannot enter longitudinal view") from exc
+            previous = evidence.get(market_day)
+            if previous is not None:
+                if previous[0] != signature:
+                    raise TiingoViewRefusal(
+                        "conflicting vendor revisions for a market date; choose explicit distinct studies"
+                    )
+                overlaps += 1
+                # When the observations agree, select the most recent *source*
+                # receipt by cutoff, without claiming it existed at market time.
+                if captured >= previous[1]:
+                    evidence[market_day] = (signature, captured, tuple(day_rows))
+            else:
+                evidence[market_day] = (signature, captured, tuple(day_rows))
+        if sum(len(group[2]) for group in evidence.values()) > max_rows:
+            raise TiingoViewRefusal("total longitudinal research row cap exceeded")
+
+    final_rows = tuple(
+        row for day in sorted(evidence)
+        for row in evidence[day][2]
+    )
+    return TiingoResearchHistory(
+        source=source, vendor_symbol=vendor_symbol,
+        start_market_date=begin.isoformat(), end_market_date=end.isoformat(),
+        observed_before_utc=cutoff.isoformat(),
+        rows=final_rows,
+        source_partitions=tuple(ref for _, ref in sorted(captures)),
+        identical_overlap_dates=overlaps,
     )
