@@ -14466,6 +14466,29 @@ jobs:
       - name: inline-CSS externalization units (incl. the jinja2 cross-module gate)
         run: python -m pytest tests/test_externalize_css.py -q
 
+  calculator-input-integrity:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # site20 S5 (compounding + dollar-cost-averaging calculators). Node unit test over
+    # the two templates' inline scripts: whole-token parseNum grammar (trailing junk,
+    # malformed grouping, nonfinite/overflow rejected), finite curveGeometry for the
+    # one-year, all-zero and fractional-year scenarios, bilingual plainSentence/copyText,
+    # and tryCopy reporting success only on an acknowledged clipboard write.
+    # gate: code because the verdict is a pure function of the PR tree (templates +
+    # test); free-content-estate is gate: data and never runs on a pull request.
+    paths:
+      - templates/calculators/compounding.html.j2
+      - templates/calculators/dollar_cost_averaging.html.j2
+      - tests/js/calculator_input_integrity.test.mjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: calculator input, chart, language and copy integrity
+        run: node --test tests/js/calculator_input_integrity.test.mjs
+
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
