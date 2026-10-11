@@ -15,10 +15,6 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
 from app.prophet_lab import _PRIVATE_HEADERS, require_site_full_user
-from engine.prophet_early_observations import (
-    ObservationQueryError, load_observations, query_observations, unavailable_observations,
-)
-from engine.us_candidate_episode_intake import load_identity_spine
 from lib.us_cash_calendar import expected_last_session
 
 router = APIRouter()
@@ -34,6 +30,9 @@ def read_current_observations() -> dict:
     Missing or corrupt latest bytes do not fall back to an older successful
     result. Future-session files cannot change the current-session population.
     """
+    from engine.prophet_early_observations import load_observations, unavailable_observations
+    from engine.us_candidate_episode_intake import load_identity_spine
+
     reference = expected_last_session().isoformat()
     source_dir = _DATA_ROOT / "us_prophet_rank/episode_inputs/turn_watch"
     projection = unavailable_observations("SOURCE_UNREADABLE")
@@ -69,6 +68,10 @@ def read_current_observations() -> dict:
 
 def _query(request: Request) -> dict:
     """Parse only after authentication; keep all errors within private framing."""
+    from engine.prophet_early_observations import (
+        ObservationQueryError, query_observations, unavailable_observations,
+    )
+
     params = request.query_params
     if any(key not in _QUERIES or len(params.getlist(key)) != 1 for key in params):
         raise ObservationQueryError("INVALID_QUERY")
@@ -94,6 +97,14 @@ def _query(request: Request) -> dict:
 
 @router.get("/api/prophet/observations/v1")
 def observations_v1(request: Request, _user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    # The optional parquet/identity runtime belongs to this entitled request,
+    # not application startup or an anonymous caller's authentication path.
+    try:
+        from engine.prophet_early_observations import ObservationQueryError, query_observations
+    except ImportError as exc:
+        log.warning("early observation runtime unavailable (%s)", type(exc).__name__)
+        return JSONResponse({"error": "OBSERVATIONS_UNAVAILABLE"}, status_code=503,
+                            headers=_PRIVATE_HEADERS)
     try:
         query = _query(request)
     except ObservationQueryError as exc:

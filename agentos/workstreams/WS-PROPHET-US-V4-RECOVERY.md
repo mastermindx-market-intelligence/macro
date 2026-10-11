@@ -681,7 +681,9 @@ next_action: >
   integration clearance and independent source/visual approval for P1a #8444,
   then consume the prepared HK/China adoption through existing owners. Complete
   independent review and normal release of the disjoint B03 lossless observation
-  delivery candidate PR8762. PR8670's exact-head CI is satisfied; accounting recovery and
+  delivery candidate PR8762. Its eager optional-parquet import and missing cached
+  restart closure from CI38111473458 are repaired with RED/GREEN regressions;
+  require hosted CI on the new repair commit. PR8670's exact-head CI is satisfied; accounting recovery and
   current annotation independent approval remain held. M2 Fabric admission needs
   canonical effect/policy reconciliation; no Executive dispatch or retry around
   refused effects. Then advance native economic evidence, Daily Brief, entry

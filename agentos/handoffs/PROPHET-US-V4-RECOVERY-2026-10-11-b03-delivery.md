@@ -19,18 +19,26 @@ changed:
   - path: engine/prophet_early_observations.py
     what: Full-population read projection over the existing Turn Watch sidecar; exact identity and source-receipt B1 relationships; receipt-verified featured/beyond-preview counts, source counterevidence and explicit correction-history limits; all-false authority.
   - path: app/prophet_observations.py
-    what: Authenticated site_full API, exact search before paging, private failures, per-request source reads and snapshot-conflict handling.
+    what: Authenticated site_full API, exact search before paging, private failures, per-request source reads and snapshot-conflict handling; optional parquet runtime loads only after entitlement so unrelated APIs still start without it.
+  - path: app/deploy/update.sh
+    what: Named B03 request-cached dependency closure now triggers macro-api restart; data-only publications remain outside the restart trigger.
   - path: templates/_us_early_observations.html.j2
     what: Bilingual dashboard disclosure with server search, eight-row paging, truthful source age and failure states; public shell contains no observation rows.
   - path: .github/ci/legacy-jobs.yml
     what: B03 source, API and real-browser tests added to existing code-gated prophet-lab; seven curated callers widened to their actual new import closure without raising packing limits.
 verified:
+  - claim: The previously failing lightweight API suites start and serve without the optional parquet stack.
+    command: python -m pytest -q tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py tests/test_biocatalyst_api.py tests/test_biocatalyst_peer_api_contract.py tests/test_biocatalyst_deploy.py tests/test_biocatalyst_page.py tests/test_biocatalyst_catalyst_radar.py tests/test_biocatalyst_catalyst_radar_api.py tests/test_biocatalyst_d0b_ui.py tests/test_biocatalyst_hydration.py tests/test_research_api.py tests/test_collect_identity.py
+    result: 547 passed, 18 upstream warnings, zero skips in a separate isolated environment with pyarrow, pandas and numpy confirmed absent; declared lightweight-job dependencies only.
+  - claim: Both hosted B03 integration defects have discriminating local RED and GREEN evidence.
+    command: python -m pytest -q tests/test_prophet_observations_api.py tests/test_prophet_early_observations.py tests/test_deploy_update_self_heal.py
+    result: 294 passed after the new application-startup regression and existing restart-closure check both failed before repair. The new probe blocks pyarrow, verifies anonymous denial without loading the observation engine, and requires a private 503 for an entitled request with unavailable runtime.
   - claim: The entire existing Prophet CI owner plus the B03 suites passes with its declared dependencies and required committed metadata present.
     command: python -m pytest -q tests/test_prophet_lab.py tests/test_intelligence_vector_units.py tests/test_prophet_lab_api.py tests/test_company_intelligence_workspace_chain.py tests/test_prophet_lab_timeparse.py tests/test_prophet_lab_commissioning.py tests/test_caddy_hub_boundary.py tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py tests/test_prophet_observations_browser.py
-    result: 544 passed, 10 upstream warnings, zero skips in one isolated-environment run after approved data materialization. Includes 57 B03 tests.
+    result: 545 passed, 10 upstream warnings, zero skips in one isolated-environment run after approved data materialization. Includes 58 B03 tests.
   - claim: The source/API/browser candidate is tested with producer and B1 writer fixtures.
     command: python -m pytest -q tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py tests/test_prophet_observations_browser.py
-    result: All 57 B03 cases pass within the 544-test shared-owner run above, with declared CI dependencies in an isolated environment; no production source or episode store was mutated.
+    result: All 58 B03 cases pass within the 545-test shared-owner run above, with declared CI dependencies in an isolated environment; no production source or episode store was mutated.
   - claim: The observation population can find AMZN beyond a public/loaded-row cap.
     command: python -m pytest -q tests/test_prophet_observations_browser.py::test_server_search_finds_amzn_outside_loaded_page_and_is_not_an_episode
     result: Server search finds the 61st synthetic observation while page one contains eight; no episode or entry authority is granted.
@@ -57,6 +65,7 @@ unverified:
   - claim: M2 Fabric can admit a new review.
     what_would_verify: Actual canonical Paper effect/support-policy reconciliation and fresh admission evidence, not idle telemetry or messaging consent.
 unresolved:
+  - Hosted CI38111473458 failed on prior head45ffb557a48e9a0c075251de85d21162a0963513 because eager observation imports required pyarrow in four lightweight API jobs and the fifth failed the restart closure. The retained failure log is consumed; this source repair needs a new exact-head hosted run. B03 source/API/browser steps themselves passed on that failed aggregate run.
   - Existing committed public candidate-pool HTML at base 0ed26bdf exposes locked names ACI/LRN/YUM. test_us_board_gate.py::test_shipped_shell_leaks_no_locked_ticker fails; site/us_stocks.html, site/premiumdata/us_stocks.json, candidate-pool template and build_site.py are byte-unchanged from base. This remains a production-acceptance blocker on the existing P1a/candidate delivery path, not a reason to weaken the gate.
   - P1a PR8444 stays on head 60a494ed8c647c45712a13c8919e6d51c8b60905, operation prophet-four-market-p1a-20261004-sol-001. Original comment 6029541334 records an explicit pre-execution platform refusal of same-workspace integration. Do not replay it elsewhere.
   - HK/China adoption remains dependent on accepted P1a; preserve existing 8184/8270 owners and prepared adoption work.

@@ -3,7 +3,11 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
+import os
+import subprocess
+import sys
 from datetime import date
+from pathlib import Path
 
 import pytest
 from fastapi import FastAPI, HTTPException
@@ -17,6 +21,47 @@ URL = "/api/prophet/observations/v1"
 
 def test_observation_route_is_available():
     assert importlib.util.find_spec("app.prophet_observations"), "B03 authenticated delivery is absent"
+
+
+def test_optional_observation_runtime_does_not_break_app_startup_or_auth(tmp_path):
+    """An eager B03 import must not make every API require the parquet runtime."""
+    probe = r'''
+import builtins
+import sys
+
+real_import = builtins.__import__
+def without_parquet(name, *args, **kwargs):
+    if name.split('.', 1)[0] == 'pyarrow':
+        raise ModuleNotFoundError(name)
+    return real_import(name, *args, **kwargs)
+builtins.__import__ = without_parquet
+
+from fastapi.testclient import TestClient
+import app.main as main
+import app.prophet_observations as observations
+
+assert 'engine.prophet_early_observations' not in sys.modules
+client = TestClient(main.app)
+denied = client.get('/api/prophet/observations/v1?limit=invalid')
+assert denied.status_code == 401, denied.text
+assert denied.headers['cache-control'] == 'private, no-store'
+assert 'engine.prophet_early_observations' not in sys.modules
+
+main.app.dependency_overrides[observations.require_site_full_user] = lambda: {'id': 'paid-fixture'}
+unavailable = client.get('/api/prophet/observations/v1')
+assert unavailable.status_code == 503, unavailable.text
+assert unavailable.json() == {'error': 'OBSERVATIONS_UNAVAILABLE'}
+assert unavailable.headers['cache-control'] == 'private, no-store'
+assert unavailable.headers['vary'] == 'Authorization'
+assert 'pyarrow' not in unavailable.text
+'''
+    environment = os.environ.copy()
+    environment["BIOCATALYST_PUBLIC_ROOT"] = str(tmp_path / "not-provisioned")
+    result = subprocess.run(
+        [sys.executable, "-c", probe], cwd=Path(__file__).resolve().parents[1],
+        env=environment, capture_output=True, text=True, timeout=45, check=False,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 @pytest.fixture
