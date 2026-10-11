@@ -1,0 +1,216 @@
+/* Leadership Lab review surface. House tokens; no new global design tokens.
+   Radius fallbacks match the existing DS-PR-0 bridge in theme.css. */
+body.ll { margin:0; padding:0; background:var(--bg); color:var(--text); font:400 var(--fs-body)/1.55 var(--font-ui); }
+.ll *, .ll *::before, .ll *::after { box-sizing:border-box; }
+.ll [hidden] { display:none !important; }
+.ll .l-zh { display:none; }
+html[data-lang="zh"] .ll .l-en { display:none; }
+html[data-lang="zh"] .ll .l-zh { display:inline; }
+.ll-frame { width:min(1280px, calc(100% - 64px)); margin:0 auto; }
+.ll h1, .ll h2, .ll h3, .ll p { margin-top:0; }
+.ll h1 { margin-bottom:12px; font-size:var(--fs-display); line-height:1.08; font-weight:850; letter-spacing:-.04em; }
+.ll h2 { font-size:var(--fs-h2); line-height:1.35; font-weight:700; margin-bottom:10px; }
+.ll h3 { font-size:var(--fs-h3); margin:20px 0 8px; }
+.ll p { margin-bottom:12px; }
+.ll button, .ll input, .ll select { font:inherit; }
+.ll button, .ll select, .ll input { border:1px solid var(--line); background:var(--panel); color:var(--text); border-radius:var(--r-ctl,8px); min-height:44px; padding:10px 12px; }
+.ll button { cursor:pointer; font-size:var(--fs-sm); }
+.ll button:hover { background:var(--panel2); }
+.ll button:focus-visible, .ll a:focus-visible, .ll summary:focus-visible, .ll input:focus-visible, .ll select:focus-visible, .ll-table-wrap:focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+.ll-nav { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:24px 0; border-bottom:1px solid var(--line); }
+.ll-brand { color:var(--text); text-decoration:none; font-size:var(--fs-h2); font-weight:850; letter-spacing:-.035em; white-space:nowrap; }
+.ll-brand span { color:var(--muted); font-weight:400; font-size:var(--fs-sm); letter-spacing:.08em; }
+.ll-nav-tools { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.ll-preview { color:var(--ink-warn,var(--warn)); font-size:var(--fs-sm); margin-right:10px; }
+.ll-hero { display:grid; grid-template-columns:1.25fr 1fr; gap:60px; align-items:center; padding:48px 0 32px; }
+.ll-eyebrow { color:var(--muted); font-size:var(--fs-label); letter-spacing:.11em; font-weight:650; margin-bottom:15px; }
+.ll-subtitle { color:var(--muted); font-size:var(--fs-md); max-width:470px; }
+.ll-source { font-size:var(--fs-sm); color:var(--muted); padding-top:6px; margin-bottom:0 !important; }
+.ll-source strong { color:var(--text); font-variant-numeric:tabular-nums; }
+.ll-hero-note { border-left:2px solid var(--link); padding:8px 0 8px 24px; }
+.ll-hero-note h2 { font-size:var(--fs-num-lg); margin:10px 0; letter-spacing:-.025em; }
+.ll-hero-note p { color:var(--muted); max-width:400px; }
+.ll-note { font-size:var(--fs-sm); color:var(--muted); }
+.ll-hero-note > .ll-note { color:var(--ink-warn,var(--warn)); }
+.ll-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); margin:0 0 32px; overflow:hidden; }
+.ll-metrics > div { padding:20px 24px; border-right:1px solid var(--line); }
+.ll-metrics > div:last-child { border:0; }
+.ll-metrics > div > span, .ll-metrics > div > small { display:block; color:var(--muted); font-size:var(--fs-sm); }
+.ll-metrics strong { display:block; font-size:var(--fs-num-xl); font-weight:750; line-height:1.35; margin:7px 0; font-variant-numeric:tabular-nums; letter-spacing:-.025em; }
+.ll-metrics .ll-text-metric { font-size:var(--fs-h1); line-height:1.82; }
+.ll-board, .ll-panel { border:1px solid var(--line); background:var(--panel); border-radius:var(--r-card,12px); box-shadow:var(--card-shadow); }
+.ll-board { padding:24px; }
+.ll-section-head { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.ll-section-head .ll-eyebrow { margin-bottom:8px; }
+.ll-section-head h2 { font-size:var(--fs-num-lg); margin-bottom:8px; letter-spacing:-.025em; }
+.ll-count { color:var(--muted); font:500 var(--fs-sm)/1.4 var(--font-mono); white-space:nowrap; }
+.ll-section-copy { color:var(--muted); font-size:var(--fs-sm); margin-bottom:20px; }
+.ll-filters { display:flex; gap:14px; align-items:flex-end; margin:20px 0 18px; }
+.ll-filters label { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.ll-filters label:first-child { flex:1; max-width:420px; }
+.ll-filters label > span, .ll-filter-count { color:var(--muted); font-size:var(--fs-sm); }
+.ll-filter-count { padding:12px 0; margin-left:auto; white-space:nowrap; }
+.ll-table-wrap { max-width:100%; overflow-x:auto; }
+.ll-table { width:100%; border-collapse:collapse; font-size:var(--fs-sm); }
+.ll-table th { color:var(--muted); text-align:left; font-weight:500; font-size:var(--fs-label); padding:12px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+.ll-table td { padding:16px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+.ll-table th:first-child, .ll-table td:first-child { padding-left:0; width:44%; }
+.ll-table tr:last-child td { border-bottom:0; }
+.ll-table .ll-number { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.ll-out-of { color:var(--muted); font-size:var(--fs-label); }
+.ll-ticker { font:750 var(--fs-md)/1.4 var(--font-mono); margin-right:10px; }
+.ll-company { color:var(--muted); overflow-wrap:anywhere; }
+.ll-dossier > summary { cursor:pointer; min-height:24px; padding-right:8px; }
+.ll-dossier > summary::marker { color:var(--muted); font-size:var(--fs-micro); }
+.ll-dossier-content { padding:16px 12px 4px 0; max-width:510px; overflow-wrap:anywhere; }
+.ll-dossier-content p { font-size:var(--fs-sm); }
+.ll-dossier-content dl { margin:12px 0; }
+.ll-dossier-content dl > div { display:flex; gap:12px; justify-content:space-between; border-bottom:1px solid var(--line); padding:6px 0; }
+.ll-dossier-content dt { color:var(--muted); }
+.ll-dossier-content dd { text-align:right; margin:0; }
+.ll-next { border-left:2px solid var(--link); padding-left:12px; margin:16px 0; }
+.ll-next p { color:var(--muted); margin:4px 0 0; }
+.ll-themes { color:var(--text); max-width:230px; }
+.ll-themes small { display:block; color:var(--muted); margin-top:3px; }
+.ll-muted { color:var(--muted); }
+.ll-table-foot { border-top:1px solid var(--line); color:var(--muted); padding-top:16px; font-size:var(--fs-sm); }
+.ll-empty { padding:24px 0; color:var(--muted); }
+.ll-lower { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:24px 0; align-items:start; }
+.ll-panel { padding:24px; min-width:0; }
+.ll-panel .ll-eyebrow { margin-bottom:10px; }
+.ll-group-list > summary, .ll-method > summary { cursor:pointer; padding:14px 0; min-height:44px; font-weight:600; }
+.ll-group-list > summary span { color:var(--muted); margin-left:10px; }
+.ll-group { display:grid; grid-template-columns:1fr auto; gap:4px 15px; padding:12px 0; border-top:1px solid var(--line); font-size:var(--fs-sm); }
+.ll-group > strong { font-weight:550; }
+.ll-group > span { color:var(--muted); font-variant-numeric:tabular-nums; }
+.ll-group small { grid-column:1/-1; color:var(--muted); }
+.ll-evidence { list-style:none; padding:0; margin:0; }
+.ll-evidence li { padding:12px 0; border-top:1px solid var(--line); }
+.ll-evidence li strong, .ll-evidence li span { display:block; }
+.ll-evidence li strong { font-size:var(--fs-body); font-weight:600; }
+.ll-evidence li span { color:var(--muted); font-size:var(--fs-sm); margin-top:3px; }
+.ll-method { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:4px 0; }
+.ll-method-inner { max-width:900px; padding:6px 0 24px; font-size:var(--fs-sm); color:var(--muted); }
+.ll-method h3, .ll-method strong { color:var(--text); }
+.ll-method code { font-family:var(--font-mono); font-size:var(--fs-label); overflow-wrap:anywhere; }
+.ll-receipt { display:grid; gap:4px; border-top:1px solid var(--line); padding:12px 0; }
+.ll-receipt small { overflow-wrap:anywhere; }
+.ll-footer { color:var(--muted); font-size:var(--fs-sm); padding:24px 0 40px; }
+.ll-status { border:1px solid var(--line); border-left:3px solid var(--warn); border-radius:var(--r-ctl,8px); padding:16px 20px; margin-bottom:24px; background:var(--panel); }
+.ll-status p { color:var(--muted); margin:4px 0 0; font-size:var(--fs-sm); }
+@media (max-width:760px) {
+  .ll-frame { width:calc(100% - 32px); }
+  .ll-nav { flex-wrap:wrap; padding:18px 0; }
+  .ll-nav-tools { width:100%; gap:8px; }
+  .ll-preview { margin-right:auto; }
+  .ll-hero { grid-template-columns:1fr; gap:24px; padding:32px 0 24px; }
+  .ll h1 { font-size:var(--fs-num-xl); }
+  .ll-hero-note { padding-left:16px; }
+  .ll-hero-note h2 { font-size:var(--fs-h2); }
+  .ll-metrics { grid-template-columns:1fr; margin-bottom:24px; }
+  .ll-metrics > div { border-right:0; border-bottom:1px solid var(--line); padding:14px 18px; display:grid; grid-template-columns:1fr auto; align-items:center; gap:0 12px; }
+  .ll-metrics strong, .ll-metrics .ll-text-metric { grid-column:2; grid-row:1/3; font-size:var(--fs-num-lg); margin:0; }
+  .ll-metrics small { grid-column:1; font-size:var(--fs-label); }
+  .ll-board, .ll-panel { padding:18px 16px; }
+  .ll-filters { flex-wrap:wrap; gap:12px; }
+  .ll-filters label:first-child { flex-basis:100%; max-width:none; }
+  .ll-filters label:nth-child(2) { flex:1; }
+  .ll-filter-count { margin-left:0; }
+  .ll-table { min-width:640px; }
+  .ll-table th:first-child, .ll-table td:first-child { width:45%; }
+  .ll-lower { grid-template-columns:1fr; gap:18px; margin:18px 0; }
+  .ll-count { font-size:var(--fs-label); }
+}
+@media (prefers-reduced-motion:reduce) { .ll *, .ll *::before, .ll *::after { animation:none !important; transition:none !important; } }
+
+/* Mobile glance: keep the stance and first leader above the fold. The same
+   counts remain in the table heading and expanded theme coverage below. */
+@media (max-width:760px) {
+  .ll-hero { gap:8px; padding:24px 0 20px; }
+  .ll-hero-note { border:0; padding:0; }
+  .ll-hero-note .ll-eyebrow, .ll-hero-note h2, .ll-hero-note p { display:none; }
+  .ll-metrics > div:not(:last-child) { display:none; }
+  .ll-board > .ll-section-copy { display:none; }
+}
+
+.ll-current-banner { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; border:1px solid var(--line); border-left:2px solid var(--info); border-radius:var(--r-card,12px); background:var(--panel); padding:14px 18px; margin:0 0 20px; }
+.ll-current-banner > div { min-width:0; }
+.ll-current-banner strong { display:block; font-size:var(--fs-sm); margin-bottom:3px; }
+.ll-current-banner span, .ll-current-banner p { color:var(--muted); font-size:var(--fs-label); line-height:1.5; }
+.ll-current-banner p { max-width:520px; margin:0; text-align:right; }
+.ll-owner-context { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:14px 0; margin:14px 0; }
+.ll-owner-context > strong { display:block; font-size:var(--fs-sm); margin-bottom:6px; }
+.ll-owner-context dl { margin:4px 0 10px; }
+.ll-owner-context dl > div { padding:5px 0; }
+.ll-context-line { margin:8px 0; color:var(--muted); font-size:var(--fs-label); }
+@media (max-width:760px) {
+  .ll-current-banner { display:block; padding:12px 14px; }
+  .ll-current-banner p { margin-top:8px; text-align:left; }
+}
+
+@media (max-width:760px) {
+  .ll-current-banner { padding:9px 12px; margin-bottom:12px; }
+  .ll-current-banner strong { margin-bottom:1px; }
+  .ll-current-banner p { display:none; }
+  .ll-current-banner > div > span { display:block; line-height:1.35; }
+}
+
+.ll-episode { display:grid; gap:3px; margin:8px 0 10px; padding:9px 10px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); }
+.ll-episode strong { font-size:var(--fs-sm); }
+.ll-episode span, .ll-episode small { color:var(--muted); font-size:var(--fs-label); }
+.ll-episode code { color:var(--text); font:500 var(--fs-micro)/1.45 var(--font-mono); overflow-wrap:anywhere; }
+
+.ll-earnings { display:grid; gap:6px; margin:10px 0; padding:10px 12px; border-left:2px solid var(--ok); background:var(--panel2); }
+.ll-earnings > strong { font-size:var(--fs-sm); }
+.ll-earnings > p { margin:0; }
+.ll-earnings > small { color:var(--muted); font-size:var(--fs-label); }
+.ll-evidence-chip { display:inline-block; width:max-content; max-width:100%; color:var(--muted); font:500 var(--fs-label)/1.4 var(--font-mono); overflow-wrap:anywhere; }
+.ll-evidence-fact, .ll-evidence-counter { font-size:var(--fs-label) !important; }
+.ll-evidence-fact { color:var(--text); }
+.ll-evidence-counter { color:var(--ink-warn,var(--warn)); }
+.ll-evidence-gaps { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+.ll-evidence-gaps strong { width:100%; font-size:var(--fs-label); color:var(--muted); }
+.ll-evidence-gaps span { border:1px solid var(--line); border-radius:var(--r-pill,999px); padding:3px 7px; color:var(--muted); font-size:var(--fs-micro); }
+
+.ll-peer-context { display:grid; gap:3px; margin:8px 0 10px; padding:9px 10px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); }
+.ll-peer-context strong { font-size:var(--fs-sm); }
+.ll-peer-context span, .ll-peer-context small { color:var(--muted); font-size:var(--fs-label); }
+.ll-peer-context p { margin:2px 0 !important; font-size:var(--fs-label) !important; }
+
+.ll-group-leaders { grid-column:1/-1; display:grid; gap:6px; padding:8px 0 2px; }
+.ll-group-leaders > span { display:flex; flex-wrap:wrap; align-items:center; gap:6px; color:var(--text); }
+.ll-group-leaders b { min-width:150px; font-size:var(--fs-label); font-weight:600; }
+.ll-group-leaders i { font:500 var(--fs-micro)/1.4 var(--font-mono); font-style:normal; color:var(--muted); border:1px solid var(--line); border-radius:var(--r-pill,999px); padding:2px 6px; }
+.ll-group-leaders > small { color:var(--muted); }
+
+.ll-catalyst { display:grid; gap:4px; margin:10px 0; padding:9px 10px; border-left:2px solid var(--warn); background:var(--panel2); }
+.ll-catalyst strong { font-size:var(--fs-sm); }
+.ll-catalyst span, .ll-catalyst small { color:var(--muted); font-size:var(--fs-label); }
+
+/* A mobile leadership board must show its actual Alpha and RS values, not just
+   the first ticker of a horizontally clipped desktop table. Details still carry
+   all theme/owner information; opening a dossier gives it the full row width. */
+@media (max-width:760px) {
+  .ll-nav { padding:12px 0; gap:10px; }
+  .ll-hero { padding:16px 0 12px; gap:4px; }
+  .ll-hero .ll-eyebrow { margin-bottom:10px; }
+  .ll-subtitle { font-size:var(--fs-sm); margin-bottom:8px; }
+  .ll-metrics { margin-bottom:16px; }
+  .ll-metrics > div { padding:10px 14px; }
+  .ll-board, .ll-panel { padding:14px 12px; }
+  .ll-section-head h2 { font-size:var(--fs-h2); }
+  .ll-filters { margin:12px 0 10px; gap:8px; }
+  .ll-current-banner > div > span { font-size:var(--fs-label); }
+  .ll-table { display:block; min-width:0; width:100%; }
+  .ll-table thead, .ll-table tbody { display:block; width:100%; }
+  .ll-table tr { display:grid; grid-template-columns:minmax(0,1fr) 76px 70px; width:100%; }
+  .ll-table th, .ll-table td { min-width:0; padding:10px 6px; white-space:normal; }
+  .ll-table th:first-child, .ll-table td:first-child { width:auto; }
+  .ll-table th:nth-child(4), .ll-table td:nth-child(4) { display:none; }
+  .ll-company { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ll-table tr:has(details[open]) td:first-child { grid-column:1/-1; }
+  .ll-table tr:has(details[open]) td.ll-number { display:none; }
+  .ll-dossier-content { max-width:none; padding-right:0; }
+  .ll-dossier-content dl > div { flex-wrap:wrap; gap:4px 10px; }
+  .ll-dossier-content dd { overflow-wrap:anywhere; }
+}
