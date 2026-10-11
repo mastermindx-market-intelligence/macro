@@ -1,0 +1,2440 @@
+{
+  "operation": "gmi-theme-accept-d2e-20260827-sol-001",
+  "phase": 2,
+  "round": "pin3r",
+  "pin": "cbfa20a45d8401f1cf1cc9fc48155455f1d612fb",
+  "head": "7671cce0227a649361f7740d1c138cac6603c3d9",
+  "pin_head_note": "pin/head = the Phase-1 (r1d) measurement pin and PR head; Phase 2 was measured at pin2 (PIN2 e061209069a1bc05157d9078cd394e9ce1d96cc9, GEN2 2026-10-06T13:27:04Z); the record's own commit is stated in the PR body, never in the record; PIN3 composition at pin3 ebe35dc916de5aae556371a5aa963c6692175c9c",
+  "harness_corrections": [
+    {
+      "id": "D1",
+      "reason": "Round r1 ran R1.B/R2 without data/reference/security_master.parquet, which degraded check (f) and produced a false 1168-row biconditional breach."
+    },
+    {
+      "id": "D5",
+      "reason": "MarketOntology half-B docket tests are not a D2 rights gate; moved to non-gating R1.X and R1.F scoped to theme-graph rights tests only."
+    },
+    {
+      "id": "D6",
+      "reason": "R3.2 census is bound to evidence.source_ref via family_for_source_ref, not non-reference node/edge metadata columns."
+    },
+    {
+      "id": "D7",
+      "reason": "site/factordata/us_standouts.json is intentionally unmapped (fail-closed); PASS requires None, not a registry family."
+    },
+    {
+      "id": "r1d-D1",
+      "reason": "r1b computed C5/V3 on the latest-row-per-node view; restored to the R-A7 newest computed_at generation"
+    },
+    {
+      "id": "D8",
+      "reason": "N5 probe amended by seat orchestrator: GitHub job logs render ::group:: as ##[group]; probe now matches both forms (round r2b)."
+    },
+    {
+      "id": "D9",
+      "reason": "Round r2 composed PHASE-2/D2E from the first HOLD (N5) although FAIL rows (R1.A, R3.2) existed; the rule takes the first FAIL row first (round r2b)."
+    },
+    {
+      "id": "D10",
+      "reason": "r2c: P3 adversarial review fixes \u2014 B1 GEN1 capability generations 53; B2 phase-2 V2/V3 re-measured at GEN2; B3 R1.D CN-panel hydration artifact; M1 R1.A-CI is gate: data (data-health.yml), not a ci.yml pack; M2 pin/head note; m1\u2013m4"
+    },
+    {
+      "id": "D11",
+      "reason": "pin3: re-measure at PIN3 ebe35dc9 (#8544); R0.2 mirrors -> #8543 527243be; C6 /rows restored to GEN1 truth; \u00a76 recomposed (PHASE-2 PENDING:GEN3)"
+    },
+    {
+      "id": "D12",
+      "reason": "pin3r: exact PIN3 command per row + verbatim PIN3 probes in Appendix C (m1); R1.A delta lifecycle detail + canonical rule (m2); md D11 (m3); header PIN3/#8543/lane/written-at (m4); rows_pin3 R1.A stale PIN1 failure fields removed (review MAJOR 1); C6 PIN3 owner/repair/gate (review minor 5); \u00a76.C GEN3 must-show made literal (review minor 6)"
+    },
+    {
+      "id": "D13",
+      "reason": "pin3s: R0.2 exact command and literal output (the 40-char-sha grep printed no WS line; the WS record cites 12-char shas at :58/:70/:82); every Appendix C anchor referenced from \u00a76.A / command_ref resolves (\u00a7-headers); the four verbatim probe heredocs are closed (copy-paste runnable)."
+    }
+  ],
+  "generation": {
+    "computed_at": "2026-10-06T08:07:45Z",
+    "data_commit": "f7dd82910f315e82f376144388f2b38490c94ffe",
+    "lane": "nightly",
+    "mode": "nightly",
+    "era": "observed",
+    "belief_time": "2026-10-06"
+  },
+  "rows": [
+    {
+      "id": "R0.1",
+      "gating": true,
+      "gate": "Predecessor ancestry",
+      "command": "git merge-base --is-ancestor {0b1fe887,79b566f5,192a46de} HEAD",
+      "rc": 0,
+      "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n192a46de rc=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R0.2",
+      "gating": true,
+      "gate": "Agent OS acceptance trace",
+      "command": "git grep D2C|D2D accept|merged in agentos/",
+      "rc": 0,
+      "output_tail": "at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:58 D2C squash 0b1fe8873054, :70 D2D squash 79b566f5c0cc, :82 \"D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc)\"; #8543 merge is an ancestor of PIN3 (rc=0)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R0.3",
+      "gating": true,
+      "gate": "No overlapping D2E carrier",
+      "command": "gh pr list --search D2E",
+      "rc": 0,
+      "output_tail": "[{\"number\":8324,\"title\":\"research(gmi): audited v3 report...\"}]",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R0.4",
+      "gating": true,
+      "gate": "Owner-action authority #8507",
+      "command": "gh pr view 8507; git grep OWNER_ACTION...",
+      "rc": 0,
+      "output_tail": "state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; grep matches=5",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.A",
+      "gating": true,
+      "gate": "D2A identity resolution",
+      "command": "TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_identity_resolution.py tests/test_theme_graph_identity.py",
+      "rc": 1,
+      "failing_tests": [
+        "tests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes",
+        "tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row",
+        "tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet"
+      ],
+      "output_tail": "3 failed, 118 passed \u2014 2807 vs 2806 company nodes; co:us:VMRK",
+      "cause": "committed nodes.parquet carries 2807 company nodes including co:us:VMRK, a second company node for the EQR->VMRK ticker rename (both co:us:EQR and co:us:VMRK RESOLVED -> SEC:US-XNYS-EQR; first co:us:VMRK sidecar row 2026-09-04T11:52:38Z); the D2A suite pins 2806 and asserts no co:us:VMRK node (\u00a76.1 assertion 3)",
+      "verdict": "FAIL",
+      "owner": "seat (PR #8544)",
+      "repair_packet": "PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) \u2014 seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B\u2013F, R2, C1\u2013C7"
+    },
+    {
+      "id": "R1.A-CI",
+      "gating": false,
+      "gate": "D2A data lane (INFO)",
+      "command": "gh run view 37407802317 -R mastermindx-market-intelligence/macro --json conclusion,event,headSha; data-health.yml unrun-intl-libraries step",
+      "rc": 0,
+      "output_tail": "run 37407802317 (event=workflow_run, headSha=2d3ab1e087a07d63b6dcf8c4682c7541c5386b73, conclusion=failure) failing on unrun-intl-libraries D2A step (gate: data \u2014 exercised by data-health.yml, not ci.yml packs)",
+      "verdict": "INFO",
+      "owner": "\u2014",
+      "repair_packet": "clears with R1.A"
+    },
+    {
+      "id": "R1.B",
+      "gating": true,
+      "gate": "D2B lifecycle hostile matrix",
+      "command": "pytest tests/test_theme_graph_lifecycle.py",
+      "rc": 0,
+      "output_tail": "26 passed in 2.43s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.C",
+      "gating": true,
+      "gate": "D2C PIT vintage",
+      "command": "pytest basket_membership_pit + gmi_history...",
+      "rc": 0,
+      "output_tail": "143 passed, 14 warnings in 2.98s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.D",
+      "gating": true,
+      "gate": "D2D ontology/probation",
+      "command": "pytest crosswalk/local_plane/structural/exposure",
+      "rc": 0,
+      "output_tail": "575 passed, 1 skipped in 10.40s; skips: 1 (reasons in Appendix A); the 1 skip was a lane-checkout hydration artifact (CN panel tracked in git) \u2014 re-measured with the panel hydrated at PIN2 in r2c, see \u00a76 R1.D",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.E",
+      "gating": true,
+      "gate": "Materialize + contracts",
+      "command": "pytest materialize + contracts",
+      "rc": 0,
+      "output_tail": "132 passed in 6.65s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.F",
+      "gating": true,
+      "gate": "Rights tests (theme graph)",
+      "command": "pytest tests/test_theme_graph_rights_use.py tests/test_theme_sources_registry.py",
+      "rc": 0,
+      "output_tail": "30 passed in 0.72s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.X",
+      "gating": false,
+      "gate": "MarketOntology half-B rights docket (INFORMATIONAL)",
+      "command": "pytest tests/test_market_ontology_half_b_rights_docket.py",
+      "rc": 1,
+      "output_tail": "3 failed, 16 passed in 0.53s\ntests/test_market_ontology_half_b_rights_docket.py::test_blocked_on_quotes_the_ledger_verbatim\nE           AssertionError: MO-PAID-019: 'one issuer page joining >=2 module streams...' not in '- **Blocked on (verbatim from the ledger):** `unified capital-markets tape journey...`'",
+      "verdict": "FAIL-INFO",
+      "owner": "MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496)",
+      "repair_packet": "reconcile tests/test_market_ontology_half_b_rights_docket.py (EXPECTED_DISPOSITION_CENSUS, docket rows) with the F00C closure ledger CSV as amended by records waves #8425/#8465/#8496, or restore those ledger rows; re-run TZ=UTC PY -m pytest -q tests/test_market_ontology_half_b_rights_docket.py"
+    },
+    {
+      "id": "R2",
+      "gating": true,
+      "gate": "Strict contract guard",
+      "command": "check_theme_graph_contracts --selftest; --strict",
+      "rc": 0,
+      "output_tail": "selftest rc=0\nstrict rc=0\n(no breach lines; identity resolution census notice only). Round r1 recorded rc=0 for a breaching --strict run in a tree without data/reference; that value was not the guard's exit status and is superseded.",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C1",
+      "gating": true,
+      "gate": "GOLD/IBIT lifecycle standing",
+      "command": "pandas node_lifecycle.parquet probe",
+      "rc": 0,
+      "output_tail": "GOLD retired 2025-12-02 identity_break; IBIT retired 2026-08-22 entity_type_conflict",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C2",
+      "gating": true,
+      "gate": "GOLD edge closure",
+      "command": "pandas edges GOLD MEMBER_OF probe",
+      "rc": 0,
+      "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B\u2194GOLD edges=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C3",
+      "gating": true,
+      "gate": "IBIT refusal fence",
+      "command": "pandas IBIT + _meta refusals",
+      "rc": 0,
+      "output_tail": "member_of:co:us:IBIT->basket:baskets:crypto_rails@2023-05-09 belief_rows=2 latest valid_from=valid_to=2023-05-09; IBIT refusal etf_conflict; etf:IBIT TRACKS live; live co:us:IBIT MEMBER_OF=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C4",
+      "gating": true,
+      "gate": "Retired-consistency",
+      "command": "latest-belief MEMBER_OF vs retired lifecycle",
+      "rc": 0,
+      "output_tail": "violations: 0 (7798 live MEMBER_OF edges, 2 retired nodes, 0 offenders)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C5",
+      "gating": true,
+      "gate": "Identity sidecar R-A2",
+      "command": "identity_resolution.parquet NEWEST us-scope",
+      "rc": 0,
+      "output_tail": "US total=1237 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=1 (co:us:B) ENTITY_TYPE_CONFLICT=0; RESOLVED share 0.978981; all-scope NEWEST sum=2805 equals _meta.identity_resolution_state_counts",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C6",
+      "gating": true,
+      "gate": "Generation provenance P1",
+      "command": "merge-base vs DATA_COMMIT f7dd829...",
+      "rc": 0,
+      "output_tail": "`0b1fe887 rc=1`; `79b566f5 rc=1`; seat fact: gen predates D2C/D2D merges; cured: GEN2 natural receipt (\u00a76.D N1\u2013N5) and re-measured at PIN3 \u2014 see \u00a76.A C6",
+      "verdict": "HOLD",
+      "owner": "seat",
+      "repair_packet": "natural receipt on a main containing D2C+D2D pending \u2014 Phase 2"
+    },
+    {
+      "id": "C7",
+      "gating": true,
+      "gate": "Nightly _meta history",
+      "command": "git log -5 _meta.json",
+      "rc": 0,
+      "output_tail": "5/5 commits: node_lifecycle=2 and IBIT refusal present",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R3.1",
+      "gating": true,
+      "gate": "theme_sources.yml registry",
+      "command": "python yaml families",
+      "rc": 0,
+      "output_tail": "finviz_themes internal_only; ths_concepts internal_only; all families have rights_class",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R3.2",
+      "gating": true,
+      "gate": "Source-ref census (evidence.source_ref)",
+      "command": "family_for_source_ref over evidence.parquet source_ref",
+      "rc": 2,
+      "output_tail": "22 rows / 17 distinct refs; ths_concepts 12; mastermind_curated 6; finviz_themes 2; None 2 (gmi:entity_type_conflict:co:us:IBIT; config/theme_graph_identity_breaks.yml#us:GOLD)",
+      "verdict": "FAIL",
+      "owner": "seat (PR #8544)",
+      "repair_packet": "PR #8544 (seat-accepted frozen P-R3.2: rights registry entries for the correction source_refs; orchestrator gate 4 on #8544 = 23 evidence rows / 18 refs / None 0) \u2014 re-measured in the same PIN3 round"
+    },
+    {
+      "id": "R3.3",
+      "gating": true,
+      "gate": "Spot checks",
+      "command": "family_for_source_ref spot refs",
+      "rc": 0,
+      "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None (intentional, rights.py 70-72)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V1",
+      "gating": true,
+      "gate": "Node prefix census",
+      "command": "nodes.parquet distinct prefixes",
+      "rc": 0,
+      "output_tail": "total=3882; co:us=1239 co:cn=1021 ltheme=644 basket=358 ... as-of GEN",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V2",
+      "gating": true,
+      "gate": "Capability generations",
+      "command": "store.read_capability vs newest generation",
+      "rc": 0,
+      "output_tail": "read_capability=644; file 34061 rows / 53 generations; newest gen rows=643 (measurement_candidate 505 + semantic_only 138); carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V3",
+      "gating": true,
+      "gate": "Identity generations",
+      "command": "identity_resolution NEWEST vs _meta",
+      "rc": 0,
+      "output_tail": "NEWEST rows=2805 state sum=2805; _meta.counts.identity_resolution=2807 = 2805 newest + 2 carried (co:us:GOLD, co:us:IBIT); file_rows=154270 generations=55; rows_appended=2805",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V4",
+      "gating": true,
+      "gate": "THS mapping arithmetic",
+      "command": "_meta local_plane + crosswalk",
+      "rc": 0,
+      "output_tail": "ths concepts=375; crosswalk mapped 61 + unknown 0 = 61 code rows; ths_unmapped_concept_count=314; unresolved_concept_names=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V5",
+      "gating": true,
+      "gate": "Probation proposals",
+      "command": "proposals.jsonl status field",
+      "rc": 0,
+      "output_tail": "lines=236; status counts recorded in \u00a75",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V6",
+      "gating": true,
+      "gate": "PIT vintage + edge era",
+      "command": "_meta per_suite + edges.parquet era",
+      "rc": 0,
+      "output_tail": "membership_published_at per suite; edges observed vs reconstruction labeled",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V7",
+      "gating": true,
+      "gate": "Refusal/negative categories",
+      "command": "_meta negative buckets",
+      "rc": 0,
+      "output_tail": "company_mint_refusals=1; finviz refused=0; NOT_IN_MASTER=195; UNSUPPORTED_MARKET=233 ...",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    }
+  ],
+  "d2b3": {
+    "C1": {
+      "GOLD": "retired/2025-12-02/identity_break",
+      "IBIT": "retired/entity_type_conflict"
+    },
+    "C2": {
+      "gold_miners_valid_to": "2025-12-02",
+      "belief_rows": 2,
+      "current_gold_miners_count": 12,
+      "GOLD_in_current": false
+    },
+    "C3": {
+      "IBIT_annulled": true,
+      "etf_tracks_live": 2,
+      "live_co_ibit_member_of": 0
+    },
+    "C4": {
+      "retired_live_member_of_violations": 0
+    },
+    "C5": {
+      "us_total": 1237,
+      "RESOLVED": 1211,
+      "NOT_IN_MASTER": 25,
+      "DEFERRED_count": 1,
+      "DEFERRED_nodes": [
+        "co:us:B"
+      ],
+      "ENTITY_TYPE_CONFLICT": 0,
+      "all_scope_newest_sum": 2805,
+      "RESOLVED_share": 0.978981,
+      "carried_not_in_newest": [
+        "co:us:GOLD",
+        "co:us:IBIT"
+      ]
+    }
+  },
+  "rights": {
+    "R3.2_none_rows": 2,
+    "R3.2_distinct_refs": 17,
+    "R3.2_evidence_rows": 22,
+    "R3.3_probation": "mastermind_curated",
+    "R3.3_us_standouts": null
+  },
+  "coverage": {
+    "V1_total_nodes": 3882,
+    "V2_meta_capability": 644,
+    "V2_newest_rows": 643,
+    "V2_carried_node": "ltheme:ths:309263",
+    "V5_proposals_lines": 236,
+    "V5_status": {
+      "proposed": 234,
+      "rejected": 2
+    },
+    "V6_edges_era": {
+      "observed": 12423,
+      "reconstruction": 12677
+    }
+  },
+  "phase1_verdict": "PASS at PIN3 ebe35dc916de5aae556371a5aa963c6692175c9c (all gating rows, \u00a76.A)",
+  "d2e_verdict": "HOLD:seat:PHASE-1 PASS / PHASE-2 PENDING:GEN3 (PIN3 ebe35dc916de5aae556371a5aa963c6692175c9c; W3B held until the seat records GEN3)",
+  "routed_non_gating": "R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; #8425/#8465/#8496); R1.A-CI INFO -> no data-health.yml run on a head containing PIN3 yet",
+  "phase2": {
+    "status": "HISTORICAL_GEN2 (r2\u2013r2c; superseded for composition by rows_pin3)",
+    "pin": "e061209069a1bc05157d9078cd394e9ce1d96cc9",
+    "generation": {
+      "computed_at": "2026-10-06T13:27:04Z",
+      "data_commit": "f9ccad3e50f671499893f8113ba96ae2910ab5e7",
+      "lane": "nightly",
+      "mode": "nightly",
+      "era": "observed",
+      "belief_time": "2026-10-06",
+      "store_eq_rc": 0
+    },
+    "natural_receipt": {
+      "run_id": "37404125352",
+      "event": "schedule",
+      "engine_job_id": "112118780036",
+      "job_conclusion": "failure",
+      "job_started_at": "2026-10-06T11:14:43Z",
+      "job_completed_at": "2026-10-06T14:42:06Z",
+      "checkout_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+      "effective_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+      "ancestry": {
+        "0b1fe887": 0,
+        "79b566f5": 0
+      },
+      "pr8507": {
+        "state": "MERGED",
+        "merged_at": "2026-10-06T11:28:40Z",
+        "note": "merged after job start \u2014 not required by D3(b)"
+      },
+      "data_commit_time": "2026-10-06T13:40:52Z",
+      "guard_groups": {
+        "mandated_grep_matches": 2,
+        "probe": "corrected r2b ((::group::|##[group]) pattern)",
+        "observed_brun_headers": [
+          "theme graph nightly materialization [8s, rc=0]",
+          "theme graph contract guard [3s, rc=0]"
+        ]
+      }
+    },
+    "rows": [
+      {
+        "id": "N1",
+        "gating": true,
+        "gate": "Natural run identity",
+        "command": "gh run view 37404125352 job 112118780036",
+        "rc": 0,
+        "output_tail": "event=schedule; engine completed; conclusion=failure",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N2",
+        "gating": true,
+        "gate": "Effective code sha",
+        "command": "gh api job logs; grep checkout/pull",
+        "rc": 0,
+        "output_tail": "line 111: 640e3e237eede62351b6f657c8e13ad20274585c; line 120: Already up to date.",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N3",
+        "gating": true,
+        "gate": "Ancestry D3(b)",
+        "command": "merge-base --is-ancestor on CHECKOUT_SHA",
+        "rc": 0,
+        "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start \u2014 not required by D3(b)",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N4",
+        "gating": true,
+        "gate": "Data-commit linkage",
+        "command": "git show DATA_COMMIT; merge-base CHECKOUT_SHA DATA_COMMIT",
+        "rc": 0,
+        "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z\u201314:42:06Z; commit 13:40:52Z; rc=0",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N5",
+        "gating": true,
+        "gate": "Advisory guard in job",
+        "command": "gh api job 112118780036 logs; perl ANSI strip; grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)'",
+        "rc": 0,
+        "output_tail": "grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)' \u2192 34798: ##[group]theme graph nightly materialization (build_theme_graph)  [8s, rc=0]; 34814: ##[group]theme graph contract guard (check_theme_graph_contracts)  [3s, rc=0]; guard body: two ##[notice] lines (historical snapshots, not breaches); grep -c warning/error over guard body = 0",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N6",
+        "gating": true,
+        "gate": "Strict guard local",
+        "command": "check_theme_graph_contracts --selftest/--strict",
+        "rc": 0,
+        "output_tail": "selftest rc=0; strict rc=0; no breach/INDETERMINATE",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N7",
+        "gating": true,
+        "gate": "R-A8 edge stability",
+        "command": "edges P1_PIN vs HEAD probe",
+        "rc": 0,
+        "output_tail": "GOLD rows 2/2 identical latest; IBIT rows 2/2 identical; totals 25100/12863",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q1",
+        "gating": true,
+        "gate": "PIT meta",
+        "command": "RepositoryStore _meta",
+        "rc": 0,
+        "output_tail": "computed_at 2026-10-06T13:27:04Z nightly observed",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q2",
+        "gating": true,
+        "gate": "Strict readers",
+        "command": "read_nodes/lifecycle/edges/proposals",
+        "rc": 0,
+        "output_tail": "nodes=3882 lifecycle=2 edges=25100 proposals=236",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q3",
+        "gating": true,
+        "gate": "Identity resolution",
+        "command": "resolve_graph_node_identity x4",
+        "rc": 0,
+        "output_tail": "NVDA RESOLVED; B/GOLD DEFERRED_IDENTITY_EXCEPTION; IBIT ENTITY_TYPE_CONFLICT",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q4",
+        "gating": true,
+        "gate": "Neighborhoods",
+        "command": "compose_neighborhood a\u2013e",
+        "rc": 0,
+        "output_tail": "gold_a\u2013e OK; crypto_d etf:IBIT present",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "R0.1",
+        "verdict": "PASS",
+        "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n192a46de rc=0"
+      },
+      {
+        "id": "R0.2",
+        "verdict": "PASS",
+        "output_tail": "WS:GMI-THEME-GRAPH.md:58 D2C MERGED 0b1fe887; :70 D2D MERGED 79b566f5"
+      },
+      {
+        "id": "R0.3",
+        "verdict": "PASS",
+        "output_tail": "[{\"number\":8324,\"title\":\"research(gmi): audited v3 report...\"}]"
+      },
+      {
+        "id": "R0.4",
+        "verdict": "PASS",
+        "output_tail": "state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; grep matches=5"
+      },
+      {
+        "id": "R1.A",
+        "verdict": "FAIL",
+        "output_tail": "3 failed, 118 passed \u2014 2807 vs 2806 company nodes; co:us:VMRK",
+        "owner": "seat (PR #8544)",
+        "repair_packet": "PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) \u2014 seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B\u2013F, R2, C1\u2013C7"
+      },
+      {
+        "id": "R1.A-CI",
+        "verdict": "INFO",
+        "output_tail": "run 37407802317 (event=workflow_run, headSha=2d3ab1e087a07d63b6dcf8c4682c7541c5386b73, conclusion=failure) failing on unrun-intl-libraries D2A step (gate: data \u2014 exercised by data-health.yml, not ci.yml packs)"
+      },
+      {
+        "id": "R1.B",
+        "verdict": "PASS",
+        "output_tail": "26 passed in 2.43s"
+      },
+      {
+        "id": "R1.C",
+        "verdict": "PASS",
+        "output_tail": "143 passed, 14 warnings in 2.98s"
+      },
+      {
+        "id": "R1.D",
+        "verdict": "PASS",
+        "output_tail": "576 passed in 10.14s"
+      },
+      {
+        "id": "R1.E",
+        "verdict": "PASS",
+        "output_tail": "132 passed in 6.65s"
+      },
+      {
+        "id": "R1.F",
+        "verdict": "PASS",
+        "output_tail": "30 passed in 0.72s"
+      },
+      {
+        "id": "R1.X",
+        "verdict": "FAIL-INFO",
+        "output_tail": "3 failed, 16 passed in 0.53s\ntests/test_market_ontology_half_b_rights_docket.py::test_blocked_on_quotes_the_ledger_verbatim\nE           AssertionError: MO-PAID-019: 'one issuer page joining >=2 module streams...' not in '- **Blocked on (verbatim from the ledger):** `unified capital-markets tape journey...`'"
+      },
+      {
+        "id": "R2",
+        "verdict": "PASS",
+        "output_tail": "selftest rc=0\nstrict rc=0\n(no breach lines; identity resolution census notice only). Round r1 recorded rc=0 for a breaching --strict run in a tree without data/reference; that value was not the guard's exit status and is superseded."
+      },
+      {
+        "id": "C1",
+        "verdict": "PASS",
+        "output_tail": "GOLD retired 2025-12-02 identity_break; IBIT retired 2026-08-22 entity_type_conflict"
+      },
+      {
+        "id": "C2",
+        "verdict": "PASS",
+        "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B\u2194GOLD edges=0"
+      },
+      {
+        "id": "C3",
+        "verdict": "PASS",
+        "output_tail": "member_of:co:us:IBIT->basket:baskets:crypto_rails@2023-05-09 belief_rows=2 latest valid_from=valid_to=2023-05-09; IBIT refusal etf_conflict; etf:IBIT TRACKS live; live co:us:IBIT MEMBER_OF=0"
+      },
+      {
+        "id": "C4",
+        "verdict": "PASS",
+        "output_tail": "violations: 0 (7798 live MEMBER_OF edges, 2 retired nodes, 0 offenders)"
+      },
+      {
+        "id": "C5",
+        "verdict": "PASS",
+        "output_tail": "US total=1237 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=1 (co:us:B) ENTITY_TYPE_CONFLICT=0; RESOLVED share 0.978981; all-scope NEWEST sum=2805 equals _meta.identity_resolution_state_counts"
+      },
+      {
+        "id": "C6",
+        "verdict": "PASS",
+        "output_tail": "N1\u2013N5 all PASS (N5 after corrected probe)",
+        "rc": 0,
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "C7",
+        "verdict": "PASS",
+        "output_tail": "5/5 commits: node_lifecycle=2 and IBIT refusal present"
+      },
+      {
+        "id": "R3.1",
+        "verdict": "PASS",
+        "output_tail": "finviz_themes internal_only; ths_concepts internal_only; all families have rights_class"
+      },
+      {
+        "id": "R3.2",
+        "verdict": "FAIL",
+        "output_tail": "22 rows / 17 distinct refs; ths_concepts 12; mastermind_curated 6; finviz_themes 2; None 2 (gmi:entity_type_conflict:co:us:IBIT; config/theme_graph_identity_breaks.yml#us:GOLD)",
+        "owner": "seat (PR #8544)",
+        "repair_packet": "PR #8544 (seat-accepted frozen P-R3.2: rights registry entries for the correction source_refs; orchestrator gate 4 on #8544 = 23 evidence rows / 18 refs / None 0) \u2014 re-measured in the same PIN3 round"
+      },
+      {
+        "id": "R3.3",
+        "verdict": "PASS",
+        "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None (intentional, rights.py 70-72)"
+      },
+      {
+        "id": "V1",
+        "verdict": "PASS",
+        "output_tail": "total=3882; co:us=1239 co:cn=1021 ltheme=644 basket=358 ... as-of GEN"
+      },
+      {
+        "id": "V2",
+        "verdict": "PASS",
+        "output_tail": "read_capability=644; file 34704 rows / 54 generations; newest gen rows=643 (measurement_candidate 505 + semantic_only 138); carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet"
+      },
+      {
+        "id": "V3",
+        "verdict": "PASS",
+        "output_tail": "NEWEST rows=2805 state sum=2805; _meta.counts.identity_resolution=2807 = 2805 newest + 2 carried (co:us:GOLD, co:us:IBIT); file_rows=157075 generations=56; rows_appended=2805"
+      },
+      {
+        "id": "V4",
+        "verdict": "PASS",
+        "output_tail": "ths concepts=375; crosswalk mapped 61 + unknown 0 = 61 code rows; ths_unmapped_concept_count=314; unresolved_concept_names=0"
+      },
+      {
+        "id": "V5",
+        "verdict": "PASS",
+        "output_tail": "lines=236; status counts recorded in \u00a75"
+      },
+      {
+        "id": "V6",
+        "verdict": "PASS",
+        "output_tail": "membership_published_at per suite; edges observed vs reconstruction labeled"
+      },
+      {
+        "id": "V7",
+        "verdict": "PASS",
+        "output_tail": "company_mint_refusals=1; finviz refused=0; NOT_IN_MASTER=195; UNSUPPORTED_MARKET=233 ..."
+      }
+    ],
+    "pit_queries": {
+      "Q1": "2026-10-06T13:27:04Z",
+      "Q2": {
+        "nodes": 3882,
+        "lifecycle": 2,
+        "edges": 25100,
+        "proposals": 236
+      },
+      "Q3": {
+        "NVDA": "RESOLVED",
+        "B": "DEFERRED_IDENTITY_EXCEPTION",
+        "GOLD": "DEFERRED_IDENTITY_EXCEPTION",
+        "IBIT": "ENTITY_TYPE_CONFLICT"
+      },
+      "Q4": "all cases OK"
+    },
+    "gen2_verdict_historical": "FAIL:seat:R1.A D2A company-node pin 2807 vs 2806 (co:us:VMRK duplicate mint) \u2014 repair = PR #8544"
+  },
+  "pin2": "e061209069a1bc05157d9078cd394e9ce1d96cc9",
+  "generation_phase2": {
+    "computed_at": "2026-10-06T13:27:04Z",
+    "data_commit": "f9ccad3e50f671499893f8113ba96ae2910ab5e7",
+    "lane": "nightly",
+    "mode": "nightly",
+    "era": "observed",
+    "belief_time": "2026-10-06",
+    "store_eq_rc": 0
+  },
+  "phase2_verdict": "PENDING:GEN3 first natural daily.yml engine run whose checkout contains ebe35dc916de5aae556371a5aa963c6692175c9c (cron 22:30Z; seat GEN3 check ~2026-10-07T14:07Z)",
+  "natural_receipt": {
+    "run_id": "37404125352",
+    "event": "schedule",
+    "engine_job_id": "112118780036",
+    "job_conclusion": "failure",
+    "job_started_at": "2026-10-06T11:14:43Z",
+    "job_completed_at": "2026-10-06T14:42:06Z",
+    "checkout_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+    "effective_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+    "ancestry": {
+      "0b1fe887": 0,
+      "79b566f5": 0
+    },
+    "pr8507": {
+      "state": "MERGED",
+      "merged_at": "2026-10-06T11:28:40Z",
+      "note": "merged after job start \u2014 not required by D3(b)"
+    },
+    "data_commit_time": "2026-10-06T13:40:52Z",
+    "guard_groups": {
+      "mandated_grep_matches": 2,
+      "probe": "corrected r2b ((::group::|##[group]) pattern)",
+      "observed_brun_headers": [
+        "theme graph nightly materialization [8s, rc=0]",
+        "theme graph contract guard [3s, rc=0]"
+      ]
+    }
+  },
+  "rows_phase2_gate": [
+    {
+      "id": "N1",
+      "gating": true,
+      "gate": "Natural run identity",
+      "command": "gh run view 37404125352 job 112118780036",
+      "rc": 0,
+      "output_tail": "event=schedule; engine completed; conclusion=failure",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N2",
+      "gating": true,
+      "gate": "Effective code sha",
+      "command": "gh api job logs; grep checkout/pull",
+      "rc": 0,
+      "output_tail": "line 111: 640e3e237eede62351b6f657c8e13ad20274585c; line 120: Already up to date.",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N3",
+      "gating": true,
+      "gate": "Ancestry D3(b)",
+      "command": "merge-base --is-ancestor on CHECKOUT_SHA",
+      "rc": 0,
+      "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start \u2014 not required by D3(b)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N4",
+      "gating": true,
+      "gate": "Data-commit linkage",
+      "command": "git show DATA_COMMIT; merge-base CHECKOUT_SHA DATA_COMMIT",
+      "rc": 0,
+      "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z\u201314:42:06Z; commit 13:40:52Z; rc=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N5",
+      "gating": true,
+      "gate": "Advisory guard in job",
+      "command": "gh api job 112118780036 logs; perl ANSI strip; grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)'",
+      "rc": 0,
+      "output_tail": "grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)' \u2192 34798: ##[group]theme graph nightly materialization (build_theme_graph)  [8s, rc=0]; 34814: ##[group]theme graph contract guard (check_theme_graph_contracts)  [3s, rc=0]; guard body: two ##[notice] lines (historical snapshots, not breaches); grep -c warning/error over guard body = 0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N6",
+      "gating": true,
+      "gate": "Strict guard local",
+      "command": "check_theme_graph_contracts --selftest/--strict",
+      "rc": 0,
+      "output_tail": "selftest rc=0; strict rc=0; no breach/INDETERMINATE",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N7",
+      "gating": true,
+      "gate": "R-A8 edge stability",
+      "command": "edges P1_PIN vs HEAD probe",
+      "rc": 0,
+      "output_tail": "GOLD rows 2/2 identical latest; IBIT rows 2/2 identical; totals 25100/12863",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q1",
+      "gating": true,
+      "gate": "PIT meta",
+      "command": "RepositoryStore _meta",
+      "rc": 0,
+      "output_tail": "computed_at 2026-10-06T13:27:04Z nightly observed",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q2",
+      "gating": true,
+      "gate": "Strict readers",
+      "command": "read_nodes/lifecycle/edges/proposals",
+      "rc": 0,
+      "output_tail": "nodes=3882 lifecycle=2 edges=25100 proposals=236",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q3",
+      "gating": true,
+      "gate": "Identity resolution",
+      "command": "resolve_graph_node_identity x4",
+      "rc": 0,
+      "output_tail": "NVDA RESOLVED; B/GOLD DEFERRED_IDENTITY_EXCEPTION; IBIT ENTITY_TYPE_CONFLICT",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q4",
+      "gating": true,
+      "gate": "Neighborhoods",
+      "command": "compose_neighborhood a\u2013e",
+      "rc": 0,
+      "output_tail": "gold_a\u2013e OK; crypto_d etf:IBIT present",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    }
+  ],
+  "written_at_utc": "2026-10-06T18:30:06Z",
+  "lane_host_model": "Cursor bounded fabric builder (ubuntu1, composer-2.5) \u2014 META-CEO commission rounds pin3, pin3r, pin3s",
+  "pin3": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+  "rows_pin3": [
+    {
+      "id": "R0.1",
+      "gating": true,
+      "gate": "Predecessor ancestry",
+      "command": "for c in 0b1fe88730547207475ad3c04118d2e771a9b949 79b566f5c0ccba878ab963084a239993d3116aa9 192a46de8be8c694e47a1f2ab60b396d7dbb4f7f 527243be5c03c79c016d8731179307f6ff03bf1d ebe35dc916de5aae556371a5aa963c6692175c9c; do git merge-base --is-ancestor \"$c\" HEAD; echo \"$c rc=$?\"; done",
+      "rc": 0,
+      "output_tail": "PIN3: 0b1fe88730547207475ad3c04118d2e771a9b949 rc=0; 79b566f5c0ccba878ab963084a239993d3116aa9 rc=0; 192a46de8be8c694e47a1f2ab60b396d7dbb4f7f rc=0; 527243be5c03c79c016d8731179307f6ff03bf1d rc=0; ebe35dc916de5aae556371a5aa963c6692175c9c rc=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R0.2",
+      "gating": true,
+      "gate": "Agent OS acceptance trace",
+      "command": "git grep -n -E '0b1fe887|79b566f5' agentos/workstreams/WS-GMI-THEME-GRAPH.md | grep -F MERGED; git merge-base --is-ancestor 527243be5c03c79c016d8731179307f6ff03bf1d HEAD; echo 527243be_rc=$?",
+      "rc": 0,
+      "output_tail": "PIN3: agentos/workstreams/WS-GMI-THEME-GRAPH.md:58: MERGED 2026-10-06T09:50:19Z as squash 0b1fe8873054 at head f5b9a42b91fb, under Sol's | agentos/workstreams/WS-GMI-THEME-GRAPH.md:70: MERGED 2026-10-06T10:42:10Z as squash 79b566f5c0cc at head 69a1aa7d90cb (ci.yml | agentos/workstreams/WS-GMI-THEME-GRAPH.md:82: D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc), so acceptance is live as a | 527243be_rc=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "reading": "at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:58 D2C squash 0b1fe8873054, :70 D2D squash 79b566f5c0cc, :82 \"D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc)\"; #8543 merge is an ancestor of PIN3 (rc=0)"
+    },
+    {
+      "id": "R0.3",
+      "gating": true,
+      "gate": "No overlapping D2E carrier",
+      "command": "gh pr list -R mastermindx-market-intelligence/macro --state open --search \"D2E\" --json number,title,headRefName --limit 20",
+      "rc": 0,
+      "output_tail": "PIN3: open #8540 (D2E acceptance carrier) + blueprint #8324 only",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R0.4",
+      "gating": true,
+      "gate": "Owner-action authority #8507",
+      "command": "gh pr view 8507 -R mastermindx-market-intelligence/macro --json state,mergeCommit; git grep -c OWNER_ACTION_AUTHORITY_UNAVAILABLE HEAD -- engine scripts tests",
+      "rc": 0,
+      "output_tail": "PIN3: state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; OWNER_ACTION grep matches=5",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.A",
+      "gating": true,
+      "gate": "D2A identity resolution",
+      "command": "TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_identity_resolution.py tests/test_theme_graph_identity.py",
+      "rc": 0,
+      "output_tail": "PIN3: 121 passed in 5.22s; tests/test_theme_graph_identity_resolution.py: 56 passed in 5.17s; tests/test_theme_graph_identity.py: 65 passed in 0.57s",
+      "cause": "PIN3: re-pinned by PR #8544 (DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE): the suite asserts physical company nodes = FROZEN 2806 + POST_FREEZE_MERGED_DUPLICATES {co:us:VMRK} = 2807 with co:us:VMRK latest-status merged into co:us:EQR (tests/test_theme_graph_identity_resolution.py:99-120 at PIN3)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.A-CI",
+      "gating": false,
+      "gate": "D2A data lane (INFO)",
+      "command": "gh run list -R mastermindx-market-intelligence/macro --workflow data-health.yml --branch main -L 5 --json databaseId,headSha,conclusion,status",
+      "rc": 0,
+      "output_tail": "PIN3: no data-health.yml run on a head containing PIN3 yet",
+      "verdict": "INFO",
+      "owner": "\u2014",
+      "repair_packet": "clears with R1.A",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.B",
+      "gating": true,
+      "gate": "D2B lifecycle hostile matrix",
+      "command": "TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_lifecycle.py",
+      "rc": 0,
+      "output_tail": "PIN3: 57 passed in 2.96s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.C",
+      "gating": true,
+      "gate": "D2C PIT vintage",
+      "command": "TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_basket_membership_pit.py tests/test_us_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_gmi_history_integrity.py",
+      "rc": 0,
+      "output_tail": "PIN3: 143 passed, 14 warnings in 3.16s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.D",
+      "gating": true,
+      "gate": "D2D ontology/probation",
+      "command": "unset GMI_STATE_OWNER_WORKSPACE; TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_crosswalk.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_structural_owner_binding.py tests/test_market_ontology_exposure_map.py",
+      "rc": 0,
+      "output_tail": "PIN3: 576 passed in 10.58s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.E",
+      "gating": true,
+      "gate": "Materialize + contracts",
+      "command": "TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_materialize.py tests/test_theme_graph_contracts.py",
+      "rc": 0,
+      "output_tail": "PIN3: 132 passed in 7.01s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.F",
+      "gating": true,
+      "gate": "Rights tests (theme graph)",
+      "command": "TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_rights_use.py tests/test_theme_sources_registry.py",
+      "rc": 0,
+      "output_tail": "PIN3: 31 passed in 0.75s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R1.X",
+      "gating": false,
+      "gate": "MarketOntology half-B rights docket (INFORMATIONAL)",
+      "command": "TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_market_ontology_half_b_rights_docket.py",
+      "rc": 1,
+      "output_tail": "PIN3: 3 failed, 16 passed in 0.53s",
+      "verdict": "FAIL-INFO",
+      "owner": "MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496)",
+      "repair_packet": "reconcile tests/test_market_ontology_half_b_rights_docket.py (EXPECTED_DISPOSITION_CENSUS, docket rows) with the F00C closure ledger CSV as amended by records waves #8425/#8465/#8496, or restore those ledger rows; re-run TZ=UTC PY -m pytest -q tests/test_market_ontology_half_b_rights_docket.py",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "R2",
+      "gating": true,
+      "gate": "Strict contract guard",
+      "command": "TZ=UTC /home/longr/lanes/tmp/d2e-venv/bin/python -m scripts.check_theme_graph_contracts --selftest; TZ=UTC /home/longr/lanes/tmp/d2e-venv/bin/python -m scripts.check_theme_graph_contracts --strict",
+      "rc": 0,
+      "output_tail": "PIN3: selftest rc=0; strict rc=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "C1",
+      "gating": true,
+      "gate": "GOLD/IBIT lifecycle standing",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'",
+      "rc": 0,
+      "output_tail": "PIN3: co:us:GOLD retired 2025-12-02 identity_break; co:us:IBIT retired 2026-08-22 entity_type_conflict; co:us:VMRK merged_into co:us:EQR",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_D2B3"
+    },
+    {
+      "id": "C2",
+      "gating": true,
+      "gate": "GOLD edge closure",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'",
+      "rc": 0,
+      "output_tail": "PIN3: GOLD belief_rows 2; open gold_miners 12 GOLD_in False",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_D2B3"
+    },
+    {
+      "id": "C3",
+      "gating": true,
+      "gate": "IBIT refusal fence",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'",
+      "rc": 0,
+      "output_tail": "PIN3: IBIT MEMBER_OF annulled valid_from=valid_to=2023-05-09; IBIT refusal 1; live co:us:IBIT MEMBER_OF 0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_D2B3"
+    },
+    {
+      "id": "C4",
+      "gating": true,
+      "gate": "Retired-consistency",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'",
+      "rc": 0,
+      "output_tail": "PIN3: violations: 0 (7797 live MEMBER_OF edges, 3 retired-like/merged nodes, 0 offenders)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_D2B3"
+    },
+    {
+      "id": "C5",
+      "gating": true,
+      "gate": "Identity sidecar R-A2",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'",
+      "rc": 0,
+      "output_tail": "PIN3: US 1237 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=1 ENTITY_TYPE_CONFLICT=0; RESOLVED share 0.978981; NEWEST sum=2805",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_D2B3"
+    },
+    {
+      "id": "C6",
+      "gating": true,
+      "gate": "Generation provenance at PIN3",
+      "command": "git log -4 --oneline -- data/theme_graph/_meta.json; git log f9ccad3e50f671499893f8113ba96ae2910ab5e7..HEAD --oneline -- data/theme_graph; for c in 0b1fe88730547207475ad3c04118d2e771a9b949 79b566f5c0ccba878ab963084a239993d3116aa9; do git merge-base --is-ancestor \"$c\" 640e3e237eede62351b6f657c8e13ad20274585c; echo \"$c vs engine rc=$?\"; done",
+      "rc": 0,
+      "output_tail": "PIN3: GEN2 natural generation f9ccad3e50f671499893f8113ba96ae2910ab5e7 (2026-10-06T13:27:04Z) + #8544 correction rows; D2C/D2D ancestry rc=0 vs engine 640e3e237eede62351b6f657c8e13ad20274585c; sole post-GEN2 data/theme_graph commit ebe35dc916de5aae556371a5aa963c6692175c9c (#8544)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    },
+    {
+      "id": "C7",
+      "gating": true,
+      "gate": "Nightly _meta history",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_C7'",
+      "rc": 0,
+      "output_tail": "PIN3: 5/5 _meta commits carry node_lifecycle>=2 and IBIT refusal",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_C7"
+    },
+    {
+      "id": "R3.1",
+      "gating": true,
+      "gate": "theme_sources.yml registry",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: finviz_themes/ths_concepts internal_only; all families rights_class set",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "R3.2",
+      "gating": true,
+      "gate": "Source-ref census (evidence.source_ref)",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: 23 rows / 18 distinct refs; ths_concepts 12; mastermind_curated 9; finviz_themes 2; None 0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "R3.3",
+      "gating": true,
+      "gate": "Spot checks",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: probation \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None (intentional)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "V1",
+      "gating": true,
+      "gate": "Node prefix census",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: total=3882; co:us=1239; co:cn=1021; ltheme=644; basket=358",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "V2",
+      "gating": true,
+      "gate": "Capability generations",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: read_capability=644; file 34704 rows / 54 generations; newest gen 643 rows",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "V3",
+      "gating": true,
+      "gate": "Identity generations",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: NEWEST=2805; latest-per-node=2807; _meta.counts.identity_resolution=2807; file 157075 rows / 56 gens",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "V4",
+      "gating": true,
+      "gate": "THS mapping arithmetic",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: ths concepts=375; mapped 61 + unknown 0; unmapped_concept_count=314",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "V5",
+      "gating": true,
+      "gate": "Probation proposals",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: proposals lines=236 proposed=234 rejected=2",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "V6",
+      "gating": true,
+      "gate": "PIT vintage + edge era",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: edges observed=12424 reconstruction=12677 (reconstruction not observed proof)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    },
+    {
+      "id": "V7",
+      "gating": true,
+      "gate": "Refusal/negative categories",
+      "command": "/home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'",
+      "rc": 0,
+      "output_tail": "PIN3: company_mint_refusals=1; NOT_IN_MASTER=195; UNSUPPORTED_MARKET=233",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014",
+      "pin": "ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "command_ref": "Appendix C \u00a7PROBE_R3V"
+    }
+  ],
+  "generation_pin3": {
+    "store_composition": "GEN2 natural generation 2026-10-06T13:27:04Z + #8544 ratified correction rows",
+    "meta_computed_at": "2026-10-06T13:27:04Z",
+    "data_commits_since_gen2": [
+      "ebe35dc916de5aae556371a5aa963c6692175c9c"
+    ],
+    "worktree_hash_table": {
+      "data/theme_graph/nodes.parquet": "2dcac135e78cbf32c52c531488fd4a475f7c30cf",
+      "data/theme_graph/edges.parquet": "91aac1d196f70023a11135c8e6f48ef018cbe858",
+      "data/theme_graph/node_lifecycle.parquet": "b246f37d43ddbfed09446a0e5602da782783aea4",
+      "data/theme_graph/evidence.parquet": "52620566e7c5dfd3e6e1bed1f3177281838cb9c3",
+      "data/theme_graph/identity_resolution.parquet": "318472e5d82d0c6e437d6ebffaf05d9efb3a3c40",
+      "data/theme_graph/capability.parquet": "4c50e0447bcc310d3f17667fc81b8c62386b5f5c",
+      "data/theme_graph/_meta.json": "0163387a14c309f8a5fad64cc8517531806c07fd",
+      "data/china_search/closes.parquet": "64d2440cd85f729baa1e673d78fe0f44a0cdde2c"
+    }
+  },
+  "r1a_delta_pin3": {
+    "physical_gen2": 2807,
+    "physical_pin3": 2807,
+    "canonical_gen2": 2807,
+    "canonical_pin3": 2806,
+    "canonical_rule": "canonical = physical kind=='company' nodes minus those whose LATEST node_lifecycle status == 'merged' (post-freeze merged duplicates; co:us:GOLD and co:us:IBIT are latest-status 'retired' and are inside the frozen 2806, so they are not subtracted)",
+    "left": [
+      "co:us:VMRK"
+    ],
+    "entered": [],
+    "left_detail": [
+      {
+        "node_id": "co:us:VMRK",
+        "latest_lifecycle_status": "merged",
+        "merged_into": "co:us:EQR",
+        "ratified_by": "DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE",
+        "computed_at": "2026-10-06T13:55:11Z",
+        "merged_into_is_live_company": true,
+        "why": "PR #8544 duplicate-mint repair: co:us:VMRK was a post-freeze re-mint of the incumbent co:us:EQR; lifecycle-merged into it per DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE (config/theme_graph_duplicate_mints.yml)"
+      }
+    ],
+    "probe_command_ref": "Appendix C \u00a7PROBE_R1A_DELTA",
+    "counts_physical_canonical_minus_retired": {
+      "physical": 2807,
+      "canonical_minus_merged": 2806,
+      "minus_all_RETIRED_LIKE": 2804
+    },
+    "test_lines": "tests/test_theme_graph_identity_resolution.py:99-120"
+  },
+  "phase2_gen3": {
+    "status": "PENDING:GEN3",
+    "trigger": "first natural daily.yml engine run whose checkout contains ebe35dc916de5aae556371a5aa963c6692175c9c (daily.yml cron 22:30Z)",
+    "seat_check_utc": "~2026-10-07T14:07Z",
+    "must_show": [
+      "the run is a natural schedule-event daily.yml run (not workflow_dispatch / rerun) \u2014 the FIRST such run whose engine-job checkout contains ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "for its engine-job checkout sha X: git merge-base --is-ancestor ebe35dc916de5aae556371a5aa963c6692175c9c X rc=0",
+      "the theme-graph build and guard log groups end rc=0",
+      "the natural data commit's data/theme_graph/_meta.json computed_at equals the generation computed_at the run logged",
+      "R1.A pytest 0 failed with physical company nodes 2807 and canonical 2806 (co:us:VMRK latest lifecycle status merged, merged_into co:us:EQR)",
+      "R3.2 family_for_source_ref None = 0 over every distinct evidence source_ref",
+      "N1\u2013N7 and Q1\u2013Q4 re-run on that checkout",
+      "D2E cannot read PASS before the seat records PHASE-2 PASS at GEN3."
+    ]
+  },
+  "w3b": {
+    "status": "DRAFT_NOT_RELEASED",
+    "text": "\u00a77 W3B release handoff \u2014 target gmi-theme-state-w3b-20260827-sol-001; held until PHASE-2 PASS at GEN3"
+  },
+  "prospective_evidence_window_candidate": {
+    "candidate_id": "D2E-PROSPECTIVE-NATURAL-WITNESS-20261008",
+    "status": "ADOPTED_PROSPECTIVE_RULE_ONLY",
+    "governing": true,
+    "carrier": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pr": 8540,
+      "original_head": "52d57f34aad6956b3ddb697fff34c82588e791af",
+      "owned_paths": [
+        "research/theme_graph/D2E_ACCEPTANCE_2026-10-06.md",
+        "research/theme_graph/d2e_acceptance_2026-10-06.json"
+      ],
+      "original_git_blobs": {
+        "research/theme_graph/D2E_ACCEPTANCE_2026-10-06.md": "9fe2ea709570da04f0df980ba805bfd056c2f1da",
+        "research/theme_graph/d2e_acceptance_2026-10-06.json": "c87b29df54d59eb77c8d5659bb32311652c33108"
+      }
+    },
+    "procedure_context": {
+      "protected_repository": "mastermindx-market-intelligence/Mastermind",
+      "parent_verified_commit": "c7e47c859eb2925c5626931fd511800773ba09ac"
+    },
+    "scope": "Prospective evidence-window amendment only; no acceptance, production rerun, new carrier or new authority.",
+    "adoption": {
+      "status": "ADOPTED_PROSPECTIVE_RULE_ONLY",
+      "adjudicator": "ceo-sol",
+      "adjudicated_at_utc": "2026-10-08T23:38:32Z",
+      "principal_ruling_receipt": {
+        "comment_id": 6071188794,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8540#issuecomment-6071188794",
+        "created_at": "2026-10-08T23:38:32Z",
+        "comment_author": "mastermidx4",
+        "adjudicator": "ceo-sol",
+        "scope": "Prospective evidence-window rule only; no generation selection or D2E/Phase2/P3/W3B acceptance",
+        "read_back_receipt_name": "formal_adoption_comment_readback.json",
+        "read_back_receipt_sha256": "594bb117a3e5d41cd62724178c83ac594f1a5d807b8b654ba0e031f84b951a92"
+      },
+      "independent_amendment_review_receipt": {
+        "receipt_name": "independent_review_r6.json",
+        "sha256": "c831dd818eb9bec065fc0346e7e04b55bc596a92ecd577d2b8d3e729514531f3",
+        "revision": "R6",
+        "verdict": "PASS",
+        "reviewer": "/root/gmi_dependency_audit",
+        "observed_at_utc": "2026-10-08T23:35:20Z",
+        "scope": "Final frozen pre-adoption R6 source/rules and exact content binding; separate from future generation P3"
+      },
+      "amendment_reviewed_head_or_artifact_hashes": {
+        "pre_adoption_revision": "R6",
+        "cumulative_patch_sha256": "1e679a3055f688a25b5db5bd387db8f1e96f69b7f4e89da50b85886070ad46f0",
+        "r5_to_r6_patch_sha256": "904b7164da6565e3f09f52d3c0aca8b5681c059c384740ccb35b469d5dc0905e",
+        "manifest_sha256": "29197c7655d428111c909f0e3f2e5cb0297fba7f36c0ca61bd37cf8dc87a8c55",
+        "control_inventory_sha256": "949e6a23379cd9833f3161919b8256d26b02dad0a3a12ff32f3fc3293e741e12",
+        "files": [
+          {
+            "path": "research/theme_graph/D2E_ACCEPTANCE_2026-10-06.md",
+            "git_blob": "1be5eadf5896f1ad6dd7d85c0baf613070bd5176",
+            "sha256": "ab9142d2b6898412cfbd969f69eae33f546af2b1406a0e59043f424ecf8b03e7"
+          },
+          {
+            "path": "research/theme_graph/d2e_acceptance_2026-10-06.json",
+            "git_blob": "e5a61b3e51c399f8973b384de021ac781218011e",
+            "sha256": "6a6cc06a25508eba7390320c226b740932a997e92b040fed33f3c010d97a0d73"
+          }
+        ]
+      },
+      "requires_before_eligible_run_start": true,
+      "requires_all_actual_squashes_and_exact_head_release_parity_bindings_before_adoption": true,
+      "changed_frozen_head_requires_explicit_new_review": true,
+      "proof_author_is_not_independent_reviewer": true
+    },
+    "history": {
+      "preservation": "Whole original Markdown bytes retained as prefix; every original JSON subtree unchanged. Original top-level verdicts remain historical, never replacement observations.",
+      "gen3": {
+        "run_id": 37558610387,
+        "engine_job_id": 112633282165,
+        "code_commit": "07db8e5931d93a08d5c92022373e7a3a60ab2c76",
+        "data_commit": "856c5939858fe6adcf41bfc2e10787a21de649a3",
+        "N4": "UNPROVEN",
+        "N5": "UNPROVEN",
+        "reason": "Required native evidence absent from retained historical log surfaces; deterministic local proof cannot reconstruct it.",
+        "final_meta_computed_at": "2026-10-07T08:00:17Z",
+        "materialization_row_computed_at": "2026-10-07T08:00:10Z",
+        "separate_clocks_preserved": true,
+        "proof_comment_id": 6068374556,
+        "deterministic_summary_sha256": "11fcd1bcf0d75e3f470f8776736995ba583c48120e2a44a0b7b47a299e807e87"
+      },
+      "oct8": {
+        "run_id": 37716729584,
+        "engine_job_id": 113158877653,
+        "status": "LATER_N5_CANDIDATE_ONLY_NOT_COMPLETE_N4_N5_NOT_SELECTED"
+      },
+      "retroactive_pass": false
+    },
+    "prerequisites": [
+      {
+        "name": "C4",
+        "pr": 8629,
+        "frozen_reviewed_head": "a4deb82387895dae58bb77404faeeb851450c174",
+        "source_native_review": "ROOT_REPORTED_PASS",
+        "squash_merge": "123eda091dfd0d83c4c303f7f138d4c8a2c7e128",
+        "principal_release_receipt": {
+          "comment_id": 6070151039,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8629#issuecomment-6070151039"
+        },
+        "post_merge_parity_receipt": {
+          "sha256": "68dc86e87015722c6a62e2e6e24dd4e03c5cf77d706f15e7f9ecdb9752823b18",
+          "recorded_at_utc": "2026-10-08T22:37:50.349280Z",
+          "observed_main": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+          "merge_ancestor_rc": 0,
+          "public_comment_id": 6070559424,
+          "public_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8629#issuecomment-6070559424",
+          "integrated_ci_blob": "b9e71767b7d1fc3ffe0de7dc981be31f0ee2fc31",
+          "ci_path": ".github/ci/legacy-jobs.yml",
+          "upstream_pr": 8654,
+          "upstream_squash": "d2eec4732abee359ebb578b245fa7359b3c01a7d",
+          "integration_review_sha256": "fd28cbb230b5b60c7fc874add65ac25856481976b4fdcf56a52e42834e8dd9c2",
+          "parity_scope": "Other four owned blobs exact; integrated CI preserves upstream PB-D and adds only approved C4 two population-test lines versus actual parent. Older whole-CI snapshot is not claimed identical.",
+          "evidence_source": "Root post-merge receipt supplied in task and canonical/c4_merged_update/source_receipts.json"
+        },
+        "state": "MERGED_PRINCIPAL_RELEASE_AND_POST_MERGE_PARITY_RECORDED"
+      },
+      {
+        "name": "M1",
+        "pr": 8651,
+        "frozen_reviewed_head": "0b331ec68f26ef2decbcf67eabb9cac38b415fc9",
+        "squash_merge": "11b48b2304ecda38bc4f78594af58cc8bfafd871",
+        "state": "ROOT_REPORTED_EXACT_HEAD_MERGE_AND_POST_MERGE_FOUR_BLOBS_VERIFIED",
+        "post_merge_verification_at": "2026-10-08T21:40:51.683216Z",
+        "verification_source": "Principal task clarification; this local candidate performed no independent merge fetch",
+        "principal_release_receipt": {
+          "comment_id": 6069579052,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8651#issuecomment-6069579052"
+        },
+        "post_merge_parity_receipt": {
+          "sha256": "1b28c4aa215b46578053059cd2f285787439b50348785d340a2eb551af80862c",
+          "recorded_at_utc": "2026-10-08T21:40:51.683216Z",
+          "parity_scope": "Four owned blobs verified after exact-head squash merge",
+          "evidence_source": "Root-provided canonical post-merge receipt hash and recorded time"
+        }
+      },
+      {
+        "name": "witness_retention",
+        "pr": 8653,
+        "frozen_reviewed_head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+        "source_native_review": "ROOT_REPORTED_PASS",
+        "squash_merge": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "principal_release_receipt": {
+          "comment_id": 6070969336,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8653#issuecomment-6070969336",
+          "created_at": "2026-10-08T23:19:32Z",
+          "accepted_head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+          "scope": "Engineering/source only; no D2E adoption or production acceptance"
+        },
+        "post_merge_parity_receipt": {
+          "receipt_name": "witness-post-merge.json",
+          "sha256": "0b10c9635fd886f8344bb1e44a83f63c7cc6ad88b8e065ccbde299e01a8cf20e",
+          "recorded_at_utc": "2026-10-08T23:20:32.267715Z",
+          "observed_main": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+          "actual_first_parent": "53914368416d3350684887b3cc45070a3ad5700a",
+          "fetch_rc": 0,
+          "merge_ancestor_rc": 0,
+          "workspace_clean": true,
+          "native_process_id": 36808,
+          "native_process_rc": 0,
+          "public_comment_id": 6070995691,
+          "public_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8653#issuecomment-6070995691",
+          "owned_blobs": {
+            ".github/ci/legacy-jobs.yml": "178cbb69586301cd47da98e5400b023a2a977c36",
+            ".github/workflows/daily.yml": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+            "scripts/build_theme_graph.py": "dc051c176b797f8f684fe0b7be599d922d42d05d",
+            "scripts/ci/daily_engine_regional_desk_builders.sh": "e59f2c2a43300b7e35a1e4b9719cafe286c3ff5d",
+            "tests/test_theme_graph_materialize.py": "0eada6503e673ba3f5dcff2c675d81aac1ad6ec0"
+          },
+          "actual_parent_ci_blob": "b9e71767b7d1fc3ffe0de7dc981be31f0ee2fc31",
+          "integrated_ci_blob": "178cbb69586301cd47da98e5400b023a2a977c36",
+          "parity_scope": "All five integrated owned blobs verified; four runtime/test blobs exact accepted source. Complete integrated CI minus only the approved witness trigger line equals actual-parent b9e717 bytes, preserving C4 and upstream PB-D.",
+          "evidence_source": "Root supplied completed native receipt hash, timestamp and results; independent reviewer gmi_dependency_audit separately read and hash-verified that receipt and public postproof before this draft."
+        },
+        "changed_head_review": {
+          "parent_head": "7df186a7553c8494bd846c8b06454f2fe3f222b3",
+          "reviewed_head": "c40ea096a5116e5394ea4c0eaa3a6df5fe3e34fe",
+          "independent_exact_head_review": "ROOT_REPORTED_PASS",
+          "binding_approved_by": "gmi_dependency_audit",
+          "scope": "Original four implementation/test blobs unchanged; only one additional CI-trigger line in a fifth changed file",
+          "authority_scope": "Explicit changed-head binding only; not squash merge, CI release or adoption"
+        },
+        "dag_repair_head_review": {
+          "parent_head": "c40ea096a5116e5394ea4c0eaa3a6df5fe3e34fe",
+          "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+          "scope_ruling_comment_id": 6070559640,
+          "scope": "One witness-ID export line changed; unchanged parser/config/guards/archive behavior and all other band bytes; existing five-file PR scope retained",
+          "patch_sha256": "9e4ee11c771ef89787b0561ef41bf5292cd3edbc4b301cf61149ca5c83ea99df",
+          "independent_source_review": "PASS",
+          "independent_source_review_sha256": "9bf26eaf30998b0e8d7ff6af67bdab4a2f7d9963d4080f2a1b9ee86e7fff0c96",
+          "independent_exact_head_review": {
+            "status": "PASS",
+            "reviewer": "gmi_dependency_audit",
+            "receipt_name": "independent_exact_head_ebd_review.json",
+            "sha256": "691290cdba78c4c1bd64fd941237e470523acd4c1d3bbe857c6ba6960e7309d1",
+            "scope": "Exact pushed ebd sole parent c40; shell one-line delta e59f2c2; other four PR files unchanged; native/push receipt hashes independently verified"
+          },
+          "native_validation": {
+            "receipt_name": "witness-dag-repair-native-validation.json",
+            "sha256": "87d8de97a673b7044314dbfacad5551576d1145a468e3f8c850bb86a5ca90af8",
+            "source": "Root-provided native receipt",
+            "dag_before_mismatches": 9,
+            "checker_selftest": "PASS",
+            "dag_after_lanes": 27,
+            "dag_after_rc": 0,
+            "inherited_suspects_unchanged": 2,
+            "bash_syntax": "PASS",
+            "id_parity_cases_passed": 10,
+            "tests_passed": 114,
+            "tests_skipped": 0,
+            "tests_failed": 0
+          },
+          "ordinary_push": {
+            "receipt_name": "witness-dag-repair-commit-push.json",
+            "sha256": "eae620b3ed34edce2c9514ff1d3328acf3a94a8534a6b07933bdc08d6a12cc9b",
+            "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+            "source": "Root-provided ordinary-push receipt"
+          },
+          "d2e_changed_head_binding_review": {
+            "status": "PASS",
+            "revision": "R4",
+            "reviewer": "gmi_dependency_audit",
+            "receipt_name": "independent_review_r4.json",
+            "sha256": "d2ca3707e269bd22e2404e29b06a77a288d22b2264a4945f18e9ba9c4b8b57e5",
+            "scope": "Exact ebd rebinding and C4/M1 factual bindings; witness final merge/release/parity were then pending and require final R6 review."
+          },
+          "binding_ci": {
+            "workflow_run": 37855935397,
+            "required_checks": [
+              {
+                "name": "ci-gate",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113588914724"
+              },
+              {
+                "name": "ci-authority/main",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580618042"
+              },
+              {
+                "name": "ci-pack-9",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322051"
+              },
+              {
+                "name": "ci-pack-6",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322046"
+              },
+              {
+                "name": "ci-pack-10",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322025"
+              },
+              {
+                "name": "ci-pack-3",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322019"
+              },
+              {
+                "name": "ci-pack-7",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322015"
+              },
+              {
+                "name": "ci-pack-0",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321996"
+              },
+              {
+                "name": "ci-pack-11",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321974"
+              },
+              {
+                "name": "ci-pack-5",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321966"
+              },
+              {
+                "name": "ci-pack-8",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321961"
+              },
+              {
+                "name": "ci-pack-2",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321957"
+              },
+              {
+                "name": "ci-pack-4",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321941"
+              },
+              {
+                "name": "ci-pack-1",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321929"
+              },
+              {
+                "name": "grader-manifest",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580229753"
+              },
+              {
+                "name": "capability-broker",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580227424"
+              },
+              {
+                "name": "self-mod-fence",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580224476"
+              },
+              {
+                "name": "contract-delta",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113579987065"
+              },
+              {
+                "name": "ci-plan",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113579986636"
+              },
+              {
+                "name": "fence-pack",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855934978/job/113579986498"
+              }
+            ],
+            "all_required_success": true,
+            "main_context_active": true,
+            "pilot_context_active": false,
+            "pilot_actual_conclusion": "failure",
+            "pilot_context_reason": "inactive_base_context"
+          },
+          "authority_scope": "Source/native proof and ordinary push only; no merge, release, post-merge parity, adoption or natural-generation observation"
+        },
+        "state": "MERGED_PRINCIPAL_RELEASE_AND_POST_MERGE_PARITY_RECORDED",
+        "independent_merge_source_review": {
+          "status": "PASS",
+          "reviewer": "gmi_dependency_audit",
+          "receipt_name": "independent_merge_source_review.json",
+          "sha256": "bc908f46d7984330d7fcc64d3e68f9be115e461a581ad8a4b084ce43aa75f0bb",
+          "scope": "Actual GitHub squash source, integrated CI conservation, principal release and concluded binding checks; native post-merge receipt assessed separately"
+        }
+      }
+    ],
+    "original_predecessors": [
+      {
+        "role": "D2C",
+        "commit": "0b1fe88730547207475ad3c04118d2e771a9b949"
+      },
+      {
+        "role": "D2D",
+        "commit": "79b566f5c0ccba878ab963084a239993d3116aa9"
+      },
+      {
+        "role": "original R0.1 predecessor",
+        "commit": "192a46de8be8c694e47a1f2ab60b396d7dbb4f7f"
+      },
+      {
+        "role": "D2C/D2D acceptance trace",
+        "commit": "527243be5c03c79c016d8731179307f6ff03bf1d"
+      },
+      {
+        "role": "PIN3 duplicate/rights correction",
+        "commit": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+      }
+    ],
+    "selection": {
+      "rule": "First original schedule-event .github/workflows/daily.yml attempt-1 run whose original attempt-1 workflow-run run_started_at is strictly later than the designated formal adoption comment created_at whose actual effective producer checkout contains every verified prerequisite squash and original predecessor, and whose immutable workflow-definition revision contains the reviewed witness upload wiring.",
+      "workflow_path": ".github/workflows/daily.yml",
+      "event": "schedule",
+      "run_attempt": 1,
+      "conclusively_gated_off_no_execution": {
+        "status": "ADOPTED_PROSPECTIVE_CLARIFICATION_ONLY",
+        "classification_if_all_proven": "INELIGIBLE_CONCLUSIVELY_GATED_OFF",
+        "all_required": [
+          "Complete immutable workflow-definition proof establishes the existing checkout-free et_gate and engine exclusion semantics",
+          "Same original schedule-run and attempt identity bound across complete gate/job evidence",
+          "Existing checkout-free et_gate completed successfully and actually published the literal job output run=false; a printed notice alone is insufficient because it precedes the GITHUB_OUTPUT write",
+          "Engine terminal conclusion skipped",
+          "Complete same-run/attempt proof that no engine steps, checkout or producer execution occurred"
+        ],
+        "retain_in_ordered_candidate_list": true,
+        "reason": "No actual effective producer checkout or generation exists; this is positive non-execution proof, not missing evidence",
+        "does_not_establish_exception": [
+          "Bare run=false log notice without successful output proof",
+          "Cron/date prediction alone",
+          "Missing gate output",
+          "Missing log",
+          "Missing artifact",
+          "Errored gate, which is fail-open",
+          "Ambiguous/canceled/errored gate or engine evidence",
+          "Any started engine",
+          "Any started-engine/setup/producer failure"
+        ],
+        "whole_workflow_success_required": false,
+        "unrelated_overall_workflow_failure_or_cancellation": "Does not by itself change a fully proved successful-gate/false-output/engine-skipped/no-execution disposition",
+        "incomplete_or_ambiguous_proof": "UNKNOWN; cannot justify skipping the candidate",
+        "upload_success_is_eligibility": false,
+        "otherwise_selected_run_failed_or_missing_archive": "HOLD selected window; no rollover",
+        "future_adoption_boundary_unchanged": true,
+        "other_R4_ineligibility_rules": "Unchanged; failure to establish this exception does not override independently proved ineligibility under another existing rule",
+        "observed_run_or_disposition": null
+      },
+      "workflow_definition_proof": {
+        "event_sha": null,
+        "definition_commit": null,
+        "definition_path": ".github/workflows/daily.yml",
+        "definition_git_blob": null,
+        "proof_reference": null,
+        "reviewed_witness_upload_wiring": "UNASSESSED",
+        "separate_from_actual_effective_producer_checkout": true,
+        "known_absent_wiring": "INELIGIBLE",
+        "missing_or_unknown_definition_proof": "UNKNOWN; cannot justify skipping the run",
+        "upload_success_is_eligibility": false,
+        "selected_run_failed_or_missing_upload": "HOLD selected window; no rollover"
+      },
+      "ordering": [
+        "run_created_at_utc",
+        "run_id"
+      ],
+      "enumerate_earlier_candidates_and_dispositions": true,
+      "missing_earlier_candidate_source_proof": "UNKNOWN; cannot silently skip",
+      "freeze_before_reader_test_composition": [
+        "run_id",
+        "run_attempt",
+        "engine_job_id",
+        "event_sha",
+        "workflow_definition_commit",
+        "workflow_definition_path",
+        "workflow_definition_git_blob",
+        "actual_effective_checkout",
+        "canonical_data_commit",
+        "final_metadata_sha256",
+        "seven_output_hashes"
+      ],
+      "ineligible": [
+        "workflow_dispatch",
+        "rerun/attempt greater than 1",
+        "manual graph rebuild",
+        "pre-adoption generation",
+        "mixed generation/attempt evidence",
+        "immutable workflow definition known to lack reviewed witness upload wiring"
+      ],
+      "failure_or_missing_archive": "Hold selected window; replacement requires a new prospective principal ruling, no silent rollover.",
+      "selected_generation": null,
+      "earlier_candidate_dispositions": null,
+      "adoption_time_binding": {
+        "workflow_run_start_field": "run_started_at",
+        "workflow_run_start_scope": "Original workflow-run attempt 1, not engine, job, checkout, producer or witness start",
+        "adoption_cutoff_field": "created_at",
+        "adoption_cutoff_scope": "The explicitly designated formal adoption comment on existing PR #8540, not draft clarification comment 6070802215",
+        "required_relation": "original_attempt_1_workflow_run.run_started_at > designated_formal_adoption_comment.created_at",
+        "strictly_after": true,
+        "workflow_run_created_at_role": "Candidate ordering only, followed by run ID; never the start/adoption comparison",
+        "later_engine_or_witness_start_substitutes": false,
+        "workflow_started_before_or_at_adoption": "INELIGIBLE even if its engine, producer or witness starts later",
+        "missing_or_ambiguous_original_attempt_start": "UNKNOWN; cannot justify skipping or selection",
+        "observed_original_attempt_1_run_started_at": null,
+        "designated_formal_adoption_comment_id": 6071188794,
+        "designated_formal_adoption_comment_created_at": "2026-10-08T23:38:32Z"
+      }
+    },
+    "replacement_gates": [
+      {
+        "id": "N1",
+        "gating": true,
+        "required": "Original schedule-event daily.yml attempt 1 with original workflow-run run_started_at strictly greater than the designated formal adoption comment created_at; record both fields and bind the original attempt. Workflow run created_at orders candidates only; engine/job/producer/witness start never substitutes. Missing or ambiguous original-attempt run_started_at is UNKNOWN, not permission to skip or select; prove first eligibility, repository/workflow/run/attempt/engine-job identity and timing. Record event SHA and immutable workflow-definition commit/path/Git blob separately from effective producer checkout; prove reviewed witness upload wiring exists in that definition. Known absent wiring is ineligible; missing/unknown definition proof is UNKNOWN and cannot justify skipping. Apply the narrow no-execution clarification only with complete immutable-workflow and same-run/attempt proof of successful complete checkout-free et_gate execution, actual literal run=false output, terminal engine skipped and no executed engine steps, checkout or producer; retain the ineligible disposition in the ordered list. A bare log notice, cron/date prediction, missing/ambiguous/canceled/errored gate or engine evidence, or any started-engine/setup/producer failure cannot establish that exception. Whole-workflow SUCCESS is not required; unrelated overall workflow failure/cancellation alone does not change a fully proved no-execution disposition. Upload success is not eligibility; selected-run archive failure remains HOLD without rollover. Report actual overall conclusion separately.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N2",
+        "gating": true,
+        "required": "Bind actual effective producer checkout after checkout/pull and at witness start, separate from event GITHUB_SHA and immutable workflow-definition commit/path/Git blob; validate each identity independently, retained run identity, unique witness ID and source hashes against exact canonical source. A newer producer checkout or its daily.yml hash cannot prove an older queued workflow definition contains the upload step.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N3",
+        "gating": true,
+        "required": "Every original predecessor and resolved exact-head squash is ancestor of actual producer checkout, each merge-base rc 0; verify principal-reviewed integrated owned-source parity and no unreviewed reversal.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N4",
+        "gating": true,
+        "required": "Post-write logged final metadata computed_at and SHA256 equal exact canonical published _meta.json and archive copy. Keep materialization clock separate. Bind source ancestry, publisher, commit timing and canonical data commit to selected run. All seven output hashes match that publication.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N5",
+        "gating": true,
+        "required": "Natural native producer and advisory guard rc 0, valid seconds and mutually consistent group/sidecar evidence; inspect full retained logs for raw/rendered warning/error annotations and logged failure, requiring zero. Require successful post-write marker; caught exceptions, absent marker or local rc never substitute.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N6",
+        "gating": true,
+        "required": "Existing native guard --selftest and --strict at frozen effective code and exact selected published data: rc 0, no breach or INDETERMINATE; retain actual commands/logs.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N7",
+        "gating": true,
+        "required": "Repeat original R-A8 edge-stability and GOLD/IBIT correction/PIT comparisons to original baselines. Preserve correction beliefs/endpoints. Individually reconcile new structural rows to accepted C4. Record measured totals/appends, no copied counts or padding; unexplained protected/history changes hold.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q1",
+        "gating": true,
+        "required": "Native strict stored metadata equals selected published metadata identity, nightly lane/mode, observed era and correct belief time; reconstruction is not observed proof.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q2",
+        "gating": true,
+        "required": "Native strict RepositoryStore nodes/lifecycle/edges/proposals succeed on exact publication, record actual population and negative categories. Historical total 3882 is not a target after structural additions.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q3",
+        "gating": true,
+        "required": "Run native resolve_graph_node_identity for the four exact identities/states frozen below.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q4",
+        "gating": true,
+        "required": "Run native compose_neighborhood for each explicit dated tuple frozen below, all availability.state OK and exact presence/absence/future-belief requirements. These are not a claim to recover old unknown a-e literals.",
+        "status": "NOT_RUN",
+        "observation": null
+      }
+    ],
+    "inherited_gate_matrix": [
+      {
+        "id": "R0.1",
+        "gating": true,
+        "gate": "Predecessor ancestry",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R0.2",
+        "gating": true,
+        "gate": "Agent OS acceptance trace",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R0.3",
+        "gating": true,
+        "gate": "No overlapping D2E carrier",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R0.4",
+        "gating": true,
+        "gate": "Owner-action authority #8507",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.A",
+        "gating": true,
+        "gate": "D2A identity resolution",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.A-CI",
+        "gating": false,
+        "gate": "D2A data lane (INFO)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.B",
+        "gating": true,
+        "gate": "D2B lifecycle hostile matrix",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.C",
+        "gating": true,
+        "gate": "D2C PIT vintage",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.D",
+        "gating": true,
+        "gate": "D2D ontology/probation",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.E",
+        "gating": true,
+        "gate": "Materialize + contracts",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.F",
+        "gating": true,
+        "gate": "Rights tests (theme graph)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.X",
+        "gating": false,
+        "gate": "MarketOntology half-B rights docket (INFORMATIONAL)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R2",
+        "gating": true,
+        "gate": "Strict contract guard",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C1",
+        "gating": true,
+        "gate": "GOLD/IBIT lifecycle standing",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C2",
+        "gating": true,
+        "gate": "GOLD edge closure",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C3",
+        "gating": true,
+        "gate": "IBIT refusal fence",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C4",
+        "gating": true,
+        "gate": "Retired-consistency",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C5",
+        "gating": true,
+        "gate": "Identity sidecar R-A2",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C6",
+        "gating": true,
+        "gate": "Generation provenance at PIN3",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C7",
+        "gating": true,
+        "gate": "Nightly _meta history",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R3.1",
+        "gating": true,
+        "gate": "theme_sources.yml registry",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R3.2",
+        "gating": true,
+        "gate": "Source-ref census (evidence.source_ref)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R3.3",
+        "gating": true,
+        "gate": "Spot checks",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V1",
+        "gating": true,
+        "gate": "Node prefix census",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V2",
+        "gating": true,
+        "gate": "Capability generations",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V3",
+        "gating": true,
+        "gate": "Identity generations",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V4",
+        "gating": true,
+        "gate": "THS mapping arithmetic",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V5",
+        "gating": true,
+        "gate": "Probation proposals",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V6",
+        "gating": true,
+        "gate": "PIT vintage + edge era",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V7",
+        "gating": true,
+        "gate": "Refusal/negative categories",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      }
+    ],
+    "inherited_law": {
+      "all_original_gates_and_classifications_preserved": true,
+      "historical_rc_counts_pass_not_copied": true,
+      "commands": "Rebind original Appendix C/native recipes to selected exact effective source and canonical data; retain actual command lines, outputs, rc and fixture manifest. Do not regenerate graph or mutate historical ledgers.",
+      "R1_A": {
+        "required_failed_tests": 0,
+        "physical_company_nodes": 2807,
+        "canonical_company_nodes": 2806,
+        "canonical_rule": "canonical = physical kind=='company' nodes minus those whose LATEST node_lifecycle status == 'merged' (post-freeze merged duplicates; co:us:GOLD and co:us:IBIT are latest-status 'retired' and are inside the frozen 2806, so they are not subtracted)",
+        "vmrk": {
+          "node": "co:us:VMRK",
+          "latest_lifecycle_status": "merged",
+          "merged_into": "co:us:EQR",
+          "merged_into_live_company": true,
+          "ratifier": "DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE",
+          "canonical_and_fresh_identity_materialization_suppressed": true,
+          "live_membership_suppressed": true
+        },
+        "changed_company_population": "Requires explicit adjudication; never silently weaken frozen company constraints"
+      },
+      "R3_2": {
+        "family_none_required": 0,
+        "population": "Every distinct evidence source_ref, with actual evidence-row and distinct-ref denominators reported",
+        "rights_fences": "Existing registry/purpose laws, internal-only Finviz/THS, and refusal/negative categories unchanged; family mapping is not display permission"
+      },
+      "total_node_count": "Measure and reconcile actual total; 3882 is historical, not a post-C4 target; no padding.",
+      "lifecycle": "All original GOLD/IBIT/VMRK lifecycle, edge-closure, refusal, identity and PIT gates retained",
+      "non_gating": "Original classifications/routes retained, including R1.X FAIL-INFO and R1.A-CI INFO"
+    },
+    "Q3_identity_states": {
+      "co:us:B": "DEFERRED_IDENTITY_EXCEPTION",
+      "co:us:GOLD": "DEFERRED_IDENTITY_EXCEPTION",
+      "co:us:IBIT": "ENTITY_TYPE_CONFLICT",
+      "co:us:NVDA": "RESOLVED"
+    },
+    "Q4_explicit_tuples": [
+      {
+        "absent": [],
+        "asof": "2025-12-01",
+        "case": "a",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:gold_miners",
+        "present": [
+          "co:us:GOLD"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [
+          "co:us:GOLD"
+        ],
+        "asof": "2025-12-02",
+        "case": "b",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:gold_miners",
+        "present": [],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [],
+        "asof": "2026-08-20",
+        "case": "c",
+        "knowledge_cutoff": "2026-08-20",
+        "minimum_future_beliefs_excluded": 1,
+        "node_id": "basket:baskets:gold_miners",
+        "present": [
+          "co:us:GOLD"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [
+          "co:us:IBIT"
+        ],
+        "asof": "2026-08-20",
+        "case": "d",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:crypto_rails",
+        "present": [
+          "etf:IBIT"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [
+          "co:us:IBIT"
+        ],
+        "asof": "2026-10-07",
+        "case": "e",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:crypto_rails",
+        "present": [
+          "etf:IBIT"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      }
+    ],
+    "Q4_source": {
+      "file": "gmi_state_gen3_summary_20261008.json",
+      "sha256": "11fcd1bcf0d75e3f470f8776736995ba583c48120e2a44a0b7b47a299e807e87",
+      "scope": "Known explicit GEN3 proof tuples; not recovered original unknown a-e literals. Prior tuple PASS is historical; new observations unset."
+    },
+    "witness_binding": {
+      "fresh_run_bound_directory_required": true,
+      "band_files": [
+        "theme_graph.log",
+        "theme_graph.rc",
+        "theme_graph.sec",
+        "theme_graph_guard.log",
+        "theme_graph_guard.rc",
+        "theme_graph_guard.sec"
+      ],
+      "metadata_path": "data/theme_graph/_meta.json",
+      "retained_source_paths": [
+        "scripts/build_theme_graph.py",
+        "scripts/check_theme_graph_contracts.py",
+        "scripts/ci/daily_engine_regional_desk_builders.sh",
+        ".github/workflows/daily.yml"
+      ],
+      "graph_output_paths": [
+        "data/theme_graph/nodes.parquet",
+        "data/theme_graph/node_lifecycle.parquet",
+        "data/theme_graph/edges.parquet",
+        "data/theme_graph/evidence.parquet",
+        "data/theme_graph/capability.parquet",
+        "data/theme_graph/identity_resolution.parquet",
+        "data/theme_graph/probation/proposals.jsonl"
+      ],
+      "required_checks": [
+        "repository/run/attempt/event/job and witness-ID binding",
+        "event SHA and immutable workflow-definition commit/path/Git blob recorded separately from actual effective producer checkout",
+        "reviewed witness upload wiring proven in immutable workflow definition independently of checkout ancestry or checkout daily.yml hash",
+        "source hashes match selected canonical code and prerequisite source parity",
+        "all original/prerequisite ancestry rc0 and checkout ancestry to canonical publication",
+        "post-write final metadata computed_at and hash EXACT canonical published metadata",
+        "materialization clock separately recorded, never forced equal to final metadata clock",
+        "all seven output hashes EXACT same canonical data publication",
+        "native build/guard rc0 plus numeric sec and full retained warning/error-free logs",
+        "capture errors absent and retained files byte hashes validated"
+      ],
+      "capture_complete_is_acceptance": false,
+      "missing_incomplete_or_mismatched_archive": "UNKNOWN_OR_INCOMPLETE_NEVER_PASS"
+    },
+    "composition": {
+      "replacement_phase2_verdict": "NOT_ASSESSED",
+      "d2e": "HOLD_AWAITING_SELECTED_GENERATION_PROOF",
+      "gating_fail_blocks": true,
+      "missing_gating_proof_holds": true,
+      "independent_P3_required": true,
+      "independent_P3_receipt": null,
+      "principal_phase2_ruling": null,
+      "principal_phase2_ruling_at_utc": null,
+      "W3B": "HELD_UNTIL_PRINCIPAL_PHASE2_PASS",
+      "release_automatic": false
+    },
+    "non_goals": [
+      "No production or natural-workflow dispatch/rerun",
+      "No graph regeneration to create proof",
+      "No new state producer/store/queue/service/workflow/carrier",
+      "No historical ledger mutation",
+      "No E1 outcome look or performance experiment",
+      "No downstream scoring/trading/capability grant"
+    ],
+    "amendment_review_lineage": {
+      "pre_adoption_revision": "R6",
+      "prior_reviews": [
+        {
+          "revision": "R4",
+          "verdict": "PASS",
+          "reviewer": "gmi_dependency_audit",
+          "receipt_name": "independent_review_r4.json",
+          "sha256": "d2ca3707e269bd22e2404e29b06a77a288d22b2264a4945f18e9ba9c4b8b57e5",
+          "scope": "Changed-head ebd binding and C4/M1 actual facts; not final witness source release or adoption."
+        },
+        {
+          "revision": "R5",
+          "verdict": "PASS",
+          "reviewer": "gmi_dependency_audit",
+          "receipt_name": "independent_review_r5.json",
+          "sha256": "c9fa7849975e7ef97ce918e4eac9ccc44b231bbcad466dfa9875c22bd9ba6558",
+          "scope": "Source-only narrow conclusive no-execution clarification and inherited-law preservation; no actual run selected."
+        }
+      ],
+      "draft_clarification_receipt": {
+        "comment_id": 6070802215,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8540#issuecomment-6070802215",
+        "is_adoption": false
+      },
+      "final_review_binding": "External independent review must bind the frozen R6 artifact hashes and complete source/rules before formal adoption. A later control-only delta records that actual review and designated adoption comment; no self-referential hash is fabricated."
+    }
+  }
+}
