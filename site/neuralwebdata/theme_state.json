@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-10-09",
-  "generated_at": "2026-10-09T15:23:02Z",
+  "as_of": "2026-10-11",
+  "generated_at": "2026-10-11T05:14:55Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -39,7 +39,7 @@
           "basket_id": "ai_semiconductors",
           "name_en": "AI Semiconductors",
           "name_zh": "AI半导体",
-          "score": 65,
+          "score": 63,
           "label": "dominant",
           "label_en": "DOMINANT",
           "label_zh": "主导",
@@ -148,7 +148,7 @@
           "basket_id": "memory_storage",
           "name_en": "Memory, HBM & Storage",
           "name_zh": "内存、HBM 与存储",
-          "score": 40,
+          "score": 39,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -302,7 +302,7 @@
           "basket_id": "data_center_power",
           "name_en": "Data-Center Power & Cooling",
           "name_zh": "数据中心电力与散热",
-          "score": 50,
+          "score": 49,
           "label": "neutral",
           "label_en": "NEUTRAL",
           "label_zh": "中性",
@@ -396,7 +396,7 @@
           "basket_id": "nuclear_power",
           "name_en": "Nuclear & SMR Power",
           "name_zh": "核电与小型模块化反应堆",
-          "score": 36,
+          "score": 37,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -483,7 +483,7 @@
           "basket_id": "power_grid",
           "name_en": "Power & Grid Buildout",
           "name_zh": "电力与电网",
-          "score": 35,
+          "score": 36,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -622,7 +622,7 @@
           "basket_id": "defense",
           "name_en": "Defense & Aerospace",
           "name_zh": "国防与航空航天",
-          "score": 27,
+          "score": 26,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -685,7 +685,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 39.4,
+        "score": 38.8,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -788,7 +788,7 @@
       "foresight": {
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 38.9,
+        "score": 39.5,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -861,7 +861,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 45.0,
+        "score": 33.9,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -871,7 +871,7 @@
           "basket_id": "payments_fintech",
           "name_en": "Payments & Fintech",
           "name_zh": "支付与金融科技",
-          "score": 42,
+          "score": 43,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -1211,7 +1211,7 @@
       "foresight": {
         "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "score": 51.2,
+        "score": 48.8,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1221,7 +1221,7 @@
           "basket_id": "managed_care",
           "name_en": "Managed Care & Insurers",
           "name_zh": "管理式医疗与保险",
-          "score": 46,
+          "score": 42,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -1277,7 +1277,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 36.7,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1324,9 +1324,9 @@
       "name_en": "Solar",
       "name_zh": "太阳能",
       "foresight": {
-        "stage": "WATCH",
+        "stage": "GLUT-RISK",
         "tier": "P",
-        "score": 34.1,
+        "score": 40.0,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1355,7 +1355,14 @@
           }
         ]
       },
-      "divergence_board": null,
+      "divergence_board": {
+        "quadrant": "hidden-opportunity",
+        "divergence": -0.3824,
+        "narrative_pct": 0.2647,
+        "money_pct": 0.6471,
+        "asof": "2026-10-10",
+        "source": "data/foresight/divergence_log.jsonl"
+      },
       "basket_ids": [],
       "subsector_keys": [
         "Energy Renewable"
@@ -1369,6 +1376,7 @@
     "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
     "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-04)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-10-06)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[data_center_power]: stale (as_of=2026-09-26)"
   ],
@@ -1384,7 +1392,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-09T15:23:03Z",
-  "inputs_hash": "sha256:215b463222ac9ae7d7e62f533521a7987276ff6f473a6b1bdbdb8566124c88f6",
+  "produced_at": "2026-10-11T05:14:56Z",
+  "inputs_hash": "sha256:bd58535fc6fe41850a04c07f3693800057f68d6ed265c077b8ed69a05b6fedc5",
   "tier": "display"
 }

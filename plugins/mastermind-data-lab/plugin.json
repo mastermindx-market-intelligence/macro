@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "mastermind-data-lab",
+  "version": "0.1.0",
+  "description": "Discover Mastermind datasets, inspect source coverage, read bounded slices and run reviewed Lab recipes through the existing Studio Direct connection.",
+  "author": {
+    "name": "MastermindX"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Mastermind Data & Lab",
+        "shortDescription": "Our data and testing workspace",
+        "longDescription": "Use our existing Studio Direct connection to inspect stock, options, macro and research data with explicit coverage and provenance, and run bounded tests using the existing Lab. Requires Studio Direct selected in the session.",
+        "developerName": "MastermindX",
+        "category": "Productivity",
+        "capabilities": [
+          "Interactive"
+        ],
+        "defaultPrompt": "Find our options and stock data, show their coverage, and prepare a Lab test."
+      }
+    }
+  }
+}

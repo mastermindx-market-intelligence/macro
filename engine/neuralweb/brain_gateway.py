@@ -6661,6 +6661,21 @@ def _delta_sse(text: str, timing: dict | None = None, t0: float | None = None) -
 # Core chat loop (non-streaming)
 # ---------------------------------------------------------------------------
 
+def _thinking_only_token_limit(response: Any) -> bool:
+    """A completed call spent its budget on reasoning without text or tool blocks.
+
+    Refusals, partial answers, and unfinished tool calls do not qualify. The
+    incomplete reasoning/signature must not be replayed into the answer pass.
+    """
+    blocks = getattr(response, "content", None) or []
+    return (
+        getattr(response, "stop_reason", None) == "max_tokens"
+        and bool(blocks)
+        and all(getattr(block, "type", "") in {"thinking", "redacted_thinking"}
+                for block in blocks)
+    )
+
+
 def _run_brain_loop(
     message: str,
     lane: str,
@@ -6970,7 +6985,14 @@ def _run_brain_loop(
     # out with the model still mid-investigation (stop_reason == tool_use), the last
     # text block is narration ("Let me also check…"), not an answer. Nudge ONE final
     # no-more-tools synthesis turn so chat() returns a real answer.
-    if last_resp is not None and getattr(last_resp, "stop_reason", None) == "tool_use":
+    thinking_limited = _thinking_only_token_limit(last_resp)
+    recovery_usage = getattr(last_resp, "usage", None) if thinking_limited else None
+    if thinking_limited:
+        messages.pop()  # Keep completed reads, discard unfinished reasoning.
+        answer_text = ""  # Earlier tool-round narration is not a final answer.
+    if last_resp is not None and (
+        getattr(last_resp, "stop_reason", None) == "tool_use" or thinking_limited
+    ):
         _synth_t0 = time.monotonic()
         receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
         messages.append({
@@ -6981,9 +7003,9 @@ def _run_brain_loop(
             resp, model = _create_failover(
                 _cands,
                 per_model_kwargs=_pmk,
-                max_tokens=max_tokens,
+                max_tokens=max_tokens * 2 if thinking_limited else max_tokens,
                 system=system_param,
-                tools=tools_param,
+                tools=[] if thinking_limited else tools_param,
                 messages=messages,
             )
             last_resp = resp
@@ -7017,6 +7039,10 @@ def _run_brain_loop(
                 val = getattr(u, field, None)
                 if val is not None:
                     usage_dict[field] = val
+
+    if recovery_usage is not None and getattr(last_resp, "usage", None) is not recovery_usage:
+        for field in ("input_tokens", "output_tokens"):
+            usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
 
     # W5 Contract M: the turn's latency record rides the usage dict (see the docstring).
     _timing_stamp(timing, "total_ms", _lt0)
@@ -8064,7 +8090,15 @@ def _run_brain_loop_stream(
     usage_dict: dict = {}
     _synth_stop: str | None = None   # synthesis stop_reason, for the degraded-stub log
 
-    need_synthesis = last_stop == "tool_use"
+    thinking_limited = not _leak_tripped and _thinking_only_token_limit(resp)
+    recovery_usage = getattr(resp, "usage", None) if thinking_limited else None
+    if thinking_limited:
+        # ONE no-tool answer pass with bounded headroom, using the existing
+        # candidates, thinking policy, evidence receipt, and final screens.
+        messages.pop()
+        last_resp_content = []
+    need_synthesis = last_stop == "tool_use" or thinking_limited
+    synthesis_max_tokens = max_tokens * 2 if thinking_limited else max_tokens
     if need_synthesis:
         _synth_t0 = time.monotonic()
         receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
@@ -8092,7 +8126,7 @@ def _run_brain_loop_stream(
             try:
                 with _cl.messages.stream(
                     model=_p.get("model"),
-                    max_tokens=max_tokens,
+                    max_tokens=synthesis_max_tokens,
                     system=system_param,
                     # NO tools: synthesis must produce PROSE. With tools attached the model
                     # answers a tool-budget-exhausted turn with yet another tool_use, the
@@ -8211,6 +8245,12 @@ def _run_brain_loop_stream(
         except Exception:  # noqa: BLE001
             pass
 
+    if recovery_usage is not None:
+        # The additional pass must count its spent reasoning against the same
+        # existing token backstop, even when the recovery is empty too.
+        for field in ("input_tokens", "output_tokens"):
+            usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
+
     if need_synthesis and not full_answer.strip():
         # Every candidate came back empty — salvage any text the last tool round wrote
         # rather than degrading a turn whose tool work all succeeded.
@@ -8265,7 +8305,8 @@ def _run_brain_loop_stream(
             "phase=%s stop=%s input_tokens=%s output_tokens=%s max_tokens=%s)",
             lane, model, "synthesis" if need_synthesis else "tool-round",
             _synth_stop or last_stop,
-            usage_dict.get("input_tokens"), usage_dict.get("output_tokens"), max_tokens)
+            usage_dict.get("input_tokens"), usage_dict.get("output_tokens"),
+            synthesis_max_tokens if need_synthesis else max_tokens)
 
     # ── Contract S reconciliation ────────────────────────────────────────────────────
     # `_emitted` is exactly what the client holds. It is EMPTY on every non-streaming
