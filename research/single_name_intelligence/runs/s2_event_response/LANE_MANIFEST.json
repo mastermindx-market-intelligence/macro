@@ -1,0 +1,67 @@
+{
+  "lane": "s2_event_response",
+  "version": "v1",
+  "base_commit": "5ef7a7f39f99232bf9b574c7603da1011ee3af66",
+  "input_ref": "5ef7a7f39f99232bf9b574c7603da1011ee3af66",
+  "branch": "claude/sni-s2-event-response-20261011",
+  "labels": {
+    "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+    "identity_view": "RETROSPECTIVE_JOIN"
+  },
+  "authority_flags": {
+    "rank_authority": false,
+    "gate_authority": false,
+    "size_authority": false,
+    "signal_authority": false,
+    "escalation_authority": false,
+    "trade_authority": false
+  },
+  "families": [
+    "P04",
+    "P05",
+    "P06"
+  ],
+  "declared_budgets": {
+    "P04": 6,
+    "P05": 6,
+    "P06": 6
+  },
+  "itemized_grid_size": 12,
+  "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+  "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+  "info_leak": [
+    {
+      "protocol_id": "P04",
+      "split": "TUNE",
+      "contamination_class": "information_leak",
+      "detected_at": "2026-10-11T21:59:47+00:00",
+      "evidence": "series=close/close_price; first_offending_date=2026-06-11,2026-06-18; steps_above_tolerance={'BABA': 1, 'SPY': 2}; max_abs_step={'BABA': 0.009183968381, 'SPY': 0.002576235571}",
+      "successor": "P04 v2 — not drafted; owner = seat/S0",
+      "membership_sha256": "a3b15693e32d9d2f44e5e4a78f90bdfb3ac2afece84b5691be12e03685804ed6"
+    },
+    {
+      "protocol_id": "P05",
+      "split": "TUNE",
+      "state": "EMPTY — retirement not applicable",
+      "first_tune_anchor": null
+    },
+    {
+      "protocol_id": "P06",
+      "split": "TUNE",
+      "state": "EMPTY — retirement not applicable",
+      "first_tune_anchor": null
+    }
+  ],
+  "hk_series_vintage": "VINTAGE_UNVERIFIABLE (disclosed; not retired)",
+  "train_retirement": "TRAIN is never retired (SL §8 step 6)",
+  "census_only": [
+    "tencent issuer group (00700) — counted, listed, abstained, never graded",
+    "HK legs (9988, 0700) — never graded (V0 row 14)"
+  ],
+  "not_supported_in_s2": {
+    "P07": "NOT SUPPORTED in S2 (not commissioned)",
+    "P08": "NOT SUPPORTED in S2 (not commissioned)",
+    "P11": "NOT SUPPORTED in S2 (not commissioned)"
+  },
+  "evidence_command": "python3 research/single_name_intelligence/event_response/run_s2.py --input-ref 5ef7a7f39f99232bf9b574c7603da1011ee3af66 --out-dir research/single_name_intelligence/runs/s2_event_response --trial-ledger-path research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl"
+}

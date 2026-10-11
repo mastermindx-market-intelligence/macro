@@ -1,0 +1,801 @@
+{
+  "label": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+  "protocol_id": "P05",
+  "title": "EVT-CAPITAL (REG P05)",
+  "family": "capital_action",
+  "counting_clock": "MARKET_US",
+  "identity_view": "RETROSPECTIVE_JOIN",
+  "authority_flags": {
+    "rank_authority": false,
+    "gate_authority": false,
+    "size_authority": false,
+    "signal_authority": false,
+    "escalation_authority": false,
+    "trade_authority": false
+  },
+  "reg_canonical_family": "sni.s0.P05",
+  "honest_n_note": "honest-N counts the graded cohort (alibaba) only; census-only issuer episodes are listed in the manifests and never counted (V0 row 14)",
+  "splits": {
+    "TRAIN": {
+      "h5": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      },
+      "h21": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      },
+      "h63": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      }
+    },
+    "TUNE": {
+      "h5": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      },
+      "h21": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      },
+      "h63": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      }
+    },
+    "QUARANTINE": {
+      "h5": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      },
+      "h21": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      },
+      "h63": {
+        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "analysis_set": {
+          "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
+          "SENS_A": {
+            "honest_n": 0,
+            "cluster_n": 0
+          },
+          "SENS_B": {
+            "honest_n": 0,
+            "cluster_n": 0
+          }
+        },
+        "honest_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "cluster_n": {
+          "PRIMARY": 0,
+          "SENS_A": 0,
+          "SENS_B": 0
+        },
+        "literal_row_count": 7,
+        "visible_exclusions": {
+          "excluded_and_listed": [
+            "12295308,12295380,12300619"
+          ],
+          "excluded_and_listed_count": 1,
+          "confounded": 0,
+          "absorbed": 0,
+          "purged": 0,
+          "quarantine": 0
+        },
+        "test": "ABSTAIN_NO_EPISODES",
+        "ci": "CI NOT ESTIMABLE (cluster-N < 2)",
+        "trials": {
+          "literal_n": 12,
+          "effective_n": 12,
+          "declared_budget": 6,
+          "effective_n_label": "effective N (trials; TrialLedger.effective_n — never a sample N, IL §1)"
+        },
+        "receipt": {
+          "code_commit_sha": "inputs pinned at 5ef7a7f39f99232bf9b574c7603da1011ee3af66 (see seal INPUT_MANIFEST blob ids; the branch head is never stamped so byte-compares stay stable)",
+          "prereg_digest_sha256": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+          "seal_row": "research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the seat integrates)",
+          "trial_ledger_path": "research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl",
+          "prior_looks": "none for v1"
+        },
+        "family_row": {
+          "event_count": 0,
+          "distinct_calendar_clusters": 0,
+          "honest_n": 0,
+          "honest_n_sens_a": 0,
+          "honest_n_sens_b": 0,
+          "effective_n": 12,
+          "pooling_weight": "NOT ESTIMABLE",
+          "uncertainty": "CI NOT ESTIMABLE (cluster-N < 2)",
+          "abstention_state": "ABSTAIN_NO_EPISODES"
+        },
+        "baselines": {
+          "always_long": {
+            "label": "baseline (i) always-long (+1)",
+            "episodes": []
+          },
+          "trailing_63_excess_sign": {
+            "label": "baseline (ii) sign of the trailing-63-session excess at D(s)",
+            "episodes": []
+          },
+          "pooled_train_prior": {
+            "label": "baseline (iii) direction of the all-events pooled TRAIN prior",
+            "state": "NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)",
+            "episodes": []
+          },
+          "challenger_hierarchy": {
+            "label": "challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name)",
+            "state": "NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)",
+            "episodes": []
+          }
+        },
+        "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
+        "labels": {
+          "status": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+          "identity_view": "RETROSPECTIVE_JOIN"
+        }
+      }
+    },
+    "TEST": "none (prospective only; REG §2 registration gate not met)"
+  }
+}
