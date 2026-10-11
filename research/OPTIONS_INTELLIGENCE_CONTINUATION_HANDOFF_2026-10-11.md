@@ -243,8 +243,30 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 - D38 (18:40Z) V01 executed. Three commits instead of the commission's two (the qualification tests get their own commit
   because they are green before the fix), recorded as a deviation. Pushed at `3eadb841171d`; the Opus READ_ONLY exact-head audit
   was commissioned before any PR.
+- D39 (18:55Z) V01 audit judged REQUEST_REPAIR. The seat repaired it (owner of the worktree, L.7 still holds), with no second audit.
+  The seat re-ran each check. F1: corrected the runtime-effect wording in the PR body against `build_flow_surface.py:273,530-560,1389-1392`
+  and `options_scenario_surface.py:298-307`. F2: saved red evidence (`red_fullfile_at_51a12c8.txt`, 22 failed / 20 passed).
+  F3: e–h count corrected to 103 (`qual_eh_at_019c5cd.txt`). F4/F5: `kernel_applicability` refuses `10**400` (OverflowError) and
+  bool/np.bool_ as `unknown_economic_clock`. These are 3 table rows red at `f51bda96804f`, fixed at `479b16df2a7a`, with the gate now
+  351 passed (`gate_pytest_repair.txt`). F6: `options_payoff.py:11,47` stale line citations is a follow-up outside the owned files.
+  F7: comment reflowed. F8: informational. Macro PR #8851 opened at head `479b16df2a7a`, label `merge-on-green`, MERGEABLE.
+  The app PR monitor is bound. Its only red check, `ci-authority/codex/merge-queue-pilot`, is `inactive_base_context` with
+  `allowed: True, reason: ordinary_change`, and the same check is red on merged #8846/#8843/#8841. So it is the O-4/D22
+  by-design failure, not a defect. Macro `main` has no branch protection.
+- D40 (19:00Z) D16a DELIVERED at 18:45:40Z, head `9ff6c68a5a56`, pushed, 3 owned files. Judged by artifact, so far ACCEPT-pending.
+  The seat re-ran the 3-file gate (135 passed), then planted the base engine and observed T2, T3, T4 and T5 FAIL, then reverted
+  (worktree clean). The diff matches frozen rules 1–9, and there is no hunk at or below `_default_store_root`. The return's stated
+  deviations (second `_unmounted_volume` call; the script imports the private helper to name the volume) are accepted as
+  reasoned. The literal two-dot gate 4 is moot because the three-dot diff holds. Still open before the PR: the 29-file consumer
+  suite (running, b2zxmgms7) and one Opus READ_ONLY exact-head review (running). The review is specifically asked whether
+  `os.path.ismount` returning False on an lstat OSError (for example a TCC denial) turns a fail-open `_UNKNOWN` into a false
+  `_UNMOUNTED`.
+- D41 (18:50Z) U01 step 2 commission drafted at `leads/U01/step2_commission_DRAFT.md` and marked NOT ISSUABLE. Freeze checklist
+  F1–F6 runs only after Terminal #723 is MERGED: master SHA; #846 head still `eb57a683…`; Lab-heartbeat custody with a fenced
+  claim at launch; ort merge-tree conflicts; SSD worktree plus a baseline; launch via `launch_when_admitted`. O8 defect 7
+  (the flow cache ignores account identity) is still unassigned.
 
-## FACTS (observed this session, UTC 2026-10-11)
+## OPEN
 
 - macro #7861 OPEN non-draft, head `c095a2b0c8`, mergeState UNKNOWN, no review decision; checks:
   `ci-authority` pass, `ci-authority/main` pass, `ci-authority/codex/merge-queue-pilot` fail (0s);
@@ -412,9 +434,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 3. Then U01 step 2: #846 refresh under this account (cross-owner A01/A03 tests, Read<T>, optionsReadAccess,
    three-state copy, VolPayload, lockfile regen, O-11 items).
 4. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
-5. Judge the D16a return by artifact on its (re)launched task exit (bdofouo42 was never admitted; D34): diff limited to the three owned files and the resolver
-   region; T2/T3 shown failing before and passing after; gate suite 128+N passed; `scripts/` import check. On
-   ACCEPT the seat opens the Macro PR, adds `merge-on-green`, and reads CI once.
+5. D16a (D40): on the consumer suite b2zxmgms7 exit, a failure counts against D16a only if it is green on base `565d883c`.
+   On the Opus review, judge its findings. If both are clean, open the Macro PR from `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`,
+   add `merge-on-green`, and bind the PR monitor. Production proof is the next natural resolver call on m1 logging a resolved store, not NONE.
 6. Judge the OC return by artifact on its (re)launched task exit (bocvhjvo5 was never admitted; D34): positive controls reproduced; rerun `oc_sim.py --quick`
    and one full cell myself; no sentence selects a parameter. On ACCEPT persist as a Macro research PR.
 7. DONE through freeze (D35): O2/O3/O4 judged ACCEPT; V01/F01/M01 commissions frozen; worktrees ready.
@@ -430,13 +452,13 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(18:40Z snapshot.) Rows superseding older rows below:
+(19:00Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
 | U01 step 1B | RUNNING — admitted 18:20:45Z via bt8w3juhp (launch_when_admitted, fix_build, alarm 14400); grok operator live; artifacts dir named in `leads/U01/step1B_pool.log` |
-| D16a | RUNNING — admitted 18:30:50Z (load1 14.7) via bjtdrpkg9 (fix_build, alarm 7200); grok artifacts dir named in `leads/D16a/pool.log` |
-| V01 | DELIVERED by seat (D36/D38) — branch pushed at `3eadb841171d` (red `51a12c8b51d8`, qualification `019c5cdf4aa5`, fix `3eadb841171d`); gates: 348 passed, imports OK, diff = 2 owned files; 8/8 mutations killed; return `leads/V01/return.md`; Opus READ_ONLY audit RUNNING |
+| D16a | DELIVERED 18:45:40Z at `9ff6c68a5a56` (bjtdrpkg9 rc=0); seat re-ran the gate (135) and the base-engine negatives (T2–T5 FAIL); consumer suite b2zxmgms7 + Opus READ_ONLY review RUNNING (D40); PR after both |
+| V01 | CI — Macro PR #8851 at `479b16df2a7a` (audit REQUEST_REPAIR → seat repair `f51bda96804f` + `479b16df2a7a`, D39); gate 351 passed; `merge-on-green`; app PR monitor bound; pilot red = O-4 by design; production proof = first natural flow-surface cycle on m1 after merge |
 | OC | QUEUED → armed 18:36Z on bnwojs7jx (launch_when_admitted, build-bounded, alarm 12600, wait budget 10800 s); takes the next slot 1B or D16a frees (max_active 2) |
 | F01, M01 | QUEUED — commissions frozen |
 
@@ -620,3 +642,11 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   Qualification e–h is green at the unmodified kernel, and 8/8 planted mutations are killed by assertions. The fix makes the IV
   inversion refuse inside MIN_T and declares KERNEL_CONVENTIONS plus `kernel_applicability`. Gates: 348 passed, imports OK,
   diff limited to the 2 owned files. Pushed `3eadb841171d`; the Opus audit is pending, and the PR follows ACCEPT.
+
+### 2026-10-11 19:00Z — V01 repaired and at CI (#8851); D16a delivered and under review; D39–D41
+- V01: the Opus audit returned REQUEST_REPAIR (F1–F8); the seat repaired it at `f51bda96804f` + `479b16df2a7a`, and the gate is 351
+  passed. PR #8851 is labeled `merge-on-green`. The single red check is the by-design pilot context (O-4), confirmed red on three merged PRs.
+- D16a: delivered at `9ff6c68a5a56`. The seat reproduced gate 135 and observed the base-engine negatives (T2–T5 FAIL). The consumer
+  suite and the Opus review are running.
+- U01 step 2 drafted, not issuable until #723 merges (D41). 1B (bt8w3juhp) is still RUNNING. OC (bnwojs7jx) is waiting for load1 < 15
+  (load1 21 at 18:58Z).
