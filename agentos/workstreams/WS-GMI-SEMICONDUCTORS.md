@@ -46,7 +46,7 @@ waves:
       A session-local CI watcher was bound to that exact head on 2026-10-11; a successor
       verifies it is live (control_plane owns liveness) and otherwise binds exactly one.
       LANDING ORDER (binding, from #7870 comment 6105402719 line 18): Industrials #8250
-      (adjudicated 6105257496, repaired 6105272573, RED at 20e7e9ac on the curated-closure
+      (adjudicated 6105257496, rebuilt on e4bce058 as 20e7e9ac (6105272573), RED at 20e7e9ac on the curated-closure
       contract, repaired again at 1db9cad104437dc0c9bb4b27cf45781040302fb2 = merge of
       origin/main f191b7f1 plus a two-line path widening) lands on main FIRST;
       #7870 then merges main (the comment's "rebases afterward" is implemented as a merge of
@@ -141,7 +141,7 @@ waves:
       own release head with --external-effect-evidence-fingerprint = sha256 of #8250's recorded
       external-effect artifact (the ls-remote line plus the pulls/8250 head/state/draft read;
       da6a8c45d80757e2ef3eda821dd56e24db64149c92e8a6c6d3bb231846cc0c06 at 1db9cad1,
-      seat-only-checkable until the exact hashed bytes are posted), with the verifier source
+      seat-only-checkable until the exact hashed bytes are posted because 6106395498 paraphrases the ls-remote line and summarizes the pulls/8250 read), with the verifier source
       SHA recorded in the #8250 DECISION and its JSON quoted verbatim there, or a non-seat
       acceptance citing that #8250 comment by id and quoted in the #8250 release DECISION.
       The verifier checks the fingerprint only for shape (control_plane/source_continuity.py:26,

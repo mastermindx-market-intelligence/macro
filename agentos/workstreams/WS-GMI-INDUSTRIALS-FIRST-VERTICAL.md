@@ -70,9 +70,7 @@ next_action: >
   path widening (1db9cad104437dc0c9bb4b27cf45781040302fb2, pushed 2026-10-11, local closure
   check {} and the two curated-scope tests pass locally); it lands on main first per the #7870
   landing order (comment 6105402719 line 18) once, at 1db9cad1, four conditions are in hand:
-  (1) ALL_CONCLUDED green from the one bound watcher (in hand: 2026-10-11T06:24:44Z, 15 check
-  runs, the only failure ci-authority/codex/merge-queue-pilot, which is not a required check
-  on this repository and has been red on PRs that later merged, so it is not a gate); (2) the
+  (1) ALL_CONCLUDED green from the one bound watcher (in hand: 2026-10-11T06:24:44Z, 26 check runs (1 failure; 4 skipped; 21 success; 6106622707 line 26 wrote 15, corrected by readback 2026-10-11T07:39:39Z), the only failure ci-authority/codex/merge-queue-pilot, which is not a required check on this repository (readback 2026-10-11T07:39:39Z: GET repos/mastermindx-market-intelligence/macro/branches/main/protection/required_status_checks returned 'HTTP 404 Branch not protected' and GET repos/.../rules/branches/main returned rule types (empty list), so GitHub requires no check on main and merge readiness rests on the seat's own gates, not on branch protection) and has been red on PRs that later merged, so it is not a gate); (2) the
   non-author READ_ONLY review chain from Sol's reviewed head e4bce058 (REVIEW 5925055036,
   CONTINUE 5925110889 with REVIEW_REUSE_ALLOWED) to 1db9cad1 (in hand, two legs: the first
   candidate 20b853e2 was adjudicated REPAIR_REQUIRED by the READ_ONLY audit consumed in #8250
@@ -81,13 +79,13 @@ next_action: >
   in #8250 comment 6106622707 (6105272573 recorded NON_AUTHOR_READ: PENDING and carries no
   verdict; 6106622707 also corrects the gate-ledger line in 6106321419 that cited it as a
   manifest ACCEPT); 20e7e9ac..1db9cad1,
-  the merge commit 03d29dfe against each parent plus the two-line commit, returned
+  the merge commit 03d29dfe diffed against origin/main f191b7f1 only, the other side covered by the seat's tree-identity proof b94a9852 == 03d29dfe^{tree} that the reviewer did not re-run, plus the two-line commit, returned
   ACCEPT_REPAIR, consumed in #8250 comment 6106321419: scope PASS over exactly the 7 owned
   paths; the tip is the exact two-line widening of the closure lists of jobs nw-lobe-unfreeze
   (.github/ci/legacy-jobs.yml:10407, unquoted) and ticker-news-qbus (:21058, quoted), not of
   industrials-result-cash (:22605); 0 conflict markers and each def and table once in
   issuer_profiles.py; that comment supersedes the earlier 'twins at the Industrials job'
-  wording of comment 6106264920); (3) Source Continuity gate (4) applied to #8250 in its own
+  wording of comment 6106264920); Sol's CONTINUE 5925110889 grants REVIEW_REUSE_ALLOWED for the accepted product/identity semantics and names exactly one bounded CI-closure repair (the five paths: additions), while 1db9cad1 adds a merge of main plus a second closure repair that the reuse grant does not name, so that second repair's only non-author cover is 6106321419; and 5925055036 is PASS on product semantics with FINALIZATION_CLASSIFICATION REQUEST_REPAIR, which is why 6106622707 calls it REQUEST_REPAIR and 6105272573 and 6106321419 call it PASS; the release DECISION must state both points; (3) Source Continuity gate (4) applied to #8250 in its own
   terms (owed): the verifier run at #8250's own release head from protected Mastermind master
   at re-run time, with --external-effect-evidence-fingerprint = sha256 of #8250's recorded
   external-effect artifact (the git ls-remote line plus the pulls/8250 head/state/draft read;
@@ -109,7 +107,7 @@ next_action: >
   REMOTE_CENSUS_INCOMPLETE only, shown by the attribution test around an actual run at that
   head, the seat's own tightening posted in the addendum and recorded in WS:GMI-SEMICONDUCTORS
   gate (4); every other refusal code RELEASE_BLOCKED regardless; until one branch is in hand
-  #8250 is RELEASE_BLOCKED on gate (4) exactly as #7870 is, 6106134520 section 1(iii); the
+  #8250 is RELEASE_BLOCKED on gate (4) exactly as #7870 is, 6106134520 section 1(iii), with the block that continues after #8250's substitute was recorded stated in addendum 6106495383 section 3 (substitute recorded, not accepted) and section 5 (RELEASE: BLOCKED_PENDING_NON_SEAT_RULING for #7870 and #8250); the
   verifier has not been run on #8250 and would be expected to
   refuse at the census step, roster 634 > _MAX_COLLISION_PRS = 490 per GraphQL
   pullRequests(states:OPEN).totalCount at 2026-10-11T05:59:21Z, 633 at 06:17:20Z and 634 at
