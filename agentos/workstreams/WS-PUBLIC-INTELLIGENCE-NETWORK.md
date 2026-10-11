@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Protected controller refreshed PR8786 to b8a4805af5233872705d7ba8012294eeb98d1e37 after prior 90b5fe5 passed all21 binding checks. Consume CI38177181702 and the same protected landing path, then verify installation and browser routes. Recovery integration969b3028dfb135df290466e43536c53aeddc1c9d passes70 targeted retention tests. After landing, integrate the source-retention slice from fresh main and run the existing nonpromoting full audit. The public White House/NVIDIA candidate passes15 of17 document checks but still lacks D14 first-party evidence and admission.
+next_action: PR8786 was protected-refreshed to c0963f78021b1be45606be4c75ef2cd771470dc5 after b8a4805 passed all 21 binding checks. Consume CI38180707696 through the existing observer and protected controller, then verify installed source, served bytes and public browser routes. The separate recovery integration is fb07949277680cdc8c290dbaa68b741a03188627. Retention has 70 passing affected tests at integration969b3028; candidate remains 15/17 and unadmitted. The existing NVIDIA dossier now reaches the exact Terminal transcript with an authenticated account and existing watchlist entry, but a busy-sheet bug required manual dismissal and is under isolated repair. After landing, run the existing nonpromoting full audit and integrate the retention slice from fresh main.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
