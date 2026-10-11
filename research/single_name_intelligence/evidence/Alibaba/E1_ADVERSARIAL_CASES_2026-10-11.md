@@ -10,10 +10,10 @@ treated as data (A20); no instruction-like span was acted on (see A20 note at th
 
 | # | probe | verdict |
 |---|---|---|
-| P1 | mismatched denominator | **REFUSED** (pack-level A11 refusal; owners carry no canonical denominator) |
+| P1 | mismatched denominator | **owner-side SILENT_JOIN (bvps/eps embed uncarried share denominators) + pack REFUSED per A11** |
 | P2 | repeated report | **FLAGGED** in filings (distinct events preserved) / **SILENT_JOIN (structural)** in financials (single slot per period, no correction version) |
 | P3 | segment recast | **SILENT_JOIN (structural)** — owner has no segment dimension to recast |
-| P4 | late filing | **FLAGGED** — first-public timestamp preserved; no silent period attribution |
+| P4 | late filing | **FLAGGED** (first-public announced_at preserved; no backdating) AND **SILENT_JOIN** (structural: no period-end/filing-lag field; period only in title prose) |
 | P5 | unit scale / currency | **SILENT_JOIN** — the HKD-on-CNY currency defect passes unflagged |
 | P6 | duplicate languages / dual counters | **SILENT_JOIN** on the ticker column (counter folded) / **FLAGGED** at the raw stock_code field |
 | P7 | source correction | **FLAGGED** — corrections carried as explicit era/receipt rows; no silent rewrite |
@@ -35,8 +35,11 @@ treated as data (A20); no instruction-like span was acted on (see A20 note at th
 - Observed behaviour: no owner provides a canonical capital-structure version or the corporate
   actions it binds for Alibaba; per-share owner values (bvps, eps) embed unstated denominators
   from different vintages.
-- Verdict: **REFUSED** — every share-count/valuation denominator for Alibaba is refused by this
-  pack under A11; no denominator is derived, assumed or joined.
+- Verdict: **owner-side SILENT_JOIN (bvps/eps embed uncarried share denominators) + pack REFUSED
+  per A11** — the owner-side SILENT_JOIN is the defect finding (per-share values carry unstated
+  denominators from different vintages and no owner flags it); the pack side refuses: every
+  share-count/valuation denominator for Alibaba is refused under A11; no denominator is derived,
+  assumed or joined.
 
 ## P2 — Repeated report
 
@@ -88,9 +91,12 @@ treated as data (A20); no instruction-like span was acted on (see A20 note at th
   event by announcement date; it never folds a late announcement into the fiscal period it
   reports on, and it carries no expected-deadline field — lateness is therefore detectable
   downstream from owner fields alone, but is not flagged by the owner.
-- Verdict: **REFUSED/FLAGGED** — first-public preserved, no silent period misattribution; the
-  missing deadline field is recorded as a coverage limit (the pack does not infer one — that
-  would break the descriptor law).
+- Verdict: **FLAGGED (first-public announced_at preserved; no backdating) AND SILENT_JOIN
+  (structural: no period-end/filing-lag field; period only in title prose)** — first-public is
+  preserved and no period is silently attributed (FLAGGED), but the owner carries no
+  period-end/filing-lag field: the fiscal period appears only in the announcement's title prose,
+  so lateness is detectable downstream yet never owner-flagged (structural SILENT_JOIN). The
+  pack does not infer a deadline — that would break the descriptor law.
 - A07 cross-check: announced_at 2026-05-13 ≤ as-of 2026-10-11 for every row carried; no
   post-cutoff information was used in any then-known view.
 

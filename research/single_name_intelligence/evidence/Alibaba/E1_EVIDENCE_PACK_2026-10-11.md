@@ -38,7 +38,9 @@ Descriptors: (1) issuer subject, (2) reporting period, (3) known-at evidence, (4
   `issuer_id=='ISS:US-XNYS-BABA'`; `pd.read_parquet('data/reference/vendor_aliases.parquet')`
   → 5 Alibaba alias rows; `json.load(open('data/reference/_receipt.json'))`.
 - **C3** `from engine.theme_graph import identity_resolution as ir;
-  ir.read_identity_resolution()` (122 Alibaba rows = 61+61);
+  ir.read_identity_resolution(latest=False)` → history rows per node: `co:us:BABA` = 61,
+  `co:hk:9988.HK` = 61 (re-run 2026-10-11; the default `latest=True` call returns ONE row per
+  node — 2,807 rows store-wide — and is never cited for a history count);
   `ir.resolve_graph_node_identity('co:hk:9988.HK')`; `ir.resolve_graph_node_identity('co:us:BABA')`.
 - **C4** `from engine import hk_filing_bus as fb; fil = fb._load_filings()` (3,906 rows);
   `fb.classify_row(row.category, row.title)`; `fb.build_tape(fil, fb._load_placements(), window_days=3650)`.
@@ -46,12 +48,16 @@ Descriptors: (1) issuer subject, (2) reporting period, (3) known-at evidence, (4
   json.loads(fu[fu.ticker=='9988.HK'].iloc[-1]['payload'])`.
 - **C6** `pd.read_parquet('data/earnings/earnings.parquet').loc['BABA']`.
 - **C7** `pd.read_parquet('data/hk_stocks/9988.HK.parquet')`;
-  `pd.read_parquet('data/yahoo/BABA.parquet')`; `ls data/massive_stock_day | grep -ci baba` → 0.
+  `pd.read_parquet('data/yahoo/BABA.parquet')`; `ls data/massive_stock_day | grep -ci baba` → 0
+  (re-run 2026-10-11); `git rev-parse HEAD:data/massive_stock_day/_manifest.json` →
+  17e8338575a12e1ab80f988093a00cf08d8faf4a (re-run 2026-10-11).
 - **C8** `sb = pd.read_parquet('data/hk_southbound/holdings.parquet')` (MultiIndex date×ticker);
   `sb[sb.index.get_level_values(1)=='9988.HK']` (290 rows); level `89988.HK` → 0 rows.
 - **C9** `sp = pd.read_parquet('data/hk_shorts/positions.parquet')`; filter `stock_code==9988`
   (357 rows) and `stock_code==89988` (172 rows).
-- **C10** `pd.read_parquet('data/hk_placements/events.parquet')` filter `9988|89988` → 0 of 811.
+- **C10** `pd.read_parquet('data/hk_placements/events.parquet')` filter `9988|89988` → 0 of 811
+  (re-run 2026-10-11: columns news_id/stock_code/ticker/category/announced_at/date/title/subcats;
+  `date` 2026-03-05..2026-10-11, `announced_at` 2026-03-05 06:05:00..2026-10-11 18:25:00).
 - **C11** `pd.read_parquet('data/intraday_flow/ledger.parquet')`; ticker 'BABA' → 0 of 7,424.
 - **C12** `pd.read_parquet('data/finra/short_interest_history.parquet')` and
   `data/finra_short_volume/panel.parquet`; ticker 'BABA' → 0 and 0.
@@ -64,8 +70,14 @@ Descriptors: (1) issuer subject, (2) reporting period, (3) known-at evidence, (4
   `research_vault.catalog.v1` per `engine/research_vault/catalog.py` SCHEMA; generated field in
   file): 2,820 items; case-insensitive 'alibaba' name-pattern census → 24 items (pattern-census
   bound, not a subject-resolved link).
-- **C15** line scan of `data/qledger/claims.jsonl` (118,022 claims) for `scope.key=='BABA'`
-  → 163; for '9988'/'89988' → 0. Claim text/falsifier prose NOT copied (metadata only).
+- **C15** `json.loads` per line of `data/qledger/claims.jsonl` (118,022 claims):
+  `scope.key=='BABA'` → **159** (families us_importance_v0 78, us_importance_v0_pit 78, altdata 1,
+  altdata_event 1, altdata_mid 1); scope containing '9988'/'89988' → 0 and 0. A raw substring scan
+  for `"BABA"` hits 163 lines — the 4 extra lines are OTHER entities' claims that merely mention
+  BABA (claim ids 969905d24586619b scope BRO altdata_event; 4d48b1a649685a97 TTD altdata_event;
+  27c2a75f33a764fe LYB altdata_mid; 1a3f48a5e52b4f35 KVUE altdata_mid). The `scope.key` count
+  (159) is the evidence_rows value used everywhere. Claim text/falsifier prose NOT copied
+  (metadata only).
 - **C16** `pd.read_parquet('data/hk/HKD_X.parquet')` (6,419 rows);
   `json.load(open('data/forex/latest.json'))['pairs']['USDCNH']` (asof 2026-10-09);
   `pd.read_parquet('data/china/CNH_F.parquet')` (3,368 rows);
@@ -87,7 +99,7 @@ Descriptors: (1) issuer subject, (2) reporting period, (3) known-at evidence, (4
 Blob shas cited below are `git rev-parse HEAD:<path>` at `b79cd12239e5` (short form).
 
 Status totals (machine-readable twin: `E1_COVERAGE_REPORT_2026-10-11.json`):
-**9 OWNER_NATIVE · 19 PARTIAL · 1 REFUSED · 12 ABSENT · 13 NO_OWNER (54 cells).**
+**2 OWNER_NATIVE · 25 PARTIAL · 2 REFUSED · 12 ABSENT · 13 NO_OWNER (54 cells).**
 
 ---
 
@@ -102,9 +114,15 @@ security_state, superseded_by.
 
 | metric_id | status | issuer subject | period | known-at | unit/curr | dimensions | acct basis | source span | def version | correction/refusal |
 |---|---|---|---|---|---|---|---|---|---|---|
-| identity_listing.hkd_9988 | **OWNER_NATIVE** | `SEC:HK-XHKG-09988` (master row); `issuer_id` NULL, `issuer_state=NO_ISSUER_EVIDENCE` | `effective_at 2019-11-29` (row) | `ingested_at 2026-08-20T18:50:35` (row) + receipt `generated_at 2026-10-11T16:03:17` | n/a (type) — identity record; master schema has no currency column | country HK, mic XHKG, listing_key `HK-XHKG-09988`, inception_code 09988 | n/a (type) — reference record | security_master.parquet blob 85ef75104840, 1 row | seams `version: 1` + CN/HK admission contract `research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md` + receipt `code_version bb0830d8…` | issuer axis REFUSAL recorded by owner: `issuer_state=NO_ISSUER_EVIDENCE` (link to ISS:US-XNYS-BABA would be a mint; forbidden) |
+| identity_listing.hkd_9988 | **REFUSED** (`OWNER_REFUSED_NO_ISSUER_EVIDENCE`; missing: issuer_subject) | MISSING — security row `SEC:HK-XHKG-09988` exists, but the owner itself records the issuer link `issuer_state=NO_ISSUER_EVIDENCE`, `issuer_id` NULL (SECURITY_ROW_EXISTS_ISSUER_LINK_NO_ISSUER_EVIDENCE) | `effective_at 2019-11-29` (row) | `ingested_at 2026-08-20T18:50:35` (row) + receipt `generated_at 2026-10-11T16:03:17` | n/a (type) — identity record; master schema has no currency column | country HK, mic XHKG, listing_key `HK-XHKG-09988`, inception_code 09988 | n/a (type) — reference record | security_master.parquet blob 85ef75104840, 1 row | seams `version: 1` + CN/HK admission contract `research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md` + receipt `code_version bb0830d8…` | issuer axis REFUSAL recorded by owner: `issuer_state=NO_ISSUER_EVIDENCE` (link to ISS:US-XNYS-BABA would be a mint; forbidden) |
 | identity_listing.rmb_89988 | **NO_OWNER** | — (no row exists; counter must stay unresolved) | — | — | — | — | — | security_master.parquet blob 85ef75104840, query C1 → 0 rows | — | would-be owner: Data OS CN/HK admission — `scripts/build_security_master.py` under a counter seam in `config/identity_seams.yml` (per profile would_be_owner). NO id constructed here |
 | identity_listing.adr_baba | **OWNER_NATIVE** | `SEC:US-XNYS-BABA` → issuer `ISS:US-XNYS-BABA` RESOLVED, `issuer_cik 0001577552`, legal_name "Alibaba Group Holding Ltd" | `effective_at 2026-08-21` (security row); issuer era snapshot 2026-08-18 | `ingested_at 2026-08-21T10:17:27` (row) + receipt `generated_at 2026-10-11T16:03:17` | n/a (type) — identity record | country US, mic XNYS; vendor aliases membership/store/yahoo/yahoo_fetch × BABA; issuer `n_securities 1`, `status active` | n/a (type) | security_master 85ef75104840 + issuer_master 6643e7eae379 + vendor_aliases 6406d5bffa3e | issuer era `issuer_semantic_correction_v1` (issuer_master `era` field; seams yml:71,316) + seams `version: 1` | correction ledger queried: `issuer_migrations.parquet` (ddef55b56231, 3 rows) and `security_migrations.parquet` (b2aae9179179, 1 row) → 0 Alibaba rows (no pending correction); the issuer id itself exists via the recorded semantic-correction era, `evidence_source sec_company_tickers` |
+
+Coordinator ruling (review F6 disposition): identity_listing.hkd_9988 stays **REFUSED** — the
+commission requires the E0 fact "HK counters are NO_ISSUER_EVIDENCE" to appear as a REFUSED /
+NO_OWNER row, and the owner-recorded `NO_ISSUER_EVIDENCE` is the owner's refusal of exactly this
+metric's issuer–security link; the reviewer's descriptor reading (only `issuer_subject` missing)
+is adopted.
 
 Sample rows (exact, from C1/C2): SEC:HK-XHKG-09988 / issuer NULL / NO_ISSUER_EVIDENCE /
 HK / XHKG / 09988 / effective 2019-11-29 / ingested 2026-08-20 18:50:35. SEC:US-XNYS-BABA /
@@ -115,8 +133,8 @@ ISS:US-XNYS-BABA / RESOLVED / 0001577552 / snapshot 2026-08-18 / US / XNYS / BAB
 
 | metric_id | status | issuer subject | period | known-at | unit/curr | dimensions | acct basis | source span | def version | correction/refusal |
 |---|---|---|---|---|---|---|---|---|---|---|
-| filings_announcements.hkd_9988 | **OWNER_NATIVE** | row `ticker 9988.HK`, `stock_code "09988<br/>89988"` (as recorded) | `date` = announcement date (e.g. 2026-08-24) | `announced_at` = HKEX release timestamp (e.g. 2026-08-24 06:04:00) — first-public, owner field | n/a (type) — headline metadata | news_id, category, subcats, title; classified category + dilution_flag/buyback_flag from `classify_row` | n/a (type) | data/hk_filings/events.parquet blob be30a5bc5ecb (3,906 rows, 2026-04-13..2026-10-11) + coverage.json 98aedf7d9b2f (`fetched_at 2026-10-11T14:17:08Z`) | category taxonomy defined in committed owner code `engine/hk_filing_bus.py` (e3aced460bb8) `classify_row`; store receipt coverage.json | store window starts 2026-04-13 (no earlier history); headlines only, no full text; rights UNVERIFIED (per profile). All four rows carry `dilution_flag=True` where applicable (placing rows) |
-| filings_announcements.rmb_89988 | **OWNER_NATIVE** | subject recorded by owner AS the counter string inside `stock_code "09988<br/>89988"` (both counters in one announcement); note: the `ticker` column folds to `9988.HK` only — see adversarial probe P6 | same 4 rows: 2026-05-13, 2026-08-23, 2026-08-24, 2026-08-26 | `announced_at` (same field) | n/a (type) | news_id/category/subcats as above | n/a (type) | same blob be30a5bc5ecb, the 4 rows whose stock_code names 89988 | same classifier code | no security_id exists for this counter — subject is the raw counter code the owner itself records, NOT a minted id; join to the identity axis remains impossible (would-be owner: CN/HK admission, per profile) |
+| filings_announcements.hkd_9988 | **PARTIAL** (missing: issuer_subject, reporting_period, definition_version, correction_refusal_state) | MISSING — rows keyed by raw `ticker 9988.HK` / `stock_code "09988<br/>89988"` (as recorded); the owner records issuer evidence NO_ISSUER_EVIDENCE for 09988 and no security_id exists for 89988 (RAW_STOCK_CODE_KEY_NO_ISSUER_EVIDENCE) | MISSING — owner carries announcement `date` (e.g. 2026-08-24) only; no reporting-period field | `announced_at` = HKEX release timestamp (e.g. 2026-08-24 06:04:00) — first-public, owner field | n/a (type) — headline metadata | news_id, category, subcats, title; classified category + dilution_flag/buyback_flag from `classify_row` | n/a (type) | data/hk_filings/events.parquet blob be30a5bc5ecb (3,906 rows, 2026-04-13..2026-10-11) + coverage.json 98aedf7d9b2f (`fetched_at 2026-10-11T14:17:08Z`) | MISSING — category taxonomy in committed owner code `engine/hk_filing_bus.py` (e3aced460bb8) `classify_row` carries no version constant | MISSING — the store has no correction/retraction field; the store-window note (starts 2026-04-13, no earlier history) is coverage text, NOT a correction state; headlines only, no full text; rights UNVERIFIED (per profile). All four rows carry `dilution_flag=True` where applicable (placing rows) |
+| filings_announcements.rmb_89988 | **PARTIAL** (missing: issuer_subject, reporting_period, definition_version, correction_refusal_state) | MISSING — subject appears only as the counter string inside `stock_code "09988<br/>89988"` (both counters in one announcement); no security_id exists for 89988 (ROW_STOCK_CODE_LISTS_89988_NO_SECURITY_ID); the `ticker` column folds to `9988.HK` only — see adversarial probe P6 | MISSING — same 4 rows: 2026-05-13, 2026-08-23, 2026-08-24, 2026-08-26; no reporting-period field | `announced_at` (same field) | n/a (type) | news_id/category/subcats as above | n/a (type) | same blob be30a5bc5ecb, the 4 rows whose stock_code names 89988 | MISSING — same versionless classifier code | MISSING — same: no correction/retraction field. The raw counter code is carried as the owner itself records it, NOT a minted id; join to the identity axis remains impossible (would-be owner: CN/HK admission, per profile) |
 | filings_announcements.adr_baba | **ABSENT** | — | — | — | — | — | — | discovery.parquet 688e781e91b0 + event_versions.parquet 52446066643d + public_summary.json 36bd01cec2eb, query C13 → 0 | — | exact queries recorded (C13): CIK 1577552 / ticker BABA → 0 rows in both stores; FIF public_summary/v1 (1,492 companies) has no Alibaba key; `data/fundamental_forensics/companyfacts/` absent. Would-be owner: `engine/fundamental_forensics/broad_sec_store.py` (c38ee45ad68a) universe with 20-F filer admission. DEC:FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED noted |
 
 Sample rows (exact, from C4 — the 4 events for this issuer in the store):
@@ -131,7 +149,7 @@ general_mandate 777 / shareholder 132 / buyback 27.
 
 | metric_id | status | issuer subject | period | known-at | unit/curr | dimensions | acct basis | source span | def version | correction/refusal |
 |---|---|---|---|---|---|---|---|---|---|---|
-| financials.hkd_9988 | **PARTIAL** (missing: known_at_evidence, accounting_basis, definition_version) | payload `ticker "9988.HK"`; profile.name_full 阿里巴巴集团控股有限公司 | `fy` 2020..2026 (fiscal-year label; fy-end convention undeclared by owner — profile: "fiscal year ends March; fy label convention undeclared") | **MISSING** — no first-public/publication field; only collector snapshot column `asof = 2026-06-18` (observation, not publication) | `currency "HKD"` recorded per line — **defective label**: collector header `collectors/hk_fundamentals.py:19-21` (3895bcd52d21) states many HK names report in CNY while price/target are HKD; defect carried, never relabelled (probe P5) | line keys revenue, ni, gross_profit, eps, eps_diluted, bvps + ratio fields; profile block (industry, employees 126,661); separate forecast block (n_analysts/target levels/buy-hold-sell) — **forecast values NOT carried here (out of scope)** | **MISSING** — no GAAP/IFRS/non-GAAP marker anywhere in payload | data/hk_fundamentals/fundamentals.parquet blob b4d4806e1ed9, 1 payload row (7 financial lines) | **MISSING** — no schema/version field in payload | currency defect recorded (above); ratios deliberately not computed by collector for PE/PB for this reason; third-party consensus forecast block present = display/qualification fact only |
+| financials.hkd_9988 | **PARTIAL** (missing: issuer_subject, known_at_evidence, unit_currency, accounting_basis, source_span, definition_version, correction_refusal_state) | MISSING — payload keyed by raw ticker `9988.HK`; owner-recorded issuer link NO_ISSUER_EVIDENCE (RAW_TICKER_KEY_NO_ISSUER_EVIDENCE); payload `profile.name_full` 阿里巴巴集团控股有限公司 stays as recorded | `fy` 2020..2026 (fiscal-year label; fy-end convention undeclared by owner — profile: "fiscal year ends March; fy label convention undeclared") | **MISSING** — no first-public/publication field; only collector snapshot column `asof = 2026-06-18` (observation, not publication) | **MISSING** — `currency "HKD"` recorded per line but **defective**: collector header `collectors/hk_fundamentals.py:19-21` (3895bcd52d21) states many HK names report in CNY while price/target are HKD; descriptor missing with note CURRENCY_DEFECT_HKD_LABEL_ON_RMB_REPORTED_FINANCIALS; defect carried, never relabelled (probe P5) | line keys revenue, ni, gross_profit, eps, eps_diluted, bvps + ratio fields; profile block (industry, employees 126,661); separate forecast block (n_analysts/target levels/buy-hold-sell) — **forecast values NOT carried here (out of scope)** | **MISSING** — no GAAP/IFRS/non-GAAP marker anywhere in payload | **MISSING** — vendor payload carries no filing span (VENDOR_PAYLOAD_NO_FILING_SPAN); artifact citation: data/hk_fundamentals/fundamentals.parquet blob b4d4806e1ed9, 1 payload row (7 financial lines) | **MISSING** — no schema/version field in payload | **MISSING** — correction state records the currency defect: vendor label `HKD` on reported financials the collector itself notes are reported in CNY; values stay verbatim, never relabelled or converted; ratios deliberately not computed by collector for PE/PB for this reason; third-party consensus forecast block present = display/qualification fact only |
 | financials.rmb_89988 | **NO_OWNER** | — | — | — | — | — | — | same blob b4d4806e1ed9; snapshot exists only under ticker `9988.HK` | — | issuer-level family reachable from this counter only through an issuer link that does not exist; would-be owner: Data OS issuer axis (`scripts/build_security_master.py` apply_issuer_correction under a new issuer-evidence era), per profile |
 | financials.adr_baba | **ABSENT** | — | — | — | — | — | — | query C13 → 0 metric rows in every FIF / capital_structure artifact | — | would-be owner: `engine/fundamental_forensics/sec_companyfacts.py` with 20-F filer admission. A11 note: any share-count/valuation denominator for Alibaba is REFUSED by this pack — no canonical capital-structure version exists (probe P1) |
 
@@ -144,8 +162,8 @@ queried as a control and is ALSO labeled "HKD" — the defect is store-wide, not
 
 | metric_id | status | issuer subject | period | known-at | unit/curr | dimensions | acct basis | source span | def version | correction/refusal |
 |---|---|---|---|---|---|---|---|---|---|---|
-| company_events_earnings_calendar.hkd_9988 | **OWNER_NATIVE** | ticker `9988.HK`, stock_code `09988<br/>89988` | announcement date 2026-05-13 (FY2026 annual + March-quarter results) | `announced_at 2026-05-13 17:30:00` (HKEX release) | n/a (type) | news_id 12157537, category final_results (classifier: `results`), subcats "[Quarterly Results / Final Results / Dividend or Distribution]" | n/a (type) | events.parquet be30a5bc5ecb, 1 results-category row of 4 store events | classifier code e3aced460bb8 | realized events only — **no forward scheduled-date owner for HK names** (engine/hk_event_calendar.py / hk_catalyst_calendar.py are macro/index-level, per profile); response windows can only be anchored after the fact |
-| company_events_earnings_calendar.rmb_89988 | **OWNER_NATIVE** | same single results announcement; owner records the counter in `stock_code "09988<br/>89988"` | 2026-05-13 | `announced_at 2026-05-13 17:30:00` | n/a (type) | same news_id/category | n/a (type) | same blob/row | same classifier | same realized-only limit; ticker column folds to 9988.HK (probe P6); no counter id minted |
+| company_events_earnings_calendar.hkd_9988 | **PARTIAL** (missing: issuer_subject, reporting_period, definition_version, correction_refusal_state) | MISSING — ticker `9988.HK`, stock_code `09988<br/>89988` raw codes; owner-recorded issuer link NO_ISSUER_EVIDENCE (RAW_STOCK_CODE_KEY_NO_ISSUER_EVIDENCE) | MISSING — owner carries the announcement date 2026-05-13 (FY2026 annual + March-quarter results, per the row's own title prose), no reporting-period field | `announced_at 2026-05-13 17:30:00` (HKEX release) | n/a (type) | news_id 12157537, category final_results (classifier: `results`), subcats "[Quarterly Results / Final Results / Dividend or Distribution]" | n/a (type) | events.parquet be30a5bc5ecb, 1 results-category row of 4 store events | MISSING — classifier code e3aced460bb8 carries no version constant | MISSING — no correction/retraction field. Realized events only — **no forward scheduled-date owner for HK names** (engine/hk_event_calendar.py / hk_catalyst_calendar.py are macro/index-level, per profile); response windows can only be anchored after the fact |
+| company_events_earnings_calendar.rmb_89988 | **PARTIAL** (missing: issuer_subject, reporting_period, definition_version, correction_refusal_state) | MISSING — same single results announcement; owner records the counter in `stock_code "09988<br/>89988"`; no security_id exists for 89988 (ROW_STOCK_CODE_LISTS_89988_NO_SECURITY_ID) | MISSING — same announcement date, no reporting-period field | `announced_at 2026-05-13 17:30:00` | n/a (type) | same news_id/category | n/a (type) | same blob/row | MISSING — same versionless classifier | MISSING — same: no correction/retraction field; realized-only limit stands; ticker column folds to 9988.HK (probe P6); no counter id minted |
 | company_events_earnings_calendar.adr_baba | **PARTIAL** (missing: definition_version) | index key `ticker == 'BABA'` | `next_date 2026-08-20` (+ `next_time "time-pre-market"`) | `as_of 2026-09-30T03:23:30Z` + `surprises_as_of 2026-08-13T02:58:10Z` (both owner fields) | n/a (type) — date field | next_date/next_time; eps_forecast and surprises fields exist in the row but their values are NOT carried here (forecast/consensus = out of scope) | n/a (type) | data/earnings/earnings.parquet blob 8f0575464ba0, 1 row (2,315 total) | **MISSING** — no schema/version field; collector contract `collectors/equity_earnings.py` (3cf263cdc561:16-19) documents ticker-indexed columns and that dates "are estimated and can move; community/Nasdaq-sourced, not official" | owner fields show the row is STALE: next_date 2026-08-20 already past at as_of 2026-09-30 (the next-report row was not rolled after the 2026-08-20 report) |
 
 ## market_data_daily — DAILY BARS
@@ -175,7 +193,8 @@ volume 271879400.0.
 
 | metric_id | status | evidence + refusal state |
 |---|---|---|
-| corporate_actions_adjustment.hkd_9988 | **ABSENT** | owners queried, no explicit action rows: `data/hk_placements/events.parquet` (d3d63e03a478, 811 rows 2026-03-05..2026-10-09) → 0 rows for this counter — the collector keys on the 'placing' headline category and missed the 9988 HK$80bn placing that HKEXnews filed under general_mandate (profile + verified here); no dividend/split rows in any HK store; adjustment factors not stored (implicit in `auto_adjust=True`). Would-be: an explicit HK corporate-action ledger |
+| corporate_actions_adjustment.hkd_9988 | **ABSENT** | owners queried, no explicit action rows: `data/hk_placements/events.parquet` (d3d63e03a478, 811 rows; re-run 2026-10-11: `date`
+2026-03-05..2026-10-11, `announced_at` 2026-03-05 06:05:00..2026-10-11 18:25:00) → 0 rows for this counter — the collector keys on the 'placing' headline category and missed the 9988 HK$80bn placing that HKEXnews filed under general_mandate (profile + verified here); no dividend/split rows in any HK store; adjustment factors not stored (implicit in `auto_adjust=True`). Would-be: an explicit HK corporate-action ledger |
 | corporate_actions_adjustment.rmb_89988 | **NO_OWNER** | no corporate-action or adjustment ledger for the RMB counter (no prices to adjust); would-be `collectors/hk_stock_prices.py` + counter security_id |
 | corporate_actions_adjustment.adr_baba | **PARTIAL** (missing: known_at_evidence, definition_version) | cumulative dividend factor derivable from two owner-recorded columns as `close/close_price` (derivation documented in collector W1.3); sample from C7: first row 88.35541534423828/93.88999938964844 = 0.941064…, last row 111.37000274658203/111.37000274658203 = 1.0; NO explicit corporate-action rows; `data/capital_structure` has 0 BABA rows (C13); ADS-ratio changes carried by no owner (profile). Factor rows are a derivation from owner columns, never an owner row — hence PARTIAL |
 
@@ -183,15 +202,15 @@ volume 271879400.0.
 
 | metric_id | status | evidence |
 |---|---|---|
-| sessions_calendar.hkd_9988 | **PARTIAL** (missing: known_at_evidence) | `lib/hk_calendar.py` (5ffb5af43465) rule arithmetic + annual HKEX notices: is_session(2026-10-09)=True, is_session(2026-10-01)=False (holiday), sessions_between(2026-09-01, 2026-10-09)=27, holidays(2026) n=14. Period = queried date (call argument); clock "session date in HKT; 17:30 HKT regular expectation, 13:30 half-day" (owner docstring/profile). No per-rule first-known date is recorded → known-at missing |
-| sessions_calendar.rmb_89988 | **PARTIAL** (missing: known_at_evidence) | same session calendar serves both HK counters (profile note); same three probe results |
-| sessions_calendar.adr_baba | **PARTIAL** (missing: known_at_evidence) | `lib/nyse_calendar.py` (0ece6439ffe4): is_session(2026-10-09)=True, is_session(2026-10-10)=False, sessions_between(2026-09-01, 2026-10-9)=28, holidays(2026) n=10; clock America/New_York; BABA close precedes next HK open (temporal-law fact, profile) |
+| sessions_calendar.hkd_9988 | **PARTIAL** (missing: known_at_evidence, definition_version) | `lib/hk_calendar.py` (5ffb5af43465) rule arithmetic + annual HKEX notices: is_session(2026-10-09)=True, is_session(2026-10-01)=False (holiday), sessions_between(2026-09-01, 2026-10-09)=27, holidays(2026) n=14. Period = queried date (call argument); clock "session date in HKT; 17:30 HKT regular expectation, 13:30 half-day" (owner docstring/profile). known_at_evidence MISSING (HOLIDAY_RULES_IN_CODE_NO_PUBLICATION_KNOWN_AT) — no per-rule first-known date is recorded. definition_version MISSING (NO_VERSION_CONSTANT_IN_OWNER_MODULE) — `grep -in version lib/nyse_calendar.py lib/hk_calendar.py` returns no line (re-run 2026-10-11): the calendars are versionless rule code; a git blob sha is not an owner-declared version |
+| sessions_calendar.rmb_89988 | **PARTIAL** (missing: known_at_evidence, definition_version) | same session calendar serves both HK counters (profile note); same three probe results; same known_at_evidence and definition_version gaps with the same notes |
+| sessions_calendar.adr_baba | **PARTIAL** (missing: known_at_evidence, definition_version) | `lib/nyse_calendar.py` (0ece6439ffe4): is_session(2026-10-09)=True, is_session(2026-10-10)=False, sessions_between(2026-09-01, 2026-10-9)=28, holidays(2026) n=10; clock America/New_York; BABA close precedes next HK open (temporal-law fact, profile). known_at_evidence and definition_version MISSING with the same notes as the HK calendar rows (no publication known-at; no version constant in the owner module) |
 
 ## southbound_holdings — SOUTHBOUND HOLDINGS
 
 | metric_id | status | evidence |
 |---|---|---|
-| southbound_holdings.hkd_9988 | **PARTIAL** (missing: known_at_evidence, unit_currency) | 290 rows, index (date, ticker) 2024-09-19..2026-10-09; subject recorded as ticker `9988.HK` + name 阿里巴巴-W; period = holding date T (index); values exact from C8: 2024-09-19 own_pct 1.03, hold_shares 199783605.0, hold_mktcap 17121454948.5, close 85.7; 2026-10-09 own_pct 9.97, hold_shares 1986384146.0, hold_mktcap 212543103622.0, close 107.0; 2026-10-08 own_pct 9.97, close 104.3. unit: own_pct % and hold_shares are column-declared; hold_mktcap/close carry no currency declaration → unit/currency missing. Correction state: values are price-contaminated (profile note); source is a third-party Eastmoney mirror, rights UNVERIFIED; first-party CCASS BLOCKED-licence per 08-28 matrix |
+| southbound_holdings.hkd_9988 | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version, correction_refusal_state) | 290 rows, index (date, ticker) 2024-09-19..2026-10-09; subject recorded as ticker `9988.HK` + name 阿里巴巴-W; period = holding date T (index); values exact from C8: 2024-09-19 hold_shares 199783605.0, hold_mktcap 17121454948.5, close 85.7; 2026-10-09 hold_shares 1986384146.0, hold_mktcap 212543103622.0, close 107.0; 2026-10-08 close 104.3. **own_pct on any date: A11-REFUSED as a denominator-bearing value — HKEX-reported issued-share denominator, no canonical capital-structure version** (definition_version MISSING, OWN_PCT_DENOMINATOR_UNVERSIONED; the latest-row own_pct is therefore not shown as a number; hold_shares stays a sample value). unit: hold_shares are column-declared; hold_mktcap/close carry no currency declaration → unit/currency missing. known_at_evidence MISSING (holding date is a position date; no publication field). correction/refusal MISSING as an owner descriptor — values are price-contaminated (profile note), source is a third-party Eastmoney mirror, rights UNVERIFIED; first-party CCASS BLOCKED-licence per 08-28 matrix |
 | southbound_holdings.rmb_89988 | **NO_OWNER** | C8: index level `89988.HK` → 0 rows; the store keys (date, ticker) and cannot key the RMB counter at all; no artifact establishes RMB-counter Southbound eligibility (hk_connect_roster 3a2affa41b0c has 0 rows for 89988 — a missing change row is not an eligibility verdict). Would-be owner: collectors/hk_southbound_holdings.py after a counter security_id exists |
 | southbound_holdings.adr_baba | **REFUSED** (`NOT_APPLICABLE_PER_PROFILE`) | profile cell `applicable: false` — a US ADS is not a Southbound security; typed absence, no value |
 
@@ -199,8 +218,8 @@ volume 271879400.0.
 
 | metric_id | status | evidence |
 |---|---|---|
-| short_positions.hkd_9988 | **PARTIAL** (missing: known_at_evidence) | 357 weekly rows 2019-11-29..2026-10-02; subject recorded: stock_code 9988, ticker 9988.HK, stock_name "BABA-W"; period = position date; units column-declared (shorted_shares shares; value_hkd HKD); source SFC aggregated reportable short positions (official, verified-internal rights). Known-at: SFC publication lag is NOT carried as a field (profile + verified schema: only date/stock_code/ticker/stock_name/shorted_shares/value_hkd) → missing. Samples (C9, exact): 2026-10-02 shorted_shares 186521267, value_hkd 19472820275; 2026-09-25 shorted_shares 206803687, value_hkd 22417519671 |
-| short_positions.rmb_89988 | **PARTIAL** (missing: known_at_evidence) | 172 weekly rows 2023-06-23..2026-10-02 keyed NATIVELY by the counter: stock_code 89988, ticker 89988.HK, stock_name "BABA-WR" (owner distinguishes the counters by name here). Samples: 2026-10-02 shorted_shares 111000, value_hkd 11428560. Correction state: counter has no security_id (rows are keyed by raw code, no id minted); `value_hkd` is HKD even for the RMB counter — explicit in the column name, carried as recorded |
+| short_positions.hkd_9988 | **PARTIAL** (missing: known_at_evidence, definition_version, correction_refusal_state) | 357 weekly rows 2019-11-29..2026-10-02; subject recorded: stock_code 9988, ticker 9988.HK, stock_name "BABA-W"; period = position date; units column-declared (shorted_shares shares; value_hkd HKD); source SFC aggregated reportable short positions (official, verified-internal rights). known_at_evidence MISSING: SFC publication lag is NOT carried as a field (profile + schema re-run 2026-10-11: columns date/stock_code/ticker/stock_name/shorted_shares/value_hkd only). definition_version MISSING — no schema/version field in the store. correction/refusal MISSING — no correction/retraction field. Samples (C9, exact): 2026-10-02 shorted_shares 186521267, value_hkd 19472820275; 2026-09-25 shorted_shares 206803687, value_hkd 22417519671 |
+| short_positions.rmb_89988 | **PARTIAL** (missing: issuer_subject, known_at_evidence, unit_currency, definition_version, correction_refusal_state) | 172 weekly rows 2023-06-23..2026-10-02 keyed NATIVELY by the counter: stock_code 89988, ticker 89988.HK, stock_name "BABA-WR" (owner distinguishes the counters by name here). issuer_subject MISSING — rows are keyed by the raw code and the counter has no security id (NO_SECURITY_ID_FOR_89988; none minted). Samples: 2026-10-02 shorted_shares 111000, value_hkd 11428560. unit_currency MISSING — the value column's exact name is `value_hkd` (re-run 2026-10-11): the column name carries HKD, but the owner records no convention for what currency the RMB counter's value column reports beyond that name (VALUE_COLUMN_CURRENCY_CONVENTION_FOR_RMB_COUNTER_NOT_RECORDED); carried as recorded. known_at_evidence MISSING (publication lag not a field); definition_version MISSING — no schema/version field; correction/refusal MISSING — no correction/retraction field |
 | short_positions.adr_baba | **ABSENT** | owners exist and were queried: FINRA short_interest_history (5,990-de4fa81f blob 5990de4fa81f, 9,129 rows) and finra_short_volume panel (cdc95d8bca55, 137,047 rows) → 0 BABA rows each; universe excludes BABA (profile). Would-be owner: collectors/finra.py universe |
 
 ## adr_h_basis — ADR/H BASIS (diagnostic only)
@@ -215,9 +234,9 @@ volume 271879400.0.
 
 | metric_id | status | evidence |
 |---|---|---|
-| fx.hkd_9988 | **PARTIAL** (missing: known_at_evidence, definition_version) | `data/hk/HKD_X.parquet` (826468c71fd6): 6,419 rows 2001-07-16..2026-10-11, columns close/volume, DatetimeIndex Date; last close 7.84689998626709 (HKD per USD, collector semantics `HKD=X`); read by engine/hk_inputs.py as usdhkd. Close-fixing convention undeclared (profile) → carried in correction state; no publication timestamp |
-| fx.rmb_89988 | **PARTIAL** (missing: known_at_evidence, definition_version) | two owner sources, both carried as-is: (1) desk snapshot `data/forex/latest.json` (0e41dead4a2f): USDCNH quote 6.6685, chg -0.6, asof 2026-10-09, owner-recorded trust flags `reliable: false`, `shock_state: exogenous_bid`, `cnh_basis_bps -53.0`, schema_note "MSX-1 additive-only enrichment"; (2) `data/china/CNH_F.parquet` (fe01ca5a6dcb): 3,368 rows 2013-02-11..2026-10-09, last close 6.663000106811523 — a FUTURES proxy, not spot (correction state, owner/profile-recorded); onshore CNY (`data/fred/DEXCHUS.parquet` 5f5898b2b6d3, fx_cny_usd 6.7038 @ 2026-10-02) must NOT be substituted silently |
-| fx.adr_baba | **PARTIAL** (missing: known_at_evidence, definition_version) | counter is USD-native; the USD/HKD diagnostic leg is the same HKD_X store (above); FX matters only for basis work and that leg's rights are UNVERIFIED (profile) |
+| fx.hkd_9988 | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version, correction_refusal_state) | `data/hk/HKD_X.parquet` (826468c71fd6): 6,419 rows 2001-07-16..2026-10-11, columns close/volume, DatetimeIndex Date; last close 7.84689998626709 (HKD per USD, collector semantics `HKD=X`); read by engine/hk_inputs.py as usdhkd. unit_currency MISSING — the pair (USD/HKD) is implied by the file name, not recorded in the row (columns close/volume, re-run 2026-10-11). Close-fixing convention undeclared (profile → carried); correction_refusal_state MISSING (no owner-recorded state); no publication timestamp |
+| fx.rmb_89988 | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version, correction_refusal_state) | two owner sources, both carried as-is: (1) desk snapshot `data/forex/latest.json` (0e41dead4a2f): USDCNH quote 6.6685, chg -0.6, asof 2026-10-09, owner-recorded trust flags `reliable: false`, `shock_state: exogenous_bid`, `cnh_basis_bps -53.0`, schema_note "MSX-1 additive-only enrichment"; (2) `data/china/CNH_F.parquet` (fe01ca5a6dcb): 3,368 rows 2013-02-11..2026-10-09, columns close/volume, last close 6.663000106811523 — a FUTURES proxy, not spot (caveat carried from owner/profile text; correction_refusal_state itself MISSING as an owner descriptor); unit_currency MISSING — the pair is implied by the JSON key (`pairs.USDCNH`) / file name, not recorded in rows (PAIR_IMPLIED_BY_FILE_NAME_NOT_RECORDED_IN_ROW); onshore CNY (`data/fred/DEXCHUS.parquet` 5f5898b2b6d3, fx_cny_usd 6.7038 @ 2026-10-02) must NOT be substituted silently |
+| fx.adr_baba | **PARTIAL** (missing: known_at_evidence, unit_currency, definition_version, correction_refusal_state) | counter is USD-native; the USD/HKD diagnostic leg is the same HKD_X store (above; unit_currency MISSING with the same pair-implied-by-file-name note); FX matters only for basis work and that leg's rights are UNVERIFIED (profile); correction_refusal_state MISSING (no owner-recorded state) |
 
 ## options — OPTIONS
 
@@ -239,7 +258,7 @@ volume 271879400.0.
 
 | metric_id | status | evidence |
 |---|---|---|
-| news.hkd_9988 | **PARTIAL** (missing: known_at_evidence beyond date, definition_version) | `data/hk_gdelt/alibaba.parquet` (2bc738a16655): 77 daily rows 2026-07-12..2026-10-06, index `date` (UTC aggregation day — the only time field); subject recorded as entity_query "Alibaba" + ticker 9988.HK (topic-level, not issuer-resolved); sample exact (C20): 2026-07-12 vol_intensity 0.0225, avg_tone NaN; 2026-10-06 vol_intensity 0.0253, avg_tone NaN (NaN carried as recorded, never zero-filled — A10). GDELT volume/tone aggregates only, no article text |
+| news.hkd_9988 | **PARTIAL** (missing: issuer_subject, known_at_evidence, unit_currency, definition_version, correction_refusal_state) | `data/hk_gdelt/alibaba.parquet` (2bc738a16655): 77 daily rows 2026-07-12..2026-10-06, index `date` (UTC aggregation day — the only time field, so known_at_evidence beyond the aggregation day is missing); issuer_subject MISSING — subject is entity_query "Alibaba" + ticker 9988.HK, a name query not an issuer id (NAME_QUERY_NOT_ISSUER_ID); unit_currency MISSING — TONE_AND_VOLUME_MEASURES_UNDECLARED (vol_intensity/avg_tone carry no unit definition); definition_version MISSING — no schema/version in the store; correction/refusal MISSING — no correction field. Sample exact (C20): 2026-07-12 vol_intensity 0.0225, avg_tone NaN; 2026-10-06 vol_intensity 0.0253, avg_tone NaN (NaN carried as recorded, never zero-filled — A10). GDELT volume/tone aggregates only, no article text |
 | news.rmb_89988 | **NO_OWNER** | topic keyed 9988.HK only; no counter key |
 | news.adr_baba | **ABSENT** | no BABA-keyed news owner in the searched bounds: the GDELT store's rows are keyed 9988.HK; BABA is reachable only through the issuer, whose HK link is UNRESOLVED (profile); exact query C20 → 0 BABA-keyed rows |
 
@@ -247,17 +266,17 @@ volume 271879400.0.
 
 | metric_id | status | evidence |
 |---|---|---|
-| themes.hkd_9988 | **OWNER_NATIVE** | `resolve_graph_node_identity('co:hk:9988.HK')` (C3) returns a fully-descriptorized row: schema `gmi.identity_resolution/v1`, node co:hk:9988.HK, market_scope hk, source_native_symbol 9988.HK, resolution_asof 2026-10-09, RESOLVED → security_id `SEC:HK-XHKG-09988`, issuer_id NULL, join_method vendor_alias, master_generated_at 2026-10-09T05:05:32, master_code_version cdbcd143dcfa…, computed_at 2026-10-09T14:11:26Z, engine_version theme_graph.v1, refusal_reason empty, source_receipts `{"matched_vendors": ["theme_graph_native"]}`. 61 snapshots for this node (122 Alibaba rows total across both nodes). All nine descriptors owner-recorded; issuer NULL is the owner's own refusal record |
+| themes.hkd_9988 | **PARTIAL** (missing: issuer_subject) | `resolve_graph_node_identity('co:hk:9988.HK')` (C3) returns a fully-descriptorized row: schema `gmi.identity_resolution/v1`, node co:hk:9988.HK, market_scope hk, source_native_symbol 9988.HK, resolution_asof 2026-10-09, RESOLVED → security_id `SEC:HK-XHKG-09988`, issuer_id NULL, join_method vendor_alias, master_generated_at 2026-10-09T05:05:32, master_code_version cdbcd143dcfa…, computed_at 2026-10-09T14:11:26Z, engine_version theme_graph.v1, refusal_reason empty, source_receipts `{"matched_vendors": ["theme_graph_native"]}`. History: 61 rows for this node via `read_identity_resolution(latest=False)` (re-run 2026-10-11). issuer_subject MISSING — GRAPH_NODE_RESOLVES_TO_SECURITY_ONLY_NO_ISSUER_EVIDENCE: the graph node resolves to the SECURITY id only, `issuer_id` NULL with no issuer evidence (the remaining eight descriptors are owner-recorded) |
 | themes.rmb_89988 | **NO_OWNER** | no company node for the RMB counter in `data/theme_graph/nodes.parquet`; CN/HK Data OS admission is node-driven, so a missing node is also why the counter has no security_id (profile). Would-be owner: CN/HK admission path |
-| themes.adr_baba | **OWNER_NATIVE** | `resolve_graph_node_identity('co:us:BABA')`: RESOLVED → security_id `SEC:US-XNYS-BABA`, issuer_id `ISS:US-XNYS-BABA`, join_method `master_inception_exact`, same asof/computed_at/engine_version fields; 61 snapshots. Theme membership is display/context only; evidence-row rights governed by `engine/theme_graph/rights.py`, not adjudicated here |
+| themes.adr_baba | **OWNER_NATIVE** | `resolve_graph_node_identity('co:us:BABA')`: RESOLVED → security_id `SEC:US-XNYS-BABA`, issuer_id `ISS:US-XNYS-BABA`, join_method `master_inception_exact`, same asof/computed_at/engine_version fields; history 61 rows for co:us:BABA via `read_identity_resolution(latest=False)` (re-run 2026-10-11). Theme membership is display/context only; evidence-row rights governed by `engine/theme_graph/rights.py`, not adjudicated here |
 
 ## evaluation_qledger — CLAIM/GRADE LEDGER (census only)
 
 | metric_id | status | evidence |
 |---|---|---|
-| evaluation_qledger.hkd_9988 | **ABSENT** | C15: 0 of 118,022 claims carry 9988 in scope; exact scan recorded. Would-be owner: engine/qledger.py via the V0 SNI claim contract (not on main; #8042 held carrier) |
-| evaluation_qledger.rmb_89988 | **ABSENT** | same scan for 89988 → 0 claims |
-| evaluation_qledger.adr_baba | **OWNER_NATIVE** | 163 claims with `scope.key == 'BABA'` (families: us_importance_v0 78, us_importance_v0_pit 78, altdata 1, altdata_event 3, altdata_mid 3). Metadata owner-recorded per claim: desk, asof, scope{type entity, key BABA}, direction, horizon_d, bench, check_by, timestamp_quality (DISCLOSURE_DATE / CRAWL_BOUNDED), is_placebo, claim_family (a versioned definition name, e.g. us_importance_v0), claim_id, timestamp, status; grades file carries graded_at/embargo_applied. All nine descriptors owner-recorded; claim/falsifier prose and entry levels deliberately NOT copied (private text + out-of-scope fields; A20). Census only — no hit-rate or return grading is presented as forecast support (profile family_notes) |
+| evaluation_qledger.hkd_9988 | **ABSENT** | C15 re-run: 0 of 118,022 claims carry '9988' in scope; exact scan recorded (json.loads per line). Would-be owner: engine/qledger.py via the V0 SNI claim contract (not on main; #8042 held carrier) |
+| evaluation_qledger.rmb_89988 | **ABSENT** | same scan for '89988' → 0 claims |
+| evaluation_qledger.adr_baba | **PARTIAL** (missing: issuer_subject) | **159** claims with `scope.key == 'BABA'` (families: us_importance_v0 78, us_importance_v0_pit 78, altdata 1, altdata_event 1, altdata_mid 1; re-run 2026-10-11). A raw substring scan for "BABA" hits 163 lines — the 4 extra are OTHER entities' claims that merely mention BABA (claim ids 969905d24586619b scope BRO altdata_event; 4d48b1a649685a97 TTD altdata_event; 27c2a75f33a764fe LYB altdata_mid; 1a3f48a5e52b4f35 KVUE altdata_mid); the scope.key count **159** is the evidence_rows value. issuer_subject MISSING — the scope key is the RAW TICKER STRING 'BABA', not an issuer id (SCOPE_KEY_IS_RAW_TICKER_NOT_ISSUER_ID). Metadata owner-recorded per claim: desk, asof, scope{type entity, key BABA}, direction, horizon_d, bench, check_by, timestamp_quality (DISCLOSURE_DATE / CRAWL_BOUNDED), is_placebo, claim_family (a versioned definition name, e.g. us_importance_v0), claim_id, timestamp, status; grades file carries graded_at/embargo_applied. Claim/falsifier prose and entry levels deliberately NOT copied (private text + out-of-scope fields; A20). Census only — no hit-rate or return grading is presented as forecast support (profile family_notes) |
 
 ## behavioral_pilot — AUGUST 2026 STOCK-IDENTITY PILOT (HISTORICAL)
 
@@ -265,23 +284,28 @@ volume 271879400.0.
 |---|---|---|
 | behavioral_pilot.hkd_9988 | **ABSENT** | pilot store `pilot_fingerprint_v0.parquet` (cd7675e995b4) holds exactly 21 US symbols (AEM, AG, BABA, CBRS, FFAI, GOLD, HL, KO, KRUS, MCD, MCK, META, MSFT, NEM, NVDA, PAAS, REGN, UEC, WMT, WPM, YELP); 9988 not present. HISTORICAL: pilot frozen 2026-08-13; absence blocks nothing (profile) |
 | behavioral_pilot.rmb_89988 | **ABSENT** | same store; 89988 not present |
-| behavioral_pilot.adr_baba | **PARTIAL** (missing: unit_currency) | fingerprint row symbol BABA: asof 2026-08-13, epoch_key epoch_0, epoch_detector "none/provisional", price_plane_id stock_identity_ohlcv_v1, n_sessions 2992, fingerprint_spec_hash 0e3457b1…; manifest (b74ae237e99b, schema stock_identity.ohlcv_manifest.v1) records fetched_at 2026-08-14T10:52:09Z, adjustment_mode "auto_adjust=True (dividend/split adjusted total-return)", fetcher collectors._stock_ohlc.fetch_ohlc, authority all-false (can_rank/gate/originate_signal/size/escalate all false — owner-recorded); pilot OHLCV 2,992 rows 2014-09-19..2026-08-13; episode file carries per-episode resolution_known_date fields. Unit: the plane declares adjustment mode but no currency → unit/currency missing. Correction state: HISTORICAL prior art, never current behaviour (profile family_notes + manifest authority block) |
+| behavioral_pilot.adr_baba | **PARTIAL** (missing: unit_currency; source = the FROZEN 2026-08 research pilot — read as HISTORICAL only, never current data) | fingerprint row symbol BABA: asof 2026-08-13, epoch_key epoch_0, epoch_detector "none/provisional", price_plane_id stock_identity_ohlcv_v1, n_sessions 2992, fingerprint_spec_hash 0e3457b1…; manifest (b74ae237e99b, schema stock_identity.ohlcv_manifest.v1) records fetched_at 2026-08-14T10:52:09Z, adjustment_mode "auto_adjust=True (dividend/split adjusted total-return)", fetcher collectors._stock_ohlc.fetch_ohlc, authority all-false (can_rank/gate/originate_signal/size/escalate all false — owner-recorded); pilot OHLCV 2,992 rows 2014-09-19..2026-08-13; episode file carries per-episode resolution_known_date fields. Unit: the plane declares adjustment mode but no currency → unit/currency missing. Correction state: HISTORICAL prior art, never current behaviour (profile family_notes + manifest authority block) |
 
 ---
 
 ## A33 required-source classes (coordinator ruling) — satisfaction map
 
-| class | ≥1 OWNER_NATIVE? | evidence |
-|---|---|---|
-| identity_listing | YES | identity_listing.hkd_9988, identity_listing.adr_baba |
-| filings_announcements | YES | filings_announcements.hkd_9988, filings_announcements.rmb_89988 |
-| financials | **NO — GAP** | best is PARTIAL (hkd_9988: missing known_at_evidence, accounting_basis, definition_version + currency defect); adr_baba ABSENT; rmb NO_OWNER. Would-be owners: `collectors/hk_fundamentals.py` (would need publication timestamps, an accounting-basis marker, a schema version and a currency fix) and `engine/fundamental_forensics/sec_companyfacts.py` (20-F filer admission) |
-| company_events_earnings_calendar | YES | company_events_earnings_calendar.hkd_9988, .rmb_89988 |
-| corporate_actions_adjustment | **NO — GAP** | hkd_9988 ABSENT (no explicit action rows anywhere; placements collector missed the one real action), adr_baba PARTIAL (derived factor only; missing known_at_evidence/definition_version), rmb NO_OWNER. Would-be owner: an explicit HK corporate-action ledger + `collectors/yahoo.py`-class adjustment metadata with known-at stamps |
-| market_data_daily | **NO — GAP** | hkd_9988 and adr_baba both PARTIAL: no owner stamps a collection/publication time (known_at_evidence) and neither artifact declares its currency; rmb_89988 NO_OWNER. Would-be owners: `collectors/hk_stock_prices.py`, `collectors/yahoo.py`, `collectors/massive_stock_day.py` (a known-at column would clear the blocking descriptor) |
+Exactly **ONE** of the six required source classes is satisfied: identity_listing, via
+identity_listing.adr_baba only. Machine-readable twin: `a33_required_source_classes` in
+`E1_COVERAGE_REPORT_2026-10-11.json`.
 
-No PARTIAL was upgraded to OWNER_NATIVE to satisfy A33; the three GAPs above are the honest
-answer to the class requirement.
+| class | satisfied? | best cell | best status | blocking missing descriptors | would-be owner |
+|---|---|---|---|---|---|
+| identity_listing | **YES** | identity_listing.adr_baba | OWNER_NATIVE | — | n/a — satisfied: adr_baba owner-records security SEC:US-XNYS-BABA bound to issuer ISS:US-XNYS-BABA |
+| filings_announcements | **NO — GAP** | filings_announcements.hkd_9988 | PARTIAL | issuer_subject, reporting_period, definition_version, correction_refusal_state | collectors/hk_hkexnews.py + engine/hk_filing_bus.py once the category taxonomy carries a version id, a correction/retraction field exists, and the subject binds through the Data OS identity axis |
+| financials | **NO — GAP** | financials.hkd_9988 | PARTIAL | issuer_subject, known_at_evidence, unit_currency, accounting_basis, source_span, definition_version, correction_refusal_state | Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a new issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py (binds issuer_subject only; no owner exists for the remaining descriptor gaps) |
+| company_events_earnings_calendar | **NO — GAP** | company_events_earnings_calendar.adr_baba | PARTIAL | definition_version | collectors/hk_hkexnews.py + engine/hk_filing_bus.py once the category taxonomy carries a version id, a correction/retraction field exists, and the subject binds through the Data OS identity axis |
+| corporate_actions_adjustment | **NO — GAP** | corporate_actions_adjustment.adr_baba | PARTIAL | known_at_evidence, definition_version | collectors/yahoo.py-class adjustment metadata carrying known-at stamps and a definition version, plus an explicit HK corporate-action ledger (profile names no would_be_owner for this class; pack-named) |
+| market_data_daily | **NO — GAP** | market_data_daily.adr_baba | PARTIAL | known_at_evidence, unit_currency, definition_version | collectors/hk_stock_prices.py / collectors/yahoo.py / collectors/massive_stock_day.py recording a known-at column, a declared currency and a definition version (profile names no would_be_owner for these descriptors; pack-named) |
+
+No cell was upgraded to OWNER_NATIVE to satisfy A33; the hkd_9988 identity cell is REFUSED (the
+owner's own NO_ISSUER_EVIDENCE), and the five GAPs above are the honest answer to the class
+requirement.
 
 ## Binding E0 facts — how each was honored
 
@@ -299,22 +323,125 @@ answer to the class requirement.
 
 ## GAPS
 
-- financials: no owner serves an OWNER_NATIVE financial line for any Alibaba counter.
-  Blocking descriptors: known_at_evidence (no publication timestamp in
-  data/hk_fundamentals), accounting_basis (no GAAP/IFRS marker), definition_version (no schema
-  version in the payload); plus the store-wide currency defect. Would-be owners:
-  collectors/hk_fundamentals.py (HK, after fixes) and
-  engine/fundamental_forensics/sec_companyfacts.py (BABA, after 20-F filer admission).
-- corporate_actions_adjustment: no owner carries explicit corporate-action rows for any
-  Alibaba counter; the one real 2026 action (HK$80bn placing, completed 2026-08-26) reached the
-  repo only as HKEXnews headline metadata because the placements collector keys on a different
-  headline category. Would-be owner: an explicit HK corporate-action ledger; the ADR side has
-  only the derived close/close_price factor.
-- market_data_daily: no daily-bar owner stamps known_at_evidence or declares currency
-  (blocking descriptors), so the class has no OWNER_NATIVE cell. Would-be owners:
-  collectors/hk_stock_prices.py, collectors/yahoo.py, collectors/massive_stock_day.py.
-- No canonical share-count/short-interest/20-F evidence exists for BABA on main (FILINGS and
-  SHORTS classes for the ADR line are ABSENT): would-be owners
-  engine/fundamental_forensics/broad_sec_store.py (20-F universe admission) and
-  collectors/finra.py (universe expansion), both gated by
-  DEC:FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED where applicable.
+Every NO_OWNER and ABSENT cell (25 ids), one per line, with its would-be owner (the E0 profile
+cell's `would_be_owner` where present; otherwise the owner this pack names, suffixed
+"(pack-named)"):
+
+NO_OWNER (13):
+
+- adr_h_basis.rmb_89988 — engine/hk_adr_bridge.py after counter prices exist
+- corporate_actions_adjustment.rmb_89988 — collectors/hk_stock_prices.py + a Data OS counter security_id
+- financials.rmb_89988 — Data OS issuer axis: scripts/build_security_master.py (apply_issuer_correction) under a new issuer-evidence era declared in config/identity_seams.yml, read via lib/dataos/identity.py
+- identity_listing.rmb_89988 — Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md, with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml
+- market_data_daily.rmb_89988 — collectors/hk_stock_prices.py (universe via collectors/hk_universe.py) after a Data OS counter security_id exists
+- market_data_intraday.hkd_9988 — Chairman procurement decision, then a new HK intraday collector
+- market_data_intraday.rmb_89988 — Chairman procurement decision, then a new HK intraday collector
+- news.rmb_89988 — Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md, with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml
+- options.hkd_9988 — Chairman procurement decision, then an HK options owner
+- options.rmb_89988 — Chairman procurement decision, then an HK options owner
+- research_vault.rmb_89988 — Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md, with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml
+- southbound_holdings.rmb_89988 — collectors/hk_southbound_holdings.py after a Data OS counter security_id exists
+- themes.rmb_89988 — Data OS CN/HK admission: scripts/build_security_master.py under research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md, with a counter seam (one economic security, two trading counters) declared in config/identity_seams.yml
+
+ABSENT (12):
+
+- adr_h_basis.adr_baba — engine/hk_adr_bridge.py (pack-named; profile names no would_be_owner for this cell)
+- adr_h_basis.hkd_9988 — engine/hk_adr_bridge.py (pack-named; profile names no would_be_owner for this cell)
+- behavioral_pilot.hkd_9988 — engine/stock_identity/pilot.py (no refresh scheduled)
+- behavioral_pilot.rmb_89988 — engine/stock_identity/pilot.py (no refresh scheduled)
+- corporate_actions_adjustment.hkd_9988 — an explicit HK corporate-action ledger (pack-named; profile names no would_be_owner for this cell)
+- evaluation_qledger.hkd_9988 — engine/qledger.py via the V0 contract lane
+- evaluation_qledger.rmb_89988 — engine/qledger.py via the V0 contract lane
+- filings_announcements.adr_baba — engine/fundamental_forensics/broad_sec_store.py universe (20-F filer admission)
+- financials.adr_baba — engine/fundamental_forensics/sec_companyfacts.py (20-F filer admission)
+- market_data_intraday.adr_baba — engine/intraday_flow.py universe
+- news.adr_baba — collectors/hk_gdelt.py (pack-named; profile names no would_be_owner for this cell)
+- short_positions.adr_baba — collectors/finra.py universe
+
+A33 class gaps (5):
+
+- filings_announcements — best cell filings_announcements.hkd_9988, PARTIAL; blocking
+  issuer_subject, reporting_period, definition_version, correction_refusal_state; would-be owner
+  collectors/hk_hkexnews.py + engine/hk_filing_bus.py once the category taxonomy carries a
+  version id, a correction/retraction field exists, and the subject binds through the Data OS
+  identity axis.
+- financials — best cell financials.hkd_9988, PARTIAL; blocking issuer_subject,
+  known_at_evidence, unit_currency, accounting_basis, source_span, definition_version,
+  correction_refusal_state; would-be owner the Data OS issuer axis (binds issuer_subject only;
+  no owner exists for the remaining descriptor gaps).
+- company_events_earnings_calendar — best cell company_events_earnings_calendar.adr_baba,
+  PARTIAL; blocking definition_version; would-be owner as filings_announcements (HK filing-bus
+  version id + correction/retraction field + identity-axis subject binding).
+- corporate_actions_adjustment — best cell corporate_actions_adjustment.adr_baba, PARTIAL;
+  blocking known_at_evidence, definition_version; would-be owner an explicit HK corporate-action
+  ledger plus collectors/yahoo.py-class adjustment metadata with known-at stamps and a
+  definition version (pack-named).
+- market_data_daily — best cell market_data_daily.adr_baba, PARTIAL; blocking known_at_evidence,
+  unit_currency, definition_version; would-be owner collectors/hk_stock_prices.py /
+  collectors/yahoo.py / collectors/massive_stock_day.py recording a known-at column, a declared
+  currency and a definition version (pack-named).
+
+Standing DEC note: BABA has 0 rows in every FIF / fundamental_forensics / capital-structure
+artifact (C13) and 0 FINRA rows (C12); the would-be owners above are gated by
+DEC:FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED where applicable.
+
+## COORDINATOR CONTRADICTIONS
+
+None. Every owner re-run performed for this repair agreed with the frozen target table (R3/R4):
+qledger scope.key=='BABA' re-run → 159 (coordinator's recount), families exactly as ruled;
+identity-resolution history via `latest=False` → 61 rows for co:us:BABA and 61 for co:hk:9988.HK
+(the previously cited "122 rows from `read_identity_resolution()`" was a call misattribution,
+fixed under R6); hk_placements re-run → 811 rows (count unchanged; the cited span was stale and
+is corrected to the re-run span ..2026-10-11 under F14); hk_shorts re-run → 357 rows (9988) and
+172 rows (89988), value column `value_hkd`. No target row was contradicted by an owner output.
+
+## REVIEW DISPOSITIONS
+
+Disposition of the independent review lane's findings on this pack (verdict REQUEST_CHANGES;
+each REPAIR below is binding and was applied in this edit):
+
+- **F1 (BLOCKER — filings/events hkd_9988 + rmb_89988 marked OWNER_NATIVE; A33 map said YES for
+  both classes): REPAIRED.** All four rows are now PARTIAL with missing
+  [issuer_subject, reporting_period, definition_version, correction_refusal_state]; the A33 map
+  shows both classes as GAP with would-be owner "collectors/hk_hkexnews.py +
+  engine/hk_filing_bus.py once the category taxonomy carries a version id, a
+  correction/retraction field exists, and the subject binds through the Data OS identity axis".
+  The store has no correction field and `engine/hk_filing_bus.py` has no version constant; the
+  store-window coverage text is NOT presented as a correction state.
+- **F4 (themes.hkd_9988 OWNER_NATIVE with owner-recorded issuer_id NULL): REPAIRED** per the
+  frozen table — now PARTIAL [issuer_subject] with note
+  GRAPH_NODE_RESOLVES_TO_SECURITY_ONLY_NO_ISSUER_EVIDENCE.
+- **F6 (identity_listing.hkd_9988): RULED by the coordinator — status stays REFUSED** (the
+  commission requires the E0 fact "HK counters are NO_ISSUER_EVIDENCE" to appear as a
+  REFUSED/NO_OWNER row, and the owner-recorded NO_ISSUER_EVIDENCE is the owner's refusal of
+  exactly this metric's issuer–security link); **the reviewer's descriptor reading (only
+  issuer_subject missing) is ADOPTED.** The ruling sentence sits under the identity_listing
+  table.
+- **F7 (evaluation_qledger.adr_baba OWNER_NATIVE on raw scope key): REPAIRED** — now PARTIAL
+  [issuer_subject] with note SCOPE_KEY_IS_RAW_TICKER_NOT_ISSUER_ID; count corrected to the
+  scope.key re-run (see R5 disposition below).
+- **F13 ("ir.read_identity_resolution() (122 Alibaba rows = 61+61)" misattributed a store-level
+  count to a latest-only call): REPAIRED** per R6 — the history count is now cited to
+  `read_identity_resolution(latest=False)` (61 rows per node, re-run 2026-10-11), and the
+  default `latest=True` call is marked one-row-per-node.
+- **F14 (hk_placements span cited 2026-03-05..2026-10-09 was stale): REPAIRED** — re-run
+  `fb._load_placements()` (columns news_id/stock_code/ticker/category/announced_at/date/
+  title/subcats): 811 rows, `date` 2026-03-05..2026-10-11, `announced_at`
+  2026-03-05 06:05:00..2026-10-11 18:25:00; the re-run span is cited verbatim in C10, the
+  corporate_actions row, and the JSON owner_call.
+- **F15 (sessions_calendar cells omitted definition_version): REPAIRED** — all three cells now
+  carry definition_version MISSING (NO_VERSION_CONSTANT_IN_OWNER_MODULE; `grep -in version` over
+  `lib/nyse_calendar.py` + `lib/hk_calendar.py` returns no line — a git blob is not an
+  owner-declared version) plus the known-at note HOLIDAY_RULES_IN_CODE_NO_PUBLICATION_KNOWN_AT.
+- **Review C15 "163 BABA — MATCH" was a substring count: RESOLVED per R5** — the scope.key count
+  is 159 (families us_importance_v0 78, us_importance_v0_pit 78, altdata 1, altdata_event 1,
+  altdata_mid 1); the 163 substring lines include 4 non-BABA claims (969905d24586619b BRO,
+  4d48b1a649685a97 TTD, 27c2a75f33a764fe LYB, 1a3f48a5e52b4f35 KVUE). evidence_rows = 159
+  everywhere.
+- **Review-side gaps the reviewer did not check: DONE** — `ls data/massive_stock_day | grep -ci
+  baba` → 0 and `git rev-parse HEAD:data/massive_stock_day/_manifest.json` →
+  17e8338575a12e1ab80f988093a00cf08d8faf4a, both pasted next to the C7 citation.
+- Cross-pack findings F2 (constructed id literal for an RMB counter) and F10 (forecast values)
+  do not apply to this pack: the substring-scan form is kept for 89988 (no id-shaped string is
+  written for it — confirmed by the report's id-literal scan) and forecast values stay
+  uncarried.
