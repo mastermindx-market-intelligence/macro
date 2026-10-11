@@ -343,8 +343,11 @@ def measure_source_snapshot(snapshot):
         "n_trf_report_timestamps": len(report_deltas),
         "min_sip_minus_trf_report_ns": min(report_deltas) if report_deltas else None,
         "max_sip_minus_trf_report_ns": max(report_deltas) if report_deltas else None,
-        "oe_source_shares": _fmt(total_shares) if rows else None,
-        "oe_source_notional_usd": _fmt(total_notional) if rows else None,
+        # An absence of policy-qualified TRF prints in the bounded source
+        # sample is NOT evidence that the market printed zero TRF volume.
+        # Keep observed numeric totals nullable until a qualifying print exists.
+        "oe_source_shares": _fmt(total_shares) if prepared else None,
+        "oe_source_notional_usd": _fmt(total_notional) if prepared else None,
         "largest_individual_print_usd": _fmt(max(prints)) if prints else None,
         "largest_cluster_usd": _fmt(max(cluster_notionals)) if clusters else None,
         "n_clusters": len(clusters),
@@ -362,6 +365,56 @@ def measure_source_snapshot(snapshot):
     }
 
 
+def _safe_minute_points(record):
+    """Check derived cumulative ratios against their source counters and clocks.
+
+    This catches altered/contradictory in-memory projections. It is not a
+    vendor signature or independent proof of the original captured tape.
+    """
+    points = record.get("minute_points_private_only")
+    start, end, cutoff = (record.get(k) for k in ("start_ns", "end_ns", "asof_ns"))
+    # Original source watermark authenticity remains the input owner's duty;
+    # this only cross-checks bounded derived points and their as-of clock.
+    if (not isinstance(points, list) or len(points) > MAX_MINUTES
+            or any(type(x) is not int for x in (start, end, cutoff))
+            or not 0 < start < end or cutoff < start
+            or start % MINUTE_NS or end % MINUTE_NS):
+        return False
+    prior = -1
+    required = {
+        "minute_index", "oe_shares", "consolidated_shares",
+        "share", "qualified_prefix", "source_available_ns",
+        "source_receipt_sha256",
+    }
+    for point in points:
+        if not isinstance(point, dict) or set(point) != required:
+            return False
+        index, available = point["minute_index"], point["source_available_ns"]
+        if (type(index) is not int or index <= prior
+                or index >= (end-start)//MINUTE_NS
+                or type(available) is not int
+                or not start+(index+1)*MINUTE_NS <= available <= cutoff
+                or type(point["qualified_prefix"]) is not bool
+                or not isinstance(point["source_receipt_sha256"], str)
+                or _SHA.fullmatch(point["source_receipt_sha256"]) is None):
+            return False
+        prior = index
+        try:
+            oe = _amount(point["oe_shares"], "minute.oe", zero=True)
+            total = _amount(point["consolidated_shares"],
+                            "minute.consolidated", zero=True)
+        except HistoricalRulerRefusal:
+            return False
+        if oe > total or (total == 0 and point["qualified_prefix"]):
+            return False
+        with localcontext() as ctx:
+            ctx.prec = 2*MAX_DECIMAL_WIDTH + 20
+            expected = _fmt(oe/total) if total else None
+        if point["share"] != expected:
+            return False
+    return True
+
+
 def _safe_measurement(record):
     """Permit only the observational output of the TP-B source boundary."""
     return (isinstance(record, dict)
@@ -376,7 +429,7 @@ def _safe_measurement(record):
             and record.get("actor_identity") is None
             and isinstance(record.get("snapshot_sha256"), str)
             and _SHA.fullmatch(record["snapshot_sha256"]) is not None
-            and isinstance(record.get("minute_points_private_only"), list))
+            and _safe_minute_points(record))
 
 
 def calibrate_history(*, target, previous, minute_index, evaluation_ns, min_history=20):

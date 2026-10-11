@@ -155,7 +155,8 @@ def test_source_partitions_are_not_inferred_as_trf_or_direction():
     assert obj["n_trf_observed"]==0
     assert obj["n_unknown_volume_policy"]==1
     assert obj["state"]=="NO_QUALIFIED_OFF_EXCHANGE_OBSERVED"
-    assert obj["oe_source_shares"]=="0"
+    assert obj["oe_source_shares"] is None
+    assert obj["oe_source_notional_usd"] is None
     assert all(x is None for x in obj["absolute_block_tier_rates"].values())
     assert obj["signal"] is None and obj["actor_identity"] is None
 
@@ -190,7 +191,8 @@ def test_correction_generation_can_change_ranks_without_mutating_predecessor():
     second=measured(rows=[revised],source_generation_sha256=SHA_C,
                     supersedes_generation_sha256=SHA_B)
     assert first["oe_source_notional_usd"]=="100000"
-    assert second["oe_source_notional_usd"]=="0"
+    assert second["oe_source_notional_usd"] is None
+    assert second["oe_source_shares"] is None
     assert second["n_cancelled"]==1
     assert second["n_revised_rows"]==1
     assert first["snapshot_sha256"]!=second["snapshot_sha256"]
@@ -346,6 +348,34 @@ def test_split_basis_is_quarantined_not_rebased_from_jump():
     assert out["minute_conditioned_baseline"]["robust_z"] is None
 
 
+def test_tampered_historical_minute_ratio_and_availability_are_quarantined():
+    original = measured()
+    past = history(5)
+    tampered_ratio = copy.deepcopy(past)
+    tampered_ratio[0]["minute_points_private_only"][0]["share"] = "0.95"
+    out = calibrate_history(
+        target=original, previous=tampered_ratio, minute_index=30,
+        evaluation_ns=END + 90_000_000_000, min_history=3)
+    assert out["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 1
+    assert out["minute_conditioned_baseline"]["n_prior"] == 4
+    late = copy.deepcopy(past)
+    late[0]["minute_points_private_only"][0]["source_available_ns"] = (
+        late[0]["asof_ns"] + 1)
+    out2 = calibrate_history(
+        target=original, previous=late, minute_index=30,
+        evaluation_ns=END + 90_000_000_000, min_history=3)
+    assert out2["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 1
+
+
+def test_tampered_target_minute_ratio_rejected_before_calibration():
+    value = measured()
+    value["minute_points_private_only"][0]["share"] = "1.3"
+    with pytest.raises(HistoricalRulerRefusal, match="target source/authority"):
+        calibrate_history(
+            target=value, previous=history(5), minute_index=30,
+            evaluation_ns=END + 90_000_000_000, min_history=3)
+
+
 def test_causal_availability_and_duplicate_revision_seam():
     prev=history(5)
     future=copy.deepcopy(prev[0])
@@ -385,9 +415,14 @@ def test_thin_history_and_zero_mad_are_not_invented():
                           evaluation_ns=END+90_000_000_000,min_history=3)
     assert out["daily_object_ranks"]["DAILY_TOTAL"]["rank_desc"] is None
     assert out["minute_conditioned_baseline"]["state"]=="INSUFFICIENT_MINUTE_MATCHED_HISTORY"
-    flat=history(4)
-    for p in flat:
-        p["minute_points_private_only"][0]["share"]="0.2"
+    # Build source-consistent flat baseline fixtures instead of mutating
+    # derived ratios independently of their recorded share denominators.
+    flat=[
+        measured("2026-09-"+str(i+1).zfill(2),
+                 rows=[trade("flat"+str(i),30,shares="500")],
+                 points=[point(30,"20","100"),point(209,"100","200")])
+        for i in range(4)
+    ]
     out=calibrate_history(target=target,previous=flat,minute_index=30,
                           evaluation_ns=END+90_000_000_000,min_history=3)
     assert out["minute_conditioned_baseline"]["state"]=="NO_ROBUST_DISPERSION"
