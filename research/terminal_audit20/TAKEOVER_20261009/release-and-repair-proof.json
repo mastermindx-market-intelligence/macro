@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1527",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1547",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -7830,6 +7830,107 @@
     "browser_restoration": "Exact already-issued human restoration request remains pending. No repeat, unchanged control polling, idle principal or new worker solely for notice.",
     "independent_holds": "All T1502 781 reserved numeric/IW2 explicit cyber HUMAN/SQL/rights/security/887 exactALLOW/MoneySCP+OAuth EFFECT_UNKNOWN/A19/873 producer publication and B931/935 owning returns unchanged.",
     "next_ready_phase": "Actual human browser restoration or restored native-capability event enables affected939 normalGET/UI three sizes and cleanup. Eligible NEW bounded Fabric work only when independently useful and actually admitted; explicit verified root discipline. Consume other actual owning returns.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1547": {
+    "observed_at": "2026-10-11T15:47:18.470079+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "935 owning merge/requiredCI pending state; all old source/capture scopes,931 review, installed abf/paid proof, browser request and independent holds remain.",
+    "material": "Actual935 merged source and exact required CI qualified for next suitable canonical release.",
+    "source_935": {
+      "qualified_at": "2026-10-11T15:47:18.470079+00:00",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "scope": "Merged source and exact requiredCI only; release consumer for next suitable canonical generation",
+      "pr": 935,
+      "head": "0ffd643c4676a7ab432e83bbaf069359f91b62f9",
+      "merged": "a16fa983c893fcc7f0e5c555e15541d161f03920",
+      "merged_at": "2026-10-11T15:30:30Z",
+      "base_and_merge_parent": "abf97eaa42d7f4e6f0062b43ba0c8a3a82ce56e3",
+      "head_squash_tree_equal": "a9d16f6a873165ee295f436285c0bdb3f71c5f04",
+      "stylesheet": {
+        "bytes": 21943,
+        "sha256": "c7fcd07d13cf3d7453bb51cd47ffb13c80af05e327bf9662368e97988023320c",
+        "blob": "517133e5b048de44a881504928757945a73e4fb0"
+      },
+      "source_scope": "Only two Active status declarations use semantic state-accepted token; exact stylesheet SHA equals previously qualified c7fcd. Lifecycle/API/persistence/market-direction/math unchanged. Owner17 changed-path exact parity receipt consumed; parent independently verifies fullhead/squash tree equality and stylesheet hash. No parent PNG/test rerun or visual/financial acceptance.",
+      "required_run": 38148371400,
+      "required_suite": 103356598968,
+      "attempt": 1,
+      "event": "pull_request",
+      "path": ".github/workflows/ci.yml",
+      "required_checks": [
+        {
+          "id": 114505813817,
+          "name": "Terminal typecheck + tests",
+          "head_sha": "0ffd643c4676a7ab432e83bbaf069359f91b62f9",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-10-11T15:30:11Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38148371400/job/114505813817",
+          "suite": 103356598968,
+          "app": 15368
+        },
+        {
+          "id": 114496411868,
+          "name": "Quote Hub tests",
+          "head_sha": "0ffd643c4676a7ab432e83bbaf069359f91b62f9",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-10-11T14:44:24Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38148371400/job/114496411868",
+          "suite": 103356598968,
+          "app": 15368
+        },
+        {
+          "id": 114496411887,
+          "name": "Ingest + signal-layer tests",
+          "head_sha": "0ffd643c4676a7ab432e83bbaf069359f91b62f9",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-10-11T14:44:59Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38148371400/job/114496411887",
+          "suite": 103356598968,
+          "app": 15368
+        }
+      ],
+      "all_ten_jobs_success": true,
+      "all_five_browser_shards_success": true,
+      "run_pull_requests_empty": true,
+      "qualifier": "Owning run supplies no direct PR-number binding through pull_requests[]. Exact PR/head/run/suite/check/job identity observed. Existing strict required policy/app15368 retained from qualified parent policy; no policy change asserted.",
+      "evidence": [
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/935-merged-exact-source-ci-metadata.json",
+          "bytes": 6745,
+          "sha256": "52ea71f063e0ef2888e0795234e5618e48d7258e9bf0816379f73a7cc80f6aec"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/marketontology-consumer/f11-status-colors/merge-935.json",
+          "bytes": 1859,
+          "sha256": "2d0d1dfa65a957916a959ca15e112ca251c6e8b537d8d3d8915c0e972d73195a"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/marketontology-consumer/LIVE_ACCEPTANCE_931_935_939.md",
+          "bytes": 4312,
+          "sha256": "e2c5996ca42bfa35d3db57798eae24ef1fb954aef852158aa2330018487bb2e7"
+        }
+      ],
+      "remaining": "Installed production remains qualified abf97e at T1502 observations.935a16 not installed/paidaccepted. Existing browser restoration request pending; future existing active thesis/history/inspector EN/ZH/West-East and three sizes through legitimate UI preferences with restoration, no creation/revision/archive or private-row export. If state absent, untriggered.",
+      "source_931": "Incoming B reports fully green CI, original attended review unresolved; not source/review/release qualified by parent. B941 integration pending, no duplicate lane or outgoing message.",
+      "no_effects": "No new observer/review/merge/rearm/dispatch/checkout/fetch/build/service/job/provider/browser effect; no repeat pending human question.",
+      "whole_audit20_complete": false
+    },
+    "evidence": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/935-merged-source-required-ci-parent-qualification.json",
+      "bytes": 4553,
+      "sha256": "db5071b3771bb4d4386253cadeb99be93e43967aae79dc53011539c4fe3d5133"
+    },
+    "retained_product_frontier": "current_capability_frontier_20261011T1502",
+    "retained_fabric_frontier": "current_capability_frontier_20261011T1527",
+    "browser_restoration": "ONE already-issued request still pending; no unchanged native-control retry/poll/secondbrowser or repeated question. Live935/939 consumer qualification and cleanup require actual restoration/capability event.",
+    "next_ready_phase": "Actual browser restoration/capability event enables affected939 normalGET/UI; next suitable admitted canonical release includes935 only with selectedgeneration/source/writer/exactUUID/root+volume10GiB gates and owning existing thesis normal-path proof. Do not redeploy abf to restamp; no930 science/781numeric/#761/wholeMarketOntology acceptance. Consume actual B941/released-source or platform/producer returns, no idle polling.",
+    "independent_holds": "781 reserved numeric/IW2 explicit cyber HUMAN/SQL/rights/security/887 exactALLOW/MoneySCP+OAuth EFFECT_UNKNOWN/A19/873 actual publication unchanged. No real thesis/portfolio/alert mutation or fault manufacturing.",
     "whole_audit20_complete": false
   }
 }
