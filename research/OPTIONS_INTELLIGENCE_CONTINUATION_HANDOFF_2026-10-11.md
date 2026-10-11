@@ -314,6 +314,75 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   - F01 and M01 had never launched, so their loops were stopped with no effect. They were re-armed with
     `launch_when_admitted_v2.sh`, which passes `POOL_CHILD_TIMEOUT_SECONDS=7200`. That is the pool's own documented knob
     within its own maximum, not a bypass. v1 is left untouched because OC's running loop still executes it.
+- D44 (20:10Z) N01 verify lead (O6) judged ACCEPT. Its slice T1 was done by the seat under L.7: no worker had started it, the seat
+  held the worktree, the #723/#846 file lists do not contain the owned files, and no act was in EFFECT_UNKNOWN.
+  - T1: `terminal/lib/flowFreshness.ts` now asks `usRegularSessionWindow` (the existing hashed projection of Macro
+    `lib/nyse_calendar.py` + `engine/session_digest.py`) instead of a hard-coded 16:00, so early closes, holidays and the DST open
+    read correctly and an out-of-coverage date fails closed to `last_session`. Commit `34f54738e`, Terminal PR #948, `merge-on-green`
+    plus armed auto-merge, app-bound. Gates: tsc 0; `npm test` 545 files, 8,976 passed, 4 todo; targeted e2e 6/6
+    (logs `leads/O6/t1/`).
+  - Q1: `gh pr diff 723 --name-only` lists `terminal/lib/dte.ts` but neither `flowFreshness.ts` nor `app/api/flow/route.ts`
+    (#723 head `b83a9b852a62`). So F4 (route stale-hit keeps source clocks byte-identical) is NOT blocked by #723; F3 (`dte.ts`
+    after-close DTE) waits for #723.
+  - Q2: the SPX AM/PM economic clock comes only from #8684's `fixing_at`. No Terminal AM-SPX state ships before it. N01-A02 AM/PM
+    stays open.
+  - Q3: `session_digest.is_early_close` is the canonical half-day owner. The duplicate `exchange_holidays.early_close` is a DSC
+    candidate, not N01 work.
+  - F2 (Macro `_year_fraction` characterization, test-only) goes to the Macro test-only lane MT (D45).
+  - N01 is NOT accepted. The latency budget needs the measured distribution at natural points: SPX AM settlement 2026-10-15/16,
+    the DST change 2026-11-02, the half day 2026-11-27.
+- D45 (20:10Z) Q02 verify lead (O5) judged ACCEPT as a packet. The existing adapter is NOT ADOPTED: record Q02 as "S-stage
+  refusal adapter; cross-fit, freeze-order guard and B1-RI owed".
+  - Q1: U2 (causal cross-fit plus the freeze-order guard) belongs in the G3/Q03 study runner. The adapter stays the refusal boundary.
+  - Q2: the refusal-name drift (`SOLVER_UNRESOLVED` in the spec vs `NUMERICALLY_UNIDENTIFIED`/`SOLVER_NONCONVERGENCE` in the
+    reference) is recorded as a mapping in the runner's receipt or DEC. Neither hash-pinned file is edited.
+  - Q3: A02 does not forbid the registered training-fold scaler (SPEC:148), provided validation and test use the frozen pre-cutoff
+    scaler. That guard is U2's.
+  - U1 (executable now) is tests-only in `tests/test_options_pilot_study_adapter.py`: A02-a baseline receipt, A02-b scaler future
+    observation, A02-c feature input after publication, A04 solver policy and nine no-rescue cases, A05 adapter-output scan. Each
+    has an in-memory mutant falsifier; the reference stays pinned at sha256 `29fc1cc5…a65a11f`.
+  - Lane MT: U1 and N01-F2 share one Macro test-only lane. The two owned test files are new or disjoint, and each is
+    independently revertible.
+  - U3 (B1-RI adapters, A01) belongs to the incumbent Prophet/OA owner per spec gate G2. U4 (B0-only labelling, A05) follows U2/U3.
+- D46 (20:10Z) D04 verify lead (O1) judged ACCEPT. Slice A (server-side quote and pulse source clocks; pulse coverage measured
+  against the resolved universe) is frozen from §5 with an amended custody precheck.
+  - Scan: the files of all 643 open Macro PRs (paged GraphQL, plus REST for the 34 large ones). Two idle drafts touch owned files:
+    - #6867 (DRAFT/HOLD-FOR-SOL, the WS-INTRADAY-FLOW-P0 PR, last activity 2026-10-03): `build_intraday_flow.py` hunks at base
+      ~L546, ~L1099, and one line in `_run_fastpath` at base L1231-1237;
+    - #8144 (China heatmap draft, idle since 2026-09-28): `check_vps_live_health.py` +156 at L82 and one line in `require_lane`
+      at base ~L179.
+  - Ruling: neither is a live writer of main's file, and slice A writes neither branch. The #6867 hold binds #6867's own merge
+    path only. Slice A must not modify base L1231-1237 of `build_intraday_flow.py` or base L176-186 of `check_vps_live_health.py`;
+    if it must, STOP with CUSTODY_CONFLICT. The PR body names both PRs as coordination. The WS-INTRADAY-FLOW-P0 owner label
+    (coo-fable) is a label, not a live receiver (D20).
+  - Q1: the deploy is held until after the Monday 2026-10-12 21:30Z post-close capture, so Monday measures one unfixed revision
+    and captures the natural A02 falsifier. Tuesday proves the fixed gates.
+  - Q2: the brief receipt fixes wait for D16a to merge and for the AD-1 owner to rule on one-time `receipt_id` churn.
+  - Q3: slice B (template, site copy, `test_intraday_flow_ncp_js.py`) goes to the same lane after slice A merges.
+  - A04 (calendar) adopts D44 Q3. D04 only consumes it.
+- D47 (20:10Z) M02 verify lead (O3) judged ACCEPT. Custody of #8684 and #870 is ruled VACANT under D20:
+  - no commit, comment, review or claim since 2026-10-09T06:13Z (#8684) and 06:11Z (#870), about 62 h;
+  - the author's own handoff records the branch as blocked;
+  - no WS record names a live receiver.
+  - Adoption is by the smallest blast radius. The pin lane works on a NEW seat branch stacked on #8684's head `300754c60144`. It
+    never pushes to the author's branch `claude/spx-session-mechanics-20261008`, and it does not rebase or merge. The
+    store/collector hunks (`thetadata_store.py` main ≈426–446, 479–482, 806–812; disjoint from D16a ≈94–390) stay untouched and
+    coordination-only until #8856 merges, then go to D02's owner. ONE comment is posted on #8684 at launch: the fencing claim plus
+    the four coordination facts.
+  - Q2: once V01 #8851 merges, `build_hedge_target_change` consults `kernel_applicability` and returns unavailable
+    `kernel_inside_min_t` within 60 s of fixing. The 40-book receipt is kept as-is, with its final-20-second cases noted as
+    superseded (defect D8). This is a follow-up slice, not the pin lane.
+  - Q3: the accepted A05 schema is the key set emitted at the reviewed head, frozen by the A05 producer test, and later registered as
+    `contracts/options/options.hedge_target_change.v1.schema.json`. The consumer refuses unknown authority keys, strips other
+    unknown fields and projects warnings. This is a follow-up #870 consumer slice.
+  - M02 cannot close from this lane. Still owed: D02 real-source qualification, the scenario view (after #723), an independent
+    review of the integration delta, and an entitled authenticated view. #8555 and #7328 are untouched.
+- D48 (20:10Z) OC run 1 judged PARTIAL by artifact: killed rc=124 at about 19:48Z (O-16).
+  - Items 1, 2, 4, 7 and 8 have result files. Items 5 and 6 are partial. Items 3 and 9 were not started.
+  - The run-1 lane `result.json` shows `timed_out` with residual_count 0.
+  - Run 2 is a continuation, not a rerun: `leads/OC/packet_continuation.md`, v2 launcher, child timeout 7200. It resumes from the
+    existing result files, adds a determinism falsifier, finishes items 3 and 9, and then merges, reports and returns. It stops
+    writing new work at 75 minutes so it returns inside the window.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -499,25 +568,34 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
    On a b41wsvrgy TIMEOUT, record BLOCKED-EXTERNAL (O-14) and re-arm at most once.
    Judge V01/F01/M01 returns by artifact, then commission one independent Opus READ_ONLY review per
    PR head. The seat opens the PR, adds `merge-on-green`, and reads CI once.
+9. (20:10Z) Launch three v2 lanes, each from its own SSD worktree:
+   - D04-A, slice A per D46;
+   - M02-PIN, stacked on `300754c60144` per D47, posting the one #8684 comment at launch;
+   - MT, Macro test-only: N01-F2 plus Q02-U1 per D44/D45.
+   Judge each by artifact; the seat opens the PRs.
+   D04-A deploys only after the Monday 21:30Z capture. Arm a real read-only observer for the D04 Monday dossier: 13:00Z,
+   14:00–14:15Z, 17:00Z, 20:00Z, 20:45–21:30Z.
+10. On #948 MERGED: deploy merged master `--target-sha`, then verify live (chunk grep for the session-window lookup in the flow chunk).
 8. Later waves per D16b/D18: D16b (after #7861); #7861 R1 successor PR; O-13 successor; O6/N01 after V01.
    R05 GATED(Sol), Q05 GATED(#8555/#7328 holders) per D33. Optional: re-attempt G01 A02 while capacity admits.
 
 ## Lane matrix
 
-(19:45Z snapshot.) Rows superseding older rows below:
+(20:10Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
 | U01 step 1B | KILLED rc=124 at 19:20:53Z by the pool's 3600 s child timeout (D43). Partial: 8 commits pushed at `988208e10a1e`, scope OK. B2 judged PASS with positive control, plus one reachability finding for review. The B3 orphan run is finishing into `leads/U01/logs/b3-e2e.log`. B4 and `judge_1B.sh` are owed to the seat |
 | D16a | CI — Macro PR #8856 at `c93aa900` (review REQUEST_REPAIR F1/F2 → seat repair, D42); gate 145; consumer suite no regression (7 pre-existing); `merge-on-green`; app bound; production proof = next natural m1 resolver call logs a resolved store |
 | V01 | CI — Macro PR #8851 at `479b16df2a7a` (audit REQUEST_REPAIR → seat repair `f51bda96804f` + `479b16df2a7a`, D39); gate 351 passed; `merge-on-green`; app PR monitor bound; pilot red = O-4 by design; production proof = first natural flow-surface cycle on m1 after merge |
-| OC | RUNNING — admitted 18:48:21Z (ATTEMPT 1, load1 14.16) via bnwojs7jx (build-bounded, alarm 12600); `oc_sim.py` last modified 19:11:50Z; launched by v1 without `POOL_CHILD_TIMEOUT_SECONDS`, so the pool kills it at about 19:48:21Z (D43); judge what it leaves, then a v2 continuation |
+| OC | run 1 KILLED rc=124 about 19:48Z, judged PARTIAL (D48). Run 2 continuation ARMED via `launch_when_admitted_v2` (pid 21548, build-bounded, child timeout 7200); log `leads/OC/pool.log`; packet `leads/OC/packet_continuation.md` |
 | F01 | ARMED — `launch_when_admitted_v2` bzn10wigs (fix_build, child timeout 7200, wait budget 14400); blrzzl887 stopped before launch (D43); log `leads/F01/pool.log` |
 | M01 | ARMED — `launch_when_admitted_v2` bmq245vh6 (fix_build, child timeout 7200, wait budget 18000); bj2hwmddd stopped before launch (D43); log `leads/M01/pool.log` |
-| O3 M02 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:30Z; `leads/O3/M02_lead.md`; hit the 12-turn limit once, resumed 19:31Z; custody of #8684/#870 is the first question (the seat rules VACANT per D20, not the lead) |
-| O6 N01 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:30Z; `leads/O6/N01_lead.md`; hit the 12-turn limit once, resumed 19:33Z; first finding: the Terminal clock is a projection of Macro `lib/nyse_calendar.py` + `engine/session_digest.py` |
-| O5 Q02 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:37Z; `leads/O5/Q02_lead.md`; the adapter already exists on main (`scripts/options_pilot_study_adapter.py`, 513 lines + test); D13 bounds it |
-| O1 D04 verify lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), launched 19:37Z; `leads/O1/D04_lead.md`; builds on accepted D01/D02; natural proof is Monday 2026-10-12 only |
+| O3 M02 verify lead | DELIVERED → JUDGED ACCEPT (D47); `leads/O3/return_M02.md`; custody VACANT ruled by the seat |
+| N01-T1 | CI — Terminal PR #948 at `34f54738e`, seat-direct under L.7 (D44); `merge-on-green` + auto-merge armed; app-bound; then deploy `--target-sha` and a live chunk check |
+| O6 N01 verify lead | DELIVERED → JUDGED ACCEPT (D44); `leads/O6/return_N01.md` |
+| O5 Q02 verify lead | DELIVERED → JUDGED ACCEPT as a packet, adapter NOT ADOPTED (D45); `leads/O5/return_Q02.md` |
+| O1 D04 verify lead | DELIVERED → JUDGED ACCEPT (D46); `leads/O1/return_D04.md` |
 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
@@ -744,3 +822,13 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - B3 (orphan responsive e2e on 1B's tree): 396 of 2,062 marks at 19:30Z (337 pass, 59 skip, 0 fail), about 20 per
   minute, so it finishes around 20:55Z.
 - Load1 26.7 at 19:29Z, so F01/M01 admission (< 15) is not yet met.
+
+### 2026-10-11 20:10Z — four verify leads judged; N01-T1 at PR #948; OC run 1 partial; D44–D48
+- O6/N01, O5/Q02, O1/D04 and O3/M02 were judged by artifact (returns persisted under `leads/O*/return_*.md`). D44–D47 record the
+  rulings on every question the leads raised.
+- N01-T1 is PR #948 (`34f54738e`), at CI, armed. It is not merged.
+- The open-PR custody scan covered all 643 open Macro PRs and found two idle drafts on D04-A files (#6867, #8144). D46 fences them
+  by line range.
+- OC run 1 is PARTIAL (D48). Run 2 is armed.
+- Load1 was 60 at 19:57Z (other sessions' Playwright/vitest, WindowServer, peekaboo), so F01, M01 and OC run 2 are all waiting on
+  admission (< 15). That is BLOCKED-EXTERNAL (O-14), not a lane fault.
