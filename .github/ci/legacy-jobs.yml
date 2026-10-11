@@ -20820,6 +20820,7 @@ jobs:
       - collectors/tiingo_archive.py
       - scripts/tiingo_ingest.py
       - scripts/build_ext_quotes.py
+      - lib/nyse_calendar.py
       - tests/test_tiingo_boats_display.py
       - tests/test_build_ext_quotes.py
       - scripts/tiingo_materialize.py
