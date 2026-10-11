@@ -17,8 +17,8 @@ acceptance remain open, distinct from the Chairman's purchase/rights attestation
 
 The accepted producer integrity logic remains bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb
 with successful exact-head hosted CI 38137444247. The active original source carrier
-is Macro PR #8698 at 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde plus the current
-independently accepted BOATS-only source/registry change. Its own hosted checks
+is Macro PR #8698 with accepted BOATS source and protected-base integration at
+82feebf630999c0b5a4a3ec6c922ec92f720105f, plus the dated final history evidence save. Its own hosted checks
 and protected landing remain separate requirements. Dated sections below preserve
 historical observations; the prior blocked untracked CEO handoff is not published.
 
@@ -26,14 +26,14 @@ historical observations; the prior blocked untracked CEO handoff is not publishe
 |---|---|---|
 | Original producer integrity | REPAIRED_SOURCE | Original eleven failures repaired; accepted full/affected tests and hosted CI at bddd8da1, no waiver |
 | BOATS producer/public boundary | ACCEPTED_SOURCE | Existing archive-first observer, qualified trades, separate clocks, gap/B/shutdown invalidation and exact BOATS-only public allowlists; independent PASS, 96 combined source/registry tests; no installed runtime claim |
-| Historical EOD | VERIFIED_BOUNDED | Dated wave-four partial qualification: 4,386 nonempty histories / 8,919,835 distinct bars; all raw hashes, exact receipt contexts, nonempty lineage, unique dates and exact overlap equality verified |
+| Historical EOD | VERIFIED_BOUNDED | Final wave-four qualification: 4,547 nonempty histories / 9,263,622 distinct bars; all raw hashes, exact receipt contexts, nonempty lineage, unique dates and exact overlap equality verified |
 | Fundamentals | BOUNDED_WITH_SCOPE_GATE | 20,352 unique permanent IDs / 12,540 inactive / 85 metric definitions; AAPL original/revised/daily 200 and 45 fiscal value differences; current-key AMD ticker/permanent-ID 400 evaluation/Dow 30 restriction unresolved |
 | BOATS bars/authentication | CONTROL_AND_HISTORY_ONLY | Authentic H/200,I/200 and ID presence, historical AMD/AAPL 1,407 minute bars; zero genuine Q/T/B in closed-window capture |
 | Complete history / canonical L2 | INCOMPLETE_NOT_ADMITTED | Exact catalogue 47,689 acquisition candidates; dated security identity and complete history remain open. All 24 contracts PROPOSED and PIT false |
 | Terminal provenance #945 | DEPLOYED_HEALTHY | Merged d0973ef6e7521f775801401a345792fc7c4cb3e2, existing VPS builder rc=0, source/marker/public identity agree, active Hub/Terminal and responsive production pages |
 | BOATS consumer #955 | ACCEPTED_SOURCE_CI_REPAIR | Existing Hub, full-replacement/capture/generation ordering, source eligibility, API allowlist and generic-route exclusion; 116 Hub/48 focused/13 responsive passes and independent PASS; feature-copy repair passes 554 files / 9,141 tests, type, unchanged guard and six EN/ZH browser cases at 3e8fe8ad; protected current-head CI, landing and release pending |
 | Producer runtime/publication | NOT_ADMITTED | Earlier combined publisher/launchd persistent change was auto-review rejected; ops unchanged. Source-only approval does not clear scheduling/installation/publication effects |
-| Current collection | WAVE4_SETTLED_MATERIALIZED | Original timeout and partial proof preserved. All 161 unattempted requests succeeded: 999 retained responses / one absent BAFE request. Existing materializer settled rc=0; final full archive qualification is running. No raw writer, unattended wake or retry queue |
+| Current collection | WAVE4_SETTLED_MATERIALIZED | Original timeout and partial proof preserved. All 161 unattempted requests succeeded: 999 retained responses / one absent BAFE request. Existing materializer settled rc=0; final full archive qualification passed with 4,547 histories / 9,263,622 bars. No raw writer, unattended wake or retry queue |
 
 Safe exact evidence is in `tiingo-evidence/20261011-boats-source/`,
 `tiingo-evidence/20261011-history-wave2/`, `tiingo-evidence/20261011-history-wave3/` and `tiingo-evidence/20261011-history-wave4/`.

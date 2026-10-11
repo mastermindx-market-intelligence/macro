@@ -95,6 +95,12 @@ verified:
     LIVE-pin failures; independent review d7ae07de accepted five actual hashes/counts and three unique
     unchanged anchor relocations; repaired classification suite 21 passed. 102 workflow files parse /
     2,363 closures reachable / zero trigger gaps. Hosted current-head gates pending.
+- claim: Final wave-four complete archive qualification passes without weakening context or lineage checks.
+  command: python3 docs/tiingo-evidence/20261011-history-wave4/verify-final-archive.py after settled existing
+    materializer; audit-final.py checks all 1000 original planned requests.
+  result: 'Dated 22:56:35.691310Z: 4,547 nonempty EOD histories / 9,263,622 distinct bars / 4,564 receipts;
+    all raw and nonempty projection checks passed. 604,537,634 physical bytes, 255.4 GiB free, reserve35.
+    BAFE absent / remaining43,000-plus catalogue candidates; full history/PIT/live consumer not admitted.'
 unverified:
 - claim: Full served fundamentals scope.
   what_would_verify: Resolve actual-key AMD ticker/permanent-ID HTTP 400 evaluation/Dow 30/limit discrepancy
@@ -121,8 +127,8 @@ unresolved:
 - 'Current Terminal #955 source 3e8fe8ad required hosted gates are pending; previous copyguard and historical-lock
   failures are repaired without waivers or screenshot restamps.'
 - Wave-four writer ended on technical TimeoutError with 838 retained responses. Full archive proof passed.
-  The 161-request continuation settled and materialization passed; final full lineage qualification is
-  running, with no raw writer. BAFE remains absent within the original combined cap.
+  The 161-request continuation settled and materialization passed; final full lineage qualification passed,
+  with no raw writer. BAFE remains absent within the original combined cap.
 - Correct intended browser is already signed in; the earlier login request is obsolete. Actual-key AMD
   fundamentals HTTP 400 remains a separate service diagnosis.
 - Normal BOATS window starts 2026-10-12T00:00:00Z / Sunday 17:00 PDT / 20:00 ET. Closed-window controls
@@ -130,8 +136,8 @@ unresolved:
 next_actions:
 - 'Complete protected exact-head CI/landing on original Macro #8698 and Terminal #955; existing #955 auto-merge
   is armed and no bypass is authorized.'
-- Settle the active 161-request wave-four continuation; materialize and qualify its actual retained results.
-  Preserve timeout, partial evidence and combined request cap.
+- Wave four is qualified; continue a finite next catalogue scope after fresh resource/writer checks, preserving
+  the BAFE timeout and real BOATS window.
 - 'Use existing VPS builder for actual protected Terminal #955 merge and verify installed Hub/source/PID/public
   identity. Original #945 is already delivered.'
 - Prepare concrete bounded original BOATS publisher writer/resource/object/cache proof for same-carrier
