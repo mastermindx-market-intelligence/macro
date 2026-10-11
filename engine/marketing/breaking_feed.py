@@ -110,6 +110,10 @@ class _OfficialSourcePayloadRejected(ValueError):
     """An official HTTP success carried no verifiable RSS/Atom document."""
 
 
+class _OfficialSourceRevisionPending(ValueError):
+    """An Atom source entry requires the existing News revision owner."""
+
+
 def _parse_pub_date(raw: str, *, require_attested: bool = False) -> str:
     """Parse RSS pubDate / Atom updated/published / dc:date → ISO8601 UTC str.
 
@@ -196,7 +200,8 @@ def parse_feed(xml_or_json_text: str, source_cfg: dict) -> list[FeedItem]:
                 xml_or_json_text, source_key, source_name, source_tier,
                 strict_date=strict_clock,
             )
-    except (_OfficialSourceTimeRejected, _OfficialSourcePayloadRejected):
+    except (_OfficialSourceTimeRejected, _OfficialSourcePayloadRejected,
+            _OfficialSourceRevisionPending):
         raise
     except Exception as exc:  # noqa: BLE001
         if strict_clock:
@@ -288,7 +293,13 @@ def _parse_atom(
     root: Any, source_key: str, source_name: str, source_tier: str, ns: str,
     *, strict_date: bool = False,
 ) -> list[FeedItem]:
-    """Parse Atom feed (root already an ElementTree Element)."""
+    """Parse Atom entries; strict mode refuses unhandled publisher revisions.
+
+    BLS Atom 'published' values can precede the 8:30 ET embargo in its
+    corresponding official release. The parsed published_at is a SOURCE
+    METADATA clock, never proof of public availability or first observation.
+    Live/PIT admission needs a separate incumbent source-observation receipt.
+    """
     entries = root.findall(f"{ns}entry")
     results: list[FeedItem] = []
     for entry in entries:
@@ -306,12 +317,35 @@ def _parse_atom(
             if href and not link:
                 link = href
 
+        if strict_date and not title and not link:
+            raise _OfficialSourcePayloadRejected(
+                "official feed payload has incomplete Atom entry"
+            )
+
         id_el = entry.find(f"{ns}id")
         entry_id_raw = _elem_text(id_el) if id_el is not None else link
 
         updated_el = entry.find(f"{ns}updated")
         published_el = entry.find(f"{ns}published")
         pub_raw = _elem_text(updated_el if updated_el is not None else published_el)
+        if strict_date:
+            original = _elem_text(published_el)
+            revised = _elem_text(updated_el)
+            if not original:
+                raise _OfficialSourceRevisionPending(
+                    "official publication timestamp missing in Atom"
+                )
+            original_at = _parse_pub_date(original, require_attested=True)
+            if revised and _parse_pub_date(
+                revised, require_attested=True
+            ) != original_at:
+                # Same source ID plus later Atom <updated> needs a qualified
+                # correction/retraction reduction, not keep-FIRST dedupe.
+                # Refuse the whole preview before ETag/seen acceptance.
+                raise _OfficialSourceRevisionPending(
+                    "official source revision requires News owner"
+                )
+            pub_raw = original
 
         # Prefer <content>, fall back to <summary> — with EXPLICIT None checks:
         # ElementTree Elements with no children are falsy, so `content_el or
@@ -558,9 +592,9 @@ def poll_source(
         return parse_feed(text, source_cfg)
 
     except (_OfficialFeedRedirectRefused, _OfficialSourceTimeRejected,
-            _OfficialSourcePayloadRejected):
-        # Unqualified transport, publication clock or RSS/Atom payload stops
-        # the ENTIRE preview before proposed ETag/seen is acknowledged.
+            _OfficialSourcePayloadRejected, _OfficialSourceRevisionPending):
+        # Unqualified transport, publisher clock, revision or RSS/Atom body
+        # stops the ENTIRE preview before proposed ETag/seen is acknowledged.
         raise
     except HTTPError as exc:
         # urllib raises for every non-2xx, INCLUDING 304. A redirect to an
@@ -688,8 +722,10 @@ class OfficialFeedPreview:
 
     A caller must FIRST prove every offered event was durably accepted by the
     incumbent News/Intelligence Desk before ack_official_preview is allowed.
-    Existing keep-FIRST event IDs make this a FIRST-PRINT-ONLY pilot; changed
-    same-ID facts/withdrawals are NOT established by this contract.
+    BLS Atom <published> can be pre-embargo source metadata; this object does
+    not certify public release/first observed time or tradable as-of. Existing
+    keep-FIRST IDs make this a FIRST-PRINT-ONLY pilot; changed same-ID facts
+    and withdrawals require the canonical News revision owner.
     """
 
     root_key: str

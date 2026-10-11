@@ -2865,3 +2865,64 @@ def test_real_shape_bea_rss_current_window_to_private_desk_no_historical_backfil
     assert len(feed._load_seen(tmp_path)) == 1
     assert feed._load_state(tmp_path)["bea_news"]["etag"] == "bea-2026-10-trade"
     assert not list(tmp_path.rglob("items.jsonl"))
+
+
+
+@pytest.mark.parametrize("published,updated,reason", [
+    ("2026-09-11T07:50:40-04:00", "2026-09-12T07:50:40-04:00",
+     "official source revision"),
+    ("", "2026-09-11T07:50:40-04:00",
+     "official publication timestamp"),
+])
+def test_official_atom_changed_or_missing_original_clock_fails_before_etag(
+        tmp_path, monkeypatch, published, updated, reason):
+    """A revised Atom entry needs News revision authority, not keep-FIRST."""
+    from engine.marketing import breaking_feed as feed
+
+    pubtag = f"<published>{published}</published>" if published else ""
+    atom = (
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        '<entry><id>cpi-2026_09_11__07_50_40</id>'
+        '<title>Revised CPI news item</title>'
+        '<link href="https://www.bls.gov/news.release/archives/cpi_09112026.htm"/>'
+        + pubtag +
+        f'<updated>{updated}</updated>'
+        '</entry></feed>'
+    ).encode("utf-8")
+
+    class Response:
+        headers = {"ETag": "cannot-ack-unhandled-correction"}
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def read(self, n): return atom[:n]
+        def geturl(self): return "https://www.bls.gov/feed/cpi.rss"
+
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    with pytest.raises(ValueError, match=reason):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [dict(BLS_CPI_RELEASE_CFG)],
+                       "poll_interval_s": 0}
+        )
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+def test_nonofficial_atom_update_keeps_legacy_updated_clock_behavior():
+    """Strict revision handling stays scoped to the dormant official preview."""
+    from engine.marketing import breaking_feed as feed
+    atom = (
+        '<feed xmlns="http://www.w3.org/2005/Atom">'
+        '<entry><id>ordinary-legacy-item</id><title>Updated ordinary item</title>'
+        '<link href="https://example.com/story"/>'
+        '<published>2026-09-11T07:50:40-04:00</published>'
+        '<updated>2026-09-12T07:50:40-04:00</updated>'
+        '</entry></feed>'
+    )
+    items = feed.parse_feed(atom, {
+        "key": "ordinary", "kind": "rss", "tier": "wire",
+        "source_name": "Legacy wire",
+    })
+    assert len(items) == 1
+    assert datetime.fromisoformat(items[0]["published_at"]) == (
+        datetime(2026, 9, 12, 11, 50, 40, tzinfo=timezone.utc)
+    )
