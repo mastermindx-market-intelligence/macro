@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from numbers import Real
 
 from engine.indicators import score_from_z, slope_z
 from engine.regime import apply_hysteresis, raw_quad
@@ -28,6 +29,57 @@ _GROWTH = {"gdp_trend": 1.0, "unemployment_trend": 1.0, "index_trend": 1.0,
 # cpi_direction leads WHEN FRESH; oil + the long-yield trend are always-current
 # proxies so the axis stays meaningful where keyless CPI is stale/discontinued.
 _INFLATION = {"cpi_direction": 1.5, "oil_trend": 0.75, "yield_trend": 0.75}
+
+
+def _finite_native_float(value: object) -> float | None:
+    if value is None or pd.isna(value) or isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
+        return None
+    number = float(value)
+    return number if np.isfinite(number) else None
+
+
+def _native_count(value: object) -> int | None:
+    if value is None or pd.isna(value) or isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
+        return None
+    if value < 0 or not float(value).is_integer():
+        return None
+    return int(value)
+
+
+def component_evidence_at(reg: pd.DataFrame, asof: pd.Timestamp) -> dict[str, object]:
+    required_columns = {
+        "growth_score", "inflation_score", "growth_n_components", "inflation_n_components",
+        *(f"c_growth_{key}" for key in _GROWTH),
+        *(f"c_inflation_{key}" for key in _INFLATION),
+    }
+    if (not isinstance(reg, pd.DataFrame) or reg.empty or not isinstance(reg.index, pd.DatetimeIndex)
+            or reg.index.hasnans or reg.index.has_duplicates or reg.columns.has_duplicates
+            or not required_columns.issubset(reg.columns) or not isinstance(asof, pd.Timestamp)
+            or pd.isna(asof)):
+        raise ValueError("invalid classifier frame or as-of timestamp")
+
+    try:
+        row = reg.loc[asof]
+    except KeyError as error:
+        raise ValueError("as-of timestamp is absent") from error
+    if not isinstance(row, pd.Series):
+        raise ValueError("as-of timestamp is not unique")
+
+    def components(axis: str, definitions: dict[str, float]) -> list[dict[str, object]]:
+        return [
+            {"key": key, "score": _finite_native_float(row[f"c_{axis}_{key}"]), "weight": float(definitions[key])}
+            for key in definitions
+        ]
+
+    return {
+        "asof": row.name.isoformat(),
+        "growth": components("growth", _GROWTH),
+        "inflation": components("inflation", _INFLATION),
+        "growth_score": _finite_native_float(row["growth_score"]),
+        "inflation_score": _finite_native_float(row["inflation_score"]),
+        "growth_n_components": _native_count(row["growth_n_components"]),
+        "inflation_n_components": _native_count(row["inflation_n_components"]),
+    }
 
 
 def _scfg() -> dict:

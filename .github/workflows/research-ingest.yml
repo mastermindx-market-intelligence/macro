@@ -71,8 +71,11 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       R2_BUCKET: ${{ secrets.R2_BUCKET }}
-      # Research vault store — a SEPARATE Cloudflare account/bucket. Each falls
-      # back to the shared R2_* above when its secret is unset (same-account case).
+      # Research vault store — a PRIVATE bucket with an explicit credential
+      # namespace. The engine intentionally does NOT inherit the shared R2_* values
+      # above. Same-account credentials remain possible only when these dedicated
+      # names are populated explicitly, and R2_RESEARCH_BUCKET must differ from
+      # the configured shared/public R2_BUCKET.
       R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
       R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
       R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}

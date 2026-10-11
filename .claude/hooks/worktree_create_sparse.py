@@ -11,7 +11,8 @@ WHAT IT DOES
 ------------
 1. `git fetch --prune origin main`, so every session starts on fresh origin/main
    (house law: branch off fresh origin/main, never a squash-merged branch).
-2. `git worktree add --no-checkout -b worktree-<name>`.
+2. `git worktree add --no-checkout -b claude/<name>` (an existing legacy
+   `worktree-<name>` branch is attached instead — see BRANCH NAME below).
 3. Applies the sparse profile from `config/sparse_worktree.json` — every tracked
    top-level directory EXCEPT the heavy generated ones (`data/`, `site/`,
    `mockups/`, `verify_shots/`).
@@ -52,6 +53,22 @@ remains undeletable (see CLAUDE.md § Shared workspace).
 ``scripts/worktree_gc.py`` expands its repo-relative roots under every host
 checkout for the same reason — a tree the sweeper cannot see is a tree it can
 never reclaim.
+
+BRANCH NAME (2026-10-09)
+------------------------
+New trees are minted on `claude/<name>`. The hook used to mint
+`worktree-<name>`, but `.claude/hooks/ship_loop_guard.py` admits a delivery root
+only when it is a linked worktree on a `claude/*` branch
+(`_delivery_root_admission`) and files `unsafe_branch` on Stop otherwise — so
+every tree this hook planted started in a state its own guard quarantined, and
+the operator had to hand-create a `claude/*` branch before any work could ship.
+A `worktree-<name>` branch that already exists (a tree minted before the switch,
+or the legacy zsh hook's half-finished spawn) is still attached exactly as
+before: branches and worktrees are never renamed or deleted HERE. The rename is
+the ship-loop guard's job (`_adopt_native_session_branch`, 2026-10-10): it moves
+an unpublished `worktree-<name>` in `.claude/worktrees/<name>` to `claude/<name>`
+at SessionStart or the first effectful tool call — which also heals trees minted
+by a host checkout whose copy of this hook predates the switch.
 
 IDEMPOTENT ON PURPOSE
 ---------------------
@@ -129,6 +146,27 @@ def ref_exists(repo_root: Path, ref: str) -> bool:
     """True when ``ref`` resolves in this repository."""
     return subprocess.run(
         ("git", "-C", str(repo_root), "show-ref", "--verify", "--quiet", ref),
+        capture_output=True, check=False,
+    ).returncode == 0
+
+
+def session_branch(repo_root: Path, name: str) -> str:
+    """The branch a session worktree named ``name`` lives on.
+
+    ``claude/<name>`` for a new mint — the only namespace the ship-loop guard
+    admits — unless a legacy ``worktree-<name>`` branch already exists, which is
+    kept and attached rather than renamed.
+    """
+    legacy = f"worktree-{name}"
+    if ref_exists(repo_root, f"refs/heads/{legacy}"):
+        return legacy
+    return f"claude/{name}"
+
+
+def is_valid_branch(repo_root: Path, branch: str) -> bool:
+    """True when ``branch`` is a legal branch name (``git check-ref-format``)."""
+    return subprocess.run(
+        ("git", "-C", str(repo_root), "check-ref-format", f"refs/heads/{branch}"),
         capture_output=True, check=False,
     ).returncode == 0
 
@@ -652,7 +690,9 @@ def main() -> int:
     repo_root = resolve_host(toplevel, common, common.parent)
     worktree_root = repo_root / ".claude" / "worktrees"
     dest = worktree_root / name
-    branch = f"worktree-{name}"
+    branch = session_branch(repo_root, name)
+    if not is_valid_branch(repo_root, branch):
+        return fail(f"worktree name does not form a valid branch: {branch}")
 
     if dest.exists():
         # A sibling wiring (the legacy zsh hook) may have created it already.

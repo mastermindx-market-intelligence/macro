@@ -29,6 +29,15 @@
 {% set _hz = _re.get('hazard_summary') or {} %}
 {% set _co = _re.get('coherence') or {} %}
 {% set _ps = _re.get('policy_summary') or {} %}
+{% set _rotation = _re.get('rotation_context') or {} %}
+{% set _confluence = _re.get('confluence') or {} %}
+{% set _transition = _re.get('market_transition') or {} %}
+{% set _rotation_labels = {
+  'DEFENSIVE_RELATIVE_STRENGTH': ('Defensive groups gaining relative strength', '防御板块相对转强'),
+  'BROADENING': ('Broader-market proxies gaining relative strength', '更广市场代理相对转强'),
+  'MIXED_ROTATION': ('Defensive groups and broader-market proxies gaining relative strength', '防御板块与更广市场代理相对转强'),
+  'NO_EARLY_SHIFT': ('No short-term relative shift measured', '未测得短期相对强弱变化')
+} %}
 {% set _prov = (_re.get('provenance') or {}).get('sources') or [] %}
 {% set _stage = _hz.get('stage') %}
 {% set _coh = _co.get('state') %}
@@ -124,6 +133,28 @@
   <details class="gde-disc">
     <summary><span class="l-en">Settled evidence · {{ _prov | length }} sources</span><span class="l-zh">收盘依据 · {{ _prov | length }} 个来源</span></summary>
     <div class="gde-disc-body">
+          {% if _rotation or _confluence or _transition %}
+          <div id="gde-rotation-context" data-context-session="{{ _rotation.get('as_of') or '' }}">
+            <p class="gde-disc-h"><span class="l-en">Leadership and risk · settled evidence</span><span class="l-zh">领涨变化与风险 · 收盘依据</span></p>
+            {% set _rotation_label = _rotation_labels.get(_rotation.get('state')) if _rotation.get('usable') else none %}
+            {% if _rotation_label %}
+            <p class="gde-context-line"><span class="l-en">{{ _rotation_label[0] }} · {{ _rotation.get('as_of') }}.</span><span class="l-zh">{{ _rotation_label[1] }} · {{ _rotation.get('as_of') }}。</span></p>
+            {% else %}
+            <p class="gde-input-caveat"><span class="l-en">Rotation evidence is unavailable for this session. This does not establish a stable market.</span><span class="l-zh">本交易日的轮动依据不全，不能据此认定市场稳定。</span></p>
+            {% endif %}
+            <p class="gde-context-line"><span class="l-en">The macro backdrop and relative leadership describe different aspects of the market. Shared price or breadth inputs do not count as independent confirmation.</span><span class="l-zh">宏观背景与相对领涨结构描述市场的不同方面。共用的价格或广度数据不能重复计为独立确认。</span></p>
+            {% if _confluence.get('lineage_status') != 'COMPLETE' %}
+            <p class="gde-input-caveat"><span class="l-en">Some source relationships remain unknown; there is no independent-signal count.</span><span class="l-zh">部分来源之间的关系尚不明确，因此不提供独立信号数量。</span></p>
+            {% endif %}
+            {% set _last_change = _transition.get('latest_recorded_change') or {} %}
+            {% set _before = _last_change.get('before') or {} %}
+            {% set _after = _last_change.get('after') or {} %}
+            {% if _last_change.get('verdict_changed') and _before.get('verdict') in _labels and _after.get('verdict') in _labels %}
+            <p class="gde-context-line"><span class="l-en">Last recorded backdrop change: {{ _labels[_before.get('verdict')][0] }} → {{ _labels[_after.get('verdict')][0] }} · {{ _after.get('asof') or _after.get('as_of') or _after.get('source_session') or 'date unavailable' }}.</span><span class="l-zh">最近记录的宏观判读变化：{{ _labels[_before.get('verdict')][1] }} → {{ _labels[_after.get('verdict')][1] }} · {{ _after.get('asof') or _after.get('as_of') or _after.get('source_session') or '日期不详' }}。</span></p>
+            {% endif %}
+            <p class="gde-input-caveat"><span class="l-en">Relative strength can reflect a smaller decline. It does not establish fund inflows, institutional distribution, or a forecast of the next selloff.</span><span class="l-zh">相对强势也可能只是跌幅较小，并不证明资金流入、机构派发或预示下一轮抛售。</span></p>
+          </div>
+          {% endif %}
           <div class="gde-tblwrap">
             <table class="gde-tbl">
               <thead><tr>
@@ -136,7 +167,7 @@
               {% for s in _prov %}
                 <tr>
                   <td class="l">{% if s.label_en %}<span class="l-en">{{ s.label_en }}</span><span class="l-zh">{{ s.label_zh or s.label_en }}</span>{% else %}<span class="tnum">{{ s.source_id }}</span>{% endif %}</td>
-                  <td class="tnum">{{ s.state if s.state is not none else '—' }}{% if s.score is not none %} · {{ s.score }}{% endif %}</td>
+                  <td class="tnum">{% if s.source_id == 'site-marketdata-rotation-events' and s.state in _rotation_labels %}<span class="l-en">{{ _rotation_labels[s.state][0] }}</span><span class="l-zh">{{ _rotation_labels[s.state][1] }}</span>{% else %}{{ s.state if s.state is not none else '—' }}{% endif %}{% if s.score is not none %} · {{ s.score }}{% endif %}</td>
                   <td class="tnum">{{ s.as_of or '—' }}</td>
                   <td>
                     {% if s.coverage == 'FRESH' %}<span class="l-en">This session</span><span class="l-zh">本交易日</span>

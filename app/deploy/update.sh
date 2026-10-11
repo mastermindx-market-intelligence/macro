@@ -469,6 +469,14 @@ OPTIONS_CREDENTIAL_READY=0
 API_UNIT_UPDATED=0
 API_UNIT_READY=0
 
+# macro-api binds ticker-news state read-only. Provision only the private state
+# root here; this does NOT install, enable, or start the writer service.
+if [ -L /var/lib/macro-ticker-news ]; then
+	echo "macro-update: refusing symlinked ticker-news state root" >&2
+	exit 1
+fi
+install -d -m 0700 /var/lib/macro-ticker-news
+
 if ! mm_reviewed_unit_file_ready \
 	"$APP_DIR/app/deploy/macro-api.service" \
 	/etc/systemd/system/macro-api.service; then
@@ -1188,6 +1196,11 @@ fi
 #                          contracts, health, and views; all are pinned in the
 #                          API process for the lifetime of the public ticker
 #                          context route.
+#   integrated answer      app/integrated_answer.py (Package I v0, default-off) reads
+#                          company_theme_exposure/{__init__,contracts}, expectation_state,
+#                          k3e_expectation_surface, theme_context and the frozen-source
+#                          loader scripts/query_k3e_expectation_surface.py at request
+#                          time; each stays cached in macro-api after the first read.
 #   seasonality/           app/seasonality.py's single `from engine.seasonality
 #                          import screener` executes the package __init__, which
 #                          eagerly re-exports contracts, event_clock, model,
@@ -1234,6 +1247,8 @@ fi
 #                          unrelated collectors.
 #   lib/*                  ai_costs + mastermind_response_log log every chat call;
 #                          config.py is a module-level dep of live_quotes;
+#                          us_cash_calendar imports the exchange_holidays annual
+#                          slate for live_quotes; both remain cached until restart;
 #                          commercial_path.py is the GATE-4 emit module reached
 #                          from billing / require_user / brain_gateway (function-
 #                          level, cached after the first money-path event)
@@ -1251,7 +1266,7 @@ fi
 API_RESTART_CONFIRMED=0
 API_RESTART_NEEDED=0
 # BEGIN MACRO_API_RESTART_TRIGGER
-if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/earnings_catalyst\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
+if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|risk_envelope|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
    [ "$API_DEPS_UPDATED" -eq 1 ]; then
 	API_RESTART_NEEDED=1
 
@@ -2146,6 +2161,42 @@ if [ -f /etc/systemd/system/marketing-press-feeds.service ] && \
 	fi
 fi
 
+# TICKER NEWS is a long-running, operator-armed source service. Routine deploys
+# never install, enable, or start an absent/inactive unit. If an operator has
+# already installed it, keep the reviewed unit current and restart only an
+# already-active writer when import-cached code or canonical universe inputs move.
+TICKER_NEWS_RUNTIME_REGEX='^(app/requirements\.txt|scripts/run_qbus_news\.py|scripts/build_qbus_news_universe\.py|collectors/benzinga_news\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|lib/dataos/identity\.py|data/breadth/(constituents|sp1500_pit_membership)\.parquet|data/reference/(security_master|vendor_aliases)\.parquet)$'
+TICKER_NEWS_UNIT_UPDATED=0
+if [ -f /etc/systemd/system/macro-ticker-news.service ]; then
+	if ! cmp -s "$APP_DIR/app/deploy/macro-ticker-news.service" /etc/systemd/system/macro-ticker-news.service; then
+		if systemd-analyze verify "$APP_DIR/app/deploy/macro-ticker-news.service"; then
+			install -m 0644 "$APP_DIR/app/deploy/macro-ticker-news.service" /etc/systemd/system/macro-ticker-news.service
+			systemctl daemon-reload
+			TICKER_NEWS_UNIT_UPDATED=1
+			RECONCILED=1
+			echo "macro-update: macro-ticker-news reviewed unit reconciled"
+		else
+			echo "macro-update: refusing macro-ticker-news unit update — systemd-analyze verify failed" >&2
+			if systemctl is-active --quiet macro-ticker-news.service; then
+				exit 1
+			fi
+		fi
+	fi
+	if [ "$TICKER_NEWS_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE "$TICKER_NEWS_RUNTIME_REGEX"; then
+		if systemctl is-active --quiet macro-ticker-news.service; then
+			systemctl restart macro-ticker-news.service
+			systemctl is-active --quiet macro-ticker-news.service || {
+				echo "macro-update: macro-ticker-news restart failed" >&2
+				exit 1
+			}
+			RECONCILED=1
+			echo "macro-update: active macro-ticker-news restarted on reviewed source"
+		else
+			echo "macro-update: macro-ticker-news installed but inactive; preserving operator-controlled arming"
+		fi
+	fi
+fi
+
 # BioCatalyst B1 is a separate source-canonical lane.  A routine production
 # pull must never install, enable, or start it: doing so could turn a partially
 # configured evidence collector live.  Reconcile only a fully operator-installed
@@ -2398,7 +2449,13 @@ fi
 # import-cached after the first hit exactly like a module-level import, so a
 # deploy that changed the impact scoring would leave the panel serving the old
 # module out of sys.modules. governor.py stays out: the panel never imports it.
-if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|quality|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/codex_lane/runner\.py|engine/chronicle/impact\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
+# F05-017 (PR #8265) makes impact.py import engine/chronicle/schema.py at module
+# level (the schema.SOURCES tie-break for the family-fair glance), so schema.py
+# rides into the same import cache through impact: a deploy that changed the
+# sources, families or row contract would otherwise leave the panel scoring
+# against the old schema. The closure test
+# (tests/test_deploy_update_self_heal.py) derives this; keep the two in step.
+if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|quality|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/codex_lane/runner\.py|engine/chronicle/(impact|schema)\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
 	systemctl is-enabled admin >/dev/null 2>&1 && systemctl restart admin || true
 fi
 
