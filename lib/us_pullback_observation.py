@@ -1,8 +1,9 @@
 """US settled-price pullback adapter; consumes the single existing raw-close observer.
 
 No new episode ledger, forecast, source feed, or capital policy. The existing
-held PR #8188 owns lib.pullback_observation.observe(); this code imports that
-owner only at evaluation time. Until integrated, its absence is unavailable.
+held PR #8188 owns lib.pullback_observation.observe(). This module never imports
+it: the builder must pass it to snapshot() as ``observer``. Until that binding
+lands with the #8188 integration, every snapshot is unavailable.
 
 Prices come only from the licensed whole-market daily store plus the same
 vendor's same-session regular-hours close (both raw prints, one basis). The
@@ -29,6 +30,11 @@ MAX_SESSION_TIP = 3
 # A market-wide halt caps one regular session near -20%, so a consecutive close
 # ratio beyond 3:4 is a split-like basis break, never a market move.
 SPLIT_LIKE_RATIO = 0.75
+# Below this many points the shared renderer draws its "No history yet"
+# placeholder, which would contradict the measured figures beside it.
+MIN_CHART_POINTS = 4
+# The owner rounds path values to 4 dp; its last value is the current drawdown.
+PATH_TOLERANCE_PP = 0.01
 
 
 class SourceRefused(ValueError):
@@ -117,9 +123,10 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
     """SPY raw regular-session closes through ``expected`` from licensed sources.
 
     History is the licensed daily store. Sessions it has not landed yet (at most
-    MAX_SESSION_TIP) come from the same vendor's per-session close, appended in
-    order and never skipped. A tip that cannot be appended is held, and the
-    observer reports the series as delayed. Never falls back to another vendor.
+    MAX_SESSION_TIP) come from the same vendor's finalized per-session close,
+    appended in order and never skipped. A tip that cannot be appended, including
+    a not-yet-finalized snapshot close, is held, and the observer reports the
+    series as delayed. Never falls back to another vendor.
     """
     if load is None:
         from collectors.massive_stock_day import load_ticker as load
@@ -157,9 +164,12 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
         if getattr(got, "session", None) != session or price is None:
             hold = "session_close_unavailable"
             break
+        if getattr(got, "finalized", False) is not True:
+            # A snapshot close can still be revised; the popup says "Settled close".
+            hold = "session_close_provisional"
+            break
         rows.append((session, price))
-        appended.append({"session": session,
-                         "settlement": "final" if got.finalized else "provisional"})
+        appended.append({"session": session, "settlement": "final"})
     if _split_like_break(rows):
         raise SourceRefused("price_basis_discontinuity")
     return LicensedCloses(rows=rows, appended=tuple(appended), hold=hold)
@@ -233,19 +243,39 @@ def snapshot(*, now: datetime | None = None, read: Callable | None = None,
     }
 
 
-def _since_peak(path: dict, peak_session) -> dict:
+def _episode_window(obs: dict) -> dict | None:
     """Display window only: the episode starts at the retained peak.
 
     The owner's path also carries closes from before that peak, measured against
     a high that did not exist yet; drawn as drawdown, a rally reads as damage.
-    The observation itself is not modified.
+    None, so no chart or table is drawn, unless the window agrees with the
+    measured figures beside it. The observation itself is not modified.
     """
-    dates = list(path.get("dates") or [])
-    vals = list(path.get("vals") or [])
-    if not isinstance(peak_session, str):
-        return {"dates": dates, "vals": vals}
-    start = next((i for i, d in enumerate(dates) if str(d) >= peak_session), len(dates))
-    return {"dates": dates[start:], "vals": vals[start:]}
+    path, peak_session = obs.get("price_path"), obs.get("peak_session")
+    if not isinstance(path, dict) or not isinstance(peak_session, str):
+        return None
+    dates, vals = list(path.get("dates") or []), list(path.get("vals") or [])
+    if len(dates) != len(vals) or not all(isinstance(d, str) for d in dates):
+        return None
+    start = next((i for i, d in enumerate(dates) if d >= peak_session), len(dates))
+    dates, vals = dates[start:], vals[start:]
+    if len(dates) < MIN_CHART_POINTS or dates[-1] != obs.get("asof"):
+        return None
+    if any(later <= earlier for earlier, later in zip(dates, dates[1:])):
+        return None
+    if not all(isinstance(v, Real) and not isinstance(v, bool) and isfinite(v)
+               and -100.0 <= v <= 0.0 for v in vals):
+        return None
+    close, peak = _positive(obs.get("close")), _positive(obs.get("peak_close"))
+    if close is None or peak is None:
+        return None
+    # A reclaimed close sits at the 0% line, as the owner draws it.
+    if abs(vals[-1] - min(0.0, 100.0 * (close / peak - 1.0))) > PATH_TOLERANCE_PP:
+        return None
+    low = _positive(obs.get("low_close"))
+    if low is not None and min(vals) < 100.0 * (low / peak - 1.0) - PATH_TOLERANCE_PP:
+        return None
+    return {"dates": dates, "vals": vals}
 
 
 def present(observation: dict, radar: dict | None = None) -> dict:
@@ -267,17 +297,18 @@ def present(observation: dict, radar: dict | None = None) -> dict:
         "monitoring", "developing", "underway", "stabilizing",
         "recovering", "repaired",
     } else "unavailable"
-    chart, shown = "", None
-    if phase != "unavailable" and obs.get("price_path"):
+    chart = ""
+    shown = _episode_window(obs) if phase != "unavailable" else None
+    if shown is not None:
         from lib import illus
-        shown = _since_peak(obs["price_path"], obs.get("peak_session"))
         chart = illus.illus(
             shown,
             kind="drawdown",
             height=188,
             accent="var(--down)",
             reference=0,
-            value_fmt="{:.1f}%",
+            # "z": a value that rounds to zero prints 0.0%, as the metric does.
+            value_fmt="{:z.1f}%",
             aria_en="Observed SPY price closing drawdown from the retained episode high",
             aria_zh="SPY实际收盘价相对本轮参考高点的回撤",
         )

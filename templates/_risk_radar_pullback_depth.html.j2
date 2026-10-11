@@ -3,6 +3,38 @@
    the caller must qualify market, source clocks and trusted SSR chart provenance.
    No forecast payload or risk score is accepted as an estimate by this fragment. #}
 {% macro t(en, zh) -%}<span class="l-en">{{ en|e }}</span><span class="l-zh">{{ zh|e }}</span>{%- endmacro %}
+{# The one qualification rule. detail() renders by it and a page's lead gate
+   asks lead(), so a view this fragment rejects never displaces the page's own
+   popup content. Results go into the caller's namespace. #}
+{% macro assess(mkt, view, ns) -%}
+{% set v = view if view is mapping else {} %}
+{% set o = v.get('observation') if v.get('observation') is mapping else {} %}
+{% set labels = ('monitoring','developing','underway','stabilizing','recovering','repaired') %}
+{% set phase = v.get('phase') %}
+{% set p = o.get('close') %}{% set h = o.get('peak_close') %}{% set low = o.get('low_close') %}
+{# A close at or above the retained high is the owner's reclaim, which it only
+   reports as recovering (or repaired); in any other phase it is contradictory. #}
+{% set price_ok = (p is float or p is integer) and (h is float or h is integer)
+   and p-p == 0 and h-h == 0 and p > 0 and h > 0
+   and (p <= h or phase in ('recovering','repaired')) %}
+{% set low_ok = (low is float or low is integer) and low-low == 0
+   and low > 0 and price_ok and low <= p and low <= h %}
+{% set ns.low_ok = low_ok %}
+{% set ns.current = mkt in ('cn','us') and o.get('market') == mkt
+   and o.get('schema') == 'pullback_observation.v1'
+   and o.get('available') is sameas true and o.get('quality') == 'current'
+   and o.get('clock') == 'settled_close' and o.get('asof') is string and o.get('asof')
+   and o.get('valid_until') is string and o.get('valid_until')
+   and phase in labels and phase == o.get('phase') and price_ok
+   and ((phase in ('underway','stabilizing','recovering') and o.get('active') is sameas true)
+        or (phase in ('monitoring','developing','repaired') and o.get('active') is sameas false))
+   and (low_ok or phase in ('monitoring','developing')) %}
+{%- endmacro %}
+{# '1' when the measured section may lead the popup: qualified and an active episode. #}
+{% macro lead(mkt, view) -%}
+{% set ns = namespace(current=false, low_ok=false) %}{{ assess(mkt, view, ns) }}
+{{- '1' if ns.current and (view if view is mapping else {}).get('phase') in ('underway','stabilizing','recovering') else '' -}}
+{%- endmacro %}
 {% macro detail(mkt, view) -%}
 {% set v = view if view is mapping else {} %}
 {% set o = v.get('observation') if v.get('observation') is mapping else {} %}
@@ -16,19 +48,8 @@
 } %}
 {% set phase = v.get('phase') %}
 {% set p = o.get('close') %}{% set h = o.get('peak_close') %}{% set low = o.get('low_close') %}
-{% set price_ok = (p is float or p is integer) and (h is float or h is integer)
-   and p-p == 0 and h-h == 0 and p > 0 and h > 0 %}
-{% set low_ok = (low is float or low is integer) and low-low == 0
-   and low > 0 and price_ok and low <= p and low <= h %}
-{% set current = mkt in ('cn','us') and o.get('market') == mkt
-   and o.get('schema') == 'pullback_observation.v1'
-   and o.get('available') is sameas true and o.get('quality') == 'current'
-   and o.get('clock') == 'settled_close' and o.get('asof') is string and o.get('asof')
-   and o.get('valid_until') is string and o.get('valid_until')
-   and phase in labels and phase == o.get('phase') and price_ok
-   and ((phase in ('underway','stabilizing','recovering') and o.get('active') is sameas true)
-        or (phase in ('monitoring','developing','repaired') and o.get('active') is sameas false))
-   and (low_ok or phase in ('monitoring','developing')) %}
+{% set q = namespace(current=false, low_ok=false) %}{{ assess(mkt, view, q) }}
+{% set current = q.current %}{% set low_ok = q.low_ok %}
 {% set phase = phase if current else 'unavailable' %}
 <section class="rrp pbx" data-pb-phase="{{ phase|e }}"
          data-pb-valid-until="{{ (o.get('valid_until') or '')|e }}"
@@ -50,15 +71,15 @@
     {% set dd = [0, 100*(1-p/h)]|max %}
     <div class="rrp-metrics">
       <div><div class="rrp-label">{{ t('Below the episode high','距本轮高点') }}</div>
-        <strong class="rrp-primary" data-metric="current">{{ '−' if dd >= 0.05 else '' }}{{ '%.1f'|format(dd) }}%</strong>
+        {% set dd_s = '%.1f'|format(dd) %}<strong class="rrp-primary" data-metric="current">{{ '−' if dd_s != '0.0' else '' }}{{ dd_s }}%</strong>
         <div class="rrp-note">{{ t('Reference high','参考高点') }} {{ (o.get('peak_session') or '—')|e }}</div>
       </div>
       <div><div class="rrp-label">{{ t('Worst drawdown so far','已发生的最深回撤') }}</div>
-        <strong data-metric="worst">{% if low_ok %}{{ '−' if h > low else '' }}{{ '%.1f'|format(100*(1-low/h)) }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
+        <strong data-metric="worst">{% if low_ok %}{% set worst_s = '%.1f'|format(100*(1-low/h)) %}{{ '−' if worst_s != '0.0' else '' }}{{ worst_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
         <div class="rrp-note">{{ t('The previous low is retained','保留本轮此前低点') }}</div>
       </div>
       <div><div class="rrp-label">{{ t('Rebound from the low','自低点回升') }}</div>
-        <strong class="rrp-rebound" data-metric="rebound">{% if low_ok and p/low-p/low == 0 %}+{{ '%.1f'|format(100*(p/low-1)) }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
+        <strong class="rrp-rebound" data-metric="rebound">{% if low_ok and p/low-p/low == 0 %}{% set rebound_s = '%.1f'|format(100*(p/low-1)) %}{{ '+' if rebound_s != '0.0' else '' }}{{ rebound_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
         <div class="rrp-note">{{ t('Not recovery odds','并非修复概率') }}</div>
       </div>
     </div>
@@ -79,7 +100,7 @@
       <details class="rrp-method rrp-history"><summary>{{ t('Inspect price history','查看价格历程') }}</summary>
         <table><thead><tr><th>{{ t('Session','交易日') }}</th><th>{{ t('From reference high','距参考高点') }}</th></tr></thead><tbody>
         {% for day in dates %}{% set value = vals[loop.index0] %}
-        <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{{ '%.2f'|format(value) }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
+        <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{% set value_s = '%.2f'|format(0 - value) %}{{ '−' if value_s != '0.00' else '' }}{{ value_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
         {% endfor %}</tbody></table>
       </details>{% endif %}
       {% else %}<p>{{ t('The chart needs current, usable price evidence.', '图表需要当前且可用的价格证据。') }}</p>{% endif %}

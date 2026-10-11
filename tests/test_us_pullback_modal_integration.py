@@ -58,6 +58,9 @@ def test_repair_observations_keep_the_measurement_primary_without_authorizing_bu
     ("market", "cn"),
     ("active", False),
     ("phase", "monitoring"),
+    # Rejected by the fragment's price checks: must not displace the popup either.
+    ("low_close", None),
+    ("close", 101.0),
 ])
 def test_unqualified_or_pre_episode_view_keeps_previous_forecast_first_layout(change):
     v = native_view("us")

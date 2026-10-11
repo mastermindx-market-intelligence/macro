@@ -12856,19 +12856,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {# Measured price damage leads only when the canonical settled-close
            observation confirms an active decline; risk odds remain evidence. #}
         {% set _us_pbv = us_pullback_view if (us_pullback_view is defined and us_pullback_view is mapping) else none %}
-        {% set _us_pbo = _us_pbv.get('observation') if (_us_pbv and _us_pbv.get('observation') is mapping) else none %}
-        {% set _us_pb_active = _us_pbo and _us_pbo.get('market') == 'us'
-             and _us_pbo.get('schema') == 'pullback_observation.v1'
-             and _us_pbo.get('clock') == 'settled_close'
-             and _us_pbo.get('asof') is string and _us_pbo.get('asof')
-             and _us_pbo.get('valid_until') is string and _us_pbo.get('valid_until')
-             and _us_pbo.get('available') is sameas true
-             and _us_pbo.get('quality') == 'current'
-             and _us_pbo.get('phase') in ('underway','stabilizing','recovering')
-             and _us_pbv.get('phase') == _us_pbo.get('phase')
-             and _us_pbo.get('active') is sameas true %}
+        {% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
+        {# The fragment's own qualification decides; one rule, not two. #}
+        {% set _us_pb_active = _us_pbv is not none and (pb_depth.lead('us', _us_pbv)|trim) == '1' %}
         {% if _us_pb_active %}
-          {% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
           {# The observed-path chart is the shared illustration format; this page
              links its published stylesheet only when that chart can render. #}
           {% if _us_pbv.get('detail_chart_html') %}<link rel="stylesheet" href="illus.css">{% endif %}

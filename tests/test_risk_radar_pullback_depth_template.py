@@ -195,3 +195,36 @@ def test_price_history_table_reads_the_same_window_the_chart_drew():
     v['detail_path'] = {'dates': ['2026-09-14', '2026-09-30'], 'vals': [0.0, -6.8]}
     rows = BeautifulSoup(render(v), 'html.parser').select('.rrp-history tbody tr')
     assert [r.select_one('td').get_text() for r in rows] == ['2026-09-14', '2026-09-30']
+
+
+def test_close_above_the_retained_high_is_rejected_not_shown_as_zero_damage():
+    v = native_view()
+    v['observation']['close'] = 101.0
+    v['observation']['low_close'] = 92.6
+    assert 'data-pb-phase="unavailable"' in render(v)
+
+
+def test_figures_that_round_to_zero_print_without_a_sign():
+    v = native_view()
+    v['observation'].update(close=99.97, peak_close=100.0, low_close=99.97)
+    v['observation']['price_path'] = {'dates': ['2026-09-29', '2026-09-30'], 'vals': [-0.004, -1.234]}
+    soup = BeautifulSoup(render(v), 'html.parser')
+    assert soup.select_one('[data-metric="current"]').get_text(strip=True) == "0.0%"
+    assert soup.select_one('[data-metric="worst"]').get_text(strip=True) == "0.0%"
+    assert soup.select_one('[data-metric="rebound"]').get_text(strip=True) == "0.0%"
+    cells = [r.select('td')[1].get_text() for r in soup.select('.rrp-history tbody tr')]
+    assert cells == ["0.00%", "\u22121.23%"]
+
+
+@pytest.mark.parametrize("change, lead", [
+    ({}, "1"),
+    ({"low_close": None}, ""),
+    ({"close": 101.0}, ""),
+    ({"quality": "delayed"}, ""),
+])
+def test_lead_gate_uses_the_fragments_own_qualification(change, lead):
+    v = native_view("us")
+    v["observation"].update(change)
+    env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=False)
+    got = env.from_string('{% import "_risk_radar_pullback_depth.html.j2" as p %}{{ p.lead("us", v) }}').render(v=v)
+    assert got.strip() == lead

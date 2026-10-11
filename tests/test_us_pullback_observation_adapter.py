@@ -57,7 +57,10 @@ def observer_receipt(rows, *, expected_session, is_session):
         "low_close": 87.0,
         "peak_session": "2026-09-18",
         "source_digest": "a" * 64,
-        "price_path": {"dates": ["2026-10-08", "2026-10-09"], "vals": [-12.0, -11.0]},
+        # The owner's shape: since-peak closes against the retained high, ending today.
+        "price_path": {"dates": ["2026-09-18", "2026-10-07", "2026-10-08",
+                                 expected_session.isoformat()],
+                       "vals": [0.0, -9.0, -12.0, round(100.0 * (rows[-1][1] / 100.0 - 1.0), 4)]},
     }
 
 
@@ -139,12 +142,26 @@ def test_multi_session_tip_appends_in_order_and_never_skips_a_failed_session():
     assert got.hold == "session_close_unavailable"
 
 
-def test_provisional_snapshot_close_is_labelled_provisional():
+def test_provisional_snapshot_close_is_held_not_reported_as_settled():
+    """A snapshot close can still be revised; the popup's receipt says "Settled close"."""
     def snap(session, wanted):
         return SessionCloses(session=session, closes={"SPY": 89.0}, finalized=False)
     got = licensed_spy_closes(EXPECTED, load=lambda t: store(), session_closes=snap,
                               corp_actions=quiet)
-    assert got.appended == ({"session": "2026-10-09", "settlement": "provisional"},)
+    assert got.appended == ()
+    assert got.hold == "session_close_provisional"
+    assert [r[0] for r in got.rows][-1] == "2026-10-08"
+    out = snapshot(now=FIXED_NOW, read=reader(session_closes=snap), observer=currency_observer)
+    assert out["available"] is False and out["drawdown_pct"] is None
+    assert out["session_tip"] == {"appended": [], "hold": "session_close_provisional"}
+    assert pb.present(out)["detail_chart_html"] == ""
+
+
+def test_finalized_session_close_is_appended_as_final():
+    got = licensed_spy_closes(EXPECTED, load=lambda t: store(), session_closes=final_close(),
+                              corp_actions=quiet)
+    assert got.appended == ({"session": "2026-10-09", "settlement": "final"},)
+    assert got.hold is None
 
 
 @pytest.mark.parametrize("actions, hold", [
@@ -339,20 +356,72 @@ def _qualified(price_path, **over):
     return obs
 
 
-@pytest.mark.parametrize("peak, shown", [
-    ("2026-09-18", ["2026-09-18", "2026-09-21", "2026-09-22"]),
-    (None, ["2026-09-16", "2026-09-17", "2026-09-18", "2026-09-21", "2026-09-22"]),
-])
-def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch, peak, shown):
-    """Pre-peak closes measured against a later high would draw a rally as damage."""
+PATH = {"dates": ["2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18",
+                  "2026-09-21", "2026-09-22"],
+        "vals": [-3.0, -1.0, 0.0, -1.5, -2.0, -2.5, -4.0]}
+
+
+def _drawn(monkeypatch, obs):
     from lib import illus
     seen = []
     monkeypatch.setattr(illus, "illus", lambda series, **kw: seen.append(series) or "<figure></figure>")
-    path = {"dates": ["2026-09-16", "2026-09-17", "2026-09-18", "2026-09-21", "2026-09-22"],
-            "vals": [-3.0, -1.0, 0.0, -2.5, -4.0]}
-    obs = _qualified(dict(path), peak_session=peak)
-    pb.present(obs)
-    window = {"dates": shown, "vals": path["vals"][-len(shown):]}
+    view = pb.present(obs)
+    return seen, view
+
+
+def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch):
+    """Pre-peak closes measured against a later high would draw a rally as damage."""
+    obs = _qualified({k: list(v) for k, v in PATH.items()}, peak_session="2026-09-16")
+    seen, view = _drawn(monkeypatch, obs)
+    window = {"dates": PATH["dates"][2:], "vals": PATH["vals"][2:]}
     assert seen == [window]
-    assert pb.present(obs)["detail_path"] == window  # the history table's rows
-    assert obs["price_path"] == path  # the owner's observation is not rewritten
+    assert view["detail_path"] == window  # the history table's rows
+    assert obs["price_path"] == PATH  # the owner's observation is not rewritten
+
+
+def _bump(index, value):
+    vals = list(PATH["vals"])
+    vals[index] = value
+    return {"dates": list(PATH["dates"]), "vals": vals}
+
+
+@pytest.mark.parametrize("path, over", [
+    # Fewer than four points: the shared renderer would draw "No history yet".
+    (PATH, {"peak_session": "2026-09-18"}),
+    (PATH, {"peak_session": "2026-09-23"}),
+    # Without a usable peak date the window would fall back to pre-peak closes.
+    (PATH, {"peak_session": None}),
+    (PATH, {"peak_session": date(2026, 9, 16)}),
+    # The path must end on the receipt's session at the metric's own value.
+    ({"dates": PATH["dates"][:-1], "vals": PATH["vals"][:-1]}, {}),
+    (_bump(-1, -5.8), {}),
+    # Not deeper than the retained low, never above the high, finite, ordered.
+    (_bump(-2, -20.0), {}),
+    (_bump(-2, 3.0), {}),
+    (_bump(-2, float("nan")), {}),
+    ({"dates": PATH["dates"][:4] + ["2026-09-17"] + PATH["dates"][5:], "vals": PATH["vals"]}, {}),
+    ({"dates": PATH["dates"], "vals": PATH["vals"][1:]}, {}),
+    (PATH, {"close": 101.0}),
+])
+def test_chart_is_withheld_when_it_would_disagree_with_the_measured_figures(monkeypatch, path, over):
+    obs = _qualified({k: list(v) for k, v in path.items()}, **{"peak_session": "2026-09-16", **over})
+    seen, view = _drawn(monkeypatch, obs)
+    assert seen == []
+    assert view["detail_chart_html"] == "" and view["detail_path"] is None
+
+
+def test_a_reclaimed_close_still_draws_at_the_zero_line(monkeypatch):
+    path = _bump(-1, 0.0)
+    obs = _qualified(path, peak_session="2026-09-16", close=100.4, phase="recovering")
+    seen, view = _drawn(monkeypatch, obs)
+    assert seen == [{"dates": PATH["dates"][2:], "vals": path["vals"][2:]}]
+
+
+def test_a_drawdown_that_rounds_to_zero_prints_without_a_minus():
+    """The chart's end tag agrees with the metric, which prints 0.0%."""
+    close = 100.0 * (1 - 0.0003)
+    path = {"dates": PATH["dates"], "vals": PATH["vals"][:-1] + [round(100.0 * (close / 100.0 - 1.0), 4)]}
+    obs = _qualified(path, peak_session="2026-09-16", close=close)
+    chart = pb.present(obs)["detail_chart_html"]
+    assert '<span class="ilx-tag">0.0%' in chart
+    assert "-0.0%" not in chart
