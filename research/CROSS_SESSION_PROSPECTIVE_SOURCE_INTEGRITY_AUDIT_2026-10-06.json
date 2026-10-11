@@ -1,0 +1,204 @@
+{
+  "schema": "research.cross_session_prospective_source_integrity_audit.v1",
+  "generated_at": "2026-10-06T04:29:57Z",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "d12a1b8280ca103ed2c769c0ab787a6647f2d39e"
+  },
+  "protected_procedure": {
+    "master_pin": "877b1e7f275da0b6d3558d2667778b32d628bf67",
+    "index_blob": "38a18571229e487f525b1c9780f7993220a5da93",
+    "active_execution_blob": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+    "session_reliability_enrolled": true
+  },
+  "immutable_bindings": {
+    "initial_admissions_path": "research/CROSS_SESSION_PROSPECTIVE_SOURCE_ADMISSIONS_2026-10-05.json",
+    "initial_admissions_git_blob": "0ed3e38eecb3682d3c55eadb0c60df7dcde0a050",
+    "late_recovery_path": "research/CROSS_SESSION_PROSPECTIVE_LATE_SOURCE_RECOVERY_2026-10-06.json",
+    "late_recovery_git_blob": "2feb625b4c6f9b8ee69e72e3bf683ce7a54752e8",
+    "protocol_path": "research/CROSS_SESSION_TRANSFER_PROSPECTIVE_PROTOCOL_2026-09-26.md",
+    "amendment_v1_1_path": "research/CROSS_SESSION_TRANSFER_PROSPECTIVE_AMENDMENT_V1_1_2026-09-26.md"
+  },
+  "target_firewall": {
+    "hsi_outcomes_read": false,
+    "recovered_rows_us_returns_read": false,
+    "market_outcomes_used_for_candidate_disposition": false,
+    "epoch1_hsi_open_allowed": false,
+    "note": "The target firewall remains intact. The integrity ruling is based on source receipts and frozen admission law, not HSI outcomes."
+  },
+  "integrity_ruling": {
+    "state": "SOURCE_ADMISSION_SYSTEMICALLY_INCOMPLETE_AFTER_US_EXPOSURE",
+    "initial_source_first_rows": 10,
+    "initial_hormuz_row_integrity": "INVALID_CLOCK_AND_EVENT_GRANULARITY_AFTER_EXPOSURE",
+    "exact_clock_late_rows_count_at_least": 4,
+    "additional_maritime_rows_with_unresolved_earliest_public_clock": true,
+    "pooled_n10_review_allowed": false,
+    "epoch1_hsi_open_allowed": false,
+    "epoch1_product_or_promotion_credit": false,
+    "original_receipts_preserved": true,
+    "no_backfill_to_rescue_sample": true,
+    "reason": "Source-only audit found omitted Russia/Ukraine and Iraq operational events plus an unswept official UKMTO incident stream. UKMTO warnings 144-146 predate the later Reuters/Marisks aggregate used for the original Oct-1 Hormuz admission."
+  },
+  "bounded_source_audit": {
+    "through_utc": "2026-10-06T04:29:57Z",
+    "oct6_full_day_certified": false,
+    "families": [
+      "physical_energy_shipping_security",
+      "ceasefire_deescalation_or_escalation",
+      "official_or_attributed_policy_operational_change"
+    ],
+    "theatres": [
+      "Russia/Ukraine",
+      "Israel/Gaza",
+      "Iran/Hormuz",
+      "Saudi/Yemen/Houthi/Red Sea",
+      "Taiwan/China"
+    ],
+    "qualifying_late_rows": [
+      {
+        "event_id": "2026-09-30-final-us-forces-withdraw-iraq",
+        "disposition": "QUALIFYING_LATE_NON_EVALUABLE"
+      },
+      {
+        "event_id": "2026-10-03-zelenskiy-doubles-russian-refinery-strikes",
+        "disposition": "QUALIFYING_LATE_NON_EVALUABLE"
+      },
+      {
+        "event_id": "2026-10-04-russia-announces-intensified-ukraine-strikes",
+        "disposition": "QUALIFYING_LATE_NON_EVALUABLE"
+      },
+      {
+        "source_key": "UKMTO-148-26",
+        "available_at": "2026-10-02T11:22:00Z",
+        "disposition": "QUALIFYING_LATE_NON_EVALUABLE"
+      },
+      {
+        "source_family": "UKMTO-144-156",
+        "disposition": "ADDITIONAL_QUALIFYING_OR_CONFOUNDED_LATE_ROWS_WITH_UNRESOLVED_EARLIEST_PUBLIC_CLOCKS",
+        "note": "Retained source-only in late-recovery receipt; never measured or used for clean credit."
+      }
+    ],
+    "audited_exclusions": [
+      {
+        "source_clock": "2026-09-27T16:08:00Z",
+        "headline": "Russian drones kill people around Kyiv and other regions",
+        "source_ref": "https://www.marketscreener.com/news/russian-attacks-kills-three-in-ukrainian-cities-strikes-hit-kyiv-districts-officials-say-ce785adcd88ffe20",
+        "disposition": "EXCLUDED_CONTINUATION",
+        "reason": "Reuters describes continued intensive attacks in an already-active barrage. The frozen law requires a material change in the risk channel; the next day's unusually persistent jet-drone escalation is separately admitted."
+      },
+      {
+        "source_clock": "2026-09-27T15:15:00Z",
+        "headline": "Russia says it struck military infrastructure and vessels in Ukraine",
+        "source_ref": "https://www.marketscreener.com/news/russia-says-it-struck-military-infrastructure-vessels-in-ukraine-ce785adcd88ff125",
+        "disposition": "EXCLUDED_CONTINUATION",
+        "reason": "Operational continuation of the same active strike campaign; no separately identified material policy/risk-channel change."
+      },
+      {
+        "source_clock": "2026-10-01T03:59:00Z",
+        "headline": "Taiwan transfers senior naval commander to Coast Guard to boost deterrence coordination",
+        "source_ref": "https://www.marketscreener.com/news/taiwan-transfers-naval-commander-to-coast-guard-to-boost-deterrence-against-china-ce785ad3da80fe22",
+        "disposition": "EXCLUDED_NONMATERIAL_ADMINISTRATIVE",
+        "reason": "Official personnel/coordination change, but bounded source review did not establish a material change in the active cross-strait risk channel under the frozen admission rule."
+      },
+      {
+        "source_clock": "2026-10-05T09:36:00Z",
+        "headline": "Middle East oil exports rise while tanker attacks increase",
+        "source_ref": "https://www.marketscreener.com/news/middle-east-oil-exports-top-pre-war-levels-in-september-but-tanker-attacks-increase-ce785ddbd18ef622",
+        "disposition": "EXCLUDED_SYNTHESIS_NOT_NEW_EVENT",
+        "reason": "Retrospective shipping/flow synthesis describing already-recorded tanker risk, not a new first-disclosure geopolitical event."
+      }
+    ],
+    "same_day_oct6_qualifying_event_identified": false,
+    "note": "The earlier two-row miss estimate is superseded. A date-by-date audit found a systemic Reuters-only recall gap for maritime security. Oct 6 remains open and uncertified.",
+    "epoch2_source_sweep_through_utc": "2026-10-06T04:31:47Z",
+    "epoch2_qualifying_event_identified_before_activation": false
+  },
+  "parent_cluster_dependence": {
+    "purpose": "Dependence disclosure only; Epoch 1 is quarantined before target read.",
+    "changes_event_eligibility": false,
+    "changes_event_clock": false,
+    "changes_measurements": false,
+    "independent_draw_claim_allowed": false,
+    "initial_source_first_rows": 10,
+    "late_recovered_rows": "multiple; see late-source recovery receipt",
+    "conservative_families": [
+      "Russia/Ukraine air-energy escalation",
+      "Israel/Gaza escalation",
+      "Iran/Hormuz physical-shipping security",
+      "Saudi/Yemen/Houthi/Red Sea counteroffensive escalation",
+      "Iraq regional-force-posture transition"
+    ],
+    "largest_initial_cluster": "Saudi/Yemen/Houthi/Red Sea: six initial rows",
+    "note": "Do not translate family/cluster count into an effective sample size. Epoch 1 receives no pooled target review."
+  },
+  "future_accrual_safeguard": {
+    "event_definition_changed": false,
+    "predictor_definition_changed": false,
+    "target_definition_changed": false,
+    "threshold_changed": false,
+    "operational_rule": "Clean target validation restarts in a new source-first epoch. For each UTC source day, freeze a completed source-only census/disposition receipt across declared family-specific channels before opening any event's U.S. leg. Physical shipping-security requires UKMTO plus Reuters/wire. Unresolved source clocks remain logged but unmeasured.",
+    "late_recovery_rule": "Any qualifying source row discovered only after relevant U.S. exposure quarantines that row; a recurrent systematic recall failure quarantines the epoch. Never backfill to rescue sample size.",
+    "mechanical_enforcement": {
+      "commit": "525ba1e6c10ac9aa4792febdcfdd8ab1b6a41232",
+      "capture_script": "scripts/research/capture_cross_session_transfer.py",
+      "test_file": "tests/test_event_microstructure_replay.py",
+      "source_day_schema": "research.cross_session_transfer_source_day_census.v1",
+      "required_channels": [
+        "reuters_wire",
+        "ukmto"
+      ],
+      "gates": [
+        "complete UTC source day before post-activation U.S. measurement",
+        "sealed Epoch-2 admission bound to admitted source-day candidate and parent cluster",
+        "known Epoch-1 rows refuse further measurement/HSI",
+        "known late-recovered rows refuse U.S. measurement",
+        "post-activation unsealed rows fail before transport"
+      ],
+      "local_verification": "64/64 owned research tests passed at exact code head; temporary worktree cleanup verified separately",
+      "hsi_outcomes_read": false
+    }
+  },
+  "authority": {
+    "research_only": true,
+    "product_or_trading_authority": false,
+    "may_rank": false,
+    "may_alert": false,
+    "may_size": false,
+    "may_execute": false
+  },
+  "initial_row_integrity_corrections": [
+    {
+      "event_id": "2026-10-01-three-hormuz-tankers-hit-by-projectiles",
+      "original_available_at": "2026-10-01T06:17:00Z",
+      "original_source": "Reuters / Marisks shipping intelligence",
+      "correction_state": "SOURCE_CLOCK_AND_EVENT_GRANULARITY_INVALID_AFTER_US_EXPOSURE",
+      "evidence": "UKMTO warnings 144-26, 145-26 and 146-26 were publicly issued on 2026-09-30 for three separate tanker attacks that occurred on 2026-09-29. The later Reuters/Marisks row aggregated those separate incidents and therefore is not the earliest exact decision-eligible source representation.",
+      "original_receipt_mutated": false,
+      "original_us_receipt_preserved_as_historical_diagnostic": true,
+      "own_hsi_outcome_read": false,
+      "clean_primary_credit": false,
+      "evaluation_eligible": false,
+      "repair": "Do not retime or split this already-exposed row into evaluable observations. Preserve the immutable receipt and recover the official maritime incidents only as late/non-evaluable source evidence."
+    }
+  ],
+  "source_recall_root_cause": {
+    "state": "MISSING_SPECIALIZED_MARITIME_SOURCE_CHANNEL",
+    "detail": "The first bounded census relied heavily on Reuters/wire retrieval and did not systematically sweep UKMTO, the official maritime-security warning owner. This caused separate Hormuz incidents to be omitted or aggregated under a later secondary clock.",
+    "source_channels_added_for_future_admission": [
+      "Reuters/wire search",
+      "UKMTO warnings/advisories for physical shipping-security family"
+    ],
+    "new_event_rail_created": false
+  },
+  "epoch2_activation": {
+    "state": "FROZEN",
+    "commit": "41c08c218efa8261d4750dd923c5b3d3c2ff3a79",
+    "commit_time_utc": "2026-10-06T04:31:47Z",
+    "safeguard_path": "research/CROSS_SESSION_TRANSFER_SOURCE_ADMISSION_SAFEGUARD_V1_2_2026-10-06.md",
+    "safeguard_git_blob": "b3d5697dfab24526f5c5e9b2bd87c3464ce0c9fd",
+    "clean_credit_rule": "earliest decision-eligible public available_at must be strictly after activation commit time and pass the completed-source-day admission gate before any U.S. measurement"
+  }
+}

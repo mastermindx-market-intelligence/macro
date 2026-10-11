@@ -1,0 +1,547 @@
+{
+  "controls": [
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "13:55:00Z",
+      "event_available_at": "2026-09-28T13:55:00Z",
+      "event_date": "2026-09-28",
+      "event_id": "2026-09-28-russia-jet-drone-escalation-kyiv-dnipro",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T13:55:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 1,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "06:41:00Z",
+      "event_available_at": "2026-09-29T06:41:00Z",
+      "event_date": "2026-09-29",
+      "event_id": "2026-09-29-israel-kills-north-gaza-hamas-armed-wing-chief",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T06:41:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 2,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "04:42:00Z",
+      "event_available_at": "2026-09-30T04:42:00Z",
+      "event_date": "2026-09-30",
+      "event_id": "2026-09-30-russia-launches-heavy-ukraine-energy-grid-assault",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T04:42:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 3,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "06:17:00Z",
+      "event_available_at": "2026-10-01T06:17:00Z",
+      "event_date": "2026-10-01",
+      "event_id": "2026-10-01-three-hormuz-tankers-hit-by-projectiles",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T06:17:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 4,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "20:07:00Z",
+      "event_available_at": "2026-10-01T20:07:00Z",
+      "event_date": "2026-10-01",
+      "event_id": "2026-10-01-saudi-coalition-intercepts-four-drones-two-missiles",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T20:07:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 4,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "04:16:00Z",
+      "event_available_at": "2026-10-02T04:16:00Z",
+      "event_date": "2026-10-02",
+      "event_id": "2026-10-02-yemen-government-twenty-taiz-strikes",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T04:16:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 5,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "16:03:00Z",
+      "event_available_at": "2026-10-02T16:03:00Z",
+      "event_date": "2026-10-02",
+      "event_id": "2026-10-02-saudi-plans-houthi-offensive-red-sea",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T16:03:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 5,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "12:24:00Z",
+      "event_available_at": "2026-10-03T12:24:00Z",
+      "event_date": "2026-10-03",
+      "event_id": "2026-10-03-riyadh-aramco-fire-houthi-claim",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T12:24:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 6,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "12:11:00Z",
+      "event_available_at": "2026-10-04T12:11:00Z",
+      "event_date": "2026-10-04",
+      "event_id": "2026-10-04-yemen-government-major-offensive-launch",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T12:11:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 6,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    },
+    {
+      "admitted_event_date_receipt": {
+        "count_including_current_event": 8,
+        "sha256": "126bac149e45d854a143530ca950f88b84deb557634c90cce5f2c79a5914c370"
+      },
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "calendar_receipt": {
+        "covered_session_count": 8,
+        "first": "2026-09-24",
+        "last": "2026-10-05",
+        "provided_session_count": 8,
+        "sha256": "9c01d0a38efd1a2a83f22e14ecbe9da07fb5f43ffe1978f5a15ce2b2be7ac259"
+      },
+      "clock_utc": "07:25:00Z",
+      "event_available_at": "2026-10-05T07:25:00Z",
+      "event_date": "2026-10-05",
+      "event_id": "2026-10-05-yemen-forces-seize-bab-el-mandeb-positions",
+      "next": {
+        "control_anchor_at": null,
+        "control_date": null,
+        "session_distance": null,
+        "status": "PENDING_OBSERVED_SESSION"
+      },
+      "outcome_state": "NOT_READ",
+      "persistence": "none_stdout_only",
+      "prior": {
+        "control_anchor_at": "2026-09-25T07:25:00Z",
+        "control_date": "2026-09-25",
+        "session_distance": 6,
+        "status": "SELECTED"
+      },
+      "schema": "research.cross_session_transfer_matched_controls.v1",
+      "selection_law": {
+        "exclude_every_admitted_source_event_date": true,
+        "max_observed_session_distance": 10,
+        "return_based_replacement_allowed": false,
+        "session_source": "observed_smh_sessions_only"
+      },
+      "source_coverage_certified_calendar_through": "2026-10-05",
+      "source_coverage_complete_through": "2026-10-06T00:00:00Z",
+      "state": "PENDING"
+    }
+  ],
+  "session_source": "Yahoo SMH daily index used only to establish observed session dates; no prices retained",
+  "source_admission_commit": "7c9b5f4d7b99a7d8917376a04fdc3d9b54e604da",
+  "source_coverage_complete_through": "2026-10-06T00:00:00Z"
+}
