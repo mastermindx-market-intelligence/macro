@@ -1,0 +1,131 @@
+# Q14 post-audit edits (amendment A1). Unified diff, pre-edit -> post-edit.
+# engine/vol_horizon_variance_premium.py: sha256 c7906612edebacb34b6824aecc3c5180fa6a4fe2c9f683dc0f2d7b56cb2c660a -> 42a7039eb8bd80151c4d902bd5c8d45c8d3e7305a544f13ccfd341aa5870034b
+# research/quant_assessment_2026_10/Q14_forward_variance_premium/evaluate.py: sha256 6b65b3b61131e7d6d0b5fc7ca31a96a539585e1cf00d80bacb02ea6dcd953164 -> 38e124a7e626abb54b1b01ee4fbf6ccbd484bae8188cd47ab823ee7e61cfd121
+# tests/test_vol_horizon_variance_premium.py: sha256 c2586c04af2d72541ae65b189bcb9b60630249cca8cda553e2087e9cda92ac0a -> c469e0794b7ec2f6fbc286e03f46ee6751f117a92acb05e853011202a9f0ca3d
+--- pre/engine/vol_horizon_variance_premium.py
++++ post/engine/vol_horizon_variance_premium.py
+@@ -109,8 +109,22 @@
+             raise ValueError("only horizon_variance units are admitted")
+ 
+     @property
++    def basis_days(self) -> float:
++        """Horizon length in the day-count's own units: calendar days under
++        ``calendar365``; expected trading days ``252*h/365`` under ``trading252``."""
++        return basis_days(self.horizon_calendar_days, self.day_count)
++
++    @property
+     def year_fraction(self) -> float:
+-        return float(self.horizon_calendar_days) / 365.0
++        """basis_days / year_days, which equals h/365 under every admitted day count."""
++        return self.basis_days / DAY_COUNTS[self.day_count]
++
++
++def basis_days(horizon_calendar_days: int, day_count: str) -> float:
++    """Horizon length in day-count units: h * year_days / 365 (h calendar days)."""
++    if day_count not in DAY_COUNTS:
++        raise ValueError(f"day_count must be one of {sorted(DAY_COUNTS)}")
++    return float(horizon_calendar_days) * DAY_COUNTS[day_count] / 365.0
+ 
+ 
+ def vol_index_to_horizon_variance(level_pct: Any, horizon_calendar_days: int = 30,
+@@ -265,12 +279,12 @@
+ 
+ 
+ def atm_proxy_leg(atm_iv: float, basis: HorizonBasis, asof: int) -> ImpliedLeg:
+-    """ATM implied vol (annualized, decimal, calendar basis) as a PROXY: one strike,
+-    no tail coverage. Labelled ``atm_proxy`` so it never passes as a strip."""
++    """ATM implied vol (annualized, decimal, in the basis' day count) as a PROXY: one
++    strike, no tail coverage. Labelled ``atm_proxy`` so it never passes as a strip.
++    Horizon variance = atm_iv^2 * basis_days / year_days = atm_iv^2 * year_fraction."""
+     if not (atm_iv >= 0 and math.isfinite(atm_iv)) or atm_iv > 10:
+         raise ValueError("atm_iv must be a finite decimal in [0, 10]")
+-    yd = DAY_COUNTS[basis.day_count]
+-    value = atm_iv ** 2 * basis.horizon_calendar_days / yd
++    value = atm_iv ** 2 * basis.year_fraction
+     cov = {"tail_strikes": "single_strike_none",
+            "overnight": "risk_neutral_horizon_includes_overnight"}
+     return ImpliedLeg(float(value), basis, "atm_proxy", int(asof), cov)
+@@ -403,11 +417,11 @@
+ 
+     def annualized_vol_view(self) -> dict[str, float]:
+         yd = DAY_COUNTS[self.day_count]
+-        h = self.horizon_calendar_days
++        n = basis_days(self.horizon_calendar_days, self.day_count)
+         return {
+-            "implied_vol_ann": float(horizon_variance_to_annualized_vol(self.implied_variance, h, yd)),
+-            "physical_vol_ann": float(horizon_variance_to_annualized_vol(self.physical_variance, h, yd)),
+-            "premium_variance_ann": float(self.premium_variance * yd / h),
++            "implied_vol_ann": float(horizon_variance_to_annualized_vol(self.implied_variance, n, yd)),
++            "physical_vol_ann": float(horizon_variance_to_annualized_vol(self.physical_variance, n, yd)),
++            "premium_variance_ann": float(self.premium_variance * yd / n),
+         }
+ 
+     def to_dict(self) -> dict[str, Any]:
+--- pre/research/quant_assessment_2026_10/Q14_forward_variance_premium/evaluate.py
++++ post/research/quant_assessment_2026_10/Q14_forward_variance_premium/evaluate.py
+@@ -1,6 +1,6 @@
+ from __future__ import annotations
+ 
+-"""Q14-T1 evaluator: horizon-matched variance premium vs IV/RV controls.
++__doc__ = """Q14-T1 evaluator: horizon-matched variance premium vs IV/RV controls.
+ 
+ Refuses to run unless sha256(PREREG.md) equals the hash recorded in FREEZE.log.
+ Appends every invocation (command, exit code, input and output sha256s) to RUNS.log.
+@@ -185,12 +185,16 @@
+     cov_i = {"tail_strikes": "strip_truncated",
+              "overnight": "risk_neutral_horizon_includes_overnight",
+              "source": "FRED VIXCLS (CBOE 30cd strip, vendor-computed)", "jump_correction": "none"}
+-    cov_p = vp.realized_coverage("close_to_close")
++    cov_p = vp.realized_coverage("close_to_close")  # label leg: sum sq log returns, not demeaned
++    # Forecast leg receipt (amendment A1 / audit M3): har_vol is a rolling std (ddof=0) of
++    # simple pct returns, i.e. demeaned within each window, scaled x252x30/365.
++    cov_f = dict(cov_p, demeaned=True, returns="simple_pct",
++                 estimator="rolling std ddof=0 of pct returns, equal-weight HAR lags (2,5,22,66), x252x30/365")
+     recs_ante, recs_post = [], []
+     for d, iv2, f, y in zip(df["day"].to_numpy(), df["iv2_h"].to_numpy(),
+                             df["f_h"].to_numpy(), df["rv_fwd"].to_numpy()):
+         il = vp.ImpliedLeg(float(iv2), basis_i, "strip", int(d), cov_i)
+-        fl = vp.PhysicalLeg(float(f), basis_p, "forecast", int(d), int(d), cov_p,
++        fl = vp.PhysicalLeg(float(f), basis_p, "forecast", int(d), int(d), cov_f,
+                             method="incumbent engine.vol_forecast.har_vol lags (2,5,22,66), equal weight")
+         ll = vp.PhysicalLeg(float(y), basis_p, "forward_label", int(d), int(d) + H, cov_p,
+                             method="sum sq log returns (t, t+30cd]")
+--- pre/tests/test_vol_horizon_variance_premium.py
++++ post/tests/test_vol_horizon_variance_premium.py
+@@ -1,6 +1,6 @@
+ from __future__ import annotations
+ 
+-"""Hermetic tests for engine/vol_horizon_variance_premium.py (brief Q14).
++__doc__ = """Hermetic tests for engine/vol_horizon_variance_premium.py (brief Q14).
+ 
+ Each test is named after the acceptance requirement it proves (req1..req6). Synthetic
+ inputs only: integer day offsets, seeded random numbers, no repo data, no network,
+@@ -69,6 +69,28 @@
+ 
+ def test_req1_daily_variance_scales_by_expected_trading_days_in_horizon():
+     assert vp.daily_variance_to_horizon_variance(1e-4, 30, 252.0) == pytest.approx(1e-4 * 252 * 30 / 365)
++
++
++def test_req1_trading252_basis_is_expected_trading_days_and_consistent_with_calendar365():
++    # audit M4: trading252 measures the horizon in expected trading days 252*h/365, so the
++    # year fraction, the ATM-proxy horizon variance and the annualized view agree with calendar365
++    cal, trd = _basis(30, "calendar365"), _basis(30, "trading252")
++    assert cal.basis_days == pytest.approx(30.0)
++    assert trd.basis_days == pytest.approx(252.0 * 30.0 / 365.0)
++    assert trd.year_fraction == pytest.approx(cal.year_fraction) == pytest.approx(30.0 / 365.0)
++    v_cal = vp.atm_proxy_leg(0.25, cal, 7).value
++    v_trd = vp.atm_proxy_leg(0.25, trd, 7).value
++    assert v_trd == pytest.approx(v_cal) == pytest.approx(0.0625 * 30.0 / 365.0)
++    daily = 0.25 ** 2 / 252.0
++    assert vp.daily_variance_to_horizon_variance(daily, 30, 252.0) == pytest.approx(v_trd)
++    rec = vp.build_premium(vp.atm_proxy_leg(0.30, trd, 9),
++                           _phys(0.20 ** 2 * 30 / 365.0, basis=trd, asof=9, info=9))
++    view = rec.annualized_vol_view()
++    assert view["implied_vol_ann"] == pytest.approx(0.30)
++    assert view["physical_vol_ann"] == pytest.approx(0.20)
++    assert view["premium_variance_ann"] == pytest.approx(0.05)
++    with pytest.raises(ValueError, match="day_count"):
++        vp.basis_days(30, "act360")
+ 
+ 
+ def test_req1_premium_refuses_mismatched_horizon_daycount_session_or_asof():

@@ -1,0 +1,40 @@
+{
+ "checks": {
+  "gate_scored_false": true,
+  "gate_status_building_history": true,
+  "models_dir_absent": true,
+  "no_partition_receipt_in_data_dir": true,
+  "scoring_enabled_is_false": true,
+  "trainer_ece_none_present": true,
+  "trainer_insufficient_strings_present": true
+ },
+ "config_scoring_enabled": false,
+ "data_dir_entries": [
+  "gate.json",
+  "grades.parquet",
+  "ledger.parquet"
+ ],
+ "gate_scored": false,
+ "gate_status": "building_history",
+ "outcome_calibration": {
+  "missing": [
+   "retained FS-4 fitted model artifact or predictions under data/flow_signals/models (absent; the directory is gitignored and R2-only, and R2 is forbidden here)",
+   "admitted FS-5 population partition receipt naming calibration_eval membership (absent)"
+  ],
+  "state": "INSUFFICIENT_DATA"
+ },
+ "reproduced": true,
+ "stage": "baseline",
+ "trainer_ece_none_lines": [
+  1216
+ ],
+ "trainer_string_lines": {
+  "CALIBRATION_INSUFFICIENT:weighted_bin_method_unavailable": [
+   1173,
+   1256
+  ],
+  "calibration_insufficient": [
+   1179
+  ]
+ }
+}

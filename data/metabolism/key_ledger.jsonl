@@ -3049,3 +3049,7 @@
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-09T14:48:34+00:00","key_id":"codex_account","cycle_id":"","stage":"risk_brain","est_tokens":22862,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-09T14:48:45+00:00","key_id":"codex_account","cycle_id":"","stage":"risk_radar_review","est_tokens":18599,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-09T15:04:12+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":28142,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-10-10T03:48:16+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":20906,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-10-10T09:35:20+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":20976,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-10-10T11:18:24+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":21030,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-10-11T03:30:20+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":24327,"outcome":"ok"}

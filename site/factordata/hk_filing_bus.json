@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-10",
   "freshness": "fresh",
   "tape": [
     {
@@ -10579,6 +10579,22 @@
       "name_zh": null
     },
     {
+      "ticker": "1115.HK",
+      "date": "2026-08-31",
+      "category": "results",
+      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
       "ticker": "1241.HK",
       "date": "2026-08-31",
       "category": "results",
@@ -10599,22 +10615,6 @@
       "date": "2026-08-31",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "1115.HK",
-      "date": "2026-08-31",
-      "category": "results",
-      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -10707,6 +10707,22 @@
       "name_zh": null
     },
     {
+      "ticker": "8460.HK",
+      "date": "2026-08-31",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
       "ticker": "1925.HK",
       "date": "2026-08-31",
       "category": "results",
@@ -10724,22 +10740,6 @@
     },
     {
       "ticker": "8283.HK",
-      "date": "2026-08-31",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "8460.HK",
       "date": "2026-08-31",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
@@ -10963,7 +10963,7 @@
       "name_zh": null
     },
     {
-      "ticker": "1680.HK",
+      "ticker": "2415.HK",
       "date": "2026-08-31",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
@@ -11059,10 +11059,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2415.HK",
+      "ticker": "2699.HK",
       "date": "2026-08-31",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -11075,10 +11075,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2699.HK",
+      "ticker": "1680.HK",
       "date": "2026-08-31",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -11251,22 +11251,6 @@
       "name_zh": null
     },
     {
-      "ticker": "3669.HK",
-      "date": "2026-08-31",
-      "category": "results",
-      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED JUNE 30, 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
       "ticker": "1889.HK",
       "date": "2026-08-31",
       "category": "results",
@@ -11299,6 +11283,38 @@
       "name_zh": null
     },
     {
+      "ticker": "3669.HK",
+      "date": "2026-08-31",
+      "category": "results",
+      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED JUNE 30, 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "2246.HK",
+      "date": "2026-08-31",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
       "ticker": "1518.HK",
       "date": "2026-08-31",
       "category": "results",
@@ -11316,22 +11332,6 @@
     },
     {
       "ticker": "2597.HK",
-      "date": "2026-08-31",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "2246.HK",
       "date": "2026-08-31",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
@@ -15059,26 +15059,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2219.HK",
+      "ticker": "6818.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "2149.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "2026 INTERIM RESULTS ANNOUNCEMENT",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15107,10 +15091,10 @@
       "name_zh": null
     },
     {
-      "ticker": "6082.HK",
+      "ticker": "3988.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
+      "title_en": "2026 Interim Results Announcement",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15119,11 +15103,11 @@
       "pill_zh": "\u4e1a\u7ee9",
       "read_en": "earnings update",
       "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
+      "name_en": "Bank of China",
+      "name_zh": "\u4e2d\u56fd\u94f6\u884c"
     },
     {
-      "ticker": "3347.HK",
+      "ticker": "2219.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
@@ -15155,10 +15139,10 @@
       "name_zh": null
     },
     {
-      "ticker": "6818.HK",
+      "ticker": "3347.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "2026 INTERIM RESULTS ANNOUNCEMENT",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15171,26 +15155,10 @@
       "name_zh": null
     },
     {
-      "ticker": "0123.HK",
+      "ticker": "6082.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "Announcement of 2026 Interim Results",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "2515.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15219,10 +15187,26 @@
       "name_zh": null
     },
     {
-      "ticker": "1288.HK",
+      "ticker": "2515.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "0123.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "Announcement of 2026 Interim Results",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15299,10 +15283,10 @@
       "name_zh": null
     },
     {
-      "ticker": "3988.HK",
+      "ticker": "6936.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "2026 Interim Results Announcement",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15311,8 +15295,24 @@
       "pill_zh": "\u4e1a\u7ee9",
       "read_en": "earnings update",
       "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": "Bank of China",
-      "name_zh": "\u4e2d\u56fd\u94f6\u884c"
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "2149.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
     },
     {
       "ticker": "8452.HK",
@@ -15523,6 +15523,22 @@
       "name_zh": null
     },
     {
+      "ticker": "2192.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
       "ticker": "6833.HK",
       "date": "2026-08-28",
       "category": "results",
@@ -15555,22 +15571,6 @@
       "name_zh": null
     },
     {
-      "ticker": "2192.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
       "ticker": "1392.HK",
       "date": "2026-08-28",
       "category": "results",
@@ -15587,23 +15587,7 @@
       "name_zh": null
     },
     {
-      "ticker": "6936.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "9699.HK",
+      "ticker": "1288.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
@@ -15619,10 +15603,26 @@
       "name_zh": null
     },
     {
-      "ticker": "2400.HK",
+      "ticker": "1977.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
+      "title_en": "Interim Results for the six months ended 30 June 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "2298.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15827,10 +15827,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2298.HK",
+      "ticker": "1318.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -15843,7 +15843,7 @@
       "name_zh": null
     },
     {
-      "ticker": "1318.HK",
+      "ticker": "2400.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
@@ -16035,22 +16035,6 @@
       "name_zh": null
     },
     {
-      "ticker": "1977.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "Interim Results for the six months ended 30 June 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
       "ticker": "1070.HK",
       "date": "2026-08-28",
       "category": "results",
@@ -16103,6 +16087,22 @@
       "date": "2026-08-28",
       "category": "results",
       "title_en": "Results for the Six Months Ended 30 June 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "9699.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -17235,10 +17235,10 @@
       "name_zh": null
     },
     {
-      "ticker": "0804.HK",
+      "ticker": "1247.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -17427,6 +17427,22 @@
       "name_zh": null
     },
     {
+      "ticker": "3798.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
       "ticker": "0840.HK",
       "date": "2026-08-28",
       "category": "results",
@@ -17444,22 +17460,6 @@
     },
     {
       "ticker": "1396.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "3798.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
@@ -19955,10 +19955,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2051.HK",
+      "ticker": "1815.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -19987,10 +19987,10 @@
       "name_zh": null
     },
     {
-      "ticker": "0136.HK",
+      "ticker": "2325.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -20211,10 +20211,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2325.HK",
+      "ticker": "0136.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
+      "title_en": "INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -20227,26 +20227,26 @@
       "name_zh": null
     },
     {
-      "ticker": "1247.HK",
+      "ticker": "0804.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "2051.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "1815.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -20451,10 +20451,10 @@
       "name_zh": null
     },
     {
-      "ticker": "0065.HK",
+      "ticker": "2651.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "UNAUDITED INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -20467,10 +20467,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2651.HK",
+      "ticker": "0065.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "UNAUDITED INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -20547,42 +20547,42 @@
       "name_zh": null
     },
     {
-      "ticker": "3603.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "1968.HK",
-      "date": "2026-08-28",
-      "category": "results",
-      "title_en": "Announcement of Interim Results for the Six Months Ended 30 June 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
       "ticker": "2250.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "1570.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "1643.HK",
+      "date": "2026-08-28",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -20787,7 +20787,7 @@
       "name_zh": null
     },
     {
-      "ticker": "1643.HK",
+      "ticker": "3603.HK",
       "date": "2026-08-28",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
@@ -21027,10 +21027,10 @@
       "name_zh": null
     },
     {
-      "ticker": "6816.HK",
+      "ticker": "1968.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "Announcement of Interim Results for the Six Months Ended 30 June 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -21059,10 +21059,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1570.HK",
+      "ticker": "6816.HK",
       "date": "2026-08-28",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -21715,10 +21715,10 @@
       "name_zh": null
     },
     {
-      "ticker": "0639.HK",
+      "ticker": "1110.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -21731,10 +21731,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1110.HK",
+      "ticker": "1785.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "2026 INTERIM RESULTS ANNOUNCEMENT",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -23523,10 +23523,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1785.HK",
+      "ticker": "0639.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "2026 INTERIM RESULTS ANNOUNCEMENT",
+      "title_en": "INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -23555,10 +23555,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1120.HK",
+      "ticker": "1157.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "Interim Results for The Six Months Ended 30 June 2026",
+      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -23795,10 +23795,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1292.HK",
+      "ticker": "1120.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "Interim Results Announcement for the Six Months Ended 30 June 2026",
+      "title_en": "Interim Results for The Six Months Ended 30 June 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -24099,10 +24099,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1157.HK",
+      "ticker": "1292.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF UNAUDITED INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "Interim Results Announcement for the Six Months Ended 30 June 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -24403,7 +24403,7 @@
       "name_zh": null
     },
     {
-      "ticker": "3880.HK",
+      "ticker": "3887.HK",
       "date": "2026-08-27",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
@@ -24419,10 +24419,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1599.HK",
+      "ticker": "0392.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "2026 INTERIM RESULTS ANNOUNCEMENT",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -24579,10 +24579,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2156.HK",
+      "ticker": "1599.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "2026 INTERIM RESULTS ANNOUNCEMENT",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -24611,42 +24611,42 @@
       "name_zh": null
     },
     {
-      "ticker": "0392.HK",
-      "date": "2026-08-27",
-      "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "0984.HK",
-      "date": "2026-08-27",
-      "category": "results",
-      "title_en": "2026 Interim Results",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
       "ticker": "0272.HK",
       "date": "2026-08-27",
       "category": "results",
       "title_en": "ANNOUNCEMENT OF 2026 INTERIM RESULTS",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "2156.HK",
+      "date": "2026-08-27",
+      "category": "results",
+      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
+      "ticker": "3880.HK",
+      "date": "2026-08-27",
+      "category": "results",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -24675,10 +24675,10 @@
       "name_zh": null
     },
     {
-      "ticker": "3887.HK",
+      "ticker": "0984.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
+      "title_en": "2026 Interim Results",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -25443,6 +25443,22 @@
       "name_zh": null
     },
     {
+      "ticker": "8059.HK",
+      "date": "2026-08-27",
+      "category": "results",
+      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "official_flag": true,
+      "dilution_flag": false,
+      "buyback_flag": false,
+      "bucket": "results",
+      "pill_en": "Results",
+      "pill_zh": "\u4e1a\u7ee9",
+      "read_en": "earnings update",
+      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
+      "name_en": null,
+      "name_zh": null
+    },
+    {
       "ticker": "2266.HK",
       "date": "2026-08-27",
       "category": "results",
@@ -25463,22 +25479,6 @@
       "date": "2026-08-27",
       "category": "results",
       "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
-      "official_flag": true,
-      "dilution_flag": false,
-      "buyback_flag": false,
-      "bucket": "results",
-      "pill_en": "Results",
-      "pill_zh": "\u4e1a\u7ee9",
-      "read_en": "earnings update",
-      "read_zh": "\u4e1a\u7ee9\u66f4\u65b0",
-      "name_en": null,
-      "name_zh": null
-    },
-    {
-      "ticker": "8059.HK",
-      "date": "2026-08-27",
-      "category": "results",
-      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -25635,10 +25635,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1180.HK",
+      "ticker": "2399.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -25779,7 +25779,7 @@
       "name_zh": null
     },
     {
-      "ticker": "2399.HK",
+      "ticker": "1786.HK",
       "date": "2026-08-27",
       "category": "results",
       "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
@@ -25843,10 +25843,10 @@
       "name_zh": null
     },
     {
-      "ticker": "1786.HK",
+      "ticker": "1180.HK",
       "date": "2026-08-27",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED 30 JUNE 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -41779,10 +41779,10 @@
       "name_zh": null
     },
     {
-      "ticker": "7618.HK",
+      "ticker": "2618.HK",
       "date": "2026-08-13",
       "category": "results",
-      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
+      "title_en": "ANNOUNCEMENT OF THE RESULTS FOR THE THREE AND SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -41795,10 +41795,10 @@
       "name_zh": null
     },
     {
-      "ticker": "0831.HK",
+      "ticker": "7618.HK",
       "date": "2026-08-13",
       "category": "results",
-      "title_en": "Interim Results for the six months ended 30 June 2026",
+      "title_en": "INTERIM RESULTS ANNOUNCEMENT FOR THE SIX MONTHS ENDED JUNE 30, 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,
@@ -41955,10 +41955,10 @@
       "name_zh": null
     },
     {
-      "ticker": "2618.HK",
+      "ticker": "0831.HK",
       "date": "2026-08-13",
       "category": "results",
-      "title_en": "ANNOUNCEMENT OF THE RESULTS FOR THE THREE AND SIX MONTHS ENDED JUNE 30, 2026",
+      "title_en": "Interim Results for the six months ended 30 June 2026",
       "official_flag": true,
       "dilution_flag": false,
       "buyback_flag": false,

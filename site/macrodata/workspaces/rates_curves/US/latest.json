@@ -373,7 +373,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "rates_curves-US-3b1a26d15aea8dd5"
+    "predecessor_generation_id": "rates_curves-US-4d8bb343b80f7ef5"
   },
   "drivers": {
     "balance_sheet": [
@@ -508,11 +508,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-09T12:00:01Z",
+    "built_at": "2026-10-11T03:40:41Z",
     "calculation_as_of": "2026-10-09",
-    "code_version": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
-    "content_sha256": "a3b1be3fa7d02b648450b9dde9fa61894a9ecec8791c39b72331b777adfe4fe5",
-    "generation_id": "rates_curves-US-a3b1be3fa7d02b64",
+    "code_version": "49319de9aafa51427b9c50cbb653d73d35d5288b",
+    "content_sha256": "d68281370bdf032733fc9db8f09ebeb5bdfe41468e01f456064e01b53e75c1d0",
+    "generation_id": "rates_curves-US-d68281370bdf0327",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
     "rendered_at": null
   },

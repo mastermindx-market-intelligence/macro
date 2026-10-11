@@ -167,13 +167,14 @@
     "emerging_score": 2.764,
     "n_members": 20,
     "present_counts": {
-     "buy": 2,
+     "buy": 3,
      "ran": 1,
      "leaders": 0
     },
     "present": {
      "buy": [
       "LRN",
+      "TAL",
       "WLY"
      ],
      "ran": [
@@ -181,7 +182,7 @@
      ],
      "leaders": []
     },
-    "represented_n": 3,
+    "represented_n": 4,
     "days_since_top5_entry": null
    },
    {
@@ -190,12 +191,13 @@
     "emerging_score": 2.268,
     "n_members": 24,
     "present_counts": {
-     "buy": 4,
+     "buy": 5,
      "ran": 0,
      "leaders": 0
     },
     "present": {
      "buy": [
+      "ACI",
       "ADM",
       "GIS",
       "INGR",
@@ -204,7 +206,7 @@
      "ran": [],
      "leaders": []
     },
-    "represented_n": 4,
+    "represented_n": 5,
     "days_since_top5_entry": null
    },
    {
@@ -213,16 +215,17 @@
     "emerging_score": 2.006,
     "n_members": 39,
     "present_counts": {
-     "buy": 2,
-     "ran": 0,
+     "buy": 1,
+     "ran": 1,
      "leaders": 0
     },
     "present": {
      "buy": [
-      "ADM",
-      "DECK"
+      "ADM"
      ],
-     "ran": [],
+     "ran": [
+      "SONO"
+     ],
      "leaders": []
     },
     "represented_n": 2,
@@ -234,18 +237,19 @@
     "emerging_score": 1.885,
     "n_members": 46,
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "ran": 0,
      "leaders": 0
     },
     "present": {
      "buy": [
+      "ACI",
       "TRMB"
      ],
      "ran": [],
      "leaders": []
     },
-    "represented_n": 1,
+    "represented_n": 2,
     "days_since_top5_entry": null
    },
    {
@@ -291,7 +295,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 1,
-  "n_unrepresented": 7,
+  "n_unrepresented": 8,
   "misses": [],
   "baskets": [
    {
@@ -302,7 +306,7 @@
     "n_members": 31,
     "n_members_live": 31,
     "n_members_read": 31,
-    "n_members_on_board": 9,
+    "n_members_on_board": 8,
     "members_on_board": [
      "ATO",
      "CEG",
@@ -311,12 +315,11 @@
      "LNT",
      "NI",
      "PPL",
-     "SO",
-     "SRE"
+     "SO"
     ],
     "present_counts": {
      "buy": 8,
-     "watch": 1,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
@@ -409,18 +412,17 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 6,
+    "n_members_on_board": 5,
     "members_on_board": [
      "ASO",
      "BJ",
      "BURL",
-     "FIVE",
      "ROST",
      "ULTA"
     ],
     "present_counts": {
      "buy": 1,
-     "watch": 3,
+     "watch": 2,
      "leaders": 0,
      "ran": 2
     },
@@ -462,15 +464,14 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 4,
+    "n_members_on_board": 3,
     "members_on_board": [
      "BWXT",
      "CEG",
-     "SO",
-     "SRE"
+     "SO"
     ],
     "present_counts": {
-     "buy": 4,
+     "buy": 3,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -515,15 +516,16 @@
     "n_members": 14,
     "n_members_live": 13,
     "n_members_read": 14,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "APH",
      "CSCO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.6766,
     "pctile_n": 252,
@@ -568,10 +570,12 @@
     "n_members": 74,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 11,
+    "n_members_on_board": 14,
     "members_on_board": [
      "ACN",
      "ADSK",
+     "ANET",
+     "APH",
      "AVGO",
      "CSCO",
      "MSFT",
@@ -579,6 +583,7 @@
      "PLTR",
      "PTC",
      "SNDK",
+     "SNPS",
      "TRMB",
      "WDC"
     ],
@@ -586,7 +591,7 @@
      "buy": 4,
      "watch": 3,
      "leaders": 2,
-     "ran": 2
+     "ran": 5
     },
     "pctile": 0.6567,
     "pctile_n": 252,
@@ -602,13 +607,12 @@
     "n_members": 12,
     "n_members_live": 10,
     "n_members_read": 12,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "OKTA",
-     "ZS"
+     "OKTA"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 1,
      "ran": 0
@@ -659,18 +663,18 @@
     "n_members_on_board": 9,
     "members_on_board": [
      "ABNB",
-     "DECK",
      "EXPE",
      "GPC",
      "HAS",
      "RL",
      "ROST",
+     "TPR",
      "ULTA",
      "YUM"
     ],
     "present_counts": {
-     "buy": 3,
-     "watch": 6,
+     "buy": 2,
+     "watch": 7,
      "leaders": 0,
      "ran": 0
     },
@@ -737,10 +741,9 @@
     "n_members": 35,
     "n_members_live": 35,
     "n_members_read": 35,
-    "n_members_on_board": 6,
+    "n_members_on_board": 5,
     "members_on_board": [
      "ADM",
-     "CL",
      "GIS",
      "PG",
      "STZ",
@@ -748,7 +751,7 @@
     ],
     "present_counts": {
      "buy": 5,
-     "watch": 1,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
@@ -766,15 +769,14 @@
     "n_members": 18,
     "n_members_live": 18,
     "n_members_read": 18,
-    "n_members_on_board": 3,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "CL",
      "GIS",
      "PG"
     ],
     "present_counts": {
      "buy": 2,
-     "watch": 1,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
@@ -871,8 +873,8 @@
      "VZ"
     ],
     "present_counts": {
-     "buy": 4,
-     "watch": 0,
+     "buy": 3,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -940,11 +942,11 @@
     "n_members_read": 12,
     "n_members_on_board": 1,
     "members_on_board": [
-     "GGG"
+     "MSM"
     ],
     "present_counts": {
-     "buy": 1,
-     "watch": 0,
+     "buy": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -986,21 +988,20 @@
     "n_members": 76,
     "n_members_live": 76,
     "n_members_read": 76,
-    "n_members_on_board": 10,
+    "n_members_on_board": 9,
     "members_on_board": [
      "AIG",
      "BNY",
      "CB",
      "CBOE",
      "CFG",
-     "CME",
      "MSCI",
      "NTRS",
      "PNC",
      "STT"
     ],
     "present_counts": {
-     "buy": 5,
+     "buy": 4,
      "watch": 5,
      "leaders": 0,
      "ran": 0
@@ -1089,15 +1090,16 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "ANET",
      "AVGO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.3552,
     "pctile_n": 252,
@@ -1113,15 +1115,17 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 1,
+    "n_members_on_board": 3,
     "members_on_board": [
+     "ANET",
+     "APH",
      "AVGO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 2
     },
     "pctile": 0.3472,
     "pctile_n": 252,
@@ -1313,12 +1317,10 @@
     "n_members": 7,
     "n_members_live": 7,
     "n_members_read": 7,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "CME"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1550,7 +1552,7 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 179776,
+  "n_calls": 179777,
   "n_frozen_echoes_excluded": 233,
   "n_stamp_dates": 73,
   "stamp_dates": {
@@ -1717,18 +1719,18 @@
  },
  "scan_tier": {
   "available": true,
-  "asof": "2026-10-07",
+  "asof": "2026-10-09",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 21158,
-  "scan_n": 1646,
+  "store_n": 21171,
+  "scan_n": 1661,
   "runners_n": 150,
-  "runners_eligible_today_n": 6,
+  "runners_eligible_today_n": 11,
   "runners_never_eligible_n": 33,
   "excluder_family_hist": {
-   "not_topped_veto": 137,
-   "ELIGIBLE": 6,
-   "freshness_expired": 5,
+   "not_topped_veto": 130,
+   "ELIGIBLE": 11,
+   "freshness_expired": 7,
    "rsi_cap_on_fresh_cross": 2
   }
  },
