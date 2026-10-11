@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 import yaml
 
@@ -126,3 +127,16 @@ def test_pricing_copy_matches_preview_limits_and_drops_china_pitch():
     assert "6 signals a day" not in combined
     assert "China special situations" not in plans
     assert "The China event desk" not in plans
+
+
+def test_tier_preview_secondary_signin_meets_mobile_interaction_floor():
+    css = (ROOT / "templates" / "tier_preview.css").read_text()
+    m = re.search(r"\.mx-tier-signin\{([^}]*)\}", css, re.S)
+    assert m, "missing secondary sign-in control rule"
+    rule = m.group(1)
+    h = re.search(r"min-height:\s*(\d+)px", rule)
+    assert h and int(h.group(1)) >= 40, rule
+    assert "box-sizing:border-box" in rule
+    assert "display:inline-flex" in rule
+    assert ".mx-tier-signin:focus-visible" in css
+    assert (ROOT / "site" / "tier_preview.css").read_text() == css
