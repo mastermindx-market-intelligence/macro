@@ -470,3 +470,24 @@ html[data-lang="zh"] .stage-pill.LEADERSHIP{background:rgba(220,38,38,0.18);colo
 html[data-lang="zh"] .rerating-stage-chip.s-breakaway{background:rgba(239,68,68,0.12);color:#f87171;}
 /* Leg chip green (breakaway context) */
 html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f87171;}
+/* RS leader watch: observation tier, built from existing radar rows. */
+.rs-highs-panel{margin-top:20px;padding:20px 22px;}
+.rs-highs-description{color:var(--text-secondary);font-size:13px;line-height:1.65;margin:6px 0 16px;}
+.rs-highs-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.rs-highs-col{padding:15px;border:1px solid var(--border);border-radius:var(--r-card,12px);background:var(--tile);}
+.rs-highs-col-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.rs-highs-col-title{font-size:14px;font-weight:700;color:var(--text-primary);}
+.rs-highs-count{font-family:var(--num);font-size:16px;font-weight:700;color:var(--col-ignition);}
+.rs-highs-tickers{display:flex;flex-wrap:wrap;gap:8px;}
+.rs-highs-ticker{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border-strong);border-radius:var(--r-ctl,8px);padding:5px 8px;font:600 12px var(--num);color:var(--text-primary);}
+.rs-highs-ticker:hover,.rs-highs-ticker:focus-visible{outline:1px solid var(--col-ignition);color:var(--col-ignition);}
+.rs-highs-leads{color:var(--col-ignition);font:600 10px var(--font-ui);}
+.rs-highs-foot{color:var(--text-secondary);font-size:12px;margin-top:10px;}
+.rs-highs-recents{grid-column:1/-1;}
+.rs-highs-ticker-date{font:500 10px var(--num);color:var(--text-secondary);}
+.rs-highs-entry{font:600 10px var(--font-ui);color:var(--text-secondary);white-space:nowrap;}
+.rs-highs-entry.staged{color:var(--col-ignition);}
+.rs-highs-entry.caution{color:var(--col-crowded);}
+
+
+@media(max-width:680px){.rs-highs-panel{padding:14px}.rs-highs-columns{grid-template-columns:1fr}}
