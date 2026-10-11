@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T11:50:27.149244+00:00",
-  "count": 2804,
+  "generated_at": "2026-10-11T12:20:33.762554+00:00",
+  "count": 2805,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -262,6 +262,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yrrua7uxrl0-566dd6",
+      "title": "GS TWIG Notes This Week in Global Research October 9, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:43:56Z",
+      "summary_points": [
+        "Asia/EM Market Evolution & China Exports: Asia equity markets now 50% tech-heavy with 10% EPS CAGR (100bp higher), driving EM strategy overweight North Asia/Tech + Brazil/SA/Greece/Hungary; China exports growth strong but demand sustainability hinges on trading partners’ growth.",
+        "Europe Sovereign Stress & Credit Pressures: Tightening financial conditions (e.g., French 10-yr spreads) reduce ECB rate hike urgency; sovereign risk tied to fiscal issues, not monetary policy, pressuring Eurozone IG/HY credit spreads amid growth/inflation trade-offs.",
+        "US Rates & GDP Impact: Persistent high Treasury yields drag ~0.5pp from GDP; FOMC remains \"open mind\" on policy, directly impacting macro risk exposure and portfolio positioning.",
+        "Energy & Tech Sector Shifts: Favor COP, OXY, PR, DUK, PWR, BKR, GLNG, DINO, TRP, AR; lithium supply chain shifts to 8-18% surplus (2027-2028E) from EV/ESS softening, altering sector flows.",
+        "AI & Green Capex Shifts: AI macro implications (India webinar) and Green Capex as policy-driven growth areas critical for sector allocation, with sustainability-focused portfolios prioritizing these themes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
