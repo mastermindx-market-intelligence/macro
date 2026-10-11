@@ -1,0 +1,171 @@
+{
+  "scope": "R9 planning-package integrity and syntax checks. Native rights behavior has 11 matching observations and one unmet V0 requirement; no product tests, live permissions, API/browser proof, independent design acceptance or forecast performance.",
+  "record_date": "2026-09-23",
+  "interface_commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+  "package_checks_passed": 29,
+  "checks": [
+    {
+      "id": "plan_exact_local_identity",
+      "pass": true
+    },
+    {
+      "id": "r8_manifest_preserved",
+      "pass": true
+    },
+    {
+      "id": "r8_spec_preserved",
+      "pass": true
+    },
+    {
+      "id": "eight_unique_tasks",
+      "pass": true
+    },
+    {
+      "id": "seven_unique_named_holds",
+      "pass": true
+    },
+    {
+      "id": "all_dependency_references_resolve",
+      "pass": true
+    },
+    {
+      "id": "dependency_graph_acyclic",
+      "pass": true
+    },
+    {
+      "id": "r8_requirements_exact_coverage",
+      "pass": true
+    },
+    {
+      "id": "r9_requirements_exact_coverage",
+      "pass": true
+    },
+    {
+      "id": "every_requirement_has_valid_tasks",
+      "pass": true
+    },
+    {
+      "id": "task_titles_present_in_plan",
+      "pass": true
+    },
+    {
+      "id": "planned_paths_in_plan",
+      "pass": true
+    },
+    {
+      "id": "no_runtime_or_native_approval",
+      "pass": true
+    },
+    {
+      "id": "no_tasks_falsely_started",
+      "pass": true
+    },
+    {
+      "id": "owner_gates_not_falsely_closed",
+      "pass": true
+    },
+    {
+      "id": "unproved_profile_stays_null",
+      "pass": true
+    },
+    {
+      "id": "full_four_subject_acceptance_preserved",
+      "pass": true
+    },
+    {
+      "id": "missingness_cases_preserved",
+      "pass": true
+    },
+    {
+      "id": "head_disagreement_not_hidden",
+      "pass": true
+    },
+    {
+      "id": "eleven_source_paths_pinned",
+      "pass": true
+    },
+    {
+      "id": "placeholder_markers_absent",
+      "pass": true
+    },
+    {
+      "id": "five_python_examples_syntax_parse",
+      "pass": true
+    },
+    {
+      "id": "shell_example_tokenization",
+      "pass": true
+    },
+    {
+      "id": "native_source_copy_matches_remote",
+      "pass": true
+    },
+    {
+      "id": "native_probe_identity_matches_matrix",
+      "pass": true
+    },
+    {
+      "id": "eleven_behavior_matches_one_unmet_requirement",
+      "pass": true
+    },
+    {
+      "id": "cache_invalidation_control_observed_denial",
+      "pass": true
+    },
+    {
+      "id": "reproduction_script_parses",
+      "pass": true
+    },
+    {
+      "id": "reproduction_command_documented",
+      "pass": true
+    }
+  ],
+  "task_topological_order": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7",
+    "T8"
+  ],
+  "r8_requirements": 32,
+  "additional_r9_requirements": 12,
+  "native_behavior": {
+    "matching": 11,
+    "unmet_v0_requirement": 1,
+    "production_leak_proven": false
+  },
+  "artifacts": [
+    {
+      "file": "2026-09-23-basic-materials-economics-v0-implementation.md",
+      "bytes": 46119,
+      "git_blob": "dbd993f57fc636ab2675a2ebba3e1e2296064778",
+      "sha256": "6ad7bfd44e20cd17fccd02211d51e08babc2ee22c41e5783a6af958be133fc99"
+    },
+    {
+      "file": "R9_CONTRACT_AND_TASK_MATRIX_2026-09-23.json",
+      "bytes": 19669,
+      "git_blob": "6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9",
+      "sha256": "15814da683ccb42be1b2c83d0c2d4b4e3fcb93bba5f0722d44e2e139a30a8293"
+    },
+    {
+      "file": "R9_NATIVE_RIGHTS_PROBE_2026-09-23.json",
+      "bytes": 2729,
+      "git_blob": "87f13672a044e37ae44914f817047247bf8f06d8",
+      "sha256": "87b446fa97f2e939732160a03a9f59c4305d99f8afa29e502fed8a52dd261e2e"
+    },
+    {
+      "file": "R9_NATIVE_RIGHTS_PROBE_2026-09-23.py",
+      "bytes": 3472,
+      "git_blob": "c86609b938f60592015c4a81b4ab0b3e8ae06433",
+      "sha256": "937c68e5ba4c120c49cc0a9efa91cd96ec9d2dffa523314e335a454303d75a80"
+    }
+  ],
+  "product_tests_executed": false,
+  "native_admission": false,
+  "decision_authority": false,
+  "independent_review": false
+}

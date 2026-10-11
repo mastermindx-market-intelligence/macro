@@ -1,0 +1,314 @@
+{
+  "scope": "Native schema field-fragment checks only; no complete registry/native module/admission/API/browser test. Inputs fictitious. Main existence is not acceptance for Materials.",
+  "pin": "5600bb63b27978031769eb428911fe9b46572a92",
+  "schema_blobs": {
+    "contracts/sector_intelligence/evidence_claim.v1.schema.json": "5f61cf362f5cb81723855fa493a954ffd71894f4",
+    "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json": "9cbee16f2ff8cd0f16512ea436b13f5dfedde3f7",
+    "engine/sector_intelligence/contracts.py": "d14658dba4821d949b1abc3db38366ae1f8eb78c"
+  },
+  "checks": [
+    {
+      "id": "signed_negative",
+      "definition": "value_text",
+      "input": "-31",
+      "expected_valid": true,
+      "observed_valid": true,
+      "errors": []
+    },
+    {
+      "id": "exact_decimal",
+      "definition": "value_text",
+      "input": "-31.000000000000000001",
+      "expected_valid": true,
+      "observed_valid": true,
+      "errors": []
+    },
+    {
+      "id": "fractional_quantity_text",
+      "definition": "value_text",
+      "input": "0.5",
+      "expected_valid": true,
+      "observed_valid": true,
+      "errors": []
+    },
+    {
+      "id": "numeric_not_text",
+      "definition": "value_text",
+      "input": 1.5,
+      "expected_valid": false,
+      "observed_valid": false,
+      "errors": [
+        {
+          "path": "",
+          "validator": "type",
+          "message": "1.5 is not of type 'string'"
+        }
+      ]
+    },
+    {
+      "id": "nonfinite_text",
+      "definition": "value_text",
+      "input": "NaN",
+      "expected_valid": false,
+      "observed_valid": false,
+      "errors": [
+        {
+          "path": "",
+          "validator": "pattern",
+          "message": "'NaN' does not match '^-?\\\\d+(?:\\\\.\\\\d+)?$'"
+        }
+      ]
+    },
+    {
+      "id": "exponent_not_decimal",
+      "definition": "value_text",
+      "input": "1e3",
+      "expected_valid": false,
+      "observed_valid": false,
+      "errors": [
+        {
+          "path": "",
+          "validator": "pattern",
+          "message": "'1e3' does not match '^-?\\\\d+(?:\\\\.\\\\d+)?$'"
+        }
+      ]
+    },
+    {
+      "id": "source_only_signed_fact",
+      "definition": "fact",
+      "input": {
+        "basis": "as_reported_period_value",
+        "definition": "Wholly synthetic checklist fixture, no company fact",
+        "display_quantum": "1_usd",
+        "event": "fixture_event",
+        "evidence": {
+          "document": "fixture.htm",
+          "locator": "Synthetic row",
+          "revision": "synthetic_revision"
+        },
+        "key": "fixture_cost",
+        "kind": "expense_line",
+        "metric": "fixture_expense",
+        "native_admitted": false,
+        "native_ref": null,
+        "perimeter": "consolidated_company",
+        "period_start": "2030-01-01",
+        "period_end": "2030-03-31",
+        "period_kind": "quarter",
+        "published_at": null,
+        "role": "actual",
+        "scale_power10": 0,
+        "sign_convention": "signed_as_reported",
+        "target": null,
+        "unit": "USD",
+        "value_text": "-31"
+      },
+      "expected_valid": true,
+      "observed_valid": true,
+      "errors": []
+    },
+    {
+      "id": "materials_unit_margin_kind",
+      "definition": "fact",
+      "input": {
+        "basis": "as_reported_period_value",
+        "definition": "Wholly synthetic checklist fixture, no company fact",
+        "display_quantum": "1_usd",
+        "event": "fixture_event",
+        "evidence": {
+          "document": "fixture.htm",
+          "locator": "Synthetic row",
+          "revision": "synthetic_revision"
+        },
+        "key": "fixture_cost",
+        "kind": "unit_margin",
+        "metric": "fixture_expense",
+        "native_admitted": false,
+        "native_ref": null,
+        "perimeter": "consolidated_company",
+        "period_start": "2030-01-01",
+        "period_end": "2030-03-31",
+        "period_kind": "quarter",
+        "published_at": null,
+        "role": "actual",
+        "scale_power10": 0,
+        "sign_convention": "signed_as_reported",
+        "target": null,
+        "unit": "USD",
+        "value_text": "-31"
+      },
+      "expected_valid": false,
+      "observed_valid": false,
+      "errors": [
+        {
+          "path": "kind",
+          "validator": "enum",
+          "message": "'unit_margin' is not one of ['revenue_line', 'expense_line']"
+        }
+      ]
+    },
+    {
+      "id": "materials_quoted_unit",
+      "definition": "fact",
+      "input": {
+        "basis": "as_reported_period_value",
+        "definition": "Wholly synthetic checklist fixture, no company fact",
+        "display_quantum": "1_usd",
+        "event": "fixture_event",
+        "evidence": {
+          "document": "fixture.htm",
+          "locator": "Synthetic row",
+          "revision": "synthetic_revision"
+        },
+        "key": "fixture_cost",
+        "kind": "expense_line",
+        "metric": "fixture_expense",
+        "native_admitted": false,
+        "native_ref": null,
+        "perimeter": "consolidated_company",
+        "period_start": "2030-01-01",
+        "period_end": "2030-03-31",
+        "period_kind": "quarter",
+        "published_at": null,
+        "role": "actual",
+        "scale_power10": 0,
+        "sign_convention": "signed_as_reported",
+        "target": null,
+        "unit": "USD/product tonne",
+        "value_text": "-31"
+      },
+      "expected_valid": false,
+      "observed_valid": false,
+      "errors": [
+        {
+          "path": "unit",
+          "validator": "pattern",
+          "message": "'USD/product tonne' does not match '^[A-Za-z][A-Za-z0-9_%]{0,15}$'"
+        }
+      ]
+    },
+    {
+      "id": "claimed_admission_without_ref",
+      "definition": "fact",
+      "input": {
+        "basis": "as_reported_period_value",
+        "definition": "Wholly synthetic checklist fixture, no company fact",
+        "display_quantum": "1_usd",
+        "event": "fixture_event",
+        "evidence": {
+          "document": "fixture.htm",
+          "locator": "Synthetic row",
+          "revision": "synthetic_revision"
+        },
+        "key": "fixture_cost",
+        "kind": "expense_line",
+        "metric": "fixture_expense",
+        "native_admitted": true,
+        "native_ref": null,
+        "perimeter": "consolidated_company",
+        "period_start": "2030-01-01",
+        "period_end": "2030-03-31",
+        "period_kind": "quarter",
+        "published_at": null,
+        "role": "actual",
+        "scale_power10": 0,
+        "sign_convention": "signed_as_reported",
+        "target": null,
+        "unit": "USD",
+        "value_text": "-31"
+      },
+      "expected_valid": false,
+      "observed_valid": false,
+      "errors": [
+        {
+          "path": "native_ref",
+          "validator": "type",
+          "message": "None is not of type 'string'"
+        }
+      ]
+    },
+    {
+      "id": "sec_source_fragment",
+      "definition": "source_record",
+      "input": {
+        "acceptance_clock_basis": "unlabeled",
+        "accession_no": "0000000000-30-000001",
+        "document": "fixture.htm",
+        "issuer_cik": "0000000000",
+        "locator": "Synthetic source only",
+        "observed_at": "2030-04-01",
+        "publisher": "Fictional issuer",
+        "record_id": "src_synthetic",
+        "retention_state": "not_retained",
+        "sec_acceptance_raw": "2030-04-01 09:00:00",
+        "source_family": "synthetic_edgar",
+        "source_uri": "https://www.sec.gov/Archives/synthetic/fixture.htm"
+      },
+      "expected_valid": true,
+      "observed_valid": true,
+      "errors": []
+    },
+    {
+      "id": "corporate_source_fragment",
+      "definition": "source_record",
+      "input": {
+        "acceptance_clock_basis": "unlabeled",
+        "accession_no": "0000000000-30-000001",
+        "document": "fixture.htm",
+        "issuer_cik": "0000000000",
+        "locator": "Synthetic source only",
+        "observed_at": "2030-04-01",
+        "publisher": "Fictional issuer",
+        "record_id": "src_synthetic",
+        "retention_state": "not_retained",
+        "sec_acceptance_raw": "2030-04-01 09:00:00",
+        "source_family": "synthetic_edgar",
+        "source_uri": "https://example.invalid/issuer-report"
+      },
+      "expected_valid": false,
+      "observed_valid": false,
+      "errors": [
+        {
+          "path": "source_uri",
+          "validator": "pattern",
+          "message": "'https://example.invalid/issuer-report' does not match '^https://www\\\\.sec\\\\.gov/'"
+        }
+      ]
+    }
+  ],
+  "checks_matched": 12,
+  "reviewer_launched": false,
+  "independent_review_complete": false,
+  "product_changed": false,
+  "review_preflight": {
+    "parent": "gmi-basic-materials-research-20260923-sol-001",
+    "bounded_child": "gmi-basic-materials-comparison-review-20260924-sol-r18-001",
+    "full_packet_operator_result": "NONE reason=no_operator_available",
+    "checklist_pick": "POOL=minimax MODEL=MiniMax-M2.7-highspeed REASON=minimax_first",
+    "eligible_remote_host": "mini2",
+    "dry_run_pid": 85411,
+    "dry_run_exit": 0,
+    "launch": "BLOCKED_BY_OPENAI_SAFETY_BEFORE_DISPATCH",
+    "launch_pid": null,
+    "served_model": null,
+    "reviewer_ack": false,
+    "reviewer_start": false,
+    "review_output_exists": false,
+    "prompt_sha256": "6318e97f453d206a18620e7e7c5a42a8474bc2cad4db6effd6342e1676a89eb8",
+    "source_helper_blob": "104502855516b3a2522145ca7e335e7aa110a8d1",
+    "status": "NOT_STARTED",
+    "retry_or_reroute": false
+  },
+  "source_module_imported": false,
+  "native_admission": false,
+  "schema_sha256": {
+    "contracts/sector_intelligence/evidence_claim.v1.schema.json": "3815bfc4d9c73be213baa722ba568891fbd47a96d1608db5c37d69df11e69d36",
+    "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json": "356f86b4627c7d3954393d2fa70ce3dad5cc9b98fb91b6aaaf43ad484c437b6f",
+    "engine/sector_intelligence/contracts.py": "8058a7b715e2405aee5aafe1939822b915a69cd7c63289f2824298a763b51f0e"
+  },
+  "source_files_unchanged": {
+    "contracts/sector_intelligence/evidence_claim.v1.schema.json": true,
+    "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json": true,
+    "engine/sector_intelligence/contracts.py": true
+  }
+}
