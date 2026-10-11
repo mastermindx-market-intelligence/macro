@@ -8,34 +8,45 @@ claim: >
   {"code":"REMOTE_CENSUS_INCOMPLETE","message":"remote proof census is incomplete","ok":false,
   "schema":"mastermind.source_continuity_refusal/v1"}, and that refusal carries no cause: it is
   one static string (control_plane/source_continuity.py:171) emitted from several sites
-  (scripts/source_continuity.py:2181, :2197, :2217, :2276, :2298, :2615, :2680 and
-  control_plane/source_continuity.py:661-662), one of which (:2615) fires on
-  `not files_complete or not collisions_complete` and is not roster-size specific. No
+  (scripts/source_continuity.py:2181, :2197, :2217, :2276, :2298, :2496, :2615, :2680 and
+  control_plane/source_continuity.py:661-662 and :1017), one of which (:2615) fires on
+  `not files_complete or not collisions_complete` and is not roster-size specific, and two of
+  which (:2496, on _ReadBudgetExceeded after bounded_get.check(), and :2680) fire on
+  read-budget exhaustion. No
   REMOTE_COMPLETE_VERIFIED receipt is obtainable for any Macro carrier until the Mastermind #346
   census-envelope series lands or the roster falls to 490 or fewer. The seat's recorded pass
-  criterion for a substitute (#7870 comments 6106134520 section 1 (i)-(v) and 6106495383
-  sections 3 and 5) therefore has five legs, each checkable by command: (1) head identity,
+  criterion for a substitute, as posted (#7870 comments 6106134520 section 1 (i)-(v) and
+  6106495383 sections 3 and 5), has five legs, each checkable by command: (1) head identity,
   git ls-remote == local HEAD == pulls/N head and the GitHub commit tree == HEAD^{tree};
   (2) ownership, fully paginated pulls/N/files == git diff --name-only <merge-base>..<head>,
   with the count; (3) attribution, an open-PR count above 490 read immediately BEFORE and
-  immediately AFTER the run plus the run's logical-call, byte and wall totals inside the #346
-  envelope (1,152 logical HTTP calls, 128 MiB, 300 s), because the refusal text does not say
-  which site fired; (4) fingerprint, sha256 of the exact posted census bytes, not of a
-  paraphrase; (5) one substitute per carrier per head, re-recorded at every head move. The
-  acc72f3f run on #7870 does not satisfy leg (3); #8250's substitute at 1db9cad1 (#8250 comment
-  6106395498) satisfies legs (1), (2) and (5) and leg (4) by shape only, because the hashed
-  ls-remote line is paraphrased and the pulls/8250 read is summarized there.
+  immediately AFTER the run plus the run's recorded wall time inside the adapter's census
+  budget read at the same source SHA, because the refusal text does not say which site fired;
+  (4) fingerprint, sha256 of the recorded external-effect artifact (the git ls-remote line plus
+  the pulls/N head/state/draft read at that head), NOT of the census, which the verifier checks
+  for shape only (control_plane/source_continuity.py:26, ^[0-9a-f]{64}$); (5) one substitute
+  per carrier per head, re-recorded at every head move. Two tightenings are the seat's own,
+  written in this record after 6106495383 and NOT on the carrier: under leg (3) also record
+  the run's logical-call and byte totals against the #346 envelope (1,152 logical HTTP calls,
+  128 MiB, 300 s); under leg (4) also post the exact artifact bytes the fingerprint hashes, so
+  a reader other than the poster can recompute it. The acc72f3f run on #7870 does not satisfy
+  leg (3); #8250's substitute at 1db9cad1 (#8250 comment 6106395498) satisfies legs (1), (2)
+  and (5) and leg (4) by shape only, because the hashed ls-remote line is paraphrased and the
+  pulls/8250 read is summarized there.
 falsifier: >
   A non-seat ruling on #7870 or #8250 (the Chairman or Sol, by cited comment or message id)
   that accepts a substitute lacking one of the five legs, or that requires the
   REMOTE_COMPLETE_VERIFIED receipt itself and no substitute (option B); or a run of
-  scripts/source_continuity.py (cap check in control_plane/source_continuity.py) on a Macro
+  scripts/source_continuity.py (cap check at :77 and :1337; control_plane/source_continuity.py
+  has no cap check) on a Macro
   carrier that returns REMOTE_COMPLETE_VERIFIED while the open-PR roster is above 490.
 so_what: >
   Gate (4) of the #7870 and #8250 release DECISIONs has one checkable definition, written before
   the release-head re-run so the run is specified before it runs: read the roster immediately
-  before and after, record the call/byte/wall totals, post the exact census bytes the fingerprint
-  hashes, and re-record at every new head (a base-sync merge supersedes the substitute:
+  before and after, record the wall time against the census budget (and, under the seat's
+  tightening, the call and byte totals), post the external-effect artifact the fingerprint
+  hashes (the ls-remote line plus the pulls/N read, never the census), and re-record at every
+  new head (a base-sync merge supersedes the substitute:
   SOURCE_CONTINUITY: SUBSTITUTE_SUPERSEDED_NEEDS_NEW_AT_<head>). The seat requests the non-seat
   ruling on the substitute and never rules it; raising the 490 cap is a protected-source change
   owned by the Mastermind #346 series, not a constant a carrier seat may tweak.
@@ -68,10 +79,20 @@ when the roster is above the cap, and it fails closed by design. The practical f
 not the refusal but an under-specified substitute: a session that posts "ls-remote matches, the
 files match, the roster was 632" has recorded legs (1), (2) and a paraphrase of (3), and a later
 reader cannot tell whether the refusal came from the roster-size site or from budget exhaustion
-or from an ownership gap. Leg (3)'s before/after roster reads and the call/byte/wall totals are
-what attribute the refusal to the roster; leg (4)'s exact bytes are what make the fingerprint
-recomputable by someone other than the poster.
+or from an ownership gap. Leg (3)'s before/after roster reads and wall-time reading (plus, under
+the seat's tightening, the call/byte totals) are what attribute the refusal to the roster; leg
+(4)'s posted artifact bytes (the seat's tightening) are what make the fingerprint recomputable
+by someone other than the poster, since the verifier checks it for shape only.
 
-The criterion is the seat's recorded request, not a ruling. Until the Chairman or Sol accepts a
-substitute by cited id, every Macro carrier's release stays RELEASE_BLOCKED_PENDING_NON_SEAT_RULING
-on this gate, and a head move voids the substitute recorded for the previous head.
+Confidence `verified` covers the verifier facts only (the refusal, the 490 cap, the emission
+sites, the roster reads). The five-leg criterion is the seat's recorded request, a proposal
+pending a non-seat ruling, not a verified fact.
+
+The criterion is the seat's recorded request, not a ruling, and this record gates nothing
+(Agent OS invariant I1). Recorded state, limited to the two carriers in the seat's gate set under
+DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL: #7870 and #8250 each stand at
+RELEASE_BLOCKED_PENDING_NON_SEAT_RULING on this gate until the Chairman or Sol accepts a
+substitute by cited id, and a head move voids the substitute recorded for the previous head.
+Other Macro carriers are outside that gate set and land under their own owners' gates (78 PRs
+merged to main on 2026-10-11 through 19:01:12Z, read 19:01:15Z; the enumerating command is in
+the 2026-10-11 base-sync-delta-review handoff's verified block).

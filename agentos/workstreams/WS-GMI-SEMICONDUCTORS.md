@@ -45,7 +45,7 @@ do_not_redo:
   - "A union merge can make a curated exclusive job reach a data file neither parent reached alone (1eb871d6: semiconductor-b-boundary reached site/turn_watch/turn_watch.json through app.main -> app.prophet_observations): run tests/test_ci_pack.py -k test_curated_exclusive_scopes_cover_their_own_import_closure locally after every base-sync before pushing (about 4-8 min)."
 waves:
   - id: SB-W1
-    title: "Shared foundation carrier #7870 at approved scope: H1 ruled B; audits consumed through 1eb871d6 (two base-syncs); CI red at 1eb871d6 repaired at 839bd6a1; hosted checks and the non-seat rulings owed"
+    title: "Shared foundation carrier #7870 at approved scope: H1 ruled B; audits consumed through 839bd6a1 (two base-syncs and the CI repair); CI red at 1eb871d6 repaired at 839bd6a1; hosted checks and the non-seat rulings owed"
     status: awaiting_ci
     pr: 7870
     next_action: >
@@ -62,8 +62,14 @@ waves:
       test_curated_exclusive_scopes_cover_their_own_import_closure reported "1 introduced, 0
       inherited". The repair is the tool's prescribed one-line widening of that job's paths:
       (local red 457.82 s -> green 252.99 s; packing probes unchanged at 135/5,827, 133/5,602,
-      128/5,562). Exactly one v2-guarded CI watcher is bound to 839bd6a1; a successor verifies it
-      is live (control_plane owns liveness) and otherwise binds exactly one.
+      128/5,562, measured 18:08:57Z-18:13:20Z on the working tree with the widening applied
+      but not yet committed, so probes-after.txt is stamped with the parent 1eb871d6e504 tree
+      73640ee5c405; the commit is 18:18:43Z). One v2-guarded CI watcher was launched for
+      839bd6a1 (watch-checks-v2.sh 7870 839bd6a1b065959b90e48d3171edbbe85f4f74f3 150 96, pid
+      37757, log header "WATCH #7870 head=839bd6a1b065959b90e48d3171edbbe85f4f74f3
+      interval=150s start=2026-10-11T18:19:32Z", alive by kill -0 at 18:53:21Z and 19:02:12Z); a
+      successor
+      verifies it is live (control_plane owns liveness) and otherwise binds exactly one.
       LANDING ORDER (binding, from #7870 comment 6105402719 line 18): Industrials #8250
       (adjudicated 6105257496, rebuilt on e4bce058 as 20e7e9ac (6105272573), RED at 20e7e9ac on the curated-closure
       contract, repaired again at 1db9cad104437dc0c9bb4b27cf45781040302fb2 = merge of
@@ -83,8 +89,12 @@ waves:
       printed 3 for both; and .github/ci/legacy-jobs.yml, auto-merged with 0 markers (at
       1db9cad1 tests/test_ci_pack.py also auto-merges with 0 markers; it is a main-side change
       between 363b4e62 and f191b7f1 that 1db9cad1 inherits, not an #8250-owned path).
-      Green and the delta reviews at acc72f3f, 36e2064d and 1eb871d6 are evidence for those
-      trees only.
+      Per-tree evidence, each for its own tree only: acc72f3f hosted green (21 success, 4
+      skipped, the non-gating merge-queue pilot excluded) and delta review ACCEPT_DELTA
+      (6105402719); 36e2064d hosted green (21 success, 4 skipped), the docfix that repaired in
+      full the REQUEST_REPAIR read of 2b770ade; 1eb871d6 hosted RED (run 38158831326) with the
+      delta read ACCEPT (6111839715); 839bd6a1 delta read ACCEPT, delta only (6112221196),
+      hosted CI IN_PROGRESS.
       Gate set per DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, stated completely: (1) semantic pass:
       the H1 ruling B (#7870 comment 6105015260) plus the consumed independent Opus audit of
       b76551be (DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE); (2) fresh non-author
@@ -157,7 +167,7 @@ waves:
       both above 490; the PR's fully paginated pulls/N/files equal to git diff --name-only
       against its base; and the run's recorded wall time inside the adapter's census budget
       read at the same source SHA. Any doubt on any leg is RELEASE_BLOCKED. Every other
-      refusal code (budget-exhaustion REMOTE_CENSUS_INCOMPLETE at :2679-2680,
+      refusal code (budget-exhaustion REMOTE_CENSUS_INCOMPLETE at :2496 and :2679-2680,
       REMOTE_PROOF_CHANGED, PATH_OUTSIDE_OWNERSHIP, and the
       control_plane/source_continuity.py:650-662 refusals) is RELEASE_BLOCKED
       regardless; (ii) a head is covered only if the substitute is re-recorded at that exact
@@ -223,9 +233,10 @@ waves:
 next_action: >
   2026-10-11: the seat consolidated under DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11.
   SB-W1 is the critical path for every vertical below it. Head is 839bd6a1b065959b90e48d3171edbbe85f4f74f3
-  (CI repair of the 1eb871d6 red). Consume the terminal line of the one v2-guarded CI watcher
-  bound to that head (bind exactly one if none is verifiably live; do not poll it) and the
-  pending non-author READ_ONLY read of 1eb871d6..839bd6a1; both are consumed on #7870 by note.
+  (CI repair of the 1eb871d6 red). The non-author READ_ONLY read of 1eb871d6..839bd6a1 is
+  consumed (ACCEPT, delta only, #7870 comment 6112221196). Consume the terminal line of the one
+  v2-guarded CI watcher bound to that head (bind exactly one if none is verifiably live; do not
+  poll it) on #7870 by note.
   Then request, never rule, the two non-seat items in one note if not already answered: gate (4)
   (the substitute re-recorded at the release head under the DSC's five legs, or the verifier's
   REMOTE_COMPLETE_VERIFIED) and gate (5) (acceptance of the two recorded raises by the
@@ -246,7 +257,7 @@ next_action: >
   head `839bd6a1b065959b90e48d3171edbbe85f4f74f3` at the time of this record (CI repair of the
   1eb871d6 red; acc72f3f -> ad5bdb2c -> 2b770ade -> 36e2064d -> 1eb871d6 -> 839bd6a1).
 - Truthful state lines: MISSION_COMPLETE FALSE; SEMICONDUCTOR_B NOT_BUILT; C1 DEFERRED;
-  V1_1 PROPOSED_NOT_BUILT; RIGHTS_QUALIFICATION QUEUED_NOT_STARTED; H1 RULED_B_IMPLEMENTED_AT_1eb871d6;
+  V1_1 PROPOSED_NOT_BUILT; RIGHTS_QUALIFICATION QUEUED_NOT_STARTED; H1 RULED_B_IMPLEMENTED_AT_acc72f3f;
   DELTA_REVIEW ACCEPTED_AT_839bd6a1 (repair delta, #7870 comment 6112221196; base-sync 2 at 6111839715);
   CEILING_RAISE RECORDED_NOT_ACCEPTED; SOURCE_CONTINUITY SUBSTITUTE_SUPERSEDED_NEEDS_NEW_AT_839bd6a1;
   CI RED_AT_1eb871d6 (run 38158831326), IN_PROGRESS_AT_839bd6a1; RELEASE BLOCKED_PENDING_NON_SEAT_RULING

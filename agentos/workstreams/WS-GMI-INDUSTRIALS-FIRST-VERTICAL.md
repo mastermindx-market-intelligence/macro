@@ -176,14 +176,17 @@ next_action: >
   strongest available Exponent/Pentair journey proof; claim no acceptance until the real user
   path satisfies the whole outcome. Re-arm the approved exact-carrier wait/watch path after the
   next nonterminal return, or report the exact WATCH_UNAVAILABLE condition.
-  2026-10-11 17:49Z: gate (4) for #8250 is applied under the five-leg substitute criterion now
-  recorded as DSC:SOURCE-CONTINUITY-CENSUS-PASS-CRITERION-FOR-MACRO-CARRIERS-OVER-THE-490-CAP:
-  6106395498 at 1db9cad1 satisfies legs (1) head identity, (2) ownership and (5) one substitute
-  per carrier per head; leg (4) fingerprint by shape only (the hashed ls-remote line is
-  paraphrased and the pulls/8250 read summarized there); leg (3) attribution (roster read
-  immediately before and after the run plus the run's call/byte/wall totals) is not recorded.
-  The release-head re-run records all five. #8250's head at this write is unchanged at 1db9cad1 (no #8250 act this
-  window); #7870 is at 1eb871d6 with its own substitute superseded (WS:GMI-SEMICONDUCTORS SB-W1).
+  2026-10-11 17:49Z: the seat's own reading of #8250's gate (4) against the requested, still
+  unruled five-leg substitute criterion recorded as
+  DSC:SOURCE-CONTINUITY-CENSUS-PASS-CRITERION-FOR-MACRO-CARRIERS-OVER-THE-490-CAP (a request,
+  not a ruling; the non-seat ruling stays owed): 6106395498 at 1db9cad1 satisfies legs (1) head
+  identity, (2) ownership and (5) one substitute per carrier per head; leg (4) fingerprint by
+  shape only (the hashed ls-remote line is paraphrased and the pulls/8250 read summarized
+  there); leg (3) attribution (roster read immediately before and after the run plus the run's
+  wall time against the census budget) is not recorded. The release-head re-run records all
+  five. #8250's head at 17:49Z is unchanged at 1db9cad1 (no #8250 act this window); #7870 was at
+  1eb871d6 at 17:49Z and is at 839bd6a1 (CI repair) at this record, with its own substitute
+  superseded at each head (WS:GMI-SEMICONDUCTORS SB-W1).
 artifacts:
   - agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md
