@@ -29,11 +29,14 @@
     }
   },
   "full_eleven_suite_local_tests_passed": 325,
-  "full_thirteen_suite_local_passed": 408,
+  "full_thirteen_suite_local_passed": 420,
+  "future_label_prefix_test_cases_added": 7,
+  "future_label_validation_deferral_causal": true,
   "historical_initial_milestone": {
     "eleven_suite_passed": 325,
     "new_oos_tests_passed": 41
   },
+  "invalid_future_values_original_red_failures": 6,
   "libraries": {
     "numpy": "2.5.1",
     "pytest": "9.1.1",
@@ -41,13 +44,19 @@
   },
   "licensed_market_pilot_executed": false,
   "local_python": "3.12",
+  "mature_invalid_labels_still_refused": true,
   "method": "external_pre_frozen_forecast_pair_next30m_residual_return_bps",
   "model_freeze_authenticated": false,
   "native_host": "M2 Studio",
-  "new_scoped_native_tests_passed": 46,
+  "new_scoped_native_tests_passed": 53,
   "new_withheld_status": "INSUFFICIENT_DAY_OUTCOME_COVERAGE",
-  "phase_predecessor_commit": "ad1053958287589a4ecd78c2aba06933ffa57c6e",
-  "prepared_at_utc": "2026-10-11T09:48:43.894583+00:00",
+  "phase_predecessor_commit": "8de7a138f6a9db52722078fb315db5aa64a73c69",
+  "prepared_at_utc": "2026-10-11T10:24:38.977337+00:00",
+  "previous_accepted_native_milestone": {
+    "new_oos_tests_passed": 46,
+    "parent_head": "748bceb73ae025ee48782cb1c3d541497558e53a",
+    "total_13_suite_local": 408
+  },
   "proof_logs": {
     "oos-daily-coverage-green.txt": {
       "bytes": 99,
@@ -65,6 +74,18 @@
       "bytes": 420,
       "sha256": "1bfe2afbf74ebd2389bd2a695af3235953296586d74f27bf86d0ee07dd555fef"
     },
+    "oos-future-prefix-full-green.txt": {
+      "bytes": 501,
+      "sha256": "7d81879f7a33fe3d3d01adf2ae6917c1b101fbc9895dcdcd6a8cb7147f8ecb04"
+    },
+    "oos-unavailable-future-green.txt": {
+      "bytes": 99,
+      "sha256": "55d66a5304aa9a88caf850a4a3497b2e63737aeda2eca46aac1454f708b4d39d"
+    },
+    "oos-unavailable-future-red.txt": {
+      "bytes": 13401,
+      "sha256": "3b78da49f619f91e93f13d8c9f8180276602bbbb23e02a89418c409bc23b8a60"
+    },
     "pressure-oos-adversarial-red.txt": {
       "bytes": 3768,
       "sha256": "90f107bba4e45bf501273bb2183cd62d2cfff4b6d9848d4bfc806b48927eac4a"
@@ -78,31 +99,35 @@
       "sha256": "6dcb5a40ce7bc1e65c883bcbdb207444cc371f91c1d92aa3781a2c261d1cc325"
     }
   },
-  "protected_mastermind": "f381af6758533906865361373addbb0514f86d7d",
+  "protected_mastermind": "70e9ef1ede16628d00a7cc1d749387d893a1d5b3",
   "real_equity_source_admitted": false,
   "registered_outcome_coverage_per_day_required": true,
   "schema": "factor_atlas.native_pressure_oos_receipt.v1",
   "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
   "source_files": {
     "session2/OOS_PRESSURE_INCREMENTAL_TEST_PROTOCOL.md": {
-      "bytes": 7458,
-      "sha256": "0617acc8ba3fa75db7990e49cf2662f0c8e160918d2c90033023b3a06ef61595"
+      "bytes": 9677,
+      "sha256": "586cd3e20172fa8de819ee41331219ebc22e22ea96ea8620caa6f51fe38a29bd"
     },
     "session2/evidence/oos_daily_outcome_coverage_witness.json": {
       "bytes": 23165,
       "sha256": "9866019c6f1f4f357d58e846160d2de5f13d4516c4a20ddd736d146e00e43c19"
+    },
+    "session2/evidence/oos_future_label_prefix_witness.json": {
+      "bytes": 2282,
+      "sha256": "2a1da55e0e6990de45f2d359e1d1c8e56d1c067e65db75aa6c6694c13b6803f6"
     },
     "session2/evidence/pressure_oos_synthetic_trial.json": {
       "bytes": 23023,
       "sha256": "bd3152fb9d53bb4b316f048905a4e3dc9fa1602f287655f13a3e1d6ea2c18130"
     },
     "session2/prototype/pressure_oos.py": {
-      "bytes": 12572,
-      "sha256": "4132f8911dd02a363bb265552b39632b15c4f334d2168bdc5c975c5aedea7082"
+      "bytes": 13015,
+      "sha256": "b236d815d671c7f930eeadcf5bc1d707308d96ee4594a6fe80602c478144f8fb"
     },
     "session2/prototype/test_pressure_oos.py": {
-      "bytes": 17184,
-      "sha256": "ba0851a7abd41d7021d8c157693ca10c105e2898a02e98a981f460dee6157d4a"
+      "bytes": 18914,
+      "sha256": "9f0d99fadbe86ab27c98826572badd9cf0bb4134fd18b669e5270982816d70d1"
     }
   },
   "source_population": "FABRICATED_FORECASTS_LABELS_AND_WEEKDAYS",

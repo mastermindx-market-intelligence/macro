@@ -231,7 +231,13 @@ def evaluate_oos(plan: EvaluationPlan,
                 raise ValueError("outcome_before_event")
         _signed_bps(r.control_prediction_bps,"control_forecast")
         _signed_bps(r.pressure_prediction_bps,"pressure_forecast")
-        if r.realized_residual_return_bps is not None:
+        # Treat the withheld future label as outside this evaluation vintage.
+        # Later-vintage bytes (including corruption) must not affect an earlier
+        # point-in-time report or digest. Validate only when actually known;
+        # once the receipt is mature, nonfinite/out-of-range labels fail closed.
+        if (r.realized_residual_return_bps is not None and
+                r.realized_known_at_utc_s is not None and
+                r.realized_known_at_utc_s<=evaluation_at_utc_s):
             _signed_bps(r.realized_residual_return_bps,"realized_outcome")
         seen[key]=r
 

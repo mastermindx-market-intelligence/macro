@@ -810,3 +810,65 @@ GitHub immutable readback, then consume exact-head CI.
 Advance only independent useful measurement/owner-readiness
 steps while no authentic source bundle exists; never imply
 consumer/publication acceptance.
+
+## S2-P6 deferred future-label validation at original cutoff — causal prefix
+
+At source entry, active PR #8677 original branch head was
+`8de7a138f6a9db52722078fb315db5aa64a73c69`, DRAFT/HOLD. Protected Mastermind
+`70e9ef1ede16628d00a7cc1d749387d893a1d5b3`;
+INDEX/ACTIVE_EXECUTION/SESSION_RELIABILITY and companions
+same-SHA Skillpack 1.0.1/bootstrap 1 blobs compatible,
+unchanged from prior pin.
+
+**Independent native source bug identified:** as-of OOS evaluator
+correctly excluded future known-at outcomes from loss/input
+digest, but validated the NUMERIC CONTENT of future-unavailable
+labels before applying decision cutoff. Malformed later-vintage
+outcomes (NaN, inf, -inf, 10^100, string, bool) made a
+historical available-only evaluation fail despite not entering
+the historical information set. Six test-first red failures.
+
+**Accepted bounded fix:** in existing `prototype/pressure_oos.py`,
+numeric outcome validation runs ONLY when original
+`realized_known_at_utc_s <= evaluation_at_utc_s`; all
+prior static clock ordering, source/mode/PIT identity,
+model feature-known-at, 30m outcome event and within-day
+coverage rules preserved. Future label changes, including
+later-invalid values, now have byte-identical earlier
+`EvaluationResult` and digest, never fill zero or
+backdate receipts. At/after original receipt, invalid
+values still raise ValueError (fail-closed).
+
+**Proof:** 6/6 future-invalid test-first red, 7 new tests,
+53/53 OOS focused tests green, 420/420 complete selected
+13-suite tests green locally M2 Python3.12. Controlled
+synthetic receipt `evidence/oos_future_label_prefix_witness.json`.
+No actual market data/labels/model freeze, source-rights
+admission, rank, alert, size, trade or customer release.
+The existing earlier research `pressure_oos.py` source owner
+remains original PR branch, not a substitute for S2-P4
+read-model implementation or any denied operation.
+
+**Reviewer state uncertain:** exact Executive native
+`session_summon` operation
+`factor-atlas-s2-independent-science-audit-20261011-sol-001`
+returned EFFECT_UNKNOWN. Read-only targets empty and Fabric
+roots unjoined, no confirmed START. DO_NOT_RETRY or
+commission substitute worker.
+
+**DO_NOT_REDO:** four named explicit source-read refusals,
+original denied benchmark/interpreter repair, denied
+fresh-main changed-path comparison and separately denied
+S2-P4 downstream factor_read_model.py patch. Its two
+uncommitted local WIP files and four failed integrity
+tests remain excluded from source manifest, PR and CI.
+
+**Unmet product frontier:** Terminal #844 and Macro #8623
+incumbent owner selected minute/quote/trade capture,
+corporate-action/volume basis, original source and reader
+receipts, PIT listing/calendar, correction and actual
+dataset-use rights NOT_ADMITTED. The source-only
+research fix is publishable as DRAFT evidence; the
+licensed four-stock pilot and production customer capability
+are not. Next original same-branch commit/push, remote
+readback, exact-head hosted CI. Keep HOLD.

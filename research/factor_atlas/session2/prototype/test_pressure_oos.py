@@ -426,3 +426,40 @@ def test_insufficient_day_label_fractions_not_equivalent_to_no_day_labels():
     assert result.per_day[-1].expected_slots==10
     assert result.per_day[-1].matured_slots==1
     assert result.input_digest
+
+
+@pytest.mark.parametrize("unavailable_future_label",[
+    float("nan"),float("inf"),float("-inf"),10**100,"invalid_future_label",True,
+])
+def test_future_unavailable_label_payload_cannot_poison_historical_oos_prefix(unavailable_future_label):
+    """A future label's unreceived value is outside the earlier information set.
+
+    At the earlier evaluation cutoff even an invalid later-vintage value must
+    not change the no-label result. Once learned, the value must be validated.
+    """
+    slots,rows=sample()
+    later_clock=END+8000
+    clean=replace(rows[0],realized_known_at_utc_s=later_clock,
+                  realized_residual_return_bps=10.)
+    future_bad=replace(clean,realized_residual_return_bps=unavailable_future_label)
+    earlier=study(slots=slots,rows=(clean,*rows[1:]))
+    candidate=study(slots=slots,rows=(future_bad,*rows[1:]))
+    assert earlier==candidate
+    assert candidate.status=="INSUFFICIENT_HOLDOUT_SESSIONS"
+    assert candidate.matured_matched_slots==19
+    assert candidate.input_digest==earlier.input_digest
+    with pytest.raises(ValueError,match="finite|outside_research_bounds"):
+        evaluate_oos(plan(),slots,(future_bad,*rows[1:]),
+                     evaluation_at_utc_s=later_clock+1)
+
+
+def test_preavailability_future_label_changes_do_not_change_prior_day_loss():
+    slots,rows=sample()
+    when=END+8000
+    original=replace(rows[0],realized_known_at_utc_s=when,
+                     realized_residual_return_bps=100.)
+    corrected=replace(original,realized_residual_return_bps=-200.)
+    a=study(slots=slots,rows=(original,*rows[1:]))
+    b=study(slots=slots,rows=(corrected,*rows[1:]))
+    assert a==b
+    assert a.control_mse_bps2 is None and b.control_mse_bps2 is None
