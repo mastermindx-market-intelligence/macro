@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-11 07:27:22 UTC",
+  "observed_at": "2026-10-11 08:00:25 UTC",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T0727",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T0800",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -5842,6 +5842,246 @@
       },
       "dialogue": "No watcher-enabled reciprocal wait was established in this return. Outgoing peer reply withheld because a received peer message is not direct human authorization to message another chat. Parent consumes the return within the already assigned mission; B retains the original CI/merge work.",
       "next_action": "Consume B's actual merged exact-source receipt when supplied. Existing parent release scope includes the qualified merged Settings change with caf/new master only once resource and release gates pass. Keep soleheartbeat quiet pending the existing concrete spend/maintenance decision; do not repeat it or poll provider/runtime/CI."
+    }
+  },
+  "current_capability_frontier_20261011T0800": {
+    "observed_at": "2026-10-11 08:00:25 UTC",
+    "supersedes": "current_capability_frontier_20261011T0727",
+    "supersession_scope": "Only Chairman storage-only preference, actual exact50/100GB volume quotes and retained release-topology assessment. Previous48USD compute-resize proposal remains historical and is no longer the preferred pending action. No purchase/cutover/new VPS measurement/source replay/live acceptance.",
+    "whole_original_mission_accepted": false,
+    "authenticated_provider": "Chairman reports DigitalOcean logged in. Same selected IAB5/tab1 actual authenticated MastermindX project contains droplet580786327 ubuntu-s-mastermindx/SFO3/146.190.142.17/Ubuntu24.04LTS/Active, matching retained instance metadata and80GiB physicaldisk. No login retry/credential read or new identity.",
+    "actual_current_plan": "Basic SharedCPU Regular/2vCPU/4GB RAM/80GB SSD/4TB transfer exact24USD/month0.036USD/hour. Plan price is provider current configuration estimate, not retrospective whole-account billing.",
+    "actual_proposal": "Preferred storage-only comparison: exact droplet Add Volume dialog50GB5USD/month;100GB10USD/month also observed. Existingcompute24USD/month yields29 or34USD/month before taxes/snapshots. No Create Volume or other paid/mount effect.",
+    "recovery_and_spend": "Previous resize/full-dropletsnapshot allowance was never approved. Storage-only purchase and concrete coherent-tree migration/recovery/maintenance scope remain to be admitted before any consequential effect. No implicit storage-spend cap from the preference question.",
+    "maintenance_proposal": "A coherent migration of the complete/opt/terminal tree is a viable candidate, not an executed or fully admitted cutover. Must preserve checkout/runtime/publicdata/permissions/marker/current and rollback generations; resolve actual writer effects once, validate complete copy and rollback, configure mount/service startup ordering, cut over in a bounded approved maintenance window, reclaim old root blocks only after proven recoverability, then verify/available>=10GiB and the original canonical release gates. Builder rollback does not itself roll back a filesystem migration. Keep Macro.git and other-project/private data intact.",
+    "source_and_capacity_retained": "T0518 capacitycause/local10GiB invariant retained; oldfb1/c968 operations unreplayed/no weakening/Gitcleanup/alternateprincipal. PR914caf source/latest3CI/all10jobsqualified; last actualcanonical34d installgapnotclosed. Completed914/8755 branches stayclosed. No settled source/CI/tests/capture/paidanswers/Peak/export/backup replay.",
+    "retained_protected_boundaries": "PR781 reservedmastermindx-3 ad5 independentnumericreview/3threads, IW2explicitcyberrefusal/platformhumanstep, SQL0030-32/operator/API+SQL/rights/release/security/source/EFFECT_UNKNOWN and exact887ALLOW remain scoped. No fullA11/Audit20acceptance.",
+    "screenshot_diagnostic": "A data:image URL attempt to expose the captured screenshot to a browser download API was blocked by the browser URL policy. No blocked protocol/navigation/CDP/browser-surface workaround retried. Temporary blank tab closed. Materially safer direct local file save of the already captured screenshot succeeded without browser navigation. This exact failed URL effect remains closed.",
+    "continuation": "Use storage-only as preferred remediation direction. Complete bounded migration/recovery/startup-dependency preparation and exact purchase/maintenance decision before effects. Do not proceed with the old48USD resize question, weaken root10GiB/same-filesystem guards, silently move data or poll unchanged provider/CI/runtime. Consume only actual relevant returns.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-only-volume-comparison-parent-qualification-20261011T0800.json",
+        "bytes": 6258,
+        "sha256": "7814ae5cb8835637cdef49a8698424b141dca368eaff76414672c8231e1d83d7"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-volume-50gb-quote-20261011.jpg",
+        "bytes": 87435,
+        "sha256": "2238fadab1a2dcad9901a1dd9144430e0d0cf79c4be70fc7d30b4106839c5249"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/Settings-917-source-return-parent-qualification-20261011T0727.json",
+        "bytes": 6923,
+        "sha256": "98f1c667ed6b7ee0f3dfeaed9d8fb8e4a06a517da4608cc3ad9784770d11ecd6"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-authenticated-resize-proposal-parent-qualification-20261011T0659.json",
+        "bytes": 5399,
+        "sha256": "375d0781c5e727780ea00307aa354901d6fb7921130894ce4eb231f1bcaf1582"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-resize-quote-20261011T0650.jpg",
+        "bytes": 219013,
+        "sha256": "ca7c6296f14a5e0c5d38f51a9be15cbff309f255f9da2f42d3f8c7464dd0376d"
+      }
+    ],
+    "settings_917_source_return": {
+      "schema": "terminal_audit20.scoped_worker_source_return.v1",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "observed_at": "2026-10-11 07:27:22 UTC",
+      "source_thread_id": "01a128b7-bd2b-7a91-891d-39d38f74ad55",
+      "verdict": "RULE_CONTINUE_SOURCE_QUALIFIED_INTEGRATION_AND_LIVE_ACCEPTANCE_UNPROVEN",
+      "whole_original_mission_accepted": false,
+      "actual_pr": {
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/917",
+        "number": 917,
+        "head": "881d9ad2b371fcaceb690c84c4068b5dd3cde672",
+        "base": "caf202fd5ac63c44ed09ddc758cab53d0c259beb",
+        "branch": "claude/ssd-mo-b-settings-retry-4f40c722bb5bcc5e",
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "mergeable": true,
+        "created_at": "2026-10-11T07:24:04Z",
+        "updated_at": "2026-10-11T07:24:30Z",
+        "changed_files": [
+          "terminal/components/settings/SectionPortfolioTargets.tsx",
+          "terminal/components/settings/__tests__/SectionPortfolioTargets.test.tsx",
+          "terminal/docs/pr-crops/mo-b-settings-retry/README.md",
+          "terminal/docs/pr-crops/mo-b-settings-retry/desktop-en-recovered.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/desktop-en-unavailable.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/desktop-zh-recovered.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/desktop-zh-unavailable.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/manifest.json",
+          "terminal/docs/pr-crops/mo-b-settings-retry/mobile-en-recovered.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/mobile-en-unavailable.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/mobile-zh-recovered.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/mobile-zh-unavailable.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/tablet-en-recovered.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/tablet-en-unavailable.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/tablet-zh-recovered.png",
+          "terminal/docs/pr-crops/mo-b-settings-retry/tablet-zh-unavailable.png",
+          "terminal/e2e/settings-targets-retry.spec.ts"
+        ],
+        "change_count": 17
+      },
+      "actual_source_bindings": [
+        {
+          "path": "terminal/components/settings/SectionPortfolioTargets.tsx",
+          "bytes": 11121,
+          "sha256": "2ffd3c0a7a3c15d80ccf5c52902e19d1cad05fdc28c6b7747c3144681448e8c0",
+          "git_blob": "ee38bc0326bc0b2ca6f898e83a650c578d59fc21",
+          "manifest_matches": true
+        },
+        {
+          "path": "terminal/components/settings/__tests__/SectionPortfolioTargets.test.tsx",
+          "bytes": 42601,
+          "sha256": "a1b6596ff18269d428da95b6f38976759a44660a8bbf779bcb4222e8341e302e",
+          "git_blob": "e6cd818a3aeb14e715ab9a274bde21510bf618ff",
+          "manifest_matches": true
+        },
+        {
+          "path": "terminal/e2e/settings-targets-retry.spec.ts",
+          "bytes": 3244,
+          "sha256": "6a4072ffbc0f125fde00c6572ed35190a84d2ece240d23f0bb9cd023eb8698fe",
+          "git_blob": "195366781922b2eab1235458a8bcacd1a81ade97",
+          "manifest_matches": true
+        }
+      ],
+      "prior_proposal": {
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/805#issuecomment-6077827461",
+        "comment_id": 6077827461,
+        "user": "mastermindx-2",
+        "created_at": "2026-10-09T09:03:04Z",
+        "comparison": "Current immutable component and native test SHA256 exactly match the two candidate hashes in this executed C2 proposal. Retain the bounded semantics; this is not a new full-repository or current-head CI acceptance."
+      },
+      "capability_delta": "Accepted proposal now has an actual non-draft current source PR against caf. Existing localized Retry bumps the authoritative GET loader; failed reads remain distinct from valid empty responses. A monotonic owner-transition generation guards mutation readback/recovery paints after A→B→A.",
+      "parent_review": "Read exact immutable current component/native tests/E2E/manifest/README and actual component PR diff. Three source hashes independently computed and match the committed manifest. No new auth/API/persistence or queued-POST policy change appears in the actual product delta. Native regressions discriminate obsolete failure/success retirement, loader abort, same-owner/locale continuity and unchanged submitted/queued writes.",
+      "explicit_retained_limitation": "Queued old-A POSTs may still execute after A→B→A, as explicitly preserved by the #805 proposal. Obsolete readbacks are retired; displayed loader data can remain stale until current-generation work completes. No claim of full lifecycle repair, live auth round-trip, cross-account disclosure closure or #761 authenticated closure.",
+      "worker_reported_checks": {
+        "native_component": "41 PASS reported by B and committed README; not rerun by parent.",
+        "typecheck": "tsc PASS reported by B and PR body; no independent current execution log observed.",
+        "mounted_responsive": "6 PASS reported: EN/ZH x1440x900,820x1180,390x844 using local fixture identity and intercepted GET. E2E source asserts one additional explicit GET/no POST/no horizontal overflow.",
+        "captures": "12 committed PNG paths observed; manifest lists 12 capture SHA256 values. No new parent visual inspection or independent PNG-byte hashing; not production captures."
+      },
+      "integration_state": "PR OPEN/not merged at the observed read. Current hosted CI was not queried; B owns its existing fresh CI/merge-on-green lane and will return the actual merge receipt. Do not create another CI watcher/rearm/dispatch/merge or source writer.",
+      "production_state": "No new canonical installed generation observed or deployment attempted in this event. Paid phone Replay and live Settings proof remain owed after actual capacity readiness and qualified canonical release. Pending exact VPS48USD/month + temporarysnapshot6USD/month + maintenance decision remains unchanged and is not granted by this peer message.",
+      "effects": {
+        "production_mutation": false,
+        "paid_resource_action": false,
+        "poweroff": false,
+        "snapshot": false,
+        "resize": false,
+        "source_branch_mutation": false,
+        "test_rerun": false,
+        "ci_observer_created": false,
+        "credential_access": false,
+        "outgoing_peer_message": false
+      },
+      "dialogue": "No watcher-enabled reciprocal wait was established in this return. Outgoing peer reply withheld because a received peer message is not direct human authorization to message another chat. Parent consumes the return within the already assigned mission; B retains the original CI/merge work.",
+      "next_action": "Consume B's actual merged exact-source receipt when supplied. Existing parent release scope includes the qualified merged Settings change with caf/new master only once resource and release gates pass. Keep soleheartbeat quiet pending the existing concrete spend/maintenance decision; do not repeat it or poll provider/runtime/CI."
+    },
+    "storage_only_comparison": {
+      "schema": "terminal_audit20.storage_only_comparison.v1",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "observed_at": "2026-10-11 08:00:25 UTC",
+      "user_steering": "Chairman prefers additional storage instead of a VPS upgrade and asks for judgment. This changes the preferred remediation direction; it is not a volume purchase, migration, outage, snapshot or resize approval.",
+      "actual_provider": {
+        "droplet_id": 580786327,
+        "name": "ubuntu-s-mastermindx",
+        "project": "MastermindX",
+        "region": "SFO3",
+        "state": "Active",
+        "url": "https://cloud.digitalocean.com/droplets/580786327/volumes?i=5a93d5",
+        "attached_volume_surface": "Exact droplet Volumes tab reports no block storage volumes on this surface.",
+        "quote": "Add a Volume dialog opened without creation. Initial100GB input quoted10USD/month. Input changed to50GB and actual quote5USD/month at0.1USD/GB/month. Size property50 observed. Default Automatically Format & Mount/Ext4 is selected; Create Volume was never clicked.",
+        "current_compute": "Settings read still shows current24USD/month,2vCPU/4GB/80GB. No resize, poweroff or compute-plan mutation."
+      },
+      "costs": {
+        "currency": "USD",
+        "volume_50_gb_monthly": 5,
+        "computed_compute_plus_50_gb_monthly": 29,
+        "volume_100_gb_monthly": 10,
+        "computed_compute_plus_100_gb_monthly": 34,
+        "previous_resize_compute_monthly": 48,
+        "comparison_basis": "Before taxes, any snapshot charges or other account resources; totals are arithmetic from the exact current compute plan and displayed volume quotes, not retrospective billing."
+      },
+      "official_sources": [
+        {
+          "url": "https://docs.digitalocean.com/products/volumes/details/pricing/",
+          "claim": "Volumes cost0.10USD/GiB/month and are separate network-attached block storage; billed while they exist even unattached."
+        },
+        {
+          "url": "https://docs.digitalocean.com/products/volumes/how-to/create/",
+          "claim": "Create/format/mount, same droplet region/project; supported automatic mounting under/mnt is available. Creation itself is a paid effect."
+        },
+        {
+          "url": "https://docs.digitalocean.com/products/volumes/how-to/mount-unmount/",
+          "claim": "A volume is a separate filesystem mounted into the existing hierarchy; persistent mount configuration is needed for reboots."
+        }
+      ],
+      "actual_capacity_scope": "No new VPS or disk measurement. Retained05:08 available8752930816B is1984487424B below10GiB. Merely mounting a separate volume does not add free blocks to/ because the retained wrapper measures os.statvfs('/'). Moving data off root only helps when root blocks are actually reclaimed; hiding a retained root directory under a mount does not reclaim it.",
+      "delegated_review": {
+        "agent": "/root/volume_release_fit",
+        "kind": "bounded read-only explorer",
+        "source": "Retained audit wrapper and git show caf202fd5ac63c44ed09ddc758cab53d0c259beb:ops/terminal-build.sh only",
+        "findings": "Whole/opt/terminal tree migration preserving exact absolute paths can structurally retain runtime dependencies/data, staging,live.next/.next.bak and marker on one filesystem. Moving only node_modules/publicdata/app/.next or staging breaks st_dev/hardlink/atomic-rename assumptions.",
+        "effect_scope": "No source edit/worktree/test/fetch/SSH/VPS/provider/credential/service/process effect by the explorer; no new root or Fabric replacement."
+      },
+      "builder_invariants": {
+        "wrapper_root_capacity_lines": [
+          16,
+          34
+        ],
+        "wrapper_runtime_device_lines": [
+          39,
+          40
+        ],
+        "builder_fixed_paths_lines": [
+          36,
+          38
+        ],
+        "builder_stage_line": 1085,
+        "builder_hardlink_lines": [
+          1103,
+          1108
+        ],
+        "builder_swap_lines": [
+          1135,
+          1155
+        ],
+        "builder_rollback_lines": [
+          874,
+          897
+        ]
+      },
+      "recommendation": "Prefer storage-only for this observed disk blocker;50GB at5USD/month is a reasonable initial size for the retained approximately8.24GB Terminal tree.100GB at10USD/month is an alternative if more storage headroom is desired. No current CPU/RAM bottleneck proof or need for a compute upgrade is established by this event.",
+      "prospective_migration": "A coherent migration of the complete/opt/terminal tree is a viable candidate, not an executed or fully admitted cutover. Must preserve checkout/runtime/publicdata/permissions/marker/current and rollback generations; resolve actual writer effects once, validate complete copy and rollback, configure mount/service startup ordering, cut over in a bounded approved maintenance window, reclaim old root blocks only after proven recoverability, then verify/available>=10GiB and the original canonical release gates. Builder rollback does not itself roll back a filesystem migration. Keep Macro.git and other-project/private data intact.",
+      "current_proposal_status": "Prior48USD/month compute-resize approval request is superseded as the preferred plan. No hardware upgrade should proceed from that old pending question. Prepare/confirm the storage-only purchase amount and concrete migration/recovery/maintenance scope before consequential effects; no new approval question repeated in this comparison turn.",
+      "unchanged_delivery": "PR914caf and PR917 source return retain their exact historical qualifications; B owns917CI/merge and actual merged receipt is still pending. No settled productsource/CI/tests/captures/paid answers replay. PR781review/IW2security/SQL/rights/EFFECT_UNKNOWN/887holds unchanged. No canonical install/liveSettings/phoneReplay/fullAudit20 acceptance.",
+      "screenshots": [
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/digitalocean-580786327-volume-50gb-quote-20261011.jpg",
+          "bytes": 87435,
+          "sha256": "2238fadab1a2dcad9901a1dd9144430e0d0cf79c4be70fc7d30b4106839c5249"
+        }
+      ],
+      "effects": {
+        "volume_created": false,
+        "attach_or_mount": false,
+        "purchase": false,
+        "poweroff": false,
+        "resize": false,
+        "snapshot": false,
+        "migration": false,
+        "cleanup": false,
+        "service_restart": false,
+        "deploy": false,
+        "outgoing_peer_message": false
+      },
+      "whole_original_mission_accepted": false
     }
   }
 }
