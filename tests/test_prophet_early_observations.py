@@ -260,3 +260,118 @@ def test_bad_trigger_flags_fail_as_unavailable_instead_of_quiet_data(api, tmp_pa
     result = view(api, source, spine)
     assert result["status"] == "UNAVAILABLE"
     assert result["reason"] == "SOURCE_MALFORMED"
+
+
+def relation_snapshot(api, rows, *, events=None, suppressions=None, episodes=None, generation="peg:test"):
+    """A declared post-validation snapshot double for relation-only assertions."""
+    from types import SimpleNamespace
+    normal_events = [{"source_system": "turn_watch", "source_schema": api.TURN_WATCH_SCHEMA,
+                      "source_event_id": row["source_event_id"], "source_receipt": row["source_receipt"],
+                      "episode_id": f"episode:{row['ticker']}"} for row in rows]
+    normal_episodes = [{"episode_id": f"episode:{row['ticker']}",
+                        "security_id": row["security_id"]} for row in rows]
+    return SimpleNamespace(generation_id=generation, generation=SimpleNamespace(
+        events=normal_events if events is None else events,
+        suppressions=[] if suppressions is None else suppressions,
+        episodes=normal_episodes if episodes is None else episodes))
+
+
+@pytest.mark.parametrize("case,expected", [
+    ("exact", "EXACT_EPISODE"),
+    ("duplicate_event", "EPISODE_JOIN_UNAVAILABLE"),
+    ("event_and_suppression", "EPISODE_JOIN_UNAVAILABLE"),
+    ("duplicate_suppression", "EPISODE_JOIN_UNAVAILABLE"),
+    ("wrong_security", "EPISODE_JOIN_UNAVAILABLE"),
+    ("missing_episode", "EPISODE_JOIN_UNAVAILABLE"),
+    ("wrong_system", "EPISODE_JOIN_UNAVAILABLE"),
+    ("wrong_schema", "EPISODE_JOIN_UNAVAILABLE"),
+    ("wrong_receipt", "EPISODE_JOIN_UNAVAILABLE"),
+    ("active_anchor", "BLOCKED_BY_ACTIVE_EPISODE"),
+    ("unbound_suppression", "NOT_YET_ANCHORED"),
+    ("wrong_suppression_security", "EPISODE_JOIN_UNAVAILABLE"),
+])
+def test_relation_cardinality_and_exact_source_binding(api, tmp_path, monkeypatch, case, expected):
+    source, spine, _, _ = seed(tmp_path)
+    row = view(api, source, spine)["rows"][0]
+    snapshot = relation_snapshot(api, [row])
+    generation = snapshot.generation
+    event = generation.events[0]
+    suppression = {**event, "security_id": row["security_id"],
+                   "reason": "ACTIVE_EPISODE_DIFFERENT_ANCHOR"}
+    if case == "duplicate_event":
+        generation.events.append(dict(event))
+    elif case == "event_and_suppression":
+        generation.suppressions.append(suppression)
+    elif case == "duplicate_suppression":
+        generation.events = []
+        generation.suppressions = [suppression, dict(suppression)]
+    elif case == "wrong_security":
+        generation.episodes[0]["security_id"] = "SEC:US-XNAS-OTHER"
+    elif case == "missing_episode":
+        generation.episodes = []
+    elif case in {"wrong_system", "wrong_schema", "wrong_receipt"}:
+        event[{"wrong_system": "source_system", "wrong_schema": "source_schema",
+               "wrong_receipt": "source_receipt"}[case]] = "other"
+    elif case in {"active_anchor", "unbound_suppression", "wrong_suppression_security"}:
+        generation.events = []
+        if case == "unbound_suppression":
+            suppression.update(security_id=None, reason="MISSING_STRUCTURAL_ANCHOR")
+        elif case == "wrong_suppression_security":
+            suppression["security_id"] = "SEC:US-XNAS-OTHER"
+        generation.suppressions = [suppression]
+    # Same ticker/security and same event ID are insufficient when provenance differs.
+    generation.events.extend([{**event, "source_system": "another_producer"},
+                              {**event, "source_schema": "another_schema"},
+                              {**event, "source_receipt": "another_receipt"}])
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _: snapshot)
+    result = view(api, source, spine, episode_root=tmp_path)["rows"][0]["episode_relation"]
+    assert result["state"] == expected
+    assert result["generation_id"] == "peg:test"
+    assert result["episode_id"] == ("episode:AMZN" if expected == "EXACT_EPISODE" else None)
+
+
+def test_relation_population_scans_each_validated_collection_once(api, tmp_path, monkeypatch):
+    class CountedRows(list):
+        yielded = 0
+
+        def __iter__(self):
+            for row in super().__iter__():
+                self.yielded += 1
+                yield row
+
+    source, spine, _, _ = seed(tmp_path, tuple(f"N{i:03}" for i in range(48)))
+    rows = view(api, source, spine)["rows"]
+    snapshot = relation_snapshot(api, rows)
+    gen = snapshot.generation
+    gen.events = CountedRows(gen.events)
+    gen.episodes = CountedRows(gen.episodes)
+    gen.suppressions = CountedRows([{**row, "source_receipt": "unrelated", "reason": "OTHER"}
+                                   for row in list.__iter__(gen.events)])
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _: snapshot)
+    result = view(api, source, spine, episode_root=tmp_path)
+    assert len(result["rows"]) == 48
+    assert all(row["episode_relation"]["state"] == "EXACT_EPISODE" for row in result["rows"])
+    assert {name: getattr(gen, name).yielded for name in ("events", "suppressions", "episodes")} == {
+        "events": 48, "suppressions": 48, "episodes": 48}
+
+
+def test_same_head_corruption_after_a_successful_read_does_not_reuse_relation(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path)
+    b1_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False, correction_path=None,
+                        recorded_at="2026-10-08T21:00:00Z")
+    root = tmp_path / "data/us_prophet_rank/episodes"
+    head_bytes = (root / "HEAD.json").read_bytes()
+    first = view(api, source, spine, episode_root=root)
+    gid = json.loads(head_bytes)["generation_id"]
+    payload = root / "generations" / gid / "all_candidates.json"
+    original = payload.read_bytes()
+    payload.write_bytes(original + b" ")
+    changed = view(api, source, spine, episode_root=root)
+    assert (root / "HEAD.json").read_bytes() == head_bytes
+    assert changed["status"] == "CURRENT_SESSION" and len(changed["rows"]) == 1
+    assert changed["rows"][0]["episode_relation"]["reason"] == "B1_SNAPSHOT_UNAVAILABLE"
+    assert changed["snapshot_id"] != first["snapshot_id"]
+    with pytest.raises(api.ObservationQueryError, match="SNAPSHOT_CHANGED"):
+        api.query_observations(changed, expected_snapshot=first["snapshot_id"])
+    payload.write_bytes(original)
+    assert view(api, source, spine, episode_root=root)["snapshot_id"] == first["snapshot_id"]
