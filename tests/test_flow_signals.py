@@ -1786,3 +1786,168 @@ class TestCurrentMainSourceClockNamespace:
         assert int(fresh["source_print_count"]) == 7
         assert float(fresh["at_ask_share"]) == pytest.approx(0.55)
         assert float(fresh["nbbo_premium_coverage"]) == pytest.approx(0.8)
+
+
+# ─── F01: measured slots reject legacy categories and broken location identity ─
+
+
+def test_midpoint_derived_buy_side_never_enters_measured_slots():
+    """A ~buy category and a legacy 0.8 ask_share do not fill an inside print."""
+    from collectors.flow_signals import _events_from_blob
+
+    block = {
+        "schema": MICRO_SCHEMA,
+        "inside_share": 1.0,
+        "at_ask_share": 0.0,
+        "at_bid_share": 0.0,
+        "outside_share": 0.0,
+        "aggression_share": 0.0,
+    }
+    event = _make_event(
+        "evtMidBuy",
+        side="~buy",
+        ask_share=0.8,
+        category_proxy_share=0.8,
+        microstructure=block,
+    )
+    row = _events_from_blob(_make_feed_blob([event]))[0]
+    assert row["at_ask_share"] == 0.0
+    assert row["aggression_share"] == 0.0
+
+
+def test_two_print_source_tick_signed_mid_stays_inside_not_proxy():
+    """Print 1 at 2.90 ask; print 2 at the 3.00 mid, signed up by the tick test."""
+    import pandas as pd
+    from engine import live_flow as lf
+    from collectors.flow_signals import _events_from_blob
+    from scripts.build_chain_heat import _enrich_events
+
+    rows = [
+        {
+            "root": "SPY", "right": "C", "expiration": "2026-07-17", "strike": 550.0,
+            "price": 2.90, "size": 1, "bid": 2.80, "ask": 2.90,
+            "trade_timestamp": "2026-07-02T14:30:00.100",
+            "quote_timestamp": "2026-07-02T14:30:00.000",
+            "sequence": 1,
+        },
+        {
+            "root": "SPY", "right": "C", "expiration": "2026-07-17", "strike": 550.0,
+            "price": 3.00, "size": 1, "bid": 2.00, "ask": 4.00,
+            "trade_timestamp": "2026-07-02T14:30:01.100",
+            "quote_timestamp": "2026-07-02T14:30:01.000",
+            "sequence": 2,
+        },
+    ]
+    result = lf.process_batch(
+        calls_df=pd.DataFrame(rows),
+        puts_df=None,
+        session_date="2026-07-02",
+        batch_ts="2026-07-02T18:30:00Z",
+        etf_floor=0,
+        name_floor=0,
+        etf_anchors=["SPY", "QQQ"],
+    )
+    assert len(result["events"]) == 1
+    event = result["events"][0]
+    assert event["side"] == "~buy"
+    enriched = _enrich_events([event])
+    assert enriched[0]["category_proxy_share"] == pytest.approx(0.80)
+    row = _events_from_blob(_make_feed_blob([event]))[0]
+    assert row["side"] == "~buy"
+    assert row["inside_share"] == pytest.approx(300 / 590)
+
+
+def _f01_consistent_location_block(**extra) -> dict:
+    block = {
+        "schema": MICRO_SCHEMA,
+        "source_premium_usd": 1_000_000.0,
+        "nbbo_covered_premium_usd": 1_000_000.0,
+        "nbbo_premium_coverage": 1.0,
+        "nbbo_print_coverage": 1.0,
+        "at_ask_share": 0.6,
+        "at_bid_share": 0.2,
+        "inside_share": 0.2,
+        "outside_share": 0.0,
+        "aggression_share": 0.8,
+        "aggression_balance": 0.4,
+    }
+    block.update(extra)
+    return block
+
+
+@pytest.mark.parametrize("legacy_key", ["ask_share", "category_proxy_share", "side"])
+def test_measured_block_with_legacy_categorical_key_is_rejected(legacy_key):
+    """A v1 block that also carries a legacy category key is not measured."""
+    from collectors.flow_signals import _events_from_blob
+
+    block = _f01_consistent_location_block(**{legacy_key: 0.8})
+    row = _events_from_blob(
+        _make_feed_blob([_make_event("evtLegacyKey", microstructure=block)])
+    )[0]
+    assert row["at_ask_share"] is None
+    assert row["microstructure_schema"] is None
+
+
+def test_measured_block_breaking_location_identity_is_rejected():
+    """Shares that do not partition covered premium, or that mix nulls, are dropped."""
+    from collectors.flow_signals import _events_from_blob
+
+    broken_sum = {
+        "schema": MICRO_SCHEMA,
+        "at_ask_share": 0.8,
+        "at_bid_share": 0.2,
+        "inside_share": 0.5,
+        "outside_share": 0.0,
+        "aggression_share": 1.0,
+    }
+    mixed_null = {
+        "schema": MICRO_SCHEMA,
+        "at_ask_share": 0.8,
+        "at_bid_share": None,
+        "inside_share": 0.2,
+        "outside_share": 0.0,
+        "aggression_share": 0.8,
+    }
+    for block in (broken_sum, mixed_null):
+        row = _events_from_blob(
+            _make_feed_blob([_make_event("evtBroken", microstructure=block)])
+        )[0]
+        for column in MEASURED_COLS:
+            assert row[column] is None, column
+
+
+def test_genuine_coalesced_block_passes_rejection_predicate():
+    """Producer output from the A01 geometries is trusted, not rejected."""
+    import pandas as pd
+    from engine import live_flow as lf
+    from collectors.flow_signals import (
+        _measured_microstructure_cols,
+        measured_block_rejection_reason,
+    )
+
+    for bid, ask in ((2.00, 4.00), (3.00, 3.90)):
+        rows = []
+        for seq, second in ((1, 0), (2, 1)):
+            rows.append({
+                "root": "SPY",
+                "right": "C",
+                "expiration": "2026-07-17",
+                "strike": 550.0,
+                "price": 3.90,
+                "size": 10,
+                "bid": bid,
+                "ask": ask,
+                "trade_timestamp": f"2026-07-02T14:30:0{second}.100",
+                "quote_timestamp": f"2026-07-02T14:30:0{second}.000",
+                "sequence": seq,
+            })
+        measured = lf._coalesce_nbbo_microstructure(pd.DataFrame(rows))
+        assert len(measured) == 1
+        block = next(iter(measured.values()))
+        assert measured_block_rejection_reason(block) is None
+        flat = _measured_microstructure_cols({"microstructure": block})
+        assert flat["microstructure_schema"] == block["schema"]
+        assert flat["at_ask_share"] == block["at_ask_share"]
+        assert flat["inside_share"] == block["inside_share"]
+        assert flat["at_ask_share"] is not None
+

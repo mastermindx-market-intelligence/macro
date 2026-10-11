@@ -539,3 +539,160 @@ def test_publisher_writes_valid_payload(tmp_path, monkeypatch):
     assert "Infinity" not in text and "NaN" not in text
     payload = json.loads(text)
     assert payload["campaigns"]
+
+
+# ─── F01: unknown ask_share stays null; measured location is not the proxy ──
+
+
+def _f01_two_print_event(bid: float, ask: float) -> dict:
+    """One contract, two prints at 3.90 × 10, through the live-flow event path."""
+    import pandas as pd
+    from engine import live_flow as lf
+
+    rows = []
+    for seq, second in ((1, 0), (2, 1)):
+        rows.append({
+            "root": "SPY",
+            "right": "C",
+            "expiration": "2026-07-17",
+            "strike": 550.0,
+            "price": 3.90,
+            "size": 10,
+            "bid": bid,
+            "ask": ask,
+            "trade_timestamp": f"2026-07-02T14:30:0{second}.100",
+            "quote_timestamp": f"2026-07-02T14:30:0{second}.000",
+            "sequence": seq,
+        })
+    result = lf.process_batch(
+        calls_df=pd.DataFrame(rows),
+        puts_df=None,
+        session_date="2026-07-02",
+        batch_ts="2026-07-02T18:30:00Z",
+        etf_floor=0,
+        name_floor=0,
+        etf_anchors=["SPY", "QQQ"],
+    )
+    assert len(result["events"]) == 1
+    return result["events"][0]
+
+
+def test_same_category_changed_nbbo_moves_location_not_proxy():
+    """Same ~buy category, two NBBO geometries: location moves, proxy does not."""
+    # X is inside and above mid (sign +1). Y prints at the ask (sign +1).
+    scenarios = (
+        ("X", 2.00, 4.00, 0.0, 1.0),
+        ("Y", 3.00, 3.90, 1.0, 0.0),
+    )
+    campaigns = []
+    for _name, bid, ask, at_ask, inside in scenarios:
+        event = _f01_two_print_event(bid, ask)
+        assert event["side"] == "~buy"
+        micro = event["microstructure"]
+        assert micro["inside_share"] == inside
+        assert micro["at_ask_share"] == at_ask
+        enriched = _enrich_events([event])
+        assert enriched[0]["category_proxy_share"] == pytest.approx(0.80)
+        raw = aggregate_chain_heat(
+            enriched, min_premium_mn=0.0, min_alerts=1, session_date="2026-07-02",
+        )
+        assert len(raw) == 1
+        assert raw[0]["category_proxy"]["share"] == pytest.approx(0.80)
+        campaigns.append((at_ask, raw[0]))
+
+    for at_ask, campaign in campaigns:
+        assert campaign["measured_location"]["at_ask_share"] == at_ask
+
+
+def test_envelope_unknown_ask_share_stays_null_not_neutral():
+    """A missing legacy ask_share is unknown, not the 0.5 contested anchor."""
+    campaign = {
+        "option_symbol": "SMH   260918C00530000",
+        "ticker": "SMH",
+        "right": "CALL",
+        "strike": 530.0,
+        "expiry": "2026-09-18",
+        "dte": 71,
+        "total_premium_mn": 5.0,
+        "alert_count": 2,
+        "span_minutes": 10.0,
+        "first_seen": "2026-07-08T14:00:00Z",
+        "ask_share": None,
+        "lean": "contested",
+        "direction_reliability": "soft",
+        "authority_tier": "display",
+    }
+    env = build_envelope([campaign], "2026-07-08", "2026-07-08T15:00:00Z")
+    assert env["campaigns"][0]["ask_share"] is None
+    assert env["ask_share_basis"] == "side_category_legacy"
+    assert env["campaigns"][0]["lean"] == "contested"
+
+
+def _f01_location_block(
+    source: float,
+    covered: float,
+    at_ask: float,
+    at_bid: float,
+    inside: float,
+    outside: float,
+) -> dict:
+    """A v1 block whose location identity and coverage bounds hold."""
+    return {
+        "schema": "options.trade_nbbo_microstructure/v1",
+        "source_premium_usd": source,
+        "nbbo_covered_premium_usd": covered,
+        "nbbo_premium_coverage": covered / source,
+        "at_ask_share": at_ask,
+        "at_bid_share": at_bid,
+        "inside_share": inside,
+        "outside_share": outside,
+        "aggression_share": at_ask + at_bid,
+        "aggression_balance": at_ask - at_bid,
+    }
+
+
+def test_partial_coverage_keeps_full_source_premium_and_eligible_denominator():
+    """Covered premium weights location; source premium and the proxy stay whole."""
+    def _event(event_id: str, ts: str, premium: float, block: dict | None) -> dict:
+        row = {
+            "id": event_id,
+            "ts": ts,
+            "root": "SMH",
+            "right": "C",
+            "exp": "2026-09-18",
+            "strike": 530.0,
+            "premium": premium,
+            "side": "~buy",
+        }
+        if block is not None:
+            row["microstructure"] = block
+        return row
+
+    events = [
+        _event(
+            "a", "2026-07-08T14:00:00Z", 2_000_000.0,
+            _f01_location_block(2_500_000.0, 1_000_000.0, 1.0, 0.0, 0.0, 0.0),
+        ),
+        _event(
+            "b", "2026-07-08T14:10:00Z", 2_000_000.0,
+            _f01_location_block(2_000_000.0, 2_000_000.0, 0.5, 0.0, 0.5, 0.0),
+        ),
+        _event("c", "2026-07-08T14:20:00Z", 1_500_000.0, None),
+    ]
+    raw = aggregate_chain_heat(
+        _enrich_events(events), min_premium_mn=3.0, min_alerts=2,
+        session_date="2026-07-08",
+    )
+    assert len(raw) == 1
+    campaign = raw[0]
+    assert campaign["category_proxy"]["share"] == pytest.approx(0.80)
+    loc = campaign["measured_location"]
+    assert loc["source_premium_usd"] == 4.5e6
+    assert loc["nbbo_covered_premium_usd"] == 3.0e6
+    assert loc["nbbo_premium_coverage"] == pytest.approx(0.6667, abs=1e-4)
+    assert loc["at_ask_share"] == pytest.approx(2 / 3, abs=1e-4)
+    assert loc["unmeasured_member_count"] == 1
+    assert loc["unmeasured_member_premium_usd"] == pytest.approx(1_500_000.0)
+    # The unmeasured member is disclosed, not inserted as a zero location.
+    assert loc["at_ask_share"] != pytest.approx(0.0)
+    assert loc["inside_share"] == pytest.approx(1 / 3, abs=1e-4)
