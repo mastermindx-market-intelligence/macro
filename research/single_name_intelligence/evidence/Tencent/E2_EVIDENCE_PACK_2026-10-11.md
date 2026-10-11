@@ -20,10 +20,13 @@ Identity owner calls used throughout (run 2026-10-11, re-runnable):
 python3 -c "
 import sys; sys.path.insert(0,'.')
 import pandas as pd
-from lib.dataos.identity import IssuerMaster, VendorAliasTable, normalize_hk_symbol, security_id as mk_sid
+from lib.dataos.identity import IssuerMaster, VendorAliasTable
 sm = pd.read_parquet('data/reference/security_master.parquet')
 im = IssuerMaster.from_records(sm.to_dict('records'))
-mk_sid(normalize_hk_symbol('0700.HK'))            # -> 'SEC:HK-XHKG-00700'
+# The HK security id is READ from the owner's own master row, never constructed from a ticker
+# (seat repair 2026-10-11: an earlier draft built it with the owner's key constructor):
+sm[(sm['mic']=='XHKG') & (sm['inception_code'].astype(str)=='00700')][['security_id','issuer_id','issuer_state']].to_dict('records')
+                                                  # -> [{'security_id': 'SEC:HK-XHKG-00700', 'issuer_id': nan, 'issuer_state': 'NO_ISSUER_EVIDENCE'}]  (one row, sm.iloc[2962])
 im.issuer_of_security('SEC:HK-XHKG-00700')        # -> None  (NO_ISSUER_EVIDENCE)
 va = pd.read_parquet('data/reference/vendor_aliases.parquet')
 # RMB counter 80700: NO id is ever constructed for it. Identity absence is established by
@@ -466,6 +469,15 @@ Observed latest of 61 snapshots for `co:hk:0700.HK` (verbatim): `schema="gmi.ide
 Eight of nine descriptors owner-recorded; issuer subject MISSING (review finding F5 repair): the owner's node resolves to SECURITY only — `security_id=SEC:HK-XHKG-00700` with `issuer_id=NaN` in the owner's own row, i.e. the owner explicitly carries NO issuer evidence for this subject (`GRAPH_NODE_RESOLVES_TO_SECURITY_ONLY_NO_ISSUER_EVIDENCE`), so the issuer_subject descriptor is missing, not owner-recorded. reporting period = `resolution_asof=2026-10-09` (snapshot clock); known-at = `computed_at=2026-10-09T14:11:26Z` + `master_generated_at=2026-10-09T05:05:32`; unit n/a (identifier row); dimensions = `graph_kind, market_scope, graph_identity_epoch, join_method, engine_version`; accounting basis n/a; source span = `source_receipts` JSON + `master_symbol_directory_snapshot` + `master_code_version`; definition version = `schema="gmi.identity_resolution/v1"`; correction/refusal state = `refusal_reason` field (NaN here) + append-only 61-snapshot history + `graph_identity_epoch`. Total rows: 61. Theme membership = display/context only; evidence-row rights governed by `engine/theme_graph/rights.py`, not adjudicated here. `evidence_rows: 1` (full latest snapshot) + 61-row count.
 
 `missing_descriptors: ["issuer_subject"]`; `descriptor_notes: {"issuer_subject": "GRAPH_NODE_RESOLVES_TO_SECURITY_ONLY_NO_ISSUER_EVIDENCE"}`.
+
+Snapshot history composition (seat check 2026-10-11, same blob `c84db448b957`, grouped by `resolution_state` over the 61 `co:hk:0700.HK` rows):
+
+| resolution_state | snapshots | first `resolution_asof` | last `resolution_asof` | security_id | join_method | refusal_reason |
+|---|---|---|---|---|---|---|
+| NOT_IN_MASTER | 5 | 2026-08-18 | 2026-08-20 | null | `refused` | "no security-master or vendor-alias row resolves this symbol" |
+| RESOLVED | 56 | 2026-08-20 | 2026-10-09 | `SEC:HK-XHKG-00700` | `vendor_alias` | null |
+
+Point-in-time consequence (A07): a then-known view dated before the master row's own `ingested_at=2026-08-20 18:50:35` has NO security id for 0700.HK. The owner refused it in those snapshots, so the id must not be back-filled into them.
 
 ## 32. themes.rmb_80700 — NO_OWNER
 
