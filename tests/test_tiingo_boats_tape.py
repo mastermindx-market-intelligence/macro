@@ -518,3 +518,32 @@ def test_same_quote_within_verified_segment_remains_observed_repeat(lake):
     ])
     out = audit(lake, [capture])
     assert out["quality_flags"]["same_venue_quote_repetition"] == 1
+
+
+
+def test_separate_capture_epochs_must_not_be_called_a_continuous_stream(lake):
+    early = saved(lake, [
+        ("2026-10-09T01:00:10Z",
+         frame("Q", event_at="2026-10-09T01:00:09Z")),
+    ])
+    late = saved(lake, [
+        ("2026-10-09T01:00:20Z",
+         frame("T", event_at="2026-10-09T01:00:08Z")),
+    ])
+    out = audit(lake, [early, late])
+    assert out["quality_flags"].get("event_epoch_out_of_arrival_order", 0) == 0
+    assert out["capture_observation_gaps"]["between_segment_positive_gaps"] == 1
+    assert out["capture_observation_gaps"]["cross_segment_event_time_order_proven"] is False
+    assert out["transport_continuity_proven"] is False
+
+
+def test_within_segment_out_of_order_epoch_still_detected(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:10Z",
+         frame("Q", event_at="2026-10-09T01:00:09Z")),
+        ("2026-10-09T01:00:20Z",
+         frame("T", event_at="2026-10-09T01:00:08Z")),
+    ])
+    out = audit(lake, [ref])
+    assert out["quality_flags"]["event_epoch_out_of_arrival_order"] == 1
+    assert out["capture_observation_gaps"]["source_segments"] == 1

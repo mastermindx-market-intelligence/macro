@@ -244,7 +244,6 @@ def audit_boats_tape(
     examples: list[dict[str, Any]] = []
     total_traded_shares = 0
     total_break_shares = 0
-    last_epoch: int | None = None
     seen_raw: set[str] = set()
     latency_nonnegative_ns: list[int] = []
     matched = 0
@@ -258,6 +257,9 @@ def audit_boats_tape(
         latest_prior_venue_quote: tuple[int, int] | None = None
         prior_arrival_ns: int | None = None
         prior_QTB_arrival_ns: int | None = None
+        # A separate source segment cannot establish continuity with another
+        # segment's events; epoch-order diagnosis is intra-segment only.
+        last_epoch: int | None = None
         for row in rows:
             symbol = row.get("ticker")
             if not isinstance(symbol, str) or not symbol:
@@ -431,6 +433,7 @@ def audit_boats_tape(
             "missing_source_message_count_known": False,
             "complete_session_proven": False,
             "transport_continuity_proven": False,
+            "cross_segment_event_time_order_proven": False,
             "source_arrival_silence_is_not_packet_loss_proof": True,
         },
         "distinct_symbols_in_selected_segments": len(symbols_in_source),

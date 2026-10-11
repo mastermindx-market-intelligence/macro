@@ -1081,3 +1081,52 @@ Neither denied effect was retried, fragmented, delegated or re-routed.
 Continue only safe independent work until a genuinely permitted path
 exists. No live or queued collector, no deployment, no auto-alerts;
 24 Data OS Tiingo contracts remain PROPOSED; PR stays draft.
+
+
+### 2026-10-11 UTC — no false BOATS event-order continuity across segments
+
+Additional independent pure-BOATS-reader correctness repair:
+lib/dataos/tiingo_boats_tape.py::audit_boats_tape previously carried last_epoch
+from a selected Q/T/B event in one BOATS capture segment into the next,
+flagging a later-received earlier-event-time observation as
+event_epoch_out_of_arrival_order despite *unproven continuity between
+source segments*. The analysis now resets this order comparison at each
+segment boundary while preserving its within-segment detection. Metadata
+explicitly records cross_segment_event_time_order_proven=false and still
+refuses session completeness, packet-loss inference and executable quote
+authority. This is read-side quality only, not a new producer/stream.
+
+Two discriminating synthetic regressions first demonstrated the false
+cross-segment order claim, then passed with same-segment order regression
+detection retained. Focused BOATS tape + query suites: 77 passed.
+Full Tiingo + Data OS registry suite: 414 passed, the SAME 11 unrepaired
+source writer/normalized-context integrity tests failed (pytest exit 1).
+Original denied files were not changed; core collector SHA-256 remains
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+Full-run external-drive evidence:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-segment-epoch-refusal-20261011.log
+SHA-256:
+7ba94e2d034bed7ae99c5505734e4547ad35fa6ed6d587c70ed07388cc75f34e.
+
+A read-only source checkout on M2 reconfirmed:
+- Existing Terminal overnight quote truth owner is Quote Hub, not Macro's
+  research reader or a direct client-side BOATS socket.
+- No intended /Volumes/Mastermind/market-data/tiingo production archive
+  exists; unrelated historical IEX data is NOT Tiingo BOATS evidence.
+- Current deployment/collection cannot truthfully be called live.
+- Original platform-refused authenticated vendor probe and core collector
+  rewrite remain DO_NOT_REDO. The Chairman's BOATS licensed-use and
+  redistribution authorization is accepted but does not clear those
+  independent platform denials.
+- Executive MCP Fabric projected ceo_submit_armed=false in a prior
+  current-session observation, so no newly admitted Executive worker or
+  automatic runtime takeover can be claimed. No live worker was launched.
+- Macro PR #8698 is the one source-writing carrier, remains DRAFT and
+  carries all unwaived producer failures. Do not merge or deploy.
+
+Next actual critical dependency is not another pure-reader test; it is a
+genuinely permitted resolution of the original core writer/probe safety
+refusals, direct source-integrity repair against the 11 red cases,
+authenticated BOATS/EOD/fundamental capture qualification, and measured
+storage/runtime/Terminal integration under incumbent owners. No substitute
+collector or new control plane is authorized as a workaround.
