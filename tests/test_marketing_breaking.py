@@ -1899,3 +1899,354 @@ def test_official_atom_entry_without_source_timestamp_refused(
             tmp_path, {"sources": [src], "poll_interval_s": 0}
         )
     assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+
+
+# WEB-P1 G1: explicit *private only* official-source => incumbent Desk acceptance.
+# The bridge has no production caller and acquires no licensing/release power.
+
+def _private_official_bridge_case(monkeypatch, root):
+    from datetime import timedelta
+    from engine.marketing import breaking_feed as feed
+    source, item, config, calls = _official_preview_fixture(monkeypatch)
+    token = source.preview_official_sources(root, {"sources": [config]})
+    now = datetime.fromisoformat(item["published_at"].replace("Z", "+00:00"))
+    now += timedelta(minutes=5)
+    saved = {}
+    writes = []
+    def checkpoint_identity(state):
+        writes.append(sorted(state.keys()))
+        saved.update(json.loads(json.dumps(state)))
+    desk_cfg = {"wire": {"intelligence": {
+        "salience_floor": 0.0, "max_packets_per_tick": 10,
+    }}}
+    return feed, item, token, now, saved, writes, checkpoint_identity, desk_cfg
+
+
+def test_official_private_bridge_accepts_only_after_existing_desk_snapshot(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={"breaking": {"llm": {"enabled": False}}},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state),
+    )
+    assert result["status"] == "ACCEPTED"
+    assert result["accepted_ids"] == [item["id"]]
+    assert len(writes) == 1
+    assert "story_spine" in state and "intel_claims" in state
+    assert "providers" not in state
+    sink = tmp_path / "data/marketing/press/intelligence.json"
+    data = json.loads(sink.read_text())
+    assert item["id"] in {ev["event_id"] for story in data["stories"]
+                          for ev in story["evidence"]}
+    assert (tmp_path / "data/marketing/press/intelligence.db").exists()
+    assert feed.preview_official_sources(
+        tmp_path, {"sources": [dict(BLS_SOURCE_CFG)]}
+    ).items == ()
+    assert not list(tmp_path.rglob("items.jsonl"))
+
+
+def test_official_private_bridge_snapshot_failure_preserves_source_and_replay_identity(
+        tmp_path, monkeypatch):
+    from datetime import timedelta
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    from engine.marketing import intelligence_desk
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    params = dict(
+        root=tmp_path, now=now, marketing_cfg={"breaking": {"llm": {"enabled": False}}},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    def fail_json(*args, **kwargs):
+        raise OSError("controlled post-sqlite projection fault")
+    with monkeypatch.context() as ctx:
+        ctx.setattr(intelligence_desk, "_atomic_json", fail_json)
+        first = accept_private_official_preview(token, **params)
+    assert first["status"] == "STORE_OR_PROJECTION_FAILED"
+    assert feed._load_seen(tmp_path) == {}
+    assert len(writes) == 1
+    second = accept_private_official_preview(
+        token, **{**params, "now": now + timedelta(seconds=30)}
+    )
+    assert second["status"] == "ACCEPTED"
+    output = json.loads(
+        (tmp_path / "data/marketing/press/intelligence.json").read_text()
+    )
+    assert len(output["stories"]) == 1
+    assert item["id"] in feed._load_seen(tmp_path)
+
+
+def test_official_private_bridge_unqualified_packet_never_consumes_source(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    press["wire"]["intelligence"]["salience_floor"] = 101.0
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "SOURCE_NOT_QUALIFIED"
+    assert feed._load_seen(tmp_path) == {}
+    assert not writes
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
+
+
+def test_official_private_bridge_identity_writer_failure_before_sqlite_does_not_ack(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, _, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    def unavailable_writer(s):
+        raise OSError("controlled current-press-identity owner failure")
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=unavailable_writer,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "IDENTITY_CHECKPOINT_FAILED"
+    assert feed._load_seen(tmp_path) == {}
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
+
+
+def test_official_private_bridge_public_or_symlinked_snapshot_refused_before_scoring(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    pub = tmp_path / "site" / "live" / "intelligence.json"
+    pub.parent.mkdir(parents=True)
+    snap = tmp_path / "data/marketing/press/intelligence.json"
+    snap.parent.mkdir(parents=True)
+    snap.symlink_to(pub)
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "PRIVATE_DESTINATION_NOT_ADMITTED"
+    assert feed._load_seen(tmp_path) == {}
+    assert not writes
+    assert not pub.exists()
+
+
+def test_official_private_bridge_wrong_preview_root_refused(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    elsewhere = tmp_path / "other-root"
+    result = accept_private_official_preview(
+        token, root=elsewhere, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "UNQUALIFIED_SOURCE_PREVIEW"
+    assert not writes
+    assert feed._load_seen(tmp_path) == {}
+
+
+
+def test_official_private_bridge_bad_store_result_never_acknowledges_source(
+        tmp_path, monkeypatch):
+    from engine.marketing import intelligence_desk
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    monkeypatch.setattr(
+        intelligence_desk, "update_intelligence_desk",
+        lambda *args, **kwargs: None,
+    )
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "SOURCE_NOT_SERVED"
+    assert feed._load_seen(tmp_path) == {}
+
+
+def test_official_private_bridge_malformed_persisted_json_never_acknowledges(
+        tmp_path, monkeypatch):
+    from engine.marketing import intelligence_desk
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    def malformed_store(packets, *, snapshot_path, **kwargs):
+        Path(snapshot_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(snapshot_path).write_text('[]', encoding="utf-8")
+        return {"stories": list(packets)}
+    monkeypatch.setattr(intelligence_desk, "update_intelligence_desk",
+                        malformed_store)
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "SOURCE_NOT_SERVED"
+    assert feed._load_seen(tmp_path) == {}
+
+
+def test_official_private_bridge_no_identity_checkpoint_for_invalid_desk_cfg(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    press["wire"]["intelligence"] = "invalid-desk-config"
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "SOURCE_NOT_QUALIFIED"
+    assert writes == []
+    assert feed._load_seen(tmp_path) == {}
+
+
+def test_official_private_bridge_original_source_cas_conflict_is_not_accepted(
+        tmp_path, monkeypatch):
+    from engine.marketing import breaking_feed as feed
+    from engine.marketing import official_preview_bridge as bridge
+    _, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    original_ack = bridge.ack_official_preview
+    def competing_writer(root, preview, *, accepted_ids):
+        feed._save_seen(root, {"another-owner": "2026-10-10T10:00:00Z"})
+        return original_ack(root, preview, accepted_ids=accepted_ids)
+    monkeypatch.setattr(bridge, "ack_official_preview", competing_writer)
+    result = bridge.accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state)
+    )
+    assert result["status"] == "SOURCE_CAS_REFUSED"
+    ledger = feed._load_seen(tmp_path)
+    assert "another-owner" in ledger and item["id"] not in ledger
+
+
+
+def test_official_private_bridge_rejects_noop_identity_checkpoint(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    accepted = []
+    def noop_writer(candidate):
+        accepted.append(candidate)
+        # Simulates a caller which does not actually persist existing state.
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=noop_writer,
+        load_identity=lambda: dict(state),
+    )
+    assert result["status"] == "IDENTITY_CHECKPOINT_UNVERIFIED"
+    assert accepted
+    assert feed._load_seen(tmp_path) == {}
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
+
+
+def test_official_private_bridge_reader_failure_does_not_advance_official_source(
+        tmp_path, monkeypatch):
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    feed, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    def unreadable():
+        raise OSError("current press identity writer inaccessible")
+    result = accept_private_official_preview(
+        token, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=unreadable,
+    )
+    assert result["status"] == "IDENTITY_CHECKPOINT_UNVERIFIED"
+    assert feed._load_seen(tmp_path) == {}
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
+
+
+
+def test_official_private_bridge_real_press_state_disk_replay_after_snapshot_failure(
+        tmp_path, monkeypatch):
+    """Exercise actual incumbent host-local state IO, not an in-memory fake."""
+    from datetime import timedelta
+    from engine.marketing import breaking_feed as feed, intelligence_desk
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    from scripts import marketing_fastlane_daemon as daemon
+    _, item, token, now, state, writes, _checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    current_path = tmp_path / "data/marketing/press/state.json"
+    monkeypatch.setattr(daemon, "_PRESS_STATE_PATH", current_path)
+    before = daemon._load_press_state()
+    assert before == {}
+    kwargs = {
+        "root": tmp_path,
+        "marketing_cfg": {"breaking": {"llm": {"enabled": False}}},
+        "press_cfg": press,
+        "persist_identity": daemon._save_press_state,
+        "load_identity": daemon._load_press_state,
+    }
+    original_atomic = intelligence_desk._atomic_json
+    def fail_projection(*args, **kwargs):
+        raise OSError("controlled after-real-SQLite-commit publication failure")
+    with monkeypatch.context() as ctx:
+        ctx.setattr(intelligence_desk, "_atomic_json", fail_projection)
+        first = accept_private_official_preview(
+            token, now=now, current_state=before, **kwargs
+        )
+    assert first["status"] == "STORE_OR_PROJECTION_FAILED"
+    disk_state = daemon._load_press_state()
+    assert "story_spine" in disk_state
+    assert "intel_claims" in disk_state
+    assert feed._load_seen(tmp_path) == {}
+    assert original_atomic is intelligence_desk._atomic_json
+    recovered = accept_private_official_preview(
+        token, now=now + timedelta(seconds=37),
+        current_state=disk_state, **kwargs
+    )
+    assert recovered["status"] == "ACCEPTED"
+    payload = json.loads((tmp_path /
+        "data/marketing/press/intelligence.json").read_text())
+    assert len(payload["stories"]) == 1
+    assert item["id"] in feed._load_seen(tmp_path)
+    assert not (tmp_path / "data/marketing/press/seen.json").exists()
+    assert not list(tmp_path.rglob("items.jsonl"))
+
+
+
+def test_official_private_bridge_partial_source_ack_is_not_reported_as_success(
+        tmp_path, monkeypatch):
+    """Post-seen ETag failure belongs to original source owner reconciliation."""
+    from engine.marketing import breaking_feed as feed
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    _, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    def fail_source_state(*args, **kwargs):
+        raise OSError("controlled seen-applied/state-pending split")
+    with monkeypatch.context() as ctx:
+        ctx.setattr(feed, "_save_state", fail_source_state)
+        with pytest.raises(OSError, match="seen-applied/state-pending"):
+            accept_private_official_preview(
+                token, root=tmp_path, now=now, marketing_cfg={},
+                press_cfg=press, current_state=state,
+                persist_identity=checkpoint,
+                load_identity=lambda: dict(state),
+            )
+    assert item["id"] in feed._load_seen(tmp_path)
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+    assert (tmp_path / "data/marketing/press/intelligence.db").exists()
