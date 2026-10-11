@@ -3,6 +3,63 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Current delivery frontier — 2026-10-11
+
+The first repaired candidate, `f60d77e228b2c8e8352e4bb70041c497271240b9`,
+concluded **21 binding CI checks green**, including pack 11 and `ci-gate`.
+The inactive merge-queue-pilot context was nonbinding for base main. The merge
+controller then found that main had changed CI definitions, so those greens
+were insufficient to land the stale candidate. Sweep
+[38133090174](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38133090174)
+recorded that diagnosis; the next completed sweep left the branch unchanged and
+the attached refresh-lease inventory was empty.
+
+The parent marked and disarmed the same PR, verified it was OPEN at that exact
+head with only `merge-blocked`, and merged fresh main
+`395e5d6089e95aa907c48fae811ecb918fb26f95` as
+`d0fa95bafb0c9fd56519a81d255e05de65430399`. This was conflict-free. Press
+implementation, configuration and tests are byte-unchanged from the accepted
+candidate, and the inspection test remains registered in the merged CI lane.
+Fresh candidate proof and installation remain pending; no new PR or sweep was
+created and no release check was bypassed. The old observer ended on a transient
+GitHub read error and is no longer running. Exact post-refresh proof and delivery
+readbacks belong to the existing [PR evidence comment](https://github.com/mastermindx-market-intelligence/macro/pull/8786#issuecomment-6107930181).
+
+Refresh validation: CI-plan validation accepted all 276 registered legacy jobs;
+`tests/test_press_workflow.py` plus `tests/test_press_staging_inspection.py`
+passed **33 tests** (one inherited temporary Chromium cleanup warning), exit 0.
+The free-content check remains **69 byte-identical files, zero orphans**;
+both Press property trees have no drift. Agent OS validation passed **1,623
+records, zero errors, 109 inherited warnings**. `git diff --check` passed.
+The earlier 342-test Press and 120-test free-content results remain accepted
+for their unchanged implementation; the refreshed remote head still needs its
+own binding checks before release.
+
+The Chairman-authorized bounded Fable request was posted and exact-body read
+back on [existing issue 1243](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1243#issuecomment-6107955309).
+It requests the existing packet/generation/revision, rights receipt, permitted
+read-only admission path and owner-qualified dossier link. It does not transfer
+Commission 19, replay a frozen operation or prove pickup. No reply had arrived
+at the last bounded read. Historical owner labels alone are not a current-writer
+fence; the actual story dependency is the missing qualified artifact and
+permitted admission path. The canonical adapter currently admits
+`allowed_links: []`, so a dossier link cannot be appended after immutable admission.
+
+An independent check also exhausted the currently retained ordinary Brief route:
+the planner reads Chronicle, not PRESS-FEEDS wire artifacts. Its October 8–11
+window has one macro print without a ticker/source URL/receipt and 17 Prophet
+closes. The 31 retained current wire items contain no recorded rights identifiers;
+the closest stock headline is secondary Benzinga commentary with no issuer-primary
+receipt or recorded source publication date. The existing CLI cannot admit that
+wire item. `ordinary_brief_dependency.json` retains identifiers, artifact hashes
+and the bounded search scope. No feed ingestion, provider generation, credential
+action or retry of the refused R2 manifest was performed for this check.
+
+The two-desk overlap is substantive: both generated drafts repeat the same
+AI-breadth figures and closely similar wording. This is not a validator defect;
+retain the 0.381 rejection and unchanged 0.18 limit. No historical pass counts
+as current batch, rights or editorial approval.
+
 ## Source and custody
 
 - Macro starting main: `1f3b82a01ea57749a9021b7c331cf6b2efe137b5`.
@@ -12,7 +69,8 @@ Mission complete: **false**. Publication approved: **false**.
   installed claim follows from the pushed branch.
 - Working branch: `claude/mmx-public-intelligence-press-20261011` in
   `/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main`.
-- Governing Mastermind protected master: `8d62a8571d2a6ad9da9d50e5e4624de6eecaac4c`;
+- Governing Mastermind protected master refreshed for the replacement assigned-principal instructions:
+  `70e9ef1ede16628d00a7cc1d749387d893a1d5b3`;
   Sol skillpack `mastermind.sol_skillpack.v1`, version `1.0.1`, bootstrap major 1.
 - Existing D14 owner: `research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md`;
   publication ownership stays with the existing Press workflow and append-only ledger.

@@ -33,6 +33,8 @@ unverified:
 unresolved:
   - Existing Brief and Research drafts fail current combined-batch acceptance on overlap; preserve the unchanged threshold.
   - Exact admitted immutable earnings packet and permitted read path unavailable in current evidence.
+  - The authorized Fable dependency request is posted on Mastermind issue 1243 comment 6107955309; no pickup is claimed.
+  - The retained ordinary feed route has no qualified current primary-source stock event, and Brief currently consumes Chronicle rather than PRESS-FEEDS artifacts.
   - Publication disabled; News TLS and Research CNAME failures remain; paired cutover not released.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
@@ -55,6 +57,14 @@ resumed parent has stopped or that publication is complete. The original PR
 remains the sole delivery carrier. The isolated estate commit
 `776c532e469c8bdd95df293bd4f45dcb77ea86c0` was integrated as `4ee8bf7bc55c`
 after merging main `e5c724d204916a6152c89a52a644537a57a09ab4`.
+
+Subsequent exact-head CI at `f60d77e228b2c8e8352e4bb70041c497271240b9`
+concluded 21 binding checks green. The merge controller found later CI-definition
+changes on main, so the parent marked/disarmed the same PR and merged current
+main `395e5d6089e95aa907c48fae811ecb918fb26f95` as
+`d0fa95bafb0c9fd56519a81d255e05de65430399`. Fresh proof and actual delivery
+are still required. The previous observer is stopped. The current PR evidence
+comment is https://github.com/mastermindx-market-intelligence/macro/pull/8786#issuecomment-6107930181.
 
 Full evidence and exact next commands are in
 `research/agentic_media/public_intelligence_20261011/CHECKPOINT.md`.
