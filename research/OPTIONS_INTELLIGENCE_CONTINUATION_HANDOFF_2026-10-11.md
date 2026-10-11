@@ -236,6 +236,13 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   and nothing is EFFECT_UNKNOWN. So the seat executes the frozen V01 commission directly, niced, with no change to the commission.
   V01 is REMOVED from the fabric launch queue (one writer). 1B and the others stay queued for admission. Acceptance still
   needs an independent Opus READ_ONLY exact-head review before the PR.
+- D37 (18:20Z) Seat launcher `leads/../launch_when_admitted.sh`. It launches ONE pool lane only while load1 < 15 (just under
+  the 16 admission limit). A clean refusal (exit 75 + LANE_ADMISSION_REFUSED, no run id) has no effect, so it is renamed and
+  waited out on the same carrier. Any other exit ends the wait. This is the O-14 re-arm, with no new queue: the fabric's own
+  admission still decides. 1B was admitted at 18:20:45Z (load1 13.8); D16a is armed behind it (bjtdrpkg9).
+- D38 (18:40Z) V01 executed. Three commits instead of the commission's two (the qualification tests get their own commit
+  because they are green before the fix), recorded as a deviation. Pushed at `3eadb841171d`; the Opus READ_ONLY exact-head audit
+  was commissioned before any PR.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -423,6 +430,16 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
+(18:40Z snapshot.) Rows superseding older rows below:
+
+| lane | state |
+|---|---|
+| U01 step 1B | RUNNING — admitted 18:20:45Z via bt8w3juhp (launch_when_admitted, fix_build, alarm 14400); grok operator live; artifacts dir named in `leads/U01/step1B_pool.log` |
+| D16a | QUEUED → armed on bjtdrpkg9 (launch_when_admitted, fix_build, alarm 7200, wait budget 7200 s); old refusal log renamed `pool.refused-1750Z.log` |
+| V01 | DELIVERED by seat (D36/D38) — branch pushed at `3eadb841171d` (red `51a12c8b51d8`, qualification `019c5cdf4aa5`, fix `3eadb841171d`); gates: 348 passed, imports OK, diff = 2 owned files; 8/8 mutations killed; return `leads/V01/return.md`; Opus READ_ONLY audit RUNNING |
+| OC | QUEUED; old refusal log renamed `pool.refused-1751Z.log`; launch after D16a or 1B frees a slot |
+| F01, M01 | QUEUED — commissions frozen |
+
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
 | G00 ownership + interface map | Fable seat | this file + `leads/O7/U01_overlap_map.md` | #599 | — | DELIVERED (custody ruled D20) | — |
@@ -597,3 +614,9 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - O2/O3/O4 verify leads judged ACCEPT by artifact (two cited assertions opened per lead) (D35).
 - V01/F01/M01 commissions frozen with HOST NOTE, seat Q answers and falsifiers. Three clean SSD worktrees exist.
 - 0 operators running (admission). 0 native children running. Load at 18:07Z: 49.0, from other sessions.
+### 2026-10-11 18:40Z — 1B admitted and running; V01 delivered seat-direct and under audit; D37–D38
+- `launch_when_admitted.sh` (D37) admitted 1B at 18:20:45Z, load1 13.8. The grok operator is running. D16a is armed behind it.
+- V01 (D36/D38). Red tests fail for the stated reasons: IV 0.1414 = 0.2·√(30/60) at 30 s; 2 contracts inside MIN_T entered the grid.
+  Qualification e–h is green at the unmodified kernel, and 8/8 planted mutations are killed by assertions. The fix makes the IV
+  inversion refuse inside MIN_T and declares KERNEL_CONVENTIONS plus `kernel_applicability`. Gates: 348 passed, imports OK,
+  diff limited to the 2 owned files. Pushed `3eadb841171d`; the Opus audit is pending, and the PR follows ACCEPT.
