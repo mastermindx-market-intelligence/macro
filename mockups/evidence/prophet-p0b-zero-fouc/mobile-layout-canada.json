@@ -288,7 +288,7 @@
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
-    "site/account.js": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be",
+    "site/account.js": "77f178da8f55e1c71939e9b241043ac9fc08892306a32409c3f851b783fc4586",
     "site/canada-stock-v36.js": "b7ba336ddf9955585eacf0a18d07652249d2d2b9da8393c083bd7a9a416f41c0",
     "site/chart_i18n.js": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
     "site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
@@ -314,7 +314,7 @@
     "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
     "site/theme.css": "d6d5207461084867fa835042037b0393deccb193498e946b2c5eef414d0c4f0e",
-    "site/theme.js": "14bc9b378f37a3aaf1f031f445dbc1c81faaab5a66aca8d057947a38491d3d53"
+    "site/theme.js": "0fae635945bdda7e65603497e42e39fe94a98b27a6d1709204f4c0bf0b0005e3"
   },
   "viewport": {
     "width": 390,
@@ -3263,7 +3263,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "70cdd96ece9d324e06fc46b9cc017f6096a0578d38096aafcbd89bd1d1432dea",
+          "sha256": "65e2758b74e08d311b4cbb097add78eb270d21f98edde5c1655a37193a36e5b2",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4700,7 +4700,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "1c4d417ddc3d876e3e7013466973299e427df7dfc72b877fb3edaaec9bce4660",
+          "sha256": "159463ff7c133cc1f25bb2bd310db63f389a71975890e06f6f31607646e19fb1",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -6137,7 +6137,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "4db73fb87e558791932b1d372858af53dc43dac45117e41202545c806f56e15e",
+          "sha256": "56e984b34cfbe1624202a897b9dc1c7172af076eca06368da86fe6f41f01d8c1",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -7574,7 +7574,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-light-1440.png",
           "width": 1440,
-          "sha256": "e68833a03163be691f5afc0bbcefb95a271c9446a7a931de6a0948ea86882e63",
+          "sha256": "33e245848b44109a41c98a0fdae136ce5602b38c8b6b3e78c32ec020e63167fd",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
@@ -9011,7 +9011,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-dark-390.png",
           "width": 390,
-          "sha256": "4c68ada436289066a281451c8dba93db5ddcfa8aff78cca726ddf20211204b29",
+          "sha256": "1781d2624595d0a4749d16d415f85e76b6d9024a81933194dc0b6283e6c2e5d5",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
@@ -10448,7 +10448,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "2e64c580da1996c06d88af26d01c822ae5b8db02a2d7268078817bfcb22d32a6",
+          "sha256": "3359dea49065418a07cf72c10bfc552a3786eb68f29096ade78edab571be74ec",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -11885,7 +11885,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "86bcac43ba5e288bac011ab75e798f1df7c45b921f2a1bfe2c612816f0d93e4e",
+          "sha256": "3585abba209a07f4f857e2062d5d37d34998ddc74d3822303a34cf724be75e08",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -13322,7 +13322,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "a87b5efe6df06aa6e3edf1084d1543dc486a1bc2b01d72707bccc628a11fff9d",
+          "sha256": "ec6fadfe7315d746b53549ab998f4f58e2dc1e1272b626fe4a9c1f339675697b",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
