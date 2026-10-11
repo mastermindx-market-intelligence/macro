@@ -11,7 +11,7 @@
   "location": "tests/test_leader_recovery_integration.py:7",
   "repair": "Use package-qualified tests.test_build_leader_radar import in integration and original RS-high test",
   "repair_staged": true,
-  "hosted_fix_verified": false,
+  "hosted_fix_verified": true,
   "legacy_suites_passed": {
     "lifecycle": 141,
     "builder": 138
@@ -46,7 +46,12 @@
         "agentos": "python3 scripts/agentos.py validate --root agentos --quiet -> 0 errors",
         "diff_check": "git diff --check clean"
       },
-      "hosted_fix_verified": false
+      "hosted_fix_verified": true,
+      "hosted_fix_verified_by": {
+        "run_id": 38117862214,
+        "head": "a7189a98f1c1991e3cf5e1e0b4816b6552f238c9",
+        "note": "unrun-import-hygiene and the R0 radius literal did not recur on this run (see subsequent[1].previous_failures_cleared); that run itself failed only the visual-evidence gate, repaired in subsequent[1]."
+      }
     },
     {
       "subject_head": "a7189a98f1c1991e3cf5e1e0b4816b6552f238c9",
@@ -122,7 +127,16 @@
         "agentos": "python3 scripts/agentos.py validate --root agentos --quiet (run before commit)",
         "diff_check": "git diff --check (run before commit)"
       },
-      "hosted_fix_verified": false
+      "hosted_fix_verified": true,
+      "hosted_fix_verified_by": {
+        "run_id": 38128428074,
+        "head": "7164b018ecd00f44e158b69252afce27accb28f0",
+        "note": "exact-head hosted ci.yml run concluded with every binding check green (standing excluded contexts: ci-authority/codex/merge-queue-pilot, Workers Builds: macro)."
+      }
     }
-  ]
+  ],
+  "hosted_fix_verified_by": {
+    "run_id": 38128428074,
+    "head": "7164b018ecd00f44e158b69252afce27accb28f0"
+  }
 }
