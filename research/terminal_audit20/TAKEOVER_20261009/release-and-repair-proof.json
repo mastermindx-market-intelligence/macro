@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-11T00:38:30.325316+00:00",
+  "observed_at": "2026-10-11T02:06:54.962304+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T0038",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T0205",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -5605,5 +5605,41 @@
     "paid_browser_restore": "Paid Brain panel closed after two requests; actual panel visibility false and3D tfbtn on verified. No credential/private chat/watchlist evidence retained. Initial close DOM-count/aria-pressed assumptions corrected by visibility/selected class; no UI replay.",
     "retained_protected_boundaries": "T0038 identity/Levels/Heatmap and historical source/CI/runtime scopes retained without replay. Terminal lastqualified34d runtime13:11/13:12; no current114 or9e7 installed phone Replay observation. Firstfb1/c968 reserve refusals remain FROZEN/no retry/weakerfloor/cleanup/rawbuilder/alternatecarrier; no parent release or restore owed. IW2 fifth cyber refusal FROZEN/no poll/retry/rephrase/alternateexecution; supported human platform resolution in existingIW2 chat remains required.0030-32 unapplied/operatorSQL/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/EFFECT_UNKNOWN holds exact.887 exactALLOW pending, not inferred from broad authorization. Optional Brain Fabric contract-mode refusal frozen/no independent review verdict.",
     "continuation": "This source/paid checkpoint does not complete any whole original mission. Continue ready path-disjoint phases only on actual material events/clearance. Existing MOG/nativeauto and sole heartbeat own914 terminalCI/merge;781 exact green does not remove reserved review. No duplicate workers/watchers, source custody invention, polling principals, accepted proof replays or completed branch reuse."
+  },
+  "current_capability_frontier_20261011T0205": {
+    "observed_at": "2026-10-11T02:06:54.962304+00:00",
+    "supersedes": "current_capability_frontier_20261011T0117",
+    "supersession_scope": "Only914 CI red, scoped CSS repair, full local proof, publication and initial newhead CI. Historical scoped receipts retained.",
+    "whole_original_mission_accepted": false,
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-exact-red-parent-consumption-20261011T0157.json",
+        "bytes": 10345,
+        "sha256": "a820185da6599b7e891eef3c128c7d8243531d7fb1b7783a3892d6afc2ec0235"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-TerminalShell-lint-baseline-corrected-parent-comparison-20261011T0157.json",
+        "bytes": 2408,
+        "sha256": "7cfa80dd0a8403e61636972d390032622facf3eb388a959d9683ac548eab1433"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-scoped-CSS-source-responsive-parent-qualification-20261011T0205.json",
+        "bytes": 11200,
+        "sha256": "f004e451fd5004c7c2de11ab7c49bd69031d5a6250619d52de650537c7ec7426"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-scoped-CSS-publish-initial-CI-parent-consumption-20261011T0205.json",
+        "bytes": 9446,
+        "sha256": "6c9e9b1b005455ffa9fe3b11fab0c5c45e03828243fe3052e8c8181f17edc831"
+      }
+    ],
+    "phone_Replay_actual_terminal_CI_event": "Old9e7 owning38100806937 attempt1 completed FAILURE01:47:51Z; unit114356172586 and requiredTerminal114362708554 failed, while both desktop/tablet/mobile/serial and Quote/Ingest/PG succeeded. Actual old-run log lines UNOBSERVED: first installed CI-wait-guard refusal freezes log retrieval/no timer/API/UI/alternatecarrier/laterpush retry. Independent local full native reproduced3 globals.css evidence-lock failures.",
+    "phone_Replay_scoped_source_repair": "PR914 normalFF9e7->30e9c7c2bd5d54c6794c717be21db131bcefbc19 in same canonical externalSSD carrier/branch; clean HEAD/upstream/remote matched. Final8paths:6original plus2CSSmodules. globals.css exactbase114/SHA d67894b84cb6968d6fc87ab379f95da3b7e887cd5dd38240c5db8a55e31408a2/omitted final PR delta. Phone entry/shared gates/44px transport/counterfullscreen separation preserved. No manifest/hash restamp, PNG ownership transfer, global-style delta, engine/math/auth/entitlement change or gate weakening.",
+    "phone_Replay_complete_local_validation": "Actual repaired full native529files ALLPASS/8582PASS4TODO/rc0;3 formerly failing locks18PASS; own responsive13PASS14project-specificSKIP at1440x900/820x1180/390x844 including ENZH/focus/multichart/entry/step/exit/44px/range/counter. TSC0/four behaviorfilelint0/plainlanguage enforceadded0/diffcheck0. TerminalShell exactbase/current54errors14warnings all68 matched/0added0removed/unwaived. Initial diagnostic-position comparisonrc1 corrected without lint replay; eight existing visual-intelligence any errors retained/no fullapplicationlintPASS. First final plainlanguage rootcwd MODULE_NOT_FOUND corrected terminalcwd, disclosed/preserved.",
+    "phone_Replay_capture_source_binding": "Four new OWN scoped-style PNG bind exact8sourceSHAs/stable informational9e7 HEAD while dirty; mobile/tablet/activehub viewed, desktop captured/tested but not newly viewed. Final30e9 eightblobs match validated source. Not unmodified9e7-generated/futureHEAD-generated captures; no unrelated recapture.",
+    "phone_Replay_fresh_initial_CI": "Fresh38103930223 attempt1/head30e9/mastermindxryan/pull_request/ci.yml created02:04:06Z IN_PROGRESS. Quote114365339122SUCCESS02:04:25/PG114365338933SUCCESS; Ingest114365338930 andTerminalshardsrunning/requiredTerminalaggregatorabsentNOTgreen. Vercel2PENDING initial. OPEN/MERGEABLE/BLOCKED/nativeautooriginal01:09:14/MOG+mergeblockedretained; no rearm/approval/dispatch/merge/PUT/admin/manuallabelremoval. One initial newhead observation; existingMOG/nativeauto+soleheartbeat owns next actualevent.",
+    "knowledge_pointer_correction": "Actual8b43 JSON current_capability_frontier_key still pointedT0038 although T0117 object and WS latestT0117 existed. Initial expectedT0117 marker assertion failed before any writes; exactclean8b43 read qualified stale pointer, corrected toT0205 here. No earlier receipt reacceptance or source/runtime proof extension.",
+    "retained_protected_boundaries": "LastqualifiedTerminal34d T1315 only; no114/30e9 installed phoneproof. Frozenfb1/c968 releases/no retry/weakerfloor/cleanup/rawbuilder/alternatecarrier/route refused effect/no restoreowed. Brain8755 scoped install/2paid answers, A12Peak/T0038Levels/Heatmap retained/no replay.781ad5green still reservedmastermindx-3 exactheadnumericreview replacing5388952130+3threads. IW2fifthcyberrefusalFROZEN/human supported platform resolution existingIW2chat required.0030-32 unapplied/operatorSQL/API+SQL/rights/release/B5/862/OptionsG7G9/A19/security/source/EFFECT_UNKNOWN and exact887ALLOW unchanged; optionalBrainFabriccontractmoderefusalFROZEN.",
+    "continuation": "Source/local/publish checkpoint not fullA11/fullAudit20 completion. Consume actual30e9 terminal CI/merge and only admitted independently authorized canonical generation before paid phoneproof. No principalpolling/newobserver/duplicatewriter/completedbranchreuse/old-runrefused-logretry. No other safe readyphase from unchanged accepted proof."
   }
 }
