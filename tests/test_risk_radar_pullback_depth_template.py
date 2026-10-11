@@ -178,7 +178,7 @@ def test_active_phase_cannot_survive_contradictory_native_activity(active):
 
 def test_chart_has_bilingual_text_alternative_and_price_history():
     v = native_view()
-    v['observation']['price_path'] = {'dates':['2026-09-29','2026-09-30'], 'vals':[-7.4,-6.8]}
+    v['detail_path'] = {'dates':['2026-09-29','2026-09-30'], 'vals':[-7.4,-6.8]}
     soup = BeautifulSoup(render(v), 'html.parser')
     assert soup.select_one('.rrp-chart[aria-hidden="true"]')
     caption = soup.select_one('.rrp-chart-caption')
@@ -197,6 +197,15 @@ def test_price_history_table_reads_the_same_window_the_chart_drew():
     assert [r.select_one('td').get_text() for r in rows] == ['2026-09-14', '2026-09-30']
 
 
+def test_raw_owner_path_alone_is_not_tabulated():
+    # Only the presenter's validated window is the chart's text alternative; the
+    # owner's raw path can start before the peak or miss the retained low.
+    v = native_view()
+    v['observation']['price_path'] = {'dates': ['2026-09-11', '2026-09-14', '2026-09-30'],
+                                      'vals': [-2.0, 0.0, -6.8]}
+    assert BeautifulSoup(render(v), 'html.parser').select_one('.rrp-history') is None
+
+
 def test_close_above_the_retained_high_is_rejected_not_shown_as_zero_damage():
     v = native_view()
     v['observation']['close'] = 101.0
@@ -207,7 +216,7 @@ def test_close_above_the_retained_high_is_rejected_not_shown_as_zero_damage():
 def test_figures_that_round_to_zero_print_without_a_sign():
     v = native_view()
     v['observation'].update(close=99.97, peak_close=100.0, low_close=99.97)
-    v['observation']['price_path'] = {'dates': ['2026-09-29', '2026-09-30'], 'vals': [-0.004, -1.234]}
+    v['detail_path'] = {'dates': ['2026-09-29', '2026-09-30'], 'vals': [-0.004, -1.234]}
     soup = BeautifulSoup(render(v), 'html.parser')
     assert soup.select_one('[data-metric="current"]').get_text(strip=True) == "0.0%"
     assert soup.select_one('[data-metric="worst"]').get_text(strip=True) == "0.0%"

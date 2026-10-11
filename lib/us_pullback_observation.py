@@ -252,12 +252,18 @@ def _episode_window(obs: dict) -> dict | None:
     measured figures beside it. The observation itself is not modified.
     """
     path, peak_session = obs.get("price_path"), obs.get("peak_session")
-    if not isinstance(path, dict) or not isinstance(peak_session, str):
+    low_session = obs.get("low_session")
+    if (not isinstance(path, dict) or not isinstance(peak_session, str)
+            or not isinstance(low_session, str)):
         return None
     dates, vals = list(path.get("dates") or []), list(path.get("vals") or [])
     if len(dates) != len(vals) or not all(isinstance(d, str) for d in dates):
         return None
-    start = next((i for i, d in enumerate(dates) if d >= peak_session), len(dates))
+    # The owner keeps at most 63 closes, so a long episode's peak can predate
+    # the path; starting mid-decline would draw a partial episode.
+    if peak_session not in dates:
+        return None
+    start = dates.index(peak_session)
     dates, vals = dates[start:], vals[start:]
     if len(dates) < MIN_CHART_POINTS or dates[-1] != obs.get("asof"):
         return None
@@ -267,15 +273,20 @@ def _episode_window(obs: dict) -> dict | None:
                and -100.0 <= v <= 0.0 for v in vals):
         return None
     close, peak = _positive(obs.get("close")), _positive(obs.get("peak_close"))
-    if close is None or peak is None:
-        return None
-    # A reclaimed close sits at the 0% line, as the owner draws it.
-    if abs(vals[-1] - min(0.0, 100.0 * (close / peak - 1.0))) > PATH_TOLERANCE_PP:
-        return None
     low = _positive(obs.get("low_close"))
-    if low is not None and min(vals) < 100.0 * (low / peak - 1.0) - PATH_TOLERANCE_PP:
+    if close is None or peak is None or low is None or low_session not in dates:
         return None
-    return {"dates": dates, "vals": vals}
+    low_pct = 100.0 * (low / peak - 1.0)
+    # A reclaimed close sits at the 0% line, as the owner draws it.
+    end = min(0.0, 100.0 * (close / peak - 1.0))
+    if (abs(vals[0]) > PATH_TOLERANCE_PP
+            or abs(vals[-1] - end) > PATH_TOLERANCE_PP
+            or abs(vals[dates.index(low_session)] - low_pct) > PATH_TOLERANCE_PP
+            or min(vals) < low_pct - PATH_TOLERANCE_PP):
+        return None
+    # The owner rounds each point; a second rounding for the end tag can land
+    # one tenth away from the metric. Draw the end from the metric's own ratio.
+    return {"dates": dates, "vals": vals[:-1] + [end]}
 
 
 def present(observation: dict, radar: dict | None = None) -> dict:

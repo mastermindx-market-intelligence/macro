@@ -54,10 +54,12 @@ def observer_receipt(rows, *, expected_session, is_session):
         "expected_session": expected_session.isoformat(),
         "close": rows[-1][1],
         "peak_close": 100.0,
-        "low_close": 87.0,
+        "low_close": 88.0,
+        "low_session": "2026-10-08",
         "peak_session": "2026-09-18",
         "source_digest": "a" * 64,
-        # The owner's shape: since-peak closes against the retained high, ending today.
+        # The owner's shape: since-peak closes against the retained high, ending
+        # today, passing through the retained low.
         "price_path": {"dates": ["2026-09-18", "2026-10-07", "2026-10-08",
                                  expected_session.isoformat()],
                        "vals": [0.0, -9.0, -12.0, round(100.0 * (rows[-1][1] / 100.0 - 1.0), 4)]},
@@ -352,7 +354,9 @@ def test_absent_source_reader_never_autoselects_a_store(monkeypatch):
 def _qualified(price_path, **over):
     obs = observer_receipt([("2026-09-22", 96.0)], expected_session=date(2026, 9, 22),
                            is_session=nyse_calendar.is_session)
-    obs.update(market="us", clock="settled_close", price_path=price_path, **over)
+    obs.update(market="us", clock="settled_close", price_path=price_path,
+               low_close=96.0, low_session="2026-09-22")
+    obs.update(over)
     return obs
 
 
@@ -373,7 +377,9 @@ def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch):
     """Pre-peak closes measured against a later high would draw a rally as damage."""
     obs = _qualified({k: list(v) for k, v in PATH.items()}, peak_session="2026-09-16")
     seen, view = _drawn(monkeypatch, obs)
-    window = {"dates": PATH["dates"][2:], "vals": PATH["vals"][2:]}
+    # The end point is the metric's own ratio, not the owner's rounded copy of it.
+    end = 100.0 * (obs["close"] / obs["peak_close"] - 1.0)
+    window = {"dates": PATH["dates"][2:], "vals": PATH["vals"][2:-1] + [end]}
     assert seen == [window]
     assert view["detail_path"] == window  # the history table's rows
     assert obs["price_path"] == PATH  # the owner's observation is not rewritten
@@ -392,6 +398,17 @@ def _bump(index, value):
     # Without a usable peak date the window would fall back to pre-peak closes.
     (PATH, {"peak_session": None}),
     (PATH, {"peak_session": date(2026, 9, 16)}),
+    # The owner keeps 63 closes: a peak or low older than the path is not drawn
+    # as a partial episode beside the full-episode figures.
+    ({"dates": PATH["dates"][3:], "vals": PATH["vals"][3:]}, {}),
+    (PATH, {"peak_session": "2026-09-15"}),
+    (_bump(2, -0.5), {}),
+    (PATH, {"low_session": "2026-09-10"}),
+    (PATH, {"low_session": "2026-09-14"}),
+    (PATH, {"low_session": None}),
+    (PATH, {"low_close": None}),
+    # Low inside the window, but the path never reaches the reported worst.
+    (PATH, {"low_close": 87.0}),
     # The path must end on the receipt's session at the metric's own value.
     ({"dates": PATH["dates"][:-1], "vals": PATH["vals"][:-1]}, {}),
     (_bump(-1, -5.8), {}),
@@ -412,7 +429,8 @@ def test_chart_is_withheld_when_it_would_disagree_with_the_measured_figures(monk
 
 def test_a_reclaimed_close_still_draws_at_the_zero_line(monkeypatch):
     path = _bump(-1, 0.0)
-    obs = _qualified(path, peak_session="2026-09-16", close=100.4, phase="recovering")
+    obs = _qualified(path, peak_session="2026-09-16", close=100.4, phase="recovering",
+                     low_close=97.5, low_session="2026-09-21")
     seen, view = _drawn(monkeypatch, obs)
     assert seen == [{"dates": PATH["dates"][2:], "vals": path["vals"][2:]}]
 
@@ -421,7 +439,23 @@ def test_a_drawdown_that_rounds_to_zero_prints_without_a_minus():
     """The chart's end tag agrees with the metric, which prints 0.0%."""
     close = 100.0 * (1 - 0.0003)
     path = {"dates": PATH["dates"], "vals": PATH["vals"][:-1] + [round(100.0 * (close / 100.0 - 1.0), 4)]}
-    obs = _qualified(path, peak_session="2026-09-16", close=close)
+    obs = _qualified(path, peak_session="2026-09-16", close=close,
+                     low_close=97.5, low_session="2026-09-21")
     chart = pb.present(obs)["detail_chart_html"]
     assert '<span class="ilx-tag">0.0%' in chart
     assert "-0.0%" not in chart
+
+
+@pytest.mark.parametrize("close", [99.95004, 97.65004, 99.97])
+def test_chart_end_tag_reads_the_same_figure_as_the_metric(close):
+    """The owner rounds each point to 4 dp; formatting that rounded value again
+    can land a tenth away from the metric (-0.04996 -> -0.05 -> -0.1)."""
+    from bs4 import BeautifulSoup
+    from tests.test_risk_radar_pullback_depth_template import render
+    path = {"dates": PATH["dates"],
+            "vals": PATH["vals"][:-1] + [round(100.0 * (close / 100.0 - 1.0), 4)]}
+    obs = _qualified(path, peak_session="2026-09-16", close=close, low_close=97.5,
+                     low_session="2026-09-21", valid_until="2026-09-23T21:00:00+00:00")
+    soup = BeautifulSoup(render(pb.present(obs), "us"), "html.parser")
+    tag = soup.select_one(".ilx-tag").get_text(strip=True).replace("-", "\u2212")
+    assert tag == soup.select_one('[data-metric="current"]').get_text(strip=True)

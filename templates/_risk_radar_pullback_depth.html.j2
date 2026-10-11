@@ -94,7 +94,8 @@
       {% if current and v.get('detail_chart_html') %}
       <div class="rrp-chart" aria-hidden="true">{{ v.detail_chart_html|safe }}</div>
       <p class="rrp-chart-caption">{{ t('Observed closing drawdown from the retained reference high.', '相对保留参考高点的已发生收盘回撤。') }}</p>
-      {% set path = v.get('detail_path') if v.get('detail_path') is mapping else (o.get('price_path') if o.get('price_path') is mapping else {}) %}
+      {# Only the presenter's validated window; the raw path can predate the peak. #}
+      {% set path = v.get('detail_path') if v.get('detail_path') is mapping else {} %}
       {% set dates = path.get('dates', []) %}{% set vals = path.get('vals', []) %}
       {% if dates is sequence and dates is not string and vals is sequence and vals is not string and dates|length == vals|length and dates|length > 0 %}
       <details class="rrp-method rrp-history"><summary>{{ t('Inspect price history','查看价格历程') }}</summary>
