@@ -27,3 +27,5 @@ Result: **104 passed in 5.58s**, no skips after materializing committed `site/`.
 ## Delivery frontier
 
 This slice is isolated in `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-attempt-recovery-20261011-a46f27ad11045cb8`, initially based on fresh main `565d883c26571b00d7f660f56689f33ce8b13dcc` and merged with exact PR #8786 candidate `3b8a642735378309e73107690bbc4682ffbd3108` as `b45d8d629bd88c91ef39b998fc79708559b577cc`. It does not change the running PR proof. Preserve that sole carrier until its protected outcome settles; then integrate this separately tested follow-on through the normal current-main release path. No duplicate PR has been opened.
+
+Additional integrated failure-boundary check: `python3 -m pytest tests/test_press_run.py::test_storage_failure_after_provider_return_blocks_replay -q --tb=short --basetemp=../mmx-recovery-returned-storage-fixtures` — **1 passed in 2.76s**. This injects replacement failure after the fixture writer has returned, verifies the original complete reservation survives, and proves an attempted repeat makes no second provider call. The implementation is unchanged from the 104-test result.

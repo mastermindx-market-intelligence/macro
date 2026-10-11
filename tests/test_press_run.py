@@ -252,6 +252,30 @@ def test_stage_checkpoint_replace_failure_keeps_previous_complete_record(tmp_pat
     assert list(tmp_path.iterdir()) == [path]
 
 
+def test_storage_failure_after_provider_return_blocks_replay(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    slot = P.plan(["brief"], as_of="2026-07-26", root=root, cfg=cfg)[0]
+    calls = _stub_writer(monkeypatch)
+
+    def fail_replace(*_a, **_kw):
+        raise OSError("returned draft could not be persisted")
+
+    monkeypatch.setattr(R.os, "replace", fail_replace)
+    with pytest.raises(OSError, match="returned draft could not be persisted"):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    path = root / "data/press/staging" / f"{slot['id']}.json"
+    before = path.read_bytes()
+    assert json.loads(before)["progress"]["phase"] == "provider_started"
+    assert json.loads(before)["draft"] is None
+    assert calls["n"] == 1
+    monkeypatch.setattr(R.desk_planner, "plan", lambda *_a, **_kw: [slot])
+    with pytest.raises(FileExistsError):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    assert calls["n"] == 1
+    assert path.read_bytes() == before
+
+
 def test_staging_writes_one_json_per_slot_plus_a_run_summary(tmp_path, monkeypatch):
     root = F.fixture_root(tmp_path)
     _stub_writer(monkeypatch)
