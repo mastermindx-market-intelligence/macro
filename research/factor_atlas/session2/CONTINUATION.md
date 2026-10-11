@@ -558,3 +558,60 @@ consume new-head CI. Then original data owners must bind
 true monetary price/volume/action vintage, rights, PIT
 security identity/calendar and selected first-observed
 revision receipts before any empirical study.
+
+## R2 source ABI fingerprint and OHLC integrity correction — 2026-10-11
+
+Original PR #8677 recovered at verified exact head
+`f19efea3c21e4deec8e05e8067746993b5909ff7` (DRAFT/HOLD / unmerged). Source writer remains the original
+`claude/factor-atlas-capital-pressure-20261008` branch. Protected
+Mastermind `f381af6758533906865361373addbb0514f86d7d`
+read with same-SHA compatible Skillpack 1.0.1/bootstrap1.
+Incumbent source PRs Terminal #844 and Macro #8623 remain DRAFT;
+their source-boundary admission still NOT_ADMITTED.
+
+**Independently discovered genuine ABI bug** in already accepted
+`prototype/owner_reader_abi.py`: two different fully self-sealed
+source-shaped decoded prices or volumes could share the same
+`evidence_digest` because only the metadata preflight was bound.
+Impossible high/low/open/close values were not refused. Eight
+dedicated fail-first adversarial tests recorded the defect.
+Changed only accepted owner-reader ABI and its tests, not the
+separately platform-denied S2-P4 `factor_read_model.py` patch.
+
+**Verified fix:** finite positive OHLC with valid min/max range
+and original `owner_close` refusal compatibility; include sorted
+`(security_id, event_start, revision_id, canonical_row_receipt_sha256)`
+bindings in candidate ABI digest. A content-consistency digest
+is NEVER remote source authentication, basis proof or rights.
+Reordering valid source rows stays deterministic.
+35/35 ABI tests and exact 13-suite native local regression
+**392/392 PASSED** on M2 Python3.12. Synthetic delta witness:
+`evidence/owner_reader_abi_integrity_witness.json`, source/test/log
+SHA-256 evidence updated in `evidence/native_owner_reader_abi_tests.json`.
+No live source bytes or customer data accessed; all flags false.
+
+**Program leadership coordination:** original [Terminal #844]
+(https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/844#issuecomment-6107460659)
+and [Macro #8623]
+(https://github.com/mastermindx-market-intelligence/macro/pull/8623#issuecomment-6107464007)
+carriers received exact basis/clock/rights/selected-revision
+requirements; no new Job was created and no source custody
+was transferred. Executive OS is currently `readonly` with
+no target addressable to this caller. A narrow M1 Studio path
+inspection found no default installed Terminal minute data there,
+but not a fleet-wide absence proof. Local M2 signed source
+archive remains unqualified. Do not relabel metadata as data.
+
+**DO_NOT_REDO:** the four expressly denied reads,
+denied benchmark repair, denied current-main changed-path fetch/
+comparison, and separately blocked S2-P4 WIP calculation patch.
+Two WIP files remain uncommitted and **4 integrity tests red**;
+no alternate tool/account/model/carrier approach was used to
+obtain the denied edit. Unchanged research/production gates:
+S2-P1 current AAPL/MSFT/NVDA/SPY true 1m+trade/quote source,
+PIT listing, corporate-action adjusted monetary/volume basis,
+source and reader known-at, selected revision and dataset-use
+rights **NOT_ADMITTED**, no customer, rank, alert, size or trade
+authority. Next: same-carrier publish + remote readback of this
+accepted ABI delta; exact new-head hosted CI; source-owner
+selected input-bundle admission when genuinely supported.

@@ -118,6 +118,19 @@ def _readrow(item: Mapping[str,object], scope: sp.IntakeScope) -> sp.MinuteClaim
         raise ValueError("source_ref_mismatch")
     revision=item.get("revision_id")
     m._text(revision,"revision")
+    # Check observed OHLC before accepting even a self-consistent local seal.
+    # These are structural source-value checks, not proof of correct prices.
+    price={}
+    for field in ("open","high","low","close"):
+        try:
+            price[field]=m._finite(item.get(field),"owner_ohlc_"+field,positive=True)
+        except ValueError:
+            # Preserve the existing owner_close refusal family for callers.
+            prefix="owner_close_ohlc_invalid" if field=="close" else "owner_ohlc_invalid_"
+            raise ValueError(prefix if field=="close" else prefix+field) from None
+    if (price["low"]>min(price["open"],price["close"]) or
+            price["high"]<max(price["open"],price["close"])):
+        raise ValueError("owner_ohlc_inconsistent")
     seal=item.get("receipt_sha256")
     if not sp._digest(seal,"row_receipt"):
         raise ValueError("row_receipt_invalid")
@@ -195,6 +208,12 @@ def inspect_candidate(decoded: Mapping[str,object],
     claims=tuple(_readrow(x,scope) for x in rows)
     pre=sp.preflight(scope,claims)
     counts=Counter(r.value_state for r in claims)
+    # The metadata preflight intentionally excludes actual OHLCV values.
+    # Bind each validated, canonical row seal as well so changed source
+    # prices, volumes, and nested read evidence cannot share this ABI digest.
+    # This seal is a content-consistency fingerprint, NOT source authority.
+    row_bindings=tuple(sorted((x["security_id"],x["start"],
+                               x["revision_id"],x["receipt_sha256"]) for x in rows))
     return CandidateInterop(
         DECODER_SCHEMA,SOURCE_OWNER_HEAD,
         "OWNER_READER_UNAVAILABLE" if not claims else "OWNER_BASIS_UNPROVEN",
@@ -205,4 +224,5 @@ def inspect_candidate(decoded: Mapping[str,object],
                   "owner_head":SOURCE_OWNER_HEAD,
                   "preflight":pre.input_digest,
                   "candidate_row_count":len(claims),
+                  "decoded_row_seals":row_bindings,
                   "volume_states":tuple(sorted(counts.items()))}))

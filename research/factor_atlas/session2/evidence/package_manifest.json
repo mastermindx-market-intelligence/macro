@@ -5,12 +5,12 @@
   "external_ci_workflow_sha256": "e61df86a7aaf302279d985d12596e6665af56b1d921ee07ac0351cdcb0b3fc11",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 109375,
-      "sha256": "5321ad5a334bca7c9bf609844d3753e4be4bf917386914c45d914f20000a5d0b"
+      "bytes": 112662,
+      "sha256": "e6aee9d405ebd0151444f5f317256fa84505da3fa56805b630c94bbd2839c0f1"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 35089,
-      "sha256": "52a4b1b649d14a0358f929ff4b892c3e760a564c8570ebeb8308f5bbacdd4992"
+      "bytes": 38329,
+      "sha256": "6a07e5f444ba44cd1a821f59b2c7167d08daad4b3eda909eb45744760c78e90c"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 2197,
@@ -21,8 +21,8 @@
       "sha256": "60325238c026ab7060bd1919f95f9c4f665fd55539da4ef8607098ff4bb18985"
     },
     "session2/OWNER_READER_ABI_CONFORMANCE.md": {
-      "bytes": 5523,
-      "sha256": "dd2092dd33fad69b9573bf316b8bbf8a59d069e9b1b465887529e99ebf652c9b"
+      "bytes": 7712,
+      "sha256": "ab9075120173e7a854b994e02a71859781fdc827cca897b680f55650553553e6"
     },
     "session2/QUOTE_CALIBRATION_PROTOCOL.md": {
       "bytes": 7187,
@@ -81,8 +81,8 @@
       "sha256": "abfc08da7f6cd46b3c1bddac9bfc28dba7e2ed93b38f88d2c7729066f4dd7baa"
     },
     "session2/evidence/native_owner_reader_abi_tests.json": {
-      "bytes": 3641,
-      "sha256": "f73216cf93e9c9ac88de7ece080845fd8e3f9eeca22f2ba5c3856ca66ac328ca"
+      "bytes": 4664,
+      "sha256": "4fa79c49a3b69d4bf53bc347c158fe5477deb738460e50234d2a015a2e812a8e"
     },
     "session2/evidence/native_pressure_oos_tests.json": {
       "bytes": 3673,
@@ -111,6 +111,10 @@
     "session2/evidence/native_window_tests.json": {
       "bytes": 2726,
       "sha256": "1f24d67c5b8ac98da98ce8ca399438e492ab5e355f5349bd02e58386c85c9190"
+    },
+    "session2/evidence/owner_reader_abi_integrity_witness.json": {
+      "bytes": 1979,
+      "sha256": "71383e4a268aa8c39eceb844335dc7fcb2718fb63a0824991f6ffc4f25be00b7"
     },
     "session2/evidence/owner_reader_abi_synthetic_witness.json": {
       "bytes": 1056,
@@ -149,8 +153,8 @@
       "sha256": "7e5adecdfb8cd1e89f8eb91c29d97618ecb3a53036dcca19fe99ba8f07f03fda"
     },
     "session2/prototype/owner_reader_abi.py": {
-      "bytes": 8872,
-      "sha256": "9fd216848dbd5f7af7cffb96ba5f03f8b4f9cce9188a6c902ce45ad287147b96"
+      "bytes": 10132,
+      "sha256": "de1375954c2f4f65097b1b7424087c2863e90f253000e87a7eb918ae6af3fd1a"
     },
     "session2/prototype/pressure.py": {
       "bytes": 26552,
@@ -185,8 +189,8 @@
       "sha256": "cd79fe2022169d8282e1ce7a656d2a97c0b3b0e9489ee412d67b5c2a7735540d"
     },
     "session2/prototype/test_owner_reader_abi.py": {
-      "bytes": 11314,
-      "sha256": "cea89de32b0eea3c21ca83c991bbff39da835d662b7848bdb96d42e5c6ec94fe"
+      "bytes": 13100,
+      "sha256": "8a53cab59f3f5a640675a26c06001badbde7c521d0be6369aabc50f779800549"
     },
     "session2/prototype/test_pressure.py": {
       "bytes": 15906,
@@ -254,15 +258,15 @@
   "native_quote_study_receipt": "session2/evidence/native_quote_study_tests.json",
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_read_contract_test_receipt": "session2/evidence/native_read_contract_tests.json",
-  "native_scoped_tests_passed": 384,
+  "native_scoped_tests_passed": 392,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "9d407ba6bed520399b1153b66638ebb133afe8a6",
-  "prepared_at_utc": "2026-10-11T09:03:08.544554+00:00",
+  "predecessor_commit": "f19efea3c21e4deec8e05e8067746993b5909ff7",
+  "prepared_at_utc": "2026-10-11T09:19:58.852535+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 28
+    "numbered_sections": 29
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }

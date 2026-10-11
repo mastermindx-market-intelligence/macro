@@ -309,3 +309,51 @@ def test_unsupported_owner_source_timestamp_format_is_refused():
     x["receipt_sha256"]=seal(x)
     with pytest.raises(ValueError,match="owner_timestamp"):
         eval_([x])
+
+
+def test_evidence_digest_binds_changed_observed_close_not_only_source_metadata():
+    original=minute()
+    changed=copy.deepcopy(original)
+    changed["close"]=100.5
+    changed["receipt_sha256"]=seal(changed)
+    a,b=eval_([original]),eval_([changed])
+    assert original["source_ref"]==changed["source_ref"]
+    assert a.preflight.input_digest==b.preflight.input_digest
+    assert a.evidence_digest!=b.evidence_digest
+    assert not a.market_pilot_admitted and not b.market_pilot_admitted
+
+
+def test_evidence_digest_binds_changed_positive_volume_and_row_receipt():
+    original=minute()
+    changed=copy.deepcopy(original)
+    changed["volume"]=11.5
+    changed["receipt_sha256"]=seal(changed)
+    a,b=eval_([original]),eval_([changed])
+    assert a.preflight.input_digest==b.preflight.input_digest
+    assert a.evidence_digest!=b.evidence_digest
+    assert not a.verified_rights and not b.verified_rights
+
+
+@pytest.mark.parametrize(("field","value"),[
+    ("high",99.),("low",101.),("open",103.),("low",0.),("high",float("nan"))
+])
+def test_candidate_impossible_ohlc_value_is_rejected_even_when_self_sealed(field,value):
+    x=minute()
+    x[field]=value
+    if isinstance(value,float) and value!=value:
+        with pytest.raises(ValueError,match="ohlc"):
+            eval_([x])
+    else:
+        x["receipt_sha256"]=seal(x)
+        with pytest.raises(ValueError,match="ohlc"):
+            eval_([x])
+
+
+def test_valid_ohlc_change_changes_candidate_fingerprint_without_source_admission():
+    source=minute()
+    variant=copy.deepcopy(source)
+    variant["high"]=103.
+    variant["receipt_sha256"]=seal(variant)
+    first,second=eval_([source]),eval_([variant])
+    assert first.evidence_digest!=second.evidence_digest
+    assert first.stage==second.stage=="OWNER_BASIS_UNPROVEN"
