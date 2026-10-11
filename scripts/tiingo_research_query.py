@@ -9,6 +9,10 @@ Examples (when a qualified archive exists):
   python -m scripts.tiingo_research_query query --source eod-bars --symbol AMD \
       --capture 2026-10-09:0123...(64-hex) --start 2019-01-01 --end 2019-12-31 \
       --observed-before 2026-10-10T00:00:00Z --acknowledge-hindsight
+  python -m scripts.tiingo_research_query query --source boats-firehose --symbol AMD \
+      --capture 2026-10-09:FULL_SOURCE_SHA256 \
+      --start 2026-10-09T00:00:00Z --end 2026-10-09T03:59:00Z \
+      --observed-before 2026-10-10T00:00:00Z --acknowledge-hindsight
 
 Output is bounded JSON to stdout; no output files are created.
 """
@@ -31,8 +35,10 @@ from lib.dataos.tiingo_reader import (
     read_research_statement_timeline, read_research_view,
 )
 from lib.dataos.temporal import utc
+from lib.dataos.tiingo_reader import _unique_raw_context
+from lib.dataos.tiingo_boats_tape import audit_boats_tape, MAX_CAPTURES, MAX_EVENTS_PER_CAPTURE
 
-RESEARCH_SOURCES = ("eod-bars", "fund-daily", "fund-statements")
+RESEARCH_SOURCES = ("eod-bars", "fund-daily", "fund-statements", "boats-firehose")
 DIGEST = re.compile(r"^[0-9a-f]{64}$")
 MAX_SCAN = 2048
 MAX_RESULTS = 200
@@ -124,14 +130,20 @@ def discover(
             )
             if not view.rows:
                 raise TiingoViewRefusal("no research rows can identify the vendor security")
-            field = "ticker_vendor" if source == "eod-bars" else "ticker_or_permaticker_vendor"
+            field = ("ticker" if source == "boats-firehose" else
+                     "ticker_vendor" if source == "eod-bars" else "ticker_or_permaticker_vendor")
             symbols = {row.get(field) for row in view.rows}
-            if symbols != {vendor_symbol}:
+            if (vendor_symbol not in symbols if source == "boats-firehose"
+                    else symbols != {vendor_symbol}):
                 continue
             if cutoff is not None:
                 if view.source_observed_at_utc is None:
                     raise TiingoViewRefusal("capture clock missing")
-                if utc(view.source_observed_at_utc) > cutoff:
+                if source == "boats-firehose":
+                    context = _unique_raw_context(base, source, day, digest)
+                    if utc(context["last_received_at_utc"]) > cutoff:
+                        continue
+                elif utc(view.source_observed_at_utc) > cutoff:
                     continue
             if len(out["verified_candidates"]) < max_results:
                 out["verified_candidates"].append({
@@ -186,6 +198,30 @@ def query(
     refs = [capture_ref(text) for text in captures]
     if len(refs) != len(set(refs)):
         raise ValueError("duplicate exact capture references")
+    if source == "boats-firehose":
+        if as_reported is not None:
+            raise ValueError("asReported does not apply to venue firehose")
+        if acknowledge_hindsight is not True:
+            raise ValueError("BOATS tape audit requires explicit hindsight acknowledgement")
+        tape = audit_boats_tape(
+            refs, root=root, vendor_symbol=vendor_symbol,
+            start_event_at_utc=start, end_event_at_utc=end,
+            observed_before_utc=observed_before, check_mount=check_mount,
+            max_captures=min(max_partitions, MAX_CAPTURES),
+            max_events_per_capture=min(max_rows, MAX_EVENTS_PER_CAPTURE),
+            max_observations=max_rows,
+        )
+        return {
+            "schema": "mastermind.tiingo.research_query.v1",
+            "status": tape["status"], "network": False,
+            "writes": False, "key_read": False,
+            "source_authenticity_proven": False,
+            "market_time_availability_proven": False,
+            "pit_backtest_eligible": False,
+            "redistribution_admitted": False,
+            "complete_history_proven": False,
+            "boats_single_venue_tape_diagnostics": tape,
+        }
     if source == "fund-statements":
         if as_reported not in ("true", "false"):
             raise ValueError("statement query must select asReported=true or false")
@@ -244,8 +280,8 @@ def main(
             sub.add_argument("--max-results", type=int, default=50)
         else:
             sub.add_argument("--capture", action="append", required=True, help="repeat DAY:full-64-hex-SHA256")
-            sub.add_argument("--start", required=True, help="YYYY-MM-DD market date or vendor release label")
-            sub.add_argument("--end", required=True, help="YYYY-MM-DD market date or vendor release label")
+            sub.add_argument("--start", required=True, help="YYYY-MM-DD for EOD/financials, UTC-offset event datetime for BOATS")
+            sub.add_argument("--end", required=True, help="YYYY-MM-DD for EOD/financials, UTC-offset event datetime for BOATS")
             sub.add_argument("--as-reported", choices=("true", "false"),
                              help="required for fund-statements; forbidden for other products")
             sub.add_argument("--acknowledge-hindsight", action="store_true", required=True)

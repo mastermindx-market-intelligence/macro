@@ -757,3 +757,94 @@ The frozen core collector still hashes to
 1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
 A published source commit and confirmed GitHub head do not prove live
 entitlement, full history or a green CI/release. No key/network/live job used.
+
+
+### October 11 UTC — BOATS single-venue tape diagnostics, still offline
+
+New *read-only research* capability in the EXISTING Data OS research path:
+lib/dataos/tiingo_boats_tape.py::audit_boats_tape. It consumes explicitly
+selected already-archived BOATS-firehose receipt references and reuses
+read_research_view, the bounded raw-body verifier and the original BOATS
+Q/T/B projection. It never invokes the network, reads a token, creates a
+collector, inserts a queue, changes the raw archive or overrides the canonical
+Data OS, rights, venue, price, temporal or machine-signal owners.
+
+Vendor public contract checked:
+https://www.tiingo.com/documentation/websockets/boats
+- BOATS firehose is a BETA product, requiring separate BOATS Real-time
+  entitlement; a paid general Tiingo subscription/working News API is not
+  proof that this add-on is enabled.
+- BOATS returns single-ATS, venue-native 9-slot top-of-book Q messages and
+  10-slot trade T / trade break B messages with epoch-nanosecond timestamps
+  and four raw MEMOIR sale-condition slots. Trade break corrections must not
+  be silently counted as ordinary executed volume. These quotes are NOT
+  consolidated NBBO and not proof of order-level replenishment.
+- Source session is approximately 8PM-3:59AM America/New_York, respecting
+  daylight savings. Session-timing disagreements are diagnostics, not
+  a substitute for a venue holiday/session calendar.
+
+Implemented bounded audit:
+- Verifies source SHA-256, compressed raw byte length, receipt Q/T/B/other
+  counts, first/last arrival interval, all original raw-to-Parquet projected
+  rows, archive confinement and full-segment observed-before cutoff.
+  An editable/rehashed manifest cannot silently mutate trades or venue quotes.
+- Preserves raw Q/T/B and four condition positions (including H versus X),
+  counts unknown/opaque source messages separately, and tracks precise
+  ticker-scoped selected events from multi-ticker firehose segments.
+- Reports suspected vendor-event-time versus int64 epoch disagreement,
+  lag between vendor event and local receipt (not network RTT), negative
+  arrival skew, out-of-order source epochs, repeated raw frames, mid-price
+  anomalies and locked/crossed single-venue quotes. Break shares are recorded
+  separately, not subtracted from possibly unrelated T events.
+- Caps the number of referenced segments, source frames per segment,
+  selected messages and returned examples. The source capture can include
+  messages outside the query window; no completeness is claimed.
+- Refuses corrupt original source, altered Parquet values even when an
+  editable manifest digest was recomputed, impossible counts or clocks,
+  unobserved suffixes of a capture segment, unsafe requests and over-budget
+  workloads. Never silently picks a corrected or aggregate market feed.
+
+The existing local CLI now permits:
+    python3 -m scripts.tiingo_research_query discover --source boats-firehose --symbol AMD
+    python3 -m scripts.tiingo_research_query query --source boats-firehose --symbol AMD \
+      --capture CAPTURE_DAY:FULL_SHA256 \
+      --start 2026-10-09T00:00:00Z --end 2026-10-09T03:59:00Z \
+      --observed-before 2026-10-10T00:00:00Z --acknowledge-hindsight
+
+Result disposition is either OBSERVED_SOURCE_EVENTS_NOT_COVERAGE_PROOF or
+UNQUALIFIED_CLOCKS; both keep source_authenticity_proven=false,
+transport_continuity_proven=false, nbbo=false, net_executed_volume_proven=false,
+trade_initiator_side_proven=false, order_level_liquidity_replenishment_proven=false,
+point_in_time_backtest_eligible=false, redistribution_admitted=false,
+time_window_completeness_proven=false, network=false and writes=false.
+No autonomous options signal, ranking, trading/sizing or alert integration.
+
+Synthetic independent tests:
+tests/test_tiingo_boats_tape.py plus BOATS cases in
+tests/test_tiingo_research_query.py. Focused 49 passed (process 7100),
+full Tiingo and Data OS registry tests 382 passed with the exact SAME
+11 unwaived producer-ingestion-integrity failures, pytest exit 1
+(process 14749). Exact log SHA-256:
+31c68c85ce17cd8cc43dd984b5a5f0cc7cf4913945514b3640b6e089deeeaf93
+at external-drive path:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-boats-tape-audit-20261011.log
+
+The new module/tests were wired into the existing
+dataos-prospective-reference job and existing workflow trigger closure
+with no new CI job, waiver, scheduler, worker registry or source authority.
+On the intended M2 archive, the read-only BOATS discover returned
+NO_LOCAL_ARCHIVE (no captures, zero network or writes).
+Core collector and ingestion/materializer scripts remain byte-identical:
+  collectors/tiingo_archive.py
+    1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d
+  scripts/tiingo_ingest.py
+    1364af1c3ce08c2c91b57a6415e0a099064918306dfbf4fc2729e55b72e11797
+  scripts/tiingo_materialize.py
+    0b54f919a2a57e1014ff10ea001acbdb4cfa9937be5b97bcecb7919848b41969
+
+No authenticated Tiingo probe or source collector rewrite was retried or
+delegated after its earlier explicit refusal. Actual live BOATS entitlement,
+vendor session capture, latency, completeness, price/quote joins, quote-age,
+special-sale-condition interpretation, and any applied intelligence consumer
+remain UNPROVEN. Tiingo News PR #8697 has its own owner. All 24 Tiingo Data
+OS contracts stay PROPOSED; keep Macro PR #8698 DRAFT/HOLD, not released.

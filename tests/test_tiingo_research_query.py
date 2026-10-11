@@ -277,3 +277,84 @@ def test_cli_large_research_output_refuses_without_partially_printing_rows(lake,
     output = json.loads(capsys.readouterr().out)
     assert output["status"] == "REFUSED"
     assert "rows" not in output
+
+
+def boats_partition(lake):
+    from datetime import datetime, timezone
+    stamp = "2026-10-09T01:00:00Z"
+    d = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    sec = int((d - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds())
+    events = [
+        ("2026-10-09T01:00:01Z", json.dumps({
+            "service": "boats", "data": [
+                "Q", stamp, sec * 10**9, "AMD", 100, 99.9, 100.0, 100.1, 120]})),
+        ("2026-10-09T01:00:02Z", json.dumps({
+            "service": "boats", "data": [
+                "T", stamp, sec * 10**9, "NVDA", 100.0, 22, "@", "", "", ""]})),
+    ]
+    response = lake.store_boats_batch(events)
+    digest = response["raw_sha256"]
+    rec = next(
+        json.loads(p.read_text())
+        for p in (lake.root / "receipts" / "boats-firehose").rglob("*.json")
+        if json.loads(p.read_text())["raw_sha256"] == digest
+    )
+    assert materialize_one(lake.root, rec, free_floor=0)["status"] == "WRITTEN"
+    return "2026-10-09", digest
+
+
+def test_boats_discovery_handles_multiticker_raw_segments_without_claiming_nbbo(lake):
+    day, digest = boats_partition(lake)
+    out = discover(lake.root, source="boats-firehose", vendor_symbol="AMD",
+                   observed_before="2026-10-09T01:00:03Z", check_mount=False)
+    assert out["scan_complete"] is True
+    assert len(out["verified_candidates"]) == 1
+    assert out["verified_candidates"][0]["source_sha256"] == digest
+    assert out["complete_history_proven"] is False
+    assert out["pit_backtest_eligible"] is False
+    assert out["redistribution_admitted"] is False
+
+
+def test_boats_discovery_entire_segment_must_be_observed_by_cutoff(lake):
+    boats_partition(lake)
+    out = discover(lake.root, source="boats-firehose", vendor_symbol="AMD",
+                   observed_before="2026-10-09T01:00:01Z", check_mount=False)
+    assert out["verified_candidates"] == []
+    assert out["scan_complete"] is True
+
+
+def test_boats_cli_query_is_read_only_venue_diagnostic_not_executable_price(lake, capsys):
+    day, digest = boats_partition(lake)
+    args = [
+        "query", "--source", "boats-firehose", "--symbol", "AMD",
+        "--capture", day + ":" + digest,
+        "--start", "2026-10-09T01:00:00Z",
+        "--end", "2026-10-09T03:00:00Z",
+        "--observed-before", "2026-10-10T00:00:00Z",
+        "--acknowledge-hindsight",
+    ]
+    assert main(args, root=lake.root, check_mount=False) == 0
+    data = json.loads(capsys.readouterr().out)
+    assert data["status"] == "OBSERVED_SOURCE_EVENTS_NOT_COVERAGE_PROOF"
+    tape = data["boats_single_venue_tape_diagnostics"]
+    assert tape["selected_kind_counts"] == {"Q": 1, "T": 0, "B": 0}
+    assert tape["source_messages_all_tickers"] == 2
+    assert tape["nbbo"] is False
+    assert data["pit_backtest_eligible"] is False
+    assert data["complete_history_proven"] is False
+
+
+def test_boats_query_without_capture_clock_or_hindsight_refuses(lake, capsys):
+    day, digest = boats_partition(lake)
+    common = dict(
+        root=lake.root, source="boats-firehose", vendor_symbol="AMD",
+        captures=[day + ":" + digest],
+        start="2026-10-09T01:00:00Z", end="2026-10-09T03:00:00Z",
+        observed_before="2026-10-10T00:00:00Z", check_mount=False,
+    )
+    with pytest.raises(ValueError, match="hindsight"):
+        query(**common, acknowledge_hindsight=False)
+    with pytest.raises(ValueError, match="asReported"):
+        query(**common, acknowledge_hindsight=True, as_reported="false")
+    with pytest.raises(ValueError, match="UTC-offset"):
+        query(**{**common, "end": "2026-10-09T03:00:00"}, acknowledge_hindsight=True)

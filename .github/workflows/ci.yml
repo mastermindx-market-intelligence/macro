@@ -4378,6 +4378,8 @@ on:
       - "tests/test_tiingo_reader.py"
       - "tests/test_tiingo_history.py"
       - "tests/test_tiingo_research_query.py"
+      - "tests/test_tiingo_boats_tape.py"
+      - "lib/dataos/tiingo_boats_tape.py"
       - "scripts/tiingo_research_query.py"
       - "tests/test_tiingo_vendor_cohort.py"
       - "tests/test_tiingo_ingestion_integrity.py"
