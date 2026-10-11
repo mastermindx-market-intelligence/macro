@@ -32,6 +32,7 @@ from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_receipts import (
     HEALTH_SCHEMA,
     NewsReceiptError,
+    QualifiedNewsRights,
     load_rights_receipt,
     write_health_receipt,
 )
@@ -65,6 +66,21 @@ def exit_receipt(stats: RunnerStats) -> dict:
 
 def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+def _rights_receipt_for(
+    rights_path: Path, *, now: datetime, provider: str
+) -> QualifiedNewsRights | None:
+    """Load the site_full receipt, binding alpaca runs to alpaca-issued rights.
+
+    A receipt qualifies for provider == "alpaca" only when its own provider is
+    "alpaca"; any other runner provider gets exactly what load_rights_receipt
+    returns.
+    """
+    receipt = load_rights_receipt(rights_path, now=now, audience="site_full")
+    if receipt is not None and provider == "alpaca" and receipt.provider != "alpaca":
+        return None
+    return receipt
 
 
 def stream_url(token: str) -> str:
@@ -476,17 +492,25 @@ def main(argv=None) -> int:
         return 2
 
     now = _utc_now()
-    if load_rights_receipt(
-        rights_path,
-        now=now,
-        audience="site_full",
-    ) is None:
+    if _rights_receipt_for(rights_path, now=now, provider=provider) is None:
+        error = "activation_rights_unqualified"
+        if provider == "alpaca":
+            # A loadable receipt whose provider is not "alpaca" misses the
+            # alpaca binding specifically; an unloadable receipt keeps the
+            # generic fault.
+            loaded = load_rights_receipt(
+                rights_path,
+                now=now,
+                audience="site_full",
+            )
+            if loaded is not None and loaded.provider != "alpaca":
+                error = "activation_rights_provider_mismatch"
         print(
             json.dumps(
                 {
                     **report,
                     "activation_qualified": False,
-                    "error": "activation_rights_unqualified",
+                    "error": error,
                 },
                 sort_keys=True,
             )
@@ -519,11 +543,12 @@ def main(argv=None) -> int:
         return 0
 
     def rights_admitted() -> bool:
-        return load_rights_receipt(
-            rights_path,
-            now=_utc_now(),
-            audience="site_full",
-        ) is not None
+        return (
+            _rights_receipt_for(
+                rights_path, now=_utc_now(), provider=provider
+            )
+            is not None
+        )
 
     stop = StopFlag()
     for sig in (signal.SIGINT, signal.SIGTERM):

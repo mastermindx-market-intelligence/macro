@@ -244,3 +244,16 @@ Operator notes:
   (`benzinga-rest` vs `alpaca-rest`) and back-switching mixes clock domains.
 - One WebSocket connection per key pair; the Alpaca stream handshake
   authenticates over the socket and never places credentials in a URL.
+
+### Fail-closed item handling
+
+One contract-invalid item is never skipped: it fails its whole REST page (the
+catch-up counts `catchups_failed` and holds the cursor) or its whole WS frame
+(a stream error; the next catch-up — periodic or after the reconnect —
+re-serves the frame-mates whose `updated_at` falls within the cursor − 3 s
+overlap). This mirrors the incumbent Benzinga collector. Operator triage is
+the typed code — `news_item_<code>` from a REST page, `stream_<code>` from a
+WS frame — raised as `alpaca_news:<code>` when the failing page or frame is
+replayed, with the health file and the journal's exit receipts showing the
+stall as rising `catchups_failed` / `stream_errors` counts. A persistent one
+stalls the cursor and needs an engineering fix, never a provider switch.
