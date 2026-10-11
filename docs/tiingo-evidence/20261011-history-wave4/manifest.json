@@ -1,0 +1,62 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 1667,
+      "sha256": "ec83d58d4b00378675cae0290a0cbb04f975374e21465ef634ad3202bd43f42c"
+    },
+    "attended-continuation-scope.json": {
+      "bytes": 64399,
+      "sha256": "0be06d7de1013fe75ff98ecd5c463f9b43b263c74d9cea804bdc134ee8d2fa06"
+    },
+    "audit-partial.py": {
+      "bytes": 1366,
+      "sha256": "d248983bc201aaa731faa195991aad88c2bbe731e50b841785f4c0ebb97d8cec"
+    },
+    "content-ambiguity-refusal.log": {
+      "bytes": 758,
+      "sha256": "f3ee0decdf249d4d226422eb94fca177bc68acea1320f0613213832f55c7378b"
+    },
+    "exact-context-independent-review.txt": {
+      "bytes": 1545,
+      "sha256": "16eb83961d1ef314150b43a4fad249016aa6412f1092564e7999e309803d9123"
+    },
+    "identical-body-contexts.json": {
+      "bytes": 3742,
+      "sha256": "96225990d27281c6077a820aded2a5bed00d5a900ad2ac3a4bb09634797c7fa2"
+    },
+    "original-candidates.json": {
+      "bytes": 393426,
+      "sha256": "88ff89ccafebc7fc273f15ecc0f1d717ab10028d9ca88bfc124a04b33abbe245"
+    },
+    "original-writer-timeout.log": {
+      "bytes": 10280,
+      "sha256": "c383b4930ec2bd22e0dae2959a79d3959432c337581513fa9f889b52363feb06"
+    },
+    "partial-exact-corpus-audit.json": {
+      "bytes": 578671,
+      "sha256": "75c3954aebfe582c87c6dd0694ce9fd62c65689f8768d6d7258a1c7479e71ebd"
+    },
+    "partial-exact-corpus-audit.log": {
+      "bytes": 471,
+      "sha256": "bccf9836a194e3b63ffa7a6500ce4ea31c775fb71e517c352f6304ccd5925aa7"
+    },
+    "partial-materialization.log": {
+      "bytes": 232,
+      "sha256": "eabfb8cff8dbf0e1c69ad6f0bee6678b50afb8cf930ae53ecbedf6d1eec44ecf"
+    },
+    "partial-qualified-archive.json": {
+      "bytes": 4571461,
+      "sha256": "0d2c9505aeed3a9d193e05f9eecaf668231d7a0a21d786a061bd0c9d993bc58f"
+    },
+    "partial-qualified-archive.log": {
+      "bytes": 798,
+      "sha256": "b9405492a5e9b680f02580ff9d0f0fd806e2200adab66e00019ec12f7a75af5b"
+    },
+    "verify-archive.py": {
+      "bytes": 6858,
+      "sha256": "cf4a2c3ac53a43cfbbc634447bf494af15dd034c5ca7a5767ac73d11a3990b3a"
+    }
+  },
+  "observed_at_utc": "2026-10-11T22:49:03.116081+00:00",
+  "schema": "tiingo_history_wave4_evidence_manifest.v1"
+}

@@ -1,0 +1,106 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 3691,
+      "sha256": "7973b31ba800368763b486ef58da02d109c085086703f093f5943e0e79e79b25"
+    },
+    "boats-consumer-i18n-base-integration-review.txt": {
+      "bytes": 5250,
+      "sha256": "48ac4c19857a334b3831790f2fa905de80892bd54aee8781bc96deee0614afce"
+    },
+    "boats-feature-copy-independent-acceptance.txt": {
+      "bytes": 3433,
+      "sha256": "338dab0066e196246f6200c9edd2dc7d05f718653fe49094bf5cffa188849e05"
+    },
+    "boats-public-independent-review-current-hash-addendum.txt": {
+      "bytes": 4761,
+      "sha256": "1de3f07927d40fb4eba87d9bdfa87498795586f7a728489443c2d9bd5d2de725"
+    },
+    "boats-public-independent-review-repaired.txt": {
+      "bytes": 7916,
+      "sha256": "94b302a41006d826101dce48e2b9cd933c7a46062ff55a04460e4b257d0c2742"
+    },
+    "boats-public-independent-review.txt": {
+      "bytes": 9084,
+      "sha256": "1eb959b564101df16411a8d131d9140846340b785f03a2429572360f4a19d9bd"
+    },
+    "boats-public-source-tests.log": {
+      "bytes": 179,
+      "sha256": "03628186281b24570062bfe34ff16c5e1d8431f3ea12c4bf7020baa13e0bed7d"
+    },
+    "boats-registry-final-tests.log": {
+      "bytes": 179,
+      "sha256": "ec798204d33ba94665801f53158f9fdeaf50dc4af3870078c5ffbe385acac3cf"
+    },
+    "current-consumer-pin-addendum.json": {
+      "bytes": 1050,
+      "sha256": "ad7ac77ba3e6d5816c46ae5a64e6aa9dbd4b76f074e64b1b54c560caef47554e"
+    },
+    "previous-live-anchor-rows.tsv": {
+      "bytes": 2041,
+      "sha256": "7fd848949036208a95ee75abc510bfd2d1efc4b1e908c743365f9f9454c39ed8"
+    },
+    "previous-live-receipt-rows.tsv": {
+      "bytes": 278,
+      "sha256": "885e1f48be430d4bd049b5ee2c148cb4b21450592326fd846f1c498015b3cfcd"
+    },
+    "previous-remaining-live-anchor-rows.tsv": {
+      "bytes": 1877,
+      "sha256": "12ada3ea0287bb0ad52795477a930d49b43fa65bda0cb2e53777bab3299e3217"
+    },
+    "previous-remaining-live-receipt-rows.tsv": {
+      "bytes": 827,
+      "sha256": "d5f6c3f383c8cb2ae335706c075c60b449ac073fad6f8e7b6c52203e0af4c7d0"
+    },
+    "qualified-consumer-live-pins.json": {
+      "bytes": 2539,
+      "sha256": "72502bf5a6fd86a5ab17cb75bc1cb5bf8c3bdc96c36bc3df361c66e3b512eb0c"
+    },
+    "qualified-live-pin-repair.json": {
+      "bytes": 5723,
+      "sha256": "8c622e24793d4d4cc320549efcc2a0ea22a03fadae4c2d9e251f444850ec49cf"
+    },
+    "r2-existing-relay-preflight.json": {
+      "bytes": 464,
+      "sha256": "23f47824c7dfe2b9703c8d8dfd39912349538df67da78c2e1e6989ba3cc6930d"
+    },
+    "registry-consumer-refresh-tests.log": {
+      "bytes": 99,
+      "sha256": "405c2ad77c59701a915ff680bd5eaf4435b73e024f15c61641bc41f33d2cba08"
+    },
+    "registry-eight-live-pins-independent-review.txt": {
+      "bytes": 11102,
+      "sha256": "34984aeb606dd2dcf09d622fd0060b00485eedbc268267d37ce90c77de3cbec0"
+    },
+    "registry-final-independent-review.txt": {
+      "bytes": 6775,
+      "sha256": "adc1f0390fbd306cdd25619f6e0bb08747e821f0d06b7387fadd3fa50d23d012"
+    },
+    "registry-live-pin-independent-review.txt": {
+      "bytes": 7258,
+      "sha256": "60d0049b1a0ed784628293285a340d3a56964ac17b9245bbd33c2ab2d1a39ede"
+    },
+    "remaining-inherited-live-pin-repair.json": {
+      "bytes": 4484,
+      "sha256": "e642abd2a08388081c046f265a171203b5935441712f4eec799dc2db840ddc6d"
+    },
+    "terminal-945-public-live-receipt.json": {
+      "bytes": 634,
+      "sha256": "58c484f8d2982a45ecff3ebe447c7ddb5d3ba74ef05aecefca9ae091cd30fe4d"
+    },
+    "terminal-945-vps-live-receipt.json": {
+      "bytes": 364,
+      "sha256": "974277d2ac8557cda4128b0e368943055d3ce0ccf652ca62ec9d5bf84cae31ab"
+    },
+    "terminal-boats-feature-copy-manifest.json": {
+      "bytes": 2412,
+      "sha256": "87cd99c094a248b6cdd9bf58e7dc7ccf42a5175b30045b45a896df87128c0fd1"
+    },
+    "tiingo-account-session-correction.json": {
+      "bytes": 1264,
+      "sha256": "dc13f371f889920d0b0bbf9f3ecd7dc096d50aa781fb2f48eacd057ab92c7922"
+    }
+  },
+  "observed_at_utc": "2026-10-11T22:49:03.120300+00:00",
+  "schema": "tiingo_boats_source_evidence_manifest.v1"
+}

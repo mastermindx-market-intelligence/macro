@@ -217,3 +217,32 @@ def test_chairman_attestation_is_distinct_from_proven_live_boats_registry():
     assert raw["status"] == view["status"] == "PROPOSED"
     assert "not_canonical" in view["licensing"]
     assert raw["producer"] == "collectors/tiingo_archive.py::Archive.store_boats_batch"
+
+
+def test_display_callback_sees_only_persisted_raw(lake, monkeypatch):
+    raw = frame("T", "2026-10-09T01:00:01Z")
+    fake_connection(monkeypatch, [[raw]], ["2026-10-09T01:00:01.100Z"])
+    seen = []
+    def observer(kind, payload):
+        if kind == "archived":
+            assert (lake.root / payload["receipt"]["path"]).is_file()
+            assert len(refs(lake)) == 1
+            assert payload["frames"] == (("2026-10-09T01:00:01.100Z", raw),)
+            assert payload["active"] is False
+        seen.append(kind)
+    ing.boats_stream(max_seconds=10, max_messages=1, batch_messages=100,
+                     flush_seconds=2, archive=lake, observer=observer)
+    assert seen == ["connected", "disconnected", "archived", "ended"]
+
+def test_archive_failure_cannot_emit_a_display_batch(lake, monkeypatch):
+    raw = frame("T", "2026-10-09T01:00:01Z")
+    fake_connection(monkeypatch, [[raw]], ["2026-10-09T01:00:01.100Z"])
+    def failed_store(_):
+        raise a.TiingoArchiveError("offline simulated disk failure")
+    monkeypatch.setattr(lake, "store_boats_batch", failed_store)
+    seen = []
+    with pytest.raises(a.TiingoArchiveError, match="disk failure"):
+        ing.boats_stream(max_seconds=10, max_messages=1, batch_messages=100,
+                         flush_seconds=2, archive=lake, observer=lambda k,p:seen.append(k))
+    assert "archived" not in seen
+    assert seen[-1] == "ended"

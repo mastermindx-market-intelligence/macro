@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any, Callable, Iterable, Iterator
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -269,7 +269,8 @@ def boats_subscribe_message(token: str) -> str:
 
 def boats_stream(*, max_seconds: int, max_messages: int,
                  batch_messages: int, flush_seconds: float,
-                 archive: Archive | None = None) -> dict[str, Any]:
+                 archive: Archive | None = None,
+                 observer: Callable[[str, dict[str, Any]], None] | None = None) -> dict[str, Any]:
     if not 1 <= max_seconds <= 3600:
         raise ValueError("a bounded 1-3600s stream is required")
     if not 1 <= max_messages <= 10_000_000:
@@ -291,6 +292,11 @@ def boats_stream(*, max_seconds: int, max_messages: int,
     buffer: list[tuple[str, str]] = []
     buffer_bytes = 0
     last_flush = time.monotonic()
+    stream_active = False
+
+    def notify(kind, payload=None):
+        if observer is not None:
+            observer(kind, payload or {})
 
     def flush() -> None:
         nonlocal buffer_bytes, last_flush
@@ -299,9 +305,13 @@ def boats_stream(*, max_seconds: int, max_messages: int,
         saved = archive.store_boats_batch(buffer)
         counts["segments"] += int(saved["new_raw"])
         counts["bytes"] += saved["raw_bytes"]
+        frames = tuple(buffer)
         buffer.clear()
         buffer_bytes = 0
         last_flush = time.monotonic()
+        # Display observers see only bytes with a successful immutable archive write.
+        notify("archived", {"frames": frames, "receipt": saved,
+                            "connection": counts["connections"], "active": stream_active})
 
     # A short bounded run is not a background daemon. A continuous service
     # requires existing authorized runtime orchestration, independent admission
@@ -319,12 +329,15 @@ def boats_stream(*, max_seconds: int, max_messages: int,
                 counts["connections"] += 1
                 sock.settimeout(3)
                 sock.send(boats_subscribe_message(key))
+                stream_active = True
+                notify("connected", {"connection": counts["connections"]})
                 while (time.monotonic() < end_at
                        and counts["raw_messages"] < max_messages):
                     try:
                         raw = sock.recv()
                     except websocket.WebSocketTimeoutException:
                         flush()
+                        notify("tick")
                         continue
                     if not isinstance(raw, str):
                         continue
@@ -352,19 +365,31 @@ def boats_stream(*, max_seconds: int, max_messages: int,
                             or time.monotonic() - last_flush >= flush_seconds):
                         flush()
             except TiingoArchiveError:
+                stream_active = False
+                notify("error")
                 raise
             except (OSError, websocket.WebSocketException):
                 counts["transport_breaks"] += 1
+                stream_active = False
+                notify("gap")
                 flush()
                 # Explicit gap, bounded retry. No inference of continuity.
                 if time.monotonic() < end_at and attempts < 5:
                     time.sleep(min(2**attempts, 12))
             finally:
+                # Close display eligibility before socket closure/post-close archival.
+                # Persist buffered frames even though they no longer qualify for display.
+                stream_active = False
+                notify("disconnected")
                 if sock is not None:
                     sock.close()
                 flush()
     finally:
-        flush()
+        try:
+            flush()
+        finally:
+            stream_active = False
+            notify("ended")
     return counts
 
 

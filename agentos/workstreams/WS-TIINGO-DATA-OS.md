@@ -32,12 +32,15 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945]
+    pr: [8698, 945, 955]
 next_action: >-
-  Obtain actual BOATS Q/T/B evidence in the live session, reconcile the current
-  served fundamentals restriction and retained independent-review resource gate,
-  and continue the 47,689-candidate history corpus using the same collector and
-  exact accepted catalogue after verifying one active writer and current reserve.
+  Finish current protected Terminal 955 source checks and the incumbent VPS release,
+  using the accepted feature-copy repair with 554 files / 9,141 tests and six EN/ZH browser passes; Terminal 945 is
+  already merged, installed and healthy. Settle/materialize/audit the attended
+  interrupted fourth 1000-request EOD wave: 838 raw responses / 835 new views verified and full archive qualified at 4,386 histories / 8,919,835 bars; settle the active 161-request continuation within the original combined cap.
+  Before real BOATS publication, qualify exact producer source/CI, original runtime
+  controls, sole writer and object/cache replacement. Reconcile the existing
+  account's served fundamentals HTTP 400 discrepancy; the intended Chrome Chris profile is already signed in with BOATS ACTIVE and current quota remaining.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -49,12 +52,15 @@ artifacts:
   - docs/tiingo-evidence/20261011-producer-integrity/
   - docs/tiingo-evidence/20261011-live-qualification/
   - docs/tiingo-evidence/20261011-history-expansion/
+  - docs/tiingo-evidence/20261011-history-wave2/
+  - docs/tiingo-evidence/20261011-history-wave3/
+  - docs/tiingo-evidence/20261011-boats-source/
 landmines:
   - Keep one existing collector, archive writer, provider/runtime owner and source carrier; News PR 8697 is separate.
   - The source archive retains a directory-swap TOCTOU limit; trust one writer and do not rename archive directories concurrently.
   - Full fundamentals activation is Chairman-attested but AMD current-key responses still expose evaluation restrictions; do not infer absent purchase or purchase again.
   - Authentic BOATS controls and historical bars do not prove actual Q/T/B or session coverage.
-  - The current relay publisher and Hub parser label their data as Yahoo; do not inject BOATS under that source label.
+  - Reviewed source admits a complete BOATS-only public projection; installation and old object/cache replacement still need proof. Never inject BOATS under a legacy provider label.
   - Registry PROPOSED and research PIT/identity/availability refusals remain until their incumbent owners admit real production capability.
 do_not_redo:
   - Do not publish the previously blocked untracked CEO handoff by another route.
@@ -138,3 +144,100 @@ by this completed bounded collection. Programme completion still needs full
 served fundamentals access, actual live BOATS events/quality, complete history and
 dated identities, independent consumer review, incumbent runtime admission and
 approved VPS/live browser proof.
+
+New qualification at 2026-10-11T20:38:12.057478Z supersedes earlier corpus counts:
+2,551 nonempty EOD histories / 5,278,835 distinct bars, four empty EOD responses,
+2,565 immutable source receipts, every raw checksum and nonempty projection
+lineage verified. The second additional 1,000-request wave returned 1,000 HTTP
+200 responses / zero failures / 2,127,586 rows / 487,075,814 bytes in 2,657.548
+seconds. Existing materialization returned 999 new / 1,558 existing / two RAW_ONLY
+/ six empty / zero refusals. The exact audit found 999 RAW_RECORDS_CAPTURED and
+one EMPTY_CAPTURED. Current wave-specific files and commands are hash-bound in
+`docs/tiingo-evidence/20261011-history-wave2/`. Source logic remains bddd8da1.
+
+The Chairman explicitly authorized an already-permitted alternative independent
+review after the Fabric diagnosis. Exclusive workspace log reservation worked;
+the installed directory is outside the task write grant, and a log-only override
+would orphan the existing status/result/acceptance path. The failed original
+Fabric operation was not retried or altered. One bounded native reasoning review
+returned PASS for Terminal 945 quote route/tests at 7506ef15; those files remain
+unchanged at dde9b71ee21680c1c38c2c6d86c38c4fc2dc3660. Its report is retained
+on that original Terminal carrier, hash
+57b98c4412837c9447c18d561a2673934d714c97b7cd87c1b96be3b0cf2d0f93.
+This fulfills the bounded source-consumer review; it is not a formal GitHub
+approval, producer/feed review or production acceptance. The adapter grant
+still has its original limitation but no longer blocks this source review.
+
+Terminal 945 is ready and protected native squash auto-merge is armed. At the
+20:50 UTC observation, Quote Hub, unit/typecheck, ingest, PostgreSQL and both
+desktop/serial shards passed on run 38170844161; tablet/mobile and aggregate
+checks remain pending. No merge/deploy or live BOATS provider claim follows.
+The 0032 migration namespace test was repaired against the genuine #946 merge,
+then the #947 owner's reservation file was consumed unchanged; final Terminal
+PR has no migration-source delta and this session executed no SQL.
+
+The completed second wave has no remaining writer. The third attended EOD wave
+started at 2026-10-11T20:46:57.412141Z, excluding 2,555 captured symbols, with
+257.190 GiB free and the same 35 GiB reserve. That wave is still running at this
+checkpoint; its future exit/qualification is not assumed. No second collector,
+recurring runtime or future wake was created. The Tiingo browser has returned to
+Login Required, ordinary autofill was unavailable, and a human sign-in request is
+pending while independent data/release work continues. Do not transfer the
+credential to the VPS or retry the previously refused Passwords access.
+
+
+Current source/release checkpoint, 2026-10-11 22:12 UTC (supersedes dated pending
+945 and third-wave states above): Terminal #945 merged at 20:55:17Z and the existing
+VPS builder settled rc=0 at squash d0973ef6e7521f775801401a345792fc7c4cb3e2.
+Fresh 21:43 UTC VPS/public receipts agree on source, deployment marker and public
+page identity; Terminal/Quote Hub active, HTTP 200/no-store ext API with null
+AMD/AAPL in the closed window. Responsive production desktop/tablet/mobile loaded.
+This completes the provenance prerequisite release, not genuine BOATS delivery.
+Commands and safe receipts are in docs/tiingo-evidence/20261011-boats-source/.
+
+Third history wave settled with 1000 new HTTP 200 captures, zero failures,
+1,938,218 row hints and 440,364,083 uncompressed bytes in 2351.934 seconds.
+Materialization wrote 1000 new views without refusals. Exact audit inspected all
+3565 receipts and verified all 1000 response bodies. The dated full proof at
+21:37:28.879631Z verified 3551 nonempty EOD histories / 7,217,053 distinct bars,
+every raw checksum and nonempty projection lineage, unique market dates and exact
+overlap equality. Physical archive 465,839,324 bytes; free 255.615 GiB, same 35 GiB
+reserve. Reproduction commands, exact plans, old observation clocks and safe hashes
+are in docs/tiingo-evidence/20261011-history-wave3/. A fourth attended wave started
+21:41:55.785799Z on calling head 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde with
+explicit dirty-source/loaded-source hashes and excluded 3555 captured symbols.
+Its original log and plan are in the task's tiingo-phase1 artifact directory;
+settlement and qualification remain pending. Do not start a competing archive writer.
+
+The incumbent BOATS producer/archive observer and whole public allowlist source
+passed independent review and 96 combined strict producer/registry tests. Only the
+two existing extended-quote families now qualify complete BOATS facts as
+PUBLIC_FACT/ANONYMOUS under Chairman's existing license attestation. Unrelated
+families remain unchanged and generic quote delivery stays held. Required current
+LIVE-pin repairs were independently qualified against original/current blobs;
+August census identity and historical data/site evidence remain unchanged.
+
+Terminal #955 starts from the actual #945 squash on its new external-SSD carrier,
+commit 07c777035b132e376b905a793065d1d611cc8918. Its independent review repaired
+three timing/ordering defects and passed; 116 Hub, 48 route/freshness, 13 responsive
+(two existing width skips), three regular-authority and six EN/ZH screenshot cases
+passed. Captures are SOURCE_SYNTHETIC. Hosted run 38178639549 passed Hub, ingest,
+PostgreSQL, CodeQL, full unit tests/typecheck, but the unit job's later copy guard
+rejected one inline bilingual label. The exact red evidence is retained; the same
+copy is now routed through the existing LEX/t helper and its strict local guard
+passed. Current repair CI and protected landing remain pending; do not claim this
+BOATS source is deployed from the earlier #945 receipt.
+
+The same bounded reasoning reviewer is the user-authorized alternative carrier;
+original failed Fabric operations remain untouched. No persistent producer schedule
+was installed. Automatic approval review rejected the earlier combined publisher/
+launchd scheduling change for untested persistent publication/relaunch and overlap
+risks. Source-only application was separately approved and accepted; the original
+persistent effect remains unadmitted. Existing provisioned R2 environment names are
+present at the legitimate Cloudflare R2 origin, with no secrets printed/copied or
+client constructed. The Tiingo page is still Login Required with no password;
+human sign-in remains pending and the refused Passwords access is not retried.
+
+Dated correction, 2026-10-11 around 22:30 UTC: the earlier login blocker was inferred from the wrong Chrome Ryan profile. The intended mastermindx6031 account is already signed in in Chrome Chris; Organization/BOATS are ACTIVE, with 19,620 hourly / 145,592 daily requests and 98.09 GB remaining. No login, purchase, email or token transfer was needed. Current Terminal #955 source 3e8fe8adad84a043a3454c1214bc886c42e872b1 restores global i18n to protected-base bytes and uses the existing feature-copy pattern; 554 Vitest files / 9,141 tests, type, unchanged guard and six EN/ZH browser cases pass. Hosted current-head gates are separate. Wave 4 retained 838 responses before a read timeout, rather than completing all 1,000; materialization wrote 835 new views and refused zero. Full archive qualification is running, with no raw writer.
+
+Dated wave-four qualification, 2026-10-11 22:49 UTC: all 4,403 receipts were checked with exact identity for ambiguous body hashes. Full archive: 4,386 nonempty EOD histories / 8,919,835 bars, 577,610,201 bytes, 254.978 GiB free, reserve 35 GiB. Existing reader refusal remains intact; independent exact-context review PASS. One attended continuation requests 161 previously unattempted paths under the original 1,000-attempt total; BAFE timeout remains unresolved. No complete history or PIT admission is claimed. Terminal #955 current head 3e8fe8ad hosted unit/type, Hub, ingest, PostgreSQL, serial and CodeQL checks passed; four responsive shards remain in progress at the 22:48 observation.

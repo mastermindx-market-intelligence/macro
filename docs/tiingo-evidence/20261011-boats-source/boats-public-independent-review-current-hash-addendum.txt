@@ -1,0 +1,39 @@
+Independent BOATS source review — current-hash addendum — 2026-10-11
+
+Verdict: PASS retained for the bounded integrated source scope at the twenty current hashes below. No actionable defect arose from these documentation corrections. The original HOLD and subsequent repair PASS remain separate, unchanged artifacts.
+
+I inspected the documentation delta directly. Macro's retained offline candidate has the exact previously accepted SHA-256 c52b23bc2ae67f3c6a48cf9b0167bcf93423d95fe2edf5dd10164b653897ce7f. Its complete diff against the current producer changes only the leading module docstring and one sentence in publish_boats_stream's docstring: the latter now says each invocation is bounded rather than claiming a launchd runner owns continuation. No executable statement changes. The revised module description accurately identifies the BOATS-only public projection, private legacy diagnostic, bounded invocation and absence of an installed persistent schedule.
+
+For Terminal's ext-quote route, substituting its previous header into the current bytes reconstructs the exact previously accepted SHA-256 b306ccb71bf01467bb84256c0905ae3d5719887409f9afb373daac827f72aaa5. Thus that delta is confined to the source comment describing the public BOATS-only route, incumbent Hub selector, provenance and expiry behavior. No executable statement changes.
+
+I freshly calculated all sixteen Terminal and four Macro file hashes. The other eighteen files exactly match the preceding PASS report. Its source findings, accepted repairs, producer qualification and acceptance limits therefore continue to apply. The owner now reports typecheck session 43590 settled with rc=0 and an empty terminal-boats-ordering-typecheck.log; this updates the earlier pending status as owner-supplied execution evidence, not a test executed by this reviewer. The previously inspected 116-pass hub and 13-pass/two-skip responsive logs, and supplied 75-pass unchanged producer evidence, retain their stated scope.
+
+This addendum does not independently re-adjudicate the separate live-pin application or change any registry classification. The previously qualified live-pin procedure remains a separate report. Source acceptance is not protected landing, production deployment, genuine BOATS market/browser qualification or whole-programme acceptance. No ops/plist installation, persistent scheduling, publication or runtime effect is authorized; the original combined-action refusal remains controlling for that effect.
+
+Terminal carrier: /Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/tiingo-boats-quotehub-b2b25c10fd296613
+Base: d0973ef6e7521f775801401a345792fc7c4cb3e2
+
+hub/lib/extfeed.js d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277
+hub/lib/quotes.js 744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd
+hub/lib/store.js 0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498
+hub/tests/boatsrelay.test.js c72f71fb45dec108444473e364855ba9b8a8d123aefdf80dca4b123403ed65ed
+terminal/app/api/ext-quote/route.ts bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc
+terminal/app/api/quote/route.ts 289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0
+terminal/components/TerminalShell.tsx 495ae2f1ff45153888bbf04302cf8b99beec0055bf6c72dd6aeed848158ac7f1
+terminal/e2e/responsive.spec.ts ce085c7b21b34ef117edcca3b18051539be52a9eec9db26243af5c5822e036e0
+terminal/e2e/watchlist-ext-percent.spec.ts 4aa3224aef43807d5f090b95c73e646ff160c4589991a6dd033f5e66dc32d991
+terminal/e2e/boats-display.spec.ts 917713f86e383f26dd2abf4ef5b1552bffc19473ba7adfea9b505486e4fbda0b
+terminal/e2e/fixtures/boatsQuote.ts dbd53b7836e9129fc8f29b3ddb0c050bf38e22f7ed158e8dad8e6a6bc82036a2
+terminal/lib/__tests__/extQuoteRoute.test.ts 4787f5686de72a64b9bb42c928330e8e67a862a54cd862ea3a3b36e7f97a99d8
+terminal/lib/__tests__/quoteRouteView.test.ts db26d1572947b02f67a7901f94b1ce70b9ee9b925a159b22f81e5c943e09e19c
+terminal/lib/__tests__/extQuoteFreshness.test.ts 749c682d394ff6bff39df5a868ec4ad62b01e7db09a4d932a57640d8e5bed79b
+terminal/lib/extQuoteFreshness.ts f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76
+terminal/lib/liveCandle.ts 7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d
+
+Macro carrier: /Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009
+HEAD: 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde
+
+scripts/build_ext_quotes.py 9d477b0128b744ed1423dd0135b697eb489f11aff156e3eee4f5e2af3febfc66
+scripts/tiingo_ingest.py ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6
+tests/test_tiingo_boats_display.py cf8b79f1c7ef38a2d8359f85d54d7f6a2531a3cc0f5458c997af10de3ca93185
+tests/test_tiingo_boats_stream_chain.py 0f3162d3ffb5f41100f7431acb5bb11fcb4b13e0cff622337c1c5e87d8bd5a58

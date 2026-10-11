@@ -13,46 +13,49 @@ Actual endpoint activation and data receipt now have bounded proof below. Full
 fundamentals scope, complete backfill, canonical admission and production consumer
 acceptance remain open, distinct from the Chairman's purchase/rights attestation.
 
-## Current truthful states — verified 2026-10-11 19:17 UTC
+## Current truthful states — source checkpoint 2026-10-11 22:49 UTC
 
-The current producer source is `bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb` on
-[Macro PR #8698](https://github.com/mastermindx-market-intelligence/macro/pull/8698).
-The later dated sections retain historical observations and restrictions from prior
-sessions. Their no-data/eleven-failure statements describe those dates; this current
-checkpoint supersedes them for current capability. It does not clear another
-session's refused or unsettled effect, and the previously blocked untracked CEO
-handoff has not been published through another route.
+The accepted producer integrity logic remains bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb
+with successful exact-head hosted CI 38137444247. The active original source carrier
+is Macro PR #8698 at 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde plus the current
+independently accepted BOATS-only source/registry change. Its own hosted checks
+and protected landing remain separate requirements. Dated sections below preserve
+historical observations; the prior blocked untracked CEO handoff is not published.
 
 | Capability | Current state | Actual proof and remaining requirement |
 |---|---|---|
-| Tiingo account/key and quotas | VERIFIED_BOUNDED | Signed-in account key matches the provisioned key; Organization and BOATS active; 20,000 requests/hour, 150,000/day, 100 GB/month |
-| Producer integrity | REPAIRED_SOURCE | Original eleven failures repaired; 431 full-suite passes before final one-case repair, then 122 affected passes; bounded independent reviewer condition fulfilled |
-| Producer hosted CI | GREEN_EXACT_HEAD | [Run 38137444247](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38137444247) completed success at bddd8da1; source/release fences green |
-| Historical EOD ingestion | VERIFIED_BOUNDED | 1,552 nonempty histories, 3,151,249 distinct bars, raw/adjusted/action fields retained, exact hashes and projection lineage verified; 3 additional empty responses recorded |
-| Fundamentals metadata/definitions | VERIFIED_BOUNDED | 20,352 unique permanent IDs (7,812 active, 12,540 inactive), 85 metric definitions; no canonical dated alias admission |
-| Full fundamentals statements/daily | RESTRICTED_CURRENT_RESPONSE | AAPL three-year true/false/daily responses 200; AMD ticker and permanent-ID requests 400 with free/Dow 30/limit error terms; full activated scope not yet served/proven |
-| BOATS historical bars | VERIFIED_BOUNDED | AMD/AAPL HTTP 200, 1,407 bars with explicit volume, all timestamps in the overnight window; no historical tick/book claim |
-| BOATS WebSocket authentication | VERIFIED_CONTROL_ONLY | Actual H/200, I/200 subscription response and ID presence; zero Q/T/B during Sunday daytime; actual market-frame/gap/break qualification remains |
-| L1 research Parquet | VERIFIED_BOUNDED | 1,565 raw receipts inspected/materialized; exact 1,000-request continuation verified, zero refusals; empty controls remain empty |
-| Complete historical corpus / full symbol census | INCOMPLETE | 1,000-response continuation and earlier pilots complete; full US catalogue denominator is 47,689 candidates |
-| Canonical L2 Data OS enrollment | NOT_ADMITTED | Existing identity/rights/availability/quality owner still required; all 24 contracts PROPOSED and PIT eligibility false |
-| Terminal consumer | PREREQUISITE_IMPLEMENTED | [Draft PR #945](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/945), head 7506ef1539c8646e7bf52b65b697a102fd549942, preserves source/basis; actual BOATS Hub provider, independent review, approved VPS release and live browser proof remain |
-| Recurring capture/runtime/publication | NOT_ADMITTED | Attended bounded runs only; no daemon, cron, alternate queue, live publisher or future watcher created |
+| Original producer integrity | REPAIRED_SOURCE | Original eleven failures repaired; accepted full/affected tests and hosted CI at bddd8da1, no waiver |
+| BOATS producer/public boundary | ACCEPTED_SOURCE | Existing archive-first observer, qualified trades, separate clocks, gap/B/shutdown invalidation and exact BOATS-only public allowlists; independent PASS, 96 combined source/registry tests; no installed runtime claim |
+| Historical EOD | VERIFIED_BOUNDED | Dated wave-four partial qualification: 4,386 nonempty histories / 8,919,835 distinct bars; all raw hashes, exact receipt contexts, nonempty lineage, unique dates and exact overlap equality verified |
+| Fundamentals | BOUNDED_WITH_SCOPE_GATE | 20,352 unique permanent IDs / 12,540 inactive / 85 metric definitions; AAPL original/revised/daily 200 and 45 fiscal value differences; current-key AMD ticker/permanent-ID 400 evaluation/Dow 30 restriction unresolved |
+| BOATS bars/authentication | CONTROL_AND_HISTORY_ONLY | Authentic H/200,I/200 and ID presence, historical AMD/AAPL 1,407 minute bars; zero genuine Q/T/B in closed-window capture |
+| Complete history / canonical L2 | INCOMPLETE_NOT_ADMITTED | Exact catalogue 47,689 acquisition candidates; dated security identity and complete history remain open. All 24 contracts PROPOSED and PIT false |
+| Terminal provenance #945 | DEPLOYED_HEALTHY | Merged d0973ef6e7521f775801401a345792fc7c4cb3e2, existing VPS builder rc=0, source/marker/public identity agree, active Hub/Terminal and responsive production pages |
+| BOATS consumer #955 | ACCEPTED_SOURCE_CI_REPAIR | Existing Hub, full-replacement/capture/generation ordering, source eligibility, API allowlist and generic-route exclusion; 116 Hub/48 focused/13 responsive passes and independent PASS; feature-copy repair passes 554 files / 9,141 tests, type, unchanged guard and six EN/ZH browser cases at 3e8fe8ad; protected current-head CI, landing and release pending |
+| Producer runtime/publication | NOT_ADMITTED | Earlier combined publisher/launchd persistent change was auto-review rejected; ops unchanged. Source-only approval does not clear scheduling/installation/publication effects |
+| Current collection | ATTENDED_WAVE4_CONTINUATION | Original timeout and partial proof preserved. One finite continuation attempts the 161 unattempted requests under the same 1,000 combined cap, skipping BAFE; qualification will follow settlement. No unattended wake or retry queue |
 
-Sanitized actual evidence is [the current history expansion](tiingo-evidence/20261011-history-expansion/README.md), with [the earlier live qualification](tiingo-evidence/20261011-live-qualification/README.md) retained.
-The latest 1,000-response continuation downloaded 439,264,113 bytes in 2,596.673
-seconds (~0.385 requests/s). The current verified archive occupies 208,107,760
-bytes and had 272.666 GiB free at qualification. The enforced 35 GiB reserve remains. Other writers also
-consume this volume, so that free-space observation is not a future reservation.
+Safe exact evidence is in `tiingo-evidence/20261011-boats-source/`,
+`tiingo-evidence/20261011-history-wave2/`, `tiingo-evidence/20261011-history-wave3/` and `tiingo-evidence/20261011-history-wave4/`.
+The third wave captured 1,938,218 row hints / 440,364,083 uncompressed bytes in
+2,351.934 seconds. Its audit verified 1,000 exact planned HTTP-200 body hashes.
+The full proof observed 465,839,324 physical archive bytes and 255.615 GiB free,
+with the same 35 GiB reserve; these are dated observations, not future capacity
+reservations against other SSD users. Raw/adjusted/action/vintage distinctions and
+retrospective/PIT refusal boundaries remain. The 33.6-hour / 23.9-GB all-US estimate
+remains an extrapolation, not completed acquisition or current vendor quota credit.
 
-The Chairman clarified that the historical platform blocks belonged to ChatGPT
-Web. This Codex session's actual source/archive writes were separately approved
-and succeeded under its own permission controls. No original refused publication
-was retried. The retained Fabric operations did not launch: consumer operation `tiingo-8698-consumer-contract-20261011-01` failed before launch with
-`no_operator_available`; final review operation
-`tiingo-8698-final-integrity-review-20261011-01` failed before lease/launch with
-`LOG_RESERVATION_FAILED errno=1`. These are not running workers or a basis to
-resubmit, switch carriers or claim independent Terminal review acceptance.
+Earlier signed-in account observations established key equality, Organization and
+BOATS activation plus stated 20,000/hour, 150,000/day and 100-GB/month allocations.
+The intended account is already signed in in the Chrome Chris profile. The Ryan-profile login screen was the wrong session. Current UI reports Organization/BOATS ACTIVE and 19,620 hourly / 145,592 daily requests plus 98.09 GB remaining. No human sign-in is needed; full fundamentals served scope remains a separate actual-key HTTP 400 diagnosis. No purchase, email or
+key rotation occurred. Original failed Fabric IDs retain their actual prelaunch
+state. The user authorized a bounded independent reasoning-review alternative,
+which accepted the source; no failed adapter operation was replayed or altered.
+
+The normal BOATS session begins 2026-10-12T00:00:00Z / Sunday 17:00 PDT / 20:00 ET.
+That calendar fact creates no unattended capture or observer. Production acceptance
+still requires actual market-frame/raw/L1 proof and admitted incumbent
+archive-to-relay-to-Hub-to-API-to-responsive-browser consumption.
 
 ## Dataset families and semantic traps
 
