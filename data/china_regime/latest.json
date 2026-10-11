@@ -225,55 +225,64 @@
     "construction_demand_z": -0.42,
     "cgb_10y": 1.685,
     "cgb_10y2y_slope": 0.417,
-    "cgb_10y_chg_6m": -0.132,
+    "cgb_10y_chg_6m": -0.129,
     "property_etf_drawdown": -29.9,
     "note": "display/context only \u2014 A-shares mean-revert, not a scored signal"
   },
   "market_drivers": {
     "asof": "2026-10-09",
     "window_d": 5,
-    "verdict": "quiet",
-    "verdict_zh": "\u5e73\u9759",
-    "primary": "ai_semis",
-    "primary_label": "AI / semis leadership",
-    "primary_label_zh": "AI/\u534a\u5bfc\u4f53\u9886\u6da8",
-    "direction": "AI/semis unwind \u2014 tech-led de-rating",
-    "direction_zh": "AI/\u534a\u5bfc\u4f53\u56de\u5410 \u2014 \u79d1\u6280\u4e3b\u5bfc\u7684\u56de\u8c03",
+    "verdict": "clear",
+    "verdict_zh": "\u660e\u786e",
+    "primary": "pboc_repricing",
+    "primary_label": "PBoC / rates repricing",
+    "primary_label_zh": "\u592e\u884c/\u5229\u7387\u91cd\u5b9a\u4ef7",
+    "direction": "rates repricing easier \u2014 SHIBOR & CGB yields down, liquidity added",
+    "direction_zh": "\u5229\u7387\u5bbd\u677e\u91cd\u5b9a\u4ef7 \u2014 SHIBOR\u4e0e\u56fd\u503a\u6536\u76ca\u7387\u4e0b\u884c\u3001\u6d41\u52a8\u6027\u6295\u653e",
     "dir_sign": -1,
-    "confidence": "low",
-    "confidence_zh": "\u4f4e",
-    "strength": 0.5,
-    "dominance_ratio": 3.73,
-    "agreement": 1.0,
-    "runner_up": "china_stimulus",
-    "runner_up_label": "Stimulus tape",
-    "runner_up_label_zh": "\u523a\u6fc0\u884c\u60c5",
-    "headline": "No dominant driver \u2014 China cross-asset moves are within their normal weekly range.",
+    "confidence": "medium",
+    "confidence_zh": "\u4e2d",
+    "strength": 0.88,
+    "dominance_ratio": 1.76,
+    "agreement": 0.65,
+    "runner_up": "ai_semis",
+    "runner_up_label": "AI / semis leadership",
+    "runner_up_label_zh": "AI/\u534a\u5bfc\u4f53\u9886\u6da8",
+    "headline": "PBoC / rates repricing \u2014 rates repricing easier \u2014 SHIBOR & CGB yields down, liquidity added. 1y SHIBOR -1.6\u03c3, 3m SHIBOR -1.4\u03c3, 10y CGB yield +0.4\u03c3.",
     "evidence": [
-      "tech RS -0.9\u03c3",
-      "semis RS -0.3\u03c3",
-      "small vs large caps -0.8\u03c3"
+      "1y SHIBOR -1.6\u03c3",
+      "3m SHIBOR -1.4\u03c3",
+      "10y CGB yield +0.4\u03c3"
     ],
     "evidence_legs": [
       {
-        "en": "tech RS",
-        "zh": "\u79d1\u6280\u76f8\u5bf9\u5f3a\u5ea6",
-        "z": -0.9
+        "en": "1y SHIBOR",
+        "zh": "1\u5e74\u671fSHIBOR",
+        "z": -1.6
       },
       {
-        "en": "semis RS",
-        "zh": "\u534a\u5bfc\u4f53\u76f8\u5bf9\u5f3a\u5ea6",
-        "z": -0.3
+        "en": "3m SHIBOR",
+        "zh": "3\u4e2a\u6708SHIBOR",
+        "z": -1.4
       },
       {
-        "en": "small vs large caps",
-        "zh": "\u5c0f\u76d8\u5bf9\u5927\u76d8",
-        "z": -0.8
+        "en": "10y CGB yield",
+        "zh": "10\u5e74\u671f\u56fd\u503a\u6536\u76ca\u7387",
+        "z": 0.4
       }
     ],
-    "invalidation": "Fades if semis RS reverses and the rest of the equity-leadership fingerprint stops confirming.",
-    "invalidation_zh": "\u82e5\u534a\u5bfc\u4f53\u76f8\u5bf9\u5f3a\u5ea6\u53cd\u8f6c\u3001\u4e14\u80a1\u7968\u9886\u6da8\u6307\u7eb9\u5176\u4f59\u817f\u505c\u6b62\u786e\u8ba4\uff0c\u6b64\u5224\u8bfb\u5c06\u6d88\u9000\u3002",
+    "invalidation": "Fades if 1y SHIBOR reverses and the rest of the rates fingerprint stops confirming.",
+    "invalidation_zh": "\u82e51\u5e74\u671fSHIBOR\u53cd\u8f6c\u3001\u4e14\u5229\u7387\u6307\u7eb9\u5176\u4f59\u817f\u505c\u6b62\u786e\u8ba4\uff0c\u6b64\u5224\u8bfb\u5c06\u6d88\u9000\u3002",
     "scores": [
+      {
+        "driver": "pboc_repricing",
+        "label": "PBoC / rates repricing",
+        "label_zh": "\u592e\u884c/\u5229\u7387\u91cd\u5b9a\u4ef7",
+        "family": "rates",
+        "projection": -0.88,
+        "strength": 0.88,
+        "direction": "rates repricing easier \u2014 SHIBOR & CGB yields down, liquidity added"
+      },
       {
         "driver": "ai_semis",
         "label": "AI / semis leadership",
@@ -297,9 +306,9 @@
         "label": "Liquidity impulse",
         "label_zh": "\u6d41\u52a8\u6027\u8109\u51b2",
         "family": "liquidity",
-        "projection": -0.12,
-        "strength": 0.12,
-        "direction": "domestic liquidity draining \u2014 M1/M2 down, overnight dear, small-caps & margin sold"
+        "projection": 0.11,
+        "strength": 0.11,
+        "direction": "domestic liquidity easing \u2014 M1/M2 up, overnight cheap, small-caps & margin bid"
       },
       {
         "driver": "southbound_appetite",
@@ -309,15 +318,6 @@
         "projection": 0.06,
         "strength": 0.06,
         "direction": "mainland risk-on \u2014 southbound buying HK, AH premium narrowing"
-      },
-      {
-        "driver": "pboc_repricing",
-        "label": "PBoC / rates repricing",
-        "label_zh": "\u592e\u884c/\u5229\u7387\u91cd\u5b9a\u4ef7",
-        "family": "rates",
-        "projection": 0.06,
-        "strength": 0.06,
-        "direction": "rates repricing tighter \u2014 SHIBOR & CGB yields up, liquidity drained"
       },
       {
         "driver": "risk_off_washout",
@@ -342,8 +342,8 @@
         "label": "Yuan (CNH) shock",
         "label_zh": "\u4eba\u6c11\u5e01(CNH)\u51b2\u51fb",
         "family": "fx",
-        "projection": 0.01,
-        "strength": 0.01,
+        "projection": 0.02,
+        "strength": 0.02,
         "direction": "yuan weakening \u2014 CNH up, capital-outflow stress, equities pressured"
       }
     ],
@@ -351,8 +351,8 @@
   },
   "conditions": {
     "roro": {
-      "roro": -0.038,
-      "roro_raw": -0.038,
+      "roro": -0.04,
+      "roro_raw": -0.04,
       "roro_state": "neutral",
       "china_roro_copper_gold": 1.709,
       "china_roro_breadth": -0.314,
@@ -360,7 +360,7 @@
       "china_roro_m1_m2": 0.307,
       "china_roro_turnover": -0.851,
       "china_roro_qvix": 1.065,
-      "china_roro_usdcnh": 0.372,
+      "china_roro_usdcnh": 0.353,
       "china_roro_margin": -0.433,
       "china_roro_ah_premium": -1.93,
       "legs": [
@@ -410,7 +410,7 @@
           "key": "usdcnh",
           "name_en": "Offshore yuan (20d)",
           "name_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01\uff0820\u65e5\uff09",
-          "value": 0.372,
+          "value": 0.353,
           "lean": "risk-on"
         },
         {
@@ -2091,7 +2091,7 @@
           -0.152,
           -0.196,
           -0.086,
-          -0.038
+          -0.04
         ]
       },
       "recession": {
@@ -6831,7 +6831,7 @@
           43.7,
           39.2,
           50.6,
-          56.7
+          56.4
         ]
       }
     },
@@ -6839,10 +6839,10 @@
     "note": "display-only conditioning lens \u2014 RORO + uncalibrated recession/drawdown gauges; never feeds china_axes / china_regime / china_playbook"
   },
   "fear_euphoria": {
-    "fe_score": 57,
+    "fe_score": 56,
     "band": "Neutral",
     "band_zh": "\u4e2d\u6027",
-    "roro": -0.038,
+    "roro": -0.04,
     "roro_state": "neutral",
     "legs": [
       {
@@ -6897,8 +6897,8 @@
         "key": "usdcnh",
         "name_en": "Offshore yuan (20d)",
         "name_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01\uff0820\u65e5\uff09",
-        "value": 0.372,
-        "pct": 67,
+        "value": 0.353,
+        "pct": 66,
         "lean": "risk-on"
       },
       {
