@@ -20834,6 +20834,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - lib/__init__.py
       - lib/config.py
+      - lib/nyse_calendar.py
       - lib/dataos/**
       - lib/delisted_symbols.py
       - lib/ticker_aliases.py
