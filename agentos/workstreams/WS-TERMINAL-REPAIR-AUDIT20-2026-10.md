@@ -7,10 +7,10 @@ objective: Review the twenty supplied Terminal repair missions through the admit
 status: active
 blocked_by:
 - PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
-- Phone Replay PR914 mergedcaf/source and exact CI are qualified; last observed canonical remains34d. Actual05:08 storage available8752930816 is1984487424 below retained10GiB reserve. Capacity check is a local pre-effect validator; it is not a platform permission denial. Canonical installation and paid phone proof remain.
+- Phone Replay PR914 mergedcaf/source/exact CI are qualified; canonical remains34d. Approved volume migration resolves root capacity:16667484160 available above retained10GiB. Actual921 guard merge/CI, canonical914+917+921 installation and paid phone proof remain.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
 - Settings PR917 mergedfc76 at08:00:12 from881d; whole head/merge tree equal and exact three required CI38121240817 are SUCCESS. B source/merge obligation complete; never reuse completed917 branch. Canonical install/live Settings proof remain after storage and release gates; no #761 authenticated closure.
-- Chairman approved prepared50GB5USD/month storage, temporarysnapshot capped3USD/month and maintenance now. One terminal-storage volume is created/attached at/mnt/terminal_storage, UUID71dc6155-3f93-4370-a971-b89a6d87a203. Initialwhole-tree copy complete/unsealed; same admitted cutover/recovery operation is ready. No snapshot/servicepause/rootreclaim/canonicalrelease or paidproof yet.
+- Approved storage operation complete: terminal-storage50GB5USD/month UUID71dc6155-3f93-4370-a971-b89a6d87a203 binds live tree at/opt/terminal. Independent recovery/restore rehearsal and17.41GiB snapshot qualified; verified oldrootcopy removed. Fourservices active/defaultguard0/maintenanceflag absent. New921 sourceguard qualified scoped; actual existing CI observer result and canonical release/live proof remain.
 - A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
 program: terminal-charting
 repos:
@@ -27,7 +27,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: "Continue same admitted attended operation: bounded controller review, pause affectedlaunches/drain under existing updaterlock, Terminal+QuoteHub stop/finalcopy/metadata+hardlinks+source stability/recoveryrehearsal, exactlyone actualquiescedsnapshot<=3USD/month, expectedUUID samepath cutover/service+livequalification, admittedverifiedroot-originalreclamation/root>=10GiB, then qualifiednewcanonicalrelease/paidphone+Settingsproof. No duplicatecopy/controller/purchase or alternateprincipal if effectunknown."
+next_action: "Consume only actual existing921 observer material return. After exact qualified merged source/required CI, run guarded canonical new generation including914+917+921, then owning paid phone/Settings proof. Storage operation complete: never retry purchase/snapshot/migration/root reclamation/controller; no unchanged34d/source/paid replay. Independent781/IW2/SQL/rights/887/security/EFFECT_UNKNOWN/A19 holds remain."
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -737,3 +737,22 @@ Latest frontier `current_capability_frontier_20261011T0846` supersedes T0823 onl
 - WholeAudit20 incomplete. Parent continues actual storage/resource/release gates in this same turn; prior independentreview/security/SQL/rights/effect holds are retained.
 
 Evidence: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-approved-volume-initial-copy-parent-consumption-20261011T0846.json` — 1715B / SHA256 `b1063fad3603024318207ec1332f1995b97bb80f2e7387ef53e49d309d60ca4e`.
+
+
+Actual storage completion — 2026-10-11T09:28 frontier
+
+Both storage mounts exact UUID71dc6155-3f93-4370-a971-b89a6d87a203/ext4/baseFSROOT / andbindFSROOT /live-terminal. Clean canonical/live34d; fourservices active/running. Terminal+Quote stopped08:59:18 andstarted09:21:59UTC=22m41s; currentPIDs2756254/2756258. MacroAPI2550552/rsyslog491178 retained. PublicTerminal200/96302B SHA63ca91b4031b6a013dababae280748f614669aa6929bf39dcbbd4bf01500851e asset34d. Storage-health scope only, not914/917installation orpaid behavior.
+
+136598entries/1hardlinkgroup full contents, metadata, xattrs, symlinks and intra-copy hardlinks equal across original/live/independent recovery/restored rehearsal. Source stability and disjoint cross-copy regular inodes verified. Sealed manifest fd82083c5298bab9e467f1634dac8cb1b888b3caa2a76c24b4c5973428b62f0f. Only verified oldroottree removed after actual cutover acceptance. Macro.git/private/otherproject data preserved.
+
+Fixed externalguard rejects wrong root-backed path(rc1 actual09:08); normal jobsguard75 during maintenance; default0 after verifiedrootreclaim. Services BindsTo/After opt-terminal.mount; binddepends onexpectedbaseUUID. Eightaffectedcronlaunches andmanual macro-update/terminal-data entrance guarded; no kill/newjob/manualproducer/catchup. Persistentflag nowabsent/normaladmissionrestored. Actual absent-volume boot fault notexecuted.
+
+Existing compute24USD/month retained; volume50GB5USD/month gives29USDbase/up to32USDwhile approved snapshot retained beforetaxes/otherresources. Actual snapshot17.41GiB atdisplayedrate estimates1.04USD/month withincap. No computeupgrade/wholeVPSshutdown/historicalDB-R2backup replay. Snapshot restoration from the provider image remains unobserved; the independent recovery copy was actually restored and compared.
+
+Parent exact11productionline ops/terminal-data+ops/terminal-build.sh andfocusedregressions read. Defaultguard beforeeffects/no--service; dangling/nonexec failclosed andabsenthost oldbootstrap. Workeractual13PASS/causaloriginal8FAIL3PASS/bash-n/diffcheckPASS retained without rerun. PR921/head55dd1b1ca20edae209fdc66a58732c3453ff136e remains source scope until actual owning CI/merge return. Sole observer45269 belongs to sourceworker; its0B undeliveredartifact is not acceptance. Do not bypass the rejected duplicate manual CI read.
+
+New attended canonical-terminal-volume-release-20261011.py compiled/reviewed SHAbd22d2fed7e558d02a4252c0abfa00beb59a37f0bf96e1a33187229c7e673a84. Fixed guard+exactUUID+volume10GiB beforeeffects; root10GiB/existingupdaterlock/canonicalbuilder retained. Postbuildguarderror now emitsbuilderrc+guardrc beforefailclosed; fourisolatedrecoverycasesPASS/no remoteeffects. Oldwrapper7d460537 andfb1/c968 operations retained/unreplayed.
+
+Consume only actual existing921 observer material return. After exact qualified merged source/required CI, run guarded canonical new generation including914+917+921, then owning paid phone/Settings proof. Storage operation complete: never retry purchase/snapshot/migration/root reclamation/controller; no unchanged34d/source/paid replay. Independent781/IW2/SQL/rights/887/security/EFFECT_UNKNOWN/A19 holds remain.
+
+Detailed actual receipts remain in research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json / current_capability_frontier_20261011T0928. Historical JSON objects retained. The stale frontier pointer0810 is corrected to this actual event; wholeAudit20 remains incomplete.

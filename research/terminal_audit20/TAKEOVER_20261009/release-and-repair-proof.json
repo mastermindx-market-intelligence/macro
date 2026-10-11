@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T0810",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T0928",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -6497,5 +6497,119 @@
       }
     ],
     "retained_boundaries": "914caf/917fc76 source+CI accepted withoutreplay; completedbranchesclosed. Oldfb1/c968 operations not retried/root10GiB unchanged.781reservedreview/IW2cyber/SQL/operator/rights/security/887/effectunknown/A19 holds unchanged. PriorupgradependingquestionSUPERSEDED; currentnewdecision now approved and must not be askedagain."
+  },
+  "current_capability_frontier_20261011T0928": {
+    "observed_at": "2026-10-11T09:27:38.685884+00:00",
+    "supersedes": "current_capability_frontier_20261011T0846",
+    "supersession_scope": "Approved storage migration/snapshot/cutover/live health/root reclamation complete; capacity gap resolved. New921source guard qualified scoped, actual CI/merge/install pending. Prior scopes retained. Also correct stale current-frontier pointer0810, which had not advanced with appended0823/0846.",
+    "whole_original_mission_accepted": false,
+    "operation": "storage-migration-01a10f92-20261011-v1",
+    "actual_storage_completion": {
+      "observed_at": "2026-10-11T09:27:38.685884+00:00",
+      "operation": "storage-migration-01a10f92-20261011-v1",
+      "phase": "storage_migration_complete_release_pending",
+      "last_completed_phase": "storage_migration_complete_release_pending",
+      "state_updated_at": "2026-10-11T09:25:54.445991+00:00",
+      "root_originals_removed": true,
+      "snapshot_restoration_NOT_tested": true,
+      "mounts": {
+        "/mnt/terminal_storage": {
+          "uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+          "fstype": "ext4",
+          "fsroot": "/"
+        },
+        "/opt/terminal": {
+          "uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+          "fstype": "ext4",
+          "fsroot": "/live-terminal"
+        }
+      },
+      "guard_rc": 0,
+      "maintenance_flag": false,
+      "root_original_present": false,
+      "source_head": "34d52545ac04692ab642942972b29b1379a44a08",
+      "source_status": "",
+      "live_marker": "34d52545ac04692ab642942972b29b1379a44a08",
+      "stage_paths": [],
+      "services": {
+        "terminal.service": {
+          "MainPID": "2756254",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "quote-hub.service": {
+          "MainPID": "2756258",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "macro-api.service": {
+          "MainPID": "2550552",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "rsyslog.service": {
+          "MainPID": "491178",
+          "ActiveState": "active",
+          "SubState": "running"
+        }
+      },
+      "guard_sha256": "1a7e39a4188d9dcfd55907e741a1b27850ed65835f4525cc6bc3a48eca122de9",
+      "available_bytes": {
+        "/": 16667484160,
+        "/mnt/terminal_storage": 33895960576
+      }
+    },
+    "copy_recovery": "136598entries/1hardlinkgroup full contents, metadata, xattrs, symlinks and intra-copy hardlinks equal across original/live/independent recovery/restored rehearsal. Source stability and disjoint cross-copy regular inodes verified. Sealed manifest fd82083c5298bab9e467f1634dac8cb1b888b3caa2a76c24b4c5973428b62f0f. Only verified oldroottree removed after actual cutover acceptance. Macro.git/private/otherproject data preserved.",
+    "snapshot": {
+      "name": "audit20-terminal-storage-precutover-20261011",
+      "created_from": "terminal-storage",
+      "region": "SFO3",
+      "count": 1,
+      "displayed_gib": 17.41,
+      "displayed_usd_gib_month": 0.06,
+      "computed_estimate_usd_month": 1.0446,
+      "admitted_cap_usd_month": 3,
+      "initial_0_00_meter_superseded": true,
+      "actual_bill_numeric_id_and_snapshot_restore_unobserved": true
+    },
+    "cost": "Existing compute24USD/month retained; volume50GB5USD/month gives29USDbase/up to32USDwhile approved snapshot retained beforetaxes/otherresources. Actual snapshot17.41GiB atdisplayedrate estimates1.04USD/month withincap. No computeupgrade/wholeVPSshutdown/historicalDB-R2backup replay.",
+    "actual_health": "Both storage mounts exact UUID71dc6155-3f93-4370-a971-b89a6d87a203/ext4/baseFSROOT / andbindFSROOT /live-terminal. Clean canonical/live34d; fourservices active/running. Terminal+Quote stopped08:59:18 andstarted09:21:59UTC=22m41s; currentPIDs2756254/2756258. MacroAPI2550552/rsyslog491178 retained. PublicTerminal200/96302B SHA63ca91b4031b6a013dababae280748f614669aa6929bf39dcbbd4bf01500851e asset34d. Storage-health scope only, not914/917installation orpaid behavior.",
+    "startup_jobs": "Fixed externalguard rejects wrong root-backed path(rc1 actual09:08); normal jobsguard75 during maintenance; default0 after verifiedrootreclaim. Services BindsTo/After opt-terminal.mount; binddepends onexpectedbaseUUID. Eightaffectedcronlaunches andmanual macro-update/terminal-data entrance guarded; no kill/newjob/manualproducer/catchup. Persistentflag nowabsent/normaladmissionrestored. Actual absent-volume boot fault notexecuted.",
+    "source_guard_921": {
+      "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/921",
+      "head": "55dd1b1ca20edae209fdc66a58732c3453ff136e",
+      "tree": "0294a290ecdb609269e5ee6327b7ac7e412c6ecc",
+      "accepted_scope": "Parent exact11productionline ops/terminal-data+ops/terminal-build.sh andfocusedregressions read. Defaultguard beforeeffects/no--service; dangling/nonexec failclosed andabsenthost oldbootstrap. Workeractual13PASS/causaloriginal8FAIL3PASS/bash-n/diffcheckPASS retained without rerun.",
+      "ci_merge_install": "Not qualified. Lastactual38126521144 in_progress/nativeMOGSQUASHarmed. Solechild observer45269; rootcannotaccesschildPTY. ci-watch.json actual0B is undelivered, not CI acceptance. Duplicate manualreadREDUNDANT_POLL exactrequest closed/no alternate parentretry/secondobserver. Canonicalinstall awaitsactualqualifiedmerge; current runtime guard alreadyinstalled by admittedmigration."
+    },
+    "release_preparation": "New attended canonical-terminal-volume-release-20261011.py compiled/reviewed SHAbd22d2fed7e558d02a4252c0abfa00beb59a37f0bf96e1a33187229c7e673a84. Fixed guard+exactUUID+volume10GiB beforeeffects; root10GiB/existingupdaterlock/canonicalbuilder retained. Postbuildguarderror now emitsbuilderrc+guardrc beforefailclosed; fourisolatedrecoverycasesPASS/no remoteeffects. Oldwrapper7d460537 andfb1/c968 operations retained/unreplayed.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-migration-complete-parent-qualification-20261011.json",
+        "bytes": 1595,
+        "sha256": "0b7ac8c8fc44a7a9db42e31974e4c89372d02893ee943190f95dfe597b5afc9a"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-cutover-services-public-parent-qualification-20261011.json",
+        "bytes": 2581,
+        "sha256": "e2f860f75b047c94dd8be54f48563a328e0b09e9b6e9d4be2b16872232602e93"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-quiesced-copy-snapshot-parent-consumption-20261011.json",
+        "bytes": 2050,
+        "sha256": "08b4e554fe0b84ec9c3363be4806d9f59249ad7ab993e03a386ea25ca9f2ef67"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-snapshot-metering-parent-qualification-20261011.json",
+        "bytes": 581,
+        "sha256": "990e02d77cec7f1a4f888c2014d59d16aea4a422b1042bd74609775070e5d318"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-guard-921-parent-source-qualification-20261011.json",
+        "bytes": 898,
+        "sha256": "a2ba7f7193d0cbe7b3673cd7a5d4f2e0f1c8cad6c52fadd882c46f2b20006edf"
+      }
+    ],
+    "next_action": "Consume only actual existing921 observer material return. After exact qualified merged source/required CI, run guarded canonical new generation including914+917+921, then owning paid phone/Settings proof. Storage operation complete: never retry purchase/snapshot/migration/root reclamation/controller; no unchanged34d/source/paid replay. Independent781/IW2/SQL/rights/887/security/EFFECT_UNKNOWN/A19 holds remain."
   }
 }
