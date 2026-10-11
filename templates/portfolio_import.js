@@ -75,8 +75,25 @@
     } catch (e) { return 'unknown'; }
   }
 
+  // Exact stored declaration, never a unit guessed from a ticker or a new price.
+  function currencyCode(value) {
+    if (typeof value !== 'string' || value === 'XXX' || value === 'XTS') return null;
+    try { return Intl.supportedValuesOf('currency').indexOf(value) >= 0 ? value : null; }
+    catch (e) { return null; }
+  }
+  function entryCurrency(row) {
+    var unit = currencyCode(row.entry_currency), basis = row.entry_currency_basis;
+    if (!unit || !basis || typeof basis !== 'object' || Array.isArray(basis) ||
+        Object.keys(basis).length !== 2 || !own(basis, 'ticker') || !own(basis, 'price') ||
+        basis.ticker !== row.ticker) return null;
+    var price = row.entry_price;
+    if (price === null) return basis.price === null ? unit : null;
+    return typeof price === 'number' && isFinite(price) &&
+      typeof basis.price === 'number' && isFinite(basis.price) && basis.price === price ? unit : null;
+  }
+
   function semantic(row) {
-    return {
+    var out = {
       id: row.id,
       ticker: row.ticker,
       shares: row.shares == null ? null : Number(row.shares),
@@ -85,11 +102,18 @@
       notes: row.notes == null || row.notes === '' ? null : String(row.notes),
       status: row.status === 'closed' ? 'closed' : 'open'
     };
+    if (own(row, 'entry_currency') || own(row, 'entry_currency_basis')) {
+      var unit = entryCurrency(row);
+      out.entry_currency = unit;
+      out.entry_currency_basis = unit ? { ticker: row.ticker, price: row.entry_price } : null;
+    }
+    return out;
   }
 
   function semanticKey(row, includeId) {
     var s = semantic(row);
-    var out = [s.ticker, s.shares, s.entry_price, s.entry_date, s.notes, s.status];
+    var out = [s.ticker, s.shares, s.entry_price, s.entry_date, s.notes, s.status,
+               s.entry_currency || null, s.entry_currency_basis || null];
     if (includeId) out.unshift(s.id);
     return JSON.stringify(out);
   }
@@ -220,6 +244,10 @@
       if (row.status !== 'open' || (row.notes !== null && row.notes !== undefined && row.notes !== '')) {
         return { ok: false, code: 'unsupported_semantics', index: i };
       }
+      if ((row.entry_currency != null && !entryCurrency(row)) ||
+          (row.entry_currency == null && row.entry_currency_basis != null)) {
+        return { ok: false, code: 'invalid_entry_currency_receipt', index: i };
+      }
       if (own(row, 'user_id')) return { ok: false, code: 'caller_owner_forbidden', index: i };
     }
     return { ok: true, code: null };
@@ -238,6 +266,8 @@
     validate: validate,
     fingerprint: fingerprint,
     semantic: semantic,
+    currencyCode: currencyCode,
+    entryCurrency: entryCurrency,
     sameSemantic: sameSemantic,
     isUuid: isUuid,
     isRealDate: isRealDate,

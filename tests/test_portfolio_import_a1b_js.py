@@ -557,7 +557,7 @@ def test_uuid_fold_preserves_two_exact_duplicate_lots_and_is_idempotent():
 def test_page_wires_pure_contract_before_store_and_ui_after_portfolio():
     page = (ROOT / "templates" / "watchlist.html.j2").read_text(encoding="utf-8")
     assert 'id="pf_import"' in page and 'id="dlg-import"' in page
-    assert 'src="watchstore.js?v=11"' in page and 'src="portfolio.js?v=10"' in page
+    assert 'src="watchstore.js?v=12"' in page and 'src="portfolio.js?v=12"' in page
     assert 'src="portfolio_import_ui.js?v=2"' in page
     assert page.index('src="portfolio_import.js') < page.index('src="watchstore.js')
     assert page.index('src="portfolio.js') < page.index('src="portfolio_import_ui.js')
@@ -655,3 +655,99 @@ def test_a1b_badge_refresh_follows_authoritative_rows_and_keeps_shipping_pairs()
     assert "refreshModeCounts: refreshModeCounts" in watchlist
     assert (ROOT / "site" / "watchlist.js").read_bytes() == (ROOT / "templates" / "watchlist.js").read_bytes()
     assert (ROOT / "site" / "portfolio.js").read_bytes() == (ROOT / "templates" / "portfolio.js").read_bytes()
+
+
+@needs_node
+def test_a09_import_semantics_keep_units_and_compare_receipts():
+    out = _node('''
+      var known={id:%s,ticker:'AAPL',shares:2,entry_price:100,entry_date:null,notes:null,status:'open',
+        entry_currency:'HKD',entry_currency_basis:{ticker:'AAPL',price:100}};
+      var other=Object.assign({},known,{entry_currency:'USD'});
+      var stale=Object.assign({},known,{entry_currency_basis:{ticker:'AAPL',price:99}});
+      OUT({known:PortfolioImport.semantic(known),same:PortfolioImport.sameSemantic(known,other),
+        stale:PortfolioImport.validate([stale])});
+    ''' % json.dumps(IDS[0]))
+    assert out['known']['entry_currency'] == 'HKD'
+    assert out['known']['entry_currency_basis'] == {'ticker':'AAPL','price':100}
+    assert out['same'] is False
+    assert out['stale']['ok'] is False
+
+
+@needs_node
+def test_a09_unit_only_local_write_is_not_a_false_noop():
+    out = _node('''
+      var row={id:%s,ticker:'AAPL',shares:2,entry_price:100,entry_date:null,notes:null,status:'open',
+        entry_currency:'USD',entry_currency_basis:{ticker:'AAPL',price:100}};
+      WS.pfWrite([row]); __sets=[];
+      WS.pfWrite([Object.assign({},row,{entry_currency:'HKD'})]);
+      OUT({writes:__sets.length,rows:WS.pfRead().rows});
+    ''' % json.dumps(IDS[0]), store=True)
+    assert out['writes'] == 1
+    assert out['rows'][0]['entry_currency'] == 'HKD'
+
+
+@needs_node
+def test_a09_old_local_writer_preserves_unrelated_edit_but_never_resurrects_unit():
+    out = _node('''
+      var row={id:%s,ticker:'AAPL',shares:2,entry_price:100,entry_date:null,notes:null,status:'open',
+        entry_currency:'HKD',entry_currency_basis:{ticker:'AAPL',price:100}};
+      WS.pfWrite([row]);
+      WS.portfolio.upsert(Object.assign({},row,{notes:'changed',entry_currency:undefined,entry_currency_basis:undefined}))
+      .then(function(kept){
+        return WS.portfolio.upsert({id:row.id,ticker:'AAPL',shares:2,entry_price:99,status:'open'})
+        .then(function(changed){
+          return WS.portfolio.upsert({id:row.id,ticker:'AAPL',shares:2,entry_price:100,status:'open'})
+          .then(function(back){OUT({kept:kept,changed:changed,back:back});});
+        });
+      });
+    ''' % json.dumps(IDS[0]), store=True)
+    assert out['kept']['entry_currency'] == 'HKD'
+    assert out['changed']['entry_currency'] is None
+    assert out['back']['entry_currency'] is None
+
+
+@needs_node
+def test_a09_cloud_import_keeps_explicit_unit_receipt():
+    lot = {**LOCAL_BATCH[0], 'shares':2, 'entry_price':100,
+           'entry_currency':'HKD','entry_currency_basis':{'ticker':'AAPL','price':100}}
+    out = _cloud('ok', batch=[lot])
+    assert out['result']['ok'] is True
+    assert out['calls'][0][0]['entry_currency'] == 'HKD'
+    assert out['calls'][0][0]['entry_currency_basis'] == lot['entry_currency_basis']
+
+
+@needs_node
+def test_a09_dropped_cloud_unit_receipt_cannot_be_saved():
+    lot = {**LOCAL_BATCH[0], 'shares':2, 'entry_price':100,
+           'entry_currency':'HKD','entry_currency_basis':{'ticker':'AAPL','price':100}}
+    helper = CLOUD_HELPER.replace('state=state.concat(payload);',
+       "if(mode==='currency_drop') payload=payload.map(function(r){var p=Object.assign({},r);delete p.entry_currency;delete p.entry_currency_basis;return p;}); state=state.concat(payload);")
+    out = _node(helper + '\nrunCloud("currency_drop",[],%s).then(OUT);' % json.dumps([lot]), store=True)
+    assert out['result']['ok'] is False
+    assert out['result']['state'] != 'saved'
+    assert len(out['calls']) == 1
+
+
+@needs_node
+def test_a09_existing_uuid_with_different_unit_is_a_no_effect_conflict():
+    lot = {**LOCAL_BATCH[0], 'shares':2, 'entry_price':100,
+           'entry_currency':'HKD','entry_currency_basis':{'ticker':'AAPL','price':100}}
+    initial = {**lot, 'user_id':'owner-a', 'entry_currency':'USD'}
+    out = _cloud('ok', initial=[initial], batch=[lot])
+    assert out['result']['ok'] is False
+    assert out['calls'] == []
+    assert out['state'][0]['entry_currency'] == 'USD'
+
+
+@needs_node
+def test_a09_non_import_page_preserves_same_exact_receipt():
+    out = _node("""
+      delete window.PortfolioImport;
+      var row={id:%s,ticker:'AAPL',shares:2,entry_price:100,entry_date:null,notes:null,status:'open',
+        entry_currency:'HKD',entry_currency_basis:{ticker:'AAPL',price:100}};
+      WS.pfWrite([row]);
+      WS.portfolio.upsert({id:row.id,ticker:'AAPL',shares:2,entry_price:100,notes:'only note',status:'open'})
+      .then(function(kept){OUT(kept);});
+    """ % json.dumps(IDS[0]), store=True)
+    assert out['entry_currency'] == 'HKD'
+    assert out['entry_currency_basis'] == {'ticker':'AAPL','price':100}

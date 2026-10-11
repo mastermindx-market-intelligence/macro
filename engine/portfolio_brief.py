@@ -50,6 +50,9 @@ Public surface:
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+import math
+
+from engine.portfolio_money import native_entry_currency
 
 from engine.portfolio_changes import (CURSOR_DISCLOSURE, compose_since_section,
                                       snapshot_state)
@@ -63,6 +66,8 @@ SCHEMA = "portfolio_brief.v2"
 _MODE_LABELS = {
     "positions": {"en": "by cost basis", "zh": "按成本权重"},
     "equal": {"en": "equal-weighted", "zh": "等权"},
+    "unavailable": {"en": "cost weights unavailable — entry units are missing, incompatible or outside the supported numeric range",
+                    "zh": "成本权重不可用 — 入场币种缺失、不兼容或超出支持的数值范围"},
 }
 
 # ── population-mode labels (bilingual) — WHICH names (A8) ────────────────────
@@ -121,13 +126,17 @@ def _normalize_holdings(holdings: list[dict]) -> tuple[list[str], dict[str, floa
     shares*entry_price, summed on duplicate tickers, renormalized to 1. Else "equal":
     every unique ticker gets 1/n. Tickers uppercased; blanks dropped; first-seen order
     preserved. Position rows with missing/non-positive fields contribute 0 cost in
-    positions mode (they still count as held names — an equal share of 0 cost is 0,
-    which is honest: a name with no cost basis carries no cost-basis weight).
+    positions mode (they still count as held names). Every positive-cost lot must
+    carry a valid exact ticker/price unit receipt, and the WHOLE eligible cohort
+    must use one finite native unit. Otherwise weights are unavailable, including
+    when an incompatible lot lacks desk coverage; no known subset is normalized.
     """
     order: list[str] = []
     seen: set[str] = set()
     cost: dict[str, float] = {}
     any_positions = False
+    cohort_currency: str | None = None
+    cohort_unavailable = False
 
     for row in holdings or []:
         if not isinstance(row, dict):
@@ -149,13 +158,24 @@ def _normalize_holdings(holdings: list[dict]) -> tuple[list[str], dict[str, floa
             sh = ep = None
         if sh is not None and ep is not None and sh > 0 and ep > 0:
             any_positions = True
-            cost[t] += sh * ep
+            amount = sh * ep
+            currency = native_entry_currency(row)
+            # Qualification precedes coverage/exclusion. An unknown or mixed lot
+            # cannot vanish and silently renormalize the remaining position book.
+            if (not math.isfinite(amount) or amount <= 0 or not currency
+                    or (cohort_currency is not None and currency != cohort_currency)):
+                cohort_unavailable = True
+            if currency is not None:
+                cohort_currency = currency
+            cost[t] += amount
 
     if not order:
         return [], {}, "equal"
 
     if any_positions:
         total = sum(cost.values())
+        if cohort_unavailable or not math.isfinite(total):
+            return order, {}, "unavailable"
         if total > 0:
             weights = {t: cost[t] / total for t in order}
             return order, weights, "positions"
@@ -934,7 +954,7 @@ def compose_brief(ctx: dict, holdings: list[dict], today: str,
     # Full brief.
     sections: list[dict] = []
     for builder in (
-        lambda: _exposure_section(ctx, covered, weights, population),
+        lambda: _exposure_section(ctx, covered, weights, population) if mode != "unavailable" else None,
         lambda: _lanes_section(ctx, covered, weights, population),
         lambda: _signals_section(ctx, covered),
         lambda: _regime_section(ctx, covered, weights),

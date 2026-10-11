@@ -73,6 +73,8 @@
       mixedAbstain: 'Weights not shown — mix of sized and unsized positions.',
       mixedBasisAbstain: 'Weights not shown — mix of live-priced and at-cost positions.',
       unresolvedBasisAbstain: 'Weights not shown — a position has no resolvable price.',
+      moneyUnitAbstain: 'Weights not shown — monetary units are missing or incompatible.',
+      moneyRangeAbstain: 'Weights not shown — amounts are outside the supported numeric range.',
       singlePositionBook: 'One position in this book — a relationship read needs at least two.',
       costWeighted: 'Weighted by entry cost — live prices are not available for these positions.',
       onePosSay: 'This book is one position',
@@ -126,6 +128,8 @@
       mixedAbstain: '未显示权重 —— 部分持仓有仓位大小，部分没有。',
       mixedBasisAbstain: '未显示权重 —— 部分按现价，部分按成本价。',
       unresolvedBasisAbstain: '未显示权重 —— 有一笔持仓没有可用价格。',
+      moneyUnitAbstain: '未显示权重 —— 金额币种缺失或不兼容。',
+      moneyRangeAbstain: '未显示权重 —— 金额超出支持的数值范围。',
       singlePositionBook: '这本账簿只有一笔持仓——关系读数需要至少两笔。',
       costWeighted: '按成本价加权 —— 这些持仓暂无实时价格。',
       onePosSay: '这本账簿只有一笔持仓',
@@ -214,7 +218,7 @@
      quiet, no weighting-law claim, the existing B2 fallback untouched. */
   function refreshSnapshot() {
     var ps = PS();
-    if (!ps) { snapshot = null; return null; }
+    if (!ps || typeof ps.computeRowMoney !== 'function') { snapshot = null; return null; }
     var effWrite = writeState;
     if (effWrite === 'clean' && readState.authority === 'cloud' &&
         (readState.state === 'degraded' || readState.state === 'error')) {
@@ -225,7 +229,7 @@
       authority: readState.authority,
       readState: readState.state,
       writeState: effWrite,
-      priceOf: priceOf,
+      priceOf: moneyPriceOf,
       bookOf: marketOf,
       lastGoodAt: readState.last_good_at,
       warning: readState.warning
@@ -324,19 +328,22 @@
     var pc = priceCache[t];
     return (pc && isNum(pc.price)) ? pc.price : null;
   }
-  /* {value, atCost} for a row — shares×price, else shares×entry ("at cost").
-     null value when the row carries no shares (a watch-only holding). */
-  function rowValue(r) {
-    var sh = num(r.shares), px = priceOf(r.ticker), entry = num(r.entry_price);
-    if (sh == null || sh <= 0) return { value: null, atCost: false };
-    if (px != null && px > 0) return { value: sh * px, atCost: false };
-    if (entry != null && entry > 0) return { value: sh * entry, atCost: true };
-    return { value: null, atCost: false };
+  // Currency follows the SAME cached observation as its price; an absent field
+  // stays unknown. Raw scalar priceOf remains the display/percentage interface.
+  function moneyPriceOf(t) {
+    var pc = priceCache[t];
+    return pc && isNum(pc.price) ? {price:pc.price,currency:pc.currency} : null;
   }
-  function fmtMoney(v, book) {
-    var meta = bookMeta(book);
-    var ccy = meta ? meta.ccy : '$';
-    return (ccy || '') + group(Math.round(v));
+
+  // Raw prices remain readable. Money and since-entry comparisons require the
+  // one qualifier; a split deploy without it keeps these figures unavailable.
+  function rowValue(r) {
+    var ps = PS();
+    return ps && ps.computeRowMoney ? ps.computeRowMoney(r, moneyPriceOf(r.ticker))
+      : {value:null,atCost:false,currency:null,since_pct:null};
+  }
+  function fmtMoney(v, currency) {
+    return currency + ' ' + group(Math.round(v));
   }
 
   // ---- factor weight wiring (FX-corruption guard) --------------------------
@@ -370,7 +377,8 @@
        never activated for it at all. computeWeighting's `all_unsized_equal` state is
        what names that case; everything else keeps the original real-value math. */
     var ps = PS();
-    var wgt = ps ? ps.computeWeighting(modeled, priceOf) : null;
+    var wgt = ps && typeof ps.computeRowMoney === 'function'
+      ? ps.computeWeighting(modeled, moneyPriceOf) : null;
     if (wgt && wgt.state === 'all_unsized_equal') {
       modeled.forEach(function (r) { w[r.ticker] = 1; });
     } else if (wgt && wgt.complete !== true) {
@@ -390,31 +398,14 @@
       window.FX.setAutoWeights({});
       return;
     } else if (wgt && wgt.complete === true) {
-      modeled.forEach(function (r) {
-        var t = r.ticker;
-        var sh = num(r.shares), px = priceOf(t);
-        if (sh != null && sh > 0 && px != null && px > 0) w[t] = sh * px;
-      });
+      // The snapshot already qualified the whole chosen native-money cohort.
+      // Recomputing from scalar prices would lose units, cost basis and duplicate lots.
+      w = Object.assign({},wgt.weights);
     } else {
-      /* F5 (Sol post-review, MAJOR): PS-absent (`wgt === null`, split-deploy
-         window) used to silently DROP any row that was not both sized and live-
-         priced from `w` — the weights that DID make it in still summed to 100%
-         of THEMSELVES, presented as if they were the whole book: a fabricated
-         distribution, the same class of defect §12/S3 exist to forbid. Mirrors
-         renderBookRead's own B2 `allCurrent` condition: real per-row weights are
-         pushed ONLY when EVERY open modeled row is sized AND live-priced;
-         anything else pushes the honest-empty `{}` (no claim) rather than a
-         partial view of who is actually weighted. */
-      var allCurrent = modeled.length > 0 && modeled.every(function (r) {
-        var sh = num(r.shares), px = priceOf(r.ticker);
-        return sh != null && sh > 0 && px != null && px > 0;
-      });
-      if (allCurrent) {
-        modeled.forEach(function (r) { w[r.ticker] = num(r.shares) * priceOf(r.ticker); });
-      } else {
-        window.FX.setAutoWeights({});
-        return;
-      }
+      // Without the qualifier there is no monetary-unit proof. Keep the factor
+      // engine on its honest empty auto path, never a silent Watchlist fallback.
+      window.FX.setAutoWeights({});
+      return;
     }
     var keys = Object.keys(w);
     /* W2 seeded `FX.update(keys)` here before announcing, because `FX.setAutoWeights`
@@ -545,14 +536,13 @@
     // the demoted columns, restated in full
     out += '<div class="drw">';
     out += '<div><span class="k">' + te('Day', '当日') + '</span>' + WS().dayCell() + '</div>';
-    var entryP = num(r.entry_price), cur = priceOf(t);
+    var since = v.since_pct;
     out += '<div><span class="k">' + te('Since entry', '持有以来') + '</span>' +
-      (entryP != null && entryP !== 0 && cur != null
-        ? '<span class="fig ' + (cur >= entryP ? 'pos' : 'neg') + '">' +
-          ((cur - entryP) / entryP * 100 >= 0 ? '+' : '') +
-          ((cur - entryP) / entryP * 100).toFixed(1) + '%</span>'
-        : WS().dash('No entry price saved for this position, so there is nothing to measure from.',
-                    '这笔持仓没有保存买入价，因此没有基准可比。')) + '</div>';
+      (since != null
+        ? '<span class="fig ' + (since >= 0 ? 'pos' : 'neg') + '">' +
+          (since >= 0 ? '+' : '') + since.toFixed(1) + '%</span>'
+        : WS().dash('Comparable entry and current prices with known matching currencies are unavailable.',
+                    '缺少已知且币种一致的买入价和现价，暂不可比。')) + '</div>';
     var share = RISK_SHARES[t];
     out += '<div><span class="k">' + te('Risk share', '风险占比') + '</span>' +
       (isNum(share)
@@ -561,7 +551,7 @@
                     '不在风险模型覆盖范围内，因此没有占比可给。')) + '</div>';
     if (v.value != null) {
       out += '<div><span class="k">' + te('Position value', '仓位市值') + '</span><span class="fig">' +
-        esc(fmtMoney(v.value, b)) + '</span>' +
+        esc(fmtMoney(v.value, v.currency)) + '</span>' +
         (v.atCost ? ' <span class="mut">' + te('at cost', '按成本') + '</span>' : '') + '</div>';
     }
     out += '</div>';
@@ -614,7 +604,7 @@
       var wPct = null;
       if (v.value != null) {
         var bt = bookValueTotals(openRows())[b];
-        if (bt && bt.value > 0) wPct = v.value / bt.value * 100;
+        if (bt && bt.complete && bt.value > 0) wPct = v.value / bt.value * 100;
       }
       var sections = '';
       try {
@@ -650,14 +640,23 @@
   var RISK_COVERED = {};   // ticker -> true when the factor model covers it
 
   function bookValueTotals(list) {
-    // {book -> {value, priced}} over the given rows; per book, never across books
+    // Qualify the WHOLE book before totals/row weights. A market partition alone
+    // proves no currency, and an unresolved lot cannot disappear from its sum.
     var out = {};
     list.forEach(function (r) {
       var b = marketOf(r.ticker), v = rowValue(r);
-      var e = out[b] || (out[b] = { value: 0, priced: 0, n: 0, atCost: false });
+      var e = out[b] || (out[b] = {value:0,priced:0,n:0,atCost:false,
+                                  currency:null,basis:null,complete:true});
       e.n++;
-      if (v.value != null) { e.value += v.value; if (v.atCost) e.atCost = true; else e.priced++; }
+      if (v.value == null || !v.currency) { e.complete = false; return; }
+      var basis = v.atCost ? 'cost' : 'current';
+      if ((e.currency && e.currency !== v.currency) || (e.basis && e.basis !== basis)) e.complete = false;
+      e.currency = v.currency; e.basis = basis;
+      e.value += v.value;
+      if (v.atCost) e.atCost = true; else e.priced++;
+      if (!isFinite(e.value)) e.complete = false;
     });
+    Object.keys(out).forEach(function (b) { if (!out[b].complete) out[b].value = null; });
     return out;
   }
 
@@ -681,24 +680,23 @@
 
     var valHtml;
     if (v.value != null) {
-      valHtml = '<span class="fig">' + esc(fmtMoney(v.value, b)) + '</span>';
-      if (tot && tot.value > 0) {
+      valHtml = '<span class="fig">' + esc(fmtMoney(v.value, v.currency)) + '</span>';
+      if (tot && tot.complete && tot.value > 0) {
         valHtml += '<span class="w fig">' + (v.value / tot.value * 100).toFixed(1) + '%' +
           (v.atCost ? ' ' + te('at cost', '按成本') : '') + '</span>';
       }
     } else {
-      valHtml = WS().dash('This position has no share count saved, so there is no value to show.',
-                          '这笔持仓没有保存股数，因此没有市值可显示。');
+      valHtml = WS().dash('Value unavailable — share count, a price with a known currency, or a supported numeric amount is missing.',
+                          '缺少股数、已知币种的价格，或金额超出支持范围，暂不显示价值。');
     }
 
-    var entryP = num(r.entry_price), cur = priceOf(t), sinceHtml;
-    if (entryP != null && entryP !== 0 && cur != null) {
-      var pct = (cur - entryP) / entryP * 100;
+    var pct = v.since_pct, sinceHtml;
+    if (pct != null) {
       sinceHtml = '<span class="fig ' + (pct >= 0 ? 'pos' : 'neg') + '">' +
         (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%</span>';
     } else {
-      sinceHtml = WS().dash('No entry price saved for this position, so there is nothing to measure from.',
-                            '这笔持仓没有保存买入价，因此没有基准可比。');
+      sinceHtml = WS().dash('Comparable entry and current prices with known matching currencies are unavailable.',
+                            '缺少已知且币种一致的买入价和现价，暂不可比。');
     }
 
     /* Risk share on ONE shared scale: the bar is full at 30% of book risk and the
@@ -825,13 +823,17 @@
       if (sortKey === 'sym') r = (a.ticker || '').localeCompare(b.ticker || '');
       else if (sortKey === 'risk') r = (RISK_SHARES[a.ticker] || 0) - (RISK_SHARES[b.ticker] || 0);
       else if (sortKey === 'since') r = sincePct(a) - sincePct(b);
-      else r = (rowValue(a).value || 0) - (rowValue(b).value || 0);
+      else {
+        var va = rowValue(a), vb = rowValue(b);
+        r = String(va.currency || '').localeCompare(String(vb.currency || ''));
+        if (!r && va.currency && va.currency === vb.currency) r = (va.value || 0) - (vb.value || 0);
+      }
       return (r || (a.ticker || '').localeCompare(b.ticker || '')) * d;
     });
   }
   function sincePct(r) {
-    var e = num(r.entry_price), c = priceOf(r.ticker);
-    return (e != null && e !== 0 && c != null) ? (c - e) / e * 100 : -1e9;
+    var pct = rowValue(r).since_pct;
+    return pct != null ? pct : -1e9;
   }
 
   function renderTable() {
@@ -918,7 +920,7 @@
        it shows no money bars rather than a fabricated one. */
     var ps = PS();
     var W;
-    if (ps) {
+    if (ps && typeof ps.computeRowMoney === 'function') {
       /* F5 (Sol post-review, MAJOR — real snapshot consumption): a single-currency
          book (the common case, `byBook` has exactly one key) reads the ONE
          snapshot's own `weighting` field directly — computeSnapshot() computes it
@@ -933,43 +935,19 @@
       var singleBookSnap = Object.keys(byBook).length === 1 ? refreshSnapshot() : null;
       W = (singleBookSnap && singleBookSnap.weighting)
         ? singleBookSnap.weighting
-        : ps.computeWeighting(leadRows, priceOf);
+        : ps.computeWeighting(leadRows, moneyPriceOf);
     } else {
-      /* B2 (review — split-deploy falsehood): portfolio_state.js is a NEW paired
-         script; the .j2 markup that references it goes live within minutes, but
-         `site/watchlist.html` itself re-bakes far slower (measured "over an hour" —
-         see watchlist.js's own LEGACY RENDER PATH comment). In that window `ps` is
-         null on every page — not just a mixed book. The old shape here (`!W ||
-         W.complete !== true`) printed the ABSTAIN copy for every book whenever PS was
-         merely absent, including a fully sized, fully live-priced one — a false
-         "weights not shown" over a book that had a perfectly good answer. PS's
-         ABSENCE must never make a weighting-law claim: only the one case computable
-         without it (every row sized AND live-priced) gets real numbers, with no
-         basis label; anything else is a silent minimal state — no abstain copy, no
-         equal-assumption label, no claim this module is not ready to make. */
-      var allCurrent = leadRows.length > 0 && leadRows.every(function (r) {
-        var sh = num(r.shares), px = priceOf(r.ticker);
-        return sh != null && sh > 0 && px != null && px > 0;
-      });
-      if (!allCurrent) {
-        if (meta) meta.innerHTML = '<span>' + te(open.length + (open.length === 1 ? ' position' : ' positions'),
-                                                   open.length + ' 只持仓') + '</span>';
-        say.innerHTML = te('This book holds ' + open.length + (open.length === 1 ? ' position.' : ' positions.'),
-                            '这本账簿共有 ' + open.length + ' 笔持仓。');
-        if (because) because.innerHTML = '';
-        if (stance) stance.innerHTML = '';
-        if (cov) cov.innerHTML = '';
-        if (WS().seam) WS().seam(el('ws_seam'), null);
-        return;
-      }
-      var psSum = 0, psVal = {};
-      leadRows.forEach(function (r) { var v = num(r.shares) * priceOf(r.ticker); psVal[r.ticker] = v; psSum += v; });
-      var psWeights = {};
-      leadRows.forEach(function (r) {
-        psWeights[r.ticker] = psSum > 0 ? (psVal[r.ticker] / psSum * 100) : (100 / leadRows.length);
-      });
-      W = { state: 'all_sized_current', weights: psWeights, basis: 'current_value',
-            complete: true, reason: null };
+      // During a split deploy, keep a minimal population read until the single
+      // monetary qualifier is available. Raw scalar prices cannot prove units.
+      if (meta) meta.innerHTML = '<span>' + te(open.length + ' positions',
+                                                open.length + ' 只持仓') + '</span>';
+      say.innerHTML = te('This book holds ' + open.length + ' positions.',
+                          '这本账簿共有 ' + open.length + ' 笔持仓。');
+      if (because) because.innerHTML = '';
+      if (stance) stance.innerHTML = '';
+      if (cov) cov.innerHTML = '';
+      if (WS().seam) WS().seam(el('ws_seam'), null);
+      return;
     }
     if (!W || W.complete !== true) {
       if (meta) meta.innerHTML = '<span>' + te(open.length + ' positions', open.length + ' 只持仓') + '</span>';
@@ -980,6 +958,8 @@
       var abstainMsg = T.en.mixedAbstain, abstainMsgZh = T.zh.mixedAbstain;
       if (W && W.reason === 'mixed_price_basis') { abstainMsg = T.en.mixedBasisAbstain; abstainMsgZh = T.zh.mixedBasisAbstain; }
       else if (W && W.reason === 'unresolved_basis') { abstainMsg = T.en.unresolvedBasisAbstain; abstainMsgZh = T.zh.unresolvedBasisAbstain; }
+      else if (W && (W.reason === 'currency_unknown' || W.reason === 'currency_mismatch')) { abstainMsg = T.en.moneyUnitAbstain; abstainMsgZh = T.zh.moneyUnitAbstain; }
+      else if (W && W.reason === 'amount_overflow') { abstainMsg = T.en.moneyRangeAbstain; abstainMsgZh = T.zh.moneyRangeAbstain; }
       /* A 1-US + 1-HK all-sized book (core audience) reaches this block via the
          lead-book restriction: leadRows.length===1 → 'insufficient'/'single_position'.
          The generic mixed-sizing sentence is FALSE for it — every position carries a
@@ -993,12 +973,14 @@
       return;
     }
 
-    var items = leadRows.map(function (r) {
+    // Weights already aggregate lots by name. Render each name once so a
+    // repeated lot cannot contribute the full name weight a second time.
+    var items = Object.keys(W.weights).map(function (ticker) {
       return {
-        sym: r.ticker,
-        money: (W.weights[r.ticker] != null) ? W.weights[r.ticker] : 0,
-        risk: RISK_COVERED[r.ticker] && isNum(RISK_SHARES[r.ticker])
-                ? Math.abs(RISK_SHARES[r.ticker]) * 100 : null,
+        sym: ticker,
+        money: W.weights[ticker],
+        risk: RISK_COVERED[ticker] && isNum(RISK_SHARES[ticker])
+                ? Math.abs(RISK_SHARES[ticker]) * 100 : null,
         role: ''
       };
     }).sort(function (a, b) { return b.money - a.money; });
@@ -1018,7 +1000,7 @@
       var parts = ['<span>' + te(open.length + (open.length === 1 ? ' position' : ' positions'),
                                  open.length + ' 只持仓') + '</span>'];
       if (leadTot > 0) {
-        parts.push('<span class="sep">·</span><span class="fig">' + esc(fmtMoney(leadTot, lead)) + '</span>' +
+        parts.push('<span class="sep">·</span><span class="fig">' + esc(fmtMoney(leadTot, totals[lead].currency)) + '</span>' +
           '<span>' + te('tracked', '在管') + '</span>');
       }
       // the weighting basis is disclosed whenever it is not the unlabeled default
@@ -1051,10 +1033,11 @@
       var topShare = 0, topN = Math.max(1, Math.min(3, Math.ceil(items.length / 4)));
       items.slice(0, topN).forEach(function (x) { topShare += x.money; });
       say.innerHTML = te(
-        'Most of this book — <span class="fig">' + Math.round(topShare) + '%</span> of the money — sits in <span class="fig">' +
-          topN + '</span> ' + (topN === 1 ? 'position' : 'positions') + '.',
-        '这本账簿的大部分 —— <span class="fig">' + Math.round(topShare) + '%</span> 的资金 —— 压在 <span class="fig">' +
-          topN + '</span> 只持仓上。');
+        'The largest <span class="fig">' + topN + '</span> ' + (topN === 1 ? 'name accounts' : 'names account') +
+          ' for <span class="fig">' + Math.round(topShare) + '%</span> of this book\'s ' +
+          (W.state === 'all_unsized_equal' ? 'relative weight' : 'money') + '.',
+        '权重最大的 <span class="fig">' + topN + '</span> 只标的，占这本账簿' +
+          (W.state === 'all_unsized_equal' ? '相对权重' : '资金') + '的 <span class="fig">' + Math.round(topShare) + '%</span>。');
     }
     if (because) because.innerHTML = (BOOK && BOOK.because) ? BOOK.because : te(
       'The biggest weights are <b>' + esc(items.slice(0, 3).map(function (x) { return x.sym; }).join(' · ')) + '</b>.',
@@ -1364,7 +1347,7 @@
     window.SD.loadTickers(tickers, function (t, j) {
       jsonCache[t] = j;
       priceCache[t] = (j && j.tech && j.tech.price != null)
-        ? { price: j.tech.price, asof: j.asof || '' } : null;
+        ? { currency: j.tech.currency, price: j.tech.price, asof: j.asof || '' } : null;
       if (j && window.WRI && window.WRI.noteJson) { try { window.WRI.noteJson(t, j); } catch (e) {} }
       repaintRow(t);
     }).then(function () {

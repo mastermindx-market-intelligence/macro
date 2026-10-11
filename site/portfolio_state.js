@@ -63,14 +63,51 @@
     basis: 'none', complete: false, reason: 'no_positions'
   };
 
-  /* priceOf: fn(ticker) -> current price number, or null/undefined when unresolved.
+  /* priceOf: fn(ticker) -> {price|last,currency}, legacy number, or null.
+     A legacy scalar has no monetary unit; raw-price compatibility is preserved.
 
      PURE over `openRows` — this function never sums across currencies itself. The
-     caller is responsible for handing it a set that already shares one currency (a
-     `marketOf`/book partition, e.g. market_books.js's `marketOf`, or the modeled-only
-     subset pushFxWeights restricts to). computeSnapshot below performs that partition
-     check at the whole-portfolio level and reports `cross_currency_partitioned`
-     instead of calling this function across markets. */
+     caller may partition markets, but that partition does not prove price units.
+     Each chosen current observation must carry its own explicit currency, and
+     each chosen entry price its exact stored receipt. The WHOLE monetary cohort
+     must qualify before weights; unknown lots never disappear or renormalize. */
+  function currencyCode(value) {
+    if (typeof value !== 'string' || value === 'XXX' || value === 'XTS') return null;
+    try { return Intl.supportedValuesOf('currency').indexOf(value) >= 0 ? value : null; }
+    catch (e) { return null; }
+  }
+  function costCurrency(row) {
+    var currency = currencyCode(row.entry_currency), basis = row.entry_currency_basis;
+    if (!currency || !basis || typeof basis !== 'object' || Array.isArray(basis) ||
+        Object.keys(basis).length !== 2 || !Object.prototype.hasOwnProperty.call(basis,'ticker') ||
+        !Object.prototype.hasOwnProperty.call(basis,'price') || basis.ticker !== row.ticker) return null;
+    return typeof row.entry_price === 'number' && isFinite(row.entry_price) &&
+      typeof basis.price === 'number' && isFinite(basis.price) && basis.price === row.entry_price ? currency : null;
+  }
+  function currentObservation(value) {
+    if (value && typeof value === 'object') {
+      var raw = value.price !== undefined ? value.price : value.last;
+      return {price:num(raw),currency:currencyCode(value.currency)};
+    }
+    // Legacy scalar callbacks still supply raw prices, but no money unit.
+    return {price:num(value),currency:null};
+  }
+  function computeRowMoney(row, quote) {
+    row = row || {};
+    var current = currentObservation(quote), entry = num(row.entry_price);
+    var entryUnit = costCurrency(row), shares = num(row.shares);
+    var atCost = !(current.price != null && current.price > 0);
+    var price = atCost ? entry : current.price;
+    var unit = atCost ? entryUnit : current.currency;
+    var value = shares != null && shares > 0 && price != null && price > 0 && unit
+      ? shares * price : null;
+    if (value != null && (!isFinite(value) || value <= 0)) value = null;
+    var since = current.currency && current.currency === entryUnit &&
+      current.price != null && entry != null && entry !== 0
+        ? (current.price - entry) / entry * 100 : null;
+    if (since != null && !isFinite(since)) since = null;
+    return {value:value,atCost:atCost,currency:unit,since_pct:since};
+  }
   function computeWeighting(openRows, priceOf) {
     var rows = (openRows || []).filter(function (r) { return r && r.ticker; });
     if (rows.length < 2) {
@@ -99,7 +136,11 @@
     }
 
     if (unsized.length === rows.length) {
-      var eq = 100 / rows.length;
+      // The downstream model is keyed by name. Repeated unsized lots do not
+      // manufacture a larger assumption for the same name.
+      var names = {};
+      rows.forEach(function (r) { names[r.ticker] = true; });
+      var eq = 100 / Object.keys(names).length;
       var eqWeights = {};
       rows.forEach(function (r) { eqWeights[r.ticker] = eq; });
       return {
@@ -108,13 +149,13 @@
       };
     }
 
-    // every row is sized: partition by which basis actually resolves for it
+    // Select each complete observation ONCE, retaining its price/unit together.
     var current = [], costOnly = [], noBasis = [];
     rows.forEach(function (r) {
-      var px = priceOf ? num(priceOf(r.ticker)) : null;
+      var observation = currentObservation(priceOf ? priceOf(r.ticker) : null);
       var entry = num(r.entry_price);
-      if (px != null && px > 0) current.push(r);
-      else if (entry != null && entry > 0) costOnly.push(r);
+      if (observation.price != null && observation.price > 0) current.push({row:r,observation:observation});
+      else if (entry != null && entry > 0) costOnly.push({row:r,observation:{price:entry,currency:costCurrency(r)}});
       else noBasis.push(r);
     });
 
@@ -136,16 +177,25 @@
 
     var allCurrent = current.length === rows.length;
     var basisRows = allCurrent ? current : costOnly;
-    var sum = 0;
-    var raw = basisRows.map(function (r) {
-      var sh = num(r.shares);
-      var px = allCurrent ? num(priceOf(r.ticker)) : num(r.entry_price);
-      var v = sh * px;
-      sum += v;
-      return { t: r.ticker, v: v };
+    var sum = 0, currency = null, reason = null;
+    var raw = basisRows.map(function (item) {
+      var value = num(item.row.shares) * item.observation.price;
+      var unit = item.observation.currency;
+      if (!isFinite(value) || value <= 0) reason = 'amount_overflow';
+      else if (!unit && reason !== 'amount_overflow') reason = 'currency_unknown';
+      else if (currency && unit && unit !== currency && !reason) reason = 'currency_mismatch';
+      if (unit) currency = unit;
+      sum += value;
+      return { t:item.row.ticker,v:value };
     });
+    if (!isFinite(sum)) reason = 'amount_overflow';
+    if (reason) return {
+      state:'monetary_basis_abstain',eligible:eligible,excluded:[],weights:{},
+      basis:'none',complete:false,reason:reason
+    };
     var weights = {};
-    raw.forEach(function (x) { weights[x.t] = sum > 0 ? (x.v / sum * 100) : (100 / raw.length); });
+    raw.forEach(function (x) { weights[x.t] = (weights[x.t] || 0) + x.v / sum * 100; });
+
     return {
       state: allCurrent ? 'all_sized_current' : 'all_sized_cost',
       eligible: eligible, excluded: [], weights: weights,
@@ -221,6 +271,7 @@
   var API = {
     computeSnapshot: computeSnapshot,
     computeWeighting: computeWeighting,
+    computeRowMoney: computeRowMoney,
     openRowsOf: openRowsOf,
     closedRowsOf: closedRowsOf,
     populationOf: populationOf

@@ -1803,14 +1803,16 @@ _PORTFOLIO_CTX_PATH = "site/data/portfolio_ctx.json"
 def _holdings_fingerprint(holdings: list[dict], population: str) -> str:
     """Stable short digest of what the loader returned, for the response cache key.
 
-    Covers the population AND the rows (ticker/shares/entry_price), so any change that
+    Covers the population AND the rows (ticker/shares/entry_price/unit/receipt), so any change that
     could alter a composed sentence changes the key. Hashed rather than stored raw: the
     cache key lives in a process-wide dict, and a book is user data — a digest keeps the
     holdings out of a structure that outlives the request.
     """
     payload = json.dumps(
         [population] + sorted(
-            (str(r.get("ticker") or ""), str(r.get("shares")), str(r.get("entry_price")))
+            (str(r.get("ticker") or ""), str(r.get("shares")), str(r.get("entry_price")),
+             str(r.get("entry_currency")),
+             json.dumps(r.get("entry_currency_basis"), sort_keys=True, separators=(",", ":")))
             for r in holdings if isinstance(r, dict)),
         separators=(",", ":"), sort_keys=True)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
@@ -1865,14 +1867,16 @@ def _portfolio_load_holdings(uid: str) -> tuple[list[dict], str]:
     rows: list[dict] = []
     pos_rows = _sb_get(
         f"portfolio_positions?user_id=eq.{quid}&status=eq.open"
-        f"&select=ticker,shares,entry_price")
+        f"&select=ticker,shares,entry_price,entry_currency,entry_currency_basis")
     if pos_rows is None:
         # The positions query did not answer. We cannot say the user has no positions.
         return [], "unspecified"
     for r in pos_rows:
         if isinstance(r, dict) and r.get("ticker"):
             rows.append({"ticker": r.get("ticker"), "shares": r.get("shares"),
-                         "entry_price": r.get("entry_price")})
+                         "entry_price": r.get("entry_price"),
+                         "entry_currency": r.get("entry_currency"),
+                         "entry_currency_basis": r.get("entry_currency_basis")})
     if rows:
         return rows, "positions"
 

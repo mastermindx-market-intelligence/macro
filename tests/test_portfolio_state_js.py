@@ -63,7 +63,7 @@ def test_all_unsized_gets_equal_relative_weights_explicitly_labeled():
 @needs_node
 def test_all_sized_and_current_priced_gets_current_value_weights():
     out = _run(
-        "OUT(PS.computeWeighting(ROWS, function(t){ return t === 'AAPL' ? 100 : 200; }));",
+        "OUT(PS.computeWeighting(ROWS, function(t){ return {price:t === 'AAPL' ? 100 : 200,currency:'USD'}; }));",
         {"ROWS": [{"ticker": "AAPL", "shares": 10}, {"ticker": "MSFT", "shares": 5}]},
     )
     assert out["state"] == "all_sized_current"
@@ -78,8 +78,10 @@ def test_all_sized_and_current_priced_gets_current_value_weights():
 def test_all_sized_but_no_live_price_gets_entry_cost_weights_labeled():
     out = _run(
         "OUT(PS.computeWeighting(ROWS, function(){ return null; }));",
-        {"ROWS": [{"ticker": "AAPL", "shares": 10, "entry_price": 50},
-                  {"ticker": "MSFT", "shares": 5, "entry_price": 40}]},
+        {"ROWS": [{"ticker": "AAPL", "shares": 10, "entry_price": 50,
+                   "entry_currency": "USD", "entry_currency_basis": {"ticker": "AAPL", "price": 50}},
+                  {"ticker": "MSFT", "shares": 5, "entry_price": 40,
+                   "entry_currency": "USD", "entry_currency_basis": {"ticker": "MSFT", "price": 40}}]},
     )
     assert out["state"] == "all_sized_cost"
     assert out["basis"] == "entry_cost"
@@ -212,7 +214,7 @@ def test_cross_currency_partitions_before_weighting_never_a_blended_map():
 @needs_node
 def test_single_currency_with_bookOf_still_computes_real_weights():
     out = _run(
-        "OUT(PS.computeSnapshot({rows: ROWS, authority: 'cloud', priceOf: function(){return 100;}, "
+        "OUT(PS.computeSnapshot({rows: ROWS, authority: 'cloud', priceOf: function(){return {price:100,currency:'USD'};}, "
         "bookOf: function () { return 'us'; }}).weighting);",
         {"ROWS": [{"ticker": "AAPL", "shares": 10, "status": "open"},
                   {"ticker": "MSFT", "shares": 10, "status": "open"}]},
@@ -235,3 +237,95 @@ def test_snapshot_never_mutates_between_calls():
         {"ROWS": [{"ticker": "AAPL", "status": "open"}]},
     )
     assert out["b"] == "one"
+
+
+# A09 money authority: these are fictional declarations, never ticker defaults.
+@needs_node
+@pytest.mark.parametrize('quotes', [
+    {'AAPL':100, 'MSFT':100},
+    {'AAPL':{'price':100,'currency':'USD'}, 'MSFT':{'price':100,'currency':'HKD'}},
+    {'AAPL':{'price':100,'currency':'USD'}, 'MSFT':{'price':100}},
+    {'AAPL':{'price':1e308,'currency':'USD'}, 'MSFT':{'price':1e308,'currency':'USD'}},
+])
+def test_a09_unknown_mixed_or_overflow_current_money_has_no_weights(quotes):
+    out = _run('OUT(PS.computeWeighting(ROWS,function(t){return QUOTES[t];}));',
+        {'ROWS':[{'ticker':'AAPL','shares':1},{'ticker':'MSFT','shares':1}], 'QUOTES':quotes})
+    assert out['complete'] is False
+    assert out['weights'] == {}
+    assert set(out['eligible']) == {'AAPL','MSFT'}
+    assert out['reason'] in {'currency_unknown','currency_mismatch','amount_overflow'}
+
+
+@needs_node
+def test_a09_stale_cost_receipt_cannot_renormalize_the_other_lot():
+    rows = [{'ticker':t,'shares':1,'entry_price':100,'entry_currency':'HKD',
+             'entry_currency_basis':{'ticker':t,'price':100 if t=='AAPL' else 99}}
+            for t in ['AAPL','MSFT']]
+    out = _run('OUT(PS.computeWeighting(ROWS,function(){return null;}));', {'ROWS':rows})
+    assert out['complete'] is False and out['weights'] == {}
+    assert out['reason'] == 'currency_unknown'
+
+
+@needs_node
+def test_a09_current_observation_is_chosen_once_per_lot():
+    out = _run('''var calls=0; var w=PS.computeWeighting(ROWS,function(t){calls++;
+      return {price:t==='AAPL'?100:200,currency:'USD'};}); OUT({w:w,calls:calls});''',
+      {'ROWS':[{'ticker':'AAPL','shares':2},{'ticker':'MSFT','shares':1}]})
+    assert out['w']['complete'] is True
+    assert out['w']['weights'] == {'AAPL':50,'MSFT':50}
+    assert out['calls'] == 2
+
+
+@needs_node
+def test_a09_same_unit_cost_controls_and_duplicate_lots_conserve_whole_weight():
+    rows = [{'ticker':t,'shares':sh,'entry_price':100,'entry_currency':'HKD',
+             'entry_currency_basis':{'ticker':t,'price':100}}
+            for t,sh in [('AAPL',1),('AAPL',2),('MSFT',1)]]
+    out = _run('OUT(PS.computeWeighting(ROWS,function(){return null;}));', {'ROWS':rows})
+    assert out['complete'] is True
+    assert out['weights'] == {'AAPL':75,'MSFT':25}
+    assert sum(out['weights'].values()) == 100
+
+
+@needs_node
+def test_a09_positive_lot_amount_underflow_abstains_without_nan_weights():
+    out = _run("OUT(PS.computeWeighting(ROWS,function(){return {price:1e-200,currency:'USD'};}));",
+        {'ROWS':[{'ticker':'AAPL','shares':1e-200},{'ticker':'MSFT','shares':1e-200}]})
+    assert out['complete'] is False and out['weights'] == {}
+    assert out['reason'] == 'amount_overflow'
+
+
+@needs_node
+@pytest.mark.parametrize('currency,entry_currency,price,basis_price,want_value,want_pct', [
+    ('USD','USD',120,100,240,20), ('HKD','USD',120,100,240,None),
+    (None,'USD',120,100,None,None), ('USD',None,120,100,240,None),
+    ('USD','USD',120,99,240,None), ('GBp','GBP',120,100,None,None),
+    (None,'HKD',None,100,200,None), (None,'HKD',None,99,None,None),
+])
+def test_a09_row_money_keeps_explicit_same_observation_and_entry_receipt(
+        currency,entry_currency,price,basis_price,want_value,want_pct):
+    row={'ticker':'AAPL','shares':2,'entry_price':100,'entry_currency':entry_currency,
+         'entry_currency_basis':{'ticker':'AAPL','price':basis_price}}
+    out=_run('OUT(PS.computeRowMoney(ROW,QUOTE));',
+             {'ROW':row,'QUOTE':{'price':price,'currency':currency} if price is not None else None})
+    assert out['value'] == want_value
+    if want_pct is None: assert out['since_pct'] is None
+    else: assert out['since_pct'] == pytest.approx(want_pct)
+    if want_value is not None: assert out['currency'] == (currency if price is not None else entry_currency)
+
+
+@needs_node
+@pytest.mark.parametrize('shares,price',[ (1e308,1e308), (1e-200,1e-200) ])
+def test_a09_row_money_numeric_range_never_renders_infinite_or_false_zero(shares,price):
+    out=_run('OUT(PS.computeRowMoney(ROW,QUOTE));',
+        {'ROW':{'ticker':'AAPL','shares':shares},'QUOTE':{'price':price,'currency':'USD'}})
+    assert out['value'] is None
+
+
+@needs_node
+def test_a09_duplicate_unsized_names_keep_one_equal_assumption_per_name():
+    out=_run('OUT(PS.computeWeighting(ROWS,function(){return null;}));',
+             {'ROWS':[{'ticker':'AAPL'},{'ticker':'AAPL'},{'ticker':'MSFT'}]})
+    assert out['state'] == 'all_unsized_equal'
+    assert out['weights'] == {'AAPL':50,'MSFT':50}
+    assert sum(out['weights'].values()) == 100
