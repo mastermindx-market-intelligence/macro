@@ -12,7 +12,7 @@ The additive, path-disjoint candidate `engine/tp2_private_ruler_view.py` exposes
 
 ## Truthful private states and distinctions
 
-If a valid TP-B observation and its separately available historical calibration agree on `ticker`, RTH `session`, source snapshot SHA, original as-of and split basis/segment, the result is `PRIVATE_TPB_RESEARCH_CONTEXT_ONLY` with:
+If a valid TP-B observation and its separately available historical calibration agree on `ticker`, RTH `session`, source snapshot SHA, original as-of and split basis/segment, the result is `PRIVATE_TPB_RESEARCH_CONTEXT_ONLY`. The private reader also checks the RTH timestamp is **09:30 America/New_York on the claimed session date**, including DST (without certifying holiday/close eligibility), and refuses single print/cluster notionals greater than the sampled off-exchange total. It enforces bounded exact fixed-decimal tokens and rank/minute range rather than trusting a forged derived row. Eligible output includes:
 - distinct observed largest **single print**, largest **same-level/time-window cluster**, and **day total**, plus sample counts and absolute $100k/$500k/$1m tiers;
 - distinct `SINGLE_PRINT` / `SAME_LEVEL_CLUSTER` / `DAILY_TOTAL` observed-sample rank states (not all-time claims);
 - the TP-B source's **exact-minute-index cumulative** historical baseline with N, median/MAD and nullable robust z;

@@ -219,6 +219,27 @@ def test_future_calibration_before_source_refused():
                                view_asof_ns=golden["evaluation_ns"]+1)
 
 
+def test_private_reader_rejects_relabelled_rth_dates_and_wrong_source_clock():
+    observation, golden = originals()
+    mislabeled = dict(observation, session="2026-10-09:RTH")
+    with pytest.raises(TP2PrivateViewRefusal, match="RTH.*clock"):
+        build_private_tp2_view(observation=mislabeled, view_asof_ns=golden["evaluation_ns"]+1)
+    wrong_open = dict(observation, start_ns=observation["start_ns"]+60_000_000_000)
+    with pytest.raises(TP2PrivateViewRefusal, match="RTH.*clock"):
+        build_private_tp2_view(observation=wrong_open, view_asof_ns=golden["evaluation_ns"]+1)
+
+
+def test_private_reader_rejects_print_or_cluster_greater_than_source_total():
+    observation, golden = originals()
+    for key, amount in (
+        ("largest_individual_print_usd", "999999"),
+        ("largest_cluster_usd", "999999"),
+    ):
+        bad = dict(observation, **{key: amount})
+        with pytest.raises(TP2PrivateViewRefusal, match="source total"):
+            build_private_tp2_view(observation=bad, view_asof_ns=golden["evaluation_ns"]+1)
+
+
 def test_unsafe_source_exponent_and_oversized_ranks_are_not_promoted():
     observation, golden = originals()
     forged = dict(observation, largest_individual_print_usd="1e99999999")

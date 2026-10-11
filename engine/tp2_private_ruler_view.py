@@ -11,7 +11,9 @@ retains source-vintage, original availability and explicitly null live layers.
 from __future__ import annotations
 
 import re
+from datetime import date, datetime, time
 from decimal import Decimal, InvalidOperation
+from zoneinfo import ZoneInfo
 
 SCHEMA = "darkpool.tp2_private_offexchange_view/v0"
 OBS_SCHEMA = "equity.tp_b.historical_ruler/v0"
@@ -49,6 +51,23 @@ def _hex(value, field):
     if type(value) is not str or _SHA.fullmatch(value) is None:
         raise TP2PrivateViewRefusal(f"{field}: original digest missing")
     return value
+
+
+def _rth_open_ns(session):
+    """Cross-check source session against 09:30 New York (DST aware).
+
+    Not a holiday/early-close certificate; the source/calendar owner must
+    still attest original market existence and correct session boundaries.
+    """
+    if type(session) is not str or _SESSION.fullmatch(session) is None:
+        return None
+    try:
+        day = date.fromisoformat(session[:10])
+    except ValueError:
+        return None
+    opening = datetime.combine(
+        day, time(9, 30), tzinfo=ZoneInfo("America/New_York"))
+    return int(opening.timestamp()) * 1_000_000_000
 
 
 def _bounded_decimal(value, field, *, allow_zero=False):
@@ -144,6 +163,8 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
     _hex(observation.get("source_manifest_sha256"), "source manifest")
     _hex(observation.get("source_generation_sha256"), "source generation")
     start = _clock(observation.get("start_ns"), "source.start_ns")
+    if start != _rth_open_ns(session):
+        raise TP2PrivateViewRefusal("source: RTH session/clock mismatch")
     end = _clock(observation.get("end_ns"), "source.end_ns")
     asof = _clock(observation.get("asof_ns"), "source.asof_ns")
     if end <= start or end-start > 390*60_000_000_000 or asof < start:
@@ -168,6 +189,11 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
     largest_cluster = observation.get("largest_cluster_usd")
     if largest_cluster is not None:
         _bounded_decimal(largest_cluster, "largest_cluster_usd")
+    total_usd = Decimal(observation["oe_source_notional_usd"])
+    if (Decimal(observation["largest_individual_print_usd"]) > total_usd
+            or (largest_cluster is not None
+                and Decimal(largest_cluster) > total_usd)):
+        raise TP2PrivateViewRefusal("observation: source total smaller than print/cluster")
     tiers = observation.get("absolute_block_tier_counts")
     if not isinstance(tiers, dict) or set(tiers) != set(_BLOCKS):
         raise TP2PrivateViewRefusal("observation: invalid block-tier source")
