@@ -33,3 +33,14 @@ Before fix: 2 failed (foreign package imported; shrink-only guard names new insp
 python3 -m pytest -q tests/test_press_staging_inspection.py tests/test_check_script_import_pinning.py
 After fix: 16 passed, 1 inherited temp-cleanup warning in 48.43s, exit 0.
 MM_DATA_GUARD remained enabled; no delta on settled-source green run.
+
+Consolidated earnings dossier integration — 2026-10-11
+Base main: f5dce71faf5b7f87cfaefb7a12380869422baa1d; integrated prior PR head bf6e3957f9c71c15a338fa723f8cfb367056e001 and contract b7aeed5d83c28e29b1e8cb02072f13fa210c2943.
+Corrected canonical host after the real Press link validator rejected the initial apex binding.
+python3 -m pytest tests/test_earnings_dossier_link_contract.py tests/test_earnings_story_packets.py tests/test_earnings_canonical_story.py tests/test_earnings_story_promotion.py tests/test_earnings_story_press_admission.py tests/test_earnings_story_press_ingress.py tests/test_earnings_story_press_stage_workflow.py tests/test_earnings_story_press_workflow.py tests/test_earnings_public_wire.py tests/test_refresh_earnings_story_packets.py tests/test_publish_earnings_story_packets_r2.py tests/test_press_validators.py -q --tb=short --basetemp=../mmx-dossier-integrated-fixtures
+248 passed in 19.85s; exit 0.
+CI plan: 276 legacy jobs validated; exit 0.
+Free content: 69 byte-identical files, no orphans, 3 hand-authored exemptions; exit 0.
+Press properties: no drift across 2 publications; exit 0.
+Agent OS: 1623 records, 0 errors, 140 advisory warnings; no warning names this operation record. Exit 0.
+git diff --check: exit 0.

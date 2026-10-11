@@ -36,7 +36,7 @@ def validate_dossier_link(binding: object, *, ticker: str) -> dict[str, Any]:
     if (
         binding.get("schema") != DOSSIER_LINK_SCHEMA
         or binding.get("ticker") != symbol
-        or binding.get("url") != f"https://mastermind-x.com/stocks/{symbol}.html"
+        or binding.get("url") != f"https://www.mastermind-x.com/stocks/{symbol}.html"
     ):
         raise ContractError("earnings dossier link is not the canonical event ticker destination")
     for field in ("source_commit", "source_blob_oid"):
@@ -77,7 +77,7 @@ def build_dossier_link(ticker: str, *, root: Path) -> dict[str, Any]:
         raise ContractError("earnings dossier destination has no committed page receipt") from exc
     return validate_dossier_link({
         "schema": DOSSIER_LINK_SCHEMA, "ticker": symbol,
-        "url": f"https://mastermind-x.com/stocks/{symbol}.html",
+        "url": f"https://www.mastermind-x.com/stocks/{symbol}.html",
         "source_commit": commit, "source_blob_oid": blob,
     }, ticker=symbol)
 

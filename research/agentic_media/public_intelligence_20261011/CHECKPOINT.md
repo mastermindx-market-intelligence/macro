@@ -5,6 +5,16 @@ Mission complete: **false**. Publication approved: **false**.
 
 ## Current delivery frontier — 2026-10-11
 
+**Latest continuation:** both first-stage heads (`f60d77e...` and `bf6e3957...`) passed 21 binding checks, but later main changes invalidated freshness. Controller run [38135914337](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38135914337) deferred the latest refresh at 10 indexed CI runs / cap 8. The parent marked/disarmed the same PR and confirmed no attached refresh lease. Its observer was positively stopped (exit 130, PID absent); no autonomous wake is claimed.
+
+The parent continued the next safe build phase: an explicit, compatibility-preserving immutable earnings dossier contract. Source commit `b7aeed5d83c28e29b1e8cb02072f13fa210c2943` has 154 passing affected tests and independent review. It is consolidated with the original PR in `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-earnings-dossier-contract-20261011-68f2215de362b65d`, through merge `439c0d80c11b8a8b9a66155124f1e4cfc83b2a63`, then main `f5dce71faf5b7f87cfaefb7a12380869422baa1d` through `ebd22b1a9e49fcd0c95d6e9d20a2e4e6d4366c09`. There is one PR, #8786. Original provider accounting changes are preserved in the primary worktree.
+
+The final integration regression exposed an apex/www mismatch between the new packet and the existing Press contract. It failed on the real link validator before repair; the adapter now uses the existing canonical www destination. The combined earnings plus Press-validator suite passed **248 tests in 19.85 seconds**, exit 0. The local raw log is `/tmp/mmx-dossier-integrated-tests.log`; the exact invocation and durable contract evidence are in `EARNINGS_DOSSIER_CONTRACT.md`. This does not establish live packet rights or publication. At the 11:37 UTC capacity read, 9 indexed CI runs still exceeded cap 8, so the PR branch update was held. Reconcile current capacity and writer/source state before the next push.
+
+Fable's [11:09 reply](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1243#issuecomment-6108389713) identifies `WS:EARNINGS-INTELLIGENCE-OS` as the semantic story owner; C19 does not own the packet or Press adapter. The new contract preserves that ownership and existing v1 hashes. Exact packet/revision IDs reside in the generation manifest and immutable packet object, not journal receipts alone. Integrity receipts do not establish public-article rights. No qualified tuple or permitted read path was supplied.
+
+The following paragraphs retain the earlier refresh history; the latest source and execution state is above and in the cumulative PR evidence comment.
+
 The first repaired candidate, `f60d77e228b2c8e8352e4bb70041c497271240b9`,
 concluded **21 binding CI checks green**, including pack 11 and `ci-gate`.
 The inactive merge-queue-pilot context was nonbinding for base main. The merge
@@ -39,11 +49,9 @@ The Chairman-authorized bounded Fable request was posted and exact-body read
 back on [existing issue 1243](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1243#issuecomment-6107955309).
 It requests the existing packet/generation/revision, rights receipt, permitted
 read-only admission path and owner-qualified dossier link. It does not transfer
-Commission 19, replay a frozen operation or prove pickup. No reply had arrived
-at the last bounded read. Historical owner labels alone are not a current-writer
+Commission 19, replay a frozen operation or prove pickup. No reply had arrived at that earlier bounded read; the later reply is recorded above. Historical owner labels alone are not a current-writer
 fence; the actual story dependency is the missing qualified artifact and
-permitted admission path. The canonical adapter currently admits
-`allowed_links: []`, so a dossier link cannot be appended after immutable admission.
+permitted admission path. The legacy canonical adapter admits `allowed_links: []`. The new explicit v2 construction path freezes a canonical dossier before hashing; a link still cannot be appended after immutable admission.
 
 An independent check also exhausted the currently retained ordinary Brief route:
 the planner reads Chronicle, not PRESS-FEEDS wire artifacts. Its October 8–11

@@ -48,11 +48,25 @@ def test_legacy_packet_bytes_and_generation_remain_identical(tmp_path: Path) -> 
     assert packet["press_slot"]["allowed_links"] == []
 
 
+def test_linked_packet_uses_the_existing_public_press_destination(tmp_path: Path) -> None:
+    from engine.press.desk_planner import load_config
+    from engine.press.validators import check_link_allowlist
+
+    _, _, _, packet = _compile(tmp_path, dossier_root=_site(tmp_path))
+    slot = _derive_slot(packet)
+    destination = slot["allowed_links"][0]
+    cfg = load_config(Path(__file__).resolve().parents[1])
+    draft = {"body_html": f'<p><a href="{destination}">AAPL dossier</a></p>'}
+    assert check_link_allowlist(draft, slot, cfg)["ok"] is True
+    draft["body_html"] += '<p><a href="https://www.mastermind-x.com/stocks/MSFT.html">Unplanned dossier</a></p>'
+    assert check_link_allowlist(draft, slot, cfg)["ok"] is False
+
+
 def test_link_is_immutable_before_admission_and_replays_after_site_changes(tmp_path: Path) -> None:
     root = _site(tmp_path)
     evidence, store, first, packet = _compile(tmp_path, dossier_root=root)
     assert packet["schema"] == "earnings.story_packet/v2"
-    assert packet["press_slot"]["allowed_links"] == ["https://mastermind-x.com/stocks/AAPL.html"]
+    assert packet["press_slot"]["allowed_links"] == ["https://www.mastermind-x.com/stocks/AAPL.html"]
     assert packet["press_slot"]["canonical_emit_allowed"] is False
     frozen = canonical_json_sha256(packet)
     # The historical binding cannot depend on the mutable rendered filesystem.
@@ -70,8 +84,9 @@ def test_link_is_immutable_before_admission_and_replays_after_site_changes(tmp_p
 
 @pytest.mark.parametrize("field,value", [
     ("url", "https://evil.example/stocks/AAPL.html"),
-    ("url", "https://mastermind-x.com/stocks/MSFT.html"),
-    ("url", "https://mastermind-x.com/stocks/AAPL.html?next=evil"),
+    ("url", "https://mastermind-x.com/stocks/AAPL.html"),
+    ("url", "https://www.mastermind-x.com/stocks/MSFT.html"),
+    ("url", "https://www.mastermind-x.com/stocks/AAPL.html?next=evil"),
     ("ticker", "MSFT"),
     ("extra", "caller-controlled"),
 ])
@@ -91,7 +106,7 @@ def test_construction_rejects_unshipped_dossier_and_slot_append(tmp_path: Path) 
     with pytest.raises(ContractError, match="dossier"):
         _compile(tmp_path, dossier_root=root)
     _, _, manifest, legacy = _compile(tmp_path)
-    legacy["press_slot"]["allowed_links"].append("https://mastermind-x.com/stocks/AAPL.html")
+    legacy["press_slot"]["allowed_links"].append("https://www.mastermind-x.com/stocks/AAPL.html")
     with pytest.raises(ContractError, match="adapter"):
         validate_story_packet(legacy, policy=manifest["policy"]["snapshot"])
 

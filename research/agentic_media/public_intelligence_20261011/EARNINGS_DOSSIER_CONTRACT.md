@@ -69,8 +69,7 @@ PY
 ```
 
 This writes local immutable objects, a generation and marker through the
-existing compiler. It does not invoke a model or publish to R2. Actual linked
-Press validation requires PR #8786's `/stocks/` configuration and validators.
+existing compiler. It does not invoke a model or publish to R2. Linked Press validation is integrated with PR #8786's `/stocks/` configuration and validators on the same carrier.
 
 ## Remaining live dependencies
 
@@ -94,3 +93,9 @@ packet through `scripts/stage_earnings_story_press.py`. An unchanged existing
 event needs a separately qualified contract upgrade. D14 staging acceptance,
 editorial approval, publication release, domain readiness and the authenticated
 signup/follow journey remain separate obligations.
+
+## Parent integration repair
+
+The parent consolidated both slices on PR #8786 and added an integration check through the actual `check_link_allowlist` and current Press configuration. The initial new adapter used the apex host while existing canonical dossier links use `www.mastermind-x.com`; the regression failed with `assert False is True`. The adapter now derives exactly `https://www.mastermind-x.com/stocks/<ticker>.html`, and an apex-host binding is rejected. No generic validator was weakened.
+
+The final command is the 11-file command above plus `tests/test_press_validators.py`, using `--basetemp=../mmx-dossier-integrated-fixtures`. Result: **248 passed in 19.85 seconds**, exit 0. The integration check admits the immutable event-ticker link and rejects an additional unplanned ticker. This supersedes the pre-integration hostname in the original build receipt.

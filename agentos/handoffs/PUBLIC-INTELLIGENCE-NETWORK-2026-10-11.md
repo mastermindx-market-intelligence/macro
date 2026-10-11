@@ -33,12 +33,12 @@ unverified:
 unresolved:
   - Existing Brief and Research drafts fail current combined-batch acceptance on overlap; preserve the unchanged threshold.
   - Exact admitted immutable earnings packet and permitted read path unavailable in current evidence.
-  - The authorized Fable dependency request is posted on Mastermind issue 1243 comment 6107955309; no pickup is claimed.
+  - Fable replied on Mastermind issue 1243 comment 6108389713; the actual story owner is Earnings Intelligence OS, and the exact qualified packet and permitted read path remain unavailable.
   - The retained ordinary feed route has no qualified current primary-source stock event, and Brief currently consumes Chronicle rather than PRESS-FEEDS artifacts.
-  - Publication disabled; News TLS and Research CNAME failures remain; paired cutover not released.
+  - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Reconcile exact PR 8786 head and binding CI, repair genuine failures, land through existing merge controls, then verify installation and live generated pages.
+  - Reconcile exact PR 8786 source, refresh writer and available CI capacity, then deliver the consolidated source through fresh binding CI and existing landing/install controls.
   - Obtain the existing source owner's qualified packet/revision receipt and permitted immutable read path, then use scripts/stage_earnings_story_press.py without creating a second compiler.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
 do_not_redo:
@@ -68,3 +68,13 @@ comment is https://github.com/mastermindx-market-intelligence/macro/pull/8786#is
 
 Full evidence and exact next commands are in
 `research/agentic_media/public_intelligence_20261011/CHECKPOINT.md`.
+
+## Continued implementation: immutable dossier binding
+
+The root continued after the checkpoint. The refreshed `bf6e3957f9c71c15a338fa723f8cfb367056e001` candidate also passed all 21 binding checks (CI run 38133632321). Controller run 38135914337 then held it as PROOF_STALE after main changed the tested surface; refresh capacity was 10 indexed runs against cap 8. The parent marked/disarmed the same PR, confirmed no attached refresh lease, and stopped its own observer (PID 78423, exit 130). This is not a running-watcher promise.
+
+The accepted dossier-contract implementation was saved as `b7aeed5d83c28e29b1e8cb02072f13fa210c2943`, then consolidated with the same PR and main `f5dce71faf5b7f87cfaefb7a12380869422baa1d` in the helper-created worktree `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-earnings-dossier-contract-20261011-68f2215de362b65d`. The original primary's three provider accounting files remain untouched. No second PR was created.
+
+Verification: the documented 154-test earnings suite passed and independent replay/admission probes passed. A combined-path regression then caught the apex/www hostname mismatch. After adopting the existing `https://www.mastermind-x.com/stocks/<ticker>.html` destination, the 11 earnings suites plus `tests/test_press_validators.py` passed **248 tests in 19.85 seconds**, exit 0, using `--basetemp=../mmx-dossier-integrated-fixtures`. The new packet version is an explicit offline compiler opt-in, leaves unchanged packets and cron defaults alone, and remains staging-only. See `EARNINGS_DOSSIER_CONTRACT.md` for invocation and limits.
+
+At 11:37 UTC, the canonical `scripts.merge_on_green.in_flight_pr_proofs` read still reported 9 indexed CI runs against cap 8. The consolidated PR branch update was held at that observation; fresh capacity/lease evidence is required before submitting its next proof. Current remote progress and exact candidate are retained in the single PR evidence comment.

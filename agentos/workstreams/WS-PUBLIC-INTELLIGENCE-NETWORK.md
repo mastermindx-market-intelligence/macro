@@ -15,17 +15,18 @@ waves:
     status: in_progress
   - id: qualified-story
     title: Admit one rights-qualified event story and canonical dossier link
-    status: todo
+    status: in_progress
     depends_on: [press-staging]
   - id: live-journey
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Deliver the refreshed same-carrier PR 8786 through current binding CI, protected landing and installed/live checks; its previous green head required main integration after CI definitions changed. Obtain the exact admitted event packet, rights receipt and permitted read-only path before story staging; the retained ordinary feed route has no qualified current candidate or Brief input binding.
+next_action: Deliver the consolidated same-carrier PR 8786 after fresh capacity and writer admission, current binding CI, protected landing and installed/live checks. The linked earnings contract is implemented and tested without changing publisher defaults; live staging still requires the Earnings owner packet/revision, article rights and permitted read-only path.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
   - research/agentic_media/public_intelligence_20261011/CHECKPOINT.md
+  - research/agentic_media/public_intelligence_20261011/EARNINGS_DOSSIER_CONTRACT.md
 do_not_redo:
   - Do not duplicate Commission 19 or claim its Fable-owned source.
   - Do not duplicate Catalyst Loop integration PR 8678 or its acquisition stores.
