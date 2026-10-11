@@ -38,7 +38,8 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Repair the current import-closure CI failure and consolidate the tested staged-cohort fix on existing PR 8786, then complete fresh binding CI and protected landing/install checks.
+  - Let the existing protected controller refresh and land PR 8786 after its freshness/capacity gate, then verify installed source and public browser behavior. Current exact-head CI 38161506271 passed all binding checks at 24bad; the former import-closure failure is repaired.
+  - Integrate single-attempt staging commit 2343aaec13bb after PR 8786 lands; its local evidence and recovery branch are in SINGLE_ATTEMPT_QUALIFICATION.md.
   - Obtain the existing source owner's qualified packet/revision receipt and permitted immutable read path, then use scripts/stage_earnings_story_press.py without creating a second compiler.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
 do_not_redo:

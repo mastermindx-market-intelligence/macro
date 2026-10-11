@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Complete fresh exact-head CI and protected landing/install checks for same-carrier PR 8786, now including durable staging recovery after current-main integration. Preserve the interrupted provider attempt without replay. Live story staging still requires the qualified Earnings packet/revision, public-article rights and permitted read-only path.
+next_action: Complete PR 8786 protected refresh and landing, then installed-source and browser checks. Exact head 24bad passed all binding checks but controller 38165706231 deferred refresh for freshness and CI capacity. Integrate the separately tested single-attempt staging commit 2343aaec13bb after landing. Preserve the unsettled provider attempt; event-story admission still needs the qualified Earnings packet/revision, public-article rights and permitted read path.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
@@ -29,6 +29,7 @@ artifacts:
   - research/agentic_media/public_intelligence_20261011/EARNINGS_DOSSIER_CONTRACT.md
   - research/agentic_media/public_intelligence_20261011/STAGED_COHORT_REPAIR.md
   - research/agentic_media/public_intelligence_20261011/STAGING_RECOVERY.md
+  - research/agentic_media/public_intelligence_20261011/SINGLE_ATTEMPT_QUALIFICATION.md
 do_not_redo:
   - Do not duplicate Commission 19 or claim its Fable-owned source.
   - Do not duplicate Catalyst Loop integration PR 8678 or its acquisition stores.
