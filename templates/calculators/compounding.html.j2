@@ -27,6 +27,9 @@
   .cp-curve-wrap{margin:20px 0 0; border-radius:var(--r-md); border:1px solid var(--hair-strong); overflow:hidden;}
   .cp-curve-wrap svg{display:block; width:100%; height:auto; background:var(--panel2);}
   .ci input[aria-invalid="true"]{border-color:var(--warn);}
+.copy-fallback{flex-basis:100%; margin:4px 0 0;}
+.copy-fallback-l{display:block; font-family:var(--font-ui); font-size:var(--fs-sm); color:var(--warn); margin:0 0 6px; line-height:1.4;}
+.copy-fallback-t{display:block; width:100%; box-sizing:border-box; font-family:var(--num); font-size:var(--fs-sm); line-height:1.5; color:var(--ink-1); background:var(--tile); border:1px solid var(--hair-strong); border-radius:var(--r-md); padding:9px 11px; resize:vertical;}
 {% endblock %}
 
 {% block calc_form %}
@@ -63,6 +66,10 @@
 <div class="calc-actions">
   <button class="gbtn" id="copy-result" type="button">{{ t('Copy result', '复制结果') }}</button>
   <span class="copied" id="copied" role="status">{{ t('Copied', '已复制') }}</span>
+  <div class="copy-fallback" id="copy-fallback" hidden>
+    <label class="copy-fallback-l" for="copy-fallback-text">{{ t('Could not copy automatically. The text below is selected; press Ctrl+C or ⌘C to copy it.', '未能自动复制。下方文字已选中，请按 Ctrl+C 或 ⌘C 复制。') }}</label>
+    <textarea class="copy-fallback-t" id="copy-fallback-text" readonly rows="4" spellcheck="false"></textarea>
+  </div>
 </div>
 
 <div class="cp-curve-wrap" id="curve-wrap" aria-hidden="true" style="display:none;">
@@ -78,8 +85,8 @@
     <path id="cp-line-fv"  fill="none" stroke="var(--link)"  stroke-width="2" stroke-linecap="round"/>
     <path id="cp-line-c"   fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 3"/>
     <g id="cp-legend" font-family="var(--font-ui)" font-size="11" fill="var(--muted)">
-      <text x="12" y="18">&#9472; Total value</text>
-      <text x="12" y="32">&#8229; Contributed</text>
+      <text class="l-en" x="12" y="18">&#9472; Total value</text><text class="l-zh" x="12" y="18">&#9472; 总价值</text>
+      <text class="l-en" x="12" y="32">&#8229; Contributed</text><text class="l-zh" x="12" y="32">&#8229; 累计投入</text>
     </g>
   </svg>
 </div>
@@ -180,6 +187,47 @@
     sZh.textContent = zh;
     el.appendChild(sEn);
     el.appendChild(sZh);
+  }
+
+  function curLang(){ return document.documentElement.getAttribute("data-lang") === "zh" ? "zh" : "en"; }
+
+  function echoNum(v){ return Number(v).toLocaleString("en-US",{maximumFractionDigits:6}); }
+
+  function tryCopy(text){
+    return new Promise(function(resolve){
+      function legacy(){
+        var ok = false, ta = document.createElement("textarea");
+        ta.value = text; ta.setAttribute("readonly", ""); document.body.appendChild(ta); ta.select();
+        try { ok = document.execCommand("copy") === true; } catch(e){ ok = false; }
+        document.body.removeChild(ta); resolve(ok);
+      }
+      var cb = (typeof navigator !== "undefined") ? navigator.clipboard : null, p = null;
+      if (cb && typeof cb.writeText === "function") { try { p = cb.writeText(text); } catch(e){ p = null; } }
+      if (p && typeof p.then === "function") { p.then(function(){ resolve(true); }, legacy); return; }
+      legacy();
+    });
+  }
+
+  function plainSentence(d){
+    return {
+      en: "After " + d.n + " years, " + d.contributed + " in contributions grow to " + d.fv + " — the extra " + d.growth + " is compounding doing the work.",
+      zh: d.n + " 年后，" + d.contributed + " 的投入增长至 " + d.fv + "——多出的 " + d.growth + " 来自复利。"
+    };
+  }
+
+  function copyText(lang, d){
+    if(lang === "zh"){
+      return [
+        "Mastermind 复利计算器（假设情景）",
+        "输入：初始本金 " + d.principal + " · 每期投入 " + d.contrib + " · " + d.freq + " · 假设年化收益率 " + d.rate + "% · " + d.years + " 年",
+        "结果：终值 " + d.fv + " · 合计投入 " + d.contributed + " · 增长 " + d.growth + " · 增长倍数 " + d.mult
+      ].join("\n");
+    }
+    return [
+      "Mastermind compound interest calculator (hypothetical scenario)",
+      "Inputs: " + d.principal + " starting principal · " + d.contrib + " per period · " + d.freq + " · " + d.rate + "% assumed annual return · " + d.years + " years",
+      "Result: " + d.fv + " future value · " + d.contributed + " total contributed · " + d.growth + " growth · " + d.mult + " growth multiple"
+    ].join("\n");
   }
 
   // ── pure compute (CONTRACT §7 — ordinary annuity) ──────────────────────────
@@ -311,7 +359,8 @@
     var outMain=$("out-main"), outPlain=$("out-plain"),
         outContrib=$("out-contrib"), outGrowth=$("out-growth"), outMult=$("out-mult"),
         tbody=$("year-tbody"), tableWrap=$("year-table-wrap"), seg=$("freq-seg"),
-        copyBtn=$("copy-result"), copied=$("copied");
+        copyBtn=$("copy-result"), copied=$("copied"),
+        copyFallback=$("copy-fallback"), copyFallbackText=$("copy-fallback-text");
     var FIELD_ORDER = ["principal","contrib","rate","years"];
     var FIELD_UNITS = {principal:"num", contrib:"num", rate:"pct", years:"num"};
     var FIELD_LABELS = {
@@ -330,8 +379,12 @@
     function money(n){ return "$" + n.toLocaleString("en-US",{maximumFractionDigits:0}); }
     function dash(){ outMain.textContent="—"; [outContrib,outGrowth,outMult].forEach(function(e){e.textContent="—";}); }
 
-    var last=null;
+    var last=null, lastInp=null;
+    var FREQ_LABELS = {12:{en:"Monthly", zh:"每月"}, 4:{en:"Quarterly", zh:"每季"}, 1:{en:"Annual", zh:"每年"}};
     function render(){
+      if(copyFallback) copyFallback.hidden = true;
+      if(copyFallbackText) copyFallbackText.value = "";
+      tableWrap.setAttribute("aria-label", curLang() === "zh" ? "逐年明细" : "Year-by-year breakdown");
       var firstFail = null;
       var parsed = {};
       FIELD_ORDER.forEach(function(id){
@@ -390,13 +443,18 @@
       if(res.mult !== null){
         outMult.textContent = res.mult.toFixed(2) + "×";
       } else {
-        outMult.textContent = "— enter a principal or contribution";
+        setBi(outMult, "— enter a principal or contribution", "— 请输入本金或投入金额");
       }
 
-      var plain = "After " + inp.n + " years, $" + res.contributed.toLocaleString("en-US",{maximumFractionDigits:0}) +
-        " in contributions grow to " + money(res.FV) +
-        " — the extra $" + res.growth.toLocaleString("en-US",{maximumFractionDigits:0}) + " is compounding doing the work.";
-      outPlain.textContent = plain; outPlain.className = "co-plain";
+      lastInp = {P:parsed.principal, c:parsed.contrib, r:parsed.rate, n:parsed.years, f:freq};
+      var s = plainSentence({
+        n: String(inp.n),
+        contributed: "$" + res.contributed.toLocaleString("en-US",{maximumFractionDigits:0}),
+        fv: money(res.FV),
+        growth: "$" + res.growth.toLocaleString("en-US",{maximumFractionDigits:0})
+      });
+      setBi(outPlain, s.en, s.zh);
+      outPlain.className = "co-plain";
 
       // render year table
       tbody.innerHTML = "";
@@ -414,21 +472,40 @@
       drawCurve(inp.P, res.rows);
     }
 
-    function copyLine(){
-      if(!last || !last.ok) return "";
-      var yearsPn = parseNum(els.years.value, "num");
-      return "Compounding: " + money(last.FV) + " after " + yearsPn.v + " years" +
-        " · contributed " + money(last.contributed) +
-        " · growth $" + last.growth.toLocaleString("en-US",{maximumFractionDigits:0}) +
-        " — mastermind-x.com";
-    }
     copyBtn.addEventListener("click", function(){
-      var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      if(!last || !last.ok || !lastInp) return;
+      if(copyFallback) copyFallback.hidden = true;
+      copied.classList.remove("show");
+      var lang = curLang();
+      var fl = FREQ_LABELS[lastInp.f] || FREQ_LABELS[12];
+      var d = {
+        principal: "$" + echoNum(lastInp.P),
+        contrib: "$" + echoNum(lastInp.c),
+        freq: lang === "zh" ? fl.zh : fl.en,
+        rate: echoNum(lastInp.r),
+        years: echoNum(lastInp.n),
+        fv: outMain.textContent,
+        contributed: outContrib.textContent,
+        growth: outGrowth.textContent,
+        mult: (last.mult !== null) ? outMult.textContent : "—"
+      };
+      var text = copyText(lang, d);
+      tryCopy(text).then(function(ok){
+        if(ok){
+          copied.classList.add("show");
+          setTimeout(function(){ copied.classList.remove("show"); }, 1600);
+        } else {
+          if(copyFallbackText){
+            copyFallbackText.value = text;
+            if(copyFallback) copyFallback.hidden = false;
+            copyFallbackText.focus();
+            copyFallbackText.select();
+          }
+        }
+      });
     });
+
+    document.addEventListener("langchange", function(){ render(); });
 
     ["principal","contrib","rate","years"].forEach(function(id){
       els[id].addEventListener("input", render);

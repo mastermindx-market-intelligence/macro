@@ -13,8 +13,9 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const COMP_PATH = join(ROOT, 'templates', 'calculators', 'compounding.html.j2');
-const DCA_PATH = join(ROOT, 'templates', 'calculators', 'dollar_cost_averaging.html.j2');
+const TEMPLATE_DIR = process.env.CALC_TEMPLATE_DIR || join(ROOT, 'templates', 'calculators');
+const COMP_PATH = join(TEMPLATE_DIR, 'compounding.html.j2');
+const DCA_PATH = join(TEMPLATE_DIR, 'dollar_cost_averaging.html.j2');
 const COMP_SRC = readFileSync(COMP_PATH, 'utf8');
 const DCA_SRC = readFileSync(DCA_PATH, 'utf8');
 
@@ -353,4 +354,141 @@ test('curveGeometry last point yFv is 24.0 when FV>0', () => {
   assert.ok(res.FV > 0);
   const g = curveGeometry(1000, res.rows);
   assert.equal(g.pts[g.pts.length - 1].yFv, 24.0);
+});
+
+function srcOf(source, name) {
+  return extractFunction(source, name);
+}
+
+test('curLang, echoNum and tryCopy source text is byte-identical in both templates', () => {
+  for (const name of ['curLang', 'echoNum', 'tryCopy']) {
+    assert.equal(srcOf(COMP_SRC, name), srcOf(DCA_SRC, name), name);
+  }
+});
+
+const LATIN_WORD = /[A-Za-z]{2,}/;
+const URLISH = /https?:|www\.|\.com\b|[?&][A-Za-z_]+=/;
+
+test('plainSentence EN matches worked-example English; ZH keeps numbers and has no latin words', () => {
+  const { plainSentence: dcaPlain } = loadTemplate(DCA_SRC, ['plainSentence']);
+  const dcaD = { c: '$500', N: '60', fv: '$36,738', invested: '$30,000', gain: '$6,738' };
+  const dca = dcaPlain(dcaD);
+  assert.equal(
+    dca.en,
+    'Investing $500 across 60 buys projects to $36,738 — $30,000 invested plus $6,738 of growth at this hypothetical rate.',
+  );
+  for (const n of Object.values(dcaD)) assert.ok(dca.zh.includes(n), `dca zh missing ${n}`);
+  let dcaZhRest = dca.zh;
+  for (const n of Object.values(dcaD)) dcaZhRest = dcaZhRest.split(n).join('');
+  assert.equal(LATIN_WORD.test(dcaZhRest), false, dcaZhRest);
+
+  const { plainSentence: compPlain } = loadTemplate(COMP_SRC, ['plainSentence']);
+  const compD = { n: '10', contributed: '$70,000', fv: '$106,639', growth: '$36,639' };
+  const comp = compPlain(compD);
+  assert.equal(
+    comp.en,
+    'After 10 years, $70,000 in contributions grow to $106,639 — the extra $36,639 is compounding doing the work.',
+  );
+  for (const n of Object.values(compD)) assert.ok(comp.zh.includes(n), `comp zh missing ${n}`);
+  let compZhRest = comp.zh;
+  for (const n of Object.values(compD)) compZhRest = compZhRest.split(n).join('');
+  assert.equal(LATIN_WORD.test(compZhRest), false, compZhRest);
+});
+
+test('copyText includes identity, inputs, results; ZH has no latin; neither language has a URL', () => {
+  const { copyText: dcaCopy } = loadTemplate(DCA_SRC, ['copyText']);
+  const dcaEnD = {
+    contrib: '$500', freq: 'Monthly', years: '5', rate: '8',
+    fv: '$36,738', invested: '$30,000', gain: '$6,738', ret: '22%', buys: '60',
+  };
+  const dcaZhD = { ...dcaEnD, freq: '每月' };
+  const dcaEn = dcaCopy('en', dcaEnD);
+  const dcaZh = dcaCopy('zh', dcaZhD);
+  assert.ok(dcaEn.includes('Mastermind dollar-cost averaging calculator (hypothetical scenario)'));
+  assert.ok(dcaZh.includes('Mastermind 定投计算器（假设情景）'));
+  for (const v of Object.values(dcaEnD)) assert.ok(dcaEn.includes(v), `dca en missing ${v}`);
+  for (const v of Object.values(dcaZhD)) assert.ok(dcaZh.includes(v), `dca zh missing ${v}`);
+  assert.ok(dcaEn.includes('years') && dcaEn.includes('8%'));
+  assert.ok(dcaZh.includes('年') && dcaZh.includes('8%'));
+  assert.equal(LATIN_WORD.test(dcaZh.replace(/Mastermind/g, '')), false, dcaZh);
+  assert.equal(URLISH.test(dcaEn), false, dcaEn);
+  assert.equal(URLISH.test(dcaZh), false, dcaZh);
+
+  const { copyText: compCopy } = loadTemplate(COMP_SRC, ['copyText']);
+  const compEnD = {
+    principal: '$10,000', contrib: '$500', freq: 'Monthly', rate: '7', years: '10',
+    fv: '$106,639', contributed: '$70,000', growth: '$36,639', mult: '1.52×',
+  };
+  const compZhD = { ...compEnD, freq: '每月' };
+  const compEn = compCopy('en', compEnD);
+  const compZh = compCopy('zh', compZhD);
+  assert.ok(compEn.includes('Mastermind compound interest calculator (hypothetical scenario)'));
+  assert.ok(compZh.includes('Mastermind 复利计算器（假设情景）'));
+  for (const v of Object.values(compEnD)) assert.ok(compEn.includes(v), `comp en missing ${v}`);
+  for (const v of Object.values(compZhD)) assert.ok(compZh.includes(v), `comp zh missing ${v}`);
+  assert.ok(compEn.includes('years') && compEn.includes('7%'));
+  assert.ok(compZh.includes('年') && compZh.includes('7%'));
+  assert.equal(LATIN_WORD.test(compZh.replace(/Mastermind/g, '')), false, compZh);
+  assert.equal(URLISH.test(compEn), false, compEn);
+  assert.equal(URLISH.test(compZh), false, compZh);
+});
+
+function makeDocument(execImpl) {
+  const ta = { value: '', setAttribute() {}, select() {} };
+  return {
+    createElement() { return ta; },
+    body: { appendChild() {}, removeChild() {} },
+    execCommand: execImpl,
+  };
+}
+
+function loadTryCopy(source, extras) {
+  const fnSrc = extractFunction(source, 'tryCopy');
+  const context = vm.createContext({
+    Promise,
+    Error,
+    document: extras.document,
+    navigator: extras.navigator,
+  });
+  vm.runInContext(fnSrc, context);
+  return context.tryCopy;
+}
+
+test('tryCopy reports success only on an acknowledged write', async () => {
+  const src = DCA_SRC;
+  const t1 = loadTryCopy(src, {
+    navigator: { clipboard: { writeText: () => Promise.resolve() } },
+    document: makeDocument(() => true),
+  });
+  assert.equal(await t1('x'), true);
+
+  const t2 = loadTryCopy(src, {
+    navigator: { clipboard: { writeText: () => Promise.reject(new Error('denied')) } },
+    document: makeDocument(() => false),
+  });
+  assert.equal(await t2('x'), false);
+
+  const t3 = loadTryCopy(src, {
+    navigator: { clipboard: { writeText: () => { throw new Error('sync'); } } },
+    document: makeDocument(() => false),
+  });
+  assert.equal(await t3('x'), false);
+
+  const t4 = loadTryCopy(src, {
+    navigator: {},
+    document: makeDocument(() => false),
+  });
+  assert.equal(await t4('x'), false);
+
+  const t5 = loadTryCopy(src, {
+    navigator: {},
+    document: makeDocument(() => true),
+  });
+  assert.equal(await t5('x'), true);
+
+  const t6 = loadTryCopy(src, {
+    navigator: {},
+    document: makeDocument(() => { throw new Error('exec'); }),
+  });
+  assert.equal(await t6('x'), false);
 });
