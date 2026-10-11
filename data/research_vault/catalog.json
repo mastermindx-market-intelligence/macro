@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T21:51:49.504862+00:00",
-  "count": 2833,
+  "generated_at": "2026-10-11T22:06:51.539958+00:00",
+  "count": 2834,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -239,6 +239,27 @@
         "Municipal ETF Inflows Surge: $46.6bn YTD flows (vs $28.3bn for OEFs), with 88% entering investment-grade funds, highlighting institutional demand amid volatility.",
         "Declining Equity Risk Premium: Near-historical lows imply overvalued equities relative to bonds, supporting defensive fixed-income positioning for risk mitigation.",
         "Municipal Credit Spreads Widening: Due to state fiscal stress and rising rates, amplifying spread volatility despite institutional flows into investment-grade munis."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 38,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dqeokbvrap4-71c755",
+      "title": "Article floatingrateloanmarketmonitor q32026",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T03:04:28Z",
+      "summary_points": [
+        "Credit Quality Concentration: 61.54% of market value in B-rated loans signals high exposure to lower credit quality, with BBB (7.54%) and BB (23.51%) segments dominating, requiring active risk monitoring.",
+        "CCC Index Spread Risk: CCC Index exhibits extreme spread (2188 bps), highlighting severe credit risk in lower-rated segments versus B Index (445 bps) and BBB Index (200 bps), indicating potential volatility.",
+        "Rate-Cutting Cycle Performance: US Equities (+38.0%) significantly outperformed Loans (+12.3%) since first Fed rate cut, underscoring equity dominance and loan vulnerability in easing environments.",
+        "Sector Imbalance & Concentration: Software (11.25% index weight, 4.9% return) dominates performance, while Diversified Telecom Services (-2.3%) lags; top 3 issuers (e.g., UKG Inc) reveal critical concentration for credit assessment.",
+        "Market Liquidity & Activity: Trading volume peaked at $978B (LTM Q2 2026) with 100% turnover ratio, signaling heightened liquidity and active flows, though refinancings remain subdued."
       ],
       "tags": [],
       "tickers": [],
