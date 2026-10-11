@@ -445,7 +445,9 @@ def _sharpe(r, ann: int) -> float:
 
 
 def _maxdd(r) -> float:
-    eq = np.cumprod(1.0 + np.asarray(r, float))
+    """Max drawdown of a return series; the curve starts at 1.0 (starting capital), so an initial loss counts, and an empty input returns 0.0."""
+    r = np.asarray(r, float)
+    eq = np.concatenate(([1.0], np.cumprod(1.0 + r)))
     peak = np.maximum.accumulate(eq)
     return float(np.min(eq / peak - 1.0))
 
@@ -635,8 +637,10 @@ def apply_calibration(model: dict, p_new) -> "np.ndarray":
 
 def vif(df) -> dict:
     """Variance inflation factor per column from the correlation matrix inverse
-    (VIF≈1 independent, >5 redundant, >10 severe collinearity). Surfaces the
-    cost-basis cluster triple-counting that a heuristic vote can't see."""
+    (VIF≈1 independent, >5 redundant, >10 severe collinearity). Zero-variance
+    columns are dropped before the inverse; a rank-deficient standardized design
+    returns {} rather than reporting pseudo-inverse diagonals as finite VIFs
+    (see design_rank for the rank/conditioning diagnostic)."""
     d = df.dropna()
     if len(d) < 30 or d.shape[1] < 2:
         return {}
@@ -644,9 +648,39 @@ def vif(df) -> dict:
     X = ((d - d.mean()) / sd).dropna(axis=1, how="any")
     if X.shape[1] < 2:
         return {}
+    if np.linalg.matrix_rank(X.values) < X.shape[1]:
+        return {}
     C = np.corrcoef(X.values, rowvar=False)
     Ci = np.linalg.pinv(C)
     return {col: round(float(Ci[i, i]), 2) for i, col in enumerate(X.columns)}
+
+
+def design_rank(df) -> dict:
+    """Rank/conditioning diagnostic for the same standardized design `vif` sees.
+    n_rows/n_cols describe the dropna frame before any column is dropped;
+    dropped_zero_variance lists the columns with sd == 0 or NaN (vif drops them
+    before the inverse); rank is the rank of the standardized kept design (0 when
+    nothing is kept); condition_number is the correlation-matrix condition number,
+    None unless the kept design has >= 2 columns and full rank; rank_deficient
+    flags an empty or rank-short design — the case vif abstains on with {} — and
+    thin flags fewer than 30 rows or fewer than 2 kept columns (vif's thin guard)."""
+    d = df.dropna()
+    n_rows = len(d)
+    cols = list(d.columns)
+    n_cols = len(cols)
+    sd = d.std(ddof=0)
+    dropped_zero_variance = [c for c in cols if not (sd[c] > 0)]
+    keep = [c for c in cols if c not in dropped_zero_variance]
+    Xs = ((d[keep] - d[keep].mean()) / sd[keep]) if keep else d[keep]
+    k = len(keep)
+    rank = int(np.linalg.matrix_rank(Xs.values)) if k else 0
+    condition_number = float(np.linalg.cond(np.corrcoef(Xs.values, rowvar=False))) \
+        if (k >= 2 and rank == k) else None
+    rank_deficient = bool(k == 0 or rank < k)
+    thin = bool(n_rows < 30 or k < 2)
+    return {"n_rows": n_rows, "n_cols": n_cols, "dropped_zero_variance": dropped_zero_variance,
+            "rank": rank, "condition_number": condition_number,
+            "rank_deficient": rank_deficient, "thin": thin}
 
 
 def top_correlated_pairs(df, k: int = 8, thresh: float = 0.6) -> list:
