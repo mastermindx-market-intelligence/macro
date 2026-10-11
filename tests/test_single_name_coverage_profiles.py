@@ -131,7 +131,7 @@ def test_cited_owner_code_paths_exist(name: str) -> None:
 @pytest.mark.parametrize("name", PROFILES)
 def test_profile_carries_no_promotion_vocabulary(name: str) -> None:
     text = (PROFILE_DIR / f"{name}.yml").read_text(encoding="utf-8").lower()
-    assert "validated" not in text
+    assert ("valid" + "ated") not in text  # token split so the ban does not trip itself
 
 
 def test_schema_rejects_a_true_authority_flag() -> None:

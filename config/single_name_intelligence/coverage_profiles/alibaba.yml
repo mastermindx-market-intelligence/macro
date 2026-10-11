@@ -483,10 +483,12 @@ families:
       - C2
       - S0
       notes: 'A frozen return window can drift between runs (DSC:HK-DEEP-PANEL-SPLICES-ADJUSTMENT-VINTAGES); response
-        windows must pin the vintage. No owner carries share count: share-count changes reach the repo only as HKEXnews
-        headline metadata (9988: HK$80bn new-share placing, general_mandate events 2026-08-23..26). collectors/hk_placements.py
-        (810 rows, 2026-03-05..2026-10-09) holds no row for this counter: it keys on the HKEXnews ''placing'' headline
-        category, so it missed the 9988 placing that HKEXnews filed under general_mandate.'
+        windows must pin the vintage. No owner carries share count (searched: data/reference/security_master.parquet,
+        data/reference/vendor_aliases.parquet, data/hk_fundamentals/fundamentals.parquet payloads, collectors/hk_placements.py
+        output): share-count changes reach the repo only as HKEXnews headline metadata (9988: HK$80bn new-share
+        placing, general_mandate events 2026-08-23..26). collectors/hk_placements.py (810 rows, 2026-03-05..2026-10-09)
+        holds no row for this counter: it keys on the HKEXnews ''placing'' headline category, so it missed the 9988
+        placing that HKEXnews filed under general_mandate.'
       evidence:
       - data/hk_stocks/9988.HK.parquet
       - data/hk_placements/events.parquet
@@ -523,7 +525,8 @@ families:
       blocks:
       - C2
       - S0
-      notes: ADS ratio changes, if any, are not carried by any owner.
+      notes: 'ADS ratio changes, if any, are not carried by any owner (searched: data/reference/security_master.parquet,
+        data/reference/vendor_aliases.parquet, data/yahoo/BABA.parquet columns).'
       evidence:
       - data/yahoo/BABA.parquet
   sessions_calendar:
