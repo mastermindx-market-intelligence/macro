@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T13:50:44.962764+00:00",
-  "count": 2810,
+  "generated_at": "2026-10-11T14:20:42.739085+00:00",
+  "count": 2811,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -140,6 +140,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kix52sdoxmz-983c42",
+      "title": "India Insights October 2026",
+      "institution": "HSBC AM",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T03:10:39Z",
+      "summary_points": [
+        "GDP & FX Resilience: Real GDP expanded 7.8% YoY (vs 7.4% forecast), FX reserves rebuilt to $780B (from $671.6B) via $133B FCNR(B) deposits and $143.5B foreign borrowing post-RBI policy.",
+        "Corporate Fundamentals Strengthening: Strongest revenue growth in ten quarters, 19% earnings growth ahead of expectations; domestic credit growth at 19% (2-yr high), auto sales broadening recovery beyond narrow sectors.",
+        "Foreign Flows Rebounding: After $29bn peak-to-trough outflows, foreign investors bought $6bn in Indian equities since mid-June; India remains under-owned globally with room for further capital inflows.",
+        "Liquidity & Inflation Dynamics: RBI absorbed INR11.6T foreign currency surplus (down to INR7.4T), but headline CPI accelerated to 4.8% YoY (core 4.2%) amid oil price shocks (+0.3pp CPI) threatening liquidity management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
