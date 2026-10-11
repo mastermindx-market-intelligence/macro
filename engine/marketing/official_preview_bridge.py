@@ -12,7 +12,7 @@ sink. See held PR #8704. Same-GUID corrections remain News owner's responsibilit
 from __future__ import annotations
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import logging
 from pathlib import Path
@@ -20,6 +20,7 @@ from typing import Any, Callable
 
 from engine.marketing.breaking_feed import (
     OfficialFeedPreview, ack_official_preview,
+    _OFFICIAL_PREVIEW_URLS, _qualified_official_item_url,
 )
 
 log = logging.getLogger(__name__)
@@ -114,6 +115,28 @@ def accept_private_official_preview(
                 if isinstance(row, dict)}
     if len(expected) != len(preview.items) or "" in expected:
         return {"status": "SOURCE_NOT_QUALIFIED"}
+
+    # A frozen dataclass is not a signed source-rights or publisher-identity
+    # receipt. Repeat the same source-owner checks before the private store:
+    # an internal caller must not smuggle a wire/third-party item by forging
+    # OfficialFeedPreview(items=...). This STILL does not establish licensing.
+    for row in preview.items:
+        source = str(row.get("source") or "")
+        raw_date = row.get("published_at")
+        if (source not in _OFFICIAL_PREVIEW_URLS
+                or row.get("source_tier") != "official"
+                or not _qualified_official_item_url(row.get("url"), source)
+                or not isinstance(raw_date, str) or not raw_date.strip()):
+            return {"status": "SOURCE_NOT_QUALIFIED"}
+        try:
+            publication = datetime.fromisoformat(
+                raw_date.replace("Z", "+00:00")
+            )
+        except ValueError:
+            return {"status": "SOURCE_NOT_QUALIFIED"}
+        if (publication.tzinfo is None or publication.utcoffset() is None
+                or publication > now + timedelta(minutes=5)):
+            return {"status": "SOURCE_NOT_QUALIFIED"}
 
     from engine.marketing.press_lane import run_press_tick
     from engine.marketing.intelligence_desk import update_intelligence_desk

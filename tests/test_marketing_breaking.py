@@ -2250,3 +2250,34 @@ def test_official_private_bridge_partial_source_ack_is_not_reported_as_success(
     assert item["id"] in feed._load_seen(tmp_path)
     assert not (tmp_path / "data/marketing/breaking/state.json").exists()
     assert (tmp_path / "data/marketing/press/intelligence.db").exists()
+
+
+
+@pytest.mark.parametrize("override", [
+    {"source": "benzinga"},
+    {"source_tier": "wire"},
+    {"url": "https://www.bls.gov.evil.example/news.release/cpi.nr0.htm"},
+    {"url": "https://external-publisher.example/bls-copy"},
+    {"published_at": "2026-10-10T08:30:00"},
+    {"published_at": "2099-01-01T00:00:00+00:00"},
+    {"published_at": ""},
+])
+def test_official_private_bridge_rejects_forged_unqualified_source_items(
+        tmp_path, monkeypatch, override):
+    """A dataclass instance is not an ownership or source-rights receipt."""
+    from dataclasses import replace
+    from engine.marketing import breaking_feed as feed
+    from engine.marketing.official_preview_bridge import accept_private_official_preview
+    _, item, token, now, state, writes, checkpoint, press = (
+        _private_official_bridge_case(monkeypatch, tmp_path)
+    )
+    suspect = replace(token, items=({**item, **override},))
+    result = accept_private_official_preview(
+        suspect, root=tmp_path, now=now, marketing_cfg={},
+        press_cfg=press, current_state=state, persist_identity=checkpoint,
+        load_identity=lambda: dict(state),
+    )
+    assert result["status"] == "SOURCE_NOT_QUALIFIED"
+    assert not writes
+    assert feed._load_seen(tmp_path) == {}
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
