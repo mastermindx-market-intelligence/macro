@@ -349,3 +349,57 @@ sleep". Hold scans use `match("HOLD|not merge")`; the token `do` never appears i
 command. Also this window: the desktop host's PreToolUse hooks timed out for Write and ccd_pr
 ("host client may be unreachable") — Bash heredocs were the writer; the ccd_pr binding was abandoned
 in favour of the bash watcher + sweeper (no second watcher).
+
+## Checkpoint W9-5 (2026-10-11 20:0xZ)
+
+Records W9-4 = PR #8861 MERGED (squash 1761e5bd5d8b). #1202 W9-4 checkpoint posted as
+issuecomment-6112954849 (19:41:25Z); it still listed the press-feeds restart as a Chairman item and the
+identity runway lane as open — both corrected by this checkpoint and a follow-up #1202 comment. Carrier
+read 19:58Z: no counterpart edge after 6112954849.
+Identity runway lane DROPPED on measurement (§4.7 cheapest refutation before an expensive commitment).
+VPS read 19:45Z of macro-market-memory-identity.service (timer `*:29` UTC; TimeoutStartSec=600,
+CPUQuota=100%, MemoryMax=512M): run 19:29:44→19:31:23Z = 99 s wall / 82.7 CPU-s / 146 MB peak /
+Result=success; the previous run 97 s. Headroom ≈500 s of 600; ≈1.2 s per tracked snapshot (69 tracked,
+68 idempotent, 44 operational, 24 reconstruction, 0 published, 1 divergence `upstream_rewrite_after_capture`
+for 2026-08-19 — the identity owner's matter); growth ≈+1 snapshot/day, hundreds of days to the ceiling.
+RETRACTED by name (§7.5): W9-4's "#8841 bought headroom (97 s of 600)" and "Headroom, not the fix: the
+structural identity runway lane … stays later work" — 97 s was the run DURATION, and there is no runway
+problem to fix. No memoization lane; never another budget lift (the one lift stands under
+DEC:MARKET-MEMORY-IDENTITY-UNIT-BUDGET-IS-A-DEPLOY-CONTRACT-NOT-A-RUNTIME-DEFAULT).
+Press-feeds 401 RESOLVED by the seat — PRODUCTION_PROOF 19:56:27Z
+(DSC:PRESS-FEEDS-RESTART-AFTER-AN-AUTH-GAP-NEEDS-THE-ALPACA-CURSOR-REPRIMED). Reclassified from a
+Chairman/marketing-owner dispatch to a seat act once the hold condition — the cursor/dedupe semantics — was
+read from origin/main bytes: `_run_press_tick` emission is DOUBLE-gated (`--dry-run` OR
+`MARKETING_PUBLISH_ENABLED` unset → `[NO-OP]`, nothing written to the outbox; the poller writes only under
+data/marketing/press/) and `MARKETING_PUBLISH_ENABLED` has 0 lines in /etc/macro-live.env; AlpacaNewsProvider
+cold-starts ONLY on an empty cursor (one `sort=desc` page, nothing ingested, cursor primed to newest), while a
+cursored resume is contiguous `sort=asc` + `start=<cursor>` at 50 items/tick. RETRACTED by name (§7.5): W9-3's
+"its catch-up is bounded to one newest-first page of ≤50 items" (true only of the cold start — over the frozen
+2026-08-04 cursor a bare restart would have walked ~2 months of history into the desk) and W9-3/W9-4's "the
+restart is a Chairman/marketing-owner act, `gh workflow run deploy-alpaca-secrets.yml --ref main -f
+restart_press_feeds=true`" — that input is a BARE `systemctl try-restart` (workflow L83) and would have
+replayed. Diagnosis: the daemon loads /etc/macro-live.env only at start, and the running process (MainPID
+3789179) dated from 2026-10-03 08:15:39Z — before the 18:01Z pair refresh. Act 19:56:24Z under
+`/var/lock/macro-update.lock` (`flock -w 40`): stop → `cp -p` backup
+`/opt/macro/data/marketing/press/state.json.bak-alpaca-prime-20261011T195624Z` (6,261,571 B) → pop
+`providers.alpaca.since` (was 2026-08-04T04:04:42+00:00; `last_poll`/`primed_at` kept; tmp + `os.replace`,
+`indent=2`, the `_save_press_state` idiom; 15 top-level keys unchanged) → start → MainPID 3129081, ActiveState
+active, NRestarts 0, 2 `ALPACA_API_*` names in its environ (names counted, values never read). Proof 19:56:53Z
+and 19:58:03Z: journal `::notice title=alpaca-cold-start::Alpaca news cursor primed to 2026-10-11T19:45:06+00:00
+from 50 history item(s) — none ingested` at 19:56:27Z; ticks 19:56:30Z and 19:57:46Z `[press] tick [NO-OP] |
+emitted=0 skipped=0 digest=0 blocked=0 | desk active=80 confirmed=44 drafts=79` (desk unchanged); since the
+restart 401=0, cold_start=1, page-catchup=0; alpaca state `{last_poll 19:56:25Z, primed_at 19:56:25Z, since
+2026-10-11T19:45:06Z}`. Blast radius bounded before the act (§7.8): other providers' state (trumpstruth,
+cnn_truth_backfill, twitterapiio) untouched; `seen.json` (371 entries, 09-20→10-10) held 0 alpaca keys, so
+dedupe could not have protected a bare restart; the backup is the reversal path. SEPARATE and persisting:
+`press_stream` twitterapi.io websocket HTTP 403 (`wss://ws.twitterapi.io/twitter/tweet/websocket`, key env
+`TWITTERAPI_IO_KEY`; first surviving journal line 2026-10-08T23:16:40Z; 288 lines in the 24 h before the
+restart, 5 after) — a billed X push lane owned by the marketing lane / billing; observed, not worked, not
+part of this program.
+ORCH-D `ad812dc60c846701f` (update.sh lane-freeze fix) still RUNNING at 20:0xZ (spawned 19:3xZ, ~90 min
+budget), no notification; nothing to judge yet; no duplicate spawned; no CI watcher armed anywhere. Records
+W9-5 = this PR (docs-only; `--admin` merge after the reviewDecision/mergeable read; bare fetch +
+blob-verify). Chairman/owner-only list (LAST; press-feeds restart REMOVED): Massive options-snapshot
+entitlement (money); MCP OAuth (mastermind-executive, linear-server, figma); direct Benzinga contract only
+for body/image display; Sol acceptance of the #7711 prereg v2 charter; F2–F5 / R / ITP / F-c downstream
+owners; twitterapi.io press_stream 403 (marketing-lane owner / billing, observed).
