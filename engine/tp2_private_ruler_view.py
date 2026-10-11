@@ -10,6 +10,8 @@ retains source-vintage, original availability and explicitly null live layers.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from datetime import date, datetime, time
 from decimal import Decimal, InvalidOperation
@@ -525,3 +527,303 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns,
         "history_coverage_start": minute.get("coverage_start"),
     }
     return finish(output)
+
+# TP-2's own *derived view* handoff only. Original T/Q source readback remains
+# in TP1's canonical verify_private_minute_bytes, not reproduced here.
+PRIVATE_VIEW_RECEIPT_SCHEMA = "darkpool.tp2_private_view_artifact_receipt/v0"
+MAX_PRIVATE_VIEW_BYTES = 64 * 1024
+_TOP_KEYS = frozenset((
+    "schema", "state", "reason", "authority",
+    "observation_asof_ns_decimal", "view_asof_ns_decimal",
+    "ticker", "session", "source_generation_sha256",
+    "source_snapshot_sha256", "source_manifest_sha256",
+    "observed_source", "historical_ruler", "intraday_minute_baseline",
+    "tp1_minute_state", "tp1_provisional_minute",
+    "live_block_tape", "repeat_print_price_shelves",
+    "live_signed_offexchange_flow", "nbbo_classification_coverage",
+    "named_ats_attribution", "finra_ats_delayed_context",
+    "eod_weekly_context", "source_authenticated",
+    "market_capture_completeness_proven", "public_delivery_allowed",
+    "ranking_trading_alert_authority", "signal",
+))
+_VIEW_STATES = frozenset((
+    "NO_TPB_OBSERVATION_SOURCE", "SOURCE_NOT_YET_KNOWABLE",
+    "NO_QUALIFIED_TRF_OBSERVATIONS", "HISTORICAL_CALIBRATION_PENDING",
+    "CALIBRATION_NOT_YET_KNOWABLE", "CALIBRATION_STALE_SOURCE_GENERATION",
+    "PRIVATE_TPB_RESEARCH_CONTEXT_ONLY",
+))
+_OBS_OUTPUT_KEYS = frozenset((
+    "state", "n_trf_observed", "n_unknown_volume_policy",
+    "largest_individual_print_usd", "largest_same_level_cluster_usd",
+    "measured_rth_trf_notional_usd", "measured_rth_trf_shares",
+    "block_tier_counts", "full_rth_covered_claim_unverified",
+    "cluster_clock",
+))
+_MINUTE_OUTPUT_KEYS = frozenset((
+    "state", "conditioning", "minute_index", "n_prior",
+    "cumulative_offexchange_share", "median", "mad", "robust_z",
+    "midrank_percentile", "history_coverage_start",
+))
+_TP1_OUTPUT_KEYS = frozenset((
+    "source", "ticker", "session",
+    "minute_start_ns_decimal", "minute_end_ns_decimal",
+    "minute_decision_ns_decimal", "watermark_available_ns_decimal",
+    "source_manifest_sha256", "source_observation_sha256",
+    "sampled_prints", "sampled_lit_prints", "sampled_trf_prints",
+    "lit_quote_located_le5s_prints",
+    "provisional_trf_any_condition_notional_usd",
+    "trf_volume_eligibility_proven", "classification_accuracy_validated",
+    "join_to_tpb_historical_ranks", "source_authenticity",
+))
+_CANONICAL_POSITIVE_NS = re.compile(r"^[1-9][0-9]{0,19}$")
+
+
+def _private_view_refuse(message):
+    raise TP2PrivateViewRefusal("TP2 private handoff: " + message)
+
+
+def _private_ns(value, name, *, optional=False):
+    if value is None and optional:
+        return None
+    if (type(value) is not str or _CANONICAL_POSITIVE_NS.fullmatch(value) is None
+            or int(value) > _LIMIT_NS):
+        _private_view_refuse(name + " has invalid canonical nanosecond text")
+    return int(value)
+
+
+def _validate_private_tp2_view(view):
+    """Validate the *derived* view contract; never authenticate original tape."""
+    if not isinstance(view, dict) or set(view) != _TOP_KEYS:
+        _private_view_refuse("top-level allowlist mismatch")
+    if (view.get("schema") != SCHEMA
+            or view.get("state") not in _VIEW_STATES
+            or view.get("authority") != "PRIVATE_RESEARCH_VIEW_HOLD_NOT_DELIVERY"
+            or view.get("eod_weekly_context") !=
+               "UNCHANGED_SEPARATE_EXISTING_CONSUMER"
+            or any(view.get(k) is not None for k in (
+                "signal", "live_block_tape", "repeat_print_price_shelves",
+                "live_signed_offexchange_flow", "nbbo_classification_coverage",
+                "named_ats_attribution", "finra_ats_delayed_context"))
+            or any(view.get(k) is not False for k in (
+                "source_authenticated", "market_capture_completeness_proven",
+                "public_delivery_allowed", "ranking_trading_alert_authority"))):
+        _private_view_refuse("distribution or authority promotion")
+    now = _private_ns(view["view_asof_ns_decimal"], "view cutoff")
+    source_asof = _private_ns(
+        view["observation_asof_ns_decimal"], "observation cutoff",
+        optional=True)
+    if source_asof is not None and source_asof > now:
+        _private_view_refuse("source metadata not knowable at view cutoff")
+    state = view["state"]
+    absent = state in ("NO_TPB_OBSERVATION_SOURCE",
+                       "SOURCE_NOT_YET_KNOWABLE")
+    source_fields = ("ticker", "session", "source_generation_sha256",
+                     "source_snapshot_sha256", "source_manifest_sha256",
+                     "observation_asof_ns_decimal")
+    if absent:
+        if (any(view[k] is not None for k in source_fields)
+                or any(view[k] is not None for k in (
+                    "observed_source", "historical_ruler",
+                    "intraday_minute_baseline"))):
+            _private_view_refuse("missing/future TP-B source leaked evidence")
+    else:
+        if source_asof is None:
+            _private_view_refuse("known TP-B source has no original cutoff")
+        if (_rth_open_ns(view.get("session")) is None
+                or type(view.get("ticker")) is not str
+                or _SYMBOL.fullmatch(view["ticker"]) is None):
+            _private_view_refuse("known TP-B identity invalid")
+        for k in ("source_generation_sha256",
+                  "source_snapshot_sha256", "source_manifest_sha256"):
+            _hex(view.get(k), "TP2."+k)
+    if view["reason"] is not None:
+        if (state != "NO_QUALIFIED_TRF_OBSERVATIONS"
+                or view["reason"] not in (
+                    "NO_SAMPLED_PRINTS", "NO_QUALIFIED_OFF_EXCHANGE_OBSERVED")):
+            _private_view_refuse("unexpected free-text missingness reason")
+    if state == "PRIVATE_TPB_RESEARCH_CONTEXT_ONLY":
+        if view["observed_source"] is None or view["historical_ruler"] is None or view["intraday_minute_baseline"] is None:
+            _private_view_refuse("complete source lacks typed research layers")
+    elif (view["historical_ruler"] is not None
+          or view["intraday_minute_baseline"] is not None
+          or (state in ("NO_QUALIFIED_TRF_OBSERVATIONS",
+                         "SOURCE_NOT_YET_KNOWABLE") and
+              view["observed_source"] is not None)):
+        _private_view_refuse("unqualified/immature history was promoted")
+
+    observed = view["observed_source"]
+    if observed is not None:
+        if (not isinstance(observed, dict)
+                or set(observed) != _OBS_OUTPUT_KEYS
+                or observed["state"] != "BOUNDED_SOURCE_OBSERVATION_NOT_AUTHENTICATED"
+                or type(observed["n_trf_observed"]) is not int
+                or not 1 <= observed["n_trf_observed"] <= 20000
+                or type(observed["n_unknown_volume_policy"]) is not int
+                or not 0 <= observed["n_unknown_volume_policy"] <= 20000
+                or type(observed["full_rth_covered_claim_unverified"]) is not bool
+                or observed["cluster_clock"] !=
+                   "SIP_REPORT_TIME_PROXY_NOT_EXECUTION_CLOCK"):
+            _private_view_refuse("source observation allowlist/denominator invalid")
+        for field in ("largest_individual_print_usd",
+                      "measured_rth_trf_notional_usd",
+                      "measured_rth_trf_shares"):
+            _bounded_decimal(observed[field], "TP2."+field)
+        cluster = observed["largest_same_level_cluster_usd"]
+        if cluster is not None:
+            _bounded_decimal(cluster, "TP2.cluster")
+        total = Decimal(observed["measured_rth_trf_notional_usd"])
+        if (Decimal(observed["largest_individual_print_usd"]) > total
+                or cluster is not None and Decimal(cluster) > total):
+            _private_view_refuse("source single-print/cluster greater than day")
+        tiers = observed["block_tier_counts"]
+        if (not isinstance(tiers, dict) or set(tiers) != set(_BLOCKS)
+                or any(type(x) is not int or not 0 <= x <= observed["n_trf_observed"]
+                       for x in tiers.values())):
+            _private_view_refuse("invalid source block-tier counts")
+
+    ranks = view["historical_ruler"]
+    if ranks is not None:
+        if not isinstance(ranks, dict) or set(ranks) != set(_KINDS):
+            _private_view_refuse("historical kind allowlist invalid")
+        for name, data in ranks.items():
+            if (not isinstance(data, dict)
+                    or set(data) != {
+                        "state", "rank_desc_in_observed_sample",
+                        "n_prior_comparable", "source_metric"}
+                    or data["state"] not in _DAILY_STATES
+                    or data["source_metric"] != _RANK_SOURCE_METRICS[name]
+                    or type(data["n_prior_comparable"]) is not int
+                    or not 0 <= data["n_prior_comparable"] <= 1500):
+                _private_view_refuse("historical object metrics invalid")
+            rank = data["rank_desc_in_observed_sample"]
+            if data["state"] == "OBSERVED_COVERAGE_ONLY":
+                if type(rank) is not int or not 1 <= rank <= data["n_prior_comparable"]+1:
+                    _private_view_refuse("historical rank impossible")
+            elif rank is not None:
+                _private_view_refuse("historical rank without observed basis")
+
+    minute = view["intraday_minute_baseline"]
+    if minute is not None:
+        if (not isinstance(minute, dict)
+                or set(minute) != _MINUTE_OUTPUT_KEYS
+                or minute["state"] not in _MINUTE_STATES
+                or minute["conditioning"] != "EXACT_MINUTE_INDEX_RTH_CUMULATIVE_ONLY"
+                or type(minute["minute_index"]) is not int
+                or not 0 <= minute["minute_index"] < 390
+                or type(minute["n_prior"]) is not int
+                or not 0 <= minute["n_prior"] <= 1500):
+            _private_view_refuse("historical minute conditioning invalid")
+        for key in ("cumulative_offexchange_share", "median", "mad",
+                    "midrank_percentile"):
+            v = minute[key]
+            if v is not None and Decimal(_bounded_decimal(
+                    v, "minute."+key, allow_zero=True)) > 1:
+                _private_view_refuse("historical minute fraction invalid")
+        if minute["robust_z"] is not None:
+            _bounded_signed_decimal(minute["robust_z"], "minute.robust_z")
+        if (minute["state"] not in ("OBSERVED_COVERAGE_ONLY",
+                                   "NO_ROBUST_DISPERSION")
+                and any(minute[k] is not None for k in (
+                    "median", "mad", "robust_z", "midrank_percentile"))):
+            _private_view_refuse("historical statistics without coverage")
+
+    tp1_state = view["tp1_minute_state"]
+    tp1 = view["tp1_provisional_minute"]
+    if tp1_state not in (
+        "TP1_MINUTE_NOT_SUPPLIED", "TP1_MINUTE_NOT_YET_KNOWABLE",
+        "PROVISIONAL_TP1_MINUTE_RESEARCH_HOLD"):
+        _private_view_refuse("unknown TP1 private state")
+    if tp1_state != "PROVISIONAL_TP1_MINUTE_RESEARCH_HOLD":
+        if tp1 is not None:
+            _private_view_refuse("TP1 future/absent minute leaked")
+    else:
+        if (not isinstance(tp1, dict) or set(tp1) != _TP1_OUTPUT_KEYS
+                or tp1["source"] !=
+                   "TP1_VERIFIED_PRIVATE_BODY_REQUIRES_EXTERNAL_CUSTODY_PROOF"
+                or tp1["source_authenticity"] !=
+                   "EXTERNAL_INCUMBENT_PROOF_REQUIRED"
+                or any(tp1[k] is not False for k in (
+                    "trf_volume_eligibility_proven",
+                    "classification_accuracy_validated",
+                    "join_to_tpb_historical_ranks"))):
+            _private_view_refuse("TP1 provisional layer authority invalid")
+        if (_rth_open_ns(tp1.get("session")) is None
+                or type(tp1.get("ticker")) is not str
+                or _SYMBOL.fullmatch(tp1["ticker"]) is None):
+            _private_view_refuse("TP1 source identity invalid")
+        if not absent and (
+            tp1["ticker"] != view["ticker"]
+                or tp1["session"] != view["session"]):
+            _private_view_refuse("TP1 source mismatched TP-B identity")
+        stamps = {k: _private_ns(tp1[k], "TP1."+k) for k in (
+            "minute_start_ns_decimal", "minute_end_ns_decimal",
+            "minute_decision_ns_decimal", "watermark_available_ns_decimal")}
+        if (not _rth_open_ns(tp1["session"]) <= stamps["minute_start_ns_decimal"]
+                    < _rth_open_ns(tp1["session"])+390*60_000_000_000
+                or stamps["minute_end_ns_decimal"] -
+                   stamps["minute_start_ns_decimal"] != 60_000_000_000
+                or stamps["minute_decision_ns_decimal"] > now
+                or stamps["watermark_available_ns_decimal"] >
+                   stamps["minute_decision_ns_decimal"]):
+            _private_view_refuse("TP1 private original minute clocks invalid")
+        _hex(tp1["source_manifest_sha256"], "TP1.manifest")
+        _hex(tp1["source_observation_sha256"], "TP1.observation")
+        for field in ("sampled_prints", "sampled_lit_prints",
+                      "sampled_trf_prints", "lit_quote_located_le5s_prints"):
+            n = tp1[field]
+            if type(n) is not int or not 0 <= n <= 10000:
+                _private_view_refuse("TP1 private sampled counts invalid")
+        if (tp1["sampled_prints"] < 1
+                or tp1["sampled_lit_prints"]+tp1["sampled_trf_prints"] >
+                   tp1["sampled_prints"]
+                or tp1["lit_quote_located_le5s_prints"] >
+                   tp1["sampled_lit_prints"]):
+            _private_view_refuse("TP1 private sampled counts inconsistent")
+        _bounded_decimal(
+            tp1["provisional_trf_any_condition_notional_usd"],
+            "TP1.provisional_trf_notional", allow_zero=True)
+    return view
+
+
+def serialize_private_tp2_view(*, view):
+    """Produce canonical PRIVATE bytes, never a source/storage/publication action."""
+    _validate_private_tp2_view(view)
+    try:
+        packed = (json.dumps(view, sort_keys=True, separators=(",", ":"),
+                             allow_nan=False, ensure_ascii=True) + "\n").encode("utf-8")
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TP2PrivateViewRefusal("TP2 private handoff: invalid JSON shape") from exc
+    if not 0 < len(packed) <= MAX_PRIVATE_VIEW_BYTES:
+        _private_view_refuse("payload exceeds private byte budget")
+    return {
+        "schema": PRIVATE_VIEW_RECEIPT_SCHEMA,
+        "state": "NOT_PUBLISHED",
+        "authority": "PRIVATE_DERIVED_HANDOFF_ONLY",
+        "content_type": "application/json",
+        "sha256": hashlib.sha256(packed).hexdigest(),
+        "byte_length": len(packed),
+        "bytes_private_only": packed,
+        "is_public_delivery_authorized": False,
+        "source_custody_proven": False,
+    }
+
+
+def verify_private_tp2_bytes(*, expected_sha256, expected_byte_length, blob):
+    """Strict local derived-view readback; does NOT verify TP1 original bytes."""
+    _hex(expected_sha256, "TP2 expected_sha256")
+    if type(expected_byte_length) is not int or expected_byte_length <= 0:
+        _private_view_refuse("invalid expected byte length")
+    if (type(blob) is not bytes or len(blob) != expected_byte_length
+            or len(blob) > MAX_PRIVATE_VIEW_BYTES):
+        _private_view_refuse("private artifact byte length invalid")
+    if hashlib.sha256(blob).hexdigest() != expected_sha256:
+        _private_view_refuse("private artifact content digest mismatch")
+    try:
+        decoded = json.loads(blob.decode("utf-8"))
+    except (UnicodeError, ValueError) as exc:
+        raise TP2PrivateViewRefusal("TP2 private handoff: invalid artifact JSON") from exc
+    _validate_private_tp2_view(decoded)
+    if (json.dumps(decoded, sort_keys=True, separators=(",", ":"),
+                   allow_nan=False, ensure_ascii=True) + "\n").encode("utf-8") != blob:
+        _private_view_refuse("private artifact canonical byte representation mismatch")
+    return decoded

@@ -452,6 +452,120 @@ def test_no_tp1_layer_does_not_create_a_live_source():
     assert view["tp1_provisional_minute"] is None
 
 
+def test_private_tp2_handoff_canonical_bytes_roundtrip_with_two_layers():
+    from engine.tp2_private_ruler_view import (
+        serialize_private_tp2_view, verify_private_tp2_bytes)
+    obs, cal = originals()
+    view = build_private_tp2_view(
+        observation=obs, calibration=cal, tp1_private_minute=tp1_private_body(),
+        view_asof_ns=cal["evaluation_ns"]+1)
+    receipt = serialize_private_tp2_view(view=view)
+    assert receipt["state"] == "NOT_PUBLISHED"
+    assert receipt["authority"] == "PRIVATE_DERIVED_HANDOFF_ONLY"
+    assert receipt["is_public_delivery_authorized"] is False
+    assert receipt["source_custody_proven"] is False
+    assert receipt["byte_length"] < 64*1024
+    blob = receipt["bytes_private_only"]
+    assert blob.endswith(b"\n")
+    assert hashlib.sha256(blob).hexdigest() == receipt["sha256"]
+    verified = verify_private_tp2_bytes(
+        expected_sha256=receipt["sha256"], expected_byte_length=receipt["byte_length"],
+        blob=blob)
+    assert verified == view
+    assert verified["tp1_provisional_minute"]["join_to_tpb_historical_ranks"] is False
+    assert verified["named_ats_attribution"] is None and verified["live_block_tape"] is None
+    assert verified["public_delivery_allowed"] is False
+    assert b"trade_id" not in blob and b"raw_quote" not in blob and b"API_KEY" not in blob
+
+
+def test_tp2_private_handoff_reproduces_frozen_cross_source_golden_bytes():
+    from engine.tp2_private_ruler_view import (
+        serialize_private_tp2_view, verify_private_tp2_bytes)
+    path = Path(__file__).parent / "fixtures/tp2_private_view.synthetic.v0.json"
+    raw = path.read_bytes()
+    digest = "8c1ee4f865566f013d7a5805fccdd11c031223d39c6d8ec6b66968cbdc35f60b"
+    assert len(raw) == 3394
+    assert hashlib.sha256(raw).hexdigest() == digest
+    obs, cal = originals()
+    new = serialize_private_tp2_view(view=build_private_tp2_view(
+        observation=obs, calibration=cal, tp1_private_minute=tp1_private_body(),
+        view_asof_ns=cal["evaluation_ns"]+1))
+    assert new["bytes_private_only"] == raw
+    assert new["sha256"] == digest
+    view = verify_private_tp2_bytes(
+        expected_sha256=digest, expected_byte_length=len(raw), blob=raw)
+    assert view["tp1_provisional_minute"]["join_to_tpb_historical_ranks"] is False
+    assert view["source_authenticated"] is False and view["signal"] is None
+
+
+def test_tp2_private_handoff_is_deterministic_across_key_order():
+    from engine.tp2_private_ruler_view import serialize_private_tp2_view
+    a=context()
+    b=dict(reversed(list(a.items())))
+    first=serialize_private_tp2_view(view=a)
+    second=serialize_private_tp2_view(view=b)
+    assert first["sha256"]==second["sha256"]
+    assert first["bytes_private_only"]==second["bytes_private_only"]
+
+
+def test_tp2_private_handoff_rejects_wrong_sha_length_or_noncanonical_bytes():
+    from engine.tp2_private_ruler_view import (
+        serialize_private_tp2_view, verify_private_tp2_bytes)
+    a=serialize_private_tp2_view(view=context())
+    with pytest.raises(TP2PrivateViewRefusal, match="length"):
+        verify_private_tp2_bytes(expected_sha256=a["sha256"],
+            expected_byte_length=a["byte_length"]-1, blob=a["bytes_private_only"])
+    with pytest.raises(TP2PrivateViewRefusal, match="digest"):
+        verify_private_tp2_bytes(expected_sha256="f"*64,
+            expected_byte_length=a["byte_length"], blob=a["bytes_private_only"])
+    uncanonical=json.dumps(context(),sort_keys=False,indent=2).encode()+b"\n"
+    with pytest.raises(TP2PrivateViewRefusal, match="canonical"):
+        verify_private_tp2_bytes(expected_sha256=hashlib.sha256(uncanonical).hexdigest(),
+            expected_byte_length=len(uncanonical),blob=uncanonical)
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda x: x.update(public_delivery_allowed=True),
+    lambda x: x.update(ranking_trading_alert_authority=True),
+    lambda x: x.update(named_ats_attribution={"fictitious":True}),
+    lambda x: x.update(live_signed_offexchange_flow={"buy":100}),
+    lambda x: x.update(raw_vendor_private={"API_KEY":"secret"}),
+    lambda x: x["tp1_provisional_minute"].update(source_authenticity="PROVEN"),
+    lambda x: x["tp1_provisional_minute"].update(join_to_tpb_historical_ranks=True),
+])
+def test_tp2_private_handoff_rejects_rehashed_forged_payload(mutation):
+    from engine.tp2_private_ruler_view import (
+        serialize_private_tp2_view, verify_private_tp2_bytes)
+    obs,cal=originals()
+    original=build_private_tp2_view(
+        observation=obs,calibration=cal,tp1_private_minute=tp1_private_body(),
+        view_asof_ns=cal["evaluation_ns"]+1)
+    altered=copy.deepcopy(original)
+    mutation(altered)
+    with pytest.raises(TP2PrivateViewRefusal):
+        serialize_private_tp2_view(view=altered)
+    raw=(json.dumps(altered,sort_keys=True,separators=(",",":"))+"\\n").encode()
+    with pytest.raises(TP2PrivateViewRefusal):
+        verify_private_tp2_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+            expected_byte_length=len(raw),blob=raw)
+
+
+def test_future_source_handoff_stays_private_and_has_no_future_metadata():
+    from engine.tp2_private_ruler_view import (
+        serialize_private_tp2_view, verify_private_tp2_bytes)
+    obs,cal=originals()
+    future=build_private_tp2_view(observation=obs,calibration=cal,
+        view_asof_ns=obs["asof_ns"]-1)
+    a=serialize_private_tp2_view(view=future)
+    restored=verify_private_tp2_bytes(
+        expected_sha256=a["sha256"],expected_byte_length=a["byte_length"],
+        blob=a["bytes_private_only"])
+    assert restored["state"]=="SOURCE_NOT_YET_KNOWABLE"
+    assert restored["source_snapshot_sha256"] is None
+    assert restored["observation_asof_ns_decimal"] is None
+    assert restored["tp1_provisional_minute"] is None
+
+
 def test_unknown_daily_rank_state_or_invalid_minute_conditioning_refused():
     observation, golden = originals()
     invalid = copy.deepcopy(golden)
