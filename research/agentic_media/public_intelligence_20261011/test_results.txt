@@ -1,0 +1,20 @@
+Integrated command:
+python3 -m pytest tests/test_press_planner.py tests/test_press_writer.py tests/test_press_validators.py tests/test_press_run.py tests/test_press_properties.py tests/test_press_workflow.py tests/test_press_staging_inspection.py tests/test_earnings_story_press_ingress.py tests/test_earnings_story_press_admission.py tests/test_earnings_story_press_stage_workflow.py -q
+
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 64%]
+........................................................................ [ 85%]
+.................................................                        [100%]
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-a52382b3-00e3-4467-ae2c-6d3078707196/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-a52382b3-00e3-4467-ae2c-6d3078707196/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+337 passed, 1 warning in 41.52s
+
+Final URL-parser repair: python3 -m pytest -q tests/test_press_validators.py -> 92 passed; four new adversarial variants failed before repair.
+Agent OS validation: 1609 records, 0 errors, 102 inherited warnings.
+git diff --check: passed.
