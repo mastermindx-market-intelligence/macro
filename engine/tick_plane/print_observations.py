@@ -8,14 +8,17 @@ An invalid or absent quote/condition can never be filled from the later market.
 
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, Context
 
 from engine.flow_signing import classify_print
 from engine.tick_plane.asof_nbbo import InFlightNBBO, MATCH_SCHEMA
 from engine.tick_plane.condition_policy import POLICY_SCHEMA
 from engine.tick_plane.exchange_reference import VERDICT_SCHEMA as VENUE_SCHEMA
 from engine.tick_plane.quote_condition_policy import evaluate_quote_condition, POLICY_SCHEMA as QUOTE_POLICY_SCHEMA
-from engine.tick_plane.stream_events import SCHEMA as STREAM_SCHEMA
+from engine.tick_plane.stream_events import (
+    SCHEMA as STREAM_SCHEMA, MAX_FIXED_DECIMAL_CHARS, _bounded_fixed_decimal,
+    FrameContractError,
+)
 
 SCHEMA = "equity.tick_plane.provisional_print_observation/v0"
 
@@ -27,7 +30,10 @@ def _shares(trade):
         return None
     if not shares.is_finite() or shares <= 0:
         return None
-    return format(shares, "f")
+    try:
+        return format(_bounded_fixed_decimal(shares, "shares"), "f")
+    except FrameContractError:
+        return None
 
 
 def _money(trade):
@@ -38,7 +44,16 @@ def _money(trade):
         return None
     if not price.is_finite() or not shares.is_finite() or price <= 0 or shares <= 0:
         return None
-    return format(price * shares, "f")
+    try:
+        _bounded_fixed_decimal(price, "price")
+        _bounded_fixed_decimal(shares, "shares")
+        # The default Decimal context rounds beyond 28 significant digits.
+        # Source scalars are width-bounded, so this per-call precision is both
+        # finite and sufficient for exact multiplication before presentation.
+        product = Context(prec=2 * MAX_FIXED_DECIMAL_CHARS + 16).multiply(price, shares)
+        return format(_bounded_fixed_decimal(product, "notional"), "f")
+    except FrameContractError:
+        return None
 
 
 def observe_provisional_trade(

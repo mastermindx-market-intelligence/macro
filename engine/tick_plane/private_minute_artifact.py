@@ -18,7 +18,11 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
+
+from engine.tick_plane.stream_events import (
+    FrameContractError, MAX_FIXED_DECIMAL_CHARS, _bounded_fixed_decimal,
+)
 
 SCHEMA = "equity.tick_plane.private_minute_artifact/v0"
 SOURCE_SCHEMA = "equity.tick_plane.minute_observation/v0"
@@ -109,7 +113,10 @@ def _source_decimal(value, field):
         raise PrivateMinuteRefusal(f"{field} malformed source amount") from exc
     if not amount.is_finite() or amount < 0:
         raise PrivateMinuteRefusal(f"{field} invalid source amount")
-    return amount
+    try:
+        return _bounded_fixed_decimal(amount, field)
+    except FrameContractError as exc:
+        raise PrivateMinuteRefusal(f"{field} exceeds bounded source decimal width") from exc
 
 
 def _digest(value, field, *, optional=False):
@@ -193,12 +200,22 @@ def project_private_minute(*, source_minute, source_manifest_sha256):
                +counters["n_lit_classified_quote_gt5s_prints"]
                +counters["n_lit_unclassified_prints"]!=counters["n_lit_eligible_prints"]):
         raise PrivateMinuteRefusal("source minute contradictory print denominators")
-    if (notional["buy_proxy_notional_usd"]+notional["sell_proxy_notional_usd"]
-            +notional["midpoint_notional_usd"]+notional["unknown_notional_usd"]
-            +notional["ineligible_notional_usd"]!=notional["gross_sampled_notional_usd"]
-            or sum((shares[key] for key in (
-                "source_volume_included_shares","source_volume_excluded_shares",
-                "source_volume_unknown_shares")),Decimal(0))!=shares["source_all_printed_shares"]):
+    # The default Decimal context is only 28 significant digits. A huge leg
+    # can otherwise round a small but nonzero amount away and falsely satisfy
+    # the conservation test. Every source scalar above was width-bounded.
+    # This explicit precision covers the maximum combined fixed representation
+    # plus carry without relaxing or rewriting source evidence.
+    with localcontext() as exact:
+        exact.prec = 2 * MAX_FIXED_DECIMAL_CHARS + 16
+        notional_total = sum((notional[key] for key in (
+            "buy_proxy_notional_usd","sell_proxy_notional_usd",
+            "midpoint_notional_usd","unknown_notional_usd",
+            "ineligible_notional_usd")), Decimal(0))
+        share_total = sum((shares[key] for key in (
+            "source_volume_included_shares","source_volume_excluded_shares",
+            "source_volume_unknown_shares")), Decimal(0))
+    if (notional_total != notional["gross_sampled_notional_usd"]
+            or share_total != shares["source_all_printed_shares"]):
         raise PrivateMinuteRefusal("source notional/volume conservation failed")
     reasons=_reasons(m["reason_counts"],"reason_counts")
     age_reasons=_reasons(m["lit_unknown_reason_counts"],"lit_unknown_reason_counts")

@@ -142,6 +142,23 @@ class PilotEvidenceTests(unittest.TestCase):
         self.assertEqual(out["numeric_checks"]["eligible_volume_names_le2pct"],
                          "NUMERIC_MET")
 
+    def test_volume_2pct_boundary_does_not_round_strictly_over_to_pass(self):
+        # 2% + a nonzero fractional increment beyond Decimal default precision
+        # must be rejected even if the displayed ratio rounds to 0.02.
+        rec = symbol(source_volume_shares="102.00000000000000000000000000000001",
+                     reference_volume_shares="100")
+        report = diag([rec])
+        self.assertEqual(report["n_volume_within_2pct"], 0)
+        self.assertEqual(report["numeric_checks"]["eligible_volume_names_le2pct"],
+                         "NUMERIC_NOT_MET")
+
+    def test_volume_source_exponents_cannot_expand_at_render(self):
+        for field in ("source_volume_shares", "reference_volume_shares"):
+            for exponent in ("1e+999999999", "1e-999999999"):
+                with self.subTest(field=field, exponent=exponent):
+                    with self.assertRaisesRegex(PilotEvidenceRefusal, "bounded source decimal"):
+                        diag([symbol(**{field: exponent})])
+
     def test_volume_2pct_inclusive_boundary(self):
         rec=symbol(source_volume_shares="102",reference_volume_shares="100")
         out=diag([rec])

@@ -8,8 +8,12 @@ empty capture, missing watermark or incomplete sample as zero pressure.
 
 from __future__ import annotations
 
-from collections import Counter
-from decimal import Decimal, InvalidOperation
+from collections import Counter, defaultdict
+from decimal import Decimal, InvalidOperation, Context
+
+from engine.tick_plane.stream_events import (
+    FrameContractError, MAX_FIXED_DECIMAL_CHARS, _bounded_fixed_decimal,
+)
 from hashlib import sha256
 import json
 
@@ -51,7 +55,10 @@ def _decimal(value, label):
         raise MinuteProjectionRefusal(f"{label} malformed decimal") from exc
     if not d.is_finite() or d <= 0:
         raise MinuteProjectionRefusal(f"{label} must be positive and finite")
-    return d
+    try:
+        return _bounded_fixed_decimal(d, label)
+    except FrameContractError as exc:
+        raise MinuteProjectionRefusal(f"{label} exceeds bounded source decimal width") from exc
 
 
 def _money(d):
@@ -139,7 +146,14 @@ def project_provisional_minute(
         return {**head,"state":"NO_SAMPLED_PRINTS",
                 "reason":"NO_OBSERVED_ROWS_IS_NOT_PROOF_OF_ZERO_MARKET_VOLUME",
                 "n_sampled_prints":0}
-    sums=Counter()
+    sums=defaultdict(Decimal)
+    # Never let ordinary 28-digit Decimal context discard a small source leg
+    # when adding much larger observed amounts. This context is private to
+    # this minute, with precision bounded by the admitted scalar widths.
+    amount_context=Context(prec=2 * MAX_FIXED_DECIMAL_CHARS + 16)
+    def add_amount(key, amount):
+        sums[key]=amount_context.add(sums[key], amount)
+
     counts=Counter()
     problems=Counter()
     lit_unknown_reasons=Counter()
@@ -153,17 +167,17 @@ def project_provisional_minute(
         volume_eligible=o["trade_volume_eligible"]
         if type(volume_eligible) is bool:
             if volume_eligible:
-                sums["source_volume_included_shares"]+=shares
+                add_amount("source_volume_included_shares",shares)
                 counts["source_volume_included_prints"]+=1
             else:
-                sums["source_volume_excluded_shares"]+=shares
+                add_amount("source_volume_excluded_shares",shares)
                 counts["source_volume_excluded_prints"]+=1
         elif volume_eligible is None:
-            sums["source_volume_unknown_shares"]+=shares
+            add_amount("source_volume_unknown_shares",shares)
             counts["source_volume_unknown_prints"]+=1
         else:
             raise MinuteProjectionRefusal("source volume eligibility must be boolean or unknown")
-        sums["source_all_printed_shares"]+=shares
+        add_amount("source_all_printed_shares",shares)
         limit=_integer(o["quote_age_limit_ns"],"quote_age_limit_ns")
         source_quote_age_limits.add(limit)
         side=o["side_proxy"]
@@ -171,18 +185,18 @@ def project_provisional_minute(
         venue=o["venue_class"]
         if venue not in ("LIT","TRF","UNKNOWN"):
             raise MinuteProjectionRefusal("invalid native venue classification")
-        sums["observed"]+=gross
+        add_amount("observed",gross)
         counts["total"]+=1
         counts[venue]+=1
         if state=="INELIGIBLE":
             if side!="unclassified" or o["signed_notional_usd"] is not None:
                 raise MinuteProjectionRefusal("ineligible print has signed quantity")
-            sums["ineligible"]+=gross
+            add_amount("ineligible",gross)
             counts["ineligible"]+=1
         elif state=="UNKNOWN":
             if side!="unclassified" or o["signed_notional_usd"] is not None:
                 raise MinuteProjectionRefusal("unqualified print has signed quantity")
-            sums["unknown"]+=gross
+            add_amount("unknown",gross)
             counts["unknown"]+=1
         elif state=="MEASURED_SOURCE_PROXY":
             if venue!="LIT" or side not in ("buy","sell","mid"):
@@ -198,7 +212,7 @@ def project_provisional_minute(
             if side=="mid":
                 if signed is not None:
                     raise MinuteProjectionRefusal("midpoint may not carry signed amount")
-                sums["mid"]+=gross
+                add_amount("mid",gross)
             else:
                 if not isinstance(signed,str):
                     raise MinuteProjectionRefusal("signed notional disagrees with exact gross")
@@ -209,7 +223,7 @@ def project_provisional_minute(
                 if (not signed_decimal.is_finite()
                         or signed_decimal != (gross if side=="buy" else -gross)):
                     raise MinuteProjectionRefusal("signed notional disagrees with exact gross")
-                sums[side]+=gross
+                add_amount(side,gross)
             counts[side]+=1
             if (not isinstance(o["quote_conditions_rules_ref"],str)
                     or len(o["quote_conditions_rules_ref"])!=64):
@@ -224,7 +238,7 @@ def project_provisional_minute(
         # Parent TP-1's 95% floor applies ONLY to source-eligible lit prints,
         # not halts, TRF, unknown venues, or unknown sale/venue policies.
         if venue=="LIT" and state!="INELIGIBLE":
-            sums["lit_observed"]+=gross
+            add_amount("lit_observed",gross)
             if (o["trade_condition_policy_reason"]=="CONSERVATIVE_PRICE_FORMING_CANDIDATE"
                     and o["venue_admission_reason"]=="SOURCE_REFERENCE_EXCHANGE_CANDIDATE"):
                 counts["lit_eligible"]+=1
@@ -244,7 +258,7 @@ def project_provisional_minute(
             else:
                 counts["lit_source_unqualified"]+=1
         if venue=="TRF":
-            sums["trf"]+=gross
+            add_amount("trf",gross)
         ref=o["trade_conditions_rules_ref"]
         if ref is not None:
             if not isinstance(ref,str) or len(ref)!=64:
@@ -268,7 +282,7 @@ def project_provisional_minute(
         raise MinuteProjectionRefusal("mixed exchange reference generations in one minute")
     if len(policy_refs)>1:
         raise MinuteProjectionRefusal("mixed condition rule generations in one minute")
-    known_lit=sums["buy"]+sums["sell"]+sums["mid"]
+    known_lit=amount_context.add(amount_context.add(sums["buy"],sums["sell"]),sums["mid"])
     lit_total=sums["lit_observed"]
     if (counts["lit_eligible"]!=counts["lit_classified_le5s"]
             +counts["lit_classified_gt5s"]+counts["lit_unknown"]):

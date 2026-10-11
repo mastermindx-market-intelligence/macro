@@ -89,6 +89,19 @@ def input_args(trade=None,**updates):
 
 
 class ProvisionalObservationTests(unittest.TestCase):
+    def test_observed_notional_multiplication_keeps_exact_decimal_precision(self):
+        from decimal import Decimal, localcontext
+        from engine.tick_plane.print_observations import _money, _shares
+        price = "1234567890.123456789012345678"
+        shares = "0.123456789012345678"
+        with localcontext() as exact:
+            exact.prec = 272
+            expected = format(Decimal(price) * Decimal(shares), "f")
+        self.assertEqual(_money({"price": price, "decimal_size_shares": shares}), expected)
+        self.assertEqual(_shares({"decimal_size_shares": shares}), shares)
+        self.assertIsNone(_money({"price": "1e+999999999", "decimal_size_shares": "1"}))
+        self.assertIsNone(_shares({"decimal_size_shares": "1e-999999999"}))
+
     def setUp(self):
         self.ring=InFlightNBBO(session=SESSION,symbols={"SPY"})
         self.ring.ingest_quote(q())

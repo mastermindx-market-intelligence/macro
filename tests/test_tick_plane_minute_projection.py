@@ -65,6 +65,18 @@ def run(observations=None,**rest):
     return project_provisional_minute(**kwargs(observations,**rest))
 
 class ProjectionTests(unittest.TestCase):
+    def test_minute_totals_never_round_away_a_small_real_print(self):
+        big = "1000000000000000000000000000000"
+        minute = run([row("big", gross=big), row("small", gross="1")])
+        expected = str(int(big) + 1)
+        self.assertEqual(minute["gross_sampled_notional_usd"], expected)
+        self.assertEqual(minute["buy_proxy_notional_usd"], expected)
+        self.assertEqual(minute["n_sampled_prints"], 2)
+
+    def test_forged_oversized_source_amount_refuses_before_format(self):
+        with self.assertRaisesRegex(MinuteProjectionRefusal, "bounded source decimal width"):
+            run([row(gross="1e+999999999")])
+
     def test_qualified_buy_sell_mid_and_unknown_are_separate(self):
         rows=[row("buy",gross="100.50"),row("sell",side="sell",gross="30.25"),
               row("mid",side="mid",gross="20.00"),
@@ -638,6 +650,30 @@ class PrivateServiceMinuteHandoffTests(unittest.TestCase):
         m["original_latest_available_ns"]=m["decision_ns"]+1
         with self.assertRaisesRegex(PrivateMinuteRefusal,"time/receipt"):
             self.sealed(m)
+
+    def test_notional_conservation_cannot_lose_small_leg_to_decimal_rounding(self):
+        m = run()
+        m["gross_sampled_notional_usd"] = "1e30"
+        m["buy_proxy_notional_usd"] = "1e30"
+        m["unknown_notional_usd"] = "1"
+        with self.assertRaisesRegex(PrivateMinuteRefusal, "conservation"):
+            self.sealed(m)
+
+    def test_share_conservation_cannot_lose_small_leg_to_decimal_rounding(self):
+        m = run()
+        m["source_all_printed_shares"] = "1e30"
+        m["source_volume_included_shares"] = "1e30"
+        m["source_volume_unknown_shares"] = "1"
+        with self.assertRaisesRegex(PrivateMinuteRefusal, "conservation"):
+            self.sealed(m)
+
+    def test_private_projection_refuses_extreme_amount_exponents(self):
+        for exponent in ("1e+999999999", "1e-999999999"):
+            with self.subTest(exponent=exponent):
+                m = run()
+                m["gross_sampled_notional_usd"] = exponent
+                with self.assertRaisesRegex(PrivateMinuteRefusal, "bounded source decimal width"):
+                    self.sealed(m)
 
     def test_notional_and_share_conservation_tested_before_serialization(self):
         for field in ("gross_sampled_notional_usd","source_volume_included_shares"):

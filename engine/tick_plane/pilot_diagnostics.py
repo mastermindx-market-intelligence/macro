@@ -16,8 +16,11 @@ Reference: research/MASSIVE_ADVANCED_INTEGRATION_MASTERPLAN_BY_FABLE.md §0.
 
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
 from engine.tick_plane.minute_projection import SCHEMA as TP1_MINUTE_SCHEMA, MINUTE_NS
+from engine.tick_plane.stream_events import (
+    FrameContractError, MAX_FIXED_DECIMAL_CHARS, _bounded_fixed_decimal,
+)
 from hashlib import sha256
 import json
 import re
@@ -68,7 +71,10 @@ def _shares(value, field, *, optional=False):
         raise PilotEvidenceRefusal(f"{field} invalid decimal") from exc
     if not number.is_finite() or number < 0:
         raise PilotEvidenceRefusal(f"{field} invalid nonnegative shares")
-    return number
+    try:
+        return _bounded_fixed_decimal(number, field)
+    except FrameContractError as exc:
+        raise PilotEvidenceRefusal(f"{field} exceeds bounded source decimal width") from exc
 
 
 def _fmt(value):
@@ -186,9 +192,18 @@ def summarize_tp1_soak_evidence(
             elif reference_volume==0:
                 zero_reference+=1
             else:
-                discrepancy=abs(source_volume-reference_volume)/reference_volume
+                # Do the threshold comparison on exact admitted decimals. At
+                # Decimal's default precision a difference just over 2% can
+                # round to precisely 2% and create a false quality PASS.
+                with localcontext() as exact:
+                    exact.prec = 2 * MAX_FIXED_DECIMAL_CHARS + 16
+                    absolute_difference = abs(source_volume-reference_volume)
+                    within_ceiling = (absolute_difference <=
+                                      _VOLUME_DIFF_CEILING * reference_volume)
+                # Retain the usual compact rounded ratio for display only.
+                discrepancy=absolute_difference/reference_volume
                 volume_names+=1
-                if discrepancy <= _VOLUME_DIFF_CEILING:
+                if within_ceiling:
                     volume_within+=1
         per_symbol.append({
             "ticker":ticker, "state":state,
