@@ -1,0 +1,21 @@
+{
+  "slug": "stockopine",
+  "name": "StockOpine",
+  "channel": "newsletter",
+  "audience": "fundamental earnings and long-only portfolio thesis readers",
+  "profile_url": "https://www.stockopine.com/archive",
+  "selected_tickers": [
+    "MU",
+    "AMD",
+    "NVDA"
+  ],
+  "brief_angle": "post-Micron AI-demand evidence versus later AMD issuer update; next check and falsifier",
+  "status": "candidate",
+  "profile_verified_at_utc": "2026-10-08T04:00:00Z",
+  "profile_time_precision": "research-day-normalized, not exact observed clock",
+  "research_only": true,
+  "research_ref": "https://github.com/mastermindx-market-intelligence/macro/pull/8681",
+  "publication_permission": "NOT_GRANTED",
+  "brand_permission_receipt": null,
+  "notes": "Session 05 research, Draft/HOLD PR #8681, 2026-10-08; unaffiliated publisher candidate only"
+}
