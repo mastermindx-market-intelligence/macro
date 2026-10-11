@@ -27,6 +27,8 @@ Environment=MM_TICKER_NEWS_DB=/var/lib/macro-ticker-news/qbus.sqlite3
 Environment=MM_TICKER_NEWS_UNIVERSE=/var/lib/macro-ticker-news/news_universe.json
 Environment=MM_TICKER_NEWS_RIGHTS=/etc/macro-ticker-news-rights.json
 Environment=MM_TICKER_NEWS_HEALTH=/var/lib/macro-ticker-news/health.json
+# Integrated Answer v0 read API (app/integrated_answer.py _require_enabled): flag-on; route 404s when unset.
+Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1
 StateDirectory=macro-codex macro-codex-2 macro-codex-3
 StateDirectoryMode=0700
 # ── Site Access Gate env (all optional; safe defaults apply when absent) ─────
