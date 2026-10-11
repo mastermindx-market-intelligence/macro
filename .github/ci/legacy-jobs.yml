@@ -5604,6 +5604,9 @@ jobs:
     paths:
       - lib/illus.py
       - lib/us_pullback_observation.py
+      - collectors/massive_flatfiles.py
+      - collectors/massive_stock_day.py
+      - lib/massive_ticker.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -10070,6 +10073,9 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - lib/us_pullback_observation.py
+      - collectors/massive_flatfiles.py
+      - collectors/massive_stock_day.py
+      - lib/massive_ticker.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
