@@ -225,6 +225,8 @@ desks:
 public_link_prefixes:
   - "/research/"
   - "/blog/"
+  # Logged-out TTWO dossier verified 200 with this exact canonical URL (2026-10-11).
+  - "/stocks/"
 
 # Full-name aliases for EXTERNAL primary sources (used by check_primary_source).
 # The naming check requires the source's FULL name, not a token from it: token
