@@ -1,0 +1,1898 @@
+{
+  "artifact_type": "research_notebook_not_production_schema",
+  "research_cutoff": "2026-09-23",
+  "operation_key": "gmi-energy-sector-research-20260923-sol-001",
+  "carrier": "macro PR #7791",
+  "publication_state": "PORTABLE_DRAFT_PENDING_SAME_CARRIER_RECONCILIATION",
+  "protected_skillpack_commit": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "last_reconciled_carrier_head": "eaf6bc6ff1ffd8071063cdc0fcc191a076098b0d",
+  "authority": {
+    "native_ingestion": false,
+    "change_theme_state": false,
+    "change_identity": false,
+    "change_baskets": false,
+    "rank": false,
+    "gate_entry": false,
+    "size": false,
+    "trade": false,
+    "fable_handoff_issued": false
+  },
+  "sources": [
+    {
+      "id": "P01",
+      "publisher": "PJM",
+      "title": "January 2026 long-term load forecast explanation",
+      "url": "https://insidelines.pjm.com/pjms-updated-20-year-forecast-continues-to-see-significant-long-term-load-growth/",
+      "publication_date": "2026-01-14",
+      "publication_precision": "date",
+      "period": "2026 forecast vintage",
+      "retrieved_on": "2026-09-23",
+      "kind": "system_operator_primary",
+      "review_scope": "relevant text read",
+      "locator": "Summer peak forecast and large-load vetting discussion",
+      "limitation": "Forecast vintages, not realized demand; do not use the unexamined underlying forecast workbook.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P02",
+      "publisher": "U.S. EIA",
+      "title": "September 2026 electricity outlook",
+      "url": "https://www.eia.gov/outlooks/steo/report/elec_coal_renew.php",
+      "publication_date": "2026-09-09",
+      "publication_precision": "date",
+      "period": "2026-2027 forecast",
+      "retrieved_on": "2026-09-23",
+      "kind": "government_forecast",
+      "review_scope": "relevant text read",
+      "locator": "Electricity consumption/generation outlook; model completed September 3",
+      "limitation": "Mutable release URL; preserve September vintage. Sales and generation have different scope. Forecast not actual.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P03",
+      "publisher": "Office of the Texas Governor",
+      "title": "Directive to TCEQ concerning data-center permits",
+      "url": "https://gov.texas.gov/news/post/governor-abbott-directs-tceq-to-halt-data-center-permits",
+      "publication_date": "2026-09-21",
+      "publication_precision": "date",
+      "period": "2026-09-21 directive",
+      "retrieved_on": "2026-09-23",
+      "kind": "government_primary",
+      "review_scope": "relevant text read",
+      "locator": "Directive, audit condition, October 19 update",
+      "limitation": "Official announcement of directive, not plant-level legal determination, shutdown evidence or restart date.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P04",
+      "publisher": "PJM",
+      "title": "2027/2028 capacity-auction release",
+      "url": "https://insidelines.pjm.com/pjm-auction-procures-134479-mw-of-generation-resources/",
+      "publication_date": "2025-12-17",
+      "publication_precision": "date",
+      "period": "2027-06-01/2028-05-31",
+      "retrieved_on": "2026-09-23",
+      "kind": "system_operator_primary",
+      "review_scope": "relevant text read",
+      "locator": "Clearing price and delivery-period context",
+      "limitation": "Not the latest auction by research cutoff. Inconsistent aggregate cleared-volume prose excluded.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P05",
+      "publisher": "PJM via PR Newswire",
+      "title": "2028/2029 capacity auction results",
+      "url": "https://www.prnewswire.com/news-releases/pjm-capacity-auction-procures-138-318-mw-of-generation-resources-as-work-continues-to-address-growing-electricity-demand-302825613.html",
+      "publication_date": "2026-07-14",
+      "publication_precision": "date",
+      "period": "2028-06-01/2029-05-31",
+      "retrieved_on": "2026-09-23",
+      "kind": "system_operator_primary",
+      "review_scope": "relevant text read",
+      "locator": "Clearing price and procured capacity, July auction",
+      "limitation": "Capacity market outcome under then-current rules, not unrestricted scarcity valuation or blackout probability.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P06",
+      "publisher": "PJM",
+      "title": "June 25 auction preparation and rule context",
+      "url": "https://insidelines.pjm.com/the-capacity-auction-is-coming-heres-what-were-doing-now/",
+      "publication_date": "2026-06-25",
+      "publication_precision": "date",
+      "period": "2028/2029 auction",
+      "retrieved_on": "2026-09-23",
+      "kind": "system_operator_primary",
+      "review_scope": "relevant text read",
+      "locator": "2028/2029 price cap/floor and extended application",
+      "limitation": "Pre-auction rule context; use July result for actual clearing outcome.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P07",
+      "publisher": "Talen Energy",
+      "title": "2027/2028 auction announcement, furnished 8-K exhibit",
+      "url": "https://ir.talenenergy.com/node/9021/html",
+      "publication_date": "2025-12-17",
+      "publication_precision": "date",
+      "period": "2027-06-01/2028-05-31",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "8,745 MW, $333.44/MW-day, planning year",
+      "limitation": "Future gross capacity revenue, not current earnings or operating cash; do not imply complete filing review.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P08",
+      "publisher": "Talen Energy",
+      "title": "2028/2029 auction announcement",
+      "url": "https://ir.talenenergy.com/news-releases/news-release-details/talen-energy-reports-pjm-auction-results-20282029-planning-year",
+      "publication_date": "2026-07-14",
+      "publication_precision": "date",
+      "period": "2028-06-01/2029-05-31",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "10,180 MW, $325/MW-day, planning year",
+      "limitation": "Changing portfolio; gross expected capacity revenue is neither incremental profit nor organic growth.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P09",
+      "publisher": "Talen Energy",
+      "title": "Second-quarter results and guidance",
+      "url": "https://ir.talenenergy.com/news-releases/news-release-details/talen-energy-reports-second-quarter-2026-results-raises-2026",
+      "publication_date": "2026-08-05",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Cornerstone acquisition closing and reporting perimeter",
+      "limitation": "Establishes portfolio change; not a precise bridge attributing every cleared MW to the acquisition.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P10",
+      "publisher": "Vistra",
+      "title": "Second-quarter results",
+      "url": "https://investor.vistracorp.com/2026-08-07-Vistra-Reports-Second-Quarter-2026-Results",
+      "publication_date": "2026-08-07",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Hedge as-of note; 2026 guidance/2027 opportunity footnotes",
+      "limitation": "August 3 hedge observation, October 31 2025 curves underlying 2027 opportunity. Opportunity is not guidance; exclusions matter.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P11",
+      "publisher": "Vistra",
+      "title": "Meta nuclear power agreements",
+      "url": "https://investor.vistracorp.com/2026-01-09-Vistra-and-Meta-Announce-Agreements-to-Support-Nuclear-Plants-in-PJM-and-Add-New-Nuclear-Generation-to-the-Grid",
+      "publication_date": "2026-01-09",
+      "publication_precision": "date",
+      "period": "2026-2034 prospective ramp",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Existing output versus uprates and phased commencement",
+      "limitation": "Contracted MW do not equal newly built MW; exact pricing and attributable incremental cash not disclosed here.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P12",
+      "publisher": "Vistra via SEC",
+      "title": "2025 Form 10-K, PPA timing excerpt",
+      "url": "https://www.sec.gov/Archives/edgar/data/1692819/000169281926000006/vistra-20251231.htm",
+      "publication_date": null,
+      "publication_precision": "unknown",
+      "period": "2025-12-31",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_filing_indexed_excerpt",
+      "review_scope": "targeted primary indexed excerpt",
+      "locator": "Meta PPA existing/uprate timing",
+      "limitation": "Primary indexed excerpt only; do not claim full annual-filing review.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P13",
+      "publisher": "Duke Energy via SEC",
+      "title": "Second-quarter earnings release",
+      "url": "https://www.sec.gov/Archives/edgar/data/1326160/000132616026000037/er-20260630xearningsreleas.htm",
+      "publication_date": "2026-08-04",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Recovery, depreciation/interest and results",
+      "limitation": "Company-wide release must not supply project-specific approval or return parameters.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P14",
+      "publisher": "Duke Energy registrants via SEC",
+      "title": "June 30 Form 10-Q, scoped project/regulatory excerpts",
+      "url": "https://www.sec.gov/Archives/edgar/data/20290/000132616026000040/duk-20260630.htm",
+      "publication_date": "2026-08-04",
+      "publication_precision": "date",
+      "period": "2026-06-30 with subsequent events",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_filing_indexed_excerpt",
+      "review_scope": "targeted indexed primary excerpts; full filing unavailable",
+      "locator": "Separate Anderson combined-cycle and Buck combustion-turbine headings",
+      "limitation": "Full-file open exceeded tool size limit. Targeted indexed excerpts read; Buck CWIP treatment must not be assigned to Anderson. Proposed interests are not closed ownership.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P15",
+      "publisher": "Duke Energy",
+      "title": "Anderson gas-generation approval announcement",
+      "url": "https://news.duke-energy.com/releases/regulators-approve-duke-energys-proposal-for-new-natural-gas-generation-to-support-south-carolinas-growing-energy-needs",
+      "publication_date": "2026-03-26",
+      "publication_precision": "date",
+      "period": "project announcement",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Approval announcement, project and expected service",
+      "limitation": "Announcement versus later written order are different events; early-2031 target differs from later filing end-2030 target.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P16",
+      "publisher": "AEP Ohio",
+      "title": "Data-center tariff customer explanation",
+      "url": "https://www.aepohio.com/company/about/rates/data-center-tariff/",
+      "publication_date": null,
+      "publication_precision": "unknown",
+      "period": "tariff effective 2025-07-23",
+      "retrieved_on": "2026-09-23",
+      "kind": "utility_primary_tariff_summary",
+      "review_scope": "relevant text read",
+      "locator": "Effective date; ramp; size-based demand floor; collateral and netting",
+      "limitation": "Primary tariff summary, not complete legal schedule or full bill calculator. Tariff effective July 23 2025; page update date unknown.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P17",
+      "publisher": "GE Vernova",
+      "title": "Second-quarter results",
+      "url": "https://www.gevernova.com/news/press-releases/ge-vernova-reports-second-quarter-2026-financial-results-raises-2026-financial",
+      "publication_date": "2026-07-22",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Orders, gas equipment backlog/reservations, cash",
+      "limitation": "Combined backlog/reservation measure is not all firm orders; output run-rate targets not installed capacity.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P18",
+      "publisher": "GE Vernova via SEC",
+      "title": "June 30 Form 10-Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/1996810/000199681026000148/gev-20260630.htm",
+      "publication_date": "2026-07-22",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant acquisition, cash, RPO and contract-balance sections",
+      "locator": "Prolec acquisition; contract liabilities; RPO and recognition fractions",
+      "limitation": "Balance-sheet liability movement differs from cash-flow contribution. Cumulative RPO fractions must not be summed as annual revenue.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P19",
+      "publisher": "Quanta Services",
+      "title": "Second-quarter results",
+      "url": "https://investors.quantaservices.com/news-events/press-releases/detail/402/quanta-services-reports-second-quarter-2026-results",
+      "publication_date": "2026-07-30",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Backlog and remaining performance obligation definitions",
+      "limitation": "RPO is a subset of backlog; estimated MSA renewals are not equally firm contractual obligations.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P20",
+      "publisher": "Quanta Services via SEC",
+      "title": "June 30 Form 10-Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/1050915/000105091526000025/pwr-20260630.htm",
+      "publication_date": "2026-07-30",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant contract, reporting and acquisition sections",
+      "locator": "Revenue by contract type; claims; contract balances; DSO definition",
+      "limitation": "Claims recognized in revenue are not necessarily agreed/billed/collected. Acquisitions affect comparability.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P21",
+      "publisher": "Clearway Energy",
+      "title": "Second-quarter results",
+      "url": "https://investor.clearwayenergy.com/news-releases/news-release-details/clearway-energy-inc-reports-second-quarter-2026-financial",
+      "publication_date": "2026-08-05",
+      "publication_precision": "date",
+      "period": "2026-06-30",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "CAFD reconciliation, updated guidance, generation and contract restructurings",
+      "limitation": "CAFD is issuer-defined and not generic FCF; generation growth includes new investments; updated guidance is not consensus.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P22",
+      "publisher": "Clearway Energy",
+      "title": "Second-quarter operating preview",
+      "url": "https://investor.clearwayenergy.com/static-files/b8d9c14a-f494-4517-b7b8-e027d0776289",
+      "publication_date": "2026-07-16",
+      "publication_precision": "date",
+      "period": "2026-Q2",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "both pages parsed and visually inspected with PDF screenshots",
+      "locator": "Two-page preview; production/availability definitions",
+      "limitation": "Compensable generation may include paid curtailment; equity-method investments excluded. Forecast comparison differs from year-on-year generation comparison.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P23",
+      "publisher": "Clearway Energy",
+      "title": "Second-quarter investor presentation",
+      "url": "https://investor.clearwayenergy.com/static-files/c56c4524-ed40-4c31-bdfb-d60a3affa3bb",
+      "publication_date": "2026-08-05",
+      "publication_precision": "date",
+      "period": "mixed section-specific vintages",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text and screenshots of PDF pages 13 and 24 (zero based)",
+      "locator": "Slide 14 resource/guidance; slide 25 ownership/contracts; appendix date footnotes",
+      "limitation": "Sponsor development pipeline is not owned public-company fleet. Some appendix inputs are October 2025, December 2025 or February 2026 vintages.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P24",
+      "publisher": "Clearway Energy",
+      "title": "First-quarter results",
+      "url": "https://investor.clearwayenergy.com/news-releases/news-release-details/clearway-energy-inc-reports-first-quarter-2026-financial-results",
+      "publication_date": null,
+      "publication_precision": "unknown",
+      "period": "2026-03-31",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Prior CAFD guidance and Mesquite Sky restructuring",
+      "limitation": "Prior guidance is historical; contract restructuring can retain legacy liability via in-substance financing.",
+      "redistribution_or_native_ingestion_admitted": false
+    },
+    {
+      "id": "P25",
+      "publisher": "Eaton",
+      "title": "Second-quarter results",
+      "url": "https://www.eaton.com/us/en-us/company/news-insights/news-releases/2026/eaton-reports-record-second-quarter-2026-results.html",
+      "publication_date": null,
+      "publication_precision": "unknown",
+      "period": "2026-Q2 with trailing-12-month order measures",
+      "retrieved_on": "2026-09-23",
+      "kind": "issuer_primary",
+      "review_scope": "relevant text read",
+      "locator": "Rolling-12-month organic orders, quarterly sales/margins, acquired Boyd Thermal contribution",
+      "limitation": "Exact publication timestamp not established from page. Rolling order change is not quarterly growth; sequential margin change differs from year-on-year.",
+      "redistribution_or_native_ingestion_admitted": false
+    }
+  ],
+  "observations": [
+    {
+      "id": "O01",
+      "subject": "PJM",
+      "metric": "Summer 2027 peak demand forecast revision",
+      "values": {
+        "revised": "160451",
+        "change_from_prior": "-3735"
+      },
+      "unit": "MW",
+      "period": "summer 2027",
+      "observation_asof": "2026-01-14",
+      "kind": "agency_forecast",
+      "source_ids": [
+        "P01"
+      ],
+      "limitation": "Not an observed fall in electricity use.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "revised": "MW",
+        "change_from_prior": "MW"
+      }
+    },
+    {
+      "id": "O02",
+      "subject": "US EIA",
+      "metric": "Electricity sales forecast",
+      "values": {
+        "2026": "4135",
+        "2027": "4211"
+      },
+      "unit": "billion kWh",
+      "period": "2026-2027",
+      "observation_asof": "2026-09-03",
+      "kind": "agency_forecast",
+      "source_ids": [
+        "P02"
+      ],
+      "limitation": "Sales, not generation; model completed September 3.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "2026": "billion kWh",
+        "2027": "billion kWh"
+      }
+    },
+    {
+      "id": "O03",
+      "subject": "Talen",
+      "metric": "2027/2028 capacity auction",
+      "values": {
+        "cleared_capacity": "8745",
+        "price": "333.44",
+        "issuer_rounded_revenue_USDm": "1067"
+      },
+      "unit": "mixed: MW; USD/MW-day; USD million",
+      "period": "2027-06-01/2028-05-31",
+      "observation_asof": "2025-12-17",
+      "kind": "awarded_future_revenue",
+      "source_ids": [
+        "P07"
+      ],
+      "limitation": "Gross capacity revenue, not profit. Delivery year has 366 days.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "cleared_capacity": "MW",
+        "price": "USD/MW-day",
+        "issuer_rounded_revenue_USDm": "USD million"
+      }
+    },
+    {
+      "id": "O04",
+      "subject": "Talen",
+      "metric": "2028/2029 capacity auction",
+      "values": {
+        "cleared_capacity": "10180",
+        "price": "325",
+        "issuer_rounded_revenue_USDm": "1208"
+      },
+      "unit": "mixed: MW; USD/MW-day; USD million",
+      "period": "2028-06-01/2029-05-31",
+      "observation_asof": "2026-07-14",
+      "kind": "awarded_future_revenue",
+      "source_ids": [
+        "P08"
+      ],
+      "limitation": "Different portfolio and 365-day period; not organic growth.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "cleared_capacity": "MW",
+        "price": "USD/MW-day",
+        "issuer_rounded_revenue_USDm": "USD million"
+      }
+    },
+    {
+      "id": "O05",
+      "subject": "Vistra",
+      "metric": "Expected generation volume hedge coverage",
+      "values": {
+        "2026": "100",
+        "2027": "94",
+        "2028": "72"
+      },
+      "unit": "percent",
+      "period": "calendar-year expected generation",
+      "observation_asof": "2026-08-03",
+      "kind": "company_reported_position",
+      "source_ids": [
+        "P10"
+      ],
+      "limitation": "Not all corporate risk hedged; not current September certification.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "2026": "percent",
+        "2027": "percent",
+        "2028": "percent"
+      }
+    },
+    {
+      "id": "O06",
+      "subject": "Vistra Meta agreements",
+      "metric": "Existing supply versus uprates",
+      "values": {
+        "total": "2609",
+        "existing": "2176",
+        "uprates": "433"
+      },
+      "unit": "MW",
+      "period": "prospective phased PPAs",
+      "observation_asof": "2026-01-09",
+      "kind": "announced_contract",
+      "source_ids": [
+        "P11"
+      ],
+      "limitation": "Most total capacity already exists; exact future net earnings unknown.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "total": "MW",
+        "existing": "MW",
+        "uprates": "MW"
+      }
+    },
+    {
+      "id": "O07",
+      "subject": "Duke Anderson",
+      "metric": "Proposed interests and gross capacity",
+      "values": {
+        "gross_capacity": "1365",
+        "Duke_proposed": "1170",
+        "NCEMC_proposed": "100",
+        "CEPC_proposed": "95"
+      },
+      "unit": "MW",
+      "period": "prospective project",
+      "observation_asof": "2026-06-30",
+      "kind": "project_plan",
+      "source_ids": [
+        "P14"
+      ],
+      "limitation": "Proposed joint ownership is subject to negotiation, not completed rights.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "gross_capacity": "MW",
+        "Duke_proposed": "MW",
+        "NCEMC_proposed": "MW",
+        "CEPC_proposed": "MW"
+      }
+    },
+    {
+      "id": "O08",
+      "subject": "GE Vernova",
+      "metric": "Quarterly orders and gas backlog/reservations",
+      "values": {
+        "orders_USDbn": "24.2",
+        "combined_gas_GW": "116",
+        "prior_combined_gas_GW": "100"
+      },
+      "unit": "mixed: USD billion; GW",
+      "period": "2026-Q2",
+      "observation_asof": null,
+      "kind": "reported_company_measure",
+      "source_ids": [
+        "P17"
+      ],
+      "limitation": "Combined reservations/backlog not installed or uniformly contracted capacity.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "orders_USDbn": "USD billion",
+        "combined_gas_GW": "GW",
+        "prior_combined_gas_GW": "GW"
+      }
+    },
+    {
+      "id": "O09",
+      "subject": "GE Vernova",
+      "metric": "Remaining performance obligations",
+      "values": {
+        "equipment": "87821",
+        "services": "88463",
+        "total": "176284"
+      },
+      "unit": "USD million",
+      "period": "2026-06-30",
+      "observation_asof": "2026-06-30",
+      "kind": "reported_company_measure",
+      "source_ids": [
+        "P18"
+      ],
+      "limitation": "RPO not a delivery guarantee or earnings.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "equipment": "USD million",
+        "services": "USD million",
+        "total": "USD million"
+      }
+    },
+    {
+      "id": "O10",
+      "subject": "GE Vernova",
+      "metric": "Contract liabilities/current deferred income balances",
+      "values": {
+        "opening": "25950",
+        "closing": "40037",
+        "source_reported_increase": "14088"
+      },
+      "unit": "USD million",
+      "period": "2025-12-31/2026-06-30",
+      "observation_asof": null,
+      "kind": "reported_balance",
+      "source_ids": [
+        "P18"
+      ],
+      "limitation": "Rounded balances differ by 14087; retain reported 14088 separately, do not force equality. Includes acquisition effects.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "opening": "USD million",
+        "closing": "USD million",
+        "source_reported_increase": "USD million"
+      }
+    },
+    {
+      "id": "O11",
+      "subject": "GE Vernova",
+      "metric": "Prolec transaction cash and remeasurement gain",
+      "values": {
+        "purchase_cash": "5254",
+        "noncash_pretax_gain": "3992"
+      },
+      "unit": "USD million",
+      "period": "2026-02-02 acquisition",
+      "observation_asof": null,
+      "kind": "reported_transaction",
+      "source_ids": [
+        "P18"
+      ],
+      "limitation": "Remaining stake acquisition; noncash gain not recurring operating cash.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "purchase_cash": "USD million",
+        "noncash_pretax_gain": "USD million"
+      }
+    },
+    {
+      "id": "O12",
+      "subject": "Quanta",
+      "metric": "Backlog versus RPO",
+      "values": {
+        "backlog": "53440.496",
+        "RPO": "33554.155"
+      },
+      "unit": "USD million",
+      "period": "2026-06-30",
+      "observation_asof": null,
+      "kind": "reported_company_measure",
+      "source_ids": [
+        "P19"
+      ],
+      "limitation": "RPO subset of backlog; neither sum nor equality is appropriate.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "backlog": "USD million",
+        "RPO": "USD million"
+      }
+    },
+    {
+      "id": "O13",
+      "subject": "Quanta",
+      "metric": "Contract-type quarterly revenue",
+      "values": {
+        "fixed_price": "6083.463",
+        "unit_price": "1770.593",
+        "cost_plus": "1702.941",
+        "total": "9556.997"
+      },
+      "unit": "USD million",
+      "period": "2026-Q2",
+      "observation_asof": null,
+      "kind": "reported_actual",
+      "source_ids": [
+        "P20"
+      ],
+      "limitation": "Revenue mix, not backlog mix or fixed-price profit margin.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "fixed_price": "USD million",
+        "unit_price": "USD million",
+        "cost_plus": "USD million",
+        "total": "USD million"
+      }
+    },
+    {
+      "id": "O14",
+      "subject": "Quanta",
+      "metric": "Recognized unapproved change orders and claims",
+      "values": {
+        "current": "411.1",
+        "prior": "983.6"
+      },
+      "unit": "USD million",
+      "period": "2026-06-30 vs 2025-12-31",
+      "observation_asof": null,
+      "kind": "reported_balance",
+      "source_ids": [
+        "P20"
+      ],
+      "limitation": "Not automatically losses, fraud, booked orders or collected cash.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "current": "USD million",
+        "prior": "USD million"
+      }
+    },
+    {
+      "id": "O15",
+      "subject": "Quanta",
+      "metric": "Contract liabilities and contract assets",
+      "values": {
+        "current_liabilities": "4241.933",
+        "prior_liabilities": "3258.465",
+        "current_assets": "1534.265"
+      },
+      "unit": "USD million",
+      "period": "2026-06-30 vs 2025-12-31",
+      "observation_asof": null,
+      "kind": "reported_balance",
+      "source_ids": [
+        "P20"
+      ],
+      "limitation": "Acquisitions and billing affect movement; netting is source-definition-specific.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "current_liabilities": "USD million",
+        "prior_liabilities": "USD million",
+        "current_assets": "USD million"
+      }
+    },
+    {
+      "id": "O16",
+      "subject": "Clearway",
+      "metric": "CAFD guidance vintages",
+      "values": {
+        "old_low": "470",
+        "old_high": "510",
+        "new_low": "430",
+        "new_high": "470"
+      },
+      "unit": "USD million",
+      "period": "calendar 2026",
+      "observation_asof": "2026-08-05",
+      "kind": "management_guidance",
+      "source_ids": [
+        "P21",
+        "P24"
+      ],
+      "limitation": "Lower midpoint does not establish surprise; old guidance retained historically.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "old_low": "USD million",
+        "old_high": "USD million",
+        "new_low": "USD million",
+        "new_high": "USD million"
+      }
+    },
+    {
+      "id": "O17",
+      "subject": "Clearway",
+      "metric": "Q2 CAFD reconciliation",
+      "values": {
+        "CFO": "214",
+        "working_capital_adjustment": "92",
+        "return_on_investments": "3",
+        "net_NCI_distributions": "-45",
+        "notes_receivable": "1",
+        "maintenance_capital": "0",
+        "principal_amortization": "-98",
+        "CAFD": "167"
+      },
+      "unit": "USD million",
+      "period": "2026-Q2",
+      "observation_asof": null,
+      "kind": "issuer_nonGAAP_reconciliation",
+      "source_ids": [
+        "P21"
+      ],
+      "limitation": "CAFD is not free cash before all growth capital; source definitions required.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "CFO": "USD million",
+        "working_capital_adjustment": "USD million",
+        "return_on_investments": "USD million",
+        "net_NCI_distributions": "USD million",
+        "notes_receivable": "USD million",
+        "maintenance_capital": "USD million",
+        "principal_amortization": "USD million",
+        "CAFD": "USD million"
+      }
+    },
+    {
+      "id": "O18",
+      "subject": "Clearway",
+      "metric": "Guidance-midpoint CAFD reconciliation",
+      "values": {
+        "CFO": "976",
+        "net_NCI": "-134",
+        "notes": "6",
+        "maintenance": "-14",
+        "principal": "-384",
+        "CAFD": "450"
+      },
+      "unit": "USD million",
+      "period": "calendar 2026 guidance",
+      "observation_asof": null,
+      "kind": "management_guidance_reconciliation",
+      "source_ids": [
+        "P21"
+      ],
+      "limitation": "Forecast not actual and not analyst consensus.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "CFO": "USD million",
+        "net_NCI": "USD million",
+        "notes": "USD million",
+        "maintenance": "USD million",
+        "principal": "USD million",
+        "CAFD": "USD million"
+      }
+    },
+    {
+      "id": "O19",
+      "subject": "Clearway",
+      "metric": "Renewable generation/sales comparison",
+      "values": {
+        "current": "6867",
+        "prior": "5945"
+      },
+      "unit": "thousand MWh",
+      "period": "2026-Q2 vs 2025-Q2",
+      "observation_asof": null,
+      "kind": "reported_actual",
+      "source_ids": [
+        "P21"
+      ],
+      "limitation": "Includes growth investment contribution; not same-fleet resource beat.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "current": "thousand MWh",
+        "prior": "thousand MWh"
+      }
+    },
+    {
+      "id": "O20",
+      "subject": "Clearway operating preview",
+      "metric": "Wind and solar performance indices",
+      "values": {
+        "wind_index": "96",
+        "solar_index": "95",
+        "wind_availability": "92",
+        "solar_availability": "99"
+      },
+      "unit": "percent",
+      "period": "2026-Q2",
+      "observation_asof": null,
+      "kind": "company_preliminary_operating_measure",
+      "source_ids": [
+        "P22"
+      ],
+      "limitation": "Different weighted populations; excludes equity-method investments; compensated curtailment may count.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "wind_index": "percent",
+        "solar_index": "percent",
+        "wind_availability": "percent",
+        "solar_availability": "percent"
+      }
+    },
+    {
+      "id": "O21",
+      "subject": "Clearway Mesquite Sky",
+      "metric": "Gross and ownership-weighted capacity",
+      "values": {
+        "gross": "340",
+        "ownership_percent": "50",
+        "net": "170"
+      },
+      "unit": "mixed: MW; percent",
+      "period": "asset table at publication",
+      "observation_asof": null,
+      "kind": "reported_asset_description",
+      "source_ids": [
+        "P23"
+      ],
+      "limitation": "Ownership-weighted MW is not necessarily a cash-distribution fraction.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "gross": "MW",
+        "ownership_percent": "percent",
+        "net": "MW"
+      }
+    },
+    {
+      "id": "O22",
+      "subject": "Eaton",
+      "metric": "Sales growth and segment margin comparison",
+      "values": {
+        "reported_sales_growth": "21",
+        "organic_sales_growth": "14",
+        "acquisition_contribution": "7",
+        "segment_margin": "23.1",
+        "segment_margin_yoy_bps": "-80",
+        "Americas_margin_qoq_bps": "190"
+      },
+      "unit": "mixed: percent; basis points",
+      "period": "2026-Q2",
+      "observation_asof": null,
+      "kind": "company_reported_measure",
+      "source_ids": [
+        "P25"
+      ],
+      "limitation": "Do not relabel sequential margin improvement year-on-year; total vs segment scopes differ.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "reported_sales_growth": "percent",
+        "organic_sales_growth": "percent",
+        "acquisition_contribution": "percent",
+        "segment_margin": "percent",
+        "segment_margin_yoy_bps": "basis points",
+        "Americas_margin_qoq_bps": "basis points"
+      },
+      "value_horizons": {
+        "reported_sales_growth": "Q2 year-on-year consolidated",
+        "organic_sales_growth": "Q2 year-on-year consolidated",
+        "acquisition_contribution": "Q2 year-on-year consolidated",
+        "segment_margin": "Q2 combined segments",
+        "segment_margin_yoy_bps": "Q2 year-on-year combined segments",
+        "Americas_margin_qoq_bps": "Q2 versus Q1 Electrical Americas"
+      }
+    },
+    {
+      "id": "O23",
+      "subject": "Eaton",
+      "metric": "Electrical Americas orders and Global sales",
+      "values": {
+        "Americas_order_growth": "41",
+        "Global_reported_sales_growth": "44",
+        "Global_organic_growth": "18",
+        "Global_acquisition_contribution": "25",
+        "Global_FX": "1"
+      },
+      "unit": "percent",
+      "period": "orders trailing-12-month; sales 2026-Q2",
+      "observation_asof": null,
+      "kind": "company_reported_measure",
+      "source_ids": [
+        "P25"
+      ],
+      "limitation": "Not simultaneous same-period organic indicators.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "Americas_order_growth": "percent",
+        "Global_reported_sales_growth": "percent",
+        "Global_organic_growth": "percent",
+        "Global_acquisition_contribution": "percent",
+        "Global_FX": "percent"
+      },
+      "value_horizons": {
+        "Americas_order_growth": "trailing-12-month Electrical Americas orders",
+        "Global_reported_sales_growth": "Q2 year-on-year Electrical Global sales",
+        "Global_organic_growth": "Q2 year-on-year Electrical Global sales",
+        "Global_acquisition_contribution": "Q2 year-on-year Electrical Global sales",
+        "Global_FX": "Q2 year-on-year Electrical Global sales"
+      }
+    },
+    {
+      "id": "O24",
+      "subject": "GE Vernova",
+      "metric": "Six-month cash-flow statement",
+      "values": {
+        "contract_liabilities_cashflow_contribution": "13695",
+        "CFO": "10680",
+        "gross_capex": "783",
+        "issuer_FCF": "9897"
+      },
+      "unit": "USD million",
+      "period": "six months ended 2026-06-30",
+      "observation_asof": null,
+      "kind": "reported_cashflow",
+      "source_ids": [
+        "P18"
+      ],
+      "limitation": "Cash-flow-statement contributions, not liability balance changes or Q2-only flows; contribution is not profit.",
+      "canonical_issuer_id": null,
+      "native_evidence_id": null,
+      "value_units": {
+        "contract_liabilities_cashflow_contribution": "USD million",
+        "CFO": "USD million",
+        "gross_capex": "USD million",
+        "issuer_FCF": "USD million"
+      }
+    }
+  ],
+  "companies": [
+    {
+      "name": "Vistra",
+      "symbol_as_reported": "VST",
+      "profile": "merchant generation plus retail and contracting",
+      "source_ids": [
+        "P10",
+        "P11",
+        "P12"
+      ],
+      "critical_unknowns": [
+        "regional hedge prices and shapes",
+        "later September hedge transactions",
+        "Meta price/capex/shareholder contribution",
+        "consistent acquisition perimeter"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    },
+    {
+      "name": "Duke Energy",
+      "symbol_as_reported": "DUK",
+      "profile": "regulated utility investment and recovery",
+      "source_ids": [
+        "P13",
+        "P14",
+        "P15"
+      ],
+      "critical_unknowns": [
+        "full current project orders and approved recovery",
+        "actual funding/share issuance path",
+        "asset-specific allowed versus earned return",
+        "final proposed joint ownership"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    },
+    {
+      "name": "Clearway Energy",
+      "symbol_as_reported": "CWEN",
+      "profile": "contracted generation and residual project cash",
+      "source_ids": [
+        "P21",
+        "P22",
+        "P23",
+        "P24"
+      ],
+      "critical_unknowns": [
+        "individual PPA price/shape/curtailment terms",
+        "full distributions and tax equity waterfalls",
+        "legacy restructuring liabilities",
+        "site-level production counterfactuals"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    },
+    {
+      "name": "GE Vernova",
+      "symbol_as_reported": "GEV",
+      "profile": "generation/grid equipment and service",
+      "source_ids": [
+        "P17",
+        "P18"
+      ],
+      "critical_unknowns": [
+        "reservation conversion/cancellation terms",
+        "contract-level margin and cost to complete",
+        "normalized customer-advance contribution",
+        "organic versus acquired backlog"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    },
+    {
+      "name": "Quanta Services",
+      "symbol_as_reported": "PWR",
+      "profile": "engineering and construction delivery",
+      "source_ids": [
+        "P19",
+        "P20"
+      ],
+      "critical_unknowns": [
+        "contract-level escalation and cost recovery",
+        "cash collection of recognized claims",
+        "firm commitments behind MSA estimates",
+        "labor productivity and acquisition normalization"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    },
+    {
+      "name": "Eaton",
+      "symbol_as_reported": "ETN",
+      "profile": "electrical equipment comparator",
+      "source_ids": [
+        "P25"
+      ],
+      "critical_unknowns": [
+        "aligned period-by-period orders",
+        "acquisition-normalized comparables",
+        "segment data-center exposure and margins"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    },
+    {
+      "name": "Talen Energy",
+      "symbol_as_reported": "TLN",
+      "profile": "capacity-revenue arithmetic comparator",
+      "source_ids": [
+        "P07",
+        "P08",
+        "P09"
+      ],
+      "critical_unknowns": [
+        "complete fixed-perimeter cleared-MW bridge",
+        "performance/hedge/cost obligations",
+        "net incremental capacity profit"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    },
+    {
+      "name": "AEP Ohio",
+      "symbol_as_reported": null,
+      "profile": "subsidiary tariff case, not a resolved listed-security identity",
+      "source_ids": [
+        "P16"
+      ],
+      "critical_unknowns": [
+        "complete binding tariff schedule and customer agreement",
+        "actual customer billing ratchet",
+        "approved return and shareholder exposure"
+      ],
+      "canonical_issuer_id": null,
+      "canonical_security_id": null,
+      "exposure_weight": null,
+      "company_forecast": null
+    }
+  ],
+  "drivers": [
+    {
+      "id": "D01",
+      "name": "Load identity",
+      "required_inputs": "Facility load, IT load, meter boundary and power usage effectiveness",
+      "economic_question": "A larger IT footprint need not equal the same grid draw.",
+      "failure_to_reject": "Do not apply PUE to a number already stated as facility demand."
+    },
+    {
+      "id": "D02",
+      "name": "Load shape",
+      "required_inputs": "Hourly/seasonal load factor, coincidence and interruptibility",
+      "economic_question": "Determines energy, peak network use and firm-service requirement.",
+      "failure_to_reject": "Do not multiply peak MW by 8,760 without an explicit load factor."
+    },
+    {
+      "id": "D03",
+      "name": "Demand credibility",
+      "required_inputs": "Application, study, agreement, deposit, construction and energized load",
+      "economic_question": "Improved project commitment may change conditional future demand.",
+      "failure_to_reject": "Do not present a utility request queue as realized or uniformly firm demand."
+    },
+    {
+      "id": "D04",
+      "name": "Forecast vintage",
+      "required_inputs": "Publication, model cutoff, horizon, coverage and revisions",
+      "economic_question": "An estimate can rise over time while being revised down versus an earlier estimate.",
+      "failure_to_reject": "Do not rename a forecast revision actual consumption growth."
+    },
+    {
+      "id": "D05",
+      "name": "Local deliverability",
+      "required_inputs": "Grid node/zone, congestion, interconnection and firm service",
+      "economic_question": "Demand reaches different assets and prices depending on delivery constraints.",
+      "failure_to_reject": "Do not use corporate headquarters as economic geography."
+    },
+    {
+      "id": "D06",
+      "name": "Energy price and shape",
+      "required_inputs": "Hourly node/hub prices and generation-weighted capture",
+      "economic_question": "Changes revenue actually realizable during output hours.",
+      "failure_to_reject": "Do not apply annual average power price to every generator."
+    },
+    {
+      "id": "D07",
+      "name": "Capacity accreditation",
+      "required_inputs": "Cleared MW, accreditation, performance and delivery year",
+      "economic_question": "Changes paid reliability capacity, distinct from energy sold.",
+      "failure_to_reject": "Nameplate MW and UCAP MW are not interchangeable."
+    },
+    {
+      "id": "D08",
+      "name": "Market design",
+      "required_inputs": "Auction rule vintage, caps, floors and settlement scope",
+      "economic_question": "Observed prices may bind at administrative limits.",
+      "failure_to_reject": "Do not call a capped auction unrestricted scarcity pricing or export it into another market."
+    },
+    {
+      "id": "D09",
+      "name": "Fuel and heat rate",
+      "required_inputs": "Gas basis, heat rate, fuel contract and transport",
+      "economic_question": "Power-price gains may be partly absorbed by fuel.",
+      "failure_to_reject": "Do not assume fixed fuel costs when linked contracts reset."
+    },
+    {
+      "id": "D10",
+      "name": "Generation hedge book",
+      "required_inputs": "Volume, delivery year, index, strike and observation date",
+      "economic_question": "Separates current realization from later repricing exposure.",
+      "failure_to_reject": "Expected-volume coverage is not all-risk protection or a current certificate."
+    },
+    {
+      "id": "D11",
+      "name": "Retail obligations",
+      "required_inputs": "Customer load, tariff/retail contract and procurement",
+      "economic_question": "Generation and retail can offset or amplify price changes.",
+      "failure_to_reject": "Do not value a vertically integrated generator as pure long spot power."
+    },
+    {
+      "id": "D12",
+      "name": "Outage exposure",
+      "required_inputs": "Actual output, availability, replacement power and performance penalties",
+      "economic_question": "A hedged fleet can become short power when output fails.",
+      "failure_to_reject": "Do not treat a hedge percentage as an outage guarantee."
+    },
+    {
+      "id": "D13",
+      "name": "Contract form",
+      "required_inputs": "As-generated, fixed-shape, tolling, capacity and pass-through terms",
+      "economic_question": "Determines who retains price, volume, fuel and performance risk.",
+      "failure_to_reject": "Contracted does not mean fixed cash."
+    },
+    {
+      "id": "D14",
+      "name": "Existing versus incremental capacity",
+      "required_inputs": "Operating MW, preserved supply, uprate and new construction",
+      "economic_question": "Existing output re-contracting differs from net additions.",
+      "failure_to_reject": "Do not count all PPA MW as new grid supply."
+    },
+    {
+      "id": "D15",
+      "name": "Regulatory recovery",
+      "required_inputs": "Jurisdiction, asset, request, order and earned outcome",
+      "economic_question": "Determines which costs/returns may be recovered and when.",
+      "failure_to_reject": "Do not apply one project section or requested return to another asset."
+    },
+    {
+      "id": "D16",
+      "name": "Construction accounting",
+      "required_inputs": "CWIP treatment, AFUDC and actual collections",
+      "economic_question": "Reported construction-period earnings may be noncash.",
+      "failure_to_reject": "Do not classify AFUDC as current customer cash."
+    },
+    {
+      "id": "D17",
+      "name": "Customer contributions",
+      "required_inputs": "Deposits, refundable security and nonrefundable construction funding",
+      "economic_question": "Changes who finances assets and what may remain eligible for return.",
+      "failure_to_reject": "Do not earn a modeled equity return on customer-funded amounts without the governing treatment."
+    },
+    {
+      "id": "D18",
+      "name": "Funding per share",
+      "required_inputs": "Debt cost, maturities, retained cash, new shares and NCI",
+      "economic_question": "Growth value depends on its financing and ownership claim.",
+      "failure_to_reject": "Do not equate rising rate base or gross capex with EPS growth."
+    },
+    {
+      "id": "D19",
+      "name": "Resource and curtailment",
+      "required_inputs": "Wind/solar resource, availability and compensated curtailment",
+      "economic_question": "Changes paid output even with fixed pricing.",
+      "failure_to_reject": "Compensable generation need not equal physical electricity produced."
+    },
+    {
+      "id": "D20",
+      "name": "Sponsor versus owned assets",
+      "required_inputs": "Sponsor pipeline, offer, acquisition and retained economic rights",
+      "economic_question": "Pipeline may provide opportunities without current ownership.",
+      "failure_to_reject": "Do not count sponsor projects as a listed vehicle operating fleet."
+    },
+    {
+      "id": "D21",
+      "name": "Cash waterfall",
+      "required_inputs": "Project principal, tax equity/NCI, restrictions and parent receipts",
+      "economic_question": "Determines residual cash available to common shareholders.",
+      "failure_to_reject": "Ownership-weighted capacity is not a distribution waterfall."
+    },
+    {
+      "id": "D22",
+      "name": "Reservations versus orders",
+      "required_inputs": "Binding terms, cancellation, scheduling and price",
+      "economic_question": "Production slots and signed orders have different certainty.",
+      "failure_to_reject": "Do not collapse reservations, bookings and RPO."
+    },
+    {
+      "id": "D23",
+      "name": "Equipment output capacity",
+      "required_inputs": "Actual production versus planned factory run-rate",
+      "economic_question": "New manufacturing capacity may unlock deliveries after ramp costs.",
+      "failure_to_reject": "Factory GW/year targets are not installed generation GW."
+    },
+    {
+      "id": "D24",
+      "name": "Customer advances",
+      "required_inputs": "Cash received, contract balance, acquisitions and performance obligation",
+      "economic_question": "Financing quality can improve before earnings recognition.",
+      "failure_to_reject": "Do not call every liability increase new organic cash or permanent earnings."
+    },
+    {
+      "id": "D25",
+      "name": "Service durability",
+      "required_inputs": "Installed base, service attachment, parts mix and contract margin",
+      "economic_question": "Potentially extends revenue beyond original equipment delivery.",
+      "failure_to_reject": "Do not value all equipment sales as recurring service."
+    },
+    {
+      "id": "D26",
+      "name": "Construction contract risk",
+      "required_inputs": "Fixed-price, unit-price, cost-plus and escalation terms",
+      "economic_question": "Cost and labor shocks pass through differently.",
+      "failure_to_reject": "Large awards do not establish attractive margins."
+    },
+    {
+      "id": "D27",
+      "name": "Revenue versus collections",
+      "required_inputs": "Claims, approvals, milestones, receivables and billing advances",
+      "economic_question": "Accounting progress and cash receipts may diverge.",
+      "failure_to_reject": "Recognized unapproved claims are not collected cash or automatically a loss."
+    },
+    {
+      "id": "D28",
+      "name": "Backlog quality",
+      "required_inputs": "RPO subset, estimated MSA work and termination rights",
+      "economic_question": "Headline backlog mixes different levels of commitment.",
+      "failure_to_reject": "Do not add RPO to backlog or apply one certainty factor to both."
+    },
+    {
+      "id": "D29",
+      "name": "Comparable growth",
+      "required_inputs": "Acquisition, currency, segment and measurement horizon",
+      "economic_question": "Growth revisions require a consistent perimeter.",
+      "failure_to_reject": "Do not mix rolling orders, quarterly sales and sequential margin changes."
+    },
+    {
+      "id": "D30",
+      "name": "Expectations and valuation",
+      "required_inputs": "Fixed forecast year, published panel, share/debt basis and price date",
+      "economic_question": "Tests an incremental change against what was already expected.",
+      "failure_to_reject": "Do not relabel management opportunity as guidance, consensus or a priced-in surprise."
+    },
+    {
+      "id": "D31",
+      "name": "Policy event scope",
+      "required_inputs": "Authority, geography, covered activity, issue/effective/update dates",
+      "economic_question": "Can change permitting sequence or scenario timing.",
+      "failure_to_reject": "A compliance-update deadline is not an automatic reopening date."
+    },
+    {
+      "id": "D32",
+      "name": "Transition and retirement",
+      "required_inputs": "Retained MW, replaced MW, incremental MW and obligations",
+      "economic_question": "Capacity can preserve service rather than increase it one-for-one.",
+      "failure_to_reject": "Do not ignore displaced assets or closure obligations."
+    },
+    {
+      "id": "D33",
+      "name": "Joint economic surplus",
+      "required_inputs": "Buyer payment, seller receipt, value added and internal transfers",
+      "economic_question": "Distinguishes total value creation from reallocating one cash stream.",
+      "failure_to_reject": "Do not add unchanged buyer upside to supplier upside from the same indexed price transfer."
+    },
+    {
+      "id": "D34",
+      "name": "Evidence clock and correction",
+      "required_inputs": "Section-specific observation and superseded estimates",
+      "economic_question": "Prevents a new presentation date laundering old assumptions.",
+      "failure_to_reject": "Do not use the cover date as the date of every appendix number."
+    }
+  ],
+  "acceptance_cases": [
+    {
+      "id": "A01",
+      "requirement": "Preserve facility-versus-IT load before PUE conversion.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A02",
+      "requirement": "Use the correct calendar hours and an explicit load factor for MW to MWh.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A03",
+      "requirement": "Keep energy MWh, capacity MW-day and reliability accreditation separate.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A04",
+      "requirement": "Keep application, study, signed contract, payment security and energized load as evidence facets, not a fabricated runtime state machine.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A05",
+      "requirement": "Do not treat the downward PJM forecast revision as an observed decrease in load.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A06",
+      "requirement": "Preserve the EIA September 3 model cutoff when discussing the September 21 Texas directive.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A07",
+      "requirement": "Do not turn the Texas October 19 update deadline into a restart date or existing-site shutdown.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A08",
+      "requirement": "Use 2028/2029 July 2026 results, not 2027/2028, when referring to the latest examined auction.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A09",
+      "requirement": "Preserve capped-auction price context and each delivery period.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A10",
+      "requirement": "Use 366 days for June 2027-May 2028 and 365 for June 2028-May 2029.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A11",
+      "requirement": "Explain Talen capacity-revenue growth through volume, rate and calendar, not price alone.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A12",
+      "requirement": "Do not label the Talen comparison organic after portfolio changes.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A13",
+      "requirement": "Preserve Vistra August 3 expected-volume hedge scope; do not claim full risk elimination.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A14",
+      "requirement": "Keep Vistra 2027 opportunity separate from guidance and its October 2025 curve cutoff separate from the August 2026 release.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A15",
+      "requirement": "Keep Cogentrix/Meta exclusions attached to the corresponding Vistra forward measure.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A16",
+      "requirement": "Separate Vistra existing PPA MW from future uprate MW and phased start dates.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A17",
+      "requirement": "Do not assign Buck CWIP/AFUDC treatment to Anderson through adjacent filing text.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A18",
+      "requirement": "Preserve proposed Duke project ownership as conditional and separate written order from announcement.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A19",
+      "requirement": "Do not count AFUDC as current customer cash.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A20",
+      "requirement": "Keep tariff billing demand separate from energy actually consumed.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A21",
+      "requirement": "Compute AEP size branch and cap rather than a universal 85-percent rule.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A22",
+      "requirement": "Keep the AEP prior-demand ratchet and ramp provisions separate from the size-only illustration.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A23",
+      "requirement": "Begin the tariff agreement clock at actual energization where the source requires it.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A24",
+      "requirement": "Do not assume behind-meter generation creates unlimited free grid backup.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A25",
+      "requirement": "Distinguish customer construction contributions from refundable collateral and ordinary revenue.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A26",
+      "requirement": "Do not equate contracted renewable pricing with guaranteed generation or cash.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A27",
+      "requirement": "Preserve Clearway July 16 preliminary evidence before the August 5 guidance change.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A28",
+      "requirement": "Do not claim a market surprise or profitable early signal from disclosure ordering alone.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A29",
+      "requirement": "Separate Clearway acquired-fleet year-on-year generation growth from within-year resource underperformance.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A30",
+      "requirement": "Keep compensable-generation definitions and equity-method exclusions visible.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A31",
+      "requirement": "Preserve old and new CAFD guidance; do not overwrite historical vintages.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A32",
+      "requirement": "Reconcile Clearway CAFD with principal and NCI adjustments instead of generic CFO minus capex.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A33",
+      "requirement": "Do not convert a sponsor project pipeline or dropdown offer into listed-company ownership.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A34",
+      "requirement": "Keep ownership-weighted MW separate from the cash waterfall.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A35",
+      "requirement": "Preserve legacy obligations when a contract restructuring includes in-substance financing.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A36",
+      "requirement": "Do not call all GE Vernova backlog-plus-reservation capacity firm orders or operating plants.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A37",
+      "requirement": "Distinguish factory output run-rate from installed grid capacity.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A38",
+      "requirement": "Separate acquired Prolec contribution and noncash remeasurement gain from recurring growth.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A39",
+      "requirement": "Distinguish contract-liability stock changes from cash-flow contributions.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A40",
+      "requirement": "Preserve the rounded GE Vernova contract-liability movement without forcing inconsistent precision.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A41",
+      "requirement": "Treat RPO recognition percentages as cumulative or annual according to their stated definition.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A42",
+      "requirement": "Do not add Quanta RPO to its broader backlog.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A43",
+      "requirement": "Distinguish estimated MSA renewals from minimum contracted revenue.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A44",
+      "requirement": "Keep fixed-price revenue mix separate from backlog mix and profit margin.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A45",
+      "requirement": "Do not equate Quanta recognized unapproved claims with agreed, billed or collected cash.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A46",
+      "requirement": "Use the source definition of Quanta net DSO before comparison.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A47",
+      "requirement": "Keep Eaton rolling order growth distinct from quarterly sales growth.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A48",
+      "requirement": "Keep Eaton sequential segment-margin improvement distinct from year-on-year total-margin decline.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A49",
+      "requirement": "Preserve acquired and organic growth contributions rather than one AI demand score.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A50",
+      "requirement": "Do not infer shareholder value from capex or cash-flow duration without incremental capital and funding.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A51",
+      "requirement": "Use consistent unlevered or equity valuation and avoid duplicate interest/NCI deductions.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A52",
+      "requirement": "No current cheap/expensive, surprise, forecast-probability or stock-return verdict without matched evidence.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A53",
+      "requirement": "No source-local research tag may originate a native identity, basket, score, entry, size or trade change.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A54",
+      "requirement": "No public-source locator implies full-text redistribution or native private-publication permission.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    },
+    {
+      "id": "A55",
+      "requirement": "Keep section-level clock, uncertainty and source limitation when the front page date is newer.",
+      "status": "PROPOSED_NOT_APPLICATION_TESTED"
+    }
+  ],
+  "clock_rules": [
+    "Publication date is date-only unless source establishes finer precision.",
+    "Section-specific observation/assumption dates override any inferred presentation-cover date.",
+    "Calendar, delivery period, business validity, publication and research retrieval remain distinct.",
+    "Unknown remains null; zero is not missing; source correction does not become independent corroboration."
+  ],
+  "authority_note": "All P/O/D/A labels are document-local. No new graph, identity, state machine, evidence store, scheduler or publication authority is proposed.",
+  "synthetic_scenario_note": "All hypothetical numerical cases are separately labeled and are neither company estimates nor investment advice.",
+  "mission_complete": false,
+  "application_tests_run": 0,
+  "predictive_backtests_run": 0,
+  "research_conflicts": [
+    {
+      "id": "G01",
+      "status": "UNRESOLVED_SCOPE_LIMIT",
+      "subject": "Duke full filing",
+      "source_ids": [
+        "P14"
+      ],
+      "explanation": "Primary indexed passages reviewed; full-file open unavailable. Preserve headings and do not imply complete regulatory audit."
+    },
+    {
+      "id": "G02",
+      "status": "PRESERVED_ROUNDING",
+      "subject": "GE Vernova liability balance movement",
+      "source_ids": [
+        "P18"
+      ],
+      "explanation": "Rounded closing minus opening is 14087m; source reported increase is 14088m. Neither replaced by assumption."
+    },
+    {
+      "id": "G03",
+      "status": "EXCLUDED_SOURCE_CONFLICT",
+      "subject": "PJM older aggregate cleared volume",
+      "source_ids": [
+        "P04"
+      ],
+      "explanation": "Inconsistent aggregate numbers in source prose excluded; scoped auction rate used, not aggregate census."
+    },
+    {
+      "id": "G04",
+      "status": "LIMITED_TARIFF_REVIEW",
+      "subject": "AEP full legal schedule",
+      "source_ids": [
+        "P16"
+      ],
+      "explanation": "Primary summary reviewed; full legal Schedule DCT and customer-specific history not read. Illustrations are size branch only."
+    },
+    {
+      "id": "G05",
+      "status": "MIXED_VINTAGES_VISIBLE",
+      "subject": "Clearway presentation appendix",
+      "source_ids": [
+        "P23"
+      ],
+      "explanation": "Presentation date cannot refresh older appendix dates or create current calibrated sensitivities."
+    },
+    {
+      "id": "G06",
+      "status": "UNACQUIRED",
+      "subject": "PIT expectations and valuation history",
+      "source_ids": [],
+      "explanation": "No licensed analyst panel or matched market series was acquired; no surprise, mispricing or alpha conclusion."
+    },
+    {
+      "id": "G07",
+      "status": "CARRIER_RECONCILIATION_REQUIRED",
+      "subject": "R3 publication",
+      "source_ids": [],
+      "explanation": "Existing #7791 moved with an in-turn checkpoint; only the actual latest canonical files determine what is additive. Portable package is not canonical."
+    }
+  ],
+  "evidence_scope_cases": [
+    {
+      "id": "E01",
+      "subject": "Vistra 2027 opportunity",
+      "source_ids": [
+        "P10"
+      ],
+      "measure_kind": "management_opportunity_not_guidance",
+      "release_date": "2026-08-07",
+      "assumption_cutoff": "2025-10-31",
+      "forecast_year": 2027,
+      "excludes": [
+        "Cogentrix",
+        "Meta"
+      ],
+      "is_consensus": false
+    },
+    {
+      "id": "E02",
+      "subject": "Texas permitting directive",
+      "source_ids": [
+        "P03"
+      ],
+      "announcement_date": "2026-09-21",
+      "update_due": "2026-10-19",
+      "automatic_reopening_date": null,
+      "existing_facility_shutdown_established": false
+    },
+    {
+      "id": "E03",
+      "subject": "EIA September forecast",
+      "source_ids": [
+        "P02"
+      ],
+      "release_date": "2026-09-09",
+      "model_cutoff": "2026-09-03",
+      "includes_September_21_event": false
+    },
+    {
+      "id": "E04",
+      "subject": "Clearway preview and guidance",
+      "source_ids": [
+        "P22",
+        "P21"
+      ],
+      "preview_date": "2026-07-16",
+      "guidance_date": "2026-08-05",
+      "market_surprise_established": false,
+      "predictive_return_established": false
+    },
+    {
+      "id": "E05",
+      "subject": "Duke separate project scopes",
+      "source_ids": [
+        "P14"
+      ],
+      "Buck_CWIP_in_construction_rate_base": false,
+      "Buck_AFUDC_accrued": true,
+      "Anderson_CWIP_treatment_from_Buck": null,
+      "Anderson_proposed_ownership_final": false
+    },
+    {
+      "id": "E06",
+      "subject": "AEP Ohio tariff summary",
+      "source_ids": [
+        "P16"
+      ],
+      "size_formula_is_entire_bill": false,
+      "minimum_billing_demand_is_energy_consumption": false,
+      "full_legal_schedule_read": false,
+      "contract_start_event": "actual_energization"
+    },
+    {
+      "id": "E07",
+      "subject": "Quanta backlog/RPO",
+      "source_ids": [
+        "P19",
+        "P20"
+      ],
+      "RPO_is_subset_of_backlog": true,
+      "backlog_plus_RPO_valid": false,
+      "all_MSA_estimates_are_minimum_commitments": false
+    },
+    {
+      "id": "E08",
+      "subject": "Eaton orders",
+      "source_ids": [
+        "P25"
+      ],
+      "Americas_orders_horizon": "trailing_12_month",
+      "Americas_order_growth_is_quarterly": false,
+      "Americas_margin_comparator": "sequential",
+      "combined_segment_margin_comparator": "year_on_year"
+    },
+    {
+      "id": "E09",
+      "subject": "Vistra Meta capacity",
+      "source_ids": [
+        "P11",
+        "P12"
+      ],
+      "all_contracted_MW_are_new_supply": false,
+      "exact_incremental_shareholder_cash": null,
+      "uprate_full_delivery_year": 2034
+    },
+    {
+      "id": "E10",
+      "subject": "Clearway presentation",
+      "source_ids": [
+        "P23"
+      ],
+      "cover_date": "2026-08-05",
+      "all_appendix_inputs_use_cover_date": false,
+      "sponsor_pipeline_is_listed_owned_fleet": false
+    }
+  ]
+}
