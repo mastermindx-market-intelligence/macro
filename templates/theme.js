@@ -4725,24 +4725,30 @@
       lastTrigger = null;
     }
 
-    // Restyle every .lst-more into the pill; recount on every pass so lists injected or
-    // re-rendered after boot (renderActNow, langchange rebuilds) update their label.
-    function upgrade() {
-      document.querySelectorAll('.lst-wrap').forEach(function (wrap) {
-        var btn = null, list = null, i;
-        for (i = 0; i < wrap.children.length; i++) {
-          if (wrap.children[i].classList.contains('lst-more')) btn = wrap.children[i];
-        }
-        list = wrap.querySelector('.lst-collapse');
-        if (!btn || !list) return;
-        var n = list.children.length;
-        if (btn.dataset.ovlN === String(n)) return;   // idempotent per count
-        btn.dataset.ovlN = String(n);
-        btn.classList.add('lst-viewall');
-        btn.setAttribute('aria-haspopup', 'dialog');
-        btn.innerHTML = bl('View all ' + n, '查看全部 ' + n)
-          + ' <span class="lst-va-arr" aria-hidden="true">↗</span>';
-      });
+    // Restyle .lst-more into the pill. Keep this incremental: dynamic dashboards mutate
+    // large parts of the DOM, and rescanning every .lst-wrap in the document after every
+    // unrelated mutation made mobile pages pay O(all lists) work for O(one subtree) changes.
+    function upgradeWrap(wrap) {
+      if (!wrap || !wrap.classList || !wrap.classList.contains('lst-wrap')) return;
+      var btn = null, list = null, i;
+      for (i = 0; i < wrap.children.length; i++) {
+        if (wrap.children[i].classList.contains('lst-more')) btn = wrap.children[i];
+      }
+      list = wrap.querySelector('.lst-collapse');
+      if (!btn || !list) return;
+      var n = list.children.length;
+      if (btn.dataset.ovlN === String(n)) return;   // idempotent per count
+      btn.dataset.ovlN = String(n);
+      btn.classList.add('lst-viewall');
+      btn.setAttribute('aria-haspopup', 'dialog');
+      btn.innerHTML = bl('View all ' + n, '查看全部 ' + n)
+        + ' <span class="lst-va-arr" aria-hidden="true">↗</span>';
+    }
+
+    function upgradeRoot(root) {
+      if (!root) return;
+      if (root.nodeType === 1 && root.matches && root.matches('.lst-wrap')) upgradeWrap(root);
+      if (root.querySelectorAll) root.querySelectorAll('.lst-wrap').forEach(upgradeWrap);
     }
 
     // Capture-phase click: open the overlay INSTEAD of the legacy in-flow expansion.
@@ -4757,13 +4763,28 @@
       openOverlay(wrap, list, btn);
     }, true);
 
-    upgrade();
-    var mo = new MutationObserver(function () {
-      if (mo.__raf) return;
-      mo.__raf = requestAnimationFrame(function () { mo.__raf = 0; upgrade(); });
+    upgradeRoot(document);
+    var pendingWraps = new Set();
+    var mo = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        var target = m.target && m.target.nodeType === 1 ? m.target : m.target && m.target.parentElement;
+        var owner = target && target.closest ? target.closest('.lst-wrap') : null;
+        if (owner) pendingWraps.add(owner);
+        Array.prototype.forEach.call(m.addedNodes || [], function (node) {
+          if (!node || node.nodeType !== 1) return;
+          if (node.matches && node.matches('.lst-wrap')) pendingWraps.add(node);
+          if (node.querySelectorAll) node.querySelectorAll('.lst-wrap').forEach(function (wrap) { pendingWraps.add(wrap); });
+        });
+      });
+      if (!pendingWraps.size || mo.__raf) return;
+      mo.__raf = requestAnimationFrame(function () {
+        mo.__raf = 0;
+        pendingWraps.forEach(upgradeWrap);
+        pendingWraps.clear();
+      });
     });
     mo.observe(document.body, { childList: true, subtree: true });
-    document.addEventListener('langchange', upgrade);
+    document.addEventListener('langchange', function () { upgradeRoot(document); });
   }
 
   /* ---- row conditions popover ([data-rpop] rows / hidden .rp-src payload) ----------
