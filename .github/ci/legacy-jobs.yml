@@ -20600,6 +20600,74 @@ jobs:
       - name: prospective reference clocks, refusals and consumer compatibility
         run: python -m pytest tests/test_dataos_prospective_reference.py -q
 
+
+  dataos-web-workspace:
+    # Stored-data readers and the bounded canonical Lab adapter are optional
+    # consumers of the pure Data OS foundation. Keep its pytest/pyyaml-only
+    # canary intact; these suites need the numerical and Parquet stack.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/ci.yml
+      - config/dataset_registry.yml
+      - config/web_data_workspace.studio.json
+      - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/indicators.py
+      - engine/lab.py
+      - engine/ma_crosses.py
+      - engine/predictive_signals.py
+      - engine/rsi_signals.py
+      - engine/stock_technicals.py
+      - engine/strategy_signals.py
+      - engine/tech_catalog.py
+      - engine/tech_stars.py
+      - engine/technicals.py
+      - engine/trial_ledger.py
+      - engine/validation.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/store.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_lab.py
+      - lib/dataos/web_lab_worker.py
+      - lib/dataos/web_readers.py
+      - lib/dataos/web_workspace.py
+      - scripts/data_workspace.py
+      # Canonical catalog artifact references present in the full CI tree.
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
+      - tests/test_dataos_web_api.py
+      - tests/test_dataos_web_lab.py
+      - tests/test_dataos_web_lab_worker.py
+      - tests/test_dataos_web_readers.py
+      - tests/test_dataos_web_workspace.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install bounded data and Lab test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: web data access, source clocks, reader limits and canonical Lab isolation
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
+          tests/test_dataos_web_workspace.py -q -rs
+
   dataos-foundation:
     scope: exclusive
     # Mastermind Data OS foundation library (lib/dataos/**) — the canonical identity,
