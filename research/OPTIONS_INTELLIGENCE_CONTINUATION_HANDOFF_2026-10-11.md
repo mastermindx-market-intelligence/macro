@@ -208,6 +208,29 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   (29,509 rows / 50,889,496 B). There is nothing for this seat to execute; R05 is reported as
   GATED(Sol acceptance). Q05 also stays gated, on the explicit #8555/#7328 holding-authority ruling, and no
   crosswalk work starts against held carriers.
+- D34 (17:5xZ, host defect) Launchers for D16a, OC and 1B hung in `heredoc_write` at 0% CPU and produced no output.
+  Cause: m2 kernel pipe memory is exhausted, so new pipes get about 512 B, and `/opt/homebrew/bin/bash` 5.3.9 writes heredocs
+  into pipes. `pool` execs bash, and `sub.sh:484` passes a 7,177 B heredoc, so it blocks forever. My zsh Bash tool is
+  unaffected because zsh uses temp files. Ruling: kill only MY wedged launchers (no operator had started, so there is no
+  effect to reconcile). Relaunch through a seat-local shim `scratchpad/shim/bash -> /bin/bash` placed first on PATH;
+  bash 3.2 uses temp-file heredocs. Every packet gets a HOST NOTE telling the worker to avoid large pipe
+  heredocs. Wedged launchers belonging to other sessions (PIDs 45895, 46113, 46274, 46568, 46778) are not mine and
+  are left alone. The fabric owner may want `pool`/`sub.sh` to pin `/bin/bash`, which is reported, not done here.
+- D35 (18:0xZ, lead rulings) O2/F01 ACCEPT, O3/M01 ACCEPT, O4/V01 ACCEPT. Two cited assertions per lead were
+  opened, and both held each time. A custody sweep over 400 open Macro PRs found no PR touching V01/F01 owned files. For M01, only
+  the stale drafts #7483/#7402 touch `tests/test_options_hub.py` additively, so M01 appends only. Seat answers:
+  F01 Q1 yes (additive `measured_location`), Q2 unknown `ask_share` -> null + envelope
+  `ask_share_basis: side_category_legacy`, Q3 `side_basis` routed to F02. F01 gains a falsifier test proving a genuine
+  `_coalesce_nbbo_microstructure` block passes the new rejection predicate.
+  M01 regime design (frozen by the seat): `market_gamma.view()` takes its regime from the same-session
+  `cboe/gex_SPX.gamma_regime` (the repaired engine's direct sign, written by the same `cboe.py` fetch as `cboe/gex`).
+  If that row is absent, mismatched or not long/short, the regime is None and never defaults to "long". There is no
+  producer edit, and one-argument callers stay unedited through a store-reading default. M01 Q1 B1 tolerance goes to a
+  later gex_engine-owner slice (strict xfail). Q2 `collectors/deribit.py:178` goes to the crypto owner. Q3 is a null
+  headline + `net_gex_known_bn` + `coverage.n_gamma_missing`, only if reproduced.
+  V01: Q1 minimal guard; Q2 accept final-minute NaN; Q3 R1 Theta receipt 2026-10-12 RTH on the existing Theta
+  Terminal host. F-A03a/F-A05a (surface pm/vex label, spot clock) are routed as M02 inputs to the #8684 carrier.
+  Launch order when admitted (max_active 2): V01, 1B, then D16a, F01, M01, OC as slots free.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -313,6 +336,27 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 - 17:08Z ONE #7861 evidence comment posted: issuecomment-6111517903 (A05 table R4(a)/(c) PASS, R4(b) NOT
   OBSERVED, D22 classification + the four real gates, R1 owed as seat successor PR with both fixtures; identity
   note). O.17 search beforehand: 6 keyword matches, all older posts by other sessions; 0 comments since 10-10.
+- 17:4xZ Heredoc deadlock reproduced. A heredoc size probe under `/opt/homebrew/bin/bash` blocks above ~500 B
+  at 0% CPU in `heredoc_write`, and the same probe under `/bin/bash` returns. That is the falsifier: if pipe
+  memory recovers, the probe returns under both shells. The shim is verified to get `pool` past `sub.sh:484`.
+- 17:50–17:51Z Relaunches via the shim of D16a, OC and 1B reached admission and were REFUSED before effect:
+  `LANE_ADMISSION_REFUSED host_load_at_or_above_limit` (load1 31.4/30.5/31.8; limit 0.667×24 = 16; max_active 2),
+  exit 75. No operator started, so no carrier holds an effect. Each attempt also wrote one ECONOMIC_POLICY allow
+  record. These are duplicate economic records, not workers.
+- 17:52Z Watcher b41wsvrgy armed: ADMISSIBLE when load1 < 15.5, bounded at 5,400 s. Later readings: 20.9, 18.1,
+  37.4, 49.0 (18:07Z). The load comes from other sessions (rg, git, python, Codex, Chrome); none of it is this seat's.
+- 17:55–18:04Z O2/O3/O4 lead returns are persisted at `leads/O{2,3,4}/return.md` (extracted from the agent JSONL).
+- 18:0xZ The M01 source has been checked against the code. `collectors/cboe.py::_legacy_spx` (:179–215) writes `cboe/gex` without a
+  regime column. `_row` (:217) writes `cboe/gex_SPX` with `gamma_regime` in the same fetch (:232–235). The
+  bug is at `engine/market_gamma.py:150`: regime is the flip side. `snapshot()` reads `cboe/gex` only, and its consumers are
+  `engine/run.py:492-496` and `scripts/build_site.py:32,6428`.
+- 18:0xZ Three SSD worktrees were created clean from Macro origin/main. Each was checked for owned-file drift since
+  `b79cd12239e5`, and there was none:
+  V01 `v01-greek-kernel-provenance-a0c3b30a02c397b8` @ `0a47364446e6`;
+  F01 `f01-chain-heat-unknown-null-79b82035c4cbdf68` @ `f1ae1e0365fc`;
+  M01 `m01-gamma-regime-consumer-3d2881905e5f1a3f` @ `f1ae1e0365fc`
+  (all under `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/`, branch `claude/ssd-<name>`).
+  Commissions are frozen at `leads/{V01,F01,M01}/commission.md`.
 
 ## OPEN
 
@@ -337,6 +381,13 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 - O-12 CLOSED: #804 has a live incumbent writer (03342a8d, head `302b0c3ff7`); the seat stays off #804.
 - O-13 Master-wide one-decoder adoption (`GexDeskView`, `StrikeExpiryMatrix`, `aggTrend`, `HeatSeekerCard` read
   `asof_date` only): seat-owned successor PR after step 1 lands (D27f).
+- O-14 m2 host capacity is the binding external constraint. Fabric admission is refused while load1 is at or above 16,
+  and the load comes from other sessions. This is BLOCKED-EXTERNAL and is not routed around (no carrier change, and
+  nothing is killed that is not mine). Host-operator controls: m2 pipe-memory exhaustion (reboot or operator) and
+  host load.
+- O-15 Routed findings: `collectors/deribit.py:178` flip-side regime goes to the crypto owner. The F01 `dte` None->0
+  coercion is reported by the F01 operator. F-A03a/F-A05a go to #8684/M02. The `pool`/`sub.sh` bash pin goes to
+  the fabric owner.
 
 ## NEXT
 
@@ -349,14 +400,19 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 3. Then U01 step 2: #846 refresh under this account (cross-owner A01/A03 tests, Read<T>, optionsReadAccess,
    three-state copy, VolPayload, lockfile regen, O-11 items).
 4. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
-5. Judge the D16a return by artifact when bdofouo42 exits: diff limited to the three owned files and the resolver
+5. Judge the D16a return by artifact on its (re)launched task exit (bdofouo42 was never admitted; D34): diff limited to the three owned files and the resolver
    region; T2/T3 shown failing before and passing after; gate suite 128+N passed; `scripts/` import check. On
    ACCEPT the seat opens the Macro PR, adds `merge-on-green`, and reads CI once.
-6. Judge the OC return by artifact when bocvhjvo5 exits: positive controls reproduced; rerun `oc_sim.py --quick`
+6. Judge the OC return by artifact on its (re)launched task exit (bocvhjvo5 was never admitted; D34): positive controls reproduced; rerun `oc_sim.py --quick`
    and one full cell myself; no sentence selects a parameter. On ACCEPT persist as a Macro research PR.
-7. Judge each O2/O3/O4 lead return (D32) on its completion notification: spot-check two SATISFIED claims per
-   lead by opening the cited test assertion; reject any plan that writes under #8660/#8684/#7861/D16a/#723
-   scope; freeze the accepted operator commission and launch it on the fabric when capacity admits (V01 first).
+7. DONE through freeze (D35): O2/O3/O4 judged ACCEPT; V01/F01/M01 commissions frozen; worktrees ready.
+   On b41wsvrgy ADMISSIBLE: launch V01 (fix_build, alarm 10800), then 1B (fix_build, alarm 14400), via
+   `PATH="$S/shim:$PATH" POOL_ORCHESTRATOR_ID=... POOL_TASK_CLASS=... POOL_ESCALATION_REASON=... perl -e 'alarm N;
+   exec @ARGV' pool run grok "<read and execute leads/<lane>/commission.md>" <worktree>`. Rename the prior pool log
+   first, record the launch time, and arm one watcher per lane. Then launch D16a, F01, M01 and OC as slots free.
+   On a b41wsvrgy TIMEOUT, record BLOCKED-EXTERNAL (O-14) and re-arm at most once.
+   Judge V01/F01/M01 returns by artifact, then commission one independent Opus READ_ONLY review per
+   PR head. The seat opens the PR, adds `merge-on-green`, and reads CI once.
 8. Later waves per D16b/D18: D16b (after #7861); #7861 R1 successor PR; O-13 successor; O6/N01 after V01.
    R05 GATED(Sol), Q05 GATED(#8555/#7328 holders) per D33. Optional: re-attempt G01 A02 while capacity admits.
 
@@ -371,12 +427,15 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | PLAN ACCEPTED 08:53Z → REQUEST_REPAIR (O8 defects 1–12 + D24 rulings), carried by the refresh commission D26 | 1 lead |
 | O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | DELIVERED 09:3xZ (after one nudge at the 12-turn limit) → JUDGED: ACCEPT as evidence; D24 | 1 auditor |
 | U01 step 1A (#723 refresh) | fabric operator grok (fix_build), D26/D27 | SSD worktree `pr-723-c89a753150e1dbd6`, branch `claude/ssd-pr-723-c89a753150e1dbd6`; packet `leads/U01/step1A_packet.md` | #723 (claim issuecomment-6111490519) | background task bjyey2nbm exit (3 h alarm) + `leads/U01/step1A_return.md` | DELIVERED → JUDGED: ACCEPT (17:32Z, D30) at cd5d50551a3d | — |
-| D16a resolver unmounted-volume refusal | fabric operator grok (fix_build), D28 | SSD worktree `thetadata-unmounted-refusal-ff0dcf1f0bf22254`, branch `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`; packet `leads/D16a/packet.md` | Macro PR (seat opens after ACCEPT) | background task bdofouo42 exit (2 h alarm) + `leads/D16a/return.md` | RUNNING (START 17:16:46Z; ECONOMIC_POLICY allowed) | 1 operator |
-| OC data-free operating-characteristics package | fabric operator grok (build-bounded), D29 | scratchpad `leads/OC/` only; packet `leads/OC/packet.md` | #8385 (non-normative input; Macro research PR after ACCEPT) | background task bocvhjvo5 exit (3.5 h alarm) + `leads/OC/return.md` | RUNNING (launched 17:22:12Z; a first attempt under class `research` was refused before effect: unknown_task_class) | 1 operator |
-| U01 step 1B (recapture + chunk grep + responsive e2e) | fabric operator grok (fix_build), D31 | same SSD worktree/branch at cd5d50551a3d; packet `leads/U01/step1B_packet.md` | #723 | background task bk5q9soqc exit (4 h alarm) + `leads/U01/step1B_return.md`; log `leads/U01/step1B_pool.log` | QUEUED→launched 17:34:56Z (no refusal in log at launch) | 1 operator |
-| O4 V01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O4/` (`V01_lead.md` + `_common_verify_lead.md`) | #599 | agent completion notification | RUNNING (launched 17:43Z) | 1 lead |
-| O2 F01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O2/` | #599 (coordination with Macro #8660) | agent completion notification | RUNNING (launched 17:43Z) | 1 lead |
-| O3 M01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O3/` | #599 | agent completion notification | RUNNING (launched 17:43Z) | 1 lead |
+| D16a resolver unmounted-volume refusal | fabric operator grok (fix_build), D28 | SSD worktree `thetadata-unmounted-refusal-ff0dcf1f0bf22254`, branch `claude/ssd-thetadata-unmounted-refusal-ff0dcf1f0bf22254`; packet `leads/D16a/packet.md` | Macro PR (seat opens after ACCEPT) | re-armed on relaunch + `leads/D16a/return.md` | QUEUED — awaiting admission (heredoc wedge killed, D34; 17:50Z relaunch REFUSED host load 31.4, exit 75, no effect) | 1 operator |
+| OC data-free operating-characteristics package | fabric operator grok (build-bounded), D29 | scratchpad `leads/OC/` only; packet `leads/OC/packet.md` | #8385 (non-normative input; Macro research PR after ACCEPT) | re-armed on relaunch + `leads/OC/return.md` | QUEUED — awaiting admission (`research` class refused; heredoc wedge killed, D34; 17:51Z relaunch REFUSED host load 30.5, exit 75, no effect) | 1 operator |
+| U01 step 1B (recapture + chunk grep + responsive e2e) | fabric operator grok (fix_build), D31 | same SSD worktree/branch at cd5d50551a3d; packet `leads/U01/step1B_packet.md` | #723 | re-armed on relaunch + `leads/U01/step1B_return.md`; log `leads/U01/step1B_pool.log` | QUEUED — awaiting admission (heredoc wedge killed, D34; 17:51Z relaunch REFUSED host load 31.8, exit 75, no effect); launch #2 after V01 | 1 operator |
+| O4 V01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O4/` (`V01_lead.md` + `_common_verify_lead.md`) | #599 | agent completion notification | DELIVERED → JUDGED: ACCEPT (D35); return persisted in `leads/O2|O3|O4/return.md` | 1 lead |
+| O2 F01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O2/` | #599 (coordination with Macro #8660) | agent completion notification | DELIVERED → JUDGED: ACCEPT (D35); return persisted in `leads/O2|O3|O4/return.md` | 1 lead |
+| O3 M01 verify/adopt lead | native `mastermind-opus-orchestrator` (opus, READ_ONLY), D32 | scratchpad `leads/O3/` | #599 | agent completion notification | DELIVERED → JUDGED: ACCEPT (D35); return persisted in `leads/O2|O3|O4/return.md` | 1 lead |
+| V01 slice 1 Greek-kernel provenance + MIN_T refusal | fabric operator grok (fix_build), D35 | SSD worktree `v01-greek-kernel-provenance-a0c3b30a02c397b8` @ `0a47364446e6`; `leads/V01/commission.md` | Macro PR (seat opens after ACCEPT + review) | b41wsvrgy (admission) → task exit + `leads/V01/return.md` | QUEUED — commission frozen; launch #1 on admission | 1 operator |
+| F01 slice 1 chain-heat unknown-null + measured_location | fabric operator grok (fix_build), D35 | SSD worktree `f01-chain-heat-unknown-null-79b82035c4cbdf68` @ `f1ae1e0365fc`; `leads/F01/commission.md` | Macro PR (coordinate with #8660 owner) | task exit + `leads/F01/return.md` | QUEUED — commission frozen | 1 operator |
+| M01 Macro-1 regime consumer + hub completeness | fabric operator grok (fix_build), D35 | SSD worktree `m01-gamma-regime-consumer-3d2881905e5f1a3f` @ `f1ae1e0365fc`; `leads/M01/commission.md` | Macro PR | task exit + `leads/M01/return.md` | QUEUED — commission frozen | 1 operator |
 
 ## DO_NOT_REDO (this programme)
 
@@ -387,6 +446,10 @@ ADDED 09:1xZ: manual `com.macro.optionsmatrix` re-run / kickstart / ssh+nohup pu
 from this seat; any real-R2 `history/**` write from this seat; any calibration floor (incl. S1) on the
 six-pilot programme; re-litigating O-A on #8385 without a material invalidator; a second writer on #723/#846
 before the fenced claim.
+ADDED 18:0xZ (D34/D35): launching any pool lane without the `/bin/bash` shim on m2 while pipe memory is
+exhausted; killing or touching other sessions' wedged launchers; routing around a host-load admission refusal
+(changing carrier, host or model); re-running the O2/O3/O4 verify leads (accepted); deriving the market regime from
+`spot_vs_flip_pct`.
 
 ## Preserved obligations
 
@@ -402,9 +465,9 @@ amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKN
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (WIP commit "O2/O3/O4 verify leads launched; R05/Q05 gated; D32-D33" on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "D34-D35: heredoc shim, admission refusals, O2/O3/O4 accepted, V01/F01/M01 frozen" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: on step-1B task exit judge 1B (NEXT 2); on bdofouo42 exit judge D16a (NEXT 5); on bocvhjvo5 exit judge OC (NEXT 6); on O2/O3/O4 lead completion judge (NEXT 7)
+EXACT_NEXT_ACTION: on b41wsvrgy ADMISSIBLE launch V01 then 1B via the shim (NEXT 7); then D16a/F01/M01/OC as slots free; judge each by artifact on exit (NEXT 2/5/6/7). On TIMEOUT record BLOCKED-EXTERNAL O-14 and re-arm once.
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -523,4 +586,9 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - 1B packet written (seven packets incl. the ungated companion EVIDENCE.json; guest chunk grep with positive control;
   full responsive e2e) (D31).
 - (17:43Z) D32/D33: O2/O3/O4 verify leads launched on pinned snapshots; R05 = charter done (#7711), gated on Sol; Q05 gated on #8555/#7328 holders.
-
+### 2026-10-11 18:08Z — D34–D35: heredoc shim; admission refused on host load; leads accepted; three commissions frozen
+- Launchers wedged on the m2 pipe-heredoc deadlock. My launchers were killed (none had started) and relaunched via the `/bin/bash` shim.
+  Every relaunch was REFUSED at admission (load1 ≈ 31 vs 16), exit 75, no effect. Watcher b41wsvrgy is armed.
+- O2/O3/O4 verify leads judged ACCEPT by artifact (two cited assertions opened per lead) (D35).
+- V01/F01/M01 commissions frozen with HOST NOTE, seat Q answers and falsifiers. Three clean SSD worktrees exist.
+- 0 operators running (admission). 0 native children running. Load at 18:07Z: 49.0, from other sessions.
