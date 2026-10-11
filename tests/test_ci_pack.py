@@ -4652,6 +4652,9 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
+    # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
+    "dataos-web-workspace",
 }
 
 
