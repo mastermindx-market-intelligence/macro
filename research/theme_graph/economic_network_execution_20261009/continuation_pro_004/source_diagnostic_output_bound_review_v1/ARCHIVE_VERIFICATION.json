@@ -1,0 +1,47 @@
+{
+  "STOP": true,
+  "additional_public_API_calls": 0,
+  "additional_tests": 0,
+  "all_archived_members_reopened_and_byte_equal_to_originals": true,
+  "all_original_members_and_manifest_exact_before_and_after": true,
+  "archive": {
+    "byte_length": 271717,
+    "path": "SOURCE_ARCHIVE.tar.gz",
+    "sha256": "3cff335f86997c698a1cfa45c9620b1cec5ec58751eb4f21cb41924321222da7"
+  },
+  "archive_manifest": {
+    "byte_length": 6637,
+    "path": "ARCHIVE_MANIFEST.json",
+    "sha256": "dce8197bfef419ebf5969c66f655bcf96b1ec7428ee072244f9a73416433faa8"
+  },
+  "archive_regenerated_twice_byte_identical_in_recorded_environment": true,
+  "archived_code_imported_or_executed": false,
+  "completed_utc": "2026-10-09T13:47:17.916730+00:00",
+  "gzip_stream_crc_verified": true,
+  "member_count": 34,
+  "native_Git_store_provider_or_acquisition_actions": false,
+  "nested_gzip_members_match_original_manifest_uncompressed_bindings": true,
+  "only_safe_relative_unique_regular_file_members": true,
+  "original_evidence_public_API_calls": 3,
+  "original_manifest": {
+    "byte_length": 7041,
+    "path": "MANIFEST.json",
+    "sha256": "d5f6b385efdb6da5c7e1d1bdc8153e274ed4843ea3a26add136a71f604fb1861"
+  },
+  "original_prediction_and_narrative_errors_retained_with_their_corrections": true,
+  "packaging_script": {
+    "byte_length": 7891,
+    "path": "BUILD_ARCHIVE.py",
+    "sha256": "57fea35695cc402207ca63562f9e6585c2dcb4decd1640f84e7f8b78e29aea3b"
+  },
+  "pid": 2,
+  "pid_scope": "scratch process local",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "economic_network.frozen_packet_archive_verification/v1",
+  "scope": "Packaging completed evidence; no new application or source-readiness proof.",
+  "source_directory_membership_unchanged": true,
+  "started_utc": "2026-10-09T13:47:17.807713+00:00",
+  "uncompressed_file_bytes": 1144398,
+  "verdict": "PASS_EXACT_DETERMINISTIC_ARCHIVE",
+  "zlib": "1.3.2"
+}

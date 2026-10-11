@@ -1,0 +1,26 @@
+{
+  "actual_cohort_F": null,
+  "observed_at": "2026-10-09T12:48:10.802263+00:00",
+  "predictive_promotion": false,
+  "principal_actions": [
+    "Read complete accepted public in-repository grant record at c4cd21d",
+    "Reopen official coverage and endpoint docs",
+    "Follow official roadmap through linked Productboard page",
+    "Targeted official-domain recent search returned no results",
+    "Author bounded scope addendum"
+  ],
+  "principal_markdown_terminal_newline_normalization": {
+    "after_sha256": "35548286eaee7ba2f999f14e198846946076094e3672924be9cc56cd0f71c42b",
+    "before_sha256": "35548286eaee7ba2f999f14e198846946076094e3672924be9cc56cd0f71c42b",
+    "bytes_removed": 0,
+    "scope": "New principal-authored file before first freeze only"
+  },
+  "prior_census_manifest_sha256": "380fea0e33dc73acca8118f2e9703d181fd2fe42c1473f607200b5e9d8b20cf9",
+  "prior_census_or_feasibility_modified": false,
+  "private_agreement_or_credentials_read": false,
+  "provider_api_calls": 0,
+  "purchase_or_external_message": false,
+  "raw_source_http_bytes_retained": false,
+  "real_source_admission": false,
+  "schema": "economic_network.product_scope_research_effects/v1"
+}

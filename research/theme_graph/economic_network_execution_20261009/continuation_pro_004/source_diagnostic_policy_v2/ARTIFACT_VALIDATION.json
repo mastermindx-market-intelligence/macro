@@ -1,0 +1,218 @@
+{
+  "artifacts_bound": [
+    {
+      "bytes": 60312,
+      "path": "RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522"
+    },
+    {
+      "bytes": 58436,
+      "path": "SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "sha256": "4d322ba08f488c6b4b71f22899416b4cb412f951dc893c4145f43796126fea29"
+    },
+    {
+      "bytes": 12822,
+      "path": "CORRECTION_CHANGELOG.md",
+      "sha256": "f47d8a11ec88d724375e5e7d71a4baffe7b8f94962a3825f23fa1e4e2d2bd387"
+    },
+    {
+      "bytes": 15881,
+      "path": "PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "bytes": 3091,
+      "path": "SOURCE_PROVENANCE.json",
+      "sha256": "8bfc98191e50e1b8a7b0158c36e3443e05a9515c600037fa9b6a5179264f4f6b"
+    },
+    {
+      "bytes": 8698,
+      "path": "PRESERVATION_BASELINE.json",
+      "sha256": "0fa2acfd8f7e9b4e0233390312d6268b376485e912679a3b10a9332e9104cf31"
+    },
+    {
+      "bytes": 10875,
+      "path": "SYNTHETIC_METHOD_CHECKS.py",
+      "sha256": "c075fe80d9f30f2492889eb5b4e799878a250c56353cf3113c73f8f0904a8107"
+    },
+    {
+      "bytes": 2827,
+      "path": "SYNTHETIC_METHOD_CHECKS.json",
+      "sha256": "6f2b8e7f5ca4dfdf6595286711601dde00e47e53229187f332e0cf5c598f3281"
+    }
+  ],
+  "author_validation_not_independent_corrective_review": true,
+  "changed_pointer_count": 37,
+  "correction_contract_presence": {
+    "R1_historical_paths": 2,
+    "R2_component_kinds": 7,
+    "authority_vs_structure_boundary_explicit": true,
+    "full_42_pool_dependency": true,
+    "primary_activity_and_segment_coverage_separate": true,
+    "remaining_flow_target_and_zero_case": true,
+    "remove_current_before_residual_flow": true
+  },
+  "created_at_utc": "2026-10-09T11:54:30.925121+00:00",
+  "exact_v1_to_v2_changed_json_pointers": [
+    "/adoption/required_gate_corrections",
+    "/authority_boundary",
+    "/capitalization/assertion_resolution",
+    "/capitalization/cap_unknown_handling",
+    "/capitalization/fx/assertion_rule",
+    "/capitalization/prices/historical_adjustment",
+    "/capitalization/prices/source",
+    "/capitalization/share_class_and_ADR/assertion_rule",
+    "/capitalization/share_count/source",
+    "/coverage_axes",
+    "/cutoff_policy/D_conditioned_inference_limit",
+    "/cutoff_policy/historical_roster",
+    "/cutoff_policy/revisions",
+    "/deterministic_selection/INT_feasibility/deterministic_solution",
+    "/deterministic_selection/INT_feasibility/implementation_test_requirements",
+    "/deterministic_selection/INT_feasibility/residual_pseudocode",
+    "/deterministic_selection/output_required",
+    "/deterministic_selection/preflight_order",
+    "/failure_and_falsifier_law/diagnostic_falsifiers",
+    "/failure_and_falsifier_law/hard_stops",
+    "/frame_sourcing_dependency",
+    "/historical_frame",
+    "/holds/actual_cap_component_conflicts_audited",
+    "/holds/corrective_review_pass_observed",
+    "/holds/historical_frame_proven",
+    "/instrument_and_venue/venue_register_requirement",
+    "/policy_id",
+    "/relative_size/administrative_population_label",
+    "/relative_size/completeness",
+    "/relative_size/denominator",
+    "/schema",
+    "/scope_of_this_artifact/corrective_review_state",
+    "/scope_of_this_artifact/current_effects",
+    "/scope_of_this_artifact/executable_selector",
+    "/scope_of_this_artifact/previous_failures_preserved",
+    "/status",
+    "/version_provenance"
+  ],
+  "expected_delta_only": true,
+  "policy_status": "RECOMMENDED_NOT_ADOPTED_CORRECTIVE_REVIEW_PENDING",
+  "preservation": {
+    "baseline_binding": {
+      "bytes": 8698,
+      "path": "PRESERVATION_BASELINE.json",
+      "sha256": "0fa2acfd8f7e9b4e0233390312d6268b376485e912679a3b10a9332e9104cf31"
+    },
+    "no_prior_file_changed": true,
+    "prior_directories": 3,
+    "prior_files_verified_before_and_after": 36
+  },
+  "preserved_equal_json_pointers": [
+    "/preserved_law",
+    "/recommendation",
+    "/comparators",
+    "/activity_assignment",
+    "/identity_and_primary",
+    "/replacement_law",
+    "/stress_case_law",
+    "/proposed_semantic_adoptions",
+    "/relative_size/rule",
+    "/relative_size/reference_pools",
+    "/relative_size/pool_key",
+    "/relative_size/pool_count",
+    "/relative_size/international_rule",
+    "/relative_size/eligible_reference_floor_usd",
+    "/relative_size/positive_value_required",
+    "/relative_size/micro_cap_excluded",
+    "/relative_size/labels",
+    "/deterministic_selection/seed_utf8",
+    "/deterministic_selection/encoding",
+    "/deterministic_selection/issuer_priority",
+    "/deterministic_selection/non_INT",
+    "/deterministic_selection/INT_feasibility/source_to_country",
+    "/deterministic_selection/INT_feasibility/country_to_sector_band",
+    "/deterministic_selection/INT_feasibility/sector_band_to_sink",
+    "/deterministic_selection/INT_feasibility/required_flow",
+    "/cutoff_policy/proposed_valuation_local_date",
+    "/cutoff_policy/public_knowledge_cutoff_utc",
+    "/capitalization/name",
+    "/capitalization/formula",
+    "/capitalization/numeric_rule",
+    "/capitalization/share_count/maximum_measurement_age_calendar_days",
+    "/capitalization/prices/max_older_scheduled_sessions",
+    "/capitalization/prices/max_age_calendar_days",
+    "/capitalization/fx/common_rate_date",
+    "/capitalization/fx/formula"
+  ],
+  "quota_and_semantics_invariants_equal": true,
+  "reference_sources": {
+    "all_ids_resolve": true,
+    "copied_register_byte_exact": true,
+    "count": 19,
+    "memo_source_ids": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P13",
+      "P14",
+      "P18"
+    ],
+    "new_external_retrieval": false,
+    "policy_source_ids": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P17",
+      "P18"
+    ]
+  },
+  "remaining_holds": {
+    "actual_120_issuer_selection": null,
+    "actual_global_frame": "INCOMPLETE_FROM_PRESERVED_AUDIT",
+    "authenticated_frame_and_source_rights": "NOT_ESTABLISHED",
+    "independent_corrective_review": "PENDING",
+    "predictive_admission": false,
+    "principal_adoption": "PENDING_A01_A02_A03",
+    "production_admission": false,
+    "trusted_source_receipt_interface": "NOT_SELECTED_BY_AUTHOR"
+  },
+  "result": "PASS_STRUCTURAL_AND_SYNTHETIC_CHECKS_ONLY",
+  "schema": "research.gmi.wp02.policy_artifact_validation/v2",
+  "scope": "Only local versioned research artifacts and embedded synthetic controls. This does not prove a complete/authentic source frame, issuer identities, source rights, actual dataset population, deployed selector, or independent corrective acceptance.",
+  "synthetic_checks": {
+    "check_count": 12,
+    "checks_passed": 12,
+    "execution": "python -B SYNTHETIC_METHOD_CHECKS.py > SYNTHETIC_METHOD_CHECKS.json",
+    "execution_was_only_embedded_artificial_data": true,
+    "observed_exit_code": 0,
+    "production_selector_or_input_receipt_validator": false,
+    "source_or_entitlement_proof": false,
+    "toy_INT_permutations_compared_to_exhaustive": 720
+  },
+  "validation_diagnostics_preserved": [
+    {
+      "artifact_validation_written_before_failure": false,
+      "policy_or_memo_changed_to_pass": false,
+      "reason": "An assertion allowed only literal false/null for every hold and rejected the legitimate unchanged integer selected_issuer_count=0. It was corrected to require exact integer zero for this count, while authority flags remain false/null.",
+      "result": "FAILED_OVERSTRICT_VALIDATOR_ASSERTION",
+      "stage": "initial_author_artifact_validation",
+      "subsequent_corrected_artifact_validation": "PASS"
+    }
+  ]
+}

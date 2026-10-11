@@ -115,7 +115,7 @@ def test_admin_import_closure_generation_forces_same_cycle_restart():
     )
     assert (
         "Environment=MMX_ADMIN_IMPORT_CLOSURE_GENERATION="
-        "2026-08-09-prophet-integrity-v1"
+        "2026-10-11-billing-catalog-v1"
     ) in unit
 
     reconcile = SCRIPT.index('cmp -s "$APP_DIR/admin/deploy/admin.service"')
@@ -256,6 +256,8 @@ MUST_RESTART = [
     "app/requirements.txt",
     "app/deploy/macro-api.service",
     "config/site_access.yml",
+    # app.billing holds the issuer's plan/features catalog for the process life.
+    "config/plans.yml",
     "engine/neuralweb/market_memory_playback.py",
     # Private Issue Desk router import-caches both its engine and strict schemas.
     "engine/options_issue_desk.py",
@@ -490,6 +492,10 @@ ADMIN_MUST_RESTART = [
     "admin/mastermind_logs.py",
     "admin/prophet.py",
     "admin/trade_memory.py",
+    # The authenticated entitlement panel lazily imports the existing billing
+    # writer, including its process-cached catalog; an API restart is separate.
+    "app/billing.py",
+    "config/plans.yml",
     # outbox approve / reject / decide endpoints (admin/marketing.py).  This was
     # the 2026-07-26 gap: an outbox.py fix deployed to the VPS and the running
     # panel kept serving the previous module, with no signal.

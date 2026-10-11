@@ -1,0 +1,30 @@
+{
+  "all35_source_paths_unchanged": true,
+  "exit_code": 1,
+  "failed_script_bytes": 22084,
+  "failed_script_sha256": "1751120dc7d4c4a7992dfc60e727455dc47c25190770fdcc801cd2c4b32dfb0f",
+  "failure": "Publication writer incorrectly called the integer st_mode field when reading README mode. Failure occurred after the exact intended execution-status file write and before README/temp or further payload writes.",
+  "finished_at": "2026-10-09T17:09:11.258102+00:00",
+  "future_recovery": "Reuse only the verified existing new status file; correct integer field access; preserve every original and failure receipt; write remaining new payloads through a distinct runner/result.",
+  "head": "74c542beb6e137958e3babe91a78b50aef651768",
+  "ignored_paths_empty": true,
+  "native_payload_directory_absent": true,
+  "only_new_file": {
+    "byte_length": 9240,
+    "matches_exact_intended_prose": true,
+    "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/EXECUTION_STATUS_20261009_008.md",
+    "sha256": "06c34317ec15bd576bd5f6ac903d8b5e9bc5de1b6d6cc9566b800b4072e0fb62"
+  },
+  "original149_checkpoint_files_unchanged": true,
+  "original_readme_unchanged": true,
+  "pid": 48787,
+  "prior151_manifest_members_unchanged": true,
+  "runtime_seconds": 3.12,
+  "schema": "economic_network.nvda_partial_apply_reconciliation/v1",
+  "staged_diff_empty": true,
+  "status": "FAILED_APPLY_ONE_NEW_FILE_VERIFIED_ORIGINALS_UNCHANGED",
+  "temporary_readme_absent": true,
+  "terminal_tool_value_serialization_bytes": 1058,
+  "terminal_tool_value_serialization_sha256": "71ebe2746b631be8ef22a388f7994b82a1fb02b4f0c52b11f46c20910f9a5a60",
+  "tracked_diff_empty": true
+}
