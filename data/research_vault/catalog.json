@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T12:35:32.548983+00:00",
-  "count": 2806,
+  "generated_at": "2026-10-11T12:50:39.953150+00:00",
+  "count": 2807,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -429,6 +429,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-k09ycnr296c-ac8009",
+      "title": "Global EM Weekly Worsening technicals backdrop compound challenges for EM FX",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:24:26Z",
+      "summary_points": [
+        "India RBI 25bp hike & INR fragility: RBI hikes to 6.00% terminal rate, persistent USD strength, foreign outflows erasing June inflows; INR ranks highest in EM for 3m carry/vol ratio signaling vulnerability.",
+        "EM portfolio flows surge out of Asia: $19.2bn equity outflows (Sep) and $7bn debt outflows concentrated in Asia (China dominant), worsening technicals compound year-end de-risking risks.",
+        "EM FX-DXY correlation at -86%: Tight linkages amplify EM FX vulnerability to USD moves; energy/bond sell-offs elevate EM FX beta to USD, penalizing twin deficit economies.",
+        "Turkey CBR rate policy shift: CBR holds rates at 37% with dovish MPC, 100bp cut expected Dec; lira weakness amid global risks and policy cornerstone.",
+        "Nigeria CBN policy shift: Cuts policy rate 350bp to 23% signaling faster easing cycle amid elections, fiscal loosening risks undermining inflation outlook."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 33,
       "language": "en",
       "needs_metadata": false
     },
