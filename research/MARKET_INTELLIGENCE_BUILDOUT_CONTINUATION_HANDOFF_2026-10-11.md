@@ -60,25 +60,26 @@ orchestrator outputs `$S/../tasks/<id>.output`; fabric kit
 | OPS-F | ubuntu1, `claude/ssd-options-audit-v2-charter-e2c3a19ebf3198a0` (same PR) | #7711 · `cf25af32e3f3` pre-edit | RUNNING since 13:11Z, sentinel `byf837tak`; edits the charter only, push no-force |
 | OPS D-options build | not yet launched (cap) | — | under DEC:MM-PIT-UNOWNED-PARENT-FSYNC-EACCES-IS-TOLERATED; launch when a slot frees |
 
-### 2b. Lane matrix as of 2026-10-11 14:5xZ (supersedes the §2 table above)
+### 2b. Lane matrix as of 2026-10-11 15:5xZ (supersedes the §2 table above)
 
 | lane | artifact | rung | owner / watcher |
 |---|---|---|---|
 | N adapter #8809 | `9b1da2b55e6e` | MERGED | — |
 | N P1b #8823 | `d39672a34aaa` (squash of `af1b3e102267`) | MERGED 14:48:18Z, blob-verified 6/6 | — |
-| N SKYD-IDENTITY | `claude/mi-skyd-identity-rename-20261011` | RUNNING (ubuntu3) | ORCH-N, watcher `bjwwbonx8` |
+| N SKYD-IDENTITY | DRAFT #8828 head `bf5b534c300e` (unarmed; `data/reference/` regen withheld) | DELIVERED; seat ruling = conditional FOLD C1–C4 (C4 PASS); C2 lane + review RUNNING; fold held | ORCH-N, watchers `bq1h4qpvu` (review, ubuntu3) + `bvbicvq2i` (C2, ubuntu2) |
 | N P2 / P3 | VPS writer + Terminal drop-in | QUEUED behind SKYD | ORCH-N |
 | N heal #8824 | — | CLOSED (superseded by #8805 `413e253ada36`) | — |
 | I #8811 | `70f42ccba7ca` | PRODUCTION_PROOF (401) | — |
 | MM-B #8807 | `616b1b8703fa` | MERGED, VPS pulled; proof after 10-12 nightly | ORCH-OPS `a5ccb27d864b1f6cb` |
 | MM-E #8812 | `c782664b6361` | PRODUCTION_PROOF (14:42:07Z tick: 2 MB-cap error gone; remaining red = #8748 intake breach) | — |
 | MM-DX #8816 | `3657d0ebc075` | MERGED; activation waits on MM-B proof | ORCH-OPS |
-| MM-DID #8819 | `b8a839236ddd` (squash of `a95921b01a93`) | MERGED 14:50:31Z, 2/2 blobs verified; proof = identity timer 15:30:50Z after VPS pull | ORCH-OPS reads once |
-| MM-DO #8818 | head `d319fde9b192` | DELIVERED, DOPTR review RUNNING | ORCH-OPS, watchers `byrdworsi` + `b8gmgn1xm` |
+| MM-DID #8819 | `b8a839236ddd` (squash of `a95921b01a93`) | MERGED 14:50:31Z, 2/2 blobs verified; proof = first identity-timer run after 15:30:50Z (journald: typed counts + divergence_count, no KeyError) | ORCH-OPS reads once, watcher `biyqfcy0u` |
+| MM-DO #8818 | `56e269cf2e3f` (squash of `d319fde9b192`) | MERGED 14:59:22Z, 6/6 blobs; FAILURE LINE PRODUCTION_PROOF (15:00:23Z stage token); CAPTURE = EXACT_HUMAN_GATE (403 options-snapshot entitlement) | — (Chairman: plan entitlement) |
 | F #7711 | `d1b93722ec41` | MERGED | — |
 | W8 records #8820 | `4a27bedaabe9` | MERGED | — |
-| W8 records-2 | this branch | DELIVERED → PR | seat |
-| main proof | ci.yml run 38147853042 @ `186dbdce5aad` | IN FLIGHT (sibling dispatch 14:36Z) | seat watcher `bynlnkdgt` (300 s) |
+| W8 records-2 #8826 | `dc674a5b5d3d` | MERGED, 7/7 blobs | — |
+| W8 records-3 | this branch (`claude/mi-records-wave7-20261011`) | DELIVERED → PR | seat |
+| main proof | ci.yml run 38147853042 @ `186dbdce5aad` | SUCCESS 15:12:02Z — clears #8812's `scripts/**` freeze; #8819/#8818/#8826 postdate it | — |
 
 ## 3. DECIDED (do not re-open without a material invalidator)
 
@@ -174,6 +175,30 @@ from the return (refresh vs origin/main, four keys cited, docs-only merge if it 
 - **Main proof** — never re-dispatch over run 38147853042; its exit is the only lever for the
   `scripts/**` authority freeze on #8812/#8818/#8819.
 
+### 3c. DECIDED this wave (15:0x–15:5xZ)
+
+- **SKYD FOLD ruling on DRAFT #8828** — FOLD the `data/reference/` regeneration into the PR
+  (never SPLIT by default), conditional on four artifact checks ORCH-N must prove before the fold
+  commit: C1 head-regen − main-regen == exactly the 6 PSKY/SKYD `vendor_aliases` rows with one
+  security id; C2 #8626's stale advance (+719 security_master / +2874 vendor_aliases) is
+  additions-only (any deletion/modification → SPLIT to the ITP owner); C3 the global
+  `build_alias_rows` gate change stays only if PSKY fails without it (else REQUEST_REPAIR to
+  remove; before/after stated in the body); C4 no foreign writer on the builder or
+  `data/reference/` (PASS 15:26Z — the ubuntu3 `.claude/worktrees/macro` tree is our own SKYD
+  lane, clean/unlocked/no process). One fold commit, one PR-body edit, then READY_FOR_SEAT_MERGE
+  with the exact head; ORCH-N never arms/readies/merges.
+- **CI fact, settled by the seat's own read of origin/main** — `house-law-registry` is
+  `gate: data` (legacy-jobs.yml L7882) and ci.yml plans only `--gate code`, so
+  `tests/test_dataos_security_master.py` runs ONLY in data-health.yml (workflow_run on `daily` +
+  13:30Z cron). Two earlier seat statements are retracted by name: "if: ${{ false }} disables it"
+  (wrong reason, right conclusion) and "it runs inside ci-pack-10" (wrong — that pack read omitted
+  `--gate code`). Gate 4 for the fold = G4a/G4b/G4c local commands in the PR body plus
+  `dataos-identity-seams` and `ticker-news-qbus` green on the fold head.
+- **D-options is two rungs** — the FAILURE LINE is PRODUCTION_PROOF (the 15:00:23Z run logged the
+  fail-closed stage token, so #8818's EACCES tolerance and token path are live); the CAPTURE is
+  EXACT_HUMAN_GATE (`DSC:MASSIVE-REST-OPTIONS-SNAPSHOT-NOT-ENTITLED-ON-STOCK-PLAN`). No key swap,
+  retry, code change, or timer re-arm is lawful; the weekday timer stays disarmed.
+
 ## 4. FACTS
 
 - origin/main `9b1da2b55e6e` = #8809 squash (14:0xZ). Records branch base `734ab8571d48`.
@@ -218,6 +243,30 @@ from the return (refresh vs origin/main, four keys cited, docs-only merge if it 
 - Prior main ci.yml: 38144614871 dafe18c3 FAIL, 38141975449 f8dc4bb0 FAIL, 38139442230 c8105785 FAIL,
   38127477906 f20a02dd SUCCESS, 38115014721 1fca5da8 SUCCESS. Core quota 4,716 at 14:4xZ.
 
+### 4c. FACTS added 15:0x–15:5xZ
+
+- #8818 MERGED 14:59:22Z `56e269cf2e3f` (6/6 blobs); #8826 MERGED `dc674a5b5d3d` (7/7 blobs);
+  main proof 38147853042 SUCCESS 15:12:02Z at `186dbdce5aad`.
+- Massive discriminator (seat, on the VPS, values never printed): the credential at
+  `/etc/macro-market-memory-options/massive-option-oi-api-key` is 32 bytes and byte-equal to
+  `MASSIVE_API_KEY`; `GET /v3/snapshot/locale/us/markets/stocks/tickers/SPY` → 200;
+  `GET /v3/snapshot/options/SPY` → 403 `NOT_AUTHORIZED` "You are not entitled to this data.
+  Please upgrade your plan". The flat-file 403 of 2026-08-20
+  (`DSC:MASSIVE-OPTIONS-FLATFILE-ENTITLEMENT-REGRESSION`) explicitly excluded this REST case.
+- `house-law-registry` `gate: data` (L7882); `house-law-registry-code` `gate: code` (L22860) runs
+  only `check_house_law_registry` + `test_house_law_registry`. `run_ci_pack.py --gate code
+  --pack-index 10` lists no house-law-registry. data-health.yml on main last ran SUCCESS 06:48Z,
+  before #8626 (11:54:15Z, author chriswong6031-creator, builder advanced without regeneration);
+  its next main run goes red on the stale-artifact test until the SKYD fold regenerates.
+- #8828 at bf5b534c300e: 21 SUCCESS / 4 SKIPPED / 1 FAILURE (merge-queue-pilot, standing
+  inactive, excluded). The code-gate jobs that bind the fold head: `dataos-identity-seams`
+  (paths include `data/reference/**` + the builder; runs `test_identity_seam_agreement`,
+  `test_build_security_master_universe`) and `ticker-news-qbus`.
+- ORCH-N C4: ubuntu3 `~/lanes/repos/macro/.claude/worktrees/macro` reflog — created 14:15Z,
+  committed bf5b534c at 14:57Z, detached 15:14Z, now clean/unlocked/no process; the review runs
+  in the sibling worktree `pr-8828`. The "8 modified files" ORCH-OPS saw were that lane's
+  pre-commit state, not a foreign writer.
+
 ## 5. Lane recipes (B-kit)
 
 ```
@@ -230,27 +279,33 @@ Packet = frozen spec + owned files + tests + NOT DONE UNLESS + RETURN line; retu
 `$K/ext/lanes/<id>.remote.stdout`; one watcher per lane at ≥150 s. Never bare `ls $K/ext/`; never
 read credential files or shim logs.
 
-## 6. OPEN — gates by owner (as of 14:5xZ)
+## 6. OPEN — gates by owner (as of 15:5xZ)
 
 | package | gate | owner | this seat's move |
 |---|---|---|---|
-| N | SKYD PR; P2 canary live + growing rows; P3 rail flip | ORCH-N → seat | judge SKYD PR by artifact → merge → tell ORCH-N the sha; verify P2/P3 proofs by artifact |
+| N | #8828 fold on C1/C2/C3 (C4 PASS) → READY_FOR_SEAT_MERGE; P2 canary live + growing rows; P3 rail flip | ORCH-N → seat | judge the fold by artifact (six-row delta, additions-only counts, rc 0, two code-gate jobs green, G4a/b/c in body) → hold scan → ready + merge → blob-verify → tell ORCH-N the sha; verify P2/P3 proofs by artifact |
 | I | — | — | PRODUCTION_PROOF reached (401 at the route) |
 | MM-B | technicals replay after the 10-12 nightly | ORCH-OPS | read the first :53 tick after ~02:0xZ; no hand-start |
 | MM-E | first sentinel tick after the pull | ORCH-OPS (`bjaodhbad`) | accept the tick receipt |
 | MM-DX | W2C activation by update.sh after MM-B proof | ORCH-OPS | read the experience tick receipt |
-| MM-DID | first identity run after the VPS pulls b8a8392 (15:30:50Z) | ORCH-OPS | accept the journald receipt: typed counts + divergence_count, no KeyError |
-| MM-DO | #8818 DOPTR PASS + CI | ORCH-OPS (`byrdworsi`, `b8gmgn1xm`) → seat | ready + merge at d319fde9; proof = next scheduled run's stage token |
-| main proof | run 38147853042 exit | seat (`bynlnkdgt`) | SUCCESS → freeze clears; FAILURE → diagnose by job name, claim lane first |
-| W8-records-2 | this PR | seat | PR → concluded checks → merge → blob-verify |
+| MM-DID | first identity run after the VPS pulled b8a8392 (timer 15:30:50Z) | ORCH-OPS (`biyqfcy0u`) | accept the journald receipt: typed counts + divergence_count, no KeyError |
+| MM-DO | capture entitlement | Chairman (money) | failure line PROVEN at 15:00:23Z; capture = EXACT_HUMAN_GATE; nothing to poll — an entitled key at the LoadCredential path + one scheduled run is the release |
+| main proof | — | — | SUCCESS 15:12:02Z; a later red on a post-186dbdce scripts/** head needs a LATER descendant proof (never re-dispatch over an in-flight one) |
+| W8-records-3 | this PR | seat | PR → concluded checks → merge → blob-verify |
 
 ## 7. NEXT (critical path first)
 
-1. #8823 MERGED `d39672a34aaa` (14:48:18Z; 6/6 blobs match origin/main). Notify ORCH-N.
-2. SKYD-IDENTITY PR → judge → merge → ORCH-N P2 (`--check/--install/--arm` + canary after the VPS pull)
-   → P3 drop-in only on a live canary with growing rows across two reads ≥10 min apart.
-3. #8819 MERGED `b8a839236ddd` (14:50:31Z; T1–T3 judged on the diff). #8818 (DOPTR PASS + CI) → ready + merge → blob-verify → scheduled-run proofs.
-4. This records PR → merge → blob-verify. Main proof exit → act once.
+1. #8828 fold: ORCH-N proves C1/C2/C3 (C4 PASS), launches ONE fold commit (fresh-main merge +
+   head-builder regeneration), reads `dataos-identity-seams` + `ticker-news-qbus` on the fold head,
+   makes the single PR-body edit (G4a/b/c, C2 counts, before/after for C3), returns
+   READY_FOR_SEAT_MERGE with the exact sha + the DSC falsifier/so_what.
+2. Seat: judge by artifact → hold scan → `gh pr ready 8828 && gh pr merge 8828 --squash
+   --match-head-commit <sha>` → bare `git fetch origin` + per-path blob-verify → SendMessage ORCH-N.
+3. ORCH-N P2 (`--check/--install/--arm` + canary after the VPS pull) → P3 drop-in only on a live
+   canary with growing rows across two reads ≥10 min apart; proof `newsRailEnabled":true` at
+   `.deployment-id 707648d52014`.
+4. #8819 proof: ORCH-OPS's one read of the 15:30Z identity run. Records wave after the SKYD merge
+   (venue-moving-rename DSC; P2/P3 proofs). This records PR → merge → blob-verify.
 5. Post-nightly proofs (B, D-experience) on 10-12; ONE #1202 checkpoint at the W8/W9 boundary;
    memory refresh; Chairman blocker list LAST; `SESSION END: <STATE>`.
 
@@ -261,8 +316,12 @@ Human-only, unchanged by any orchestration:
   Linear projection stay dark until authorized).
 - A direct Benzinga contract ONLY if body/image display on the Terminal rail is wanted; headline
   display is live under the Alpaca receipt without it.
-- Vendor entitlement for option-OI ONLY if the stage token on the next scheduled run reads an
-  HTTP 401/403 class.
+- **Massive options-snapshot entitlement for the option-OI capture (DEFINITE, money).** The
+  installed key is the stock-plan key; `GET /v3/snapshot/options/SPY` returns 403 NOT_AUTHORIZED
+  ("upgrade your plan"). Either upgrade the Massive plan to include the REST Options Snapshot or
+  install an entitled key at `/etc/macro-market-memory-options/massive-option-oi-api-key`; then
+  one scheduled run is the proof and the weekday timer can be re-armed. Until then the unit fails
+  closed with a stage token (`DSC:MASSIVE-REST-OPTIONS-SNAPSHOT-NOT-ENTITLED-ON-STOCK-PLAN`).
 - Package R under #8438, ITP GAP-E-BASIS/ALIAS, and F2–F5 (C19 `req-4a8daf76317cfe92f436991444c58281`)
   remain with their named owners outside this program.
 - Sol acceptance of the Options Context Audit preregistration v2 charter (#7711) — until then the
