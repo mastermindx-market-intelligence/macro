@@ -88,7 +88,7 @@ Quarantine exists for two reasons:
 - Alibaba has an owner-recorded id: `ISS:US-XNYS-BABA` (alibaba.yml L15), owner `lib/dataos/identity.py` (L16).
 - No id is derived from a ticker, name or CIK.
 
-**Own-name protocols.** The own-name protocols registered at S0 (REG P01–P13) are never name holdouts. The name axis is n/a for every one of them.
+**Own-name protocols.** The own-name protocols of the S0 register (REG P01–P13) are never name holdouts. The name axis is n/a for every one of them.
 
 ## 4. Event axis
 

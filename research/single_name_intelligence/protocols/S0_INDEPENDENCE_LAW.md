@@ -10,7 +10,7 @@
 
 | Source | Location | Commit |
 |---|---|---|
-| qledger, trial ledger, grading statistics | `engine/qledger.py`, `engine/trial_ledger.py`, `engine/grading_stats.py` | origin/main `31b9647872e1`. The diff over these paths is empty back to `b79cd12239e5`, the base V0 cited. |
+| qledger, trial ledger, grading statistics | `engine/qledger.py`, `engine/trial_ledger.py`, `engine/grading_stats.py` | origin/main `31b9647872e1`. The diff over these paths is empty back to `e44069e306fd`, the evidence base V0 cites (V0 matrix L5). |
 | V0 decisions | `research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md` and `SNI_V0_EXTENSION_DECISION.md` | on main (PR #8834) |
 | Coverage profiles | `config/single_name_intelligence/coverage_profiles/alibaba.yml` and `tencent.yml` | `43251ca845b2` (PR #8837, not yet on main) |
 | E0 and M0 qualifications | — | `43251ca845b2` (PR #8837) |
