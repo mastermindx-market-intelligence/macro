@@ -1,0 +1,34 @@
+{
+  "status": "ACCEPTED_SOURCE_ONLY",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "operation": "paper-waves-01a1101f-release-r2",
+  "original_run": "paper-01a1101f-intl-owner-bridge-build-r1",
+  "source_review": "Parent exact-source review after Sol repaired five reproduced boundary defects. Original worker implementation rejected; repaired implementation accepted.",
+  "files": {
+    "lib/intl_investigation_owner.py": "b920b0cd1dcde8c1115029e5437aa2e55f8a1486a342a01b3e302f6cff850523",
+    "tests/test_intl_investigation_owner.py": "8b4e82ef74a6cf7c0921c2137087c5806ba68d2564a350eef0dbd0b190ba64b7",
+    "tests/test_intl_investigation_owner_boundary.py": "47f1c7dbc3b8dde0445d95da815f7bea566dc4e006e1410aa41e5830429bbfa8",
+    "tests/fixtures/intl_investigation_owner_current.json": "687b875205a358748cce84602b98107552263f60b7c4f8aa43022ddf4608d923"
+  },
+  "validation": {
+    "command": "python3 -m pytest tests/test_intl_investigation_owner.py tests/test_intl_investigation_owner_boundary.py -q",
+    "result": "45 passed; 21 subtests passed",
+    "original_tests": "39 tests byte-identical to accepted candidate",
+    "parent_regressions": "Six methods AST-identical; only repository import and fixture plumbing adapted",
+    "warning": "Unrelated pytest old temporary-tree cleanup PermissionError; test exit0. No permissions or cleanup changed."
+  },
+  "earlier_accepted_evidence": "Independent vectors, copied actual producer shape and frozen Terminal TypeScript consumer passed on exact accepted b920b0cd source; no rerun of unchanged independent suites.",
+  "ci": {
+    "job": "international-workspace-foundation",
+    "registered_suites": 2,
+    "uncovered_closure_paths": [],
+    "verification": "Canonical load_legacy_jobs/infer_job_scopes on the existing job; derived1/1; exact-head hosted CI remains pending."
+  },
+  "external_evidence": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/intl-owner-bridge-r1/PARENT_ADJUDICATION_R2.json",
+  "limits": [
+    "Caller must supply authentic trusted context and qualification origin; no raw-draft validation or source admission",
+    "Absent membership remains unknown; absent qualification stays unqualified; malformed inputs are structured refusals",
+    "No runtime owner registration, provider read, Saved/DDL/API/mount, merge, deployment or visual/live acceptance",
+    "Recovered current bytes match original retained report hashes; no historical producer seal claimed"
+  ]
+}
