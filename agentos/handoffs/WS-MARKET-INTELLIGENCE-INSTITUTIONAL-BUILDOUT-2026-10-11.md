@@ -1,6 +1,6 @@
 ---
 workstream: WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT
-session: claude/mi-records-wave7-20261011 (seat fd47d431; worktree mastermind-program-handoff-09cdd0; lane branches claude/mi-n-alpaca-provider-20261011, claude/mi-w2c-torn-pending-recovery-20261011, claude/mi-n-alpaca-hardening-20261011, claude/mi-skyd-identity-rename-20261011)
+session: claude/mi-records-wave9-20261011 (seat fd47d431; worktree mastermind-program-handoff-09cdd0; lane branches claude/mi-n-alpaca-provider-20261011, claude/mi-w2c-torn-pending-recovery-20261011, claude/mi-n-alpaca-hardening-20261011, claude/mi-skyd-identity-rename-20261011, claude/mi-identity-checkout-race-20261011)
 model: fable
 ended_because: blocked
 mission: >-
@@ -19,6 +19,10 @@ state_before: >-
   on a store refusal, option-OI capture failing before persistence since 2026-08-11, freshness
   sentinel refusing a served body over 8 MiB, us_board_provisional stale over the weekend.
 changed:
+  - path: "app/deploy/macro-market-memory-identity.service"
+    what: "W9-3 (#8841): TimeoutStartSec 180->600 and CPUQuota 50%->100% for the identity intake unit; the deploy test pins 600"
+  - path: "agentos/discoveries/DSC-WORKFLOW-DISPATCH-RESOLVES-AGAINST-THE-DEFAULT-BRANCH.md"
+    what: "W9-3: workflow_dispatch resolves the workflow FILE against the default branch, so a new .github/workflows file cannot be dispatched from its own PR branch; verified both ways on deploy-alpaca-secrets.yml"
   - path: "agentos/decisions/DEC-TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS.md"
     what: "Package N rights basis: the writer ingests Benzinga-sourced headlines through Alpaca's official news API under a committed headline-tier receipt; direct Benzinga stays a procurement option"
   - path: "agentos/decisions/DEC-MM-IDENTITY-INGEST-IDEMPOTENT-OVER-CAPTURED-DATES.md"
@@ -30,6 +34,12 @@ changed:
   - path: "research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-11.md"
     what: "W8 program file: lane matrix (ORCH-N, ORCH-OPS and their fabric lanes), DECIDED D0–D6 + seat rulings, FACTS, lane recipes, gates by owner, NEXT, Chairman blocker list"
 verified:
+  - claim: "PR #8838 (deploy-alpaca-secrets.yml) MERGED 2026-10-11T17:58:30Z as 0a47364446e6; dispatch run 38162037064 from main concluded SUCCESS 18:03Z; VPS /etc/macro-live.env + /etc/macro-ticker-news.env rotated (mtime 18:01:08Z, keylen 26 / seclen 44, mode 600, .bak-alpaca-20261011T180108Z kept) and the data.alpaca.markets news probe answers HTTP 200 — no secret value read"
+    command: "gh pr merge 8838 --squash --match-head-commit …; gh workflow run deploy-alpaca-secrets.yml --ref main; gh run view 38162037064 --json conclusion; ssh root@146.190.142.17 stat/grep -c/curl -o /dev/null -w %{http_code} (length and presence only)"
+  - claim: "PR #8841 (identity unit budget 600 s / 100%) MERGED 2026-10-11T18:11:43Z on exact head f1aa81a17b7a as f20602fdf5e6; both changed blobs identical on origin/main; needle TimeoutStartSec=600 x1. VPS install still pending at 18:17Z: /opt/macro HEAD f1ae1e0365fc because /run/lock/macro-update.lock is held by an in-flight Terminal build (flock -n skip)"
+    command: "gh pr merge 8841 --squash --match-head-commit f1aa81a17b7a; git fetch origin; git rev-parse origin/main:<path> per path; git grep TimeoutStartSec=600 origin/main -- app/deploy; ssh root@146.190.142.17 git -C /opt/macro rev-parse HEAD; lslocks / ps on the lock holder (read-only)"
+  - claim: "macro-ticker-news.service (the Package N writer) is loaded/active/running since 2026-10-11T16:55:34Z, NRestarts=0 — the W9-2 note 'ticker-news.service not-found' used the wrong unit name and is retracted"
+    command: "ssh root@146.190.142.17 systemctl show macro-ticker-news.service -p LoadState -p ActiveState -p SubState -p NRestarts -p ExecMainStartTimestamp -p FragmentPath"
   - claim: "PR #8819 (identity ingest idempotent over captured dates) MERGED 2026-10-11T14:50:31Z as b8a839236ddd; both changed paths blob-identical to origin/main; diff carries DEC T1/T2/T3 tests plus the every-date-diverges repair"
     command: "gh pr diff 8819; gh pr ready 8819 && gh pr merge 8819 --squash --match-head-commit a95921b0…; git fetch origin; per-path git rev-parse compare"
   - claim: "PR #8823 (alpaca provider hardening) MERGED 2026-10-11T14:48:18Z as d39672a34aaa; all 6 changed paths blob-identical to origin/main"
@@ -75,6 +85,16 @@ verified:
   - claim: "#8809 MERGED at head 1d8a481ce9f4 as squash 9b1da2b55e6e; all 10 files present on origin/main"
     command: "gh pr ready 8809 && gh pr merge 8809 --squash --match-head-commit 1d8a481ce9f44751865da1af688214f68526b077; git fetch origin; for p in <10 paths>; do git cat-file -e origin/main:$p; done; git grep rights-alpaca-benzinga-news-2026-10-11 origin/main -- config/ticker_news_rights_alpaca_benzinga.json"
     result: "origin/main advanced 734ab8571d48 -> 9b1da2b55e6e; 10/10 paths present; needle found; merged on the inherited ci-pack-0 red (PR delta 0 on three packing probes, main's own newest ci.yml red on the same job)"
+  - claim: "#8828 SKYD-IDENTITY (dated PSKY->SKYD RenameEvent, US-XNYS-PSKY -> SEC:US-XNAS-PSKY supersession bridge, variant N suppression gate, data/reference regeneration) MERGED 2026-10-11 16:5xZ as squash c50af4eb0421 of fold head 005c81ed737e; 8/8 changed paths blob-identical on origin/main; the VPS pulled it (/opt/macro HEAD c50af4eb0421)"
+    command: "gh pr ready 8828 && gh pr merge 8828 --squash --match-head-commit 005c81ed737e78d40494571dc6e9a8e476f692b3; git fetch origin; per-path git rev-parse origin/main:<p> vs 005c81ed737e:<p> (8/8 equal); git grep -c unratified_rename_member origin/main -- scripts/build_security_master.py; ssh -i ~/.ssh/macro_dashboard_deploy_v2 -o BatchMode=yes root@146.190.142.17 'git -C /opt/macro rev-parse --short=12 HEAD'"
+    result: "merge rc=0; squash c50af4eb04217376dbed228bddd1b632b06bf4ae; 8/8 SAME; needle 2 hits; VPS HEAD c50af4eb0421"
+  - claim: "the SKYD fold is additions-only (C2) with a bounded SKYD-specific delta (C1), and the two code-gate jobs that bind it concluded green: security_master 2384->3103 rows (added 719, removed 0), vendor_aliases 6046->8924 (added 2876, removed 0); MOG-A 0->4 rows (the F1 misclassification fixed by variant N), BRK-B/BF-B/FI/FISV byte-identical; resolve('membership','SKYD',2026-10-11) == SEC:US-XNAS-PSKY re-run by the review lane"
+    command: "seat parquet extracts $S/seatva/{va,sm}_{head,main} compared with python3/pandas; review lane stdout $K/ext/lanes/skyd-review-20261011-r1.remote.stdout; gh api repos/mastermindx-market-intelligence/macro/commits/005c81ed737e/check-runs?per_page=100 (27 runs, 0 pending, only merge-queue-pilot red; dataos-identity-seams ci-pack-11 + ticker-news-qbus ci-pack-9 SUCCESS on run 38154035667)"
+  - claim: "/opt/macro is a depth-1 clone on which ancestry checks fail closed on every pull (DSC:DEPTH-ONE-DEPLOY-CLONE-DEFEATS-ANCESTRY-CHECKS)"
+    command: "ssh -i ~/.ssh/macro_dashboard_deploy_v2 -o BatchMode=yes root@146.190.142.17 'git -C /opt/macro rev-parse --is-shallow-repository; wc -l < /opt/macro/.git/shallow; git -C /opt/macro rev-list --count HEAD; git -C /opt/macro merge-base --is-ancestor HEAD@{1} HEAD; echo rc=$?'"
+    result: "true; 1641; 1; rc=1 with HEAD@{1} a040596a32a4 the direct parent of HEAD c50af4eb0421 on origin/main"
+  - claim: "DIDC #8830 round 4 is test-only over the reviewed round-3 head and its new test discriminates the fail-open mutant: ORCH-OPS re-ran it in a detached worktree (21 passed at head 3418a0e579bf; with the mutant that computes the loaded-module set before the per-key loop, exactly test_ingest_fails_closed_when_a_module_imported_during_capture_moves fails); ingest script byte-identical to r3 1e6823ed2221"
+    command: "ORCH-OPS packet $S/../tasks/a5ccb27d864b1f6cb.output (git diff --stat 1e6823ed2221..3418a0e579bf = tests file only +34; pytest counts 21 / 1 failed 20 passed on the mutant; store+observation suites 53 passed)"
   - claim: "PR #8818 (D-options: pit EACCES tolerance + stage token) MERGED 2026-10-11T14:59:22Z as 56e269cf2e3f; 6/6 changed paths blob-identical to origin/main"
     command: "gh pr ready 8818 && gh pr merge 8818 --squash --match-head-commit d319fde9b192…; git fetch origin; per-path git rev-parse origin/main:<p> vs <head>:<p> (6/6 equal)"
   - claim: "PR #8826 (W8 records-2) MERGED as dc674a5b5d3d; 7/7 paths blob-identical to origin/main"
@@ -88,29 +108,30 @@ verified:
   - claim: "tests/test_dataos_security_master.py is NOT on PR CI: house-law-registry is gate: data (legacy-jobs.yml L7882); ci.yml plans/runs --gate code only (L4698/L5039/L5062); the test runs only in data-health.yml (workflow_run on daily + 13:30Z cron)"
     command: "git show origin/main:.github/ci/legacy-jobs.yml | awk '/^  house-law-registry:/{f=1} f&&/gate:/{print NR\": \"$0; exit}'; git show origin/main:.github/workflows/ci.yml | grep -n -- '--gate'; python3 scripts/run_ci_pack.py --workflow <main manifest> --gate code --pack-index 10 --pack-count 12 --validate-only | grep house-law"
 unverified:
-  - claim: "the SKYD-IDENTITY fix (one dated RenameEvent PSKY->SKYD 2026-10-06) resolves the writer's universe build"
-    what_would_verify: "python3 scripts/build_qbus_news_universe.py rc 2 on main -> rc 0 at the fix head against the committed constituents artifact; resolve('membership','SKYD',2026-10-11) == resolve('membership','PSKY',2026-10-05); artifact row-diff limited to PSKY/SKYD rows; the new test red on main"
   - claim: "#8812 is live: the sentinel served-file read uses the measured whole-file cap"
     what_would_verify: "the first sentinel tick after the VPS pull (14:42Z cadence) logs no HTML-truncation refusal; watcher bjaodhbad reads it"
   - claim: "#8807 and #8816 heal their units after the 10-12 nightly republishes the manifest"
     what_would_verify: "first :53 technicals tick after the ~02:0xZ nightly completes without 'store ticker count does not match'; update.sh then arms W2C (D-experience) and the experience tick logs the torn-pending discard path instead of a wedge"
-  - claim: "P2 brings the writer live on the VPS and the canary reads live with growing rows"
-    what_would_verify: "systemctl is-active macro-ticker-news.service; /api/ticker-news health json read by the orchestrator; row count rising across two reads ≥10 min apart"
+  - claim: "DIDC #8830 reached PRODUCTION_PROOF on the VPS: the 17:30:25Z macro-market-memory-identity run exited 0 after the deploy pull moved HEAD 8a75b657→b79cd122 mid-run (completion_commit ≠ deployed_commit; merged blob 57f6ae0d155d at HEAD)"
+    command: "ssh -i ~/.ssh/macro_dashboard_deploy_v2 -o BatchMode=yes root@146.190.142.17 'cd /opt/macro && git rev-parse HEAD:scripts/ingest_market_memory_identity.py && git reflog --date=iso | head -12 && systemctl show macro-market-memory-identity.service -p Result,NRestarts,ExecMainStartTimestamp,ExecMainExitTimestamp,ExecMainStatus && journalctl -u macro-market-memory-identity.service --since 17:25 -o cat | grep -E completion_commit' (ORCH-OPS read 17:34:37Z; seat judged the artifact)"
+  - claim: "P2 brings the writer live on the VPS once the deploy-alpaca-secrets dispatch (#8838) refreshes the VPS Alpaca pair, and the canary reads live with growing rows"
+    what_would_verify: "deploy-alpaca-secrets.yml run from main concluding success with key_id_lines=1 secret_lines=1 cr_lines=0 for both env files; then systemctl is-active macro-ticker-news.service; /api/ticker-news health json read by the orchestrator; row count rising across two reads ≥10 min apart"
   - claim: "P3 turns the Terminal rail on without a redeploy"
     what_would_verify: "curl -s https://app.mastermind-x.com/terminal | grep -o 'newsRailEnabled\":[a-z]*' reads true and .deployment-id still 707648d52014"
   - claim: "the D-experience torn-pending discard, D-identity idempotent ingest and D-options EACCES tolerance each heal their unit"
     what_would_verify: "the next SCHEDULED run's journald line for each unit (experience tick after timers re-arm; hourly identity run shows accrual past 2026-08-19 with one upstream_rewrite_after_capture receipt; option-OI run completes or reports stage=<class>)"
 unresolved:
-  - "SKYD-IDENTITY DRAFT #8828 (head bf5b534c300e, unarmed, ORCH-N) under the seat's conditional FOLD ruling: C1 head-regen minus main-regen == exactly 6 PSKY/SKYD vendor_aliases rows + one security id; C2 #8626's stale advance is additions-only (else SPLIT to the ITP owner); C3 keep the global build_alias_rows gate change only if PSKY fails without it; C4 PASS (ubuntu3 .claude/worktrees/macro is our own SKYD lane). C2 lane skyd-c2-20261011-r1 (ubuntu2, watcher bvbicvq2i) and review skyd-review-20261011-r1 (ubuntu3, watcher bq1h4qpvu) RUNNING; the fold commit (fresh-main merge + head-builder regeneration of data/reference/) launches only once C1/C2/C3 hold; then READY_FOR_SEAT_MERGE → seat merge → P2 → P3"
+  - "DIDC #8830 is MERGED (8a75b657d821, 17:26:55Z) and at PRODUCTION_PROOF: the 17:30:25Z identity-timer run saw HEAD move 8a75b657→b79cd122 at 17:33:05Z (deploy pull, 6 non-identity paths), accepted it, exited 0 with completion_commit b79cd122 ≠ deployed_commit 8a75b657, divergence_count 1 (unchanged). Do not re-merge, re-prove, restart macro-market-memory-identity.service, or ask ORCH-OPS for a second read"
   - "D-options CAPTURE is EXACT_HUMAN_GATE: Massive REST options snapshot is not entitled on the stock plan (403 NOT_AUTHORIZED with the correct key); fix = Chairman plan entitlement/upgrade, or an entitled key installed at /etc/macro-market-memory-options/massive-option-oi-api-key; weekday timer stays disarmed; no code change or key swap can cure it"
-  - "data-health.yml on main (last SUCCESS 06:48Z, before #8626) will go red on tests/test_dataos_security_master.py until the SKYD fold regenerates data/reference/ — attributable to #8626's unregenerated advance, cleared by the fold, never by a test edit"
+  - "data-health.yml on main: its next run after c50af4eb0421 should go green on tests/test_dataos_security_master.py because the fold regenerated data/reference/; if it stays red the cause is NOT the fold — diagnose before any test edit. A red on #8828's merged head (scripts/** edit = authority freeze) clears only through a completed-SUCCESS ci.yml on a main descendant of c50af4eb0421 (preflight for an in-flight baseline first)"
   - "Production-records capture stays fail-closed at MAX_SOURCE_ROWS=25_000 until an accepted preregistration v2 (DEC:PRODUCTION-RECORDS-ROW-BOUND-STAYS-FAIL-CLOSED-UNTIL-PREREG-V2)"
 next_actions:
-  - "On ORCH-N's READY_FOR_SEAT_MERGE for #8828: judge by artifact (C1 six-row delta + one security id; C2 additions-only counts; universe builder rc 0; dataos-identity-seams + ticker-news-qbus concluded green on the fold head; G4a/b/c in the single PR-body edit) → hold scan → gh pr ready 8828 && gh pr merge 8828 --squash --match-head-commit <full fold sha> → bare git fetch origin + per-path blob-verify → SendMessage ORCH-N the merge sha"
-  - "ORCH-N P2 (app/deploy/ticker-news-setup.sh --check/--install/--arm + canary after the VPS 3-min pull) → P3 Terminal drop-in (TICKER_NEWS_RAIL=1, daemon-reload, one restart) only on a live canary with rows growing across two reads ≥10 min apart; P3 proof = newsRailEnabled true at .deployment-id 707648d52014"
-  - "#8819 PRODUCTION_PROOF: accept ORCH-OPS's one read of the first identity-timer journald receipt after 15:30:50Z (typed counts + divergence_count, no KeyError; watcher biyqfcy0u)"
+  - "On ORCH-N's READY_FOR_SEAT_PROOF for Package N: judge P2 by artifact (systemctl is-active macro-ticker-news.service; two /api/ticker-news health reads >=10 min apart with rows growing; source=benzinga only) and P3 by the anon /terminal read (newsRailEnabled true at .deployment-id 707648d52014); record PRODUCTION_PROOF for N; never arm, start or restart a unit by hand"
+  - "#8838 deploy-alpaca-secrets.yml (armed merge-on-green; watcher bbyqxi0ml 150 s on head dbdf75a58f00): merge on concluded green → gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=false (a dispatch from the PR branch answered 404 — workflow_dispatch resolves against the default branch) → on success SendMessage ORCH-N CONTINUE: ticker-news-setup.sh --disarm then --arm, canary ×2 ≥10 min apart, then P3 Terminal drop-in (TICKER_NEWS_RAIL=1, daemon-reload, one restart); P3 proof = newsRailEnabled true at .deployment-id 707648d52014. Never restart marketing-press-feeds before reading the press-lane cursor/dedupe semantics (two-month frozen cursor)"
+  - "Covering main proof for the authority-frozen heads #8830 (scripts/) and #8838 (.github/workflows/): gh workflow run ci.yml --ref main only after run 38158841888 concludes and #8838 merges, over a clear field (preflight the in-flight list first)"
+  - "Identity-timer runway: both 17:27Z and 17:30Z runs took ~165 s wall for ~82 s CPU under CPUQuota=50% against TimeoutStartSec=180 in app/deploy/macro-market-memory-identity.service (92% of the budget; corpus grows daily). Lift the budget in a small unit-file PR (CPUQuota and/or TimeoutStartSec; read app/deploy/update.sh for how unit edits deploy) BEFORE the timer starts timing out — this is the identity unit, not the options-context-audit unit whose timeout DNR forbids the same lever"
   - "Proof reads after the 10-12 nightly (~02:0xZ) + first :53 technicals tick: B (#8807) replay passes; D-experience (#8816) W2C activation by update.sh; then the scheduled identity/options runs for #8819/#8818"
-  - "After the SKYD merge: mint the venue-moving-rename DSC from ORCH-N's falsifier + so_what (US-XNYS-PSKY supersession bridging the committed US-XNAS-PSKY key) in the next records wave"
+  - "On ORCH-OPS watcher bb4o086m3 CONCLUDED for #8830 at head 3418a0e579bf: hold scan (DRAFT, 0 labels, auto-merge null, reviewDecision, no hold text in body/comments) -> gh pr ready 8830 && gh pr merge 8830 --squash --match-head-commit <full sha> -> bare git fetch origin + 2-path blob compare -> SendMessage ORCH-OPS the sha; proof on the first moved-HEAD identity run (one journald read); then the seat's separate timeout-runway decision"
   - "ONE #1202 checkpoint comment at the W8/W9 boundary (never re-ACK/re-START); refresh account memory; Chairman blocker list LAST; SESSION END line"
 do_not_redo:
   - "Alpaca rights basis, D-identity option (a), D-options fix (b): DECIDED in the three DEC records in this PR"
@@ -121,6 +142,7 @@ do_not_redo:
   - "G-PR DECIDED: MAX_SOURCE_ROWS stays 25_000 until prereg v2 (DEC:PRODUCTION-RECORDS-ROW-BOUND-STAYS-FAIL-CLOSED-UNTIL-PREREG-V2); never window/evict owners"
   - "Never relaunch a Terminal news server lane (#832 closed superseded); P3 is a systemd drop-in on the Terminal host, not a Vercel redeploy"
 danger_areas:
+  - "The VPS Alpaca pair is refreshed ONLY by deploy-alpaca-secrets.yml (#8838; DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW): never read, paste, copy or hand-edit the pair; a file mtime newer than the 2026-08-04 rotation is not evidence the pair is current (DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04); the press-lane cursor has been frozen since 2026-08-04, so a marketing-press-feeds restart replays a two-month backlog whose dedupe semantics are unread — restart_press_feeds stays false until that is read"
   - "Pushing into an armed PR, or reading a PR the orchestrator just read within 300 s (REDUNDANT POLL guard)"
   - "engine/qbus_news_receipts.py is edited by Sol's held #8697 (head 7b7fa9599b26) — the Alpaca adapter must never touch it"
   - "The 0710 root-owned parent of the options store; the identity store's refusal path; MAX_SOURCE_ROWS in market_memory_production_records.py — all three are boundaries, not bugs"
@@ -128,11 +150,12 @@ danger_areas:
   - "Credential files and shim logs listed in the seat's security rule: presence/length checks only, never values"
   - "A PR body is edited at most ONCE per PR (a second edit inside one ci-authority run cancels it); #8818's single edit is spent"
   - "A red on a scripts/** head that POSTDATES 186dbdce5aad (#8819/#8818/#8826) needs a LATER main-descendant proof; 38147853042 (15:12:02Z) clears only #8812's freeze — never re-dispatch over an in-flight baseline"
-  - "Never push into #8828, arm it, ready it, or edit its body: ORCH-N owns the single body edit and the fold commit (O.16, one writer)"
-  - "tests/test_dataos_security_master.py runs only in data-health.yml — a green ci.yml on #8828 is NOT evidence the stale-artifact test passes; read G4a/b/c and the two code-gate jobs instead"
-prs: [8809, 8811, 8807, 8812, 7711, 8816, 8820, 8805, 8823, 8818, 8819, 8824, 8817, 8826, 8828]
+  - "#8828 is MERGED (c50af4eb0421): never reopen it, replay the fold, or re-regenerate data/reference/ for PSKY/SKYD; the store key stays PSKY until the #4622 follow-on. Never push into #8830, arm it, or edit its body again (the single edit is spent 17:00:36Z); ORCH-OPS's bb4o086m3 is the only watcher on it — a seat read of pr-view:8830 inside 300 s of its tick trips the REDUNDANT POLL guard"
+  - "tests/test_dataos_security_master.py runs only in data-health.yml — a green ci.yml is never evidence the stale-artifact test passes; read data-health's next main run after c50af4eb0421"
+prs: [8809, 8811, 8807, 8812, 7711, 8816, 8820, 8805, 8823, 8818, 8819, 8824, 8817, 8826, 8828, 8829, 8830]
 decisions:
   - DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS
+  - DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW
   - DEC:MM-IDENTITY-INGEST-IDEMPOTENT-OVER-CAPTURED-DATES
   - DEC:MM-PIT-UNOWNED-PARENT-FSYNC-EACCES-IS-TOLERATED
   - DEC:TICKER-NEWS-UNIVERSE-STAYS-FAIL-CLOSED-ON-UNRESOLVED-ALIAS
@@ -142,6 +165,9 @@ discoveries:
   - DSC:OPTIONS-CONTEXT-AUDIT-V1-TIMEOUT-PRECEDES-4096-REFUSAL
   - DSC:PSKY-SKYD-RENAME-IS-ONE-CIK-DATED-BOUNDARY
   - DSC:MASSIVE-REST-OPTIONS-SNAPSHOT-NOT-ENTITLED-ON-STOCK-PLAN
+  - DSC:A-VENUE-MOVING-RENAME-MISSES-THE-COMMITTED-LISTING-KEY
+  - DSC:DEPTH-ONE-DEPLOY-CLONE-DEFEATS-ANCESTRY-CHECKS
+  - DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04
 ---
 
 ## Context
@@ -196,3 +222,91 @@ read of origin/main: `house-law-registry` is `gate: data`, so the stale-artifact
 CI and binds only in data-health.yml; gate 4 for the fold is therefore local commands in the PR
 body plus the two code-gate jobs. Highest rung in the wave is PRODUCTION_PROOF (#8811, #8812,
 #8818 failure line); #8819's proof waits on ORCH-OPS's single read of the 15:30Z identity run.
+
+## Checkpoint W9-records (2026-10-11 17:0xZ)
+
+#8828 SKYD-IDENTITY MERGED at 16:5xZ as c50af4eb0421 (squash of fold head 005c81ed737e): the
+seat judged the fold by its own parquet diff (additions-only; MOG-A 0->4; BRK-B/BF-B/FI/FISV
+byte-identical), the review lane's variant-N verdict and the two code-gate jobs on run
+38154035667, then merged with --match-head-commit and blob-verified 8/8 paths. The VPS pulled it
+inside the 3-min cadence. P2/P3 were released to ORCH-N by SendMessage with the squash sha; P2 then BLOCKED at 17:04Z on HTTP
+401 — the VPS holds the pre-rotation Alpaca pair (rotated 2026-08-04; DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04) — and the seat opened #8838 deploy-alpaca-secrets.yml
+(DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW), armed merge-on-green, to be dispatched from main after its merge (a branch dispatch
+answered 404). DIDC
+#8830 (ORCH-OPS, one review + four repair rounds; round 2's ancestry design rejected because
+/opt/macro is a depth-1 clone — DSC:DEPTH-ONE-DEPLOY-CLONE-DEFEATS-ANCESTRY-CHECKS) is
+MERGED 17:26:55Z as 8a75b657d821 (--match-head-commit 3418a0e579bf; 2/2 blobs verified); its
+production proof is the first identity-timer run whose HEAD moved. Three DSCs and one DEC minted
+here: DSC:A-VENUE-MOVING-RENAME-MISSES-THE-COMMITTED-LISTING-KEY,
+DSC:DEPTH-ONE-DEPLOY-CLONE-DEFEATS-ANCESTRY-CHECKS, DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04 and
+DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW. Highest rung in the wave is still
+PRODUCTION_PROOF (#8811, #8812, #8819, #8818 failure line); #8828 and #8830 are MERGED; #8828's
+production proof is the P2 canary, which waits on #8838.
+
+## Checkpoint W9-2 (2026-10-11 17:3xZ)
+
+DIDC #8830 MERGED 17:26:55Z as 8a75b657d821 (ready + `--match-head-commit 3418a0e579bf` in one act;
+2/2 blobs verified on origin/main; ORCH-OPS owns the one journald read of the first moved-HEAD
+identity-timer run). Package N P2 BLOCKED at 17:04Z on HTTP 401: the VPS copy of the Alpaca pair in
+/etc/macro-live.env and /etc/macro-ticker-news.env is the pre-rotation pair (repository secrets
+rotated 2026-08-04T05:22Z; the press-feeds cursor froze at 04:04Z the same day; 88 journal 401 lines
+in 2 h; presence/shape checks only, values never read — ). Seat
+remedy: #8838 `.github/workflows/deploy-alpaca-secrets.yml` (),
+a dispatch-only job on the deploy-api-secrets idiom that delivers the two repository secrets to both
+env files over the VPS_DEPLOY_KEY SSH path (timestamped 0600 backups, counts printed, never values,
+no restart by default). A dispatch from the PR branch answered 404 (workflow_dispatch resolves
+against the default branch), so the refresh waits on the #8838 merge: armed merge-on-green at
+17:3xZ, watcher `bbyqxi0ml` (150 s) on head dbdf75a58f00. Main proof 38158841888 is in flight
+(started before the #8830 merge, so it clears neither authority-frozen head); the seat dispatches
+the covering proof after it concludes. ORCH-OPS then returned the #8830 production proof (one
+read-only VPS read at 17:34:37Z, judged by artifact): the 17:30:25Z timer run saw the deploy pull move
+HEAD 8a75b657→b79cd122 at 17:33:05Z, accepted the 6 non-identity paths, exited 0 with
+completion_commit ≠ deployed_commit — exactly the case #8830 fixes — so D-identity race is at
+PRODUCTION_PROOF and ORCH-OPS has ended (0/2 lanes). New OPEN item from that read: both runs took
+~165 s wall for ~82 s CPU under CPUQuota=50% against TimeoutStartSec=180 (92% of the budget) — the
+identity unit needs a budget lift before the growing corpus times it out.
+
+## Checkpoint W9-3 (2026-10-11 18:2xZ)
+
+Alpaca activation unblocked. #8838 (`.github/workflows/deploy-alpaca-secrets.yml`) MERGED by the
+sweeper 17:58:30Z as 0a47364446e6 (head dbdf75a58f00 unchanged, 25/25 clean; blob verified on
+origin/main). The seat dispatched it from main at 18:01:03Z with `restart_press_feeds=false`: run
+38162037064 concluded SUCCESS 18:03Z; job log (counts only): both env files `key_id_lines=1
+secret_lines=1 cr_lines=0`, backups `*.bak-alpaca-20261011T180108Z` 0600. VPS proof (presence,
+length, diff only — values never read): /etc/macro-live.env and /etc/macro-ticker-news.env mtime
+18:01:08Z, keylen 26 / seclen 44, each CHANGED against its backup, the two files' pairs identical;
+an auth probe from the VPS (`GET /v1beta1/news?limit=1`, HTTP code only) answered 200 on the first
+attempt — the 401 class that froze the press-feeds cursor on 2026-08-04 is gone. The seat did NOT
+restart marketing-press-feeds.service (outward-facing marketing emitter; it loads the env at
+service start, its 401 path is stateless, and its catch-up is bounded to one newest-first page of
+≤50 items): the restart is a Chairman/marketing-owner act, `gh workflow run
+deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=true`. ORCH-N (`ad8bb35435bc5fe52`)
+resumed 18:06Z with the P2 rulings (`ticker-news-setup.sh --check/--install/--arm`; canary ×2 ≥10 min,
+source=benzinga only; P3 drop-in + one terminal restart, proof `newsRailEnabled":true` at
+.deployment-id = the LIVE id (bc28e47ee54f since another seat's Terminal deploy restarted terminal.service 18:18:44Z; 707648d52014 is its ancestor, so the rail code is in the live build); G3 → GLM build lane). RETRACTED from W9-2: "ticker-news.service
+not-found" used the wrong unit name — the writer unit is `macro-ticker-news.service`, loaded/active/
+running since 16:55:34Z (NRestarts=0, pid 3024662 `run_qbus_news.py --run`, cgroup
+`system.slice/macro-ticker-news.service`), so P2 install already happened before the key refresh. ORCH-N interim 18:2xZ: because the writer
+reads its env only at start, it re-armed it with the rotated pair through the committed script
+(`--disarm` → `--check` → `--install` → `--arm`, 18:20:21–18:20:59Z, all rc=0, secret_hits=0; the disarm is
+required because install refuses while active — recorded as a DEVIATION, accepted: the script IS the admitted
+lifecycle). Canary read 1b 18:25:47Z: health state=live, catchups_failed=0, connect_attempts=1,
+disconnects=0, last_successful_catchup 18:25:32Z, e406=0, anon /api/ticker-news/AAPL=401, revisions=0 (fresh
+start looks back 300 s; Sunday flow is thin) — growth sentinel every 600 s, max 12 reads. G3 health-codes
+lane g3-health-codes-20261011-r1 launched 18:24Z on ubuntu1 (glm-5.3).
+#8841 (`app/deploy/macro-market-memory-identity.service` TimeoutStartSec 180→600, CPUQuota 50%→100%;
+the deploy test pins 600) MERGED by hand 18:11:43Z on exact head f1aa81a17b7a as f20602fdf5e6
+(watcher 25/25 clean; both blobs SAME on origin/main; `TimeoutStartSec=600` needle ×1). VPS proof is
+pending: at 18:17Z /opt/macro HEAD was still f1ae1e0365fc because the 3-min pull had been skipping
+since 18:12Z — `/run/lock/macro-update.lock` (flock -n, exit 0 on contention) was held by an in-flight
+Terminal build from another seat's ssh session (`python3 -` heredoc → `terminal-build.sh --target-sha …`
+→ `npm run build`, started ~18:11:56Z). That is the lock's designed serialization, not a wedge; the seat
+left it alone. The install lands on the first `macro-update` tick after release (update.sh L819-862:
+cmp → systemd-analyze verify → install → daemon-reload → timer restart); INSTALLED 18:27:36Z: the build released the lock
+(no holder, 0 build processes), /opt/macro HEAD 8156a0b38c39, `cmp` IDENTICAL, `TimeoutStartUSec=10min`,
+`CPUQuotaPerSecUSec=1s`, NeedDaemonReload=no — PRODUCTION_PROOF for the install. The 17:30:25Z run (the last
+under 180 s / 50%) ended Result=success at 165 s wall / 81.96 CPU-s; the first run under the new budget is the
+18:30:03Z trigger and its `Result=success` is the remaining run proof.
+Covering main proof ci.yml run 38162040929 (a same-second sibling dispatch, 38162041313, is still in flight and is
+left alone — never cancel a proof run) on f1ae1e0365fc (descendant of the #8830 and #8838
+merges; dispatched 18:01:07Z over a clear field; watcher `blq7tnv8m` at 120 s): concluded SUCCESS 18:28:59Z (watcher line `MAINPROOF-CONCLUDED 38162040929 success f1ae1e0365fc`) — both authority freezes (#8830 scripts/, #8838 .github/workflows/) CLEAR
