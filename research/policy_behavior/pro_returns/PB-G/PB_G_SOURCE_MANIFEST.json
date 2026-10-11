@@ -1,0 +1,823 @@
+{
+  "schema": "pb_g_source_manifest.v1",
+  "operation_key": "PB-G-POLICY-BEHAVIOR-INTEGRATION-20261007",
+  "scope": "Completed bounded research/architecture synthesis; no implementation, source enrollment, production or investment authority.",
+  "research_only": true,
+  "parent_program_complete": false,
+  "commission": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8560,
+    "head_sha": "7abc3dc596c5a6463effb37422bf9bd34bbdf1ba",
+    "path": "research/policy_behavior/handoffs/PB_G_INTEGRATION_SYNTHESIS_PRO.md",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7abc3dc596c5a6463effb37422bf9bd34bbdf1ba/research/policy_behavior/handoffs/PB_G_INTEGRATION_SYNTHESIS_PRO.md",
+    "assignment": "User current live delivery on 2026-10-07: Initiate handoffs/PB_G_INTEGRATION_SYNTHESIS_PRO.md from github."
+  },
+  "carrier": {
+    "pr": 8580,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8580",
+    "branch": "claude/pb-g-integration-synthesis-20261007",
+    "fresh_base_sha": "c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05",
+    "initial_checkpoint_sha": "f1faee0caee6278e814b5275ead9dde6d95e5ba3",
+    "scope_prefix": "research/policy_behavior/pro_returns/PB-G/",
+    "draft": true,
+    "hold_for_sol": true,
+    "auto_merge_authorized": false,
+    "final_head_receipt": "Final GitHub branch/readback and PR body carry exact publication head; not self-embedded in the commit."
+  },
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "branch": "master",
+    "protected": true,
+    "sha": "ee120e80f5d5e0344c453dd7cbf4108b9c429b38",
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1",
+    "minimum_bootstrap_major": 1,
+    "index_blob_sha": "38a18571229e487f525b1c9780f7993220a5da93",
+    "commission_historical_pin": "9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2",
+    "historical_index_blob_identical": true,
+    "same_pin_current_procedures_loaded": [
+      "INDEX.md",
+      "COLD_START.md",
+      "ACTIVE_EXECUTION.md",
+      "SESSION_RELIABILITY.md",
+      "WEB_CEO_DELEGATION.md",
+      "REVIEW_RETURN.md",
+      "CLOSEOUT.md",
+      "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md"
+    ],
+    "historical_comparison": [
+      {
+        "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+        "commission_pin_blob_sha": "5bfb9bbc91177e2400da596b45ec809d294a3242",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+        "commission_pin_blob_sha": "2073a33f05506268b15f0b5ce292ce57d5b60ed3",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/COLD_START.md",
+        "commission_pin_blob_sha": "b11e58f083040144933cf2ddab76bf6c60a7e542",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+        "commission_pin_blob_sha": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/CLOSEOUT.md",
+        "commission_pin_blob_sha": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+        "commission_pin_blob_sha": "8adc1ace42db9ab97854f96689485be223d34c51",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/REVIEW_RETURN.md",
+        "commission_pin_blob_sha": "f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      }
+    ],
+    "advisory_limit": "Bootstrap relative authority-boundaries advice was unavailable; canonical same-commit procedures and routing addendum were read. No modifying boundary was waived."
+  },
+  "inputs": [
+    {
+      "lane": "PB-A",
+      "pr": 8568,
+      "head_sha": "a60c620b2761db74070929068c969aac8c2cee57",
+      "branch": "research/pb-a-policy-behavior-baseline-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-A/",
+      "completion_record": "PB_A_COMPLETION.json",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true,
+      "commit_url": "https://github.com/mastermindx-market-intelligence/macro/commit/a60c620b2761db74070929068c969aac8c2cee57",
+      "return_url": "https://github.com/mastermindx-market-intelligence/macro/tree/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8568"
+    },
+    {
+      "lane": "PB-B",
+      "pr": 8573,
+      "head_sha": "1604552006b7a91ed5d0fa89c785a983478866ea",
+      "branch": "claude/pb-b-us-japan-constraint-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-B/",
+      "completion_record": "PB_B_RETURN.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true,
+      "commit_url": "https://github.com/mastermindx-market-intelligence/macro/commit/1604552006b7a91ed5d0fa89c785a983478866ea",
+      "return_url": "https://github.com/mastermindx-market-intelligence/macro/tree/1604552006b7a91ed5d0fa89c785a983478866ea/research/policy_behavior/pro_returns/PB-B",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8573"
+    },
+    {
+      "lane": "PB-C",
+      "pr": 8565,
+      "head_sha": "83b46fa22a1d79af86b4311483850fcc31d9aa56",
+      "branch": "research/pb-c-announcement-study-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-C/",
+      "completion_record": "README.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true,
+      "commit_url": "https://github.com/mastermindx-market-intelligence/macro/commit/83b46fa22a1d79af86b4311483850fcc31d9aa56",
+      "return_url": "https://github.com/mastermindx-market-intelligence/macro/tree/83b46fa22a1d79af86b4311483850fcc31d9aa56/research/policy_behavior/pro_returns/PB-C",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8565"
+    },
+    {
+      "lane": "PB-D",
+      "pr": 8574,
+      "head_sha": "df2091915159dab94f316718caa9b2662098eae4",
+      "branch": "research/pb-d-t2-event-quality-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-D/",
+      "completion_record": "PB_D_ACCEPTANCE.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true,
+      "commit_url": "https://github.com/mastermindx-market-intelligence/macro/commit/df2091915159dab94f316718caa9b2662098eae4",
+      "return_url": "https://github.com/mastermindx-market-intelligence/macro/tree/df2091915159dab94f316718caa9b2662098eae4/research/policy_behavior/pro_returns/PB-D",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8574"
+    },
+    {
+      "lane": "PB-E",
+      "pr": 8572,
+      "head_sha": "4720504205a7307630efe249a79c4bb02e5560da",
+      "branch": "research/pb-e-circular-financing-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-E/",
+      "completion_record": "README.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true,
+      "commit_url": "https://github.com/mastermindx-market-intelligence/macro/commit/4720504205a7307630efe249a79c4bb02e5560da",
+      "return_url": "https://github.com/mastermindx-market-intelligence/macro/tree/4720504205a7307630efe249a79c4bb02e5560da/research/policy_behavior/pro_returns/PB-E",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8572"
+    },
+    {
+      "lane": "PB-F",
+      "pr": 8575,
+      "head_sha": "7458a5d9b8e507de435136560a5cf86cebb839b9",
+      "branch": "research/policy-behavior-pbf-redteam-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-F/",
+      "completion_record": "PB_F_REVIEW_MANIFEST.json",
+      "completion_observation": "Independent bounded review complete; no acceptance, merge or prospective activation.",
+      "commit_url": "https://github.com/mastermindx-market-intelligence/macro/commit/7458a5d9b8e507de435136560a5cf86cebb839b9",
+      "return_url": "https://github.com/mastermindx-market-intelligence/macro/tree/7458a5d9b8e507de435136560a5cf86cebb839b9/research/policy_behavior/pro_returns/PB-F",
+      "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8575"
+    }
+  ],
+  "claim_coverage": {
+    "reviewed_matrix_url": "https://github.com/mastermindx-market-intelligence/macro/blob/7458a5d9b8e507de435136560a5cf86cebb839b9/research/policy_behavior/pro_returns/PB-F/PB_F_CLAIM_MATRIX.json",
+    "reviewed_matrix_git_blob_sha": "bcd2a2d44d02b7796484f1bdc549a684816cc577",
+    "reviewed_matrix_sha256": "a3f7c0d67f077c4c8096f825b974a92a0e929d60b1205e4b9c3e8ce68a3eb4b4",
+    "original_claims_and_ids_preserved": true,
+    "count": 122,
+    "pb_f_dispositions": {
+      "SURVIVES": 95,
+      "WEAKEN": 5,
+      "REJECT": 13,
+      "NEEDS_MORE_DATA": 9
+    },
+    "pb_g_dispositions": {
+      "RETAIN_AS_QUALIFIED": 95,
+      "UNRESOLVED": 9,
+      "REJECT_STRONG_FORM": 13,
+      "NARROW_AND_RETAIN": 5
+    },
+    "counts_are_not_evidence_weights": true,
+    "next_falsifier_normalized_to_array": true
+  },
+  "baseline": {
+    "input_receipts": "PB_G_BASELINE_SOURCE_RECEIPTS.json",
+    "recomputed_output": "PB_G_BASELINE_RECOMPUTED.json",
+    "script": "scripts/reproduce_baseline.py",
+    "source_files_git_verified": 18,
+    "own_score_groups_reproduced": 60,
+    "output_sha256": "5c9b534ae8e1fe1c78ad5bc432f1ba094fea4a8867b2e069116755960bd7e0e7",
+    "primary_episodes": 24,
+    "separate_challenge": 1,
+    "m0_m2_min_common": 8,
+    "all_three_common": 4,
+    "rich_m2_scored": 0,
+    "b_snapshots": 15,
+    "b_distinct_targets": 10,
+    "b_slots": 45,
+    "b_scored": 0,
+    "e_dossiers": 15,
+    "e_edges": 112,
+    "intended_40_to_60_comparable_complete": false,
+    "insufficiency_proven": true,
+    "historical_inputs_forecasts_outcomes_modified": false,
+    "limit": "Independent arithmetic over frozen labels; no new historical market-data collection, historically blinded reconstruction or causal test."
+  },
+  "owner_census": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05",
+    "scope": "Frozen read-only PB-G source census. No live runtime tests.",
+    "file_count": 43,
+    "files": [
+      {
+        "path": "engine/policy_watch_current.py",
+        "blob": "7af6bc4bae50b9a3bff2db656dc267a86a93507d",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/policy_watch_current.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/policy_intent_desk.py",
+        "blob": "8ab5dc662c8f9b8ec1e2500e755ebdc8ba0c04c2",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/policy_intent_desk.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/policy_dates.py",
+        "blob": "8e4a15d2d4e5a93ef3a8c6d44dde841a93936a0f",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/policy_dates.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "scripts/build_policy_watch.py",
+        "blob": "2990507e6cb23f91de567719e728d33042019473",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/scripts/build_policy_watch.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/whitehouse_feed.py",
+        "blob": "11f00fed347e871f4d1da6601f1763f6421f8106",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/whitehouse_feed.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/whitehouse_brain.py",
+        "blob": "d0ecd3b6b24534a399a4ff57f3732a3f80a102fa",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/whitehouse_brain.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "scripts/build_whitehouse.py",
+        "blob": "e4beac0957fb74a6e9dc47def713984dea3bcbbe",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/scripts/build_whitehouse.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "collectors/federal_register.py",
+        "blob": "087f61d328be3636a59656896b9a636d9b9eb934",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/collectors/federal_register.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/policy_calendar.py",
+        "blob": "e06a43813171df54e90a30a5e6d65e6e5cfa2ca0",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/policy_calendar.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/treasury_watch.py",
+        "blob": "e1e341cd2edba1619e2759f7c3152236a5c36664",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/treasury_watch.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/qbus.py",
+        "blob": "11f0948a7f7b54b7c67e502f479daae594a30f97",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/qbus.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/rates_inflation_command.py",
+        "blob": "d0b8d7e6f658236dcda9a1b9de84026d124441a8",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/rates_inflation_command.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/intel_hub.py",
+        "blob": "87ce7bdf6daf41a3d5946c2e16e3ec6bdd8b48e0",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/intel_hub.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/company_intelligence/contracts.py",
+        "blob": "750cf16e481e98222e6f078eb6a28ef3e8e45d7f",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/company_intelligence/contracts.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/company_intelligence/events.py",
+        "blob": "9d839a468ba0de2b2ea090bfe7d3ae698d303c44",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/company_intelligence/events.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/company_intelligence/event_workspace.py",
+        "blob": "4ab75d478fdec9aafcd7af8c6601aab697d3a705",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/company_intelligence/event_workspace.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/company_intelligence/financial_dossier.py",
+        "blob": "9664168689c443926a4a69c8c2af0ba681727a0e",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/company_intelligence/financial_dossier.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/company_intelligence/economic_observations.py",
+        "blob": "b7833b0793070a1d361d352b30af5fd6f4ab66f4",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/company_intelligence/economic_observations.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/company_intelligence/views.py",
+        "blob": "bfd142ad45d68d28f0e7eaa8f10dc18dbef80151",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/company_intelligence/views.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/capital_structure/event_spine.py",
+        "blob": "dee559f74ffa6760aabb60ba0f8ac2acd0cb1eb9",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/capital_structure/event_spine.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/capital_structure/source_ledger_io.py",
+        "blob": "9ad611fe4f10fb0c6f4b38aa6e13dcc93a22bf3e",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/capital_structure/source_ledger_io.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/capital_structure/source_identity.py",
+        "blob": "ce8aa9e91c71358c2fa4e9c7309e09e79b98873b",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/capital_structure/source_identity.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/capital_structure/projection.py",
+        "blob": "5e94f6626bfab2281cbc6a215b24ce943ac4590f",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/capital_structure/projection.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/capital_structure/document_terms.py",
+        "blob": "5d3ab4a107c68f9fb15713b8d6cd3d73bbcdad93",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/capital_structure/document_terms.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/corp_credit.py",
+        "blob": "56855ee5c44330184e4b7ca7273c64de8915eac2",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/corp_credit.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/credit_window.py",
+        "blob": "9d556b30a3a4c96f1413e609d1f8f69ed5ff68b8",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/credit_window.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/credit_cycle.py",
+        "blob": "028534b45a60f892c71280b8155f41dcc6d78a71",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/credit_cycle.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/government_revenue/amount_semantics.py",
+        "blob": "6d02b7b0783eb8001919ef34f4d0040a4b26bfbf",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/government_revenue/amount_semantics.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/government_revenue/prophet_annotation.py",
+        "blob": "0a3c2b7571520d96e3a998eace87178dbaecb1c0",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/government_revenue/prophet_annotation.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/government_revenue/award_events.py",
+        "blob": "5e231ba0d91def9e8ccee0a6d1b626af894c7066",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/government_revenue/award_events.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/government_revenue/dossiers.py",
+        "blob": "f3f030b0a48910c7cace344b982f3425f94a7a3b",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/government_revenue/dossiers.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/government_revenue/entity_resolution.py",
+        "blob": "06bfc270d681c1f1f9f4fc61e3f5de4f9d898acd",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/government_revenue/entity_resolution.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/theme_graph/materialize.py",
+        "blob": "c9eed67f232765dbb5280eedbef1ad1367839468",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/theme_graph/materialize.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/theme_graph/ontology.py",
+        "blob": "d70b3a09955826702186231789b20ba27a50502b",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/theme_graph/ontology.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/market_ontology/exposure_map.py",
+        "blob": "a96224f983f01b21f73fd2f2090a5f9421bc3230",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/market_ontology/exposure_map.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/group_linked_outsiders.py",
+        "blob": "2a01093d015737641fe702619a8cf6830e0d680d",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/group_linked_outsiders.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/transmission_company_continuation.py",
+        "blob": "cbce9b5771925251cb2c7b72cafa6318d22218a2",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/transmission_company_continuation.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "engine/transmission_chains.py",
+        "blob": "61ebef95861cc1af15282f2685092b4142d179d0",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/engine/transmission_chains.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "lib/dataos/temporal.py",
+        "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/lib/dataos/temporal.py",
+        "read_scope": "full file"
+      },
+      {
+        "path": "data/policy_intent/track_record.json",
+        "blob": "d9b3e019cf409c73603997b5dab537be786aa062",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/data/policy_intent/track_record.json",
+        "read_scope": "full file"
+      },
+      {
+        "path": "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv",
+        "blob": "e6ae2c8c5eb2b61e3484a83f8a759e3df1406757",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv",
+        "read_scope": "full file"
+      },
+      {
+        "path": "data/policy/intel.json",
+        "blob": "8309d093709e5e33026f90729bc3057848c184be",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/data/policy/intel.json",
+        "read_scope": "lines 1-70"
+      },
+      {
+        "path": "site/policy_intent.json",
+        "blob": "2cb176fada027b0b05c40de7b713457fee993e60",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05/site/policy_intent.json",
+        "read_scope": "lines 1-50"
+      }
+    ],
+    "dependent_prs": [
+      {
+        "number": 6514,
+        "title": "HOLD-FOR-SOL: contracts(k3d): Economic Propagation hypothesis v1 — do not merge until Sol accepts",
+        "state": "open",
+        "draft": true,
+        "head": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+        "ref": "claude/k3d-economic-propagation",
+        "base": "main",
+        "updated_at": "2026-09-22T07:54:28Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/6514"
+      },
+      {
+        "number": 7358,
+        "title": "[MO-B-REC] Ledger not-built sweep (W5-K1): glossary, sanctions map, policy lifecycle, research priority, AAPL scenarios proven live; 8 rows to partial; 2 to spec-only; 6 retold",
+        "state": "open",
+        "draft": false,
+        "head": "45737627eb3ae766a749332068f1f6d81cb11aac",
+        "ref": "claude/mo-b-rec-w5k1-notbuilt-sweep-rows-2026-09-19",
+        "base": "main",
+        "updated_at": "2026-09-20T09:16:25Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/7358"
+      },
+      {
+        "number": 7426,
+        "title": "feat(company-intelligence): materialize v3 workspace clock index",
+        "state": "open",
+        "draft": true,
+        "head": "7bc04876747d773861b47519061279ae033a148d",
+        "ref": "sol/event-workspace-clock-index-k4g-20260918",
+        "base": "main",
+        "updated_at": "2026-10-04T18:47:40Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/7426"
+      },
+      {
+        "number": 7521,
+        "title": "[HOLD-FOR-SOL] Preserve qualified policy pricing through RIC and stance",
+        "state": "open",
+        "draft": true,
+        "head": "8da98209ad4a34450745780666c48b6999f2bfb2",
+        "ref": "claude/rates-policy-consumer-integration-20260920-sol-010",
+        "base": "main",
+        "updated_at": "2026-09-20T10:04:22Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/7521"
+      },
+      {
+        "number": 7923,
+        "title": "[RIC][HOLD-FOR-SOL] Separate matched-contract changes from policy-path roll",
+        "state": "open",
+        "draft": true,
+        "head": "15ccca764331af56562d441497047ba58af0b961",
+        "ref": "claude/rates-policy-constituents-20260924-sol-002",
+        "base": "main",
+        "updated_at": "2026-09-25T01:16:14Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/7923"
+      },
+      {
+        "number": 7940,
+        "title": "[RIC][HOLD-FOR-SOL] Freeze policy repricing in existing nightly ledger",
+        "state": "open",
+        "draft": true,
+        "head": "9c2f2d3ebd2c4867fed9eb942855dc2d1d05676a",
+        "ref": "claude/rates-direction-prospective-ledger-20260924-sol-004",
+        "base": "claude/rates-policy-constituents-20260924-sol-002",
+        "updated_at": "2026-09-25T01:17:37Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/7940"
+      },
+      {
+        "number": 8399,
+        "title": "research: audit and harden event-to-earnings intelligence architecture",
+        "state": "open",
+        "draft": true,
+        "head": "e66c8382a4b8f04100df7c2f7c0e3493f132f1ca",
+        "ref": "sol/event-intelligence-audit-20261004",
+        "base": "main",
+        "updated_at": "2026-10-05T08:37:54Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8399"
+      },
+      {
+        "number": 8406,
+        "title": "research: Commission 4 economic exposure graph — second-pass deep research",
+        "state": "open",
+        "draft": false,
+        "head": "4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272",
+        "ref": "research/commission4-effective-dated-economic-graph-20261004",
+        "base": "main",
+        "updated_at": "2026-10-05T07:21:59Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8406"
+      },
+      {
+        "number": 8495,
+        "title": "research(prophet): NVDA golden-case, emergence + ignition audit",
+        "state": "open",
+        "draft": true,
+        "head": "770918cb266b5d884978e31d61670b4efd789eaf",
+        "ref": "sol/prophet-nvda-conversion-audit-20261006",
+        "base": "main",
+        "updated_at": "2026-10-06T07:53:50Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8495"
+      },
+      {
+        "number": 8533,
+        "title": "research(prophet): publish news-to-business-impact masterplan packet",
+        "state": "open",
+        "draft": true,
+        "head": "cde0219b1040c66cbc8647f86352a25794488528",
+        "ref": "research/prophet-news-impact-masterplan-20261006",
+        "base": "main",
+        "updated_at": "2026-10-06T09:14:19Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8533"
+      },
+      {
+        "number": 8540,
+        "title": "theme-graph(D2E): D2 acceptance gate matrix \\u2014 Phase-1 interim record (HOLD pending natural receipt)",
+        "state": "open",
+        "draft": true,
+        "head": "52d57f34aad6956b3ddb697fff34c82588e791af",
+        "ref": "claude/gmi-d2e-acceptance-20261006",
+        "base": "main",
+        "updated_at": "2026-10-06T18:41:32Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8540"
+      },
+      {
+        "number": 8576,
+        "title": "PB-D: implement event quality, frozen cohorts, and research evaluation",
+        "state": "open",
+        "draft": true,
+        "head": "401d51258afc44c9c5cbd21c04586e2c575024a2",
+        "ref": "sol/web-pb-d-event-quality-implementation-20261007",
+        "base": "main",
+        "updated_at": "2026-10-07T04:59:54Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8576"
+      }
+    ],
+    "read_scope_limit": "40 full source files plus three bounded/partial source references, as individually recorded; no fresh production/runtime or Terminal receiver proof."
+  },
+  "final_source_recheck": {
+    "observed_at_utc": "2026-10-07 05:42:33 UTC",
+    "source_returns": [
+      {
+        "key": "PB-A",
+        "number": 8568,
+        "head": "a60c620b2761db74070929068c969aac8c2cee57",
+        "state": "open",
+        "draft": true,
+        "auto_merge": null,
+        "labels": [],
+        "updated_at": "2026-10-07T03:26:40Z",
+        "base": "007e0cccbd06f089605ba122efc658f406043dd3",
+        "changed_files": 34,
+        "merged": false
+      },
+      {
+        "key": "PB-B",
+        "number": 8573,
+        "head": "1604552006b7a91ed5d0fa89c785a983478866ea",
+        "state": "open",
+        "draft": true,
+        "auto_merge": null,
+        "labels": [],
+        "updated_at": "2026-10-07T03:44:23Z",
+        "base": "32fc0e75343ae91eb38b9bbc168a678672ecf14b",
+        "changed_files": 8,
+        "merged": false
+      },
+      {
+        "key": "PB-C",
+        "number": 8565,
+        "head": "83b46fa22a1d79af86b4311483850fcc31d9aa56",
+        "state": "open",
+        "draft": true,
+        "auto_merge": null,
+        "labels": [],
+        "updated_at": "2026-10-07T04:46:52Z",
+        "base": "481d67119c85c0951af5441cba4c218e9339c0b7",
+        "changed_files": 38,
+        "merged": false
+      },
+      {
+        "key": "PB-D",
+        "number": 8574,
+        "head": "df2091915159dab94f316718caa9b2662098eae4",
+        "state": "open",
+        "draft": true,
+        "auto_merge": null,
+        "labels": [],
+        "updated_at": "2026-10-07T03:44:44Z",
+        "base": "32fc0e75343ae91eb38b9bbc168a678672ecf14b",
+        "changed_files": 15,
+        "merged": false
+      },
+      {
+        "key": "PB-E",
+        "number": 8572,
+        "head": "4720504205a7307630efe249a79c4bb02e5560da",
+        "state": "open",
+        "draft": true,
+        "auto_merge": null,
+        "labels": [],
+        "updated_at": "2026-10-07T03:32:27Z",
+        "base": "a43968131f6877d55d67088ac1c03e03874f7449",
+        "changed_files": 11,
+        "merged": false
+      },
+      {
+        "key": "PB-F",
+        "number": 8575,
+        "head": "7458a5d9b8e507de435136560a5cf86cebb839b9",
+        "state": "open",
+        "draft": true,
+        "auto_merge": null,
+        "labels": [],
+        "updated_at": "2026-10-07T05:18:21Z",
+        "base": "a146de40a8b3ba0475f17ddd87519187f17449a7",
+        "changed_files": 9,
+        "merged": false
+      }
+    ],
+    "pb_d_incumbent": {
+      "key": "PB-D-incumbent",
+      "number": 8576,
+      "head": "401d51258afc44c9c5cbd21c04586e2c575024a2",
+      "state": "open",
+      "draft": true,
+      "auto_merge": null,
+      "labels": [],
+      "updated_at": "2026-10-07T04:59:54Z",
+      "base": "a146de40a8b3ba0475f17ddd87519187f17449a7",
+      "changed_files": 1,
+      "merged": false,
+      "files": [
+        {
+          "path": "research/policy_behavior/pro_returns/PB-D/PB_D_IMPLEMENTATION_CHECKPOINT.md",
+          "sha": "a6009d5213042c5b7bceee8824768c71fded6133"
+        }
+      ]
+    },
+    "macro_base": "c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05",
+    "macro_rechecked_main": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+    "main_movement": {
+      "status": "ahead",
+      "ahead_by": 1,
+      "total_commits": 1,
+      "files": [
+        {
+          "path": "engine/rotation_events.py",
+          "sha": "bcd3961be24a57e44d45bcfbd5f2190b2b059f9a",
+          "status": "modified"
+        },
+        {
+          "path": "tests/test_rotation_events.py",
+          "sha": "6d1924c4dc8e25a0e4cdb4f9d7a9c9ce0fc9b5c6",
+          "status": "modified"
+        }
+      ],
+      "assessment": "One intervening rotation-events change; disjoint from PB-G output and the 43 inspected owner/source paths. No source rebase or research redo warranted; no release integration proof claimed."
+    },
+    "protected_procedure": {
+      "sha": "ee120e80f5d5e0344c453dd7cbf4108b9c429b38",
+      "protected": true
+    },
+    "commission_procedure_comparison": [
+      {
+        "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+        "commission_pin_blob_sha": "5bfb9bbc91177e2400da596b45ec809d294a3242",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+        "commission_pin_blob_sha": "2073a33f05506268b15f0b5ce292ce57d5b60ed3",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/COLD_START.md",
+        "commission_pin_blob_sha": "b11e58f083040144933cf2ddab76bf6c60a7e542",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+        "commission_pin_blob_sha": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/CLOSEOUT.md",
+        "commission_pin_blob_sha": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+        "commission_pin_blob_sha": "8adc1ace42db9ab97854f96689485be223d34c51",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      },
+      {
+        "path": "docs/sol_skills/REVIEW_RETURN.md",
+        "commission_pin_blob_sha": "f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00",
+        "comparison_to_current_read": "Same text after scratch-copy trailing-newline normalization; loaded current procedure remains governing."
+      }
+    ]
+  },
+  "primary_source_spot_checks": [
+    {
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20240501a.htm",
+      "source": "Federal Reserve FOMC May 1, 2024 statement",
+      "directly_verified": "Policy target and balance-sheet-runoff decision are separate instruments; stated objectives are observable.",
+      "limit": "Does not identify hidden favored-industry motive or a counterfactual rate path."
+    },
+    {
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20230312a.htm",
+      "source": "Federal Reserve March 12, 2023 BTFP release",
+      "directly_verified": "Facility terms, par collateral and available Treasury backstop.",
+      "limit": "Available backstop is not actual draw, project cash or causal enabling of higher rates."
+    },
+    {
+      "url": "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2024/BBR_20240529174000.pdf",
+      "source": "Treasury May 29, 2024 buyback results",
+      "directly_verified": "PDF screenshot inspected: 16.524 billion offered, 2 billion accepted; May 29 operation and May 30 settlement date; 20 eligible CUSIPs and nine accepted.",
+      "limit": "Acceptance allocation does not itself establish completed settlement or hidden policy intent."
+    }
+  ],
+  "integration_precision_repairs": [
+    "B03 assisted-option/report conditionality narrowed; realized causal effect not established.",
+    "B16 no aggregate H1/H2 causal ranking.",
+    "C28 NVDA exclusion means coded issuer set, not all involvement.",
+    "X01 legacy categories not independent economic roots; X02 null sentiment unclassified, not neutral.",
+    "X04 U.S. leverage narrow; X05 heterogeneity not causal two-speed discount.",
+    "X09 inevitable unwind rejected as established inference; conditional fragility remains open.",
+    "E26 R-S21 August 11 release versus August 12 filing/source date qualified, first-public nulls preserved, no actual PIT leak asserted.",
+    "D11 uncertainty remains an open hypothesis; D13 four-cell inference plan deferred.",
+    "C16/C17 current-vintage/lagged clock limits, C21 no globally-earliest clock certificate, C26 remaining prospective design gaps explicit.",
+    "Restrictive strategic preference versus tolerated costs NOT_IDENTIFIED; deliberate instrument choice separately supported."
+  ],
+  "assistance": {
+    "mode": "In-session analytical helpers; no external Executive/worker dispatch, no GitHub or production writes by helpers. Root owns adjudication/publication.",
+    "lanes": [
+      "baseline arithmetic and method reconciliation",
+      "hypothesis synthesis and final scientific review",
+      "current-source owner census and architecture drafting"
+    ],
+    "independence_limit": "In-session cross-checking is not independent source-owner adoption, production acceptance or an external scientific replication."
+  },
+  "remaining_limits": [
+    "No production tests or deployment.",
+    "No enrolled prospective cohort.",
+    "No Terminal receiver, Japanese producer or incumbent final evaluator path verified.",
+    "Current-source read and dated historical acceptance are distinct.",
+    "No merge of PB-A-F or original masterplan.",
+    "Parent scientific/program completion remains false."
+  ]
+}
