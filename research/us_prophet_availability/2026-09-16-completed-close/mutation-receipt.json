@@ -1,0 +1,18 @@
+{
+  "omit_calendar": {
+    "rc": 1,
+    "tail": "FAILED tests/test_us_breadth_completed_close.py::test_seam_repair_cannot_remove_completed_prices_before_persistence\nFAILED tests/test_us_breadth_completed_close.py::test_current_close_guard_covers_cold_and_tail_refresh[False]\nFAILED tests/test_us_breadth_completed_close.py::test_current_close_guard_covers_cold_and_tail_refresh[True]\nFAILED tests/test_us_breadth_completed_close.py::test_full_history_validates_but_preserves_its_no_live_cache_write_contract\nFAILED tests/test_us_breadth_completed_close.py::test_ambiguous_duplicate_completed_date_cannot_be_persisted\nFAILED tests/test_us_breadth_completed_close.py::test_transport_error_and_incomplete_response_share_one_retry_budget\n18 failed, 3 passed, 22 warnings in 1.81s"
+  },
+  "drop_response_retry_validation": {
+    "rc": 1,
+    "tail": "FAILED tests/test_us_breadth_completed_close.py::test_exhausted_incomplete_responses_preserve_every_existing_cache\nFAILED tests/test_us_breadth_completed_close.py::test_existing_eighty_percent_partial_coverage_is_not_changed_to_all_or_nothing\nFAILED tests/test_us_breadth_completed_close.py::test_current_close_guard_covers_cold_and_tail_refresh[False]\nFAILED tests/test_us_breadth_completed_close.py::test_current_close_guard_covers_cold_and_tail_refresh[True]\nFAILED tests/test_us_breadth_completed_close.py::test_full_history_validates_but_preserves_its_no_live_cache_write_contract\nFAILED tests/test_us_breadth_completed_close.py::test_transport_error_and_incomplete_response_share_one_retry_budget\n9 failed, 12 passed, 7 warnings in 1.39s"
+  },
+  "drop_post_merge_guard": {
+    "rc": 1,
+    "tail": "\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n\nNOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_us_breadth_completed_close.py::test_seam_repair_cannot_remove_completed_prices_before_persistence\n1 failed, 20 passed, 14 warnings in 1.41s"
+  },
+  "restored": {
+    "rc": 0,
+    "summary": "54 passed, 14 warnings in 3.21s"
+  }
+}
