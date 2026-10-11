@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-11 02:59:48 UTC",
+  "observed_at": "2026-10-11 05:18:27 UTC",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T0255",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T0518",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -5664,6 +5664,27 @@
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-merged-caf-readonly-installation-gap-parent-consumption-20261011T0255.json",
         "bytes": 3178,
         "sha256": "d3f13f88042ed5b4455e08a7392f036ae1900c8e77b57d4863c3c297a562d04a"
+      }
+    ]
+  },
+  "current_capability_frontier_20261011T0518": {
+    "observed_at": "2026-10-11 05:18:27 UTC",
+    "supersedes": "current_capability_frontier_20261011T0255",
+    "supersession_scope": "Only current release-capacity cause attribution, actual provider-login result and application of the Chairman's execution-first policy. Prior PR914 merged-source/required-CI qualification, canonical installation gap, Brain8755/paid A12 and all exact scoped receipts retained without replay.",
+    "whole_original_mission_accepted": false,
+    "capacity_cause": "Actual read-only05:08:09Z filesystem total82086711296/available8752930816; retained10GiB10737418240 reserve short1984487424. Physical VPS disk85899345920B (80GiB); no unallocated headroom sufficient for the gap. Macro .git29763186688B is largest storage contributor; Terminal current .next120958976/rollback120889344/caches approximately0.5MiB each. Tiny apt/npm/Next caches cannot close the1.85GiB gap.",
+    "validator_classification": "The 10GiB check is local audit wrapper canonical-terminal-release-20261009.py line36, not a platform permission denial. Installed canonical builder58231B/6cd5088d12b0ce4be5bf3c3b8b6ccf416864002ec4243056966e5ed81507b2d5 matches caf ops source; no10GiB check in canonical builder. Preserve reserve invariant and old fb1/c968 no-build operations; diagnosis is allowed and no rejected operation was replayed or routed to another owner.",
+    "git_reclamation_unqualified": "Actual05:10:12Z Macro Git84packs/1550 shallow boundaries/gc.auto0; no locks/matching writer observed at that instant, not custody transfer. Bounded45s referenced-object disk-use estimate timed out; referenced/reclaimable bytes UNKNOWN. No gc/repack/prune/ref changes, archive/delete, cold store, live/private data or rollback weakening.",
+    "provider_human_step": "Bounded instance metadata identifies DigitalOcean droplet580786327/sfo3. Legitimate cloud.digitalocean.com provisioned browser autofill login attempted once; provider returned Incorrect email or password. macOS Passwords was locked. No secret printed/stored, retries, reset, alternate identity or permissions bypass. Login fields cleared and provider tab preserved/shown; human must establish the authorized provider session before actual current billing/resize offer can be inspected.",
+    "reviewable_capacity_option": "Public Regular Basic catalog160GiB SSD/8GiB RAM/4vCPU $48/month only; exact account plan/delta/eligibility unobserved. DigitalOcean docs require poweroff and permanent disk increase; actual downtime unobserved. No paid resize, snapshot, poweroff or deployment done. Complete account-specific proposal before asking for consequential paid maintenance decision.",
+    "execution_first_application": "Current Chairman instructions allow ordinary source recovery and direct bounded diagnosis; idle-owner labels/absent optional registries do not veto work. Configured native ceiling16 only when tools/runtime admit it; no native spawn tool exposed here/no child created. Existing Fabric root/depth/effective budget preserved, no new operation/controller/principal polling.",
+    "retained_boundaries": "T0255 PR914 caf mergedsource/latest3required/all10 owning jobs qualified, last actual canonical34d installation gap retained. T0205 local scopedCSS and T0117 Brain8755 paid replies/A12 render retained. Completed914/8755 branches remain closed. PR781 reserved independent ad5 review/three threads, exact887 ALLOW, IW2 explicit cyber refusal and SQL0030-32/operator/API+SQL/rights/release/security/source/EFFECT_UNKNOWN holds remain. No whole A11/Audit20 acceptance.",
+    "next_useful_action": "Human establishes a valid DigitalOcean session on the preserved provider page. Parent then inspects only exact droplet580786327 resize offer/current price, prepares concrete capacity/downtime proposal, and requests the actual consequential decision. No retry of rejected saved credential or bypass of OS/provider authentication. Meanwhile consume only actual independent material returns; no repeated settled source/CI/runtime/browser/backup/export/test/capture or unchanged support-only polling.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-release-capacity-cause-parent-diagnosis-20261011T0518.json",
+        "bytes": 6429,
+        "sha256": "71640fec21de623ec64bb910eeb51e9c362ff557d1ef5cf7aca94566d950d402"
       }
     ]
   }

@@ -7,9 +7,9 @@ objective: Review the twenty supplied Terminal repair missions through the admit
 status: active
 blocked_by:
 - PR781 exactad5 required CI is green; reserved mastermindx-3 exact-current-head independent numeric review and three-thread qualification remain required. No selfapproval or admin bypass.
-- Phone Replay PR914 mergedcaf with exact3 required CI/all10 owning jobs SUCCESS; actual02:57 canonical remains34d, new Replay styles absent. Available8818388992 is1919029248 below10GiB. Admitted canonical installation and paid phone live proof remain; no frozen release retry. Both914 CI-read refusals remain exact frozen.
+- Phone Replay PR914 mergedcaf/source and exact CI are qualified; last observed canonical remains34d. Actual05:08 storage available8752930816 is1984487424 below retained10GiB reserve. Capacity check is a local pre-effect validator; it is not a platform permission denial. Canonical installation and paid phone proof remain.
 - IW2 fifth explicit cybersecurity refusal remains frozen; supported platform resolution in the existing IW2 chat is required. SQL0030-32 unapplied and exact operator/rights/release/API+SQL holds remain.
-- Terminal fb1/c968 canonical build-reserve refusals remain frozen; no retry, weaker floor, cleanup bypass, alternate carrier or restore owed.
+- DigitalOcean droplet580786327/sfo3 provider autofill login was rejected; macOS Passwords is locked. Human establishes a valid authorized provider session before account-specific resize/price/maintenance proposal. Preserve10GiB, Git/private/current/rollback data and exact old fb1/c968 no-build receipts; no paid resize, cleanup or builder effect conducted.
 - A11 installed phone Replay/cutoff/weekly bucket, A12 native closed-volume caller, A19 durable operational first-intake/prior-effect producer authority, exact887 ALLOW and all security/source/rights/EFFECT_UNKNOWN boundaries remain unqualified; paid A12 render is scoped only.
 program: terminal-charting
 repos:
@@ -26,7 +26,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: Consume actual independently authorized admitted canonicalcaf/newgeneration before paid phone Replay proof;914 source/CI/merge is qualified but current canonical source/runtime remains34d below10GiB. Consume reserved781 currenthead numeric review and three-thread clearance or actual independently authorized producer/platform events. No merged914 source/CI/test recensus, unchanged34d readback/browser/reacceptance, frozen CI-read/release/IW2 retry, cleanup weakening, alternatecarrier or principalpolling. Checkpoint is not completion.
+next_action: Human establishes a valid authorized DigitalOcean session on the preserved provider login page. Parent then inspects exact droplet580786327 resize offer/current billing and prepares the concrete capacity and downtime decision; public160GiB/$48 catalog is not account qualification. Preserve10GiB, Git/private/current/rollback data and prior no-build operations. Consume only actual independent material returns; no settled PR914 source/CI/test/browser or repeated support polling. WholeAudit20 remains incomplete.
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -640,3 +640,19 @@ Evidence bindings:
 
 - `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-merged-source-exact-CI-parent-qualification-20261011T0255.json` — 16190B / SHA256 `4b6734e4a1a336cd8fe502faee386b748024c5858194ec60ce47c76039cfa747`.
 - `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/phone-Replay-914-merged-caf-readonly-installation-gap-parent-consumption-20261011T0255.json` — 3178B / SHA256 `d3f13f88042ed5b4455e08a7392f036ae1900c8e77b57d4863c3c297a562d04a`.
+
+
+## 2026-10-11T0518 — actual release capacity cause and provider login boundary
+
+The latest frontier is `current_capability_frontier_20261011T0518`, superseding T0255 only for capacity diagnosis, provider login and the current execution-first policy. Historical exact source/CI/runtime/paid receipts remain retained.
+
+- Actual read-only05:08:09Z filesystem total82086711296/available8752930816; retained10GiB10737418240 reserve short1984487424. Physical VPS disk85899345920B (80GiB); no unallocated headroom sufficient for the gap. Macro .git29763186688B is largest storage contributor; Terminal current .next120958976/rollback120889344/caches approximately0.5MiB each. Tiny apt/npm/Next caches cannot close the1.85GiB gap.
+- The 10GiB check is local audit wrapper canonical-terminal-release-20261009.py line36, not a platform permission denial. Installed canonical builder58231B/6cd5088d12b0ce4be5bf3c3b8b6ccf416864002ec4243056966e5ed81507b2d5 matches caf ops source; no10GiB check in canonical builder. Preserve reserve invariant and old fb1/c968 no-build operations; diagnosis is allowed and no rejected operation was replayed or routed to another owner.
+- Actual05:10:12Z Macro Git84packs/1550 shallow boundaries/gc.auto0; no locks/matching writer observed at that instant, not custody transfer. Bounded45s referenced-object disk-use estimate timed out; referenced/reclaimable bytes UNKNOWN. No gc/repack/prune/ref changes, archive/delete, cold store, live/private data or rollback weakening.
+- Bounded instance metadata identifies DigitalOcean droplet580786327/sfo3. Legitimate cloud.digitalocean.com provisioned browser autofill login attempted once; provider returned Incorrect email or password. macOS Passwords was locked. No secret printed/stored, retries, reset, alternate identity or permissions bypass. Login fields cleared and provider tab preserved/shown; human must establish the authorized provider session before actual current billing/resize offer can be inspected.
+- Public Regular Basic catalog160GiB SSD/8GiB RAM/4vCPU $48/month only; exact account plan/delta/eligibility unobserved. DigitalOcean docs require poweroff and permanent disk increase; actual downtime unobserved. No paid resize, snapshot, poweroff or deployment done. Complete account-specific proposal before asking for consequential paid maintenance decision.
+- Current Chairman instructions allow ordinary source recovery and direct bounded diagnosis; idle-owner labels/absent optional registries do not veto work. Configured native ceiling16 only when tools/runtime admit it; no native spawn tool exposed here/no child created. Existing Fabric root/depth/effective budget preserved, no new operation/controller/principal polling.
+- T0255 PR914 caf mergedsource/latest3required/all10 owning jobs qualified, last actual canonical34d installation gap retained. T0205 local scopedCSS and T0117 Brain8755 paid replies/A12 render retained. Completed914/8755 branches remain closed. PR781 reserved independent ad5 review/three threads, exact887 ALLOW, IW2 explicit cyber refusal and SQL0030-32/operator/API+SQL/rights/release/security/source/EFFECT_UNKNOWN holds remain. No whole A11/Audit20 acceptance.
+- Human establishes a valid DigitalOcean session on the preserved provider page. Parent then inspects only exact droplet580786327 resize offer/current price, prepares concrete capacity/downtime proposal, and requests the actual consequential decision. No retry of rejected saved credential or bypass of OS/provider authentication. Meanwhile consume only actual independent material returns; no repeated settled source/CI/runtime/browser/backup/export/test/capture or unchanged support-only polling.
+
+Evidence: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-release-capacity-cause-parent-diagnosis-20261011T0518.json` — 6429B / SHA256 `71640fec21de623ec64bb910eeb51e9c362ff557d1ef5cf7aca94566d950d402`. Read-only diagnosis is a material cause finding, not installation, paid phone acceptance or whole-mission completion.
