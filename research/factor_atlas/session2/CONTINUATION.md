@@ -742,3 +742,71 @@ accepted OOS coverage source/fixtures and GitHub exact-head
 readback. Current-head hosted tests and current full CI
 remain separate evidence to consume; owner-issued real data
 admission is needed before empirical forecasting trials.
+
+## Causal single-cutoff window history serialization reuse — research performance
+
+Accepted original PR #8677 research branch source at phase entry
+`748bceb73ae025ee48782cb1c3d541497558e53a`, DRAFT/HOLD unmerged. Protected Mastermind
+`f381af6758533906865361373addbb0514f86d7d`,
+Skillpack1.0.1/bootstrap1 compatible. No active source/owner
+custody transfer or production task accepted. Source operator
+Executive `session_summon` exact operation key
+`factor-atlas-s2-independent-science-audit-20261011-sol-001`
+still has EFFECT_UNKNOWN after one bounded native projection:
+DO_NOT_RETRY or spin alternative workers without exact resolution.
+
+**New independently safe S2-P2 capital-pressure performance phase:**
+`prototype/window_pressure.py` had recursively serialized the
+same immutable `PressurePoint` multiple times for the union
+and each overlapping factor input digest. Native synthetic
+cProfile 100-security, 60-minute, six-factor probe observed
+37,988 `dataclasses.asdict` calls / 1.339 cumulative
+seconds during a 2.326s profiled window computation.
+Changed this accepted pure reducer to materialize each point's
+canonical dataclass document ONCE at the same evaluation
+cutoff and re-use it for all subsequent unchanged source
+digests, with original sid/time order. No cross-cutoff cache,
+no alternative source ingestion, no change to BVC probabilities,
+values, target, roster, corrected-history or availability.
+
+Five full `WindowPressure` canonical JSON SHA-256 output goldens
+were captured BEFORE code change for complete, corrected,
+partial, zero and multi-phase synthetic windows and all
+five were BYTE-IDENTICAL AFTER. Added their exact golden
+assertions to existing `test_window_pressure.py`.
+All **413/413** native selected 13-suite tests passed
+locally M2 Python3.12 (prior 408).
+
+A single unreplicated synthetic benchmark observed
+24,000 security-minutes (200 names, 120 minutes, 8 factors)
+time from 4.719s before to 3.649s after (~22.7%
+directional reduction); observed process cumulative RSS
+max from 242MB to 260MB. Neither number is production SLO,
+licensed input, statistical improvement estimate or live
+source permission. Compact cases/profiles/exact source and
+test digests: `evidence/window_history_cache_performance.json`
+and `evidence/native_window_cache_tests.json`.
+No denied original benchmark RSS/interpreter/mutation script
+was executed or changed.
+
+**Blocking remainder:** actual qualified AAPL/MSFT/NVDA+SPY
+minute + tape + NBBO with original source and reader
+first-seen, canonical PIT listing/calendar/selected revision,
+corporate-action/volume-basis, source rights and
+independent calibrated market outcomes STILL NOT_ADMITTED.
+Terminal #844 and Macro #8623 original source PR carriers
+remain DRAFT/held at last read. Separately platform-denied
+S2-P4 read-model patch remains untouched; two untracked
+local WIP files and four failing integrity tests remain
+excluded from accepted manifest, Git, CI and consumer.
+Do not retry the four explicitly denied source reads,
+denied benchmark/interpreter edit or denied fresh-main
+source compare.
+
+**Frontier:** stage solely current approved window source,
+existing tests/protocol, compact native benchmark receipt,
+report and continuation on original PR; commit/push once,
+GitHub immutable readback, then consume exact-head CI.
+Advance only independent useful measurement/owner-readiness
+steps while no authentic source bundle exists; never imply
+consumer/publication acceptance.

@@ -1,0 +1,71 @@
+{
+  "baseline_to_optimized_benchmark_single_run_only": true,
+  "change_class": "SAME_CUTOFF_IMMUTABLE_POINT_SERIALIZATION_REUSE",
+  "changed_BVC_mathematics": false,
+  "changed_source_admission_or_rights": false,
+  "customer_publication_allowed": false,
+  "five_pre_capture_golden_full_output_hashes": {
+    "complete": "b90642a93c8ea4bb17d73a600d26688a75b5fa2a503d7574d26c4ed0d6b07098",
+    "corrected_history": "4784158ab88c5c39cd38b87507b57679d0af5ab2e585d0e64d963c83b06605b8",
+    "explicit_zero": "299cf1239c29ea2cd977067d02047074bdbab95563ad6cdbc59a5c1ec781f37f",
+    "multi_phase": "11a239ee7048a8ee63a4b5f531b1ccc2573b9013a10bbff3fe928cf5364f2005",
+    "one_missing_minute": "6c91d627535a359bdbc370111274b8585dc3c8793102bee0f47f69fece1bd2d6"
+  },
+  "full_thirteen_suite_tests_passed": 413,
+  "golden_output_bytes_stable": true,
+  "golden_test_cases_passed": 5,
+  "logs": {
+    "synthetic_window_performance.json": {
+      "bytes": 1491,
+      "sha256": "0b81c476a316b20e686306a34692743d10ca76ba9bed5d46597bbb4ca3326180"
+    },
+    "synthetic_window_performance_before.json": {
+      "bytes": 1488,
+      "sha256": "1bb332c3fb7b9f0f5862c4c500518927d02b113927508ad11e5f170ecc93b872"
+    },
+    "synthetic_window_profile.txt": {
+      "bytes": 3895,
+      "sha256": "09ad8c57e2c8fef020385ed6927721d323fc81d3fb35240c7a162c8747c930d6"
+    },
+    "window-cache-full-green.txt": {
+      "bytes": 500,
+      "sha256": "097e0e6833c890a47cbe682ac3c039380ccd54f6bf3eeca270bb837792ccc9de"
+    },
+    "window-cache-parity-after.txt": {
+      "bytes": 99,
+      "sha256": "c2e7840d7e3ad95ea9a9303080ec7cec9b437239205db6e6685f8b0c95b5a276"
+    },
+    "window-cache-parity-baseline.txt": {
+      "bytes": 113,
+      "sha256": "3ad844e5dfd29cf2e8d2a1f8a767d3487a4184d2f2298badef8a3b26bb37d582"
+    }
+  },
+  "new_accepted_native_tests_added": 5,
+  "new_storage_or_cross_cutoff_cache": false,
+  "observed_at_utc": "2026-10-11T09:58:20.415499+00:00",
+  "original_parent_head": "748bceb73ae025ee48782cb1c3d541497558e53a",
+  "prior_platform_denied_scripts_unchanged": true,
+  "prior_separately_denied_readmodel_patch_unchanged": true,
+  "protected_mastermind": "f381af6758533906865361373addbb0514f86d7d",
+  "provider_capture_executed": false,
+  "schema": "factor_atlas.native_window_source_record_cache_receipt.v1",
+  "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_files": {
+    "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
+      "bytes": 5261,
+      "sha256": "ab18b8d767c789734949ee2fef5a2a079b516a4e600c5f9577269ef690a89943"
+    },
+    "session2/prototype/test_window_pressure.py": {
+      "bytes": 10656,
+      "sha256": "2d73f90660ac157d99d92e59b226a821115241a35c4443b5bba59ce5c1dd0121"
+    },
+    "session2/prototype/window_pressure.py": {
+      "bytes": 11443,
+      "sha256": "9875a2837c921219caffc1ecac0cf8e0ab3d5f7aa567d3d23dfb6671a937e571"
+    }
+  },
+  "synthetic_benchmark": {
+    "bytes": 2817,
+    "sha256": "238d4510bd8374f2f452a4b210ab5f450a480953ffe95c7a9742927a634a60ab"
+  }
+}

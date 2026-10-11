@@ -165,10 +165,16 @@ def measure_windows(bars: Iterable[m.Bar], memberships: Sequence[m.Membership],
     end_segment=next(s for s in segs if s.start_utc_s<end_utc_s<=s.end_utc_s)
     slots=(end_utc_s-start_utc_s)//60
     factors=[]
-    all_history=[p for sid in sorted(history_by_id) for p in history_by_id[sid]]
+    # The same immutable PressurePoint contributes to the union digest and
+    # often several overlapping factor membership digests. Materialize its
+    # canonical dataclass structure once at this evaluation cutoff; reuse
+    # without mutating it or changing the original digest order or content.
+    point_docs_by_id={sid:tuple(asdict(p) for p in history_by_id[sid])
+                      for sid in sorted(history_by_id)}
     outer_digest=m.digest({'shape':shape,'start':start_utc_s,'end':end_utc_s,
         'estimator':estimator_id,'groups':[asdict(g)|{'member_ids':sorted(g.member_ids)} for g in groups],
-        'points':[asdict(p) for p in all_history]})
+        'points':[doc for sid in sorted(point_docs_by_id)
+                  for doc in point_docs_by_id[sid]]})
     for group in groups:
         ids=tuple(sorted(group.member_ids))
         selected=[p for sid in ids for p in selected_by_id[sid]]
@@ -197,7 +203,8 @@ def measure_windows(bars: Iterable[m.Bar], memberships: Sequence[m.Membership],
         money_identity=m.digest([(sid,sorted(basis_by_id[sid]),
                     sorted({p.gross_basis for p in history_by_id[sid]})) for sid in ids])
         result_digest=m.digest({'membership':member_identity,'start':start_utc_s,'end':end_utc_s,
-            'estimator':estimator_id,'points':[asdict(p) for p in history]})
+            'estimator':estimator_id,'points':[doc for sid in ids
+                for doc in point_docs_by_id.get(sid,())]})
         def reference(measure: str,value: float) -> m.Reference:
             key=m.MatchKey(group.factor_id,end_segment.phase,m._et_clock(end_utc_s)[1],
                 segs[0].session_class,measure,estimator_id,'members:'+member_identity,

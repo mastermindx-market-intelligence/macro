@@ -159,3 +159,32 @@ def test_invalid_window_or_calendar_refused(case):
     if case=="overlap":segs=(segs[0],segs[0])
     if case=="unknown_mode":kw["mode"]="pretend_live"
     with pytest.raises(ValueError):calc((bars,segs,start,end),**kw)
+
+
+@pytest.mark.parametrize(("golden_case","expected_canonical_sha256"),[
+    ("complete","b90642a93c8ea4bb17d73a600d26688a75b5fa2a503d7574d26c4ed0d6b07098"),
+    ("corrected_history","4784158ab88c5c39cd38b87507b57679d0af5ab2e585d0e64d963c83b06605b8"),
+    ("one_missing_minute","6c91d627535a359bdbc370111274b8585dc3c8793102bee0f47f69fece1bd2d6"),
+    ("explicit_zero","299cf1239c29ea2cd977067d02047074bdbab95563ad6cdbc59a5c1ec781f37f"),
+    ("multi_phase","11a239ee7048a8ee63a4b5f531b1ccc2573b9013a10bbff3fe928cf5364f2005"),
+])
+def test_full_window_canonical_output_bytes_stable_across_history_serialization(golden_case,expected_canonical_sha256):
+    # Golden hashes captured from the exact accepted original PR #8677 head
+    # 748bceb73ae025ee48782cb1c3d541497558e53a, before optimization.
+    # They cover full hierarchy: values, baseline identities, timestamps,
+    # missing vs zero, historical mode and source-window provenance.
+    if golden_case=="complete":
+        observed=calc()
+    elif golden_case=="corrected_history":
+        observed=calc(mode="corrected_history")
+    elif golden_case=="one_missing_minute":
+        bars,segs,start,end=make()
+        observed=calc(([b for b in bars if not
+                       (b.security_id=="A" and b.start_utc_s==start+60)],segs,start,end))
+    elif golden_case=="explicit_zero":
+        bars,segs,start,end=make()
+        observed=calc(([replace(b,volume=0.) for b in bars],segs,start,end))
+    else:
+        observed=calc(make(pre=True))
+    assert m.digest(asdict(observed))==expected_canonical_sha256
+    assert observed.authority==m.AUTHORITY

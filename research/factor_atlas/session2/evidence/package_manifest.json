@@ -5,16 +5,16 @@
   "external_ci_workflow_sha256": "e61df86a7aaf302279d985d12596e6665af56b1d921ee07ac0351cdcb0b3fc11",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 117155,
-      "sha256": "baac89b8ff9a2ffddbfe2bff3e69a568b5806d1c26764204810f7c2772a768fe"
+      "bytes": 119428,
+      "sha256": "9b6b6a45f6f7f9b0c4ff3bcff5cde703d8e612e7bd03b39a5cdc899bdb33a2e3"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 44854,
-      "sha256": "adcf4046d5f86b778149e12e0777262d556e0cbf7f07b3f6c8cf2fb4cbccdc1b"
+      "bytes": 48315,
+      "sha256": "4bb85ce6b049ca1056bc278dd03e26a56c3be3e5e2ecfc953cc04dc05795637d"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
-      "bytes": 2197,
-      "sha256": "7afce9b4f4e01ed1eda350cefe09de6cf3b6733903f31b9d5fd4a2d6d9991f0b"
+      "bytes": 5261,
+      "sha256": "ab18b8d767c789734949ee2fef5a2a079b516a4e600c5f9577269ef690a89943"
     },
     "session2/OOS_PRESSURE_INCREMENTAL_TEST_PROTOCOL.md": {
       "bytes": 7458,
@@ -108,6 +108,10 @@
       "bytes": 2861,
       "sha256": "a6962c99cac4de1e20183146f0e28d2a3c2dbcc8b0f9584b12cb57087f8d7c99"
     },
+    "session2/evidence/native_window_cache_tests.json": {
+      "bytes": 3004,
+      "sha256": "5368b9c89bf723b376441994eb6c1009ad7c85a9b9c092d55dd7ad708ea41243"
+    },
     "session2/evidence/native_window_tests.json": {
       "bytes": 2726,
       "sha256": "1f24d67c5b8ac98da98ce8ca399438e492ab5e355f5349bd02e58386c85c9190"
@@ -143,6 +147,10 @@
     "session2/evidence/source_intake_witness.json": {
       "bytes": 1099,
       "sha256": "1b660a613f2d203cf222d606615c10d764c7ac959a3fb46ca971dfef8ba48c18"
+    },
+    "session2/evidence/window_history_cache_performance.json": {
+      "bytes": 2817,
+      "sha256": "238d4510bd8374f2f452a4b210ab5f450a480953ffe95c7a9742927a634a60ab"
     },
     "session2/evidence/window_mutations.json": {
       "bytes": 2258,
@@ -233,8 +241,8 @@
       "sha256": "59db4ad98cafd2108f7e1ef4d79605f1cc3c5c49b0c122dbba85350bd6904540"
     },
     "session2/prototype/test_window_pressure.py": {
-      "bytes": 9050,
-      "sha256": "38093ec3ac17ca93ad5e3640d294756b96d2ea50f465eead0d7f06024cdf37eb"
+      "bytes": 10656,
+      "sha256": "2d73f90660ac157d99d92e59b226a821115241a35c4443b5bba59ce5c1dd0121"
     },
     "session2/prototype/test_witnesses.py": {
       "bytes": 1362,
@@ -245,8 +253,8 @@
       "sha256": "2c0ee1f993ddd7a939fbad585a324467a24ee28aedb84f8faad0ab2bff02f4a1"
     },
     "session2/prototype/window_pressure.py": {
-      "bytes": 10989,
-      "sha256": "b9da3360090d5765fdc2802ec9f609144c73f096d9ccc16764b23f33aa0160b5"
+      "bytes": 11443,
+      "sha256": "9875a2837c921219caffc1ecac0cf8e0ab3d5f7aa567d3d23dfb6671a937e571"
     },
     "session2/prototype/witnesses.py": {
       "bytes": 5711,
@@ -268,15 +276,16 @@
   "native_quote_study_receipt": "session2/evidence/native_quote_study_tests.json",
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_read_contract_test_receipt": "session2/evidence/native_read_contract_tests.json",
-  "native_scoped_tests_passed": 408,
+  "native_scoped_tests_passed": 413,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "ad1053958287589a4ecd78c2aba06933ffa57c6e",
-  "prepared_at_utc": "2026-10-11T09:48:43.942558+00:00",
+  "native_window_cache_test_receipt": "session2/evidence/native_window_cache_tests.json",
+  "predecessor_commit": "748bceb73ae025ee48782cb1c3d541497558e53a",
+  "prepared_at_utc": "2026-10-11T09:58:20.449791+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 31
+    "numbered_sections": 32
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }
