@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-11",
-  "generated_utc": "2026-10-11T07:15:44.708594+00:00",
-  "n_tickers": 2884,
+  "generated_utc": "2026-10-11T20:38:06.743134+00:00",
+  "n_tickers": 2882,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -913,8 +913,8 @@
         "insider_cluster"
       ],
       "weighted_score": 1.0,
-      "insider_net_usd": 133514854.0,
-      "insider_buyers": 40,
+      "insider_net_usd": 124202047.0,
+      "insider_buyers": 37,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -1417,12 +1417,11 @@
     "PSKY": {
       "ticker": "PSKY",
       "channels": [
-        "material_8k",
-        "special_situation"
+        "material_8k"
       ],
-      "weighted_score": 0.75,
+      "weighted_score": 0.55,
       "material_8k_30d": 7,
-      "convergence_score": 2,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -4097,17 +4096,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "UMC": {
-      "ticker": "UMC",
-      "channels": [],
-      "weighted_score": 0,
-      "days_to_earnings": 17,
-      "next_earnings": "2026-10-28",
-      "earnings_surprise_pct": 237.5,
-      "convergence_score": 0,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "VRT": {
       "ticker": "VRT",
       "channels": [
@@ -4173,6 +4161,17 @@
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 3.3,
       "congress_position_usd": 4389642000.0,
+      "convergence_score": 0,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "ILMN": {
+      "ticker": "ILMN",
+      "channels": [],
+      "weighted_score": 0,
+      "days_to_earnings": 18,
+      "next_earnings": "2026-10-29",
+      "earnings_surprise_pct": 6.5,
       "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
@@ -23193,16 +23192,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "IPEXR": {
-      "ticker": "IPEXR",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "JENA-RI": {
       "ticker": "JENA-RI",
       "channels": [
@@ -23973,8 +23962,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "LGNZZ": {
-      "ticker": "LGNZZ",
+    "LGNYZ": {
+      "ticker": "LGNYZ",
       "channels": [
         "special_situation"
       ],
@@ -24223,8 +24212,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "FHN-PF": {
-      "ticker": "FHN-PF",
+    "FHN-PH": {
+      "ticker": "FHN-PH",
       "channels": [
         "special_situation"
       ],
@@ -28343,8 +28332,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "AQNB": {
-      "ticker": "AQNB",
+    "AGQPF": {
+      "ticker": "AGQPF",
       "channels": [
         "special_situation"
       ],
@@ -28653,8 +28642,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "RWTQ": {
-      "ticker": "RWTQ",
+    "RWTN": {
+      "ticker": "RWTN",
       "channels": [
         "special_situation"
       ],
@@ -28883,8 +28872,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TCBIO": {
-      "ticker": "TCBIO",
+    "TCBI-PB": {
+      "ticker": "TCBI-PB",
       "channels": [
         "special_situation"
       ],
@@ -29265,16 +29254,6 @@
     },
     "LXEO": {
       "ticker": "LXEO",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "MSSAF": {
-      "ticker": "MSSAF",
       "channels": [
         "special_situation"
       ],

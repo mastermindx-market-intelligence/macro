@@ -134,7 +134,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py -q
 
   inline-js:
     if: ${{ false }}
@@ -4443,6 +4443,14 @@ jobs:
       - "tests/test_prophet_early_observations.py"
       - "tests/test_prophet_observations_api.py"
       - "tests/test_prophet_observations_browser.py"
+      - "engine/us_candidate_episode.py"
+      - "engine/us_candidate_episode_intake.py"
+      - "scripts/reconcile_us_candidate_episodes.py"
+      - "tests/test_us_candidate_episode.py"
+      - "tests/test_us_candidate_episode_intake.py"
+      - "tests/test_us_candidate_episode_reconciler.py"
+      - "tests/test_us_candidate_episode_wiring.py"
+      - "tests/fixtures/us_candidate_episode/**"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4470,6 +4478,11 @@ jobs:
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
 
+      # B1's hermetic source, intake and generation contracts guard the reader
+      # used by this projection. Keep their existing proof in the PR code gate;
+      # the context-and-grades data job only runs after merge.
+      - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
+        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
@@ -4810,7 +4823,7 @@ jobs:
         run: python -m pytest tests/test_china_news.py -q
       - name: optional news provider semantics and actual ordering consumer
         # Source-only fixtures: no live data, vendor credentials or activation.
-        run: python -m pytest tests/test_news_ai_feed_contract.py -q
+        run: python -m pytest tests/test_news_ai_feed_contract.py tests/test_build_news.py -q
       - name: strict SEC filing parser, extraction, and sealed attestation contracts
         run: |
           python -m pytest \
@@ -8046,6 +8059,7 @@ jobs:
         run: python -m pytest tests/test_research_screener.py -q
 
   leader-radar-unit:
+    scope: exclusive
     if: ${{ false }}
     gate: code
     # LRV-W1: leader lifecycle engine + builder unit tests.
@@ -8054,7 +8068,69 @@ jobs:
     # Builder (test_build_leader_radar.py): RS rank history, insider cluster,
     # options skew, basket corr, early_entry sort, artifact schema additive,
     # analyst buy-share loader + chip wiring + banner render (LRV-R1e; jinja2 needed).
+    # 2026-10-11 lineage wave (#8802): curated `scope: exclusive` for COVERAGE.
+    # Inference smeared three opaque roots onto this job: the builder's jinja
+    # loader (scripts/build_leader_radar.py renders leader_radar.html.j2 from
+    # config.ROOT/templates, read as templates/**), the integration suite's
+    # data/site rglob roots (test_leader_recovery_integration.py) and the
+    # lineage suite's AST import scan (test_leader_lineage.py, read as
+    # engine/** + scripts/**). Every ordinary code PR therefore selected it,
+    # and the lineage step (+3 weight) pushed two packing probes over their
+    # ceilings on the PR's merge ref (templates/index.html 5,806 > 5,800;
+    # scripts/build_free_content.py 5,603 > 5,600). paths: = the measured
+    # 43-path import/read closure plus the template the builder renders by
+    # name and its include chain (_seo_head, _site_nav, _navlinks). Derived
+    # against a FULL checkout (the two site/ JSON literals are invisible on a
+    # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
+    paths:
+      - engine/__init__.py
+      - engine/analyst_revisions.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/cycles.py
+      - engine/indicators.py
+      - engine/leader_lifecycle.py
+      - engine/leader_lineage.py
+      - engine/leader_recovery.py
+      - engine/leader_recovery_expectations.py
+      - engine/leader_recovery_observations.py
+      - engine/leader_recovery_outcomes.py
+      - engine/leader_recovery_policy_research.py
+      - engine/ledger_lane.py
+      - engine/pick_lab/candidates.py
+      - engine/pick_lab/ledger.py
+      - engine/pick_lab/profile.py
+      - engine/pick_lab/registry.py
+      - engine/rs_leader_highs.py
+      - engine/session_anchor.py
+      - engine/technicals.py
+      - engine/vol_forecast.py
+      - engine/vol_regime.py
+      - engine/winner_autopsy.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/nyse_calendar.py
+      - lib/options_context.py
+      - lib/pages.py
+      - lib/store.py
+      - scripts/build_leader_radar.py
+      - site/flowleaders/leaders.json
+      - site/leaderradar/radar.json
+      - templates/leader_radar.html.j2
+      - templates/_seo_head.html.j2
+      - templates/_site_nav.html.j2
+      - templates/_navlinks.html.j2
+      - tests/test_build_leader_radar.py
+      - tests/test_leader_lifecycle.py
+      - tests/test_leader_lineage.py
+      - tests/test_leader_recovery.py
+      - tests/test_leader_recovery_expectations.py
+      - tests/test_leader_recovery_integration.py
+      - tests/test_leader_recovery_observations.py
+      - tests/test_leader_recovery_outcomes.py
+      - tests/test_leader_recovery_policy_research.py
+      - tests/test_rs_leader_highs.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -8066,6 +8142,10 @@ jobs:
         run: python -m pytest tests/test_leader_lifecycle.py -q
       - name: leader radar builder tests
         run: python -m pytest tests/test_build_leader_radar.py -q
+      - name: RS leader highs and deep recovery regression
+        run: python -m pytest tests/test_rs_leader_highs.py tests/test_leader_recovery.py tests/test_leader_recovery_outcomes.py tests/test_leader_recovery_integration.py tests/test_leader_recovery_policy_research.py tests/test_leader_recovery_expectations.py tests/test_leader_recovery_observations.py -q
+      - name: leader lineage descriptor tests
+        run: python -m pytest tests/test_leader_lineage.py -q
 
   evidence-clock:
     if: ${{ false }}
@@ -11614,6 +11694,8 @@ jobs:
         run: python -m pytest tests/test_account_actions.py -v
       - name: account getToken client identity (templates/account.js)
         run: node --test tests/js/account_get_token.test.mjs
+      - name: account continuity (templates/account.js S1)
+        run: node --test tests/js/account_continuity.test.mjs
       - name: shared preference atomics contract (templates/theme.js)
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)
@@ -15856,10 +15938,39 @@ jobs:
       - name: candidate projection contract fixtures
         run: python -m pytest -n 2 --dist load --max-worker-restart=0 tests/test_government_revenue_candidate_projection.py tests/test_government_revenue_candidate_fixture.py -q
 
-  unrun-factor-research:
-    # factor registry + measurement disclosure + the study lanes behind them.
-    if: ${{ false }}
+  information-to-price-eval-receipts:
+    # Information-to-Price receipt and admission suites: SRC-A1, synthetic PIT
+    # sample conformance, R4 V2 admission, EVAL-1 partition clock and EVAL-1
+    # challenger identity. Moved out of unrun-factor-research on 2026-10-11
+    # (#8805): that job's opaque fallback smears engine/** and collectors/**
+    # onto every ordinary code change, so each new receipt suite grew the
+    # templates/index.html packing probe past its 5,800 ceiling (5,802 on main,
+    # 5,805 on the A9 head). scope: exclusive with the measured closure below
+    # drops only that opaque fallback; the family still runs for every path it
+    # actually reads, and the EVAL1_PARTITION_CLOCK_*.json glob keeps a new
+    # receipt selecting the job.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code
+    scope: exclusive
+    paths:
+      - collectors/equity_revisions.py
+      - engine/k3e_expectation_surface.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/identity.py
+      - lib/nyse_calendar.py
+      - research/alpha_intelligence/expectation_market_dynamics/EVAL1_PARTITION_CLOCK_*.json
+      - research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_challenger_trial_identity.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock_check.py
+      - research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py
+      - research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py
+      - research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py
+      - research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py
+      - research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py
+      - tests/test_eval1_challenger_identity.py
+      - tests/test_eval1_partition_clock.py
+      - tests/test_r4_v2_receipt.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -15889,6 +16000,32 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py --help
           python -m pytest tests/test_r4_v2_receipt.py -q
+      # EVAL-1 partition clock receipt (ITP A9). Name the validator
+      # CLI as well as its suite; the suite loads the validator by file path.
+      - name: information-to-price EVAL-1 partition clock receipt
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock_check.py --help
+          python -m pytest tests/test_eval1_partition_clock.py -q
+      # EVAL-1 challenger trial identity (ITP B6). Name the checker CLI as
+      # well as its suite; the suite loads the checker by file path.
+      - name: information-to-price EVAL-1 challenger trial identity
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
+          python -m pytest tests/test_eval1_challenger_identity.py -q
+
+  unrun-factor-research:
+    # factor registry + measurement disclosure + the study lanes behind them.
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
@@ -16449,7 +16586,7 @@ jobs:
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
       - name: Shared Prophet card - record identity and explicit unavailable action
-        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py -q
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: Prophet journey reconciliation harness (PR-time gated journey)
@@ -18205,12 +18342,8 @@ jobs:
       # check on prophet_bridge.select_candidates.
       - name: US candidate-pool lanes (lossless partition + store columns + no authority leak)
         run: python -m pytest tests/test_us_candidate_lanes.py -q
-      # V4-B1 canonical candidate episodes: pure event contract, source-specific intake,
-      # immutable-generation/atomic-HEAD publication, and this workflow/registry authority
-      # fence. TURN WATCH's own discovery suite stays in its existing engine owner; B1 reads
-      # its sidecar and does not absorb the producer.
-      - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
-        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
+      # The hermetic B1 contract/intake/reconciler/wiring proof belongs to the
+      # existing prophet-lab code gate. TURN WATCH retains its separate owner.
       # W1.5 board-session anchor (#5303/#5307): the earnings-blackout gate and the
       # display-tier chip read the BOARD's session, never the render host's wall
       # clock — hosts straddling local midnight flipped membership (78 vs 81 buy
@@ -20672,6 +20805,34 @@ jobs:
       - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
       - tests/test_dataos_prospective_reference.py
+      # Tiingo raw-vintage/read-only research proofs; no live provider calls.
+      - .github/workflows/ci.yml
+      - collectors/__init__.py
+      - collectors/tiingo_archive.py
+      - scripts/tiingo_ingest.py
+      - scripts/build_ext_quotes.py
+      - tests/test_tiingo_boats_display.py
+      - tests/test_build_ext_quotes.py
+      - scripts/tiingo_materialize.py
+      - scripts/tiingo_vendor_cohort.py
+      - requirements/tiingo.txt
+      - tests/test_tiingo_archive.py
+      - tests/test_tiingo_views.py
+      - tests/test_tiingo_reader.py
+      - tests/test_tiingo_history.py
+      - tests/test_tiingo_research_query.py
+      - tests/test_tiingo_boats_tape.py
+      - tests/test_tiingo_boats_stream_chain.py
+      - lib/dataos/tiingo_boats_tape.py
+      - scripts/tiingo_research_query.py
+      - tests/test_tiingo_vendor_cohort.py
+      - tests/test_tiingo_ingestion_integrity.py
+      - scripts/tiingo_reference_audit.py
+      - tests/test_tiingo_reference_audit.py
+      - tests/test_tiingo_planning.py
+      - scripts/tiingo_corpus_audit.py
+      - tests/test_tiingo_corpus_audit.py
+      - tests/test_tiingo_additional_history.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20682,7 +20843,16 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: prospective reference clocks, refusals and consumer compatibility
-        run: python -m pytest tests/test_dataos_prospective_reference.py -q
+        run: >-
+          python -m pytest tests/test_dataos_prospective_reference.py
+          tests/test_tiingo_archive.py tests/test_tiingo_views.py
+          tests/test_tiingo_reader.py tests/test_tiingo_history.py
+          tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
+          tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
+          tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
+          tests/test_tiingo_ingestion_integrity.py
+          tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
+          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q
 
 
   dataos-web-workspace:
@@ -20971,6 +21141,7 @@ jobs:
       - "app/unsubscribe.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
+      - "collectors/alpaca_news.py"
       - "collectors/base.py"
       - "collectors/benzinga_news.py"
       - "collectors/biocatalyst/drugs_at_fda.py"
@@ -21034,6 +21205,7 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
+      - "config/ticker_news_rights_alpaca_benzinga.json"
       - "config/us_names_zh.json"
       - "config/us_search_aliases_zh.json"
       - "contracts/capital_structure_projection.schema.json"
@@ -21610,6 +21782,7 @@ jobs:
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
+      - "tests/test_alpaca_news.py"
       - "tests/test_benzinga_news.py"
       - "tests/test_build_qbus_news_universe.py"
       - "tests/test_massive_benzinga_news.py"
@@ -21626,6 +21799,7 @@ jobs:
       - "tests/test_qbus_news_universe_snapshot.py"
       - "tests/test_run_qbus_news.py"
       - "tests/test_run_qbus_news_health.py"
+      - "tests/test_run_qbus_news_provider.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
       - "tests/test_ticker_news_receipt_binding.py"
@@ -21646,6 +21820,7 @@ jobs:
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_alpaca_news.py
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
           tests/test_massive_benzinga_news.py
@@ -21662,6 +21837,7 @@ jobs:
           tests/test_qbus_news_universe_snapshot.py
           tests/test_run_qbus_news.py
           tests/test_run_qbus_news_health.py
+          tests/test_run_qbus_news_provider.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
           tests/test_ticker_news_receipt_binding.py
@@ -23023,3 +23199,51 @@ jobs:
         run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
       - name: same suites against the shipped site/ copies
         run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
+
+  single-name-coverage-profiles:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI E0/M0 (2026-10-11) coverage_profile.v1 qualification files for the
+    # Alibaba/Tencent reference pair. Contract tests only: schema shape, every
+    # first-stage authority flag false, no issuer/security id minted from a
+    # ticker/local code/CIK, every unresolved cell names its closing owner.
+    # Hermetic — reads the committed schema + YAML profiles, no network, no data/.
+    # Wired in the SAME commit as the suite (contract-delta unwired-suite lesson).
+    paths:
+      - "config/single_name_intelligence/**"
+      - "contracts/single_name_intelligence/**"
+      - "tests/test_single_name_coverage_profiles.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install coverage-profile contract test dependencies
+        run: pip install pytest pyyaml jsonschema
+      - name: SNI coverage_profile.v1 contract tests
+        run: python -m pytest tests/test_single_name_coverage_profiles.py -q -p no:cacheprovider
+
+  grey-deer-observed-moves:
+    if: ${{ false }}
+    gate: code
+    # Grey Deer W2 (WS:GREY-DEER-RISK-INTELLIGENCE): observed-move label and
+    # feature primitives frozen by research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
+    # (§3 price-basis refusal, §4 forward maximum loss, §6 trailing features).
+    # Hermetic: synthetic series only, no data/ or site/ reads.
+    timeout-minutes: 5
+    paths:
+      - "lib/__init__.py"
+      - "lib/observed_moves.py"
+      - "tests/test_observed_moves.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy
+      - name: observed-move labels, features and price-basis refusal
+        run: python -m pytest tests/test_observed_moves.py -q
