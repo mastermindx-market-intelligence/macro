@@ -311,10 +311,17 @@ jobs:
           # dedicated narrow publishers; the helper restores/cleans them around the
           # broad `git add` so neither the collect commit nor the engine commit below
           # can smuggle an Options artifact onto the Asia lane.
+          # Run-local proof that the official corpus is settled on origin/main.
+          # push_lost returns 0 by design, so downstream CIE-09 must not infer
+          # publication success merely from this step's green status.
+          rm -f "$RUNNER_TEMP/cie09_official_corpus_settled"
           bash scripts/ci/options_signal_nightly.sh exclude-broad
           git add data/ site/qledger/
           bash scripts/ci/options_signal_nightly.sh exclude-broad
-          if git diff --cached --quiet; then echo "no asia data changes"; else
+          if git diff --cached --quiet; then
+            echo "no asia data changes"
+            touch "$RUNNER_TEMP/cie09_official_corpus_settled"
+          else
             git commit -m "data: asia collection $(date -u +%F)"
             push_retry_init "asia data"
             while push_attempt; do
@@ -335,13 +342,32 @@ jobs:
               # add later in THIS job stages verbatim — the exact chronicle-step shape
               # that polluted the US nightly. Detect, discard, retry clean.
               if git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-                if push_do; then echo "pushed asia data (attempt $PUSH_ATTEMPT)"; push_won; break; fi
+                if push_do; then
+                  echo "pushed asia data (attempt $PUSH_ATTEMPT)"
+                  touch "$RUNNER_TEMP/cie09_official_corpus_settled"
+                  push_won
+                  break
+                fi
               fi
               push_abort_rebase
               push_backoff
             done
             push_lost
           fi
+      # CIE-09 production wiring: the Asia collector above is the sole owner of the
+      # official-policy corpus. Diff that committed corpus once, without refetching,
+      # before the China spine/parallel builders can consume the new qbus/qledger
+      # context. Fail-soft like the other descriptive China desks: a policy-diff
+      # outage must stay visible without discarding otherwise valid CN/HK outputs.
+      - name: China Communiqué Diff — settled official-policy corpus (CIE-09)
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          if [ ! -f "$RUNNER_TEMP/cie09_official_corpus_settled" ]; then
+            echo "::warning title=CIE-09 settled corpus unavailable::collection changes were not confirmed on origin/main; skipping Communiqué Diff while the rest of Asia remains fail-soft."
+            exit 0
+          fi
+          python -m scripts.build_communique_diff
       - name: timings band — build-china (W2)
         run: python3 scripts/nightly_timings.py mark --band build-china || echo "::warning::timings band mark failed (non-fatal)"
       - name: build china a-share dashboard (spine — serial head, every CN surface reads it)
