@@ -1,4 +1,8 @@
 /* Scoped Overview design source. Shared shell, locale and legacy owners remain separate. */
+/* Paper uses a quiet research canvas. Keep the shared theme's palette and
+   suppress legacy ambient artwork only on the mounted workspace page. */
+html body.intl-workspace-page::before, .intl-workspace-page > .intl-aurora { display:none; }
+html[data-theme="light"] body.intl-workspace-page { --ms:var(--card-shadow); }
 .intl-workspace, .intl-overview { color:var(--text); font-family:var(--font-ui); font-size:var(--fs-body); line-height:1.6; min-inline-size:0; }
 .intl-workspace *, .intl-overview * { box-sizing:border-box; }
 .intl-workspace [hidden], .intl-overview [hidden] { display:none !important; }
@@ -11,7 +15,7 @@
 html[data-lang="zh"] .intl-workspace__eyebrow { letter-spacing:0; text-transform:none; }
 .intl-workspace__toolbar { border:0; padding:0; min-inline-size:0; display:flex; flex-direction:column; gap:calc(var(--fs-body) / 2); margin-block-end:calc(var(--fs-body) * 1.5); }
 .intl-workspace__toolbar > * { min-inline-size:0; max-inline-size:100%; }
-.intl-workspace__toolbar legend { font-weight:650; padding:0; margin-block-end:calc(var(--fs-sm) / 2); }
+.intl-workspace__toolbar legend { position:absolute; inline-size:1px; block-size:1px; margin:-1px; padding:0; border:0; clip-path:inset(50%); overflow:hidden; white-space:nowrap; }
 .intl-workspace button, .intl-workspace select, .intl-overview button { font:inherit; color:var(--text); background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:calc(var(--fs-body) / 2) var(--fs-body); min-block-size:calc(var(--fs-num-lg) * 2); max-inline-size:100%; }
 .intl-workspace button, .intl-overview button { white-space:normal; overflow-wrap:anywhere; cursor:pointer; }
 .intl-workspace select { inline-size:100%; min-inline-size:0; }
@@ -107,6 +111,7 @@ html[data-lang="zh"] .intl-workspace__deeper-title { letter-spacing:0; text-tran
   .intl-overview__first-read { grid-template-columns:minmax(0,1fr); }
   .intl-overview__market { grid-template-columns:minmax(0,1fr); }
   .intl-workspace__controls > label { flex:1 1 calc(var(--fs-body) * 10); }
+  .intl-workspace__controls > .intl-workspace__view-select { flex-basis:100%; }
   .intl-workspace__context-line { flex-basis:100%; }
   .intl-overview__expansion-trigger { inline-size:100%; }
   .intl-workspace__deeper { flex-direction:column; align-items:flex-start; }
