@@ -939,3 +939,35 @@ datasets:
       complete-empty, partial and failed acquisitions retained separately.
       Native event IDs and exact decimal tokens are observations, not factor
       applicability, raw-minute reconstruction, source authenticity or basis admission.
+
+  - dataset_id: company_intelligence.issuer_disclosure_generations
+    layer: L3
+    status: PROPOSED
+    owner: company-intelligence
+    producer: scripts/publish_company_disclosure.py
+    storage: "private:company-intelligence/state/generations/{sha256}.json"
+    format: json
+    grain: [generation]
+    temporal_profile: DERIVED
+    timezone: UTC
+    frequency: on_demand
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [temporal_integrity, referential, uniqueness]
+    version: "1.0.0"
+    licensing: GMI-C01-CHAIRMAN-SOURCE-PURPOSE-20261011
+    schema:
+      schema: {dtype: string, nullable: false, value: company_intelligence.issuer_disclosure_generation/v1}
+      computed_at: {dtype: RFC3339_UTC, nullable: false}
+      code_version: {dtype: string, nullable: false}
+      input_cutoffs: {dtype: object, nullable: false}
+      decisions: {dtype: object, nullable: false}
+      edition: {dtype: object, nullable: false}
+      fact: {dtype: object, nullable: false}
+    code_consumers: [engine/company_intelligence/issuer_disclosure_owner.py]
+    notes: >
+      Proposed until the source owner observes a retained-input publication.
+      Current-only manifest of separately versioned native edition/fact members;
+      metadata clocks belong to the manifest, not invented native-schema fields.
+      No PIT read, original-source redistribution, commercial magnitude or trade
+      authority. The protected source ruling, identity and correction decisions
+      remain operative; a private pointer cannot grant itself authority.

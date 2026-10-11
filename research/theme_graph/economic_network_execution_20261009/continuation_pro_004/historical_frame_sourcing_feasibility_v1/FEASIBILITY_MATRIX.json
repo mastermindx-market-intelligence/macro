@@ -1,0 +1,265 @@
+{
+  "schema": "research.historical_frame_feasibility_matrix.v1",
+  "D": "2026-09-30",
+  "K": "2026-10-09T00:00:00Z",
+  "classification": "Observed sourcing feasibility, not capability rejection or admission",
+  "rows": [
+    {
+      "route_id": "CA_TMX_ROSTER",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA01",
+        "CA02",
+        "CA03",
+        "CA07"
+      ],
+      "advertised_or_observed_population": "all TSX and TSXV listings advertised; eligibility is narrower",
+      "observed_representation": "primary search rendering; originals blocked",
+      "actual_dated_artifact": "no exact D roster inspected",
+      "history_revision_cutoff": "advertised monthly timing; original/K revision evidence absent",
+      "identity_primary_instrument_cap_gap": "names/symbols/shares/listing-status fields advertised; operative class/primary semantics uninspected",
+      "access_use_retention_derived_rights": "all requested customer purposes unestablished",
+      "minimal_missing_input": "exact D pair plus schema, original/K versions, scope and current entitlement",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "CA_TMX_EVENT",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA04",
+        "CA05"
+      ],
+      "advertised_or_observed_population": "TSX/TSXV listing changes advertised",
+      "observed_representation": "primary search rendering; originals blocked",
+      "actual_dated_artifact": "historical product advertised; no delivered event interval",
+      "history_revision_cutoff": "history start advertised; cancellation/revision/public clocks unknown",
+      "identity_primary_instrument_cap_gap": "listing-change product; event schema not opened",
+      "access_use_retention_derived_rights": "current report delivery shifted toward subscription; use rights unestablished",
+      "minimal_missing_input": "bounded anchor-to-D changes and K correction chain with no-change/omission witness",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "CA_CDSX_ALTERNATIVE",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA08"
+      ],
+      "advertised_or_observed_population": "CDSX eligible securities; not exchange-primary universe",
+      "observed_representation": "primary search rendering; original blocked",
+      "actual_dated_artifact": "current master/daily changes advertised; no D artifact",
+      "history_revision_cutoff": "historical snapshots/corrections unknown",
+      "identity_primary_instrument_cap_gap": "depository scope does not prove primary/class perimeter",
+      "access_use_retention_derived_rights": "customer scope unestablished",
+      "minimal_missing_input": "actual coverage/venue fields and historical version contract",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "CA_CSE_ROSTER_EVENTS",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA09",
+        "CA10",
+        "CA13"
+      ],
+      "advertised_or_observed_population": "CSE listings/events; all eligible operating issuers not proved",
+      "observed_representation": "original event specification and dated notice titles",
+      "actual_dated_artifact": "specification actual; notice bodies incomplete; no D roster",
+      "history_revision_cutoff": "effective and New/Modified schema fields; actual publication/revision chain absent",
+      "identity_primary_instrument_cap_gap": "type/class/identifier changes specified; issuer/primary operating status still needs evidence",
+      "access_use_retention_derived_rights": "CUSIP/ISIN conditional licensing; other retention/use unestablished",
+      "minimal_missing_input": "D anchor plus delivered complete event interval and permitted retained bytes",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "CA_CBOE_ROSTER_EVENTS",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA14",
+        "CA15",
+        "CA16",
+        "CA19",
+        "CA20"
+      ],
+      "advertised_or_observed_population": "master covers all eligible-to-trade securities, broader than listing admission",
+      "observed_representation": "original product/navigation/manual",
+      "actual_dated_artifact": "no D master; quarterly subset page names June 2026",
+      "history_revision_cutoff": "history SFTP advertised; first release/correction version unknown",
+      "identity_primary_instrument_cap_gap": "listing platform/admission/primary distinction unresolved in actual file",
+      "access_use_retention_derived_rights": "offered terms inspected, customer entitlement absent",
+      "minimal_missing_input": "exact D master and admission change/version history with operative fields",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "CA_VENUE_LEGAL",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA20",
+        "CA21"
+      ],
+      "advertised_or_observed_population": "TSX/TSXV/CSE/Cboe listing versus trading-only distinction",
+      "observed_representation": "original regulator/SRO navigation",
+      "actual_dated_artifact": "current descriptions and legal record links; no frozen D adjudication",
+      "history_revision_cutoff": "applicable operating/recognition intervals require owner record",
+      "identity_primary_instrument_cap_gap": "not an issuer/class census",
+      "access_use_retention_derived_rights": "site reading does not grant bulk reference-data use",
+      "minimal_missing_input": "D/K recognized venue and eligible ordinary/admission certificate",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "CA_DISCLOSURE",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA22",
+        "CA23"
+      ],
+      "advertised_or_observed_population": "issuer/fund disclosures; not exchange roster",
+      "observed_representation": "original public-site terms; profile search blocked",
+      "actual_dated_artifact": "no retained filing dataset; actual public posting unknown",
+      "history_revision_cutoff": "filing transmission may precede public posting",
+      "identity_primary_instrument_cap_gap": "cap/operating/primary supplements possible only with actual assertions",
+      "access_use_retention_derived_rights": "public terms exclude database/automated multiple-piece reproduction; specific licensed alternative possible",
+      "minimal_missing_input": "existing explicit retained-data entitlement or permitted issuer/exchange assertion",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "CA_CAP_COMPONENTS",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "CA02",
+        "CA06",
+        "CA10",
+        "CA11",
+        "CA17",
+        "CA18",
+        "CA22"
+      ],
+      "advertised_or_observed_population": "every eligible issuer and unique residual ordinary class; no cap population inspected",
+      "observed_representation": "mixed product advertisement and original schema/license",
+      "actual_dated_artifact": "no price/share/FX dataset acquired",
+      "history_revision_cutoff": "D validity, K public clocks and action bridges needed per component",
+      "identity_primary_instrument_cap_gap": "listed shares vs actual outstanding, fungible counters/receipts, treasury and quote units unresolved",
+      "access_use_retention_derived_rights": "component/source-specific permission; derived cap use not presumed",
+      "minimal_missing_input": "exact permissible share/class/action/close/FX assertions under adopted policy; independent conflicts kept",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "LICENSED_PROVIDER_ALTERNATIVE",
+      "jurisdiction": "CA",
+      "source_ids": [
+        "ALT01"
+      ],
+      "advertised_or_observed_population": "historical identifier-resolution API; full Canadian census not demonstrated",
+      "observed_representation": "primary search rendering; original empty",
+      "actual_dated_artifact": "no customer data or history artifact",
+      "history_revision_cutoff": "historical identifiers advertised; revision archive unknown",
+      "identity_primary_instrument_cap_gap": "listing/security/issuer ID resolution potentially useful",
+      "access_use_retention_derived_rights": "actual existing provider license not inspected",
+      "minimal_missing_input": "existing licensed full coverage and exact D/K semantics; no vendor incapability conclusion",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "JP_TSE",
+      "jurisdiction": "JP",
+      "source_ids": [
+        "JP01",
+        "JP02"
+      ],
+      "advertised_or_observed_population": "TSE only; excludes regional perimeter",
+      "observed_representation": "original dated artifact navigation and terms",
+      "actual_dated_artifact": "September 2026 workbook named; workbook not acquired",
+      "history_revision_cutoff": "third-business-day schedule; sequential overwrite and correction example; initial-public clock unproved",
+      "identity_primary_instrument_cap_gap": "ordinary/professional/instrument eligibility needs actual file evidence",
+      "access_use_retention_derived_rights": "commercial collection/secondary use permission or paid route required",
+      "minimal_missing_input": "operative exact version/public-release witness plus separate regional coverage",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "JP_NAGOYA",
+      "jurisdiction": "JP",
+      "source_ids": [
+        "JP04",
+        "JP05"
+      ],
+      "advertised_or_observed_population": "Premier/Main/Next/Other and sole-listing filters",
+      "observed_representation": "original current search and field notice",
+      "actual_dated_artifact": "no exact D roster",
+      "history_revision_cutoff": "prior-month-end shares update around 20th; latest-price semantics; no historic versions",
+      "identity_primary_instrument_cap_gap": "sole listing differs from global primary; listed shares differs from actual outstanding",
+      "access_use_retention_derived_rights": "historical retention/derived permissions unestablished",
+      "minimal_missing_input": "D roster/events, field basis and public clocks; regional use policy",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "JP_FUKUOKA",
+      "jurisdiction": "JP",
+      "source_ids": [
+        "JP06",
+        "JP07",
+        "JP08"
+      ],
+      "advertised_or_observed_population": "regional month-end issues/cap/listed-share resources",
+      "observed_representation": "original archive navigation/disclaimer",
+      "actual_dated_artifact": "actual August file link named; file not acquired; no September exception observed",
+      "history_revision_cutoff": "next-month around-20th schedule; September normal timing after K is inference",
+      "identity_primary_instrument_cap_gap": "listed shares and cap-basis eligibility not reconciled",
+      "access_use_retention_derived_rights": "unauthorized alteration/sale restriction; other desired uses unestablished",
+      "minimal_missing_input": "earlier public component route valid at D and <=K plus rights; actual exception if it exists",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    },
+    {
+      "route_id": "JP_SAPPORO",
+      "jurisdiction": "JP",
+      "source_ids": [
+        "JP09",
+        "JP10"
+      ],
+      "advertised_or_observed_population": "regional ordinary/Ambitious/professional navigation and changes",
+      "observed_representation": "actual 14-page event-history PDF; selected pp13-14 and visual p14",
+      "actual_dated_artifact": "dated-by-filename event document observed, not roster completeness",
+      "history_revision_cutoff": "filename September 25 does not prove public date or closed interval through D",
+      "identity_primary_instrument_cap_gap": "cross-market notes; class/primary/pro admission proof still unresolved",
+      "access_use_retention_derived_rights": "regional retention/derived permission unestablished",
+      "minimal_missing_input": "closed D interval/anchor, K versions, primary/type and use witnesses",
+      "exact_D_eligible_frame_proved": false,
+      "customer_entitlement_proved": false,
+      "unresolved_population_count": null,
+      "raw_dataset_sha256": null
+    }
+  ]
+}

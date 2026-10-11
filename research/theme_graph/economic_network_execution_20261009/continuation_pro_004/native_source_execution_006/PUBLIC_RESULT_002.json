@@ -1,0 +1,678 @@
+{
+  "D": "2026-09-30",
+  "F": {
+    "precision": "exact decimal strings for native integer nanoseconds",
+    "producer_completed_utc_ns": "1791559136120920000",
+    "producer_started_utc_ns": "1791559135461959000",
+    "public_by_K": "UNPROVED"
+  },
+  "K": "2026-10-09T00:00:00Z",
+  "acquisition": {
+    "acquisition_id": "bebd0cf4f8d44f0d96f8b81192c62200",
+    "acquisition_sha256": "b2675455c55474c4f3c1ea73b005878416947207302ffc75aa8247c341668b47",
+    "artifact_byte_length": 1274,
+    "artifact_sha256": "0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7",
+    "authority": {
+      "context_only": true,
+      "horizon_role": "context",
+      "may_append_outcome": false,
+      "may_escalate": false,
+      "may_execute": false,
+      "may_gate": false,
+      "may_originate": false,
+      "may_rank": false,
+      "may_select_options_candidate": false,
+      "may_size": false,
+      "may_trade": false,
+      "may_train_prophet": false,
+      "may_write_options_episode": false,
+      "proposal_weight": 0,
+      "tier": "display"
+    },
+    "basis_eligible": false,
+    "failure_kind": null,
+    "page_count": 1,
+    "pages": [
+      {
+        "body_bytes_observed": 76,
+        "body_complete": true,
+        "cursor_sha256": null,
+        "http_status": 200,
+        "observed_body_sha256": "14af1ec774f42eb00a8f9d65cc02cbcf7fb823fbbd8e597202e81a55651902c8",
+        "outcome": "ok",
+        "page_index": 0,
+        "request_started_utc_ns": "1791559135462023000",
+        "response_completed_utc_ns": "1791559136120837000",
+        "rows_received": 0,
+        "rows_retained": 0
+      }
+    ],
+    "raw_body_retained": false,
+    "retained_row_count": 0,
+    "row_execution_date_counts": {
+      "after_D": 0,
+      "on_D": 0
+    },
+    "status": "complete"
+  },
+  "all_source_pins_unchanged_after": true,
+  "basis_date_metadata": "2026-09-30",
+  "boundaries": {
+    "D_close_price_and_currency": "NOT_SUPPLIED",
+    "Graph1": null,
+    "K_public_vintage": "UNPROVED",
+    "Sol_CEO_architectural_adjudication": "NOT_ASSERTED",
+    "WP02_real_cohort": "NOT_ADMITTED",
+    "canonical_issuer_class_and_shares": "NOT_ADMITTED",
+    "gating": false,
+    "global_population_and_relative_cap": "NOT_ADMITTED",
+    "prediction": false,
+    "production_activation": false,
+    "ranking": false,
+    "sizing": false,
+    "source_registry_modified": false,
+    "trading": false
+  },
+  "cohort_selected_case_count": 0,
+  "final_native_head": "7af7a9785d74c1b420b23de3be0eac6946cc2200",
+  "final_store": {
+    "exists": true,
+    "files": [
+      {
+        "byte_length": 0,
+        "mode": "0o600",
+        "mtime_ns": "1791559136123280766",
+        "path": ".writer.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byte_length": 327,
+        "mode": "0o600",
+        "mtime_ns": "1791559136134351663",
+        "path": "SOURCE_HEAD.json",
+        "sha256": "b4a6b70f9d7a67da7062cdce838ec913f4a7811a0f5b296babc3e9c7d149930d"
+      },
+      {
+        "byte_length": 977,
+        "mode": "0o600",
+        "mtime_ns": "1791559136124345268",
+        "path": "SOURCE_STORE.json",
+        "sha256": "fd9592e49fd4dd15bfc4c04b5b106b35f064959e4940d3745fd7a2f79d36026a"
+      },
+      {
+        "byte_length": 1301,
+        "mode": "0o600",
+        "mtime_ns": "1791559136131985741",
+        "path": "source_captures/dd/mmscapture_ddb92abbf241f38e03761115c72c11509d21db25196fff554be00c443a3ed85a.json",
+        "sha256": "9303fa18be6a13b8a599cb7b1d6238ab79af5c8c34a220280024cabfbe112f97"
+      },
+      {
+        "byte_length": 806,
+        "mode": "0o600",
+        "mtime_ns": "1791559136133746495",
+        "path": "source_generations/a6/mmsgen_a6dd5bb27939a12d508f56a135e5184d8cd03440ecc2c4d1412f1941701220d7.json",
+        "sha256": "37c512c6ca66db7472c7dd66b3a7c5571e89444fb87837b6219d6fb6bb81a920"
+      },
+      {
+        "byte_length": 290,
+        "mode": "0o600",
+        "mtime_ns": "1791559136127340982",
+        "path": "source_generations/c5/mmsgen_c56587168574dd30a169693af5b470d3de7fd687682b9a8f3b896df0c29571c2.json",
+        "sha256": "0e4f119fd24a7a1d2e195ddade4c7f9ccbc306c3e9dbfec1e7db1eb524e4f04c"
+      },
+      {
+        "byte_length": 1274,
+        "mode": "0o600",
+        "mtime_ns": "1791559136130984114",
+        "path": "source_objects/0c/0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7.json",
+        "sha256": "0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7"
+      },
+      {
+        "byte_length": 1301,
+        "mode": "0o600",
+        "mtime_ns": "1791559136132889535",
+        "path": "source_receipts/08/mmsrc_08bd528d83d82ac856eb2d3886166e25cec59d633d74e9c6f4be42dd0dcdd4e6.json",
+        "sha256": "9303fa18be6a13b8a599cb7b1d6238ab79af5c8c34a220280024cabfbe112f97"
+      }
+    ],
+    "total_bytes": 6276
+  },
+  "finished_utc_ns": "1791559136140644000",
+  "generation_id": "mmsgen_a6dd5bb27939a12d508f56a135e5184d8cd03440ecc2c4d1412f1941701220d7",
+  "git_mutation": false,
+  "ignored_paths_absent_after": true,
+  "imported_repository_sources_after_call": [
+    {
+      "byte_length": 0,
+      "module": "engine",
+      "path": "engine/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1375,
+      "module": "engine.close_pass",
+      "path": "engine/close_pass/__init__.py",
+      "sha256": "3dd4087aea6dbbb8d846d5302c64d60fc3eb60add7d72c16d58b5f5d18a3770d"
+    },
+    {
+      "byte_length": 25891,
+      "module": "engine.close_pass.board",
+      "path": "engine/close_pass/board.py",
+      "sha256": "8ad05cc446f9764e831ccbcc209f7afb8660ed329af9b500b63f159e99e6bb04"
+    },
+    {
+      "byte_length": 29522,
+      "module": "engine.close_pass.massive_close",
+      "path": "engine/close_pass/massive_close.py",
+      "sha256": "43bc800dedba38a35ea5a94bc2f1de539401350a683123ecd9d40e6581e7bb66"
+    },
+    {
+      "byte_length": 26549,
+      "module": "engine.close_pass.massive_split_evidence",
+      "path": "engine/close_pass/massive_split_evidence.py",
+      "sha256": "a1d32eacd48c90f793df717a7284fa044054c476241c622e9b9f9abc997c6942"
+    },
+    {
+      "byte_length": 8801,
+      "module": "engine.close_pass.reconcile",
+      "path": "engine/close_pass/reconcile.py",
+      "sha256": "4e0a7eac9a2df3dc09cbcbcd39782b3e770edab270de11b72149fda5873e8314"
+    },
+    {
+      "byte_length": 58981,
+      "module": "engine.confluence_tiers",
+      "path": "engine/confluence_tiers.py",
+      "sha256": "ac0fda6d5ea30d35ad404c84eb848a176c872af42567937cd00adcdb49a51f65"
+    },
+    {
+      "byte_length": 7125,
+      "module": "engine.hysteresis",
+      "path": "engine/hysteresis.py",
+      "sha256": "49eeeccf6f02110e11e57a4f5fd6b82de4d1c804157dc9a9605cf40dd5eca6a7"
+    },
+    {
+      "byte_length": 1832,
+      "module": "engine.neuralweb",
+      "path": "engine/neuralweb/__init__.py",
+      "sha256": "b4bb1e4f8374b687034d1d6ff6f303915bc0228ebaae463e12c1b0303284ad8d"
+    },
+    {
+      "byte_length": 107556,
+      "module": "engine.neuralweb.market_memory",
+      "path": "engine/neuralweb/market_memory.py",
+      "sha256": "d64a53df452eeece71588e61006cb103e8930c6c7a8f3bc1c97b20a7dc747bc5"
+    },
+    {
+      "byte_length": 36991,
+      "module": "engine.neuralweb.market_memory_source_kernel",
+      "path": "engine/neuralweb/market_memory_source_kernel.py",
+      "sha256": "270f6efdab81d464b7f251d0440c1d82b371bab35a08fab7ee35b8a3e26fffbc"
+    },
+    {
+      "byte_length": 1098,
+      "module": "engine.prophet_live",
+      "path": "engine/prophet_live/__init__.py",
+      "sha256": "215a1254dd4e767a1f19fe68a029a6a3a34195f8dbc3ae8da07716028f590fcc"
+    },
+    {
+      "byte_length": 16751,
+      "module": "engine.prophet_live.interval",
+      "path": "engine/prophet_live/interval.py",
+      "sha256": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3"
+    },
+    {
+      "byte_length": 9996,
+      "module": "engine.session_anchor",
+      "path": "engine/session_anchor.py",
+      "sha256": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f"
+    },
+    {
+      "byte_length": 44184,
+      "module": "engine.signal_gate",
+      "path": "engine/signal_gate.py",
+      "sha256": "8ac545beb3d9cd1164069bd4850c2406e7f2ea88f972c6382490896653dff2fb"
+    },
+    {
+      "byte_length": 56987,
+      "module": "engine.signal_quality",
+      "path": "engine/signal_quality.py",
+      "sha256": "7191d7adef0942465465bd83baf5b02ea14a9465626089415987ed35763252ef"
+    },
+    {
+      "byte_length": 11329,
+      "module": "engine.technicals",
+      "path": "engine/technicals.py",
+      "sha256": "83e90996d3f6eb58162cc6005ac292116ae784332700ef5323b381d495269739"
+    },
+    {
+      "byte_length": 140499,
+      "module": "engine.us_board_rank",
+      "path": "engine/us_board_rank.py",
+      "sha256": "5b1cc96957549c9bdbbd682eacf026098c7c807f43cb49220f3a13ce11367abd"
+    },
+    {
+      "byte_length": 0,
+      "module": "lib",
+      "path": "lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1131,
+      "module": "lib.config",
+      "path": "lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    {
+      "byte_length": 29814,
+      "module": "lib.nyse_calendar",
+      "path": "lib/nyse_calendar.py",
+      "sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+    }
+  ],
+  "imported_repository_sources_before_call": [
+    {
+      "byte_length": 0,
+      "module": "engine",
+      "path": "engine/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1375,
+      "module": "engine.close_pass",
+      "path": "engine/close_pass/__init__.py",
+      "sha256": "3dd4087aea6dbbb8d846d5302c64d60fc3eb60add7d72c16d58b5f5d18a3770d"
+    },
+    {
+      "byte_length": 25891,
+      "module": "engine.close_pass.board",
+      "path": "engine/close_pass/board.py",
+      "sha256": "8ad05cc446f9764e831ccbcc209f7afb8660ed329af9b500b63f159e99e6bb04"
+    },
+    {
+      "byte_length": 29522,
+      "module": "engine.close_pass.massive_close",
+      "path": "engine/close_pass/massive_close.py",
+      "sha256": "43bc800dedba38a35ea5a94bc2f1de539401350a683123ecd9d40e6581e7bb66"
+    },
+    {
+      "byte_length": 26549,
+      "module": "engine.close_pass.massive_split_evidence",
+      "path": "engine/close_pass/massive_split_evidence.py",
+      "sha256": "a1d32eacd48c90f793df717a7284fa044054c476241c622e9b9f9abc997c6942"
+    },
+    {
+      "byte_length": 8801,
+      "module": "engine.close_pass.reconcile",
+      "path": "engine/close_pass/reconcile.py",
+      "sha256": "4e0a7eac9a2df3dc09cbcbcd39782b3e770edab270de11b72149fda5873e8314"
+    },
+    {
+      "byte_length": 58981,
+      "module": "engine.confluence_tiers",
+      "path": "engine/confluence_tiers.py",
+      "sha256": "ac0fda6d5ea30d35ad404c84eb848a176c872af42567937cd00adcdb49a51f65"
+    },
+    {
+      "byte_length": 7125,
+      "module": "engine.hysteresis",
+      "path": "engine/hysteresis.py",
+      "sha256": "49eeeccf6f02110e11e57a4f5fd6b82de4d1c804157dc9a9605cf40dd5eca6a7"
+    },
+    {
+      "byte_length": 1832,
+      "module": "engine.neuralweb",
+      "path": "engine/neuralweb/__init__.py",
+      "sha256": "b4bb1e4f8374b687034d1d6ff6f303915bc0228ebaae463e12c1b0303284ad8d"
+    },
+    {
+      "byte_length": 107556,
+      "module": "engine.neuralweb.market_memory",
+      "path": "engine/neuralweb/market_memory.py",
+      "sha256": "d64a53df452eeece71588e61006cb103e8930c6c7a8f3bc1c97b20a7dc747bc5"
+    },
+    {
+      "byte_length": 36991,
+      "module": "engine.neuralweb.market_memory_source_kernel",
+      "path": "engine/neuralweb/market_memory_source_kernel.py",
+      "sha256": "270f6efdab81d464b7f251d0440c1d82b371bab35a08fab7ee35b8a3e26fffbc"
+    },
+    {
+      "byte_length": 1098,
+      "module": "engine.prophet_live",
+      "path": "engine/prophet_live/__init__.py",
+      "sha256": "215a1254dd4e767a1f19fe68a029a6a3a34195f8dbc3ae8da07716028f590fcc"
+    },
+    {
+      "byte_length": 16751,
+      "module": "engine.prophet_live.interval",
+      "path": "engine/prophet_live/interval.py",
+      "sha256": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3"
+    },
+    {
+      "byte_length": 9996,
+      "module": "engine.session_anchor",
+      "path": "engine/session_anchor.py",
+      "sha256": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f"
+    },
+    {
+      "byte_length": 44184,
+      "module": "engine.signal_gate",
+      "path": "engine/signal_gate.py",
+      "sha256": "8ac545beb3d9cd1164069bd4850c2406e7f2ea88f972c6382490896653dff2fb"
+    },
+    {
+      "byte_length": 56987,
+      "module": "engine.signal_quality",
+      "path": "engine/signal_quality.py",
+      "sha256": "7191d7adef0942465465bd83baf5b02ea14a9465626089415987ed35763252ef"
+    },
+    {
+      "byte_length": 11329,
+      "module": "engine.technicals",
+      "path": "engine/technicals.py",
+      "sha256": "83e90996d3f6eb58162cc6005ac292116ae784332700ef5323b381d495269739"
+    },
+    {
+      "byte_length": 140499,
+      "module": "engine.us_board_rank",
+      "path": "engine/us_board_rank.py",
+      "sha256": "5b1cc96957549c9bdbbd682eacf026098c7c807f43cb49220f3a13ce11367abd"
+    },
+    {
+      "byte_length": 0,
+      "module": "lib",
+      "path": "lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1131,
+      "module": "lib.config",
+      "path": "lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    {
+      "byte_length": 29814,
+      "module": "lib.nyse_calendar",
+      "path": "lib/nyse_calendar.py",
+      "sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+    }
+  ],
+  "initial_store": {
+    "exists": false,
+    "files": []
+  },
+  "native_head": "7af7a9785d74c1b420b23de3be0eac6946cc2200",
+  "owner_receipt": {
+    "artifact_sha256": "0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7",
+    "authority": {
+      "context_only": true,
+      "horizon_role": "context",
+      "may_append_outcome": false,
+      "may_escalate": false,
+      "may_execute": false,
+      "may_gate": false,
+      "may_originate": false,
+      "may_rank": false,
+      "may_select_options_candidate": false,
+      "may_size": false,
+      "may_trade": false,
+      "may_train_prophet": false,
+      "may_write_options_episode": false,
+      "proposal_weight": 0,
+      "tier": "display"
+    },
+    "basis_eligible": false,
+    "canonical_receipt_sha256": "9303fa18be6a13b8a599cb7b1d6238ab79af5c8c34a220280024cabfbe112f97",
+    "capture_id": "mmscapture_ddb92abbf241f38e03761115c72c11509d21db25196fff554be00c443a3ed85a",
+    "object_key": "source_objects/0c/0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7.json",
+    "owner_intake_started_utc_ns": "1791559136121027000",
+    "owner_receipt_assembled_utc_ns": "1791559136130442000",
+    "receipt_id": "mmsrc_08bd528d83d82ac856eb2d3886166e25cec59d633d74e9c6f4be42dd0dcdd4e6",
+    "revision_id": "mmsrevision_660769b3521a5367a04ff3cb6d775febef20e0c2e28294f44c96b36ba64bd54e",
+    "schema": "market_memory.source_artifact_receipt.massive_split_history.v1",
+    "source_id": "massive_rest:stocks:split_history",
+    "source_schema": "market_memory.source.massive_split_history.v1",
+    "store_id": "mmsstore_a268336b56c86d369adead1874b1cfa45e84768792e23aa868780b1e597cb711",
+    "vintage_id": "mmsvintage_cf9dce0aa7c46c2998b17920203d0d86f0ba289796b886b0e2cae69f2754e82b"
+  },
+  "preflight_complete": true,
+  "private_result_identity": {
+    "byte_length": 11384,
+    "sha256": "320c0026f1ca0cff3b3ea0b28fe3a9fea1842070ece3cfb351a3bd2d7d932dea"
+  },
+  "producer_call_count": 1,
+  "producer_entrypoint": "engine.close_pass.massive_close.retain_split_history",
+  "protected_master_expected": "8d838c8df453a78fac3459b7458576e1ba2cbcb8",
+  "protected_master_observed": "8d838c8df453a78fac3459b7458576e1ba2cbcb8",
+  "provider_request_attempts_recorded": 1,
+  "provider_request_count_is_network_instrumented": false,
+  "python_pid": 59339,
+  "query": {
+    "endpoint": "https://api.massive.com/stocks/v1/splits",
+    "execution_date.gte": "2026-09-30",
+    "limit": 1000,
+    "sort": "execution_date.asc",
+    "ticker": "MU"
+  },
+  "raw_provider_body_published": false,
+  "read_receipt": {
+    "artifact_bytes": 1274,
+    "artifact_sha256": "0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7",
+    "basis_eligible": false,
+    "generation_id": "mmsgen_a6dd5bb27939a12d508f56a135e5184d8cd03440ecc2c4d1412f1941701220d7",
+    "read_completed_utc_ns": "1791559136137306000",
+    "read_receipt_sha256": "5424ea7e89a2b6ec5065027ca952e993f99d8a1e498b4d97720035b436961b8a",
+    "read_started_utc_ns": "1791559136136389000",
+    "reader_id": "CorpActions.SplitEvidenceReader",
+    "receipt_id": "mmsrc_08bd528d83d82ac856eb2d3886166e25cec59d633d74e9c6f4be42dd0dcdd4e6",
+    "receipt_sha256": "9303fa18be6a13b8a599cb7b1d6238ab79af5c8c34a220280024cabfbe112f97",
+    "schema": "market_memory.source_read.massive_split_history.v1",
+    "store_id": "mmsstore_a268336b56c86d369adead1874b1cfa45e84768792e23aa868780b1e597cb711"
+  },
+  "repeat": {
+    "created": false,
+    "producer_reacquisition": false,
+    "same_acquisition_id": true,
+    "same_artifact": true,
+    "same_generation": true,
+    "same_owner_receipt": true,
+    "store_bytes_and_mtime_unchanged": true
+  },
+  "requested_case_count": 1,
+  "requested_vendor_token": "MU",
+  "reviewed_source": "87b01101ef13aa20ded205f3a2b267b68d094def",
+  "same_artifact_intake_repeat_call_count": 1,
+  "schema": "economic_network.native_mu_capture_witness/v1",
+  "secret_values_recorded": false,
+  "source_pins": [
+    {
+      "byte_length": 2152,
+      "git_blob_sha1": "662fc013dc4507fa7575dff41a4d4846fbe79123",
+      "path": "agentos/discoveries/DSC-MASSIVE-DAY-AGGS-LASTMODIFIED-FOLLOWS-0430Z.md",
+      "sha256": "6d126b2c3799eac8c291718a05691f5b25d43d00d8b1e0d54bc79f9fe7d7cc04"
+    },
+    {
+      "byte_length": 1727,
+      "git_blob_sha1": "85b2075faaf9ac9ee31871a41652bb4ac6d19c07",
+      "path": "agentos/discoveries/DSC-MASSIVE-GROUPED-DAILY-AVAILABLE-AT-XNYS-CLOSE.md",
+      "sha256": "71e4a297d2e91e6eca964022236bcc04f43e5d496cbf26c3431d6c81e6b3cfaa"
+    },
+    {
+      "byte_length": 2833,
+      "git_blob_sha1": "0ff65376a7c9e1312cc3baa3d3efe1fa0967903a",
+      "path": "agentos/workstreams/WS-MASSIVE-STOCK-DAY-R2-COHERENCE.md",
+      "sha256": "fef7490c2f3576041cbeb728a867bb16095c896bb6085e6ee10c40c27e8b0992"
+    },
+    {
+      "byte_length": 12770,
+      "git_blob_sha1": "f94ae42ea3c9810e4c767dee71abb4846d319ce3",
+      "path": "collectors/massive_flatfiles.py",
+      "sha256": "1b270024530bb4e1ef66553c690786d14c7dcc1d6aa6c1fc56e047ffd4f46eb4"
+    },
+    {
+      "byte_length": 39815,
+      "git_blob_sha1": "fcad0850eb5ca3aa699cb52d3ba9a62d92231616",
+      "path": "collectors/massive_stock_day.py",
+      "sha256": "4fd28b8fc7740a9d9dc0f397b8fb1daf5e24ebeda6aee2cfcece26cf175db105"
+    },
+    {
+      "byte_length": 22124,
+      "git_blob_sha1": "2271adc2b9d9c787670c66e53eecb526b9a8d3a4",
+      "path": "collectors/polygon_options.py",
+      "sha256": "0c2efcdb11af39fec8b03b83f6f40497f33f6536f6421a99c9ab1714751cad0f"
+    },
+    {
+      "byte_length": 50632,
+      "git_blob_sha1": "42252174a9f97c0643d30c9057455761aff35f80",
+      "path": "config/dataset_registry.yml",
+      "sha256": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7"
+    },
+    {
+      "byte_length": 29522,
+      "git_blob_sha1": "c5c61536bbba04fd9f8f72b893528bf00e94ee62",
+      "path": "engine/close_pass/massive_close.py",
+      "sha256": "43bc800dedba38a35ea5a94bc2f1de539401350a683123ecd9d40e6581e7bb66"
+    },
+    {
+      "byte_length": 26549,
+      "git_blob_sha1": "f7123e761ea83011f603a8e3cd37d4240ab5d59b",
+      "path": "engine/close_pass/massive_split_evidence.py",
+      "sha256": "a1d32eacd48c90f793df717a7284fa044054c476241c622e9b9f9abc997c6942"
+    },
+    {
+      "byte_length": 36991,
+      "git_blob_sha1": "2a75c5016c07e9c1a5377fe4331a4f06b95e79dd",
+      "path": "engine/neuralweb/market_memory_source_kernel.py",
+      "sha256": "270f6efdab81d464b7f251d0440c1d82b371bab35a08fab7ee35b8a3e26fffbc"
+    },
+    {
+      "byte_length": 36909,
+      "git_blob_sha1": "de416757bf77946776e1872b437eab9399d4997c",
+      "path": "engine/neuralweb/market_memory_sources_spy.py",
+      "sha256": "a29d0ebc0ae4b7fa7949d319b8872abcbef189425da99453a9d017895dc006b3"
+    },
+    {
+      "byte_length": 107556,
+      "git_blob_sha1": "adffe89b75ea72d58d06fc6618da7ba487b6598a",
+      "path": "engine/neuralweb/market_memory.py",
+      "sha256": "d64a53df452eeece71588e61006cb103e8930c6c7a8f3bc1c97b20a7dc747bc5"
+    },
+    {
+      "byte_length": 12847,
+      "git_blob_sha1": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "path": "lib/dataos/temporal.py",
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67"
+    },
+    {
+      "byte_length": 3652,
+      "git_blob_sha1": "3969a9aae918141b51baffbb0e17d8a2ec2485a0",
+      "path": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "sha256": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891"
+    },
+    {
+      "byte_length": 230231,
+      "git_blob_sha1": "4a042933f37f32d112bd4d77a704f233bbd7d4a9",
+      "path": "scripts/build_security_master.py",
+      "sha256": "bfe25480ec3e3dca98dcc5a4f0efad5fdad0f19870095066285e795598b022d6"
+    },
+    {
+      "byte_length": 31301,
+      "git_blob_sha1": "8d0b533f6cac2d884954b6d207bdc48d3c7ce916",
+      "path": "scripts/entry_radar_vendor.py",
+      "sha256": "0dcb882f7d311a063a4d7ddeea2bbe9e56a5499c5c224bd15f93e513767b8dea"
+    },
+    {
+      "byte_length": 30383,
+      "git_blob_sha1": "b2d4188148b75d1fd6d7a6ce696723f0317dc336",
+      "path": "scripts/ingest_market_memory_sources_spy.py",
+      "sha256": "1caba034ac3757037ab2b38bbfa7aeb80695cf0560116e2ea86c828fbaa7ffdb"
+    },
+    {
+      "byte_length": 36743,
+      "git_blob_sha1": "8a6a16d159b8a1c0b9854527206c5785d3173b84",
+      "path": "scripts/massive_entitlement_probe.py",
+      "sha256": "64f05064e53a256fb9632bfa1f83fb0db53cceee3e84d00234b44caaf4bd7395"
+    }
+  ],
+  "stage": "SAME_ARTIFACT_REPEAT",
+  "started_utc_ns": "1791559129859112000",
+  "status": "CAPTURE_STORE_READ_REPEAT_VERIFIED",
+  "store_after_intake": {
+    "exists": true,
+    "files": [
+      {
+        "byte_length": 0,
+        "mode": "0o600",
+        "mtime_ns": "1791559136123280766",
+        "path": ".writer.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byte_length": 327,
+        "mode": "0o600",
+        "mtime_ns": "1791559136134351663",
+        "path": "SOURCE_HEAD.json",
+        "sha256": "b4a6b70f9d7a67da7062cdce838ec913f4a7811a0f5b296babc3e9c7d149930d"
+      },
+      {
+        "byte_length": 977,
+        "mode": "0o600",
+        "mtime_ns": "1791559136124345268",
+        "path": "SOURCE_STORE.json",
+        "sha256": "fd9592e49fd4dd15bfc4c04b5b106b35f064959e4940d3745fd7a2f79d36026a"
+      },
+      {
+        "byte_length": 1301,
+        "mode": "0o600",
+        "mtime_ns": "1791559136131985741",
+        "path": "source_captures/dd/mmscapture_ddb92abbf241f38e03761115c72c11509d21db25196fff554be00c443a3ed85a.json",
+        "sha256": "9303fa18be6a13b8a599cb7b1d6238ab79af5c8c34a220280024cabfbe112f97"
+      },
+      {
+        "byte_length": 806,
+        "mode": "0o600",
+        "mtime_ns": "1791559136133746495",
+        "path": "source_generations/a6/mmsgen_a6dd5bb27939a12d508f56a135e5184d8cd03440ecc2c4d1412f1941701220d7.json",
+        "sha256": "37c512c6ca66db7472c7dd66b3a7c5571e89444fb87837b6219d6fb6bb81a920"
+      },
+      {
+        "byte_length": 290,
+        "mode": "0o600",
+        "mtime_ns": "1791559136127340982",
+        "path": "source_generations/c5/mmsgen_c56587168574dd30a169693af5b470d3de7fd687682b9a8f3b896df0c29571c2.json",
+        "sha256": "0e4f119fd24a7a1d2e195ddade4c7f9ccbc306c3e9dbfec1e7db1eb524e4f04c"
+      },
+      {
+        "byte_length": 1274,
+        "mode": "0o600",
+        "mtime_ns": "1791559136130984114",
+        "path": "source_objects/0c/0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7.json",
+        "sha256": "0c527ed511f14734e64b8127b475abfb92b93f8d158d3bcc5dbd869ea3bcf6b7"
+      },
+      {
+        "byte_length": 1301,
+        "mode": "0o600",
+        "mtime_ns": "1791559136132889535",
+        "path": "source_receipts/08/mmsrc_08bd528d83d82ac856eb2d3886166e25cec59d633d74e9c6f4be42dd0dcdd4e6.json",
+        "sha256": "9303fa18be6a13b8a599cb7b1d6238ab79af5c8c34a220280024cabfbe112f97"
+      }
+    ],
+    "total_bytes": 6276
+  },
+  "store_root": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-mu-split-pro-004-002/sources-massive-split-history-v1",
+  "transport_or_clock_replacement": false,
+  "upper_execution_date_filter": null,
+  "validation": {
+    "actual_clock_order_valid": true,
+    "artifact_object_bytes_equal": true,
+    "fresh_intake_created": true,
+    "pinned_generation_read_payload_equal": true,
+    "read_receipt_hash_and_binding_valid": true,
+    "read_store_bytes_mtime_unchanged": true,
+    "returned_request_exact": true,
+    "same_artifact_repeat_idempotent": true,
+    "source_authority_preserved": true
+  },
+  "workspace_clean_after": true,
+  "wrapper_exit_code": 0
+}

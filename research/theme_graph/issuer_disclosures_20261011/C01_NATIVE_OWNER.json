@@ -1,0 +1,133 @@
+{
+  "schema": "company_intelligence.native_owner_decision/v1",
+  "case_id": "C01-micron-planned-product-integration",
+  "ruling_reference": {
+    "sha256": "5b3fc66029456f38d40358496ba308596751ef7ffae0d3711adb1ab5caa84117",
+    "byte_length": 3027
+  },
+  "edition": {
+    "schema": "company_intelligence.issuer_disclosure_edition/v1",
+    "disclosure_id": "disclosure:357369cb386fb6d31924ce61176180f3b57f8daccb974b2688d12b095f181bdb",
+    "issuer_id": "ISS:US-XNAS-MU",
+    "source_key": "manual:micron-ir:hbm3e-h200:2024-02-26",
+    "revision": 1,
+    "previous": null,
+    "source_sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+    "source_byte_length": 504119,
+    "published_date": "2024-02-26",
+    "published_at": null,
+    "publication_precision": "date",
+    "known_at": "2026-10-09T01:38:55.651385+00:00"
+  },
+  "fact": {
+    "schema": "company_intelligence.product_integration_fact/v1",
+    "fact_id": "integration:a67d5c6168617d71c5b1eedb241fc8518d3a8473476fe2a0889b73a5e3ff718f",
+    "claim_key": "micron-hbm3e-h200-planned-integration",
+    "disclosure_id": "disclosure:357369cb386fb6d31924ce61176180f3b57f8daccb974b2688d12b095f181bdb",
+    "edition": {
+      "schema": "company_intelligence.issuer_disclosure_edition/v1",
+      "sha256": "ba908ad57e030e720d71ea32be950153caa02ff9415f6051e4f9215f8ae08abd",
+      "byte_length": 506
+    },
+    "revision": 1,
+    "previous": null,
+    "review_revision": "cbad48fd2ba90088349fee9f2153f39fc14decd4bad096dcce66b99b3353eb5f",
+    "subject_id": "ISS:US-XNAS-MU",
+    "object_id": "ISS:US-XNAS-NVDA",
+    "subject_identity": "9633d7287a06139c23c515437c9dea90ee65b791fbdc57fccf70cd3036192a4f",
+    "object_identity": "3766a094f8d199ffc7c392eb7aa18bbf22899dd2940939bba4221144d3522446",
+    "kind": "product_integration",
+    "lifecycle": "planned",
+    "product": "24GB 8H HBM3E",
+    "platform": "NVIDIA H200",
+    "amount": null,
+    "economic_share": null,
+    "span": {
+      "start_byte": 370936,
+      "end_byte": 371320,
+      "text_sha256": "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a"
+    },
+    "known_at": "2026-10-11T17:09:10.298093+00:00"
+  },
+  "identities": {
+    "MU": {
+      "schema": "company_intelligence.current_issuer_identity/v1",
+      "identity_mode": "current",
+      "issuer_id": "ISS:US-XNAS-MU",
+      "evidenced_cik": "0000723125",
+      "source_commit": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+      "sources": {
+        "security_master": {
+          "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+          "byte_length": 79534
+        },
+        "vendor_aliases": {
+          "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f",
+          "byte_length": 50724
+        },
+        "issuer_master": {
+          "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402",
+          "byte_length": 43844
+        }
+      },
+      "evidence_source": "sec_company_tickers",
+      "evidence_snapshot": "2026-08-18"
+    },
+    "NVDA": {
+      "schema": "company_intelligence.current_issuer_identity/v1",
+      "identity_mode": "current",
+      "issuer_id": "ISS:US-XNAS-NVDA",
+      "evidenced_cik": "0001045810",
+      "source_commit": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+      "sources": {
+        "security_master": {
+          "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+          "byte_length": 79534
+        },
+        "vendor_aliases": {
+          "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f",
+          "byte_length": 50724
+        },
+        "issuer_master": {
+          "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402",
+          "byte_length": 43844
+        }
+      },
+      "evidence_source": "sec_company_tickers",
+      "evidence_snapshot": "2026-08-18"
+    }
+  },
+  "temporal_decision": {
+    "identity_mode": "current",
+    "historical_admitted": false,
+    "published_date": "2024-02-26",
+    "published_at": null,
+    "publication_precision": "date",
+    "edition_known_at": "2026-10-09T01:38:55.651385+00:00",
+    "fact_known_at": "2026-10-11T17:09:10.298093+00:00"
+  },
+  "correction_decision": {
+    "status": "current",
+    "edition": {
+      "schema": "company_intelligence.issuer_disclosure_edition/v1",
+      "sha256": "ba908ad57e030e720d71ea32be950153caa02ff9415f6051e4f9215f8ae08abd",
+      "byte_length": 506
+    },
+    "fact": {
+      "schema": "company_intelligence.product_integration_fact/v1",
+      "sha256": "16f463ca97b3a3710a1666e49c0e6f08ecd8114482d45a5744df3edff641e334",
+      "byte_length": 1121
+    }
+  },
+  "semantic_review": {
+    "decision": "SUPPORTED_WITH_REQUIRED_QUALIFIERS",
+    "kind": "product_integration",
+    "lifecycle": "planned",
+    "amount": null,
+    "economic_share": null,
+    "source_date": "2024-02-26",
+    "first_reader_sha256": "3a9ce686a0593f9731c89ef63c20afb92dce810681aa3d0039bd72ce0f4d6408",
+    "principal_sha256": "96c5a97fd64a3c4330bba160310e5ade8babb211fd61d567fc5b119346837d9a",
+    "qualification": "Planned integration disclosed on source date; not proof of current planning, shipment or commercial magnitude."
+  }
+}
