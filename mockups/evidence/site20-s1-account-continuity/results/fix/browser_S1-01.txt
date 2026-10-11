@@ -1,0 +1,23 @@
+# account.js sha256 7f8abff1c31b4ec75bb435577e485fae65dc161921aa6122651165469656c215
+# S1-01 theme/language preference persistence browser acceptance — variant=fix page=site/alerts.html (local-only, fictional fixtures)
+# result: 20 pass / 0 fail
+PASS J1 Esc closes the account dialog :: 
+PASS J1 theme then language (EN start) -> ONE POST carrying both :: [{'theme': 'light', 'lang': 'zh'}]
+PASS J1 server holds both final values :: {'theme': 'light', 'lang': 'zh'}
+PASS J1 both fields acknowledged on the account root :: ('acked', 'acked')
+PASS J7 reload keeps theme=light lang=zh :: ('light', 'zh')
+PASS J7 reload + account hydration sends no write :: 0
+PASS J1/J7 no page errors :: []
+PASS J1z language then theme (ZH start) -> ONE POST carrying both :: [{'lang': 'en', 'theme': 'dark'}]
+PASS J1z server holds both final values :: {'theme': 'dark', 'lang': 'en'}
+PASS J2 light,dark,lang,light -> ONE POST {theme:light,lang:zh} :: [{'theme': 'light', 'lang': 'zh'}]
+PASS J3 HTTP 400 marks theme failed (not acked) :: failed
+PASS J3 server unchanged :: {'theme': 'dark', 'lang': 'en'}
+PASS J4 requests carry light then dark :: [{'theme': 'light'}, {'theme': 'dark'}]
+PASS J4 second write starts only after the first returns :: overlap=False
+PASS J4 final server theme = last edit (dark) :: {'theme': 'dark', 'lang': 'en'}
+PASS J4 theme acknowledged :: acked
+PASS J5 server prefs hydrate theme+lang :: ('light', 'zh')
+PASS J5 hydration sends no write :: []
+PASS J6 pending theme of account A is not sent after switch to B :: []
+PASS J8 keyboard theme(Enter)+language(Space) -> ONE POST with both :: [{'theme': 'light', 'lang': 'zh'}]

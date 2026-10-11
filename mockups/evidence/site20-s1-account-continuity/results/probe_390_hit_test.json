@@ -1,0 +1,122 @@
+{
+ "fix_unavailable_retry_390": {
+  "panel": [
+   0,
+   625,
+   390,
+   844
+  ],
+  "panel_pos": "fixed",
+  "panel_bottom_css": "0px",
+  "target": [
+   288,
+   784,
+   374,
+   814
+  ],
+  "target_hit": false,
+  "topmost_at_target": "DIV#.mmb-orb",
+  "vh": 844,
+  "vw": 390
+ },
+ "main_signedin_signout_all_390": {
+  "panel": [
+   0,
+   101,
+   390,
+   844
+  ],
+  "panel_pos": "fixed",
+  "panel_bottom_css": "0px",
+  "target": [
+   219,
+   631,
+   374,
+   661
+  ],
+  "target_hit": true,
+  "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+  "vh": 844,
+  "vw": 390
+ },
+ "fix_signedin_signout_all_390": {
+  "panel": [
+   0,
+   101,
+   390,
+   844
+  ],
+  "panel_pos": "fixed",
+  "panel_bottom_css": "0px",
+  "target": [
+   219,
+   631,
+   374,
+   661
+  ],
+  "target_hit": true,
+  "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+  "vh": 844,
+  "vw": 390
+ },
+ "fix_unavailable_retry_1440": {
+  "panel": [
+   1052,
+   58,
+   1426,
+   277
+  ],
+  "panel_pos": "fixed",
+  "panel_bottom_css": "623.25px",
+  "target": [
+   1324,
+   216,
+   1410,
+   247
+  ],
+  "target_hit": true,
+  "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+  "vh": 900,
+  "vw": 1440
+ },
+ "main_signedin_signout_all_1440": {
+  "panel": [
+   1052,
+   58,
+   1426,
+   778
+  ],
+  "panel_pos": "fixed",
+  "panel_bottom_css": "122px",
+  "target": [
+   1255,
+   564,
+   1410,
+   595
+  ],
+  "target_hit": true,
+  "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+  "vh": 900,
+  "vw": 1440
+ },
+ "fix_signedin_signout_all_1440": {
+  "panel": [
+   1052,
+   58,
+   1426,
+   778
+  ],
+  "panel_pos": "fixed",
+  "panel_bottom_css": "122px",
+  "target": [
+   1255,
+   564,
+   1410,
+   595
+  ],
+  "target_hit": true,
+  "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+  "vh": 900,
+  "vw": 1440
+ }
+}

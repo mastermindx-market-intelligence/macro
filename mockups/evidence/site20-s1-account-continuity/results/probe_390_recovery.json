@@ -1,0 +1,27 @@
+{
+ "P1_before": {
+  "open": true,
+  "unavailable": true,
+  "name": null,
+  "noReload": "kept"
+ },
+ "P1_after_close": {
+  "open": false,
+  "unavailable": true,
+  "name": null,
+  "noReload": "kept"
+ },
+ "P1_after_reopen": {
+  "open": true,
+  "unavailable": false,
+  "name": "Pat Fictional",
+  "noReload": "kept"
+ },
+ "P2_after_enter": {
+  "open": true,
+  "unavailable": false,
+  "name": "Pat Fictional",
+  "noReload": "kept"
+ },
+ "P3_error": "TimeoutError('Page.click: Timeout 3000ms exceeded.\\nCall log:\\n  - waiting for locator(\"[data-act=retry-load]\")\\n    - locator resolved to <button type=\"button\" data-act=\"retry-load\" class=\"mmacc-btn mmacc-ghost\">Try again</button>\\n  - attempting click action\\n    2 \u00d7 waiting for element to be visi"
+}
