@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-10-04T18:31:50Z",
+  "as_of": "2026-10-11T19:22:24Z",
   "orders": [
     {
       "id": "missing_description",
@@ -172,6 +172,19 @@
       "pages_count": 1,
       "suggested_fix": "Add lang attribute to <html> element",
       "falsifiable_check": "grep '<html' in page — should include lang= attribute"
+    },
+    {
+      "id": "page_weight",
+      "priority": 11,
+      "title": "Reduce HTML page weight to <2.5 MB",
+      "class": "page_weight",
+      "severity": "low",
+      "pages": [
+        "intl.html"
+      ],
+      "pages_count": 1,
+      "suggested_fix": "Reduce HTML page weight to <2.5 MB",
+      "falsifiable_check": "wc -c site/<page>.html < 2621440 bytes"
     }
   ]
 }
