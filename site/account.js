@@ -35,6 +35,33 @@
 
   var state = { acct: null, loaded: false };
   var _sb = null, _sbLoad = null, _hydrating = false, _prefTimer = null, _mounted = false, _macro = false;
+  // Continuity fences (site-20 S1). _loadGen orders account reads; _wgen invalidates every
+  // queued/in-flight preference write when the signed-in account changes.
+  var _loadGen = 0, _wgen = 0, _soAllBusy = false;
+  var _prefPending = {}, _prefOwner = '', _prefFlight = null, _prefState = {};
+  var _alertQueued = {}, _alertInflight = {};
+  function _acctKey(a) { return (a && a.authenticated) ? 'u:' + String(a.email || '').toLowerCase() : ''; }
+  function _saveOk(res) { return !!(res && res.ok && res.data && res.data.ok === true); }
+  function _dropPendingWrites() {
+    _wgen++; _prefPending = {}; _prefOwner = ''; _prefFlight = null;
+    clearTimeout(_prefTimer); _prefTimer = null;
+    for (var k in _alertPrefTimers) clearTimeout(_alertPrefTimers[k]);
+    _alertPrefTimers = {}; _alertQueued = {}; _alertInflight = {};
+  }
+  function _onAuthTransition(user, evt) {
+    if (evt !== 'SIGNED_IN' && evt !== 'SIGNED_OUT') return;
+    if (evt === 'SIGNED_IN' && !(user && user.email)) return;
+    var next = (evt === 'SIGNED_IN') ? 'u:' + String(user.email).toLowerCase() : '';
+    if (state.loaded && !state.unavail && _acctKey(state.acct) === next) return;
+    _dropPendingWrites(); _loadGen++;
+    state.acct = null; state.loaded = false; state.unavail = false;
+    if (panel && panel.classList.contains('open')) { render(); load(); } else render();
+  }
+  function _wireAuthTransitions() {
+    if (window.MDXAuth && typeof window.MDXAuth.onChange === 'function') {
+      try { window.MDXAuth.onChange(_onAuthTransition); } catch (e) {}
+    }
+  }
   var _mode = null;                 // 'standalone' | 'embed'
   var _root = null;                 // the element whose innerHTML we render into
   var trigger = null, scrim = null, panel = null;
@@ -146,6 +173,12 @@
     guest_title: ['Access session', '访问会话'],
     guest_sub: ['You’re in with the site access password. Sign in with an account to manage email, password & preferences.',
       '你正通过站点访问密码登录。使用账户登录以管理邮箱、密码与偏好。'],
+    acct_unavail_t: ['Can’t load your account right now', '暂时无法加载你的账户'],
+    acct_unavail: ['This is a connection problem, not a sign-out. Nothing has changed — try again in a moment.',
+      '这是连接问题，并非已退出登录。没有任何改动，请稍后重试。'],
+    retry: ['Try again', '重试'],
+    so_all_unknown: ['We couldn’t confirm that your other devices were signed out. You’re still signed in here — try again later.',
+      '无法确认其他设备已退出登录。你在此设备上仍处于登录状态，请稍后重试。'],
     close: ['Close', '关闭'], loading: ['Loading…', '加载中…']
   };
   function T(k) { var v = STR[k] || ['', '']; return v[lang() === 'zh' ? 1 : 0]; }
@@ -254,21 +287,43 @@
       });
     }).catch(function () { return { ok: false, status: 0, data: {} }; });
   }
+  // An account read is authoritative only as a 2xx JSON object carrying a boolean
+  // `authenticated`, or as a 401 (a real anonymous answer). 5xx, network failure and
+  // malformed envelopes are UNAVAILABLE — never a guest or account snapshot (S1-03).
+  function _classifyAccount(res) {
+    if (!res) return null;
+    var d = res.data;
+    if (res.ok && d && typeof d === 'object' && typeof d.authenticated === 'boolean') return d;
+    if (res.status === 401) { var g = (d && typeof d === 'object') ? d : {}; g.authenticated = false; return g; }
+    return null;
+  }
   function load() {
+    var gen = ++_loadGen;
     return api('/api/account').then(function (res) {
-      var a = res.data || {};
-      if (!SUPA && a.supabase) SUPA = normSupa(a.supabase);
-      if (!a.authenticated && SUPA && hasPersisted()) {
-        return api('/api/account').then(function (r2) { finishLoad(r2.data || a); });
+      if (gen !== _loadGen) return;
+      var a = _classifyAccount(res);
+      if (a && !SUPA && a.supabase) SUPA = normSupa(a.supabase);
+      if (a && !a.authenticated && SUPA && hasPersisted()) {
+        return api('/api/account').then(function (r2) {
+          if (gen !== _loadGen) return;
+          _settleLoad(_classifyAccount(r2));
+        });
       }
-      finishLoad(a);
+      _settleLoad(a);
     });
+  }
+  function _settleLoad(a) {
+    if (!a) { state.acct = null; state.loaded = true; state.unavail = true; render(); return; }
+    state.unavail = false;
+    if (_prefOwner && _prefOwner !== _acctKey(a)) _dropPendingWrites();
+    finishLoad(a);
   }
   function finishLoad(a) {
     state.acct = a; state.loaded = true;
     applyPrefs(a);
     if (a && a.authenticated) {
       api('/api/account/prefs').then(function (res) {
+        if (state.acct !== a) return;
         if (res && res.ok && res.data) {
           a.alert_prefs = res.data.prefs || {};
           a.alert_prefs_unset = res.data.unset || [];
@@ -297,25 +352,100 @@
     } catch (e) {}
     _hydrating = false;
   }
+  // S1-01: theme/lang edits coalesce into ONE pending body owned by the signed-in account,
+  // sent single-flight; each field is marked queued -> sent -> acked|failed on the root.
+  function _setPrefState(key, s) { _prefState[key] = s; if (_root) _root.setAttribute('data-pref-' + key, s); }
   function persistPref(key, val) {
     if (_hydrating || !state.acct || !state.acct.authenticated) return;
+    var owner = _acctKey(state.acct);
+    if (_prefOwner !== owner) { _prefPending = {}; _prefOwner = owner; }
+    _prefPending[key] = val; _setPrefState(key, 'queued');
     clearTimeout(_prefTimer);
-    _prefTimer = setTimeout(function () {
-      var body = {}; body[key] = val;
-      api('/api/account/prefs', { method: 'POST', body: body });
-    }, 500);
+    _prefTimer = setTimeout(function () { _prefTimer = null; _flushPrefs(); }, 500);
+  }
+  function _flushPrefs() {
+    if (_prefFlight) return;
+    var keys = Object.keys(_prefPending); if (!keys.length) return;
+    if (_prefOwner !== _acctKey(state.acct)) { _prefPending = {}; return; }
+    var body = _prefPending; _prefPending = {};
+    var flight = { wg: _wgen, body: body }; _prefFlight = flight;
+    keys.forEach(function (k) { _setPrefState(k, 'sent'); });
+    api('/api/account/prefs', { method: 'POST', body: body }).then(function (res) {
+      if (_prefFlight === flight) _prefFlight = null;
+      if (flight.wg !== _wgen) return;
+      var ok = _saveOk(res);
+      keys.forEach(function (k) { if (!(k in _prefPending)) _setPrefState(k, ok ? 'acked' : 'failed'); });
+      if (Object.keys(_prefPending).length && !_prefTimer) _flushPrefs();
+    });
   }
   var _alertPrefTimers = {};
+  // S1-02: each alert field keeps an immutable submitted value, one request in flight per
+  // field, and a write generation. Only the newest intent may drive the UI callbacks; an
+  // ack commits its OWN value to the account state; an account change makes old work inert.
   function persistAlertPref(key, val, onOk, onErr) {
     if (_hydrating || !state.acct || !state.acct.authenticated) return;
+    _alertQueued[key] = { val: JSON.parse(JSON.stringify(val)), owner: _acctKey(state.acct), wgen: _wgen, onOk: onOk, onErr: onErr };
     clearTimeout(_alertPrefTimers[key]);
-    _alertPrefTimers[key] = setTimeout(function () {
-      var body = {}; body[key] = val;
-      api('/api/account/prefs', { method: 'POST', body: body }).then(function (res) {
-        if (res && res.ok) { if (onOk) onOk(res); return; }
-        if (onErr) onErr(res);
-      }).catch(function (err) { if (onErr) onErr(err); });
-    }, 500);
+    _alertPrefTimers[key] = setTimeout(function () { delete _alertPrefTimers[key]; _sendAlertPref(key); }, 500);
+  }
+  function _sendAlertPref(key) {
+    var job = _alertQueued[key];
+    if (!job || _alertInflight[key]) return;
+    delete _alertQueued[key];
+    if (job.wgen !== _wgen || job.owner !== _acctKey(state.acct)) return;
+    _alertInflight[key] = job;
+    var body = {}; body[key] = job.val;
+    api('/api/account/prefs', { method: 'POST', body: body }).then(function (res) {
+      if (_alertInflight[key] === job) delete _alertInflight[key];
+      if (job.wgen !== _wgen) return;
+      var newer = !!_alertQueued[key];
+      if (_saveOk(res)) {
+        _ackAlertPref(key, job.val);
+        if (!newer) { _syncAlertControl(key, job.val); if (job.onOk) job.onOk(res); }
+      }
+      else if (!newer && job.onErr) job.onErr(res);
+      if (_alertQueued[key] && !_alertPrefTimers[key]) _sendAlertPref(key);
+    });
+  }
+  function _ackAlertPref(key, val) {
+    var a = state.acct; if (!a) return;
+    var p = a.alert_prefs = a.alert_prefs || {};
+    p[key] = (key === 'quiet_hours' && val === 'off') ? null : val;
+    var u = a.alert_prefs_unset || []; var i = u.indexOf(key); if (i > -1) u.splice(i, 1);
+    a.alert_prefs_unset = u;
+    if (key === 'tz') { var sel = E('mmacc-tz'); if (sel) sel.setAttribute('data-prev', val); }
+    if (key === 'quiet_hours') {
+      var qh = p.quiet_hours, s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
+      if (s) s.setAttribute('data-prev', (qh && qh.start) || '');
+      if (e2) e2.setAttribute('data-prev', (qh && qh.end) || '');
+      var g = document.querySelector('.mmacc-alerts'); if (g) g.setAttribute('data-quiet', qh ? 'true' : 'false');
+    }
+  }
+  function _ackedAlerts() { return (state.acct && state.acct.alert_prefs) || {}; }
+  // Point the CURRENT control (a close/reopen re-renders it) at a value: the newest acked
+  // intent after a save, or the last acked value after a failed one.
+  function _syncAlertControl(key, val) {
+    if (key === 'tz') { var sel = E('mmacc-tz'); if (sel && val) sel.value = val; return; }
+    if (key === 'quiet_hours') {
+      var on = !!(val && val !== 'off'), s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
+      if (s) s.value = on ? val.start : '';
+      if (e2) e2.value = on ? val.end : '';
+      return;
+    }
+    if (key === 'alert_email_optin') {
+      var b = document.querySelector('[data-act="alert-optin"]');
+      if (b) b.setAttribute('aria-checked', val ? 'true' : 'false');
+      var g = document.querySelector('.mmacc-alerts');
+      if (g) g.setAttribute('data-on', val ? 'true' : 'false');
+      var d = E('mmacc-alert-detail');
+      if (d) d.classList.toggle('open', !!val);
+      return;
+    }
+    if (key === 'alert_categories') {
+      document.querySelectorAll('[data-act="alert-cat"]').forEach(function (c) {
+        c.setAttribute('aria-checked', (val || []).indexOf(c.getAttribute('data-cat')) !== -1 ? 'true' : 'false');
+      });
+    }
   }
 
   // -------------------------------------------------- section builders -------
@@ -480,7 +610,7 @@
           alertCatRow('thesis_window', T('al_cat_thes'), cats.indexOf('thesis_window') !== -1) +
           (cats.length === 0 ? '<div class="mmacc-hint mmacc-hint-none">' + esc(T('al_none')) + '</div>' : '') +
           '<div class="mmacc-sublabel">' + esc(T('al_tz')) + '</div>' +
-          '<select class="mmacc-input mmacc-select" id="mmacc-tz" data-act="alert-tz" aria-label="' + esc(T('al_tz')) + '">' + _tzOptions(tz) + '</select>' +
+          '<select class="mmacc-input mmacc-select" id="mmacc-tz" data-act="alert-tz" data-prev="' + esc(tz || '') + '" aria-label="' + esc(T('al_tz')) + '">' + _tzOptions(tz) + '</select>' +
           (!tzKnown ? '<div class="mmacc-hint mmacc-hint-tz">' + esc(T('al_tz_unset')) + '</div>' : '') +
           '<div class="mmacc-sublabel">' + esc(T('al_qh')) + '</div>' +
           '<div class="mmacc-timepair">' +
@@ -510,6 +640,7 @@
         infoRow(T('last_signin'), esc(fmtDate(a.last_sign_in_at))) +
         '<div class="mmacc-row"><span class="mmacc-k">' + esc(T('user_id')) + '</span>' +
           '<button class="mmacc-mini" data-act="copy-id">' + esc(T('copy')) + '</button></div>' +
+        '<div class="mmacc-msg" id="mmacc-signout-msg" role="status"></div>' +
         '<div class="mmacc-btnrow mmacc-btnrow-wide">' +
           '<button class="mmacc-btn mmacc-ghost" data-act="signout">' + esc(T('sign_out')) + '</button>' +
           '<button class="mmacc-btn mmacc-ghost" data-act="signout-all">' + esc(T('sign_out_all')) + '</button>' +
@@ -581,11 +712,22 @@
     return '<div class="mmacc-head mmacc-head-out">' +
         '<div class="mmacc-idbox"><div class="mmacc-name">' + esc(T('account')) + '</div></div>' +
         '<button class="mmacc-x" data-act="close" aria-label="' + esc(T('close')) + '">✕</button>' +
-      '</div><div class="mmacc-body">' + bodySignedOut(a) + '</div>';
+      '</div><div class="mmacc-body">' + (state.unavail ? unavailHTML() : bodySignedOut(a)) + '</div>';
   }
+  // S1-03: the account could not be read. Not a sign-out; offer one explicit retry.
+  function unavailHTML() {
+    return '<div class="mmacc-group" data-acct-state="unavailable" role="status">' +
+        '<div class="mmacc-signin-title">' + esc(T('acct_unavail_t')) + '</div>' +
+        '<div class="mmacc-signin-sub">' + esc(T('acct_unavail')) + '</div>' +
+        '<div class="mmacc-btnrow"><button type="button" class="mmacc-btn mmacc-ghost" data-act="retry-load">' +
+          esc(T('retry')) + '</button></div>' +
+      '</div>';
+  }
+  function onRetryLoad() { state.loaded = false; state.unavail = false; render(); load(); }
   function embedHTML(a) {
     a = a || {};
     if (!state.loaded) return '<div class="mmacc-loading">' + esc(T('loading')) + '</div>';
+    if (state.unavail) return '<div class="mmacc-embed">' + unavailHTML() + '</div>';
     if (a.authenticated) return '<div class="mmacc-embed">' + profileStripHTML(a, false) + bodySignedIn(a) + '</div>';
     return '<div class="mmacc-embed">' + bodySignedOut(a) + '</div>';
   }
@@ -685,6 +827,7 @@
     } catch (e) {}
   }
   function doSignOut() {
+    _dropPendingWrites();
     if (_macro && window.MDXAuth && window.MDXAuth.signOut) {
       try { window.MDXAuth.signOut(); } catch (e) {}   // let the gear's auth own sign-out
       close(); return;
@@ -697,12 +840,18 @@
     if (SUPA && hasPersisted()) sbClient().then(function (sb) { return sb.auth.signOut(); }).then(fin, fin);
     else fin();
   }
+  // S1-04: only an authoritative {ok:true} reply is a global sign-out. A server error, a
+  // transport failure or an unreadable reply leaves this device signed in and says the
+  // other devices are unconfirmed; there is no automatic retry.
   function doSignOutAll() {
+    if (_soAllBusy) return;
+    _soAllBusy = true;
     api('/api/account/signout-everywhere', { method: 'POST' }).then(function (r) {
-      if (r.ok) { doSignOut(); }
-      else if (r.status !== 401 && r.status !== 429 && r.status !== 502) { doSignOut(); }
-      else { setMsg('mmacc-email-msg', errText(r), 'bad'); }
-    }, doSignOut);
+      _soAllBusy = false;
+      if (r.ok && r.data && r.data.ok === true) { doSignOut(); return; }
+      if (r.data && r.data.error) { setMsg('mmacc-signout-msg', errText(r), 'bad'); return; }
+      setMsg('mmacc-signout-msg', T('so_all_unknown'), 'bad');
+    }, function () { _soAllBusy = false; setMsg('mmacc-signout-msg', T('so_all_unknown'), 'bad'); });
   }
   function _alertErr(res) {
     if (res && res.status === 0) { _alertGroupState(false); setMsg('mmacc-alert-msg', T('al_unknown'), 'bad'); return; }
@@ -727,12 +876,10 @@
     if (detail) detail.classList.toggle('open', next);
     persistAlertPref('alert_email_optin', next, function (res) {
       var prefs = (res && res.data && res.data.prefs) || {};
-      if (next && prefs.tz) _applySavedTz(prefs.tz);
+      if (next && prefs.tz && !_alertQueued.tz && !_alertInflight.tz) { _ackAlertPref('tz', prefs.tz); _applySavedTz(prefs.tz); }
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
     }, function (res) {
-      btn.setAttribute('aria-checked', was ? 'true' : 'false');
-      if (g) g.setAttribute('data-on', was ? 'true' : 'false');
-      if (detail) detail.classList.toggle('open', was);
+      _syncAlertControl('alert_email_optin', !!_ackedAlerts().alert_email_optin);
       _alertErr(res);
     });
   }
@@ -747,33 +894,30 @@
     persistAlertPref('alert_categories', cats, function () {
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
     }, function (res) {
-      btn.setAttribute('aria-checked', was ? 'true' : 'false');
+      _syncAlertControl('alert_categories', _ackedAlerts().alert_categories || []);
       _alertErr(res);
     });
   }
   function onAlertTz(sel) {
-    var prev = sel.getAttribute('data-prev') || sel.value;
     persistAlertPref('tz', sel.value, function () {
-      sel.setAttribute('data-prev', sel.value);
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
     }, function (res) {
-      sel.value = prev; _alertErr(res);
+      var cur = E('mmacc-tz'), pv = cur && cur.getAttribute('data-prev');
+      if (cur && pv) cur.value = pv;
+      _alertErr(res);
     });
   }
   function _sendQuietHours() {
     var s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
     var sv = (s && s.value) || '', ev = (e2 && e2.value) || '';
-    var prevS = (s && (s.getAttribute('data-prev') || '')) || '';
-    var prevE = (e2 && (e2.getAttribute('data-prev') || '')) || '';
     var payload = (!sv || !ev || sv === ev) ? 'off' : { start: sv, end: ev };
     persistAlertPref('quiet_hours', payload, function () {
-      if (s) s.setAttribute('data-prev', sv);
-      if (e2) e2.setAttribute('data-prev', ev);
-      var g = document.querySelector('.mmacc-alerts');
-      if (g) g.setAttribute('data-quiet', (payload !== 'off') ? 'true' : 'false');
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
     }, function (res) {
-      if (s) s.value = prevS; if (e2) e2.value = prevE; _alertErr(res);
+      var s1 = E('mmacc-qh-start'), e1 = E('mmacc-qh-end');
+      if (s1) s1.value = s1.getAttribute('data-prev') || '';
+      if (e1) e1.value = e1.getAttribute('data-prev') || '';
+      _alertErr(res);
     });
   }
   function onAlertQhClear() {
@@ -790,6 +934,7 @@
     var b = e.target.closest('[data-act]'); if (!b) return;
     switch (b.getAttribute('data-act')) {
       case 'close': return close();
+      case 'retry-load': return onRetryLoad();
       case 'alert-optin': return onAlertOptin(b);
       case 'alert-cat': return onAlertCat(b);
       case 'alert-qh-clear': return onAlertQhClear();
@@ -826,7 +971,7 @@
     }
   }
   function open() {
-    if (!state.loaded) { render(); load(); } else render();
+    if (!state.loaded || state.unavail) { state.loaded = false; state.unavail = false; render(); load(); } else render();
     scrim.classList.add('open'); panel.classList.add('open');
     document.addEventListener('keydown', onEsc);
   }
@@ -915,6 +1060,7 @@
     document.body.appendChild(scrim); document.body.appendChild(panel);
     _root = panel;
     wirePrefSync();
+    _wireAuthTransitions();
   }
   window.MMAccount = {
     embed: function (el) { try { mountEmbed(el); } catch (e) {} },   // legacy (old settings modal)
@@ -1038,7 +1184,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20260913-account-actions';
+    s.src = pfx + 'nav_market.js?v=20261010-account-continuity';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();
