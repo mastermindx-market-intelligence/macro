@@ -1,0 +1,119 @@
+{# R19: read-only carry/funding evidence from existing owners. No verdict setter. #}
+{% macro cf_t(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+{% set _cf = carry_funding_view | default({}, true) %}
+{% set _scn = _cf.get('carry_unwind', {}) %}
+{% set _fund = _cf.get('funding', {}) %}
+<style>
+.fx-cf{font-family:var(--font-ui,Inter,sans-serif);color:var(--text);font-size:var(--fs-body,14px);border:1px solid var(--line,var(--grid));border-radius:var(--r-card,12px);background:var(--card);margin:var(--sp-5,20px) 0;overflow-wrap:anywhere}
+.fx-cf>summary{min-height:44px;padding:var(--sp-5,20px) var(--sp-6,24px);cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4,16px)}
+.fx-cf>summary::-webkit-details-marker{display:none}.fx-cf .cf-title{display:block;font-size:var(--fs-h2,17px);font-weight:600;line-height:1.4}.fx-cf .cf-sub{display:block;color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.6;margin-top:var(--sp-1,4px)}.fx-cf .cf-chevron{font-size:var(--fs-num-lg,22px);transition:transform .15s}.fx-cf[open]>summary .cf-chevron{transform:rotate(90deg)}
+.fx-cf .cf-body{padding:0 var(--sp-6,24px) var(--sp-6,24px)}.fx-cf .cf-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--sp-6,24px);padding:var(--sp-5,20px) 0;border-top:1px solid var(--line,var(--grid));align-items:start}
+.fx-cf .cf-kicker{font-size:var(--fs-micro,10px);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--link,var(--blue))}.fx-cf .cf-hero h3{font-size:var(--fs-h1,28px);line-height:1.2;margin:var(--sp-2,8px) 0}.fx-cf .cf-copy{color:var(--muted);line-height:1.65;max-width:68ch;margin:0}.fx-cf .cf-reading{text-align:right;min-width:150px}.fx-cf .cf-num{display:block;font-family:var(--font-mono,monospace);font-size:var(--fs-num-xl,38px);font-variant-numeric:tabular-nums}.fx-cf .cf-state{font-size:var(--fs-sm,12.5px);font-weight:600;color:var(--muted)}
+.fx-cf .cf-section{padding:var(--sp-5,20px) 0;border-top:1px solid var(--line,var(--grid))}.fx-cf .cf-section h4{font-size:var(--fs-h2,17px);margin:0 0 var(--sp-2,8px)}.fx-cf .cf-section>p{color:var(--muted);line-height:1.65;margin:0 0 var(--sp-4,16px)}
+.fx-cf .cf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-3,12px)}.fx-cf .cf-card{border:1px solid var(--line,var(--grid));border-radius:var(--r-ctl,8px);padding:var(--sp-4,16px);background:var(--panel2,var(--bg));min-width:0}.fx-cf .cf-card strong{display:block;font-size:var(--fs-sm,12.5px);line-height:1.5}.fx-cf .cf-metric{font-family:var(--font-mono,monospace);font-size:var(--fs-num-lg,22px);font-variant-numeric:tabular-nums;margin:var(--sp-2,8px) 0}.fx-cf .cf-note{display:block;color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.55}.fx-cf .cf-missing{color:var(--ink-warn,var(--warn));font-family:var(--font-ui,Inter,sans-serif);font-size:var(--fs-body,14px);font-weight:600}
+.fx-cf .cf-legs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2,8px)}.fx-cf .cf-leg{display:flex;gap:var(--sp-3,12px);align-items:flex-start;padding:var(--sp-3,12px);border-top:1px solid var(--line,var(--grid));min-width:0}.fx-cf .cf-dot{width:8px;height:8px;border-radius:var(--r-pill,999px);margin-top:6px;background:var(--muted);flex:0 0 auto}.fx-cf .cf-dot.fired{background:var(--warn)}.fx-cf .cf-dot.missing{background:var(--line,var(--grid))}.fx-cf .cf-leg-copy{font-size:var(--fs-sm,12.5px);line-height:1.55}.fx-cf .cf-leg-copy span{display:block;color:var(--muted)}
+.fx-cf .cf-receipt{border:1px solid var(--line,var(--grid));border-radius:var(--r-ctl,8px);padding:var(--sp-4,16px);background:var(--panel2,var(--bg))}.fx-cf .cf-receipt-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-3,12px);margin-top:var(--sp-3,12px)}.fx-cf .cf-receipt-row div{min-width:0}.fx-cf .cf-receipt-row span{display:block;color:var(--muted);font-size:var(--fs-micro,10px);text-transform:uppercase;letter-spacing:.05em}.fx-cf .cf-receipt-row strong{font-family:var(--font-mono,monospace);font-size:var(--fs-md,15px);font-variant-numeric:tabular-nums}
+.fx-cf .cf-gap{border:1px solid var(--warn);border-radius:var(--r-ctl,8px);padding:var(--sp-4,16px);background:var(--panel2,var(--bg));margin-top:var(--sp-3,12px)}.fx-cf .cf-gap strong{color:var(--ink-warn,var(--warn))}.fx-cf .cf-footer{padding-top:var(--sp-4,16px);border-top:1px solid var(--line,var(--grid));color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.65}
+.fx-cf :focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:4px;border-radius:var(--r-ctl,8px)}
+@media(max-width:900px){.fx-cf .cf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fx-cf .cf-receipt-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.fx-cf>summary{padding:var(--sp-4,16px)}.fx-cf .cf-body{padding:0 var(--sp-4,16px) var(--sp-4,16px)}.fx-cf .cf-hero{grid-template-columns:1fr}.fx-cf .cf-reading{text-align:left}.fx-cf .cf-grid,.fx-cf .cf-legs{grid-template-columns:1fr}.fx-cf .cf-num{font-size:var(--fs-h1,28px)}}
+@media(prefers-reduced-motion:reduce){.fx-cf .cf-chevron{transition:none}.fx-cf{scroll-behavior:auto}}
+</style>
+<details id="fx-carry-funding-evidence" class="fx-cf">
+  <summary>
+    <span><span class="cf-title">{{ cf_t('Carry & funding evidence', '套息与融资证据') }}</span><span class="cf-sub">{{ cf_t('Rate edge, scenario rule state, positioning and funding are separate evidence families.', '利差、情景规则状态、持仓与融资属于不同证据家族。') }}</span></span>
+    <span class="cf-chevron" aria-hidden="true">›</span>
+  </summary>
+  <div class="cf-body">
+    <div class="cf-hero">
+      <div>
+        <span class="cf-kicker">{{ cf_t('Canonical carry-unwind state', '官方套息平仓状态') }}</span>
+        <h3>
+          {% if _scn.get('state') == 'active' %}{{ cf_t('Existing carry-unwind scenario rule is active.', '现有套息平仓情景规则已触发。') }}
+          {% elif _scn.get('state') == 'inactive' %}{{ cf_t('Existing carry-unwind scenario rule is inactive.', '现有套息平仓情景规则未触发。') }}
+          {% else %}{{ cf_t('Current carry-unwind state is unknown.', '当前套息平仓状态未知。') }}{% endif %}
+        </h3>
+        <p class="cf-copy">{{ cf_t('This view does not recalculate the scenario. It shows the engine-owned legs beside carry, positioning and funding context.', '本视图不重新计算情景，只把引擎已有的触发项与套息、持仓和融资背景并列展示。') }}</p>
+      </div>
+      <div class="cf-reading">
+        {% if _scn.get('intensity') is not none %}<span class="cf-num">{{ '%.1f'|format(_scn.intensity) }} / 100</span>{% else %}<span class="cf-num cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}
+        <span class="cf-state">{% if _scn.get('state') == 'active' %}{{ cf_t('Active','已触发') }}{% elif _scn.get('state') == 'inactive' %}{{ cf_t('Inactive','未触发') }}{% else %}{{ cf_t('Unknown','未知') }}{% endif %}</span>
+      </div>
+    </div>
+
+    <section class="cf-section">
+      <h4>{{ cf_t('1 · Rate edge & positioning', '1 · 利差与持仓') }}</h4>
+      <p>{{ cf_t('Annualized carry, carry/volatility and 10-year yield differentials have different units. COT percentile is context, not another rate signal. Source freshness is not established here.', '年化套息、套息/波动率与10年期收益率差单位不同；COT 分位是背景，不是另一个利率信号。本面板未确认来源新鲜度。') }}</p>
+      <div class="cf-grid">
+      {% for row in _cf.get('rate_edges', []) %}
+        <div class="cf-card" data-pair="{{ row.pair }}">
+          <strong>{{ row.label }} · {{ row.base or '—' }}</strong>
+          {% set carry = row.carry_diff %}{% set ctv = row.carry_to_vol %}{% set pos = row.positioning %}
+          <div class="cf-metric">{% if carry.status == 'available' %}{{ '%+.2f'|format(carry.value) }} pp{% else %}<span class="cf-missing">{{ cf_t('Carry unavailable','套息不可用') }}</span>{% endif %}</div>
+          <span class="cf-note">{{ cf_t('Annualized foreign short rate − US short rate', '年化外国短端利率减美国短端利率') }}</span>
+          <span class="cf-note">{% if ctv.status == 'available' %}{{ cf_t('Carry / realized vol','套息 / 已实现波动率') }}: {{ '%+.2f'|format(ctv.value) }}{% else %}{{ cf_t('Carry/vol unavailable','套息/波动率不可用') }}{% endif %}</span>
+          <span class="cf-note">{% if pos.status == 'available' %}COT {{ '%.0f'|format(pos.value) }} / 100 · {{ pos.state or cf_t('state unknown','状态未知') }}{% else %}{{ cf_t('Positioning unavailable','持仓不可用') }}{% endif %}</span>
+        </div>
+      {% endfor %}
+      </div>
+    </section>
+
+    <section class="cf-section">
+      <h4>{{ cf_t('2 · Scenario confirmation', '2 · 情景确认') }}</h4>
+      <p>{{ cf_t('The carry scenario owns activation. Funding proxies below do not turn it on or off.', '套息情景本身拥有触发状态；下方融资代理不会开启或关闭该情景。') }}</p>
+      <div class="cf-legs">
+      {% for leg in _scn.get('legs', []) %}
+        <div class="cf-leg">
+          <span class="cf-dot {{ 'fired' if leg.fired else ('missing' if leg.status != 'available' else '') }}"></span>
+          <div class="cf-leg-copy"><strong>{{ cf_t(leg.label_en or leg.id, leg.label_zh or leg.id) }}</strong><span>{% if leg.status != 'available' %}{{ cf_t('Evidence unavailable','证据不可用') }}{% elif leg.fired %}{{ cf_t('Fired in the canonical scenario','已在官方情景中触发') }}{% else %}{{ cf_t('Not fired','未触发') }}{% endif %}</span></div>
+        </div>
+      {% endfor %}
+      </div>
+    </section>
+
+    <section class="cf-section">
+      <h4>{{ cf_t('3 · Historical receipt', '3 · 历史回执') }}</h4>
+      {% set receipt = _scn.get('historical_receipt', {}) %}
+      <div class="cf-receipt">
+        {% if receipt.get('status') == 'ok' %}
+          <strong>{{ cf_t('Past conditional frequency — not a forecast', '历史条件频率 — 不是预测') }}</strong>
+          <div class="cf-receipt-row">
+            <div><span>{{ cf_t('Conditional','条件频率') }}</span><strong>{{ '%.1f'|format(receipt.conditional_frequency * 100) }}%</strong></div>
+            <div><span>{{ cf_t('Base rate','基础频率') }}</span><strong>{{ '%.1f'|format(receipt.base_rate * 100) }}%</strong></div>
+            <div><span>{{ cf_t('Raw sample','原始样本') }}</span><strong>{{ receipt.n_raw }}</strong></div>
+            <div><span>{{ cf_t('Horizon','周期') }}</span><strong>{{ receipt.horizon_sessions }} {{ cf_t('sessions','个交易日') }}</strong></div>
+          </div>
+          <span class="cf-note">{{ cf_t('Dependence-adjusted interval withheld: the legacy n_eff/Wilson shortcut is not qualified uncertainty.', '依赖调整区间暂不展示：旧有 n_eff/Wilson 捷径尚未通过不确定性资格验证。') }}</span>
+        {% elif receipt.get('status') == 'insufficient' %}
+          <strong>{{ cf_t('Insufficient sample', '样本不足') }}</strong><span class="cf-note">{{ cf_t('The historical percentage is withheld rather than shown as a current chance.', '不展示历史百分比，避免被误读为当前概率。') }}</span>
+        {% else %}
+          <strong>{{ cf_t('Historical receipt unavailable', '历史回执不可用') }}</strong>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="cf-section">
+      <h4>{{ cf_t('4 · Funding plumbing', '4 · 融资管道') }}</h4>
+      <p>{{ cf_t('OFR total stress and its Funding component are related measures from one source family, not two independent confirmations. SOFR−IORB is a separate corridor proxy.', 'OFR 总压力及其融资分项来自同一来源家族，不是两项独立确认；SOFR−IORB 是另一项走廊代理。') }}</p>
+      <div class="cf-grid">
+        {% set ofr = _fund.get('ofr_fsi', {}) %}<div class="cf-card"><strong>OFR FSI</strong><div class="cf-metric">{% if ofr.status == 'available' %}{{ '%+.3f'|format(ofr.value) }}{% else %}<span class="cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}</div><span class="cf-note">{% if ofr.calculated_through %}{{ cf_t('Stored through','存储截至') }} {{ ofr.calculated_through }}{% else %}{{ cf_t('Date unknown','日期未知') }}{% endif %}</span></div>
+        {% set off = _fund.get('ofr_funding', {}) %}<div class="cf-card"><strong>{{ cf_t('OFR Funding component','OFR 融资分项') }}</strong><div class="cf-metric">{% if off.status == 'available' %}{{ '%+.3f'|format(off.value) }}{% else %}<span class="cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}</div><span class="cf-note">{{ cf_t('Same OFR family · contextual','同一 OFR 家族 · 仅作背景') }}</span></div>
+        {% set si = _fund.get('sofr_iorb', {}) %}<div class="cf-card"><strong>SOFR − IORB</strong><div class="cf-metric">{% if si.status == 'available' %}{{ '%+.2f'|format(si.value_bp) }} bp{% else %}<span class="cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}</div><span class="cf-note">{% if si.artifact_built %}{{ cf_t('Published artifact built','发布产物构建于') }} {{ si.artifact_built }} · {% endif %}{{ cf_t('vendor freshness unknown','供应商新鲜度未知') }}</span></div>
+        {% set a2 = _fund.get('a2p2_spread', {}) %}<div class="cf-card"><strong>A2/P2 {{ cf_t('spread','利差') }}</strong><div class="cf-metric">{% if a2.status == 'available' %}{{ '%.1f'|format(a2.value_bp) }} bp{% else %}<span class="cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}</div><span class="cf-note">{% if a2.artifact_as_of %}{{ cf_t('Regime artifact as of','Regime 产物截至') }} {{ a2.artifact_as_of }} · {% endif %}{{ cf_t('context proxy, not FX-swap basis','背景代理，不是外汇掉期基差') }}</span></div>
+        {% set cp = _fund.get('cp_bill_spread', {}) %}<div class="cf-card"><strong>CP − bill {{ cf_t('spread','利差') }}</strong><div class="cf-metric">{% if cp.status == 'available' %}{{ '%.1f'|format(cp.value_bp) }} bp{% else %}<span class="cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}</div><span class="cf-note">{% if cp.artifact_as_of %}{{ cf_t('Regime artifact as of','Regime 产物截至') }} {{ cp.artifact_as_of }} · {% endif %}{% if cp.stress_state %}{{ cf_t('recorded state','记录状态') }}: {{ cp.stress_state }} · {% endif %}{{ cf_t('vendor freshness unknown','供应商新鲜度未知') }}</span></div>
+      </div>
+      {% set xb = _fund.get('direct_usd_xccy_basis', {}) %}
+      <div class="cf-gap">
+        {% if xb.get('status') == 'available' %}
+          <strong>{{ cf_t('Direct USD cross-currency basis', '直接美元跨币种基差') }} · {{ '%.1f'|format(xb.value_bp) }} bp</strong>
+          <span class="cf-note">{{ cf_t('owner-qualified direct receipt', '权威来源已确认的直接回执') }} · {{ xb.source }} · {{ xb.asof }}. {{ cf_t('OFR, SOFR and commercial-paper rows remain context proxies rather than independent confirmation.', 'OFR、SOFR 与商业票据仍仅作背景代理，不构成独立确认。') }}</span>
+        {% else %}
+          <strong>{{ cf_t('Direct USD cross-currency basis · Unavailable', '直接美元跨币种基差 · 不可用') }}</strong>
+          <span class="cf-note">{{ cf_t('Available OFR, SOFR and commercial-paper proxies do not prove the FX-swap basis is normal. No substitute value is invented.', '现有 OFR、SOFR 与商业票据代理不能证明外汇掉期基差正常；不会人为填入替代值。') }}</span>
+        {% endif %}
+      </div>
+    </section>
+
+    <div class="cf-footer">{{ cf_t('Display-only evidence. No scenario state, watch, position or trade is changed. Calculation dates and vendor freshness remain separate questions.', '仅展示证据；不会改变情景状态、监控、持仓或交易。计算日期与供应商新鲜度是两个独立问题。') }}</div>
+  </div>
+</details>

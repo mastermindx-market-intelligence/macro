@@ -8823,8 +8823,26 @@ jobs:
         run: python -m pytest tests/test_builder_shim_writes.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
       # not the main-only data-health plane. Preserve real-data macro tests below.
-      - name: Forex context bus and movement evidence (synthetic inputs, temporary output)
-        run: python -m pytest tests/test_forex_context_bus.py -q
+      - name: Forex context bus, movement evidence, carry and funding evidence (synthetic inputs, temporary output)
+        run: python -m pytest tests/test_forex_context_bus.py tests/test_forex_carry_funding_view.py -q
+    paths:
+      # This job runs the builder-shim suite plus Forex suites. Once an explicit
+      # closure is declared it must include every commanded suite as well as the
+      # templates those Forex tests read as data; declarations only widen scope.
+      - tests/test_builder_shim_writes.py
+      - tests/test_forex_context_bus.py
+      - tests/test_forex_carry_funding_view.py
+      - lib/forex_kinematics_view.py
+      - lib/forex_carry_funding_view.py
+      # R19 consumes these publishers through their committed JSON contracts,
+      # so static Python import closure cannot discover the dependency.
+      - scripts/build_intl.py
+      - engine/contagion.py
+      - engine/conditions.py
+      - scripts/build_forex.py
+      - templates/forex.html.j2
+      - templates/_forex_movement_evidence.html.j2
+      - templates/_forex_carry_funding.html.j2
 
   quant-q09-venue-concentration:
     if: ${{ false }}
