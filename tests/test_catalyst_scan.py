@@ -5,7 +5,9 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from engine.marketing.catalyst_packets import PublicSourceGrant, build_event_packet
-from engine.marketing.catalyst_scan import compose_scan, normalize_tickers
+from engine.marketing.catalyst_scan import (
+    SourceCoverageReceipt, compose_scan, normalize_tickers,
+)
 
 UTC = timezone.utc
 NOW = datetime(2026, 8, 5, 12, tzinfo=UTC)
@@ -48,6 +50,50 @@ def packet(**changes):
 def scan(tickers, *packets, event_id=None, as_of=NOW):
     return compose_scan(tickers, issuers=UNIVERSE, packets=list(packets),
                         event_id=event_id, as_of=as_of)
+
+
+def verified_packet(**changes):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import VerifiedDocumentObservation
+    source_event = {**RAW, **changes}
+    source_event.pop("publication_time_utc", None)
+    read = VerifiedDocumentObservation(
+        source_id=PRIMARY, document_url=RAW["source_url"],
+        document_sha256="a" * 64,
+        receipt_id="test-only-retained-document-observation",
+        owner_ref="test-incumbent-source-reader",
+        first_verified_at_utc="2026-08-04T11:03:10Z",
+        checked_at_utc=NOW,
+        official_published_at_utc=None,
+    )
+    def version_rights(sid, now):
+        return replace(resolver(sid, now), document_sha256="a" * 64)
+    return build_event_packet(source_event, issuers=UNIVERSE,
+                              rights_resolver=version_rights,
+                              as_of=NOW, document_observation=read,
+                              max_age=timedelta(days=7))
+
+
+def coverage_receipt(**changes):
+    # Source-owner receipt fixture only; no real SEC fetch or installed GMI
+    # registry is inferred from this test.
+    fields = dict(
+        source="edgar_8k_202",
+        receipt_id="test-only-complete-edgar-window",
+        owner_ref="test-source-owner",
+        snapshot_version="test-snapshot-001",
+        issuer_tickers=frozenset({"PFE", "TST", "OTH"}),
+        window_start_utc=NOW - timedelta(days=7),
+        window_end_utc=NOW,
+        checked_at_utc=NOW,
+        outcome="COMPLETE",
+        pagination_exhausted=True,
+        truncated=False,
+        returned_events=1,
+        event_limit=20,
+    )
+    fields.update(changes)
+    return SourceCoverageReceipt(**fields)
 
 
 def test_one_to_ten_tickers_and_hostile_input_rejected_not_silently_cleaned():
@@ -166,7 +212,19 @@ def test_default_entrypoint_is_read_only_and_fails_closed(monkeypatch):
     result = module.scan_tickers(["PFE"], now_utc=NOW)
     assert result["publication_state"] == "UNAVAILABLE"
     assert result["results"][0]["status"] == "NOT_COVERED"
+    # A legacy two-part read cannot certify source completeness or corrections.
     monkeypatch.setattr(module, "read_qualified_event_context", lambda now: ([packet()], UNIVERSE))
+    legacy = module.scan_tickers(["PFE", "OUT"], now_utc=NOW)
+    assert legacy["publication_state"] == "UNAVAILABLE"
+    assert all(not r["sources"] and not r["what_changed"] for r in legacy["results"])
+    monkeypatch.setattr(module, "read_qualified_event_context",
+                        lambda now: ([packet()], UNIVERSE, coverage_receipt()))
+    # Even a complete window cannot upgrade a legacy event whose only source
+    # clock is the producer's processing wall-clock.
+    unverified = module.scan_tickers(["PFE", "OUT"], now_utc=NOW)
+    assert unverified["publication_state"] == "UNAVAILABLE"
+    monkeypatch.setattr(module, "read_qualified_event_context",
+                        lambda now: ([verified_packet()], UNIVERSE, coverage_receipt()))
     answer = module.scan_tickers(["PFE", "OUT"], now_utc=NOW)
     assert answer["results"][0]["status"] == "SUPPORTED"
     assert answer["results"][1]["status"] == "NOT_COVERED"
@@ -178,3 +236,143 @@ def test_scan_input_enforces_session_00_public_symbol_syntax():
         with pytest.raises(ValueError):
             normalize_tickers([candidate])
     assert normalize_tickers(["brk.b", "AAPL"]) == ["BRK.B", "AAPL"]
+
+
+def test_stage_a_observed_first_availability_and_nullable_publication_survive_scan():
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import VerifiedDocumentObservation
+    doc_read = VerifiedDocumentObservation(
+        source_id=PRIMARY, document_url=RAW["source_url"],
+        document_sha256="a" * 64,
+        receipt_id="test-only-successful-retained-document-read",
+        owner_ref="test-incumbent-edgar-owner",
+        first_verified_at_utc="2026-08-04T11:03:10Z",
+        checked_at_utc=NOW,
+        official_published_at_utc=None,
+    )
+    def version_rights(sid, now):
+        return replace(resolver(sid, now), document_sha256="a" * 64)
+    raw = dict(RAW)
+    raw.pop("publication_time_utc")
+    p = build_event_packet(raw, issuers=UNIVERSE, rights_resolver=version_rights,
+                           as_of=NOW, document_observation=doc_read,
+                           max_age=timedelta(days=7))
+    result = compose_scan(["PFE", "OUT"], packets=[p], issuers=UNIVERSE,
+                          as_of=NOW, coverage=coverage_receipt())
+    assert [r["status"] for r in result["results"]] == ["SUPPORTED", "NOT_COVERED"]
+    assert result["publication_state"] == "PARTIAL"
+    source = result["results"][0]["sources"][0]
+    assert source["published_at_utc"] is None
+    assert source["first_verified_at_utc"] == "2026-08-04T11:03:10Z"
+    assert source["rights_receipt_id"].startswith("fixture-receipt:")
+    assert result["results"][0]["what_changed"]
+    assert result["checked_window"]["kind"] == "earnings_8k"
+
+
+def test_trusted_complete_empty_is_distinct_from_bare_empty_or_unknown_event_id():
+    complete = coverage_receipt(returned_events=0)
+    result = compose_scan(["PFE", "OUT"], packets=[], issuers=UNIVERSE,
+                          as_of=NOW, coverage=complete)
+    assert result["publication_state"] == "COMPLETE_EMPTY"
+    assert [r["status"] for r in result["results"]] == [
+        "NO_QUALIFIED_EVENT", "NOT_COVERED"]
+    assert all(not r["sources"] and not r["what_changed"]
+               for r in result["results"])
+    assert result["event_id"] is None and result["generation"] is None
+    assert result["checked_window"]["end_utc"] == "2026-08-05T12:00:00Z"
+
+    missing = compose_scan(["PFE", "OUT"], packets=[], issuers=UNIVERSE,
+                           as_of=NOW)
+    assert missing["publication_state"] == "UNAVAILABLE"
+    assert missing["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    specified = compose_scan(["PFE"], packets=[], issuers=UNIVERSE, as_of=NOW,
+                             coverage=complete, event_id="unknown-id")
+    assert specified["publication_state"] == "UNAVAILABLE"
+    assert specified["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+
+
+@pytest.mark.parametrize("mutation", [
+    {"outcome": "FAILED"},
+    {"outcome": "PARTIAL"},
+    {"truncated": True},
+    {"pagination_exhausted": False},
+    {"checked_at_utc": NOW - timedelta(minutes=11)},
+    {"window_end_utc": NOW - timedelta(minutes=11)},
+    {"window_start_utc": NOW - timedelta(days=6)},
+    {"issuer_tickers": frozenset({"TST"})},
+    {"issuer_tickers": frozenset({"PFE", "TST", "OTH", "FAKE"})},
+    {"returned_events": 20},
+    {"event_limit": 0},
+    {"source": "private_benzinga"},
+    {"snapshot_version": ""},
+    {"receipt_id": ""},
+])
+def test_failed_partial_truncated_stale_or_unbound_coverage_cannot_claim_empty(mutation):
+    receipt = coverage_receipt(returned_events=0, **mutation) if (
+        "returned_events" not in mutation) else coverage_receipt(**mutation)
+    answer = compose_scan(["PFE", "OUT"], packets=[], issuers=UNIVERSE,
+                          coverage=receipt, as_of=NOW)
+    assert answer["publication_state"] == "UNAVAILABLE"
+    assert answer["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    assert answer["results"][1]["status"] == "NOT_COVERED"
+    assert all(not r["sources"] and not r["what_changed"]
+               for r in answer["results"])
+
+
+def test_source_read_requires_three_part_owner_result_and_current_receipt(monkeypatch):
+    from engine.marketing import catalyst_scan as module
+    monkeypatch.setattr(module, "read_qualified_event_context",
+                        lambda now: ([], UNIVERSE))
+    legacy = module.scan_tickers(["PFE"], now_utc=NOW)
+    assert legacy["publication_state"] == "UNAVAILABLE"
+    monkeypatch.setattr(module, "read_qualified_event_context",
+                        lambda now: ([], UNIVERSE, coverage_receipt(
+                            returned_events=0, truncated=True)))
+    truncated = module.scan_tickers(["PFE"], now_utc=NOW)
+    assert truncated["publication_state"] == "UNAVAILABLE"
+    monkeypatch.setattr(module, "read_qualified_event_context",
+                        lambda now: ([], UNIVERSE, coverage_receipt(
+                            returned_events=0)))
+    empty = module.scan_tickers(["PFE"], now_utc=NOW)
+    assert empty["publication_state"] == "COMPLETE_EMPTY"
+    assert empty["results"][0]["status"] == "NO_QUALIFIED_EVENT"
+
+
+def test_stage_a_scan_v2_is_explicit_and_not_a_silent_v1_extension():
+    observed = verified_packet()
+    v2 = compose_scan(["PFE", "OUT"], packets=[observed],
+                      issuers=UNIVERSE, as_of=NOW,
+                      coverage=coverage_receipt())
+    assert (observed["schema"], observed["schema_version"]) == (
+        "catalyst.public_event/v2", 2)
+    assert (v2["schema"], v2["schema_version"]) == ("catalyst.scan/v2", 2)
+    old = compose_scan(["PFE", "OUT"], packets=[packet()],
+                       issuers=UNIVERSE, as_of=NOW)
+    assert (old["schema"], old["schema_version"]) == ("catalyst.scan/v1", 1)
+    complete = compose_scan(["PFE"], packets=[], issuers=UNIVERSE,
+                            as_of=NOW, coverage=coverage_receipt(returned_events=0))
+    assert complete["schema"] == "catalyst.scan/v2"
+    assert complete["publication_state"] == "COMPLETE_EMPTY"
+
+
+def test_stage_a_complete_receipt_cannot_admit_indirect_link_or_legacy_packet():
+    direct = verified_packet()
+    indirect = deepcopy(direct)
+    indirect["affected_tickers"].append({
+        "ticker": "TST", "relationship": "EVIDENCED_INDIRECT",
+        "relation_evidence_ids": ["test_doc_relation"]})
+    for candidate in (indirect, packet()):
+        result = compose_scan(["PFE"], packets=[candidate],
+                              issuers=UNIVERSE, as_of=NOW,
+                              coverage=coverage_receipt())
+        assert result["publication_state"] == "UNAVAILABLE"
+        assert result["results"][0]["sources"] == []
+
+
+def test_twenty_event_truncation_cannot_claim_complete_current_issuer_coverage():
+    rows = [verified_packet()] * 20
+    incomplete = coverage_receipt(returned_events=20, truncated=True)
+    result = compose_scan(["PFE"], packets=rows, issuers=UNIVERSE,
+                          as_of=NOW, coverage=incomplete)
+    assert result["publication_state"] == "UNAVAILABLE"
+    assert result["results"][0]["what_changed"] == []

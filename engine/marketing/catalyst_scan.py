@@ -1,4 +1,4 @@
-"""Read-only public Catalyst scan, shape-frozen for Session 00's HTTP bridge.
+"""Read-only Catalyst scan: legacy v1 and explicit Stage-A v2 source receipts.
 
 Data is sourced ONLY from a canonical owner-provided context. This module has
 no network, file reader, background poller, public-rights mint, or second store.
@@ -6,17 +6,51 @@ The default source hook declines until a trusted adapter is wired in production.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import json
 import re
 from typing import Mapping, Sequence
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
-from engine.marketing.catalyst_packets import SCHEMA_VERSION as PACKET_SCHEMA, _utc, _stamp
+from engine.marketing.catalyst_packets import (
+    SCHEMA_VERSION as PACKET_SCHEMA, STAGE_A_PACKET_SCHEMA, _utc, _stamp,
+)
 
 SCAN_SCHEMA = "catalyst.scan/v1"
+STAGE_A_SCAN_SCHEMA = "catalyst.scan/v2"
 MAX_TICKERS = 10
+_COVERAGE_SCHEMA = "catalyst.source_coverage/v1"
+_PILOT_WINDOW = timedelta(days=7)
+_CURRENT_RECEIPT = timedelta(minutes=10)
+
+
+@dataclass(frozen=True, slots=True)
+class SourceCoverageReceipt:
+    """Owner-issued complete-current read, not a scan-generated success.
+
+    This is a read receipt from the EXISTING retained SEC source: no network,
+    source collection, registry, rights grant or snapshot store is created here.
+    A bare empty list and the old twenty-event limit prove no such completeness.
+    """
+    source: str
+    receipt_id: str
+    owner_ref: str
+    snapshot_version: str
+    issuer_tickers: frozenset[str]
+    window_start_utc: datetime
+    window_end_utc: datetime
+    checked_at_utc: datetime
+    outcome: str
+    pagination_exhausted: bool
+    truncated: bool
+    returned_events: int
+    event_limit: int
+    schema: str = _COVERAGE_SCHEMA
+
+
 _PUBLIC_TICKER = re.compile(r"^[A-Z][A-Z0-9.\-]{0,9}$")
+_DOC_DIGEST = re.compile(r"^[0-9a-f]{64}$")
 
 
 def normalize_tickers(values: Sequence[str]) -> list[str]:
@@ -52,7 +86,8 @@ def _dossier_path(ticker: str, universe: Mapping) -> str | None:
 
 
 def _revision_identity(packet: Mapping) -> tuple[str, int] | None:
-    if packet.get("schema") != PACKET_SCHEMA or packet.get("schema_version") != 1:
+    if (packet.get("schema"), packet.get("schema_version")) not in (
+            (PACKET_SCHEMA, 1), (STAGE_A_PACKET_SCHEMA, 2)):
         return None
     eid = packet.get("event_id")
     generation = packet.get("generation")
@@ -126,12 +161,15 @@ def _public_result(ticker: str, packet: Mapping, relation: Mapping,
     sources_raw = packet.get("sources")
     if (not isinstance(sources_raw, list) or not sources_raw or
             any(not isinstance(s, Mapping) or s.get("display_rights") != "ALLOWED"
-                or not s.get("rights_receipt_id") or not s.get("published_at_utc")
+                or not s.get("rights_receipt_id")
+                or not (s.get("published_at_utc") or s.get("first_verified_at_utc"))
                 for s in sources_raw)):
         base["status"] = "RIGHTS_BLOCKED"
         return base
     sources = [{"source_id": s["source_id"], "url": s["url"], "title": s["title"],
-                "published_at_utc": s["published_at_utc"], "display_rights": "ALLOWED",
+                "published_at_utc": s["published_at_utc"],
+                "first_verified_at_utc": s.get("first_verified_at_utc"),
+                "display_rights": "ALLOWED",
                 "rights_receipt_id": s["rights_receipt_id"]} for s in sources_raw]
     srcids = {s["source_id"] for s in sources}
     evidence_lookup = {e["evidence_id"]: e["source_id"] for e in packet.get("evidence", [])
@@ -196,9 +234,90 @@ def _public_result(ticker: str, packet: Mapping, relation: Mapping,
     return result
 
 
+def _complete_current_coverage(receipt: SourceCoverageReceipt | None,
+                               *, names: Sequence[str], packets: Sequence[Mapping],
+                               issuers: Mapping[str, Mapping], now: datetime) -> bool:
+    if not isinstance(receipt, SourceCoverageReceipt):
+        return False
+    if (receipt.schema != _COVERAGE_SCHEMA or receipt.source != "edgar_8k_202"
+            or not isinstance(receipt.receipt_id, str) or not receipt.receipt_id.strip()
+            or not isinstance(receipt.owner_ref, str) or not receipt.owner_ref.strip()
+            or not isinstance(receipt.snapshot_version, str)
+            or not receipt.snapshot_version.strip()
+            or not isinstance(receipt.issuer_tickers, frozenset)
+            or any(not isinstance(t, str) or not _PUBLIC_TICKER.fullmatch(t)
+                   for t in receipt.issuer_tickers)
+            or receipt.outcome != "COMPLETE"
+            or type(receipt.pagination_exhausted) is not bool
+            or receipt.pagination_exhausted is not True
+            or type(receipt.truncated) is not bool or receipt.truncated is not False
+            or type(receipt.returned_events) is not int or receipt.returned_events < 0
+            or type(receipt.event_limit) is not int or receipt.event_limit < 1
+            or receipt.returned_events > receipt.event_limit
+            or receipt.returned_events != len(packets)):
+        return False
+    if (not isinstance(issuers, Mapping) or not receipt.issuer_tickers
+            or len(receipt.issuer_tickers) > 10_000):
+        return False
+    if any(not isinstance(issuers.get(ticker), Mapping)
+           or issuers[ticker].get("supported") is not True
+           for ticker in receipt.issuer_tickers):
+        return False
+    supported = {name for name in names if
+                 isinstance(issuers.get(name), Mapping) and
+                 issuers[name].get("supported") is True}
+    if not supported.issubset(receipt.issuer_tickers):
+        return False
+    start, end, checked = (_utc(receipt.window_start_utc),
+                           _utc(receipt.window_end_utc), _utc(receipt.checked_at_utc))
+    if (start is None or end is None or checked is None
+            or start > end or start > now - _PILOT_WINDOW
+            or end > checked + timedelta(minutes=2)
+            or checked > now + timedelta(minutes=2)
+            or now - checked > _CURRENT_RECEIPT
+            or now - end > _CURRENT_RECEIPT):
+        return False
+    # A selective export, stale backfill or truncated window cannot certify
+    # a negative claim about current issuer coverage.
+    for packet in packets:
+        if (not isinstance(packet, Mapping) or packet.get("event_kind") != "earnings"
+                or packet.get("schema") != STAGE_A_PACKET_SCHEMA
+                or packet.get("schema_version") != 2):
+            return False
+        primary = packet.get("primary_subject")
+        if not isinstance(primary, Mapping):
+            return False
+        affected = packet.get("affected_tickers")
+        if not isinstance(affected, list):
+            return False
+        # The first event-first pilot is restricted to direct earnings issuers.
+        # Indirect AI-capex/semiconductor relationships require a later owner
+        # expansion and cannot be laundered through this coverage receipt.
+        if any(not isinstance(row, Mapping)
+               or row.get("relationship") != "DIRECT"
+               or row.get("ticker") != primary.get("ticker") for row in affected):
+            return False
+        accepted = _utc(packet.get("event_time_utc"))
+        first = _utc(packet.get("first_observed_at_utc"))
+        doc_checked = _utc(packet.get("document_checked_at_utc"))
+        digest = packet.get("document_sha256")
+        receipt_id = packet.get("observation_receipt_id")
+        if (accepted is None or not start <= accepted <= end + timedelta(minutes=2)
+                or first is None or first < accepted - timedelta(minutes=2)
+                or first > now + timedelta(minutes=2)
+                or doc_checked is None or first > doc_checked
+                or doc_checked > checked + timedelta(minutes=2)
+                or now - doc_checked > _CURRENT_RECEIPT
+                or not isinstance(digest, str) or not _DOC_DIGEST.fullmatch(digest)
+                or not isinstance(receipt_id, str) or not receipt_id.strip()):
+            return False
+    return True
+
+
 def compose_scan(tickers: Sequence[str], *, packets: Sequence[Mapping],
                  issuers: Mapping[str, Mapping], as_of: datetime,
-                 event_id: str | None = None) -> dict:
+                 event_id: str | None = None,
+                 coverage: SourceCoverageReceipt | None = None) -> dict:
     """Pure testable producer -> public scan; inputs MUST be trusted server-owned data."""
     now = _utc(as_of)
     if now is None:
@@ -206,6 +325,11 @@ def compose_scan(tickers: Sequence[str], *, packets: Sequence[Mapping],
     names = normalize_tickers(tickers)
     if event_id is not None and (not isinstance(event_id, str) or len(event_id) > 128):
         raise ValueError("invalid event reference")
+    if coverage is not None and not _complete_current_coverage(
+            coverage, names=names, packets=packets, issuers=issuers, now=now):
+        return compose_scan(names, packets=(), issuers=issuers, as_of=now,
+                            event_id=event_id)
+    complete = coverage is not None
     latest, conflicts = _current_packets(packets)
     if event_id is not None:
         selected = latest.get(event_id)
@@ -223,7 +347,12 @@ def compose_scan(tickers: Sequence[str], *, packets: Sequence[Mapping],
             results.append(base)
             continue
         if selected is None:
-            base["status"] = "TEMPORARILY_UNAVAILABLE"
+            # Never upgrade a bare [] or an unrecognized event reference to
+            # a factual checked-empty result. Only a complete-current owner
+            # receipt proves no qualifying earnings event in this window.
+            base["status"] = ("NO_QUALIFIED_EVENT" if complete and
+                              event_id is None and ticker in coverage.issuer_tickers
+                              else "TEMPORARILY_UNAVAILABLE")
         elif selected["event_id"] in conflicts:
             base["status"] = "TEMPORARILY_UNAVAILABLE"
         elif (relation := _relation(selected, ticker)) is not None:
@@ -237,24 +366,42 @@ def compose_scan(tickers: Sequence[str], *, packets: Sequence[Mapping],
         results.append(base)
     supported = any(r["status"] == "SUPPORTED" for r in results)
     publication = "PARTIAL" if selected is not None else "UNAVAILABLE"
+    if (selected is None and complete and event_id is None
+            and any(r["status"] == "NO_QUALIFIED_EVENT" for r in results)):
+        publication = "COMPLETE_EMPTY"
     if selected and supported and all(r["status"] == "SUPPORTED" for r in results):
         publication = "PUBLIC_QUALIFIED"
-    return {"schema": SCAN_SCHEMA, "schema_version": 1, "as_of_utc": _stamp(now),
-            "requested_tickers": names, "event_id": selected["event_id"] if selected else None,
-            "generation": selected["generation"] if selected else None,
-            "publication_state": publication, "coverage_note": "Only independently qualified public sources are eligible.",
-            "results": results}
+    response = {"schema": STAGE_A_SCAN_SCHEMA if complete else SCAN_SCHEMA,
+                "schema_version": 2 if complete else 1,
+                "as_of_utc": _stamp(now),
+                "requested_tickers": names, "event_id": selected["event_id"] if selected else None,
+                "generation": selected["generation"] if selected else None,
+                "publication_state": publication,
+                "coverage_note": "Only independently qualified public earnings evidence is eligible.",
+                "results": results}
+    if complete:
+        response["checked_window"] = {
+            "kind": "earnings_8k",
+            "start_utc": _stamp(_utc(coverage.window_start_utc)),
+            "end_utc": _stamp(_utc(coverage.window_end_utc)),
+            "checked_at_utc": _stamp(_utc(coverage.checked_at_utc)),
+        }
+    return response
 
 
-def read_qualified_event_context(now_utc: datetime) -> tuple[Sequence[Mapping], Mapping[str, Mapping]]:
-    """Source-owner seam. No compatible anonymous-rights reader is connected yet.
+def read_qualified_event_context(
+    now_utc: datetime,
+) -> tuple[Sequence[Mapping], Mapping[str, Mapping], SourceCoverageReceipt | None]:
+    """Source-owner seam. No compatible qualified SEC read is connected yet.
 
     Session 00 must bind an existing admitted source/issuer/rights adapter here,
     not a browser-supplied filename, a second ledger, or private qbus site-full.
-    Test doubles may monkeypatch this pure hook; without a qualified reader the
+    Test doubles may monkeypatch this pure hook; without the incumbent's
+    successful document and complete-current source snapshot receipts the
     public route must yield HTTP 503, not invented fixture content.
+    The source owner returns exactly (packets, issuers, coverage_receipt).
     """
-    return (), {}
+    return (), {}, None
 
 
 def scan_tickers(tickers: list[str], *, event_id: str | None = None,
@@ -262,6 +409,18 @@ def scan_tickers(tickers: list[str], *, event_id: str | None = None,
     """Frozen Session 00 entrypoint: anonymous, no storage or entitlement bypass."""
     now = now_utc if now_utc is not None else datetime.now(timezone.utc)
     normalized = normalize_tickers(tickers)
-    packets, issuers = read_qualified_event_context(now)
+    context = read_qualified_event_context(now)
+    # A legacy source reader can still return its old (packets, issuers) pair,
+    # but WITHOUT a signed/source-backed complete-current read outcome it is
+    # not enough to establish latest corrections or no-event semantics.
+    if not isinstance(context, (tuple, list)) or len(context) != 3:
+        return compose_scan(normalized, packets=(), issuers={}, as_of=now,
+                            event_id=event_id)
+    packets, issuers, coverage = context
+    if (not isinstance(packets, (tuple, list)) or not isinstance(issuers, Mapping)
+            or not _complete_current_coverage(
+                coverage, names=normalized, packets=packets, issuers=issuers, now=_utc(now))):
+        return compose_scan(normalized, packets=(), issuers={}, as_of=now,
+                            event_id=event_id)
     return compose_scan(normalized, packets=packets, issuers=issuers, as_of=now,
-                        event_id=event_id)
+                        event_id=event_id, coverage=coverage)

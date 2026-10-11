@@ -20,6 +20,8 @@ from engine.company_intelligence.contracts import ContractError, safe_ticker
 
 SCHEMA_VERSION = "catalyst.public_event/v1"
 SCHEMA_REVISION = 1
+STAGE_A_PACKET_SCHEMA = "catalyst.public_event/v2"
+STAGE_A_PACKET_REVISION = 2
 PUBLIC_AUDIENCE = "public_anonymous"
 _EARNINGS_SOURCE = "edgar_8k_202"
 _SOURCE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9:._-]{0,127}$")
@@ -76,6 +78,32 @@ class PublicSourceGrant:
     # EXACT owner-approved document URL, not a filing-level allow-all.
     # Default is empty to keep older callers fail-closed.
     document_url: str = ""
+    # Exact retained document bytes, when a verified source-read contract exists.
+    document_sha256: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class VerifiedDocumentObservation:
+    """Immutable successful source-owner observation; not a client claim.
+
+    The incumbent SEC document reader supplies a retained first verified time,
+    its current successful recheck, exact displayed document and content digest.
+    SEC acceptance, producer processing and first verified availability are
+    different clocks. Official publication may be unknown (None).
+    """
+    source_id: str
+    document_url: str
+    document_sha256: str
+    receipt_id: str
+    owner_ref: str
+    first_verified_at_utc: datetime
+    checked_at_utc: datetime
+    status: str = "verified"
+    official_published_at_utc: datetime | None = None
+    official_publication_ref: str = ""
+
+
+_SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
 
 
 RightsResolver = Callable[[str, datetime], PublicSourceGrant | None]
@@ -189,7 +217,8 @@ def _safe_url(raw: object, *, sec_only: bool) -> str | None:
     return raw
 
 
-def _allowed(source_id: str, document_url: str, resolver: RightsResolver, now: datetime) -> PublicSourceGrant | None:
+def _allowed(source_id: str, document_url: str, resolver: RightsResolver,
+             now: datetime, *, document_sha256: str = "") -> PublicSourceGrant | None:
     try:
         grant = resolver(source_id, now)
     except Exception:  # a missing/degraded rights owner is denial, not authority
@@ -198,6 +227,7 @@ def _allowed(source_id: str, document_url: str, resolver: RightsResolver, now: d
         return None
     if (grant.source_id != source_id or grant.document_url != document_url
             or not isinstance(grant.document_url, str) or not grant.document_url
+            or (document_sha256 and grant.document_sha256 != document_sha256)
             or grant.audience != PUBLIC_AUDIENCE
             or not isinstance(grant.receipt_id, str)
             or not 0 < len(grant.receipt_id.strip()) <= 128
@@ -237,6 +267,7 @@ def build_event_packet(
     source_refs: Sequence[Mapping[str, object]] = (),
     relationships: Sequence[Mapping[str, object]] = (),
     scenarios: Sequence[Mapping[str, object]] = (),
+    document_observation: VerifiedDocumentObservation | None = None,
     max_age: timedelta = timedelta(days=14),
 ) -> dict:
     """Return safe packet; deny absent rights/identity/time. No untrusted text.
@@ -267,6 +298,11 @@ def build_event_packet(
         if kind not in ("ai_capex", "semiconductor_event"):
             kind = None
     out = _base(event_id, now)
+    if document_observation is not None:
+        # Separate semantic wire identity; do not silently redefine v1's
+        # mandatory published_at field as document-first-verified availability.
+        out["schema"] = STAGE_A_PACKET_SCHEMA
+        out["schema_version"] = STAGE_A_PACKET_REVISION
     out["event_kind"] = kind
     if not event_id or not kind or not isinstance(primary_source_id, str) or not _SOURCE_ID.fullmatch(primary_source_id):
         out["missing_data"].append("unqualified_event_identity")
@@ -297,20 +333,67 @@ def build_event_packet(
         return out
 
     event_time = _utc(source_event.get("acceptance_datetime") if earnings else source_event.get("event_time_utc"))
-    observed = _utc(source_event.get("when") if earnings else source_event.get("first_observed_at_utc"),
-                    producer_utc_naive=earnings and source_event.get("when_semantics") == "processing_wall_clock")
-    if (event_time is None or observed is None or event_time > now + timedelta(minutes=2)
-            or observed > now + timedelta(minutes=2) or observed < event_time - timedelta(minutes=2)):
+    # Legacy producer processing time is NOT official first availability.
+    processing = _utc(source_event.get("when") if earnings else source_event.get("first_observed_at_utc"),
+                      producer_utc_naive=earnings and source_event.get("when_semantics") == "processing_wall_clock")
+    if event_time is None or event_time > now + timedelta(minutes=2):
         out["missing_data"].append("unqualified_source_clocks")
         return out
+    if processing is not None and (processing > now + timedelta(minutes=2)
+                                   or processing < event_time - timedelta(minutes=2)):
+        processing = None
+    observation = None
+    if document_observation is not None:
+        receipt = document_observation
+        source_url = _safe_url(source_event.get("source_url"), sec_only=earnings)
+        first = _utc(receipt.first_verified_at_utc) if isinstance(receipt, VerifiedDocumentObservation) else None
+        checked = _utc(receipt.checked_at_utc) if isinstance(receipt, VerifiedDocumentObservation) else None
+        if (not isinstance(receipt, VerifiedDocumentObservation)
+                or receipt.status != "verified" or receipt.source_id != primary_source_id
+                or source_url is None or receipt.document_url != source_url
+                or not isinstance(receipt.document_sha256, str)
+                or not _SHA256_HEX.fullmatch(receipt.document_sha256)
+                or not isinstance(receipt.receipt_id, str)
+                or not 0 < len(receipt.receipt_id.strip()) <= 128
+                or not isinstance(receipt.owner_ref, str) or not receipt.owner_ref.strip()
+                or first is None or checked is None
+                or first < event_time - timedelta(minutes=2)
+                or first > checked or checked > now + timedelta(minutes=2)
+                or now - checked > timedelta(minutes=10)):
+            out["missing_data"].append("unqualified_verified_document_observation")
+            return out
+        official = _utc(receipt.official_published_at_utc)
+        if receipt.official_published_at_utc is not None:
+            if (official is None or official < event_time - timedelta(minutes=2)
+                    or official > first or not isinstance(receipt.official_publication_ref, str)
+                    or not receipt.official_publication_ref.strip()):
+                out["missing_data"].append("unqualified_official_publication_provenance")
+                return out
+        observation = receipt
+        observed = first
+        out["observation_receipt_id"] = receipt.receipt_id
+        out["document_sha256"] = receipt.document_sha256
+        out["document_checked_at_utc"] = _stamp(checked)
+        out["processing_time_utc"] = _stamp(processing)
+        if official is not None:
+            out["publication_time_utc"] = _stamp(official)
+    else:
+        # Frozen legacy v1 path stays fail-closed on missing publication time.
+        # A real edgar_earnings_wire.build_event does not supply one; only a
+        # distinct owner-backed document-read receipt can unlock Stage A.
+        observed = processing
+        if (observed is None or observed > now + timedelta(minutes=2)
+                or observed < event_time - timedelta(minutes=2)):
+            out["missing_data"].append("unqualified_source_clocks")
+            return out
+        pub_time = _utc(source_event.get("publication_time_utc"))
+        if pub_time is not None and event_time <= pub_time <= now:
+            out["publication_time_utc"] = _stamp(pub_time)
+        else:
+            out["missing_data"].append("publication_time_not_attested")
     out.update(primary_subject={"ticker": ticker, "issuer_id": issuer_id,
                                 "company_name": str(issuer.get("name") or ticker)[:120]},
                event_time_utc=_stamp(event_time), first_observed_at_utc=_stamp(observed))
-    pub_time = _utc(source_event.get("publication_time_utc"))
-    if pub_time is not None and event_time <= pub_time <= now:
-        out["publication_time_utc"] = _stamp(pub_time)
-    else:
-        out["missing_data"].append("publication_time_not_attested")
 
     generation = source_event.get("correction_generation", 0)
     if isinstance(generation, bool) or not isinstance(generation, int) or not 0 <= generation <= 10_000:
@@ -339,14 +422,17 @@ def build_event_packet(
         out["public_disposition"] = "RETRACTED"
         out["missing_data"].append("source_retracted")
         return out
-    if now - event_time > max_age:
+    # Stage A is a seven-day acceptance-time window, never a rolling window
+    # based on a late recheck, regenerated scan, or producer process clock.
+    effective_age = min(max_age, timedelta(days=7)) if observation else max_age
+    if now - event_time > effective_age:
         out["missing_data"].append("event_outside_freshness_window")
         return out
 
     if earnings:
         primary = {"source_id": primary_source_id, "url": source_event.get("source_url"),
                    "title": "SEC Form 8-K Item 2.02",
-                   "published_at_utc": source_event.get("publication_time_utc"),
+                   "published_at_utc": out["publication_time_utc"],
                    "first_observed_at_utc": _stamp(observed), "evidence_ids": []}
     else:
         primary = {"source_id": primary_source_id, "url": source_event.get("source_url"),
@@ -373,7 +459,9 @@ def build_event_packet(
         if isinstance(ids, (list, tuple)):
             attested_evidence[sid] = {i for i in ids if isinstance(i, str) and _SOURCE_ID.fullmatch(i)}
         url = _safe_url(entry.get("url"), sec_only=earnings and sid == primary_source_id)
-        grant = _allowed(sid, url, rights_resolver, now) if url is not None else None
+        primary_digest = observation.document_sha256 if observation and sid == primary_source_id else ""
+        grant = (_allowed(sid, url, rights_resolver, now,
+                          document_sha256=primary_digest) if url is not None else None)
         if url is None or grant is None:
             blocked.add(sid)
             accepted.pop(sid, None)
@@ -392,7 +480,10 @@ def build_event_packet(
             continue
         published = _utc(entry.get("published_at_utc"))
         first_seen = _utc(entry.get("first_observed_at_utc"))
-        if published is None or published > now:
+        if published is not None and published > now:
+            blocked.add(sid)
+            continue
+        if published is None and not (observation and sid == primary_source_id):
             blocked.add(sid)
             continue
         if first_seen is not None and first_seen > now:
@@ -402,6 +493,10 @@ def build_event_packet(
                          "published_at_utc": _stamp(published),
                          "first_observed_at_utc": _stamp(first_seen),
                          "rights_receipt_id": grant.receipt_id}
+        if observation and sid == primary_source_id:
+            accepted[sid]["first_verified_at_utc"] = _stamp(observed)
+            accepted[sid]["document_sha256"] = observation.document_sha256
+            accepted[sid]["observation_receipt_id"] = observation.receipt_id
         grants.append(grant)
     # The public consumer accepts no more than twelve qualified sources.
     # Never silently truncate a claim's supporting evidence.

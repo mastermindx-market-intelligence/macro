@@ -386,3 +386,172 @@ def test_real_edgar_shape_without_separately_attested_publication_fails_closed()
     assert "publication_time_not_attested" in result["missing_data"]
     assert result["public_disposition"] == "BLOCKED_PUBLIC"
     assert not result["sources"] and not result["what_changed"]
+
+
+DOC_SHA = "a" * 64
+
+
+def stage_a_receipt(*, first="2026-08-04T11:03:10Z",
+                    checked=NOW, digest=DOC_SHA,
+                    url=SEC_URL, published=None,
+                    pub_ref=""):
+    from engine.marketing.catalyst_packets import VerifiedDocumentObservation
+    return VerifiedDocumentObservation(
+        source_id=SEC_ID,
+        document_url=url,
+        document_sha256=digest,
+        receipt_id="test-only-retained-successful-observation",
+        owner_ref="test-ingestion-owner-not-publication",
+        first_verified_at_utc=first,
+        checked_at_utc=checked,
+        status="verified",
+        official_published_at_utc=published,
+        official_publication_ref=pub_ref,
+    )
+
+
+def versioned_rights(sid, now):
+    from dataclasses import replace
+    return replace(grants()(sid, now), document_sha256=DOC_SHA)
+
+
+def test_stage_a_verified_availability_without_official_publication_is_safe():
+    raw = event()
+    raw.pop("publication_time_utc")
+    p = build(raw, document_observation=stage_a_receipt(),
+              rights_resolver=versioned_rights)
+    assert p["public_safe"] is True
+    assert p["public_disposition"] == "PUBLIC_READY"
+    assert p["publication_time_utc"] is None
+    assert p["event_time_utc"] == "2026-08-04T11:02:43Z"
+    assert p["first_observed_at_utc"] == "2026-08-04T11:03:10Z"
+    assert p["document_sha256"] == DOC_SHA
+    assert p["observation_receipt_id"] == "test-only-retained-successful-observation"
+    assert p["sources"][0]["first_verified_at_utc"] == p["first_observed_at_utc"]
+    assert p["sources"][0]["published_at_utc"] is None
+    assert p["sources"][0]["document_sha256"] == DOC_SHA
+    assert "publication_time_not_attested" not in p["missing_data"]
+    assert p["what_changed"] and p["evidence"]
+
+
+def test_stage_a_refresh_cannot_make_historical_acceptance_recent():
+    raw = event()
+    raw.pop("publication_time_utc")
+    later = NOW + timedelta(days=8)
+    def later_rights(sid, at):
+        from dataclasses import replace
+        return replace(versioned_rights(sid, at),
+                       effective_at_utc=NOW - timedelta(days=2),
+                       expires_at_utc=later + timedelta(days=1))
+    p = build(raw, as_of=later,
+              document_observation=stage_a_receipt(checked=later),
+              rights_resolver=later_rights)
+    assert p["public_safe"] is False
+    assert "event_outside_freshness_window" in p["missing_data"]
+    assert p["what_changed"] == []
+
+
+def test_stage_a_digest_or_document_mismatch_requires_renewed_rights():
+    raw = event()
+    raw.pop("publication_time_utc")
+    for receipt in (
+        stage_a_receipt(digest="b" * 64),
+        stage_a_receipt(url=SEC_EXHIBIT_URL),
+    ):
+        p = build(raw, document_observation=receipt,
+                  rights_resolver=versioned_rights)
+        assert p["public_safe"] is False
+        assert p["sources"] == p["what_changed"] == []
+    p = build(raw, document_observation=stage_a_receipt(),
+              rights_resolver=grants())
+    assert p["public_disposition"] == "BLOCKED_PUBLIC"
+    assert p["sources"] == []
+
+
+@pytest.mark.parametrize("first,checked", [
+    ("2026-08-04T11:00:00Z", NOW),  # before source acceptance
+    ("2026-08-06T10:00:00Z", NOW),  # future first observation
+    ("2026-08-04T11:03:10Z", NOW - timedelta(minutes=11)),  # stale recheck
+])
+def test_stage_a_bad_retained_document_clock_denies(first, checked):
+    raw = event()
+    raw.pop("publication_time_utc")
+    p = build(raw, document_observation=stage_a_receipt(first=first, checked=checked),
+              rights_resolver=versioned_rights)
+    assert p["public_safe"] is False
+    assert p["sources"] == p["what_changed"] == []
+
+
+def test_stage_a_processing_clock_never_rewrites_retained_first_availability():
+    raw = event()
+    raw.pop("publication_time_utc")
+    raw["when"] = "2026-08-05T11:59:59"  # fresh but not first availability
+    p = build(raw, document_observation=stage_a_receipt(),
+              rights_resolver=versioned_rights)
+    assert p["public_disposition"] == "PUBLIC_READY"
+    assert p["first_observed_at_utc"] == "2026-08-04T11:03:10Z"
+    assert p["processing_time_utc"] == "2026-08-05T11:59:59Z"
+
+
+def test_stage_a_official_publication_requires_separate_provenance():
+    raw = event()
+    raw.pop("publication_time_utc")
+    p = build(raw, document_observation=stage_a_receipt(
+        published="2026-08-04T11:03:00Z"), rights_resolver=versioned_rights)
+    assert p["public_disposition"] == "UNAVAILABLE"
+    assert "unqualified_official_publication_provenance" in p["missing_data"]
+    with_ref = build(raw, document_observation=stage_a_receipt(
+        published="2026-08-04T11:03:00Z",
+        pub_ref="test-sec-official-published-at-receipt"),
+        rights_resolver=versioned_rights)
+    assert with_ref["public_disposition"] == "PUBLIC_READY"
+    assert with_ref["publication_time_utc"] == "2026-08-04T11:03:00Z"
+
+
+def test_stage_a_packet_is_explicitly_v2_and_legacy_fixture_remains_v1():
+    raw = event()
+    raw.pop("publication_time_utc")
+    observed = build(raw, document_observation=stage_a_receipt(),
+                     rights_resolver=versioned_rights)
+    legacy = build()
+    assert (observed["schema"], observed["schema_version"]) == (
+        "catalyst.public_event/v2", 2)
+    assert (legacy["schema"], legacy["schema_version"]) == (
+        "catalyst.public_event/v1", 1)
+    assert observed["publication_time_utc"] is None
+    assert legacy["publication_time_utc"] is not None
+
+
+def test_stage_a_document_digest_correction_requires_renewed_version_rights():
+    from dataclasses import replace
+    raw = {**event(), "correction_generation": 1, "revision_status": "corrected",
+           "supersedes_generation": 0, "correction_reason": "official_amendment"}
+    raw.pop("publication_time_utc")
+    fresh_version = stage_a_receipt(digest="b" * 64)
+    denied = build(raw, document_observation=fresh_version,
+                   rights_resolver=versioned_rights)
+    assert denied["public_disposition"] == "BLOCKED_PUBLIC"
+    assert denied["what_changed"] == []
+    def renewed(sid, at):
+        return replace(versioned_rights(sid, at), document_sha256="b" * 64)
+    approved = build(raw, document_observation=fresh_version,
+                     rights_resolver=renewed)
+    assert approved["public_disposition"] == "PUBLIC_READY"
+    assert approved["correction_state"] == "CORRECTED"
+    assert approved["sources"][0]["document_sha256"] == "b" * 64
+
+
+def test_withdrawn_or_naive_verified_document_read_is_not_source_attestation():
+    from dataclasses import replace
+    raw = event()
+    raw.pop("publication_time_utc")
+    for receipt in (
+        replace(stage_a_receipt(), status="withdrawn"),
+        replace(stage_a_receipt(), first_verified_at_utc="2026-08-04T11:03:10"),
+        replace(stage_a_receipt(), checked_at_utc="2026-08-05T12:00:00"),
+        replace(stage_a_receipt(), document_sha256="not a digest"),
+    ):
+        pkt = build(raw, document_observation=receipt,
+                    rights_resolver=versioned_rights)
+        assert pkt["public_safe"] is False
+        assert pkt["sources"] == pkt["what_changed"] == []
