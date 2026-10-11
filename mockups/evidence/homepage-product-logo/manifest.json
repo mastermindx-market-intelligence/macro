@@ -1,0 +1,315 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-08T09:54:36Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:56236/api/billing/offers/founding_pro",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:56236/api/billing/offers/founding_pro"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 10519,
+            "elements_wider_than_viewport": 3,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 13456,
+            "elements_wider_than_viewport": 3,
+            "horizontal_overflow": true
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 10519,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 3,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 10,
+          "h3": 3,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 5,
+        "payload_bytes_total": 26219,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 24,
+        "screenshot_completion": 1.0,
+        "section_count": 10,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1889
+      },
+      "page_id": "index.html",
+      "registry_route": "/index.html",
+      "route": "/index.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 586350,
+          "captured": true,
+          "file": "38021792668b3191.png",
+          "force_state": null,
+          "height": 10519,
+          "locale": "en",
+          "sha256": "38021792668b3191879e4821a30760ff208c559a68245ed65e9da15f54ba56ab",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 583804,
+          "captured": true,
+          "file": "b7d2a578ce29978c.png",
+          "force_state": null,
+          "height": 10519,
+          "locale": "en",
+          "sha256": "b7d2a578ce29978c2a46e3984dea920d5d24b3b63760265a597878618d3c9309",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 579596,
+          "captured": true,
+          "file": "f7b9917c44d5d0de.png",
+          "force_state": null,
+          "height": 10415,
+          "locale": "zh",
+          "sha256": "f7b9917c44d5d0de534a4920f38bd5cd3b163ef1751852233d819fbb51ebfefe",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 579812,
+          "captured": true,
+          "file": "f6db99b7d3d475be.png",
+          "force_state": null,
+          "height": 10415,
+          "locale": "zh",
+          "sha256": "f6db99b7d3d475be4a82a6ccca185c9a81eccf773cc5af20abf18a76f819ee50",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 243799,
+          "captured": true,
+          "file": "f3fcd1051da70579.png",
+          "force_state": null,
+          "height": 13456,
+          "locale": "en",
+          "sha256": "f3fcd1051da70579bf0e01bf9e78b5e6141ef7f9d1edff10ba7e6f8050c3ab13",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 406
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 243874,
+          "captured": true,
+          "file": "c4c93bbbc2778d1b.png",
+          "force_state": null,
+          "height": 13456,
+          "locale": "en",
+          "sha256": "c4c93bbbc2778d1b22dcae0992b8da5debad4bd338903185c56eae22345a58f0",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 406
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 242651,
+          "captured": true,
+          "file": "0d65c21a0cf6ce5d.png",
+          "force_state": null,
+          "height": 12890,
+          "locale": "zh",
+          "sha256": "0d65c21a0cf6ce5dc3eb471be6576dde3e99fd54b510080702360e65f7fb2cca",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 242604,
+          "captured": true,
+          "file": "c4e0aff6b00fbfff.png",
+          "force_state": null,
+          "height": 12890,
+          "locale": "zh",
+          "sha256": "c4e0aff6b00fbfff23ab18a694c14483a70784a23ca939e056f5e3be9e619fc3",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/index.html"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/homepage-product-logo-294c61b96b6d37ba",
+    "resolved_sha_or_none": "eb9e91961ddc4f3043d0dad358602525e66eccda",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/homepage-product-logo-294c61b96b6d37ba (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/homepage-product-logo-294c61b96b6d37ba/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.2.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}
