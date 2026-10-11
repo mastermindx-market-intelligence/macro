@@ -344,8 +344,184 @@ def test_cli_sanitizes_nested_credential_bearing_failures(
     assert cli.main(["--repository-root", "/tmp/reviewed"]) == 1
     captured = capsys.readouterr()
     assert captured.out == ""
-    assert captured.err == "option-OI canary capture failed closed\n"
+    assert captured.err == "option-OI canary capture failed closed stage=unknown\n"
     assert TOKEN not in captured.err
+
+
+def _benign_capture_dependencies(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[Path, Path]:
+    """Install the wrapper test's benign dependencies; return repo and store."""
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    store = tmp_path / "operator-store"
+    bundle = _bundle()
+    monkeypatch.setattr(cli, "_repository_commit", lambda root: "1" * 40)
+    monkeypatch.setattr(cli, "_read_systemd_bearer_token", lambda: TOKEN)
+    monkeypatch.setattr(
+        cli.option_oi,
+        "read_pinned_option_oi_sources",
+        lambda root, *, pinned_commit: SimpleNamespace(pinned_commit=pinned_commit),
+    )
+    monkeypatch.setattr(
+        cli.option_oi,
+        "build_current_spy_option_oi_observation",
+        lambda root, *, pinned_commit, bearer_token: bundle,
+    )
+    monkeypatch.setattr(
+        cli.option_oi_store,
+        "validate_option_oi_store_root",
+        lambda root, *, repository_root: store.resolve(),
+    )
+    monkeypatch.setattr(
+        cli.option_oi_store, "resume_pending_option_oi_captures", lambda root: ()
+    )
+    monkeypatch.setattr(
+        cli.option_oi_store,
+        "capture_option_oi_observation",
+        lambda root, *, bundle: _stored(bundle),
+    )
+    return repository, store
+
+
+_STAGE_FAILURE_TARGETS = {
+    "commit": (cli, "_repository_commit"),
+    "store_root": (cli.option_oi_store, "validate_option_oi_store_root"),
+    "resume": (cli.option_oi_store, "resume_pending_option_oi_captures"),
+    "pinned_sources": (cli.option_oi, "read_pinned_option_oi_sources"),
+    "credential": (cli, "_read_systemd_bearer_token"),
+    "transport": (cli.option_oi, "build_current_spy_option_oi_observation"),
+    "http_status": (cli.option_oi, "build_current_spy_option_oi_observation"),
+    "observe": (cli.option_oi, "build_current_spy_option_oi_observation"),
+    "persist": (cli.option_oi_store, "capture_option_oi_observation"),
+}
+
+_STAGE_FAILURE_MESSAGES = {
+    "commit": (cli.MarketMemoryOptionOiCaptureCliError, "x"),
+    "store_root": (cli.option_oi_store.MarketMemoryOptionOiStoreError, "x"),
+    "resume": (cli.option_oi_store.MarketMemoryOptionOiStoreError, "x"),
+    "pinned_sources": (cli.option_oi.MarketMemoryOptionOiObservationError, "x"),
+    "credential": (cli.MarketMemoryOptionOiCaptureCliError, "x"),
+    "transport": (
+        cli.option_oi.MarketMemoryOptionOiObservationError,
+        "explicit-credential option-OI request failed",
+    ),
+    "http_status": (
+        cli.option_oi.MarketMemoryOptionOiObservationError,
+        "option-OI source did not return HTTP 200",
+    ),
+    "observe": (
+        cli.option_oi.MarketMemoryOptionOiObservationError,
+        "option-OI body must be exact nonempty bytes within 4 MiB",
+    ),
+    "persist": (cli.option_oi_store.MarketMemoryOptionOiStoreError, "x"),
+}
+
+
+def _fail_the_named_dependency(monkeypatch: pytest.MonkeyPatch, stage: str) -> None:
+    """Make exactly the dependency named by ``stage`` raise its typed failure."""
+    target, attribute = _STAGE_FAILURE_TARGETS[stage]
+    error_type, message = _STAGE_FAILURE_MESSAGES[stage]
+
+    def fail(*_args: object, **_kwargs: object) -> object:
+        raise error_type(message)
+
+    monkeypatch.setattr(target, attribute, fail)
+
+
+@pytest.mark.parametrize(
+    "stage",
+    (
+        "commit",
+        "store_root",
+        "resume",
+        "pinned_sources",
+        "credential",
+        "transport",
+        "http_status",
+        "observe",
+        "persist",
+    ),
+)
+def test_cli_failure_line_names_the_failed_stage(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+    stage: str,
+) -> None:
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+    _fail_the_named_dependency(monkeypatch, stage)
+
+    assert (
+        cli.main(["--repository-root", str(repository), "--store-root", str(store)])
+        == 1
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == f"option-OI canary capture failed closed stage={stage}\n"
+    assert TOKEN not in captured.err
+
+
+def test_cli_failure_line_never_carries_the_exception_message(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+
+    def leaky_build(*_args: object, **_kwargs: object) -> SimpleNamespace:
+        raise cli.option_oi.MarketMemoryOptionOiObservationError(
+            f"provider echoed Bearer {TOKEN}"
+        )
+
+    monkeypatch.setattr(
+        cli.option_oi, "build_current_spy_option_oi_observation", leaky_build
+    )
+
+    assert (
+        cli.main(["--repository-root", str(repository), "--store-root", str(store)])
+        == 1
+    )
+
+    captured = capsys.readouterr()
+    assert captured.err == "option-OI canary capture failed closed stage=observe\n"
+    assert TOKEN not in captured.err
+    assert "Bearer" not in captured.err
+
+
+def test_failure_stage_rejects_missing_foreign_or_ambiguous_notes() -> None:
+    unnoted = ValueError("no stage note")
+    assert cli._failure_stage(unnoted) == "unknown"
+
+    foreign = ValueError("foreign stage note")
+    foreign.add_note("option-OI capture stage=evil")
+    assert cli._failure_stage(foreign) == "unknown"
+
+    ambiguous = ValueError("two stage notes")
+    ambiguous.add_note("option-OI capture stage=commit")
+    ambiguous.add_note("option-OI capture stage=persist")
+    assert cli._failure_stage(ambiguous) == "unknown"
+
+    unambiguous = ValueError("one stage note")
+    unambiguous.add_note("option-OI capture stage=credential")
+    assert cli._failure_stage(unambiguous) == "credential"
+
+
+def test_capture_function_keeps_the_original_exception_with_one_stage_note(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+    _fail_the_named_dependency(monkeypatch, "http_status")
+
+    with pytest.raises(
+        cli.option_oi.MarketMemoryOptionOiObservationError
+    ) as raised:
+        cli.capture_current_option_oi_availability(repository, store_root=store)
+
+    assert type(raised.value) is cli.option_oi.MarketMemoryOptionOiObservationError
+    assert str(raised.value) == "option-OI source did not return HTTP 200"
+    assert raised.value.__notes__ == ["option-OI capture stage=http_status"]
 
 
 def test_repository_commit_rejects_noncanonical_git_output(

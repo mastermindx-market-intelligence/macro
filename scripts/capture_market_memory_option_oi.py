@@ -35,6 +35,34 @@ class MarketMemoryOptionOiCaptureCliError(RuntimeError):
     """The deployed process cannot establish one private canary capture."""
 
 
+_CAPTURE_FAILURES = (
+    MarketMemoryOptionOiCaptureCliError,
+    option_oi.MarketMemoryOptionOiObservationError,
+    option_oi_store.MarketMemoryOptionOiStoreError,
+)
+# The one journald failure line may name WHERE the capture failed closed, as a
+# token from this closed vocabulary only -- never a message, provider byte,
+# path, or credential.
+_FAILURE_STAGES = frozenset(
+    {
+        "commit",
+        "store_root",
+        "resume",
+        "pinned_sources",
+        "credential",
+        "transport",
+        "http_status",
+        "observe",
+        "persist",
+    }
+)
+_STAGE_NOTE_PREFIX = "option-OI capture stage="
+# Exact literals raised by market_memory_option_oi_observation; matched by
+# equality only, so a reworded message degrades to "observe", never leaks.
+_TRANSPORT_FAILURE = "explicit-credential option-OI request failed"
+_HTTP_STATUS_FAILURE = "option-OI source did not return HTTP 200"
+
+
 def _repository_commit(repository_root: Path) -> str:
     git_env = {
         key: value
@@ -131,50 +159,66 @@ def capture_current_option_oi_availability(
 ) -> dict[str, Any]:
     """Fetch exactly one first page and durably capture source availability."""
 
-    root = Path(repository_root).expanduser().resolve()
-    commit = _repository_commit(root)
-    destination = (
-        option_oi_store.validate_option_oi_store_root(
-            Path(store_root).expanduser(), repository_root=root
+    stage = "commit"
+    try:
+        root = Path(repository_root).expanduser().resolve()
+        commit = _repository_commit(root)
+        stage = "store_root"
+        destination = (
+            option_oi_store.validate_option_oi_store_root(
+                Path(store_root).expanduser(), repository_root=root
+            )
+            if store_root is not None
+            else option_oi_store.default_option_oi_store_root(root)
         )
-        if store_root is not None
-        else option_oi_store.default_option_oi_store_root(root)
-    )
 
-    # A prepared record is already a durable first observation.  Resume it
-    # entirely from private CAS before opening the systemd credential or making
-    # a new request; otherwise a process crash could strand the original clock
-    # behind a later network response with a different source identity.
-    resumed = option_oi_store.resume_pending_option_oi_captures(destination)
-    if resumed:
+        # A prepared record is already a durable first observation.  Resume it
+        # entirely from private CAS before opening the systemd credential or making
+        # a new request; otherwise a process crash could strand the original clock
+        # behind a later network response with a different source identity.
+        stage = "resume"
+        resumed = option_oi_store.resume_pending_option_oi_captures(destination)
+        if resumed:
+            return _capture_result(
+                resumed[-1],
+                deployed_commit=commit,
+                capture_action="resumed_pending",
+                resumed_capture_count=len(resumed),
+            )
+
+        # The reviewed source semantics and entitlement are request preconditions,
+        # not post-request decoration. Validate them before opening the systemd
+        # credential; build() repeats the stable Git pin immediately before fetch.
+        stage = "pinned_sources"
+        option_oi.read_pinned_option_oi_sources(root, pinned_commit=commit)
+        stage = "credential"
+        bearer_token = _read_systemd_bearer_token()
+        stage = "observe"
+        bundle = option_oi.build_current_spy_option_oi_observation(
+            root,
+            pinned_commit=commit,
+            bearer_token=bearer_token,
+        )
+        del bearer_token
+        stage = "persist"
+        stored = option_oi_store.capture_option_oi_observation(
+            destination,
+            bundle=bundle,
+        )
         return _capture_result(
-            resumed[-1],
+            stored,
             deployed_commit=commit,
-            capture_action="resumed_pending",
-            resumed_capture_count=len(resumed),
+            capture_action="captured_current",
+            resumed_capture_count=0,
         )
-
-    # The reviewed source semantics and entitlement are request preconditions,
-    # not post-request decoration. Validate them before opening the systemd
-    # credential; build() repeats the stable Git pin immediately before fetch.
-    option_oi.read_pinned_option_oi_sources(root, pinned_commit=commit)
-    bearer_token = _read_systemd_bearer_token()
-    bundle = option_oi.build_current_spy_option_oi_observation(
-        root,
-        pinned_commit=commit,
-        bearer_token=bearer_token,
-    )
-    del bearer_token
-    stored = option_oi_store.capture_option_oi_observation(
-        destination,
-        bundle=bundle,
-    )
-    return _capture_result(
-        stored,
-        deployed_commit=commit,
-        capture_action="captured_current",
-        resumed_capture_count=0,
-    )
+    except _CAPTURE_FAILURES as exc:
+        if stage == "observe" and type(exc) is option_oi.MarketMemoryOptionOiObservationError:
+            if str(exc) == _TRANSPORT_FAILURE:
+                stage = "transport"
+            elif str(exc) == _HTTP_STATUS_FAILURE:
+                stage = "http_status"
+        exc.add_note(_STAGE_NOTE_PREFIX + stage)
+        raise
 
 
 def _capture_result(
@@ -237,6 +281,22 @@ def _capture_result(
     }
 
 
+def _failure_stage(exc: BaseException) -> str:
+    """Return the one fixed-vocabulary stage recorded on ``exc``, else ``unknown``."""
+
+    notes = getattr(exc, "__notes__", None)
+    if type(notes) is not list:
+        return "unknown"
+    stages = [
+        note[len(_STAGE_NOTE_PREFIX) :]
+        for note in notes
+        if type(note) is str and note.startswith(_STAGE_NOTE_PREFIX)
+    ]
+    if len(stages) != 1 or stages[0] not in _FAILURE_STAGES:
+        return "unknown"
+    return stages[0]
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Capture one private option-OI endpoint availability canary"
@@ -263,14 +323,14 @@ def main(argv: list[str] | None = None) -> int:
             args.repository_root,
             store_root=args.store_root,
         )
-    except (
-        MarketMemoryOptionOiCaptureCliError,
-        option_oi.MarketMemoryOptionOiObservationError,
-        option_oi_store.MarketMemoryOptionOiStoreError,
-    ):
+    except _CAPTURE_FAILURES as exc:
         # The process has handled a bearer credential. Never let a nested
         # transport/parser cause or hostile provider byte reach journald.
-        print("option-OI canary capture failed closed", file=sys.stderr)
+        # The stage token is chosen from a closed vocabulary by this module.
+        print(
+            f"option-OI canary capture failed closed stage={_failure_stage(exc)}",
+            file=sys.stderr,
+        )
         return 1
     print(
         json.dumps(
