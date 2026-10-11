@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T19:21:49.049763+00:00",
-  "count": 2826,
+  "generated_at": "2026-10-11T19:51:56.203743+00:00",
+  "count": 2827,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -103,6 +103,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-wjsf6ezrbet-d10add",
+      "title": "WUS (002463)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T17:12:20Z",
+      "summary_points": [
+        "AI PCB Demand & Margins: Q3 2026 revenue up 5% QoQ to Rmb7.8bn with gross margin expanding to 37.6% (vs. 8% YoY) driven by AI server/switch upgrades, higher-margin PCB product mix, and capacity expansion in China/Thailand.",
+        "Earnings & TAM Revision: 2026–2028 earnings revised up 8%/4%/4% (vs. prior), AI server PCB TAM raised to US$38bn by 2027E, with high-speed networking PCBs growing at 63% CAGR (2026–2028).",
+        "Valuation Upside: Target price raised to Rmb148 (31.8% upside from current Rmb112.29), based on 23x 2027E P/E (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-ytmfwvh7k4w-000230",
       "title": "Investment bulletin weekly week 40 final",
