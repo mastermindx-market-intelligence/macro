@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from engine.market_microstructure.pressure_response import (
-    _quote, _int, _name, _prior_quote, _fmt, MODES,
+    _quote, _int, _name, _prior_quote, _fmt, _midpoint, MODES,
 )
 
 SCHEMA = "equity.price_response_evaluation_label/v0"
@@ -94,8 +94,8 @@ def measure_matured_response(*, ticker, session, original_decision_ns,
     if a is None or b is None:
         return {**identity,"state":"UNOBSERVABLE",
                 "reason":{"anchor":ar,"forward":br}}
-    first=(a["bid"]+a["ask"])/2
-    last=(b["bid"]+b["ask"])/2
+    first=_midpoint(a)
+    last=_midpoint(b)
     pct_bps=(last/first-Decimal(1))*Decimal(10000)
     availability=max(watermark_received_ns,b["available_ns"])
     return {**identity,"state":"MATURED_EVALUATION_LABEL","reason":None,

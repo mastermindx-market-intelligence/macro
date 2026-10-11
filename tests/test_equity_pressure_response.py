@@ -60,6 +60,34 @@ def test_qualified_buy_sell_pressure_and_ask_size_recovery():
         "BUY_PROXY", "SELL_PROXY"}
 
 
+def test_research_midpoint_location_preserves_precision_beyond_default_decimal_context():
+    # The true midpoint is ...003 but default 28-digit Decimal math rounds
+    # it down to 1 and can invert an otherwise legitimate quote location.
+    bid = "1.00000000000000000000000000000"
+    ask = "1.00000000000000000000000000006"
+    price = "1.00000000000000000000000000002"
+    r = measure(trades=[t("precision", 130, price=price, size=1)],
+                quotes=[q("prior", 90, bid=bid, ask=ask)])
+    assert r["print_diagnostics_private_only"][0]["side_proxy"] == "SELL_PROXY"
+
+
+def test_research_large_and_small_print_totals_remain_exact():
+    huge = "1000000000000000000000000000000"
+    r = measure(trades=[t("big", 130, price=huge, size=1),
+                        t("small", 180, price="1", size=1)],
+                quotes=[q("prior", 90, bid="0.1", ask=str(int(huge) + 1))])
+    assert r["gross_active_notional_usd"] == str(int(huge) + 1)
+    assert r["buy_proxy_notional_usd"] == huge
+    assert r["sell_proxy_notional_usd"] == "1"
+
+
+def test_research_source_decimal_exponents_cannot_expand_unbounded_fixed_strings():
+    from engine.market_microstructure.pressure_response import _amount
+    for exponent in ("1e+999999999", "1e-999999999"):
+        with pytest.raises(ValueError, match="bounded"):
+            _amount(exponent, "source-price")
+
+
 def test_window_not_mature_when_event_watermark_lags():
     r = measure(watermark_ns=299)
     assert r["state"] == "NOT_MATURE"
@@ -80,6 +108,20 @@ def test_quote_arrives_after_decision_and_cannot_enter_as_seen_join():
     qs = [q("old", 90), q("late", 120, available=401, bid="100", ask="101")]
     result = measure(trades=[t("only", 130)], quotes=qs)
     assert result["print_diagnostics_private_only"][0]["quote_id"] == "old"
+
+
+def test_as_seen_quote_must_precede_trade_original_receipt_not_only_decision():
+    quotes = [q("old", 90, available=91, bid="100", ask="101"),
+              q("late", 120, available=200, bid="100", ask="102")]
+    trade = t("only", 130, available=131, price="101.9")
+    for mode in ("ACTUAL_AS_SEEN", "HISTORICAL_RECEIVABILITY"):
+        as_seen = measure(trades=[trade], quotes=quotes, evidence_mode=mode)
+        assert as_seen["print_diagnostics_private_only"][0]["side_proxy"] == "UNKNOWN"
+        assert as_seen["print_diagnostics_private_only"][0]["reason"] == (
+            "QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")
+    # Later-vintage retrospective analysis remains separately labeled.
+    final = measure(trades=[trade], quotes=quotes, evidence_mode="FINAL_VINTAGE")
+    assert final["print_diagnostics_private_only"][0]["side_proxy"] == "BUY_PROXY"
 
 
 def test_same_timestamp_quote_cannot_be_ordered_against_trade():

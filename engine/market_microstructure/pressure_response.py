@@ -14,12 +14,44 @@ from __future__ import annotations
 
 from bisect import bisect_left
 from collections import Counter, defaultdict
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, Context
 
 SCHEMA = "equity.pressure_response_observation/v0"
 MODES = frozenset({"ACTUAL_AS_SEEN", "HISTORICAL_RECEIVABILITY", "FINAL_VINTAGE"})
 VENUES = frozenset({"LIT", "TRF", "UNKNOWN"})
 ACTIONS = frozenset({"ORIGINAL", "REPLACE", "CANCEL"})
+MAX_FIXED_DECIMAL_CHARS = 128  # native input width, BEFORE fixed-point rendering
+_EXACT_PRECISION = 2 * MAX_FIXED_DECIMAL_CHARS + 16
+
+
+def _bounded_decimal(value: Decimal, name: str) -> Decimal:
+    """Reject exponent-amplified fixed-point values before formatting.
+
+    R0 is deliberately source-independent from draft TP1; this is its private
+    deterministic input-resource ceiling, not a new quote-signing authority.
+    """
+    if not value.is_finite():
+        raise ValueError(f"{name} must be finite")
+    digits = value.as_tuple()
+    count = len(digits.digits)
+    exponent = digits.exponent
+    left = count + exponent
+    if exponent >= 0:
+        width = count + exponent
+    elif left > 0:
+        width = count + 1
+    else:
+        width = 2 - left + count
+    if width + digits.sign > MAX_FIXED_DECIMAL_CHARS:
+        raise ValueError(f"{name} exceeds bounded decimal width")
+    return value
+
+
+def _midpoint(quote):
+    """Calculate exact quote midpoint before downstream rounded markouts."""
+    exact = Context(prec=_EXACT_PRECISION)
+    return exact.divide(exact.add(quote["bid"], quote["ask"]), Decimal(2))
+
 
 
 def _int(value, name):
@@ -29,8 +61,8 @@ def _int(value, name):
 
 
 def _positive_int(value, name):
-    if type(value) is not int or value <= 0:
-        raise ValueError(f"{name} must be a positive integer")
+    if type(value) is not int or value <= 0 or value.bit_length() > 425:
+        raise ValueError(f"{name} must be a bounded positive integer")
     return value
 
 
@@ -49,7 +81,7 @@ def _amount(value, name, *, allow_zero=False):
         raise ValueError(f"{name} is not decimal") from exc
     if not d.is_finite() or (d < 0 if allow_zero else d <= 0):
         raise ValueError(f"{name} must be finite and {'nonnegative' if allow_zero else 'positive'}")
-    return d
+    return _bounded_decimal(d, name)
 
 
 def _fmt(value):
@@ -255,10 +287,11 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
     if len(policy_refs) > 1:
         raise ValueError("mixed trade-condition policies require separate measurement windows")
     buy = sell = unknown = Decimal(0)
+    exact = Context(prec=_EXACT_PRECISION)
     counts = Counter()
     prints = []
     for trade in active:
-        notional = trade["price"] * trade["size"]
+        notional = exact.multiply(trade["price"], Decimal(trade["size"]))
         side = "UNKNOWN"
         quote_id = None
         age_ns = None
@@ -267,13 +300,22 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
         else:
             q, reason = _prior_quote(q_seen, q_times, trade["sip_ns"],
                                      max_age_ns=max_quote_age_ns, require_exact_order=True)
+            if (q is not None and evidence_mode != "FINAL_VINTAGE"
+                    and q["available_ns"] > trade["available_ns"]):
+                # A SIP-prior quote that arrived only after the print was not
+                # available for contemporaneous pressure classification.
+                # Later final-vintage research remains separately labeled.
+                # Never fall back to an older quote as if the newer update
+                # did not happen in the market.
+                q = None
+                reason = "QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT"
             if q is not None:
                 quote_id = q["id"]
                 age_ns = trade["sip_ns"] - q["sip_ns"]
                 if trade["price"] > q["ask"] or trade["price"] < q["bid"]:
                     reason = "OUTSIDE_NBBO"
                 else:
-                    mid = (q["bid"] + q["ask"]) / 2
+                    mid = _midpoint(q)
                     if trade["price"] > mid:
                         side = "BUY_PROXY"
                         reason = None
@@ -283,11 +325,11 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
                     else:
                         reason = "MIDPOINT_AMBIGUOUS"
         if side == "BUY_PROXY":
-            buy += notional
+            buy = exact.add(buy, notional)
         elif side == "SELL_PROXY":
-            sell += notional
+            sell = exact.add(sell, notional)
         else:
-            unknown += notional
+            unknown = exact.add(unknown, notional)
             counts[reason] += 1
         prints.append({"trade_id": trade["id"], "revision": trade["revision"],
                        "side_proxy": side, "reason": reason, "quote_id": quote_id,
@@ -298,11 +340,11 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
     end_q, end_reason = _prior_quote(q_seen, q_times, end_ns, max_age_ns=max_quote_age_ns)
     response = None
     if start_q is not None and end_q is not None:
-        start_mid = (start_q["bid"] + start_q["ask"]) / 2
-        end_mid = (end_q["bid"] + end_q["ask"]) / 2
+        start_mid = _midpoint(start_q)
+        end_mid = _midpoint(end_q)
         response = _fmt(((end_mid / start_mid) - 1) * Decimal(10000))
-    classified = buy + sell
-    gross = classified + unknown
+    classified = exact.add(buy, sell)
+    gross = exact.add(classified, unknown)
     return {
         "schema": SCHEMA, "authority": "RESEARCH_ONLY", "state": "MEASURED" if active else "NO_ELIGIBLE_PRINTS",
         "ticker": ticker, "session": session, "start_ns": start_ns, "end_ns": end_ns,
@@ -315,7 +357,7 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
         "buy_proxy_notional_usd": _fmt(buy), "sell_proxy_notional_usd": _fmt(sell),
         "unknown_notional_usd": _fmt(unknown), "gross_active_notional_usd": _fmt(gross),
         "classified_notional_coverage": _fmt(classified / gross) if gross else None,
-        "pressure_balance": _fmt((buy - sell) / classified) if classified else None,
+        "pressure_balance": _fmt(exact.subtract(buy, sell) / classified) if classified else None,
         "midpoint_response_bps": response,
         "response_null_reason": ({"start": start_reason, "end": end_reason} if response is None else None),
         "bid_size_recovery": _recovery(q_seen, start_q, start_ns, end_ns, "bid", max_age_ns=max_quote_age_ns),
