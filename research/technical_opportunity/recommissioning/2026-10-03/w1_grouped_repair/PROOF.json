@@ -1,0 +1,200 @@
+{
+  "operation": "toi-w1-grouped-review-candidate-20261005-c2-001",
+  "source_head": "15e4dfb0c9ddc788127d0954fd7d92414eefdcbf",
+  "generated_at": "2026-10-05T09:51:26.077749+00:00",
+  "scope": "Eight-path review patch applied and tested only in isolated artifact copies. Not an actual #7107 source update or current-base integration.",
+  "patch_sha256": "226b5d4539c16ccc0e6b3d5052ccd3cac93738a916afd0d808a6296c4d11a2d2",
+  "patch_bytes": 63599,
+  "changed_paths": [
+    {
+      "path": "research/technical_opportunity/W1_EVIDENCE_CENSUS.md",
+      "before_sha256": "37f52ee1656ccf673532996582ddda785a191dbe673d048648bdff6e41d799bc",
+      "after_sha256": "cf3afc0dd5de00e5cd76db26964ea45b1b53a1361fc557c401b9fe9db5f3923a",
+      "before_git_blob": "f1c6756f7e0f0e060d1aa3abe062675273c40190",
+      "after_git_blob": "50d99c45e4f33776e221bdcb2ba5960280144283"
+    },
+    {
+      "path": "research/technical_opportunity/W1_REPORT.md",
+      "before_sha256": "4958eba44ecffea163dee932ee7d39b64d6acc2606f6509365f2254d8e7f8f6c",
+      "after_sha256": "7501e6831d855db98025ef2dc6b9afd369da095e9d1dca3b306cb3d0c46ae6ae",
+      "before_git_blob": "a8c60960c72c5501773c08f7dcacfcd5bdaa2fc4",
+      "after_git_blob": "e275fbf8f182f0578ad11214bb421a5d642dce67"
+    },
+    {
+      "path": "research/technical_opportunity/W1_TO_W3_HANDOFF.md",
+      "before_sha256": null,
+      "after_sha256": "72a64b3e4336063cf507542148134629c9cb7fc0c9da0b608ea2f77ade6fae35",
+      "before_git_blob": null,
+      "after_git_blob": "d4236a6e502b893f5c19608fb9dc476702ddc1c9"
+    },
+    {
+      "path": "research/technical_opportunity/w1_local_coverage.json",
+      "before_sha256": "b63f19c93c772d1d69fbcdfd52873bc05f74dc17abab0fe5d2c52313cf470342",
+      "after_sha256": "87842f101c621c28ba606c6e0c7e2b8d4b221c67661373532861ae86d1f12108",
+      "before_git_blob": "f643223a7a5191179a482e468810c907d84979c9",
+      "after_git_blob": "f126453fc361721118a64c4cf6b66c4b28b389fe"
+    },
+    {
+      "path": "research/technical_opportunity/w1_method_passports.jsonl",
+      "before_sha256": "fb17d4d83b7822609f6faffbbf74a9daef8f44207e09784b427f349aea32abd5",
+      "after_sha256": "b3b8d4a1c2b7caf3338cd8a481e0d2d750a2200155723d24d3f1f9cb3c70751f",
+      "before_git_blob": "77a88239cb542dea1f2dd461a5bb580281f64246",
+      "after_git_blob": "53c3a142d207197a3e7275b962e894d1e961ba88"
+    },
+    {
+      "path": "research/technical_opportunity/w1_reproduction_sample.json",
+      "before_sha256": "cd1c60906af7d05e19257550d6fddd9b6394469665cc2b7b8e98f199525a0788",
+      "after_sha256": "c5768f4c8bc8d90e008ce5133ddefe52413d68b189c233d6d012b8fb4c82d63b",
+      "before_git_blob": "c63cd8115a37e2581b8612c2ab402c6488b649a5",
+      "after_git_blob": "8c2111b7cc6f242e83368b686c6ad6f24d56f5f6"
+    },
+    {
+      "path": "scripts/research/validate_toi_w1_passports.py",
+      "before_sha256": "2701e1372f7cb20bb1f9cd4561446cb2e848ddcc6a5edf54c5d65d7bb43b6581",
+      "after_sha256": "7a1804af0bd8a1c7fc19c5366883da92d210db6c12b2654396572241d47f60f2",
+      "before_git_blob": "f409d2dee7789770ad398f87b6683c84aa5d6fbd",
+      "after_git_blob": "50af8098f015d8fb03fd6c1c1eba4d83caa1cd43"
+    },
+    {
+      "path": "tests/test_toi_w1_census.py",
+      "before_sha256": "27a9aed59ba7ed92cdbc9dad60dcc77baee1f2943d4b325c9c965a6b62b4f09f",
+      "after_sha256": "b0525de3b1cb6d76309c86b1385c9caf2b5cd80b1b6f37fb05849ad4addba5e2",
+      "before_git_blob": "c6a42cfaab0be7ddb9525691f8628c404953cedb",
+      "after_git_blob": "df9aacd058071c56675d000db1230ac85521fc27"
+    }
+  ],
+  "baseline_committed_head": {
+    "tests_passed": 23,
+    "tests_failed": 3,
+    "passport_validator": "FAIL: real generated golden_cross_7_35 rejected",
+    "other_validators": 3
+  },
+  "preserved_pending_baseline": {
+    "tests_passed": 27,
+    "tests_failed": 1
+  },
+  "new_regression_red": {
+    "tests_passed": 30,
+    "tests_failed": 7,
+    "warnings": 4,
+    "warning_scope": "pre-existing unrelated pytest temporary-cache cleanup; no cleanup or permissions changed"
+  },
+  "first_grouped_run": {
+    "tests_passed": 34,
+    "tests_failed": 3,
+    "reason": "Three old fixture tests assumed first passport exact after intentional partial downgrade; corrected to select an actual exact passport, no weakened guards"
+  },
+  "final_tests_passed": 37,
+  "all_four_validators_pass": true,
+  "patch_clean_apply_check": true,
+  "replay_postimages_match": true,
+  "replay_results": [
+    {
+      "argv": [
+        "python3",
+        "scripts/research/validate_toi_w1_passports.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"count\": 32, \"exact_local_count\": 24, \"owner_counts\": {\"existing_species\": 1, \"terminal_display\": 3, \"toi_later_context\": 8, \"toi_w3_candidate\": 20}, \"priority_counts\": {\"P0\": 12, \"P1\": 10, \"P2\": 8, \"archive\": 2}, \"status\": \"valid\"}\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/research/validate_toi_w1_sources.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"p0_p1_count\": 22, \"passport_count\": 32, \"source_count\": 29, \"status\": \"valid\"}\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/research/validate_toi_w1_equivalence.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"alias_count\": 65, \"class_count\": 29, \"method_count\": 32, \"status\": \"valid\", \"unresolved_count\": 0}\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/research/validate_toi_w1_residuals.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"family_count\": 10, \"family_counts\": {\"P2\": 6, \"archive\": 2, \"blocked\": 2, \"total\": 10}, \"status\": \"valid\"}\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp",
+        "<review-artifact>/pytest_replay_temp",
+        "tests/test_toi_w1_census.py"
+      ],
+      "exit_code": 0,
+      "output": ".....................................                                    [100%]\n37 passed in 0.19s\n"
+    }
+  ],
+  "mutations": [
+    {
+      "mutation": "without_generated_id_resolver",
+      "selection": "dynamic_registry_signal_ids_are_accepted or current_passports_validate",
+      "exit_code": 1,
+      "failed_cases": [
+        "tests/test_toi_w1_census.py::test_current_passports_validate - ValueEr...",
+        "tests/test_toi_w1_census.py::test_dynamic_registry_signal_ids_are_accepted"
+      ],
+      "summary": "2 failed, 35 deselected in 0.07s",
+      "failure_output_sha256": "d9ac3c22ae5ad3be62375a50015821f988d01413df7050ef82336479676f27ac",
+      "kill_reason": "targeted regression failures, not import errors"
+    },
+    {
+      "mutation": "wrong_duplicate_fixture",
+      "selection": "equivalence_duplicate_membership",
+      "exit_code": 1,
+      "failed_cases": [
+        "tests/test_toi_w1_census.py::test_equivalence_duplicate_membership_fails_closed"
+      ],
+      "summary": "1 failed, 36 deselected in 0.05s",
+      "failure_output_sha256": "d66fbf7acd73f4153ac6ad833889f143bf957ef239db254f6260667d0b2dfe61",
+      "kill_reason": "targeted regression failures, not import errors"
+    },
+    {
+      "mutation": "without_first_class_guard",
+      "selection": "first_class_cardinality",
+      "exit_code": 1,
+      "failed_cases": [
+        "tests/test_toi_w1_census.py::test_equivalence_first_class_cardinality_has_its_own_guard[False]",
+        "tests/test_toi_w1_census.py::test_equivalence_first_class_cardinality_has_its_own_guard[True]"
+      ],
+      "summary": "2 failed, 35 deselected in 0.06s",
+      "failure_output_sha256": "0d437803014be26c4454b4203a44b148c5d4ce182423f353142a61f47d38bc0e",
+      "kill_reason": "targeted regression failures, not import errors"
+    }
+  ],
+  "preserved_validator_sha256": "7a1804af0bd8a1c7fc19c5366883da92d210db6c12b2654396572241d47f60f2",
+  "live_pending_preimages_unchanged": [
+    {
+      "path": "scripts/research/validate_toi_w1_passports.py",
+      "sha256": "7a1804af0bd8a1c7fc19c5366883da92d210db6c12b2654396572241d47f60f2",
+      "original_unchanged": true
+    },
+    {
+      "path": "tests/test_toi_w1_census.py",
+      "sha256": "5a84cd21521e01ac8d4931e23722cd11a5aba95719848b2aef886e235418dcbd",
+      "original_unchanged": true
+    }
+  ],
+  "original_30_untouched_passport_rows": true,
+  "all_method_formulas_priorities_owners_source_refs_equivalence_unchanged": true,
+  "engine_files_unchanged": 16,
+  "w1_equivalence_validator_unchanged": true,
+  "source_branch_modified": false,
+  "actual_source_custody_recovered": false,
+  "independent_review_complete": false,
+  "agentos_validation_performed": false,
+  "current_base_or_hosted_proof": false,
+  "market_data_outcomes_models_or_trial_registration": false
+}

@@ -1,0 +1,18 @@
+{
+  "result": "31 passed, 2 failed",
+  "failures": [
+    {
+      "test": "test_shipped_shell_and_protected_payload_are_paired",
+      "error": "FileNotFoundError",
+      "meaning": "Committed statistical HTML/payload was not acquired and remains untested."
+    },
+    {
+      "test": "test_gates_receipt_literals_match_minerconfig_defaults",
+      "error": "ModuleNotFoundError: engine.tech_confluence",
+      "meaning": "Initially omitted unchanged source module; supplied before the final qualified test run."
+    }
+  ],
+  "original_receipt_sha256": "2c69ee402eae3066fc15d4362ccbf66fd109f7e7af1f9ca3d1d672266a461960",
+  "final_result_ref": "QUALIFIED_SUITE_RECEIPT.json",
+  "scope": "Initial isolated full-file attempt; not a repository or production defect classification."
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "path": "engine/i18n.py",
+    "blob": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+    "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
+  },
+  {
+    "path": "templates/_site_nav.html.j2",
+    "blob": "9848b9366d43553f9d69997ecdb0a07e15e4ad2b",
+    "sha256": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482"
+  },
+  {
+    "path": "templates/_navlinks.html.j2",
+    "blob": "aed9fa1bd5be7f14b752b28866a2563aac1ce885",
+    "sha256": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
+  }
+]

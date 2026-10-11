@@ -1,0 +1,99 @@
+{
+  "kind": "grouped-repair-review-publication-validation",
+  "source_docs_head": "51db78fb7065ec2501b7340bbc27d097ebe687f8",
+  "w1_original_head": "15e4dfb0c9ddc788127d0954fd7d92414eefdcbf",
+  "native_tests_passed": 37,
+  "validators_passed": 4,
+  "patch_applies_cleanly_to_exact_export": true,
+  "postimage_match": true,
+  "untouched_other_passport_rows": 30,
+  "unchanged_native_engine_files": 16,
+  "relative_links_verified": 26,
+  "checkpoint_update": "EXPLICIT_PREDISPATCH_REFUSAL_NOT_RETRIED",
+  "cumulative_checkpoint_updated": false,
+  "source_custody_or_w3_admission": false,
+  "source_paths_written": false,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4078,
+      "sha256": "a58f79df8778671c6947be51948a6a0977272b3dfb106c27d6f465c5835da085"
+    },
+    {
+      "path": "TOI_CEO_START_PROMPT_2026-10-03.md",
+      "bytes": 6871,
+      "sha256": "687aab75ee3a3cc29a4e086891d342060e0fcc79187dc9db09dce0b43f938ee4"
+    },
+    {
+      "path": "w1_grouped_repair/CANDIDATE_W1_TO_W3_HANDOFF.md",
+      "bytes": 10018,
+      "sha256": "72a64b3e4336063cf507542148134629c9cb7fc0c9da0b608ea2f77ade6fae35"
+    },
+    {
+      "path": "w1_grouped_repair/CURRENT_SOURCE_COMPATIBILITY.json",
+      "bytes": 4096,
+      "sha256": "48b1e6e7d2b15f68d43ec434a52701d665d2b0f97d1e834114cbf35a218c79d6"
+    },
+    {
+      "path": "w1_grouped_repair/PRESERVED_BASE_REPLAY.json",
+      "bytes": 1325,
+      "sha256": "3023cdb432a25ead196a672fbfaa5e14e232a4afcf644631b3275141ce4546bd"
+    },
+    {
+      "path": "w1_grouped_repair/PROOF.json",
+      "bytes": 8719,
+      "sha256": "3699b3cde9d5abb4f89da47001a889d86b8c2a6e56755ce6b5c77d9738ce030b"
+    },
+    {
+      "path": "w1_grouped_repair/README.md",
+      "bytes": 4701,
+      "sha256": "5be008cce56afb6529be3287812371aaad88da426cd84603454435fe4d5bf5e9"
+    },
+    {
+      "path": "w1_grouped_repair/SOURCE_EXPORT.json",
+      "bytes": 7053,
+      "sha256": "0d7dcc3af60fc0fc9e99a682d650a45000078fd00ba417900f0b2f585c5652b3"
+    },
+    {
+      "path": "w1_grouped_repair/W1_GROUPED_REPAIR.patch",
+      "bytes": 63599,
+      "sha256": "226b5d4539c16ccc0e6b3d5052ccd3cac93738a916afd0d808a6296c4d11a2d2"
+    },
+    {
+      "path": "w1_grouped_repair/W1_GROUPED_REPAIR_FROM_PRESERVED.patch",
+      "bytes": 57572,
+      "sha256": "bc0a41c63ab182fce0244f70c40298a3b054ad0feacae348c957bed76d33c5a3"
+    }
+  ],
+  "preserved_base_replay": {
+    "patch_sha256": "bc0a41c63ab182fce0244f70c40298a3b054ad0feacae348c957bed76d33c5a3",
+    "patch_bytes": 57572,
+    "input_base": "frozen15e4dfb0 export with exactly the two preserved pending preimages overlaid in this isolated copy",
+    "preserved_inputs": [
+      {
+        "path": "scripts/research/validate_toi_w1_passports.py",
+        "sha256": "7a1804af0bd8a1c7fc19c5366883da92d210db6c12b2654396572241d47f60f2",
+        "original_unchanged": true
+      },
+      {
+        "path": "tests/test_toi_w1_census.py",
+        "sha256": "5a84cd21521e01ac8d4931e23722cd11a5aba95719848b2aef886e235418dcbd",
+        "original_unchanged": true
+      }
+    ],
+    "changed_paths": [
+      "research/technical_opportunity/W1_EVIDENCE_CENSUS.md",
+      "research/technical_opportunity/W1_REPORT.md",
+      "research/technical_opportunity/W1_TO_W3_HANDOFF.md",
+      "research/technical_opportunity/w1_local_coverage.json",
+      "research/technical_opportunity/w1_method_passports.jsonl",
+      "research/technical_opportunity/w1_reproduction_sample.json",
+      "tests/test_toi_w1_census.py"
+    ],
+    "clean_apply_check": true,
+    "all_postimages_equal_tested_candidate": true,
+    "postimage_files_compared": 30,
+    "test_repetition": "Not repeated: every postimage is byte-identical to the37-test/four-validator replay result",
+    "source_branch_or_live_pending_write": false
+  }
+}
