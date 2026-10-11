@@ -16,7 +16,7 @@
 | Trial-ledger line numbers | `engine/trial_ledger.py`, same commit. |
 | Grading-statistics line numbers | `engine/grading_stats.py`, `engine/pick_forward_dist.py`, `engine/k3e_eval1_forward.py` and `engine/ai_desk.py`, same commit. |
 | V0 | `research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md` and `SNI_V0_EXTENSION_DECISION.md`, on main (PR #8834). |
-| E0, M0 and coverage profiles | `SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md`, `SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md`, and `config/single_name_intelligence/coverage_profiles/{alibaba,tencent}.yml`, at `43251ca845b2` (PR #8837, not yet on main). |
+| E0, M0 and coverage profiles | `SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md`, `SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md`, and `config/single_name_intelligence/coverage_profiles/{alibaba,tencent}.yml`, at `43251ca845b2` (PR #8837; byte-identical on origin/main `98a40e3f4b13`). |
 | SNI masterplan | `7906ef1c` (PR #8773, draft). |
 
 ## 0. Authority (frozen)
