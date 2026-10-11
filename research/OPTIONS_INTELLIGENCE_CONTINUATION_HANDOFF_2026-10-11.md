@@ -105,6 +105,36 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   `ROUTE: AUDIT`, `MODE: READ_ONLY`), never the O7 agent. PR-head inputs pre-materialized into scratchpad
   `leads/O8/inputs/` (the auditor has Read/Glob/Grep only). Checks = the six O8 checks of 08:53Z +
   U01-A01..A05 against O7's candidate + B4 guest-bundle `OptionsRail` + D02/D03 consistency.
+- D22 (closes O-4) The `merge-queue-pilot` FAIL on #7861 is by design (inactive base context), not a merge
+  gate. The real gates stay D14's: Sol hold-condition disposal, owner merge-commit refresh onto current main,
+  fresh `ci-authority`/`ci-authority/main` green, and an approval from an account that is not the author.
+- D23 (A05 disposition) R4(a) PASS and R4(c) PASS by observation on the job interpreter and the live R2
+  credential; the `_MissingSnapshot` path is viable and the negative baseline (history/ empty) holds.
+  R4(b) 412 semantics remain unobserved (defense-in-depth only). D17(ii) synthetic write stays unauthorized.
+- D24 (O8 judged) O8's return is ACCEPTED as evidence (artifact-verified). O7's U01 candidate →
+  REQUEST_REPAIR with O8 defects 1–12, seat adjustments: defect 11 downgraded (no `verbatimModuleSyntax`;
+  the gate is the guest-route chunk grep at the integrated head); defect 7 → Low (sign-out is a document
+  navigation; residual bounded by TTL); defect 8 mitigated by blob identity — the owning PR for
+  `investigationOptionsReference.ts` is #846 (lands in U01 step 2); #804's copy becomes a no-op add/add;
+  defect 4 is a producer-contract item (D02-A04 / U02-A03) owed to the Research Lab lane, not step 1.
+  Rulings folded into the refresh commission: (C3) ONE decoder = `investigationOptionsReference` semantics
+  (refuse `source_session_mismatch`); gexLadder adopts the shared resolver; a session≠asof_date fixture is
+  asserted in both test files. (A04) the `flowGetFresh` conflict resolves by keeping master's `FlowOutcome`
+  → `dataOrNull` unwrap with explicit `Promise<T | null>` typing, proven by the 404/503/network/200 test.
+  (#891) owner merge-commit refresh onto current master is mandatory before any step-1 test claim.
+- D25 (identity) Because the seat posts as `mastermindxryan`, (a) a review from this seat can never be the
+  D14 non-author approval of #7861 (human-only / other-account gate); (b) D18's "R1 requested of the author"
+  is reframed: R1 + R4/A05 evidence + D22 are recorded ONCE as a #7861 comment, and the R1 fix is a
+  seat-owned successor PR after #7861 (D18 unchanged in substance); (c) #846/#804 refreshes performed under
+  this account are the author's own pushes — no custody transfer is implied for #723, whose refresh still
+  needs the D20 fencing claim.
+- D26 (U01 step-1 commission shape) One fabric operator (grok, class fix_build) performs the #723 refresh in
+  a fresh SSD worktree on the PR branch itself (merge commit of origin/master, never rebase/force-push):
+  phase A = merge + conflict resolution + C1 cache union (D24 A04 rule) + companion absent/unavailable split
+  (defects 2, 3) + C3 one-decoder (defect 1) + tsc/vitest green except the evidence-lock tests it names;
+  phase B = REAL recapture of every changed row (defect 10) + guest-route chunk grep (defect 11) + green
+  `b_pl_6Batch1Evidence`. NOT DONE UNLESS gates = O8's exact re-checks. The operator never marks ready,
+  labels, or merges; the seat reviews the pushed head by artifact.
 
 ## FACTS (observed this session, UTC 2026-10-11)
 
@@ -166,6 +196,34 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   pr723=b83a9b852 pr846=eb57a6830 pr804=feabd4447 master=fc76cf495 under `leads/O8/inputs/`; ort conflict sets:
   #723 vs master rc=1 (77 lines), #846 vs master rc=1 (12 lines), #804 vs master rc=0, #723×#846 rc=0;
   `investigationOptionsReference.ts` byte-identical pr846==pr804 (cmp).
+- 16:57Z A05 read-only R2 checks on m1 (script `leads/O1/a05/r2_readonly_probe.py`, output `.out`; credentials
+  sourced by the remote process only, never printed): (i) the launchd job interpreter
+  `/opt/homebrew/Caskroom/miniconda/base/bin/python` resolves (readlink -f) to
+  `~/miniconda3/envs/plane/bin/python3.12`; botocore/boto3 1.43.56 there model PutObject
+  `IfNoneMatch: True | IfMatch: True`. (c) HEAD on a nonexistent key → `404` (not 403); the publisher
+  credential can LIST. `options_structure/matrix/history/` → n=0 objects. Current heads SPY/QQQ/AAPL/IWM are
+  855–856-byte payloads, Last-Modified 2026-10-02T23:00:30Z…23:01:17Z — no publish since Oct 2 (consistent
+  with the Oct 6 "stale empty matrices" receipt; D15 unchanged). (ii) synthetic `history/` write NOT run.
+- 16:57Z Macro `ci-authority/codex/merge-queue-pilot` on #7861 (check-run 113694379423) = `allowed:true,
+  reason:same_repo_admin_authority_change, context_active:false, context_reason:inactive_base_context`;
+  `.github/workflows/ci-authority.yml:11-16` states each run fails the inactive base context by design.
+  Macro `main` branch protection API → 404 (unprotected); merge path = `merge-on-green` label.
+- 16:57Z O8 auditor hit the 12-turn limit on a status note → ONE nudge → full packet returned; saved
+  `leads/O8/U01_acceptance_review.md` (sha256 c28b033b98…, verdict REQUEST_REPAIR, 12 defects). Every High
+  citation re-read against `leads/O8/inputs/` bytes: all CONFIRMED. Supplementary: Terminal `tsconfig.json`
+  has `isolatedModules` only (no `verbatimModuleSyntax`); blob of `lib/investigationOptionsReference.ts`
+  is identical in pr846 and pr804 (sha256 9debfdb1…); #891 `b7a3357b0` is an ancestor of NONE of
+  refs/pr/723 (b83a9b852), 846 (eb57a6830), 804 (feabd4447); origin/master = fc76cf495 (O8's master head),
+  and worktree caf202fd5 is its ancestor (only #917, no material path).
+- 16:57Z `app/auth/signout/route.ts` is a POST route handler answering 303 → `/login`: sign-out is a document
+  navigation, so the module-level flow cache Map is discarded. Residual for O8 defect 7 = entitlement lapse
+  while signed in, bounded by TTL 25 s + the `enabled && open` gate.
+- 16:57Z Identity: this seat's `gh` login is `mastermindxryan` = author of #846, #804 and the account that pushed
+  #7861's heads; #723 author = `chriswong6031-creator` (same-repo, draft, APPROVED by the T09 Opus auditor at
+  b83a9b852 on 10-09T06:52Z). No claim comment by this seat exists on #723 (O.17 search clean). #7861 has no
+  review by this seat (4 reviews, all mastermidx4). No #7861 comment carries A05/R1 evidence yet.
+- 16:57Z `pool plan --class execute --need 1` → grant_now=1 on bailian, minimax, grok, cursor, glm, go
+  (cluster_active glm 2/24, others 0). Capacity admits again. (`ssh m2` hostname does not resolve from this host.)
 
 ## OPEN
 
@@ -177,24 +235,33 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   after the fact. Root fix (m1 TCC grant) is user-only.
 - O-3 Q01 CLOSED by D13 (O-A). Residual: OC design commission (statistics owner, when capacity admits);
   DR-6 bookkeeping owed to the #8385 author. Ruling comment POSTED 09:22:14Z (issuecomment-6107542191).
-- O-4 Which macro checks gate #7861 (`merge-queue-pilot` 0s FAIL unexplained) — part of the D14 gate.
+- O-4 CLOSED by D22 (merge-queue-pilot FAIL is by design; gates = D14).
 - O-5 U02 existing SQL operator approval — not reachable from this seat; name the exact approver when U02 opens.
 - O-6 Executive connector OAuth (user action in an interactive `claude` terminal via `/mcp`).
 - O-7 CLOSED by D20 (custody VACANT; fenced claim at launch only).
-- O-8 Guest-bundle status of #723's static `OptionsRail` import — O8 auditor checks at the PR head;
-  integrated-head verification still owed to the refresh lane.
-- O-9 A05 read-only R2 checks (botocore `IfNoneMatch`; 403-vs-404 on absent key) — next bounded host budget (D17).
-- O-10 R1 pre-merge amendment request to the #7861 author (one PR review) — owed (D18).
+- O-8 Guest-bundle B4: static imports clean at the PR head (O8); gate = guest-route chunk grep at the
+  integrated head (D26 phase B).
+- O-9 A05 (i)/(c) DONE (D23). Owed: (ii) synthetic `history/` write — source-owner authorization only.
+- O-10 Reframed by D25: ONE #7861 comment carrying R1 + A05 evidence + D22; R1 fix = seat-owned successor PR.
+- O-11 O8 defects 4/5/6 (float strikes, silent drop/missing-as-zero, session-only pin) belong to the Research
+  Lab lane (#846 step 2 / U02), with D02-A04 as the contract; not a step-1 gate.
+- O-12 #804 `updatedAt` 2026-10-11T09:05Z with unchanged head feabd4447 — inspect the carrier edge before any
+  #804 coordination note.
 
 ## NEXT
 
-1. Consume the O8 auditor return by artifact → record dispositions → ACCEPT/REQUEST_REPAIR on O7's candidate.
-2. While O8 runs: O-4 `merge-queue-pilot` classification (read-only gh); D17 A05 read-only checks on m1 (botocore IfNoneMatch; 403-vs-404), credentials never printed; then ONE #7861 review carrying R1 + R4 findings (D18).
-3. (done) #8385 ruling posted; G01 A02 deferred.
-4. When capacity admits: U01 refresh operator (fenced claim on #723 at launch, D20); D01-A01/R6 lane (D16);
-   A05 read-only checks (D17); OC design commission (D13); #7861 R1 review (D18).
+1. Launch the D26 step-1 operator (`pool run grok`, packet in scratchpad `leads/O7/U01_step1_refresh_packet.md`);
+   on admitted START post the ONE fencing claim on #723 (D20); arm one watcher (the background exit).
+   If admission is refused → record PENDING_CAPACITY, no route-around (L.7).
+2. Post ONE #7861 comment: A05 (i)/(c) evidence, D22 classification, R1 owed as successor PR (D25). Never
+   a self-approval; never merge.
+3. When the operator returns: judge the pushed #723 head by artifact (tsc/vitest log, chunk grep, recapture
+   diff); ACCEPT → fresh independent review (the T09 approval does not carry), then `merge-on-green` by the
+   seat; REQUEST_REPAIR → numbered defects, one round.
+4. Then U01 step 2 (#846 refresh under this account, D24 defect 8 ruling; O-11 items; lockfile regen).
 5. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
-6. Expand to O2/O3/O4/O6 only when their inputs clear (D01 falsifier, #7861 merge, U01 integrated head).
+6. Later waves per D13/D16/D18: OC design commission; D01-A01/R6 lane; #7861 successor PR; expand to
+   O2/O3/O4/O6 only when their inputs clear.
 
 ## Lane matrix
 
@@ -204,9 +271,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | G01 canary (Q01 source-contract) | native Opus (general-purpose/opus) → `pool run grok` operator | scratchpad `g01_canary/` | this file | — (watcher timed out 09:25Z) | CLOSED PARTIAL — A01/A03/A04 PASS; A02 DEFERRED (fabric admission refused on m2 load all session) | — |
 | O1 D01→D02→D03 | native Opus lead (lead-performed; 0 operators admitted) | scratchpad `leads/O1/` | #7861 / #599 | — | JUDGED: ACCEPT (census CUR, crosswalk, plan); rulings D14–D19 | 1 lead |
 | O5 Q01 | native Opus lead (lead-performed) | scratchpad `leads/O5/` | #8385 | — | JUDGED: ACCEPT as independent methods review; D13 | 1 lead |
-| O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | ACCEPTED as PLAN 08:53Z; D7–D12 | 1 lead |
-| O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | RUNNING since 09:23Z (eight frozen checks) | 1 auditor |
-| U01 refresh (#723→#846) | fabric operator (PENDING_CAPACITY) | new terminal worktree per lane | #723 / #846 | — | NOT_STARTED (fenced claim at launch) | — |
+| O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | PLAN ACCEPTED 08:53Z → REQUEST_REPAIR (O8 defects 1–12 + D24 rulings), carried by the refresh commission D26 | 1 lead |
+| O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | DELIVERED 09:3xZ (after one nudge at the 12-turn limit) → JUDGED: ACCEPT as evidence; D24 | 1 auditor |
+| U01 refresh (#723→#846) | fabric operator grok (fix_build), D26 | SSD worktree on `claude/terminal-options-heatmap-20260923` | #723 | background `pool run` exit + log | LAUNCHING (capacity admits; fenced claim posted only on admitted START) | 1 operator |
 
 ## DO_NOT_REDO (this programme)
 
@@ -232,9 +299,9 @@ amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKN
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (WIP commit "O1/O5 judged; D13–D21" on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "O8 judged; D22–D26" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: consume O8 auditor return (RUNNING since 09:23Z); meanwhile O-4 classification + D17 read-only A05 checks
+EXACT_NEXT_ACTION: launch D26 step-1 refresh operator on #723 (fenced claim on admitted START); post the single #7861 evidence comment
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -326,4 +393,10 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - One compact D13 ruling comment on #8385 (searched first; none existed). #8385 stays DRAFT/REVISE.
 - G01 canary closed PARTIAL: A02 deferred on sustained m2 load (delegation surface down, L.7). No route-around.
 - O8 launched with eight frozen checks; inputs materialized by the seat via `git show` (the auditor has no git).
+### 2026-10-11 16:57Z — O8 judged; A05 (i)/(c) observed; O-4 closed; D22–D26
+- O8 return consumed by artifact (one nudge at the 12-turn limit); all High citations confirmed. U01 candidate → REQUEST_REPAIR.
+- A05 read-only probe on m1: botocore models IfNoneMatch; absent key → 404; history/ empty; heads stale at 2026-10-02T23:00Z.
+- Identity finding: seat = `mastermindxryan` (author account of #846/#804/#7861 heads) → D25 reframes D14/D18 obligations.
+- Capacity admits again (grant_now=1 everywhere) → D26 step-1 refresh commission prepared for `pool run grok`.
+- Cost this cycle: ~20 tool calls, 1 native Opus auditor (completed), 0 operators yet.
 
