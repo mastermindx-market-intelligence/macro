@@ -38,10 +38,13 @@ worktree-mint command — a command the session could run itself. The Chairman r
 the stop and ordered the defect fixed at the root.
 
 A **quarantined session root, an SSD worktree mint, a stale hook copy in a host
-checkout, a stale ref, a helper lock, a missing directory, or a permission prompt** is
-an ADMINISTRATIVE blocker: the session clears it in the same conversation. **A hook
-denial names its remedy — read the text and perform it.** `defaultMode=bypassPermissions`
-is already set for Claude sessions, so a permission prompt is never the blocker.
+checkout, a stale ref, a helper lock, or a missing directory** can be an
+ADMINISTRATIVE blocker: diagnose and perform the permitted remedy in the same
+conversation. A hook message is evidence to inspect, not authority to override a
+control. **An actual permission or consent prompt remains a real boundary.**
+A permissive local setting does not authorize bypassing OS/provider consent,
+authentication, explicit refusals or another client's approval dialog. Identify
+that exact action once and continue independent permitted work.
 
 The quarantine recipe is three steps, printed filled-in by `ship_loop_guard.py` itself:
 
@@ -64,9 +67,11 @@ launched from a macro checkout plant on the SSD, and a helper refusal is FINAL. 
 checkout whose `.claude/hooks/` bytes predate this still mints the old way — keep them
 current by file overwrite only, never by git operations on the primary.
 
-**`EXACT_HUMAN_GATE` requires three proofs:** tool/permission evidence that the act is
-unavailable to the session, two no-delta attempts with a CHANGED tactic, and the named
-exact human action. Real gates are MFA / Touch ID / passkey / CAPTCHA, a provider
+**`EXACT_HUMAN_GATE` requires evidence, not a retry quota:** name the exact
+blocked action, observed tool/permission facts, and the reachable human action.
+A known human-only control requires no repeated probe. An explicit safety/permission
+refusal ends that effect immediately; ordinary technical failures can receive bounded
+permitted diagnosis. Real gates are MFA / Touch ID / passkey / CAPTCHA, a provider
 refusal, a physical device, money or security-setting changes, and Sol/Chairman rulings
 the seat does not hold. "I could not find a path" is not a gate: troubleshoot (read the
 hook or helper source, run its check command, inspect the mount/policy/receipt) before

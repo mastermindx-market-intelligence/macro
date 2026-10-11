@@ -4,7 +4,22 @@ Parent mission: execution-friction-repair-20261011-astra-001, Mastermind PR #134
 Macro operation: execution-friction-macro-entrypoint-20261011-astra-001.
 Source base: 395e5d6089e95aa907c48fae811ecb918fb26f95.
 
-## Confirmed defect and delivered scope
+## Current revision scope
+
+The original `7d07168a` migration below preserved every byte while reordering sections.
+The later `64e59bcb` revision removed the permanent whole-guide hash lock. The current
+candidate also makes two narrow safety clarifications in AGENTS.md and CLAUDE.md:
+actual OS/provider consent remains a real boundary regardless of a permissive local
+setting, and a known human-only control needs no repeated probe to be recognized.
+Ordinary permitted remediation still proceeds autonomously. These clarify safeguards;
+they do not change role authority, installed hooks, runtime permissions or memory.
+The original byte-preservation claim is historical proof, not a claim about this later
+clarification. Current verification: **31 tests plus six subtests passed**, covering
+permission-boundary regressions, instruction transport and existing continuation law.
+Log: `/tmp/execution-macro-consent-final-20261011.log`. Fresh-provider loading and the
+separate finalization-taxonomy/installed-hook defects are not proven fixed here.
+
+## Confirmed defect and original migration scope
 
 The original root AGENTS.md is 81,628 bytes. Its context-economy section began at
 byte 33,836 and execution-continuation section at byte 36,684. Both are beyond
