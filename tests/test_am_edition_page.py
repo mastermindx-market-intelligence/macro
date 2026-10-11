@@ -1217,6 +1217,57 @@ def test_context_planes_partial_rows_remain_visible(tmp_path, missing_state):
     assert context["state_reason_en"] in text
 
 
+@pytest.mark.parametrize("key,title,label,zh_label", [
+    ("market_state", "Market regime", "Risk-on", "风险偏好"),
+    ("regime", "Macroeconomic regime", "Reflation", "再通胀"),
+])
+@pytest.mark.parametrize("state", ["CURRENT", "STALE_WITH_LAST_KNOWN"])
+def test_regime_panels_keep_owner_reading_and_clock(tmp_path, key, title, label, zh_label, state):
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    payload = build_payload(site, data, now=datetime(2026, 9, 8, 15, tzinfo=timezone.utc))
+    block = next(b for b in payload["blocks"] if b["key"] == key)
+    block.update(state=state, state_reason_en="Owner reading is dated; retain this limitation.",
+                 state_reason_zh="主理读数有日期限制，请保留此说明。")
+    panel = _panel_html(_render_am_edition(payload), title)
+    text = _strip_html(panel)
+    for expected in (label, zh_label, "2026-09-08", block["state_reason_en"], block["state_reason_zh"]):
+        assert expected in text
+    assert "2026-09-08T00:00" not in text  # the owner supplies a day, not a midnight observation
+    if state == "STALE_WITH_LAST_KNOWN":
+        assert "Stale — last known" in text
+        assert "已滞后 — 最新已知" in text
+    if key == "market_state":
+        assert "Constructive" in text and "积极" in text
+
+
+@pytest.mark.parametrize("key,title", [("market_state", "Market regime"), ("regime", "Macroeconomic regime")])
+@pytest.mark.parametrize("state", ["UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN"])
+def test_regime_panels_do_not_expose_unusable_rows(tmp_path, key, title, state):
+    block = {"key": key, "state": state, "source_as_of": None,
+             "state_reason_en": "The owner source could not be read.",
+             "state_reason_zh": "无法读取主理数据源。",
+             "rows": [{"label_en": "POISON_OWNER_LABEL", "quad_name_en": "POISON_OWNER_LABEL"}]}
+    panel = _panel_html(_render_am_edition(_build_payload(tmp_path, [block])), title)
+    assert "POISON_OWNER_LABEL" not in panel
+    assert block["state_reason_en"] in panel and block["state_reason_zh"] in panel
+    assert 'class="dtp-asof"' not in panel
+
+
+def test_macro_regime_unknown_translation_remains_disclosed(tmp_path):
+    from bs4 import BeautifulSoup
+
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    _write(data / "regime" / "latest.json", {
+        "asof": "2026-09-08", "label": "UNKNOWN", "quad_name": "Unmapped owner regime",
+    })
+    payload = build_payload(site, data, now=datetime(2026, 9, 8, 15, tzinfo=timezone.utc))
+    panel = BeautifulSoup(_panel_html(_render_am_edition(payload), "Macroeconomic regime"), "html.parser")
+    assert "Unmapped owner regime" in panel.get_text()
+    zh = " ".join(s.get_text() for s in panel.select(".l-zh"))
+    assert "Unmapped owner regime" not in zh
+    assert "宏观周期名称尚无中文对照" in zh
+
+
 def test_context_planes_current_row_keeps_partial_source_reason(tmp_path):
     blocks = _make_fresh_blocks(tmp_path)
     row = blocks[0]["rows"][0]
