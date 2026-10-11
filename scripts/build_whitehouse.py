@@ -379,6 +379,17 @@ def build(reeval: bool = False, page_only: bool = False) -> int:
 
     items = wf.collect()
     log.info("whitehouse feed: %d recent items", len(items))
+    # Preserve source text before the brain, including already-seen items. The
+    # alert's raw_text is the model response, not the government document.
+    # The existing sentinel retains it outside Git with restricted permissions.
+    # Page-only returned above, and synthetic Treasury items arrive below.
+    for item in items:
+        try:
+            wf.retain_source_document(root, item)
+        except (OSError, TypeError, ValueError) as exc:
+            log.warning("whitehouse source capture failed for %s (%s) — "
+                        "not retained as Press evidence", item.get("id"), exc)
+
     # —— Treasury Watch lane: refresh TGA in-process, then inject the current TGA episode as
     # a feed-item so it flows through the IDENTICAL dedupe→brain→ledger→banner pipeline. The
     # episode id is anchored to the trailing-window extremum (quarter-end preferred), so the

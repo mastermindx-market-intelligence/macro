@@ -137,3 +137,24 @@ slot or stage record and never calls a provider. No generation-batch credit,
 publication, source freshness or authenticated signup/follow is claimed. The
 next substantive input task is the existing PRESS-FEEDS-to-Brief intake plus
 relevant first-party evidence; do not pad unrelated metrics to force the floor.
+
+## Next producer slice — 2026-10-11 20:47 UTC
+
+Working source now retains immutable normalized White House feed documents through
+the existing sentinel, outside Git under a mode-0700 host directory with mode-0600
+files. Review found and repaired the initial public-Git boundary before commit.
+Verified: the five suites and exact command in `SOURCE_RETENTION.md` returned
+70 passed; a real retained-feed replay recovered the source candidate with zero
+network/provider/stage/publication writes. The bounded repair review accepted.
+Host-local storage is not cloud backup or installed runtime proof.
+
+Verified: existing retained PR observer reported protected refresh to
+90b5fe5d6297a3000d7af84c7a859c3766574a9e; prior a85 CI38169345491 succeeded
+with 21 binding checks. `git show` and SHA-256 comparison found all 13 prepared
+installation source files and three served-page expectations unchanged. Await
+the refreshed head's own terminal result; do not bypass protected merge.
+
+Current GitHub repository visibility is PUBLIC, freshly checked with
+`gh repo view mastermindx-market-intelligence/macro --json visibility,isPrivate`.
+The recovery branch is separate from the armed PR, not a private repository.
+Only qualified public government material and nonsecret proof are committed.
