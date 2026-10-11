@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/stock_seasonality.css
+- templates/stock_seasonality.html.j2
+- templates/stock_seasonality.js
+- site/stock_seasonality.css
+- site/stock_seasonality.js
+manifest: mockups/evidence/uiux-stock-seasonality-controls-20260925/manifest.json
