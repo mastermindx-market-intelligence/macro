@@ -22923,7 +22923,7 @@ jobs:
 
 
   company-relationship-candidates:
-    # Private analyst inspection and immutable retained observation contracts.
+    # Private inspection, retained observations and native issuer disclosures.
     # Curated native imports/reads, package initialization and shared pytest hooks.
     # Avoid broad runtime-input fallbacks selecting this utility for unrelated
     # homepage/strategy changes; contract-delta keeps those packing limits.
@@ -22944,12 +22944,16 @@ jobs:
       - engine/catalyst_tone.py
       - engine/company_intelligence/__init__.py
       - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/documents.py
       - engine/company_intelligence/health.py
+      - engine/company_intelligence/identity.py
+      - engine/company_intelligence/issuer_disclosures.py
       - engine/company_intelligence/pinned_relationship_candidates.py
       - engine/company_intelligence/relationship_candidates.py
       - engine/company_intelligence/relationship_observations.py
       - engine/company_intelligence/views.py
       - engine/desk_ledger.py
+      - engine/earnings_narrative/contracts.py
       - engine/earnings_release/__init__.py
       - engine/earnings_release/receipts.py
       - engine/fundamental_forensics/__init__.py
@@ -22998,6 +23002,7 @@ jobs:
       - scripts/worktree_sparse.py
       - tests/__init__.py
       - tests/conftest.py
+      - tests/test_company_issuer_disclosures.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
       - tests/test_company_relationship_observations.py
@@ -23010,8 +23015,8 @@ jobs:
           python-version: "3.12"
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
-      - name: File, pinned-source and immutable observation replay contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py -q
+      - name: File, pinned-source, observation and native disclosure contracts
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
