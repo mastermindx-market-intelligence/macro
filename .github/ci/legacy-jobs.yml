@@ -20880,6 +20880,12 @@ jobs:
       - collectors/china_analyst.py
       - collectors/china_tushare_spine.py
       - tests/test_identity_seam_agreement.py
+      # ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the hermetic
+      # universe-admission suite needs pandas+pyarrow for its tmp parquet fixtures,
+      # so it rides this code-gate job rather than the thin dataos-foundation lane or
+      # the data-gate house-law-registry job, which never runs on a pull request.
+      - scripts/build_security_master.py
+      - tests/test_build_security_master_universe.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20895,6 +20901,10 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_identity_seam_agreement.py -q -rs
+      - name: security master universe admits the S&P 400/600 constituents (hermetic)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_build_security_master_universe.py -q -rs
 
   ticker-news-qbus:
     # Package N — Terminal per-ticker news feed correctness kernel (PR #8454).
