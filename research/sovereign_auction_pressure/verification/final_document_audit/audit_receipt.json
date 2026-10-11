@@ -1,0 +1,41 @@
+{
+  "kind": "bounded local documentation consistency review",
+  "source_writes": false,
+  "current_main_sampling": false,
+  "scope": [
+    {
+      "path": "program_docs/README.md",
+      "sha256": "8eadab9f3721ced470a0c27566f311a4bb52a7a4e06bf66f3cec0494dd0aa905"
+    },
+    {
+      "path": "program_docs/agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-08-SOVEREIGN-AUCTION-INITIATION.md",
+      "sha256": "3104c6f2737711ae76f0e1308c39bc5bea9af3d7b47afea5da7ffcfb96004b8c"
+    },
+    {
+      "path": "program_docs/pr_macro.md",
+      "sha256": "b2a53e418e5ad331d9e5673ac5d32eef5a04e3146bbdad0e6adfe2b728689866"
+    },
+    {
+      "path": "program_docs/pr_mastermind.md",
+      "sha256": "233c0ced6b40615f17371f0c05a168f568f104b37d90898ff91bd141eb2a858f"
+    },
+    {
+      "path": "program_docs/pr_terminal.md",
+      "sha256": "c7c9a8b0380b279cad86aa39cd1d79ae48d061a12db6153a0d50f30beb9f97a0"
+    }
+  ],
+  "defect_count": 1,
+  "defects": [
+    {
+      "id": "D1",
+      "path": "program_docs/agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-08-SOVEREIGN-AUCTION-INITIATION.md",
+      "line": 154,
+      "kind": "historical vs current byte-preservation wording",
+      "fix": "Qualify the byte-identical relocation at 24ae789 and separately retained predecessor bytes after the ac9117 evidence refresh.",
+      "evidence_head": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+      "historical_source_head": "24ae789308bf5b9c417b1f8bd5c7e74938b11a7e",
+      "root_owns_edit": true
+    }
+  ]
+}
+

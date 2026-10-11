@@ -1,0 +1,19 @@
+{
+  "url": "https://www.mastermind-x.com/feeds/event_calendar.json",
+  "request_started_at": "2026-10-08T23:18:34.745000+00:00",
+  "body_prefix_received_at": "2026-10-08T23:18:35.681818+00:00",
+  "request_auth": "none; no Cookie or Authorization supplied",
+  "redirects_followed": false,
+  "read_limit_bytes": 512,
+  "status": 401,
+  "headers": {
+    "Content-Type": "application/json",
+    "Vary": "Cookie",
+    "X-Regwall": "deny",
+    "Cache-Control": "no-store"
+  },
+  "body_prefix_bytes": 76,
+  "body_prefix_utf8": "{\"locked\":true,\"reason\":\"authentication_required\",\"signin_url\":\"/?signin=1\"}",
+  "body_prefix_sha256": "e68ce7107f4408a751efa904c6d36734a7ab83806a4ad93deb2e38cdc6ebc44f",
+  "interpretation": "confirms live registration refusal on this path; does not prove file existence behind the gate, paid-access configuration, entitled response, or deployed-source revision"
+}

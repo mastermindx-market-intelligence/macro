@@ -1,0 +1,2555 @@
+{
+  "schema": "sovereign_auction.bridge_current_writer_census.v1",
+  "decision": "READY_FOR_OWNED_SOURCE_APPLY_WITH_PREIMAGE_CHECK; not merge/deployment clearance",
+  "created_at": "2026-10-08T23:40:30.598Z",
+  "authoritative_scope": [
+    ".gitignore",
+    ".github/workflows/daily.yml"
+  ],
+  "adjacent_scope": [
+    "scripts/build_feeds.py",
+    "scripts/ci/daily_engine_commit_outputs.sh",
+    "scripts/publish_r2.py",
+    ".github/workflows/closing-bell.yml"
+  ],
+  "remote_mutations": false,
+  "root_patch_edited": false,
+  "credentials_or_sessions_read": false,
+  "quota": {
+    "rest_collection_pages": 9,
+    "per_page": 100,
+    "complete_unique_prs": 588,
+    "local_object_scans": 574,
+    "fallback_file_lists": 14,
+    "additional_changed_file_validation_and_patch_for_pr7246": 2,
+    "initial_convenience_search_returned": 60,
+    "rate_limit_probe": "Connector rejected /rate_limit URL before data; remaining shared quota unobserved. No further GitHub calls made for completeness.",
+    "api_operations_are_not_proven_underlying_request_count": true
+  },
+  "source_hash_receipt": {
+    "captured_at": "2026-10-08T23:39:45.758549+00:00",
+    "local_origin_main": "b86c4ada64533320232a98278cf199978a369a92",
+    "sources": [
+      {
+        "path": ".gitignore",
+        "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "blob": "b1272ff5216d8f08bfccbf2904c8ad65bafaf825",
+        "sha256": "8002e865c795a8c5ac529f0a9c8812a6c5abd4d69e8dc5ea56c682c5054a0c53",
+        "bytes": 42488,
+        "returncode": 0
+      },
+      {
+        "path": ".github/workflows/daily.yml",
+        "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+        "sha256": "c7cb98bbed9242fe8b43dbedc1ca5c258513f352903fe672579d2ee38f569653",
+        "bytes": 452715,
+        "returncode": 0
+      },
+      {
+        "path": "scripts/build_feeds.py",
+        "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "blob": "f5d086666914849fe76549f30c3e50145b316851",
+        "sha256": "ba462cfb841e896185b586494be4220ca3f8c8b8188cc682ea32f23cf15ccafd",
+        "bytes": 10401,
+        "returncode": 0
+      },
+      {
+        "path": "scripts/ci/daily_engine_commit_outputs.sh",
+        "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "blob": "52cef03e9eddbeb359d990b440259a1e711e7c31",
+        "sha256": "3f873da28b53ee8dcc20ef44615889488a7e318a4d6cdffb9be02628c5c26907",
+        "bytes": 19961,
+        "returncode": 0
+      },
+      {
+        "path": "scripts/publish_r2.py",
+        "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "blob": "240b762a661db6fe1cb087049469acf1cfa9a5f4",
+        "sha256": "d6446e1d3d66e5db51b19dde9e2c987a1f5f5d779c06a6c0e1400dbb8b1eaae0",
+        "bytes": 43738,
+        "returncode": 0
+      },
+      {
+        "path": "engine/event_calendar.py",
+        "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "blob": "ef9ebd3c380da1d81411dd62fc4b2885b231fafe",
+        "sha256": "522f642131c7adcf6d8b2fce66df9e812d40e9d8fa556360a603049fa908788b",
+        "bytes": 25260,
+        "returncode": 0
+      },
+      {
+        "path": "engine/risk_radar_intl.py",
+        "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "blob": "4ed9bdebf6e76cbf529115203ae5d8820ba07f13",
+        "sha256": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+        "bytes": 53482,
+        "returncode": 0
+      }
+    ]
+  },
+  "main_drift": {
+    "captured_at": "2026-10-08T23:39:54.795496+00:00",
+    "old": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+    "new_local_origin_main": "b86c4ada64533320232a98278cf199978a369a92",
+    "scope": [
+      ".gitignore",
+      ".github/workflows/daily.yml",
+      "scripts/build_feeds.py",
+      "scripts/ci/daily_engine_commit_outputs.sh",
+      "scripts/publish_r2.py"
+    ],
+    "changed_paths": [],
+    "returncode": 0,
+    "tip": "b86c4ada64533320232a98278cf199978a369a92 render-sync: post-rebase guards (re-stamp + template re-copy + ms-board coherence)"
+  },
+  "path_census": {
+    "started_at": "2026-10-08T23:35:07.926675+00:00",
+    "completed_at": "2026-10-08T23:35:15.699098+00:00",
+    "requested_prs": 588,
+    "path_scanned": 574,
+    "no_match_count": 561,
+    "no_match_numbers": [
+      8657,
+      8641,
+      8640,
+      8639,
+      8637,
+      8635,
+      8633,
+      8630,
+      8626,
+      8623,
+      8622,
+      8599,
+      8586,
+      8580,
+      8578,
+      8577,
+      8575,
+      8574,
+      8573,
+      8572,
+      8568,
+      8565,
+      8563,
+      8560,
+      8555,
+      8549,
+      8548,
+      8547,
+      8545,
+      8540,
+      8533,
+      8531,
+      8527,
+      8526,
+      8495,
+      8481,
+      8479,
+      8476,
+      8468,
+      8451,
+      8450,
+      8444,
+      8438,
+      8428,
+      8427,
+      8421,
+      8420,
+      8419,
+      8413,
+      8412,
+      8409,
+      8406,
+      8404,
+      8401,
+      8399,
+      8398,
+      8391,
+      8385,
+      8363,
+      8338,
+      8333,
+      8332,
+      8330,
+      8329,
+      8327,
+      8325,
+      8324,
+      8319,
+      8316,
+      8315,
+      8308,
+      8306,
+      8304,
+      8303,
+      8302,
+      8301,
+      8299,
+      8271,
+      8270,
+      8259,
+      8258,
+      8257,
+      8255,
+      8250,
+      8249,
+      8245,
+      8242,
+      8241,
+      8240,
+      8237,
+      8196,
+      8192,
+      8191,
+      8188,
+      8186,
+      8184,
+      8182,
+      8154,
+      8144,
+      8142,
+      8141,
+      8136,
+      8133,
+      8132,
+      8125,
+      8096,
+      8095,
+      8094,
+      8091,
+      8090,
+      8088,
+      8087,
+      8083,
+      8082,
+      8081,
+      8079,
+      8076,
+      8068,
+      8066,
+      8064,
+      8063,
+      8061,
+      8058,
+      8057,
+      8056,
+      8055,
+      8050,
+      8048,
+      8045,
+      8044,
+      8043,
+      8042,
+      8041,
+      8039,
+      8026,
+      8024,
+      8022,
+      8020,
+      8019,
+      8014,
+      8012,
+      8007,
+      8005,
+      8004,
+      8002,
+      7992,
+      7990,
+      7989,
+      7984,
+      7983,
+      7982,
+      7980,
+      7978,
+      7976,
+      7967,
+      7965,
+      7963,
+      7946,
+      7940,
+      7936,
+      7929,
+      7923,
+      7909,
+      7907,
+      7899,
+      7897,
+      7893,
+      7892,
+      7891,
+      7890,
+      7888,
+      7886,
+      7885,
+      7884,
+      7883,
+      7882,
+      7878,
+      7875,
+      7873,
+      7872,
+      7870,
+      7869,
+      7868,
+      7865,
+      7861,
+      7860,
+      7851,
+      7849,
+      7815,
+      7812,
+      7804,
+      7800,
+      7799,
+      7797,
+      7796,
+      7795,
+      7794,
+      7793,
+      7792,
+      7791,
+      7789,
+      7788,
+      7787,
+      7786,
+      7780,
+      7779,
+      7778,
+      7775,
+      7773,
+      7772,
+      7769,
+      7767,
+      7762,
+      7742,
+      7734,
+      7731,
+      7728,
+      7727,
+      7724,
+      7723,
+      7722,
+      7721,
+      7720,
+      7719,
+      7718,
+      7717,
+      7711,
+      7709,
+      7708,
+      7706,
+      7705,
+      7702,
+      7700,
+      7697,
+      7696,
+      7694,
+      7692,
+      7691,
+      7690,
+      7684,
+      7681,
+      7680,
+      7676,
+      7674,
+      7672,
+      7669,
+      7664,
+      7661,
+      7660,
+      7658,
+      7657,
+      7656,
+      7653,
+      7649,
+      7647,
+      7645,
+      7642,
+      7641,
+      7638,
+      7630,
+      7626,
+      7625,
+      7624,
+      7622,
+      7620,
+      7618,
+      7617,
+      7616,
+      7604,
+      7601,
+      7595,
+      7594,
+      7593,
+      7592,
+      7590,
+      7583,
+      7575,
+      7552,
+      7551,
+      7550,
+      7532,
+      7531,
+      7530,
+      7524,
+      7522,
+      7521,
+      7517,
+      7513,
+      7508,
+      7502,
+      7499,
+      7495,
+      7493,
+      7490,
+      7489,
+      7488,
+      7483,
+      7480,
+      7466,
+      7464,
+      7455,
+      7453,
+      7441,
+      7438,
+      7426,
+      7423,
+      7420,
+      7418,
+      7415,
+      7410,
+      7409,
+      7402,
+      7400,
+      7399,
+      7396,
+      7394,
+      7393,
+      7387,
+      7385,
+      7384,
+      7383,
+      7378,
+      7375,
+      7374,
+      7366,
+      7365,
+      7363,
+      7359,
+      7358,
+      7357,
+      7354,
+      7352,
+      7350,
+      7330,
+      7329,
+      7328,
+      7327,
+      7326,
+      7324,
+      7322,
+      7320,
+      7318,
+      7315,
+      7310,
+      7308,
+      7305,
+      7304,
+      7303,
+      7301,
+      7300,
+      7299,
+      7293,
+      7289,
+      7288,
+      7286,
+      7285,
+      7284,
+      7282,
+      7278,
+      7276,
+      7275,
+      7274,
+      7273,
+      7272,
+      7271,
+      7268,
+      7267,
+      7264,
+      7262,
+      7259,
+      7258,
+      7256,
+      7255,
+      7254,
+      7252,
+      7249,
+      7248,
+      7245,
+      7244,
+      7240,
+      7239,
+      7238,
+      7234,
+      7232,
+      7231,
+      7227,
+      7225,
+      7224,
+      7223,
+      7222,
+      7220,
+      7218,
+      7217,
+      7213,
+      7212,
+      7210,
+      7206,
+      7202,
+      7201,
+      7200,
+      7198,
+      7195,
+      7194,
+      7193,
+      7192,
+      7191,
+      7190,
+      7189,
+      7185,
+      7182,
+      7179,
+      7177,
+      7176,
+      7175,
+      7174,
+      7173,
+      7172,
+      7168,
+      7165,
+      7160,
+      7159,
+      7155,
+      7152,
+      7151,
+      7149,
+      7146,
+      7145,
+      7144,
+      7143,
+      7142,
+      7135,
+      7129,
+      7120,
+      7117,
+      7116,
+      7115,
+      7114,
+      7113,
+      7108,
+      7107,
+      7105,
+      7104,
+      7103,
+      7100,
+      7098,
+      7095,
+      7094,
+      7092,
+      7089,
+      7088,
+      7081,
+      7080,
+      7076,
+      7074,
+      7073,
+      7072,
+      7069,
+      7066,
+      7064,
+      7063,
+      7059,
+      7043,
+      7040,
+      7039,
+      7036,
+      7035,
+      7034,
+      7031,
+      7029,
+      7027,
+      7026,
+      7025,
+      7024,
+      7023,
+      7022,
+      7018,
+      7015,
+      7000,
+      6999,
+      6996,
+      6992,
+      6990,
+      6989,
+      6988,
+      6983,
+      6982,
+      6980,
+      6979,
+      6978,
+      6977,
+      6975,
+      6917,
+      6974,
+      6973,
+      6970,
+      6969,
+      6967,
+      6956,
+      6951,
+      6947,
+      6946,
+      6945,
+      6944,
+      6943,
+      6941,
+      6939,
+      6938,
+      6937,
+      6933,
+      6930,
+      6893,
+      6877,
+      6871,
+      6870,
+      6867,
+      6860,
+      6835,
+      6834,
+      6825,
+      6816,
+      6814,
+      6811,
+      6807,
+      6803,
+      6802,
+      6801,
+      6793,
+      6789,
+      6788,
+      6765,
+      6764,
+      6763,
+      6729,
+      6717,
+      6712,
+      6706,
+      6701,
+      6700,
+      6689,
+      6686,
+      6672,
+      6670,
+      6661,
+      6658,
+      6657,
+      6651,
+      6648,
+      6641,
+      6628,
+      6625,
+      6615,
+      6613,
+      6593,
+      6586,
+      6528,
+      6514,
+      6426,
+      6423,
+      6389,
+      6264,
+      5821
+    ],
+    "matches": [
+      {
+        "n": 8008,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7871,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7596,
+        "paths": [
+          "scripts/ci/daily_engine_commit_outputs.sh"
+        ]
+      },
+      {
+        "n": 7559,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7292,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7246,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7197,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7178,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7084,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 7060,
+        "paths": [
+          ".github/workflows/closing-bell.yml",
+          ".github/workflows/daily.yml",
+          "scripts/ci/daily_engine_commit_outputs.sh",
+          "scripts/publish_r2.py"
+        ]
+      },
+      {
+        "n": 7001,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 6861,
+        "paths": [
+          ".github/workflows/daily.yml"
+        ]
+      },
+      {
+        "n": 6842,
+        "paths": [
+          ".github/workflows/closing-bell.yml"
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "n": 8660,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8659,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8658,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8656,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8655,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8649,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8648,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8645,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8643,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8642,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8535,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 8458,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 7949,
+        "error": "merge_base_unavailable"
+      },
+      {
+        "n": 7283,
+        "error": "merge_base_unavailable"
+      }
+    ],
+    "scope": [
+      ".gitignore",
+      ".github/workflows/daily.yml",
+      "scripts/build_feeds.py",
+      "scripts/ci/daily_engine_commit_outputs.sh",
+      "scripts/publish_r2.py",
+      ".github/workflows/closing-bell.yml"
+    ],
+    "no_lazy_fetch": true,
+    "no_rename_similarity_or_blob_reads": true,
+    "optional_locks": false
+  },
+  "fallback_pathsets": [
+    {
+      "number": 8660,
+      "census_head": "dbccefe1275a697c322806b81ba237123c862e94",
+      "files": [
+        "engine/flow_signing.py",
+        "engine/tick_plane/__init__.py",
+        "engine/tick_plane/asof_nbbo.py",
+        "engine/tick_plane/stream_events.py",
+        "tests/test_tick_plane_asof_nbbo.py",
+        "tests/test_tick_plane_stream_events.py",
+        "tests/test_tp1_qualified_print_classifier.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8659,
+      "census_head": "dd5f2632e7f963665e893f97d2b99b70294693a3",
+      "files": [
+        "engine/market_microstructure/README.md",
+        "engine/market_microstructure/__init__.py",
+        "engine/market_microstructure/pressure_response.py",
+        "scripts/microstructure_pressure_response_pilot.py",
+        "tests/test_equity_pressure_response.py",
+        "tests/test_microstructure_pressure_response_pilot.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8658,
+      "census_head": "e7de6d11edc8d339f0fb960905dd20101ef2d2dd",
+      "files": [
+        "agentos/discoveries/DSC-OPTIONS-C1-FREE-EXTERNAL-SAMPLE-CUSTODY-20261008.md",
+        "collectors/options_free_samples.py",
+        "collectors/options_free_tbt.py",
+        "docs/runbooks/OPTIONS_FREE_SOURCE_EVALUATION.md",
+        "research/options_intelligence/2026-10-03/README.md",
+        "scripts/options_free_source_inventory.py",
+        "scripts/qualify_options_free_samples.py",
+        "scripts/qualify_options_free_tbt.py",
+        "tests/test_options_free_samples.py",
+        "tests/test_options_free_source_inventory.py",
+        "tests/test_options_free_tbt.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8656,
+      "census_head": "1384a72307a09d6224ec6d70c6216cc3bd35be6e",
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "engine/neuralweb/market_memory_sources_spy.py",
+        "scripts/accrue_market_memory_spy_experience_v2.py",
+        "scripts/capture_market_memory_technicals_v2.py",
+        "tests/test_market_memory_m0d_v2.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8655,
+      "census_head": "ce96432e7f81ef332a67931a7ca40889b26f3822",
+      "files": [
+        "tests/test_chat_launcher_stub.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8649,
+      "census_head": "6da88ab7cd25726e927f5c80e4e33bab23110494",
+      "files": [
+        "engine/entry_radar/replay/leader_pivot_descriptor.py",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/P0B30M_INITIATION_2026-10-08.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/P0B30M_PROGRESS_2026-10-08.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/README.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/01_EXECUTIVE_RULING.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/02_CURRENT_ESTATE_AND_COLLISIONS.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/03_PUBLIC_EVIDENCE_SYNTHESIS.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/04_SOURCE_REGISTER.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/05_HYPOTHESES_AND_FALSIFIERS.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/06_THEME_RELATIVE_ARCHITECTURE.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/07_CLOCK_AND_TIMEFRAME_DESIGN.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/08_EMPIRICAL_PREREGISTRATION.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/09_MODEL_ARCHITECTURE.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/10_PRODUCT_AND_UX_SPEC.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/11_OWNERSHIP_AND_INTEGRATION.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/12_IMPLEMENTATION_MASTERPLAN.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/13_IMPLEMENTATION_HANDOFF.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/14_OPEN_QUESTIONS_AND_ACCEPTANCE.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/chapters/99_FINAL_DECISION_BLOCK.md",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/verification/P0B30M_CONFORMANCE_2026-10-08.json",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/verification/PIVOT_PROGRESS_CONFORMANCE_2026-10-08.json",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/verification/SOURCE_BLOBS.json",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/verification/mechanical_audit.py",
+        "research/live_entry_radar/rs_pullback_launch/leader_pivot_2026-10-08/verification/rebuild_report.py",
+        "tests/test_entry_radar_leader_pivot_descriptor.py",
+        "tests/test_entry_radar_leader_pivot_progress.py",
+        "tests/test_entry_radar_leader_pivot_progress_edges.py",
+        "tests/test_entry_radar_rs_pullback_phase1.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8648,
+      "census_head": "1e1baf66ce2253d52808026623fc783fe8682bc1",
+      "files": [
+        "agentos/handoffs/GREY-DEER-META-CEO-CONTINUATION-2026-10-08.md",
+        "research/grey_deer/ALERTFUL_RISK_RADAR_MASTERPLAN_2026-10-08.md",
+        "research/grey_deer/commissions/TERMINAL_COPILOT_RISK_CONTRACT_2026-10-08.md",
+        "research/grey_deer/commissions/TERMINAL_RISK_BRIDGE_INPUT_TRUTH_2026-10-08.md",
+        "research/grey_deer/incidents/2026-10-08_LEADERSHIP_PIVOT_WARNING_AUDIT.md"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8645,
+      "census_head": "447cbaf532bee634607d717a05717690650a5c72",
+      "files": [
+        "research/structural_leadership_shock_resilience/ARTIFACT_MANIFEST.json",
+        "research/structural_leadership_shock_resilience/ASTRA_DEEP_RESEARCH_2026-10-07.md",
+        "research/structural_leadership_shock_resilience/METHODS_DERIVATION.json",
+        "research/structural_leadership_shock_resilience/POWER_ILLUSTRATION.json",
+        "research/structural_leadership_shock_resilience/RESEARCH_TO_BUILD_HANDOFF.md",
+        "research/structural_leadership_shock_resilience/SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md",
+        "research/structural_leadership_shock_resilience/SLR_P0_DEVELOPMENT_RESULTS_2026-10-07.md",
+        "research/structural_leadership_shock_resilience/SOURCE_DATA_AUDIT_2026-10-07.json",
+        "research/structural_leadership_shock_resilience/SOURCE_REGISTER.md",
+        "research/structural_leadership_shock_resilience/VERIFICATION.json",
+        "research/structural_leadership_shock_resilience/qualification_2026-10-08/HISTORICAL_REFERENCE_RECOVERY_PATH_2026-10-08.md",
+        "research/structural_leadership_shock_resilience/qualification_2026-10-08/QUALIFICATION_DECISION.md",
+        "research/structural_leadership_shock_resilience/qualification_2026-10-08/RESEARCH_ADMISSION_FIXTURE_SET_2026-10-08.md",
+        "research/structural_leadership_shock_resilience/qualification_2026-10-08/SLR_P0_PREOUTCOME_AMENDMENT_V1_1_2026-10-08.md",
+        "research/structural_leadership_shock_resilience/qualification_2026-10-08/UPSTREAM_ONSET_PIT_GATE_2026-10-08.md"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8643,
+      "census_head": "5a0b45abcdf39fc1533c34d8d8af71b02475203d",
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "config/theme_crosswalk.yml",
+        "data/us_prophet_rank/README.md",
+        "engine/us_context_vector.py",
+        "research/theme_graph/THEME_FABRIC_IMPLEMENTATION_CHECKPOINT_2026-10-07.md",
+        "scripts/check_theme_graph_contracts.py",
+        "tests/test_theme_graph_crosswalk.py",
+        "tests/test_theme_graph_hierarchy_population.py",
+        "tests/test_us_context_vector.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8642,
+      "census_head": "2c9a13267009f75e7e906f49f4c46b1f591c53a6",
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "research/technical_opportunity/swing_confluence/DESIGN_AND_RESEARCH_PROTOCOL.md",
+        "research/technical_opportunity/swing_confluence/IMPLEMENTATION_PLAN.md",
+        "research/technical_opportunity/swing_confluence/README.md",
+        "research/technical_opportunity/swing_confluence/RESEARCH_ASSESSMENT.md",
+        "research/technical_opportunity/swing_confluence/VERIFICATION.md",
+        "research/technical_opportunity/swing_confluence/recipe.json",
+        "scripts/research/run_toi_swing_plan.py",
+        "tests/test_toi_swing_plan.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8535,
+      "census_head": "838800bf01a5fe5da72d2572aca7ab134296094b",
+      "files": [
+        "agentos/discoveries/DSC-LANE-KIT-BOUNDED-WORKERS-USE-ADAPTIVE-DEADLINES-AND-NATIVE-CONTEXT.md"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 8458,
+      "census_head": "a16b8f5681c4f0bacbc91bcde81a2abf617c24e5",
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "scripts/build_intraday_flow_quotes.py",
+        "scripts/build_live_quotes.py",
+        "scripts/vps_live_orchestrator.py",
+        "tests/test_build_live_quotes.py",
+        "tests/test_prophet_strategy_definition.py",
+        "tests/test_vps_live_orchestration.py"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 7949,
+      "census_head": "9b54c2d7f1f19a7371a7ee2102fb706f46e1b7ac",
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "agentos/handoffs/MARKET-OS-SHARED-SHELL-2026-09-24.md",
+        "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md",
+        "research/SHARED_SHELL_PRODUCTION_REASSESSMENT_2026-10-08.md",
+        "research/market_os/SHARED_APPLICATION_SHELL_DESIGN_2026-09-24.md",
+        "research/market_os/SHARED_SHELL_FIRST_ADOPTION_CONTRACT_2026-09-24.md",
+        "research/market_os/SHARED_SHELL_INTERACTION_REVIEW_2026-09-27.md",
+        "research/market_os/SHARED_SHELL_JINJA_SURFACE_PLAN_2026-10-08.md",
+        "research/market_os/SHARED_SHELL_NAVIGATION_DEPTH_REVIEW_2026-09-24.md",
+        "research/market_os/SHARED_SHELL_REGISTRY_QUALIFICATION_2026-09-24.md",
+        "research/market_os/WATCHLIST_MEMBERSHIP_OBSERVATION.md",
+        "research/market_os/all_tools_adoption/README.md",
+        "research/market_os/all_tools_adoption/browser/README.md",
+        "research/market_os/all_tools_adoption/browser/pilot.spec.cjs",
+        "research/market_os/all_tools_adoption/browser/playwright.config.cjs",
+        "research/market_os/all_tools_adoption/browser/run.sh",
+        "research/market_os/all_tools_adoption/evidence/mutations-r23.json",
+        "research/market_os/all_tools_adoption/evidence/mutations.json",
+        "research/market_os/all_tools_adoption/evidence/qualification.json",
+        "research/market_os/all_tools_adoption/evidence/r22-README.md",
+        "research/market_os/all_tools_adoption/evidence/r22-mutations.json",
+        "research/market_os/all_tools_adoption/evidence/r22-qualification.json",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/README.md",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/macro-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/macro-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/receipt.json",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/reports-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/reports-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/sector_central-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/sector_central-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/README.md",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/macro-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/macro-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/receipt.json",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/reports-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/reports-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/sector_central-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r35-browser/sector_central-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/README.md",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-320-double-type-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-320-double-type-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-320-short-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-320-short-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-landscape-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-landscape-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/macro-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/receipt.json",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-320-double-type-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-320-double-type-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-320-short-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-320-short-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-landscape-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-landscape-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/reports-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-320-double-type-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-320-double-type-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-320-short-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-320-short-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-landscape-footer.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-landscape-top.png",
+        "research/market_os/all_tools_adoption/evidence/r41-browser/sector_central-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/shared-header.patch",
+        "research/market_os/all_tools_adoption/source/_site_nav.html.j2",
+        "research/market_os/all_tools_adoption/src/_all_tools_menu.html.j2",
+        "research/market_os/all_tools_adoption/src/all-tools.css",
+        "research/market_os/all_tools_adoption/src/all-tools.js",
+        "research/market_os/all_tools_adoption/tests/controller.test.cjs",
+        "research/market_os/all_tools_adoption/tests/dom.cjs",
+        "research/market_os/all_tools_adoption/tests/mutation-check.py",
+        "research/market_os/all_tools_adoption/tests/navigation.test.cjs",
+        "research/market_os/all_tools_adoption/tests/refresh-boundaries.test.cjs",
+        "research/market_os/all_tools_adoption/tests/template-contract.py",
+        "research/market_os/stock_review_probe/README.md",
+        "research/market_os/stock_review_probe/display.test.mjs",
+        "research/market_os/stock_review_probe/model.test.mjs",
+        "research/market_os/stock_review_probe/review-display.mjs",
+        "research/market_os/stock_review_probe/review-model.mjs",
+        "scripts/build_reports.py",
+        "site/account.js",
+        "site/macro.html",
+        "site/nav_market.js",
+        "site/navigation-refresh.css",
+        "site/ontology.html",
+        "site/reports.html",
+        "site/research_screener.html",
+        "site/sector_central.html",
+        "site/terminal_overlay.js",
+        "site/theme.js",
+        "site/watchstore.js",
+        "templates/_all_tools_menu.html.j2",
+        "templates/_site_nav.html.j2",
+        "templates/account.js",
+        "templates/dashboard.html.j2",
+        "templates/nav_market.js",
+        "templates/navigation-refresh.css",
+        "templates/sector_central.html.j2",
+        "templates/terminal_overlay.js",
+        "templates/theme.js",
+        "templates/watchstore.js",
+        "tests/test_account_actions.py",
+        "tests/test_all_tools_menu.py",
+        "tests/test_macro_command_p4_copy.py",
+        "tests/test_macro_command_shell.py",
+        "tests/test_nav_hover_bridge.py",
+        "tests/test_terminal_overlay_contract.py",
+        "tests/test_watchstore_multilist_js.py",
+        "tests/watchstore_membership_observation.node.test.mjs"
+      ],
+      "exact_head_reverified": false
+    },
+    {
+      "number": 7283,
+      "census_head": "f23aaba0481ac63c566e4d5835a8584751153d5f",
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "site/sector_heatmap.html",
+        "templates/sector_heatmap.html.j2",
+        "tests/test_house_theme_atlas.py"
+      ],
+      "exact_head_reverified": false
+    }
+  ],
+  "overlap_prs": [
+    {
+      "number": 8008,
+      "title": "fix(daily): keep market checkpoint alive past the collect cap",
+      "head": "d10f828c6fa7291a971ee5dab1bc0271b3e1c10d",
+      "head_ref": "claude/prophet-delivery-nightly-collect-cap-20260925",
+      "base": "2868086f84a244727791bc3bef90e6a3c13d34a4",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8008",
+      "draft": true,
+      "updated_at": "2026-09-29T20:10:45Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Collect-job cap and cancellation/market-data push timing; no final feed-build or calendar transport hunk."
+    },
+    {
+      "number": 7871,
+      "title": "data-os(fred): nightly full-vintage store for the Cycle (a) series (NEWORDER/ISRATIO/INDPRO) via the release-target producer, parameterized",
+      "head": "df96a1e3a79d976c987470c12b0d15ccf579c5ef",
+      "head_ref": "claude/pu-w3-cycle-vintages-producer",
+      "base": "07b0eeb44317b5bb104da46abef5f233cbe77703",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7871",
+      "draft": true,
+      "updated_at": "2026-10-03T12:50:41Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Adds Cycle full-vintage collector before release radar; distinct data producer."
+    },
+    {
+      "number": 7596,
+      "title": "fix(commodities): bind Gold receipt to post-rebase tree",
+      "head": "50bc529e03d2ff46c69cd7c72e59bf441634d1d5",
+      "head_ref": "sol/gold-final-tree-audit-race-20260921",
+      "base": "c48e15193a29fd5eff94e963d0d0c4d6f3104867",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7596",
+      "draft": false,
+      "updated_at": "2026-09-21T11:24:10Z",
+      "paths": [
+        "scripts/ci/daily_engine_commit_outputs.sh"
+      ],
+      "semantic_classification": "Gold post-rebase audit/receipt and staging repair in existing commit helper; no feed path. Preserve final-tree receipt semantics."
+    },
+    {
+      "number": 7559,
+      "title": "ci: make workflow alert transports honest (Telegram is not provisioned)",
+      "head": "9f9c1e869742c73a5e06c1881417258a11938719",
+      "head_ref": "claude/alert-transport-audit",
+      "base": "7a99847f01f28e2acb8cc2ad6baaa283738d1471",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7559",
+      "draft": false,
+      "updated_at": "2026-09-20T22:07:09Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Alert transport labeling and Discord/Telegram availability; unrelated execution steps."
+    },
+    {
+      "number": 7292,
+      "title": "persona memory: reconcile publications across hosts (closes XG-W3 F11)",
+      "head": "909dc5a058f0be752c49a4defc3a92438818edd8",
+      "head_ref": "claude/persona-memory-cross-host-durability",
+      "base": "747899c6f7588dca6b79fe0857d3efae8fd18f33",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7292",
+      "draft": false,
+      "updated_at": "2026-09-20T06:08:59Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Marketing persona publication-memory reconciliation; other job/band."
+    },
+    {
+      "number": 7246,
+      "title": "fix(agentos): materialize Mastermind P0 in nightly",
+      "head": "acb2fb10c1cd2e3ac9157271e6abc845bc70048a",
+      "head_ref": "sol/agentos-mastermind-p0-nightly-20260916",
+      "base": "12b655150582d9be39bfd2779b33338d154c565f",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7246",
+      "draft": true,
+      "updated_at": "2026-09-17T08:21:01Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "AgentOS nightly materializes Mastermind P0 input in RUNNER_TEMP; different tail producer, no feed seam."
+    },
+    {
+      "number": 7197,
+      "title": "fix(pressure-watch): restore source-aware freshness and same-run page consumption",
+      "head": "8cb51ef4e306be8e1839a01bedde8fe241061fda",
+      "head_ref": "claude/pressure-watch-recovery-20260916-c3",
+      "base": "aad0aaf33810c881a2da398380930eb50a9cdeda",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7197",
+      "draft": true,
+      "updated_at": "2026-09-16T09:49:13Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Pressure-watch source hydration/freshness and price_pressure R2 publication; separate directory and gate."
+    },
+    {
+      "number": 7178,
+      "title": "Fix AI Daily Brief starvation behind wedged regional builder band",
+      "head": "ec3190b33e0a3d5cc8a83797631f641274cdd974",
+      "head_ref": "sol/aibrief-reachability-20260915",
+      "base": "b51d4ebcdf1a73bae3b6b9ef3632495cef107c58",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7178",
+      "draft": false,
+      "updated_at": "2026-10-05T02:39:06Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Regional desk builder timeout before publication barrier; no assembler move. Keep upstream budget changes independent."
+    },
+    {
+      "number": 7084,
+      "title": "docs(market-os): central MarketOntology organizer and convergence handoff",
+      "head": "4fab84d2bdad0a56b063f6da98a2c41585456ecd",
+      "head_ref": "claude/marketontology-central-convergence-20260912",
+      "base": "7f187f8c4cbf13f69c59625bcf45c7c9a4c39c19",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7084",
+      "draft": false,
+      "updated_at": "2026-09-20T06:54:29Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "USGS/critical-mineral ingest and recurring briefs; distinct producers."
+    },
+    {
+      "number": 7060,
+      "title": "W1: historical US sector participation evidence journey (Draft/HOLD)",
+      "head": "170ad35b12673eac75ebefb53b3a5da4640daf06",
+      "head_ref": "claude/ssd-sector-central-w1-source-impl-1c350aeb6815a110",
+      "base": "43470274d542fdf0cfd59f77a938338f5778dea3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7060",
+      "draft": true,
+      "updated_at": "2026-09-23T09:37:26Z",
+      "paths": [
+        ".github/workflows/closing-bell.yml",
+        ".github/workflows/daily.yml",
+        "scripts/ci/daily_engine_commit_outputs.sh",
+        "scripts/publish_r2.py"
+      ],
+      "semantic_classification": "Draft/HOLD sector participation bundle with earlier core checkpoint and other data/cache options changes; no build_feeds or final calendar Git exception. publish_r2 changes add options_skew/options_payoff_lab data directory rules, not feeds manifest timing."
+    },
+    {
+      "number": 7001,
+      "title": "Fix International dashboard publication freeze",
+      "head": "3684c7d51a0b5d894314c369b408896f54df2ffd",
+      "head_ref": "sol/intl-publication-checkpoint-20260908",
+      "base": "323d63c5a0299fc92d31620fb133dc0c5b8d25b3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7001",
+      "draft": false,
+      "updated_at": "2026-09-08T22:00:09Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Adds early international dashboard checkpoint and timeout on final engine commit; move must preserve helper step configuration on integration."
+    },
+    {
+      "number": 6861,
+      "title": "feat(f13): capability health & freshness projection V1 (engine+registry+builder, display-tier)",
+      "head": "6f3b75657f342949b9e0e04b837565cdb71a38a2",
+      "head_ref": "claude/marketontology-f13-capability-health-v1-20260904",
+      "base": "e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6861",
+      "draft": false,
+      "updated_at": "2026-09-14T08:24:58Z",
+      "paths": [
+        ".github/workflows/daily.yml"
+      ],
+      "semantic_classification": "Adds capability-health projection before commit-publish timing mark; preserve relative upstream execution, no competing assembler or feed exception."
+    },
+    {
+      "number": 6842,
+      "title": "HOLD-FOR-SOL: [MARKET OS] Acquisition Truth Bridge — derive landing freshness/coverage from canonical artifacts (freeze Packet B)",
+      "head": "70815229c55963598d4441eef07ca3949d097b3b",
+      "head_ref": "claude/market-os-acquisition-truth-bridge-20260903",
+      "base": "001f1af4a2d1d6022d9ab291796373606e8c202e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6842",
+      "draft": true,
+      "updated_at": "2026-10-04T06:27:55Z",
+      "paths": [
+        ".github/workflows/closing-bell.yml"
+      ],
+      "semantic_classification": "Closing-bell acquisition landing truth projection hooks; no daily bridge edit."
+    }
+  ],
+  "overlap_pr_patch_receipts": [
+    {
+      "n": 8008,
+      "head": "d10f828c6fa7291a971ee5dab1bc0271b3e1c10d",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex 960584fb4969..80f459a5a2c7 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -151,9 +151,25 @@ jobs:\n     # macstudio label failed over to a COLD spare (mac-builder-5: fresh venv, no warm\n     # GHA/R2 caches) and the collectors step took 172m — a 13-minute margin under the\n-    # cap, on a run that had already lost three nights. The fleet can always fail over\n-    # to a cold runner, so the cap must clear the COLD pace, not the warm one: 240m is\n-    # ~1.4x the observed 172m. The job still exits as soon as its steps finish; a\n-    # larger cap costs nothing on a healthy night and buys the commit on a slow one.\n-    timeout-minutes: 240\n+    # cap, on a run that had already lost three nights.\n+    # 2026-09-25: 240 bit a FIFTH time. Authoritative run 36078806272 on mac-builder-5\n+    # spent 230m in `run collectors`, committed the market-data checkpoint successfully,\n+    # then hit the hard job cap while the alarm-bounded push was still running. The W2\n+    # ledger had already warned us: 2026-09-23/24 were 226.7m/226.3m (94.5%/94.3% of\n+    # cap) and 2026-09-17 reached 242.5m (101.1%). A job-level timeout does NOT make the\n+    # always()/cancelled() tail unreachable: GitHub cancels the job and then runs\n+    # whatever remains inside a bounded ~5-minute grace. Measured BOTH ways on this same\n+    # 240m cap — job 105033526139 (2026-09-17) had its cap fire at 04:48:55Z and still\n+    # completed `push market data` at 04:50:53Z and `salvage push` at 04:50:57Z, while\n+    # job 107895940199 (2026-09-25) fired at 04:43:08Z, spent the grace on a push that\n+    # only started at cap+2:32, and was killed at cap+5:00 with every later step never\n+    # scheduled (null started_at). The belt is real but bounded, and the\n+    # market-commit-push band is 9.6m/10.7m (09-23/09-24) — about twice the grace — so\n+    # the cap must clear the whole collector + local checkpoint + bounded-push path\n+    # instead of relying on the grace. 300m is ~1.24x the worst COMPLETE observed path\n+    # (242.5m on 09-17; the 245m figure is a kill point, not a finish) and matches the\n+    # existing engine cap. This is containment while collector creep receives its\n+    # structural follow-up, not permission for unbounded nightly growth. The job still\n+    # exits as soon as its work finishes.\n+    timeout-minutes: 300\n     outputs:\n       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}\n@@ -725,10 +741,14 @@ jobs:\n       # is atomic and integrity-complete (fully-staged tree, asia paths reset out, empty-\n       # guarded) — everything below is pure network publish. It lives in a SEPARATE\n-      # always()-guarded step so a job-timeout cancel during the push can never again\n-      # discard an already-committed night of collections (a hung git push ate 57m and\n-      # the 150m cap killed the step mid-publish; the commit existed only on the runner).\n-      # Every git network op is alarm-bounded (macOS runners have no GNU timeout;\n-      # perl alarm survives execve — SIGALRM kills a hung op, the loop retries).\n-      - name: push market data (survives a job-cap cancel; alarm-bounded git ops)\n+      # always()-guarded step so ordinary earlier-step failures/cancellation do not hide\n+      # an already-committed night of collections. A JOB-LEVEL timeout hard-stops the\n+      # running step and then gives the remaining tail only a bounded ~5-minute grace:\n+      # run 35168062576 (2026-09-17) finished this very push 1:58 PAST its cap, while\n+      # run 36078806272 (2026-09-25) entered the grace with the push still to do and\n+      # lost it at cap+5:00. The grace is a belt, not a budget — which is why the job\n+      # cap above must cover this bounded network-publish window. Every git network op\n+      # is alarm-bounded (macOS runners have no GNU timeout; perl alarm survives execve\n+      # — SIGALRM kills a hung op, the loop retries).\n+      - name: push market data (commit already local; alarm-bounded git ops)\n         id: pushdata\n         if: always() && steps.commitdata.outputs.committed == 'true'\n@@ -787,6 +807,11 @@ jobs:\n           push_lost\n           echo \"::warning::could not push collected market data after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)\"\n-      # Last-ditch publish if the job was CANCELLED mid-push (cap timeout): one bounded\n-      # attempt inside the post-cancel grace window. The commit already exists locally;\n+      # Last-ditch publish for a CANCELLED mid-push path: one bounded attempt inside the\n+      # post-cancel grace window. This DOES reach a job-cap night when grace remains —\n+      # job 105033526139 ran it to success at 04:50:57Z, 2:02 past its 04:48:55Z cap\n+      # (2026-09-17). But the grace is bounded at ~5 minutes and can be exhausted before\n+      # this step is ever scheduled: on 2026-09-25 job 107895940199 burned it on a push\n+      # that started at cap+2:32, and this step's started_at is null. A real belt with a\n+      # hard ceiling, never a cap rescue to budget against. The commit already exists locally;\n       # losing it costs the whole night's collections (2026-07-16 incident).\n       - name: salvage push (job cancelled mid-publish — one bounded attempt)\n@@ -952,9 +977,19 @@ jobs:\n           R2_BUCKET: ${{ secrets.R2_BUCKET }}\n         run: python -m scripts.publish_r2 --dirs massive_stock_day || echo \"::warning::massive_stock_day R2 publish failed (non-fatal — R2 copy goes stale; the engine job's strict audit_r2 anchor goes red within 26h)\"\n-      # W2: per-band timings row + >85%-of-cap tripwire. always() so a job-cap cancel\n-      # still records the night in the grace window (elapsed ≈ cap → the warning fires).\n+      # W2: per-band timings row + >85% creep tripwire. always() reaches failed and\n+      # cancelled paths, including a job-cap night for as long as the ~5-minute grace\n+      # lasts (job 105033526139 recorded its row at 04:51:42Z, 2:47 past its cap). It\n+      # is NOT reachable once that grace is spent: run 36078806272 never scheduled it,\n+      # so that RUN has no row (2026-09-25's other run, 36133476434, did record one at\n+      # 229.4m/240). So the cap above must keep the normal path\n+      # inside the measurable window rather than relying on post-timeout telemetry.\n+      # SECOND ARG = the creep budget, deliberately BELOW the cap. The cap is 300 so a\n+      # normal night clears the whole publish path, but the 85% alarm stays on the 240m\n+      # workload that forced the raise; without the split, 226m nights would read 75% and say nothing — the cap\n+      # raise would have disarmed the only detector of the creep that caused it. Lower\n+      # the second number only when the collectors genuinely get faster, never to quiet it.\n       - name: timings ledger + 85% budget tripwire (W2)\n         if: always()\n-        run: bash scripts/ci/nightly_timings_finish.sh 240\n+        run: bash scripts/ci/nightly_timings_finish.sh 300 240\n \n   # ── CAPITAL-STRUCTURE LANE (its own job since 2026-08-06) ─────────────────\n",
+      "original_chars": 7124
+    },
+    {
+      "n": 7596,
+      "head": "50bc529e03d2ff46c69cd7c72e59bf441634d1d5",
+      "returncode": 0,
+      "patch": "diff --git a/scripts/ci/daily_engine_commit_outputs.sh b/scripts/ci/daily_engine_commit_outputs.sh\nindex ec458c8c80c0..74bbbe6df05d 100644\n--- a/scripts/ci/daily_engine_commit_outputs.sh\n+++ b/scripts/ci/daily_engine_commit_outputs.sh\n@@ -11,4 +11,78 @@ set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declare\n git config user.name \"dashboard-bot\"\n git config user.email \"actions@users.noreply.github.com\"\n+\n+# Gold final-tree binding: the broad candidate is built from the engine checkout,\n+# but origin/main can advance the two governed source stores (or the Gold render\n+# closure) before the retry loop rebases. Fingerprint the exact material closure\n+# around every rebase attempt; when it moves, rebuild the Gold consumer and\n+# rewrite its existing quality receipt before the final push. This is not a new\n+# publication or proof plane.\n+GOLD_MATERIAL_PATHS=(\n+  config.yml\n+  config/dataset_registry.yml\n+  data/gold_china_basis/sge_au9999.parquet\n+  data/gold_china_basis/xaucny_spot.parquet\n+  engine/china_gold_premium.py\n+  lib/config.py\n+  lib/dataos/registry.py\n+  lib/pages.py\n+  lib/store.py\n+  scripts/audit_china_gold_premium.py\n+  scripts/build_commodities.py\n+  templates/_china_gold_premium.html.j2\n+  templates/commodities.html.j2\n+)\n+GOLD_CANONICAL_OUTPUT_PATHS=(\n+  data/commodity/latest.json\n+  data/quality/china_gold_premium.json\n+  site/commodities.html\n+)\n+GOLD_OPTIONAL_OUTPUT_PATHS=(\n+  data/commodity/complex_latest.json\n+  data/commodity/cycle_positions.json\n+)\n+GOLD_FOLLOWUP_PATHS=(\n+  \"${GOLD_CANONICAL_OUTPUT_PATHS[@]}\"\n+  \"${GOLD_OPTIONAL_OUTPUT_PATHS[@]}\"\n+)\n+gold_material_fingerprint() {\n+  local path\n+  {\n+    for path in \"${GOLD_MATERIAL_PATHS[@]}\"; do\n+      if [ -f \"$path\" ]; then\n+        printf '%s\\0%s\\0' \"$path\" \"$(git hash-object \"$path\")\"\n+      else\n+        printf '%s\\0MISSING\\0' \"$path\"\n+      fi\n+    done\n+  } | git hash-object --stdin\n+}\n+gold_restore_origin_main_outputs() {\n+  local path ref\n+  # A failed post-rebase rebuild/audit must remain lane-local without shipping a\n+  # Gold page or machine projection that claims different source artifacts.\n+  # Restore the canonical Gold outputs from current origin/main, while discarding\n+  # only optional side effects of the attempted second commodity build back to\n+  # this candidate's already-committed HEAD. Write worktree bytes only; the\n+  # existing follow-up staging/guard path remains the sole commit owner.\n+  for path in \"${GOLD_CANONICAL_OUTPUT_PATHS[@]}\"; do\n+    ref=\"origin/main:$path\"\n+    mkdir -p \"$(dirname \"$path\")\"\n+    if git cat-file -e \"$ref\" 2>/dev/null; then\n+      git show \"$ref\" > \"$path\"\n+    else\n+      rm -f -- \"$path\"\n+    fi\n+  done\n+  for path in \"${GOLD_OPTIONAL_OUTPUT_PATHS[@]}\"; do\n+    ref=\"HEAD:$path\"\n+    mkdir -p \"$(dirname \"$path\")\"\n+    if git cat-file -e \"$ref\" 2>/dev/null; then\n+      git show \"$ref\" > \"$path\"\n+    else\n+      rm -f -- \"$path\"\n+    fi\n+  done\n+}\n # normalize the EXACT tree this always() commit stages (P0 2026-08-04,\n # 9a997e9da3f): the engine job hit its 200m cap at 04:28Z; the cancel skipped\n@@ -205,4 +279,5 @@ PUSH_MAX_ATTEMPTS=20   # let the 600s DEADLINE stop this loop, not the attempt c\n push_retry_init \"engine outputs\"\n while push_attempt; do\n+  gold_material_before_rebase=$(gold_material_fingerprint)\n   # Fetch the exact named ref before rebasing. The shared helper sees normal\n   # AND ignored untracked collisions, quarantines only paths tracked by that\n@@ -219,4 +294,16 @@ while push_attempt; do\n   # finishes the rebase; anything else is left for the abort+retry below.\n   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then\n+    gold_material_after_rebase=$(gold_material_fingerprint)\n+    gold_rebuilt_post_rebase=\n+    gold_post_rebase_refresh_failed=\n+    if [ \"$gold_material_before_rebase\" != \"$gold_material_after_rebase\" ]; then\n+      echo \"::notice title=China gold final-tree refresh::Gold material inputs moved during rebase; rebuilding the Commodity Vector against post-rebase source truth\"\n+      gold_rebuilt_post_rebase=1\n+      if ! python -m scripts.build_commodities; then\n+        echo \"::error title=China gold post-rebase rebuild failed::serving the current origin/main Gold outputs rather than pushing a receipt/page bound to stale source artifacts\"\n+        gold_post_rebase_refresh_failed=1\n+        gold_restore_origin_main_outputs\n+      fi\n+    fi\n     # post-rebase template↔site re-sync (ui.template_site_sync): -X theirs can\n     # resurrect this run's checkout-time template copies over a reword that merged\n@@ -254,5 +341,26 @@ while push_attempt; do\n     python3 scripts/check_conflict_markers.py --file site/start.html\n     python3 scripts/check_start_runtime.py --heal-from origin/main\n-    if ! git diff --quiet -- site/ templates/; then\n+    if [ -n \"$gold_rebuilt_post_rebase\" ] && [ -z \"$gold_post_rebase_refresh_failed\" ]; then\n+      # The pre-stage audit cannot bind a source/config/code change inherited by\n+      # the later rebase. Re-audit the normalized post-rebase page and overwrite\n+      # the same receipt so artifact hashes, machine projection and HTML describe\n+      # the exact tree about to be pushed. Preserve the established lane-local\n+      # failure behavior: make a mismatch loud without suppressing every page.\n+      set +e\n+      python -m scripts.audit_china_gold_premium --strict-render\n+      gold_post_rebase_audit_rc=$?\n+      set -e\n+      if [ \"$gold_post_rebase_audit_rc\" -ne 0 ]; then\n+        echo \"::error title=China gold premium post-rebase audit::rebuilt panel disagrees with current source/engine truth; restoring current origin/main Gold outputs and continuing the unrelated nightly publication\"\n+        gold_post_rebase_refresh_failed=1\n+      fi\n+    fi\n+    # Build failure restoration above protects the generic normalizers from a\n+    # partial page. Restore once more at the final pre-stage boundary so neither\n+    # those normalizers nor a failed strict audit can leak changed Gold bytes.\n+    if [ -n \"$gold_post_rebase_refresh_failed\" ]; then\n+      gold_restore_origin_main_outputs\n+    fi\n+    if ! git diff --quiet -- site/ templates/ \"${GOLD_FOLLOWUP_PATHS[@]}\"; then\n       # push_staged_clean: never bake conflict markers into the follow-up\n       # commit (P0 d29e4dd44d/#4167). On a dirty scan: unstage and push the\n@@ -260,10 +368,20 @@ while push_attempt; do\n       git add site/\n       git add templates/ 2>/dev/null || true\n-      if push_staged_clean site/ templates/; then\n+      if [ -n \"$gold_rebuilt_post_rebase\" ]; then\n+        # Some commodity sidecars are fail-soft/optional. Stage every existing\n+        # or tracked output independently so one absent optional path cannot\n+        # prevent the required page, machine projection and receipt from landing.\n+        for path in \"${GOLD_FOLLOWUP_PATHS[@]}\"; do\n+          if [ -e \"$path\" ] || git ls-files --error-unmatch \"$path\" >/dev/null 2>&1; then\n+            git add -A -- \"$path\"\n+          fi\n+        done\n+      fi\n+      if push_staged_clean site/ templates/ \"${GOLD_FOLLOWUP_PATHS[@]}\"; then\n         bash scripts/ci/options_signal_nightly.sh commit-render-sync \\\n           \"render-sync: post-rebase guards (template re-copy + ms-board coherence)\" \\\n           || echo \"::warning::render-sync commit failed (non-fatal — pages publish gate backstops divergence)\"\n       else\n-        git reset -q -- site/ templates/ || true\n+        git reset -q -- site/ templates/ \"${GOLD_FOLLOWUP_PATHS[@]}\" || true\n         # restore the offenders' worktree bytes too — the always()\n         # Pages artifact below ships the WORKING TREE, not the commit\n",
+      "original_chars": 7760
+    },
+    {
+      "n": 7559,
+      "head": "9f9c1e869742c73a5e06c1881417258a11938719",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex 7212dfce3493..7251129b9729 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -3193,7 +3193,9 @@ jobs:\n         # never blocks the deploy, never changes brun()'s never-abort semantics.\n         env:\n-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}\n-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}\n           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}\n+          # fallback transport for _notify() — the Watchlist webhook is the one channel\n+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when\n+          # present, else uses this).\n+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}\n         run: python -m scripts.check_builder_failstreaks --art-dir \"$RUNNER_TEMP/band\" --lane nightly || echo \"::warning::builder fail-streak check failed (non-fatal)\"\n       - name: timings band — tail-desks (W2)\n@@ -4087,9 +4089,11 @@ jobs:\n           RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}\n         run: python -m scripts.build_recurring_briefs --cadence daily_after_us_close || echo \"::warning::recurring briefs producer failed (non-fatal)\"\n-      - name: notify (telegram/discord; skips when secrets absent)\n+      - name: notify (discord; skips when no webhook is provisioned)\n         env:\n-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}\n-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}\n           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}\n+          # fallback transport for _notify() — the Watchlist webhook is the one channel\n+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when\n+          # present, else uses this).\n+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}\n         run: python -m scripts.notify\n       - name: push priority alerts (W6b — ops-tier push spine ENABLED; operator Article-2 event 2026-07-04)\n@@ -4108,7 +4112,9 @@ jobs:\n         # Signal-sentinel migrations (vector/commodity) are phase 3 — not in this step.\n         env:\n-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}\n-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}\n           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}\n+          # fallback transport for _notify() — the Watchlist webhook is the one channel\n+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when\n+          # present, else uses this).\n+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}\n         run: python -m scripts.push_alerts || echo \"::warning::push_alerts failed (non-fatal)\"\n       - name: archive signal layer (append-only point-in-time model outputs; resilient)\n@@ -4631,7 +4637,9 @@ jobs:\n         # steps above.\n         env:\n-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}\n-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}\n           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}\n+          # fallback transport for _notify() — the Watchlist webhook is the one channel\n+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when\n+          # present, else uses this).\n+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}\n         run: python -m scripts.check_nw_health_escalation || echo \"::warning::check_nw_health_escalation failed (non-fatal)\"\n       - name: build neuralweb daily brief (PR-D — NW daily brief surface, engine phase)\n",
+      "original_chars": 3627
+    },
+    {
+      "n": 7292,
+      "head": "909dc5a058f0be752c49a4defc3a92438818edd8",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex f2e26d58f302..c2291ae40bd9 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -5376,6 +5376,26 @@ jobs:\n       # per-quirk frequency cap those counters bound.\n       #\n-      # A host with no spool is a no-op that exits 0 and prints a ::notice, not a\n-      # failure — most runners never emit anything.\n+      # CROSS-HOST RECONCILIATION (closes the XG-W3 review's F11). The spool is\n+      # host-local; publication is not. The publisher runs on `macstudio-light`,\n+      # this job on `macstudio`, the reply desk on the VPS, and\n+      # data/marketing/personas_host/ is gitignored — so a post shipped by one\n+      # host never reached the ledger advanced by another, SILENTLY, because an\n+      # absent spool and an idle host leave identical evidence. Measured on main\n+      # 2026-09-18: 1,138 live publications over 46 days and 7 accounts, and\n+      # data/marketing/personas/ did not exist at all — every per-quirk frequency\n+      # cap was reading an empty store.\n+      #\n+      # The step therefore also JOINS the two ledgers that ALREADY cross hosts by\n+      # the git commit-back this repo has always used — data/marketing/publications.jsonl\n+      # (what shipped) and data/marketing/outbox/items.jsonl (its copy) — and\n+      # admits a recovered record only when sha256(text) equals the receipt's own\n+      # effective_copy_hash. Both inputs are read-only here; no new transport,\n+      # ledger or queue is introduced, and the publication receipt remains the\n+      # sole authority on what published.\n+      #\n+      # A host with nothing to do is a no-op that exits 0 and prints a ::notice,\n+      # not a failure. A publication that cannot be resolved is a ::warning\n+      # naming the reason — never silence, which is the failure mode this repair\n+      # exists to remove.\n       - name: marketing — consolidate persona memory\n         env:\n",
+      "original_chars": 1974
+    },
+    {
+      "n": 7197,
+      "head": "8cb51ef4e306be8e1839a01bedde8fe241061fda",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex f2e26d58f302..ecea34d011aa 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -4149,17 +4149,7 @@ jobs:\n         # THREE R2 legs live inside this one step, all non-fatal, in order:\n         #\n-        # 1. BAR-STORE COLD-RESTORE. data/massive_stock_day is restored, advanced and\n-        #    published by the COLLECT job — in the COLLECT job's own workspace. Workspace\n-        #    state cannot cross a job boundary, so when this job lands on a runner whose\n-        #    checkout has never held that store (a cold spare), the store is simply\n-        #    absent and the builder's staleness gate correctly refuses: run 31440972065\n-        #    (2026-08-10) landed on actions-runner-2 and warned\n-        #    \"price-pressure-store-stale ... artifacts left untouched\" — a whole night\n-        #    of the lobe lost to a scheduling accident. The existence probe below is a\n-        #    `find -print -quit`, not a `ls *.parquet` glob: this store is ~20k files and\n-        #    the glob would expand ~800 KB of argv. Warm runner = one stat-ish walk that\n-        #    stops at the first hit, ~0 cost, no R2 call at all. Cold runner = a full\n-        #    ~617 MB / ~20k-object download (fetch_r2's delta is per FILE — an absent\n-        #    file downloads whole; only an already-current file is skipped by md5/ETag).\n+        # 1. BAR-STORE SYNC. Collect and engine use different workspaces. A\n+        # present parquet proves presence, not currency; always use the existing\n+        # hash-skipping R2 restore. A failed sync forbids advance and publish.\n         # 2. LEDGER RESTORE. data/price_pressure/events.parquet is R2-canonical and\n         #    gitignored (2026-08-11): the advance + the §10.1 completion pass rewrite\n@@ -4170,6 +4160,6 @@ jobs:\n         #    restored parquet is absent or older than tracked latest.json's asof — so a\n         #    failed restore costs a night, never the ledger.\n-        # 3. PUBLISH-BACK, GATED. Mirrors the massive_stock_day pair in the collect job:\n-        #    the upload runs ONLY when the restore leg exited 0 AND the builder exited 0.\n+        # 3. PUBLISH-BACK, GATED. Both restores must succeed and a newly completed\n+        #    artifact must exist. A refuse-to-run rc=0 must never restamp R2 as fresh.\n         #    \"restore failed\" must mean \"do not publish this tree over the deep store\"\n         #    (fetch_r2 exits 1 on a zero-object list or any failed download), and a red\n@@ -4188,19 +4178,23 @@ jobs:\n           R2_BUCKET: ${{ secrets.R2_BUCKET }}\n         run: |\n-          if [ -z \"$(find data/massive_stock_day -maxdepth 1 -name '*.parquet' -print -quit 2>/dev/null)\" ]; then\n-            echo \"price_pressure: bar store has no parquet bars locally (cold runner) — restoring from R2\"\n-            python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24 || echo \"::warning::massive_stock_day restore failed (non-fatal — the builder's staleness gate refuses and leaves artifacts untouched)\"\n-          else\n-            echo \"price_pressure: bar store present locally — no R2 restore needed\"\n-          fi\n+          PP_SOURCE=ok\n+          python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24 || { PP_SOURCE=failed; echo \"::warning::price_pressure source restore failed — no ledger advance or publish\"; }\n           PP_RESTORE=ok\n-          python -m scripts.fetch_r2 --dirs price_pressure || { PP_RESTORE=failed; echo \"::warning::price_pressure ledger restore failed (non-fatal — the builder's freshness gate refuses and leaves artifacts untouched)\"; }\n-          PP_BUILD=ok\n-          python -m scripts.build_price_pressure || { PP_BUILD=failed; echo \"::warning::build_price_pressure failed (non-fatal — last committed artifact stands)\"; }\n-          if [ \"$PP_RESTORE\" = ok ] && [ \"$PP_BUILD\" = ok ]; then\n-            python -m scripts.publish_r2 --dirs price_pressure || echo \"::warning::price_pressure R2 publish failed (non-fatal — R2 ledger goes stale; tomorrow's restore+freshness gate refuses rather than re-forking)\"\n+          python -m scripts.fetch_r2 --dirs price_pressure || { PP_RESTORE=failed; echo \"::warning::price_pressure ledger restore failed — no ledger advance or publish\"; }\n+          PP_BUILD=skipped\n+          PP_BEFORE=\"$(shasum -a 256 data/price_pressure/latest.json 2>/dev/null || true)\"\n+          if [ \"$PP_SOURCE\" = ok ] && [ \"$PP_RESTORE\" = ok ]; then\n+            PP_BUILD=ok\n+            python -m scripts.build_price_pressure || { PP_BUILD=failed; echo \"::warning::build_price_pressure failed — keeping the previous published record\"; }\n+          fi\n+          PP_AFTER=\"$(shasum -a 256 data/price_pressure/latest.json 2>/dev/null || true)\"\n+          if [ \"$PP_SOURCE\" = ok ] && [ \"$PP_RESTORE\" = ok ] && [ \"$PP_BUILD\" = ok ] && [ -n \"$PP_AFTER\" ] && [ \"$PP_BEFORE\" != \"$PP_AFTER\" ]; then\n+            python -m scripts.publish_r2 --dirs price_pressure || echo \"::warning::price_pressure R2 publish failed — publication remains unproven\"\n           else\n-            echo \"::warning::price_pressure R2 publish SKIPPED (restore=$PP_RESTORE build=$PP_BUILD) — a failed restore or build must never overwrite the canonical ledger\"\n+            echo \"::warning::price_pressure publish skipped (source=$PP_SOURCE restore=$PP_RESTORE build=$PP_BUILD) — no newly completed record\"\n           fi\n+          # The full dossier render precedes this producer. Refresh only its\n+          # canonical band now; failures also render the explicit delayed state.\n+          RENDER_NO_DRIP=1 python -m scripts.build_ticker_pages --pressure-only || echo \"::warning::price_pressure page refresh failed — served freshness remains unproven\"\n       - name: Entry Radar nightly reconcile (W5 forward evidence)\n         # The SOLE durable writer of data/entry_radar/** (W5 prereg §8,\n",
+      "original_chars": 5899
+    },
+    {
+      "n": 7178,
+      "head": "ec3190b33e0a3d5cc8a83797631f641274cdd974",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex f2e26d58f302..7b5044d888f8 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -3120,4 +3120,18 @@ jobs:\n         # sibling job like factor_series) because it writes a PAGE + hub card that must be\n         # in THIS run's deploy artifact — it is event-driven, so a one-run lag is wrong.\n+        #\n+        # REACHABILITY GUARD (2026-09-15): run 34957877090 proved the barrier can wedge\n+        # for >3h (15:37Z→18:56Z), starving every tail consumer behind it — including\n+        # master_brain + build_aibrief — until the 300m engine-job cap cancels the night.\n+        # End-to-end headroom is load-bearing, not just this band's own wall-clock.\n+        # Recent successful barriers are p90 ~48.5m, but run 35168062576 reached\n+        # commit-engine-outputs at 286.9m with a 46.4m barrier; substituting a full\n+        # 60m barrier projects the commit to 300.5m, beyond the engine job's 300m cap.\n+        # 50m projects ~290.5m on that same measured night, preserving ~9.5m for the\n+        # commit/publication checkpoint. The slowest regional tail may therefore time\n+        # out while otherwise healthy; continue-on-error is the explicit loss budget.\n+        # Re-measure the whole start->barrier->commit path before changing this cap.\n+        timeout-minutes: 50\n+        continue-on-error: true\n         env:\n           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}\n",
+      "original_chars": 1491
+    },
+    {
+      "n": 7084,
+      "head": "4fab84d2bdad0a56b063f6da98a2c41585456ecd",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex f2e26d58f302..4e0988a9ccab 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -1626,4 +1626,23 @@ jobs:\n           python -m engine.theme_trade_flows \\\n             || echo \"::warning::theme_trade_flows rollup failed (non-fatal)\"\n+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)\n+        timeout-minutes: 5\n+        continue-on-error: true\n+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}\n+        # Keyless ScienceBase NMIC annual release. Off the render path.\n+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.\n+        run: |\n+          python -m collectors.usgs_mcs \\\n+            || echo \"::warning::usgs_mcs ingest failed (non-fatal)\"\n+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)\n+        timeout-minutes: 5\n+        continue-on-error: true\n+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}\n+        # Pure in-memory projection of the parquet above. Honest null when absent.\n+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json\n+        # (staged via `git add data/ … site/basketdata/` below).\n+        run: |\n+          python -m engine.critical_minerals_supply \\\n+            || echo \"::warning::critical_minerals_supply rollup failed (non-fatal)\"\n       - name: TIL W10 — ClinicalTrials.gov theme pipeline ingest (non-fatal)\n         # Cap: measured 6.6s; 10m covers a slow CT.gov night and bounds a stalled fetch.\n@@ -4064,4 +4083,16 @@ jobs:\n           THESIS_MONITOR_ENABLE: ${{ secrets.THESIS_MONITOR_ENABLE }}\n         run: python -m scripts.run_thesis_condition_monitor || echo \"::warning::thesis condition monitor failed (non-fatal)\"\n+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)\n+        # AFTER 'brain briefing tunnel (build_briefing)' and AFTER the thesis\n+        # condition monitor (the step whose comment names public.alert_outbox).\n+        # Slot = site/intelligence/briefing.json field as_of. Writes\n+        # public.brief_deliveries only (insert on conflict do nothing).\n+        # Fail-soft: absent creds/tables -> typed miss, 0 rows, exit 0.\n+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.\n+        env:\n+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}\n+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}\n+          RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}\n+        run: python -m scripts.build_recurring_briefs --cadence daily_after_us_close || echo \"::warning::recurring briefs producer failed (non-fatal)\"\n       - name: notify (telegram/discord; skips when secrets absent)\n         env:\n",
+      "original_chars": 2838
+    },
+    {
+      "n": 7001,
+      "head": "3684c7d51a0b5d894314c369b408896f54df2ffd",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex 04a702203872..f57634c63833 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -4281,4 +4281,9 @@ jobs:\n           # (#3617/#3624). See render.yml for the full rationale.\n           python -m scripts.optimize_assets || echo \"::warning::asset optimize FAILED — ?v= stamps may be stale\"\n+      - name: checkpoint normalized international dashboards to main\n+        if: always()\n+        timeout-minutes: 8\n+        continue-on-error: true\n+        run: bash scripts/ci/daily_engine_intl_checkpoint.sh\n       - name: fetch oracle panels from R2 (PR-C1 sponsorship shim)\n         if: always()\n@@ -4428,4 +4433,6 @@ jobs:\n       - name: grade thematic (TIL W6 — grading pack)\n         if: always()\n+        timeout-minutes: 10\n+        continue-on-error: true\n         # TIL W6 (PR-H) grading pack — AFTER build_thematic_state.\n         # Stage 1: append attention rows → data/foresight/earliness_log.jsonl (sole nightly\n",
+      "original_chars": 1020
+    },
+    {
+      "n": 6861,
+      "head": "6f3b75657f342949b9e0e04b837565cdb71a38a2",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex f2e26d58f302..5ffe7818603e 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -4505,4 +4505,26 @@ jobs:\n           fi\n           exit 0\n+      - name: capability health & freshness projection (F13 V1 — display-only)\n+        if: always()\n+        # F13 V1: engine/capability_health.py is a PURE join over EXISTING receipts\n+        # (output_health view, data/run_status.json nightly lanes) — no new\n+        # observability store, no scheduler/retry/probe/failover logic. Same wiring\n+        # SHAPE as the chronicle step immediately above (set +e; capture rc; a bare\n+        # `::warning` on failure per the GitHub-annotation law — never a logger; always\n+        # exit 0). Writes ONE artifact, data/capability_health/state.json, covered by\n+        # 'git add data/ site/' in 'commit engine outputs' below — same as the other\n+        # display-tier builders in this job (build_thematic_state, grade_thematic,\n+        # build_entity_thesis_mechanism_registry, build_mechanism_pathways).\n+        # Placed after chronicle (a receipt this module may join against later) and\n+        # before the commit-publish timing mark; ordering is not load-bearing today —\n+        # this module reads only already-committed/already-written receipts.\n+        run: |\n+          set +e\n+          python -m scripts.build_capability_health > \"$RUNNER_TEMP/capability_health.log\" 2>&1; rc=$?\n+          cat \"$RUNNER_TEMP/capability_health.log\"\n+          if [ \"$rc\" -ne 0 ]; then\n+            echo \"::warning title=capability_health::rc=$rc (data/capability_health/state.json may be stale — last committed artifact stands)\"\n+          fi\n+          exit 0\n       - name: timings band — commit-publish (W2)\n         run: python3 scripts/nightly_timings.py mark --band commit-publish || echo \"::warning::timings band mark failed (non-fatal)\"\n",
+      "original_chars": 1934
+    },
+    {
+      "n": 6842,
+      "head": "70815229c55963598d4441eef07ca3949d097b3b",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/closing-bell.yml b/.github/workflows/closing-bell.yml\nindex cec33f944e5d..cd623c8aef3e 100644\n--- a/.github/workflows/closing-bell.yml\n+++ b/.github/workflows/closing-bell.yml\n@@ -549,4 +549,5 @@ jobs:\n           # red on every PR until #3358). Heal BEFORE staging so the first commit is never\n           # diverged; the post-rebase --fix stays for the -X theirs mid-render-merge case.\n+          python -m scripts.bake_landing_preview --fix || true\n           python -m scripts.check_template_site_sync --fix || true\n           # Stage site/ FIRST (order mirrors earlyclose.yml / intraday-fastpath.yml).\n@@ -621,4 +622,5 @@ jobs:\n               # 3.2k pages, and BEFORE the --fix so the pairs heal from a re-stamped templates/.\n               python -m scripts.optimize_assets || echo \"::warning::post-rebase asset optimize FAILED — ?v= stamps may be stale\"\n+              python -m scripts.bake_landing_preview --fix || true\n               python -m scripts.check_template_site_sync --fix || true\n               python3 scripts/check_ms_board_coherence.py --heal-from origin/main \\\n",
+      "original_chars": 1115
+    },
+    {
+      "n": 7871,
+      "head": "df96a1e3a79d976c987470c12b0d15ccf579c5ef",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex df15a81622c9..47280a52e9e4 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -4323,4 +4323,9 @@ jobs:\n         timeout-minutes: 20\n         run: python -m scripts.collect_release_target_vintages || echo \"::warning::release target vintage collection failed (non-fatal — completion authority remains withheld until a full cohort succeeds)\"\n+      - name: Cycle (a) full-vintage stores (data precondition, non-fatal)\n+        env:\n+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}\n+        timeout-minutes: 20\n+        run: python -m scripts.collect_cycle_vintages || echo \"::warning::cycle vintage collection failed (non-fatal)\"\n       - name: Release Radar official CPI Table 1 receipts (truth substrate, non-fatal)\n         # Collects the frozen preregistered BLS Supplemental Table 1 panel into\n",
+      "original_chars": 904
+    },
+    {
+      "n": 7060,
+      "head": "170ad35b12673eac75ebefb53b3a5da4640daf06",
+      "returncode": 0,
+      "patch": "diff --git a/.github/workflows/closing-bell.yml b/.github/workflows/closing-bell.yml\\n--- a/.github/workflows/closing-bell.yml\\n+++ b/.github/workflows/closing-bell.yml\\n@@ -202,25 +202,8 @@ jobs:\\n-      - name: restore breadth (S&P 500) close cache\\n-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'\\n-        uses: actions/cache/restore@v4\\n-        with:\\n-          path: data/breadth/_closes_cache.parquet\\n-          key: breadth-closes-closingbell-${{ github.run_id }}\\n-          restore-keys: breadth-closes-\\n-      - name: restore smallcap (S&P 600) close cache\\n-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'\\n-        uses: actions/cache/restore@v4\\n-        with:\\n-          path: data/smallcap_breadth/_closes_cache.parquet\\n-          key: smallcap-closes-closingbell-${{ github.run_id }}\\n-          restore-keys: smallcap-closes-\\n-      - name: restore midcap (S&P 400) close cache\\n-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'\\n-        uses: actions/cache/restore@v4\\n-        with:\\n-          path: data/midcap_breadth/_closes_cache.parquet\\n-          key: midcap-closes-closingbell-${{ github.run_id }}\\n-          restore-keys: midcap-closes-\\n+      # The US S&P 500/600/400 panels are Git-tracked committed inputs and are\\n+      # read directly from checkout; this reader must never overlay them from\\n+      # Actions cache. Only daily.collect may seed those panels. Russell, China\\n+      # and HK remain separate cache-backed handoffs below.\\n@@ -325,4 +308,16 @@ jobs:\\n+      - name: restore options_skew ledger from R2 (W2-2 store-host accrual)\\n+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'\\n+        # The store host publishes the skew ledger to R2. This step copies it down\\n+        # before emit. If the copy fails, emit still renders the committed ledger\\n+        # and reports that ledger's as-of time. The failure is a warning, not a crash.\\n+        env:\\n+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}\\n+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}\\n+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}\\n+          R2_BUCKET: ${{ secrets.R2_BUCKET }}\\n+        run: python -m scripts.fetch_r2 --dirs options_skew || echo \"::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof\"\\n+\\n@@ -376,5 +371,5 @@ jobs:\\n-            brun options_skew     \"single-name IV skew (build_options_skew)\"                     scripts.build_options_skew\\n+            brun options_skew     \"single-name IV skew (build_options_skew)\"                     scripts.build_options_skew --emit\\ndiff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\\n--- a/.github/workflows/daily.yml\\n+++ b/.github/workflows/daily.yml\\n@@ -423,5 +423,5 @@ jobs:\\n-          python -m scripts.backfill_yahoo_universe --cap 400 --budget-s 480 \\\\n+          python -m scripts.backfill_yahoo_universe --cap 400 --batch-size 160 --refresh-all --budget-s 480 \\\\n@@ -1626,4 +1626,23 @@ jobs:\\n+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)\\n+        timeout-minutes: 5\\n+        continue-on-error: true\\n+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}\\n+        # Keyless ScienceBase NMIC annual release. Off the render path.\\n+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.\\n+        run: |\\n+          python -m collectors.usgs_mcs \\\\n+            || echo \"::warning::usgs_mcs ingest failed (non-fatal)\"\\n+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)\\n+        timeout-minutes: 5\\n+        continue-on-error: true\\n+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}\\n+        # Pure in-memory projection of the parquet above. Honest null when absent.\\n+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json\\n+        # (staged via `git add data/ … site/basketdata/` below).\\n+        run: |\\n+          python -m engine.critical_minerals_supply \\\\n+            || echo \"::warning::critical_minerals_supply rollup failed (non-fatal)\"\\n@@ -1974,6 +1993,7 @@ jobs:\\n-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the\\n-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).\\n+      # Historical Aug-06 repair removed prefix restores from five breadth caches.\\n+      # Sep-16 completes Git authority: tracked US panels are not cache-restored\\n+      # by readers at all; the separate Russell and HK handoffs remain below.\\n@@ -2006,19 +2026,8 @@ jobs:\\n-      - name: restore breadth close cache (stock search library needs constituent closes)\\n-        uses: actions/cache@v4\\n-        with:\\n-          path: data/breadth/_closes_cache.parquet\\n-          key: breadth-closes-engine-${{ github.run_id }}\\n-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)\\n-        uses: actions/cache@v4\\n-        with:\\n-          path: data/smallcap_breadth/_closes_cache.parquet\\n-          key: smallcap-closes-engine-${{ github.run_id }}\\n-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)\\n-        uses: actions/cache@v4\\n-        with:\\n-          path: data/midcap_breadth/_closes_cache.parquet\\n-          key: midcap-closes-engine-${{ github.run_id }}\\n+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads\\n+      # their checkout bytes and must never overlay them from Actions cache. Only\\n+      # daily.collect may seed them because it refreshes and commits the canonical\\n+      # files. The gitignored Russell same-run handoff remains cache-backed.\\n@@ -2282,4 +2291,28 @@ jobs:\\n+      - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)\\n+        # The Prophet hold-leash's earnings arm reads EquityDesk's native\\n+        # earnings_call_sent from data/earnings_calls/history.parquet. This shim already\\n+        # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet\\n+        # had already originated against an absent store, so every plan carried\\n+        # ec_source_state=unavailable and the promoted tilt could never become eligible\\n+        # (production logs, 2026-09-17). Hydrating here is the workflow half of the\\n+        # repair; the later call stays put and is a content-hash no-op.\\n+        # READ-ONLY: the shim only get_object/download_file. The Prophet generation step\\n+        # below still carries NO R2 credentials — that publish boundary is unchanged.\\n+        # NEVER FATAL: absent creds / absent object exit 0 and Prophet degrades to the\\n+        # documented honest null (leash 1.0, ec_source_state=unavailable + reason).\\n+        # Rationale in full: scripts/report_prophet_earnings_source.py.\\n+        timeout-minutes: 6\\n+        continue-on-error: true\\n+        env:\\n+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}\\n+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}\\n+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}\\n+          R2_BUCKET: ${{ secrets.R2_BUCKET }}\\n+        run: |\\n+          python -m scripts.fetch_earnings_scores || echo \"::warning title=fetch_earnings_scores::rc≠0 before Prophet (non-fatal — the hold-tilt stays at leash 1.0 and every plan discloses ec_source_state=unavailable)\"\\n+          python3 scripts/report_prophet_earnings_source.py || echo \"::warning title=prophet_earnings_source::source report failed (non-fatal)\"\\n+          exit 0\\n@@ -3155,4 +3188,13 @@ jobs:\\n+      # Durable core checkpoint (incident run 35547644919): the coherent builder\\n+      # band completed, but a later best-effort tail exhausted the 300-minute job\\n+      # cap before the sole broad publisher. Persist the core public tree here;\\n+      # the existing final publisher remains the second cut for later tail outputs.\\n+      - name: checkpoint core engine outputs to main (durable before tail desks)\\n+        if: always()\\n+        timeout-minutes: 25\\n+        continue-on-error: true\\n+        run: bash scripts/ci/daily_engine_commit_outputs.sh\\n@@ -3753,5 +3795,18 @@ jobs:\\n-        run: python -m scripts.grade_bottom_calls --nightly || true\\n+        #\\n+        # NOT `|| true` (2026-09-18). This step stays non-fatal to the nightly — nothing here\\n+        # gates the dashboard deploy — but a bare `|| true` made failure INVISIBLE, and that is\\n+        # not a hypothetical: the advancer raised `TypeError: Cannot compare tz-naive and\\n+        # tz-aware timestamps` on EVERY run from birth, before its first write, so neither\\n+        # data/bottom_ledger/rows.parquet nor site/factordata/us_bottom_ledger.json ever\\n+        # existed while this step report",
+      "original_chars": 26783
+    },
+    {
+      "n": 7246,
+      "head": "acb2fb10c1cd2e3ac9157271e6abc845bc70048a",
+      "source": "GitHub fetch_pr_file_patch after validated filename; head association is census metadata, not atomic",
+      "patch": "@@ -6266,6 +6266,24 @@ jobs:\n           GH_TOKEN: ${{ github.token }}\n         run: |\n           python -m scripts.build_active_build_map || echo \"::warning::active_build_map generation failed (non-fatal — fail-open)\"\n+      - name: materialize Mastermind P0 source\n+        # Agent OS stays network-free itself.  The sole nightly writer explicitly\n+        # materializes the canonical cross-repo strategy source before projection so\n+        # GitHub-hosted/self-hosted Actions never depend on an ambient sibling checkout.\n+        run: |\n+          set -u\n+          root=\"${RUNNER_TEMP}/agentos-mastermind\"\n+          rm -rf -- \"$root\"\n+          if GIT_TERMINAL_PROMPT=0 GIT_LFS_SKIP_SMUDGE=1 \\\n+             perl -e 'alarm 90; exec @ARGV or die' -- \\\n+             git clone --quiet --depth=1 --single-branch --branch master \\\n+             https://github.com/mastermindx-market-intelligence/Mastermind.git \"$root\" \\\n+             && test -r \"$root/config/strategic_state.yml\"; then\n+            echo \"Mastermind P0 source SHA: $(git -C \"$root\" rev-parse HEAD)\"\n+          else\n+            echo \"::warning::Mastermind P0 source unavailable; Agent OS will report p0_active unknown\"\n+            rm -rf -- \"$root\"\n+          fi\n       - name: generate agent OS state\n         # ORDERED AFTER the active build map, which is its PR-state input: the join is\n         # only as fresh as active_builds.json, so regenerating first would publish a\n@@ -6276,9 +6294,13 @@ jobs:\n         # a regenerated copy — that would put two independent record edits into conflict\n         # on a shared generated file, which is the write pattern invariant I2 exists to\n         # prevent.  One writer; staleness is printed in the artifact, never hidden.\n-        # No network: PR state comes only from the file written by the step above.\n+        # Network collection is complete before this command: PR state is local and the\n+        # Mastermind strategy snapshot is passed through the existing read-only override.\n+        env:\n+          MACRO_MASTERMIND_REPO: ${{ runner.temp }}/agentos-mastermind\n         run: |\n           python3 scripts/agentos.py status || echo \"::warning::agent_os_state generation failed (non-fatal — fail-open)\"\n+          rm -rf -- \"${RUNNER_TEMP}/agentos-mastermind\"\n       - name: commit active build map outputs\n         run: |\n           . \"${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh\""
+    }
+  ],
+  "workspace": {
+    "summary": {
+      "kind": "summary",
+      "started_at": "2026-10-08T23:37:26.068008+00:00",
+      "completed_at": "2026-10-08T23:37:36.385961+00:00",
+      "registered": 745,
+      "counts": {
+        "clean": 716,
+        "missing": 14,
+        "dirty": 15
+      },
+      "aliases": {
+        "@managed/": "/Volumes/Mastermind/agent-workspaces/macro/",
+        "@cluade/": "/Users/chriswong/Documents/Cluade/"
+      },
+      "scope": [
+        ".gitignore",
+        ".github/workflows/daily.yml"
+      ]
+    },
+    "registrations": [
+      {
+        "path": "/private/tmp/macro-admin-release-proof-20260922",
+        "head": "2a5d60d0d358cfe5216515f24b129250c4287707",
+        "branch": "sol/admin-release-proof-20260922",
+        "lock": "Temporary read-only admin release proof workflow; source writer Sol; never merge",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/closepass-host-lane",
+        "head": "a38d8885c7fb29d3dbf590d711fb34612595b40d",
+        "branch": "",
+        "lock": "closepass host lane (com.macro.closepass launchd primary)",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/market-os-macro-merge-1bc993",
+        "head": "86c3944cbe6f08bd40e8e427f235c0dfa5520863",
+        "branch": "claude/a1a-auth-generation",
+        "lock": "\"ACTIVE session \\342\\200\\224 A1A round-3, PR #6160; do not GC\"",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/nbbo-state-v2-20260813",
+        "head": "14ddecc7aa03b2ec30111bddf74b155a96601239",
+        "branch": "claude/nbbo-state-v2-20260813",
+        "lock": "active NBBO state v2 implementation",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/sparse-selector-core-20260813",
+        "head": "14ddecc7aa03b2ec30111bddf74b155a96601239",
+        "branch": "claude/sparse-selector-core-20260813",
+        "lock": "active sparse selector core lane after campaign release",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/sparse-selector-core-ship-20260813",
+        "head": "4f2e755091afb4d363daf493f09966be326e79d4",
+        "branch": "claude/sparse-selector-core-ship-20260813",
+        "lock": "active unarmed sparse selector core ship lane",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/sparse-selector-runtime-seal-20260813",
+        "head": "2b04e953f6d701fa5f75eed4baec69053a47cbf4",
+        "branch": "claude/sparse-selector-runtime-seal-20260813",
+        "lock": "active sealed runtime transplant lane",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/sparse-selector-transplant-20260813",
+        "head": "7200d11abd5e010779a8025aedc1996cf4efab20",
+        "branch": "claude/sparse-selector-transplant-20260813",
+        "lock": "active sparse selector fresh-main transplant after campaign-v2 release gate",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/wf_f819dac0-dfa-8",
+        "head": "1f65f0a0b799008224c8cebedabe0fea8194481f",
+        "branch": "claude/mo-b-b3-b-f12-5",
+        "lock": "Meta-CEO B build worker: PR #6925 round2 fixes (session 7cd4fae1)",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/Macro Dashboard/.claude/worktrees/x-growth-overhaul",
+        "head": "72b355ae9942137fdd1389dee8d2f1ccd170a11b",
+        "branch": "claude/reply-desk-arming",
+        "lock": "claude session x-growth-overhaul (pid 36220 start Wed Jul 29 04:27:03 2026)",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/admin-uiux-sweep-20260918",
+        "head": "b79a6e08ffb82a35ae4d7d28ad49979f3296b470",
+        "branch": "sol/admin-uiux-sweep-20260918",
+        "lock": null,
+        "status": [
+          " D .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/catalyst-r19-ci-20260927",
+        "head": "17a94057c51c28583150b20f2b4f6cdc0436c546",
+        "branch": "claude/sector-catalyst-recommendation-north-star-20260926",
+        "lock": null,
+        "status": [
+          "D  .github/workflows/daily.yml",
+          "D  .gitignore"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/cross-system-reconcile-executive-m2-20260907",
+        "head": "45edbb811cc77f4662976ca3f6e2bccfea7c35c6",
+        "branch": "sol/cross-system-reconcile-executive-m2-20260907",
+        "lock": "M2 Agent OS preserved candidate publication 2026-09-07",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/macro-turnaround-anticipation-pit-r7-20260909",
+        "head": "61cb600c966a7762fcfbe9ea77bfcf48ce017e5c",
+        "branch": "claude/macro-turnaround-anticipation-pit-r7-20260909",
+        "lock": "Sol direct ownership: macro turnaround R7 PIT source repair",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/mas6-active-build-map-ci-owner-20260906",
+        "head": "418ccaae377c92f859b1fc844a1a28b3d0dd553e",
+        "branch": "sol/mas-6-active-build-map-null-files-repair-20260906",
+        "lock": "Sol #6938 active-build-map CI-owner repair",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/mo-release-6810/.claude/worktrees/mo-release-6912",
+        "head": "77e882864e434c3e68cfeced9ec3f100d98efaa9",
+        "branch": "mo-release-6912",
+        "lock": "initializing",
+        "state": "missing"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/risk-radar-displayed-probability-audit-20260922",
+        "head": "25cecb06160a1766c537e218a8979c91e7bc3064",
+        "branch": "claude/risk-radar-displayed-probability-audit-20260922",
+        "lock": null,
+        "status": [
+          "D  .github/workflows/daily.yml",
+          "D  .gitignore"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "@cluade/macro-worktrees/sol-macro-suite-registry-order-20260916",
+        "head": "c1b018c179e2f66395acedda4aa5d9852aa7d04e",
+        "branch": "sol/macro-suite-registry-order-20260916",
+        "lock": null,
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/customer-alert-delivery-20260922-6cd4e96c6eb00cfd",
+        "head": "65a525df22c6107b24b321c1786246c42b7b22bb",
+        "branch": "claude/alert-delivery-effect-unknown",
+        "lock": "mastermind-external-storage: removable volume protection",
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/orch-b-gate8-7978e5304c569149",
+        "head": "f83c60a1e64010a6c3524f33af4b2e93d7ef29a0",
+        "branch": "",
+        "lock": "mastermind-external-storage: removable volume protection",
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/us-risk-breadth-integrity-20260916-sol-9a09b2c2fa2f1eb8",
+        "head": "124781fcaf4e6010d0ec3cc95be1c438751beaf7",
+        "branch": "claude/ssd-us-risk-breadth-integrity-20260916-sol-9a09b2c2fa2f1eb8",
+        "lock": "mastermind-external-storage: removable volume protection",
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/sol/push-retry-stale-rebase-20260917-sol",
+        "head": "a45871683d2f13577c690b6ec8877dd9f57bad7a",
+        "branch": "sol/push-retry-stale-rebase-20260917-sol",
+        "lock": null,
+        "status": [
+          " D .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/tmp/prophet-packet3-r24-current-main-integration",
+        "head": "a242e144205add650eed032da49e28aa56d6b325",
+        "branch": "",
+        "lock": null,
+        "status": [
+          " D .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/pr7264-ci-selfheal-r3-20260922-sol",
+        "head": "9335a1bbab7968ba99d401c56809a687b02d26f0",
+        "branch": "",
+        "lock": null,
+        "status": [
+          "D  .github/workflows/daily.yml",
+          "D  .gitignore"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-mobile-settings-row-20260921",
+        "head": "8bb010a76d187eae1d0c57a62a5392c4cf8e5079",
+        "branch": "sol/mobile-settings-row-20260921",
+        "lock": null,
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-pr7505-canonical-20260921",
+        "head": "81f6a7f76afdc757dc84997f486f4739ce50ae6b",
+        "branch": "",
+        "lock": null,
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-prophet-cpu-diagnosis-20260920",
+        "head": "310a23dcd3e5fb8fdb95169a489b94487b091777",
+        "branch": "claude/prophet-cpu-leadership-recovery-20260920",
+        "lock": null,
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-start-mobile-controls-20260921",
+        "head": "90b0d721d78eda8f9205275f3c6bb7a478fdcbeb",
+        "branch": "sol/start-mobile-controls-20260921",
+        "lock": null,
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/tmp-7526-semantic-review",
+        "head": "96ed7e880dfe4e54bbb693dfea5267cdb6e63629",
+        "branch": "",
+        "lock": null,
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "state": "dirty"
+      },
+      {
+        "kind": "managed_lock_clean",
+        "rows": [
+          [
+            "@managed/review/oli-existing-owner-recovery-20261003-astra-001",
+            "a5feef337958e1e3d84b7243daf2a4bb2a0702f1",
+            "sol/review-oli-existing-owner-recovery-20261003-astra-001",
+            "mastermind-linked-worktree:v1 operation=oli-existing-owner-recovery-20261003-astra-001 lane=review base=a5feef337958e1e3d84b7243daf2a4bb2a0702f1"
+          ],
+          [
+            "@managed/review/theme-fabric-gen3-proof-20261008-sol-001",
+            "07db8e5931d93a08d5c92022373e7a3a60ab2c76",
+            "sol/review-theme-fabric-gen3-proof-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=theme-fabric-gen3-proof-20261008-sol-001 lane=review base=07db8e5931d93a08d5c92022373e7a3a60ab2c76"
+          ],
+          [
+            "@managed/sol/information-to-price-pit-conformance-20261004-sol-001",
+            "8cf8f73296e2b5465048606016a0c49a8886b8aa",
+            "sol/information-to-price-pit-conformance-20261004-sol-001",
+            "mastermind-linked-worktree:v1 operation=information-to-price-pit-conformance-20261004-sol-001 lane=sol base=8cf8f73296e2b5465048606016a0c49a8886b8aa"
+          ],
+          [
+            "@managed/web/alpha-rs-leadership-recovery-20261005-astra-001",
+            "89dccdb458a425ca9bb85cfc728644b03fe8f963",
+            "sol/web-alpha-rs-leadership-recovery-20261005-astra-001",
+            "mastermind-linked-worktree:v1 operation=alpha-rs-leadership-recovery-20261005-astra-001 lane=web base=8a3310cdf03bc16704d51235172a5bbcf1f9a73e"
+          ],
+          [
+            "@managed/web/bonds-forex-research-design-20260928-sol-c1-001",
+            "22df64fca3e8ceac4e81293c2da83eb2047e237e",
+            "sol/web-bonds-forex-research-design-20260928-sol-c1-001",
+            "mastermind-linked-worktree:v1 operation=bonds-forex-research-design-20260928-sol-c1-001 lane=web base=22df64fca3e8ceac4e81293c2da83eb2047e237e"
+          ],
+          [
+            "@managed/web/gmi-cte-production-bridge-v3-20261005-004",
+            "11bf5f62577152fb5a17b3331e05c8d5ea9c4898",
+            "sol/web-gmi-cte-production-bridge-v3-20261005-004",
+            "mastermind-linked-worktree:v1 operation=gmi-cte-production-bridge-v3-20261005-004 lane=web base=79b8a78b621e2b34fbbd8243b43f2dff16df5ba8"
+          ],
+          [
+            "@managed/web/gmi-publication-time-read-v2-20261005-004",
+            "cddaecac122760ba89cc0325096fab5cfb8e7d36",
+            "sol/web-gmi-publication-time-read-v2-20261005-004",
+            "mastermind-linked-worktree:v1 operation=gmi-publication-time-read-v2-20261005-004 lane=web base=79b8a78b621e2b34fbbd8243b43f2dff16df5ba8"
+          ],
+          [
+            "@managed/web/market-holiday-calendar-compatibility-20261007-sol-001",
+            "9aeebce87473eaad0f71d27ad1e15374cbeb0453",
+            "sol/web-market-holiday-calendar-compatibility-20261007-sol-001",
+            "mastermind-linked-worktree:v1 operation=market-holiday-calendar-compatibility-20261007-sol-001 lane=web base=e3800ef5addcbf60204bce0df816761086b1b17b"
+          ],
+          [
+            "@managed/web/oli-existing-owner-recovery-20261003-astra-001",
+            "5d6ad94d3c0785378173caa067645d2ce0d0a3b9",
+            "sol/web-oli-existing-owner-recovery-20261003-astra-001",
+            "mastermind-linked-worktree:v1 operation=oli-existing-owner-recovery-20261003-astra-001 lane=web base=713c2d321f7482842e9eb1fe5575550d28a11ee4"
+          ],
+          [
+            "@managed/web/pb-d-event-quality-implementation-20261007",
+            "a24f86a7f557b6490b507e4b0c31c7e07e3c47b2",
+            "sol/web-pb-d-event-quality-implementation-20261007",
+            "mastermind-linked-worktree:v1 operation=PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007 lane=web base=a146de40a8b3ba0475f17ddd87519187f17449a7"
+          ],
+          [
+            "@managed/web/pb-d-operator-quickstart-20261008",
+            "de4676280a8ea14521fa899b9ea085a4821bdb28",
+            "sol/web-pb-d-operator-quickstart-20261008",
+            "mastermind-linked-worktree:v1 operation=PB-D-OPERATOR-QUICKSTART-20261008 lane=web base=8aa1aca8c593982e722bbc666a221fdd82466f15"
+          ],
+          [
+            "@managed/web/prophet-earnings-repair-r2-20261004-sol-001",
+            "4489096c14ffea6eaf7ca5448acac5f1f91442b5",
+            "sol/web-prophet-earnings-repair-r2-20261004-sol-001",
+            "mastermind-linked-worktree:v1 operation=prophet-earnings-repair-r2-20261004-sol-001 lane=web base=cd6176e7fc8837d49cbd7ffc82e1370ca3d588dc"
+          ],
+          [
+            "@managed/web/prophet-four-market-p1a-20261004-sol-001",
+            "60a494ed8c647c45712a13c8919e6d51c8b60905",
+            "sol/web-prophet-four-market-p1a-20261004-sol-001",
+            "mastermind-linked-worktree:v1 operation=prophet-four-market-p1a-20261004-sol-001 lane=web base=bd118c69cc031b33d73b756f95eb5d3723a9dceb"
+          ],
+          [
+            "@managed/web/prophet-journey-input-integrity-20261005-sol-001",
+            "7b74c8c5b6f7150c6b829924d6d8027aa4d17925",
+            "sol/web-prophet-journey-input-integrity-20261005-sol-001",
+            "mastermind-linked-worktree:v1 operation=prophet-journey-input-integrity-20261005-sol-001 lane=web base=9519aa765af789ab2cf4e12332be200925d6d39f"
+          ],
+          [
+            "@managed/web/prophet-price-basis-ci-owner-repair-20261004-sol-001",
+            "bad9a64143b913b5d3a57ee3bbaa875817750c09",
+            "sol/web-prophet-price-basis-ci-owner-repair-20261004-sol-001",
+            "mastermind-linked-worktree:v1 operation=prophet-price-basis-ci-owner-repair-20261004-sol-001 lane=web base=3ad47339cc11b54a61ba677490bcd41fab32cc61"
+          ],
+          [
+            "@managed/web/prophet-q06-current-base-release-20261004-sol-001",
+            "fcf6ecce5bdcc43bcf35d4bf486b8df7e1c6ffa5",
+            "sol/web-prophet-q06-current-base-release-20261004-sol-001",
+            "mastermind-linked-worktree:v1 operation=prophet-q06-current-base-release-20261004-sol-001 lane=web base=604cf97b6c7d88995ddad56c9ebb71d510eff8b6"
+          ],
+          [
+            "@managed/web/prophet-s0-integrity-repair-r2-20261005-c4-001",
+            "07136c56ec6f8492067b468f90c6b4372ca649b4",
+            "sol/web-prophet-s0-integrity-repair-r2-20261005-c4-001",
+            "mastermind-linked-worktree:v1 operation=prophet-s0-integrity-repair-r2-20261005-c4-001 lane=web base=bf77fa92f55e51da185932fe081c46ca40423e32"
+          ],
+          [
+            "@managed/web/ptse-b4-private-quote-provenance-20261004-astra-001",
+            "25339c733895edd0b338fae3a8913ade25410469",
+            "sol/web-ptse-b4-private-quote-provenance-20261004-astra-001",
+            "mastermind-linked-worktree:v1 operation=ptse-b4-private-quote-provenance-20261004-astra-001 lane=web base=80fd8a1b993afe6109d289cb6916809dde70c830"
+          ],
+          [
+            "@managed/web/research-vault-resume-20261005-f3-guard",
+            "93e9b38b1be19947fcc58f0be023e0879cb71197",
+            "sol/web-research-vault-resume-20261005-f3-guard",
+            "mastermind-linked-worktree:v1 operation=research-vault-resume-20261005-f3-guard lane=web base=f0e501324a5fca5541f57ef6f26bdf1133ec2d82"
+          ],
+          [
+            "@managed/web/research-vault-resume-20261005-f4",
+            "c83f097225a6ea90842950df43e2f529faa38192",
+            "sol/web-research-vault-resume-20261005-f4",
+            "mastermind-linked-worktree:v1 operation=research-vault-resume-20261005-f4 lane=web base=4df909395c2ef2bd1e4c27f23051940b3823c54a"
+          ],
+          [
+            "@managed/web/sovereign-auction-pressure-20261008-sol-001",
+            "d9325a8dc984ef902c3a1a72446884db7676702d",
+            "sol/web-sovereign-auction-pressure-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=sovereign-auction-pressure-20261008-sol-001 lane=web base=d2eec4732abee359ebb578b245fa7359b3c01a7d"
+          ],
+          [
+            "@managed/web/theme-fabric-c0-records-20261008-sol-001",
+            "056a3a7bfb9813679a581d4af74568da32c4af46",
+            "sol/web-theme-fabric-c0-records-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=theme-fabric-c0-records-20261008-sol-001 lane=web base=c29dde7f8006bce68fcf70bc6719bda6264c6f2b"
+          ],
+          [
+            "@managed/web/theme-fabric-c4-converge-20261008-sol-001",
+            "a4deb82387895dae58bb77404faeeb851450c174",
+            "sol/web-theme-fabric-c4-converge-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=theme-fabric-c4-converge-20261008-sol-001 lane=web base=f64ee5f26ba32e4e6a5af69d16869e224d681fcc"
+          ],
+          [
+            "@managed/web/theme-fabric-d2e-window-20261008-sol-001",
+            "afc7e3c56c4096c5d1d9f66d78e6e9794eab63d1",
+            "sol/web-theme-fabric-d2e-window-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=theme-fabric-d2e-window-20261008-sol-001 lane=web base=52d57f34aad6956b3ddb697fff34c82588e791af"
+          ],
+          [
+            "@managed/web/theme-fabric-e2e-20261008-sol-001",
+            "cdb762147fa701cb171f59f3812a33c87600b36d",
+            "sol/web-theme-fabric-e2e-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=theme-fabric-e2e-20261008-sol-001 lane=web base=4dc7caadee1c1c9e4137e12f12d94a4307c45132"
+          ],
+          [
+            "@managed/web/theme-fabric-m1-integrity-20261008-sol-001",
+            "0b331ec68f26ef2decbcf67eabb9cac38b415fc9",
+            "sol/web-theme-fabric-m1-integrity-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=theme-fabric-m1-integrity-20261008-sol-001 lane=web base=793b8a693621719c5ef0f4e8e9201d4770a35bdb"
+          ],
+          [
+            "@managed/web/theme-fabric-natural-witness-20261008-sol-001",
+            "ebd4382fdafdfecf55029305baddfa95b60f863a",
+            "sol/web-theme-fabric-natural-witness-20261008-sol-001",
+            "mastermind-linked-worktree:v1 operation=theme-fabric-natural-witness-20261008-sol-001 lane=web base=8aa1aca8c593982e722bbc666a221fdd82466f15"
+          ],
+          [
+            "@managed/web/ticker-news-r1-20261004-astra-001",
+            "c0c20677bd3d362c27d06bf721b650c723243a6b",
+            "sol/web-ticker-news-r1-20261004-astra-001",
+            "mastermind-linked-worktree:v1 operation=ticker-news-r1-20261004-astra-001 lane=web base=43bb3287ae0fb3a6697b37e1483bd5ae6120e804"
+          ],
+          [
+            "/Volumes/Mastermind/agent-workspaces/sol/btc-vector-decision-envelope-20260916-sol-001",
+            "f8d46a205cfcecca1f5af6ad25a00e9bc8fbd59c",
+            "sol/btc-vector-decision-envelope-20260916-sol-001",
+            "mastermind-linked-worktree:v1 operation=btc-vector-decision-envelope-20260916-sol-001 lane=sol base=bb02c526c4809564338f2a7208e063dbe86bc476"
+          ],
+          [
+            "/Volumes/Mastermind/agent-workspaces/sol/china-heatmap-freshness-20260916-sol",
+            "e85cac201d8ac8f2a678b048115d855038dd412a",
+            "sol/china-heatmap-freshness-20260916-sol",
+            "mastermind-linked-worktree:v1 operation=china-heatmap-freshness-20260916-sol lane=sol base=b6e22a884cd0afc5bb50e8d2ec4554da7a45a1ee"
+          ],
+          [
+            "/Volumes/Mastermind/agent-workspaces/sol/macro-events-news-desk-20260929-sol-001",
+            "2445636367bcc071d2e04b168ce2aa1ba933dc0d",
+            "sol/macro-events-news-desk-20260929-sol-001",
+            "mastermind-linked-worktree:v1 operation=macro-events-news-desk-20260929-sol-001 lane=sol base=650e2ebbe08046bedf10e7eec39def3f62073103"
+          ]
+        ]
+      }
+    ],
+    "live_diffs": [
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/admin-uiux-sweep-20260918",
+        "head": "b79a6e08ffb82a35ae4d7d28ad49979f3296b470",
+        "status": [
+          " D .github/workflows/daily.yml"
+        ],
+        "classification": "whole-file deletion; no hunk-level active bridge evidence"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/catalyst-r19-ci-20260927",
+        "head": "17a94057c51c28583150b20f2b4f6cdc0436c546",
+        "status": [
+          "D  .github/workflows/daily.yml",
+          "D  .gitignore"
+        ],
+        "classification": "whole-file deletion; no hunk-level active bridge evidence"
+      },
+      {
+        "path": "@cluade/macro-main/.claude/worktrees/risk-radar-displayed-probability-audit-20260922",
+        "head": "25cecb06160a1766c537e218a8979c91e7bc3064",
+        "status": [
+          "D  .github/workflows/daily.yml",
+          "D  .gitignore"
+        ],
+        "classification": "whole-file deletion; no hunk-level active bridge evidence"
+      },
+      {
+        "path": "@cluade/macro-worktrees/sol-macro-suite-registry-order-20260916",
+        "head": "c1b018c179e2f66395acedda4aa5d9852aa7d04e",
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "a03fc61ed5e406e0cc7e077de22f6433f5b5fcc7994a0580b2310ca54dcd8040",
+        "diff_bytes": 11042,
+        "returncode": 0,
+        "bridge_keyword_chunks": [
+          "jobs:\n         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).\n         run: bash scripts/ci/daily_engine_regional_desk_builders.sh\n+      # Durable core checkpoint (incident run 35547644919): the coherent builder\n+      # band completed, but a later best-effort tail exhausted the 300-minute job\n+      # cap before the sole broad publisher. Persist the core public tree here;\n+      # the existing final publisher remains the second cut for later tail outputs.\n+      - name: checkpoint core engine outputs to main (durable before tail desks)\n+        if: always()\n+        timeout-minutes: 25\n+        continue-on-error: true\n+        run: bash scripts/ci/daily_engine_commit_outputs.sh\n       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS\n       # run's stamp rather than last night's. The plane it watches can die with every\n"
+        ],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -1626,4 +1626,23 @@ jobs:",
+          "+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)",
+          "+        timeout-minutes: 5",
+          "+        continue-on-error: true",
+          "+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}",
+          "+        # Keyless ScienceBase NMIC annual release. Off the render path.",
+          "+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.",
+          "+        run: |",
+          "+          python -m collectors.usgs_mcs \\",
+          "+            || echo \"::warning::usgs_mcs ingest failed (non-fatal)\"",
+          "+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)",
+          "+        timeout-minutes: 5",
+          "+        continue-on-error: true",
+          "+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}",
+          "+        # Pure in-memory projection of the parquet above. Honest null when absent.",
+          "+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json",
+          "+        # (staged via `git add data/ … site/basketdata/` below).",
+          "+        run: |",
+          "+          python -m engine.critical_minerals_supply \\",
+          "+            || echo \"::warning::critical_minerals_supply rollup failed (non-fatal)\"",
+          "@@ -1974,6 +1993,7 @@ jobs:",
+          "-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the",
+          "-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).",
+          "+      # Historical Aug-06 repair removed prefix restores from five breadth caches.",
+          "+      # Sep-16 completes Git authority: tracked US panels are not cache-restored",
+          "+      # by readers at all; the separate Russell and HK handoffs remain below.",
+          "@@ -2006,19 +2026,8 @@ jobs:",
+          "-      - name: restore breadth close cache (stock search library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-engine-${{ github.run_id }}",
+          "-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/smallcap_breadth/_closes_cache.parquet",
+          "-          key: smallcap-closes-engine-${{ github.run_id }}",
+          "-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/midcap_breadth/_closes_cache.parquet",
+          "-          key: midcap-closes-engine-${{ github.run_id }}",
+          "+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads",
+          "+      # their checkout bytes and must never overlay them from Actions cache. Only",
+          "+      # daily.collect may seed them because it refreshes and commits the canonical",
+          "+      # files. The gitignored Russell same-run handoff remains cache-backed.",
+          "@@ -3155,4 +3164,13 @@ jobs:",
+          "+      # Durable core checkpoint (incident run 35547644919): the coherent builder",
+          "+      # band completed, but a later best-effort tail exhausted the 300-minute job",
+          "+      # cap before the sole broad publisher. Persist the core public tree here;",
+          "+      # the existing final publisher remains the second cut for later tail outputs.",
+          "+      - name: checkpoint core engine outputs to main (durable before tail desks)",
+          "+        if: always()",
+          "+        timeout-minutes: 25",
+          "+        continue-on-error: true",
+          "+        run: bash scripts/ci/daily_engine_commit_outputs.sh",
+          "@@ -4064,4 +4082,18 @@ jobs:",
+          "+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)",
+          "+        # AFTER 'brain briefing tunnel (build_briefing)' and AFTER the thesis",
+          "+        # condition monitor (the step whose comment names public.alert_outbox).",
+          "+        # Slot = site/intelligence/briefing.json field as_of. Writes",
+          "+        # public.brief_deliveries only (insert on conflict do nothing).",
+          "+        # Fail-soft: absent creds/tables -> typed miss, 0 rows, exit 0.",
+          "+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.",
+          "+        env:",
+          "+          # Reuse the incumbent repo service-role secret already consumed by",
+          "+          # production Supabase jobs. The producer's SUPABASE_URL has a reviewed"
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/customer-alert-delivery-20260922-6cd4e96c6eb00cfd",
+        "head": "65a525df22c6107b24b321c1786246c42b7b22bb",
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "10579ebdb9a475cd9f4ee7b6710842365c61c5654074ce95bfe7d389d79d6e96",
+        "diff_bytes": 15447,
+        "returncode": 0,
+        "bridge_keyword_chunks": [
+          "jobs:\n         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).\n         run: bash scripts/ci/daily_engine_regional_desk_builders.sh\n+      # Durable core checkpoint (incident run 35547644919): the coherent builder\n+      # band completed, but a later best-effort tail exhausted the 300-minute job\n+      # cap before the sole broad publisher. Persist the core public tree here;\n+      # the existing final publisher remains the second cut for later tail outputs.\n+      - name: checkpoint core engine outputs to main (durable before tail desks)\n+        if: always()\n+        timeout-minutes: 25\n+        continue-on-error: true\n+        run: bash scripts/ci/daily_engine_commit_outputs.sh\n       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS\n       # run's stamp rather than last night's. The plane it watches can die with every\n"
+        ],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -423,5 +423,5 @@ jobs:",
+          "-          python -m scripts.backfill_yahoo_universe --cap 400 --budget-s 480 \\",
+          "+          python -m scripts.backfill_yahoo_universe --cap 400 --batch-size 160 --refresh-all --budget-s 480 \\",
+          "@@ -1626,4 +1626,23 @@ jobs:",
+          "+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)",
+          "+        timeout-minutes: 5",
+          "+        continue-on-error: true",
+          "+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}",
+          "+        # Keyless ScienceBase NMIC annual release. Off the render path.",
+          "+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.",
+          "+        run: |",
+          "+          python -m collectors.usgs_mcs \\",
+          "+            || echo \"::warning::usgs_mcs ingest failed (non-fatal)\"",
+          "+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)",
+          "+        timeout-minutes: 5",
+          "+        continue-on-error: true",
+          "+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}",
+          "+        # Pure in-memory projection of the parquet above. Honest null when absent.",
+          "+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json",
+          "+        # (staged via `git add data/ … site/basketdata/` below).",
+          "+        run: |",
+          "+          python -m engine.critical_minerals_supply \\",
+          "+            || echo \"::warning::critical_minerals_supply rollup failed (non-fatal)\"",
+          "@@ -1974,6 +1993,7 @@ jobs:",
+          "-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the",
+          "-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).",
+          "+      # Historical Aug-06 repair removed prefix restores from five breadth caches.",
+          "+      # Sep-16 completes Git authority: tracked US panels are not cache-restored",
+          "+      # by readers at all; the separate Russell and HK handoffs remain below.",
+          "@@ -2006,19 +2026,8 @@ jobs:",
+          "-      - name: restore breadth close cache (stock search library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-engine-${{ github.run_id }}",
+          "-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/smallcap_breadth/_closes_cache.parquet",
+          "-          key: smallcap-closes-engine-${{ github.run_id }}",
+          "-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/midcap_breadth/_closes_cache.parquet",
+          "-          key: midcap-closes-engine-${{ github.run_id }}",
+          "+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads",
+          "+      # their checkout bytes and must never overlay them from Actions cache. Only",
+          "+      # daily.collect may seed them because it refreshes and commits the canonical",
+          "+      # files. The gitignored Russell same-run handoff remains cache-backed.",
+          "@@ -2282,4 +2291,28 @@ jobs:",
+          "+      - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)",
+          "+        # The Prophet hold-leash's earnings arm reads EquityDesk's native",
+          "+        # earnings_call_sent from data/earnings_calls/history.parquet. This shim already",
+          "+        # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet",
+          "+        # had already originated against an absent store, so every plan carried",
+          "+        # ec_source_state=unavailable and the promoted tilt could never become eligible",
+          "+        # (production logs, 2026-09-17). Hydrating here is the workflow half of the",
+          "+        # repair; the later call stays put and is a content-hash no-op.",
+          "+        # READ-ONLY: the shim only get_object/download_file. The Prophet generation step",
+          "+        # below still carries NO R2 credentials — that publish boundary is unchanged.",
+          "+        # NEVER FATAL: absent creds / absent object exit 0 and Prophet degrades to the",
+          "+        # documented honest null (leash 1.0, ec_source_state=unavailable + reason).",
+          "+        # Rationale in full: scripts/report_prophet_earnings_source.py.",
+          "+        timeout-minutes: 6",
+          "+        continue-on-error: true",
+          "+        env:",
+          "+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}"
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/orch-b-gate8-7978e5304c569149",
+        "head": "f83c60a1e64010a6c3524f33af4b2e93d7ef29a0",
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "adff5de6bc86fa1cacb99497dce6211a65b45ac18ee9ac2ad7607e01bed062e9",
+        "diff_bytes": 1281,
+        "returncode": 0,
+        "bridge_keyword_chunks": [],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -5174,4 +5174,12 @@ jobs:",
+          "+      - name: GMI graph shadow theme state (gate 8 — off-render, non-fatal)",
+          "+        # Seat ruling G1-RC1: state-only compose; writes data/theme_graph/shadow_theme_state.v1.json only.",
+          "+        if: needs.engine.result == 'success'",
+          "+        timeout-minutes: 8",
+          "+        continue-on-error: true",
+          "+        env:",
+          "+          COLLECT_LANE: nightly",
+          "+        run: python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE",
+          "@@ -5186,4 +5194,5 @@ jobs:",
+          "+          git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true"
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/us-risk-breadth-integrity-20260916-sol-9a09b2c2fa2f1eb8",
+        "head": "124781fcaf4e6010d0ec3cc95be1c438751beaf7",
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "67b678f9717b613962ec49118107867a7547c408675625995416b24a528afa10",
+        "diff_bytes": 16592,
+        "returncode": 0,
+        "bridge_keyword_chunks": [
+          "jobs:\n         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).\n         run: bash scripts/ci/daily_engine_regional_desk_builders.sh\n+      # Durable core checkpoint (incident run 35547644919): the coherent builder\n+      # band completed, but a later best-effort tail exhausted the 300-minute job\n+      # cap before the sole broad publisher. Persist the core public tree here;\n+      # the existing final publisher remains the second cut for later tail outputs.\n+      - name: checkpoint core engine outputs to main (durable before tail desks)\n+        if: always()\n+        timeout-minutes: 25\n+        continue-on-error: true\n+        run: bash scripts/ci/daily_engine_commit_outputs.sh\n       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS\n       # run's stamp rather than last night's. The plane it watches can die with every\n"
+        ],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -423,5 +423,5 @@ jobs:",
+          "-          python -m scripts.backfill_yahoo_universe --cap 400 --budget-s 480 \\",
+          "+          python -m scripts.backfill_yahoo_universe --cap 400 --batch-size 160 --refresh-all --budget-s 480 \\",
+          "@@ -1626,4 +1626,23 @@ jobs:",
+          "+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)",
+          "+        timeout-minutes: 5",
+          "+        continue-on-error: true",
+          "+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}",
+          "+        # Keyless ScienceBase NMIC annual release. Off the render path.",
+          "+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.",
+          "+        run: |",
+          "+          python -m collectors.usgs_mcs \\",
+          "+            || echo \"::warning::usgs_mcs ingest failed (non-fatal)\"",
+          "+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)",
+          "+        timeout-minutes: 5",
+          "+        continue-on-error: true",
+          "+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}",
+          "+        # Pure in-memory projection of the parquet above. Honest null when absent.",
+          "+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json",
+          "+        # (staged via `git add data/ … site/basketdata/` below).",
+          "+        run: |",
+          "+          python -m engine.critical_minerals_supply \\",
+          "+            || echo \"::warning::critical_minerals_supply rollup failed (non-fatal)\"",
+          "@@ -1974,6 +1993,7 @@ jobs:",
+          "-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the",
+          "-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).",
+          "+      # Historical Aug-06 repair removed prefix restores from five breadth caches.",
+          "+      # Sep-16 completes Git authority: tracked US panels are not cache-restored",
+          "+      # by readers at all; the separate Russell and HK handoffs remain below.",
+          "@@ -2006,19 +2026,8 @@ jobs:",
+          "-      - name: restore breadth close cache (stock search library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-engine-${{ github.run_id }}",
+          "-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/smallcap_breadth/_closes_cache.parquet",
+          "-          key: smallcap-closes-engine-${{ github.run_id }}",
+          "-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/midcap_breadth/_closes_cache.parquet",
+          "-          key: midcap-closes-engine-${{ github.run_id }}",
+          "+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads",
+          "+      # their checkout bytes and must never overlay them from Actions cache. Only",
+          "+      # daily.collect may seed them because it refreshes and commits the canonical",
+          "+      # files. The gitignored Russell same-run handoff remains cache-backed.",
+          "@@ -2282,4 +2291,28 @@ jobs:",
+          "+      - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)",
+          "+        # The Prophet hold-leash's earnings arm reads EquityDesk's native",
+          "+        # earnings_call_sent from data/earnings_calls/history.parquet. This shim already",
+          "+        # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet",
+          "+        # had already originated against an absent store, so every plan carried",
+          "+        # ec_source_state=unavailable and the promoted tilt could never become eligible",
+          "+        # (production logs, 2026-09-17). Hydrating here is the workflow half of the",
+          "+        # repair; the later call stays put and is a content-hash no-op.",
+          "+        # READ-ONLY: the shim only get_object/download_file. The Prophet generation step",
+          "+        # below still carries NO R2 credentials — that publish boundary is unchanged.",
+          "+        # NEVER FATAL: absent creds / absent object exit 0 and Prophet degrades to the",
+          "+        # documented honest null (leash 1.0, ec_source_state=unavailable + reason).",
+          "+        # Rationale in full: scripts/report_prophet_earnings_source.py.",
+          "+        timeout-minutes: 6",
+          "+        continue-on-error: true",
+          "+        env:",
+          "+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}"
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/sol/push-retry-stale-rebase-20260917-sol",
+        "head": "a45871683d2f13577c690b6ec8877dd9f57bad7a",
+        "status": [
+          " D .github/workflows/daily.yml"
+        ],
+        "classification": "whole-file deletion; no hunk-level active bridge evidence"
+      },
+      {
+        "path": "/Volumes/Mastermind/tmp/prophet-packet3-r24-current-main-integration",
+        "head": "a242e144205add650eed032da49e28aa56d6b325",
+        "status": [
+          " D .github/workflows/daily.yml"
+        ],
+        "classification": "whole-file deletion; no hunk-level active bridge evidence"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/pr7264-ci-selfheal-r3-20260922-sol",
+        "head": "9335a1bbab7968ba99d401c56809a687b02d26f0",
+        "status": [
+          "D  .github/workflows/daily.yml",
+          "D  .gitignore"
+        ],
+        "classification": "whole-file deletion; no hunk-level active bridge evidence"
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-mobile-settings-row-20260921",
+        "head": "8bb010a76d187eae1d0c57a62a5392c4cf8e5079",
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "bbaef8dfbf003ab333b3b22bdf8fc06a9f7150956579744cb64c5bf081a33c4c",
+        "diff_bytes": 1324,
+        "returncode": 0,
+        "bridge_keyword_chunks": [],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -3344,4 +3344,19 @@ jobs:",
+          "+      - name: OIP catalyst links — bind the session's events to earnings/FOMC catalysts (context-only)",
+          "+        id: options_catalyst_links",
+          "+        if: always()",
+          "+        continue-on-error: true",
+          "+        timeout-minutes: 5",
+          "+        env:",
+          "+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}",
+          "+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}",
+          "+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}",
+          "+          R2_BUCKET: ${{ secrets.R2_BUCKET }}",
+          "+        # consumes only the date-keyed events stage already read by the episode step",
+          "+        # writes site/options_catalyst_links/ only",
+          "+        # all authority false",
+          "+        # first production caller of engine/options_catalyst_link.py",
+          "+        run: python -m scripts.build_options_catalyst_links || echo \"::warning::build_options_catalyst_links non-fatal failure\""
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-pr7505-canonical-20260921",
+        "head": "81f6a7f76afdc757dc84997f486f4739ce50ae6b",
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "0eae967ee7f876c8672eeb7505dae8e02e4ff082de46f7bd526ceaa4d4750140",
+        "diff_bytes": 7188,
+        "returncode": 0,
+        "bridge_keyword_chunks": [],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -1993,6 +1993,7 @@ jobs:",
+          "-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the",
+          "-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).",
+          "+      # Historical Aug-06 repair removed prefix restores from five breadth caches.",
+          "+      # Sep-16 completes Git authority: tracked US panels are not cache-restored",
+          "+      # by readers at all; the separate Russell and HK handoffs remain below.",
+          "@@ -2025,19 +2026,8 @@ jobs:",
+          "-      - name: restore breadth close cache (stock search library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-engine-${{ github.run_id }}",
+          "-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/smallcap_breadth/_closes_cache.parquet",
+          "-          key: smallcap-closes-engine-${{ github.run_id }}",
+          "-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/midcap_breadth/_closes_cache.parquet",
+          "-          key: midcap-closes-engine-${{ github.run_id }}",
+          "+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads",
+          "+      # their checkout bytes and must never overlay them from Actions cache. Only",
+          "+      # daily.collect may seed them because it refreshes and commits the canonical",
+          "+      # files. The gitignored Russell same-run handoff remains cache-backed.",
+          "@@ -4786,25 +4776,9 @@ jobs:",
+          "-      # build_factor_series._closes() reads these breadth close caches (broad =",
+          "-      # breadth+smallcap+midcap, narrow = breadth). Restore-only — the collect job",
+          "-      # produces/saves them.",
+          "-      - name: restore breadth (S&P 500) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: breadth-closes-",
+          "-      - name: restore smallcap (S&P 600) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/smallcap_breadth/_closes_cache.parquet",
+          "-          key: smallcap-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: smallcap-closes-",
+          "-      - name: restore midcap (S&P 400) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/midcap_breadth/_closes_cache.parquet",
+          "-          key: midcap-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: midcap-closes-",
+          "+      # build_factor_series._closes() reads the Git-tracked S&P 500/600/400",
+          "+      # panels (broad = breadth+smallcap+midcap, narrow = breadth) directly from",
+          "+      # checkout. This reader must never overlay them from Actions cache. Only",
+          "+      # daily.collect may seed those panels because it refreshes and commits the",
+          "+      # canonical files.",
+          "@@ -4875,10 +4849,7 @@ jobs:",
+          "-      - name: restore breadth (S&P 500) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: breadth-closes-",
+          "+      # Factor-panel reads the Git-tracked S&P 500/600/400 panels directly from",
+          "+      # checkout. It must never overlay them from Actions cache; only daily.collect",
+          "+      # may seed those panels because it refreshes and commits the canonical files.",
+          "@@ -5836,25 +5807,21 @@ jobs:",
+          "-      # the per-stock technical-signal leg reads constituent closes; restore-only.",
+          "-      - name: restore breadth (S&P 500) close cache",
+          "-        uses: actions/cache/restore@v4"
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-prophet-cpu-diagnosis-20260920",
+        "head": "310a23dcd3e5fb8fdb95169a489b94487b091777",
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "34156325c78718b90cd9a462a3b3a2a151ebeced2dd303e651c9b40b525116aa",
+        "diff_bytes": 1748,
+        "returncode": 0,
+        "bridge_keyword_chunks": [],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -5680,4 +5680,15 @@ jobs:",
+          "+      - name: Prophet CPU leadership shadow (cross-market suppression plane, ZERO authority)",
+          "+        # Runs only after the atomic B1 generation is visible. Reads the canonical CPU",
+          "+        # cohorts, the full US/CN candidate stores, leader-pullback owner facts and both",
+          "+        # product boards. Writes reports/prophet/compute_leadership/{date,latest}.json as",
+          "+        # a read model with all authority false. It does NOT change either live ranker,",
+          "+        # candidate admission, B4 Availability, plans, sizing, execution or trades.",
+          "+        # A malformed source fails this step before publication; continue-on-error keeps",
+          "+        # the prior report rather than letting diagnostics block forward graders.",
+          "+        if: github.event_name == 'schedule'",
+          "+        continue-on-error: true",
+          "+        run: python -m scripts.build_prophet_compute_leadership",
+          "@@ -5756,4 +5767,5 @@ jobs:",
+          "+          git add reports/prophet/compute_leadership 2>/dev/null || true"
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/sol-start-mobile-controls-20260921",
+        "head": "90b0d721d78eda8f9205275f3c6bb7a478fdcbeb",
+        "status": [
+          " M .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "6a2108cc2f00a930543ae587dadcb03661d8c250c939f5b757fd6c09d494b722",
+        "diff_bytes": 1176,
+        "returncode": 0,
+        "bridge_keyword_chunks": [
+          "jobs:\n         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).\n         run: bash scripts/ci/daily_engine_regional_desk_builders.sh\n+      # Durable core checkpoint (incident run 35547644919): the coherent builder\n+      # band completed, but a later best-effort tail exhausted the 300-minute job\n+      # cap before the sole broad publisher. Persist the core public tree here;\n+      # the existing final publisher remains the second cut for later tail outputs.\n+      - name: checkpoint core engine outputs to main (durable before tail desks)\n+        if: always()\n+        timeout-minutes: 25\n+        continue-on-error: true\n+        run: bash scripts/ci/daily_engine_commit_outputs.sh\n       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS\n       # run's stamp rather than last night's. The plane it watches can die with every\n"
+        ],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -3164,4 +3164,13 @@ jobs:",
+          "+      # Durable core checkpoint (incident run 35547644919): the coherent builder",
+          "+      # band completed, but a later best-effort tail exhausted the 300-minute job",
+          "+      # cap before the sole broad publisher. Persist the core public tree here;",
+          "+      # the existing final publisher remains the second cut for later tail outputs.",
+          "+      - name: checkpoint core engine outputs to main (durable before tail desks)",
+          "+        if: always()",
+          "+        timeout-minutes: 25",
+          "+        continue-on-error: true",
+          "+        run: bash scripts/ci/daily_engine_commit_outputs.sh"
+        ]
+      },
+      {
+        "path": "/Volumes/Mastermind/worktrees/tmp-7526-semantic-review",
+        "head": "96ed7e880dfe4e54bbb693dfea5267cdb6e63629",
+        "status": [
+          "M  .github/workflows/daily.yml"
+        ],
+        "diff_sha256": "0eae967ee7f876c8672eeb7505dae8e02e4ff082de46f7bd526ceaa4d4750140",
+        "diff_bytes": 7188,
+        "returncode": 0,
+        "bridge_keyword_chunks": [],
+        "changed_lines": [
+          "diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml",
+          "--- a/.github/workflows/daily.yml",
+          "+++ b/.github/workflows/daily.yml",
+          "@@ -1993,6 +1993,7 @@ jobs:",
+          "-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the",
+          "-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).",
+          "+      # Historical Aug-06 repair removed prefix restores from five breadth caches.",
+          "+      # Sep-16 completes Git authority: tracked US panels are not cache-restored",
+          "+      # by readers at all; the separate Russell and HK handoffs remain below.",
+          "@@ -2025,19 +2026,8 @@ jobs:",
+          "-      - name: restore breadth close cache (stock search library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-engine-${{ github.run_id }}",
+          "-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/smallcap_breadth/_closes_cache.parquet",
+          "-          key: smallcap-closes-engine-${{ github.run_id }}",
+          "-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+          "-        uses: actions/cache@v4",
+          "-        with:",
+          "-          path: data/midcap_breadth/_closes_cache.parquet",
+          "-          key: midcap-closes-engine-${{ github.run_id }}",
+          "+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads",
+          "+      # their checkout bytes and must never overlay them from Actions cache. Only",
+          "+      # daily.collect may seed them because it refreshes and commits the canonical",
+          "+      # files. The gitignored Russell same-run handoff remains cache-backed.",
+          "@@ -4786,25 +4776,9 @@ jobs:",
+          "-      # build_factor_series._closes() reads these breadth close caches (broad =",
+          "-      # breadth+smallcap+midcap, narrow = breadth). Restore-only — the collect job",
+          "-      # produces/saves them.",
+          "-      - name: restore breadth (S&P 500) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: breadth-closes-",
+          "-      - name: restore smallcap (S&P 600) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/smallcap_breadth/_closes_cache.parquet",
+          "-          key: smallcap-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: smallcap-closes-",
+          "-      - name: restore midcap (S&P 400) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/midcap_breadth/_closes_cache.parquet",
+          "-          key: midcap-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: midcap-closes-",
+          "+      # build_factor_series._closes() reads the Git-tracked S&P 500/600/400",
+          "+      # panels (broad = breadth+smallcap+midcap, narrow = breadth) directly from",
+          "+      # checkout. This reader must never overlay them from Actions cache. Only",
+          "+      # daily.collect may seed those panels because it refreshes and commits the",
+          "+      # canonical files.",
+          "@@ -4875,10 +4849,7 @@ jobs:",
+          "-      - name: restore breadth (S&P 500) close cache",
+          "-        uses: actions/cache/restore@v4",
+          "-        with:",
+          "-          path: data/breadth/_closes_cache.parquet",
+          "-          key: breadth-closes-fseries-${{ github.run_id }}",
+          "-          restore-keys: breadth-closes-",
+          "+      # Factor-panel reads the Git-tracked S&P 500/600/400 panels directly from",
+          "+      # checkout. It must never overlay them from Actions cache; only daily.collect",
+          "+      # may seed those panels because it refreshes and commits the canonical files.",
+          "@@ -5836,25 +5807,21 @@ jobs:",
+          "-      # the per-stock technical-signal leg reads constituent closes; restore-only.",
+          "-      - name: restore breadth (S&P 500) close cache",
+          "-        uses: actions/cache/restore@v4"
+        ]
+      }
+    ],
+    "canonical_census_attempt": "mmx-workspace census --repository macro was read-only but scanned all untracked files across every tree; stopped own PID93021 after bounded wait. Targeted read-only status replaced it.",
+    "no_new_lock_or_lease": true,
+    "process_liveness_not_inferred_from_git_lock": true,
+    "missing_paths_are_not_cleared": true
+  },
+  "assembler": {
+    "network_cache_sideeffects": {
+      "path": "engine/event_calendar.py",
+      "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "sha256": "522f642131c7adcf6d8b2fce66df9e812d40e9d8fa556360a603049fa908788b",
+      "excerpts": [
+        [
+          189,
+          230,
+          "189: def _fred_release_dates(release_id: int, today: date, end: date) -> list[date] | None:\n190:     \"\"\"Live FRED `release/dates` for one release id, cached. Returns None (NOT [])\n191:     when unavailable so callers fall back to the static schedule. Never raises.\"\"\"\n192:     key = config.secret(\"FRED_API_KEY\")\n193:     if not key:\n194:         return None\n195:     cdir = config.ROOT / \"data/macro/release_cache\"\n196:     try:\n197:         cdir.mkdir(parents=True, exist_ok=True)\n198:     except Exception:  # noqa: BLE001\n199:         pass\n200:     cache = cdir / f\"rel_{release_id}_{today.isoformat()}.json\"\n201:     if cache.exists():\n202:         try:\n203:             if datetime.now(timezone.utc).timestamp() - cache.stat().st_mtime < 12 * 3600:\n204:                 return parse_fred_release_dates(json.loads(cache.read_text()), today, end)\n205:         except Exception:  # noqa: BLE001\n206:             pass\n207:     try:\n208:         import requests\n209:         # include_release_dates_with_no_data=true surfaces the NEXT scheduled date\n210:         # (which has no data yet); we filter to the [today, end] window in the parser.\n211:         # No realtime_* params — they restrict to published vintages and would drop\n212:         # the upcoming dates we want.\n213:         r = requests.get(\n214:             \"https://api.stlouisfed.org/fred/release/dates\",\n215:             params={\"release_id\": release_id, \"api_key\": key, \"file_type\": \"json\",\n216:                     \"include_release_dates_with_no_data\": \"true\", \"sort_order\": \"asc\"},\n217:             timeout=20, headers=_UA)\n218:         if r.status_code != 200 or \"json\" not in r.headers.get(\"Content-Type\", \"\"):\n219:             return None\n220:         payload = r.json()\n221:         try:\n222:             cache.write_text(json.dumps(payload))\n223:         except Exception:  # noqa: BLE001\n224:             pass\n225:         return parse_fred_release_dates(payload, today, end)\n226:     except Exception as e:  # noqa: BLE001 — degrade to static schedule\n227:         log.debug(\"FRED release/dates %s unreachable (%s)\", release_id, e)\n228:         return None\n229: \n230: "
+        ],
+        [
+          297,
+          331,
+          "297: def _auction_cache_path(today: date) -> Path:\n298:     cdir = config.ROOT / \"data/macro/auction_cache\"\n299:     try:\n300:         cdir.mkdir(parents=True, exist_ok=True)\n301:     except Exception:  # noqa: BLE001\n302:         pass\n303:     return cdir / f\"upcoming_{today.isoformat()}.json\"\n304: \n305: \n306: def _fetch_upcoming_auctions(today: date) -> list[dict]:\n307:     \"\"\"Raw upcoming-auction records from TreasuryDirect, cached 12h. Never raises.\"\"\"\n308:     cache = _auction_cache_path(today)\n309:     if cache.exists():\n310:         try:\n311:             if datetime.now(timezone.utc).timestamp() - cache.stat().st_mtime < 12 * 3600:\n312:                 return json.loads(cache.read_text())\n313:         except Exception:  # noqa: BLE001\n314:             pass\n315:     try:\n316:         import requests\n317:         r = requests.get(_TD_UPCOMING, params={\"format\": \"json\"}, timeout=20, headers=_UA)\n318:         if r.status_code != 200 or \"json\" not in r.headers.get(\"Content-Type\", \"\"):\n319:             return []\n320:         data = r.json() or []\n321:         try:\n322:             cache.write_text(json.dumps(data))\n323:         except Exception:  # noqa: BLE001\n324:             pass\n325:         return data\n326:     except Exception as e:  # noqa: BLE001 — degrade to no auctions\n327:         log.debug(\"TreasuryDirect upcoming auctions unreachable (%s)\", e)\n328:         return []\n329: \n330: \n331: def _auction_events(today: date, end: date) -> list[dict]:"
+        ]
+      ]
+    },
+    "read_only_intl": {
+      "path": "engine/risk_radar_intl.py",
+      "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "sha256": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+      "excerpts": [
+        [
+          1,
+          76,
+          "1: \"\"\"Risk Radar (international) — a genuinely-leading, calibrated forward-drawdown radar\n2: for China, Hong Kong and Canada, mirroring the US engine.risk_radar but built from the\n3: drivers that *do* lead these markets.\n4: \n5: WHY THIS EXISTS\n6: ---------------\n7: The old China/HK/CA conditions layer (engine/china_conditions.py et al.) concluded there\n8: was \"no forward-drawdown edge\" — but it only ever tested China-INTERNAL froth legs (margin\n9: balance, turnover mania, valuation extension), which are indeed dead/contrarian (A-shares\n10: mean-revert on those). It never tested the EXTERNAL drivers the owner flagged: as China (and,\n11: more recently, HK and Canada) has coupled to US policy, drawdowns are led by US rate shocks,\n12: a widening US–China yield gap, a strengthening dollar / depreciating yuan, AND a broad-based\n13: breadth breakdown (China corrections sink all sectors — \"all boats\" — unlike the US rotational\n14: tape, which makes the breadth leg genuinely leading rather than self-cancelling).\n15: \n16: VALIDATION (research harness, causal trailing-504d percentiles, block-permutation p, split-half\n17: + 2016+ era; SHCOMP 1997+, confirmed on CSI 300):\n18:   breadth collapse (% < 200dMA)     lift 1.97 (≥10%/42d), 2016+ 3.13x, p=0.04, leading (1.67x near highs)\n19:   US 2y / real-10y / 10y rate shock 1.5–1.7x full, 2016+ 2.4–3.3x, p≤0.04, sign-stable\n20:   US–China 10y differential widening 1.61x, 2016+ 2.78x, p=0.03\n21:   USD/CNH depreciation               1.9x, h2 2.6x\n22:   composite (this engine)            ≥10%/42d 2.07x (h1/h2 2.28/2.00, p=0.01); CSI300 2.22x\n23: HK generalises moderately (≈1.5x, recent-era only — coupling is recent), Canada weakly\n24: (≈1.4–1.6x recent, commodity-driven). Honest per-market calibration + caveats below.\n25: \n26: HONESTY: the edge is MODEST (~1.4–2x conditional lift at the extremes, not a forecast) and\n27: concentrated where it should be (a context gate keeps the LOUD tiers quiet until the broad\n28: index is actually below its 200-day line). Every probability here is MEASURED from the market's\n29: own history; the de-risk response is SIZING, not selection. All signals are causal/leak-free\n30: (trailing-window percentiles). No public function raises into the build.\n31: \"\"\"\n32: from __future__ import annotations\n33: \n34: import json\n35: import logging\n36: from dataclasses import dataclass, field\n37: from pathlib import Path\n38: \n39: import numpy as np\n40: import pandas as pd\n41: \n42: from engine.indicators import pct_rank_window\n43: from lib import config, store\n44: \n45: log = logging.getLogger(__name__)\n46: \n47: _PCT_WIN = 504                       # ~2y trailing causal percentile window (matches US radar)\n48: _EXT_PCT_WIN = 2520                  # ~10y causal window for the raw-extension percentile (long-history, NOT the self-defeating 252d z)\n49: _EXT_PARABOLIC = 0.98                # extension percentile at/above which the regime counts as parabolic\n50: _GATE_MEMORY = 60                    # sessions the parabolic gate stays open after the last parabolic reading\n51: _STATE_ORDER = [\"calm\", \"watch\", \"caution\", \"elevated\", \"risk-off\"]\n52: # scare-meter colour bands on the 0-100 per-scare score (mean of leg percentiles * 100)\n53: _SCARE_BANDS = {\"watch\": 55.0, \"caution\": 68.0, \"elevated\": 78.0, \"risk_off\": 88.0}\n54: _GROSS = {\"calm\": 1.0, \"watch\": 0.97, \"caution\": 0.90, \"elevated\": 0.78, \"risk-off\": 0.62}\n55: _DISCLAIMER = (\"Evidence-gated leading-risk radar — built only from the external drivers (US \"\n56:                \"rate shocks, US–China yield gap, USD/FX) + breadth that MEASURABLY lead this \"\n57:                \"market's drawdowns (not the internal froth legs, which mean-revert). Edge is \"\n58:                \"modest (~1.4–2x at the extremes, not a forecast); odds are measured from the \"\n59:                \"market's own history; de-risk = sizing, not selection.\")\n60: \n61: \n62: # --- store readers (causal) --------------------------------------------------\n63: def _read(group: str, name: str, col: str = \"close\") -> pd.Series | None:\n64:     df = store.read(group, name)\n65:     if df is None or getattr(df, \"empty\", True):\n66:         return None\n67:     c = col if col in df.columns else df.columns[0]\n68:     s = df[c].dropna()\n69:     if s.empty:\n70:         return None\n71:     s.index = pd.to_datetime(s.index)\n72:     return s.sort_index()\n73: \n74: \n75: def _pct(s: pd.Series | None) -> pd.Series | None:\n76:     \"\"\"Trailing-504d causal percentile (0-1). None-safe.\"\"\""
+        ],
+        [
+          313,
+          424,
+          "313: \n314: \n315: def compute(profile: \"RadarProfile\", root=None) -> dict:\n316:     \"\"\"Live calibrated radar snapshot for `profile`. Reads the store; never raises a useful\n317:     payload away. Returns the (risk_radar_intl.v1) dict the market-state radar mapping consumes.\"\"\"\n318:     effective_disclaimer = profile.disclaimer or _DISCLAIMER\n319:     null = {\"schema\": \"risk_radar_intl.v1\", \"state\": None, \"market\": profile.key,\n320:             \"degraded_reason\": \"no_data\", \"disclaimer\": effective_disclaimer}\n321:     B, sub, comp, gate = composite_series(profile, root)\n322:     if B is None:\n323:         return null\n324:     if sub is None or comp is None or gate is None:\n325:         return null\n326:     cal = _calib(profile, root)          # baked surface + the tuner's overlay, if any\n327: \n328:     # composite-leg latest percentiles (for scares)\n329:     comp_last: dict[str, float] = {}\n330:     for comp_key, sub_codes, w in profile.comp_legs:\n331:         members = [sub[c] for c in sub_codes if c in sub]\n332:         if not members:\n333:             continue\n334:         ser = pd.concat(members, axis=1).mean(axis=1)\n335:         comp_last[comp_key] = _last(ser)\n336: \n337:     top = _last(comp)\n338:     top100 = round(top * 100) if top is not None else None\n339: \n340:     # context gate — gate_open uses the shared gate series (legacy profiles: gate == below)\n341:     gate_open = bool(gate.iloc[-1]) if len(gate) else False\n342:     # also compute the raw price-vs-200dma bool (always present in the payload)\n343:     ma = B.rolling(200, min_periods=120).mean()\n344:     below_actual = bool(B.iloc[-1] < ma.iloc[-1]) if ma.dropna().size else False\n345: \n346:     state_ungated = _band(top * 100 if top is not None else None, cal[\"bands\"])\n347:     state = state_ungated\n348:     if not gate_open and _STATE_ORDER.index(state) > _STATE_ORDER.index(\"caution\"):\n349:         state = \"caution\"\n350: \n351:     # per-scare meters (display) + plain-English firing legs\n352:     scares = []\n353:     for skey, tier, le, lz, comp_keys, sub_codes in profile.scares:\n354:         vals = [comp_last[k] for k in comp_keys if comp_last.get(k) is not None]\n355:         if not vals:\n356:             continue\n357:         sc = float(np.mean(vals)) * 100.0\n358:         firing = [{\"leg\": c, \"pctile\": round(sub_latest, 3), \"confirmed\": bool(sub_latest >= 0.85)}\n359:                   for c in sub_codes\n360:                   if (sub_latest := _last(sub.get(c))) is not None and sub_latest >= 0.55]\n361:         firing.sort(key=lambda d: -d[\"pctile\"])\n362:         scares.append({\"scare\": skey, \"tier\": tier, \"label_en\": le, \"label_zh\": lz,\n363:                        \"score\": round(sc, 1), \"band\": _band(sc, _SCARE_BANDS),\n364:                        \"firing_legs\": firing})\n365:     scares.sort(key=lambda d: -d[\"score\"])\n366:     tierA = [s for s in scares if s[\"tier\"] == \"A\"]\n367:     dominant = tierA[0] if tierA else (scares[0] if scares else None)\n368:     nhot = sum(1 for s in tierA if s[\"band\"] in (\"caution\", \"elevated\", \"risk-off\"))\n369: \n370:     if state == \"calm\":\n371:         dom_en, dom_zh = \"Calm — no driver elevated\", \"平静 — 无驱动升高\"\n372:     else:\n373:         dom_en = dominant[\"label_en\"] if dominant else \"calm\"\n374:         dom_zh = dominant[\"label_zh\"] if dominant else \"平静\"\n375: \n376:     # context_gate payload: keep exact existing keys for ALL profiles; add recent_parabolic\n377:     # only for new-mode profiles (gate_mode != \"below_200dma\") so cn/hk/ca payloads are byte-identical\n378:     context_gate: dict = {\"met\": gate_open, \"below_200dma\": below_actual}\n379:     if profile.gate_mode != \"below_200dma\" and profile.ext_sources:\n380:         # memory semantics, same as _gate_series: parabolic printed within the last\n381:         # _GATE_MEMORY sessions — a mid-crash receipt must still say \"was parabolic\"\n382:         # (the memoryless latest-value read is the F1 self-erasing-flag failure)\n383:         ext_s = sub.get(profile.ext_sources[0][2])\n384:         recent = False\n385:         if ext_s is not None:\n386:             tail = ext_s.dropna().tail(_GATE_MEMORY)\n387:             recent = bool(len(tail) and (tail >= _EXT_PARABOLIC).any())\n388:         context_gate[\"recent_parabolic\"] = recent\n389: \n390:     return {\n391:         \"schema\": \"risk_radar_intl.v1\",\n392:         \"asof\": str(pd.Timestamp(B.index[-1]).date()),\n393:         \"market\": profile.key,\n394:         \"state\": state,\n395:         \"state_ungated\": state_ungated,\n396:         \"top_score\": top100,\n397:         \"dominant_scare\": dominant[\"scare\"] if dominant else None,\n398:         \"dominant_label_en\": dom_en,\n399:         \"dominant_label_zh\": dom_zh,\n400:         \"scares\": scares,\n401:         \"drawdown_prob\": _probs(cal, state),\n402:         # de-escalation PATH (peaked? rolling over? how fast?) — reuses the composite series above.\n403:         \"trajectory\": _trajectory(comp, B, cal, gate=gate),\n404:         \"gross_factor\": _GROSS.get(state, 1.0),\n405:         \"conjunction\": bool(nhot >= 2),\n406:         \"context_gate\": context_gate,\n407:         \"caveat_en\": profile.caveat_en,\n408:         \"caveat_zh\": profile.caveat_zh,\n409:         \"disclaimer\": effective_disclaimer,\n410:     }\n411: \n412: \n413: def snapshot(profile: \"RadarProfile\", root=None) -> dict:\n414:     \"\"\"IO wrapper the build persists to latest['risk_radar']. Never raises.\"\"\"\n415:     try:\n416:         return compute(profile, root)\n417:     except Exception as e:  # noqa: BLE001\n418:         log.error(\"risk_radar_intl(%s) failed: %s\", getattr(profile, \"key\", \"?\"), e)\n419:         effective_disclaimer = getattr(profile, \"disclaimer\", None) or _DISCLAIMER\n420:         return {\"schema\": \"risk_radar_intl.v1\", \"state\": None,\n421:                 \"market\": getattr(profile, \"key\", None), \"degraded_reason\": \"compute_error\",\n422:                 \"disclaimer\": effective_disclaimer}\n423: \n424: "
+        ]
+      ]
+    },
+    "ignored_cache_paths": [
+      "data/macro/auction_cache/",
+      "data/macro/release_cache/"
+    ],
+    "gitignore_lines": [
+      172,
+      173
+    ],
+    "r2_manifest": "Existing publish uploads files and writes manifest last after no upload failures/guard violation; remains after moved build and engine commit.",
+    "commit_helper": {
+      "path": "scripts/ci/daily_engine_commit_outputs.sh",
+      "ref": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "sha256": "3f873da28b53ee8dcc20ef44615889488a7e318a4d6cdffb9be02628c5c26907",
+      "excerpts": [
+        [
+          190,
+          275,
+          "190: # gitignore + force-add situation as their stockdata libraries. HK now also ships\n191: # reconstructed candles (build_hk_library -> build_chart_data.build_hk -> site/hkohlc),\n192: # imputed from its close-only per-stock JSON so the chart draws candlesticks.\n193: # US 4H intraday chart data (built by build_site -> build_chart_data.emit_intraday\n194: # from the cached data/intraday) — gitignored, force-add so the deploy ships it.\n195: if git diff --cached --quiet; then echo \"no engine output changes\"; exit 0; fi\n196: # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): a conflicted\n197: # autostash apply anywhere upstream of this step leaves `Updated upstream /\n198: # Stashed changes` blocks that the broad `git add` above stages VERBATIM —\n199: # 1,707 pages reached main exactly that way. push_staged_heal restores\n200: # display-tier offenders (site/, templates/, reports/) wholesale from HEAD\n201: # (same restore semantic as #4167) and FAILS CLOSED on ledger-tier data/\n202: # offenders or a still-dirty re-scan — sweeping the polluted files from the\n203: # tree first, because the Pages artifact upload below runs on always() and\n204: # must never ship marker bytes.\n205: if ! push_staged_heal data/ site/ reports/ templates/; then\n206:   exit 1\n207: fi\n208: if git diff --cached --quiet; then echo \"no engine output changes after conflict heal\"; exit 0; fi\n209: bash scripts/ci/options_signal_nightly.sh commit-broad-candidate \\\n210:   \"engine: regime update $(date -u +%F)\"\n211: # best-effort push (see commit-data). The deploy below uses the uploaded\n212: # artifact, so it never depends on this commit landing.\n213: PUSH_ALARM=420\n214: PUSH_BUDGET_SECS=600   # a dropped push here costs the nightly's forward-ledger DAY (sole-advancer law) — worth waiting 10 min for the ref\n215: PUSH_MAX_ATTEMPTS=20   # let the 600s DEADLINE stop this loop, not the attempt count: 10 contention\n216:                        # retries burn only ~2 min, so the raised budget above would never bind\n217: push_retry_init \"engine outputs\"\n218: while push_attempt; do\n219:   # Fetch the exact named ref before rebasing. The shared helper sees normal\n220:   # AND ignored untracked collisions, quarantines only paths tracked by that\n221:   # exact target under RUNNER_TEMP, and never removes unrelated runner data.\n222:   if ! push_fetch_main_for_rebase; then\n223:     push_abort_rebase\n224:     push_backoff\n225:     continue\n226:   fi\n227:   # rename/rename on content-hashed site/assets/css/* is deterministic across\n228:   # retries (path conflict; -X theirs can't settle it — 2026-07-22 asia-close\n229:   # run 29904079071 dropped a day's outputs this way). The autoresolver keeps\n230:   # both sides' hashed files (next externalize_css prunes the orphan) and\n231:   # finishes the rebase; anything else is left for the abort+retry below.\n232:   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then\n233:     # post-rebase template↔site re-sync (ui.template_site_sync): -X theirs can\n234:     # resurrect this run's checkout-time template copies over a reword that merged\n235:     # mid-nightly (2026-07-07: engine-render commit 2ae709f9f0 reverted #1793's\n236:     # site-side de-escalation in sector_cycles.js this way). templates/ is now\n237:     # fresh post-rebase main — re-copy and fold any delta into a follow-up commit.\n238:     # re-shim + re-externalize POST-rebase (P0 2026-08-04, 9a997e9da3f): the\n239:     # rebase can inherit RAW pages from main — a cancelled nightly's always()\n240:     # commit shipped 5,895 un-normalized pages, and every later lane's replay\n241:     # merged its small deltas INTO those fat pages (clean merge, no conflict,\n242:     # so -X theirs never engaged) while its re-stamp-only heal pushed the\n243:     # poison onward re-stamped. Running the FULL normalize chain here makes\n244:     # the next lane push self-heal the whole tree instead. Same order as the\n245:     # normalizer step: shim → externalize → stamp; all idempotent.\n246:     python -m scripts.inject_data_base || echo \"data-base shim inject skipped (additive)\"\n247:     python -m scripts.externalize_css || echo \"::warning::post-rebase css externalize FAILED — inherited raw pages stay un-externalized (9a997e9da3f)\"\n248:     # re-stamp POST-rebase (ui.asset_stamp): the tree this loop PUSHES is not the tree\n249:     # the normalizer step stamped — pages a sibling lane lands mid-run arrive here\n250:     # un-stamped and unseen by that pass (2026-07-26 render 6260e5ac8c0 shipped\n251:     # site/us_track_record.html with a bare `theme.css` this way). Idempotent, ~11s over\n252:     # 3.2k pages, and BEFORE the --fix so the pairs heal from a re-stamped templates/.\n253:     python -m scripts.optimize_assets || echo \"::warning::post-rebase asset optimize FAILED — ?v= stamps may be stale\"\n254:     python -m scripts.check_template_site_sync --fix || true\n255:     # ms-board coherence guard (ui.ms_board_coherence): -X theirs resolves whole\n256:     # conflict REGIONS toward this run's replayed render, so racing a mid-nightly\n257:     # render can stitch a hybrid Market State board (2026-07-07: commit 5bf116a3b3\n258:     # baked upstream's score 56/\"Mixed\" beside a stale \"Risk Radar forces\n259:     # Risk-off.\" note). Restore any incoherent page WHOLESALE from post-rebase\n260:     # origin/main (coherent, at most one render old).\n261:     python3 scripts/check_ms_board_coherence.py --heal-from origin/main \\\n262:       || echo \"::warning::ms-board coherence heal incomplete (incoherent board may predate this run)\"\n263:     # refuse stash/rebase wreckage (2026-08-01 d29e4dd44d: a conflicted\n264:     # autostash apply was staged wholesale — 1,704 pages shipped markers)\n265:     bash \"${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh\"\n266:     python3 scripts/check_conflict_markers.py --file site/start.html\n267:     python3 scripts/check_start_runtime.py --heal-from origin/main\n268:     if ! git diff --quiet -- site/ templates/; then\n269:       # push_staged_clean: never bake conflict markers into the follow-up\n270:       # commit (P0 d29e4dd44d/#4167). On a dirty scan: unstage and push the\n271:       # guarded engine commit alone — same forfeit as a failed render-sync.\n272:       git add site/\n273:       git add templates/ 2>/dev/null || true\n274:       if push_staged_clean site/ templates/; then\n275:         bash scripts/ci/options_signal_nightly.sh commit-render-sync \\"
+        ]
+      ]
+    },
+    "post_rebase_limitation": "Push/autostash/heal can change final checkout. A calendar hash/JSON validation at actual publication is not yet proven by source-only bridge; no global cross-feed atomic snapshot claim.",
+    "manual_capture": "Attended-only first vertical; seed exact four captured receipts with original clocks. Daily may reproject but does not refresh captured-source clocks. Collector activation/archive retention/SLA and 128 receipt bound remain explicit readiness debt."
+  },
+  "limitations": [
+    "Point-in-time 588-PR collection is not an atomic transaction; new PRs/heads after scan are outside receipt.",
+    "574 local comparisons bind to REST census base/head SHA. Fourteen connector pathsets were not bracketed with an additional exact-head re-read to conserve shared quota.",
+    "No full semantic scan of every adjacent producer path, including .github/ci/legacy-jobs.yml. Scoped no-overlap is not a global ownership waiver.",
+    "Live worktree scoped status is evidence of filesystem/index state, not proof writer inactive. Legacy and missing workspaces remain preserved.",
+    "No deployed Macro/Mastermind/Terminal runtime verification in this follow-up."
+  ]
+}

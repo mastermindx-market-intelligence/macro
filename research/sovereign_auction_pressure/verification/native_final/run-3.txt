@@ -1,0 +1,10 @@
+{
+  "output": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/funding_audit/OUTCOME_BLIND_FUNDING_CASEBOOK.json",
+  "sha256": "f64acecce2414726448fcfc9214431ce782cbb8090283e4b96af4c09606b544d",
+  "source_hashes_verified": 12,
+  "tga_delta_usd_million": "2079",
+  "marketable_debt_net_usd_million": "11258",
+  "net_private_cash_usd": null,
+  "s_minus_one_eligible": false,
+  "check_only": true
+}

@@ -4850,16 +4850,18 @@ jobs:
         # Fail-soft: dormant until flow summaries accumulate ≥5 rows of history;
         # never kills the nightly.
         run: python -m scripts.build_options_flow_attention || echo "::warning::build_options_flow_attention failed (non-fatal — reflex dormant this run)"
-      - name: commit engine outputs
-        if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
-        run: bash scripts/ci/daily_engine_commit_outputs.sh
       - name: assemble machine-consumable feeds (site/feeds -> R2)
         if: always()
         # Handoff H4 (2026-07-02 incident): risk_radar snapshot, froth/dislocation
         # logs, group_flow meta, RRG rotation, event calendar, intl spillover,
         # per-sector breadth — one flat dir whose _manifest.json bulk consumers
         # (Mastermind bot) sync against. Never fatal; missing sources are skipped.
+        # The tracked event calendar must exist before the existing data/site commit.
+        # Its nested auction source clocks are never replaced by this build time.
         run: python -m scripts.build_feeds || echo "::warning::build_feeds failed (non-fatal)"
+      - name: commit engine outputs
+        if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
+        run: bash scripts/ci/daily_engine_commit_outputs.sh
       - name: publish heavy per-ticker stores to R2 (additive; no-op without creds)
         if: always()
         env:

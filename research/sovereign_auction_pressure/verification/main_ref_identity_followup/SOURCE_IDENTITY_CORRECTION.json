@@ -1,0 +1,49 @@
+{
+  "observation_scope": "Existing local Git refs and objects only; no fetch or server head query.",
+  "issue": "Initial 'now' hashes were stale refs/heads/main|master values, not advances of canonical remote-tracking refs.",
+  "resolution": "Use refs/remotes/origin/main for Macro and refs/remotes/origin/master for Mastermind and Terminal. Reverse historical diffs were discarded for conflict/law adjudication.",
+  "independently_read_refs": [
+    {
+      "name": "macro",
+      "refs": [
+        "refs/heads/main 007e0cccbd06f089605ba122efc658f406043dd3",
+        "refs/remotes/origin/main b86c4ada64533320232a98278cf199978a369a92"
+      ]
+    },
+    {
+      "name": "mastermind",
+      "refs": [
+        "refs/heads/master 9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
+        "refs/remotes/origin/master 6b5bac781a890d21ddc637b2b98addf2cda6b6c7"
+      ]
+    },
+    {
+      "name": "terminal",
+      "refs": [
+        "refs/heads/master e89ebda4064715371a56b1fc02b9ec9c9821d433",
+        "refs/remotes/origin/master 505edf7872541075b5eee24691703a46d1151074"
+      ]
+    }
+  ],
+  "old_local_branch_ancestry": {
+    "macro": {
+      "old_local_branch": "007e0cccbd06f089605ba122efc658f406043dd3",
+      "prior_checked_remote_tracking": "b86c4ada64533320232a98278cf199978a369a92",
+      "is_ancestor_of_prior": true,
+      "commits_behind_prior": 295
+    },
+    "mastermind": {
+      "old_local_branch": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
+      "prior_checked_remote_tracking": "6b5bac781a890d21ddc637b2b98addf2cda6b6c7",
+      "is_ancestor_of_prior": true,
+      "commits_behind_prior": 281
+    },
+    "terminal": {
+      "old_local_branch": "e89ebda4064715371a56b1fc02b9ec9c9821d433",
+      "prior_checked_remote_tracking": "f03aa5d019f1894210a7c6e40b8825ae28015198",
+      "is_ancestor_of_prior": true,
+      "commits_behind_prior": 381
+    }
+  },
+  "canonical_refs_stable_across_closing_read": true
+}

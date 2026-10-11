@@ -1,0 +1,41 @@
+[
+  {
+    "argv": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_treasury_auction_lifecycle.py",
+      "tests/test_treasury_auction_primitives.py",
+      "tests/test_capture_treasury_auction_observations.py",
+      "tests/test_sovereign_auction_feed.py",
+      "tests/test_event_calendar.py",
+      "tests/test_treasury_supply.py",
+      "-q"
+    ],
+    "started_at": "2026-10-08T23:14:05.184285+00:00",
+    "ended_at": "2026-10-08T23:14:07.708948+00:00",
+    "exit_code": 0,
+    "log": "research/sovereign_auction_pressure/verification/final-macro-1.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "research/sovereign_auction_pressure/verification/build_real_source_feed.py"
+    ],
+    "started_at": "2026-10-08T23:14:07.709377+00:00",
+    "ended_at": "2026-10-08T23:14:08.124184+00:00",
+    "exit_code": 0,
+    "log": "research/sovereign_auction_pressure/verification/final-macro-2.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "research/sovereign_auction_pressure/funding_audit/outcome_blind_funding_audit.py",
+      "--check"
+    ],
+    "started_at": "2026-10-08T23:14:08.124635+00:00",
+    "ended_at": "2026-10-08T23:14:08.375464+00:00",
+    "exit_code": 0,
+    "log": "research/sovereign_auction_pressure/verification/final-macro-3.txt"
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "verified_at": "2026-10-09T00:38:30.897142+00:00",
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_check_script_import_pinning.py",
+        "tests/test_capture_treasury_auction_observations.py"
+      ],
+      "exit_code": 0,
+      "log": "import-pin-native.log",
+      "log_sha256": "bf62741e318b83c2094d16a9b37826a181af1f50297f8cfd8a548d70512aa947"
+    },
+    {
+      "command": [
+        "python3",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/scripts/capture_treasury_auction_observations.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "fixture": "foreign engine package precedes already-present own checkout in PYTHONPATH; --help only; no provider fetch",
+      "log": "import-pin-hostile-help.log",
+      "log_sha256": "be2a5ec703e831108bb76151fd1523cbb839802359afc5338219f3d7035b878f"
+    }
+  ],
+  "capture_sha256": "db936f804eaa3349af8dc5cec05874c6fce3c9e002a72849729341894f64bc15"
+}

@@ -1,0 +1,14 @@
+{
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "ref": "c7e47c859eb2925c5626931fd511800773ba09ac",
+  "path": "config/contracts.yml",
+  "git_blob_sha": "1c03d4bbffdd0256cfbe060787934440c26344d4",
+  "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/c7e47c859eb2925c5626931fd511800773ba09ac/config/contracts.yml",
+  "ranges": [
+    {
+      "start_line": 245,
+      "end_line": 260,
+      "text": "\n  # synapse key: feeds-plane | consumer_type: mastermind:vendored\n  # Directory artifact (multiple files under site/feeds/)\n  feeds-plane:\n    path: site/feeds/\n    owner: macro_engine\n    schema_hint: json_dir\n    freshness_budget_sessions: 1\n    tier: infrastructure\n    allowed_effect: display-only\n    degradation_class: ADVISORY\n    consumer_modules: []\n    declared_by: synapse\n\n# ============================================================\n# SECTION 2: census-declared artifacts (section E, CENSUS.md)"
+    }
+  ]
+}

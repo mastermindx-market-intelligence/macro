@@ -1736,6 +1736,9 @@ lanes:
       - id: build_options_flow_attention
         module: scripts.build_options_flow_attention
         note: non-fatal reflex; neural-web W-D — direction-free options-flow attention trigger (nightly EOD fold)
+      - id: build_feeds
+        module: scripts.build_feeds
+        note: non-fatal; per-ticker JSON feeds
       - id: check_template_site_sync_fix
         module: scripts.check_template_site_sync
         args: [--fix]
@@ -1745,9 +1748,6 @@ lanes:
           assets from post-rebase templates/ so `git pull --rebase -X theirs` can never
           resurrect this run's checkout-time template copies over a reword merged
           mid-nightly (2026-07-07 incident: 2ae709f9f0 vs #1793).
-      - id: build_feeds
-        module: scripts.build_feeds
-        note: non-fatal; per-ticker JSON feeds
       - id: publish_r2
         module: scripts.publish_r2
         note: non-fatal; uploads OHLC + stockdata stores to Cloudflare R2

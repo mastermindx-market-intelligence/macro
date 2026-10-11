@@ -1,0 +1,20 @@
+[
+  {
+    "path": "terminal_patch/terminal/app/api/nw/route.ts",
+    "sha256": "d25e4086de89828470f6216532e638163de0940aa1479818b30ca12cc91b00f2",
+    "bytes": 5457,
+    "status": "uncommitted source candidate read in shared scratch; no commit identity claimed"
+  },
+  {
+    "path": "terminal_patch/terminal/lib/upstreams.ts",
+    "sha256": "021e39cadbc7fb70769ef0dcb87fc67d9d9d8bc1a48fb13ac4dfa5c4cd9f3efb",
+    "bytes": 1501,
+    "status": "uncommitted source candidate read in shared scratch; no commit identity claimed"
+  },
+  {
+    "path": "mastermind_patch/brain/sovereign_auction_context.py",
+    "sha256": "7e9930bc77c1aafed2d8a3406e57af3558822c29cdb60c49d327c5685c6aac8e",
+    "bytes": 22613,
+    "status": "uncommitted source candidate read in shared scratch; no commit identity claimed"
+  }
+]

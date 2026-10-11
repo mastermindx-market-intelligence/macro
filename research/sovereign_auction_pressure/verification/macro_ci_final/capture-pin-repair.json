@@ -1,0 +1,9 @@
+{
+  "changed_at": "2026-10-09T00:37:53.211713+00:00",
+  "source_head_before": "9ea66297a31688123ae62845c655a74db03fa9c1",
+  "path": "scripts/capture_treasury_auction_observations.py",
+  "before_sha256": "0b3fed438d863f1f5380182d95386ffa25660b04e121673aaac8dfc409017524",
+  "after_sha256": "db936f804eaa3349af8dc5cec05874c6fce3c9e002a72849729341894f64bc15",
+  "finding": "ci-pack-8 import pin must always put this checkout first, including when already present later",
+  "baseline_or_waiver_changed": false
+}

@@ -1,0 +1,52 @@
+                 For Immediate Release                                                                        CONTACT: Treasury Auctions
+                 October 01, 2026                                                                                      202-504-3550
+
+                                                        TREASURY AUCTION RESULTS
+                            Term and Type of Security                                                                         28-Day Bill
+                            CUSIP Number                                                                                      912797VP9
+
+                            High Rate 1                                                                                            3.890%
+                            Allotted at High                                                                                       23.52%
+                            Price                                                                                               99.697444
+                            Investment Rate 2                                                                                      3.956%
+
+                            Median Rate 3                                                                                             3.840%
+                            Low Rate 4                                                                                                3.785%
+
+                            Issue Date                                                                                October 06, 2026
+                            Maturity Date                                                                           November 03, 2026
+
+                                                                                        Tendered                                      Accepted
+                 Competitive                                                        $275,694,492,700                              $92,299,212,700
+                 Noncompetitive                                                       $5,701,345,400                                $5,701,345,400
+                 FIMA (Noncompetitive)                                                $2,000,000,000                                $2,000,000,000
+                 Subtotal 5                                                         $283,395,838,100                             $100,000,558,1006
+
+                 SOMA                                                                   $5,091,844,400                                 $5,091,844,400
+
+                 Total                                                              $288,487,682,500                              $105,092,402,500
+
+                                                                                        Tendered                                         Accepted
+                 Primary Dealer 7                                                   $187,150,000,000                                  $28,949,520,000
+                 Direct Bidder 7                                                     $11,950,000,000                                   $4,411,760,000
+                 Indirect Bidder 7                                                   $76,594,492,700                                  $58,937,932,700
+                 Total Competitive                                                  $275,694,492,700                                  $92,299,212,700
+
+
+
+
+1
+  All tenders at lower rates were accepted in full.
+2
+  Equivalent coupon-issue yield.
+3
+  50% of the amount of accepted competitive tenders was tendered at or below that rate.
+4
+  5% of the amount of accepted competitive tenders was tendered at or below that rate.
+5
+  Bid-to-Cover Ratio: $283,395,838,100/$100,000,558,100 = 2.83
+6
+  Awards to Treasury Retail = $4,471,072,300.
+7
+  For descriptions of these terms, see the Auction FAQs available at https://www.treasurydirect.gov/help-center/faqs/auction-faqs/.
+

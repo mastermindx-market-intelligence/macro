@@ -1,0 +1,73 @@
+{
+  "baseRefOid": "6b5bac781a890d21ddc637b2b98addf2cda6b6c7",
+  "headRefOid": "42476573407fcb882c65a9388f98ed038801fc50",
+  "isDraft": true,
+  "mergeStateStatus": "BEHIND",
+  "mergeable": "MERGEABLE",
+  "reviewDecision": "",
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37861755902/job/113599236087",
+      "name": "test",
+      "startedAt": "2026-10-08T23:53:04Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:52:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37861752830/job/113598895966",
+      "name": "Analyze (actions)",
+      "startedAt": "2026-10-08T23:51:52Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:52:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37861752830/job/113598895911",
+      "name": "Analyze (javascript-typescript)",
+      "startedAt": "2026-10-08T23:51:53Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37861752830/job/113598896109",
+      "name": "Analyze (python)",
+      "startedAt": "2026-10-08T23:51:59Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37861752830/job/113598896274",
+      "name": "Analyze (rust)",
+      "startedAt": "2026-10-08T23:51:52Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:52:25Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/runs/113599048562",
+      "name": "CodeQL",
+      "startedAt": "2026-10-08T23:52:22Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    }
+  ],
+  "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1284",
+  "observed_at": "2026-10-08T23:53:34.741835+00:00"
+}

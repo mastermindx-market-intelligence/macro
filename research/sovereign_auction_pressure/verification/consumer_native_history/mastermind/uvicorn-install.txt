@@ -1,0 +1,10 @@
+Collecting uvicorn>=0.29
+  Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting click>=7.0 (from uvicorn>=0.29)
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Requirement already satisfied: h11>=0.8 in /opt/homebrew/lib/python3.14/site-packages (from uvicorn>=0.29) (0.16.0)
+Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Installing collected packages: click, uvicorn
+
+Successfully installed click-8.5.0 uvicorn-0.54.0

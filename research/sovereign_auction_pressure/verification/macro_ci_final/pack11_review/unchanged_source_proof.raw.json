@@ -1,0 +1,12 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Process started with PID 46771 (shell: /bin/zsh)\nInitial output:\nEXACT_SOURCE_BASE_BLOB_IDENTITY\nconfig/dag.yml\nd2eec4732abee359ebb578b245fa7359b3c01a7d 0 68ca8883b6f09c64564f4f7904708684c3a55ee1 \n9ea66297a31688123ae62845c655a74db03fa9c1 0 68ca8883b6f09c64564f4f7904708684c3a55ee1 \ntests/test_nightly_liveness.py\nd2eec4732abee359ebb578b245fa7359b3c01a7d 0 38c41c161f9787c414e6051be7deee160c5a3f8d \n9ea66297a31688123ae62845c655a74db03fa9c1 0 38c41c161f9787c414e6051be7deee160c5a3f8d \nscripts/check_nightly_liveness.py\nd2eec4732abee359ebb578b245fa7359b3c01a7d 0 402d49c2468115f31c2836932345525526f72566 \n9ea66297a31688123ae62845c655a74db03fa9c1 0 402d49c2468115f31c2836932345525526f72566 \nscripts/check_dag_conformance.py\nd2eec4732abee359ebb578b245fa7359b3c01a7d 0 99473b961bc843d3a4849a88bd9ddd1dc62848a4 \n9ea66297a31688123ae62845c655a74db03fa9c1 0 99473b961bc843d3a4849a88bd9ddd1dc62848a4 \nOBSERVED_CI_BASE_OBJECT b86c4ada64533320232a98278cf199978a369a92 0 commit \nSOURCEBASE_TO_OBSERVED_CIBASE_RELEVANT_DIFFSTAT\n.github/workflows/daily.yml | 10 ++++++++++\n 1 file changed, 10 insertions(+)\nSOURCEBASE_TO_OBSERVED_CIBASE_DAG_DIFF\n\nSOURCE_CODEOWNERS_PRESENT\n(none)\n"
+      }
+    ],
+    "isError": false
+  }
+}

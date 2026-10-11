@@ -1,0 +1,42 @@
+{
+  "scope": "five held Macro heads from the recovered census, diffed from each merge-base with main8a35d8b; not all-open-PR or live lease clearance",
+  "paths": [
+    "scripts/build_feeds.py",
+    "scripts/ci/daily_engine_commit_outputs.sh",
+    ".gitignore",
+    "app/deploy/update.sh",
+    "app/deploy/Caddyfile",
+    ".github/workflows/daily.yml",
+    ".github/workflows/closing-bell.yml"
+  ],
+  "held_heads": [
+    {
+      "number": 7273,
+      "head": "0644fccc4d6f35367337b9520a6e66ff7699fcec",
+      "candidate_path_changes": [
+        "app/deploy/update.sh"
+      ]
+    },
+    {
+      "number": 7320,
+      "head": "f19b73842f297ddc6761487737505212f0735e2f",
+      "candidate_path_changes": []
+    },
+    {
+      "number": 8241,
+      "head": "33824eb66a76bc6bd2293c9255c5680e54128e9f",
+      "candidate_path_changes": []
+    },
+    {
+      "number": 7022,
+      "head": "061490193391a7f0a31aea9c0cf690e191975072",
+      "candidate_path_changes": []
+    },
+    {
+      "number": 7949,
+      "head": "2cf7577524f9df9653e619ba770c38383c2c6079",
+      "candidate_path_changes": []
+    }
+  ],
+  "required_root_gate": "recheck current protected ref, proposed-file preimages, other open PRs, and live writer/lease ownership before a source mutation; do not take over a held owner"
+}

@@ -1,0 +1,215 @@
+{
+  "status": "READ_ONLY_SOURCE_AUDIT_FIXTURES_NOT_PRODUCTION_PROOF",
+  "cases": [
+    {
+      "case_id": "bill_october_completed",
+      "fixture": "fixtures/bill_october_completed.json",
+      "fixture_sha256": "8e150288f8909bec974fd687dcd30dbe6f49a91fd336f1a503855ef685b1763f",
+      "receipt_source": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "full_source_sha256": "8f8acb2942d70a34235d83aece39eaa16948713b3521ce0a5ee4873639062326",
+      "expected": {
+        "normalized_class": "Bill",
+        "issued_cusip": "912797VP9",
+        "announced_cusip": "912797VP9",
+        "auction_date": "2026-10-01",
+        "issue_date": "2026-10-06",
+        "competitive_deadline_utc": "2026-10-01T15:30:00+00:00",
+        "official_result_release_clock_minute": "11:32",
+        "release_clock_source": "https://www.treasurydirect.gov/xml/R_20261001_1.xml",
+        "offering_amount_usd": "100000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "cash_management_bill",
+      "fixture": "fixtures/cash_management_bill.json",
+      "fixture_sha256": "4f77fe850ae7f056406127dc5b2f25b146a8ffdd5c51421edd15a16d02607298",
+      "receipt_source": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "full_source_sha256": "8f8acb2942d70a34235d83aece39eaa16948713b3521ce0a5ee4873639062326",
+      "expected": {
+        "normalized_class": "CMB",
+        "issued_cusip": "912797TD9",
+        "announced_cusip": "912797TD9",
+        "auction_date": "2026-05-21",
+        "issue_date": "2026-05-22",
+        "competitive_deadline_utc": "2026-05-21T17:00:00+00:00",
+        "official_result_release_clock_minute": "13:02",
+        "release_clock_source": "https://www.treasurydirect.gov/xml/R_20260521_3.xml",
+        "offering_amount_usd": "25000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "note_reopening",
+      "fixture": "fixtures/note_reopening.json",
+      "fixture_sha256": "87a8d8a9fd7da9842658f06fc4c059db4c16dca95d57ab50c7e11ad996237f81",
+      "receipt_source": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "full_source_sha256": "8f8acb2942d70a34235d83aece39eaa16948713b3521ce0a5ee4873639062326",
+      "expected": {
+        "normalized_class": "Note",
+        "issued_cusip": "91282CRF0",
+        "announced_cusip": "91282CRF0",
+        "auction_date": "2026-10-07",
+        "issue_date": "2026-10-15",
+        "competitive_deadline_utc": "2026-10-07T17:00:00+00:00",
+        "official_result_release_clock_minute": "13:02",
+        "release_clock_source": "https://www.treasurydirect.gov/xml/R_20261007_2.xml",
+        "offering_amount_usd": "39000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "bond_reopening",
+      "fixture": "fixtures/bond_reopening.json",
+      "fixture_sha256": "cdd322def944b0454d8d2fbed283a2130656873eafcd37761d4e955590a7e4dc",
+      "receipt_source": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "full_source_sha256": "8f8acb2942d70a34235d83aece39eaa16948713b3521ce0a5ee4873639062326",
+      "expected": {
+        "normalized_class": "Bond",
+        "issued_cusip": "912810UW6",
+        "announced_cusip": "912810UW6",
+        "auction_date": "2026-10-08",
+        "issue_date": "2026-10-15",
+        "competitive_deadline_utc": "2026-10-08T17:00:00+00:00",
+        "official_result_release_clock_minute": "13:02",
+        "release_clock_source": "https://www.treasurydirect.gov/xml/R_20261008_3.xml",
+        "offering_amount_usd": "22000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "tips_reopening",
+      "fixture": "fixtures/tips_reopening.json",
+      "fixture_sha256": "cf37aaa2718dcdca84d7b435f3f24702f0819a92c0b8fc4dbe4c4a8d68fde921",
+      "receipt_source": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "full_source_sha256": "8f8acb2942d70a34235d83aece39eaa16948713b3521ce0a5ee4873639062326",
+      "expected": {
+        "normalized_class": "TIPS",
+        "issued_cusip": "91282CRE3",
+        "announced_cusip": "91282CRE3",
+        "auction_date": "2026-09-17",
+        "issue_date": "2026-09-30",
+        "competitive_deadline_utc": "2026-09-17T17:00:00+00:00",
+        "official_result_release_clock_minute": "13:02",
+        "release_clock_source": "https://www.treasurydirect.gov/xml/R_20260917_3.xml",
+        "offering_amount_usd": "19000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "frn_reopening",
+      "fixture": "fixtures/frn_reopening.json",
+      "fixture_sha256": "322daa5b744c1d555cf2702c3586ff5c56f8147cdb08a3b1988d26e78f5d9578",
+      "receipt_source": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "full_source_sha256": "8f8acb2942d70a34235d83aece39eaa16948713b3521ce0a5ee4873639062326",
+      "expected": {
+        "normalized_class": "FRN",
+        "issued_cusip": "91282CRD5",
+        "announced_cusip": "91282CRD5",
+        "auction_date": "2026-09-23",
+        "issue_date": "2026-09-25",
+        "competitive_deadline_utc": "2026-09-23T15:30:00+00:00",
+        "official_result_release_clock_minute": "11:32",
+        "release_clock_source": "https://www.treasurydirect.gov/xml/R_20260923_2.xml",
+        "offering_amount_usd": "28000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "bill_future_nonstandard_deadline",
+      "fixture": "fixtures/bill_future_nonstandard_deadline.json",
+      "fixture_sha256": "d489a6ad50304c54586bb6989d95a77b1bc4c38c9b7ba6a7d91f4f4c6f3875fa",
+      "receipt_source": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "full_source_sha256": "8f8acb2942d70a34235d83aece39eaa16948713b3521ce0a5ee4873639062326",
+      "expected": {
+        "normalized_class": "Bill",
+        "issued_cusip": "912797SU2",
+        "announced_cusip": "912797SU2",
+        "auction_date": "2026-10-13",
+        "issue_date": "2026-10-15",
+        "competitive_deadline_utc": "2026-10-13T17:00:00+00:00",
+        "official_result_release_clock_minute": null,
+        "release_clock_source": null,
+        "offering_amount_usd": "95000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "tips_amended_latest_record",
+      "fixture": "fixtures/tips_amended_latest_record.json",
+      "fixture_sha256": "9b9e2f0282da9087a9077061b7c6279a93b9db54ee0986cd1315e4f3688ab516",
+      "receipt_source": "amended_tips_record",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/search?cusip=91282CNB3&format=json",
+      "full_source_sha256": "9f248aa83d52420366eeecd1aa0275fefc7f1bb5db79610fc270fd665bfb60a9",
+      "expected": {
+        "normalized_class": "TIPS",
+        "issued_cusip": "91282CNB3",
+        "announced_cusip": "91282CNB3",
+        "auction_date": "2025-04-17",
+        "issue_date": "2025-04-30",
+        "competitive_deadline_utc": "2025-04-17T15:30:00+00:00",
+        "official_result_release_clock_minute": null,
+        "release_clock_source": null,
+        "offering_amount_usd": "25000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "unscheduled_reopening_result",
+      "fixture": "fixtures/unscheduled_reopening_result.json",
+      "fixture_sha256": "a5689dcce3bc1828ae9ee2df15599869d7f262d85e1fbc4746400e5762cb7a98",
+      "receipt_source": "unscheduled_api_20250225",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/search?auctionDate=2025-02-25,2025-02-25&format=json",
+      "full_source_sha256": "566bcccedf9779cf1e33ad70ad77e83364b807f23bf7cb88fd8d71426d2623b1",
+      "expected": {
+        "normalized_class": "Note",
+        "issued_cusip": "91282CGQ8",
+        "announced_cusip": "91282CMQ1",
+        "auction_date": "2025-02-25",
+        "issue_date": "2025-02-28",
+        "competitive_deadline_utc": "2025-02-25T18:00:00+00:00",
+        "official_result_release_clock_minute": null,
+        "release_clock_source": null,
+        "offering_amount_usd": "70000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    },
+    {
+      "case_id": "historical_tips_missing_fields",
+      "fixture": "fixtures/historical_tips_missing_fields.json",
+      "fixture_sha256": "042e823ace51948468ef67642721b37bf22f53834ee392d555ed414c66c3e8a2",
+      "receipt_source": "treasury_1997_tips",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/search?auctionDate=1997-01-01,1997-01-31&format=json",
+      "full_source_sha256": "9ef07f1979ccdb55f39c46000ebba9e611cd1b4352d9f442513a3e7e4abd6679",
+      "expected": {
+        "normalized_class": "TIPS",
+        "issued_cusip": "9128272M3",
+        "announced_cusip": "9128272M3",
+        "auction_date": "1997-01-29",
+        "issue_date": "1997-02-06",
+        "competitive_deadline_utc": null,
+        "official_result_release_clock_minute": null,
+        "release_clock_source": null,
+        "offering_amount_usd": "7000000000",
+        "api_timestamp_is_official_publication": false,
+        "latest_api_is_historical_vintage": false
+      }
+    }
+  ]
+}

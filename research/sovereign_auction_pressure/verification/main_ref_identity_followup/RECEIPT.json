@@ -1,0 +1,482 @@
+{
+  "status": "no_intervening_drift_in_owned_production_targets_or_applicable_law",
+  "source_identity": {
+    "observation_scope": "Existing local Git refs and objects only; no fetch or server head query.",
+    "issue": "Initial 'now' hashes were stale refs/heads/main|master values, not advances of canonical remote-tracking refs.",
+    "resolution": "Use refs/remotes/origin/main for Macro and refs/remotes/origin/master for Mastermind and Terminal. Reverse historical diffs were discarded for conflict/law adjudication.",
+    "independently_read_refs": [
+      {
+        "name": "macro",
+        "refs": [
+          "refs/heads/main 007e0cccbd06f089605ba122efc658f406043dd3",
+          "refs/remotes/origin/main b86c4ada64533320232a98278cf199978a369a92"
+        ]
+      },
+      {
+        "name": "mastermind",
+        "refs": [
+          "refs/heads/master 9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
+          "refs/remotes/origin/master 6b5bac781a890d21ddc637b2b98addf2cda6b6c7"
+        ]
+      },
+      {
+        "name": "terminal",
+        "refs": [
+          "refs/heads/master e89ebda4064715371a56b1fc02b9ec9c9821d433",
+          "refs/remotes/origin/master 505edf7872541075b5eee24691703a46d1151074"
+        ]
+      }
+    ],
+    "old_local_branch_ancestry": {
+      "macro": {
+        "old_local_branch": "007e0cccbd06f089605ba122efc658f406043dd3",
+        "prior_checked_remote_tracking": "b86c4ada64533320232a98278cf199978a369a92",
+        "is_ancestor_of_prior": true,
+        "commits_behind_prior": 295
+      },
+      "mastermind": {
+        "old_local_branch": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
+        "prior_checked_remote_tracking": "6b5bac781a890d21ddc637b2b98addf2cda6b6c7",
+        "is_ancestor_of_prior": true,
+        "commits_behind_prior": 281
+      },
+      "terminal": {
+        "old_local_branch": "e89ebda4064715371a56b1fc02b9ec9c9821d433",
+        "prior_checked_remote_tracking": "f03aa5d019f1894210a7c6e40b8825ae28015198",
+        "is_ancestor_of_prior": true,
+        "commits_behind_prior": 381
+      }
+    },
+    "canonical_refs_stable_across_closing_read": true
+  },
+  "repositories": {
+    "macro": {
+      "name": "macro",
+      "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001",
+      "prior": "b86c4ada64533320232a98278cf199978a369a92",
+      "current": "b86c4ada64533320232a98278cf199978a369a92",
+      "targets": [
+        ".gitignore",
+        ".github/workflows/daily.yml",
+        "scripts/build_feeds.py",
+        "engine/treasury_auction_lifecycle.py",
+        "engine/treasury_auction_primitives.py",
+        "scripts/capture_treasury_auction_observations.py"
+      ],
+      "canonical_remote_tracking_ref": "refs/remotes/origin/main",
+      "rejected_local_branch_value": "007e0cccbd06f089605ba122efc658f406043dd3",
+      "symbolic_origin_head": "refs/remotes/origin/main",
+      "ancestry_is_forward": true,
+      "commit_count": 0,
+      "total_changed_paths": 0,
+      "all_changed_law_paths": [],
+      "all_changed_paths": [],
+      "applicable_law_paths": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "records": [
+        {
+          "path": ".github/workflows/daily.yml",
+          "role": "production",
+          "prior": {
+            "sha256": "c7cb98bbed9242fe8b43dbedc1ca5c258513f352903fe672579d2ee38f569653",
+            "bytes": 452715,
+            "git_blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce"
+          },
+          "current": {
+            "sha256": "c7cb98bbed9242fe8b43dbedc1ca5c258513f352903fe672579d2ee38f569653",
+            "bytes": 452715,
+            "git_blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce"
+          },
+          "changed": false
+        },
+        {
+          "path": ".gitignore",
+          "role": "production",
+          "prior": {
+            "sha256": "8002e865c795a8c5ac529f0a9c8812a6c5abd4d69e8dc5ea56c682c5054a0c53",
+            "bytes": 42488,
+            "git_blob": "b1272ff5216d8f08bfccbf2904c8ad65bafaf825"
+          },
+          "current": {
+            "sha256": "8002e865c795a8c5ac529f0a9c8812a6c5abd4d69e8dc5ea56c682c5054a0c53",
+            "bytes": 42488,
+            "git_blob": "b1272ff5216d8f08bfccbf2904c8ad65bafaf825"
+          },
+          "changed": false
+        },
+        {
+          "path": "AGENTS.md",
+          "role": "law",
+          "prior": {
+            "sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+            "bytes": 78660,
+            "git_blob": "367c567422f3554828f3fa57805811aa81a41df6"
+          },
+          "current": {
+            "sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+            "bytes": 78660,
+            "git_blob": "367c567422f3554828f3fa57805811aa81a41df6"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "law",
+          "prior": {
+            "sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+            "bytes": 85973,
+            "git_blob": "5d3c9b1936574af58581b03d149b4160119b1e79"
+          },
+          "current": {
+            "sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+            "bytes": 85973,
+            "git_blob": "5d3c9b1936574af58581b03d149b4160119b1e79"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "engine/treasury_auction_lifecycle.py",
+          "role": "production",
+          "prior": null,
+          "current": null,
+          "changed": false
+        },
+        {
+          "path": "engine/treasury_auction_primitives.py",
+          "role": "production",
+          "prior": null,
+          "current": null,
+          "changed": false
+        },
+        {
+          "path": "scripts/build_feeds.py",
+          "role": "production",
+          "prior": {
+            "sha256": "ba462cfb841e896185b586494be4220ca3f8c8b8188cc682ea32f23cf15ccafd",
+            "bytes": 10401,
+            "git_blob": "f5d086666914849fe76549f30c3e50145b316851"
+          },
+          "current": {
+            "sha256": "ba462cfb841e896185b586494be4220ca3f8c8b8188cc682ea32f23cf15ccafd",
+            "bytes": 10401,
+            "git_blob": "f5d086666914849fe76549f30c3e50145b316851"
+          },
+          "changed": false
+        },
+        {
+          "path": "scripts/capture_treasury_auction_observations.py",
+          "role": "production",
+          "prior": null,
+          "current": null,
+          "changed": false
+        }
+      ]
+    },
+    "mastermind": {
+      "name": "mastermind",
+      "workspace": "/Volumes/Mastermind/agent-workspaces/web/sovereign-auction-context-20261008-sol-mm-001",
+      "prior": "6b5bac781a890d21ddc637b2b98addf2cda6b6c7",
+      "current": "6b5bac781a890d21ddc637b2b98addf2cda6b6c7",
+      "targets": [
+        "app/web.py",
+        "app/static/market_view.html",
+        "brain/sovereign_auction_context.py",
+        "config/contracts.yml"
+      ],
+      "canonical_remote_tracking_ref": "refs/remotes/origin/master",
+      "rejected_local_branch_value": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
+      "symbolic_origin_head": "refs/remotes/origin/master",
+      "ancestry_is_forward": true,
+      "commit_count": 0,
+      "total_changed_paths": 0,
+      "all_changed_law_paths": [],
+      "all_changed_paths": [],
+      "applicable_law_paths": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "records": [
+        {
+          "path": "AGENTS.md",
+          "role": "law",
+          "prior": {
+            "sha256": "f847dc0e396584215f6d8ac5cad7c2b8d40517286066c9ced7daa37597561999",
+            "bytes": 15537,
+            "git_blob": "f251f95d2b1a335059bb22422afde77f618918e1"
+          },
+          "current": {
+            "sha256": "f847dc0e396584215f6d8ac5cad7c2b8d40517286066c9ced7daa37597561999",
+            "bytes": 15537,
+            "git_blob": "f251f95d2b1a335059bb22422afde77f618918e1"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "law",
+          "prior": {
+            "sha256": "3dc7a4f6aa5c575e9f1ddc9a80ee584c80fdd99313ba9f5fe63ef5eded295470",
+            "bytes": 10100,
+            "git_blob": "a3527784eeff237a388638ac639f04ed7581188b"
+          },
+          "current": {
+            "sha256": "3dc7a4f6aa5c575e9f1ddc9a80ee584c80fdd99313ba9f5fe63ef5eded295470",
+            "bytes": 10100,
+            "git_blob": "a3527784eeff237a388638ac639f04ed7581188b"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "app/static/market_view.html",
+          "role": "production",
+          "prior": {
+            "sha256": "adf9d87855356fec37d8bf9d6fc2f2c3c67e42b1a6dce8af779874b9514bb5c6",
+            "bytes": 22867,
+            "git_blob": "0e56c921b7209614144ad858c5ea2465d01a920b"
+          },
+          "current": {
+            "sha256": "adf9d87855356fec37d8bf9d6fc2f2c3c67e42b1a6dce8af779874b9514bb5c6",
+            "bytes": 22867,
+            "git_blob": "0e56c921b7209614144ad858c5ea2465d01a920b"
+          },
+          "changed": false
+        },
+        {
+          "path": "app/web.py",
+          "role": "production",
+          "prior": {
+            "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+            "bytes": 167964,
+            "git_blob": "3cff8680694edc84aeb8dc64361422ba4c5e7944"
+          },
+          "current": {
+            "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+            "bytes": 167964,
+            "git_blob": "3cff8680694edc84aeb8dc64361422ba4c5e7944"
+          },
+          "changed": false
+        },
+        {
+          "path": "brain/sovereign_auction_context.py",
+          "role": "production",
+          "prior": null,
+          "current": null,
+          "changed": false
+        },
+        {
+          "path": "config/contracts.yml",
+          "role": "production",
+          "prior": {
+            "sha256": "f39d5ec8f20d3ec7253103d212ed0ff7bca6b5140c871bd6130209aaccdb2765",
+            "bytes": 18685,
+            "git_blob": "1c03d4bbffdd0256cfbe060787934440c26344d4"
+          },
+          "current": {
+            "sha256": "f39d5ec8f20d3ec7253103d212ed0ff7bca6b5140c871bd6130209aaccdb2765",
+            "bytes": 18685,
+            "git_blob": "1c03d4bbffdd0256cfbe060787934440c26344d4"
+          },
+          "changed": false
+        }
+      ]
+    },
+    "terminal": {
+      "name": "terminal",
+      "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/sovereign-auction-context-20261008-sol-terminal-001",
+      "prior": "f03aa5d019f1894210a7c6e40b8825ae28015198",
+      "current": "505edf7872541075b5eee24691703a46d1151074",
+      "targets": [
+        "terminal/app/api/nw/route.ts",
+        "terminal/components/SovereignAuctionContext.tsx",
+        "terminal/components/TerminalShell.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/nwUpstream.ts",
+        "terminal/lib/sovereignAuctionContext.ts",
+        "terminal/lib/upstreams.ts"
+      ],
+      "canonical_remote_tracking_ref": "refs/remotes/origin/master",
+      "rejected_local_branch_value": "e89ebda4064715371a56b1fc02b9ec9c9821d433",
+      "symbolic_origin_head": "refs/remotes/origin/master",
+      "ancestry_is_forward": true,
+      "commit_count": 1,
+      "total_changed_paths": 2,
+      "all_changed_law_paths": [],
+      "all_changed_paths": [
+        "terminal/lib/__tests__/eventImpactCalendarStructure.test.ts",
+        "terminal/lib/eventImpact.ts"
+      ],
+      "applicable_law_paths": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "terminal/AGENTS.md",
+        "terminal/CLAUDE.md"
+      ],
+      "records": [
+        {
+          "path": "AGENTS.md",
+          "role": "law",
+          "prior": {
+            "sha256": "6fac041833148126262ec243bc23cc49186df58a82444b552565c370e01e89f0",
+            "bytes": 8648,
+            "git_blob": "bfec4f8faa2bc6f8b7325d7ed1c0294ce84d057d"
+          },
+          "current": {
+            "sha256": "6fac041833148126262ec243bc23cc49186df58a82444b552565c370e01e89f0",
+            "bytes": 8648,
+            "git_blob": "bfec4f8faa2bc6f8b7325d7ed1c0294ce84d057d"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "law",
+          "prior": {
+            "sha256": "edf5a9a6247b2390d585c429d5cc00a732f66b5c00ed302daf65070e14726a3f",
+            "bytes": 113,
+            "git_blob": "a8dd72d13efd56eed3e454e4d322a8ccb213018e"
+          },
+          "current": {
+            "sha256": "edf5a9a6247b2390d585c429d5cc00a732f66b5c00ed302daf65070e14726a3f",
+            "bytes": 113,
+            "git_blob": "a8dd72d13efd56eed3e454e4d322a8ccb213018e"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "terminal/AGENTS.md",
+          "role": "law",
+          "prior": {
+            "sha256": "e3fa317ad3eefc1cc0105f0ed7d8f0e51e14bd4d7a8bc9f3b5f048506cd5c8b6",
+            "bytes": 6421,
+            "git_blob": "8aff95af71bdc6700dc382390d49c8bfecb4de48"
+          },
+          "current": {
+            "sha256": "e3fa317ad3eefc1cc0105f0ed7d8f0e51e14bd4d7a8bc9f3b5f048506cd5c8b6",
+            "bytes": 6421,
+            "git_blob": "8aff95af71bdc6700dc382390d49c8bfecb4de48"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "terminal/CLAUDE.md",
+          "role": "law",
+          "prior": {
+            "sha256": "cbbb81e6108ee2f0836d4bd7af3ad44f9eb7d17fe7e8bb620abdf3866d15f587",
+            "bytes": 110,
+            "git_blob": "4b50aef7201560b274e97bcee50e01f3a4a19117"
+          },
+          "current": {
+            "sha256": "cbbb81e6108ee2f0836d4bd7af3ad44f9eb7d17fe7e8bb620abdf3866d15f587",
+            "bytes": 110,
+            "git_blob": "4b50aef7201560b274e97bcee50e01f3a4a19117"
+          },
+          "changed": false,
+          "applicable_to_owned_targets": true
+        },
+        {
+          "path": "terminal/app/api/nw/route.ts",
+          "role": "production",
+          "prior": {
+            "sha256": "8041a22e78f851dce23cdb23494003e9eb4ccc06da4526fab712f84c29ce1a95",
+            "bytes": 4794,
+            "git_blob": "93fe099574b67fb7a8bc4834e4504c3e96f78f38"
+          },
+          "current": {
+            "sha256": "8041a22e78f851dce23cdb23494003e9eb4ccc06da4526fab712f84c29ce1a95",
+            "bytes": 4794,
+            "git_blob": "93fe099574b67fb7a8bc4834e4504c3e96f78f38"
+          },
+          "changed": false
+        },
+        {
+          "path": "terminal/components/SovereignAuctionContext.tsx",
+          "role": "production",
+          "prior": null,
+          "current": null,
+          "changed": false
+        },
+        {
+          "path": "terminal/components/TerminalShell.tsx",
+          "role": "production",
+          "prior": {
+            "sha256": "9850a067fa49e1d2a593f403110b672b61e365b0ca931d003c35300019164545",
+            "bytes": 384934,
+            "git_blob": "ba589f4eb0235fafb655a20f67bc8e1de82800e7"
+          },
+          "current": {
+            "sha256": "9850a067fa49e1d2a593f403110b672b61e365b0ca931d003c35300019164545",
+            "bytes": 384934,
+            "git_blob": "ba589f4eb0235fafb655a20f67bc8e1de82800e7"
+          },
+          "changed": false
+        },
+        {
+          "path": "terminal/lib/i18n.tsx",
+          "role": "production",
+          "prior": {
+            "sha256": "858306597ebbfc2d912cefc997ad88e4805cafb08794b5cd4d3dfeacb109371f",
+            "bytes": 202478,
+            "git_blob": "8343a60139f191db7d9a7054cd7a43c7de58f945"
+          },
+          "current": {
+            "sha256": "858306597ebbfc2d912cefc997ad88e4805cafb08794b5cd4d3dfeacb109371f",
+            "bytes": 202478,
+            "git_blob": "8343a60139f191db7d9a7054cd7a43c7de58f945"
+          },
+          "changed": false
+        },
+        {
+          "path": "terminal/lib/nwUpstream.ts",
+          "role": "production",
+          "prior": null,
+          "current": null,
+          "changed": false
+        },
+        {
+          "path": "terminal/lib/sovereignAuctionContext.ts",
+          "role": "production",
+          "prior": null,
+          "current": null,
+          "changed": false
+        },
+        {
+          "path": "terminal/lib/upstreams.ts",
+          "role": "production",
+          "prior": {
+            "sha256": "8c1fbf0e22b5f807984a53c66e6b3ccd300188815fecc5e58aacb1dd0cce0c57",
+            "bytes": 1316,
+            "git_blob": "b682a4afc80e6f34c82345addd5642d4c7574e4b"
+          },
+          "current": {
+            "sha256": "8c1fbf0e22b5f807984a53c66e6b3ccd300188815fecc5e58aacb1dd0cce0c57",
+            "bytes": 1316,
+            "git_blob": "b682a4afc80e6f34c82345addd5642d4c7574e4b"
+          },
+          "changed": false
+        }
+      ]
+    }
+  },
+  "preservation": [
+    "Preserve current canonical remote-tracking law; do not treat older local-head law text as an intervening policy rollback.",
+    "Preserve Terminal commit 505edf7872541075b5eee24691703a46d1151074: malformed event calendars and malformed held ticker rows must remain calendar_unreadable, never affirmative no_events.",
+    "Retain the separate auction context's unscored, research-only role; do not connect it to incumbent eventImpact decisions through this integration.",
+    "Preserve the previously adjudicated Terminal runRenameScriptClick import/handler and auction leaf placement after .sa-btn-group; the Shell is unchanged from prior f03aa5d."
+  ],
+  "nw_path_resolution": "Tracked assigned workspace and current/prior trees identify terminal/app/api/nw/route.ts and terminal/lib/upstreams.ts. No dynamic [...slug]/route.ts or standalone nwUpstream.ts was found; the absent standalone path was explicitly checked.",
+  "limits": [
+    "No new independent remote freshness claim; refs are existing local remote-tracking snapshots.",
+    "No fetch, source edit, branch change, merge, merge-tree, test/build/browser run or CI polling performed.",
+    "New candidate source paths absent in both main snapshots are recorded as absent, not as proof of deployment.",
+    "Root owns finalized-head merge-tree checks and separately bracketed remote PR/head readbacks."
+  ]
+}

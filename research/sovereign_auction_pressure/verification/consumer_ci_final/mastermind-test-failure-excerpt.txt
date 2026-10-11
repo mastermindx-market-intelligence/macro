@@ -1,0 +1,61 @@
+1511: test	Run repository test gate	2026-10-09T00:33:36.5708524Z             ).stdout
+1512: test	Run repository test gate	2026-10-09T00:33:36.5708808Z             source_diffs.append(diff)
+1513: test	Run repository test gate	2026-10-09T00:33:36.5709150Z             if _scope_language(path) == "py":
+1514: test	Run repository test gate	2026-10-09T00:33:36.5709548Z                 source_postimages[path] = subprocess.run(
+1515: test	Run repository test gate	2026-10-09T00:33:36.5709960Z                     ["git", "show", f"HEAD:{path}"], cwd=ROOT,
+1516: test	Run repository test gate	2026-10-09T00:33:36.5710381Z                     check=True, capture_output=True, text=True,
+1517: test	Run repository test gate	2026-10-09T00:33:36.5710713Z                 ).stdout
+1518: test	Run repository test gate	2026-10-09T00:33:36.5711031Z >       assert _scan_added_identity_diff(
+1519: test	Run repository test gate	2026-10-09T00:33:36.5711451Z             "\n".join(source_diffs), source_postimages=source_postimages,
+1520: test	Run repository test gate	2026-10-09T00:33:36.5711821Z         ) == []
+1521: test	Run repository test gate	2026-10-09T00:33:36.5712217Z E       AssertionError: assert ['443', '_mas...mind_ui', ...] == []
+1522: test	Run repository test gate	2026-10-09T00:33:36.5712580Z E         
+1523: test	Run repository test gate	2026-10-09T00:33:36.5712942Z E         Left contains 58 more items, first extra item: '443'
+1524: test	Run repository test gate	2026-10-09T00:33:36.5713282Z E         
+1525: test	Run repository test gate	2026-10-09T00:33:36.5713510Z E         Full diff:
+1526: test	Run repository test gate	2026-10-09T00:33:36.5713747Z E         - []
+1527: test	Run repository test gate	2026-10-09T00:33:36.5713966Z E         + [
+1528: test	Run repository test gate	2026-10-09T00:33:36.5714191Z E         +     '443',
+1529: test	Run repository test gate	2026-10-09T00:33:36.5714673Z E         +     '_mastermind_ui',
+1530: test	Run repository test gate	2026-10-09T00:33:36.5715108Z E         +     '_mastermind_static_assets',
+1531: test	Run repository test gate	2026-10-09T00:33:36.5715464Z E         +     '_mastermind_ui',
+1532: test	Run repository test gate	2026-10-09T00:33:36.5715780Z E         +     '_mastermind_ui',
+1533: test	Run repository test gate	2026-10-09T00:33:36.5716083Z E         +     '_mastermind_ui',
+1534: test	Run repository test gate	2026-10-09T00:33:36.5716391Z E         +     '_mastermind_ui',
+1535: test	Run repository test gate	2026-10-09T00:33:36.5716697Z E         +     '_mastermind_ui',
+1536: test	Run repository test gate	2026-10-09T00:33:36.5717003Z E         +     '_mastermind_ui',
+1537: test	Run repository test gate	2026-10-09T00:33:36.5717303Z E         +     '_mastermind_ui',
+1538: test	Run repository test gate	2026-10-09T00:33:36.5717605Z E         +     '_mastermind_ui',
+1539: test	Run repository test gate	2026-10-09T00:33:36.5717919Z E         +     '_mastermind_ui',
+1540: test	Run repository test gate	2026-10-09T00:33:36.5718224Z E         +     '_mastermind_ui',
+1579: test	Run repository test gate	2026-10-09T00:33:36.5741726Z E         +     '_mastermind_static_assets',
+1580: test	Run repository test gate	2026-10-09T00:33:36.5742109Z E         +     '_mastermind_static_assets',
+1581: test	Run repository test gate	2026-10-09T00:33:36.5742459Z E         +     '_mastermind_ui',
+1582: test	Run repository test gate	2026-10-09T00:33:36.5742787Z E         +     '_mastermind_ui',
+1583: test	Run repository test gate	2026-10-09T00:33:36.5743130Z E         +     '_mastermind_static_assets',
+1584: test	Run repository test gate	2026-10-09T00:33:36.5743482Z E         +     '_mastermind_ui',
+1585: test	Run repository test gate	2026-10-09T00:33:36.5743786Z E         +     '_mastermind_ui',
+1586: test	Run repository test gate	2026-10-09T00:33:36.5744047Z E         + ]
+1587: test	Run repository test gate	2026-10-09T00:33:36.5744175Z 
+1588: test	Run repository test gate	2026-10-09T00:33:36.5744458Z tests/test_ceo_submit_armed_composition.py:1980: AssertionError
+1589: test	Run repository test gate	2026-10-09T00:33:36.5745275Z =========================== short test summary info ============================
+1590: test	Run repository test gate	2026-10-09T00:33:36.5746294Z FAILED tests/test_ceo_submit_armed_composition.py::test_d8_template_topology_and_protected_defaults - AssertionError: assert ['443', '_mas...mind_ui', ...] == []
+1591: test	Run repository test gate	2026-10-09T00:33:36.5747090Z   
+1592: test	Run repository test gate	2026-10-09T00:33:36.5747388Z   Left contains 58 more items, first extra item: '443'
+1593: test	Run repository test gate	2026-10-09T00:33:36.5747726Z   
+1594: test	Run repository test gate	2026-10-09T00:33:36.5747921Z   Full diff:
+1595: test	Run repository test gate	2026-10-09T00:33:36.5748137Z   - []
+1596: test	Run repository test gate	2026-10-09T00:33:36.5748345Z   + [
+1597: test	Run repository test gate	2026-10-09T00:33:36.5748547Z   +     '443',
+1598: test	Run repository test gate	2026-10-09T00:33:36.5748788Z   +     '_mastermind_ui',
+1599: test	Run repository test gate	2026-10-09T00:33:36.5749081Z   +     '_mastermind_static_assets',
+1600: test	Run repository test gate	2026-10-09T00:33:36.5749372Z   +     '_mastermind_ui',
+1601: test	Run repository test gate	2026-10-09T00:33:36.5749617Z   +     '_mastermind_ui',
+1602: test	Run repository test gate	2026-10-09T00:33:36.5749855Z   +     '_mastermind_ui',
+1603: test	Run repository test gate	2026-10-09T00:33:36.5750100Z   +     '_mastermind_ui',
+1604: test	Run repository test gate	2026-10-09T00:33:36.5750338Z   +     '_mastermind_ui',
+1605: test	Run repository test gate	2026-10-09T00:33:36.5750586Z   +     '_mastermind_ui',
+1606: test	Run repository test gate	2026-10-09T00:33:36.5750830Z   +     '_mastermind_ui',
+1607: test	Run repository test gate	2026-10-09T00:33:36.5751072Z   +     '_mastermind_ui',
+1608: test	Run repository test gate	2026-10-09T00:33:36.5751512Z   +     '_mastermind_ui',
+1609: test	Run repository test gate	2026-10-09T00:33:36.5751755Z   +     '_mastermind_ui',

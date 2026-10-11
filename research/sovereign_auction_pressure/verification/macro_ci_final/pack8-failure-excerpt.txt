@@ -1,0 +1,40 @@
+1844: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3371334Z             + "\n  ".join(added)
+1845: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3371547Z         )
+1846: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3372615Z E       AssertionError: New entry scripts import repo packages with no repo-root pin.  Add the pin, never extend the baseline; prune entries you fix.  A sealed-runtime runner that must not pin at module load goes in config/script_import_pin_sealed_runtime_waivers.yml with a non-empty reason, not in the baseline.
+1847: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3373542Z E         
+1848: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3373907Z E             _ROOT = Path(__file__).resolve().parent.parent   # scripts/ci/* -> parents[2]
+1849: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3374296Z E             sys.path.insert(0, str(_ROOT))
+1850: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3374523Z E         
+1851: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3374911Z E         unpinned and not in the baseline:
+1852: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3375274Z E           scripts/capture_treasury_auction_observations.py
+1853: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3375731Z E       assert not ['scripts/capture_treasury_auction_observations.py']
+1854: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3376000Z 
+1855: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3376512Z tests/test_check_script_import_pinning.py:466: AssertionError
+1856: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3377073Z =========================== short test summary info ============================
+1857: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3379162Z FAILED tests/test_check_script_import_pinning.py::test_unpinned_entry_scripts_only_shrink - AssertionError: New entry scripts import repo packages with no repo-root pin.  Add the pin, never extend the baseline; prune entries you fix.  A sealed-runtime runner that must not pin at module load goes in config/script_import_pin_sealed_runtime_waivers.yml with a non-empty reason, not in the baseline.
+1858: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3380391Z   
+1859: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3380696Z       _ROOT = Path(__file__).resolve().parent.parent   # scripts/ci/* -> parents[2]
+1860: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3381151Z       sys.path.insert(0, str(_ROOT))
+1861: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3381364Z   
+1862: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3381554Z   unpinned and not in the baseline:
+1863: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3381835Z     scripts/capture_treasury_auction_observations.py
+1864: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3382213Z assert not ['scripts/capture_treasury_auction_observations.py']
+1865: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:03:53.3382521Z 1 failed, 10 passed in 23.53s
+1866: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:04:03.4740165Z ##[endgroup]
+1867: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:04:03.4781370Z ##[error]unrun-import-hygiene: step 'file-path entry scripts pin this repository before importing it' exited 1
+1868: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:04:07.7186583Z ##[group]dependency environment attempt 1 — pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
+1869: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:04:08.0908960Z Collecting pytest
+1870: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:04:08.0920307Z   Using cached pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2791: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:31.1234225Z Removing scripts/__pycache__/
+2792: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:31.1234457Z Removing tests/__pycache__/
+2793: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:31.1258714Z CI_PACK_FAILED_JOBS=[]
+2794: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:49.9092186Z 
+2795: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:49.9092961Z CI_PACK_FAILED_JOBS=["unrun-import-hygiene"]
+2796: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:49.9093444Z Legacy CI failures:
+2797: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:49.9093895Z   - unrun-import-hygiene: step 'file-path entry scripts pin this repository before importing it' exited 1
+2798: ci-pack-8	validate and run legacy CI pack	2026-10-09T00:15:49.9228021Z ##[error]Process completed with exit code 1.
+2799: ci-pack-8	publish this pack's raw semantic fragment	﻿2026-10-09T00:15:49.9305374Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2800: ci-pack-8	publish this pack's raw semantic fragment	2026-10-09T00:15:49.9305707Z with:
+2801: ci-pack-8	publish this pack's raw semantic fragment	2026-10-09T00:15:49.9305891Z   name: ci-semantic-pack-37861101577-8
+2802: ci-pack-8	publish this pack's raw semantic fragment	2026-10-09T00:15:49.9306191Z   path: /home/runner/work/_temp/ci-semantic-fragments/pack-8.json
+2803: ci-pack-8	publish this pack's raw semantic fragment	2026-10-09T00:15:49.9306474Z   if-no-files-found: warn

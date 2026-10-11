@@ -1,0 +1,71 @@
+[
+  {
+    "path": "/feeds/event_calendar.json",
+    "matches": {
+      "deny": {
+        "exact": false,
+        "prefixes": []
+      },
+      "public": {
+        "exact": false,
+        "prefixes": []
+      },
+      "free_registered": {
+        "exact": false,
+        "prefixes": []
+      },
+      "enforced_early": {
+        "exact": false,
+        "prefixes": []
+      }
+    },
+    "classification": "premium",
+    "required_feature": "site_full"
+  },
+  {
+    "path": "/neuralwebdata/market_plane.json",
+    "matches": {
+      "deny": {
+        "exact": false,
+        "prefixes": []
+      },
+      "public": {
+        "exact": false,
+        "prefixes": []
+      },
+      "free_registered": {
+        "exact": false,
+        "prefixes": []
+      },
+      "enforced_early": {
+        "exact": false,
+        "prefixes": []
+      }
+    },
+    "classification": "premium",
+    "required_feature": "site_full"
+  },
+  {
+    "path": "/neuralwebdata/selection_cohort/us.json",
+    "matches": {
+      "deny": {
+        "exact": false,
+        "prefixes": []
+      },
+      "public": {
+        "exact": false,
+        "prefixes": []
+      },
+      "free_registered": {
+        "exact": false,
+        "prefixes": []
+      },
+      "enforced_early": {
+        "exact": false,
+        "prefixes": []
+      }
+    },
+    "classification": "premium",
+    "required_feature": "site_full"
+  }
+]

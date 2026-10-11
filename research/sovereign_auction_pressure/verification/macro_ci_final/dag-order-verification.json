@@ -1,0 +1,29 @@
+{
+  "verified_at": "2026-10-09T00:39:41.072131+00:00",
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "scripts/check_dag_conformance.py",
+        "--verbose"
+      ],
+      "exit_code": 0,
+      "log": "dag-hard-check.log",
+      "log_sha256": "8c73f33e5b3a005488ed1f439da46eaff2c91c6709f4e2e1d4ffd8dd9b976635"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_dag_conformance.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log": "dag-tests.log",
+      "log_sha256": "2659c6bf8089e88c5d4253dd6ad9b9bfcd6f1217f27c1e6586ec04dba3ccf266"
+    }
+  ],
+  "dag_sha256": "6b17b12d536e62336f11557a7f28821b1aae8611f45dbf1df581f2843d350c05",
+  "workflow_sha256": "fbb772e56112fa87ebec71985d2849b4bde1c26fc29631ed26f1b392dd00b072"
+}

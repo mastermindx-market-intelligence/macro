@@ -1,0 +1,263 @@
+{
+  "baseRefOid": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+  "headRefOid": "9ea66297a31688123ae62845c655a74db03fa9c1",
+  "isDraft": true,
+  "mergeStateStatus": "UNKNOWN",
+  "mergeable": "UNKNOWN",
+  "reviewDecision": "",
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:46:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113596913428",
+      "name": "ci-plan",
+      "startedAt": "2026-10-08T23:45:10Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:44:43Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861097171/job/113596726816",
+      "name": "ci-authority",
+      "startedAt": "2026-10-08T23:44:32Z",
+      "status": "COMPLETED",
+      "workflowName": "ci-authority"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:45:39Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596739287",
+      "name": "fence-pack",
+      "startedAt": "2026-10-08T23:44:34Z",
+      "status": "COMPLETED",
+      "workflowName": "fences"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113596913024",
+      "name": "contract-delta",
+      "startedAt": "2026-10-08T23:45:10Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:44:32Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740795",
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+      "startedAt": "2026-10-08T23:44:33Z",
+      "status": "COMPLETED",
+      "workflowName": "fences"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:46:16Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597265834",
+      "name": "trusted-ci",
+      "startedAt": "2026-10-08T23:46:16Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:44:32Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740253",
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+      "startedAt": "2026-10-08T23:44:32Z",
+      "status": "COMPLETED",
+      "workflowName": "fences"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:44:32Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740776",
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+      "startedAt": "2026-10-08T23:44:33Z",
+      "status": "COMPLETED",
+      "workflowName": "fences"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264884",
+      "name": "ci-pack-0",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264958",
+      "name": "ci-pack-1",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264949",
+      "name": "ci-pack-2",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264818",
+      "name": "ci-pack-3",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264962",
+      "name": "ci-pack-4",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264830",
+      "name": "ci-pack-5",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264862",
+      "name": "ci-pack-6",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264854",
+      "name": "ci-pack-7",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264914",
+      "name": "ci-pack-8",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264984",
+      "name": "ci-pack-9",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264923",
+      "name": "ci-pack-10",
+      "startedAt": "2026-10-08T23:46:19Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264930",
+      "name": "ci-pack-11",
+      "startedAt": "2026-10-08T23:46:18Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:44:41Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/113596781513",
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "startedAt": "2026-10-08T23:44:41Z",
+      "status": "COMPLETED",
+      "workflowName": "ci-authority"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:45:37Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/113597071101",
+      "name": "capability-broker",
+      "startedAt": "2026-10-08T23:45:37Z",
+      "status": "COMPLETED",
+      "workflowName": "ci-authority"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:44:41Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/113596783883",
+      "name": "ci-authority/main",
+      "startedAt": "2026-10-08T23:44:41Z",
+      "status": "COMPLETED",
+      "workflowName": "ci-authority"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:45:38Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/113597073252",
+      "name": "grader-manifest",
+      "startedAt": "2026-10-08T23:45:38Z",
+      "status": "COMPLETED",
+      "workflowName": "ci-authority"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:45:37Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/113597068763",
+      "name": "self-mod-fence",
+      "startedAt": "2026-10-08T23:45:37Z",
+      "status": "COMPLETED",
+      "workflowName": "ci-authority"
+    }
+  ],
+  "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8657",
+  "observed_at": "2026-10-08T23:53:34.853729+00:00"
+}

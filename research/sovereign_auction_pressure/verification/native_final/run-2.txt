@@ -1,0 +1,51 @@
+{
+  "receipt": "research/sovereign_auction_pressure/verification/real_source_feed_receipt.json",
+  "runs": [
+    {
+      "name": "primary_runtime_feed",
+      "status": "available",
+      "event_count": 74,
+      "classes": {
+        "Bill": 56,
+        "Note": 10,
+        "Bond": 4,
+        "TIPS": 2,
+        "FRN": 2
+      },
+      "feed_sha256": "b9054e091c2e56087a8a073dd1f426d7154d3cd241546a8e54a95d2fa39c4cc4"
+    },
+    {
+      "name": "mac_host_feed",
+      "status": "degraded",
+      "event_count": 46,
+      "classes": {
+        "Bill": 34,
+        "Note": 7,
+        "Bond": 3,
+        "TIPS": 1,
+        "FRN": 1
+      },
+      "feed_sha256": "9504823049fb9d19f2a71da176e438ca602a1611fd0fca121ae3d9ae0131e940"
+    }
+  ]
+}
+2026-10-08 16:29:32,653 WARNING feed risk_radar.json: no radar snapshot in latest.json — skipped
+2026-10-08 16:29:32,653 WARNING feed froth_fragility_log.jsonl: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/source_audit/forward_capture_primary/froth_fragility/log.jsonl) — skipped
+2026-10-08 16:29:32,653 WARNING feed dislocation_state_log.parquet: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/source_audit/forward_capture_primary/dislocation/state_log.parquet) — skipped
+2026-10-08 16:29:32,653 WARNING feed group_flow_validation_meta.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/source_audit/forward_capture_primary/group_flow/validation_meta.json) — skipped
+2026-10-08 16:29:32,653 WARNING feed subsector_rotation.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/primary_runtime_feed/site/marketdata/subsector_rotation.json) — skipped
+2026-10-08 16:29:32,740 WARNING feed intl_spillover.json: no intl radar snapshots — skipped
+2026-10-08 16:29:32,740 INFO feed sector_breadth.json: parquet not yet collected — skipped
+2026-10-08 16:29:32,740 WARNING feed world_state.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/source_audit/forward_capture_primary/neuralweb/world_state.json) — skipped
+2026-10-08 16:29:32,740 WARNING feed nw_mastermind_context.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/source_audit/forward_capture_primary/neuralweb/mastermind_context.json) — skipped
+2026-10-08 16:29:32,740 INFO feeds assembled: 1 artifacts -> /Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/primary_runtime_feed/site/feeds
+2026-10-08 16:29:32,839 WARNING feed risk_radar.json: no radar snapshot in latest.json — skipped
+2026-10-08 16:29:32,839 WARNING feed froth_fragility_log.jsonl: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/froth_fragility/log.jsonl) — skipped
+2026-10-08 16:29:32,839 WARNING feed dislocation_state_log.parquet: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/dislocation/state_log.parquet) — skipped
+2026-10-08 16:29:32,839 WARNING feed group_flow_validation_meta.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/group_flow/validation_meta.json) — skipped
+2026-10-08 16:29:32,839 WARNING feed subsector_rotation.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/mac_host_feed/site/marketdata/subsector_rotation.json) — skipped
+2026-10-08 16:29:32,911 WARNING feed intl_spillover.json: no intl radar snapshots — skipped
+2026-10-08 16:29:32,911 INFO feed sector_breadth.json: parquet not yet collected — skipped
+2026-10-08 16:29:32,911 WARNING feed world_state.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/neuralweb/world_state.json) — skipped
+2026-10-08 16:29:32,911 WARNING feed nw_mastermind_context.json: source absent (/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/neuralweb/mastermind_context.json) — skipped
+2026-10-08 16:29:32,912 INFO feeds assembled: 1 artifacts -> /Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/mac_host_feed/site/feeds
