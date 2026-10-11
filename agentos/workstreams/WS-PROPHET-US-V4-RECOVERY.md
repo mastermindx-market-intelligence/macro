@@ -675,6 +675,15 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
+  2026-10-11 authenticated paging continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-b03-attested-relations.md and programme6107291350.
+  PR8832 and8845 are merged and closed. Live browse/filter succeeded but offset8
+  still aborted at15s. Return to candidate is verified live in grid and filtered
+  table. The new bounded one-entry relation cache reattests all actual B1 bytes
+  on every read through the B1 owner; cold construction retains full semantics
+  and post-attestation. Parent213 tests and complete371-row byte comparison pass.
+  Finish normal exact-head CI/release, ordinary API adoption and live paging/sign-out.
+  Earlier progression below is historical and does not reopen closed evidence.
   2026-10-11 B1 validation continuation: use
   PROPHET-US-V4-RECOVERY-2026-10-11-b1-validation-performance.md and programme
   comment6107291350. PR8832 source is closed at3cb4bfcc and its exact engine was
