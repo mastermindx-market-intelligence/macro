@@ -537,3 +537,60 @@ worker, deployment, or release authorization. Keep #8698 draft; Tiingo News
 #8697 remains separately owned. The remaining user-critical gate is a genuinely
 permitted collector repair and authorized vendor qualification, followed by
 storage pilot, full history imports, CI/review and real consumer proof.
+
+
+### October 11 UTC — historical financial-statement vintage timeline
+
+The existing Tiingo research reader now also exposes a bounded
+TiingoStatementTimeline and read_research_statement_timeline. It uses the
+same *already stored, immutable receipt-verified* Parquet views and an explicit
+capture reference list. This adds retrospective statement-release research
+without another source writer, archive, historical universe, queue, temporal
+authority or point-in-time backtest admission.
+
+Tiingo's public fundamentals documentation differentiates
+asReported=true (the **current period as originally reported**) from
+asReported=false (Most-Recent, with **prior periods pulled from newer reports**):
+https://www.tiingo.com/documentation/fundamentals
+
+Every timeline therefore requires a definite as_reported boolean. A missing,
+ambiguous or mixed asReported request is refused, including in the source
+receipt/normalized rows. Vendor-claimed public-release labels, annual
+quarter=0 and quarterly 1-4, fiscal years, statement family, metrics, real null,
+zero and negative values remain distinct. Separate vendor release labels for
+the same fiscal period are retained as separate revisions. A conflicting
+same-release/fiscal-period value or metric-set change across captured source
+vintages **fails** rather than silently choosing today's restatement. Identical
+overlapping reports are deduplicated with latest capture receipt provenance
+under the explicit observed-before cutoff.
+
+Source release labels are **vendor claims, not experimentally validated
+upstream availability**. This API always reports:
+historical_known_at_proven=false, pit_backtest_eligible=false,
+historical_identity_admitted=false, redistribution_admitted=false and
+report_history_completeness_proven=false. It refuses future release claims,
+dates outside original vendor request windows, unqualified capture timestamps,
+missing exact partitions and mismatched vendor identifiers. Research-only
+inspection remains available with hindsight acknowledgement; there is no
+new production application route or implied forecast/trading eligibility.
+
+Twenty additional synthetic statement timeline tests are present in the
+**existing** test_tiingo_history.py suite and its already-wired Data OS CI
+lane. Targeted run: 54 passed (process 4670). Full Tiingo + registry:
+**327 passed, same 11 known producer-integrity failures** (process 5992,
+pytest exit 1); no skip/xfail or red-test waiver.
+External-volume test log:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-statements-timeline-20261011.log
+SHA-256 7480bc35d0a69f35a7d123df8efa2d990ae69a4065766f9b2ab67ba9eb8a83d6
+
+The current external volume had approximately 397 GiB free at the verified
+read-only capacity check; this is NOT a validated full-history or BOATS
+storage budget. Reserve capacity and obtain measured authorized vendor pilot
+sizes before sustained capture. Original collector unchanged SHA-256
+1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d.
+No data archive exists at the target path, no credential or authenticated
+vendor request was used, the original explicit tool denials stand and remain
+DO_NOT_REDO. PR #8698 stays draft, all 24 Tiingo contracts PROPOSED,
+and Tiingo News remains separately owned by #8697. Next gate is genuinely
+permitted producer repair plus live BOATS/history entitlement qualification,
+followed by real archive and consumer integration proof.

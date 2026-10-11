@@ -280,3 +280,204 @@ def test_local_longitudinal_reader_uses_no_network_or_secret(monkeypatch, lake):
     from scripts import tiingo_ingest as ingest
     monkeypatch.setattr(ingest, "boats_stream", forbidden)
     assert history(lake, [capture]).metadata()["rows"] == 1
+
+
+# Same existing research reader, now with a distinct as-reported/restated
+# statement release timeline. The source timestamp is a vendor release claim,
+# never a demonstrated historical known-at clock.
+from lib.dataos.tiingo_reader import read_research_statement_timeline
+
+
+def statement(release="2020-02-01", *, year=2019, quarter=4, net_income=42,
+              metrics=None):
+    return {
+        "date": release, "year": year, "quarter": quarter,
+        "statementData": {
+            "incomeStatement": metrics if metrics is not None else [
+                {"dataCode": "netIncome", "value": net_income},
+            ],
+        },
+    }
+
+
+def statement_saved(lake, reports, *, symbol="AMD", as_reported=True,
+                    observed="2026-10-09T05:00:00Z",
+                    start="2018-01-01", end="2021-12-31"):
+    params = {"startDate": start, "endDate": end}
+    if as_reported is not None:
+        params["asReported"] = "true" if as_reported else "false"
+    path = a.request_path("fund-statements", symbol, params)
+    capture = lake.store_response(
+        "fund-statements", symbol, path,
+        json.dumps(reports, separators=(",", ":")).encode(), received_at=observed,
+    )
+    receipt = next(
+        json.loads(file.read_text())
+        for file in (lake.root / "receipts").rglob("*.json")
+        if json.loads(file.read_text()).get("raw_sha256") == capture["raw_sha256"]
+    )
+    assert materialize_one(lake.root, receipt, free_floor=0)["status"] == "WRITTEN"
+    return observed[:10], capture["raw_sha256"]
+
+
+def timeline(lake, refs, **kw):
+    args = dict(vendor_symbol="AMD", refs=refs, start_release_date="2019-01-01",
+                end_release_date="2021-12-31", observed_before_utc=CUTOFF,
+                as_reported=True, root=lake.root, check_mount=False,
+                acknowledge_hindsight=True)
+    args.update(kw)
+    return read_research_statement_timeline(**args)
+
+
+def test_as_reported_statement_releases_from_separate_captures(lake):
+    first = statement_saved(lake, [statement(
+        "2019-05-01", year=2019, quarter=1, net_income=1,
+    )], start="2019-01-01", end="2019-09-01")
+    second = statement_saved(lake, [statement(
+        "2020-02-01", year=2019, quarter=0, net_income=42,
+    )], start="2019-09-02", end="2020-12-31")
+    result = timeline(lake, [second, first])
+    assert [(r["statement_public_release_date_vendor"], r["fiscal_year"],
+             r["fiscal_quarter"], r["metric_value"]) for r in result.rows] == [
+        ("2019-05-01", 2019, 1, 1.0),
+        ("2020-02-01", 2019, 0, 42.0),
+    ]
+    meta = result.metadata()
+    assert meta["source"] == "fund-statements"
+    assert meta["as_reported_dimension"] == "AS_REPORTED_CURRENT_PERIOD"
+    assert meta["distinct_fiscal_periods"] == 2
+    assert meta["source_partitions"] == 2
+    assert meta["source_release_is_vendor_claim"] is True
+    assert meta["availability_clock"] == "SOURCE_CAPTURE_ONLY_NO_PIT"
+    assert meta["report_history_completeness_proven"] is False
+    assert meta["historical_known_at_proven"] is False
+    assert meta["pit_backtest_eligible"] is False
+    assert meta["redistribution_admitted"] is False
+
+
+def test_latest_restated_dimension_is_not_mislabeled_as_reported(lake):
+    capture = statement_saved(lake, [statement(
+        metrics=[{"dataCode": "netIncome", "value": -10},
+                 {"dataCode": "zero", "value": 0},
+                 {"dataCode": "undisclosed", "value": None}],
+    )], as_reported=False)
+    result = timeline(lake, [capture], as_reported=False)
+    assert result.metadata()["as_reported_dimension"] == "LATEST_RESTATED_RETROSPECTIVE"
+    assert [row["metric_value"] for row in result.rows] == [-10.0, None, 0.0]
+    assert all(row["requested_as_reported"] is False for row in result.rows)
+    assert not result.pit_backtest_eligible
+
+
+def test_cannot_mix_as_reported_and_latest_restated_source_views(lake):
+    one = statement_saved(lake, [statement()], as_reported=True)
+    another = statement_saved(lake, [statement(net_income=123)], as_reported=False)
+    with pytest.raises(TiingoViewRefusal, match="cannot mix"):
+        timeline(lake, [one, another], as_reported=True)
+
+
+def test_statement_revisions_with_same_release_but_different_numbers_are_refused(lake):
+    before = statement_saved(lake, [statement(net_income=42)],
+                             observed="2026-10-09T05:00:00Z")
+    after = statement_saved(lake, [statement(net_income=40)],
+                            observed="2026-10-09T06:00:00Z")
+    with pytest.raises(TiingoViewRefusal, match="conflicting statement vintages"):
+        timeline(lake, [before, after])
+
+
+def test_statement_vintage_partial_metric_set_is_not_silently_spliced(lake):
+    before = statement_saved(lake, [statement(net_income=42)],
+                             observed="2026-10-09T05:00:00Z")
+    after = statement_saved(lake, [statement(metrics=[
+        {"dataCode": "netIncome", "value": 42},
+        {"dataCode": "oneTimeGain", "value": 9},
+    ])], observed="2026-10-09T06:00:00Z")
+    with pytest.raises(TiingoViewRefusal, match="conflicting statement vintages"):
+        timeline(lake, [before, after])
+
+
+def test_different_public_release_labels_for_same_fiscal_period_remain_distinct(lake):
+    first = statement_saved(lake, [statement("2020-02-01", net_income=42)])
+    second = statement_saved(lake, [statement("2020-05-01", net_income=55)],
+                             observed="2026-10-09T06:00:00Z")
+    result = timeline(lake, [first, second])
+    assert len(result.rows) == 2
+    assert result.metadata()["distinct_fiscal_periods"] == 1
+    assert result.metadata()["distinct_vendor_release_labels"] == 2
+    assert result.metadata()["historical_known_at_proven"] is False
+
+
+def test_identical_overlapping_report_is_deduplicated_by_latest_capture(lake):
+    first = statement_saved(lake, [statement()], observed="2026-10-09T05:00:00Z")
+    next_one = statement_saved(lake, [
+        statement(), statement("2020-05-01", year=2020, quarter=1, net_income=5),
+    ], observed="2026-10-09T06:00:00Z")
+    result = timeline(lake, [next_one, first])
+    assert len(result.rows) == 2
+    assert result.identical_report_overlaps == 1
+    assert result.rows[0]["source_observed_at_utc"] == "2026-10-09T06:00:00Z"
+    assert result.source_partitions == (first, next_one)
+
+
+def test_statement_capture_not_available_before_cutoff(lake):
+    capture = statement_saved(lake, [statement()])
+    with pytest.raises(TiingoViewRefusal, match="after requested observation cutoff"):
+        timeline(lake, [capture], observed_before_utc="2026-10-09T04:00:00Z")
+
+
+def test_vendor_release_date_outside_original_request_range_is_refused(lake):
+    capture = statement_saved(lake, [statement()],
+                              start="2021-01-01", end="2021-12-31")
+    with pytest.raises(TiingoViewRefusal, match="outside original vendor request"):
+        timeline(lake, [capture])
+
+
+def test_statement_unknown_as_reported_dimension_cannot_be_assumed_true(lake):
+    capture = statement_saved(lake, [statement()], as_reported=None)
+    with pytest.raises(TiingoViewRefusal, match="cannot mix"):
+        timeline(lake, [capture])
+
+
+def test_future_claimed_statement_release_is_not_accepted_from_old_capture(lake):
+    capture = statement_saved(lake, [statement("2029-02-01")], end="2030-01-01")
+    with pytest.raises(TiingoViewRefusal, match="future statement release"):
+        timeline(lake, [capture], end_release_date="2030-12-31")
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"acknowledge_hindsight": False},
+    {"as_reported": "true"},
+    {"max_rows": True},
+    {"max_partitions": 0},
+    {"start_release_date": "2022-01-01"},
+    {"observed_before_utc": "2026-10-09T04:00:00"},
+    {"vendor_symbol": "NVDA"},
+])
+def test_invalid_statement_study_dimensions_fail_closed(lake, kwargs):
+    capture = statement_saved(lake, [statement()])
+    with pytest.raises(TiingoViewRefusal):
+        timeline(lake, [capture], **kwargs)
+
+
+def test_statement_missing_or_duplicate_source_references_refuse(lake):
+    capture = statement_saved(lake, [statement()])
+    with pytest.raises(TiingoViewRefusal, match="duplicate"):
+        timeline(lake, [capture, capture])
+    with pytest.raises(TiingoViewRefusal, match="lacks artifact-bound"):
+        timeline(lake, [("2026-10-09", "a" * 64)])
+
+
+def test_statement_timeline_never_reads_key_or_contacts_tiingo(lake, monkeypatch):
+    capture = statement_saved(lake, [statement()])
+    def forbidden(*a, **kw):
+        pytest.fail("statement reader called vendor or key")
+    from scripts import tiingo_ingest as ingest
+    monkeypatch.setattr(a, "collect_one", forbidden)
+    monkeypatch.setattr(a, "read_key", forbidden)
+    monkeypatch.setattr(ingest, "boats_stream", forbidden)
+    before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in lake.root.rglob("*") if p.is_file()}
+    result = timeline(lake, [capture])
+    after = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+             for p in lake.root.rglob("*") if p.is_file()}
+    assert before == after
+    assert not result.pit_backtest_eligible
