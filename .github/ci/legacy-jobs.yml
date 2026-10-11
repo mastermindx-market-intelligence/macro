@@ -22899,3 +22899,22 @@ jobs:
         run: pip install pytest pyyaml requests
       - name: File and pinned-source replay, manual boundary and temporal refusals
         run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
+
+  site20-s4-chart-brief-js:
+    if: ${{ false }}
+    gate: code
+    # site20 S4: charts.js zoom bounds ignore missing observations (S4-01) and
+    # legend-hidden traces incl. the plotly_restyle show/hide lifecycle (S4-02);
+    # stockbrief.js generation fence + identity check (S4-04). Runs against the
+    # template sources and the byte-identical shipped site/ copies.
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: charts.js rescale + stockbrief.js freshness (templates)
+        run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
+      - name: same suites against the shipped site/ copies
+        run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
