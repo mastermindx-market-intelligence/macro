@@ -206,14 +206,16 @@ def test_raw_owner_path_alone_is_not_tabulated():
     assert BeautifulSoup(render(v), 'html.parser').select_one('.rrp-history') is None
 
 
-def test_withheld_chart_on_a_current_view_says_why_not_that_prices_are_unusable():
-    # The figures are current; only the chart was withheld (for example, an
-    # episode older than the owner's retained closes).
+def test_withheld_chart_without_a_reason_stays_neutral_not_that_prices_are_unusable():
+    # The figures are current; a presenter that does not say why the chart was
+    # withheld (the real reasons are covered by the US presenter's tests) gets
+    # copy that is true for every reason.
     v = native_view()
     v['detail_chart_html'] = ''
     evidence = BeautifulSoup(render(v), 'html.parser').select_one('.rrp-evidence')
-    assert 'Chart withheld' in evidence.get_text()
-    assert 'needs current, usable price evidence' not in evidence.get_text()
+    assert 'No chart is shown for this assessment.' in evidence.get_text()
+    for claim in ('needs current, usable price evidence', 'Chart withheld', 'Too few closes'):
+        assert claim not in evidence.get_text()
     v['observation']['quality'] = 'delayed'
     evidence = BeautifulSoup(render(v), 'html.parser').select_one('.rrp-evidence')
     assert 'needs current, usable price evidence' in evidence.get_text()

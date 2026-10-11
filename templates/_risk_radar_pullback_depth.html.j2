@@ -104,7 +104,10 @@
         <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{% set value_s = '%.2f'|format(0 - value) %}{{ '−' if value_s != '0.00' else '' }}{{ value_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
         {% endfor %}</tbody></table>
       </details>{% endif %}
-      {% elif current %}<p>{{ t('Chart withheld: the retained closing history does not fully cover these figures.', '图表暂不显示：保留的收盘历史未能完整覆盖上述数据。') }}</p>
+      {#- Copy says why only when the presenter says why; otherwise it stays neutral. #}
+      {% elif current and v.get('detail_withheld') == 'short' %}<p>{{ t('Too few closes since the reference high to draw a chart yet.', '自参考高点以来的收盘价尚少，暂不绘制图表。') }}</p>
+      {% elif current and v.get('detail_withheld') == 'uncovered' %}<p>{{ t('Chart withheld: the retained closing history does not fully support these figures.', '图表暂不显示：保留的收盘历史无法完整支持上述数据。') }}</p>
+      {% elif current %}<p>{{ t('No chart is shown for this assessment.', '本次评估不显示图表。') }}</p>
       {% else %}<p>{{ t('The chart needs current, usable price evidence.', '图表需要当前且可用的价格证据。') }}</p>{% endif %}
       <p class="rrp-note">{{ t('The chart is price history, not a forecast path.', '图表呈现历史价格，并非预测路径。') }}</p>
     </div>

@@ -382,6 +382,7 @@ def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch):
     window = {"dates": PATH["dates"][2:], "vals": PATH["vals"][2:-1] + [end]}
     assert seen == [window]
     assert view["detail_path"] == window  # the history table's rows
+    assert view["detail_withheld"] is None
     assert obs["price_path"] == PATH  # the owner's observation is not rewritten
 
 
@@ -429,6 +430,7 @@ def test_chart_is_withheld_when_it_would_disagree_with_the_measured_figures(monk
     seen, view = _drawn(monkeypatch, obs)
     assert seen == []
     assert view["detail_chart_html"] == "" and view["detail_path"] is None
+    assert view["detail_withheld"] == "uncovered"
 
 
 def test_a_reclaimed_close_still_draws_at_the_zero_line(monkeypatch):
@@ -480,3 +482,54 @@ def test_pre_episode_observation_still_draws_from_the_reference_high(monkeypatch
     assert soup.select_one("section.rrp").get("data-pb-phase") == phase
     assert soup.select_one(".rrp-chart .ilx") is not None
     assert "Unavailable" in soup.select_one('[data-metric="worst"]').get_text()
+
+
+def _evidence_text(view):
+    from bs4 import BeautifulSoup
+    from tests.test_risk_radar_pullback_depth_template import render
+    soup = BeautifulSoup(render(view, "us"), "html.parser")
+    assert soup.select_one("section.rrp").get("data-pb-phase") == view["phase"]
+    return soup.select_one(".rrp-evidence").get_text()
+
+
+def _young(n, phase="underway"):
+    """A valid window of n closes ending today: the peak, then a 5% shock
+    (the owner's onset rule can confirm underway one session after the peak)."""
+    dates = PATH["dates"][-n:]
+    vals = [0.0] + [-5.0] * (n - 1)
+    over = dict(peak_session=dates[0], close=95.0, low_close=95.0, low_session=dates[-1])
+    if n == 1:  # a new high today: nothing below it yet
+        over.update(close=100.0, low_close=None, low_session=None)
+    if phase in ("monitoring", "developing"):
+        over.update(active=False, low_close=None, low_session=None)
+    return _qualified({"dates": list(PATH["dates"][:-n]) + dates,
+                       "vals": [-3.0] * (len(PATH["dates"]) - n) + vals},
+                      phase=phase, valid_until="2026-09-23T21:00:00+00:00", **over)
+
+
+@pytest.mark.parametrize("n, phase", [(1, "monitoring"), (2, "underway"), (3, "underway"),
+                                      (3, "developing")])
+def test_a_young_window_says_it_is_short_not_that_history_fails_the_figures(monkeypatch, n, phase):
+    """Coverage is complete; there are just fewer than MIN_CHART_POINTS closes to draw."""
+    seen, view = _drawn(monkeypatch, _young(n, phase))
+    assert seen == [] and view["detail_path"] is None
+    assert view["detail_withheld"] == "short"
+    text = _evidence_text(view)
+    assert "Too few closes since the reference high" in text
+    assert "does not fully" not in text and "needs current" not in text
+
+
+def test_four_closes_from_the_reference_high_draw(monkeypatch):
+    seen, view = _drawn(monkeypatch, _young(4))
+    assert len(seen) == 1 and view["detail_withheld"] is None
+
+
+def test_an_uncovered_window_says_the_history_does_not_support_the_figures():
+    # The 63-close cap: the episode's peak predates the retained path.
+    obs = _qualified({"dates": PATH["dates"][3:], "vals": PATH["vals"][3:]},
+                     peak_session="2026-09-16", valid_until="2026-09-23T21:00:00+00:00")
+    view = pb.present(obs)
+    assert view["detail_withheld"] == "uncovered"
+    text = _evidence_text(view)
+    assert "does not fully support these figures" in text
+    assert "Too few closes" not in text and "needs current" not in text

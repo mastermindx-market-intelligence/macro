@@ -249,7 +249,8 @@ def _episode_window(obs: dict) -> dict | None:
     The owner's path also carries closes from before that peak, measured against
     a high that did not exist yet; drawn as drawdown, a rally reads as damage.
     None, so no chart or table is drawn, unless the window agrees with the
-    measured figures beside it. The observation itself is not modified.
+    measured figures beside it. Length is the caller's check: a young window
+    can be valid yet too short to draw. The observation itself is not modified.
     """
     path, peak_session = obs.get("price_path"), obs.get("peak_session")
     low_session = obs.get("low_session")
@@ -270,7 +271,7 @@ def _episode_window(obs: dict) -> dict | None:
         return None
     start = dates.index(peak_session)
     dates, vals = dates[start:], vals[start:]
-    if len(dates) < MIN_CHART_POINTS or dates[-1] != obs.get("asof"):
+    if not dates or dates[-1] != obs.get("asof"):
         return None
     if any(later <= earlier for earlier, later in zip(dates, dates[1:])):
         return None
@@ -317,7 +318,12 @@ def present(observation: dict, radar: dict | None = None) -> dict:
         "recovering", "repaired",
     } else "unavailable"
     chart = ""
-    shown = _episode_window(obs) if phase != "unavailable" else None
+    window = _episode_window(obs) if phase != "unavailable" else None
+    # Below MIN_CHART_POINTS the shared renderer would print "No history yet".
+    # A window that young is valid, not uncovered, and the copy must say which.
+    shown = window if window is not None and len(window["dates"]) >= MIN_CHART_POINTS else None
+    withheld = (None if shown is not None or phase == "unavailable"
+                else "short" if window is not None else "uncovered")
     if shown is not None:
         from lib import illus
         chart = illus.illus(
@@ -333,4 +339,4 @@ def present(observation: dict, radar: dict | None = None) -> dict:
         )
     # The table beside the chart is its text alternative; it reads the same window.
     return {"observation": obs, "phase": phase, "detail_chart_html": chart,
-            "detail_path": shown}
+            "detail_path": shown, "detail_withheld": withheld}
