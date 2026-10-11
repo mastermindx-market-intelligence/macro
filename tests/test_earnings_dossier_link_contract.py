@@ -41,6 +41,18 @@ def _compile(tmp_path: Path, *, dossier_root: Path | None = None):
     return evidence, store, manifest, _current_packet(store, manifest)
 
 
+def test_linked_dossier_replays_in_workflow_sparse_checkout(tmp_path: Path) -> None:
+    root = _site(tmp_path)
+    binding = earnings_adapter.build_dossier_link("AAPL", root=root)
+    subprocess.run(
+        ["git", "-C", str(root), "sparse-checkout", "set", "--cone", "engine", "lib"],
+        check=True, capture_output=True,
+    )
+    assert not (root / "site/stocks/AAPL.html").exists()
+    assert earnings_adapter.build_dossier_link("AAPL", root=root) == binding
+    earnings_adapter.assert_dossier_link_current(binding, ticker="AAPL", root=root)
+
+
 def test_legacy_packet_bytes_and_generation_remain_identical(tmp_path: Path) -> None:
     _, _, manifest, packet = _compile(tmp_path)
     assert canonical_json_sha256(packet) == "a60afe811fbf9d066bc17dac327a8276ecf966115de342b98ec162acfbeff39e"
