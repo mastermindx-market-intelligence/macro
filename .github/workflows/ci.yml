@@ -3952,6 +3952,7 @@ on:
       - "tests/test_forex.py"
       - "tests/test_forex_context_bus.py"
       - "tests/test_news_event_ledger.py"
+      - "tests/test_build_news.py"
       - "tests/test_phase_buildout.py"
       - "tests/test_policy_lever.py"
       - "tests/test_rates_command.py"
