@@ -246,6 +246,7 @@ def test_product_integration_cannot_claim_deliveries(lifecycle):
 @pytest.mark.parametrize("kind,lifecycle,disposition,bilateral", [
     ("supplier_roster", "listed", "roster_observation_only", False),
     ("framework_agreement", "in_force", "framework_candidate_no_deliveries", True),
+    ("equity_ownership", "reported", "equity_interest_candidate", False),
     ("administrative_party", "appointed", "administrative_role_only", False),
     ("anonymous_counterparty", "announced", "counterparty_unresolved", False),
     ("thematic_similarity", "observed", "non_relationship_observation", False),
@@ -258,6 +259,7 @@ def test_manual_taxonomy_preserves_disposition_without_role_or_quantity_upgrade(
     sentences = {
         "supplier_roster": "Aurora lists Boreal in its Widget supplier roster.",
         "framework_agreement": "Aurora and Boreal signed a Widget framework agreement; no deliveries are stated.",
+        "equity_ownership": "Aurora reported a 49% equity interest in Boreal Widget; no deliveries are stated.",
         "administrative_party": "Aurora appointed Boreal as trustee for Widget notes.",
         "anonymous_counterparty": "Aurora plans Widget for an unnamed customer.",
         "thematic_similarity": "Aurora and Boreal share a Widget theme.",
@@ -597,3 +599,49 @@ def test_research_witness_refuses_changed_capture_from_foreign_directory(tmp_pat
     assert result["admission"] == "NOT_ADMITTED"
     assert result["historical_system_replay"] is False
     assert "outcomes" not in result  # No CLI semantic view is derived from replacement bytes.
+
+
+def test_equity_ownership_is_a_manual_directed_interest_not_an_operating_weight():
+    # No source-control, current-contract, source-purpose or accounting claim is
+    # inferred from an exact source span or an analyst-selected lifecycle.
+    span = (
+        "<p>Aurora reported a 49% equity interest in Boreal Widget; "
+        "Boreal revenues and deliveries were not disclosed.</p>"
+    )
+    source = "SYNTHETIC ownership-only issuer disclosure.\n" + span
+    candidate = make_candidate(source=source, span=span)
+    candidate["document"]["published_date"] = "2023-11-07"
+    candidate["assertion"].update(kind="equity_ownership", lifecycle="reported")
+    result = inspect(candidate, source=source)
+    assert result["inspection_status"] == "INSPECTABLE"
+    view = result["current_candidate_view"]
+    assert view["assertion"]["kind"] == "equity_ownership"
+    assert view["disposition"] == "equity_interest_candidate"
+    assert view["scope"] == "owner_investee_only"
+    assert view["bilateral_candidate"] is False
+    assert view["assertion"]["magnitude"] is None
+    assert all(view[key] is None for key in (
+        "canonical_subject_id", "canonical_object_id", "shipments",
+        "revenue", "economic_weight", "theme_membership",
+    ))
+    assert result["support"]["semantic_adjudication"] == "NOT_PERFORMED"
+    assert result["annotation_trust"]["manual_assertions"] == "caller_supplied_not_authenticated"
+    assert all(result["gaps"][key] for key in ("native_adoption", "time", "identity", "rights"))
+    assert result["admission"] == "NOT_ADMITTED"
+    assert result["graph1_projection"] is None
+    assert not any(result["authority"].values())
+    assert result["content_boundary"]["public_export"] == "NOT_AUTHORIZED"
+
+    for reported_weight in (49, "49%", {"equity_interest_pct": 49}):
+        altered = deepcopy(candidate)
+        altered["assertion"]["magnitude"] = reported_weight
+        assert_refused(inspect(altered, source=source), "QUANTITY_MUST_BE_NULL")
+    for invented_lifecycle in ("completed_deliveries", "controls_operations", "in_force"):
+        altered = deepcopy(candidate)
+        altered["assertion"]["lifecycle"] = invented_lifecycle
+        assert_refused(inspect(altered, source=source), "LIFECYCLE_UNSUPPORTED")
+
+    # Source date/receipt alone is not a native historical system timestamp.
+    earlier = inspect(candidate, source=source, as_of="2023-11-01T00:00:00Z")
+    assert_refused(earlier, "AS_OF_REGISTRY_REQUIRED")
+    assert earlier["current_candidate_view"] is None and earlier["support"] is None
