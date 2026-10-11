@@ -391,3 +391,22 @@ def test_historical_read_requires_and_preserves_real_instant_and_pit_identity(sa
     with pytest.raises(d.DisclosureError,match="FUTURE_KNOWLEDGE"):
         d.read_disclosure(store,authority,too_early)
     assert store.reads==before
+
+
+def test_subject_identity_binding_rejects_publication_before_any_io(sample):
+    body, edition, fact, req, authority, store = sample
+    authority.admission = replace(authority.admission, subject_binding=d.SubjectIdentityBinding(
+        fact['subject_id'], '0000000001', 'synthetic.issuer_snapshot/v1', '9'*64, 200, 'a'*64))
+    reader = SyntheticSourceReader(body)
+    with pytest.raises(d.DisclosureError, match='SUBJECT_IDENTITY_MISMATCH'):
+        d.publish_disclosure(store, authority, req, edition=edition, fact=fact, source_reader=reader)
+    assert store.reads == store.writes == store.capabilities == 0 and not reader.calls
+
+
+def test_subject_identity_binding_rejects_private_fact_with_wrong_decision(sample):
+    publish(sample)
+    _, _, fact, req, authority, store = sample
+    authority.admission = replace(authority.admission, subject_binding=d.SubjectIdentityBinding(
+        fact['subject_id'], '0000000001', 'synthetic.issuer_snapshot/v1', '9'*64, 200, 'a'*64))
+    with pytest.raises(d.DisclosureError, match='SUBJECT_IDENTITY_MISMATCH'):
+        d.read_disclosure(store, authority, req)

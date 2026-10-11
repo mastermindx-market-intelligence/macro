@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-11T13:37:10.764056+00:00",
+  "red": {
+    "exec": 88575,
+    "rc": 1,
+    "cases": 2,
+    "observed": "Wrong CIK or snapshot received200 instead of503"
+  },
+  "repair": {
+    "explicit_subject_binding": true,
+    "comparison_before_store": true,
+    "fact_decision_validation_on_read_and_publish": true,
+    "real_snapshot_schema_not_relabelled": true
+  },
+  "green": {
+    "exec": 25715,
+    "rc": 0,
+    "tests": 125,
+    "seconds": 4.59
+  },
+  "ci_closure": {
+    "exec": 59398,
+    "rc": 0,
+    "owner": "ticker-news-qbus",
+    "missing": []
+  },
+  "production_accepted": false,
+  "review": {
+    "owner": "/root/native_fact_architecture",
+    "scope": "Reasoning-only correction adjudication",
+    "verdict": "No remaining architectural defect in specific identity repair; real subject decision records must still be verified by uninstalled resolver",
+    "tests_run_by_reviewer": false
+  },
+  "source_sha256": {
+    "engine/company_intelligence/issuer_disclosures.py": "56cb436ef4c73a8524277261e66ab8c81fb56070d4db75e44646f8b233c32392",
+    "engine/company_intelligence/issuer_disclosure_selection.py": "4bf10bf9bc03edc0aad34041b38df80ccc38e794ad23731b6398e58a65f94ea8",
+    "app/company_disclosures.py": "43ec71966e5dcbef3df1351c0596a513c0598ec04238220d057d15bbb322eabd",
+    "tests/test_company_disclosures_api.py": "b7e9898c9264d3a7ee5a490ae2799a3fd64e8f53f9243ebbf2cde2f83e1b72cf",
+    "tests/test_company_issuer_disclosures.py": "614817f6309336d7eabfb80d15fa072fd01a41028a0ef6d7b3bad2e11e9b40db"
+  }
+}

@@ -16,6 +16,7 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 
 from engine.company_intelligence import issuer_disclosures as native
+from engine.company_intelligence import issuer_disclosure_selection as selection
 
 FEATURE = "company_intelligence_private_read"
 PURPOSE = "private_company_intelligence_context"
@@ -93,6 +94,7 @@ class PrivateDisclosureReader:
     """
     authority: native.DisclosureAuthority
     store_factory: Callable[[], object]
+    selection_owner: selection.SelectionOwner | None = None
 
     def read(self, request: native.Request) -> dict:
         native.preflight(self.authority, request)
@@ -126,4 +128,25 @@ def product_integration(fact_id: str, request: Request,
         # non-enumerating admission/unavailability classes.
         code = "SOURCE_NOT_ADMITTED" if exc.code == "SOURCE_NOT_ADMITTED" else "PRIVATE_SOURCE_UNAVAILABLE"
         return _error(503, code)
+    return JSONResponse(value, headers=_HEADERS)
+
+
+@router.get("/issuers/{issuer_id}/product-integrations")
+def issuer_selections(issuer_id: str, request: Request,
+                      _user: dict = Depends(require_private_user)) -> JSONResponse:
+    if request.query_params:
+        return _error(400, "REQUEST_INVALID")
+    try:
+        selection.issuer_identity(issuer_id)
+    except native.DisclosureError:
+        return _error(400, "REQUEST_INVALID")
+    reader = getattr(request.app.state, "company_disclosure_reader", None)
+    if type(reader) is not PrivateDisclosureReader or reader.selection_owner is None:
+        return _error(503, "SOURCE_RUNTIME_UNAVAILABLE")
+    try:
+        value = selection.read_issuer_selection(
+            reader.selection_owner, reader.authority, reader.store_factory, issuer_id,
+            purpose=PURPOSE, audience=AUDIENCE)
+    except native.DisclosureError:
+        return _error(503, "PRIVATE_SOURCE_UNAVAILABLE")
     return JSONResponse(value, headers=_HEADERS)

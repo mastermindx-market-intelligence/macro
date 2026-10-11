@@ -222,6 +222,32 @@ class Request:
 
 
 @dataclass(frozen=True)
+class SubjectIdentityBinding:
+    """Owner-attested link from one fact decision to an immutable identity receipt.
+
+    The schema names the actual supplied receipt; it does not invent a DataOS
+    contract. The aggregate Admission.identity_revision remains a separate
+    decision and must not be confused with this subject-specific revision.
+    """
+    issuer_id: str
+    evidenced_cik: str
+    snapshot_schema: str
+    snapshot_sha256: str
+    snapshot_byte_length: int
+    decision_revision: str
+
+    def __post_init__(self) -> None:
+        _identifier(self.issuer_id)
+        _require(type(self.evidenced_cik) is str
+                 and re.fullmatch(r"[0-9]{10}", self.evidenced_cik) is not None
+                 and int(self.evidenced_cik) > 0, "SUBJECT_IDENTITY_INVALID")
+        _identifier(self.snapshot_schema)
+        _digest(self.snapshot_sha256)
+        _integer(self.snapshot_byte_length, 1, MAX_OBJECT_BYTES)
+        _digest(self.decision_revision)
+
+
+@dataclass(frozen=True)
 class Admission:
     """Metadata returned only by the injected, adopted source-owner resolver.
 
@@ -245,8 +271,11 @@ class Admission:
     identity_mode: str
     allowed_fields: frozenset[str]
     operation: str = "read"
+    subject_binding: SubjectIdentityBinding | None = None
 
     def validate(self, request: Request, candidate: Reference | None) -> None:
+        _require(self.subject_binding is None or type(self.subject_binding) is SubjectIdentityBinding,
+                 "SUBJECT_IDENTITY_INVALID")
         _require(self.request == request, "ADMISSION_REQUEST_MISMATCH")
         _require(self.operation == ("publish" if candidate is not None else "read"), "ADMISSION_OPERATION_MISMATCH")
         _require(type(self.reference) is Reference and self.reference.schema == FACT_SCHEMA, "ADMISSION_REFERENCE_INVALID")
@@ -295,6 +324,14 @@ def preflight(authority: DisclosureAuthority, request: Request,
     _require(type(admitted) is Admission, "SOURCE_NOT_ADMITTED")
     admitted.validate(request, candidate)
     return admitted
+
+
+def _subject_binding(fact: dict, admission: Admission) -> None:
+    binding = admission.subject_binding
+    if binding is not None:
+        _require(fact["subject_id"] == binding.issuer_id
+                 and fact["subject_identity"] == binding.decision_revision,
+                 "SUBJECT_IDENTITY_MISMATCH")
 
 
 def _key(reference: Reference) -> str:
@@ -424,6 +461,7 @@ def publish_disclosure(store: object, authority: DisclosureAuthority, request: R
              and fact["subject_id"] == edition["issuer_id"], "SOURCE_BINDING_MISMATCH")
     _require(_instant(edition["known_at"]) <= _instant(fact["known_at"]), "FACT_PRECEDES_SOURCE")
     admission = preflight(authority, request, fref)
+    _subject_binding(fact, admission)
     _require(admission.edition == eref and admission.known_at == fact["known_at"]
              and admission.publication_precision == edition["publication_precision"], "ADMISSION_METADATA_MISMATCH")
     try:
@@ -466,6 +504,7 @@ def read_disclosure(store: object, authority: DisclosureAuthority, request: Requ
     """Owner-selected private fact read after the F04 authentication boundary."""
     admission = preflight(authority, request)
     fact = _load(store, admission.reference)
+    _subject_binding(fact, admission)
     _require(fact["fact_id"] == request.fact_id and fact["edition"] == admission.edition.payload()
              and fact["known_at"] == admission.known_at, "ADMISSION_METADATA_MISMATCH")
     edition = _load(store, admission.edition)

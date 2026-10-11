@@ -20922,6 +20922,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/company_disclosures.py"
+      - "engine/company_intelligence/issuer_disclosure_selection.py"
+      - "engine/company_intelligence/issuer_disclosures.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.

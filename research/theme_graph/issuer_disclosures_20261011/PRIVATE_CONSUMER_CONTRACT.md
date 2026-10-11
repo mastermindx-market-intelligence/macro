@@ -163,3 +163,65 @@ found no make-or-break authorization defect; its final-recheck comment correctio
 was applied. Real resolver installation, source-owner purpose and dataset adoption,
 current private artifact, deployment, and authenticated positive/refusal proof are
 still required.
+
+## Issuer selection for F04 composition
+
+GET `/api/company-intelligence/private/issuers/{issuer_id}/product-integrations`
+uses the same authentication, actual feature, fixed purpose and fixed audience.
+The input is a canonical Data OS issuer ID; a ticker, caller-supplied CIK, event
+ID or client-derived hash is not a verified issuer binding. The incumbent identity
+owner must resolve the product's company context before this call. C01's current
+Micron/NVIDIA bindings and their exact committed reference sources are recorded
+in `C01_CURRENT_IDENTITY_QUALIFICATION.json`, without historical admission.
+
+The response schema is `company_intelligence.private_issuer_selections/v1`:
+generation, identity_mode=current, issuer_role=subject_disclosing_company,
+issuer_binding (issuer_id, evidenced_cik, immutable identity_snapshot_reference),
+and at most 16 sorted unique selections. Each selection contains fact_id, exact
+fact_reference, exact edition_reference, kind=product_integration and
+lifecycle=planned. Counterparty listings are not implied.
+
+The trusted `SelectionOwner.resolve_issuer` capability supplies an independently
+qualified current metadata generation, not arbitrary serialized HTTP data. Every
+selected entry passes the native admission boundary before even constructing a
+private Store. The reader then verifies the actual committed native artifact,
+its issuer role, exact references and generation, rechecks selection, and
+rechecks all admissions before serialization. The returned fields contain no
+source/reviewer text, decision basis or grant booleans. A reference is discovery
+metadata, not a permission token. A qualified empty generation returns an empty
+list; missing runtime or unqualified owner metadata is unavailable.
+
+F04 must retain the selection generation and references, call the fixed fact
+reader, and compare the returned fact/edition references and generation before
+display. A mismatch invalidates the composition; the caller cannot force an old
+generation to remain authorized. The source owner must eventually publish its
+selection projection through the incumbent Store/CAS pointer after the actual
+native facts and owner decisions qualify. This producer/pointer and actual
+source-owner resolver are not installed by this transport implementation. C01
+therefore contributes no selected row yet.
+
+The expanded transport suite passes 47 cases in 3.88 seconds, including exact
+selection-to-fact composition on actual LocalStore, subject/counterparty
+separation, duplicate/overflow/reference rejection before private I/O, empty
+versus unavailable, selection and admission races, and rejected identity/old
+generation overrides. All positive owners/authentication remain synthetic.
+
+
+The independent composition review reproduced a cross-owner identity gap: two
+otherwise valid current selections with the same issuer/generation could disagree
+on the CIK or identity snapshot. Both regression cases first returned HTTP 200
+instead of refusing. `Admission.subject_binding` now carries an explicit
+`SubjectIdentityBinding`: issuer ID, evidenced CIK, actual snapshot schema/hash/
+length, and the subject-specific decision revision. Selection requires this
+binding and compares it before Store construction; the native reader compares
+the fact's subject identity decision, and publication checks it before any I/O.
+The aggregate `identity_revision` remains separate. The response names the actual
+supplied snapshot schema; no new Data OS contract is implied. After repair, all
+125 affected native, private transport and public API tests passed in 4.59 seconds.
+Positive fixtures still prove source behavior only, not production qualification.
+
+The correction review found no remaining architectural defect in that repair.
+Production must verify the immutable subject decision record itself binds the
+issuer/CIK/snapshot tuple; equality of unverified hashes is insufficient. The
+installed production slice must provide this binding on publication and reads,
+even though the base native API keeps it optional for existing callers.
