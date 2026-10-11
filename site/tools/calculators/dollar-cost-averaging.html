@@ -50,7 +50,7 @@
 <link rel="icon" href="../../favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=d6d52074"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://www.mastermind-x.com/tools/index.html"},{"@type":"ListItem","position":3,"name":"Dollar-Cost Averaging (DCA) Calculator"}]}</script>
 
-<link rel="stylesheet" href="../../assets/css/f1bd9987.css?v=f1bd9987">
+<link rel="stylesheet" href="../../assets/css/449e4bdf.css?v=449e4bdf">
 
 <link rel="stylesheet" href="../../assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="../../product-nav-icons.css?v=093ad1ea">
@@ -94,6 +94,8 @@
           </div>
           <div class="public-nav-card-grid">
             <a class="public-nav-card" href="https://www.mastermind-x.com/research_vault.html"><i>R</i><span><strong><span class="l-en">Institutional Research</span><span class="l-zh">机构研报</span></strong><small><span class="l-en">Preview the latest three report summaries; full research and PDFs are available with Pro.</span><span class="l-zh">预览最新三篇研报摘要；完整研报与 PDF 为 Pro 专享。</span></small></span></a>
+            <a class="public-nav-card" href="../../glossary.html"><i>G</i><span><strong><span class="l-en">Glossary</span><span class="l-zh">词汇表</span></strong><small><span class="l-en">Every reading on the dashboards, in plain words.</span><span class="l-zh">用平实语言解释仪表盘上的每一项读数。</span></small></span></a>
+            <a class="public-nav-card" href="../../am_edition.html"><i>M</i><span><strong><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></strong><small><span class="l-en">Before the US open — tape, clock, regime and calendar.</span><span class="l-zh">美股开盘前 — 盘面、时钟、周期与日历。</span></small></span></a>
             <a class="public-nav-card" href="../../stocks/index.html"><i>S</i><span><strong><span class="l-en">Stock Dossiers</span><span class="l-zh">股票档案</span></strong><small><span class="l-en">Ticker pages for technical, fundamental, ownership and options context.</span><span class="l-zh">按股票整理的技术面、基本面、持仓与期权情况。</span></small></span></a>
             <a class="public-nav-card" href="../../stocks/earnings/index.html"><i>E</i><span><strong><span class="l-en">Earnings Intelligence</span><span class="l-zh">财报情报</span></strong><small><span class="l-en">Receipt-bound call records that lead directly into the ticker dossier.</span><span class="l-zh">可追溯的电话会记录，并可直接进入个股档案。</span></small></span></a>
           </div>
@@ -111,6 +113,7 @@
             <a class="public-nav-card" href="../../tools/index.html"><i>T</i><span><strong><span class="l-en">Free Tools</span><span class="l-zh">免费工具</span></strong><small><span class="l-en">Calculators for sizing, risk, returns and portfolios.</span><span class="l-zh">仓位、风险、回报与投资组合计算器。</span></small></span></a>
             <a class="public-nav-card" href="../../learn/index.html"><i>L</i><span><strong><span class="l-en">Learning Center</span><span class="l-zh">学习中心</span></strong><small><span class="l-en">Lessons on technicals, risk, options and filings.</span><span class="l-zh">技术分析、风险、期权与披露文件课程。</span></small></span></a>
             <a class="public-nav-card" href="../../blog/index.html"><i>B</i><span><strong><span class="l-en">Blog</span><span class="l-zh">博客</span></strong><small><span class="l-en">Plain-English articles on trading math and market mechanics.</span><span class="l-zh">关于交易数学与市场机制的朴素文章。</span></small></span></a>
+            <a class="public-nav-card" href="../../help.html"><i>H</i><span><strong><span class="l-en">Help</span><span class="l-zh">帮助</span></strong><small><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span> · <span class="l-en">Methodology</span><span class="l-zh">方法论</span> · <span class="l-en">Support</span><span class="l-zh">支持</span></small></span></a>
             <a class="public-nav-card" href="../../support.html"><i>?</i><span><strong><span class="l-en">Support</span><span class="l-zh">支持</span></strong><small><span class="l-en">Help with account, product and access questions.</span><span class="l-zh">账户、产品与访问问题的帮助入口。</span></small></span></a>
           </div>
         </div>
@@ -239,6 +242,10 @@
 <div class="calc-actions">
   <button class="gbtn" id="copy-result" type="button"><span class="l-en">Copy result</span><span class="l-zh">复制结果</span></button>
   <span class="copied" id="copied" role="status"><span class="l-en">Copied</span><span class="l-zh">已复制</span></span>
+  <div class="copy-fallback" id="copy-fallback" hidden>
+    <label class="copy-fallback-l" for="copy-fallback-text"><span class="l-en">Could not copy automatically. The text below is selected; press Ctrl+C or ⌘C to copy it.</span><span class="l-zh">未能自动复制。下方文字已选中，请按 Ctrl+C 或 ⌘C 复制。</span></label>
+    <textarea class="copy-fallback-t" id="copy-fallback-text" readonly rows="4" spellcheck="false"></textarea>
+  </div>
 </div>
 
     </section>
@@ -376,23 +383,99 @@
 (function(){
   "use strict";
 
+  var LIMIT = 1e15;
+
+  function parseNum(raw, unit){
+    var s = String(raw == null ? "" : raw).trim();
+    if(s === "") return {ok:false, why:"blank"};
+    if(unit === "pct") s = s.replace(/\s*%$/, "");
+    if(!/^[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d*)?$/.test(s) || !/\d/.test(s)) return {ok:false, why:"format"};
+    var v = Number(s.replace(/,/g, ""));
+    if(!isFinite(v)) return {ok:false, why:"range"};
+    return {ok:true, v:v};
+  }
+
+  function setBi(el, en, zh){
+    el.textContent = "";
+    var sEn = document.createElement("span");
+    sEn.className = "l-en";
+    sEn.textContent = en;
+    var sZh = document.createElement("span");
+    sZh.className = "l-zh";
+    sZh.textContent = zh;
+    el.appendChild(sEn);
+    el.appendChild(sZh);
+  }
+
+  function curLang(){ return document.documentElement.getAttribute("data-lang") === "zh" ? "zh" : "en"; }
+
+  function echoNum(v){ return Number(v).toLocaleString("en-US",{maximumFractionDigits:6}); }
+
+  function tryCopy(text){
+    return new Promise(function(resolve){
+      function legacy(){
+        var ok = false, ta = document.createElement("textarea");
+        ta.value = text; ta.setAttribute("readonly", ""); document.body.appendChild(ta); ta.select();
+        try { ok = document.execCommand("copy") === true; } catch(e){ ok = false; }
+        document.body.removeChild(ta); resolve(ok);
+      }
+      var cb = (typeof navigator !== "undefined") ? navigator.clipboard : null, p = null;
+      if (cb && typeof cb.writeText === "function") { try { p = cb.writeText(text); } catch(e){ p = null; } }
+      if (p && typeof p.then === "function") { p.then(function(){ resolve(true); }, legacy); return; }
+      legacy();
+    });
+  }
+
+  function showCopyFallback(box, ta, text){
+    ta.value = text;
+    box.hidden = false;
+    ta.rows = 4;
+    while (ta.scrollHeight > ta.clientHeight && ta.rows < 8) ta.rows = ta.rows + 1;
+    try { ta.focus({preventScroll: true}); } catch (e) { ta.focus(); }
+    ta.select();
+    ta.scrollTop = 0;
+    if (box.scrollIntoView) box.scrollIntoView({block: "center"});
+  }
+
+  function plainSentence(d){
+    return {
+      en: "Investing " + d.c + " across " + d.N + " buys projects to " + d.fv + " — " + d.invested + " invested plus " + d.gain + " of growth at this hypothetical rate.",
+      zh: "每期投入 " + d.c + "，共 " + d.N + " 次买入，预计增长至 " + d.fv + "——其中投入 " + d.invested + "，增长 " + d.gain + "（基于这一假设回报率）。"
+    };
+  }
+
+  function copyText(lang, d){
+    if(lang === "zh"){
+      return [
+        "Mastermind 定投计算器（假设情景）",
+        "输入：每期 " + d.contrib + " · " + d.freq + " · " + d.years + " 年 · 假设年化回报 " + d.rate + "%",
+        "结果：预估价值 " + d.fv + " · 总投入 " + d.invested + " · 增长 " + d.gain + "（本金回报率 " + d.ret + "）· 买入 " + d.buys + " 次"
+      ].join("\n");
+    }
+    return [
+      "Mastermind dollar-cost averaging calculator (hypothetical scenario)",
+      "Inputs: " + d.contrib + " per period · " + d.freq + " · " + d.years + " years · " + d.rate + "% assumed annual return",
+      "Result: " + d.fv + " projected value · " + d.invested + " invested · " + d.gain + " growth (" + d.ret + " on invested) · " + d.buys + " buys"
+    ].join("\n");
+  }
+
   // ── pure compute (DCA — ordinary annuity, end-of-period) ───────────────────
   // inputs: {c contribution, f periods/year, yrs years, r annualPct}. Returns
   // an outputs object, or {ok:false, msg} for invalid input. No NaN/Infinity.
   function compute(inp){
     var c=inp.c, f=inp.f, yrs=inp.yrs, r=inp.r;
-    if(!(c>0)) return {ok:false, msg:"Enter a contribution above zero."};
-    if(!(f>0)) return {ok:false, msg:"Pick how often you invest."};
-    if(!(yrs>0)) return {ok:false, msg:"Enter how many years you'll invest."};
-    if(!isFinite(r)) return {ok:false, msg:"Enter an expected annual return."};
+    if(!(c>0)) return {ok:false, field:"contrib", msg:{en:"Enter a contribution above zero.", zh:"请输入大于零的每期投入。"}};
+    if(!(f>0)) return {ok:false, msg:{en:"Pick how often you invest.", zh:"请选择投入频率。"}};
+    if(!(yrs>0)) return {ok:false, field:"years", msg:{en:"Enter how many years you'll invest.", zh:"请输入投入年数。"}};
+    if(!isFinite(r)) return {ok:false, field:"rate", msg:{en:"Enter an expected annual return.", zh:"请输入预期年化回报。"}};
     var N = Math.round(yrs * f);
-    if(!(N>0)) return {ok:false, msg:"That horizon is too short to make a single contribution."};
+    if(!(N>0)) return {ok:false, field:"years", msg:{en:"That horizon is too short to make a single contribution.", zh:"这个期限太短，连一次投入都无法完成。"}};
     var i = r / 100 / f;
     var fv = (i === 0) ? (c * N) : (c * (Math.pow(1 + i, N) - 1) / i);
     var invested = c * N;
     var gain = fv - invested;
     var returnPct = invested > 0 ? (100 * gain / invested) : 0;
-    if(!isFinite(fv) || !isFinite(gain)) return {ok:false, msg:"Those numbers are out of range — try a smaller horizon or return."};
+    if(!isFinite(fv) || Math.abs(fv) > LIMIT || !isFinite(gain) || Math.abs(gain) > LIMIT || !isFinite(invested) || Math.abs(invested) > LIMIT) return {ok:false, msg:{en:"Those numbers are out of range — try a smaller horizon or return.", zh:"这些数字超出可计算范围——请缩短年限或降低回报率。"}, overflow:true};
     return { ok:true, N:N, fv:fv, invested:invested, gain:gain, returnPct:returnPct };
   }
 
@@ -404,7 +487,7 @@
   (function selfCheck(){
     WORKED_EXAMPLES.forEach(function(ex, i){
       var got = compute(ex.in), w = ex.want, k;
-      if(!got.ok){ console.error("dollar-cost-averaging self-check "+i+": compute failed", got); return; }
+      if(!got.ok){ console.error("dollar-cost-averaging self-check "+i+": compute failed", got.msg.en); return; }
       for(k in w){ if(Math.abs(got[k] - w[k]) > 1 && got[k] !== w[k]){
         console.error("dollar-cost-averaging self-check "+i+" mismatch on "+k+": got "+got[k]+" want "+w[k]); } }
     });
@@ -417,21 +500,77 @@
     var freqWrap = $("freq");
     var outMain=$("out-main"), outPlain=$("out-plain"),
         outInv=$("out-invested"), outGain=$("out-gain"), outRet=$("out-return"), outBuys=$("out-buys"),
-        copyBtn=$("copy-result"), copied=$("copied");
+        copyBtn=$("copy-result"), copied=$("copied"),
+        copyFallback=$("copy-fallback"), copyFallbackText=$("copy-fallback-text");
+    var FIELD_ORDER = ["contrib","years","rate"];
+    var FIELD_UNITS = {contrib:"num", years:"num", rate:"pct"};
+    var FIELD_LABELS = {
+      contrib:{en:"Contribution per period", zh:"每期投入"},
+      years:{en:"Number of years", zh:"投入年数"},
+      rate:{en:"Expected annual return", zh:"预期年化回报"}
+    };
 
     var freq = 12; // default: monthly (matches the .on button)
 
-    function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
     function money0(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
     function dash(){ outMain.textContent="—";
       [outInv,outGain,outRet,outBuys].forEach(function(e){e.textContent="—"; e.className="";}); }
 
-    var last=null;
+    var last=null, lastInp=null;
+    var FREQ_LABELS = {12:{en:"Monthly", zh:"每月"}, 52:{en:"Weekly", zh:"每周"}, 4:{en:"Quarterly", zh:"每季"}};
     function render(){
-      var inp={ c:numFrom(els.contrib), f:freq, yrs:numFrom(els.years), r:numFrom(els.rate) };
+      if(copyFallback) copyFallback.hidden = true;
+      if(copyFallbackText) copyFallbackText.value = "";
+      var firstFail = null;
+      var parsed = {};
+      FIELD_ORDER.forEach(function(id){
+        var el = els[id];
+        var pn = parseNum(el.value, FIELD_UNITS[id]);
+        if(pn.ok){
+          parsed[id] = pn.v;
+          el.removeAttribute("aria-invalid");
+          el.removeAttribute("aria-describedby");
+        } else if(pn.why === "blank"){
+          parsed[id] = NaN;
+          el.removeAttribute("aria-invalid");
+          el.removeAttribute("aria-describedby");
+        } else {
+          parsed[id] = NaN;
+          el.setAttribute("aria-invalid", "true");
+          el.setAttribute("aria-describedby", "out-plain");
+          if(!firstFail) firstFail = {id:id, why:pn.why, el:el};
+        }
+      });
+      if(firstFail){
+        dash();
+        var lab = FIELD_LABELS[firstFail.id];
+        var ph = firstFail.el.getAttribute("placeholder") || "";
+        var en, zh;
+        if(firstFail.why === "format"){
+          en = lab.en + ": enter a number such as " + ph + ".";
+          zh = lab.zh + "：请输入数字，例如 " + ph + "。";
+        } else {
+          en = lab.en + ": that number is too large to calculate.";
+          zh = lab.zh + "：数字过大，无法计算。";
+        }
+        setBi(outPlain, en, zh);
+        outPlain.className = "co-plain warn";
+        last = {ok:false};
+        return;
+      }
+      var inp={ c:parsed.contrib, f:freq, yrs:parsed.years, r:parsed.rate };
       var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
+      if(!res.ok){
+        dash();
+        setBi(outPlain, res.msg.en, res.msg.zh);
+        outPlain.className = res.overflow ? "co-plain warn" : "co-plain";
+        if(res.field && isFinite(parsed[res.field])){
+          els[res.field].setAttribute("aria-invalid", "true");
+          els[res.field].setAttribute("aria-describedby", "out-plain");
+        }
+        return;
+      }
       outMain.textContent = money0(res.fv);
       outInv.textContent  = money(res.invested);
       outGain.textContent = money(res.gain);
@@ -439,11 +578,16 @@
       outRet.textContent  = res.returnPct.toFixed(res.returnPct<10 ? 1 : 0) + "%";
       outRet.className    = res.returnPct > 0 ? "pos" : (res.returnPct < 0 ? "neg" : "");
       outBuys.textContent = res.N.toLocaleString("en-US");
-      // Law 3: plain-word interpretation under the number
-      var plain = "Investing " + money0(inp.c) + " across " + res.N.toLocaleString("en-US") +
-        " buys projects to " + money0(res.fv) + " — " + money0(res.invested) +
-        " invested plus " + money0(res.gain) + " of growth at this hypothetical rate.";
-      outPlain.textContent = plain; outPlain.className="co-plain";
+      lastInp = {c:parsed.contrib, yrs:parsed.years, r:parsed.rate, f:freq};
+      var s = plainSentence({
+        c: money0(inp.c),
+        N: res.N.toLocaleString("en-US"),
+        fv: money0(res.fv),
+        invested: money0(res.invested),
+        gain: money0(res.gain)
+      });
+      setBi(outPlain, s.en, s.zh);
+      outPlain.className="co-plain";
     }
 
     // segmented frequency toggle
@@ -456,19 +600,37 @@
       });
     }
 
-    function copyLine(){
-      if(!last || !last.ok) return "";
-      return "DCA plan: " + money0(last.fv) + " projected · " + money0(last.invested) +
-        " invested · " + money0(last.gain) + " growth (" +
-        last.returnPct.toFixed(last.returnPct<10 ? 1 : 0) + "% on invested) — mastermind-x.com";
-    }
     copyBtn.addEventListener("click", function(){
-      var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      if(!last || !last.ok || !lastInp) return;
+      if(copyFallback) copyFallback.hidden = true;
+      copied.classList.remove("show");
+      var lang = curLang();
+      var fl = FREQ_LABELS[lastInp.f] || FREQ_LABELS[12];
+      var d = {
+        contrib: "$" + echoNum(lastInp.c),
+        freq: lang === "zh" ? fl.zh : fl.en,
+        years: echoNum(lastInp.yrs),
+        rate: echoNum(lastInp.r),
+        fv: outMain.textContent,
+        invested: outInv.textContent,
+        gain: outGain.textContent,
+        ret: outRet.textContent,
+        buys: outBuys.textContent
+      };
+      var text = copyText(lang, d);
+      tryCopy(text).then(function(ok){
+        if(ok){
+          copied.classList.add("show");
+          setTimeout(function(){ copied.classList.remove("show"); }, 1600);
+        } else {
+          if(copyFallbackText && copyFallback){
+            showCopyFallback(copyFallback, copyFallbackText, text);
+          }
+        }
+      });
     });
+
+    document.addEventListener("langchange", function(){ render(); });
 
     ["contrib","years","rate"].forEach(function(id){
       els[id].addEventListener("input", render);

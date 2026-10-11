@@ -381,7 +381,6 @@ html[data-lang="zh"] .est-title{letter-spacing:-.01em;}
   .est-cta-block{padding:18px; gap:14px;}
 }
 
-
   .cx-head{max-width:1120px; margin:20px auto 0; padding:0 24px;}
   .cx-shell{max-width:1120px; margin:22px auto 0; padding:0 24px;
     display:grid; grid-template-columns:minmax(0,1fr) 210px; gap:44px; align-items:start;}
@@ -470,16 +469,8 @@ html[data-lang="zh"] .est-title{letter-spacing:-.01em;}
   }
   @media (max-width:560px){ .calc-card{padding:16px 16px 18px;} }
 
-  /* compounding-specific: table + SVG curve — terminal treatment */
-  .cp-table-wrap{margin:20px 0 0; overflow-x:auto;}
-  .cp-table-wrap table{width:100%; border-collapse:collapse; font-family:var(--num);
-    font-size:var(--fs-sm); font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1;}
-  .cp-table-wrap th{font-family:var(--num); font-size:var(--fs-micro); font-weight:700; color:var(--ink-3);
-    text-transform:uppercase; letter-spacing:.08em; padding:7px 10px; text-align:right; border-bottom:1px solid var(--hair-strong);}
-  .cp-table-wrap th:first-child{text-align:left;}
-  .cp-table-wrap td{padding:6px 10px; text-align:right; border-bottom:1px solid var(--hair); color:var(--ink-1);}
-  .cp-table-wrap td:first-child{text-align:left; color:var(--ink-3);}
-  .cp-table-wrap td.pos-col{color:var(--up);}
-  .cp-curve-wrap{margin:20px 0 0; border-radius:var(--r-md); border:1px solid var(--hair-strong); overflow:hidden;}
-  .cp-curve-wrap svg{display:block; width:100%; height:auto; background:var(--panel2);}
+  .ci input[aria-invalid="true"]{border-color:var(--warn);}
+.copy-fallback{flex-basis:100%; margin:4px 0 0;}
+.copy-fallback-l{display:block; font-family:var(--font-ui); font-size:var(--fs-sm); color:var(--warn); margin:0 0 6px; line-height:1.4;}
+.copy-fallback-t{display:block; width:100%; box-sizing:border-box; font-family:var(--num); font-size:var(--fs-sm); line-height:1.5; color:var(--ink-1); background:var(--tile); border:1px solid var(--hair-strong); border-radius:var(--r-md); padding:9px 11px; resize:vertical;}
 
