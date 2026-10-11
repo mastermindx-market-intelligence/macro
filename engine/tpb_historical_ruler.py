@@ -386,6 +386,7 @@ def _safe_minute_points(record):
             or start % MINUTE_NS or end % MINUTE_NS):
         return False
     prior = -1
+    prior_oe = prior_total = Decimal(0)
     required = {
         "minute_index", "oe_shares", "consolidated_shares",
         "share", "qualified_prefix", "source_available_ns",
@@ -410,8 +411,10 @@ def _safe_minute_points(record):
                             "minute.consolidated", zero=True)
         except HistoricalRulerRefusal:
             return False
-        if oe > total or (total == 0 and point["qualified_prefix"]):
+        if (oe > total or oe < prior_oe or total < prior_total
+                or (total == 0 and point["qualified_prefix"])):
             return False
+        prior_oe, prior_total = oe, total
         with localcontext() as ctx:
             ctx.prec = 2*MAX_DECIMAL_WIDTH + 20
             expected = _fmt(oe/total) if total else None

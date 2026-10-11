@@ -387,6 +387,19 @@ def test_tampered_historical_minute_ratio_and_availability_are_quarantined():
     assert out2["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 1
 
 
+def test_historical_cumulative_counts_cannot_decrease_after_derived_tamper():
+    current = measured()
+    previous = history(4)
+    forged = copy.deepcopy(previous[0])
+    forged["minute_points_private_only"][1]["oe_shares"] = "1"
+    forged["minute_points_private_only"][1]["share"] = "0.005"
+    previous[0] = forged
+    result = calibrate_history(
+        target=current, previous=previous, minute_index=30,
+        evaluation_ns=END+90_000_000_000, min_history=3)
+    assert result["excluded_previous"]["HISTORICAL_SOURCE_UNQUALIFIED"] == 1
+
+
 def test_tampered_target_minute_ratio_rejected_before_calibration():
     value = measured()
     value["minute_points_private_only"][0]["share"] = "1.3"
