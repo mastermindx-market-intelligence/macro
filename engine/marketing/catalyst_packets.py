@@ -14,7 +14,7 @@ import ipaddress
 import math
 import re
 from typing import Callable, Mapping, Sequence
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
 
@@ -38,6 +38,14 @@ _INVALIDATOR_COPY = {
     "filing_corrected": "The issuer corrects the cited figures",
     "relationship_disproved": "The documented relationship is disproved",
 }
+_PRIVATE_URL_KEYS = frozenset({
+    "email", "e_mail", "phone", "ip", "token", "access_token", "auth",
+    "authorization", "api_key", "apikey", "secret", "session", "user_id",
+    "session_id", "signature", "password", "credential", "client_secret",
+    "jwt", "bearer",
+})
+_URL_EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", re.I)
+
 _RELATION_COPY = {
     "supplier": "Documented supplier relationship",
     "customer": "Documented customer relationship",
@@ -65,6 +73,9 @@ class PublicSourceGrant:
     display_link: bool
     display_title: bool
     display_facts: bool
+    # EXACT owner-approved document URL, not a filing-level allow-all.
+    # Default is empty to keep older callers fail-closed.
+    document_url: str = ""
 
 
 RightsResolver = Callable[[str, datetime], PublicSourceGrant | None]
@@ -124,6 +135,43 @@ def _safe_url(raw: object, *, sec_only: bool) -> str | None:
         return None
     if port not in (None, 443) or any(ch.isspace() for ch in raw):
         return None
+    # Every PUBLIC_READY packet can be consumed outside the HTTP serializer.
+    # Unwrap nested query/fragment encoding before allowing a link to leave
+    # the source boundary; refuse ambiguous excessive encoding and URL PII.
+    decoded = raw
+    for _ in range(4):
+        try:
+            parts = urlsplit(decoded)
+        except ValueError:
+            return None
+        fields = (parse_qsl(parts.query, keep_blank_values=True) +
+                  parse_qsl(parts.fragment, keep_blank_values=True))
+        if any(key.strip().lower().replace("-", "_") in _PRIVATE_URL_KEYS
+               for key, _ in fields):
+            return None
+        if (_URL_EMAIL.search(decoded) or
+                any(ord(c) < 32 or ord(c) == 127 for c in decoded)):
+            return None
+        expanded = unquote(decoded)
+        if expanded == decoded:
+            break
+        decoded = expanded
+    else:
+        if unquote(decoded) != decoded:
+            return None
+    # A fourth decoding pass may reveal a private key in the final string.
+    # Scan it too, even if a fifth decode would make no further change.
+    try:
+        final = urlsplit(decoded)
+    except ValueError:
+        return None
+    final_fields = (parse_qsl(final.query, keep_blank_values=True) +
+                    parse_qsl(final.fragment, keep_blank_values=True))
+    if any(key.strip().lower().replace("-", "_") in _PRIVATE_URL_KEYS
+           for key, _ in final_fields):
+        return None
+    if _URL_EMAIL.search(decoded) or any(ord(c) < 32 or ord(c) == 127 for c in decoded):
+        return None
     host = url.hostname.lower()
     if host in {"localhost", "localhost.localdomain"} or host.endswith((".local", ".internal")):
         return None
@@ -141,14 +189,16 @@ def _safe_url(raw: object, *, sec_only: bool) -> str | None:
     return raw
 
 
-def _allowed(source_id: str, resolver: RightsResolver, now: datetime) -> PublicSourceGrant | None:
+def _allowed(source_id: str, document_url: str, resolver: RightsResolver, now: datetime) -> PublicSourceGrant | None:
     try:
         grant = resolver(source_id, now)
     except Exception:  # a missing/degraded rights owner is denial, not authority
         return None
     if not isinstance(grant, PublicSourceGrant):
         return None
-    if (grant.source_id != source_id or grant.audience != PUBLIC_AUDIENCE
+    if (grant.source_id != source_id or grant.document_url != document_url
+            or not isinstance(grant.document_url, str) or not grant.document_url
+            or grant.audience != PUBLIC_AUDIENCE
             or not isinstance(grant.receipt_id, str)
             or not 0 < len(grant.receipt_id.strip()) <= 128
             or not isinstance(grant.owner_ref, str) or not grant.owner_ref.strip()
@@ -323,9 +373,10 @@ def build_event_packet(
         if isinstance(ids, (list, tuple)):
             attested_evidence[sid] = {i for i in ids if isinstance(i, str) and _SOURCE_ID.fullmatch(i)}
         url = _safe_url(entry.get("url"), sec_only=earnings and sid == primary_source_id)
-        grant = _allowed(sid, rights_resolver, now)
+        grant = _allowed(sid, url, rights_resolver, now) if url is not None else None
         if url is None or grant is None:
             blocked.add(sid)
+            accepted.pop(sid, None)
             continue
         if sid in accepted:
             # One source ID cannot alias differing title/URL/publication data.

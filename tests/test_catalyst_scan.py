@@ -26,10 +26,18 @@ RAW = {"source": "edgar_8k_202", "filing_key": K, "cik": 78003,
        "private_raw_vendor_story": "PRIVATE BODY 21"}
 
 
+# Explicit TEST-ONLY per-document approvals; no event can grant itself rights.
+GRANTED_DOCUMENTS = {
+    PRIMARY: RAW["source_url"],
+    "rel_src_1": "https://example.com/fictional",
+}
+
+
 def resolver(sid, now):
     return PublicSourceGrant(sid, "fixture-receipt:" + sid, "fixture-rights-owner",
                              "public_anonymous", NOW - timedelta(days=2),
-                             NOW + timedelta(days=2), True, True, True)
+                             NOW + timedelta(days=2), True, True, True,
+                             document_url=GRANTED_DOCUMENTS.get(sid, ""))
 
 
 def packet(**changes):

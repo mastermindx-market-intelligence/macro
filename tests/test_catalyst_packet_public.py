@@ -38,7 +38,9 @@ def universe():
             "OUT": {"issuer_id": "cik:0000999999", "supported": False}}
 
 
-def grants(*, audience="public_anonymous", expires=None, allowed=True):
+def grants(*, audience="public_anonymous", expires=None, allowed=True, documents=None):
+    # TEST-ONLY source-rights map: this is never derived from a live event.
+    permitted_documents = {SEC_ID: SEC_URL, **(documents or {})}
     def resolve(sid, now):
         if not allowed:
             return None
@@ -46,13 +48,24 @@ def grants(*, audience="public_anonymous", expires=None, allowed=True):
             source_id=sid, receipt_id="fixture-rights:" + sid, owner_ref="test-owner-only",
             audience=audience, effective_at_utc=NOW - timedelta(days=2),
             expires_at_utc=expires or NOW + timedelta(days=2),
-            display_link=True, display_title=True, display_facts=True)
+            display_link=True, display_title=True, display_facts=True,
+            document_url=permitted_documents.get(sid, ""))
     return resolve
 
 
 def build(raw=None, **kwargs):
+    # In fixtures only, explicitly grant rights for listed test documents.
+    # Real callers MUST obtain each document scope from the incumbent owner.
+    documents = {
+        row["source_id"]: row["url"] for row in kwargs.get("source_refs", ())
+        if isinstance(row, dict) and isinstance(row.get("source_id"), str)
+        and isinstance(row.get("url"), str)
+    }
+    resolver = kwargs.pop("rights_resolver", None)
+    if resolver is None:
+        resolver = grants(documents=documents)
     return build_event_packet(raw or event(), issuers=universe(),
-                              rights_resolver=kwargs.pop("rights_resolver", grants()),
+                              rights_resolver=resolver,
                               as_of=kwargs.pop("as_of", NOW), **kwargs)
 
 
@@ -251,3 +264,125 @@ def test_source_titles_and_identifiers_respect_session_00_public_limits():
     p = build(source_refs=[too_long_title, too_long_id])
     assert p["public_safe"] is True
     assert len(p["sources"]) == 1
+
+
+# Stage-A independent negative findings, original Session 01 carrier only.
+SEC_EXHIBIT_URL = ("https://www.sec.gov/Archives/edgar/data/78003/"
+                   "000007800326000094/pfe-6282026xex99.htm")
+
+
+def test_same_filing_grant_does_not_authorize_another_exhibit():
+    approved = build()
+    assert approved["public_disposition"] == "PUBLIC_READY"
+    other_document = build({**event(), "source_url": SEC_EXHIBIT_URL})
+    assert other_document["public_disposition"] == "BLOCKED_PUBLIC"
+    assert other_document["public_safe"] is False
+    assert other_document["sources"] == other_document["what_changed"] == []
+    assert SEC_EXHIBIT_URL not in str(other_document)
+    # Same filing identifier, separate independently scoped owner approval.
+    individually_approved = build(
+        {**event(), "source_url": SEC_EXHIBIT_URL},
+        rights_resolver=grants(documents={SEC_ID: SEC_EXHIBIT_URL}),
+    )
+    assert individually_approved["public_disposition"] == "PUBLIC_READY"
+    assert individually_approved["sources"][0]["url"] == SEC_EXHIBIT_URL
+    assert individually_approved["event_id"] == approved["event_id"]
+
+
+def test_missing_document_binding_and_wrong_issuer_grant_fail_closed():
+    from dataclasses import replace
+
+    def no_document(sid, now):
+        return replace(grants()(sid, now), document_url="")
+    denied = build(rights_resolver=no_document)
+    assert denied["public_disposition"] == "BLOCKED_PUBLIC"
+    assert denied["sources"] == denied["what_changed"] == []
+
+    def wrong_document(sid, now):
+        return replace(grants()(sid, now), document_url=SEC_EXHIBIT_URL)
+    denied = build(rights_resolver=wrong_document)
+    assert denied["public_disposition"] == "BLOCKED_PUBLIC"
+    assert not denied["sources"]
+
+
+def test_corrected_document_requires_new_rights_receipt():
+    prior = build()
+    altered_event = {**event(), "source_url": SEC_EXHIBIT_URL,
+                     "correction_generation": 1, "revision_status": "corrected",
+                     "supersedes_generation": 0,
+                     "correction_reason": "official_amendment"}
+    denied = build(altered_event)
+    assert denied["generation"] == 1
+    assert denied["event_id"] == prior["event_id"]
+    assert denied["public_disposition"] == "BLOCKED_PUBLIC"
+    assert denied["what_changed"] == []
+    admitted = build(altered_event, rights_resolver=grants(documents={
+        SEC_ID: SEC_EXHIBIT_URL,
+    }))
+    assert admitted["public_disposition"] == "PUBLIC_READY"
+    assert admitted["correction_state"] == "CORRECTED"
+
+
+@pytest.mark.parametrize("private_key", [
+    "token", "email", "api_key", "session_id", "client_secret", "user_id",
+    "authorization", "jwt",
+])
+@pytest.mark.parametrize("encoded_depth", [0, 1, 2, 4, 8])
+def test_private_encoded_source_parameter_never_reaches_public_packet(
+    private_key, encoded_depth,
+):
+    from urllib.parse import quote
+    injected = f"&{private_key}=fixture_private_value"
+    for _ in range(encoded_depth):
+        injected = quote(injected, safe="")
+    private_url = SEC_URL + "?ref=ok" + injected
+    # Even a resolver returning an exact matching grant must not be able to
+    # turn a recipient secret into an otherwise PUBLIC_READY source URL.
+    result = build({**event(), "source_url": private_url},
+                   rights_resolver=grants(documents={SEC_ID: private_url}))
+    assert result["public_safe"] is False
+    assert result["public_disposition"] == "BLOCKED_PUBLIC"
+    assert result["what_changed"] == []
+    assert result["sources"] == []
+    assert "fixture_private_value" not in str(result)
+
+
+@pytest.mark.parametrize("private_url", [
+    SEC_URL + "#token=fixture_private_value",
+    SEC_URL + "?contact=reader%40example.com",
+    SEC_URL + "?ref=ok%26token%3Dfixture_private_value",
+    SEC_URL + "?access%255Ftoken=fixture_private_value",
+    SEC_URL + "?ref=ok%2526session%255Fid%253Dfixture_private_value",
+    SEC_URL + "?ref=%0d%0aAuthorization%3Asecret",
+])
+def test_url_fragment_email_and_nested_encoded_identity_denied(private_url):
+    result = build({**event(), "source_url": private_url},
+                   rights_resolver=grants(documents={SEC_ID: private_url}))
+    assert result["public_disposition"] == "BLOCKED_PUBLIC"
+    assert result["sources"] == result["what_changed"] == []
+
+
+@pytest.mark.parametrize("public_url", [
+    SEC_URL,
+    SEC_URL + "?download=1",
+    SEC_EXHIBIT_URL,
+    SEC_EXHIBIT_URL + "#page=2",
+])
+def test_normal_sec_urls_remain_eligible_with_individual_grant(public_url):
+    result = build({**event(), "source_url": public_url},
+                   rights_resolver=grants(documents={SEC_ID: public_url}))
+    assert result["public_disposition"] == "PUBLIC_READY"
+    assert result["sources"][0]["url"] == public_url
+
+
+def test_real_edgar_shape_without_separately_attested_publication_fails_closed():
+    raw = event()
+    raw.pop("publication_time_utc")
+    # The actual incumbent edgar_earnings_wire.build_event lacks that clock.
+    # Its processing "when" and SEC acceptance MUST NOT become publication.
+    raw["when"] = "2026-08-04T11:03:10"
+    result = build(raw, rights_resolver=grants())
+    assert result["publication_time_utc"] is None
+    assert "publication_time_not_attested" in result["missing_data"]
+    assert result["public_disposition"] == "BLOCKED_PUBLIC"
+    assert not result["sources"] and not result["what_changed"]
