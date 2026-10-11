@@ -139,3 +139,28 @@ def test_altered_capture_clock_in_manifest_is_refused(view):
     file.write_text(json.dumps(manifest))
     with pytest.raises(TiingoViewRefusal, match="lineage"):
         read_research_view(source, day, digest, root=root, check_mount=False)
+
+
+
+def test_research_reader_rejects_older_projection_schema(view):
+    root, source, day, digest = view
+    file = root / "manifests" / source / day / (digest + ".json")
+    meta = json.loads(file.read_text()); meta["view_schema"] = "mastermind.tiingo.research_views.v1"
+    file.write_text(json.dumps(meta))
+    with pytest.raises(TiingoViewRefusal, match="schema"):
+        read_research_view(source, day, digest, root=root, check_mount=False)
+
+
+def test_research_reader_schema_is_pinned_per_row_not_just_manifest(view):
+    import hashlib
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    root, source, day, digest = view
+    file = root / "manifests" / source / day / (digest + ".json")
+    meta = json.loads(file.read_text()); artifact = root / meta["output_path"]
+    data = pq.read_table(artifact).to_pylist()
+    data[0]["source_view_schema"] = "mastermind.tiingo.research_views.v1"
+    pq.write_table(pa.Table.from_pylist(data), artifact)
+    meta["output_sha256"] = hashlib.sha256(artifact.read_bytes()).hexdigest(); file.write_text(json.dumps(meta))
+    with pytest.raises(TiingoViewRefusal, match="lineage"):
+        read_research_view(source, day, digest, root=root, check_mount=False)

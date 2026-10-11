@@ -3,7 +3,8 @@
 A source digest + capture date selects exactly one immutable vendor vintage.
 Default purpose is INSPECTION, not a backtest or live canonical API.
 RETROSPECTIVE_EXPLORATORY requires an explicit hindsight acknowledgement;
-PIT_BACKTEST requires prior owner admission in the exact artifact manifest.
+PIT_BACKTEST is always refused here; only a separately admitted canonical
+Data OS reader may supply it. Local manifest flags grant no such authority.
 No model/ranking/trading publication pathway is added by this module.
 """
 from __future__ import annotations
@@ -17,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from collectors.tiingo_archive import DEFAULT_ARCHIVE, SOURCES, require_external_root
+from lib.dataos.tiingo_views import SCHEMA_VERSION
 
 SHA = re.compile(r"^[0-9a-f]{64}$")
 PURPOSES = frozenset({"INSPECTION", "RETROSPECTIVE_EXPLORATORY", "PIT_BACKTEST"})
@@ -116,6 +118,8 @@ def read_research_view(source: str, day: str, sha256: str, *,
         manifest = json.loads(manifest_file.read_text())
     except (ValueError, OSError) as exc:
         raise TiingoViewRefusal("invalid source manifest") from exc
+    if not isinstance(manifest, dict) or manifest.get("view_schema") != SCHEMA_VERSION:
+        raise TiingoViewRefusal("unsupported research view schema; read-only refusal, no migration")
     expected = (Path("normalized") / rel).as_posix()
     if (manifest.get("source_sha256") != sha256
             or manifest.get("output_path") != expected
@@ -145,6 +149,7 @@ def read_research_view(source: str, day: str, sha256: str, *,
     if (len(rows) != manifest.get("rows")
             or manifest.get("source_observed_at_utc") != observed
             or any(row.get("source_sha256") != sha256
+                   or row.get("source_view_schema") != SCHEMA_VERSION
                    or row.get("pit_backtest_eligible") is not False
                    or row.get("dataos_identity_admitted") is not False
                    or row.get("source_observed_at_utc") != observed for row in rows)):

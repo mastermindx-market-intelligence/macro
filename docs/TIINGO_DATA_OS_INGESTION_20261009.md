@@ -275,124 +275,148 @@ The read-only corpus audit and additional-history projections are now implemente
 and verified below. Authentication and the refused collector rewrite remain held;
 no worker is delegated those denied effects. No live collector has been started.
 
-## Cumulative execution checkpoint — 2026-10-09 latest continuation
+## Cumulative execution checkpoint — 2026-10-10 read-side continuation
 
-**MISSION_COMPLETE: false. Production activation remains held.**
-Same carrier: Macro PR #8698, branch `sol/tiingo-data-archive-20261009`, worktree
+**MISSION_COMPLETE: false. Live ingestion, unrestricted backfill and production
+activation remain held.** Same carrier: Macro PR #8698,
+`sol/tiingo-data-archive-20261009`, worktree
 `/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009`.
-This continuation began at `4be63058e8514c3f536547b5547d2d5fef4adec4` and published
-its public-catalogue/planning milestone at
-`c7c719ea5e882398f4d197443e0467e565ef8871`. The commit containing this checkpoint
-is the cumulative source revision; its exact head is read back from PR #8698.
-Protected source remains Mastermind `326c8469a21d7f50fc9ecb1848196bf1c6e66685`,
-skillpack 1.0.1 / bootstrap 1. These repository changes grant no new authority.
+This continuation started from published
+`4a2979e1839ce2c7bb07f65af7b4e85e95ee332b`; no replacement branch was created.
+The commit containing this checkpoint is the cumulative source revision, verified
+by the same PR's exact-head readback. Protected Mastermind procedure remains
+`326c8469a21d7f50fc9ecb1848196bf1c6e66685`, skillpack 1.0.1 / bootstrap 1.
+The same immutable ACTIVE_EXECUTION and SESSION_RELIABILITY blobs were reconciled;
+no source law, source custody, admission or permission fence was changed.
 
-### Delivered independent capabilities
+### Accepted scope and preserved earlier capabilities
 
-The public reference ZIP and bounded catalogue census are physically retained
-on the external volume, with a checksum-bound report in this PR. Exact-request
-planning now has ex-date filters, explicit FX/crypto minute resolution, explicit
-IEX historical volume columns, bounded multi-symbol groups and digest-bound
-offline paging. That paging is navigation, not durable import progress.
+The official public catalogue, its census, bounded offline request planning,
+permaTicker acquisition cohorts, nine added historical projectors and read-only
+corpus audit remain on this carrier. Earlier catalogue/acquisition facts remain
+in the sections above and `research/tiingo/2026-10-09/` evidence files. A catalogue
+record is not downloaded price history, account endpoint access, or a historical
+survivorship-safe universe. All **24 Tiingo Data OS contracts remain PROPOSED**.
+News Intelligence still belongs to separate carrier #8697; nothing was moved into
+an alternative news, identity, publisher, execution or scheduler owner.
 
-Nine additional historical product projections now feed the EXISTING Parquet
-materializer and research reader: BOATS bars, IEX bars, equity intraday reference
-bars, FX bars, crypto bars, splits, distributions, fund-fee history and distribution
-yield. New intraday prices use `vendor_open/high/low/close`, not a falsely admitted
-raw/adjusted execution basis. FX/crypto volume units, source time text, currencies,
-venue scope, cancellation status, declaration/payment/record/ex dates, nulls and
-zero remain explicit. No new split factors are applied and no forecast, trading,
-ranking or point-in-time admission is introduced. News remains with #8697.
+This continuation was limited to the existing pure research projectors,
+read-only research consumer, read-only corpus auditor, their existing test suites,
+and this checkpoint/evidence. The core collector, live ingestion script,
+materializer and 11 failing producer regression cases are byte-identical to the
+starting revision. No rejected collector rewrite was recreated in another file,
+no provider call was made, and no raw or normalized production data was written.
 
-Eighteen additive source/research contracts for these nine products are registered
-under the existing Data OS registry. All **24 Tiingo contracts remain PROPOSED**.
-Each research contract has the corresponding raw dataset input and named existing
-reader/producer; fixture success never marks a production dataset as PRODUCED.
+### Read-side capability changes
 
-`scripts/tiingo_corpus_audit.py` is a read-only, bounded exact-plan comparison
-against raw receipts. It distinguishes missing, invalid, empty, captured,
-out-of-range/partial and conflicting-latest responses; verifies source bytes and
-request context; counts crypto bars instead of top-level pairs; keeps observation
-cutoffs and revisions explicit; reports partial scans and never certifies complete
-history, source authenticity or point-in-time eligibility. It does not repair or
-write any source artifact, invoke the vendor, read a key, create an import queue
-or replace the canonical Data OS reader.
+- EOD/fundamental views now reject malformed strings, booleans, non-finite
+  numbers and nonzero values that underflow to zero, instead of quietly treating
+  them as absent or valid numeric observations. Explicit nulls, actual zero,
+  negative financial results and new numeric metric names remain supported.
+- Share volumes retain exact int64 values, including decimal/exponent JSON
+  representations above float64's exact-integer range. Raw and vendor-adjusted
+  prices remain separate; neither becomes an executable or PIT price authority.
+- Statement fiscal years/quarters, release dates, metric identifiers, explicit
+  values and duplicate release/period/section/metric keys are checked. Quarter 0
+  is preserved for annual statements; different release vintages stay distinct.
+  Invalid or duplicate asReported query selections are refused, never guessed.
+- Daily fundamental identity fields are no longer misclassified as numeric
+  metrics. Explicit response identity mismatches are refused, while an exact
+  vendor permaTicker request can retain a different display ticker without
+  inventing a canonical historical alias.
+- Duplicate JSON fields and malformed date/time components are rejected by the
+  pure readers. Original date labels, timezone offsets and nanosecond text are
+  retained. Dates are not silently converted into historical availability clocks.
+- The common view contract is now `mastermind.tiingo.research_views.v2`.
+  The research reader rejects legacy/mismatched view schemas in manifests and
+  rows, even when file checksums have been recomputed. This is **refusal, not
+  migration**: the unchanged materializer may still report an older artifact as
+  existing, and that artifact is not thereby eligible for this reader.
+- Corpus-audit v2 does not hide a newer invalid response behind an older valid
+  one. It distinguishes INVALID_LATEST_CAPTURE, INVALID_UNORDERED_CAPTURE and
+  UNCONFIRMED_LATEST_PARTIAL_SCAN. An older invalid response does not erase a
+  valid later capture, and after-cutoff observations remain excluded. The audit
+  shares strict source-date semantics with the views, still writes nothing,
+  and explicitly does not claim field-semantic or full-history validation.
 
-### Actual storage observation
+Direct work was retained as PRINCIPAL_JUDGMENT for this bounded source-schema
+interpretation and regression repair. No worker was assigned the denied collector
+or credential effect. Public primary references were rechecked:
 
-At `2026-10-09T20:59:39.677788+00:00`, a read-only audit found that the intended
-`/Volumes/Mastermind/market-data/tiingo` archive did not exist. An illustrative
-six-symbol request plan (AMD, NVDA, INTC, MU, SPY, QQQ; 2000-01-01 through
-2026-10-08) had **174 requests NOT_FOUND**: 162 EOD chunks, six fundamental
-statement requests and six daily-fundamental requests. This sample is NOT a
-claim that all those products are entitled/covered for each symbol, or a limit
-on the user-requested full historical universe. There were no price/fundamental
-receipts at the target. The audit created no archive directory.
-Report: `research/tiingo/2026-10-09/CORPUS_AUDIT.json`.
+- https://www.tiingo.com/documentation/end-of-day — volume type and distinct raw
+  versus adjusted fields.
+- https://www.tiingo.com/documentation/fundamentals — quarter 0 annual reporting,
+  dynamic metric codes, report release labels and as-reported/restated dimensions.
 
-### Verification and remaining red gates
+These references establish public schemas, not this account's active endpoint
+entitlements or actual historical payload quality.
 
-- `PYTHONDONTWRITEBYTECODE=1 TMPDIR=/Volumes/Mastermind/agent-workspaces/tmp
-  python3 -m pytest tests/test_tiingo_*.py tests/test_dataos_registry.py -q
-  --tb=no --disable-warnings`: **187 passed, 11 failed**, process 93812 exit 1.
-  The 11 failures are the pre-existing active ingestion-integrity regressions,
-  not failures waived/hidden to publish a green result. All added projections,
-  audit/planner and registry tests passed in this full run.
-- `python3 -m pytest tests/test_check_script_import_pinning.py -q --tb=short
-  --disable-warnings`: **11 passed**, process 97370. Direct external-directory
-  `--help` for the reference and corpus audit CLIs succeeded; no source calls ran.
-- Existing `dataos-prospective-reference` scope inference: **46 concrete
-  dependencies, zero uncovered paths**. Existing unrun-suite census: **zero
-  unwired Tiingo suites and zero other unwired suites** in the observed tree.
-  Process 95803 exit 0. New suites are wired to the existing pyarrow-capable lane;
-  the deliberately thin foundation lane and all release fences are unchanged.
-- The core collector is unchanged. `collect`, `boats_stream` and
-  `boats_subscribe_message` function text is byte-identical to the pre-resume
-  `4be63058...` version. Process 95803 verified these assertions.
-- These are local proof and public-reference evidence. Full required hosted CI,
-  independent review and production acceptance are NOT claimed.
+### Verification and observed effects
+
+Current evidence: `research/tiingo/2026-10-10/READ_SIDE_VERIFICATION.json`.
+The prior verification artifact remains a historical receipt, not overwritten.
+
+- Full `tests/test_tiingo_*.py tests/test_dataos_registry.py` run: **266 passed,
+  11 failed; pytest exit 1**. The same 11 failures remain active producer/context
+  integrity gates. No test was skipped, marked xfail or waived to create a green
+  result. The new cases include failure reproductions and valid controls.
+- The first EOD/fundamental-quality regression run reproduced 49 failing cases;
+  subsequent read-schema/date checks reproduced five more, and the independent
+  audit-order cases reproduced four. They describe related defects and controls,
+  not a claim of that many independent root causes.
+- Final all-suite log:
+  `/Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-all-final.log`,
+  SHA-256 `1e1fe5e019ac2f4ebcb0cbe9fad009ed5ecff795922dfaf3df837d6e10aaefc8`.
+- Existing import-pin and CI dependency/unwired-suite checks are recorded in the
+  current evidence JSON with exact results. No new CI job or scheduling mechanism
+  was created; the deliberately thin foundation lane is unchanged.
+- Hosted CI for the starting head reproduced the 11 known Tiingo failures in
+  run 37990949442, job 114025209580. Job 114025209832 separately failed the live
+  quote board-cap tests, outside this scoped change. No test waiver or unrelated
+  source edit was used to bypass either. New-head hosted CI and independent
+  review are still not accepted.
+- The production archive was still absent at the read-only check in this
+  continuation. Earlier six-symbol/174-request absence evidence is preserved;
+  no new vendor corpus, fresh prices, active websocket, collector or background
+  import is claimed.
 
 ### Source defects and permission boundaries, preserved exactly
 
-Eleven active red cases still cover body-only normalized keys aliasing different
-tickers/query contexts; corrupt existing raw/normalized files accepted as present;
-naive/invalid capture clocks; prefix-only rather than exact endpoint-context
-checking; and missing source-observation context binding. The research reader
-quarantines ambiguous content and always refuses PIT_BACKTEST, but does not repair
-the producer. An unrestricted backfill is NOT safe yet.
+The producer still needs context-bound output identity, corruption handling,
+strict capture-clock and exact-request checks; the normalized writer can still
+alias identical bytes from different ticker/query contexts. Pure-reader
+quarantine/schema checks do not repair those source writers. Full resumable
+acquisition and actual history/coverage/retention remain unproven.
 
-The earlier authenticated Tiingo probe was explicitly refused by the connected
-tool safety boundary before dispatch. It was NOT a Tiingo 401/403 and proves
-nothing about the supplied key or subscription. The earlier rewrite of
-`collectors/tiingo_archive.py` was separately refused before dispatch. Its unchanged
-SHA-256 is `1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d`.
-Neither effect was replayed, delegated or reconstructed through a different
-carrier or fragmented patch. No routine Continue, new chat, mode change or user
-reattestation is treated as permission to bypass a denial. No mechanism for lifting
-these platform restrictions has been established in this session.
-
-The Chairman's live Business Advanced/full-redistribution attestation remains
-recorded. It is not being reopened as a purchase or blanket approval request.
-Endpoint activation, historical coverage/availability, storage capacity, source
-identity/quality and runtime/publication proof remain separate technical checks.
+The earlier authenticated Tiingo probe and rewrite of
+`collectors/tiingo_archive.py` were separately refused by tool safety controls
+before dispatch. Both were already reconciled as unapplied. No new attempt at
+either effect occurred in this continuation. The core file remains SHA-256
+`1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d`.
+These are not Tiingo 401/403 responses and establish no key/subscription failure.
+No mechanism for lifting the exact platform restrictions has been established;
+routine Continue, renewed ordinary approval, mode/chat change or another carrier
+is not treated as clearance. The Chairman's Business Advanced/full-redistribution
+attestation is preserved without requesting a new purchase or blanket approval.
 
 ### Next dependency and stop frontier
 
-The next critical implementation is the exact producer/context-integrity repair,
-which remains blocked by the preserved collector-write restriction. It must be
-resolved through a genuinely permitted controlling path, with all red cases
-passing and required independent review/CI, before source activation. The separate
-authenticated-probe restriction must then be resolved before endpoint/BOATS
-qualification, earliest-history census, measured storage pilot, full resumable
-backfill and canonical UI/machine consumer activation.
+The independently permitted read-side quality work is saved. The next useful
+critical effect remains repair of the blocked source writer; further activation
+requires the separate authenticated-probe path, exact-candidate CI/review,
+actual BOATS and history qualification, measured storage pilot, full resumable
+backfill and canonical machine/user consumer proof. Repeating unchanged tests or
+adding another catalogue/planning artifact does not unlock that dependency.
 
-The source writer, vendor calls and production enrollment remain the limiting
-lanes; further source-derived consumer proof requires real qualified captures.
-No active child, live collector, scheduled task or background import exists. All
-known modifying effects belong to this same PR/worktree and will be reconciled by
-exact commit readback. The worktree is retained for continuation, not released.
+Preserve the exact blocked effects until a genuinely permitted resolution exists;
+no alternate-file implementation, alternate tool/account/provider, delegated
+replay or source replacement may obtain the denied effect. No active child,
+scheduled task, live collector or background reasoning exists. The same worktree
+is retained, not released. Known source writes and publication are reconciled by
+exact commit/PR readback before final reporting.
 
-DO_NOT_REDO: no new Tiingo branch/key, replay of denied effects, waived integrity
-failures, claimed history from a catalogue, today's membership projected into past
-universes, silent source replacement, or promotion from code/tests to PROVEN_LIVE.
-Preserve the separate #8697 news owner and all 24 PROPOSED registry dispositions.
+DO_NOT_REDO: do not recreate the branch/key, retry denied actions, waive the 11
+producer regressions, overwrite prior evidence, infer complete history from the
+catalogue, promote current membership to a historical universe, or call these
+fixture-verified research readers PROVEN_LIVE. Keep the PR draft and the 24
+registry entries PROPOSED until real acceptance evidence exists.

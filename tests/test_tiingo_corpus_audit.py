@@ -169,3 +169,59 @@ def test_naive_observation_cutoff_is_not_implicitly_utc(lake):
 def test_duplicate_expected_requests_are_not_double_counted(lake):
     with pytest.raises(ValueError):
         audit(lake, [task(), task()])
+
+
+
+def test_invalid_newest_capture_cannot_fall_back_to_older_valid_response(lake):
+    saved(lake, task(), [{"date": "2020-01-01", "close": 1}], at="2026-10-09T10:00:00Z")
+    saved(lake, task(), {"detail": "malformed latest response"}, at="2026-10-09T11:00:00Z")
+    out = audit(lake)
+    assert out["request_status_counts"] == {"INVALID_LATEST_CAPTURE": 1}
+    assert out["requests"][0]["latest_capture"] is None
+
+
+def test_invalid_capture_at_latest_tie_prevents_a_clean_winner(lake):
+    saved(lake, task(), [{"date": "2020-01-01", "close": 1}])
+    saved(lake, task(), {"detail": "bad"})
+    assert audit(lake)["request_status_counts"] == {"INVALID_LATEST_CAPTURE": 1}
+
+
+def test_older_invalid_response_does_not_hide_a_valid_later_vintage(lake):
+    saved(lake, task(), {"detail": "bad"}, at="2026-10-09T10:00:00Z")
+    saved(lake, task(), [{"date": "2020-01-01", "close": 1}], at="2026-10-09T11:00:00Z")
+    out = audit(lake)
+    assert out["request_status_counts"] == {"RAW_RECORDS_CAPTURED": 1}
+    assert out["scan"]["invalid_receipts_or_payloads"] == 1
+
+
+def test_future_bad_payload_remains_beyond_observation_cutoff(lake):
+    saved(lake, task(), [{"date": "2020-01-01", "close": 1}])
+    saved(lake, task(), {"detail": "bad"}, at="2026-10-10T10:00:00Z")
+    out = audit(lake)
+    assert out["request_status_counts"] == {"RAW_RECORDS_CAPTURED": 1}
+    assert out["scan"]["after_observation_cutoff"] == 1
+
+
+def test_unorderable_invalid_receipt_cannot_claim_latest_valid(lake):
+    saved(lake, task(), [{"date": "2020-01-01", "close": 1}])
+    bad = saved(lake, task(), [{"date": "2020-01-01", "close": 2}])
+    file = next(p for p in (lake.root / "receipts").rglob("*.json")
+                if json.loads(p.read_text())["raw_sha256"] == bad["raw_sha256"])
+    receipt = json.loads(file.read_text()); receipt["observed_at_utc"] = "unusable"
+    file.write_text(json.dumps(receipt))
+    assert audit(lake)["request_status_counts"] == {"INVALID_UNORDERED_CAPTURE": 1}
+
+
+def test_partial_scan_cannot_confirm_latest_capture(lake):
+    saved(lake, task(), [{"date": "2020-01-01", "close": 1}], at="2026-10-09T10:00:00Z")
+    saved(lake, task(), [{"date": "2020-01-01", "close": 2}], at="2026-10-09T11:00:00Z")
+    out = audit(lake, max_receipts=1)
+    assert out["all_receipts_inspected"] is False
+    assert out["request_status_counts"] == {"UNCONFIRMED_LATEST_PARTIAL_SCAN": 1}
+
+
+
+@pytest.mark.parametrize("clock", ["2020-01-02T24:00:00Z", "2020-01-02T12:00:00+00:60", "2020-01-02T12:00:00"])
+def test_corpus_source_date_uses_strict_shared_date_semantics(clock):
+    with pytest.raises(ValueError):
+        summarize_records(json.dumps([{"date": clock, "close": 1}]).encode(), task())

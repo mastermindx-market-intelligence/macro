@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter, defaultdict
-from datetime import date, datetime
+from datetime import datetime
 import json
 from pathlib import Path
 import sys
@@ -19,6 +19,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from collectors.tiingo_archive import DEFAULT_ARCHIVE, require_external_root, request_path
 from lib.dataos.temporal import utc
+from lib.dataos.tiingo_views import _date as _view_date_label
 from scripts.tiingo_ingest import Task, load_symbols, plan, plan_page
 from scripts.tiingo_materialize import verified_raw
 
@@ -41,14 +42,8 @@ def strict_json(raw: str | bytes) -> Any:
 
 
 def _date_label(value: Any) -> str:
-    if not isinstance(value, str):
-        raise ValueError("record has no source date label")
-    if len(value) == 10:
-        result = date.fromisoformat(value)
-        if result.isoformat() != value:
-            raise ValueError("invalid date label")
-        return value
-    return datetime.fromisoformat(value.replace("Z", "+00:00")).date().isoformat()
+    # Share the read-only view contract; do not silently normalize bad dates.
+    return _view_date_label(value)
 
 
 def summarize_records(raw: bytes, task: Task) -> dict[str, Any]:
@@ -116,6 +111,7 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
     metrics = Counter()
     candidates: dict[str, list[dict[str, Any]]] = defaultdict(list)
     invalid_paths = set()
+    invalid_observations: dict[str, list[datetime | None]] = defaultdict(list)
     all_inspected = True
     receipts = base / "receipts"
     for file in receipts.rglob("*.json") if receipts.exists() else []:
@@ -124,6 +120,7 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
             break
         metrics["receipts_scanned"] += 1
         path = None
+        when = None
         try:
             if not file.resolve().is_relative_to(base) or file.stat().st_size > MAX_RECEIPT_BYTES:
                 raise ValueError("receipt escapes audit bounds")
@@ -168,6 +165,7 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
             metrics["invalid_receipts_or_payloads"] += 1
             if isinstance(path, str) and path in expected:
                 invalid_paths.add(path)
+                invalid_observations[path].append(when)
     statuses = Counter()
     details = []
     source_statuses: dict[str, Counter] = defaultdict(Counter)
@@ -179,13 +177,22 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
         else:
             latest = max(utc(v["observed_at_utc"]) for v in views)
             at_latest = [v for v in views if utc(v["observed_at_utc"]) == latest]
-            if len({v["raw_sha256"] for v in at_latest}) > 1:
+            rejected_times = invalid_observations.get(path, [])
+            if any(instant is None for instant in rejected_times):
+                status = "INVALID_UNORDERED_CAPTURE"
+            elif rejected_times and max(rejected_times) >= latest:
+                # A failed latest vintage must never disappear behind an older
+                # successful response. This diagnoses evidence; it repairs nothing.
+                status = "INVALID_LATEST_CAPTURE"
+            elif len({v["raw_sha256"] for v in at_latest}) > 1:
                 status = "AMBIGUOUS_LATEST_CAPTURE"
             else:
                 summary = at_latest[0]
                 status = "RAW_RECORDS_CAPTURED" if summary["records"] else "EMPTY_CAPTURED"
                 if summary.get("outside_requested_range") or summary.get("missing_crypto_pairs"):
                     status = "PARTIAL_OR_OUT_OF_RANGE"
+        if not all_inspected and summary is not None:
+            status = "UNCONFIRMED_LATEST_PARTIAL_SCAN"
         statuses[status] += 1
         source_statuses[task.source][status] += 1
         if len(details) < detail_limit:
@@ -193,7 +200,7 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
                             "request_path": path, "status": status,
                             "stored_response_count": len(views), "latest_capture": summary})
     plan_digest = plan_page(tasks, limit=1)["plan_sha256"]
-    return {"schema": "mastermind.tiingo.corpus_audit.v1", "network": False,
+    return {"schema": "mastermind.tiingo.corpus_audit.v2", "network": False,
             "writes": False, "execution_authorized": False,
             "archive_exists": base.is_dir(), "all_receipts_inspected": all_inspected,
             "observed_before_utc": cutoff.isoformat(), "expected_requests": len(expected),
@@ -202,6 +209,7 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
             "scan": dict(metrics), "requests": details, "detail_limit": detail_limit,
             "complete_history_proven": False, "backtest_admission": "NOT_GRANTED",
             "canonical_identity_admitted": False, "source_authenticity_proven": False,
+            "field_semantics_validated": False,
             "caveat": "Checks stored bytes/context only. NOT_FOUND under a partial scan is inconclusive; captured date bounds do not prove gap-free sessions or as-of availability."}
 
 

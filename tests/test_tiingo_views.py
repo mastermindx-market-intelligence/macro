@@ -209,3 +209,173 @@ def test_orphaned_output_with_incorrect_prices_is_not_repaired(lake):
     with pytest.raises(a.TiingoArchiveError, match="disagrees"):
         materialize_one(lake.root, rec, free_floor=0)
     assert not manifest.exists()
+
+
+# Pure read-side quality guards; no provider request or source-writer repair.
+def _quality_receipt(source="eod-bars"):
+    return {"source": source, "vendor": "tiingo", "symbol": "AMD",
+            "raw_sha256": "a" * 64, "observed_at_utc": "2026-10-09T12:00:00Z",
+            "request_path": "/tiingo/fundamentals/AMD/statements?asReported=true"}
+
+
+def _quality_statement(**changes):
+    row = {"date": "2020-02-01", "year": 2019, "quarter": 4,
+           "statementData": {"incomeStatement": [{"dataCode": "netIncome", "value": 12}]}}
+    row.update(changes)
+    return row
+
+
+@pytest.mark.parametrize("source", ["eod-bars", "fund-statements", "fund-daily"])
+@pytest.mark.parametrize("bad", [True, False, float("nan"), float("inf"), "garbage", "1e-9999", [], {}])
+def test_strict_numeric_view_rejects_malformed_vendor_value(source, bad):
+    receipt = _quality_receipt(source)
+    if source == "eod-bars":
+        call = lambda: equity_eod([{"date": "2020-01-02", "close": bad}], receipt)
+    elif source == "fund-daily":
+        call = lambda: fundamentals_daily([{"date": "2020-01-02", "peRatio": bad}], receipt)
+    else:
+        report = _quality_statement(statementData={"incomeStatement": [{"dataCode": "netIncome", "value": bad}]})
+        call = lambda: fundamentals_statements([report], receipt)
+    with pytest.raises(ValueError):
+        call()
+
+
+@pytest.mark.parametrize("field,bad", [("year", True), ("year", "2019"), ("year", None),
+    ("quarter", -1), ("quarter", 5), ("quarter", 2.5), ("quarter", True)])
+def test_statement_fiscal_period_has_real_typed_bounds(field, bad):
+    with pytest.raises(ValueError):
+        fundamentals_statements([_quality_statement(**{field: bad})], _quality_receipt("fund-statements"))
+
+
+@pytest.mark.parametrize("bad", [None, "bad-date", "2020-02-30", "2020-02-01trailing"])
+def test_statement_release_date_is_valid_not_silent_text(bad):
+    with pytest.raises(ValueError):
+        fundamentals_statements([_quality_statement(date=bad)], _quality_receipt("fund-statements"))
+
+
+def test_annual_zero_and_loss_zero_null_survive_without_pit_promotion():
+    report = _quality_statement(quarter=0, statementData={"incomeStatement": [
+        {"dataCode": "loss", "value": -25}, {"dataCode": "zero", "value": 0},
+        {"dataCode": "absent", "value": None}, {"dataCode": "futureMetric", "value": "1.25"}]})
+    result = fundamentals_statements([report], _quality_receipt("fund-statements"))
+    assert [r["metric_value"] for r in result] == [-25, 0, None, 1.25]
+    assert all(r["fiscal_quarter"] == 0 and not r["pit_backtest_eligible"] for r in result)
+
+
+def test_duplicate_metric_key_is_not_two_independent_facts():
+    report = _quality_statement(statementData={"incomeStatement": [
+        {"dataCode": "netIncome", "value": 12}, {"dataCode": "netIncome", "value": 13}]})
+    with pytest.raises(ValueError):
+        fundamentals_statements([report], _quality_receipt("fund-statements"))
+
+
+@pytest.mark.parametrize("code", [True, 15, "", " ", []])
+def test_metric_code_is_nonempty_string(code):
+    report = _quality_statement(statementData={"incomeStatement": [{"dataCode": code, "value": 12}]})
+    with pytest.raises(ValueError):
+        fundamentals_statements([report], _quality_receipt("fund-statements"))
+
+
+def test_statement_metric_value_key_cannot_be_missing():
+    report = _quality_statement(statementData={"incomeStatement": [{"dataCode": "netIncome"}]})
+    with pytest.raises(ValueError):
+        fundamentals_statements([report], _quality_receipt("fund-statements"))
+
+
+@pytest.mark.parametrize("query", ["asReported=oops", "asReported=", "asReported=true&asReported=false"])
+def test_as_reported_dimension_is_never_guessed(query):
+    receipt = _quality_receipt("fund-statements")
+    receipt["request_path"] = "/tiingo/fundamentals/AMD/statements?" + query
+    with pytest.raises(ValueError):
+        fundamentals_statements([_quality_statement()], receipt)
+
+
+def test_nonempty_malformed_statement_is_not_an_empty_success():
+    for section in (None, {}, {"incomeStatement": []}):
+        with pytest.raises(ValueError):
+            fundamentals_statements([_quality_statement(statementData=section)], _quality_receipt("fund-statements"))
+
+
+def test_eod_duplicate_market_date_is_not_silently_double_counted():
+    with pytest.raises(ValueError):
+        equity_eod([{"date": "2020-01-02", "close": 10},
+                    {"date": "2020-01-02", "close": 11}], _quality_receipt())
+
+
+def test_eod_integer_volume_not_rounded_by_float_conversion():
+    value = 2**53 + 1
+    row = equity_eod([{"date": "2020-01-02", "close": 10, "volume": value}], _quality_receipt())[0]
+    assert type(row["volume_raw"]) is int and row["volume_raw"] == value
+
+
+@pytest.mark.parametrize("bad", [-1, 1.5, True])
+def test_eod_raw_volume_must_be_nonnegative_integer(bad):
+    with pytest.raises(ValueError):
+        equity_eod([{"date": "2020-01-02", "close": 10, "volume": bad}], _quality_receipt())
+
+
+def test_daily_fundamental_identity_fields_are_not_numeric_metrics():
+    row = {"date": "2020-01-02", "ticker": "AMD", "peRatio": -2, "permaTicker": "123"}
+    projected = fundamentals_daily([row], _quality_receipt("fund-daily"))
+    assert [r["metric_code"] for r in projected] == ["peRatio"]
+    assert projected[0]["permaticker_vendor"] == "123"
+
+
+@pytest.mark.parametrize("source", ["eod-bars", "fund-daily"])
+def test_unrequested_response_ticker_is_refused_in_pure_view(source):
+    row = {"date": "2020-01-02", "ticker": "OTHER", "close": 10, "peRatio": 2}
+    call = equity_eod if source == "eod-bars" else fundamentals_daily
+    with pytest.raises(ValueError):
+        call([row], _quality_receipt(source))
+
+
+
+def test_json_duplicate_metric_keys_are_not_last_value_wins():
+    raw = b'[{"date":"2020-01-02","close":10,"close":99}]'
+    with pytest.raises(ValueError):
+        research_rows(raw, _quality_receipt())
+
+
+@pytest.mark.parametrize("token", ["NaN", "Infinity", "-Infinity", "1e9999"])
+def test_nonstandard_json_numbers_are_refused_not_missing(token):
+    raw = ('[{"date":"2020-01-02","close":' + token + '}]').encode()
+    with pytest.raises(ValueError):
+        research_rows(raw, _quality_receipt())
+
+
+@pytest.mark.parametrize("clock", ["2020-01-02T12:00:00+00:60", "2020-01-02T12:00:60Z", "2020-01-02T24:00:00Z"])
+def test_source_time_components_may_not_be_normalized_into_another_time(clock):
+    with pytest.raises(ValueError):
+        equity_eod([{"date": clock, "close": 10}], _quality_receipt())
+
+
+def test_valid_aware_source_date_keeps_the_original_date_and_text():
+    value = "2020-01-02T23:45:12.123456789-05:00"
+    row = equity_eod([{"date": value, "close": 10}], _quality_receipt())[0]
+    assert row["market_date"] == "2020-01-02" and row["source_date_vendor"] == value
+
+
+def test_distinct_report_release_vintages_are_kept_not_deduplicated():
+    reports = [_quality_statement(date="2020-02-01"), _quality_statement(date="2020-03-01")]
+    rows = fundamentals_statements(reports, _quality_receipt("fund-statements"))
+    assert len(rows) == 2 and rows[0]["statement_public_release_date_vendor"] != rows[1]["statement_public_release_date_vendor"]
+
+
+def test_stable_vendor_id_query_does_not_require_current_ticker_as_identity():
+    receipt = _quality_receipt("fund-daily")
+    receipt["symbol"] = "123"
+    projected = fundamentals_daily([{"date": "2020-01-02", "ticker": "OLD", "permaTicker": "123", "peRatio": 2}], receipt)
+    assert projected[0]["ticker_or_permaticker_vendor"] == "123"
+
+
+def test_empty_response_is_distinct_from_empty_report_or_empty_daily_row():
+    assert fundamentals_statements([], _quality_receipt("fund-statements")) == []
+    assert fundamentals_daily([], _quality_receipt("fund-daily")) == []
+    with pytest.raises(ValueError):
+        fundamentals_daily([{"date": "2020-01-02"}], _quality_receipt("fund-daily"))
+
+
+
+def test_integer_volume_lexeme_not_rounded_from_json_decimal():
+    raw = b'[{"date":"2020-01-02","close":10,"volume":9007199254740993.0}]'
+    assert research_rows(raw, _quality_receipt())[0]["volume_raw"] == 9007199254740993
