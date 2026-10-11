@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T20:06:39.148452+00:00",
-  "count": 2828,
+  "generated_at": "2026-10-11T21:06:44.573398+00:00",
+  "count": 2831,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -49,6 +49,7 @@
     "ING",
     "Incrementum",
     "J.P. Morgan",
+    "JPM Eye on the Market",
     "Jefferies",
     "KKR",
     "LSEG",
@@ -119,6 +120,28 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1rcik5ibo7a-4fb6ef",
+      "title": "JPM EOTM Oct 8 Califoreboding",
+      "institution": "JPM Eye on the Market",
+      "side": "sell",
+      "desk": "Cembalest",
+      "published_at": "2026-10-11T03:40:20Z",
+      "summary_points": [
+        "US Budget Deficit Exceeds 5% of GDP: Deficit worsens during economic expansion (worse than 1970s), signaling urgent need for fiscal restructuring amid deteriorating fundamentals.",
+        "AI Concentration Dominates S&P 500: 42 AI stocks drive 67% of price returns, 58% of earnings growth, and 81% of capex/R&D since Jan 2024; 60% of S&P 500 stocks down 20%+ from highs.",
+        "Private Credit Stress Metrics: Cliffwater stress at ~5% vs.",
+        "JPM BDC universe at ~15%; 70% of amended PIK loans never return to cash pay, with key risks including maturity extensions and debt-to-equity conversions."
+      ],
+      "tags": [
+        "Cembalest"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -266,6 +289,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-kfjyotw4egb-a35dda",
+      "title": "Global Economics Wrap Up October 9, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:45:24Z",
+      "summary_points": [
+        "Global PMI Strength: Global composite PMI at 53.4 (+0.9pt) signals robust economic momentum across manufacturing (53.0) and services (54.5), with rising employment and prices—key fundamental indicator for risk assets and USD.",
+        "Fed Policy Outlook: FOMC minutes confirm no October hike but December rate increase to 4.425% expected; internal splits (Wallace vs.",
+        "Jefferson/Williams) create policy uncertainty critical for fixed income and USD positioning.",
+        "US Rate Impact on Growth: Higher rates to drag 2027 GDP by 0.2pp (rising to 0.5pp if sustained), with specific impacts: residential investment (-2pp), consumer spending (-0.2pp), capex (-0.3pp)—quantifiable risk for equity and credit portfolios.",
+        "European Sovereign Stress: French 10-yr bond spreads at 2012 highs due to fiscal contraction and borrowing costs, triggering sovereign risk spillovers and ECB policy concerns—direct threat to European bond markets and equity valuations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-j6osxrfz8e9-44f8e7",
       "title": "End of Week Market Intelligence set up",
       "institution": "Goldman Sachs",
@@ -403,6 +447,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ayiijj63mgv-f053ed",
+      "title": "US Weekly Kickstart The outlook for corporate equity supply and demand in 2027",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:06Z",
+      "summary_points": [
+        "Net Equity Supply Balance: $600B 2027 equity issuance offset by $1.7T S&P 500 buybacks (15% YoY growth), creating neutral net supply despite AI-driven follow-ons ($65B) and M&A.",
+        "AI Infrastructure Dominance: 45% of 2026 YTD follow-on issuance AI-related ($65B), reflecting capital allocation to AI infrastructure as a core tech sector driver.",
+        "Rate Sensitivity Threshold: 10-yr TIPS yield rises >1.5 std dev historically correlate with slowed IPOs/follow-ons; current yield spike (125bp YoY) pressures issuance.",
+        "Hyperscaler Structural Shift: $1.2T capex, $1.1T cash flow, and debt-fueled growth (35% debt-funded capex) imply cash flow exceeding capex in 2027-2028, limiting equity issuance incentive.",
+        "Debt vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
       "language": "en",
       "needs_metadata": false
     },
