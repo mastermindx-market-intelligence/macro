@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-10-10",
-  "generated_at": "2026-10-10T11:20:27Z",
+  "as_of": "2026-10-11",
+  "generated_at": "2026-10-11T05:14:55Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -1376,6 +1376,7 @@
     "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
     "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-04)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-10-06)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[data_center_power]: stale (as_of=2026-09-26)"
   ],
@@ -1391,7 +1392,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-10T11:20:27Z",
-  "inputs_hash": "sha256:913cb1955bb10107beacba7523c5313a63a09d42e52b3196cae3d08cde6dd429",
+  "produced_at": "2026-10-11T05:14:56Z",
+  "inputs_hash": "sha256:bd58535fc6fe41850a04c07f3693800057f68d6ed265c077b8ed69a05b6fedc5",
   "tier": "display"
 }

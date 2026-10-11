@@ -7826,6 +7826,11 @@ jobs:
       # read-side guard that stops a focus refetch from reverting a just-made edit.
       - name: watchlist workspace — entry parser, stage map, focus-refetch guard (W2)
         run: python -m pytest tests/test_watchlist_workspace_js.py -q
+      # site20 S3: templates/stockdata.js — index validated before it is cached,
+      # one in-flight US index read, regional/ticker transient failures retried on a
+      # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
+      - name: stockdata.js cache resilience — index validation, dedupe, transient TTL (site20 S3)
+        run: node --test tests/js/stockdata_cache_resilience.test.mjs
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
@@ -14494,6 +14499,29 @@ jobs:
       - name: inline-CSS externalization units (incl. the jinja2 cross-module gate)
         run: python -m pytest tests/test_externalize_css.py -q
 
+  calculator-input-integrity:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # site20 S5 (compounding + dollar-cost-averaging calculators). Node unit test over
+    # the two templates' inline scripts: whole-token parseNum grammar (trailing junk,
+    # malformed grouping, nonfinite/overflow rejected), finite curveGeometry for the
+    # one-year, all-zero and fractional-year scenarios, bilingual plainSentence/copyText,
+    # and tryCopy reporting success only on an acknowledged clipboard write.
+    # gate: code because the verdict is a pure function of the PR tree (templates +
+    # test); free-content-estate is gate: data and never runs on a pull request.
+    paths:
+      - templates/calculators/compounding.html.j2
+      - templates/calculators/dollar_cost_averaging.html.j2
+      - tests/js/calculator_input_integrity.test.mjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: calculator input, chart, language and copy integrity
+        run: node --test tests/js/calculator_input_integrity.test.mjs
+
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -14754,6 +14782,8 @@ jobs:
       # ledgers and would otherwise fail for a borrowed reason.
       # No dependency widened: probed at RUN time, both load only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
+      - name: Prophet source clocks and immutable correction provenance
+        run: python -m pytest tests/test_prophet_plan_chronology_audit.py tests/test_prophet_integrity.py -q
       - name: grade_us_board outcome ledgers + tenure stamp + the strip it renders
         run: python -m pytest tests/test_board_tenure_stamp.py tests/test_us_board_outcomes.py tests/test_us_board_outcomes_strip.py tests/test_entry_status_stamping.py tests/test_us_board_price_basis_era.py -q
       - name: grade_us_board zero-accrual + truncated-history alarms
@@ -19282,6 +19312,8 @@ jobs:
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/*"
+      - "scripts/__init__.py"
+      - "scripts/build_themes_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
@@ -19290,6 +19322,7 @@ jobs:
       - "site/basketdata/foresight_cascade.json"
       - "site/factordata/**"
       - "site/marketdata/subsector_confluence.json"
+      - "site/marketdata/themes_heatmap.json"
       - "site/state_of_themes.html"
       - "templates/_navlinks.html.j2"
       - "templates/chat.html"
@@ -19301,6 +19334,7 @@ jobs:
       - "tests/test_subsector_scan.py"
       - "tests/test_subsector_turn.py"
       - "tests/test_themes_heatmap.py"
+      - "tests/test_principal_receipt_ambiguity.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -19313,7 +19347,7 @@ jobs:
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
@@ -20646,6 +20680,74 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: prospective reference clocks, refusals and consumer compatibility
         run: python -m pytest tests/test_dataos_prospective_reference.py -q
+
+
+  dataos-web-workspace:
+    # Stored-data readers and the bounded canonical Lab adapter are optional
+    # consumers of the pure Data OS foundation. Keep its pytest/pyyaml-only
+    # canary intact; these suites need the numerical and Parquet stack.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/ci.yml
+      - config/dataset_registry.yml
+      - config/web_data_workspace.studio.json
+      - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/indicators.py
+      - engine/lab.py
+      - engine/ma_crosses.py
+      - engine/predictive_signals.py
+      - engine/rsi_signals.py
+      - engine/stock_technicals.py
+      - engine/strategy_signals.py
+      - engine/tech_catalog.py
+      - engine/tech_stars.py
+      - engine/technicals.py
+      - engine/trial_ledger.py
+      - engine/validation.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/store.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_lab.py
+      - lib/dataos/web_lab_worker.py
+      - lib/dataos/web_readers.py
+      - lib/dataos/web_workspace.py
+      - scripts/data_workspace.py
+      # Canonical catalog artifact references present in the full CI tree.
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
+      - tests/test_dataos_web_api.py
+      - tests/test_dataos_web_lab.py
+      - tests/test_dataos_web_lab_worker.py
+      - tests/test_dataos_web_readers.py
+      - tests/test_dataos_web_workspace.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install bounded data and Lab test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: web data access, source clocks, reader limits and canonical Lab isolation
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
+          tests/test_dataos_web_workspace.py -q -rs
 
   dataos-foundation:
     scope: exclusive
@@ -22885,3 +22987,22 @@ jobs:
         run: pip install pytest pyyaml requests
       - name: File and pinned-source replay, manual boundary and temporal refusals
         run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
+
+  site20-s4-chart-brief-js:
+    if: ${{ false }}
+    gate: code
+    # site20 S4: charts.js zoom bounds ignore missing observations (S4-01) and
+    # legend-hidden traces incl. the plotly_restyle show/hide lifecycle (S4-02);
+    # stockbrief.js generation fence + identity check (S4-04). Runs against the
+    # template sources and the byte-identical shipped site/ copies.
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: charts.js rescale + stockbrief.js freshness (templates)
+        run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
+      - name: same suites against the shipped site/ copies
+        run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
