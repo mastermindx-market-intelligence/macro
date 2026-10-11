@@ -38,21 +38,34 @@ do_not_redo:
   - "The merge-queue pilot is NOT a gate for this carrier (two pilots merged red)."
 waves:
   - id: SB-W1
-    title: "Shared foundation carrier #7870 at approved scope: H1 ruled B, audit consumed, hosted checks"
+    title: "Shared foundation carrier #7870 at approved scope: H1 ruled B, b76551be audit and acc72f3f delta review consumed, hosted checks owed"
     status: awaiting_ci
     pr: 7870
     next_action: >
       Head acc72f3fb3efb1ad092359ce2ba4190de66d75e1 is pushed with the H1-B audit repairs.
       A session-local CI watcher was bound to that exact head on 2026-10-11; a successor
       verifies it is live (control_plane owns liveness) and otherwise binds exactly one.
-      Gates still owed before release: ALL_CONCLUDED green at the exact head AND a fresh
-      non-author review of the b76551be..acc72f3f delta (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL
-      requires a non-author exact-head review; the consumed Opus audit read b76551be, and the
-      builder alone judged the later delta behaviour-neutral). On both in hand: fresh carrier
-      read, then ONE release DECISION in DEC:FABLE-SEAT order (quote the Chairman ruling,
-      cite the consumed audit and the delta review, ACCEPTED/STOP, BRANCH_WRITER_RELEASED,
-      review state, body, Ready, merge queue), each act asserting the exact head. On red: repair in scope,
-      new head, re-bind the watcher. On HEAD_CHANGED: re-read before anything.
+      Gate set per DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, stated completely: (1) semantic pass:
+      the H1 ruling B (#7870 comment 6105015260) plus the consumed independent Opus audit of
+      b76551be (DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE); (2) fresh non-author
+      exact-head review: IN HAND for b76551be..acc72f3f as #7870 comment 6105402719 (independent
+      READ_ONLY Opus, VERDICT ACCEPT_DELTA, 2026-10-11; two LOW and three INFO findings, none
+      blocking; the LOW on a literal test path inside an engine comment is closed by hosted
+      contract-delta and fence-pack success at acc72f3f); (3) hosted checks: ALL_CONCLUDED green at
+      the exact release head, still owed; (4) the canonical Source Continuity receipt
+      (CHECKPOINT_VERIFIED / REMOTE_COMPLETE_VERIFIED) is named by the protocol for a STARTed
+      source-modifying fabric child; acc72f3f was built and pushed by this seat directly with the
+      fabric unavailable, so no STARTed child exists to carry one, and the release DECISION's
+      exact-head assertions (worktree rev-parse equals the gh head, clean tree, merge-tree against
+      the pinned base sha) are the source-identity evidence instead. The review in (2) is pinned to
+      acc72f3f: if the release head moves (a red repair, or the rebase onto main after Industrials
+      #8250 lands first on the shared issuer_profiles.py seam, per comment 6105402719), extend the
+      non-author review to acc72f3f..<new head> before release and re-bind the hosted gate to the
+      new head. With (1)-(4) in hand: fresh carrier read, then ONE release DECISION in
+      DEC:FABLE-SEAT order (quote the Chairman ruling, cite the consumed audit and the delta
+      review, ACCEPTED/STOP, BRANCH_WRITER_RELEASED, review state, body, Ready, merge queue), each
+      act asserting the exact head. On red: repair in scope, new head, re-bind the watcher, extend
+      the review. On HEAD_CHANGED: re-read before anything.
   - id: SB-W2
     title: "Option A registry follow-on: entry_kind admitting sector_profile/company_profile, optional anchor"
     status: todo
@@ -84,6 +97,8 @@ next_action: >
   head `acc72f3fb3efb1ad092359ce2ba4190de66d75e1` at the time of this record.
 - Truthful state lines: MISSION_COMPLETE FALSE; SEMICONDUCTOR_B NOT_BUILT; C1 DEFERRED;
   V1_1 PROPOSED_NOT_BUILT; RIGHTS_QUALIFICATION QUEUED_NOT_STARTED; H1 RULED_B_IMPLEMENTED_AT_acc72f3f;
-  FABRIC UNAVAILABLE; READY/MERGE NOT_YET.
+  DELTA_REVIEW ACCEPTED_AT_acc72f3f (#7870 comment 6105402719); FABRIC UNAVAILABLE; READY/MERGE NOT_YET.
 - Builder is not reviewer: the H1-B change was audited by an independent read-only
-  Opus auditor before the repairs were applied.
+  Opus auditor at b76551be before the repairs were applied, and the repairs themselves
+  (b76551be..acc72f3f) received a second independent read-only Opus review (#7870 comment
+  6105402719, ACCEPT_DELTA); any further head move owes the same review for its own delta.

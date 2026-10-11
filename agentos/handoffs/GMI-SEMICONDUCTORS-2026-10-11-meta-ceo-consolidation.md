@@ -71,7 +71,7 @@ changed:
   - path: agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md
     what: DEC link; dated note that the T02 gate is OPEN because #7905 merged 2026-09-30 as cdce3023fbba, verified by the fiscal_scope presence check on main a4d48836a69e (4 hits).
   - path: agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md
-    what: DEC link; dated note that #8245 @b019f975c695 already carries independent REQUEST_CHANGES review 5927055846 at that exact head, so the next act is the P2 scoped-reader fix; T7/T8 still wait on #7870.
+    what: DEC link; dated note that #8245 @b019f975c695 already carries the independent REQUEST_CHANGES issue comment 5927055846 at that exact head, so the next act is the P2 scoped-reader fix (CDV-T4); the repaired head then needs a fresh non-author exact-head review before any ruling; T7/T8 still wait on #7870.
   - path: agentos/workstreams/WS-CONSUMER-CYCLICAL-V1.md
     what: Owner -> fable-meta-ceo; both DEC links; dated note that #7870 is the critical-path blocker.
 verified:
@@ -83,22 +83,33 @@ verified:
     result: "100 passed, 1 warning; the positive-control test observes vertical_registration_held:sector_profile from the unpatched adapter"
   - claim: "No tests/test_sector_intelligence_shared_shell.py exists at acc72f3f; the earlier three-count claim named a file that is not in the tree."
     command: "ls tests | grep -i shared_shell"
-    result: "(no shared-shell test file exists at acc72f3f)"
+    result: "(empty output: no file name matched)"
   - claim: "At acc72f3f the theme research registry suite is green locally."
     command: "/opt/homebrew/bin/python3 -m pytest tests/test_theme_research_registry.py -q"
     result: "64 passed, 1 warning"
   - claim: "The Agent OS validator stays at zero errors with the 7 new records and 6 edited records."
     command: "/opt/homebrew/bin/python3 scripts/agentos.py validate"
-    result: "agentos: 1609 records (88 workstreams, 428 decisions, 478 discoveries, 615 handoffs) — 0 error(s), 145 warning(s); the 2 new warnings are review-overdue on the new stubs' dated waits, none on cross-references"
+    result: "literal output of the run at the pushed head: agentos: 1610 records (88 workstreams, 428 decisions, 478 discoveries, 616 handoffs) — 0 error(s), 145 warning(s)"
   - claim: "Robotics is NOT on main: #7908 merged and #8013 reverted it."
     command: "gh pr view 7908 -R mastermindx-market-intelligence/macro --json state,mergedAt,mergeCommit; gh pr view 8013 ... --json state,mergedAt,mergeCommit,title"
     result: "7908 MERGED 2026-09-25T07:27:34Z 70b3c9f1f8f0; 8013 MERGED 2026-09-25T11:01:34Z e5512ef66a74 titled Revert #7908"
   - claim: "Carrier heads cited in the new records are the gh-reported heads on 2026-10-11."
     command: "gh pr view <n> -R mastermindx-market-intelligence/macro --json headRefOid,headRefName,state,isDraft for n in 7976 8678 8039 7891 8002 7788 7804 8245 8250"
     result: "0a6e4d7f518d / ed1ceabd723c / c79aaca04948 / 861d4049ae4c / 508d8c206357 / 1f12d78169e1 / 3d286719686d / b019f975c695 / 20b853e2907e, all OPEN drafts"
+  - claim: "The Mining T02 gate condition (#7905 on main) is satisfied: cdce3023fbba is an ancestor of main a4d48836a69e and the fiscal_scope seam is present there."
+    command: "git merge-base --is-ancestor cdce3023fbba a4d48836a69e && echo ANCESTOR_YES; git show a4d48836a69e:engine/company_intelligence/issuer_profiles.py | grep -n fiscal_scope"
+    result: "ANCESTOR_YES; 4 hits: :1294 (the fiscal_scope kwarg in the profile_for_ticker signature whose def is at :1293), :1306, :1307, :1309 (the private PG guard)"
+  - claim: "#8245 comment 5927055846 is an issue comment rather than a GitHub review object, and #8245 still sits at b019f975c695."
+    command: "gh api repos/mastermindx-market-intelligence/macro/issues/comments/5927055846 --jq '[.user.login,.created_at]'; gh pr view 8245 -R mastermindx-market-intelligence/macro --json reviewDecision,reviews,headRefOid,isDraft,state"
+    result: "mastermindx-3, 2026-10-01T07:44:02Z; reviewDecision empty, reviews [], head b019f975c6959803e872fd5000601d6c4591bf62, Draft, OPEN (read 2026-10-11)"
+  - claim: "The fresh non-author review of the b76551be..acc72f3f delta is in hand on the #7870 carrier."
+    command: "gh api repos/mastermindx-market-intelligence/macro/issues/comments/6105402719 --jq .body | grep -n -E 'Verdict|ACCEPT_DELTA'"
+    result: "line 8: Verdict: ACCEPT_DELTA (PASS, scope = the two-file delta only), independent READ_ONLY Opus; anchor MMX-GMI-SEMICONDUCTOR-B-7870-DELTA-REVIEW-CONSUMED-acc72f3f-20261011"
 unverified:
+  - claim: "At acc72f3f tests/test_finance_research_registration.py also passes 100 with the four shared-shell modules forced absent."
+    what_would_verify: "A recorded command that makes the shared-shell modules unimportable for one pytest run (for example a sys.modules/meta_path block) and its literal result. No such command is recorded anywhere, so the claim was removed from the DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE evidence list on 2026-10-11."
   - claim: "Hosted ci-pack-8 and ci-gate are green at acc72f3f."
-    what_would_verify: "The single bound CI watcher's ALL_CONCLUDED table for head acc72f3f, then one fresh gh pr view read of the same head before any Ready or merge transition."
+    what_would_verify: "The ALL_CONCLUDED table of the one verifiably live (or newly bound) CI watcher for the exact head acc72f3f, then one fresh gh pr view read of the same head before any Ready or merge transition."
   - claim: "The Energy #8002 arity patch (12 -> 14 kwargs at tests/test_nuclear_research_route.py:27) is the only Energy breakage once #7870 lands."
     what_would_verify: "A head-vs-base pytest diff of tests/test_nuclear_research_route.py on #8002 rebased onto a main that contains #7870."
 unresolved:
@@ -106,7 +117,7 @@ unresolved:
   - "The Executive/Subagent Fabric is under repair (Mastermind PRs 1300-1319 open except 1305); the mastermind-executive and linear-server MCP connectors need user OAuth and mmx-cimd-probe refuses connections, so no fabric packet can be submitted from this seat yet."
   - "Option A (registry entry_kind) is scoped in the H1 DEC but has no carrier branch yet (SB-W2 todo)."
 next_actions:
-  - "Consume the result of the one live CI watcher for #7870 @ acc72f3f (bind exactly one if none is verifiably live) AND obtain the fresh non-author review of the b76551be..acc72f3f delta that DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL requires: with both in hand, fresh-read the carrier and post ONE release DECISION per the DEC-FABLE-SEAT order, then Ready and merge queue, each asserting the exact head; on red, repair in scope on a new head and re-bind the watcher; on HEAD_CHANGED, re-read before anything."
+  - "Consume the result of the one live CI watcher for #7870 @ acc72f3f (bind exactly one if none is verifiably live). The fresh non-author review of the b76551be..acc72f3f delta that DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL requires is in hand (#7870 comment 6105402719, ACCEPT_DELTA) and is pinned to acc72f3f. With green at the exact head: fresh-read the carrier and post ONE release DECISION per the DEC-FABLE-SEAT order, then Ready and merge queue, each asserting the exact head. On red, repair in scope on a new head, re-bind the watcher AND extend the non-author review to acc72f3f..<new head> before release. On HEAD_CHANGED, re-read before anything."
   - "Open the Option A registry carrier (SB-W2) off a main that contains #7870; it must forward view_keys/build_query from FINANCE_REGISTRATION_FACTS and must not reintroduce any xfail on the round trip."
   - "Dispatch the held wave-2 packets once the fabric accepts submissions, in this order: P-FIN-1, CDV-T4, Energy-1 arity patch, Tech-1, Robotics-1 re-land, CC-1, P-IND-1 / #8250 re-adjudication, P-MIN-1, HC-1."
   - "Append the #7870 outcome and the records PR number to the Semiconductors record (SB-W1 status) in a follow-on records PR."
