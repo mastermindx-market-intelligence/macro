@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T19:06:58.640144+00:00",
-  "count": 2825,
+  "generated_at": "2026-10-11T20:06:39.148452+00:00",
+  "count": 2828,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -103,6 +103,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-wjsf6ezrbet-d10add",
+      "title": "WUS (002463)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-11T17:12:20Z",
+      "summary_points": [
+        "AI PCB Demand & Margins: Q3 2026 revenue up 5% QoQ to Rmb7.8bn with gross margin expanding to 37.6% (vs. 8% YoY) driven by AI server/switch upgrades, higher-margin PCB product mix, and capacity expansion in China/Thailand.",
+        "Earnings & TAM Revision: 2026–2028 earnings revised up 8%/4%/4% (vs. prior), AI server PCB TAM raised to US$38bn by 2027E, with high-speed networking PCBs growing at 63% CAGR (2026–2028).",
+        "Valuation Upside: Target price raised to Rmb148 (31.8% upside from current Rmb112.29), based on 23x 2027E P/E (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-ytmfwvh7k4w-000230",
       "title": "Investment bulletin weekly week 40 final",
@@ -283,6 +302,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5djprswngqv-9cbb43",
+      "title": "India Weekly Kickstart NIFTY settled flat w w",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:45:03Z",
+      "summary_points": [
+        "RBI's calibrated tightening & commodity margin pressure: Repo rate hiked to 5.50% amid supply-side shock concerns; commodity inflation (US-Iran war, oil prices) pressures margins in autos, metals, mining, and FMCG sectors.",
+        "FII outflow & India's valuation premium: $31bn FII net outflow YTD 2025; MSCI India trades at 94% premium to MAXAPJ, signaling significant overvaluation vs Asia-Pacific.",
+        "Non-commodity earnings growth vs margin pressure: Consensus expects 15% yoy profit growth for MSCI India ex-commodities (Q2 FY27/Q3 CY26), but net profit margin expected to cut to 9.8%.",
+        "Tech sector disconnect: MXINOT (Tech) shows -29% YTD price performance vs consensus 30% ROE and 10% EPS growth, indicating potential mispricing or sector-specific risks.",
+        "Domestic inflows surge vs FII outflows: Active domestic equity fund inflows rose 19% to $3.1bn in August (SIP-driven), offsetting $31bn FII outflow YTD."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },
@@ -717,6 +757,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-plnzl7g22wl-2fe826",
+      "title": "BofA ABS Weekly Personal loan ABS 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:05:37Z",
+      "summary_points": [
+        "2026 Personal Loan ABS Forecast: $34bn new issue volume (2026), driven by 46% fintech/MPL dominance ($18bn), with home improvement ($8bn) outperforming subprime auto ABS due to superior credit metrics and spread advantage (28bp).",
+        "Spreads Widening & Risk: 11 ABS sectors trading 20bp+ above 24-month minima; auto prime/subprime spreads widened +5-6bps, student loan ABS spreads +7bps, signaling elevated credit risk amid inflation fears and Fed uncertainty.",
+        "Home Improvement ABS Outperformance: Highest weighted average FICO scores, lowest loss rates, and superior credit quality vs. traditional/fintech/MPL segments; preferred over subprime auto ABS for risk-reward profile.",
+        "Fintech/MPL Dominance: Fintech/MPL accounts for 46% of $66.8bn outstanding personal loan ABS balances (Sept 2026) and dominates new issuance ($18bn 2026 forecast), with higher dispersion in credit enhancement posing portfolio allocation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
       "language": "en",
       "needs_metadata": false
     },
