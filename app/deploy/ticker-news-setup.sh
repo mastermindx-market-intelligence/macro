@@ -55,11 +55,56 @@ load_provider_token() {
   export BENZINGA_API_KEY
 }
 
+load_alpaca_credentials() {
+  local line count
+  require_private_file "$ENV_FILE"
+  count=$(grep -c -E "^ALPACA_API_KEY_ID=" "$ENV_FILE" || true)
+  [ "$count" = 1 ] || fail "expected exactly one ALPACA_API_KEY_ID line in $ENV_FILE"
+  line=$(grep -E "^ALPACA_API_KEY_ID=" "$ENV_FILE")
+  ALPACA_API_KEY_ID=${line#ALPACA_API_KEY_ID=}
+  [ -n "$ALPACA_API_KEY_ID" ] || fail "ALPACA_API_KEY_ID is empty"
+  case "$ALPACA_API_KEY_ID" in *$'\n'*|*$'\r'*) fail "ALPACA_API_KEY_ID contains newline" ;; esac
+  count=$(grep -c -E "^ALPACA_API_SECRET_KEY=" "$ENV_FILE" || true)
+  [ "$count" = 1 ] || fail "expected exactly one ALPACA_API_SECRET_KEY line in $ENV_FILE"
+  line=$(grep -E "^ALPACA_API_SECRET_KEY=" "$ENV_FILE")
+  ALPACA_API_SECRET_KEY=${line#ALPACA_API_SECRET_KEY=}
+  [ -n "$ALPACA_API_SECRET_KEY" ] || fail "ALPACA_API_SECRET_KEY is empty"
+  case "$ALPACA_API_SECRET_KEY" in *$'\n'*|*$'\r'*) fail "ALPACA_API_SECRET_KEY contains newline" ;; esac
+  export ALPACA_API_KEY_ID ALPACA_API_SECRET_KEY
+}
+
+# Provider dispatcher: benzinga (default) or alpaca, from the same root env
+# file. Values are exported, never printed.
+load_provider_credentials() {
+  local provider count
+  require_private_file "$ENV_FILE"
+  count=$(grep -c -E "^QBUS_NEWS_PROVIDER=" "$ENV_FILE" || true)
+  if [ "$count" = 0 ]; then
+    provider=benzinga
+  elif [ "$count" = 1 ]; then
+    provider=$(grep -E "^QBUS_NEWS_PROVIDER=" "$ENV_FILE")
+    provider=${provider#QBUS_NEWS_PROVIDER=}
+  else
+    fail "expected at most one QBUS_NEWS_PROVIDER line in $ENV_FILE"
+  fi
+  case "$provider" in
+    benzinga) ;;
+    alpaca) ;;
+    *) fail "QBUS_NEWS_PROVIDER must be benzinga or alpaca" ;;
+  esac
+  export QBUS_NEWS_PROVIDER="$provider"
+  if [ "$provider" = alpaca ]; then
+    load_alpaca_credentials
+  else
+    load_provider_token
+  fi
+}
+
 check_activation() {
   require_private_file "$RIGHTS_FILE"
   [ -f "$UNIT_SOURCE" ] && [ ! -L "$UNIT_SOURCE" ] || fail "reviewed unit missing"
   install -d -m 0700 "$STATE_DIR"
-  load_provider_token
+  load_provider_credentials
 
   # Verify the exact production interpreter has the sync WebSocket API before
   # touching systemd. This imports only; it opens no provider connection.

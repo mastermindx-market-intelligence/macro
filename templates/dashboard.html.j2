@@ -16533,6 +16533,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if not _su %}<span class="muted" style="font-size:11.5px">{{ t("Up to 10 names per sector · grouped by setup, strongest names first.", "每个板块最多 10 只 · 按形态分组，较强者优先。") }}
           {{ help("Shows up to ten holdings from each sector when their price action reaches a clear buy, turning or topping point. Cards are grouped by setup stage; stronger names within the sector appear first. A cap keeps one sector from taking over. Click any card for the full breakdown.", "当价格走势出现明确的买入、转向或见顶时，每个板块最多展示十只股票。卡片按形态阶段分组，同板块中较强者优先。数量上限可避免单一板块占满页面。点击卡片查看完整拆解。") }}</span>{% endif %}
       </div>
+      {% if gate or pgate or life_gate %}
+      <p id="us-board-load-status" class="muted" role="status" aria-live="polite" hidden>{{ t('Full board data could not load. The dated preview remains available. Reload to try again.', '完整榜单数据无法加载，带日期的预览仍可查看。请刷新页面重试。') }}</p>
+      {% endif %}
       {#- ── W-L1 SLOT B — the board-state note (spec §2 B, §5.1, §5.2) ────────────────
           ONE line, FOUR mutually exclusive contents, never two at once. Every variant is
           SSR-baked with its l-en/l-zh pair and its own Tier-2 `?` receipt, so the live
@@ -17614,6 +17617,18 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       var clearBtn = document.getElementById('us-life-clear');
       if (clearBtn) clearBtn.addEventListener('click', function () { setLife(null); });
+      /* Detail links select an already-loaded model record by its native id.
+         This owner keeps the ladder, zero state and URL aligned before focus. */
+      window.USProphetLife = { selectPlan: function (card) {
+        if (!card || !card.classList.contains('pvcard') ||
+            card.getAttribute('data-record-only') !== '1' ||
+            !card.closest('#us-life-grid') ||
+            card.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return false;
+        var life = card.getAttribute('data-life');
+        if (!life || VALID_LIFE.indexOf(life) === -1) return false;
+        setLife(life);
+        return true;
+      } };
       /* A historical record can link to a newer episode in another lifecycle
          cell. Delegate from the stable panel rather than the replaceable grid,
          so entitled hydration and show-more do not strand the link. Select the
@@ -20432,7 +20447,8 @@ if (document.readyState === 'loading') {
     }
     if (window.USProphetSource) window.USProphetSource.set('plans');
     var card = document.getElementById(target);
-    if (!card) {
+    if (!card || !target || target.indexOf('pv-') !== 0 ||
+        !window.USProphetLife || !window.USProphetLife.selectPlan(card)) {
       document.body.dataset.pvsPlanLinkResult='missing';
       return;
     }
@@ -20468,6 +20484,14 @@ if (document.readyState === 'loading') {
   var LIFE_GATE = {{ life_gate | tojson }};
   var SRC = (GATE && GATE.payload) || (PGATE && PGATE.payload) || (LIFE_GATE && LIFE_GATE.payload);
   if (!SRC) return;
+
+  function setLoadUnavailable(unavailable){
+    var status = document.getElementById('us-board-load-status');
+    if (!status) return;
+    status.hidden = !unavailable;
+    if (unavailable) status.setAttribute('data-state', 'unavailable');
+    else status.removeAttribute('data-state');
+  }
 
   /* Session trampoline: the shared cookie carries a ~1h access token, so a
      long-idle member can be signed in with a token the server will reject.
@@ -20902,10 +20926,21 @@ if (document.readyState === 'loading') {
     .then(function(){
       return fetch(SRC, { credentials: 'same-origin', cache: 'no-store' });
     })
-    .then(function(r){ if (!r || !r.ok) throw new Error('locked'); return r.json(); })
+    .then(function(r){
+      if (!r || !r.ok){
+        var error = new Error('board payload unavailable');
+        error.status = r && r.status;
+        throw error;
+      }
+      return r.json();
+    })
     .then(hydrate)
-    .catch(function(){
-      /* Locked (or offline): the wall stays exactly as rendered. Offer
+    .then(function(){ setLoadUnavailable(false); })
+    .catch(function(error){
+      /* Access denial retains the existing wall. Transport, server and invalid
+         payload failures keep the dated preview and disclose missing full data. */
+      if (!error || (error.status !== 401 && error.status !== 403)) setLoadUnavailable(true);
+      /* The wall stays exactly as rendered. Offer
          sign-in when there is no session at all — a member on a fresh
          browser would otherwise only see an upgrade CTA. */
       var si = document.getElementById('us-tw-signin');
