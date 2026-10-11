@@ -64,7 +64,11 @@ every tree this hook planted started in a state its own guard quarantined, and
 the operator had to hand-create a `claude/*` branch before any work could ship.
 A `worktree-<name>` branch that already exists (a tree minted before the switch,
 or the legacy zsh hook's half-finished spawn) is still attached exactly as
-before: branches and worktrees are never renamed or deleted here.
+before: branches and worktrees are never renamed or deleted HERE. The rename is
+the ship-loop guard's job (`_adopt_native_session_branch`, 2026-10-10): it moves
+an unpublished `worktree-<name>` in `.claude/worktrees/<name>` to `claude/<name>`
+at SessionStart or the first effectful tool call — which also heals trees minted
+by a host checkout whose copy of this hook predates the switch.
 
 IDEMPOTENT ON PURPOSE
 ---------------------

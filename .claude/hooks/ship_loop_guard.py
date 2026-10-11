@@ -550,6 +550,86 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     return True, ""
 
 
+# Claude Code's native worktree flow -- and every copy of the WorktreeCreate hook
+# older than its 2026-10-09 BRANCH NAME switch -- mints `.claude/worktrees/<name>`
+# on `worktree-<name>`. Hooks launch from $CLAUDE_PROJECT_DIR, so a host checkout
+# that has not fast-forwarded keeps minting the legacy name long after origin/main
+# moved to `claude/<name>`, while this guard (delegated to the fresh tree) demands
+# claude/*. The result was a session quarantined from its very first tool call in
+# a tree it had just been handed (measured 2026-10-10: two consecutive Desktop /
+# EnterWorktree mints in one seat, both read-only before any work). A tree in
+# exactly that shape is the session's own unpublished carrier, not a shared
+# checkout, so the guard adopts it under the name the current mint hook would
+# have chosen. Everything else -- the primary, the designated local root, a pushed
+# branch, a tree outside `.claude/worktrees/`, a branch that does not match its
+# directory -- stays quarantined, and a hand rename is still not a repair.
+_NATIVE_SESSION_BRANCH_PREFIX = "worktree-"
+
+
+def _adopt_native_session_branch(root: Path) -> str:
+    """Rename an unpublished native ``worktree-<name>`` branch to ``claude/<name>``.
+
+    Returns the adopted branch, or "" when ``root`` is not exactly a native session
+    tree. Every condition must hold: ``root`` is a linked worktree whose directory
+    sits directly in a ``.claude/worktrees/`` folder, its branch is
+    ``worktree-<directory name>``, that branch has no upstream and no
+    remote-tracking copy (so no PR or sibling can know it by that name), and
+    ``claude/<directory name>`` is a valid, unused branch. ``git branch -m``
+    without ``-M`` refuses to clobber a branch created in the meantime.
+
+    Never raises. Admission is recomputed by the caller afterwards and still fails
+    closed, so a failed or skipped adoption leaves the session exactly as
+    quarantined as it was.
+    """
+    try:
+        root = root.resolve()
+        name = root.name
+        if root.parent.name != "worktrees" or root.parent.parent.name != ".claude":
+            return ""
+        legacy = _NATIVE_SESSION_BRANCH_PREFIX + name
+        if _run(root, "git", "branch", "--show-current") != legacy:
+            return ""
+        if Path(_run(root, "git", "rev-parse", "--show-toplevel")).resolve() != root:
+            return ""
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+        if git_dir == common_dir:
+            return ""
+        if _capture(
+            root, ("git", "config", "--get", f"branch.{legacy}.remote"), 45
+        ).stdout.strip():
+            return ""
+        if _run(
+            root,
+            "git",
+            "for-each-ref",
+            "--format=%(refname)",
+            f"refs/remotes/*/{legacy}",
+        ):
+            return ""
+        adopted = f"claude/{name}"
+        if _capture(root, ("git", "check-ref-format", "--branch", adopted), 45).returncode:
+            return ""
+        # Compare case-insensitively across every local branch. On a
+        # case-insensitive volume (default APFS) an exact-name probe misses a
+        # PACKED `claude/<Name>`, and the rename would then write a loose ref whose
+        # file shadows it -- two branch names resolving to one file.
+        wanted = f"refs/heads/{adopted}".casefold()
+        if any(
+            ref.casefold() == wanted
+            for ref in _run(
+                root, "git", "for-each-ref", "--format=%(refname)", "refs/heads/"
+            ).splitlines()
+        ):
+            return ""
+        _run(root, "git", "branch", "-m", legacy, adopted)
+        return adopted
+    except Exception:
+        return ""
+
+
 def _state_path(root: Path, payload: dict[str, Any]) -> Path:
     session = re.sub(r"[^A-Za-z0-9_.-]", "_", str(payload.get("session_id") or "default"))
     repo_key = hashlib.sha256(str(root).encode()).hexdigest()[:16]
@@ -4408,6 +4488,10 @@ def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
         # A quarantined root is read-only, so paying for a full fingerprint of
         # the shared checkout is both needless and capable of adding fleet noise.
         "baseline": _fingerprint(root) if admitted else {},
+        # False only for a record BORN quarantined: its start_head/baseline are
+        # deferred to the moment the root is first admitted. A record that was ever
+        # admitted keeps its pre-work snapshot through any later quarantine flip.
+        "baseline_captured": admitted,
         "last_blocker": "",
         "blocker_count": 0,
         "total_blocks": 0,
@@ -4415,12 +4499,33 @@ def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
     }
 
 
+def _capture_deferred_baseline(root: Path, state: dict[str, Any]) -> None:
+    """Take the pre-work snapshot a quarantined birth deliberately skipped.
+
+    Only a record whose ``baseline_captured`` is exactly False is refreshed: it was
+    born quarantined, so nothing between its birth and this first admission could
+    have been the session's own work. A record that was admitted at any point --
+    including one later flipped to quarantined by a resume/compact on a detached
+    HEAD or a transient git-identity failure -- keeps its start_head, baseline and
+    block counters. Re-capturing those would absorb the session's own commits into
+    start_head and its dirt into the baseline, and Stop would release unshipped work.
+    Legacy records without the field keep everything too, which fails closed.
+    """
+    if state.get("baseline_captured") is False:
+        state["start_head"] = _run(root, "git", "rev-parse", "HEAD")
+        state["baseline"] = _fingerprint(root)
+        state["baseline_captured"] = True
+
+
 def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     source = str(payload.get("source") or "")
+    adopted = _adopt_native_session_branch(root)
     admitted, admission_reason = _delivery_root_admission(root)
     state = _load(path)
     if state is None or source in {"startup", "clear"}:
         state = _initial_state(root, admitted)
+    elif admitted:
+        _capture_deferred_baseline(root, state)
     # Refresh on every startup/resume/compact. A Desktop conversation can retain
     # its session identity while its durable cwd changes underneath it.
     state["root_admission_v"] = _ROOT_ADMISSION_VERSION
@@ -4474,6 +4579,13 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
         )
     else:
         context = ship_loop_context
+    if adopted:
+        context = (
+            "SESSION BRANCH ADOPTED: this unpublished native session worktree was "
+            "minted on " + _NATIVE_SESSION_BRANCH_PREFIX + root.name + "; the guard "
+            "renamed it to " + adopted + ", the name the current WorktreeCreate hook "
+            "mints, so the session is admitted for delivery work.\n" + context
+        )
     _emit(
         {
             "hookSpecificOutput": {
@@ -4493,6 +4605,12 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     much later by the Stop hook.
     """
     admitted, reason = _delivery_root_admission(root)
+    if not admitted:
+        # Recompute even when this call adopted nothing: a concurrent hook process
+        # may have won the rename between the two probes, and its loser must not
+        # deny a tree that is already admissible.
+        _adopt_native_session_branch(root)
+        admitted, reason = _delivery_root_admission(root)
     if admitted:
         _seed_relocated_state(root, path)
         return
@@ -4509,7 +4627,9 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     + (tool or "<unknown>")
                     + " because this conversation is not attached to a linked "
                     "claude/* worktree (" + reason + "). Do not repair this with "
-                    "cd/change_directory or by repointing the shared checkout. Start "
+                    "cd/change_directory, a hand branch rename, or by repointing the "
+                    "shared checkout (an unpublished native .claude/worktrees/<name> "
+                    "tree on worktree-<name> is already adopted automatically). Start "
                     "a fresh worktree-backed Claude session and continue there, or "
                     "move this one with EnterWorktree onto a linked claude/* worktree."
                 ),
@@ -4529,15 +4649,35 @@ def _seed_relocated_state(root: Path, path: Path) -> None:
     admitted effectful call: start_head and the dirty baseline are captured before
     that call's side effect, which is the same moment SessionStart would have used.
     Admission never depends on this write; a failure here leaves the tool allowed.
+
+    A record that says this same root is QUARANTINED is re-admitted too. Stop skips
+    enforcement entirely for ``root_admitted: False``, so a root that became
+    admissible in place -- native branch adoption, or a git-identity probe that
+    failed transiently at SessionStart -- would otherwise mutate with no ship loop
+    behind it. Re-admission is a flag flip, never a fresh record: only a record
+    born quarantined has its snapshot taken now (``_capture_deferred_baseline``),
+    while one that was admitted before a resume/compact quarantined it keeps the
+    start_head and baseline that already hold the session's own work.
     """
     try:
-        if _load(path) is not None:
+        existing = _load(path)
+        quarantined = (
+            existing is not None
+            and existing.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+            and existing.get("root_admitted") is False
+        )
+        if existing is not None and not quarantined:
             return
-        state = _initial_state(root, True)
+        if existing is None:
+            state = _initial_state(root, True)
+            state["seeded_by"] = "pre_tool_use_relocation"
+        else:
+            state = existing
+            _capture_deferred_baseline(root, state)
+            state["seeded_by"] = "pre_tool_use_admission"
         state["root_admission_v"] = _ROOT_ADMISSION_VERSION
         state["root_admitted"] = True
         state["root_admission_reason"] = ""
-        state["seeded_by"] = "pre_tool_use_relocation"
         _save(path, state)
     except Exception:
         return
