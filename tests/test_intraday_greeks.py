@@ -333,9 +333,9 @@ def test_compute_grids_empty_on_no_usable_contracts():
 # `np.where(step_ok, sigma - diff / vega, sigma)`, and np.where evaluates BOTH branches — so
 # `diff / vega` runs even for elements the step_ok mask discards. vega is EXACTLY 0.0
 # whenever _pdf(d1) underflows (|d1| > ~38.6 → exp(-d1²/2) == 0.0 in float64), which a
-# late-day 0DTE wing reaches easily: T floored at MIN_T (1 minute) gives σ·√T ≈ 4e-4, so a
-# strike ~2% OTM already has |d1| ≈ 49. The fix masks the DENOMINATOR; it must not change
-# any solved value.
+# late-day 0DTE wing reaches easily: T at MIN_T (1 minute, the shortest solvable clock) gives
+# σ·√T ≈ 4e-4, so a strike ~2% OTM already has |d1| ≈ 49. The fix masks the DENOMINATOR; it
+# must not change any solved value.
 
 def _late_day_0dte_wing():
     """A 2¢ SPY-like wing, ~2% OTM, one minute from expiry — the live warning's input."""
