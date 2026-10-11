@@ -81,3 +81,37 @@ remain; both existing stage files retain their hashes.
 script, source, configuration, validator, original candidate and prepared JSON.
 This is a prepared research artifact, not an admitted/staged/public Press article
 or a generated D14 acceptance sample. The original12/17 replay remains retained.
+
+## Opt-in external candidate planning — 2026-10-11 23:06 UTC
+
+Source commit `7f0759ee547c` adds `desk_planner.plan_external_candidate` over the
+existing sentinel's exact retained document. Its closed input binds the document,
+body, qualification and copyright-policy hashes, reviewed literal quantities,
+ticker association and arithmetic. It rejects incomplete/truncated text, altered
+identity, future/stale/naive clocks and missing rendered dossiers. The reviewed
+White House material was already qualified for this public research record; the
+byte-identical sentinel object is retained with it. General host captures remain
+private and unqualified. No poll or source-ownership transfer was introduced.
+
+This returns a planning-only envelope with a validation context, not an ordinary
+writer slot. Default `plan()` and the runner are unchanged. Coverage dedupe is
+reported and the existing cadence ceiling is exposed; no reservation or cadence
+consumption occurs. Future writer admission must recheck both. The denial fields
+are descriptive here, not a claim of a new generic staging enforcement gate.
+
+Verification: `python3 -m pytest tests/test_press_external_candidate.py
+ tests/test_press_planner.py tests/test_press_validators.py -q` returned **154
+passed in 5.29s**. The first run found a test incorrectly assuming the existing
+fixture's staging directory did not exist; it was repaired to compare all input
+file hashes before and after. Quantity-substring rejection was added and passed.
+Independent source review accepted reader SHA256
+`b73fd096e72592684ae89262342606a5f14b2f05e349c4e914a6e996d13a273a`.
+
+Verified command: `python3
+research/agentic_media/public_intelligence_20261011/replay_event_candidate.py
+--peer-root /Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main --formatted
+--external-plan`. The saved `whitehouse_external_plan_validation.json` binds
+source commit and module hashes. The real candidate remains **15/17**, failing
+only our-value and receipts, with both staged peer hashes unchanged. All external
+figures and external-only arithmetic remain third-party. Hashes bind the reviewed
+rights input; they do not independently grant rights or publication approval.

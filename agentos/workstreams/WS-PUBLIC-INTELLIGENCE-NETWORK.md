@@ -21,9 +21,10 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: PR8786 was protected-refreshed to c0963f78021b1be45606be4c75ef2cd771470dc5 after b8a4805 passed all 21 binding checks. Consume CI38180707696 through the existing observer and protected controller, then verify installed source, served bytes and public browser routes. The separate recovery integration is fb07949277680cdc8c290dbaa68b741a03188627. Retention has 70 passing affected tests at integration969b3028; candidate remains 15/17 and unadmitted. The existing NVIDIA dossier now reaches the exact Terminal transcript with an authenticated account and existing watchlist entry, but a busy-sheet bug required manual dismissal and is under isolated repair. After landing, run the existing nonpromoting full audit and integrate the retention slice from fresh main.
+next_action: PR8786 was protected-refreshed to c0963f78021b1be45606be4c75ef2cd771470dc5 after b8a4805 passed all 21 binding checks. Consume CI38180707696 through the existing observer and protected controller, then verify installed source, served bytes and public browser routes. The separate recovery integration is fb07949277680cdc8c290dbaa68b741a03188627. Retention has 70 passing affected tests at integration969b3028; candidate remains 15/17 and unadmitted. The existing NVIDIA dossier now reaches the exact Terminal transcript with an authenticated account and existing watchlist entry, but a busy-sheet bug required manual dismissal. Its reviewed repair is Terminal PR956 at a6559d38aaf69d6a2da212a01d7515b4840e43cd, protected auto-merge armed with CI38182377131 running. External planning is implemented at7f0759ee547c with154 affected tests passing; its real candidate remains15/17 and unadmitted. After landing, run the existing nonpromoting full audit and integrate the retention slice from fresh main.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
+  - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
   - research/agentic_media/public_intelligence_20261011/CHECKPOINT.md
   - research/agentic_media/public_intelligence_20261011/EARNINGS_DOSSIER_CONTRACT.md
