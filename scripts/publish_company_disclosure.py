@@ -12,6 +12,10 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine.company_intelligence import issuer_disclosure_owner as owner
 from engine.company_intelligence import issuer_disclosures as native
