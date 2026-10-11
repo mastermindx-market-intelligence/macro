@@ -408,5 +408,122 @@ def test_iv_solve_is_unchanged_by_the_guard():
         assert np.max(np.abs(iv - sig)) < 1e-4
 
 
+# ── (10) V01: the IV inversion refuses inside MIN_T instead of solving on a floored clock ──
+# implied_vol_vec used to floor T at MIN_T (60 s) while bs_greeks_vec used the raw T, so a
+# contract with 0 < T < 60 s got its IV from one clock and its greeks from another. Inside
+# MIN_T the inversion is now refused (NaN); T == MIN_T stays the smallest valid clock.
+
+_SECONDS_PER_YEAR = 365.0 * 24.0 * 3600.0
+
+
+def test_iv_solve_refuses_inside_min_t_instead_of_flooring_tte():
+    from engine.intraday_greeks import MIN_T
+
+    S = 5000.0
+    seconds = np.array([30.0, 59.0, 61.0, 120.0])
+    T = seconds / _SECONDS_PER_YEAR
+    K = np.full(seconds.shape, 5000.0)
+    isc = np.full(seconds.shape, True)
+    sig = np.full(seconds.shape, 0.20)
+    mid = bs_price(S, K, T, sig, isc, R, Q)          # each call priced at its OWN raw T
+    iv = implied_vol_vec(mid, S, K, T, isc, R, Q)
+    assert np.isnan(iv[0]) and np.isnan(iv[1]), f"IV solved inside MIN_T: {iv[:2]}"
+    assert np.max(np.abs(iv[2:] - 0.20)) < 1e-4, f"IV outside MIN_T drifted: {iv[2:]}"
+
+    t_edge = np.array([MIN_T])
+    mid_edge = bs_price(S, K[:1], t_edge, sig[:1], isc[:1], R, Q)
+    iv_edge = implied_vol_vec(mid_edge, S, K[:1], t_edge, isc[:1], R, Q)
+    assert np.isfinite(iv_edge[0]), "T == MIN_T must stay solvable"
+    assert abs(iv_edge[0] - 0.20) < 1e-4
+
+
+def test_greek_grids_exclude_contracts_inside_min_t():
+    S = 5000.0
+    T = 30.0 / _SECONDS_PER_YEAR
+    contracts = []
+    for right, isc in (("C", True), ("P", False)):
+        mid = float(bs_price(S, np.array([5000.0]), np.array([T]), np.array([0.20]),
+                             np.array([isc]), R, Q)[0])
+        contracts.append({"exp_years": T, "strike": 5000.0, "right": right,
+                          "mid": mid, "oi": 1000.0})
+    gg = compute_greek_grids(contracts, spot=S, r=R, q=Q)
+    assert gg.n_contracts == 0, f"{gg.n_contracts} contracts inside MIN_T contributed greeks"
+    assert gg.strikes == []
+
+
+def test_kernel_declares_model_exercise_units_and_carry():
+    from engine.intraday_greeks import KERNEL_CONVENTIONS, MIN_T
+
+    assert KERNEL_CONVENTIONS == {
+        "kernel": "engine.intraday_greeks",
+        "model": "black_scholes_merton",
+        "exercise": "european",
+        "carry": "continuous_r_and_q",
+        "r_source": "fixed_default_constant",
+        "q_source": "fixed_default_constant",
+        "year_basis": "ACT/365F_calendar_seconds",
+        "iv_unit": "decimal_annualized",
+        "price_unit": "per_underlying_unit",
+        "delta_unit": "per_underlying_unit",
+        "gamma_unit": "delta_per_underlying_price_unit",
+        "vega_unit": "price_per_1.00_vol",
+        "vanna_unit": "delta_per_1.00_vol",
+        "charm_unit": "delta_per_calendar_year",
+        "iv_inversion_min_t_years": MIN_T,
+        "inside_min_t": "refused_nan",
+    }
+
+
+_REFUSED = "refused"
+_SUPPORTED = "supported"
+
+# (exercise_style, right, seconds_to_economic_expiry, discrete_dividend_before_expiry,
+#  expected (status, reason, model)) — rows are grouped by the rule that must decide them,
+# in rule order; the cross-rule rows pin that an earlier rule wins.
+_APPLICABILITY_TABLE = [
+    # 1. invalid_right
+    ("european", "X", 3600.0, False, (_REFUSED, "invalid_right", None)),
+    ("european", None, None, None, (_REFUSED, "invalid_right", None)),
+    ("bermudan", "", -1.0, True, (_REFUSED, "invalid_right", None)),
+    # 2. unknown_economic_clock
+    ("european", "C", None, False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "P", float("nan"), False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "C", float("inf"), False, (_REFUSED, "unknown_economic_clock", None)),
+    ("bermudan", "C", None, None, (_REFUSED, "unknown_economic_clock", None)),
+    # 3. at_or_after_economic_expiry
+    ("european", "C", 0.0, False, (_REFUSED, "at_or_after_economic_expiry", None)),
+    ("american", "P", -5.0, False, (_REFUSED, "at_or_after_economic_expiry", None)),
+    # 4. inside_min_t_indeterminate
+    ("european", "C", 59.0, False, (_REFUSED, "inside_min_t_indeterminate", None)),
+    ("american", "P", 30.0, None, (_REFUSED, "inside_min_t_indeterminate", None)),
+    # 5. european → supported
+    ("european", "C", 60.0, None, (_SUPPORTED, "european_exercise", "black_scholes_merton")),
+    ("European", "put", 3600.0, False,
+     (_SUPPORTED, "european_exercise", "black_scholes_merton")),
+    # 6. american put
+    ("american", "P", 3600.0, False, (_REFUSED, "american_put_early_exercise", None)),
+    # 7. american call, by dividend schedule
+    ("american", "C", 3600.0, None, (_REFUSED, "unknown_dividend_schedule", None)),
+    ("american", "C", 3600.0, True, (_REFUSED, "american_call_dividend_before_expiry", None)),
+    ("american", "call", 3600.0, False,
+     (_SUPPORTED, "american_call_without_dividend", "european_equivalent")),
+    # 8. unknown_exercise_style
+    ("bermudan", "C", 3600.0, False, (_REFUSED, "unknown_exercise_style", None)),
+    (None, "P", 3600.0, False, (_REFUSED, "unknown_exercise_style", None)),
+]
+
+
+@pytest.mark.parametrize("style,right,seconds,dividend,expected", _APPLICABILITY_TABLE)
+def test_kernel_applicability_refuses_unsupported_contracts(style, right, seconds, dividend,
+                                                            expected):
+    from engine.intraday_greeks import kernel_applicability
+
+    got = kernel_applicability(exercise_style=style, right=right,
+                               seconds_to_economic_expiry=seconds,
+                               discrete_dividend_before_expiry=dividend)
+    status, reason, model = expected
+    assert got == {"status": status, "reason": reason, "model": model}
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
