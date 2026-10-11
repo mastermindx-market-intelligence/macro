@@ -675,12 +675,17 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  2026-10-11 candidate-return continuation: use
-  PROPHET-US-V4-RECOVERY-2026-10-11-candidate-return.md and programme comment
-  6107291350. B03/8798/8801/8806 source releases are closed; publication and
-  authenticated production proof remain owed. Current candidate-return source
-  has 188 affected tests and 24 controlled Chromium journeys passing; final
-  modal-delta review, hosted CI and normal source release remain open.
+  2026-10-11 B03 runtime continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-11-b03-read-performance.md and programme comment
+  6107291350. B03/8798/8801/8806/8827 source releases are closed; 8827 merged as
+  f6ab52870283d0b1f782a6b0978a81b672864285. Earlier four-feature publication
+  completed, and live bilingual entry/source copy plus exact related Plan filter
+  were observed. Live B03 read aborted at its existing 15-second deadline;
+  original request arrival and first fault remain unknown. The current bounded
+  per-request relation index preserves full B1 validation, passes 53 affected
+  tests and exact 371-row retained-input comparison, and has independent scoped
+  review. Publish and consume exact-head CI before normal source release; actual
+  installed-source/live timeout resolution and 8827 candidate return remain owed.
   The older progression below is historical and does not reopen closed releases.
   2026-10-11 human-approved continuation under 6817/6805 and original root
   01a11e89-b35d-7a81-9404-5fce2c6170cb: use
