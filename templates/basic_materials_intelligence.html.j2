@@ -1,0 +1,97 @@
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(navigator.language||'').slice(0,2);if(l==='zh')document.documentElement.setAttribute('data-lang','zh');}catch(e){}</script>
+<title>Basic Materials Intelligence — sector dossier — MastermindX</title>
+{% set seo_title = "Basic Materials Intelligence — sector dossier — MastermindX" %}
+{% set seo_desc = "Understand how material economics reach businesses, contracts and cash — research context only." %}
+{% set seo_path = "basic_materials_intelligence.html" %}
+{% include "_seo_head.html.j2" %}
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="basic_materials_intelligence.css">
+</head>
+<body class="bm-page">
+{% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}
+{% set nav_search_placeholder_zh = "搜索任意股票 — 美股、A 股、港股、加股等…" %}
+{% include "_site_nav.html.j2" %}
+
+<main id="bm-main" class="bm-shell" data-bm-reader-state="unbound">
+  <header class="bm-hero" aria-labelledby="bm-title">
+    <p class="bm-kicker">{{ t('Sector dossier', '行业档案') }}</p>
+    <div class="bm-title-row">
+      <div>
+        <h1 id="bm-title">{{ t('Basic Materials', '基础材料') }}</h1>
+        <p class="bm-deck">{{ t('Follow the value from the material to the business, then to cash — without collapsing different mechanisms into one score.', '从材料出发，沿价值链追踪至企业与现金——不把不同机制压缩成单一评分。') }}</p>
+      </div>
+      <span class="bm-state-chip">{{ t('Research context only', '仅供研究参考') }}</span>
+    </div>
+    <div class="bm-reader-notice" role="status">
+      <strong>{{ t('Evidence service not connected', '证据服务尚未接入') }}</strong>
+      <span>{{ t('The shell is available, but verified company figures and source receipts stay unavailable until the accepted private reader is bound.', '页面框架已可用；在获准的私有读取器接入前，已验证的公司数据与来源凭据保持不可用。') }}</span>
+    </div>
+  </header>
+
+  <nav class="bm-task-tabs" role="tablist" aria-label="Dossier tasks" data-aria-en="Dossier tasks" data-aria-zh="档案任务">
+    <button id="bm-tab-understand" class="bm-tab" type="button" role="tab" data-bm-tab="understand" aria-controls="bm-panel">{{ t('Understand', '理解') }}</button>
+    <button id="bm-tab-compare" class="bm-tab" type="button" role="tab" data-bm-tab="compare" aria-controls="bm-panel">{{ t('Compare businesses', '比较企业') }}</button>
+    <button id="bm-tab-evidence" class="bm-tab" type="button" role="tab" data-bm-tab="evidence" aria-controls="bm-panel">{{ t('Check evidence', '核查证据') }}</button>
+  </nav>
+
+  <section class="bm-family-strip" aria-labelledby="bm-family-title">
+    <div class="bm-section-heading">
+      <div>
+        <p class="bm-kicker">{{ t('Research families', '研究类别') }}</p>
+        <h2 id="bm-family-title">{{ t('Explore the material chain', '探索材料链条') }}</h2>
+      </div>
+      <p>{{ t('Families overlap. They are research navigation, not a market ranking.', '类别可能重叠。它们用于研究导航，并非市场排名。') }}</p>
+    </div>
+    <div class="bm-family-list" role="group" aria-label="Material families" data-aria-en="Material families" data-aria-zh="材料类别">
+      <button type="button" data-bm-family="base-industrial-metals">{{ t('Base & industrial metals', '基本与工业金属') }}</button>
+      <button type="button" data-bm-family="ferrous">{{ t('Ferrous', '黑色金属') }}</button>
+      <button type="button" data-bm-family="precious-metals">{{ t('Precious metals', '贵金属') }}</button>
+      <button type="button" data-bm-family="battery-strategic">{{ t('Battery & strategic', '电池与战略材料') }}</button>
+      <button type="button" data-bm-family="construction-minerals">{{ t('Construction minerals', '建筑矿物') }}</button>
+      <button type="button" data-bm-family="commodity-chemicals">{{ t('Commodity chemicals', '基础化工') }}</button>
+      <button type="button" data-bm-family="specialty-materials">{{ t('Specialty materials', '特种材料') }}</button>
+      <button type="button" data-bm-family="industrial-gases">{{ t('Industrial gases', '工业气体') }}</button>
+      <button type="button" data-bm-family="fertilizers">{{ t('Fertilizers & crop inputs', '化肥与农业投入品') }}</button>
+      <button type="button" data-bm-family="forest-packaging">{{ t('Forest products & packaging', '林产品与包装') }}</button>
+    </div>
+  </section>
+
+  <section id="bm-panel" class="bm-panel" role="tabpanel" tabindex="-1" aria-labelledby="bm-tab-understand">
+    <noscript>
+      <div class="bm-empty">
+        <h2>{{ t('JavaScript is required for dossier controls', '档案控件需要 JavaScript') }}</h2>
+        <p>{{ t('No live data is embedded in this page.', '此页面未嵌入实时数据。') }}</p>
+      </div>
+    </noscript>
+  </section>
+
+  <section class="bm-method" aria-labelledby="bm-method-title">
+    <p class="bm-kicker">{{ t('Interpretation law', '解读原则') }}</p>
+    <h2 id="bm-method-title">{{ t('Different economics stay different', '不同经济机制保持区分') }}</h2>
+    <div class="bm-method-grid">
+      <article><h3>{{ t('Reported', '已报告') }}</h3><p>{{ t('Keep the issuer’s population, unit, period and accounting basis.', '保留发行人的统计范围、单位、期间与会计口径。') }}</p></article>
+      <article><h3>{{ t('Derived', '派生') }}</h3><p>{{ t('Show the exact inputs and formula without turning a residual into a raw fact.', '展示精确输入与公式，不把残差伪装成原始事实。') }}</p></article>
+      <article><h3>{{ t('Unknown', '未知') }}</h3><p>{{ t('Missing identity, rights or evidence remains unavailable rather than guessed.', '身份、权利或证据缺失时保持不可用，而非猜测。') }}</p></article>
+    </div>
+  </section>
+
+  <footer class="bm-footer">
+    <span>{{ t('No ranking · no entry signal · no position sizing', '无排名 · 无入场信号 · 无仓位建议') }}</span>
+    <span>{{ t('Verified inputs appear only after owner admission.', '仅在所有者准入后显示已验证输入。') }}</span>
+  </footer>
+</main>
+<div id="bm-announcement" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script>(function(){function applyAria(){var lang=document.documentElement.getAttribute('data-lang')||'en';document.querySelectorAll('[data-aria-en]').forEach(function(el){el.setAttribute('aria-label',lang==='zh'?(el.getAttribute('data-aria-zh')||el.getAttribute('data-aria-en')):el.getAttribute('data-aria-en'));});}document.addEventListener('langchange',applyAria);applyAria();})();</script>
+<script src="theme.js" defer></script>
+<script src="basic_materials_intelligence.js" defer></script>
+</body>
+</html>
