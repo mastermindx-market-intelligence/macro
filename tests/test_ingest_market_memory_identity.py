@@ -434,6 +434,40 @@ def test_ingest_fails_closed_when_the_checkout_moves_a_loaded_module(
         )
 
 
+def test_ingest_fails_closed_when_a_module_imported_during_capture_moves(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A module first imported inside the per-key loop must be judged at completion, not snapshotted before the loop."""
+    repository = _temporary_repository(tmp_path)
+    dependency = repository / "fake_lazy_identity_dependency.py"
+    dependency.write_text("VALUE = 1\n", encoding="utf-8")
+    _git(repository, "add", "fake_lazy_identity_dependency.py")
+    _git(repository, "commit", "-qm", "track the lazily imported dependency")
+    monkeypatch.delitem(sys.modules, "fake_lazy_identity_dependency", raising=False)
+    assert "fake_lazy_identity_dependency" not in sys.modules  # non-vacuity: not loaded before the run
+
+    def import_lazily_then_commit_edit() -> None:
+        module = types.ModuleType("fake_lazy_identity_dependency")
+        module.__file__ = str(dependency)
+        monkeypatch.setitem(sys.modules, "fake_lazy_identity_dependency", module)
+        dependency.write_text("VALUE = 2\n", encoding="utf-8")
+        _git(repository, "add", "fake_lazy_identity_dependency.py")
+        _git(repository, "commit", "-qm", "edit the lazily imported module")
+
+    monkeypatch.setattr(
+        STORE,
+        "capture_spy_listing_observation",
+        _capture_with_mid_run_commit(import_lazily_then_commit_edit),
+    )
+
+    with pytest.raises(INGEST.IdentityIngestError, match="changed during.*identity path"):
+        INGEST.ingest_identity_observations(
+            repository,
+            store_root=tmp_path / "identity-store",
+        )
+
+
 def test_completion_paths_cover_every_checkout_file_the_ingest_opens(
     tmp_path: Path,
 ) -> None:
