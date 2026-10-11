@@ -168,6 +168,90 @@ def test_staging_writes_nothing_outside_the_staging_dir(tmp_path, monkeypatch):
     assert list((root / "content" / "seo" / "blog").glob("*.md")) == []
 
 
+def test_interrupted_provider_leaves_non_emittable_seed_reservation(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    slot = P.plan(["brief"], as_of="2026-07-26", root=root, cfg=cfg)[0]
+    calls = []
+
+    def interrupt(*args, **kwargs):
+        calls.append(args[0]["id"])
+        raise KeyboardInterrupt("provider response not observed")
+
+    monkeypatch.setattr(R.writer, "write", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+
+    path = root / "data/press/staging" / f"{slot['id']}.json"
+    item = json.loads(path.read_text())
+    assert item["status"] == "in_progress"
+    assert item["progress"] == {"phase": "provider_started", "attempt": 0}
+    assert item["draft"] is None
+    assert set(slot["seed_refs"]).issubset(P.staged_refs(root, cfg)[0])
+    assert slot["id"] not in {s["id"] for s in P.plan(["brief"], as_of="2026-07-26", root=root, cfg=cfg)}
+    before = path.read_bytes()
+    # Even a caller that supplies the same preplanned slot cannot replay it.
+    monkeypatch.setattr(R.desk_planner, "plan", lambda *_a, **_kw: [slot])
+    with pytest.raises(FileExistsError):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    assert calls == [slot["id"]]
+    assert path.read_bytes() == before
+    assert R.run_emit(root, cfg)["emitted"] == 0
+
+
+def test_interrupted_validation_retains_generated_draft_without_passing_it(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    _stub_writer(monkeypatch)
+
+    def interrupt(*_a, **_kw):
+        raise KeyboardInterrupt("validation interrupted")
+
+    monkeypatch.setattr(R.validators, "validate", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"], max_slots=1)
+    path = next((root / "data/press/staging").glob("press-*.json"))
+    item = json.loads(path.read_text())
+    assert item["status"] == "in_progress"
+    assert item["progress"] == {"phase": "validation_pending", "attempt": 0}
+    assert item["draft"]["body_html"]
+    assert item["provider"] == "stub"
+    assert item["retained_draft_attempt"] == 0
+    assert item["validator_report"] is None
+    assert R.run_emit(root, cfg)["emitted"] == 0
+
+
+def test_stage_checkpoint_storage_failure_prevents_provider_call(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    calls = _stub_writer(monkeypatch)
+
+    def fail_storage(*_a, **_kw):
+        raise OSError("storage durability unavailable")
+
+    monkeypatch.setattr(R.os, "fsync", fail_storage)
+    with pytest.raises(OSError, match="storage durability unavailable"):
+        R.run_staging(root, P.load_config(root), as_of="2026-07-26",
+                      desks=["brief"], max_slots=1)
+    assert calls["n"] == 0
+    assert not list((root / "data/press/staging").iterdir())
+
+
+def test_stage_checkpoint_replace_failure_keeps_previous_complete_record(tmp_path, monkeypatch):
+    path = tmp_path / "slot.json"
+    original = {"status": "in_progress", "progress": {"phase": "provider_started", "attempt": 0}}
+    R._write_stage_checkpoint(path, original, create=True)
+    before = path.read_bytes()
+
+    def fail_replace(*_a, **_kw):
+        raise OSError("atomic replace unavailable")
+
+    monkeypatch.setattr(R.os, "replace", fail_replace)
+    with pytest.raises(OSError, match="atomic replace unavailable"):
+        R._write_stage_checkpoint(path, {"status": "passed"})
+    assert path.read_bytes() == before
+    assert list(tmp_path.iterdir()) == [path]
+
+
 def test_staging_writes_one_json_per_slot_plus_a_run_summary(tmp_path, monkeypatch):
     root = F.fixture_root(tmp_path)
     _stub_writer(monkeypatch)
