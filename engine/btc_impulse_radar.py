@@ -53,6 +53,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import date, datetime
 
 import numpy as np
 import pandas as pd
@@ -86,6 +87,282 @@ def _ladder(score: float, has_act: bool) -> str:
     if score >= 15:
         return "coiled"
     return "quiet"
+
+
+
+def _evidence_date(value) -> date | None:
+    """Parse one contract date without ever defaulting to the wall clock."""
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if value is None or value == "":
+        return None
+    try:
+        return date.fromisoformat(str(value).strip()[:10])
+    except (TypeError, ValueError):
+        return None
+
+
+def _permission_result(identity: str, evaluation: date | None, *, reason: str,
+                       permitted: bool = False, direction: str | None = None,
+                       validation_asof: date | None = None,
+                       validation_age_days: int | None = None,
+                       gate_read_state: str = "unknown", gate_path: str | None = None,
+                       gate_status: str = "unknown", stats: list[dict] | None = None,
+                       target: dict | None = None, model_version=None) -> dict:
+    """Always-same permission shape; refusal is data, never an exception."""
+    return {
+        "identity": identity,
+        "permitted": bool(permitted),
+        "reason": reason,
+        "direction": direction,
+        "evaluation_date": evaluation.isoformat() if evaluation else None,
+        "validation_asof": validation_asof.isoformat() if validation_asof else None,
+        "validation_age_days": validation_age_days,
+        "validation_state": (
+            "current" if reason in {"eligible", "demoted", "insufficient_n", "no_data",
+                                     "unknown_status", "inconsistent_verdict",
+                                     "leg_contract_mismatch", "leg_evidence_malformed",
+                                     "leg_malformed", "leg_missing",
+                                     "legs_contract_mismatch"}
+            else reason
+        ),
+        "gate_read_state": gate_read_state,
+        "gate_path": gate_path,
+        "gate_status": gate_status,
+        "stats": stats or [],
+        "target": target or {},
+        "model_version": model_version,
+        "version_state": "present" if model_version not in (None, "") else "absent",
+    }
+
+
+def resolve_leg_permission(gate_snapshot, identity: str, evaluation_date) -> dict:
+    """Resolve current permission for one exact BTC impulse identity.
+
+    This is the sole authority resolver.  It consumes the validator's existing
+    artifact contract; it does not invent a schema/version and it never consults
+    ``all_pass``.  Raw causal fire history remains independent of this decision.
+    Validation age 0 or 1 UTC days is current; every unreadable, malformed,
+    future, stale, contradictory, or non-leading state fails closed.
+    """
+    evaluation = _evidence_date(evaluation_date)
+    directions = {"d2": "down", "d3": "down", "u1": "up", "d2+d3": "down"}
+    if identity not in directions:
+        return _permission_result(identity, evaluation, reason="unknown_identity")
+    direction = directions[identity]
+    if evaluation is None:
+        return _permission_result(identity, None, reason="evaluation_time_invalid",
+                                  direction=direction)
+
+    read_state, artifact, gate_path = "ok", gate_snapshot, None
+    if isinstance(gate_snapshot, dict) and "read_state" in gate_snapshot:
+        read_state = str(gate_snapshot.get("read_state") or "unknown")
+        artifact = gate_snapshot.get("artifact")
+        gate_path = gate_snapshot.get("path")
+    if read_state == "missing":
+        return _permission_result(identity, evaluation, reason="gate_missing",
+                                  direction=direction, gate_read_state=read_state,
+                                  gate_path=gate_path)
+    if read_state == "corrupt" or not isinstance(artifact, dict):
+        return _permission_result(identity, evaluation, reason="gate_corrupt",
+                                  direction=direction, gate_read_state=read_state,
+                                  gate_path=gate_path)
+    if read_state != "ok" or not artifact or artifact.get("ok") is not True:
+        return _permission_result(identity, evaluation, reason="gate_unavailable",
+                                  direction=direction, gate_read_state=read_state,
+                                  gate_path=gate_path)
+
+    # Import at call time: the evaluator imports this module for raw conditions.
+    from engine import btc_impulse_radar_backtest as evaluator
+
+    target_label = f"fwd({evaluator.LABEL_H}d) +-{int(evaluator.LABEL_THR * 100)}%"
+    target = {
+        "label": target_label,
+        "bars": evaluator.LABEL_H,
+        "calendar": "BTC_24_7",
+        "window": f"(t,t+{evaluator.LABEL_H}d]",
+        "down_threshold": -evaluator.LABEL_THR,
+        "up_threshold": evaluator.LABEL_THR,
+    }
+    model_version = (artifact.get("model_version") or artifact.get("rule_version")
+                     or artifact.get("schema_version"))
+    if artifact.get("label") != target_label:
+        return _permission_result(identity, evaluation, reason="target_mismatch",
+                                  direction=direction, gate_read_state=read_state,
+                                  gate_path=gate_path, target=target,
+                                  model_version=model_version)
+
+    validation = _evidence_date(artifact.get("asof"))
+    if validation is None:
+        return _permission_result(identity, evaluation, reason="validation_time_invalid",
+                                  direction=direction, gate_read_state=read_state,
+                                  gate_path=gate_path, target=target,
+                                  model_version=model_version)
+    age = (evaluation - validation).days
+    if age < 0:
+        return _permission_result(identity, evaluation, reason="future_validation",
+                                  direction=direction, validation_asof=validation,
+                                  validation_age_days=age, gate_read_state=read_state,
+                                  gate_path=gate_path, target=target,
+                                  model_version=model_version)
+    if age >= 2:
+        return _permission_result(identity, evaluation, reason="stale_validation",
+                                  direction=direction, validation_asof=validation,
+                                  validation_age_days=age, gate_read_state=read_state,
+                                  gate_path=gate_path, target=target,
+                                  model_version=model_version)
+
+    legs = artifact.get("legs")
+    if not isinstance(legs, dict):
+        return _permission_result(identity, evaluation, reason="legs_contract_mismatch",
+                                  direction=direction, validation_asof=validation,
+                                  validation_age_days=age, gate_read_state=read_state,
+                                  gate_path=gate_path, target=target,
+                                  model_version=model_version)
+    known = set(evaluator.LEGS)
+    if any(key not in known for key in legs):
+        return _permission_result(identity, evaluation, reason="legs_contract_mismatch",
+                                  direction=direction, validation_asof=validation,
+                                  validation_age_days=age, gate_read_state=read_state,
+                                  gate_path=gate_path, target=target,
+                                  model_version=model_version)
+
+    requested = ["d2", "d3"] if identity == "d2+d3" else [identity]
+    stats: list[dict] = []
+    statuses: list[str] = []
+    for key in requested:
+        if key not in legs:
+            return _permission_result(identity, evaluation, reason="leg_missing",
+                                      direction=direction, validation_asof=validation,
+                                      validation_age_days=age, gate_read_state=read_state,
+                                      gate_path=gate_path, target=target,
+                                      model_version=model_version)
+        row = legs[key]
+        if not isinstance(row, dict):
+            return _permission_result(identity, evaluation, reason="leg_malformed",
+                                      direction=direction, validation_asof=validation,
+                                      validation_age_days=age, gate_read_state=read_state,
+                                      gate_path=gate_path, target=target,
+                                      model_version=model_version)
+        status = row.get("status")
+        if status not in {"leading", "demoted", "insufficient_n", "no_data"}:
+            return _permission_result(identity, evaluation, reason="unknown_status",
+                                      direction=direction, validation_asof=validation,
+                                      validation_age_days=age, gate_read_state=read_state,
+                                      gate_path=gate_path, target=target,
+                                      model_version=model_version)
+        statuses.append(status)
+        expected = evaluator.LEGS[key]
+        if status != "no_data":
+            actual_direction = row.get("dir")
+            if "direction" in row and row.get("direction") != actual_direction:
+                return _permission_result(identity, evaluation,
+                                          reason="leg_contract_mismatch",
+                                          direction=direction, validation_asof=validation,
+                                          validation_age_days=age,
+                                          gate_read_state=read_state, gate_path=gate_path,
+                                          target=target, model_version=model_version)
+            contract_ok = (
+                actual_direction == expected["dir"]
+                and row.get("label") == expected["label"]
+                and row.get("floor") == expected["floor"]
+                and row.get("min_holdout_n") == evaluator.MIN_HOLDOUT_N
+            )
+            if not contract_ok:
+                return _permission_result(identity, evaluation,
+                                          reason="leg_contract_mismatch",
+                                          direction=direction, validation_asof=validation,
+                                          validation_age_days=age,
+                                          gate_read_state=read_state, gate_path=gate_path,
+                                          target=target, model_version=model_version)
+            expected_pass = status == "leading"
+            if row.get("pass") is not expected_pass:
+                return _permission_result(identity, evaluation,
+                                          reason="inconsistent_verdict",
+                                          direction=direction, validation_asof=validation,
+                                          validation_age_days=age,
+                                          gate_read_state=read_state, gate_path=gate_path,
+                                          target=target, model_version=model_version)
+            # A refusal status already fails closed and should remain explicit even
+            # when old artifacts omit its diagnostic measurements.  Only a row that
+            # seeks current ``leading`` authority must prove the measurements that
+            # earned that label; never let status/pass labels self-authorize.
+            if status == "leading":
+                n_holdout = row.get("n_fires_holdout")
+                lift_holdout = row.get("lift_holdout")
+                perm_p = row.get("perm_p")
+                count_valid = (
+                    isinstance(n_holdout, (int, np.integer))
+                    and not isinstance(n_holdout, (bool, np.bool_))
+                    and int(n_holdout) >= 0
+                )
+                lift_valid = (
+                    isinstance(lift_holdout, (int, float, np.integer, np.floating))
+                    and not isinstance(lift_holdout, (bool, np.bool_))
+                    and np.isfinite(float(lift_holdout))
+                )
+                p_valid = (
+                    isinstance(perm_p, (int, float, np.integer, np.floating))
+                    and not isinstance(perm_p, (bool, np.bool_))
+                    and np.isfinite(float(perm_p))
+                    and 0.0 <= float(perm_p) <= 1.0
+                )
+                if not count_valid or not lift_valid or not p_valid:
+                    return _permission_result(identity, evaluation,
+                                              reason="leg_evidence_malformed",
+                                              direction=direction, validation_asof=validation,
+                                              validation_age_days=age,
+                                              gate_read_state=read_state, gate_path=gate_path,
+                                              target=target, model_version=model_version)
+                measured_leading = (
+                    int(n_holdout) >= int(evaluator.MIN_HOLDOUT_N)
+                    and float(lift_holdout) >= float(expected["floor"])
+                    and float(perm_p) <= float(evaluator.P_MAX)
+                )
+                if not measured_leading:
+                    return _permission_result(identity, evaluation,
+                                              reason="inconsistent_verdict",
+                                              direction=direction, validation_asof=validation,
+                                              validation_age_days=age,
+                                              gate_read_state=read_state, gate_path=gate_path,
+                                              target=target, model_version=model_version)
+        elif row.get("pass") not in (None, False):
+            return _permission_result(identity, evaluation,
+                                      reason="inconsistent_verdict",
+                                      direction=direction, validation_asof=validation,
+                                      validation_age_days=age, gate_read_state=read_state,
+                                      gate_path=gate_path, target=target,
+                                      model_version=model_version)
+        stats.append({
+            "leg": key,
+            "status": status,
+            "direction": expected["dir"],
+            "label": expected["label"],
+            "floor": expected["floor"],
+            "min_holdout_n": evaluator.MIN_HOLDOUT_N,
+            "lift_full": row.get("lift_full"),
+            "lift_holdout": row.get("lift_holdout"),
+            "perm_p": row.get("perm_p"),
+            "n_fires_full": row.get("n_fires_full"),
+            "n_fires_holdout": row.get("n_fires_holdout"),
+        })
+
+    if "demoted" in statuses:
+        reason = "demoted"
+    elif "insufficient_n" in statuses:
+        reason = "insufficient_n"
+    elif "no_data" in statuses:
+        reason = "no_data"
+    else:
+        reason = "eligible"
+    return _permission_result(
+        identity, evaluation, reason=reason, permitted=reason == "eligible",
+        direction=direction, validation_asof=validation, validation_age_days=age,
+        gate_read_state=read_state, gate_path=gate_path, gate_status=reason,
+        stats=stats, target=target, model_version=model_version,
+    )
 
 
 def _causal_z(s: pd.Series, w: int) -> pd.Series:
@@ -122,12 +399,15 @@ def _leg_points(cond: pd.Series, max_pts: float, decay: float, horizon: int) -> 
 
 
 def _leg(key, label, tier, pts_info, max_pts, honesty) -> dict:
+    evidence = pts_info.get("evidence") or {}
     demoted = bool(pts_info.get("demoted"))
     if demoted:
-        honesty = honesty + " · [FALSIFIER: DEMOTED — leg stopped leading; act-points zeroed]"
+        status = str(evidence.get("status") or "denied").upper()
+        honesty = honesty + f" · [EVIDENCE: {status} — act points zeroed]"
     return {"key": key, "label": label, "tier": tier, "max": max_pts,
             "points": pts_info["points"], "fired_today": pts_info["fired_today"],
-            "days_since": pts_info["days_since"], "honesty": honesty, "demoted": demoted}
+            "days_since": pts_info["days_since"], "honesty": honesty,
+            "demoted": demoted, "evidence": evidence}
 
 
 # Act-tier leg fire conditions — the alert-relevant crosses. Shared by compute()
@@ -188,7 +468,8 @@ def fire_series(sig_df: pd.DataFrame | None = None) -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def compute(sig_df: pd.DataFrame | None = None) -> dict:
+def compute(sig_df: pd.DataFrame | None = None, *, gate: dict | None = None,
+            board_date=None) -> dict:
     """Build the forward impulse-pressure radar. Never raises."""
     try:
         cfg = config.load().get("btc_impulse_radar", {}) or {}
@@ -214,28 +495,28 @@ def compute(sig_df: pd.DataFrame | None = None) -> dict:
         p3 = close / close.shift(3) - 1.0
         p5 = close / close.shift(5) - 1.0
 
-        # Falsifier gate (P3): a leg whose forward edge has decayed is marked
-        # "demoted" in data/vector/impulse_legs_gate.json by btc_impulse_radar_backtest.
-        # The radar reads it here and ZEROES that leg's act points — a leg that
-        # stops leading is removed without a code change.
-        gate_legs = {}
-        try:
-            from engine import btc_impulse_radar_backtest
-            gate_legs = (btc_impulse_radar_backtest.load_gate() or {}).get("legs", {})
-        except Exception as e:  # noqa: BLE001 — gate is optional
-            log.debug("falsifier gate load skipped: %s", e)
+        # Evidence gate: an act leg receives points only from an exact, current
+        # passport. Read failure, version drift, future/stale validation, demotion,
+        # underpowered samples, and expiry all fail closed.
+        from engine import signal_evidence
+        gate_receipt = signal_evidence.load_btc_gate() if gate is None else gate
+        passport_date = board_date if board_date is not None else asof
+        evidence = {
+            key: signal_evidence.impulse_passport(
+                key, event_at=asof, event_precision="date",
+                board_date=passport_date, source_asof=asof, gate=gate_receipt,
+            )
+            for key in ("d2", "d3", "u1")
+        }
 
         def _gate(key, pts):
-            """Zero an act leg's points + flag it if the falsifier did not bless it.
-
-            Only status 'leading' keeps act points. 'demoted' (edge decayed) and
-            'insufficient_n' (edge ok but < MIN_HOLDOUT_N holdout fires, e.g. u1)
-            both zero the leg — a thin sample cannot award act-tier weight.
-            """
-            status = gate_legs.get(key, {}).get("status")
-            if status in ("demoted", "insufficient_n"):
-                return {"points": 0.0, "fired_today": False, "days_since": None, "demoted": True}
-            return pts
+            """Attach the receipt and zero every leg lacking current authority."""
+            out = dict(pts)
+            out["evidence"] = evidence[key]
+            if not evidence[key]["claim_eligible"]:
+                out.update({"points": 0.0, "fired_today": False,
+                            "days_since": None, "demoted": True})
+            return out
 
         down_legs: list[dict] = []
         up_legs: list[dict] = []
@@ -252,7 +533,7 @@ def compute(sig_df: pd.DataFrame | None = None) -> dict:
         except Exception as e:  # noqa: BLE001 — leg is optional
             log.debug("D2 dvol leg skipped: %s", e)
         down_legs.append(_leg("d2_dvol", "Vol-of-vol jolt (DVOL range)", "act", _gate("d2", d2), 40,
-                              "Holdout lift 3.3-4.6, p=0.0015. Silent on slow/options-calm flushes (missed 2026-06-24)."))
+                              "Observed DVOL-range condition; the current passport controls authority. Blind to slow/options-calm flushes."))
 
         # ---- SOPR legs: D3 (act down 30) + U1 (act up 30) — bgeo sopr ---- #
         d3 = {"points": 0.0, "fired_today": False, "days_since": None}
@@ -268,9 +549,9 @@ def compute(sig_df: pd.DataFrame | None = None) -> dict:
         except Exception as e:  # noqa: BLE001
             log.debug("SOPR legs skipped: %s", e)
         down_legs.append(_leg("d3_sopr", "SOPR profit-take spike", "act", _gate("d3", d3), 30,
-                              "Holdout lift 1.8, p=0.0002, coincidence-clean (leading). Missed 2026-06-24 (SOPR neutral)."))
+                              "Observed SOPR profit-take condition; the current passport controls authority. Blind when SOPR stays neutral."))
         up_legs.append(_leg("u1_sopr", "SOPR capitulation (wash-out)", "act", _gate("u1", u1), 30,
-                            "Holdout lift 3.8, p=0.0004. Reactive: fires AFTER a deep drop, leads the BOUNCE ~2d — not a pre-rally oracle."))
+                            "Reactive wash-out observation after a deep drop; current passport controls authority. Not a pre-rally oracle."))
 
         # ---- D1: coinbase-premium z (context 15) + BOUNDED deepening ---- #
         d1 = {"points": 0.0, "fired_today": False, "days_since": None}
@@ -363,6 +644,7 @@ def compute(sig_df: pd.DataFrame | None = None) -> dict:
 
         return {
             "ok": True, "display_only": True, "asof": asof,
+            "evidence": evidence,
             "down": {
                 "score": int(down_score), "ladder": _ladder(down_score, down_act),
                 "act_live": down_act,
@@ -370,12 +652,13 @@ def compute(sig_df: pd.DataFrame | None = None) -> dict:
                 "legs": down_legs, "lead_window_days": [1, 3],
             },
             "up": {
-                "score": int(up_score), "ladder": _ladder(up_score, up_act), "validated": True,
+                "score": int(up_score), "ladder": _ladder(up_score, up_act),
+                "validated": evidence["u1"]["claim_eligible"],
                 "act_live": up_act,
                 "fired_today": any(l["fired_today"] and l["tier"] == "act" for l in up_legs),
                 "legs": up_legs,
-                "note": ("U1 = act-tier wash-out-bounce caller (reactive to a deep drop, "
-                         "leads the bounce ~2d). No PRE-EMPTIVE up-precursor survived verify."),
+                "note": ("U1 is a reactive wash-out observation after a deep drop. "
+                         "Its current evidence passport decides whether any action claim is permitted."),
             },
             "fuel_gauge": {
                 "oi_pctile": round(oi_pctile, 3) if oi_pctile is not None else None,
@@ -386,10 +669,9 @@ def compute(sig_df: pd.DataFrame | None = None) -> dict:
             "cascade": {"cascade_risk": cascade_risk, "oi_only_risk": oi_only},
             "staleness": {"daily_asof": asof, "intraday_asof": intraday_asof,
                           "stale": bool(stale), "last_flash_change": last_flash_change},
-            "note": ("Forward IMPULSE pressure, NOT the standing regime. Each leg = a verified "
-                     "leading precursor; legs sum to the headline; legs DECAY to quiet absent a "
-                     "fresh cross. Display-only — sizes nothing, no alert yet. None of the three "
-                     "act legs led the 2026-06-24 options-calm flush (honest blind spot)."),
+            "note": ("Forward impulse observations, not the standing regime. Exact current "
+                     "evidence passports govern act points; every denied or unreadable state zeros "
+                     "authority. Legs still decay to quiet, and this display sizes nothing."),
         }
     except Exception as e:  # noqa: BLE001 — radar is additive, never fatal
         return {"ok": False, "reason": f"{type(e).__name__}: {e}"}

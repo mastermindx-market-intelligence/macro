@@ -109,7 +109,7 @@ def test_compute_all_events_merge_drops_stale_keeps_flash_and_sentinel() -> None
     try:
         A.daily_state_events = lambda s: [dict(e) for e in fresh]
         A.risk_extreme_events = lambda s, c: []
-        A.impulse_radar_events = lambda s: []
+        A.impulse_radar_events = lambda s, **kwargs: []
         A.leverage_derisk_events = lambda s: []
         A.flash_events = lambda h, c: []
         A.load_events = lambda: [dict(e) for e in persisted]
