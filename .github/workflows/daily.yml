@@ -2629,6 +2629,8 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 5
         continue-on-error: true
+        # Pin macstudio to a Bash without the Homebrew heredoc deadlock.
+        shell: /bin/bash -e {0}
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -2782,6 +2784,8 @@ jobs:
         # the immediately-following narrow checkpoint is their sole publisher.
         # Seconds; non-fatal to the wider engine job.
         continue-on-error: true
+        # Pin macstudio to a Bash without the Homebrew heredoc deadlock.
+        shell: /bin/bash -e {0}
         env:
           COLLECT_LANE: nightly
         run: |
