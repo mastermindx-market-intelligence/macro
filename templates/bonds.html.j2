@@ -996,6 +996,12 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     <span class="l-en">Company bonds — credit watch</span><span class="l-zh">公司债 · 信用观察</span>
   </div>
 
+  {% if cc_vm.source_available is defined and not cc_vm.source_available %}
+  <div class="card cs-card cs-neutral" data-card="credit-source-unavailable">
+    <h2>{{ t('Credit reading unavailable', '信用读数不可用') }}</h2>
+    <p class="cc-verdict-lead">{{ t(cc_vm.hero.subtitle_en, cc_vm.hero.subtitle_zh) }}</p>
+  </div>
+  {% else %}
   {# 2. HERO STANCE CARD #}
   <div class="card cs-card {{ cc_vm.hero.hero_cs }}">
     <h2>{{ t('Overall read', '整体研判') }}</h2>
@@ -1224,6 +1230,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   <div class="cc-foot-note">
     <span class="l-en">Prices are fund-reported estimates · covers bonds inside major index funds only · daily prices start 14 Jul 2026</span><span class="l-zh">价格为基金披露估值 · 仅覆盖主要指数基金持仓债券 · 日度价格自2026年7月14日起</span>
   </div>
+{% endif %}
 {% endif %}
 {# END CCW-W4 corporate credit desk #}
 

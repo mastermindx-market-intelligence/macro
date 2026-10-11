@@ -1,8 +1,10 @@
 # Grey Deer Risk Intelligence & Capital Protection — canonical index
 
 **Program key:** `WS:GREY-DEER-RISK-INTELLIGENCE` · registry key `grey-deer-risk-intelligence`
-(`config/mastermind_programs.yml`) · **Status:** architecture frozen 2026-08-19; no runtime
-behavior exists yet. This README is an index only — it duplicates no architecture.
+(`config/mastermind_programs.yml`) · **Status:** architecture frozen 2026-08-19; GD-3 production acceptance
+passed 2026-08-27; pullback operation `risk-radar-pullback-20261009` under the Fable seat since
+2026-10-11 (resumption file: `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md`). This README is an
+index only — it duplicates no architecture.
 
 ## Canonical files (this directory)
 
@@ -12,6 +14,8 @@ behavior exists yet. This README is an index only — it duplicates no architect
 | `GREY_DEER_FABLE_EXECUTION_COMMAND_PACKET_2026-08-19.md` | Fable COO execution packet: wave packets GD-0..GD-11, laws, routing, acceptance, stop conditions. |
 | `GREY_DEER_WAVE_GRAPH_AND_PR_ACCEPTANCE_MATRIX_2026-08-19.md` | Mechanical index: wave DAG, PR cards, path fences, collision fences, authority checkpoints. |
 | `GD1_GROK_SCIENTIFIC_REPLAY_HANDOFF_2026-08-19.md` | GD-1A/GD-1B research protocol for the Grok operator (prereg-first PIT replay). Outputs land under `research/grey_deer/gd1/`. |
+| `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` | Fable seat resumption file for the pullback operation: wave plan + exit gates, lane matrix, DECIDED / FACTS / OPEN / NEXT, denial register. Updated at wave boundaries. |
+| `GREY_DEER_FABLE_HANDOFF_2026-10-11.md` | Sol's end-to-end handoff packet — PR #8772 (DRAFT, not on main as of 2026-10-11; the seat consumed the same packet from the Chairman-delivered zip): frontier table, collision pairs, pinned revisions. |
 
 AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 `agentos/decisions/DEC-RISK-*.md` / `DEC-PROPHET-RANK-*` / `DEC-REPAIR-*` / `DEC-PORTFOLIO-*` /
@@ -31,7 +35,16 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
-## Current next action (updated 2026-08-27, GD-3 acceptance handoff)
+## Current next action (updated 2026-10-11, Fable seat W0)
+
+- Read `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` §0 and §3 NEXT, then the latest
+  `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-11-FABLE-W0.md`. Order: W0 records PR →
+  O1/T02 source-clock-basis-rights qualification → O7/T03 publication-health note → O8/T22
+  preregistration → observed-move primitives → consumer qualification (PR #8721 read-only).
+- Incumbents are never written by a new seat: PR #8721 (live writer) and PR #8188 (HOLD-FOR-SOL).
+- Everything in the 2026-08-27 block below is DONE and DO_NOT_REDO.
+
+## Prior next action (2026-08-27, GD-3 acceptance handoff — closed)
 
 - **GD-1 closed:** GD-1A DONE; GD-1B ACCEPTED_NO_PROMOTION — zero GD-5 promotions
   (`DEC:GD1-ACCEPTED-NO-PROMOTION`). Dossier: `gd1/`. **GD-1C closed** DONE /

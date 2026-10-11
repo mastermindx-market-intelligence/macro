@@ -14468,6 +14468,29 @@ jobs:
       - name: inline-CSS externalization units (incl. the jinja2 cross-module gate)
         run: python -m pytest tests/test_externalize_css.py -q
 
+  calculator-input-integrity:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # site20 S5 (compounding + dollar-cost-averaging calculators). Node unit test over
+    # the two templates' inline scripts: whole-token parseNum grammar (trailing junk,
+    # malformed grouping, nonfinite/overflow rejected), finite curveGeometry for the
+    # one-year, all-zero and fractional-year scenarios, bilingual plainSentence/copyText,
+    # and tryCopy reporting success only on an acknowledged clipboard write.
+    # gate: code because the verdict is a pure function of the PR tree (templates +
+    # test); free-content-estate is gate: data and never runs on a pull request.
+    paths:
+      - templates/calculators/compounding.html.j2
+      - templates/calculators/dollar_cost_averaging.html.j2
+      - tests/js/calculator_input_integrity.test.mjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: calculator input, chart, language and copy integrity
+        run: node --test tests/js/calculator_input_integrity.test.mjs
+
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -19250,6 +19273,8 @@ jobs:
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/*"
+      - "scripts/__init__.py"
+      - "scripts/build_themes_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
@@ -19258,6 +19283,7 @@ jobs:
       - "site/basketdata/foresight_cascade.json"
       - "site/factordata/**"
       - "site/marketdata/subsector_confluence.json"
+      - "site/marketdata/themes_heatmap.json"
       - "site/state_of_themes.html"
       - "templates/_navlinks.html.j2"
       - "templates/chat.html"
@@ -19269,6 +19295,7 @@ jobs:
       - "tests/test_subsector_scan.py"
       - "tests/test_subsector_turn.py"
       - "tests/test_themes_heatmap.py"
+      - "tests/test_principal_receipt_ambiguity.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -19281,7 +19308,7 @@ jobs:
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
@@ -22908,3 +22935,22 @@ jobs:
         run: pip install pytest pyyaml requests
       - name: File and pinned-source replay, manual boundary and temporal refusals
         run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
+
+  site20-s4-chart-brief-js:
+    if: ${{ false }}
+    gate: code
+    # site20 S4: charts.js zoom bounds ignore missing observations (S4-01) and
+    # legend-hidden traces incl. the plotly_restyle show/hide lifecycle (S4-02);
+    # stockbrief.js generation fence + identity check (S4-04). Runs against the
+    # template sources and the byte-identical shipped site/ copies.
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: charts.js rescale + stockbrief.js freshness (templates)
+        run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
+      - name: same suites against the shipped site/ copies
+        run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
