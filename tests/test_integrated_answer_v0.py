@@ -493,3 +493,21 @@ def test_main_include_block_present() -> None:
     assert "from app.integrated_answer import router as integrated_answer_router" in text
     idx = text.index("from app.integrated_answer import router as integrated_answer_router")
     assert "try:" in text[max(0, idx - 200) : idx]
+
+
+def test_macro_api_unit_enables_integrated_answer_exactly_once() -> None:
+    text = (ROOT / "app" / "deploy" / "macro-api.service").read_text(encoding="utf-8")
+    lines = [line.strip() for line in text.splitlines()]
+    assert lines.count("Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1") == 1
+    service_idx = lines.index("[Service]")
+    flag_idx = lines.index("Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1")
+    assert service_idx < flag_idx
+    next_section_idx = next(
+        (i for i in range(service_idx + 1, len(lines)) if lines[i].startswith("[")),
+        len(lines),
+    )
+    assert flag_idx < next_section_idx
+    for line in lines:
+        if "MACRO_INTEGRATED_ANSWER_ENABLED" not in line:
+            continue
+        assert line == "Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1"

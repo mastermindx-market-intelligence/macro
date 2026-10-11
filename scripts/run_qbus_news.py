@@ -21,13 +21,14 @@ import signal
 import sys
 import threading
 import time
-from typing import Callable
+from typing import Callable, Sequence
 from urllib.parse import urlencode
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
-from collectors import benzinga_news
+from collectors import alpaca_news, benzinga_news
+from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_receipts import (
     HEALTH_SCHEMA,
     NewsReceiptError,
@@ -38,6 +39,10 @@ from engine.qbus_news_store import NewsStore
 from engine.qbus_news_universe import UniverseQualification, qualify_universe
 
 STREAM_LOG_LABEL = "wss://api.benzinga.com/api/v1/news/stream?token=REDACTED"
+ALPACA_STREAM_LOG_LABEL = (
+    "wss://stream.data.alpaca.markets/v1beta1/news (auth=REDACTED)"
+)
+SUPPORTED_PROVIDERS = ("benzinga", "alpaca")
 StopFlag = threading.Event
 
 
@@ -103,8 +108,12 @@ class NewsIngestRunner:
         max_frame_bytes: int = 2 * 1024 * 1024,
         health_path: Path | None = None,
         admission_guard: Callable[[], bool] | None = None,
+        provider: str = "benzinga",
+        stream_target: str | None = None,
+        stream_handshake: Callable[[object], None] | None = None,
+        frame_normalizer: Callable[..., Sequence[NewsRevision]] | None = None,
     ) -> None:
-        if not token:
+        if not token and stream_target is None:
             raise ValueError("qbus_news:missing_stream_token")
         if catchup_interval_seconds <= 0 or recv_timeout_seconds <= 0:
             raise ValueError("qbus_news:invalid_interval")
@@ -128,6 +137,10 @@ class NewsIngestRunner:
         self.max_frame_bytes = max_frame_bytes
         self.health_path = health_path
         self.admission_guard = admission_guard
+        self.provider = provider
+        self.stream_target = stream_target
+        self.stream_handshake = stream_handshake
+        self.frame_normalizer = frame_normalizer
         self.stats = RunnerStats()
         self._last_successful_catchup: datetime | None = None
         self._last_stream_event_at: datetime | None = None
@@ -138,6 +151,7 @@ class NewsIngestRunner:
         return {
             "schema": HEALTH_SCHEMA,
             "source": "benzinga",
+            "provider": self.provider,
             "state": state,
             "observed_at": observed.isoformat(),
             "last_successful_catchup": (
@@ -204,20 +218,37 @@ class NewsIngestRunner:
             self.stats.stream_errors += 1
             return
         try:
-            revision = benzinga_news.normalize_stream_frame(
-                raw,
-                received_at=self.clock(),
-            )
-            if revision is None:
-                self.stats.stream_ignored += 1
-                return
-            routed = benzinga_news.route_revision(
-                revision,
-                self.universe_provider(),
-            )
-            self.store.commit_observations([routed])
-            self.stats.stream_events += 1
-            self._last_stream_event_at = self.clock()
+            if self.frame_normalizer is not None:
+                revisions = list(
+                    self.frame_normalizer(raw, received_at=self.clock())
+                )
+                if not revisions:
+                    self.stats.stream_ignored += 1
+                    return
+                routed = [
+                    benzinga_news.route_revision(
+                        revision, self.universe_provider()
+                    )
+                    for revision in revisions
+                ]
+                self.store.commit_observations(routed)
+                self.stats.stream_events += len(routed)
+                self._last_stream_event_at = self.clock()
+            else:
+                revision = benzinga_news.normalize_stream_frame(
+                    raw,
+                    received_at=self.clock(),
+                )
+                if revision is None:
+                    self.stats.stream_ignored += 1
+                    return
+                routed = benzinga_news.route_revision(
+                    revision,
+                    self.universe_provider(),
+                )
+                self.store.commit_observations([routed])
+                self.stats.stream_events += 1
+                self._last_stream_event_at = self.clock()
             if self._gap_unresolved:
                 state = "degraded"
             elif self._last_successful_catchup is None:
@@ -252,12 +283,19 @@ class NewsIngestRunner:
 
                 self.stats.connect_attempts += 1
                 try:
+                    target = (
+                        self.stream_target
+                        if self.stream_target is not None
+                        else stream_url(self.token)
+                    )
                     with self.connect(
-                        stream_url(self.token),
+                        target,
                         open_timeout=20,
                         close_timeout=5,
                         max_size=self.max_frame_bytes,
                     ) as ws:
+                        if self.stream_handshake is not None:
+                            self.stream_handshake(ws)
                         backoff = self.reconnect_base_seconds
                         next_catchup = (
                             self.monotonic() + self.catchup_interval_seconds
@@ -328,6 +366,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--rights-receipt", type=Path)
     p.add_argument("--health-path", type=Path)
     p.add_argument("--token-env", default="BENZINGA_API_KEY")
+    p.add_argument(
+        "--provider",
+        default=os.environ.get("QBUS_NEWS_PROVIDER") or "benzinga",
+        help="news transport provider: benzinga (default) or alpaca",
+    )
     mode = p.add_mutually_exclusive_group()
     mode.add_argument(
         "--check-activation",
@@ -344,7 +387,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
-    token = os.environ.get(args.token_env, "")
+    provider = args.provider
     rights_path = args.rights_receipt
     if rights_path is None:
         env_rights = os.environ.get("MM_TICKER_NEWS_RIGHTS", "").strip()
@@ -354,24 +397,67 @@ def main(argv=None) -> int:
         env_health = os.environ.get("MM_TICKER_NEWS_HEALTH", "").strip()
         health_path = Path(env_health) if env_health else None
 
+    if provider not in SUPPORTED_PROVIDERS:
+        # argparse validates choices only for flagged values, never for the
+        # default (env-sourced) one, so the final value is checked here.
+        report = {
+            "schema": "qbus.news_runner_preflight.v1",
+            "run_requested": bool(args.run),
+            "check_requested": bool(args.check_activation),
+            "token_present": False,
+            "universe_present": bool(
+                args.universe_snapshot and args.universe_snapshot.is_file()
+            ),
+            "rights_receipt_present": bool(
+                rights_path and rights_path.is_file()
+            ),
+            "health_path_present": health_path is not None,
+            "database": str(args.database),
+            "stream": STREAM_LOG_LABEL,
+            "provider": provider,
+        }
+        print(
+            json.dumps(
+                {
+                    **report,
+                    "activation_qualified": False,
+                    "error": "activation_provider_invalid",
+                },
+                sort_keys=True,
+            )
+        )
+        return 2
+
+    if provider == "alpaca":
+        key_id = os.environ.get("ALPACA_API_KEY_ID", "")
+        secret_key = os.environ.get("ALPACA_API_SECRET_KEY", "")
+        token = ""
+        token_present = bool(key_id and secret_key)
+        stream_label = ALPACA_STREAM_LOG_LABEL
+    else:
+        token = os.environ.get(args.token_env, "")
+        token_present = bool(token)
+        stream_label = STREAM_LOG_LABEL
+
     report = {
         "schema": "qbus.news_runner_preflight.v1",
         "run_requested": bool(args.run),
         "check_requested": bool(args.check_activation),
-        "token_present": bool(token),
+        "token_present": token_present,
         "universe_present": bool(
             args.universe_snapshot and args.universe_snapshot.is_file()
         ),
         "rights_receipt_present": bool(rights_path and rights_path.is_file()),
         "health_path_present": health_path is not None,
         "database": str(args.database),
-        "stream": STREAM_LOG_LABEL,
+        "stream": stream_label,
+        "provider": provider,
     }
     if not args.run and not args.check_activation:
         print(json.dumps(report, sort_keys=True))
         return 0
     if (
-        not token
+        not token_present
         or not args.universe_snapshot.is_file()
         or rights_path is None
         or not rights_path.is_file()
@@ -443,18 +529,40 @@ def main(argv=None) -> int:
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_args: stop.set())
 
-    client = benzinga_news.BenzingaNewsClient(token=token)
-    with NewsStore(args.database, source_key="benzinga-rest") as store:
-        runner = NewsIngestRunner(
-            token=token,
-            store=store,
-            universe_provider=lambda: universe,
-            direct_client=client,
-            stop=stop,
-            health_path=health_path,
-            admission_guard=rights_admitted,
+    if provider == "alpaca":
+        client = alpaca_news.AlpacaNewsClient(
+            key_id=key_id, secret_key=secret_key
         )
-        stats = runner.run()
+        with NewsStore(args.database, source_key="alpaca-rest") as store:
+            runner = NewsIngestRunner(
+                token=token,
+                store=store,
+                universe_provider=lambda: universe,
+                direct_client=client,
+                stop=stop,
+                health_path=health_path,
+                admission_guard=rights_admitted,
+                provider="alpaca",
+                stream_target=alpaca_news.STREAM_URL,
+                stream_handshake=lambda ws: alpaca_news.stream_handshake(
+                    ws, key_id=key_id, secret_key=secret_key
+                ),
+                frame_normalizer=alpaca_news.normalize_stream_frames,
+            )
+            stats = runner.run()
+    else:
+        client = benzinga_news.BenzingaNewsClient(token=token)
+        with NewsStore(args.database, source_key="benzinga-rest") as store:
+            runner = NewsIngestRunner(
+                token=token,
+                store=store,
+                universe_provider=lambda: universe,
+                direct_client=client,
+                stop=stop,
+                health_path=health_path,
+                admission_guard=rights_admitted,
+            )
+            stats = runner.run()
     print(json.dumps(exit_receipt(stats), sort_keys=True))
     return 0
 
