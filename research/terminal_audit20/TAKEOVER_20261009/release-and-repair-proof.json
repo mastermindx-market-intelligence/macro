@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1547",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1600",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -7931,6 +7931,93 @@
     "browser_restoration": "ONE already-issued request still pending; no unchanged native-control retry/poll/secondbrowser or repeated question. Live935/939 consumer qualification and cleanup require actual restoration/capability event.",
     "next_ready_phase": "Actual browser restoration/capability event enables affected939 normalGET/UI; next suitable admitted canonical release includes935 only with selectedgeneration/source/writer/exactUUID/root+volume10GiB gates and owning existing thesis normal-path proof. Do not redeploy abf to restamp; no930 science/781numeric/#761/wholeMarketOntology acceptance. Consume actual B941/released-source or platform/producer returns, no idle polling.",
     "independent_holds": "781 reserved numeric/IW2 explicit cyber HUMAN/SQL/rights/security/887 exactALLOW/MoneySCP+OAuth EFFECT_UNKNOWN/A19/873 actual publication unchanged. No real thesis/portfolio/alert mutation or fault manufacturing.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1600": {
+    "observed_at": "2026-10-11T16:00:18.082655+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "T1527 installed artifact-output routing capability; preserves T1547 product/release state and all prior operations/holds.",
+    "material": "Future file-output requests constrain admitted modes before host placement; exact installed readback and owning accepted sealed canary consumed.",
+    "installed": [
+      {
+        "path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/pick.py",
+        "bytes": 96764,
+        "sha256": "394c1bac76cd59816e3202503a2662e1e2c07c1479265f3f8acbf2e5bc2c39b6"
+      },
+      {
+        "path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/fabric_task.py",
+        "bytes": 31518,
+        "sha256": "bf659289cb213f2d68a964d4ad187a09035d6e4cb0fdbf8b8f1f67373644932e"
+      },
+      {
+        "path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/artifact_production.py",
+        "bytes": 18783,
+        "sha256": "e779021dc27587b957521a23e5a9a42bc819ccc8a0889b722060db56da01fc08"
+      }
+    ],
+    "source_scope": "Artifact requests pass sorted artifact_production.MODES to format_pick before host placement. Required-mode validation and per-mode filter retain normal selection/final policy guard. Modes remain glm/go-codex/grok; no Qwen/MiniMax artifact mode extension. Native root resolver AST equals prior qualified 71708fb preimage. No source edits by this parent.",
+    "owner_tests": {
+      "installed": 14,
+      "existing": 160,
+      "parent_rerun": false,
+      "review_return": "NOT_ACCEPTED for exceeding contract; source scope separately parent-adjudicated by owner, not acceptance of raw review"
+    },
+    "owner_live_canary": {
+      "id": "fabric-artifact-route-canary-01a11e90-v1",
+      "root": "01a11e90-4b5d-7f53-b966-8aaaad38701f",
+      "parent": "01a11e90-4b5d-7f53-b966-8aaaad38701f",
+      "host": "ubuntu3",
+      "routing": "Canonical filtered audit route, requested glm-5.3-flash, no model/pool/host override",
+      "started_at": "2026-10-11T15:51:08.414Z",
+      "ended_at": "2026-10-11T15:52:38.119Z",
+      "rc": 0,
+      "normal_cleanup": {
+        "census_proven": true,
+        "error_code": null,
+        "identity_verified": true,
+        "reason": "normal_completion",
+        "residual_count": 0,
+        "sigkill_sent": false,
+        "sigterm_sent": false,
+        "status": "not_needed",
+        "stderr_capture_complete": true,
+        "stderr_capture_error": null,
+        "stdin_delivery_complete": true,
+        "stdin_delivery_error": null,
+        "stdout_capture_complete": true,
+        "stdout_capture_error": null
+      },
+      "artifact_bytes": 706,
+      "artifact_sha256": "b2a61fdc6d3e3aaeb65dfd05491205d8946d7bd953cc78585f849711c856a41a",
+      "parent_local_export_equals_expected": true,
+      "owner_acceptance": {
+        "acceptance_reason": "VALIDATED_OUTCOME",
+        "acceptance_state": "ACCEPTED",
+        "accepted": true,
+        "accepted_by": "deterministic",
+        "parent_run_id": "01a11e90-4b5d-7f53-b966-8aaaad38701f",
+        "rc": 0,
+        "result_available": true,
+        "result_bytes": 921,
+        "root_id": "01a11e90-4b5d-7f53-b966-8aaaad38701f",
+        "run_id": "fabric-artifact-route-canary-01a11e90-v1",
+        "schema": "mastermind.fabric_task_status.v1",
+        "signal": "ok",
+        "state": "TERMINAL"
+      },
+      "usage": null,
+      "qualifier": "Owning original-parent installed canary is accepted. Audit20 independently checked current installed hashes, compact receipts and retained local artifact bytes; no new dispatch, export, acceptance write or native Executive/RuntimeBinding/Wake proof."
+    },
+    "evidence": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/fabric-artifact-routing-capability-parent-consumption-20261011T1600.json",
+      "bytes": 7859,
+      "sha256": "fe5d645332fcb98748fdb19c27ec4022d83b7b1488ad6dad4f3785c4a6cbf7db"
+    },
+    "retained_product_frontier": "current_capability_frontier_20261011T1547",
+    "retained_boundaries": "Future eligible NEW attended file-output work under actual existing grants only. Explicit verified original root/exact parent discipline retained. All prior refused/uncertain runs, A12 ARTIFACT_MODE_UNAVAILABLE and home export refusals, original drawing-readiness unverified same-carrier run, OAuth/MoneySCP EFFECT_UNKNOWN and native Wake/security/review holds remain unreplayed. No replacement, retry, cancellation, lease change, account/sandbox/carrier weakening or outgoing peer message.",
+    "product_state": "T1547 qualified935 remains next-suitable-release consumer, not installed. T1502 abf installation and scoped paid Replay retain original observations. ONE pending browser restoration request and939normalGET/UI unchanged; no browser/VPS/CI/producer/source effect or repeated human question.931 original review unresolved, B941 owning integration pending.",
+    "next_ready_phase": "Actual browser restoration/native-capability event for939 normalGET/3size UI+cleanup, or actual new owning source/platform/producer return. Eligible NEW useful attended Fabric artifact work only when independently needed and admitted; no notice-only dispatch.",
     "whole_audit20_complete": false
   }
 }
