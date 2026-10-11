@@ -2754,6 +2754,8 @@
   }
   // delegated listener: intercept CTA <a> to app.mastermind-x.com/terminal?sign…
   document.addEventListener("click", function (e) {
+    // Another capture listener may already own this CTA; keep modified clicks native.
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target.closest ? e.target.closest('a[href*="app.mastermind-x.com/terminal?sign"]') : null;
     if (!a) return;
     var href = a.getAttribute("href") || "";
