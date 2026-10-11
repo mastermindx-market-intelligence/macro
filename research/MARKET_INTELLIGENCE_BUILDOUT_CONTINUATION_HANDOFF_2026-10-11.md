@@ -320,6 +320,25 @@ from the return (refresh vs origin/main, four keys cited, docs-only merge if it 
   ff before every commit. Desktop-host PreToolUse hook timeouts for Write / ccd_pr persisted all
   window; Bash heredocs remain the writer.
 
+### 4e. FACTS added 19:34–20:0xZ
+
+- Records W9-4 = #8861 MERGED (squash `1761e5bd5d8b`); #1202 W9-4 checkpoint = issuecomment-6112954849
+  (19:41:25Z). Carrier read 19:58Z: no counterpart edge after it.
+- Identity unit measurement 19:45Z (timer `*:29` UTC; TimeoutStartSec=600, CPUQuota=100%, MemoryMax=512M):
+  run 19:29:44→19:31:23Z = 99 s wall / 82.7 CPU-s / 146 MB peak / Result=success; 69 tracked snapshots
+  (68 idempotent, 44 operational, 24 reconstruction, 0 published, 1 divergence `upstream_rewrite_after_capture`
+  2026-08-19 = identity owner's matter). The W9-4 "97 s of 600 headroom" figure was the run duration.
+- marketing-press-feeds.service reads /etc/macro-live.env at start only; the old MainPID 3789179 ran since
+  10-03 08:15:39Z (pre-refresh), hence the 401s continued after the 18:01Z pair refresh. Restarted 19:56:24Z
+  under the updater lock with `providers.alpaca.since` popped (backup `state.json.bak-alpaca-prime-20261011T195624Z`,
+  6,261,571 B); MainPID 3129081; cold start primed to 2026-10-11T19:45:06Z from 50 history items, none
+  ingested; 401=0 since; `[NO-OP]` ticks (MARKETING_PUBLISH_ENABLED unset, 0 lines in the env file).
+  DSC:PRESS-FEEDS-RESTART-AFTER-AN-AUTH-GAP-NEEDS-THE-ALPACA-CURSOR-REPRIMED. The W9-3 belief "catch-up
+  is bounded to one newest-first page" was true only of the cold start (press_providers.py L896-923).
+- `press_stream` twitterapi.io websocket 403: first surviving journal line 2026-10-08T23:16:40Z; 288 lines in
+  the 24 h before the restart, 5 after — a separate billed lane, persists, not this program's.
+- ORCH-D `ad812dc60c846701f` RUNNING at 20:0xZ (spawned 19:3xZ, ~90 min budget); no notification yet.
+
 ## 5. Lane recipes (B-kit)
 
 ```
@@ -364,8 +383,11 @@ read credential files or shim logs.
    extras only: a bounded signed-in Terminal rail browser check; one later VPS read (>=10 min
    after the 19:24:41Z writer restart) confirming `last_stream_event_at` /
    `last_successful_catchup` populate on MainPID 3111697 and `news_deliveries` grew. No
-   polling. marketing-press-feeds stays un-restarted (Chairman/marketing-owner act,
-   `gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=true`).
+   polling. marketing-press-feeds: RESOLVED 19:56Z by the seat — restart under the updater lock
+   with the Alpaca cursor re-primed (DSC:PRESS-FEEDS-RESTART-AFTER-AN-AUTH-GAP-NEEDS-THE-ALPACA-CURSOR-REPRIMED);
+   PRODUCTION_PROOF = alpaca-cold-start notice 19:56:27Z, 401 lines since 0, MainPID 3129081. The
+   `restart_press_feeds=true` workflow input is a BARE restart and would have replayed — never use
+   it after a gap without re-priming. Nothing owed.
    G3 #8848: MERGED + PRODUCTION_PROOF (seat restart); behavioral proof of the error-code path
    needs a real stream / catch-up failure — read `last_stream_error` / `last_catchup_error`
    only if `catchups_failed` / `disconnects` move. Nothing owed.
@@ -373,11 +395,12 @@ read credential files or shim logs.
    tick; D-experience (#8816) W2C activation by update.sh once the regenerated manifest matches
    the store; #8828 roster resolution; data-health.yml's next main run should green on the
    regenerated artifacts. One bounded read each, no polling.
-4. Structural identity runway lane (memoize `_project_snapshot` / load store metadata once, with a
-   before/after CPU-second gate): later work — #8841 bought headroom (97 s of 600), not the fix.
-   Do not raise the budget again (WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2 do_not_redo is unit-scoped
-   to the options-context auditor; this is the identity unit, already lifted once under
-   DEC:MARKET-MEMORY-IDENTITY-UNIT-BUDGET-IS-A-DEPLOY-CONTRACT-NOT-A-RUNTIME-DEFAULT).
+4. Identity runway lane: DROPPED 19:45Z on measurement (§4.7). The 19:29:44Z run under 600 s /
+   100% took 99 s wall / 82.7 CPU-s / 146 MB peak for 69 tracked snapshots (~1.2 s per snapshot,
+   ~+1 snapshot/day): headroom is ~500 s of 600. RETRACTED by name: "#8841 bought headroom (97 s
+   of 600)" — 97 s was the run DURATION. No memoization lane. Do not raise the budget again
+   (already lifted once under DEC:MARKET-MEMORY-IDENTITY-UNIT-BUDGET-IS-A-DEPLOY-CONTRACT-NOT-A-RUNTIME-DEFAULT;
+   WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2 do_not_redo is unit-scoped to the options-context auditor).
 5. Records: this PR -> `--admin` merge (docs-only) -> blob-verify; memory refresh; Chairman
    blocker list LAST (already posted in issuecomment-6112439924); `SESSION END: <STATE>`.
 
@@ -405,3 +428,6 @@ Human-only, unchanged by any orchestration:
 - Identity replay ceiling (~150–180 dates under TimeoutStartSec=180 / CPUQuota=50%) is DNR; raising it
   is not this program's call.
 - Org audit log read for the 10-10 nightly canceller (org-admin only).
+- twitterapi.io `press_stream` websocket HTTP 403 (billed X push lane, key env `TWITTERAPI_IO_KEY`;
+  since 2026-10-08T23:16Z; 288 journal lines/24 h) — marketing-lane owner / billing; observed by this
+  program, not worked, and not cured by the 19:56Z press-feeds restart (which cleared the Alpaca 401).
