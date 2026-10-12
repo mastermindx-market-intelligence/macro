@@ -96,8 +96,8 @@ unverified:
 unresolved:
   - "Merge verification of the eight armed PRs: this recording lane is forbidden gh/push; after the sweeper merges, a bare `git fetch origin` (main alone, never bundled with a deleted head branch) then git log/merge-base against the refreshed origin/main is the proof. PR numbers are packet-reported."
   - "D3 and X1 both touch app/forensics.py in different regions (D3: dataset-mode selector ~lines 20-60; X1: excel sibling route, 58 added lines) — verify the merge order does not conflict; both were written against the same base."
-  - "S1-b query wiring was folded into S2 because both edit engine/fundamental_forensics/query.py (one writer per shared file); S1-a landed only the registry-side qualification (default-inert)."
-  - "K pack contract branch claude/fif-k-pack-schemas-20261012 (head 2ca80c17536f, 15 test defs / 37 seat-reported items, 12 pack schemas + engine/fundamental_forensics/specialist_pack_contract.py) had NO PR open at packet time — suborchestrator-owned; opening/arming it is an open obligation."
+  - "S1-b query wiring is a SEPARATE seat lane that starts only after S2 merges (seat ruling 2026-10-12 06:30Z): both edit engine/fundamental_forensics/query.py (one writer per shared file), so S2 must NOT wire qualify_metric; S1-a landed only the registry-side qualification (default-inert)."
+  - "K pack contract branch claude/fif-k-pack-schemas-20261012 (12 pack schemas + engine/fundamental_forensics/specialist_pack_contract.py) had no PR at packet time; it is now PR #8964 (wired after the financial_statement_service anchor), with Q0 held-out fixtures as PR #8965 (after w11_r4) — the seat arms both last."
   - "Sol's masterplan PR #8881 (branch sol/fif-e2e-masterplan-20261011, head 44e3c09b367a) is DRAFT and must never be armed by this program."
 next_actions:
   - "Verify the eight wave-1 PRs' merge state: bare `git fetch origin`, then per PR git log origin/main --oneline -- <a file only that PR adds> (e.g. tests/test_fundamental_forensics_production_provider.py for D3); a present path proves landed, an absent path after a green sweep means still armed."
@@ -110,7 +110,7 @@ do_not_redo:
   - "T1/T1b evidence + envelope binding (DEC:FIF-T1-ENVELOPE-PIN) — do not re-litigate payload-only binding or cutoff-filtered floor groups."
   - "T2 compatibility seal (scripts/fif_compatibility_seal.py + manifest + pinning suite) — the pre-T1 hash capture exists; regenerate only via the script, never hand-edit the manifest."
   - "S0 statement-grid generalization (DEC:FIF-S0-RAGGED-LAYOUT-FAIL-CLOSED) — do not add best-effort alignment or silent padding; widen only with new explicit layout cases + fixtures."
-  - "S1-a metric qualification (registry-side, default-inert) — the query-side wiring is deliberately NOT here; it belongs to S2/S1-b via query.py."
+  - "S1-a metric qualification (registry-side, default-inert) — the query-side wiring is deliberately NOT here; it belongs to the S1-b seat lane (after S2 merges) via query.py."
   - "E0 detector applicability by issuer class (bank-class issuers never receive industrial detectors)."
   - "C1 peer cohort (eligibility, A35 exclusion codes, rank emission rule)."
   - "D3 production provider + dataset mode selector (DEC:FIF-D3-DATASET-MODE-SELECTOR) — no auto-detect, no default-production, no R2_* fallback."
@@ -118,9 +118,10 @@ do_not_redo:
   - "K pack contract schemas (12 pack.pk*.v1.schema.json + specialist_pack_result.v1 + engine module) — cite what the branch shows; PR not yet open at packet time."
   - "G1-G4 issuer census (SNOW/CAT/BAC/GOOGL stress packs) — census notes are un-merged scratchpad research; do not treat as done."
 danger_areas:
+  - "app/forensics.py sits inside the ticker-news-qbus legacy job's import closure: any NEW engine/fundamental_forensics module that app/forensics.py (transitively) imports must be added to ticker-news-qbus's `paths:` in .github/ci/legacy-jobs.yml in the same PR, or contract-delta (and ci-pack-0's curated-closure test) goes red as 'introduced' — measured on D3 #8951 (production_datasets.py, production_provider.py) and X1 #8949 (excel_export.py), healed by seat push 2026-10-12 ~09:42Z."
   - ".github/ci/legacy-jobs.yml is a global CI invalidator — any edit trips ci-authority (full suite reruns) and the folded run: scalar must never contain a '#' comment (YAML folds it into one shell line and silently truncates the suite list)."
   - "Sparse worktrees TRUNCATE data/ writes — never git add -A an unexpected data/ or site/ diff; run python3 scripts/worktree_sparse.py clean (report-first) instead."
-  - "engine/fundamental_forensics/query.py is shared by S2 and S1-b — one writer at a time; S1-b's query wiring was folded into S2 for exactly this reason."
+  - "engine/fundamental_forensics/query.py is shared by S2 and S1-b — one writer at a time; S1-b's query wiring therefore runs as its own lane only after S2 merges, and S2 must not wire qualify_metric."
   - "Never rebuild the merged #7518 cross-filing lineage from the A4R research closeout — #7518 (merge 4294fd498e, 2026-10-04) is the live implementation; T1/T1b repaired its evidence binding."
   - "T1's byte-identity pins (_T1_VALID_CASE_PINS, the T2 manifest) are load-bearing — any engine change that moves a governed response hash must go through a new capture, not an edited pin."
   - "The masterplan branch is Sol's DRAFT — arming, labeling, or merging it from this program violates the authority note below."
@@ -189,7 +190,8 @@ seat-reported 37 collected).
    `next_actions[0]`. PR numbers themselves are packet-reported.
 2. **D3/X1 `app/forensics.py` overlap**: different regions, same file, same
    base — watch merge order; both must stay green after either order.
-3. **S1-b query wiring** is folded into S2 (both edit `query.py`); S1-a is
+3. **S1-b query wiring** is a separate seat lane after S2 merges (both edit
+   `query.py`; S2 must not wire `qualify_metric`); S1-a is
    registry-side and default-inert by design.
 4. **K pack PR** — open and wire its NEW suite literally when the
    suborchestrator reports ready.

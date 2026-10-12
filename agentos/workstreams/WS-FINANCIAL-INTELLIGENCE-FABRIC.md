@@ -139,15 +139,16 @@ decisions:
   - DEC:FIF-D3-DATASET-MODE-SELECTOR
   - DEC:FIF-PER-PR-CI-WIRING-STAGGERED-ANCHORS
 next_action: >
-  Merge wave 1 (eight armed PRs: T1/T1b #8929, T2 #8936, S0 #8928, S1-a
-  #8952, E0 #8930, C1 #8950, D3 #8951, X1 #8949 — all unmerged, armed
-  merge-on-green, on base 5267c66846e7 as of 2026-10-12) → S2/E1/D0/D1/D2/C0
-  (ORCH-A) and P0/Q0/K1–K4/X0 (ORCH-B) → P1 → P2 (design lane) → A0/A1
+  T1/T1b #8929 MERGED 2026-10-12T09:43:49Z (squash 60e8e959d0a0, landed-checked
+  per path). Merge the rest of wave 1 (T2 #8936, S0 #8928, S1-a #8952, E0 #8930,
+  C1 #8950, D3 #8951, X1 #8949, P0 #8962) plus K #8964 and Q0 #8965 once the
+  main-inherited ci-pack-0 closure red (heal #8960) clears → S2/E1/D0/D1/D2/C0
+  (ORCH-A) and X0, then K1–K4 after A1 (ORCH-B) → S1-b query wiring as a
+  separate seat lane after S2 merges → P1 → P2 (design lane) → A0/A1
   acceptance. Verify each merge against a freshly fetched origin/main (bare
-  git fetch origin, then per-PR path checks). The K pack contract branch
-  claude/fif-k-pack-schemas-20261012 still needs its PR + literal CI wiring.
-  Sol's masterplan PR #8881 (sol/fif-e2e-masterplan-20261011) is DRAFT and
-  must never be armed by this program.
+  git fetch origin, then per-PR path checks). Sol's masterplan PR #8881
+  (sol/fif-e2e-masterplan-20261011) is DRAFT and must never be armed by this
+  program.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
