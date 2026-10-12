@@ -3128,6 +3128,22 @@ jobs:
 
       - name: Prophet Q06 SEC comparable-revenue Gate-S source contract
         run: python -m pytest tests/test_q06_sec_comparable_revenue_source_contract.py -q
+  gmi-classification-axes:
+    if: ${{ false }}
+    gate: code
+    # Taxonomy V2 L00. AxisCell v1 plus the seven reserved reader suites.
+    # Unscoped, matching chronicle-suite and cycle-forward-log beside this anchor.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: AxisCell v1 contract
+        run: TZ=UTC python -m pytest tests/test_classification_axes_cell.py tests/test_classification_axes_sic_industry.py tests/test_classification_axes_geography.py tests/test_classification_axes_macro_sensitivity.py tests/test_classification_axes_business_model.py tests/test_classification_axes_lifecycle.py tests/test_classification_axes_value_chain.py tests/test_classification_axes_registry.py -q
+
   chronicle-suite:
     if: ${{ false }}
     gate: data
