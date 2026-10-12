@@ -438,6 +438,14 @@ def test_validate_row_reports_each_targeted_violation():
     non_dict_cells["cells"] = ["geography"]
     assert any("cells" in problem for problem in registry_mod.validate_row(non_dict_cells))
 
+    bad_quality = dict(row)
+    bad_quality["quality"] = "aggregate"
+    assert any("quality" in problem for problem in registry_mod.validate_row(bad_quality))
+
+    bad_version = dict(row)
+    bad_version["schema_version"] = "axis_row.v2"
+    assert any("schema_version" in problem for problem in registry_mod.validate_row(bad_version))
+
 
 def _has_ref_key(node: object) -> bool:
     """True when any schema position carries a ``$ref`` keyword."""

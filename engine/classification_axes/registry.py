@@ -330,6 +330,8 @@ def validate_row(row: object) -> list[str]:
 
     if "schema_version" in row and row["schema_version"] != ROW_SCHEMA_VERSION:
         problems.append(f"schema_version must be {ROW_SCHEMA_VERSION!r}")
+    if "quality" in row and row["quality"] != "display_only":
+        problems.append("quality must be display_only")
     if "subject_id" in row:
         try:
             cell.parse_subject(row["subject_id"])
