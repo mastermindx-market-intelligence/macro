@@ -8,6 +8,8 @@ from __future__ import annotations
 from decimal import Decimal, ROUND_HALF_EVEN
 import hashlib
 import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from engine.market_ontology.bea_industry_context import (
@@ -344,6 +346,44 @@ class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
         self.assertFalse(proof["original_file_content_sha256_verified"])
         self.assertFalse(proof["native_dataset_admission"])
         self.assertFalse(proof["public_or_historical_pit_serving"])
+
+    def test_real_incumbent_data_workspace_reads_synthetic_eight_year_file(self):
+        """Real Data OS reader and query receipt; fake data in a disposable folder."""
+        from lib.dataos.web_workspace import DataWorkspace, RootBinding
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "industry_3341.jsonl"
+            raw_rows = [synthetic_row(year) for year in range(2017, 2025)]
+            source.write_text(
+                "".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows),
+                encoding="utf-8",
+            )
+            workspace = DataWorkspace(
+                (RootBinding(alias="free_source_research",
+                             path=root, evidence_kind="research_capture"),),
+                Path(__file__).resolve().parents[1] / "config" / "dataset_registry.yml",
+                source_revision="synthetic-data-workspace-integration",
+            )
+            ref = "free_source_research:industry_3341.jsonl"
+            description = workspace.describe(ref)
+            version = description["source"]["file_version"]
+            response = workspace.read(
+                ref, equals={"commodity_code_exact": "3344"},
+                offset=0, limit=9, expected_version=version,
+            )
+            self.assertEqual(len(response["result"]["rows"]), 8)
+            self.assertTrue(response["result"]["scan_complete"])
+            self.assertIsNone(response["result"]["next_offset"])
+            self.assertEqual(response["query"]["file_version"], version)
+            report = adapt_workspace_bea_history(
+                response, industry_code="3341", commodity_code="3344",
+            )
+            self.assertEqual(len(report["observations"]), 8)
+            self.assertFalse(report["reader_provenance"]["native_dataset_admission"])
+            self.assertFalse(report["reader_provenance"][
+                "original_file_content_sha256_verified"])
+            self.assertEqual(report["observations"][-1]["accounting_year"], 2024)
 
     def test_signed_negative_allocation_survives_real_reader_envelope_shape(self):
         response = _synthetic_workspace_response()
