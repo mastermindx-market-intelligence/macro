@@ -6417,6 +6417,7 @@ jobs:
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/fundamental_forensics_disclosure_bundle.py"
       - "scripts/publish_company_disclosure.py"
+      - "scripts/publish_fif_production_datasets.py"
       - "scripts/publish_r2.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_fundamental_forensics_attested_history.py"
@@ -6440,6 +6441,7 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_forensics_api.py"
       # Static data-path references the app/ import closure carries (contract-delta, 2026-10-12).
@@ -6485,6 +6487,7 @@ jobs:
       - name: FIF kernel suites (class A, hermetic)
         run: >
           python -m pytest
+          tests/test_fif_publication_workflow_shape.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_forensics_api.py
           tests/test_fundamental_forensics_acquisition.py
@@ -6518,6 +6521,7 @@ jobs:
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
+          tests/test_fundamental_forensics_member_capture.py
           tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_normalize.py
@@ -6529,6 +6533,7 @@ jobs:
           tests/test_fundamental_forensics_production_dataset_store.py
           tests/test_fundamental_forensics_production_lineage.py
           tests/test_fundamental_forensics_production_provider.py
+          tests/test_fundamental_forensics_production_publisher.py
           tests/test_fundamental_forensics_public_summary_freshness.py
           tests/test_fundamental_forensics_q0_quality_protocol.py
           tests/test_fundamental_forensics_query.py
@@ -23306,6 +23311,7 @@ jobs:
       - "engine/fundamental_forensics/detectors.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
       - "engine/fundamental_forensics/excel_export.py"
+      - "engine/fundamental_forensics/fif_member_capture.py"
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
@@ -23661,6 +23667,7 @@ jobs:
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/migrate_qbus_news.py"
+      - "scripts/publish_fif_production_datasets.py"
       - "scripts/qbus_news_cluster_audit.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_qbus_news.py"
