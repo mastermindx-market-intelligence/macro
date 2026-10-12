@@ -3150,6 +3150,39 @@ jobs:
 
       - name: Prophet Q06 SEC comparable-revenue Gate-S source contract
         run: python -m pytest tests/test_q06_sec_comparable_revenue_source_contract.py -q
+  gmi-classification-axes:
+    if: ${{ false }}
+    gate: code
+    # Taxonomy V2 L00. AxisCell v1 plus the seven reserved reader suites.
+    # Scoped, not exclusive. The theme_graph modules the axis readers wrap are
+    # named so their edits select this job. Unrelated PRs (the PACKING_PROBES
+    # shapes in tests/test_ci_pack.py) no longer pay for it.
+    paths:
+      - "engine/classification_axes/**"
+      - "contracts/classification_axes/**"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/store.py"
+      - "tests/fixtures/classification_axes/**/*.json"
+      - "tests/test_classification_axes_cell.py"
+      - "tests/test_classification_axes_sic_industry.py"
+      - "tests/test_classification_axes_geography.py"
+      - "tests/test_classification_axes_macro_sensitivity.py"
+      - "tests/test_classification_axes_business_model.py"
+      - "tests/test_classification_axes_lifecycle.py"
+      - "tests/test_classification_axes_value_chain.py"
+      - "tests/test_classification_axes_registry.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: AxisCell v1 contract
+        run: TZ=UTC python -m pytest tests/test_classification_axes_cell.py tests/test_classification_axes_sic_industry.py tests/test_classification_axes_geography.py tests/test_classification_axes_macro_sensitivity.py tests/test_classification_axes_business_model.py tests/test_classification_axes_lifecycle.py tests/test_classification_axes_value_chain.py tests/test_classification_axes_registry.py -q
+
   chronicle-suite:
     if: ${{ false }}
     gate: data
@@ -22750,6 +22783,7 @@ jobs:
       - "scripts/snapshot_shadow_book.py"
       - "scripts/sparse_guard.py"
       - "scripts/thematic_rotation_phase0.py"
+      - "scripts/ticker_news_inventory.py"
       - "scripts/verify_ticker_news.py"
       - "scripts/worktree_sparse.py"
       - "site/basketdata/baskets.json"
@@ -22804,6 +22838,7 @@ jobs:
       - "tests/test_qbus_news_store.py"
       - "tests/test_qbus_news_store_api_reads.py"
       - "tests/test_qbus_news_store_clusters.py"
+      - "tests/test_qbus_news_store_lifecycle.py"
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
       - "tests/test_qbus_news_universe_diagnose.py"
@@ -22816,6 +22851,7 @@ jobs:
       - "tests/test_ticker_news_annotation_api.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
+      - "tests/test_ticker_news_inventory.py"
       - "tests/test_ticker_news_package_n_matrix.py"
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
@@ -22861,6 +22897,7 @@ jobs:
           tests/test_qbus_news_store.py
           tests/test_qbus_news_store_api_reads.py
           tests/test_qbus_news_store_clusters.py
+          tests/test_qbus_news_store_lifecycle.py
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
           tests/test_qbus_news_universe_diagnose.py
@@ -22873,6 +22910,7 @@ jobs:
           tests/test_ticker_news_annotation_api.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
+          tests/test_ticker_news_inventory.py
           tests/test_ticker_news_package_n_matrix.py
           tests/test_ticker_news_receipt_binding.py
           tests/test_ticker_news_secret_delivery.py
