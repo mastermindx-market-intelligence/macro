@@ -296,19 +296,38 @@ def _run_capture_members(args: argparse.Namespace) -> int:
 
 
 def _registry_available_clocks(payload: Mapping[str, Any]) -> list[datetime]:
-    """Every ``available_at`` clock the registry snapshot exposes, parsed."""
+    """Every ``available_at`` clock the registry snapshot exposes, parsed.
+
+    D10: fail closed. An ``available_at`` that exists but cannot be parsed is
+    the typed ``contract_malformed`` refusal, never a silently dropped clock —
+    a malformed registry must not quietly under-clock the CLOCK RULE max (and
+    with it the generation id and pointer ordering).
+    """
     found: list[datetime] = []
 
     def _scan(node: Any) -> None:
         if isinstance(node, Mapping):
             for key, value in node.items():
-                if key == "available_at" and isinstance(value, str) and value.strip():
+                if key == "available_at":
+                    if not isinstance(value, str) or not value.strip():
+                        _fail(
+                            "registry available_at is not a non-empty string: "
+                            f"{value!r}",
+                            code="contract_malformed",
+                        )
                     try:
                         parsed = parse_utc(value.strip(), field="registry available_at")
-                    except ValueError:
-                        parsed = None
-                    if parsed is not None:
-                        found.append(parsed)
+                    except ValueError as exc:
+                        raise PublisherError(
+                            f"registry available_at is unparseable: {value!r} ({exc})",
+                            code="contract_malformed",
+                        ) from exc
+                    if parsed is None:
+                        _fail(
+                            f"registry available_at is unparseable: {value!r}",
+                            code="contract_malformed",
+                        )
+                    found.append(parsed)
                 _scan(value)
         elif isinstance(node, (list, tuple)):
             for item in node:

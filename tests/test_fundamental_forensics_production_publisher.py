@@ -1263,6 +1263,25 @@ def test_targets_requires_max_tickers() -> None:
     assert caught.value.code == 2
 
 
+def test_d10_unparseable_registry_available_at_fails_closed() -> None:
+    """D10: a registry ``available_at`` that exists but cannot be parsed is a
+    typed contract_malformed refusal — it used to be silently dropped from the
+    CLOCK RULE max, letting a malformed registry under-clock a generation."""
+    for bogus in ("not-a-date", "2026-13-45T99:99:99Z", "   ", ""):
+        with pytest.raises(producer.PublisherError) as caught:
+            producer._registry_available_clocks(
+                {"rule": {"available_at": bogus}}
+            )
+        assert caught.value.code == "contract_malformed", bogus
+    # A non-string value is the same refusal; lawful clocks still parse.
+    with pytest.raises(producer.PublisherError) as caught:
+        producer._registry_available_clocks({"available_at": 20260802})
+    assert caught.value.code == "contract_malformed"
+    assert producer._registry_available_clocks(
+        {"available_at": "2026-08-02T00:00:00Z"}
+    ) == [datetime(2026, 8, 2, tzinfo=timezone.utc)]
+
+
 def test_d8_targets_error_annotation_goes_to_stderr(tmp_path, capsys) -> None:
     """D8: the ``targets`` ::error must reach the Actions log even though the
     workflow captures this subcommand's stdout via ``$(...)`` — the annotation
