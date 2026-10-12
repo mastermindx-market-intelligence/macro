@@ -5,8 +5,10 @@ proof path: ``set -euo pipefail``, zero ``|| true``, secrets referenced by
 name only, no ticker or CIK literal, and no new ``workflow_dispatch`` input
 surface. D13 adds the ISOLATED, non-gating contract acquire step: its
 ``continue-on-error`` is the isolation mechanism, so it is the one lawful
-exception, and the three new suites must be wired into engine-render-guards'
-rot sweep with the new producer paths in the owning curated job.
+exception. The three new suites run in fif-kernel-guards (the #9014 generator's
+FIF suite list; never also in engine-render-guards' rot sweep), that job's path
+filter starts it on every producer path and suite, and the new producer paths
+stay in the owning curated job.
 """
 from __future__ import annotations
 
@@ -19,6 +21,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "filing-forensics-sec.yml"
 LEGACY_JOBS_PATH = ROOT / ".github" / "ci" / "legacy-jobs.yml"
+FKG_JOB = "fif-kernel-guards"
+FKG_SUITE_STEP = "FIF kernel suites (class A, hermetic)"
+ERG_JOB = "engine-render-guards"
 
 INCUMBENT_STEP = "restore, acquire, project, and sync Filing Forensics SEC sources (hard gate)"
 BUNDLE_STEP = "publish disclosure-projection bundle (the engine's render input)"
@@ -331,20 +336,27 @@ def test_publish_step_publishes_then_verifies() -> None:
     }
 
 
-def test_new_suites_wired_into_engine_render_guards_rot_sweep() -> None:
-    text = LEGACY_JOBS_PATH.read_text(encoding="utf-8")
+def _glob_matches(glob: str, path: str) -> bool:
+    """The legacy-jobs path-filter semantics: ``**`` crosses directories, ``*`` does not."""
+    pattern = re.escape(glob).replace(r"\*\*", ".*").replace(r"\*", "[^/]*")
+    return re.fullmatch(pattern, path) is not None
+
+
+def test_new_suites_wired_into_fif_kernel_guards() -> None:
+    manifest = yaml.safe_load(LEGACY_JOBS_PATH.read_text(encoding="utf-8"))["jobs"]
+    kernel = manifest[FKG_JOB]
+    suite_step = next(step for step in kernel["steps"] if step.get("name") == FKG_SUITE_STEP)
+    suites = str(suite_step["run"]).split()
     for suite in NEW_TEST_SUITES:
-        assert suite in text, suite
-    manifest = yaml.safe_load(text)["jobs"]
-    guards = manifest["engine-render-guards"]
-    sweep = next(
-        step
-        for step in guards["steps"]
-        if "render-guard + engine-contract tests" in str(step.get("name", ""))
-    )
-    run = sweep["run"]
+        assert suite in suites, suite
+    # One home: a suite that also stayed in the rot sweep would run twice per pack.
+    render_guards = yaml.safe_dump(manifest[ERG_JOB])
     for suite in NEW_TEST_SUITES:
-        assert suite in run, suite
+        assert suite not in render_guards, suite
+    # The job must also START on an edit to any of them or to a producer path.
+    globs = [str(glob) for glob in kernel["paths"]]
+    for path in NEW_TEST_SUITES + NEW_PRODUCER_PATHS:
+        assert any(_glob_matches(glob, path) for glob in globs), path
 
 
 def test_new_producer_paths_wired_into_owning_curated_job() -> None:
