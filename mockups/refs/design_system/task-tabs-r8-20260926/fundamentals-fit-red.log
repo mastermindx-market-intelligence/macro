@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_specimen_tabs_simple_fundamentals_do_not_require_sideways_reading ____
+tests/test_design_system_foundations.py:791: in test_specimen_tabs_simple_fundamentals_do_not_require_sideways_reading
+    assert re.search(r'<table class="mx-tbl" style="min-width:0">', panel)
+E   assert None
+E    +  where None = <function search at 0x10328ba60>('<table class="mx-tbl" style="min-width:0">', ' role="tabpanel" aria-labelledby="tab-fu" tabindex="0" hidden>\n        <p><b class="l-en">Business improvement is no...le</span><span class="l-zh">稳定</span></td></tr>\n          </tbody>\n        </table></div>\n      </div>\n      <div ')
+E    +    where <function search at 0x10328ba60> = re.search
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_tabs_simple_fundamentals_do_not_require_sideways_reading
+1 failed, 66 deselected in 0.07s

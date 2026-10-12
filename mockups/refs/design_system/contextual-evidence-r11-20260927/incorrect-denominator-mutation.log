@@ -1,0 +1,14 @@
+.F..                                                                     [100%]
+=================================== FAILURES ===================================
+______ test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase ______
+tests/test_design_system_foundations.py:1038: in test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase
+    assert values == {'total':26, 'faded':16, 'other':10}
+E   AssertionError: assert {'faded': 16,..., 'total': 25} == {'faded': 16,..., 'total': 26}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'total': 25} != {'total': 26}
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase
+1 failed, 3 passed, 95 deselected in 0.13s

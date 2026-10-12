@@ -1,0 +1,28 @@
+{
+  "head": "2fd4f1774a782f237d3424b0bd18799237ad6b79",
+  "main": "93b98bf4a4fad08c62ccc6cdb4a19b7c381a0435",
+  "base": "abaf9377013a62727eddb60e21bec267e6c736aa",
+  "candidate_owned_paths": 103,
+  "complete_census": true,
+  "conflicting_paths": [
+    "mockups/design_system/specimen.html"
+  ],
+  "hunks": [
+    {
+      "hunk": 1,
+      "resolution": "new fictional prepared-answer specimen supersedes old LIVE/Act hero and its obsolete main-only class change"
+    },
+    {
+      "hunk": 2,
+      "resolution": "keep modern main heading and new reachable section id/tabindex"
+    },
+    {
+      "hunk": 3,
+      "resolution": "retain entire current-main spine with only two redundant unavailable travel cells removed after type-stress proof"
+    }
+  ],
+  "resolved_specimen_equals_tested_bytes": true,
+  "resolved_specimen_blob": "4821c1be63abce236a2a4415504ab96c19abd7ac",
+  "composition": "current-main tree plus the 103 existing branch-owned deltas; real content reconciliation, not behind-count cleanup",
+  "held_records": "no R8 denied research/AgentOS/cumulative update is included; their branch blobs remain unchanged"
+}

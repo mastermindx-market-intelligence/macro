@@ -1,0 +1,63 @@
+FFFFFFFFF.                                                               [100%]
+=================================== FAILURES ===================================
+_________ test_spine_comparison_markers_connector_and_change_agree[0] __________
+tests/test_design_system_foundations.py:923: in test_spine_comparison_markers_connector_and_change_agree
+    assert current - previous == change, 'Earlier marker disagrees with stated change'
+E   AssertionError: Earlier marker disagrees with stated change
+E   assert (72.0 - 84.0) == -6.0
+_________ test_spine_comparison_markers_connector_and_change_agree[1] __________
+tests/test_design_system_foundations.py:923: in test_spine_comparison_markers_connector_and_change_agree
+    assert current - previous == change, 'Earlier marker disagrees with stated change'
+E   AssertionError: Earlier marker disagrees with stated change
+E   assert (61.0 - 50.0) == 5.0
+_________ test_spine_comparison_markers_connector_and_change_agree[2] __________
+tests/test_design_system_foundations.py:923: in test_spine_comparison_markers_connector_and_change_agree
+    assert current - previous == change, 'Earlier marker disagrees with stated change'
+E   AssertionError: Earlier marker disagrees with stated change
+E   assert (58.0 - 42.0) == 9.0
+_________ test_spine_comparison_markers_connector_and_change_agree[3] __________
+tests/test_design_system_foundations.py:923: in test_spine_comparison_markers_connector_and_change_agree
+    assert current - previous == change, 'Earlier marker disagrees with stated change'
+E   AssertionError: Earlier marker disagrees with stated change
+E   assert (38.0 - 46.0) == -4.0
+_______ test_spine_comparison_narrow_examples_preserve_both_endpoints[0] _______
+tests/test_design_system_foundations.py:932: in test_spine_comparison_narrow_examples_preserve_both_endpoints
+    assert _spine_geometry(_spine_rows(specimen, 'ud-b1-390')[row_number]) == _spine_geometry(_spine_rows(specimen, 'ud-b1')[row_number])
+tests/test_design_system_foundations.py:914: in _spine_geometry
+    return (percent('mx-spine-prev', 'left'), percent('mx-spine-mark', 'left'),
+tests/test_design_system_foundations.py:911: in percent
+    tag = next(a for _, a in _specimen_tab_nodes(row) if cls in a.get('class', '').split())
+E   StopIteration
+_______ test_spine_comparison_narrow_examples_preserve_both_endpoints[1] _______
+tests/test_design_system_foundations.py:932: in test_spine_comparison_narrow_examples_preserve_both_endpoints
+    assert _spine_geometry(_spine_rows(specimen, 'ud-b1-390')[row_number]) == _spine_geometry(_spine_rows(specimen, 'ud-b1')[row_number])
+tests/test_design_system_foundations.py:914: in _spine_geometry
+    return (percent('mx-spine-prev', 'left'), percent('mx-spine-mark', 'left'),
+tests/test_design_system_foundations.py:911: in percent
+    tag = next(a for _, a in _specimen_tab_nodes(row) if cls in a.get('class', '').split())
+E   StopIteration
+__________ test_spine_comparison_exposes_complete_same_window_values ___________
+tests/test_design_system_foundations.py:937: in test_spine_comparison_exposes_complete_same_window_values
+    assert 'id="spec-spine-values"' in section and 'id="spec-spine-context"' in section
+E   assert ('id="spec-spine-values"' in ' · REGIME SPINE — UD-B1 .mx-spine ══ -->\n<section class="spec-sec">\n  <h2 class="l-en">6.5 · Regime spine (.mx-spin... (max-width:640px)</code> 对 <code>.mx-spine</code> 实施的缩约。数字、标记几何与立场墨色保留；栏布局折叠为单一堆叠。</em></p>\n  </div>\n</section>\n\n')
+_______ test_spine_comparison_summary_is_not_a_trade_or_return_estimate ________
+tests/test_design_system_foundations.py:956: in test_spine_comparison_summary_is_not_a_trade_or_return_estimate
+    assert 'id="spec-spine-summary"' in section
+E   assert 'id="spec-spine-summary"' in ' · REGIME SPINE — UD-B1 .mx-spine ══ -->\n<section class="spec-sec">\n  <h2 class="l-en">6.5 · Regime spine (.mx-spin... (max-width:640px)</code> 对 <code>.mx-spine</code> 实施的缩约。数字、标记几何与立场墨色保留；栏布局折叠为单一堆叠。</em></p>\n  </div>\n</section>\n\n'
+_________ test_spine_comparison_values_are_native_readable_disclosure __________
+tests/test_design_system_foundations.py:965: in test_spine_comparison_values_are_native_readable_disclosure
+    assert re.search(r'<details[^>]+id="spec-spine-details"', section)
+E   assert None
+E    +  where None = <function search at 0x104ebfa60>('<details[^>]+id="spec-spine-details"', ' · REGIME SPINE — UD-B1 .mx-spine ══ -->\n<section class="spec-sec">\n  <h2 class="l-en">6.5 · Regime spine (.mx-spin... (max-width:640px)</code> 对 <code>.mx-spine</code> 实施的缩约。数字、标记几何与立场墨色保留；栏布局折叠为单一堆叠。</em></p>\n  </div>\n</section>\n\n')
+E    +    where <function search at 0x104ebfa60> = re.search
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_markers_connector_and_change_agree[0]
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_markers_connector_and_change_agree[1]
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_markers_connector_and_change_agree[2]
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_markers_connector_and_change_agree[3]
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_narrow_examples_preserve_both_endpoints[0]
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_narrow_examples_preserve_both_endpoints[1]
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_exposes_complete_same_window_values
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_summary_is_not_a_trade_or_return_estimate
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_values_are_native_readable_disclosure
+9 failed, 1 passed, 80 deselected in 0.23s

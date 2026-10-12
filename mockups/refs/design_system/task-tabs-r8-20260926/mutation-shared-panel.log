@@ -1,0 +1,18 @@
+FF.......                                                                [100%]
+=================================== FAILURES ===================================
+______________ test_specimen_tabs_use_distinct_reciprocal_panels _______________
+tests/test_design_system_foundations.py:747: in test_specimen_tabs_use_distinct_reciprocal_panels
+    assert len(tabs) == 3 and len(set(targets)) == 3, 'Three tasks need three actual panels'
+E   AssertionError: Three tasks need three actual panels
+E   assert (3 == 3 and 2 == 3)
+E    +  where 3 = len([{'aria-controls': 'pane-demo', 'aria-selected': 'true', 'id': 'tab-pf', 'role': 'tab', ...}, {'aria-controls': 'pane-..., 'role': 'tab', ...}, {'aria-controls': 'pane-filings', 'aria-selected': 'false', 'id': 'tab-fi', 'role': 'tab', ...}])
+E    +  and   2 = len({'pane-demo', 'pane-filings'})
+E    +    where {'pane-demo', 'pane-filings'} = set(['pane-demo', 'pane-demo', 'pane-filings'])
+______________ test_specimen_tabs_have_one_initial_keyboard_entry ______________
+tests/test_design_system_foundations.py:765: in test_specimen_tabs_have_one_initial_keyboard_entry
+    assert ('hidden' in panel) == (tab not in selected)
+E   AssertionError: assert ('hidden' in {'aria-labelledby': 'tab-pf', 'id': 'pane-demo', 'role': 'tabpanel', 'tabindex': '0'}) == ({'aria-controls': 'pane-demo', 'aria-selected': 'false', 'id': 'tab-fu', 'role': 'tab', ...} not in [{'aria-controls': 'pane-demo', 'aria-selected': 'true', 'id': 'tab-pf', 'role': 'tab', ...}])
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_tabs_use_distinct_reciprocal_panels
+FAILED tests/test_design_system_foundations.py::test_specimen_tabs_have_one_initial_keyboard_entry
+2 failed, 7 passed, 58 deselected in 0.05s

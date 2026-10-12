@@ -1,0 +1,9 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority ___
+tests/test_design_system_foundations.py:829: in test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority
+    assert 'Positive index returns do not establish broad participation.' in body
+E   assert 'Positive index returns do not establish broad participation.' in '<section class="spec-sec" id="spec-identity" tabindex="-1">\n  <h2 class="l-en">1 · Identity — calm institutional int...ass="law l-zh">深色是指挥中心，浅色是研究工作台。一款字体、极大字重跨度；数字永远等宽对齐；色彩只在有含义时出现（方向 · 健康 · 导航 · 暂定 · 锁定）——且方向从不只靠颜色表达。页面做压缩，不做炫技。</p>\n'
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority
+1 failed, 75 deselected in 0.03s

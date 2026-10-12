@@ -1,0 +1,182 @@
+{
+  "scope": "unmodified pinned specimen; local file transport; external http(s) blocked; actual keyboard activation; not production/assistive-tech proof",
+  "cells": [
+    {
+      "viewportWidth": 1440,
+      "requestedTheme": "dark",
+      "lang": "en",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "dark",
+      "locale": "en",
+      "documentLang": "en",
+      "width": 343.34375,
+      "overflow": false,
+      "viewportOverflow": false,
+      "rect": {
+        "x": 942.15625,
+        "y": 3860.359375,
+        "width": 343.34375,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    },
+    {
+      "viewportWidth": 1440,
+      "requestedTheme": "dark",
+      "lang": "zh",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLang": "en",
+      "width": 343.34375,
+      "overflow": false,
+      "viewportOverflow": false,
+      "rect": {
+        "x": 942.15625,
+        "y": 3598.3125,
+        "width": 343.34375,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    },
+    {
+      "viewportWidth": 1440,
+      "requestedTheme": "light",
+      "lang": "en",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "light",
+      "locale": "en",
+      "documentLang": "en",
+      "width": 343.34375,
+      "overflow": false,
+      "viewportOverflow": false,
+      "rect": {
+        "x": 942.15625,
+        "y": 3860.359375,
+        "width": 343.34375,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    },
+    {
+      "viewportWidth": 1440,
+      "requestedTheme": "light",
+      "lang": "zh",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "light",
+      "locale": "zh",
+      "documentLang": "en",
+      "width": 343.34375,
+      "overflow": false,
+      "viewportOverflow": false,
+      "rect": {
+        "x": 942.15625,
+        "y": 3598.3125,
+        "width": 343.34375,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    },
+    {
+      "viewportWidth": 390,
+      "requestedTheme": "dark",
+      "lang": "en",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "dark",
+      "locale": "en",
+      "documentLang": "en",
+      "width": 309,
+      "overflow": false,
+      "viewportOverflow": true,
+      "rect": {
+        "x": 35,
+        "y": 8056.140625,
+        "width": 309,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    },
+    {
+      "viewportWidth": 390,
+      "requestedTheme": "dark",
+      "lang": "zh",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLang": "en",
+      "width": 309,
+      "overflow": false,
+      "viewportOverflow": true,
+      "rect": {
+        "x": 35,
+        "y": 7172.1875,
+        "width": 309,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    },
+    {
+      "viewportWidth": 390,
+      "requestedTheme": "light",
+      "lang": "en",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "light",
+      "locale": "en",
+      "documentLang": "en",
+      "width": 309,
+      "overflow": false,
+      "viewportOverflow": true,
+      "rect": {
+        "x": 35,
+        "y": 8056.140625,
+        "width": 309,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    },
+    {
+      "viewportWidth": 390,
+      "requestedTheme": "light",
+      "lang": "zh",
+      "open": true,
+      "focused": true,
+      "bodyVisible": true,
+      "theme": "light",
+      "locale": "zh",
+      "documentLang": "en",
+      "width": 309,
+      "overflow": false,
+      "viewportOverflow": true,
+      "rect": {
+        "x": 35,
+        "y": 7172.1875,
+        "width": 309,
+        "height": 92.125
+      },
+      "closedWithSpace": true,
+      "pass": true
+    }
+  ],
+  "exceptions": []
+}

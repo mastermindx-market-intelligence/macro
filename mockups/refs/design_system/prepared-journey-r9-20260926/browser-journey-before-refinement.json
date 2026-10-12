@@ -1,0 +1,3506 @@
+{
+  "scope": "R9 same-file reference entry and inspect-return; current-source composition; 2x cases double the type ramp, not a claimed native zoom or assistive-technology test; isolated Chrome, external HTTP(S) blocked",
+  "cells": [
+    {
+      "width": 320,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 188.046875,
+            "headerBottom": 171.046875,
+            "height": 916.375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 188.25,
+            "headerBottom": 171.046875,
+            "height": 567.5625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 187.8125,
+            "headerBottom": 171.046875,
+            "height": 2930.015625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 188.421875,
+            "headerBottom": 171.046875,
+            "height": 2244.875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 188.296875,
+            "headerBottom": 171.046875,
+            "height": 1126.015625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 188.03125,
+            "headerBottom": 171.046875,
+            "height": 8255.0625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 309,
+            "client": 309
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 320,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 168.234375,
+            "headerBottom": 151.671875,
+            "height": 737.75,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 168.4375,
+            "headerBottom": 151.671875,
+            "height": 459.5625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 168,
+            "headerBottom": 151.671875,
+            "height": 2751.859375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 167.984375,
+            "headerBottom": 151.671875,
+            "height": 2079.03125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 168.015625,
+            "headerBottom": 151.671875,
+            "height": 908.015625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 167.625,
+            "headerBottom": 151.671875,
+            "height": 7175.6875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 309,
+            "client": 309
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 320,
+      "scale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 188.046875,
+            "headerBottom": 171.046875,
+            "height": 916.375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 188.25,
+            "headerBottom": 171.046875,
+            "height": 567.5625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 187.8125,
+            "headerBottom": 171.046875,
+            "height": 2930.015625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 188.421875,
+            "headerBottom": 171.046875,
+            "height": 2244.875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 188.296875,
+            "headerBottom": 171.046875,
+            "height": 1126.015625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 188.03125,
+            "headerBottom": 171.046875,
+            "height": 8255.0625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 309,
+            "client": 309
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 320,
+      "scale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 168.234375,
+            "headerBottom": 151.671875,
+            "height": 737.75,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 168.4375,
+            "headerBottom": 151.671875,
+            "height": 459.5625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 168,
+            "headerBottom": 151.671875,
+            "height": 2751.859375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 167.984375,
+            "headerBottom": 151.671875,
+            "height": 2079.03125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 168.015625,
+            "headerBottom": 151.671875,
+            "height": 908.015625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 167.625,
+            "headerBottom": 151.671875,
+            "height": 7175.6875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 309,
+            "client": 309
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 136.734375,
+            "headerBottom": 120.171875,
+            "height": 701.34375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 136.6875,
+            "headerBottom": 120.171875,
+            "height": 456.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 137.15625,
+            "headerBottom": 120.171875,
+            "height": 2728.0625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 137.078125,
+            "headerBottom": 120.171875,
+            "height": 1646.9375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 137.015625,
+            "headerBottom": 120.171875,
+            "height": 974.390625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 137.28125,
+            "headerBottom": 120.171875,
+            "height": 7308.078125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 379,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 136.546875,
+            "headerBottom": 120.171875,
+            "height": 621.53125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 137.03125,
+            "headerBottom": 120.171875,
+            "height": 394.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 136.5,
+            "headerBottom": 120.171875,
+            "height": 2576.25,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 137.078125,
+            "headerBottom": 120.171875,
+            "height": 1515.1875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 137.265625,
+            "headerBottom": 120.171875,
+            "height": 818.671875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 136.5625,
+            "headerBottom": 120.171875,
+            "height": 6534.078125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 379,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "scale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 136.734375,
+            "headerBottom": 120.171875,
+            "height": 701.34375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 136.6875,
+            "headerBottom": 120.171875,
+            "height": 456.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 137.15625,
+            "headerBottom": 120.171875,
+            "height": 2728.0625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 137.078125,
+            "headerBottom": 120.171875,
+            "height": 1646.9375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 137.015625,
+            "headerBottom": 120.171875,
+            "height": 974.390625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 137.28125,
+            "headerBottom": 120.171875,
+            "height": 7308.078125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 379,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "scale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 136.546875,
+            "headerBottom": 120.171875,
+            "height": 621.53125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 137.03125,
+            "headerBottom": 120.171875,
+            "height": 394.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 136.5,
+            "headerBottom": 120.171875,
+            "height": 2576.25,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 137.078125,
+            "headerBottom": 120.171875,
+            "height": 1515.1875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 137.265625,
+            "headerBottom": 120.171875,
+            "height": 818.671875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 136.5625,
+            "headerBottom": 120.171875,
+            "height": 6534.078125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 379,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 768,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 89.546875,
+            "headerBottom": 73.421875,
+            "height": 494.84375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 90.296875,
+            "headerBottom": 73.421875,
+            "height": 456.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 89.765625,
+            "headerBottom": 73.421875,
+            "height": 1658.71875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 90.390625,
+            "headerBottom": 73.421875,
+            "height": 995.28125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 89.671875,
+            "headerBottom": 73.421875,
+            "height": 673.75,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 90.328125,
+            "headerBottom": 73.421875,
+            "height": 4527.8125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 757,
+            "client": 757
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 768,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 92.125,
+            "headerBottom": 76,
+            "height": 475.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 92.171875,
+            "headerBottom": 76,
+            "height": 394.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 91.640625,
+            "headerBottom": 76,
+            "height": 1528.59375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 91.59375,
+            "headerBottom": 76,
+            "height": 937.15625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 91.75,
+            "headerBottom": 76,
+            "height": 638.421875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 91.703125,
+            "headerBottom": 76,
+            "height": 3965.59375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 757,
+            "client": 757
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 768,
+      "scale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 89.546875,
+            "headerBottom": 73.421875,
+            "height": 494.84375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 90.296875,
+            "headerBottom": 73.421875,
+            "height": 456.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 89.765625,
+            "headerBottom": 73.421875,
+            "height": 1658.71875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 90.390625,
+            "headerBottom": 73.421875,
+            "height": 995.28125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 89.671875,
+            "headerBottom": 73.421875,
+            "height": 673.75,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 90.328125,
+            "headerBottom": 73.421875,
+            "height": 4527.8125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 757,
+            "client": 757
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 768,
+      "scale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 92.125,
+            "headerBottom": 76,
+            "height": 475.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 92.171875,
+            "headerBottom": 76,
+            "height": 394.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 91.640625,
+            "headerBottom": 76,
+            "height": 1528.59375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 91.59375,
+            "headerBottom": 76,
+            "height": 937.15625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 91.75,
+            "headerBottom": 76,
+            "height": 638.421875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 91.703125,
+            "headerBottom": 76,
+            "height": 3965.59375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 757,
+            "client": 757
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 60.625,
+            "headerBottom": 44.5,
+            "height": 494.84375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 60.59375,
+            "headerBottom": 44.5,
+            "height": 433.21875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 60.8125,
+            "headerBottom": 44.5,
+            "height": 1262.6875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 61.46875,
+            "headerBottom": 44.5,
+            "height": 995.28125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 60.75,
+            "headerBottom": 44.5,
+            "height": 658.25,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 61.0625,
+            "headerBottom": 44.5,
+            "height": 3266.65625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 1429,
+            "client": 1429
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "scale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 60.625,
+            "headerBottom": 44.5,
+            "height": 475.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 60.890625,
+            "headerBottom": 44.5,
+            "height": 394.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 61.359375,
+            "headerBottom": 44.5,
+            "height": 1197.625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 61.09375,
+            "headerBottom": 44.5,
+            "height": 937.15625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 61.25,
+            "headerBottom": 44.5,
+            "height": 638.421875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 61.359375,
+            "headerBottom": 44.5,
+            "height": 2976.625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 1429,
+            "client": 1429
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "scale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 60.625,
+            "headerBottom": 44.5,
+            "height": 494.84375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 60.59375,
+            "headerBottom": 44.5,
+            "height": 433.21875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 60.8125,
+            "headerBottom": 44.5,
+            "height": 1262.6875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 61.46875,
+            "headerBottom": 44.5,
+            "height": 995.28125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 60.75,
+            "headerBottom": 44.5,
+            "height": 658.25,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 61.0625,
+            "headerBottom": 44.5,
+            "height": 3266.65625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 1429,
+            "client": 1429
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "scale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 60.625,
+            "headerBottom": 44.5,
+            "height": 475.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 60.890625,
+            "headerBottom": 44.5,
+            "height": 394.46875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 61.359375,
+            "headerBottom": 44.5,
+            "height": 1197.625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 61.09375,
+            "headerBottom": 44.5,
+            "height": 937.15625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 61.25,
+            "headerBottom": 44.5,
+            "height": 638.421875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 61.359375,
+            "headerBottom": 44.5,
+            "height": 2976.625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 1429,
+            "client": 1429
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              44,
+              44,
+              44,
+              44,
+              44,
+              44
+            ],
+            "summary": 44
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "scale": 2,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 253,
+            "headerBottom": 236.421875,
+            "height": 1710.609375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 252.78125,
+            "headerBottom": 236.421875,
+            "height": 825.625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 253.40625,
+            "headerBottom": 236.421875,
+            "height": 5034.65625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 252.609375,
+            "headerBottom": 236.421875,
+            "height": 3303.4375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 253.046875,
+            "headerBottom": 236.421875,
+            "height": 2527.109375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 253.03125,
+            "headerBottom": 236.421875,
+            "height": 15437.296875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": false,
+          "detail": {
+            "scroll": 418,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              61.390625,
+              61.390625,
+              104.78125,
+              61.390625,
+              61.390625,
+              61.390625
+            ],
+            "summary": 58.75
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": false
+    },
+    {
+      "width": 390,
+      "scale": 2,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 213.90625,
+            "headerBottom": 197.671875,
+            "height": 1459.53125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 213.921875,
+            "headerBottom": 197.671875,
+            "height": 789.8125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 213.734375,
+            "headerBottom": 197.671875,
+            "height": 4457.96875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 214.4375,
+            "headerBottom": 197.671875,
+            "height": 3053.875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 214.3125,
+            "headerBottom": 197.671875,
+            "height": 1868.609375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 214.046875,
+            "headerBottom": 197.671875,
+            "height": 12668.671875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 379,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              61.390625,
+              61.390625,
+              61.390625,
+              61.390625,
+              61.390625,
+              61.390625
+            ],
+            "summary": 58.75
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "scale": 2,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 253,
+            "headerBottom": 236.421875,
+            "height": 1710.609375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 252.78125,
+            "headerBottom": 236.421875,
+            "height": 825.625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 253.40625,
+            "headerBottom": 236.421875,
+            "height": 5034.65625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 252.609375,
+            "headerBottom": 236.421875,
+            "height": 3303.4375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 253.046875,
+            "headerBottom": 236.421875,
+            "height": 2527.109375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 253.03125,
+            "headerBottom": 236.421875,
+            "height": 15437.296875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": false,
+          "detail": {
+            "scroll": 418,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              61.390625,
+              61.390625,
+              104.78125,
+              61.390625,
+              61.390625,
+              61.390625
+            ],
+            "summary": 58.75
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": false
+    },
+    {
+      "width": 390,
+      "scale": 2,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 213.90625,
+            "headerBottom": 197.671875,
+            "height": 1459.53125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 213.921875,
+            "headerBottom": 197.671875,
+            "height": 789.8125,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 213.734375,
+            "headerBottom": 197.671875,
+            "height": 4457.96875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 214.4375,
+            "headerBottom": 197.671875,
+            "height": 3053.875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 214.3125,
+            "headerBottom": 197.671875,
+            "height": 1868.609375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 214.046875,
+            "headerBottom": 197.671875,
+            "height": 12668.671875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "zh-CN",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": true,
+          "detail": {
+            "scroll": 379,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              61.390625,
+              61.390625,
+              61.390625,
+              61.390625,
+              61.390625,
+              61.390625
+            ],
+            "summary": 58.75
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "exceptions": []
+}

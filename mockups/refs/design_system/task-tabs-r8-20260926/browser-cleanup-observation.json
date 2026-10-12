@@ -1,0 +1,11 @@
+{
+  "exit": 0,
+  "observation": "80906     1 ?NE    0.0      0 (Google Chrome)\n81257     1 ?NE    0.0      0 (Google Chrome)\n",
+  "final_child": {
+    "pid": 81257,
+    "profile": "/Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r8-20260926/chrome-profile-mJWqJK",
+    "exitCode": null,
+    "signalCode": null,
+    "closed": false
+  }
+}

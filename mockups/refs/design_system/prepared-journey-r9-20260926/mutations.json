@@ -1,0 +1,17 @@
+[
+  {
+    "name": "lost-warning",
+    "exit": 1,
+    "result": "1 failed, 75 deselected in 0.03s"
+  },
+  {
+    "name": "wrong-denominator",
+    "exit": 1,
+    "result": "1 failed, 75 deselected in 0.03s"
+  },
+  {
+    "name": "dead-destination",
+    "exit": 1,
+    "result": "1 failed, 75 deselected in 0.04s"
+  }
+]

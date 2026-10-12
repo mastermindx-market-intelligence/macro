@@ -1,0 +1,35 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+__________ test_specimen_answer_deep_link_includes_example_and_window __________
+tests/test_design_system_foundations.py:870: in test_specimen_answer_deep_link_includes_example_and_window
+    assert body.index('id="spec-answer-title"') < body.index('Fictional example')
+E   assert 451 < 291
+E    +  where 451 = <built-in method index of str object at 0x105887000>('id="spec-answer-title"')
+E    +    where <built-in method index of str object at 0x105887000> = '<section class="spec-sec" id="spec-identity" tabindex="-1">\n  <h2 class="l-en">1 · Identity — calm institutional int...ass="law l-zh">深色是指挥中心，浅色是研究工作台。一款字体、极大字重跨度；数字永远等宽对齐；色彩只在有含义时出现（方向 · 健康 · 导航 · 暂定 · 锁定）——且方向从不只靠颜色表达。页面做压缩，不做炫技。</p>\n'.index
+E    +  and   291 = <built-in method index of str object at 0x105887000>('Fictional example')
+E    +    where <built-in method index of str object at 0x105887000> = '<section class="spec-sec" id="spec-identity" tabindex="-1">\n  <h2 class="l-en">1 · Identity — calm institutional int...ass="law l-zh">深色是指挥中心，浅色是研究工作台。一款字体、极大字重跨度；数字永远等宽对齐；色彩只在有含义时出现（方向 · 健康 · 导航 · 暂定 · 锁定）——且方向从不只靠颜色表达。页面做压缩，不做炫技。</p>\n'.index
+_______________ test_specimen_sector_rows_use_readable_body_text _______________
+tests/test_design_system_foundations.py:875: in test_specimen_sector_rows_use_readable_body_text
+    row = re.sub(r"\s+", "", _rule_body(specimen, r"\.spec-answer \.mx-tbl tbody th"))
+tests/test_design_system_foundations.py:192: in _rule_body
+    assert m, f"selector {selector_pattern!r} not found"
+E   AssertionError: selector '\\.spec-answer \\.mx-tbl tbody th' not found
+E   assert None
+__________ test_specimen_unavailable_spine_has_no_orphan_travel_cell ___________
+tests/test_design_system_foundations.py:883: in test_specimen_unavailable_spine_has_no_orphan_travel_cell
+    assert '<div class="mx-spine-travel"><span class="muted">—</span></div>' not in specimen
+E   assert '<div class=.../span></div>' not in '<!doctype h...>\n</html>\n'
+E     
+E     '<div class="mx-spi...ted">—</span></div>' is contained here:
+E       >
+E               <div class="mx-spine-travel"><span class="muted">—</span></div>
+E               <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+E             </div>
+E           </div>...
+E     
+E     ...Full output truncated (151 lines hidden), use '-vv' to show
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_answer_deep_link_includes_example_and_window
+FAILED tests/test_design_system_foundations.py::test_specimen_sector_rows_use_readable_body_text
+FAILED tests/test_design_system_foundations.py::test_specimen_unavailable_spine_has_no_orphan_travel_cell
+3 failed, 76 deselected in 0.12s

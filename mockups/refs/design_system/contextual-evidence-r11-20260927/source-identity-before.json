@@ -1,0 +1,25 @@
+{
+  "head": "9f497140f8536b0e8f8ef77908db4f6cb77053c8",
+  "files": {
+    "mockups/design_system/specimen.html": {
+      "blob": "517f4d18345b53733c623c00597355fc8a6285eb",
+      "sha256": "5b40fa7a91a0cc2f486bf5ca4b053749371afe3644adbdef134801fe2bc112a6"
+    },
+    "tests/test_design_system_foundations.py": {
+      "blob": "7f26148ba4177ae86bbd35d1b30a2ebd883e2611",
+      "sha256": "2e8e306042aa4d0695169f5b4725566743eb0bf4cc220433550181a762121fa7"
+    },
+    "templates/theme.css": {
+      "blob": "41f0c3bdea3979faf4a57f2a98e31a4df54a5973",
+      "sha256": "d58d35e93758ada2123553f88ea6652e66ec11c116b031679a82b80951f8a478"
+    },
+    "templates/theme.js": {
+      "blob": "0131fb6ec141956af1921f8f9454184e92af97ea",
+      "sha256": "da988d8ea0ccf558b46c2119b1f29a358b7e0f8aba26cae69737a98b981ecce9"
+    },
+    "templates/tier_preview.css": {
+      "blob": "9cc9afa897cd1578780cd49ba088750b70a8cc28",
+      "sha256": "d390f5999f642821569c8ddd0a14516d699e01b589365692faf40cb32f0aa592"
+    }
+  }
+}

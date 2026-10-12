@@ -1,0 +1,9 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_spine_comparison_exposes_complete_same_window_values ___________
+tests/test_design_system_foundations.py:943: in test_spine_comparison_exposes_complete_same_window_values
+    assert 'Fictional values' in caption and '虚构分值' in caption and '2026' in caption
+E   assert ('Fictional values' in '<span class="l-en">Same scale and dates. The missing comparison is not zero.</span><span class="l-zh">同一标尺和日期。缺失的比较不按零处理。</span>')
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_exposes_complete_same_window_values
+1 failed, 94 deselected in 0.11s

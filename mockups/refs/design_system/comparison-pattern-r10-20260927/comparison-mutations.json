@@ -1,0 +1,32 @@
+[
+  {
+    "mutation": "wrong-earlier",
+    "caught": true,
+    "check": "test_spine_comparison_markers_connector_and_change_agree",
+    "reason": "Earlier marker disagrees with stated change"
+  },
+  {
+    "mutation": "detached-connector",
+    "caught": true,
+    "check": "test_spine_comparison_markers_connector_and_change_agree",
+    "reason": "Connector must begin at the lower endpoint"
+  },
+  {
+    "mutation": "false-missing-zero",
+    "caught": true,
+    "check": "test_spine_comparison_exposes_complete_same_window_values",
+    "reason": ""
+  },
+  {
+    "mutation": "forced-phone-on-wide",
+    "caught": true,
+    "check": "test_spine_comparison_preview_mode_follows_available_width",
+    "reason": ""
+  },
+  {
+    "mutation": "missing-example-context",
+    "caught": true,
+    "check": "test_spine_comparison_exposes_complete_same_window_values",
+    "reason": ""
+  }
+]

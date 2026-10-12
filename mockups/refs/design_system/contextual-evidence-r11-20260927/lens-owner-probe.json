@@ -1,0 +1,320 @@
+{
+  "scope": "Exact LENS IIFE from pinned theme.js, isolated test fixture; no production changes",
+  "cells": [
+    {
+      "width": 1440,
+      "input": "keyboard",
+      "checks": [
+        {
+          "name": "focus_shows_help",
+          "pass": true
+        },
+        {
+          "name": "escape_closes",
+          "pass": true
+        },
+        {
+          "name": "nested_control_works",
+          "pass": true
+        }
+      ],
+      "events": [
+        {
+          "type": "focusin",
+          "target": "plain",
+          "open": true
+        },
+        {
+          "type": "focusout",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "nested",
+          "open": true
+        },
+        {
+          "type": "click",
+          "target": "nested",
+          "open": false
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "input": "touch",
+      "checks": [
+        {
+          "name": "first_tap_persists",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "lock": false,
+            "focus": "plain",
+            "text": "Historical examples, not a forecast.\nFictional · 26 cases",
+            "aria": "lensPop",
+            "nested": "0",
+            "coarse": true
+          }
+        },
+        {
+          "name": "dedicated_first_tap_persists",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "lock": false,
+            "focus": "dedicated",
+            "text": "Historical examples, not a forecast.",
+            "aria": null,
+            "nested": "0",
+            "coarse": true
+          }
+        },
+        {
+          "name": "nested_control_works",
+          "pass": true,
+          "detail": {
+            "open": false,
+            "lock": false,
+            "focus": "nested",
+            "text": "Wrapper help",
+            "aria": null,
+            "nested": "1",
+            "coarse": true
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "pointerdown",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "pointerup",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "plain",
+          "open": true
+        },
+        {
+          "type": "click",
+          "target": "plain",
+          "open": true
+        },
+        {
+          "type": "pointerdown",
+          "target": "dedicated",
+          "open": false
+        },
+        {
+          "type": "pointerup",
+          "target": "dedicated",
+          "open": false
+        },
+        {
+          "type": "focusout",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "dedicated",
+          "open": true
+        },
+        {
+          "type": "click",
+          "target": "dedicated",
+          "open": true
+        },
+        {
+          "type": "pointerdown",
+          "target": "nested",
+          "open": false
+        },
+        {
+          "type": "pointerup",
+          "target": "nested",
+          "open": false
+        },
+        {
+          "type": "focusout",
+          "target": "dedicated",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "nested",
+          "open": true
+        },
+        {
+          "type": "click",
+          "target": "nested",
+          "open": false
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "input": "keyboard",
+      "checks": [
+        {
+          "name": "focus_shows_help",
+          "pass": true
+        },
+        {
+          "name": "escape_closes",
+          "pass": true
+        },
+        {
+          "name": "nested_control_works",
+          "pass": true
+        }
+      ],
+      "events": [
+        {
+          "type": "focusin",
+          "target": "plain",
+          "open": true
+        },
+        {
+          "type": "focusout",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "nested",
+          "open": false
+        },
+        {
+          "type": "click",
+          "target": "nested",
+          "open": false
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "input": "touch",
+      "checks": [
+        {
+          "name": "first_tap_persists",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "lock": true,
+            "focus": "plain",
+            "text": "✕\nHistorical examples, not a forecast.\nFictional · 26 cases",
+            "aria": "lensPop",
+            "nested": "0",
+            "coarse": true
+          }
+        },
+        {
+          "name": "dedicated_first_tap_persists",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "lock": true,
+            "focus": "dedicated",
+            "text": "✕\nHistorical examples, not a forecast.",
+            "aria": null,
+            "nested": "0",
+            "coarse": true
+          }
+        },
+        {
+          "name": "nested_control_works",
+          "pass": true,
+          "detail": {
+            "open": false,
+            "lock": false,
+            "focus": "nested",
+            "text": "✕\nHistorical examples, not a forecast.",
+            "aria": null,
+            "nested": "1",
+            "coarse": true
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "pointerdown",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "pointerup",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "plain",
+          "open": true
+        },
+        {
+          "type": "click",
+          "target": "",
+          "open": true
+        },
+        {
+          "type": "pointerdown",
+          "target": "dedicated",
+          "open": false
+        },
+        {
+          "type": "pointerup",
+          "target": "dedicated",
+          "open": false
+        },
+        {
+          "type": "focusout",
+          "target": "plain",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "dedicated",
+          "open": true
+        },
+        {
+          "type": "click",
+          "target": "",
+          "open": true
+        },
+        {
+          "type": "pointerdown",
+          "target": "nested",
+          "open": false
+        },
+        {
+          "type": "pointerup",
+          "target": "nested",
+          "open": false
+        },
+        {
+          "type": "focusout",
+          "target": "dedicated",
+          "open": false
+        },
+        {
+          "type": "focusin",
+          "target": "nested",
+          "open": false
+        },
+        {
+          "type": "click",
+          "target": "nested",
+          "open": false
+        }
+      ]
+    }
+  ],
+  "exceptions": []
+}

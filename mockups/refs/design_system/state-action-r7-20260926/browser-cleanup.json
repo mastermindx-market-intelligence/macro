@@ -1,0 +1,27 @@
+[
+  {
+    "pid": 75629,
+    "exitCode": null,
+    "signalCode": null,
+    "profile": "/Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/chrome-profile-b7XP0y",
+    "closed": false,
+    "final_os_observation": "75629     1 ?NE    0.0      0 (Google Chrome)",
+    "observation_exit": 0
+  },
+  {
+    "pid": 75833,
+    "exitCode": null,
+    "signalCode": null,
+    "profile": "/Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/chrome-profile-KqdQ9U",
+    "closed": false,
+    "final_os_observation": "75833     1 ?NE    0.0      0 (Google Chrome)",
+    "observation_exit": 0
+  },
+  {
+    "pid": 76183,
+    "profile": "/Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/chrome-profile-cYJ40N",
+    "closed": false,
+    "final_os_observation": "76183     1 ?NE    0.0      0 (Google Chrome)",
+    "observation_exit": 0
+  }
+]

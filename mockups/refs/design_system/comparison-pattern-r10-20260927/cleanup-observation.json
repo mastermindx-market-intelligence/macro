@@ -1,0 +1,11 @@
+{
+  "controller": {
+    "pid": 3748,
+    "profile": "/Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r10-20260927/chrome-profile-4WoFE7",
+    "exitCode": null,
+    "signalCode": null,
+    "closed": false
+  },
+  "process_readback": "3748     1 ?NE    0.0      0 (Google Chrome)",
+  "ps_exit": 0
+}

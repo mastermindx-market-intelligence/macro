@@ -1,0 +1,70 @@
+{
+  "before": {
+    "styles": {
+      "13N-0": {
+        "fontSize": "10px",
+        "letterSpacing": "0.08em",
+        "whiteSpace": "pre-wrap",
+        "fontFamily": "\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif",
+        "fontWeight": 600,
+        "lineHeight": "12px",
+        "color": "var(--mx-light-warn)"
+      },
+      "12F-0": {
+        "fontSize": "46px",
+        "lineHeight": "50px",
+        "letterSpacing": "-0.03em",
+        "whiteSpace": "pre-wrap",
+        "fontFamily": "\"Inter-ExtraBold\", \"Inter\", system-ui, sans-serif",
+        "fontWeight": 800,
+        "color": "var(--mx-light-warn)"
+      },
+      "13H-0": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "round(50%, 1px)",
+        "padding": "20px",
+        "borderRadius": "var(--r-panel)",
+        "gap": "12px",
+        "backgroundColor": "var(--mx-light-panel)",
+        "borderWidth": "1px",
+        "borderStyle": "solid",
+        "borderColor": "var(--mx-light-line)"
+      }
+    }
+  },
+  "after": {
+    "styles": {
+      "13N-0": {
+        "fontSize": "10px",
+        "letterSpacing": "0.08em",
+        "whiteSpace": "pre-wrap",
+        "fontFamily": "\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif",
+        "fontWeight": 600,
+        "lineHeight": "12px",
+        "color": "var(--mx-light-ink-warn)"
+      },
+      "12F-0": {
+        "fontSize": "46px",
+        "lineHeight": "50px",
+        "letterSpacing": "-0.03em",
+        "whiteSpace": "pre-wrap",
+        "fontFamily": "\"Inter-ExtraBold\", \"Inter\", system-ui, sans-serif",
+        "fontWeight": 800,
+        "color": "var(--mx-light-warn)"
+      },
+      "13H-0": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "round(50%, 1px)",
+        "padding": "20px",
+        "borderRadius": "var(--r-panel)",
+        "gap": "12px",
+        "backgroundColor": "var(--mx-light-panel)",
+        "borderWidth": "1px",
+        "borderStyle": "solid",
+        "borderColor": "var(--mx-light-line)"
+      }
+    }
+  }
+}

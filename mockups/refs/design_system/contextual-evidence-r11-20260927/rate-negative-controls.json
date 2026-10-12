@@ -1,0 +1,26 @@
+[
+  {
+    "name": "incorrect-denominator",
+    "exit": 1,
+    "caught": true,
+    "summary": "1 failed, 3 passed, 95 deselected in 0.13s"
+  },
+  {
+    "name": "forecast-wording",
+    "exit": 1,
+    "caught": true,
+    "summary": "1 failed, 3 passed, 95 deselected in 0.04s"
+  },
+  {
+    "name": "fictional-button-enabled",
+    "exit": 1,
+    "caught": true,
+    "summary": "1 failed, 3 passed, 95 deselected in 0.04s"
+  },
+  {
+    "name": "out-of-flow-overlay",
+    "exit": 1,
+    "caught": true,
+    "summary": "1 failed, 3 passed, 95 deselected in 0.04s"
+  }
+]
