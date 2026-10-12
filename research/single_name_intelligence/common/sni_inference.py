@@ -154,8 +154,8 @@ def _require_n_k(k: object, n: object) -> tuple[int, int]:
 def _require_alpha(alpha: object) -> float:
     if isinstance(alpha, bool) or not isinstance(alpha, (int, float)):
         raise ValueError("alpha must be in (0, 1)")
-    a = float(alpha)
-    if not (0.0 < a < 1.0):
+    a = alpha + 0.0
+    if not math.isfinite(a) or not (0.0 < a < 1.0):
         raise ValueError("alpha must be in (0, 1)")
     return a
 
@@ -163,10 +163,19 @@ def _require_alpha(alpha: object) -> float:
 def _require_p0(p0: object) -> float:
     if isinstance(p0, bool) or not isinstance(p0, (int, float)):
         raise ValueError("p0 must be in [0, 1]")
-    p = float(p0)
-    if not (0.0 <= p <= 1.0):
+    p = p0 + 0.0
+    if not math.isfinite(p) or not (0.0 <= p <= 1.0):
         raise ValueError("p0 must be in [0, 1]")
     return p
+
+
+def _require_finite_real(value: object) -> float:
+    """Accept non-bool int/float only; reject bool, str, NaN, inf, others."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError("values must be finite real numbers")
+    if not math.isfinite(value):
+        raise ValueError("values must be finite real numbers")
+    return value + 0.0
 
 
 def _require_min_episodes(min_episodes: object) -> int:
@@ -193,12 +202,17 @@ def _percentile_linear(samples: Sequence[float], q: float) -> float:
     if n == 0:
         raise ValueError("percentile of empty sample")
     if n == 1:
-        return float(xs[0])
+        return xs[0] + 0.0
     pos = q * (n - 1)
     lo = int(math.floor(pos))
     hi = min(lo + 1, n - 1)
     w = pos - lo
-    return float(xs[lo] * (1.0 - w) + xs[hi] * w)
+    return xs[lo] * (1.0 - w) + xs[hi] * w
+
+
+def _cluster_sort_key(key: object) -> tuple[str, str]:
+    """Deterministic order for mixed hashable cluster-key types."""
+    return (type(key).__name__, repr(key))
 
 
 def _binom_tail_ge(k: int, n: int, p0: float) -> float:
@@ -215,7 +229,7 @@ def _binom_tail_ge(k: int, n: int, p0: float) -> float:
     total = 0.0
     for i in range(k, n + 1):
         total += math.comb(n, i) * (p0 ** i) * (q ** (n - i))
-    return float(total)
+    return total + 0.0
 
 
 def _binom_tail_le(k: int, n: int, p0: float) -> float:
@@ -232,7 +246,7 @@ def _binom_tail_le(k: int, n: int, p0: float) -> float:
     total = 0.0
     for i in range(0, k + 1):
         total += math.comb(n, i) * (p0 ** i) * (q ** (n - i))
-    return float(total)
+    return total + 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -251,11 +265,23 @@ def cluster_mean_ci(
 ) -> InferenceResult:
     """Date-cluster (block) bootstrap of the mean.
 
-    Observations are grouped by cluster key, clusters are sorted by key so the
-    result is invariant to input permutation, then clusters are resampled with
-    replacement ``draws`` times via ``random.Random(seed)``. The statistic is
-    the mean of every observation in the sampled clusters. The CI is the
-    percentile interval at (alpha/2, 1 - alpha/2).
+    Observations are grouped by cluster key. Cluster order is deterministic
+    for mixed hashable key types by sorting on ``(type(k).__name__, repr(k))``,
+    so the result is invariant to input permutation. Clusters are then
+    resampled with replacement ``draws`` times via ``random.Random(seed)``.
+    The statistic is the mean of every observation in the sampled clusters.
+    The CI is the percentile interval at (alpha/2, 1 - alpha/2).
+
+    Empty input (no observations) abstains: ``abstained=True`` with
+    ``reason=ABSTAIN_NO_EPISODES``. ``values`` and ``cluster_keys`` of
+    different lengths raise ``ValueError`` naming both lengths.
+
+    Each value is checked with ``isinstance(v, bool)`` first, then accepted
+    only as a non-bool ``int`` or ``float``, then checked with
+    ``math.isfinite`` before any arithmetic. Bool, str/bytes, and non-finite
+    values raise ``ValueError("values must be finite real numbers")``.
+    ``cluster_keys`` containing ``None`` raise
+    ``ValueError("cluster_keys must not contain None")``.
     """
     _reject_authority(kwargs)
     alpha_f = _require_alpha(alpha)
@@ -269,14 +295,14 @@ def cluster_mean_ci(
 
     vals = list(values)
     keys = list(cluster_keys)
-    if len(vals) != len(keys):
-        raise ValueError("len(values) must equal len(cluster_keys)")
-    try:
-        obs = [float(v) for v in vals]
-    except (TypeError, ValueError) as exc:
-        raise ValueError("values must be finite floats") from exc
+    n_vals = len(vals)
+    n_keys = len(keys)
+    if n_vals != n_keys:
+        raise ValueError(
+            f"len(values)={n_vals} must equal len(cluster_keys)={n_keys}"
+        )
 
-    n_obs = len(obs)
+    n_obs = n_vals
     method = "cluster_bootstrap_mean"
 
     if n_obs == 0:
@@ -295,14 +321,18 @@ def cluster_mean_ci(
             draws=draws_i,
         )
 
+    obs = [_require_finite_real(v) for v in vals]
+    if any(key is None for key in keys):
+        raise ValueError("cluster_keys must not contain None")
+
     grouped: dict[object, list[float]] = {}
     for value, key in zip(obs, keys):
         grouped.setdefault(key, []).append(value)
-    ordered_keys = sorted(grouped)
+    ordered_keys = sorted(grouped, key=_cluster_sort_key)
     blocks = [grouped[key] for key in ordered_keys]
     n_clusters = len(blocks)
-    estimate = float(statistics.fmean(obs))
-    effective_n = float(n_clusters)
+    estimate = statistics.fmean(obs)
+    effective_n = n_clusters + 0.0
 
     if n_clusters < min_c:
         return InferenceResult(
@@ -389,12 +419,12 @@ def wilson_ci(k: int, n: int, *, alpha: float = 0.05, **kwargs: object) -> Infer
     if k_i == n_i:
         hi = 1.0
     return InferenceResult(
-        estimate=float(p),
-        ci_lo=float(lo),
-        ci_hi=float(hi),
+        estimate=p + 0.0,
+        ci_lo=lo + 0.0,
+        ci_hi=hi + 0.0,
         n_obs=n_i,
         n_clusters=n_i,
-        effective_n=float(n_i),
+        effective_n=n_i + 0.0,
         method=method,
         abstained=False,
         reason=None,
@@ -421,7 +451,7 @@ def binom_p_two_sided(k: int, n: int, p0: float = 0.5, **kwargs: object) -> floa
     p = _require_p0(p0)
     upper = _binom_tail_ge(k_i, n_i, p)
     lower = _binom_tail_le(k_i, n_i, p)
-    return float(min(1.0, 2.0 * min(upper, lower)))
+    return min(1.0, 2.0 * min(upper, lower))
 
 
 def sign_test_two_sided(pos: int, neg: int, **kwargs: object) -> float:

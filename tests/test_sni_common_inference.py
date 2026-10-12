@@ -258,3 +258,85 @@ def test_input_validation_raises():
         cluster_mean_ci([1.0, 2.0], ["a"])
     with pytest.raises(ValueError):
         cluster_mean_ci([1.0], ["a", "b"])
+
+
+def test_r1_01_non_finite_values():
+    keys = ["a", "a", "b", "b", "c", "c", "d", "d"]
+    nan_vals = [0.1, -0.2, 0.3, 0.05, -0.1, 0.2, 0.0, float("nan")]
+    inf_vals = [0.1, -0.2, 0.3, 0.05, -0.1, 0.2, 0.0, float("inf")]
+    with pytest.raises(ValueError, match="values must be finite real numbers"):
+        cluster_mean_ci(nan_vals, keys)
+    with pytest.raises(ValueError, match="values must be finite real numbers"):
+        cluster_mean_ci(inf_vals, keys)
+
+
+def test_r1_02_bool_values():
+    keys = ["a", "a", "b", "b", "c", "c", "d", "d"]
+    with pytest.raises(ValueError):
+        cluster_mean_ci([True, False] * 4, keys)
+
+
+def test_r1_03_non_numeric_values():
+    keys = ["a", "a", "b", "b", "c", "c", "d", "d"]
+    with pytest.raises(ValueError):
+        cluster_mean_ci(["0.1"] * 8, keys)
+    mixed = cluster_mean_ci([1, 2.5, -3, 0, 4, 5.5, 6, 7.0], keys, draws=200, seed=0)
+    assert mixed.n_obs == 8
+    assert mixed.estimate == (1 + 2.5 + -3 + 0 + 4 + 5.5 + 6 + 7.0) / 8.0
+    assert mixed.abstained is False
+
+
+def test_r1_04_none_and_mixed_cluster_keys():
+    values = [0.1, -0.2, 0.3, 0.05, -0.1, 0.2, 0.0, 0.1]
+    none_keys = ["a", "a", "b", "b", "c", "c", "d", None]
+    with pytest.raises(ValueError, match="cluster_keys must not contain None"):
+        cluster_mean_ci(values, none_keys)
+    mixed_keys = [1, 1, "a", "a", 2, 2, "b", "b"]
+    r1 = cluster_mean_ci(values, mixed_keys, draws=400, seed=13)
+    r2 = cluster_mean_ci(values, mixed_keys, draws=400, seed=13)
+    assert r1.abstained is False
+    assert r1.ci_lo == r2.ci_lo
+    assert r1.ci_hi == r2.ci_hi
+    assert r1.n_clusters == 4
+
+
+def test_r1_05_length_mismatch_and_empty_input():
+    with pytest.raises(ValueError) as excinfo:
+        cluster_mean_ci([1.0, 2.0, 3.0], ["a", "b"])
+    msg = str(excinfo.value)
+    assert "3" in msg
+    assert "2" in msg
+    empty = cluster_mean_ci([], [])
+    assert empty.abstained is True
+    assert empty.reason == ABSTAIN_NO_EPISODES
+    assert "no" in empty.reason.lower()
+    assert "episode" in empty.reason.lower()
+
+
+@pytest.mark.parametrize(
+    "call, should_raise",
+    [
+        (lambda: cluster_mean_ci([1.0, 2.0], ["a", "b"], alpha=float("nan")), True),
+        (lambda: cluster_mean_ci([1.0, 2.0], ["a", "b"], draws=0), True),
+        (lambda: wilson_ci(3.0, 10), True),
+        (lambda: binom_p_one_sided_greater(3, 10, p0=float("nan")), True),
+        (lambda: cluster_mean_ci([1.0, 2.0], ["a", "b"], trade_authority=True), True),
+        (lambda: cluster_mean_ci([1.0, 2.0], ["a", "b"], trade_authority=False), False),
+    ],
+    ids=[
+        "alpha_nan",
+        "draws_zero",
+        "wilson_float_k",
+        "binom_p0_nan",
+        "trade_authority_true",
+        "trade_authority_false",
+    ],
+)
+def test_r1_06_regression_pins(call, should_raise):
+    if should_raise:
+        with pytest.raises(ValueError):
+            call()
+    else:
+        result = call()
+        assert result.n_obs == 2
+        assert result.n_clusters == 2
