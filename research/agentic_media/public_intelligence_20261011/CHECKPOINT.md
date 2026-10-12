@@ -3,82 +3,74 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Current delivery frontier — October 12
+## Current delivery frontier — October12 source consolidation
 
-**Original Macro carrier:** [PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786),
-head `fa3a62630be70c96c008f7bb4ebcb447a5db0e36`. The existing protected controller
-refreshed cc5d against main `611f88003639aea7272ec30b1b4e7120020e23ea` after its
-normal lease/capacity admission. [CI 38195654198](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38195654198)
-is running on that exact head. The earlier cc5d CI completed SUCCESS with all 21
-binding checks passing, but main f65b8376 changed the definitions and required
-fresh proof. The inactive merge-queue-pilot context is nonbinding. No merge or
-Macro installation has been observed. All 13 installation-source hashes and all
-three acceptance-page hashes remain unchanged after the actual refresh.
+Original carrier remains [Macro PR8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786).
+The previous exact head fa3a62630be70c96c008f7bb4ebcb447a5db0e36 passed all21binding
+checks and terminal CI38195654198, with raw proof retained here. While it ran,
+main a278075e6197 changed CI definitions. Controller38198176765 required fresh
+proof and deferred after its eight update attempts. A subsequent sweep used the
+high-load lease for another PR. No protected merge or Macro installation follows
+from the historical green result.
 
-The preceding d425 head passed all 21 binding checks. Controller 38189419480
-required fresh proof after changed main CI definitions and deferred refresh at
-10 indexed runs against cap 8. New main then conflicted in an inherited Tiingo
-record. Root disarmed the original PR, integrated main 7cb33d3a as 8d304ac93cda,
-preserved main's Tiingo record byte-for-byte, and passed 29 affected checks
-(including curated import closure) in 585.15 seconds. All 13 installation-source
-hashes and three acceptance-page hashes are unchanged. No admin merge or
-controller-capacity bypass occurred. Earlier refresh history remains in Git and
-the same cumulative PR evidence comment; it is not current readiness proof.
+Root is consolidating the already-reviewed next Press source phase onto this same
+carrier. This replaces the earlier plan to open a separate follow-on after landing.
+PR8786 was explicitly disarmed and read back OPEN at fa3a6263 with no labels or
+native auto-merge before mutation. The owned recovery branch cleanly integrated
+protected main632db13fc7a6336a149429d0e8084077c9a85ed1 as
+47069bb68a23218217b356f87175fc2c9ce2ed9d. The same protected CI and landing law apply
+to the forthcoming authored head; no controller cap, lease, review or release
+protection is changed. Publication remains unapproved.
 
-**Genuinely live:** [Terminal PR 956](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956)
-passed exact-head CI at 2fd1b1a9, protected-merged as
-`8520e5d77e9f0b83973a988cf4f4adff300994cf`, and was installed by the existing VPS
-builder. Installed HEAD and marker match, service is active, checkout clean and
-postinstall release preflight CLEAN. A real saved-credential sign-in closed the
-dialog automatically in 2.58 seconds and retained the NVIDIA destination and
-attribution after a fresh reload. No new account or new follow write is claimed.
-`terminal956_live_acceptance.json`, `terminal956_install_excerpt.txt` and the actual
-`live-terminal956-signin-complete.jpg` bind the result. Do not repeat this accepted
-installation or sign-in merely to recreate evidence.
+**Validation:** original fa3a CI21green is historical. Unchanged reviewed
+application source retains the338-test integration and161-test event-clock
+results. At the consolidated main integration, the current workflow suite passes
+28tests in4.41seconds; differential contract checking against632db13fc7a has
+zero introduced/inherited findings in314.2seconds. Installation expectations now
+bind21source files and3acceptance pages. They are preparation, not install proof.
 
-**Working source, not installed:** recovery branch
-`claude/ssd-mmx-press-single-attempt-20261011-565fd14116bdcee2` is pushed through
-`880ca1c5b70f`, now integrating refreshed original head fa3a6263 as
-`d9bbdccc0f8a334490b2beed77cbee25beeb42d6`.
-It retains the existing White House sentinel's source bytes, adds opt-in source
-planning and a fixed manual adjusted-NVDA analytical qualifier, and consumes the
-original cc5d refresh. Integrated suites passed 338 tests; differential contract
-checking found zero introduced/inherited findings. The subsequent event-clock
-correction 44866cbe79ec reproduced two failures before repair and passed 161
-affected tests afterward. Its exact source hash was independently reviewed,
-consumed and accepted through Fabric. After integration, 280 CI jobs validate,
-trigger closure has zero gaps, and Agent OS reports 1,668 records / zero errors.
-Test counts overlap and must not be summed.
+**Genuinely live:** Terminal PR956 protected-merged as
+8520e5d77e9f0b83973a988cf4f4adff300994cf, was installed by the existing VPS builder,
+and is accepted through a real saved-credential browser sign-in. The dialog closed
+automatically in2.58seconds; NVDA and attribution persisted after reload. No new
+account or new follow write is claimed. terminal956_live_acceptance.json and the
+actual screenshot bind this result; do not repeat the accepted installation.
 
-**Publication readiness:** no new Press story is admitted or published. The
-October 8 NVIDIA candidate is now outside the three-day Brief window and still
-fails first-party value and receipt floors; the 15/17 result was an October 11
-replay. Current read-only planning returned no Brief slot from the retained
-Chronicle inputs. The newer October 10 manufacturing report supplies a possible
-report-release premise, but older issuer pledges and manufacturing/R&D categories
-must retain their real dates and scope; see SOURCE_RETENTION.md. It has not been
-ingested or admitted. Existing five-receipt, value-density, rights, editorial,
-ten-consecutive-article and release controls remain unchanged.
+**Publication readiness:** no new Press article is admitted. The October8 NVIDIA
+candidate is outside the unchanged Brief window and lacks relevant first-party
+receipts. The October10 manufacturing report preserves a current report-release
+premise; retained AAPL/MU FY2025 cash-flow replay is historical consolidated
+context, not current U.S. project execution or five independent Press receipts.
+New upstream protected commit632db13fc7a published an October9 HOVR call record,
+but HOVR has no membership row, stockdata blob or canonical stock page in the
+existing producer estate. Do not fabricate index membership or a placeholder
+page to pass admission. No new public-article rights receipt is inferred.
 
-**Exact next action:** consume fa3a6263's terminal CI and protected landing; verify
-merged ancestry plus stable installed source/site/served hashes; execute the
-prepared read-only installed staging inspector and public browser paths. Then
-run the existing earnings workflow once with `promote=false`, `full_audit=true`,
-`initialize_journal=false`, consume its exact discovery artifact, and qualify
-one actual packet and rights through its existing interface. Integrate the saved
-follow-on delta from fresh main after 8786 lands. The fixed analytical workflow
-runs only from main and has not been dispatched; POLYGON_API_KEY is confirmed by
-name only, not by authentication. Dedicated earnings stage-read credentials are
-still absent; broad publisher credentials are not a substitute.
+**Bounded work:** the new Grok installation-harness review on Ubuntu3 settled
+with remote_admission_refused, rc75, active_lane_limit_reached(4/4), with no review
+or acceptance. Its exact retained refusal is saved; no retry or host switch.
+The separate new HOVR dossier-path analysis is on Ubuntu0 under stable ID
+mmx-press-hovr-dossier-path-20261012-001; consume its same-run result before
+acceptance. Parent directly expanded the read-only runtime verification snapshot
+to include published peer texts and validator source, and disabled bytecode writes.
+This is not an independent-review success claim.
 
-**Frozen effects and custody:** the original accounted 12:07 staging provider
-call has no retained final result and remains EFFECT_UNKNOWN, without replay.
-The two earlier stage peers still fail overlap 0.381 > 0.18. The optional Grok
-source-review request `mmx-press-current-report-review-20261012-001` failed before
-launch on Ubuntu0 because active support policy was stale; same-ID status is
-TERMINAL_FAILURE, rc75, with no result. It was not retried on another host. The
-parent's public-source screen did not retry that support-publication effect.
-Commission 19 and Catalyst 8678 remain unchanged. No live worker remains here.
+**Next executable action:** finish the authored consolidation on original8786,
+read back its exact head and re-arm protected landing. Consume that head's CI and
+landing, then verify merged ancestry, installed source/site/served hashes, installed
+read-only staging replay and public browser routes. Run the existing earnings
+audit once with promote=false, full_audit=true, initialize_journal=false and
+consume the exact discovery artifact. The fixed analytical workflow now travels
+in the same carrier; run it only after protected-main source qualification.
+POLYGON_API_KEY is known by name only. Dedicated earnings stage-read credentials
+remain absent; broad publisher credentials are not a substitute.
+
+The original12:07accounted staging provider attempt remains EFFECT_UNKNOWN and is
+not replayed. The old two-desk cohort remains blocked at overlap0.381>0.18.
+Commission19, Catalyst8678, ten-article acceptance, source rights, value-density,
+editorial approval and release gates remain intact. One attended PR observer,
+session79643, replaced the positively timed-out32336 with the same cursor; this
+is not an idle wake or proof that a finished chat continues execution.
 
 ## Source and custody
 
@@ -87,8 +79,8 @@ Commission 19 and Catalyst 8678 remain unchanged. No live worker remains here.
 - Delivery carrier: [Macro PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786).
   Binding CI and protected landing are pending at this checkpoint; no merged or
   installed claim follows from the pushed branch.
-- Original PR refresh worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-single-attempt-20261011-565fd14116bdcee2`, local branch `claude/mmx-8786-conflict-refresh-20261012`, head fa3a6263.
-- Follow-on worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-attempt-recovery-20261011-a46f27ad11045cb8`, recovery branch named above. Preserve both owned trees.
+- Preserved original refresh worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-single-attempt-20261011-565fd14116bdcee2`, local branch `claude/mmx-8786-conflict-refresh-20261012`, head fa3a6263. Current consolidation writes use the recovery tree below.
+- Current consolidation worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-attempt-recovery-20261011-a46f27ad11045cb8`, local branch `claude/ssd-mmx-press-single-attempt-20261011-565fd14116bdcee2`, code integration47069bb68a23. Push the authored result normally to the original remote branch `claude/mmx-public-intelligence-press-20261011`; retain a recovery-branch copy. Preserve both owned trees.
 - Shared primary `/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main` remains at its older local head with dirty provider accounting; do not mutate it.
 - Governing Mastermind protected master refreshed for the replacement assigned-principal instructions:
   `85807cf48e29e2fe5df19534d6b181fc25b9746f`;

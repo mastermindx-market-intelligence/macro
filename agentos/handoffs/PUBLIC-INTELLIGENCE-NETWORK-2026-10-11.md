@@ -377,3 +377,35 @@ engines recovered complete retained FY2025 capital-need records; source hashes,
 exact fiscal periods and limits are saved in retained_aapl_mu_capital_screen.json
 and SOURCE_RETENTION.md. These are historical consolidated facts, not current
 U.S. commitment execution, a rights receipt or an admitted Press story.
+
+
+## Consolidation after repeated protected-definition refreshes
+
+fa3a6263 passed all21binding checks in terminal CI38195654198. Controller38198176765
+then required a refresh after maina278075e6197 added a Prophet test to the CI
+manifest. The refreshed source merges cleanly; no Press conflict explains the
+delay. Root is consolidating the already-reviewed next phase on the original
+PR8786, superseding the separate-follow-on-PR plan. This is an ordinary authored
+source integration; controller admission/lease/protected landing laws are unchanged.
+Root disarmed8786 and read back fa3a OPEN with no labels/autoMerge before merging
+main632db13fc7a as47069bb68a23218217b356f87175fc2c9ce2ed9d in the owned recovery tree.
+
+Actual checks: python3 -m pytest tests/test_press_workflow.py -q --tb=short ->28passed
+in4.41s; python3 scripts/check_contract_delta.py --base632db13fc7a6336a149429d0e8084077c9a85ed1
+(with a space between --base and its SHA) ->0introduced/0inherited,314.2s. Unchanged
+application bytes retain the338/161affected results and accepted source reviews.
+Consolidated installation expectations bind21source files and3pages; not yet run.
+
+New read-only source qualification at632db13fc7a: HOVR's current October9 wire
+record exists on the installed VPS, but site/stockdata/HOVR.json and the canonical
+page do not. In-memory pandas.read_parquet over the exact committed membership
+blob returned zero HOVR rows (SHA33da41e7a9831260c6e0f988c2ca43dd421c274ccd5cf357c47bb53ddc49c91b).
+The renderer requires active admitted membership, a stockdata blob, nonlimited
+profile and three sections; no gate was weakened or fake membership created.
+
+Two useful new Fabric leaves were attempted with the actual root/parent.
+mmx-press-install-proof-review-20261012-001 onUbuntu3 settled rc75 admission refusal
+at4/4active lanes; result228bytes, no review/acceptance, no retry.
+mmx-press-hovr-dossier-path-20261012-001 onUbuntu0 was admitted and remains on its
+original retained-result path. Consume/inspect/accept only that same result.
+The historical current-report review's support refusal remains frozen too.

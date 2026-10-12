@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume original PR8786 exact-head CI38195654198 atfa3a62630be70c96c008f7bb4ebcb447a5db0e36 and protected landing; then verify installed source/site hashes, read-only staging and public browser routes and run the prepared nonpromoting earnings audit once. Terminal956 is already installed and browser accepted. Follow-on source integrates this controller refresh asd9bbdccc0f8a with reviewed runtime hashes unchanged; open it from fresh main after8786 lands. No Press publication or current qualified story is admitted.
+next_action: Finish the reviewed source consolidation on original PR8786 from integration47069bb68a23, read back its authored head and re-arm protected landing; then consume exact-head CI, install/hash/staging/browser proof, existing nonpromoting earnings discovery and the fixed analytical workflow. Priorfa3a CI21green was made stale by maina278 CI definitions. The separate-follow-on-PR plan is superseded. Terminal956 is already installed and browser accepted. HOVR has no current canonical-dossier producer inputs; no new Press story is admitted.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
