@@ -1047,9 +1047,9 @@ async def financial_query_xlsx(
     )
 
     body = await _admit_json_post_body(request)
-    provider = _financial_query_provider()
 
     try:
+        provider = _financial_query_provider()
         result = execute_financial_query(body=body, provider=provider)
     except FinancialQueryAdmissionError as exc:
         raise _private_error(exc.status_code, exc.detail) from None
@@ -1069,6 +1069,7 @@ async def financial_query_xlsx(
             **_PRIVATE_HEADERS,
             "Content-Disposition": f'attachment; filename="{filename}"',
             "X-FIF-Response-SHA256": hashlib.sha256(payload).hexdigest(),
+            "X-FIF-Receipt-SHA256": result.sha256,
         },
     )
 

@@ -7,11 +7,13 @@ originate a signal, score, rank, or finding.
 """
 from __future__ import annotations
 
+import csv
 import hashlib
+import io
 import json
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from .query_service import MAX_METRIC_IDS, MAX_PERIODS, MAX_REQUEST_BYTES
@@ -69,11 +71,12 @@ class QueryResponse:
             raw = cell.get("value")
             parsed: Decimal | None
             if isinstance(raw, str):
-                parsed = Decimal(raw)
+                try:
+                    parsed = Decimal(raw)
+                except InvalidOperation:
+                    raise FinancialQueryClientError(0, "malformed response") from None
             else:
                 parsed = None
-            if isinstance(parsed, float):
-                raise FinancialQueryClientError(0, "malformed request")
             values.append((cell, parsed))
         return values
 
@@ -266,6 +269,51 @@ class FinancialQueryClient:
             receipt_sha256=receipt.strip(),
             filename=_disposition_filename(headers),
         )
+
+    def sidecar(self, request: Mapping[str, Any], export: ExportResponse) -> QueryResponse:
+        """Fetch the JSON lineage sidecar of an export and bind it to the export.
+
+        The JSON route is the lineage sidecar of every export: binding means
+        the export's ``X-FIF-Receipt-SHA256`` equals the JSON response's
+        ``X-FIF-Response-SHA256`` for the same canonical request bytes. CSV
+        additionally checks every data row's ``query_hash`` column against
+        the sidecar receipt's ``query_hash``; Parquet and XLSX are bound by
+        header only.
+        """
+        if not export.receipt_sha256:
+            raise FinancialQueryIntegrityError("export carries no receipt digest")
+        query_response = self.query(request)
+        if query_response.sha256 != export.receipt_sha256:
+            raise FinancialQueryIntegrityError("sidecar receipt digest mismatch")
+        if export.fmt == "csv":
+            expected = self._receipt_query_hash(query_response)
+            rows = csv.DictReader(io.StringIO(export.payload.decode("utf-8")))
+            for row in rows:
+                if row.get("query_hash") != expected:
+                    raise FinancialQueryIntegrityError("sidecar query_hash mismatch")
+        return query_response
+
+    def export_with_sidecar(
+        self,
+        request: Mapping[str, Any],
+        fmt: str,
+    ) -> tuple[ExportResponse, QueryResponse]:
+        """Export, then bind it to its JSON lineage sidecar.
+
+        The JSON route is the lineage sidecar of every export: binding means
+        the export's ``X-FIF-Receipt-SHA256`` equals the JSON response's
+        ``X-FIF-Response-SHA256`` for the same canonical request bytes.
+        Returns ``(export, sidecar)`` on success; raises
+        :class:`FinancialQueryIntegrityError` on any binding failure.
+        """
+        exported = self.export(request, fmt)
+        return exported, self.sidecar(request, exported)
+
+    def _receipt_query_hash(self, query_response: QueryResponse) -> Any:
+        receipt = query_response.envelope.get("receipt")
+        if not isinstance(receipt, dict):
+            raise FinancialQueryIntegrityError("sidecar receipt digest mismatch")
+        return receipt.get("query_hash")
 
     def _send(
         self,

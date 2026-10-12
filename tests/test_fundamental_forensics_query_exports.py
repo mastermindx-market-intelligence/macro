@@ -13,7 +13,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 import app.forensics as forensics_api
-from engine.fundamental_forensics.excel_export import response_query_id
+from engine.fundamental_forensics.excel_export import response_query_id, to_xlsx_bytes
 from engine.fundamental_forensics.query import MetricMatrix, _csv_safe
 from engine.fundamental_forensics.query_exports import (
     CSV_MEDIA_TYPE,
@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parents[1]
 _JSON_PATH = "/api/forensics/v1/financial/query"
 _CSV_PATH = "/api/forensics/v1/financial/query.csv"
 _PARQUET_PATH = "/api/forensics/v1/financial/query.parquet"
+_XLSX_PATH = "/api/forensics/v1/financial/query.xlsx"
 _EXPORT_PATHS = (_CSV_PATH, _PARQUET_PATH)
 _BLOCKED_METHODS = ("GET", "PUT", "DELETE")
 
@@ -378,3 +379,43 @@ def test_export_query_envelope_rejects_unknown_format(fip1_paid_client) -> None:
 def test_matrix_from_envelope_rejects_missing_receipt() -> None:
     with pytest.raises(QueryExportError):
         matrix_from_envelope({"schema": "no-receipt"})
+
+
+def test_xlsx_receipt_sha256_matches_json_route_digest(fip1_paid_client) -> None:
+    json_response = _post(fip1_paid_client, _JSON_PATH)
+    assert json_response.status_code == 200
+    json_digest = json_response.headers.get("x-fif-response-sha256")
+    xlsx_response = _post(fip1_paid_client, _XLSX_PATH)
+    assert xlsx_response.status_code == 200
+    assert xlsx_response.headers.get("x-fif-receipt-sha256") == json_digest
+    assert xlsx_response.headers.get("x-fif-response-sha256") == hashlib.sha256(
+        xlsx_response.content
+    ).hexdigest()
+    _assert_private_headers(xlsx_response)
+
+
+def test_xlsx_provider_construction_failure_returns_private_503(
+    router_app, monkeypatch
+) -> None:
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {
+        "id": "paid-user"
+    }
+
+    def _boom():
+        raise RuntimeError("provider construction failed")
+
+    monkeypatch.setattr(forensics_api, "_financial_query_provider", _boom)
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        response = _post(client, _XLSX_PATH)
+    assert response.status_code == 503
+    assert response.json().get("detail") == "financial query temporarily unavailable"
+    _assert_private_headers(response)
+
+
+def test_xlsx_payload_bytes_equal_encoder_output(fip1_paid_client) -> None:
+    json_response = _post(fip1_paid_client, _JSON_PATH)
+    xlsx_response = _post(fip1_paid_client, _XLSX_PATH)
+    assert json_response.status_code == xlsx_response.status_code == 200
+    envelope = json_response.json()
+    envelope["sha256"] = hashlib.sha256(json_response.content).hexdigest()
+    assert xlsx_response.content == to_xlsx_bytes(envelope)

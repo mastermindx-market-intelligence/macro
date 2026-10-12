@@ -9,13 +9,13 @@ system.
 
 | Method | Path | Handler |
 |---|---|---|
-| POST | `/api/forensics/v1/financial/query.csv` | `app/forensics.py:988` |
-| POST | `/api/forensics/v1/financial/query.parquet` | `app/forensics.py:1010` |
-| GET/PUT/PATCH/DELETE/HEAD | each path above | private 405 after auth (`app/forensics.py:975`, `:997`) |
+| POST | `/api/forensics/v1/financial/query.csv` | `app/forensics.py:990` |
+| POST | `/api/forensics/v1/financial/query.parquet` | `app/forensics.py:1012` |
+| GET/PUT/PATCH/DELETE/HEAD | each path above | private 405 after auth (`app/forensics.py:976`, `:998`) |
 
-Shared body: `_financial_query_export` at `app/forensics.py:933`.
-`_admit_json_post_body` runs outside the try (`:948`); provider construction
-and `execute_financial_query` sit inside the 503 boundary (`:949-958`).
+Shared body: `_financial_query_export` at `app/forensics.py:934`.
+`_admit_json_post_body` runs outside the try (`:949`); provider construction
+and `execute_financial_query` sit inside the 503 boundary (`:950-959`).
 
 Success headers (plus `_PRIVATE_HEADERS` no-store/private):
 
@@ -70,6 +70,39 @@ separators, `ensure_ascii=False`) and refuses floats/NaN/Infinity, oversize
 bodies, and `metric_ids`/`periods` past `MAX_METRIC_IDS`/`MAX_PERIODS`
 imported from `query_service`. Bearer tokens never appear in `repr()` or
 exceptions.
+
+## Lineage sidecar
+
+The JSON route `POST /api/forensics/v1/financial/query` is the lineage
+sidecar of every export. Binding rule: `X-FIF-Receipt-SHA256` of the export
+equals `X-FIF-Response-SHA256` of the JSON response for the same canonical
+request bytes. All three export routes send it — CSV and Parquet since X0
+(`app/forensics.py:970`), XLSX since the sidecar repair (`app/forensics.py:929`,
+whose provider construction now sits inside the same private-503 boundary as
+`_financial_query_export`, `app/forensics.py:909`).
+
+Client-side binding lives in `FinancialQueryClient.sidecar` /
+`export_with_sidecar` (`engine/fundamental_forensics/api_client.py:273`/
+`:296`): refuse an export with an empty receipt digest, re-issue the JSON
+query, require the digests to match, and for CSV additionally require every
+data row's `query_hash` column to equal the sidecar receipt's `query_hash`
+(the top-level key `MetricMatrix.to_dict` writes, `query.py:3443-3446`).
+Parquet and XLSX are bound by header only: the client is stdlib-only and
+cannot re-derive a row-level identity from those payloads without the
+encoders, so the digest equality is the whole check there. In all three
+formats the JSON sidecar is the authority for value, provenance, and lineage;
+`ExportResponse.receipt_sha256` names it.
+
+## Known export-content gaps (not X0-owned)
+
+- The XLSX Meta sheet does not carry the receipt node graph
+  (`engine/fundamental_forensics/excel_export.py`).
+- XLSX value cells do not carry XBRL decimals/scale, document ids, source
+  hashes, or lineage (`engine/fundamental_forensics/excel_export.py`).
+- The kernel CSV has 37 columns and no XBRL decimals/scale, document id, or
+  source hash columns (`engine/fundamental_forensics/query.py`
+  `to_csv_bytes`); X0 serves it unchanged rather than forking a second CSV
+  encoder. The JSON sidecar is the authority for all three.
 
 ## GAPS
 

@@ -17,6 +17,7 @@ from engine.fundamental_forensics.api_client import (
     FinancialQueryClient,
     FinancialQueryClientError,
     FinancialQueryIntegrityError,
+    QueryResponse,
     encode_query_request,
 )
 from engine.fundamental_forensics.query_service import (
@@ -300,3 +301,110 @@ def test_query_without_bearer_omits_authorization(paid_client) -> None:
     _client(paid_client, calls=calls).query(_REQUEST)
     header_map = {str(k).lower() for k in calls[0]["headers"]}
     assert "authorization" not in header_map
+
+
+def test_sidecar_binds_csv_export(paid_client) -> None:
+    client = _client(paid_client)
+    exported = client.export(_REQUEST, "csv")
+    sidecar = client.sidecar(_REQUEST, exported)
+    assert isinstance(sidecar, QueryResponse)
+    assert sidecar.sha256 == exported.receipt_sha256
+
+
+@pytest.mark.parametrize("fmt", ("parquet", "xlsx"))
+def test_sidecar_binds_header_only_formats(paid_client, fmt: str) -> None:
+    client = _client(paid_client)
+    exported = client.export(_REQUEST, fmt)
+    sidecar = client.sidecar(_REQUEST, exported)
+    assert sidecar.sha256 == exported.receipt_sha256
+    assert sidecar.envelope["receipt"]["query_hash"]
+
+
+def test_export_with_sidecar_returns_pair(paid_client) -> None:
+    exported, sidecar = _client(paid_client).export_with_sidecar(_REQUEST, "csv")
+    assert isinstance(exported, ExportResponse)
+    assert isinstance(sidecar, QueryResponse)
+    assert exported.receipt_sha256 == sidecar.sha256
+
+
+def test_tampered_receipt_header_raises_sidecar_digest_mismatch(paid_client) -> None:
+    inner = _transport(paid_client)
+
+    def _retag(method, url, headers, body, timeout):
+        status, response_headers, payload = inner(method, url, headers, body, timeout)
+        tampered = {
+            str(k): ("a" * 64 if str(k).lower() == "x-fif-receipt-sha256" else str(v))
+            for k, v in response_headers.items()
+        }
+        return status, tampered, payload
+
+    client = FinancialQueryClient("http://testserver", transport=_retag)
+    exported = client.export(_REQUEST, "csv")
+    assert exported.receipt_sha256 == "a" * 64
+    with pytest.raises(FinancialQueryIntegrityError) as exc_info:
+        client.sidecar(_REQUEST, exported)
+    assert exc_info.value.detail == "sidecar receipt digest mismatch"
+
+
+def test_empty_receipt_digest_refuses_without_second_call(paid_client) -> None:
+    calls: list = []
+    inner = _transport(paid_client, calls)
+
+    def _strip(method, url, headers, body, timeout):
+        status, response_headers, payload = inner(method, url, headers, body, timeout)
+        stripped = {
+            str(k): str(v)
+            for k, v in response_headers.items()
+            if str(k).lower() != "x-fif-receipt-sha256"
+        }
+        return status, stripped, payload
+
+    client = FinancialQueryClient("http://testserver", transport=_strip)
+    exported = client.export(_REQUEST, "csv")
+    assert exported.receipt_sha256 == ""
+    before = len(calls)
+    with pytest.raises(FinancialQueryIntegrityError) as exc_info:
+        client.sidecar(_REQUEST, exported)
+    assert exc_info.value.detail == "export carries no receipt digest"
+    assert len(calls) == before
+
+
+def test_tampered_csv_row_query_hash_raises_sidecar_mismatch(paid_client) -> None:
+    inner = _transport(paid_client)
+
+    def _relabel_first_row(method, url, headers, body, timeout):
+        status, response_headers, payload = inner(method, url, headers, body, timeout)
+        if urlparse(url).path.endswith(".csv"):
+            lines = payload.decode("utf-8").split("\n")
+            first_row = lines[1]
+            lines[1] = "f" * 64 + first_row[first_row.index(",") :]
+            payload = "\n".join(lines).encode("utf-8")
+            # Recompute the payload digest so ONLY the row-level check can catch this.
+            response_headers = {
+                str(k): (
+                    hashlib.sha256(payload).hexdigest()
+                    if str(k).lower() == "x-fif-response-sha256"
+                    else str(v)
+                )
+                for k, v in response_headers.items()
+            }
+        return status, response_headers, payload
+
+    client = FinancialQueryClient("http://testserver", transport=_relabel_first_row)
+    exported = client.export(_REQUEST, "csv")
+    assert exported.sha256 == hashlib.sha256(exported.payload).hexdigest()
+    with pytest.raises(FinancialQueryIntegrityError) as exc_info:
+        client.sidecar(_REQUEST, exported)
+    assert exc_info.value.detail == "sidecar query_hash mismatch"
+
+
+def test_cell_values_malformed_decimal_raises_malformed_response() -> None:
+    response = QueryResponse(
+        body=b"",
+        sha256="0" * 64,
+        envelope={"receipt": {"nodes": [{"cell_id": "c1", "value": "not-a-decimal"}]}},
+    )
+    with pytest.raises(FinancialQueryClientError) as exc_info:
+        response.cell_values()
+    assert exc_info.value.status_code == 0
+    assert exc_info.value.detail == "malformed response"
