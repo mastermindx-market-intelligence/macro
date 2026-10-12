@@ -1685,6 +1685,190 @@ def emit_v2(
     return out
 
 
+
+# ------------------------------------------------------------------ early relative context ----
+
+def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
+    """Project registered price receipts without macro input or event mutation.
+
+    A positive two-session relative move is a descriptive shift. Retailer detail
+    does not count as sector confirmation. All price observations share one
+    conservative dependency group; no probability, severity or risk score exists.
+    """
+    from copy import deepcopy
+    from lib import nyse_calendar
+
+    groups = ("defensive_sector", "retailer_context", "broadening_proxy")
+    out = {
+        "schema": "rotation_early_context/v1",
+        "definition_id": "rotation_early_context/1",
+        "as_of": as_of, "display_only": True, "state": None,
+        "reason_codes": [], "pairs": [], "prior_loser_constituent_claim": False,
+        "coverage": {
+            "registered_pairs": 0, "evaluable_2s": 0, "positive_2s": 0,
+            "missing_pair_ids": [],
+            "groups": {g: {"registered": 0, "evaluable_2s": 0, "positive_2s": 0}
+                       for g in groups},
+        },
+        "availability": {"status": "UNKNOWN", "available_at": None},
+        "lineage": {
+            "definition_id": "rotation_early_context/1", "status": "UNKNOWN",
+            "roots": [], "revisions": {}, "dependency_groups": ["equity_price"],
+            "derived_from": ["oracle.ratio_lens"],
+        },
+    }
+    try:
+        end = nyse_calendar.last_session_on_or_before(date.fromisoformat(as_of)).isoformat()
+    except (TypeError, ValueError):
+        out["reason_codes"] = ["INVALID_CONTEXT_CUTOFF"]
+        return out
+    if (not isinstance(receipts, dict)
+            or receipts.get("schema") != "ratio_lens.short_horizons/v1"
+            or receipts.get("as_of") != as_of
+            or not isinstance(receipts.get("pairs"), list)
+            or len(receipts["pairs"]) > 256
+            or (receipts.get("reason_codes") is not None
+                and (not isinstance(receipts["reason_codes"], list)
+                     or not all(isinstance(code, str) for code in receipts["reason_codes"])))):
+        out["reason_codes"] = ["INVALID_SHORT_HORIZON_ENVELOPE"]
+        return out
+
+    reasons = set(receipts.get("reason_codes") or [])
+    canonical = {}
+    conflicts = set()
+    for row in receipts["pairs"]:
+        if (not isinstance(row, dict) or row.get("schema") != "ratio_lens.short_horizon.v1"
+                or row.get("context_group") not in groups
+                or not all(isinstance(row.get(k), str) and row[k] for k in ("pair_id", "num", "den"))
+                or not isinstance(row.get("horizons"), dict)
+                or not all(isinstance(window, dict) for window in row["horizons"].values())
+                or (row.get("reason_codes") is not None
+                    and (not isinstance(row["reason_codes"], list)
+                         or not all(isinstance(code, str) for code in row["reason_codes"])))):
+            reasons.add("INVALID_PAIR_OBSERVATION")
+            continue
+        key = (row["num"], row["den"])
+        # Alias names/IDs are transport details, not additional economic evidence.
+        try:
+            signature = json.dumps({k: v for k, v in row.items()
+                                    if k not in ("pair_id", "name_en", "name_zh")},
+                                   sort_keys=True, separators=(",", ":"), allow_nan=False)
+        except (TypeError, ValueError):
+            reasons.add("INVALID_PAIR_OBSERVATION")
+            continue
+        if key in canonical:
+            if canonical[key][0] != signature:
+                conflicts.add(key)
+            elif row["pair_id"] < canonical[key][1]["pair_id"]:
+                canonical[key] = (signature, deepcopy(row))
+        else:
+            canonical[key] = (signature, deepcopy(row))
+    if conflicts:
+        reasons.add("CONFLICTING_PAIR_OBSERVATIONS")
+
+    complete = not reasons and not conflicts
+    known = False
+    roots = set()
+    revisions = {}
+    for key in sorted(canonical, key=lambda k: (groups.index(canonical[k][1]["context_group"]), k)):
+        row = canonical[key][1]
+        group = row["context_group"]
+        counts = out["coverage"]["groups"][group]
+        counts["registered"] += 1
+        window = (row.get("horizons") or {}).get("2s") or {}
+        values = [window.get(k) for k in
+                  ("numerator_return_pct", "denominator_return_pct", "ratio_return_pct")]
+        eligible = (key not in conflicts and window.get("eligible") is True
+                    and row.get("requested_as_of") == as_of
+                    and row.get("value_as_of") == end
+                    and window.get("end") == end and window.get("sessions") == 2
+                    and all(isinstance(v, (float, int)) and not isinstance(v, bool)
+                            and np.isfinite(v) for v in values))
+        row_reasons = set(row.get("reason_codes") or [])
+        if key in conflicts:
+            row_reasons.add("CONFLICTING_PAIR_OBSERVATIONS")
+        if eligible:
+            counts["evaluable_2s"] += 1
+            relative = window["ratio_return_pct"]
+            if relative > 0:
+                counts["positive_2s"] += 1
+                row["interpretation"] = (
+                    "RELATIVE_RESILIENCE" if window.get("shape") == "BOTH_DOWN"
+                    else "DIVERGENT_PRICE_ACTION" if window.get("shape") == "RECEIVER_UP_DONOR_DOWN"
+                    else "EARLY_RELATIVE_STRENGTH"
+                )
+            else:
+                row["interpretation"] = "NO_POSITIVE_RELATIVE_SHIFT"
+            for horizon in ("1s", "5s", "20s"):
+                other = (row.get("horizons") or {}).get(horizon) or {}
+                value = other.get("ratio_return_pct")
+                if (other.get("eligible") is True and isinstance(value, (float, int))
+                        and not isinstance(value, bool) and np.isfinite(value)
+                        and relative * value < 0):
+                    row_reasons.add(f"2S_VS_{horizon.upper()}_SIGN_CONFLICT")
+        else:
+            row["interpretation"] = None
+            row_reasons.add("TWO_SESSION_CONTEXT_UNAVAILABLE")
+            out["coverage"]["missing_pair_ids"].append(row["pair_id"])
+        row["eligible_2s"] = eligible
+        row["reason_codes"] = sorted(row_reasons)
+        out["pairs"].append(row)
+
+        lineage = row.get("lineage")
+        if not isinstance(lineage, dict):
+            lineage = {}
+        lroots = lineage.get("roots") or []
+        if not isinstance(lroots, list):
+            lroots = []
+        if (lineage.get("status") == "COMPLETE" and lroots
+                and all(isinstance(r, str) and r for r in lroots)):
+            known = True
+        else:
+            complete = False
+            known |= bool(lroots)
+        roots.update(r for r in lroots if isinstance(r, str) and r)
+        lrevisions = lineage.get("revisions")
+        if not isinstance(lrevisions, dict):
+            lrevisions = {}
+        for observation, revision in lrevisions.items():
+            if observation in revisions and revisions[observation] != revision:
+                complete = False
+                reasons.add("PRICE_REVISION_CONFLICT")
+            elif isinstance(observation, str) and isinstance(revision, str):
+                revisions[observation] = revision
+
+    coverage = out["coverage"]
+    for field in ("registered", "evaluable_2s", "positive_2s"):
+        total = sum(coverage["groups"][g][field] for g in groups)
+        coverage["registered_pairs" if field == "registered" else field] = total
+    coverage["missing_pair_ids"].sort()
+    if coverage["missing_pair_ids"]:
+        reasons.add("PARTIAL_PAIR_COVERAGE")
+    d, b = coverage["groups"]["defensive_sector"], coverage["groups"]["broadening_proxy"]
+    if d["positive_2s"] and b["positive_2s"]:
+        out["state"] = "MIXED_ROTATION"
+    elif d["positive_2s"]:
+        out["state"] = "DEFENSIVE_RELATIVE_STRENGTH"
+    elif b["positive_2s"]:
+        out["state"] = "BROADENING"
+    elif (d["registered"] and b["registered"]
+          and d["evaluable_2s"] == d["registered"]
+          and b["evaluable_2s"] == b["registered"]):
+        out["state"] = "NO_EARLY_SHIFT"
+    if not coverage["registered_pairs"]:
+        reasons.add("NO_REGISTERED_PAIR_COVERAGE")
+    if coverage["groups"]["retailer_context"]["positive_2s"]:
+        reasons.add("RETAILER_CONTEXT_IS_NOT_SECTOR_CONFIRMATION")
+    if b["positive_2s"]:
+        reasons.add("BROAD_INDEX_PROXY_NOT_PRIOR_LOSER_PORTFOLIO")
+    out["reason_codes"] = sorted(reasons)
+    out["lineage"].update({
+        "status": "COMPLETE" if complete and known else "PARTIAL" if known else "UNKNOWN",
+        "roots": sorted(roots), "revisions": dict(sorted(revisions.items())),
+    })
+    return out
+
+
 # ------------------------------------------------------------------ extended run_nightly ----
 
 def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
@@ -1848,6 +2032,19 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
                 **cb,
             })
 
+    # Receipts and early context use the resolved benchmark observation clock.
+    # A confirmed event may retain an older confirmation date.
+    context_asof = as_of
+    try:
+        from lib import nyse_calendar
+        valid_bench = bench_close.dropna()
+        if not valid_bench.empty:
+            context_asof = nyse_calendar.last_session_on_or_before(
+                valid_bench.index[-1].date()).isoformat()
+    except Exception as exc:
+        log.warning("rotation receipt cutoff unavailable: %s", exc)
+        context_asof = None
+
     # velocity board
     from engine.rotation_velocity import velocity_board as _vb
     from engine.rotation_flows import flow_receipt_for_series
@@ -1855,8 +2052,9 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
     flow_receipts = {}
     for key in universe.get("velocity_series", []):
         spec = series_index.get(key)
-        if spec:
-            flow_receipts[key] = flow_receipt_for_series(spec, data_dir)
+        if spec and context_asof is not None:
+            flow_receipts[key] = flow_receipt_for_series(
+                spec, data_dir, as_of=context_asof)
 
     vboard = _vb(universe, closes, flow_receipts, bench_key)
 
@@ -1871,6 +2069,18 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
                       velocity_board_data=vboard,
                       closed_recent_rows=cr_rows,
                       n_cross_pairs_scanned=n_cross)
+    # US-only additive descriptive context. Existing confirmed event/state/ledger
+    # code above is untouched; this reader does not advance any history.
+    try:
+        from engine.oracle.ratio_lens import registered_short_horizon_context
+        short = registered_short_horizon_context(data_dir, as_of=context_asof)
+        payload["early_context"] = early_rotation_context(short, as_of=context_asof)
+    except Exception as exc:  # additive source quality never breaks confirmed RC
+        log.warning("rotation early context unavailable: %s", exc)
+        payload["early_context"] = early_rotation_context({
+            "schema": "ratio_lens.short_horizons/v1", "as_of": context_asof,
+            "pairs": [], "reason_codes": ["EARLY_CONTEXT_SOURCE_UNAVAILABLE"],
+        }, as_of=context_asof)
     return payload
 
 

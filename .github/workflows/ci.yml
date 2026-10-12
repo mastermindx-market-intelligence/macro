@@ -2197,6 +2197,9 @@ on:
       - "scripts/build_leader_radar.py"
       - "tests/test_leader_lifecycle.py"
       - "tests/test_build_leader_radar.py"
+      # Leader lineage descriptor (read-only, additive; research/leader_lineage/SPEC_V1.md)
+      - "engine/leader_lineage.py"
+      - "tests/test_leader_lineage.py"
       # OEU M-PRO display-tier options context: the shared loader/vocabulary, the two
       # Prophet-side consumers, and the fence suite. A change to any of them must
       # retrigger the fence tests even when nothing else in this filter moved.
@@ -3456,6 +3459,8 @@ on:
       # listing only the suite leaves a unit/script-only edit unable to start
       # the job that owns it. update.sh already appears above.
       - "tests/test_backup_user_tables.py"
+      - "tests/test_backup_iw2_snapshot.py"
+      - "tests/fixtures/user_table_backup_v1.tar.gz"
       - "scripts/backup_user_tables.py"
       - "app/deploy/macro-user-backup.service"
       - "app/deploy/macro-user-backup.timer"
@@ -3950,6 +3955,7 @@ on:
       - "tests/test_forex.py"
       - "tests/test_forex_context_bus.py"
       - "tests/test_news_event_ledger.py"
+      - "tests/test_build_news.py"
       - "tests/test_phase_buildout.py"
       - "tests/test_policy_lever.py"
       - "tests/test_rates_command.py"
@@ -4019,6 +4025,8 @@ on:
       - "tests/test_prophet_stage_shadow.py"
       - "tests/test_prophet_stage_tilt.py"
       - "tests/test_prophet_w1_intake_repair.py"
+      - "tests/test_prophet_plan_chronology_audit.py"
+      - "tests/test_prophet_integrity.py"
       - "tests/test_tape_flow.py"
       - "tests/test_tape_flow_stamp.py"
       - "tests/test_tech_events_export.py"
@@ -4366,6 +4374,31 @@ on:
       - "tests/test_dataos_nulls.py"
       - "tests/test_dataos_registry.py"
       - "tests/test_dataos_quality.py"
+      # Data OS source-vintage/Parquet lane owns the complete Tiingo suite.
+      - "collectors/__init__.py"
+      - "collectors/tiingo_archive.py"
+      - "scripts/tiingo_ingest.py"
+      - "scripts/tiingo_materialize.py"
+      - "scripts/tiingo_vendor_cohort.py"
+      - "requirements/tiingo.txt"
+      - "tests/test_tiingo_archive.py"
+      - "tests/test_tiingo_views.py"
+      - "tests/test_tiingo_reader.py"
+      - "tests/test_tiingo_history.py"
+      - "tests/test_tiingo_research_query.py"
+      - "tests/test_tiingo_boats_tape.py"
+      - "tests/test_tiingo_boats_stream_chain.py"
+      - "tests/test_tiingo_boats_display.py"
+      - "lib/dataos/tiingo_boats_tape.py"
+      - "scripts/tiingo_research_query.py"
+      - "tests/test_tiingo_vendor_cohort.py"
+      - "tests/test_tiingo_ingestion_integrity.py"
+      - "scripts/tiingo_reference_audit.py"
+      - "tests/test_tiingo_reference_audit.py"
+      - "tests/test_tiingo_planning.py"
+      - "scripts/tiingo_corpus_audit.py"
+      - "tests/test_tiingo_corpus_audit.py"
+      - "tests/test_tiingo_additional_history.py"
       # Job: dataos-identity-seams (.github/ci/legacy-jobs.yml). DOS-1.2. Both halves
       # again: the suite AND the surfaces it measures. config/** and lib/** catch-alls
       # would cover most of these, but a catch-all is provenance by accident — an edit

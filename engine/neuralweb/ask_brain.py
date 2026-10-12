@@ -2583,7 +2583,8 @@ def _memo_quote_response(
 # Core tool dispatcher (read-only, mirrors cortex.dispatch_tool)
 # ---------------------------------------------------------------------------
 
-def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path) -> dict:
+def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path, *,
+                        include_risk_context: bool = False) -> dict:
     """Dispatch a read-only tool call.  Refuses write tools by name.
 
     Every result passes through the chat plain-word projection
@@ -2595,7 +2596,24 @@ def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path) -> dict:
     cortex/metabolism loop (cortex.dispatch_tool) keep the raw enums.
     """
     from engine.neuralweb.chat_plain_words import project_plain_words  # noqa: PLC0415
-    return project_plain_words(_dispatch_read_tool_raw(tool_name, tool_params, root))
+    from engine.neuralweb.rotation_risk_context import redact_new_context  # noqa: PLC0415
+    # This flag is trusted server context, never a model-supplied tool parameter.
+    # Block direct envelope reads before I/O, including normalized path aliases.
+    if not include_risk_context and tool_name == "read_artifact":
+        try:
+            target = (root / str(tool_params.get("path") or "")).resolve()
+            protected = (root / "data" / "risk_envelope", root / "data" / "risk_envelope_live")
+            direct = (root / "site" / "riskdata" / "risk_envelope.json",
+                      root / "site" / "riskdata" / "risk_envelope_live.json",
+                      root / "site" / "live" / "risk_envelope.json")
+            if any(target == p.resolve() or p.resolve() in target.parents for p in protected) or any(target == p.resolve() for p in direct):
+                return {"error": "Detailed risk context requires the existing site membership."}
+        except (OSError, ValueError, RuntimeError):
+            return {"error": "Artifact path could not be qualified."}
+    result = _dispatch_read_tool_raw(tool_name, tool_params, root)
+    if not include_risk_context:
+        result = redact_new_context(result)
+    return project_plain_words(result)
 
 
 def _dispatch_read_tool_raw(tool_name: str, tool_params: dict, root: Path) -> dict:

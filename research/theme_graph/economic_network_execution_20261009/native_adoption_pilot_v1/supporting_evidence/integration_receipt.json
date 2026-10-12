@@ -1,0 +1,45 @@
+{
+  "schema": "gmi.native_adoption_pilot_integration_receipt/v1",
+  "integration_observed_at_utc": "2026-10-09T10:04:58Z",
+  "protocol_unchanged": true,
+  "first_reader_preserved": true,
+  "original_source_attempts_preserved": true,
+  "independent_judgments_sha256": "4357ab18cd8dddafd944b30641bf4c9168f755e1da60059a6ee5d8ded9192652",
+  "case_ids": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06"
+  ],
+  "file_validation": "PASS: six strict JSONL records, original URLs, null web byte hashes, unchanged protocol, authority boundaries",
+  "native_execution": false,
+  "files": [
+    {
+      "filename": "protocol.json",
+      "bytes": 8673,
+      "sha256": "cfff2160744ca51c6aabd1e6dd023ec07d6ddf99a345b93641056696b779763a"
+    },
+    {
+      "filename": "source_attempts.jsonl",
+      "bytes": 12185,
+      "sha256": "52a82c80857ba403b8db5bd1d971638e5fe4daec2e3416789386906ade9679a9"
+    },
+    {
+      "filename": "case_adjudications.jsonl",
+      "bytes": 23612,
+      "sha256": "039cfbfa04738612457e5ed04be4b20864c088103bb5a8309ff7839938830b25"
+    },
+    {
+      "filename": "replay_receipt.json",
+      "bytes": 5130,
+      "sha256": "75dfbc580ce302c9802bf6d6da12d48401434f405505219cfdfb38719e2e502f"
+    },
+    {
+      "filename": "native_adoption_return.md",
+      "bytes": 15228,
+      "sha256": "fe175837da1b64eea082bc8873071c93fb5c582263d11928b48a59733e079c1f"
+    }
+  ]
+}

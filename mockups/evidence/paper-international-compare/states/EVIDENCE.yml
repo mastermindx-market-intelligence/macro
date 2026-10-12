@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace.css
+- templates/intl_workspace.js
+- templates/intl_workspace/compare.html.j2
+- templates/intl_workspace/shell.html.j2
+manifest: mockups/evidence/paper-international-compare/states/manifest.json

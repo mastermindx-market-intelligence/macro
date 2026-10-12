@@ -1092,6 +1092,9 @@ def account(user: dict = Depends(require_user),
     tier = ent["tier"]
     return {
         "authenticated": True,
+        # Stable Supabase auth user id. account.js keys its pending-preference fence on
+        # it (site-20 S1), falling back to the email only when the id is absent.
+        "id": user.get("id"),
         "name": _user_display_name(user),
         "email": user.get("email"),
         "email_confirmed": bool(user.get("email_confirmed_at") or user.get("confirmed_at")),
@@ -2355,6 +2358,10 @@ app.include_router(biocatalyst_router)
 # BioCatalyst above.
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
+
+# B03 reads the existing uncapped observation input only after site_full auth.
+from app.prophet_observations import router as prophet_observations_router  # noqa: E402
+app.include_router(prophet_observations_router)
 
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not
