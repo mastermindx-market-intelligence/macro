@@ -27,7 +27,11 @@ from typing import Any, AsyncIterator, Mapping
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.routing import APIRoute
+from starlette.requests import Request
+from starlette.responses import Response
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
 from engine.qbus_news_annotate import (
@@ -47,8 +51,6 @@ from engine.qbus_news_store import (
 from engine.qbus_news_universe import qualify_universe
 from lib import config
 
-router = APIRouter()
-
 logger = logging.getLogger(__name__)
 
 _PRIVATE_HEADERS = {
@@ -61,6 +63,33 @@ _STREAM_HEADERS = {
     **_PRIVATE_HEADERS,
     "X-Accel-Buffering": "no",
 }
+
+
+class _PrivateValidationRoute(APIRoute):
+    """Give this router's query-validation 422s the private error headers.
+
+    Out-of-range Query constraints are rejected by FastAPI's default
+    RequestValidationError handling before the route body runs; re-issue that
+    same 422 body with the private headers instead of the bare default.
+    """
+
+    def get_route_handler(self):
+        original = super().get_route_handler()
+
+        async def handler(request: Request) -> Response:
+            try:
+                return await original(request)
+            except RequestValidationError as exc:
+                return JSONResponse(
+                    status_code=422,
+                    content={"detail": jsonable_encoder(exc.errors())},
+                    headers=dict(_PRIVATE_HEADERS),
+                )
+
+        return handler
+
+
+router = APIRouter(route_class=_PrivateValidationRoute)
 
 # Wave B news-flow rail (ticker_news.flow.v1).  The store method is owned by
 # lane B1; this layer only computes, validates, and applies feed-health
