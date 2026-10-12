@@ -13,7 +13,7 @@ not rights decisions made by this module.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import os
@@ -24,12 +24,20 @@ from typing import Iterable, Sequence
 
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
+    CLUSTER_POLICY_VERSION,
     ClusterCandidate,
     ClusterItem,
     ClusterPolicy,
     cluster_candidates,
 )
 from engine.qbus_news_reducer import NewsState, reduce_revision
+from engine.qbus_news_velocity import (
+    FLOW_COMPARE_RULE,
+    METHOD,
+    SCHEMA as VELOCITY_SCHEMA,
+    compare_to_typical,
+    compute_news_velocity,
+)
 
 SCHEMA = "qbus.news_store.v1"
 
@@ -1485,6 +1493,120 @@ class NewsStore:
             next_cursor=next_cursor,
             has_more=has_more,
         )
+
+    def news_flow(
+        self,
+        security_id: str,
+        *,
+        now: datetime,
+        rights: NewsReadRights,
+    ) -> dict:
+        """Return one security's complete ``ticker_news.flow.v1`` dict.
+
+        Counts are computed on a dedicated read-only connection, never on
+        ``self._conn``, so a store opened writable still serves flow without
+        touching its write path. Failures raise; the API layer maps them.
+        """
+        security_id = _validate_token(security_id, "security_id", 1024)
+        if not isinstance(rights, NewsReadRights):
+            raise StoreValidationError("qbus_news_store:invalid_rights")
+        if (
+            not isinstance(now, datetime)
+            or now.tzinfo is None
+            or now.utcoffset() is None
+        ):
+            raise ValueError("now must be a timezone-aware datetime")
+        if not rights.allowed_sources:
+            flow: dict = {
+                "schema": "ticker_news.flow.v1",
+                "state": "unavailable",
+                "reason": "no_accessible_sources",
+                "coverage": "complete",
+                "as_of": None,
+                "reports_24h": None,
+                "reports_7d": None,
+                "stories_24h": None,
+                "median_daily_28d": None,
+                "daily_counts_28d": None,
+                "history_days_observed": None,
+                "comparison": None,
+                "provenance": None,
+            }
+            return flow
+
+        as_of = now.astimezone(timezone.utc).replace(microsecond=0)
+        conn = self._open_flow_connection()
+        try:
+            velocity = compute_news_velocity(
+                conn,
+                security_id=security_id,
+                now=as_of,
+                allowed_sources=rights.allowed_sources,
+            )
+        finally:
+            conn.close()
+
+        sufficient = bool(velocity["sufficient_history"])
+        median = velocity["median_daily_28d"]
+        as_of_date = as_of.date()
+        provenance = {
+            "velocity_schema": VELOCITY_SCHEMA,
+            "sources_counted": velocity["sources_counted"],
+            "status_counted": "active",
+            "distinct_by": "source + source_item_id",
+            "story_grouping": (
+                "news_cluster_members.cluster_id; "
+                "a report in no cluster is its own story"
+            ),
+            "cluster_policy_version": CLUSTER_POLICY_VERSION,
+            "windows": {
+                "reports_24h": (
+                    "rolling, closed at both ends: [as_of - 24h, as_of]"
+                ),
+                "reports_7d": (
+                    "rolling, closed at both ends: [as_of - 7d, as_of]"
+                ),
+                "daily_28d": {
+                    "start_date": (as_of_date - timedelta(days=28)).isoformat(),
+                    "end_date": (as_of_date - timedelta(days=1)).isoformat(),
+                    "unit": "UTC calendar day",
+                    "excludes": "the current UTC day",
+                    "order": "oldest first",
+                },
+            },
+            "calculation": {
+                "method": METHOD,
+                "comparison_rule": FLOW_COMPARE_RULE,
+            },
+            "time_basis_counts_24h": velocity["basis_counts_24h"],
+        }
+        return {
+            "schema": "ticker_news.flow.v1",
+            "state": "ok" if sufficient else "thin_history",
+            "reason": None,
+            "coverage": "complete",
+            "as_of": as_of.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reports_24h": velocity["count_24h"],
+            "reports_7d": velocity["count_7d"],
+            "stories_24h": velocity["stories_24h"],
+            "median_daily_28d": median,
+            "daily_counts_28d": velocity["daily_counts_28d"],
+            "history_days_observed": velocity["history_days_observed"],
+            "comparison": compare_to_typical(
+                velocity["count_24h"], median, sufficient, "complete"
+            ),
+            "provenance": provenance,
+        }
+
+    def _open_flow_connection(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(
+            f"file:{self.path}?mode=ro",
+            uri=True,
+            timeout=5.0,
+            isolation_level=None,
+        )
+        conn.execute("PRAGMA query_only=ON")
+        return conn
 
     def story(
         self,
