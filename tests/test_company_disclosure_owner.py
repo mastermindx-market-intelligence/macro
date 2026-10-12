@@ -167,7 +167,10 @@ def test_proposed_registry_never_becomes_adopted_by_private_pointer(case, route)
     source, state, _, _, ruling, _ = case
     spec = source.value.spec
     source.value = o.qualify_records('a'*40, n._canonical(spec), ruling,
-                                    Path(o.REGISTRY_PATH).read_bytes(), spec['identities'])
+                                    Path(o.REGISTRY_PATH).read_bytes().replace(
+                                        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PRODUCED',
+                                        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PROPOSED'),
+                                    spec['identities'])
     result = publish(case)
     assert result['status'] == 'MEMBERS_OBSERVED_NOT_ADOPTED'
     assert result['pointer_written'] is False and not (state.root/o.CURRENT_KEY).exists()
@@ -181,6 +184,43 @@ def test_proposed_registry_never_becomes_adopted_by_private_pointer(case, route)
             current.resolve(request(case))
         else:
             current.resolve_issuer(case[0].value.spec['fact']['subject_id'], o.PURPOSE, o.AUDIENCE)
+
+
+@pytest.mark.parametrize('adopted_code', ['a'*40, 'b'*40])
+def test_protected_adoption_requires_new_intent_and_preserves_staged_members(case, adopted_code):
+    source, state, artifacts, factory, ruling, registry = case
+    proposed = registry.replace(
+        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PRODUCED',
+        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PROPOSED')
+    source.value = o.qualify_records('a'*40, source.value.spec_bytes, ruling,
+                                    proposed, source.value.current_identities)
+    staged = publish(case)
+    assert staged['status'] == 'MEMBERS_OBSERVED_NOT_ADOPTED'
+    assert not (state.root/o.CURRENT_KEY).exists()
+    members = {str(path.relative_to(artifacts.root)): path.read_bytes()
+               for path in artifacts.root.rglob('*') if path.is_file()}
+    stage_manifest = state.get_bytes_strict_bounded_versioned(
+        'generations/' + staged['generation'] + '.json', n.MAX_OBJECT_BYTES)
+    source.value = o.qualify_records(adopted_code, source.value.spec_bytes, ruling,
+                                    registry, source.value.current_identities)
+    with pytest.raises(n.DisclosureError, match='PUBLICATION_INTENT_CHANGED'):
+        p.publish_generation(source, state, artifacts, factory, intent=staged['intent'])
+    assert not (state.root/o.CURRENT_KEY).exists()
+    promoted = publish(case)
+    assert promoted['intent']['mode'] == 'PROMOTE_CURRENT'
+    assert promoted['generation'] != staged['generation']
+    assert promoted['decisions']['adoption'] != staged['decisions']['adoption']
+    assert promoted['status'] == 'COMMITTED_OBSERVED' and promoted['pointer_written']
+    assert promoted['production_accepted'] is False
+    assert promoted['identity_binding'] == staged['identity_binding']
+    for result in (staged, promoted):
+        assert result['intent']['expected_current_version'] is None
+        assert result['intent']['expected_current_sha256'] is None
+    # Preserve both immutable STAGE bytes and their store version.
+    assert stage_manifest == state.get_bytes_strict_bounded_versioned(
+        'generations/' + staged['generation'] + '.json', n.MAX_OBJECT_BYTES)
+    assert members == {str(path.relative_to(artifacts.root)): path.read_bytes()
+                       for path in artifacts.root.rglob('*') if path.is_file()}
 
 
 @pytest.mark.parametrize('changes', [dict(mode='historical',as_of='2026-10-10T00:00:00Z'),
