@@ -316,15 +316,17 @@ def diagnose_news_universe(
     alias_rows: Iterable[Mapping[str, object]],
     security_rows: Iterable[Mapping[str, object]],
     observed_at: datetime,
+    min_count: int = 400,
 ) -> dict[str, object]:
     """Report how every current constituent resolves, without building or writing.
 
-    The walk matches ``build_news_universe_snapshot``: roster and PIT checks,
-    alias-table and security-master checks, then each current ticker in sorted
-    order through membership alias, duplicate security, security master,
-    superseded state, and market alias. Alias intervals are applied inside those
-    lookups. The first table-level failure is returned in ``table_errors`` and
-    per-ticker work stops. This does not repair aliases or change the builder.
+    The walk matches ``build_news_universe_snapshot``: the ``min_count`` guard,
+    roster and PIT checks, alias-table and security-master checks, then each
+    current ticker in sorted order through membership alias, duplicate security,
+    security master, superseded state, and market alias. Alias intervals are
+    applied inside those lookups. The first table-level failure is returned in
+    ``table_errors`` and per-ticker work stops. This does not repair aliases or
+    change the builder.
     """
 
     def report(
@@ -351,6 +353,15 @@ def diagnose_news_universe(
     observed = _aware_utc(observed_at)
     observed_iso = observed.isoformat()
 
+    if isinstance(min_count, bool) or not isinstance(min_count, int) or min_count < 1:
+        return report(
+            observed_iso=observed_iso,
+            current_count=0,
+            resolved_count=0,
+            unresolved=[],
+            table_errors=["min_count_invalid"],
+        )
+
     try:
         current = _current_symbols(current_rows)
     except NewsUniverseSnapshotError as exc:
@@ -370,6 +381,9 @@ def diagnose_news_universe(
             unresolved=[],
             table_errors=[code],
         )
+
+    if len(current) < min_count:
+        return blocked("current_roster_suspicious")
 
     try:
         _active_pit(pit_rows, on=observed.date())
@@ -428,7 +442,6 @@ def diagnose_news_universe(
             unresolved.append(
                 {"ticker": ticker, "reason": "membership_alias_unresolved"}
             )
-            continue
             continue
         if security_id in seen_security_ids:
             unresolved.append(

@@ -180,6 +180,7 @@ def diagnose_from_files(
     aliases: Path | str,
     security: Path | str,
     observed_at: datetime,
+    min_count: int = 400,
 ) -> dict[str, object]:
     """Read the four owner artifacts and return a per-ticker diagnosis. Writes nothing."""
 
@@ -193,6 +194,7 @@ def diagnose_from_files(
         alias_rows=alias_rows,
         security_rows=security_rows,
         observed_at=observed_at,
+        min_count=min_count,
     )
 
 
@@ -274,6 +276,7 @@ def _main_diagnose(args: argparse.Namespace) -> int:
             aliases=args.aliases,
             security=args.security,
             observed_at=_observed_at(args.observed_at),
+            min_count=int(args.min_count),
         )
     except (NewsUniverseBuildError, ValueError, TypeError) as exc:
         return _emit_error(getattr(exc, "code", "build_failed"))

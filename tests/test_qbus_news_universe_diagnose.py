@@ -3,11 +3,15 @@ from __future__ import annotations
 
 import ast
 import inspect
+import json
 from datetime import datetime, timezone
+from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from engine import qbus_news_universe_snapshot as m
+from scripts import build_qbus_news_universe as cli
 
 
 UTC = timezone.utc
@@ -139,7 +143,7 @@ def _assert_parity(*, code, ticker, current_rows, pit_rows, alias_rows, security
         m.build_news_universe_snapshot(**common, min_count=1)
     assert exc.value.code == code
 
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
     assert diagnosis["schema"] == "qbus.news_universe_diagnosis.v1"
     assert diagnosis["observed_at"] == NOW.isoformat()
     assert diagnosis["table_errors"] == []
@@ -260,7 +264,7 @@ def test_diagnose_lists_later_tickers_after_the_builder_stops():
 
     with pytest.raises(m.NewsUniverseSnapshotError) as exc:
         m.build_news_universe_snapshot(**common, min_count=1)
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
 
     assert exc.value.code == "membership_alias_unresolved"
     assert diagnosis["table_errors"] == []
@@ -288,7 +292,7 @@ def test_clean_diagnosis_means_the_builder_raises_no_per_ticker_code():
         security_rows=_master("SEC:US-XNAS-NVDA"),
         observed_at=NOW,
     )
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
     assert diagnosis["unresolved"] == []
     assert diagnosis["table_errors"] == []
     assert diagnosis["resolved_count"] == diagnosis["current_count"] == 1
@@ -322,7 +326,7 @@ def test_collapsed_membership_rows_stay_a_table_error():
     )
     with pytest.raises(m.NewsUniverseSnapshotError) as exc:
         m.build_news_universe_snapshot(**common, min_count=1)
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
 
     assert exc.value.code == "alias_table_invalid"
     assert diagnosis["table_errors"] == ["alias_table_invalid"]
@@ -339,7 +343,7 @@ def test_alias_date_errors_keep_their_own_table_code():
     common = {**spec, "observed_at": NOW}
     with pytest.raises(m.NewsUniverseSnapshotError) as exc:
         m.build_news_universe_snapshot(**common, min_count=1)
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
 
     assert exc.value.code == "alias_valid_from_invalid"
     assert diagnosis["table_errors"] == ["alias_valid_from_invalid"]
@@ -352,7 +356,7 @@ def test_security_master_load_failure_is_a_table_error():
     common = {**spec, "observed_at": NOW}
     with pytest.raises(m.NewsUniverseSnapshotError) as exc:
         m.build_news_universe_snapshot(**common, min_count=1)
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
 
     assert exc.value.code == "security_master_invalid"
     assert diagnosis["table_errors"] == ["security_master_invalid"]
@@ -369,7 +373,7 @@ def test_pit_interval_error_stops_before_a_missing_ticker():
     )
     with pytest.raises(m.NewsUniverseSnapshotError) as exc:
         m.build_news_universe_snapshot(**common, min_count=1)
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
 
     assert exc.value.code == "pit_interval_invalid"
     assert diagnosis["table_errors"] == ["pit_interval_invalid"]
@@ -384,7 +388,7 @@ def test_unlawful_historical_symbol_is_not_reported_as_market_alias_invalid():
     common = {**spec, "observed_at": NOW}
     with pytest.raises(m.NewsUniverseSnapshotError) as exc:
         m.build_news_universe_snapshot(**common, min_count=1)
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
 
     assert exc.value.code == "historical_alias_invalid"
     assert diagnosis["table_errors"] == ["historical_alias_invalid"]
@@ -402,7 +406,7 @@ def test_duplicate_current_symbol_is_a_table_error_with_no_roster_count():
     )
     with pytest.raises(m.NewsUniverseSnapshotError) as exc:
         m.build_news_universe_snapshot(**common, min_count=1)
-    diagnosis = m.diagnose_news_universe(**common)
+    diagnosis = m.diagnose_news_universe(**common, min_count=1)
 
     assert exc.value.code == "current_roster_duplicate"
     assert diagnosis["table_errors"] == ["current_roster_duplicate"]
@@ -421,10 +425,163 @@ def test_naive_observed_at_raises_the_builder_code():
     with pytest.raises(m.NewsUniverseSnapshotError) as built:
         m.build_news_universe_snapshot(**common, min_count=1)
     with pytest.raises(m.NewsUniverseSnapshotError) as diagnosed:
-        m.diagnose_news_universe(**common)
+        m.diagnose_news_universe(**common, min_count=1)
     assert built.value.code == diagnosed.value.code == "observed_at_invalid"
 
 
 def test_diagnose_rejects_positional_arguments():
     with pytest.raises(TypeError):
         m.diagnose_news_universe([], [], [], [], NOW)
+
+
+def test_short_roster_below_min_count_matches_builder():
+    """A roster shorter than min_count is the same table error the builder raises.
+
+    The diagnosis call omits min_count so it uses the shared default of 400,
+    the same threshold passed to the builder.
+    """
+
+    common = dict(
+        current_rows=_current("NVDA"),
+        pit_rows=_pit(("NVDA", "2001-01-01", None)),
+        alias_rows=_aliases(("NVDA", "NVDA", "SEC:US-XNAS-NVDA")),
+        security_rows=_master("SEC:US-XNAS-NVDA"),
+        observed_at=NOW,
+    )
+    diagnosis = m.diagnose_news_universe(**common)
+    assert diagnosis["table_errors"] == ["current_roster_suspicious"]
+    assert diagnosis["current_count"] == 1
+    assert diagnosis["resolved_count"] == 0
+    assert diagnosis["unresolved"] == []
+    assert diagnosis["reason_counts"] == {}
+
+    with pytest.raises(m.NewsUniverseSnapshotError) as exc:
+        m.build_news_universe_snapshot(**common, min_count=400)
+    assert exc.value.code == "current_roster_suspicious"
+
+
+@pytest.mark.parametrize("min_count", [True, 0, "400"])
+def test_invalid_min_count_is_a_table_error(min_count):
+    diagnosis = m.diagnose_news_universe(
+        current_rows=_current("NVDA"),
+        pit_rows=_pit(("NVDA", "2001-01-01", None)),
+        alias_rows=_aliases(("NVDA", "NVDA", "SEC:US-XNAS-NVDA")),
+        security_rows=_master("SEC:US-XNAS-NVDA"),
+        observed_at=NOW,
+        min_count=min_count,
+    )
+    assert diagnosis["table_errors"] == ["min_count_invalid"]
+    assert diagnosis["unresolved"] == []
+    assert diagnosis["resolved_count"] == 0
+    assert diagnosis["current_count"] == 0
+    assert diagnosis["reason_counts"] == {}
+
+
+def test_roster_of_exactly_min_count_passes_the_size_guard():
+    common = dict(
+        current_rows=_current("AAA", "NVDA"),
+        pit_rows=_pit(("AAA", "2020-01-01", None), ("NVDA", "2001-01-01", None)),
+        alias_rows=_aliases(
+            ("AAA", "AAA", "SEC:US-XNAS-AAA"),
+            ("NVDA", "NVDA", "SEC:US-XNAS-NVDA"),
+        ),
+        security_rows=_master("SEC:US-XNAS-AAA", "SEC:US-XNAS-NVDA"),
+        observed_at=NOW,
+    )
+    diagnosis = m.diagnose_news_universe(**common, min_count=2)
+    assert diagnosis["table_errors"] == []
+    assert diagnosis["current_count"] == 2
+    assert diagnosis["resolved_count"] == 2
+    assert diagnosis["unresolved"] == []
+
+    built = m.build_news_universe_snapshot(**common, min_count=2)
+    assert len(built["securities"]) == 2
+
+
+def _one_member_paths(root: Path) -> dict[str, Path]:
+    breadth = root / "breadth"
+    ref = root / "reference"
+    breadth.mkdir(parents=True)
+    ref.mkdir(parents=True)
+    pd.DataFrame(
+        [{"symbol": "NVDA", "name": "NVIDIA", "sector": "Technology"}]
+    ).set_index("symbol").to_parquet(breadth / "constituents.parquet")
+    pd.DataFrame(
+        [
+            {
+                "ticker": "NVDA",
+                "start_date": "2001-01-01",
+                "end_date": None,
+                "src": "sp500",
+            }
+        ]
+    ).to_parquet(breadth / "sp1500_pit_membership.parquet", index=False)
+    pd.DataFrame(
+        [
+            {
+                "vendor": "membership",
+                "vendor_symbol": "NVDA",
+                "security_id": "SEC:US-XNAS-NVDA",
+                "valid_from": None,
+                "valid_to": None,
+            },
+            {
+                "vendor": "yahoo_fetch",
+                "vendor_symbol": "NVDA",
+                "security_id": "SEC:US-XNAS-NVDA",
+                "valid_from": None,
+                "valid_to": None,
+            },
+        ]
+    ).to_parquet(ref / "vendor_aliases.parquet", index=False)
+    pd.DataFrame(
+        [
+            {
+                "security_id": "SEC:US-XNAS-NVDA",
+                "issuer_id": "ISS:US-XNAS-NVDA",
+                "issuer_state": "RESOLVED",
+                "listing_key": "US-XNAS-NVDA",
+                "security_state": None,
+                "superseded_by": None,
+                "issuer_cik": None,
+            }
+        ]
+    ).to_parquet(ref / "security_master.parquet", index=False)
+    return {
+        "current": breadth / "constituents.parquet",
+        "pit": breadth / "sp1500_pit_membership.parquet",
+        "aliases": ref / "vendor_aliases.parquet",
+        "security": ref / "security_master.parquet",
+    }
+
+
+def test_cli_diagnose_min_count_reports_short_roster_and_exits_0(tmp_path, capsys):
+    paths = _one_member_paths(tmp_path / "data")
+    out = tmp_path / "qbus" / "news_universe.json"
+    rc = cli.main(
+        [
+            "--diagnose",
+            "--current",
+            str(paths["current"]),
+            "--pit",
+            str(paths["pit"]),
+            "--aliases",
+            str(paths["aliases"]),
+            "--security-master",
+            str(paths["security"]),
+            "--output",
+            str(out),
+            "--min-count",
+            "2",
+            "--observed-at",
+            NOW.isoformat(),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 0
+    assert payload["table_errors"] == ["current_roster_suspicious"]
+    assert payload["current_count"] == 1
+    assert payload["resolved_count"] == 0
+    assert payload["unresolved"] == []
+    assert not out.exists()
