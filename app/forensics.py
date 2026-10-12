@@ -191,8 +191,18 @@ def forensics_health(_user: dict = Depends(require_site_full_user)) -> JSONRespo
     beyond the mode name and the generation id.
     """
     headers = dict(_PRIVATE_HEADERS)
-    headers["X-FIF-Financial-Dataset-Mode"] = _financial_dataset_mode()
-    if headers["X-FIF-Financial-Dataset-Mode"] == "production":
+    # A15: an invalid dataset mode refuses health with the same private 503
+    # the financial POSTs use — never a 500 and never a silent golden report.
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        ProductionDatasetModeError,
+    )
+
+    try:
+        mode = _financial_dataset_mode()
+    except ProductionDatasetModeError:
+        raise _private_error(503, "forensics health temporarily unavailable") from None
+    headers["X-FIF-Financial-Dataset-Mode"] = mode
+    if mode == "production":
         from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
             build_production_dataset_store,
             latest_generation_summary,
@@ -968,7 +978,7 @@ async def _admit_json_post_body(request: Request) -> bytes:
 
 @router.api_route(
     "/api/forensics/v1/financial/query",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_query_method_not_allowed(
     response: Response,
@@ -1017,7 +1027,7 @@ async def financial_query(
 
 @router.api_route(
     "/api/forensics/v1/financial/revisions",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_revisions_method_not_allowed(
     response: Response,
@@ -1068,7 +1078,7 @@ async def financial_revisions(
 
 @router.api_route(
     "/api/forensics/v1/financial/packet",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_packet_method_not_allowed(
     response: Response,
@@ -1119,7 +1129,7 @@ async def financial_packet(
 
 @router.api_route(
     "/api/forensics/v1/financial/statements",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_statements_method_not_allowed(
     response: Response,
