@@ -260,3 +260,16 @@ jobs:
           python -m scripts.publish_fif_production_datasets verify \
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --report-path "$REPORT"
+      - name: upload FIF publication reports (always)
+        # D5 / spec §4: the run report is 'stdout + workflow artifact'. A red
+        # lane's reports are exactly the ones an operator needs, so the upload
+        # runs on `if: always()` — after a failed capture/publish step, not
+        # only after a green one. Pinned to the same upload-artifact sha the
+        # repo's other diagnostics captures use.
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fif-production-reports-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/fif-production-publish-report-${{ github.run_id }}.json
+            ${{ runner.temp }}/fif-member-capture-report-${{ github.run_id }}.json

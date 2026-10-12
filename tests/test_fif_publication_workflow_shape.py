@@ -73,8 +73,14 @@ def test_secrets_referenced_by_name_only() -> None:
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
     expressions = re.findall(r"\$\{\{\s*([^}]+?)\s*\}\}", text)
     assert expressions
+    # Secrets are referenced BY NAME only. Non-secret workflow contexts are
+    # allowed from this narrow allowlist (the house upload-artifact pattern's
+    # runner.temp / github.run_id — D5); anything else must be a secrets.NAME.
+    non_secret_contexts = {"runner.temp", "github.run_id"}
     for expression in expressions:
-        assert re.fullmatch(r"secrets\.[A-Z0-9_]+", expression), expression
+        assert expression in non_secret_contexts or re.fullmatch(
+            r"secrets\.[A-Z0-9_]+", expression
+        ), expression
 
 
 def test_no_ticker_or_cik_literal_in_the_workflow() -> None:
@@ -148,6 +154,27 @@ def test_d6_capture_report_written_and_consumed() -> None:
     assert '--report-path "$CAPTURE_REPORT"' in capture["run"]
     assert pattern in publish["run"]
     assert '--capture-report "$CAPTURE_REPORT"' in publish["run"]
+
+
+UPLOAD_STEP = "upload FIF publication reports (always)"
+UPLOAD_ARTIFACT_PIN = (
+    "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+)
+
+
+def test_d5_reports_uploaded_as_artifact_with_always() -> None:
+    """D5: spec §4 requires the run report as 'stdout + workflow artifact' —
+    an upload-artifact step with `if: always()` (a red lane's reports are the
+    interesting ones) pinned to the repo's existing sha, uploading BOTH the
+    publish report and the D6 capture report."""
+    workflow = _workflow()
+    steps = _steps(workflow)
+    upload = next(step for step in steps if step.get("name") == UPLOAD_STEP)
+    assert upload["uses"] == UPLOAD_ARTIFACT_PIN
+    assert upload["if"] == "always()"
+    run_text = str(upload["with"]["path"])
+    assert "fif-production-publish-report-${{ github.run_id }}.json" in run_text
+    assert "fif-member-capture-report-${{ github.run_id }}.json" in run_text
 
 
 def test_d7_capture_step_carries_no_secrets() -> None:
