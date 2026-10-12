@@ -2728,7 +2728,7 @@ body.ff-page {
 
 .ff-evidence,
 .ff-receipt-inspector { border-radius: 20px; background: var(--ff-card); }
-.ff-evidence-head { padding: 20px 21px 16px; background: linear-gradient(118deg, color-mix(in srgb, var(--ff-indigo) 7%, transparent), transparent 62%); }
+.ff-evidence-head { padding: 20px 21px 16px; background: linear-gradient(118deg, color-mix(in srgb, var(--info) 7%, transparent), transparent 62%); }
 .ff-evidence-head h2 { font-size: 18px; }
 .ff-evidence-body { padding: 18px 21px 24px; }
 .ff-proof-badge { margin-bottom: 12px; }
@@ -2975,4 +2975,102 @@ html[data-theme="light"] .ff-quick-signal { box-shadow: none; }
   .ff-export-link { width: 100%; }
   .ff-quick-signal { grid-template-columns: 40px minmax(0, 1fr); }
   .ff-quick-signal-open { grid-column: 1 / -1; width: 100%; }
+}
+
+/* ── P2 source controls (§2, R3) ──────────────────────────────────────────
+   Every number is a control into #ff-evidence. DARK: a ghost button on
+   var(--panel2) with a 1px var(--line) edge; hover adds a restrained --info
+   fill and no bloom. LIGHT: a white chip with a hairline that lifts with the
+   theme's --popover-shadow token on hover (AM2/R-C) — shadow, not glow. The
+   disabled state is shared: 46% opacity, no hover, muted ink. */
+.ff-source-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 26px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--panel2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  gap: 6px;
+}
+.ff-source-control:hover {
+  background: color-mix(in srgb, var(--info) 12%, var(--panel2));
+}
+.ff-source-control.is-unavailable,
+.ff-source-control.is-unavailable:hover {
+  color: var(--muted);
+  background: transparent;
+  cursor: not-allowed;
+}
+.ff-compact.tnum { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ff-source-unavail {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 9px;
+  white-space: nowrap;
+}
+/* Table cells and compare values swap their old <strong> for the control. */
+.ff-table td .ff-source-control,
+.ff-compare-value .ff-source-control,
+.ff-value-cell .ff-source-control {
+  display: inline-flex;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ff-value-cell .ff-source-control { justify-self: end; }
+/* The span variant rides inside card buttons; the card keeps the click. */
+.ff-redline-copy .ff-source-control,
+.ff-finding-periods .ff-source-control {
+  padding: 1px 6px;
+  font-size: 9px;
+}
+/* Drawer: exact bytes, compact secondary, bounded excerpt. */
+.ff-exact {
+  display: block;
+  margin: 0;
+  padding: 10px 11px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--ff-border);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--ff-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ff-span-excerpt {
+  margin: 0;
+  padding: 9px 10px;
+  border-left: 2px solid color-mix(in srgb, var(--info) 70%, var(--ff-border));
+  color: var(--text);
+  background: color-mix(in srgb, var(--info) 5%, var(--panel));
+  font-size: 10px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.ff-proof-compact-line {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+.ff-proof-compact-line b { color: var(--text); font-size: 9px; letter-spacing: .04em; text-transform: uppercase; }
+
+html[data-theme="light"] .ff-source-control {
+  border-color: var(--line);
+  background: var(--panel);
+}
+html[data-theme="light"] .ff-source-control:hover {
+  background: var(--panel);
+  box-shadow: var(--popover-shadow);
+}
+html[data-theme="light"] .ff-evidence {
+  border-color: var(--line);
+  box-shadow: var(--popover-shadow);
 }

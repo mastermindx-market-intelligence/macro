@@ -41,6 +41,10 @@
     lastFocus: null,
     unknownRequestedSymbol: '',
     sourceMode: 'map',
+    // §2/§3 — cell evidence + the query nodes the source controls resolve
+    // against (populated by the financial query fetch).
+    queryNodes: null,
+    cellEvidence: null,
     receipt: {
       phase: 'idle',
       requestToken: 0,
@@ -1193,6 +1197,20 @@
     if (trigger) {
       trigger.setAttribute('data-open-primary-finding', '');
       trigger.removeAttribute('data-go-tab');
+      // §2.2 — the CTA carries the primary finding's span attributes when the
+      // state has attached them (P1-b); none are invented here.
+      var findingBounds = spanBounds(first.source_span);
+      if (findingBounds) {
+        trigger.setAttribute('data-span-start', String(Math.trunc(findingBounds[0])));
+        trigger.setAttribute('data-span-end', String(Math.trunc(findingBounds[1])));
+      } else {
+        trigger.removeAttribute('data-span-start');
+        trigger.removeAttribute('data-span-end');
+      }
+      if (first.occurrence_id) trigger.setAttribute('data-occurrence-id', String(first.occurrence_id));
+      else trigger.removeAttribute('data-occurrence-id');
+      if (first.current_accession) trigger.setAttribute('data-accession', String(first.current_accession));
+      else trigger.removeAttribute('data-accession');
       trigger.innerHTML = pair('Open source', '打开来源') + ' <span aria-hidden="true">→</span>';
     }
   }
@@ -1338,6 +1356,268 @@
   function emptyState(titleEn, titleZh, copyEn, copyZh, mark) {
     return '<div class="ff-empty-state"><div><span class="ff-empty-mark" aria-hidden="true">' + esc(mark || '—') + '</span>' +
       '<h3>' + pair(titleEn, titleZh) + '</h3><p>' + pair(copyEn, copyZh) + '</p></div></div>';
+  }
+
+  // ── Source controls (§2, R3) ────────────────────────────────────────────
+  // Every displayed number is a control into #ff-evidence on the exact
+  // occurrence/version/span. With no recorded span the control renders the
+  // explicit unavailable state — never a generic EDGAR browse fallback and
+  // never an invented span (AM1).
+  function spanBounds(value) {
+    if (Array.isArray(value) && value.length >= 2) {
+      var listStart = numberValue(value[0]);
+      var listEnd = numberValue(value[1]);
+      if (listStart != null && listEnd != null) return [Math.trunc(listStart), Math.trunc(listEnd)];
+    }
+    if (value && typeof value === 'object') {
+      var start = numberValue(value.start != null ? value.start : value.char_start);
+      var end = numberValue(value.end != null ? value.end : value.char_end);
+      if (start != null && end != null) return [Math.trunc(start), Math.trunc(end)];
+    }
+    return null;
+  }
+
+  // §2.3.1 — financial query cell provenance.
+  function controlFromQueryNode(node, compactText) {
+    node = objectValue(node) || {};
+    var provenance = objectValue(node.provenance) || {};
+    var fact = objectValue(provenance.selected_raw_fact) || {};
+    var bounds = spanBounds(fact.source_span);
+    return {
+      kind: 'cell',
+      compactText: compactText,
+      occurrenceId: String(fact.occurrence_id || ''),
+      rootCellId: String(node.cell_id || node.root_cell_id || ''),
+      snapshotId: String(node.snapshot_id || ''),
+      accession: String(provenance.accession || ''),
+      spanStart: bounds ? bounds[0] : null,
+      spanEnd: bounds ? bounds[1] : null
+    };
+  }
+
+  // §2.3.2 — statement cell receipt. The span is a mapping with start/char_start.
+  function controlFromStatementCell(cell, compactText) {
+    cell = objectValue(cell) || {};
+    var receipt = objectValue(cell.source_receipt) || {};
+    var bounds = spanBounds(receipt.source_span);
+    return {
+      kind: 'statement',
+      compactText: compactText,
+      occurrenceId: String(receipt.occurrence_id || cell.occurrence_id || ''),
+      rootCellId: String(receipt.root_cell_id || cell.cell_id || ''),
+      snapshotId: String(receipt.snapshot_id || ''),
+      accession: String(receipt.accession || cell.accession || ''),
+      spanStart: bounds ? bounds[0] : null,
+      spanEnd: bounds ? bounds[1] : null
+    };
+  }
+
+  // §2.3.3 — disclosure / redline receipts.
+  function controlFromEvidenceReceipt(receipt, kind, compactText) {
+    receipt = objectValue(receipt) || {};
+    var bounds = spanBounds(receipt.source_span);
+    return {
+      kind: kind,
+      compactText: compactText,
+      occurrenceId: String(receipt.occurrence_id || receipt.block_id || ''),
+      rootCellId: '',
+      snapshotId: '',
+      accession: String(receipt.accession || receipt.accession_number || ''),
+      spanStart: bounds ? bounds[0] : null,
+      spanEnd: bounds ? bounds[1] : null
+    };
+  }
+
+  function spanOk(opts) {
+    return opts.spanStart != null && opts.spanEnd != null &&
+      String(opts.spanStart) !== '' && String(opts.spanEnd) !== '';
+  }
+
+  // §2.4 — frozen control markup. `inlineInButton` emits the same classes and
+  // copy on a span: HTML forbids nesting a control button inside the card
+  // buttons (findings, disclosures, redlines), and the card itself keeps the
+  // select/open behaviour there.
+  function sourceControlHtml(opts, inlineInButton) {
+    opts = opts || {};
+    var compact = esc(opts.compactText == null || opts.compactText === '' ? '—' : opts.compactText);
+    if (!spanOk(opts)) {
+      var tag = inlineInButton ? 'span' : 'button';
+      var disabledAttrs = inlineInButton ? ' aria-disabled="true"' : ' disabled aria-disabled="true"';
+      return '<' + tag + ' type="button" class="ff-source-control is-unavailable"' + disabledAttrs +
+        ' data-tip-en="Source span unavailable" data-tip-zh="来源片段不可用">' +
+        '<span class="ff-compact tnum">' + compact + '</span>' +
+        '<span class="ff-source-unavail">' + pair('Source span unavailable', '来源片段不可用') + '</span></' + tag + '>';
+    }
+    return '<button type="button" class="ff-source-control"' +
+      ' data-source-kind="' + esc(opts.kind || 'cell') + '"' +
+      ' data-occurrence-id="' + esc(opts.occurrenceId || '') + '"' +
+      ' data-root-cell-id="' + esc(opts.rootCellId || '') + '"' +
+      ' data-snapshot-id="' + esc(opts.snapshotId || '') + '"' +
+      ' data-accession="' + esc(opts.accession || '') + '"' +
+      ' data-span-start="' + esc(String(opts.spanStart)) + '"' +
+      ' data-span-end="' + esc(String(opts.spanEnd)) + '"' +
+      ' aria-controls="ff-evidence"' +
+      ' data-tip-en="Open the source span for this number" data-tip-zh="打开该数字的来源片段">' +
+      '<span class="ff-compact tnum">' + compact + '</span></button>';
+  }
+
+  // §2.3.4 — a finding value with no attached occurrence is matched to a query
+  // node by metric id plus period label; no match stays disabled (AM1).
+  function queryNodeForValue(value) {
+    var nodes = state.queryNodes;
+    if (!Array.isArray(nodes) || !objectValue(value)) return null;
+    var wantedKey = String(value.metric_id || value.key || '');
+    var wantedPeriod = String(value.period_label || value.period || '');
+    for (var index = 0; index < nodes.length; index += 1) {
+      var node = objectValue(nodes[index]);
+      if (!node) continue;
+      if (wantedKey && String(node.metric_id || '') !== wantedKey) continue;
+      if (wantedPeriod && String(node.period_label || node.period || '') !== wantedPeriod) continue;
+      return node;
+    }
+    return null;
+  }
+
+  function valueControlOpts(value, which) {
+    var node = queryNodeForValue(value);
+    var text = which === 'prior' ? value.prior : which === 'delta' ? value.delta : value.current;
+    if (node) {
+      var control = controlFromQueryNode(node, formatValue(text, value.format));
+      control.kind = 'finding';
+      control.exactText = node.value == null ? '' : String(node.value);
+      control.unit = node.unit || '';
+      return control;
+    }
+    return { kind: 'finding', compactText: formatValue(text, value.format) };
+  }
+
+  // The plain-word cell glossary (R7): one sentence per glance metric, no
+  // detector jargon. The same sentences live in
+  // docs/site_semantics/fundamental_forensics.md.
+  var CELL_GLOSSARY = {
+    revenue: ['Revenue is the money the company billed for its goods or services in the period.', '营收是公司在该期间因商品或服务而开票的收入。'],
+    gross_profit: ['Gross profit is revenue minus the direct cost of producing what was sold.', '毛利润是营收减去直接生产成本后的金额。'],
+    accounts_receivable_net: ['Receivables are amounts customers owe the company and have not yet paid.', '应收账款是客户尚未支付给公司的款项。'],
+    inventory_net: ['Inventory is the value of goods made or bought and not yet sold.', '存货是已生产或采购但尚未售出的商品价值。'],
+    net_cash_from_operating_activities: ['Operating cash flow is the cash the core business generated or consumed in the period.', '经营现金流是核心业务在该期间产生或消耗的现金。'],
+    capital_expenditures: ['Capital expenditure is the cash spent on long-lived assets such as plants and equipment.', '资本开支是用于厂房、设备等长期资产的现金支出。'],
+    operating_income_loss: ['Operating income is profit from the core business before interest and taxes.', '营业利润是核心业务在扣除利息和税费前的利润。'],
+    net_income_loss: ['Net income is the profit remaining after all expenses and taxes.', '净利润是扣除全部费用与税负后剩余的利润。'],
+    contract_liabilities: ['Contract liabilities is cash customers paid in advance for goods or services not yet delivered.', '合同负债是客户已预付、但公司尚未交付商品或服务的现金。']
+  };
+
+  var METRIC_ID_BY_KEY = {
+    revenue: 'revenue',
+    gross_profit: 'gross_profit',
+    receivables: 'accounts_receivable_net',
+    inventory: 'inventory_net',
+    cfo: 'net_cash_from_operating_activities',
+    capex: 'capital_expenditures',
+    op_income: 'operating_income_loss',
+    ni: 'net_income_loss'
+  };
+
+  function glossarySentence(metricId) {
+    var entry = CELL_GLOSSARY[String(metricId || '')];
+    return entry ? pair(entry[0], entry[1]) : pair(
+      'This is a value the company reported in its filing; open the source span to read it in place.',
+      '这是公司在财报中披露的数值；打开来源片段可在原文中查看。'
+    );
+  }
+
+  // §2.5 — activating a control pushes one drawer frame (§6.2) and renders
+  // the cell evidence view: plain-word title, exact API bytes, compact
+  // secondary, bounded excerpt, technical ids folded into a details block.
+  function activateSourceControl(control) {
+    if (!control || control.disabled) return;
+    state.lastFocus = control;
+    state.evidenceKind = 'cell';
+    state.cellEvidence = cellEvidenceFromControl(control);
+    writeUrl(true, {
+      drawer: true,
+      occ: control.getAttribute('data-occurrence-id') || '',
+      cell: control.getAttribute('data-root-cell-id') || '',
+      snap: control.getAttribute('data-snapshot-id') || '',
+      span: (control.getAttribute('data-span-start') || '') + '-' + (control.getAttribute('data-span-end') || '')
+    });
+    renderCellEvidence(state.cellEvidence);
+    openAnalysisDrawer();
+  }
+
+  function metricLabelById(metricId) {
+    var wanted = String(metricId || '');
+    for (var index = 0; index < METRICS.length; index += 1) {
+      if (METRIC_ID_BY_KEY[METRICS[index].key] === wanted) return pair(METRICS[index].en, METRICS[index].zh);
+    }
+    return wanted ? pair(prettify(wanted), prettify(wanted)) : '';
+  }
+
+  function cellEvidenceFromControl(control) {
+    var cell = {
+      kind: control.getAttribute('data-source-kind') || 'cell',
+      occurrenceId: control.getAttribute('data-occurrence-id') || '',
+      rootCellId: control.getAttribute('data-root-cell-id') || '',
+      snapshotId: control.getAttribute('data-snapshot-id') || '',
+      accession: control.getAttribute('data-accession') || '',
+      spanStart: control.getAttribute('data-span-start') || '',
+      spanEnd: control.getAttribute('data-span-end') || '',
+      compactText: control.querySelector('.ff-compact') ? control.querySelector('.ff-compact').textContent : '',
+      metricId: '',
+      titlePair: '',
+      exactText: '',
+      unit: '',
+      excerpt: ''
+    };
+    // Exact facts attach only when this control backs onto a query node whose
+    // value is canonical decimal text; a JSON number is a contract break and
+    // renders unavailable rather than Number()-ed (A38 / AM1).
+    var nodes = Array.isArray(state.queryNodes) ? state.queryNodes : [];
+    for (var index = 0; index < nodes.length; index += 1) {
+      var node = objectValue(nodes[index]);
+      if (!node) continue;
+      var fact = objectValue(objectValue(node.provenance) && objectValue(node.provenance).selected_raw_fact) || {};
+      var occurrenceMatch = cell.occurrenceId && String(fact.occurrence_id || '') === cell.occurrenceId;
+      var cellMatch = cell.rootCellId && String(node.cell_id || node.root_cell_id || '') === cell.rootCellId;
+      if (!occurrenceMatch && !cellMatch) continue;
+      cell.metricId = String(node.metric_id || '');
+      cell.titlePair = metricLabelById(cell.metricId);
+      cell.exactText = typeof node.value === 'string' ? node.value : '';
+      cell.unit = node.unit == null ? '' : String(node.unit);
+      cell.excerpt = String(node.display_excerpt || node.source_excerpt || '').trim();
+      break;
+    }
+    return cell;
+  }
+
+  function renderCellEvidence(cell) {
+    if (!cell) {
+      renderEvidence(null);
+      return;
+    }
+    var glossaryId = cell.metricId || '';
+    ui.evidenceTitle.innerHTML = cell.titlePair || pair('What this number is', '这个数字是什么');
+    var exact = cell.exactText != null && String(cell.exactText) !== '' ? String(cell.exactText) : '';
+    var excerpt = String(cell.excerpt || '').trim();
+    var body = '<section class="ff-signal-meaning"><span>' + pair('What this number is', '这个数字是什么') + '</span><p>' +
+      glossarySentence(glossaryId) + '</p></section>' +
+      '<section class="ff-proof-section"><h3>' + pair('Exact value', '精确数值') + '</h3>' +
+      (exact ? '<code class="ff-exact">' + esc(exact) + '</code>' +
+        '<p class="ff-proof-compact-line"><b>' + pair('Compact', '简写') + '</b> ' + esc(cell.compactText || '—') + '</p>' +
+        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '')
+        : '<p class="ff-proof-compact-line">' + pair('Exact value unavailable for this cell.', '该单元格的精确数值不可用。') + '</p>') +
+      '</section>' +
+      '<section class="ff-proof-section"><h3>' + pair('Source span', '来源片段') + '</h3>' +
+      (excerpt ? '<blockquote class="ff-span-excerpt">' + esc(excerpt) + '</blockquote>' :
+        '<p class="ff-proof-compact-line">' + pair('Source span unavailable', '来源片段不可用') + '</p>') +
+      (cell.accession ? '<p class="ff-proof-compact-line"><b>' + pair('Accession', '文件编号') + '</b> <span class="ff-accession">' + esc(cell.accession) + '</span></p>' : '') +
+      '</section>' +
+      '<details class="ff-proof-details"><summary>' + pair('Technical ids', '技术编号') + '</summary><div><dl class="ff-receipt-waterfall-fields">' +
+      (cell.occurrenceId ? '<div><dt>occurrence</dt><dd><code title="' + esc(cell.occurrenceId) + '">' + esc(shortTraceId(cell.occurrenceId)) + '</code></dd></div>' : '') +
+      (cell.rootCellId ? '<div><dt>root cell</dt><dd><code title="' + esc(cell.rootCellId) + '">' + esc(shortTraceId(cell.rootCellId)) + '</code></dd></div>' : '') +
+      (cell.snapshotId ? '<div><dt>snapshot</dt><dd><code title="' + esc(cell.snapshotId) + '">' + esc(shortTraceId(cell.snapshotId)) + '</code></dd></div>' : '') +
+      '<div><dt>span</dt><dd><code>' + esc(cell.spanStart && cell.spanEnd ? cell.spanStart + '-' + cell.spanEnd : '—') + '</code></dd></div>' +
+      '</dl></div></details>';
+    ui.evidenceBody.innerHTML = body;
   }
 
   function disclosureSectionPair(section) {
@@ -1541,8 +1821,22 @@
       var section = disclosureFindingSection(finding);
       var status = disclosureFindingState(finding);
       var form = String(finding._track_form || '');
+      // §2.2 — the change row carries the span of its first evidence receipt;
+      // opening the card opens the drawer on that exact occurrence.
+      var receiptControl = controlFromEvidenceReceipt(
+        (Array.isArray(finding.evidence_receipts) ? finding.evidence_receipts : []).filter(objectValue)[0],
+        'disclosure', ''
+      );
+      var spanAttrs = spanOk(receiptControl)
+        ? ' data-source-kind="disclosure"' +
+          ' data-occurrence-id="' + esc(receiptControl.occurrenceId) + '"' +
+          ' data-accession="' + esc(receiptControl.accession) + '"' +
+          ' data-span-start="' + esc(String(receiptControl.spanStart)) + '"' +
+          ' data-span-end="' + esc(String(receiptControl.spanEnd)) + '"'
+        : '';
       return '<div role="listitem"><button type="button" class="ff-disclosure-card' + (selected ? ' is-selected' : '') + '"' +
-        ' data-disclosure-finding-id="' + esc(disclosureFindingId(finding)) + '" aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
+        ' data-disclosure-finding-id="' + esc(disclosureFindingId(finding)) + '"' + spanAttrs +
+        ' aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
         '<span class="ff-disclosure-mark" aria-hidden="true">' + status.icon + '</span><span class="ff-disclosure-copy">' +
         '<span class="ff-finding-overline"><span class="ff-observed-label">' + pair(status.en, status.zh) + '</span>' +
         (form ? '<span aria-hidden="true">·</span><span>' + esc(form) + '</span>' : '') +
@@ -1596,11 +1890,28 @@
       var count = numberValue(redline.changed_token_count);
       var countText = count == null ? '' : count + (count === 1 ? ' changed word' : ' changed words');
       var zhCountText = count == null ? '' : count + ' 个变化词';
+      // §2.2 — changed tokens carry the span of the prior/current receipt.
+      // A span inside the card button cannot be its own button (HTML forbids
+      // the nesting), so the wrapper is a span and the card keeps the open
+      // behaviour on the exact occurrence.
+      var receiptControl = controlFromEvidenceReceipt(
+        objectValue(redline.current_receipt) || objectValue(redline.prior_receipt), 'redline', ''
+      );
+      var previewAttrs = spanOk(receiptControl)
+        ? ' data-source-kind="redline"' +
+          ' data-occurrence-id="' + esc(receiptControl.occurrenceId) + '"' +
+          ' data-accession="' + esc(receiptControl.accession) + '"' +
+          ' data-span-start="' + esc(String(receiptControl.spanStart)) + '"' +
+          ' data-span-end="' + esc(String(receiptControl.spanEnd)) + '"'
+        : '';
+      var previewClass = spanOk(receiptControl) ? 'ff-source-control' : 'ff-source-control is-unavailable';
       return '<div role="listitem"><button type="button" class="ff-redline-card' + (selected ? ' is-selected' : '') + '"' +
         ' data-redline-id="' + esc(redlineId(redline)) + '" aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
         '<span class="ff-redline-operation" data-operation="' + esc(operation.key) + '">' + pair(operation.en, operation.zh) + '</span>' +
         '<span class="ff-redline-copy"><span class="ff-finding-overline">' + (form ? esc(form) + '<span aria-hidden="true">·</span>' : '') + disclosureSectionPair(redlineSection(redline)) +
-        (countText ? '<span aria-hidden="true">·</span><span>' + pair(countText, zhCountText) + '</span>' : '') + '</span><p>' + editPreview(redline) + '</p></span>' +
+        (countText ? '<span aria-hidden="true">·</span><span>' + pair(countText, zhCountText) + '</span>' : '') + '</span><p><span class="' + previewClass + '"' + previewAttrs +
+        (spanOk(receiptControl) ? '' : ' aria-disabled="true" data-tip-en="Source span unavailable" data-tip-zh="来源片段不可用"') + '>' +
+        editPreview(redline) + '</span></p></span>' +
         '<span class="ff-redline-open">' + pair('Inspect', '查看') + '<span aria-hidden="true">↗</span></span></button></div>';
     }).join('');
     if (state.evidenceKind === 'redline') renderCurrentEvidence();
@@ -1642,7 +1953,7 @@
         '<span class="ff-period-filed">' + esc(formatDate(period.filed || period.period_end)) + '</span></td>';
       return '<tr>' + first + METRICS.map(function (metric) {
         return '<td data-label-en="' + esc(metric.en) + '" data-label-zh="' + esc(metric.zh) + '">' +
-          esc(formatValue(period[metric.key], metric.format)) + '</td>';
+          sourceControlHtml({ kind: 'statement', compactText: formatValue(period[metric.key], metric.format) }) + '</td>';
       }).join('') + '</tr>';
     }).join('');
     ui.statements.innerHTML = '<div class="ff-table-wrap"><table class="ff-table"><thead><tr>' + header +
@@ -1690,9 +2001,9 @@
       if (pct != null) deltaText += ' · ' + formatSigned(pct, 'percent');
       return '<article class="ff-compare-card"><h3>' + pair(metric.en, metric.zh) + '</h3>' +
         '<div class="ff-compare-values"><div class="ff-compare-value"><span>' + pair('Current · ' + periodLabel(current), '本期 · ' + periodLabel(current)) +
-        '</span><strong>' + esc(formatValue(current[metric.key], metric.format)) + '</strong></div>' +
+        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(current[metric.key], metric.format) }) + '</div>' +
         '<div class="ff-compare-value"><span>' + pair('Prior · ' + periodLabel(prior), '上期 · ' + periodLabel(prior)) +
-        '</span><strong>' + esc(formatValue(prior[metric.key], metric.format)) + '</strong></div></div>' +
+        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(prior[metric.key], metric.format) }) + '</div></div>' +
         '<div class="ff-compare-delta">' + pair('Change ' + deltaText, '变化 ' + deltaText) + '</div></article>';
     }).join('');
   }
@@ -2821,6 +3132,10 @@
   }
 
   function renderCurrentEvidence() {
+    if (state.evidenceKind === 'cell' && state.cellEvidence) {
+      renderCellEvidence(state.cellEvidence);
+      return;
+    }
     if (state.evidenceKind === 'disclosure-finding') {
       renderDisclosureEvidence(selectedDisclosureFinding(), 'disclosure-finding');
       return;
@@ -2848,9 +3163,9 @@
     var values = Array.isArray(finding.values) ? finding.values : [];
     var valueRows = values.length ? values.map(function (value) {
       return '<div class="ff-value-row"><div class="ff-value-label">' + fieldPair(value, 'label', prettify(value.key)) + '</div>' +
-        '<div class="ff-value-cell"><small>' + pair('Current', '本期') + '</small><strong>' + esc(formatValue(value.current, value.format)) + '</strong></div>' +
-        '<div class="ff-value-cell"><small>' + pair('Prior', '上期') + '</small><strong>' + esc(formatValue(value.prior, value.format)) + '</strong></div>' +
-        '<div class="ff-value-cell"><small>' + pair('Change', '变化') + '</small><strong>' + esc(formatSigned(value.delta, value.format)) + '</strong></div></div>';
+        '<div class="ff-value-cell"><small>' + pair('Current', '本期') + '</small>' + sourceControlHtml(valueControlOpts(value, 'current')) + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Prior', '上期') + '</small>' + sourceControlHtml(valueControlOpts(value, 'prior')) + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Change', '变化') + '</small>' + sourceControlHtml(valueControlOpts(value, 'delta')) + '</div></div>';
     }).join('') : '<div class="ff-empty-state"><div><p>' + pair('No value bridge was supplied for this result.', '此结果未提供数值变化桥。') + '</p></div></div>';
 
     var receipts = Array.isArray(finding.evidence) ? finding.evidence : [];
@@ -3234,7 +3549,16 @@
         return;
       }
       var primary = event.target.closest('[data-open-primary-finding]');
-      if (!primary || !state.payload) return;
+      if (!primary || !state.payload) {
+        // §2.5 — a real source-control button (statement cell, compare cell,
+        // drawer value) opens the cell evidence view on its occurrence. The
+        // span variants inside card buttons fall through to the card handlers.
+        var sourceControl = event.target.closest('.ff-source-control');
+        if (sourceControl && sourceControl.tagName === 'BUTTON' && !sourceControl.disabled) {
+          activateSourceControl(sourceControl);
+        }
+        return;
+      }
       var findings = orderedFindings(company());
       if (!findings.length) {
         setTab('trace', false);
