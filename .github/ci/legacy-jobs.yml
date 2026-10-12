@@ -22946,6 +22946,7 @@ jobs:
       - "tests/test_benzinga_news.py"
       - "tests/test_build_qbus_news_universe.py"
       - "tests/test_massive_benzinga_news.py"
+      - "tests/test_qbus_cluster_policy_provenance.py"
       - "tests/test_qbus_news_annotate.py"
       - "tests/test_qbus_news_cluster.py"
       - "tests/test_qbus_news_cluster_adversarial.py"
@@ -23008,6 +23009,7 @@ jobs:
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
           tests/test_massive_benzinga_news.py
+          tests/test_qbus_cluster_policy_provenance.py
           tests/test_qbus_news_annotate.py
           tests/test_qbus_news_cluster.py
           tests/test_qbus_news_cluster_adversarial.py
