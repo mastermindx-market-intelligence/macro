@@ -566,6 +566,128 @@ def test_future_source_handoff_stays_private_and_has_no_future_metadata():
     assert restored["tp1_provisional_minute"] is None
 
 
+R0_FIXTURE = Path(__file__).parent / "fixtures/tp2_r0_private_context.synthetic.v0.json"
+R0_FIXTURE_SHA = "c9a07c51061f053d58a502db85d1ed4f2eb4ee417fc48e0fda6a397f4232185b"
+
+
+def merged_r0_body():
+    raw = R0_FIXTURE.read_bytes()
+    assert len(raw) == 2404
+    assert hashlib.sha256(raw).hexdigest() == R0_FIXTURE_SHA
+    body = json.loads(raw)
+    assert body["schema"] == "equity.pressure_response.private_context_view/v0"
+    return body
+
+
+def test_merged_r0_private_observation_is_descriptive_not_live_signal():
+    from engine.tp2_r0_research_context import project_tp2_r0_observation
+    r0 = merged_r0_body()
+    output = project_tp2_r0_observation(
+        source_context=r0, view_asof_ns=r0["decision_ns"]+1)
+    assert output["state"] == "R0_OBSERVATIONAL_CONTEXT_HOLD"
+    assert output["ticker"] == "SPY" and output["session"] == "2026-10-08:RTH"
+    assert output["source_start_ns_decimal"] == str(r0["start_ns"])
+    assert output["source_decision_ns_decimal"] == str(r0["decision_ns"])
+    assert output["observed_proxy"]["pressure_balance"] == r0["pressure_balance"]
+    assert output["observed_proxy"]["classified_notional_coverage"] == (
+        r0["classified_notional_coverage"])
+    assert output["observed_proxy"]["completed_window_midpoint_response_bps"] == "0"
+    assert output["observed_proxy"]["ask_size_recovery_state"] == (
+        "MEASURED_NBBO_SIZE_PROXY_NOT_ORDER_REPLENISHMENT")
+    assert output["observed_proxy"]["sampled_prints"] == 10
+    assert output["join_to_tp1_or_tpb"] is False
+    assert output["source_authenticated"] is False
+    assert output["rank_trade_alert_authority"] is False
+    assert output["public_delivery_allowed"] is False
+    assert output["forward_label"] is None and output["absorption_signal"] is None
+
+
+def test_merged_r0_optional_source_absent_or_future_carries_no_hidden_context():
+    from engine.tp2_r0_research_context import project_tp2_r0_observation
+    r0=merged_r0_body()
+    absent=project_tp2_r0_observation(source_context=None,view_asof_ns=100)
+    assert absent["state"] == "R0_CONTEXT_NOT_SUPPLIED"
+    assert absent["observed_proxy"] is None
+    future=project_tp2_r0_observation(
+        source_context=r0,view_asof_ns=r0["decision_ns"]-1)
+    assert future["state"] == "R0_CONTEXT_NOT_YET_KNOWABLE"
+    assert future["ticker"] is None and future["session"] is None
+    assert future["source_manifest_sha256"] is None
+    assert future["source_decision_ns_decimal"] is None
+    assert future["observed_proxy"] is None
+    assert r0["minute_observations_sha256"] not in json.dumps(future)
+
+
+@pytest.mark.parametrize("change", [
+    {"ticker":"QQQ"},
+    {"session":"2026-10-07:RTH"},
+    {"start_ns":1791466200000000001},
+    {"end_ns":1791466200000000001},
+    {"decision_ns":0},
+    {"source_mode":"FINAL_VINTAGE"},
+])
+def test_merged_r0_reader_rejects_wrong_identity_clock_or_mode(change):
+    from engine.tp2_r0_research_context import (
+        project_tp2_r0_observation, TP2R0Refusal)
+    r0=dict(merged_r0_body(),**change)
+    with pytest.raises(TP2R0Refusal):
+        project_tp2_r0_observation(
+            source_context=r0,view_asof_ns=merged_r0_body()["decision_ns"]+100,
+            expected_ticker="SPY",expected_session="2026-10-08:RTH")
+
+
+@pytest.mark.parametrize("change", [
+    {"public_delivery_allowed":True},
+    {"rank_trade_alert_authority":True},
+    {"source_authenticity":"PROVEN_VENDOR_SOURCE"},
+    {"market_capture_completeness":"PROVEN"},
+    {"forward_label":"BUY"},
+    {"absorption_signal":{"go":True}},
+    {"distribution_class":"PUBLIC"},
+    {"pressure_balance":"1.5"},
+])
+def test_merged_r0_research_gate_never_promotes_trading_authority(change):
+    from engine.tp2_r0_research_context import (
+        project_tp2_r0_observation, TP2R0Refusal)
+    r0=dict(merged_r0_body(),**change)
+    with pytest.raises(TP2R0Refusal):
+        project_tp2_r0_observation(
+            source_context=r0,view_asof_ns=merged_r0_body()["decision_ns"]+1)
+
+
+def test_merged_r0_ticker_and_session_can_be_compared_without_join():
+    from engine.tp2_r0_research_context import (
+        project_tp2_r0_observation, TP2R0Refusal)
+    r0=merged_r0_body()
+    result=project_tp2_r0_observation(
+        source_context=r0,view_asof_ns=r0["decision_ns"]+1,
+        expected_ticker="SPY",expected_session="2026-10-08:RTH")
+    assert result["join_to_tp1_or_tpb"] is False
+    with pytest.raises(TP2R0Refusal,match="source identity"):
+        project_tp2_r0_observation(source_context=r0,
+            view_asof_ns=r0["decision_ns"]+1,expected_ticker="QQQ")
+
+
+def test_merged_r0_sidecar_has_frozen_bytes_without_changing_tp2_v0():
+    from engine.tp2_r0_research_context import project_tp2_r0_observation
+    body=merged_r0_body()
+    output=project_tp2_r0_observation(
+        source_context=body,view_asof_ns=body["decision_ns"]+1,
+        expected_ticker="SPY",expected_session="2026-10-08:RTH")
+    raw=(json.dumps(output,sort_keys=True,separators=(",",":"),
+                    ensure_ascii=True,allow_nan=False)+"\n").encode()
+    path=Path(__file__).parent / "fixtures/tp2_r0_observation.synthetic.v0.json"
+    source=path.read_bytes()
+    assert len(source)==1541
+    assert hashlib.sha256(source).hexdigest()==(
+        "fe03401a908d26230aa6f8426f9dd9318249a0cdd2eac256ed93786a0a48b715")
+    assert raw==source
+    old=Path(__file__).parent / "fixtures/tp2_private_view.synthetic.v0.json"
+    assert hashlib.sha256(old.read_bytes()).hexdigest()==(
+        "8c1ee4f865566f013d7a5805fccdd11c031223d39c6d8ec6b66968cbdc35f60b")
+    assert output["join_to_tp1_or_tpb"] is False and output["forward_label"] is None
+
+
 def test_unknown_daily_rank_state_or_invalid_minute_conditioning_refused():
     observation, golden = originals()
     invalid = copy.deepcopy(golden)
