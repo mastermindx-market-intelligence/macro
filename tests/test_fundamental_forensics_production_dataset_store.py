@@ -6,6 +6,7 @@ fallback from the conditional-write law fails loudly.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -332,3 +333,95 @@ def test_material_validation_is_fail_closed() -> None:
     with pytest.raises(PDS.ProductionDatasetError):
         PDS.publish_production_dataset(store, material4)
     assert store.conditional_writes == []
+
+
+# ---------------------------------------------------------------------------
+# FIF P1: the additive statement_trees_json role (publish-time precompute)
+# ---------------------------------------------------------------------------
+
+
+def _aapl_packages_material() -> PDS.ProductionDatasetMaterial:
+    from engine.fundamental_forensics.ixbrl_raw_ledger import (
+        GOLDEN_AAPL_QUERY_ACCESSIONS,
+        parse_and_convert_golden_packages,
+    )
+    from engine.fundamental_forensics.statement_graph import load_golden_aapl_package
+
+    packages = [
+        load_golden_aapl_package(ROOT, accession=accession)
+        for accession in GOLDEN_AAPL_QUERY_ACCESSIONS
+    ]
+    ledger, filing_metadata, _report = parse_and_convert_golden_packages(packages)
+    return PDS.ProductionDatasetMaterial(
+        binding=CanonicalEntityBinding(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            source_entity_id="0000320193",
+        ),
+        entity=EntityInput(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            name="Apple Inc.",
+            identity_basis="sec-cik",
+            source_entity_id="0000320193",
+        ),
+        ledger=ledger,
+        filing_metadata=filing_metadata,
+        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+        admitted_at=T_ADMITTED,
+        packages=tuple(packages),
+        security_id="SEC:US-XNAS-AAPL",
+        listing_key="US-XNAS-AAPL",
+    )
+
+
+def test_statement_trees_role_is_additive_digest_bound_and_required_when_packages_exist() -> None:
+    # Package-less publication: exactly the D3 six-role core, byte-for-byte
+    # the same manifest shape (and generation id space) as before P1.
+    store1, publication1 = _publish()
+    generation1 = PDS.load_generation(store1, "mmx.issuer.fip1", publication1.generation_id)
+    assert [row["role"] for row in generation1.manifest["objects"]] == list(
+        PDS.PRODUCTION_DATASET_ROLES
+    )
+    with pytest.raises(PDS.ProductionDatasetError):
+        generation1.statement_trees("0000320193-25-000079")
+
+    # Package-carrying publication: the optional role is admitted, content-
+    # addressed, and digest-bound exactly like the core roles.
+    store2 = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store2, _aapl_packages_material())
+    generation2 = PDS.load_latest_generation(store2, "ISS:US-XNAS-AAPL")
+    assert generation2 is not None
+    assert [row["role"] for row in generation2.manifest["objects"]] == [
+        *PDS.PRODUCTION_DATASET_ROLES,
+        *PDS.OPTIONAL_PRODUCTION_DATASET_ROLES,
+    ]
+    row = next(r for r in generation2.manifest["objects"] if r["role"] == "statement_trees_json")
+    payload = store2.get_bytes(row["object_key"])
+    assert payload is not None
+    assert len(payload) == row["byte_length"]
+    assert hashlib.sha256(payload).hexdigest() == row["sha256"]
+    assert row["object_key"] == PDS.production_object_key(row["sha256"])
+    trees = generation2.statement_trees("0000320193-25-000079")
+    assert len(trees["statements"]) == 3
+    with pytest.raises(PDS.ProductionDatasetError):
+        generation2.statement_trees("0000320193-99-999999")
+
+    # Damage classes: a dropped object or tampered bytes refuse the whole
+    # generation at load (A17); a tree-less payload refuses the accessor.
+    store2.drop(row["object_key"])
+    with pytest.raises(PDS.ProductionDatasetError):
+        PDS.load_latest_generation(store2, "ISS:US-XNAS-AAPL")
+
+    store3 = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store3, _aapl_packages_material())
+    generation3 = PDS.load_latest_generation(store3, "ISS:US-XNAS-AAPL")
+    assert generation3 is not None
+    row3 = next(r for r in generation3.manifest["objects"] if r["role"] == "statement_trees_json")
+    tampered = bytearray(store3.get_bytes(row3["object_key"]))
+    tampered[0] = tampered[0] ^ 0x01
+    store3.raw_put(row3["object_key"], bytes(tampered))
+    with pytest.raises(PDS.ProductionDatasetError):
+        PDS.load_latest_generation(store3, "ISS:US-XNAS-AAPL")

@@ -4460,24 +4460,30 @@ jobs:
           tests/test_fundamental_forensics_page.py
           tests/test_fundamental_forensics_private_state.py
           tests/test_fundamental_forensics_health.py
+          tests/test_fundamental_forensics_coverage_contract.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_acquisition.py
           tests/test_fundamental_forensics_disclosure_diff.py
+          tests/test_fundamental_forensics_detector_applicability.py
           tests/test_fundamental_forensics_disclosure_projection.py
           tests/test_fundamental_forensics_source_sync.py
           tests/test_fundamental_forensics_attestation.py
           tests/test_fundamental_forensics_wave2_operator.py
           tests/test_fundamental_forensics_companyfacts.py
+          tests/test_fundamental_forensics_t1_compatibility_seal.py
           tests/test_fundamental_forensics_companyfacts_ledger.py
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_raw_ledger.py
           tests/test_fundamental_forensics_periods.py
+          tests/test_fundamental_forensics_excel_export.py
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_financial_intelligence_packet.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r2.py
+          tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r3.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
+          tests/test_fundamental_forensics_admitted_filing_package.py
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_sec_document_spine.py
           tests/test_fundamental_forensics_filing_package.py
@@ -4486,15 +4492,19 @@ jobs:
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_query_api.py
           tests/test_fundamental_forensics_ixbrl_raw_ledger.py
+          tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_cross_filing_lineage.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_financial_revision_api.py
+          tests/test_fundamental_forensics_statement_grid.py
           tests/test_fundamental_forensics_financial_packet_service.py
           tests/test_fundamental_forensics_financial_packet_api.py
           tests/test_fundamental_forensics_financial_statement_service.py
+          tests/test_fundamental_forensics_specialist_pack_contract.py
           tests/test_fundamental_forensics_financial_statement_api.py
           tests/test_forensics_api.py
           tests/test_edgar_forensics_collector.py
+          tests/test_fundamental_forensics_attestation_admission.py
           tests/test_fundamental_forensics_broad_sec.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_fundamental_forensics_edgar_index.py
@@ -4505,9 +4515,12 @@ jobs:
           tests/test_intraday_flow.py
           tests/test_intraday_flow_stance.py
           tests/test_intraday_flow_w11_r1.py
+          tests/test_fundamental_forensics_p0_view_contract.py
           tests/test_intraday_flow_w11_r2.py
           tests/test_intraday_flow_w11_r3.py
           tests/test_intraday_flow_w11_r4.py
+          tests/test_fundamental_forensics_held_out_isolation.py
+          tests/test_fundamental_forensics_q0_quality_protocol.py
           tests/test_intraday_flow_w11_r5.py
           tests/test_intraday_flow_ncp_js.py
           tests/test_standout_audit.py
@@ -17025,7 +17038,7 @@ jobs:
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
       # generated-page and hostile-null pins never sit outside CI.
       - name: factor registry + measurement evidence and research implications
-        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py tests/test_measurement_verdict_preservation.py -q
+        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py tests/test_measurement_verdict_preservation.py tests/test_verdict_preservation_edge_matrix.py -q
       - name: look-ahead tripwire over engine/ + collectors/ (feature-leak guard)
         run: python -m pytest tests/test_no_lookahead.py -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
@@ -22423,6 +22436,7 @@ jobs:
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
@@ -22838,6 +22852,7 @@ jobs:
       - "tests/test_qbus_news_store.py"
       - "tests/test_qbus_news_store_api_reads.py"
       - "tests/test_qbus_news_store_clusters.py"
+      - "tests/test_qbus_news_store_lifecycle.py"
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
       - "tests/test_qbus_news_universe_diagnose.py"
@@ -22851,6 +22866,7 @@ jobs:
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
       - "tests/test_ticker_news_inventory.py"
+      - "tests/test_ticker_news_package_n_matrix.py"
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
@@ -22895,6 +22911,7 @@ jobs:
           tests/test_qbus_news_store.py
           tests/test_qbus_news_store_api_reads.py
           tests/test_qbus_news_store_clusters.py
+          tests/test_qbus_news_store_lifecycle.py
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
           tests/test_qbus_news_universe_diagnose.py
@@ -22908,6 +22925,7 @@ jobs:
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
           tests/test_ticker_news_inventory.py
+          tests/test_ticker_news_package_n_matrix.py
           tests/test_ticker_news_receipt_binding.py
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_systemd.py
