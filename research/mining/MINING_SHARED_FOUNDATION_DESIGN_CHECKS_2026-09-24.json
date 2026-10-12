@@ -1,0 +1,104 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "DESIGN_DOCUMENT_INVARIANTS_AND_SELF_REVIEW_ONLY",
+  "run_utc": "2026-09-24T06:39:59.800491+00:00",
+  "command": "python check_mining_design.py",
+  "layout": "portable",
+  "document": "2026-09-24-mining-shared-foundation-economic-dossier-design.md",
+  "document_words": 5618,
+  "document_bytes": 41539,
+  "document_sha256": "0925e376bc7504aa5e191cfc1795415ecbfe2b7128d6d2bc06ecd5d6d361530e",
+  "document_git_blob_sha1": "33d9448142d1ce922201b9938ae755b6239ea1e2",
+  "checker_git_blob_sha1": "4308870f9b2625e9603ee4a3e34bd3dfcc4291b0",
+  "checks": {
+    "forty_unique_release_obligations": true,
+    "sixteen_ordered_source_records": true,
+    "source_reference_ids_resolve": true,
+    "proposed_not_implemented": true,
+    "same_mining_operation_and_carrier": true,
+    "immutable_source_pins_present": true,
+    "two_named_positive_witnesses": true,
+    "actual_enrollment_gap_visible": true,
+    "no_financial_sign_workaround": true,
+    "same_horizon_distinction_visible": true,
+    "copper_proxy_distinction_visible": true,
+    "future_handoff_not_issued": true
+  },
+  "passed": 12,
+  "failed": 0,
+  "mutated_documents_rejected": {
+    "missing_release_obligation": true,
+    "false_implementation_status": true,
+    "missing_native_admission_gap": true
+  },
+  "self_review": [
+    {
+      "finding": "Initial checker assumed the spec was beside it, unlike the committed repository layout.",
+      "resolution": "Repository-layout FileNotFoundError reproduced after initial checker publication; lookup now prefers the canonical docs/superpowers/specs path and supports the flat portable package. Both layouts are checked before final publication.",
+      "source": "local verification utility only"
+    },
+    {
+      "finding": "Shared implementation is not only an old research packet.",
+      "resolution": "#7870 source pinned separately from #7780 plan and main; no runtime or production acceptance inferred.",
+      "source": "N01,N06,N09"
+    },
+    {
+      "finding": "Generic physical-quantity observation rejects signed financial values.",
+      "resolution": "Retain shared guard and use native financial objects; schema support does not imply issuer/metric coverage.",
+      "source": "N02,N03,N07"
+    },
+    {
+      "finding": "Annual outlook revision does not fit the later-period history call.",
+      "resolution": "Keep same-horizon native-owner qualification explicit; do not falsify period or add a local history engine.",
+      "source": "N04"
+    },
+    {
+      "finding": "Two null optional bases do not independently prove comparable economics.",
+      "resolution": "Require upstream native input qualification; recorded as a consumer precondition, not an unproven global helper defect.",
+      "source": "N04"
+    },
+    {
+      "finding": "Copper theme lacks a primary basket.",
+      "resolution": "Require theme-level shared entry; do not relabel the reshoring proxy or mint theme:mining.",
+      "source": "N10"
+    },
+    {
+      "finding": "Chosen Company witnesses are absent from the inspected production registry.",
+      "resolution": "Added concrete witness-admission inventory; no global financial-data absence claimed.",
+      "source": "N15,N16"
+    },
+    {
+      "finding": "Economic-right clauses and actual stream thresholds are not typed ready inputs.",
+      "resolution": "Keep source-attributed descriptive case; hold settlement computation until accepted owner extension and actual inputs.",
+      "source": "N02,N03,N14"
+    },
+    {
+      "finding": "Private-path classification is not live private admission or rights acceptance.",
+      "resolution": "Retain #7870 R4 and incumbent binding/rights gates; no fallback store or public payload.",
+      "source": "N01,N05,N06"
+    },
+    {
+      "finding": "#7669 body and metadata disagree about the candidate head.",
+      "resolution": "Preserve the mismatch and its source-owner gate; do not choose a head or displace custody.",
+      "source": "N12"
+    },
+    {
+      "finding": "Two first-release witnesses could be mistaken for full mission completion.",
+      "resolution": "Preserve eight-pass corpus and broader research/coverage obligations; M1 is explicitly bounded.",
+      "source": "N14"
+    }
+  ],
+  "unverified": [
+    "upstream module execution",
+    "application tests",
+    "current CI",
+    "independent review",
+    "private-source admission",
+    "witness data availability outside inspected registry",
+    "native derivation receipts",
+    "browser proof",
+    "design acceptance",
+    "Fable dispatch",
+    "implementation or investment validation"
+  ]
+}
