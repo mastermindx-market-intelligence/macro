@@ -505,24 +505,27 @@ def test_capture_measure_control_us_refuses_pending_side_before_transport():
     assert calls == []
 
 def _minimal_event_us_measurement(admission):
-    return {
+    return capture._seal_receipt({
         "schema": capture.SCHEMA_US,
+        "admission_sha256": capture._admission_digest(admission),
         "event_id": admission["event_id"],
         "available_at": admission["available_at"],
         "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
-    }
+    })
 
 
 def _minimal_control_us_measurement(admission, controls, side):
     selected = controls[side]
-    return {
+    return capture._seal_receipt({
         "schema": capture.SCHEMA_CONTROL_US,
+        "admission_sha256": capture._admission_digest(admission),
+        "control_selection_sha256": capture._verify_receipt(controls, "control selection"),
         "event_id": admission["event_id"],
         "control_side": side,
         "control_date": selected["control_date"],
         "control_anchor_at": selected["control_anchor_at"],
         "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
-    }
+    })
 
 
 def test_capture_hk_gate_refuses_pending_next_control():
@@ -648,24 +651,27 @@ def test_capture_hk_gate_rejects_wrong_control_clock():
             ),
         )
 
-def _full_measurement(event_id, available_at, primary, challenger, *, challenger_eligible=True):
-    return {
+def _full_measurement(admission, primary, challenger, *, challenger_eligible=True):
+    return capture._seal_receipt({
         "schema": capture.SCHEMA_US,
-        "event_id": event_id,
-        "available_at": available_at,
+        "admission_sha256": capture._admission_digest(admission),
+        "event_id": admission["event_id"],
+        "available_at": admission["available_at"],
         "primary_v1": {"return_bps": primary, "eligible": True},
         "challenger_v1_1": {
             "return_bps": challenger,
             "eligible": challenger_eligible,
         },
         "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
-    }
+    })
 
 
 def _full_control_measurement(admission, controls, side, primary, challenger):
     selected = controls[side]
-    return {
+    return capture._seal_receipt({
         "schema": capture.SCHEMA_CONTROL_US,
+        "admission_sha256": capture._admission_digest(admission),
+        "control_selection_sha256": capture._verify_receipt(controls, "control selection"),
         "event_id": admission["event_id"],
         "control_side": side,
         "control_date": selected["control_date"],
@@ -676,7 +682,7 @@ def _full_control_measurement(admission, controls, side, primary, challenger):
             "eligible": admission["challenger_v1_1_eligible"],
         },
         "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
-    }
+    })
 
 
 def test_capture_score_hsi_refuses_pending_before_transport_call():
@@ -697,12 +703,7 @@ def test_capture_score_hsi_refuses_pending_before_transport_call():
         capture.score_hsi_outcome(
             admission,
             controls,
-            _full_measurement(
-                admission["event_id"],
-                admission["available_at"],
-                100.0,
-                50.0,
-            ),
+            _full_measurement(admission, 100.0, 50.0),
             prior_control_measurement=_full_control_measurement(
                 admission, controls, "prior", -100.0, -50.0
             ),
@@ -719,12 +720,7 @@ def test_capture_score_hsi_measures_event_and_selected_controls_after_gate():
         admitted_event_dates=["2026-09-29"],
         source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
-    event_us = _full_measurement(
-        admission["event_id"],
-        admission["available_at"],
-        -120.0,
-        -60.0,
-    )
+    event_us = _full_measurement(admission, -120.0, -60.0)
     prior_us = _full_control_measurement(
         admission, controls, "prior", 80.0, -20.0
     )
@@ -776,12 +772,7 @@ def test_capture_score_hsi_keeps_missing_anchor_as_data_gap():
         admitted_event_dates=["2026-09-29"],
         source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
-    event_us = _full_measurement(
-        admission["event_id"],
-        admission["available_at"],
-        100.0,
-        50.0,
-    )
+    event_us = _full_measurement(admission, 100.0, 50.0)
     prior_us = _full_control_measurement(
         admission, controls, "prior", 80.0, 20.0
     )
@@ -817,12 +808,7 @@ def test_capture_score_hsi_rejects_conflicting_duplicate_ohlc():
         admitted_event_dates=["2026-09-29"],
         source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
-    event_us = _full_measurement(
-        admission["event_id"],
-        admission["available_at"],
-        100.0,
-        50.0,
-    )
+    event_us = _full_measurement(admission, 100.0, 50.0)
     prior_us = _full_control_measurement(
         admission, controls, "prior", 80.0, 20.0
     )
@@ -1265,3 +1251,134 @@ def test_capture_epoch2_rejects_mutated_us_receipt_before_hsi_transport(target):
             transport=hsi_transport,
         )
     assert hsi_calls == []
+
+
+
+def _legacy_integrity_chain():
+    admission = _capture_admission("2026-09-26T21:41:02Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-24", "2026-09-25", "2026-09-28"],
+        admitted_event_dates=["2026-09-26"],
+        source_coverage_complete_through="2026-09-29T00:00:00Z",
+    )
+    calls = []
+    bases = {"SPY": 100.0, "QQQ": 200.0, "SMH": 300.0}
+
+    def vendor_transport(path, params):
+        symbol = path.split("/")[4]
+        day = path.rsplit("/", 1)[-1]
+        calls.append((symbol, day))
+        base = bases[symbol]
+        return [
+            _vendor_row(f"{day}T21:46:02Z", base),
+            _vendor_row(f"{day}T22:16:02Z", base * 1.01),
+        ]
+
+    event_us = capture.measure_us_response(admission, transport=vendor_transport)
+    prior_us = capture.measure_control_us_response(
+        admission, controls, side="prior", transport=vendor_transport
+    )
+    next_us = capture.measure_control_us_response(
+        admission, controls, side="next", transport=vendor_transport
+    )
+    return admission, controls, event_us, prior_us, next_us, calls, vendor_transport
+
+
+def test_capture_legacy_rejects_mutated_control_selection_before_transport():
+    admission, controls, *_ = _legacy_integrity_chain()
+    tampered = copy.deepcopy(controls)
+    tampered["prior"]["control_date"] = "2026-09-24"
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="control selection digest mismatch"):
+        capture.measure_control_us_response(admission, tampered, side="prior", transport=transport)
+    assert calls == []
+
+
+@pytest.mark.parametrize("target", ["event", "prior_control", "next_control"])
+def test_capture_legacy_rejects_mutated_us_receipts_before_hsi_transport(target):
+    admission, controls, event_us, prior_us, next_us, *_ = _legacy_integrity_chain()
+    event_us = copy.deepcopy(event_us)
+    prior_us = copy.deepcopy(prior_us)
+    next_us = copy.deepcopy(next_us)
+    if target == "event":
+        event_us["primary_v1"]["return_bps"] = -9999.0
+        pattern = "event U.S. measurement digest mismatch"
+    elif target == "prior_control":
+        prior_us["primary_v1"]["return_bps"] = -9999.0
+        pattern = "prior control measurement digest mismatch"
+    else:
+        next_us["primary_v1"]["return_bps"] = -9999.0
+        pattern = "next control measurement digest mismatch"
+
+    hsi_calls = []
+
+    def hsi_transport(start, end):
+        hsi_calls.append((start, end))
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match=pattern):
+        capture.score_hsi_outcome(
+            admission,
+            controls,
+            event_us,
+            prior_control_measurement=prior_us,
+            next_control_measurement=next_us,
+            transport=hsi_transport,
+        )
+    assert hsi_calls == []
+
+
+def test_capture_legacy_rejects_same_id_cross_bound_controls_before_transport():
+    admission_a = _capture_admission("2026-09-26T21:41:02Z")
+    admission_b = capture.admit_source_event(
+        event_id=admission_a["event_id"],
+        event_time=admission_a["event_time"],
+        available_at=admission_a["available_at"],
+        observed_at=admission_a["observed_at"],
+        event_class=admission_a["event_class"],
+        source_state=admission_a["source_state"],
+        source_name=admission_a["source_name"],
+        source_ref=admission_a["source_ref"],
+        headline="Different same-id admission payload",
+    )
+    controls_a = capture.freeze_matched_controls(
+        admission_a,
+        observed_session_dates=["2026-09-24", "2026-09-25", "2026-09-28"],
+        admitted_event_dates=["2026-09-26"],
+        source_coverage_complete_through="2026-09-29T00:00:00Z",
+    )
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="control selection admission digest mismatch"):
+        capture.measure_control_us_response(admission_b, controls_a, side="prior", transport=transport)
+    assert calls == []
+
+
+def test_capture_rejects_split_view_mapping_before_transport():
+    admission = _capture_admission("2026-09-26T21:41:02Z")
+
+    class SplitViewDict(dict):
+        def get(self, key, default=None):
+            if key == "available_at":
+                return "2026-09-25T21:41:02Z"
+            return super().get(key, default)
+
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="plain JSON containers"):
+        capture.measure_us_response(SplitViewDict(admission), transport=transport)
+    assert calls == []

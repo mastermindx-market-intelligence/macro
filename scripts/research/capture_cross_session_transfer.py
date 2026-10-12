@@ -208,7 +208,25 @@ def _seal_receipt(receipt: Mapping[str, Any]) -> dict[str, Any]:
     return sealed
 
 
+def _require_plain_json(value: Any, label: str) -> None:
+    """Reject receipt objects whose runtime view can diverge from canonical JSON."""
+    if type(value) is dict:
+        for key, child in value.items():
+            if type(key) is not str:
+                raise CaptureContractError(f"{label} must use string JSON object keys")
+            _require_plain_json(child, label)
+        return
+    if type(value) is list:
+        for child in value:
+            _require_plain_json(child, label)
+        return
+    if value is None or type(value) in {str, int, float, bool}:
+        return
+    raise CaptureContractError(f"{label} must use plain JSON containers and scalars")
+
+
 def _verify_receipt(receipt: Mapping[str, Any], label: str) -> str:
+    _require_plain_json(receipt, label)
     claimed = str(receipt.get("sha256") or "").strip()
     if not claimed:
         raise CaptureContractError(f"{label} digest is missing")
@@ -216,11 +234,6 @@ def _verify_receipt(receipt: Mapping[str, Any], label: str) -> str:
     if claimed != actual:
         raise CaptureContractError(f"{label} digest mismatch")
     return actual
-
-
-def _integrity_chain_required(admission: Mapping[str, Any]) -> bool:
-    available = _utc(str(admission.get("available_at") or ""), "admission.available_at")
-    return available > EPOCH2_ACTIVATION_AT or admission.get("source_epoch") == "EPOCH_2"
 
 
 def _admission_digest(admission: Mapping[str, Any]) -> str:
@@ -954,12 +967,9 @@ def measure_control_us_response(
         raise CaptureContractError("control selection schema mismatch")
     if str(control_selection.get("event_id") or "") != str(admission.get("event_id") or ""):
         raise CaptureContractError("control selection event_id mismatch")
-    if _integrity_chain_required(admission):
-        controls_sha256 = _verify_receipt(control_selection, "control selection")
-        if str(control_selection.get("admission_sha256") or "") != _admission_digest(admission):
-            raise CaptureContractError("control selection admission digest mismatch")
-    else:
-        controls_sha256 = _payload_digest(_receipt_payload(control_selection))
+    controls_sha256 = _verify_receipt(control_selection, "control selection")
+    if str(control_selection.get("admission_sha256") or "") != _admission_digest(admission):
+        raise CaptureContractError("control selection admission digest mismatch")
     if admission.get("outcome_state") != "NOT_READ":
         raise CaptureContractError("control measurement is forbidden after outcome read")
     if side not in {"prior", "next"}:
@@ -1038,10 +1048,9 @@ def _validate_event_us_measurement(
         raise CaptureContractError("event U.S. measurement clock mismatch")
     if us_measurement.get("hk_outcome_state") != "NOT_READ_BY_THIS_HARNESS":
         raise CaptureContractError("event U.S. measurement does not preserve HK outcome firewall")
-    if _integrity_chain_required(admission):
-        _verify_receipt(us_measurement, "event U.S. measurement")
-        if str(us_measurement.get("admission_sha256") or "") != _admission_digest(admission):
-            raise CaptureContractError("event U.S. measurement admission digest mismatch")
+    _verify_receipt(us_measurement, "event U.S. measurement")
+    if str(us_measurement.get("admission_sha256") or "") != _admission_digest(admission):
+        raise CaptureContractError("event U.S. measurement admission digest mismatch")
 
 
 def _validate_control_receipt(
@@ -1072,13 +1081,12 @@ def _validate_control_receipt(
             raise CaptureContractError(f"{side} control measurement clock mismatch")
         if receipt.get("hk_outcome_state") != "NOT_READ_BY_THIS_HARNESS":
             raise CaptureContractError(f"{side} control measurement violates HK outcome firewall")
-        if _integrity_chain_required(admission):
-            _verify_receipt(receipt, f"{side} control measurement")
-            controls_sha256 = _verify_receipt(controls, "control selection")
-            if str(receipt.get("admission_sha256") or "") != _admission_digest(admission):
-                raise CaptureContractError(f"{side} control measurement admission digest mismatch")
-            if str(receipt.get("control_selection_sha256") or "") != controls_sha256:
-                raise CaptureContractError(f"{side} control measurement selection digest mismatch")
+        _verify_receipt(receipt, f"{side} control measurement")
+        controls_sha256 = _verify_receipt(controls, "control selection")
+        if str(receipt.get("admission_sha256") or "") != _admission_digest(admission):
+            raise CaptureContractError(f"{side} control measurement admission digest mismatch")
+        if str(receipt.get("control_selection_sha256") or "") != controls_sha256:
+            raise CaptureContractError(f"{side} control measurement selection digest mismatch")
         return {
             "status": status,
             "control_date": selected.get("control_date"),
@@ -1120,10 +1128,9 @@ def gate_hk_outcome_read(
         raise CaptureContractError("control selection does not preserve outcome firewall")
     if controls.get("state") == "PENDING":
         raise CaptureContractError("matched controls are still pending")
-    if _integrity_chain_required(admission):
-        _verify_receipt(controls, "control selection")
-        if str(controls.get("admission_sha256") or "") != _admission_digest(admission):
-            raise CaptureContractError("control selection admission digest mismatch")
+    _verify_receipt(controls, "control selection")
+    if str(controls.get("admission_sha256") or "") != _admission_digest(admission):
+        raise CaptureContractError("control selection admission digest mismatch")
 
     _validate_event_us_measurement(admission, us_measurement)
     prior = _validate_control_receipt(
