@@ -925,6 +925,28 @@ jobs:
       - name: integrated answer v0 composer
         run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py -q
 
+  c19-wp19-integrated-answer-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP19: integrated-answer SHA header + private headers on the real entitlement-denial path (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
+      - "app/integrated_answer.py"
+      - "app/forensics.py"
+      - "tests/test_integrated_answer_v0.py"
+      - "tests/test_company_theme_exposure.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
+      - name: c19-wp19-integrated-answer-pins
+        run: python -m pytest tests/test_c19_wp19_integrated_answer_entitlement_pins.py -q -p no:cacheprovider
+
   inline-js:
     if: ${{ false }}
     gate: data
@@ -3457,6 +3479,13 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/ledger_lane.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
       - "config.yml"
       - "engine/__init__.py"
       - "engine/gex_engine.py"
@@ -3474,6 +3503,15 @@ jobs:
       - "tests/fixtures/options_matrix_retention/**"
       - "tests/test_options_matrix.py"
       - "tests/test_options_matrix_retention.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/ledger_lane.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3502,6 +3540,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -3627,6 +3668,7 @@ jobs:
       - "engine/name_resolver.py"
       - "engine/name_score_grader.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -3665,6 +3707,7 @@ jobs:
       - "engine/prophet_stage_inputs.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -4055,6 +4098,8 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4436,6 +4481,8 @@ jobs:
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_sec_document_spine.py
           tests/test_fundamental_forensics_filing_package.py
+          tests/test_fundamental_forensics_production_dataset_store.py
+          tests/test_fundamental_forensics_production_provider.py
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_query_api.py
           tests/test_fundamental_forensics_ixbrl_raw_ledger.py
@@ -4454,6 +4501,7 @@ jobs:
           tests/test_context_api.py
           tests/test_finra_knowable.py
           tests/test_t0_indicator.py
+          tests/test_fundamental_forensics_disclosure_alignment_e1.py
           tests/test_intraday_flow.py
           tests/test_intraday_flow_stance.py
           tests/test_intraday_flow_w11_r1.py
@@ -6500,6 +6548,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -6740,6 +6790,10 @@ jobs:
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/marketdata/subsector_rotation.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11046,6 +11100,12 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -11168,6 +11228,7 @@ jobs:
       - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
       - tests/test_leadership_receipt.py
+      - tests/test_leadership_receipt_edge_matrix.py
       - collectors/_drip.py
       - collectors/base.py
       - collectors/breadth.py
@@ -11912,6 +11973,7 @@ jobs:
       - "engine/theme_graph/theme_state_use_reader.py"
       - "tests/test_theme_state_generation_use_reader.py"
       - "tests/test_company_theme_exposure_production_bridge.py"
+      - "tests/test_company_theme_exposure_staleness_matrix.py"
       - config/synapse.yml
       - contracts/theme_graph/capability.v1.schema.json
       - contracts/theme_graph/evidence.v1.schema.json
@@ -11973,6 +12035,14 @@ jobs:
       - lib/dataos/temporal.py
       - tests/test_theme_graph_structural_owner_binding.py
       - tests/test_theme_graph_relation_action_resolver.py
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11993,12 +12063,12 @@ jobs:
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
         run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
-        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py -k 'not live_theme_inputs' -q
+        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py tests/test_company_theme_exposure_staleness_matrix.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
         # Wired 2026-10-06 (#8519): engine/leadership_receipt.py reads
         # site/neuralwebdata/theme_state.json with a 5-day ceiling; this job owns
         # views.py + theme_graph_state, the receipt's two inputs.
-        run: TZ=UTC python -m pytest tests/test_leadership_receipt.py -q
+        run: TZ=UTC python -m pytest tests/test_leadership_receipt.py tests/test_leadership_receipt_edge_matrix.py -q
       - name: GMI finalized selection cohort contract and owner-state interface
         run: |
           set -eu
@@ -13069,6 +13139,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -13383,6 +13458,7 @@ jobs:
       - "engine/provider_health.py"
       - "engine/pullback_zone.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -13637,6 +13713,10 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
     # BioCatalyst's authenticated workbench and deployment-isolation boundary.
     # This is an intentionally bounded command, not part of a single aggregate
     # B1/B1b/B2 command: the legacy pack runner applies timeout-minutes per
@@ -13651,6 +13731,8 @@ jobs:
       - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -13763,6 +13845,11 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -13865,6 +13952,7 @@ jobs:
       - "engine/master_brain.py"
       - "engine/name_resolver.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -13877,6 +13965,7 @@ jobs:
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -14139,6 +14228,10 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
     # B1b/B2 Record History retrieval, exact-diff replay and public-safe model
     # projection.  This is deliberately independently bounded because its
     # repeated source-evidence verification is the heaviest validation family.
@@ -14157,6 +14250,8 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -14969,6 +15064,7 @@ jobs:
           tests/test_publish_r2.py
           tests/test_company_intelligence_contracts.py
           tests/test_company_intelligence_views.py
+          tests/test_c19_wp20_generation_delta.py
           tests/test_company_intelligence_health.py
           tests/test_publish_company_intelligence_r2.py
           tests/test_company_intelligence_refresh.py
@@ -15336,11 +15432,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest fastapi httpx pyyaml requests
+        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
-        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
+        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
       # WS:COMMERCIAL-ACTIVATION CA1A (2026-09-04): the event-spine acceptance
       # battery — registry-as-whitelist derivation (W2-1), envelope-v1 eid/schema/
       # meta validation and replay identity through the mounted /api/collect route,
@@ -15388,6 +15484,8 @@ jobs:
     # the repo it imports only stdlib + numpy, pytest.
     scope: exclusive
     paths:
+      - research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json
+      - research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json
       - "engine/__init__.py"
       - "engine/vol_noise_robust_realized.py"
       - "tests/test_vol_noise_robust_realized.py"
@@ -16004,6 +16102,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
@@ -16119,6 +16220,8 @@ jobs:
       - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -16410,6 +16513,11 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -16515,6 +16623,7 @@ jobs:
       - "engine/master_brain.py"
       - "engine/name_resolver.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -16527,6 +16636,7 @@ jobs:
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -16804,6 +16914,12 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -17846,6 +17962,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
       - "engine/intl_performance_records.py"
       - "engine/intl_workspace_overview.py"
       # MO-PAID-006 closure widening 2026-10-02 (#8276): engine/international_macro_dashboard.py
@@ -18770,6 +18889,11 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
     # 2026-08-15 pack-9 / run 31881072256 on PR #5750: the first semantic step
     # (1253 tests) took 223.76s; the fusion step was SIGKILL'd when this
     # 5-minute logical-job deadline expired at 300s, and the post-kill
@@ -20452,6 +20576,11 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -20555,6 +20684,7 @@ jobs:
       - "engine/master_brain.py"
       - "engine/name_resolver.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -20567,6 +20697,7 @@ jobs:
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -20842,6 +20973,12 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -21968,6 +22105,19 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "lib/live_flow_event_stage.py"
+      - "config/issuer_group_allowlist.yml"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "app/company_disclosures.py"
+      - "engine/company_intelligence/current_company_context.py"
+      - "engine/company_intelligence/current_context_runtime.py"
+      - "engine/company_intelligence/issuer_disclosure_selection.py"
+      - "engine/company_intelligence/issuer_disclosures.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -22285,6 +22435,8 @@ jobs:
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/production_datasets.py"
+      - "engine/fundamental_forensics/production_provider.py"
       - "engine/fundamental_forensics/query.py"
       - "engine/fundamental_forensics/query_service.py"
       - "engine/fundamental_forensics/query_snapshots.py"
@@ -22415,6 +22567,7 @@ jobs:
       - "engine/neuralweb/theme_state_generation.py"
       - "engine/neuralweb/theme_state_generation_reader.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/ontology_explorer.py"
@@ -22461,6 +22614,7 @@ jobs:
       - "engine/provider_health.py"
       - "engine/pullback_zone.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qbus_news_cluster.py"
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
@@ -22468,6 +22622,7 @@ jobs:
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_universe_snapshot.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -22621,12 +22776,14 @@ jobs:
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/migrate_qbus_news.py"
+      - "scripts/qbus_news_cluster_audit.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_qbus_news.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
       - "scripts/sparse_guard.py"
       - "scripts/thematic_rotation_phase0.py"
+      - "scripts/ticker_news_inventory.py"
       - "scripts/verify_ticker_news.py"
       - "scripts/worktree_sparse.py"
       - "site/basketdata/baskets.json"
@@ -22670,7 +22827,10 @@ jobs:
       - "tests/test_benzinga_news.py"
       - "tests/test_build_qbus_news_universe.py"
       - "tests/test_massive_benzinga_news.py"
+      - "tests/test_qbus_news_annotate.py"
       - "tests/test_qbus_news_cluster.py"
+      - "tests/test_qbus_news_cluster_adversarial.py"
+      - "tests/test_qbus_news_cluster_audit.py"
       - "tests/test_qbus_news_contract.py"
       - "tests/test_qbus_news_migration.py"
       - "tests/test_qbus_news_receipts.py"
@@ -22680,16 +22840,32 @@ jobs:
       - "tests/test_qbus_news_store_clusters.py"
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
+      - "tests/test_qbus_news_universe_diagnose.py"
       - "tests/test_qbus_news_universe_snapshot.py"
+      - "tests/test_qbus_news_velocity.py"
       - "tests/test_run_qbus_news.py"
+      - "tests/test_run_qbus_news_gap_replay.py"
       - "tests/test_run_qbus_news_health.py"
       - "tests/test_run_qbus_news_provider.py"
+      - "tests/test_ticker_news_annotation_api.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
+      - "tests/test_ticker_news_inventory.py"
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
       - "tests/test_verify_ticker_news.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "lib/live_flow_event_stage.py"
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22708,7 +22884,10 @@ jobs:
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
           tests/test_massive_benzinga_news.py
+          tests/test_qbus_news_annotate.py
           tests/test_qbus_news_cluster.py
+          tests/test_qbus_news_cluster_adversarial.py
+          tests/test_qbus_news_cluster_audit.py
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
@@ -22718,12 +22897,17 @@ jobs:
           tests/test_qbus_news_store_clusters.py
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
+          tests/test_qbus_news_universe_diagnose.py
           tests/test_qbus_news_universe_snapshot.py
+          tests/test_qbus_news_velocity.py
           tests/test_run_qbus_news.py
+          tests/test_run_qbus_news_gap_replay.py
           tests/test_run_qbus_news_health.py
           tests/test_run_qbus_news_provider.py
+          tests/test_ticker_news_annotation_api.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
+          tests/test_ticker_news_inventory.py
           tests/test_ticker_news_receipt_binding.py
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_systemd.py
@@ -23975,7 +24159,7 @@ jobs:
 
 
   company-relationship-candidates:
-    # Private analyst inspection and immutable retained observation contracts.
+    # Private inspection, retained observations and native issuer disclosures.
     # Curated native imports/reads, package initialization and shared pytest hooks.
     # Avoid broad runtime-input fallbacks selecting this utility for unrelated
     # homepage/strategy changes; contract-delta keeps those packing limits.
@@ -23996,12 +24180,16 @@ jobs:
       - engine/catalyst_tone.py
       - engine/company_intelligence/__init__.py
       - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/documents.py
       - engine/company_intelligence/health.py
+      - engine/company_intelligence/identity.py
+      - engine/company_intelligence/issuer_disclosures.py
       - engine/company_intelligence/pinned_relationship_candidates.py
       - engine/company_intelligence/relationship_candidates.py
       - engine/company_intelligence/relationship_observations.py
       - engine/company_intelligence/views.py
       - engine/desk_ledger.py
+      - engine/earnings_narrative/contracts.py
       - engine/earnings_release/__init__.py
       - engine/earnings_release/receipts.py
       - engine/fundamental_forensics/__init__.py
@@ -24050,10 +24238,29 @@ jobs:
       - scripts/worktree_sparse.py
       - tests/__init__.py
       - tests/conftest.py
+      - tests/test_company_disclosure_owner.py
+      - tests/test_company_disclosure_preflight.py
+      - tests/test_company_issuer_disclosures.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
       - tests/test_company_relationship_observations.py
       - tests/test_company_relationship_review_set.py
+      - research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json
+      - research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json
+      - config/delisted_symbols.yml
+      - config/issuer_group_allowlist.yml
+      - engine/company_intelligence/current_company_context.py
+      - engine/company_intelligence/current_context_runtime.py
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - engine/company_intelligence/issuer_disclosure_selection.py
+      - lib/delisted_symbols.py
+      - lib/ticker_aliases.py
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - scripts/build_security_master.py
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24062,8 +24269,8 @@ jobs:
           python-version: "3.12"
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
-      - name: File, pinned-source and immutable observation replay contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py -q
+      - name: File, pinned-source, observation and native disclosure contracts
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_preflight.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
@@ -24114,6 +24321,30 @@ jobs:
         run: pip install pytest
       - name: WP02 source diagnostic kernel contracts
         run: python -m pytest tests/test_gmi_source_diagnostic_kernel.py -q
+
+  # Guards the news-impact Phase 0 freeze contract (closed templates, evidence
+  # binding, F3 basis consts) and its owner-payload conformance (documents.py /
+  # events.py minted spans, absences and fiscal periods).
+  news-impact-contracts:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/news_impact/**"
+      - "tests/test_news_impact_contracts.py"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/contracts.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install news impact contract test dependencies
+        run: pip install pytest jsonschema pyyaml
+      - name: news impact contract freeze and owner payload conformance
+        run: python -m pytest tests/test_news_impact_contracts.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
@@ -24216,3 +24447,23 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: sni s1 residual baseline tests
         run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py -q -p no:cacheprovider
+  c19-wp11-reader-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP11 (MAS-263) acceptance pins: MRI release_forecast.v2 reader + expectation read. Hermetic: tmp_path only, no data/ reads.
+    timeout-minutes: 10
+    paths:
+      - "engine/event_window.py"
+      - "engine/validation.py"
+      - "engine/release_market_context.py"
+      - "tests/test_c19_wp11_reader_pins.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: c19-wp11-reader-pins
+        run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider

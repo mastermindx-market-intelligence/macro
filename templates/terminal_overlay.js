@@ -177,6 +177,9 @@
         /* WebKit may grow a width:100% iframe to its horizontally scrollable chart contents,
            giving the embedded Terminal a wider viewport than the phone. Constrain the
            iframe with min/max width while keeping its own scrolling functional. */
+        /* EdgeOne immutable-cache rekey (2026-10-12): the first versioned URL
+           was fetched before its bundle reached origin. The browser-proven clamp
+           is unchanged; preserve a fresh content hash for correct delivery. */
         '.mmto-frame{width:1px;min-width:100%;max-width:100%;transform:none!important;transition:none!important}',
         '#mm-terminal-overlay.is-open .mmto-frame{opacity:1!important}',
         '.mmto-toast{top:max(8px,env(safe-area-inset-top));font-size:11.5px;padding-right:10px}',

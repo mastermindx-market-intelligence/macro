@@ -3053,3 +3053,4 @@
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-10T09:35:20+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":20976,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-10T11:18:24+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":21030,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-11T03:30:20+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":24327,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-10-12T07:44:23+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":22642,"outcome":"ok"}
