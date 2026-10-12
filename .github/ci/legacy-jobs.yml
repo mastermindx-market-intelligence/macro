@@ -2683,10 +2683,14 @@ jobs:
       - "lib/nyse_calendar.py"
       - "scripts/__init__.py"
       - "scripts/build_options_matrix.py"
+      - "scripts/observe_options_matrix_publication.py"
+      - "scripts/qualify_options_matrix_older_snapshot.py"
       - "site/options_structure/examples/matrix.json"
       - "tests/fixtures/options_matrix_retention/**"
       - "tests/test_options_matrix.py"
       - "tests/test_options_matrix_retention.py"
+      - "tests/test_observe_options_matrix_publication.py"
+      - "tests/test_qualify_options_matrix_older_snapshot.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -2696,7 +2700,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py -q
 
   flow-surface:
     if: ${{ false }}
