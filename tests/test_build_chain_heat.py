@@ -696,3 +696,169 @@ def test_partial_coverage_keeps_full_source_premium_and_eligible_denominator():
     # The unmeasured member is disclosed, not inserted as a zero location.
     assert loc["at_ask_share"] != pytest.approx(0.0)
     assert loc["inside_share"] == pytest.approx(1 / 3, abs=1e-4)
+
+
+_MEASURED_LOCATION_RATIO_FIELDS = (
+    "nbbo_premium_coverage",
+    "at_ask_share",
+    "at_bid_share",
+    "inside_share",
+    "outside_share",
+    "aggression_share",
+    "aggression_balance",
+)
+
+
+def _f01_member(event_id: str, ts: str, premium: object, block: dict | None) -> dict:
+    row = {
+        "id": event_id,
+        "ts": ts,
+        "root": "SMH",
+        "right": "C",
+        "exp": "2026-09-18",
+        "strike": 530.0,
+        "premium": premium,
+        "side": "~buy",
+    }
+    if block is not None:
+        row["microstructure"] = block
+    return row
+
+
+def test_measured_accumulator_overflow_keeps_legacy_fields_and_nulls_location():
+    """Measured-sum overflow must not drop a campaign whose legacy sums are finite."""
+    events = [
+        _f01_member(
+            "a", "2026-07-08T14:00:00Z", 2_000_000.0,
+            _f01_location_block(1e308, 1e308, 1.0, 0.0, 0.0, 0.0),
+        ),
+        _f01_member(
+            "b", "2026-07-08T14:10:00Z", 2_000_000.0,
+            _f01_location_block(1e308, 1e308, 0.0, 1.0, 0.0, 0.0),
+        ),
+    ]
+    raw = aggregate_chain_heat(
+        _enrich_events(events), min_premium_mn=3.0, min_alerts=2,
+        session_date="2026-07-08",
+    )
+    assert len(raw) == 1
+    campaign = raw[0]
+    assert campaign["category_proxy"]["share"] == pytest.approx(0.80)
+    assert campaign["total_premium_mn"] == pytest.approx(4.0)
+    assert campaign["alert_count"] == 2
+    assert campaign["ask_share"] == pytest.approx(0.80)
+    loc = campaign["measured_location"]
+    assert loc["source_premium_usd"] is None
+    assert loc["nbbo_covered_premium_usd"] is None
+    for key in _MEASURED_LOCATION_RATIO_FIELDS:
+        assert loc[key] is None, key
+
+
+def test_zero_covered_and_absent_block_pin_measured_location_shapes():
+    """Pinned shapes: observed zero coverage stays; a missing block stays null."""
+    def _campaign(block: dict | None) -> dict:
+        raw = aggregate_chain_heat(
+            [_f01_member("e", "2026-07-08T14:00:00Z", 4_000_000.0, block)],
+            min_premium_mn=0.0,
+            min_alerts=1,
+            session_date="2026-07-08",
+        )
+        assert len(raw) == 1
+        return raw[0]["measured_location"]
+
+    def _zero_covered(source: float) -> dict:
+        return {
+            "schema": "options.trade_nbbo_microstructure/v1",
+            "source_premium_usd": source,
+            "nbbo_covered_premium_usd": 0.0,
+            "nbbo_premium_coverage": 0.0 if source > 0.0 else None,
+            "at_ask_share": None,
+            "at_bid_share": None,
+            "inside_share": None,
+            "outside_share": None,
+            "aggression_share": None,
+            "aggression_balance": None,
+        }
+
+    observed = _campaign(_zero_covered(1_000_000.0))
+    assert observed["source_premium_usd"] == pytest.approx(1_000_000.0)
+    assert observed["nbbo_covered_premium_usd"] == pytest.approx(0.0)
+    assert observed["nbbo_premium_coverage"] == pytest.approx(0.0)
+    for key in _MEASURED_LOCATION_RATIO_FIELDS:
+        if key == "nbbo_premium_coverage":
+            continue
+        assert observed[key] is None, key
+
+    zero_source = _campaign(_zero_covered(0.0))
+    assert zero_source["source_premium_usd"] == pytest.approx(0.0)
+    assert zero_source["nbbo_covered_premium_usd"] == pytest.approx(0.0)
+    assert zero_source["nbbo_premium_coverage"] is None
+    for key in _MEASURED_LOCATION_RATIO_FIELDS:
+        if key == "nbbo_premium_coverage":
+            continue
+        assert zero_source[key] is None, key
+
+    missing = _campaign(None)
+    assert missing["source_premium_usd"] is None
+    assert missing["nbbo_covered_premium_usd"] is None
+    for key in _MEASURED_LOCATION_RATIO_FIELDS:
+        assert missing[key] is None, key
+
+
+def test_invalid_premium_event_is_excluded_from_measured_location():
+    """A non-finite premium is not a measured member and not an unmeasured one."""
+    events = [
+        _f01_member(
+            "ok", "2026-07-08T14:00:00Z", 2_000_000.0,
+            _f01_location_block(2_000_000.0, 2_000_000.0, 1.0, 0.0, 0.0, 0.0),
+        ),
+        _f01_member("plain", "2026-07-08T14:10:00Z", 1_500_000.0, None),
+        _f01_member(
+            "bad", "2026-07-08T14:20:00Z", "nan",
+            _f01_location_block(9_000_000.0, 9_000_000.0, 0.0, 1.0, 0.0, 0.0),
+        ),
+    ]
+    raw = aggregate_chain_heat(
+        _enrich_events(events), min_premium_mn=3.0, min_alerts=2,
+        session_date="2026-07-08",
+    )
+    assert len(raw) == 1
+    campaign = raw[0]
+    assert campaign["category_proxy"]["invalid_premium_count"] == 1
+    loc = campaign["measured_location"]
+    assert loc["unmeasured_member_count"] == 1
+    assert loc["unmeasured_member_premium_usd"] == pytest.approx(1_500_000.0)
+    assert loc["source_premium_usd"] == pytest.approx(2_000_000.0)
+    assert loc["nbbo_covered_premium_usd"] == pytest.approx(2_000_000.0)
+    assert loc["at_ask_share"] == pytest.approx(1.0)
+    assert loc["at_bid_share"] == pytest.approx(0.0)
+
+
+def test_rejected_block_counts_as_unmeasured_member():
+    """One rejected block increments the unmeasured count by its event premium."""
+    event = _f01_member(
+        "rejected", "2026-07-08T14:00:00Z", 1_750_000.0,
+        {
+            "schema": "options.trade_nbbo_microstructure/v1",
+            "source_premium_usd": 9_000_000.0,
+            "nbbo_covered_premium_usd": 9_000_000.0,
+            "nbbo_premium_coverage": 1.0,
+            "at_ask_share": 0.8,
+            "at_bid_share": 0.2,
+            "inside_share": 0.5,
+            "outside_share": 0.0,
+            "aggression_share": 1.0,
+        },
+    )
+    raw = aggregate_chain_heat(
+        _enrich_events([event]),
+        min_premium_mn=0.0,
+        min_alerts=1,
+        session_date="2026-07-08",
+    )
+    assert len(raw) == 1
+    loc = raw[0]["measured_location"]
+    assert loc["unmeasured_member_count"] == 1
+    assert loc["unmeasured_member_premium_usd"] == pytest.approx(1_750_000.0)
+    assert loc["source_premium_usd"] is None
+    assert loc["nbbo_covered_premium_usd"] is None

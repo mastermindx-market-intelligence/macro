@@ -1767,7 +1767,18 @@ class TestCurrentMainSourceClockNamespace:
         restated = dict(rich)
         restated["available_at"] = "2026-07-13T18:00:03Z"
         restated["decision_at"] = "2026-07-13T18:00:02Z"
-        restated["microstructure"] = dict(rich["microstructure"], at_ask_share=0.99)
+        # Valid identity (sum 1, aggression = ask + bid, balance = ask - bid).
+        # Overwriting only at_ask_share sums to 1.44 and the predicate rejects
+        # it, so the stored 0.55 would no longer prove keep-first.
+        restated["microstructure"] = dict(
+            rich["microstructure"],
+            at_ask_share=0.99,
+            at_bid_share=0.01,
+            inside_share=0.0,
+            outside_share=0.0,
+            aggression_share=1.0,
+            aggression_balance=0.98,
+        )
         existing_ids = clock_owner._load_existing_ids(path)
         new_rows = [
             r for r in clock_owner._events_from_blob(_make_feed_blob([restated]))
@@ -1880,7 +1891,18 @@ def _f01_consistent_location_block(**extra) -> dict:
     return block
 
 
-@pytest.mark.parametrize("legacy_key", ["ask_share", "category_proxy_share", "side"])
+@pytest.mark.parametrize(
+    "legacy_key",
+    [
+        "ask_share",
+        "bid_share",
+        "category_proxy_share",
+        "category_proxy",
+        "side",
+        "soft_side",
+        "lean",
+    ],
+)
 def test_measured_block_with_legacy_categorical_key_is_rejected(legacy_key):
     """A v1 block that also carries a legacy category key is not measured."""
     from collectors.flow_signals import _events_from_blob
@@ -1955,3 +1977,106 @@ def test_genuine_coalesced_block_passes_rejection_predicate():
         assert flat["at_ask_share"] == block["at_ask_share"]
         assert flat["inside_share"] == block["inside_share"]
         assert flat["at_ask_share"] is not None
+
+
+def test_aggression_only_block_without_location_shares_is_rejected():
+    """Coverage without location shares cannot carry a numeric aggression."""
+    from collectors.flow_signals import (
+        _events_from_blob,
+        measured_block_rejection_reason,
+    )
+    from engine.options_structure import aggregate_chain_heat
+
+    coverage = {
+        "schema": MICRO_SCHEMA,
+        "source_premium_usd": 1_000_000.0,
+        "nbbo_covered_premium_usd": 1_000_000.0,
+        "nbbo_premium_coverage": 1.0,
+    }
+    block = dict(coverage, aggression_share=0.7)
+    assert measured_block_rejection_reason(block) == "LOCATION_IDENTITY"
+    balance_only = dict(coverage, aggression_balance=0.4)
+    assert measured_block_rejection_reason(balance_only) == "LOCATION_IDENTITY"
+
+    row = _events_from_blob(
+        _make_feed_blob([_make_event("evtAggOnly", microstructure=block)])
+    )[0]
+    for column in MEASURED_COLS:
+        if column == "vol_gt_oi_ratio":
+            continue
+        assert row[column] is None, column
+
+    event = _make_event(
+        "evtAggCampaign",
+        premium=2_000_000.0,
+        root="SMH",
+        exp="2026-09-18",
+        strike=530.0,
+        microstructure=block,
+    )
+    raw = aggregate_chain_heat(
+        [event], min_premium_mn=0.0, min_alerts=1, session_date="2026-07-08",
+    )
+    assert len(raw) == 1
+    loc = raw[0]["measured_location"]
+    assert loc["aggression_share"] is None
+    assert loc["unmeasured_member_count"] == 1
+
+
+def test_aggression_balance_must_match_ask_minus_bid():
+    """A present balance that is not at_ask - at_bid is not a measurement."""
+    from collectors.flow_signals import measured_block_rejection_reason
+
+    block = _f01_consistent_location_block(aggression_balance=0.9)
+    assert block["at_ask_share"] == 0.6
+    assert block["at_bid_share"] == 0.2
+    assert measured_block_rejection_reason(block) == "LOCATION_IDENTITY"
+
+
+def test_location_shares_outside_unit_interval_are_rejected():
+    """Shares outside [0, 1] are rejected even when they sum to 1."""
+    from collectors.flow_signals import measured_block_rejection_reason
+
+    block = {
+        "schema": MICRO_SCHEMA,
+        "at_ask_share": 1.2,
+        "at_bid_share": -0.2,
+        "inside_share": 0.0,
+        "outside_share": 0.0,
+        "aggression_share": 1.0,
+        "aggression_balance": 1.4,
+    }
+    assert measured_block_rejection_reason(block) == "LOCATION_IDENTITY"
+
+
+def test_aggression_share_must_equal_at_ask_plus_at_bid():
+    """A valid share sum does not excuse an aggression that is not the edge sum."""
+    from collectors.flow_signals import measured_block_rejection_reason
+
+    block = _f01_consistent_location_block(aggression_share=0.5)
+    assert (
+        block["at_ask_share"] + block["at_bid_share"]
+        + block["inside_share"] + block["outside_share"]
+    ) == pytest.approx(1.0)
+    assert measured_block_rejection_reason(block) == "LOCATION_IDENTITY"
+
+
+@pytest.mark.parametrize(
+    ("source", "covered", "coverage"),
+    [
+        (100.0, 150.0, None),
+        (100.0, -1.0, 0.5),
+        (100.0, 50.0, 1.2),
+    ],
+    ids=["covered_exceeds_source", "negative_covered", "coverage_above_one"],
+)
+def test_coverage_bounds_reject_out_of_range_covered_premium(source, covered, coverage):
+    """Covered above source, a negative covered premium, and coverage above 1."""
+    from collectors.flow_signals import measured_block_rejection_reason
+
+    block = _f01_consistent_location_block(
+        source_premium_usd=source,
+        nbbo_covered_premium_usd=covered,
+        nbbo_premium_coverage=coverage,
+    )
+    assert measured_block_rejection_reason(block) == "COVERAGE_BOUNDS"
