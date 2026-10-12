@@ -1,3 +1,5 @@
+> **Superseded visual direction — 2026-10-12.** The human rejected this presentation and requested a substantial flagship card redesign. These captures are retained for source-composition and interaction compatibility only. Their technical success does not accept this design or authorize release. The new editable R6 direction is in [Paper, page p-9-0](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-9-0); it remains a draft awaiting critique and is not implemented here. The historical review brief follows for provenance.
+
 # P1a composed presentation review contract
 
 This packet describes the existing original P1a proposal now composed with current source. It is pending qualified visual judgment; schema validation and functional browser success are separate evidence.

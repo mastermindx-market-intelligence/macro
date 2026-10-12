@@ -675,17 +675,18 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  Finish the bounded CI history-consumer contract repair on original P1a8444 after
-  CI38218464277 failed its registry assertion for stock-dashboard-first-frame.
-  Canonical final semantic/plan evidence and actual tested-merge parents are consumed;
-  both dashboard proof steps passed, but whole CI remains failed. Parent reproduction
-  is red and the narrow test repair passes19affected cases; the scoped independent technical review is accepted.
-  Preserve the reviewed pinned-base setup and all existing parity assertions. The human
+  Publish the verified fifth composition of original P1a8444 with pinned main4930e8ba,
+  preserving both CI dependency sets and reviewed source bytes. The retained native US
+  output has received the canonical asset-versioning pass; HK/CA each pass96browser cases,
+  all48images bind current assets and are byte-identical to prior24593403. Stable planner2,
+  final live-client/shipped12 and receipt5 cases pass; scoped technical review is accepted.
+  The old CI38218464277 failure and subsequent reviewed history-consumer repair remain
+  consumed evidence; discover only new exact-head runs after publication. The human
   rejected the previous gallery and requested a flagship card redesign, superseding its
-  brief approval. Eight new editable Paper R6 boards and a working local prototype are
-  ready for critique; no new visual acceptance, production implementation or merge.
-  Publish the reviewed CI repair normally, then use the sole observer for new exact-head
-  gates. Closed DailyBrief/object/B03 evidence remains consumed.
+  brief approval. Eight editable Paper R6 boards and the local prototype await critique.
+  No redesign acceptance or production integration is inferred. Release remains gated by
+  the accepted design, actual implementation, exact-head semantic CI and required product
+  journeys. Closed DailyBrief/object/B03 evidence stays consumed.
 
 ---
 

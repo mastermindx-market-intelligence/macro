@@ -184,6 +184,33 @@ verified:
     acceptance confirmed. Static supplied-file review only, hashes are parent bindings,
     no independent pytest. The literal guard is not a general shell parser; the review's
     broader whitespace-obfuscation claim is not accepted. Parent19-case execution is separate.
+- claim: The fifth ordinary composition preserves both parent dependency declarations and all reviewed source bytes.
+  command: git merge --no-commit --no-ff 4930e8bae7abf5d55ac7c5867e22d98ee22309c4; p1a-fifth-manifest-union-proof-20261012.json; p1a-fifth-source-preservation-20261012.json
+  result: Original merge77497 settled with four conflicts. Ten CI conflict hunks retain the union of both
+    parents paths; every non-path job definition equals a parent. The six reviewed application files
+    and the reviewed history-consumer test are exact; eighteen upstream source/asset/test paths are exact
+    pinned-main bytes. Historical capture target/pages/baseline and both extension histories are preserved.
+- claim: Final fifth-composition browser evidence binds current loaded assets and the actual retained native output.
+  command: Retained-VM _compose_stocks_mode; scoped scripts.optimize_assets.make_optimizer; sequential canonical HK/CA verifier and corrected anonymous normal-surface harness.
+  result: HK96cases and CA96cases passed; sixteen watch-only and thirty-two normal images bind actual
+    loaded assets. All48images are byte-identical to published24593403. The canonical post-render optimizer
+    versions the US live-event script and preserves async; final US HTML SHA8bb36138a3ba4064409f9d577b8badd352d3bd3b2ce1826a19dccffae3180c5d.
+    Protected payload and native VM/config hashes remain unchanged. This is retained-generation/local
+    presentation proof, not a fresh clock, full-config build, accepted redesign or production evidence.
+- claim: The fifth composition passes discriminating planner, asset/access and receipt checks.
+  command: pytest two real-manifest planner cases; affected live-client/stockdata/overlay/history-consumer suites; final live-client and shipped-access cases; five fixture/browser/manifest receipt cases.
+  result: Stable planner2passed142.32seconds with the data guard enabled and output hashes unchanged.
+    Initial planner assertions both passed but the session guard rejected the concurrent HTML staging
+    transition; that rc1 remains retained. The affected client suite first had57pass/1fail because the
+    generated US page had not received canonical asset versioning. After that existing post-render pass,
+    all12live-client/shipped checks passed (87intentional deselections); other51client/contract checks
+    remain passed. Final5receipt checks passed (111intentional deselections). No source/assertion/guard waiver.
+- claim: The fifth incoming script-loading delta has one accepted independent technical review.
+  command: fabric_task.py result/accept/status prophet-p1a-fifth-composition-review-01a11e89
+  result: Original-root/parent MiniMax/Ubuntu0 static supplied-byte review accepted once. Stock-script
+    guards retain stock inclusion/order and the release-publications readyState startup supports async.
+    Parent adjudication rejects overbroad dedupe, polling, styling, authorship and unperformed browser
+    claims. No independent pytest, screenshot or hash recomputation is claimed by the review.
 unverified:
 - claim: Qualified visual adjudication, hosted exact-head CI, source release and authenticated four-market
     production acceptance.
@@ -206,14 +233,15 @@ unresolved:
 - HK/China adoption depends on actual accepted shared P1a release; Canada native Plan remains unavailable
   until its real owner exists.
 next_actions:
-- The original retained prophet-p1a-fetch-consumer-review-01a11e89 result is accepted for
-  its exact one-file static scope. Commit and publish the verified repair on the original
-  branch. No worker replay. Old CI38218464277 and every prior artifact/gate remain consumed.
+- Publish this verified fifth composition normally on original PR8444 and consume only newly admitted
+  exact-head CI/gates. All old CI38218464277 artifacts and gates, prior review results and Git executions
+  are consumed; no replay or duplicate worker. The original fetch failed but all requested objects were
+  independently verified readable before the ordinary merge; do not relabel that fetch successful.
 - The human rejected the prior gallery after its brief approval. Use the new eight-board
   Paper page p-9-0 in Prophet01M3NT5Y3G5HTJHVR0K5W2MDJM and local R6 prototype for critique;
   do not infer visual acceptance or merge from the superseded answer. Page redesign is later scope.
-- Continue new exact-head CI and normal release only after all applicable source and visual
-  gates, then actual owner-native integration and authenticated journeys.
+- Implement the accepted card direction when available, qualify its actual composed source and captures,
+  then continue source release and actual owner-native integration/authenticated journeys through their gates.
 do_not_redo:
 - Do not duplicate P1a or Daily Brief carriers; human approvals already received and must not be requested
   again.
