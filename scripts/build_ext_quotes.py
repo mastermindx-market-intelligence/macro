@@ -449,7 +449,7 @@ class BoatsLastTrade:
         for symbol in symbols:
             symbol_path(symbol)
             if symbol != symbol.upper():
-                raise ValueError("exact uppercase vendor symbols required")
+                raise ValueError("uppercase display coverage keys required")
         self.symbols = tuple(symbols)
         self.capture_id = capture_id
         self.connection = 0
@@ -482,10 +482,13 @@ class BoatsLastTrade:
         if data[0] not in {"Q", "T", "B"}:
             return
         # Do not accept the research decoder's string/int coercion as identity proof.
-        symbol = data[3] if len(data) > 3 else None
-        if not isinstance(symbol, str) or not re.fullmatch(r"[A-Z0-9][A-Z0-9.:-]{0,31}", symbol):
+        vendor_symbol = data[3] if len(data) > 3 else None
+        if not isinstance(vendor_symbol, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.:-]{0,31}", vendor_symbol):
             self.quotes.clear()
             return
+        # Tiingo BOATS emits lowercase ticker strings. Map ASCII case only
+        # into the accepted display coverage; the raw/decoded identity stays exact.
+        symbol = vendor_symbol.upper()
         if symbol not in self.symbols:
             return
         try:
