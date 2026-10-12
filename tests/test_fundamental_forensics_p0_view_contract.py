@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "research" / "financial_intelligence_fabric" / "FIF_P0_VIEW_CONTRACT.json"
 DOC = ROOT / "research" / "financial_intelligence_fabric" / "FIF_P0_ANALYST_JOURNEYS.md"
@@ -224,11 +226,38 @@ def test_i18n_template_title_attribute_count():
     assert "pair(" in i18n["mechanism"]
 
 
-def test_first_viewport_measured_is_false():
+FOLD_RECEIPT = "mockups/evidence/fundamental_forensics_p2/populated/fold_measurement.json"
+
+
+def test_first_viewport_measured_records_the_fold_receipt():
     viewport = _contract()["first_viewport"]
-    assert viewport["measured"] is False
     assert viewport["desktop_1440"].strip()
     assert viewport["mobile_390"].strip()
+    measured = viewport["measured"]
+    assert isinstance(measured, dict)
+    assert measured["receipt"] == FOLD_RECEIPT
+    assert measured["desktop_1440"]["viewport_height"] == 900
+    assert measured["mobile_390"]["viewport_height"] == 844
+    assert measured["desktop_1440"]["meets_contract"] is True
+    # Recorded as measured, not as hoped: at 390 the lead brief crosses the fold.
+    assert measured["mobile_390"]["meets_contract"] is False
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_first_viewport_measured_matches_the_committed_receipt():
+    measured = _contract()["first_viewport"]["measured"]
+    cells = json.loads((ROOT / measured["receipt"]).read_text(encoding="utf-8"))
+    rest = [c for c in cells if c["force_state"] is None and c["mode"] == "populated"]
+    assert len(rest) == 8
+    for cell in rest:
+        want = measured["desktop_1440" if cell["viewport"] == "desktop" else "mobile_390"]
+        found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
+        inside = sorted(n for n, m in found.items() if m["within_first_viewport"])
+        assert inside == want["within_first_viewport"], cell["cell_id"]
+        lead = found["lead"]
+        assert lead["viewport_height"] == want["viewport_height"]
+        span = [int(round(lead["top"])), int(round(lead["bottom"]))]
+        assert span == want["lead_px"][cell["locale"]], cell["cell_id"]
 
 
 def test_doc_mentions_journeys_and_every_dom_id():
