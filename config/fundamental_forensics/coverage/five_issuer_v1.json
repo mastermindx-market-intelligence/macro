@@ -92,6 +92,24 @@
       "identity_binding_state": "golden_committed",
       "issuer_class": "industrial",
       "legal_name": "Apple Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0000320193",
+        "issuer_id": "ISS:US-XNAS-AAPL",
+        "listing_key": "US-XNAS-AAPL",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-AAPL",
+        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_state": null
+      },
+      "sic": "3571",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0000320193.json",
+        "retrieved_at": "2026-10-12T12:26:36Z",
+        "sha256": "2821703cf04e1138923243a87cc5148673feb9d3792a5b6a7747d1e1a093bf7f",
+        "sic_description": "Electronic Computers",
+        "source_url": "https://data.sec.gov/submissions/CIK0000320193.json"
+      },
       "ticker": "AAPL"
     },
     {
@@ -204,6 +222,24 @@
       "identity_binding_state": "generic_path_only",
       "issuer_class": "industrial",
       "legal_name": "Snowflake Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0001640147",
+        "issuer_id": "ISS:US-XNYS-SNOW",
+        "listing_key": "US-XNYS-SNOW",
+        "mic": "XNYS",
+        "security_id": "SEC:US-XNYS-SNOW",
+        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_state": null
+      },
+      "sic": "7372",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0001640147.json",
+        "retrieved_at": "2026-10-12T12:26:37Z",
+        "sha256": "780cbbfb3e252169b2f8b089b1f1a00e5b15e8db5cd867dd2cd2b313883645db",
+        "sic_description": "Services-Prepackaged Software",
+        "source_url": "https://data.sec.gov/submissions/CIK0001640147.json"
+      },
       "ticker": "SNOW"
     },
     {
@@ -317,6 +353,24 @@
       "identity_binding_state": "generic_path_only",
       "issuer_class": "industrial",
       "legal_name": "Caterpillar Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0000018230",
+        "issuer_id": "ISS:US-XNYS-CAT",
+        "listing_key": "US-XNYS-CAT",
+        "mic": "XNYS",
+        "security_id": "SEC:US-XNYS-CAT",
+        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_state": null
+      },
+      "sic": "3531",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0000018230.json",
+        "retrieved_at": "2026-10-12T12:26:37Z",
+        "sha256": "cd43eaa79308f1f76d62092b45c603432a39e32ae369548886e7bd923b90c278",
+        "sic_description": "Construction Machinery & Equip",
+        "source_url": "https://data.sec.gov/submissions/CIK0000018230.json"
+      },
       "ticker": "CAT"
     },
     {
@@ -429,6 +483,24 @@
       "identity_binding_state": "generic_path_only",
       "issuer_class": "bank",
       "legal_name": "BANK OF AMERICA CORP /DE/",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0000070858",
+        "issuer_id": "ISS:US-XNYS-BAC",
+        "listing_key": "US-XNYS-BAC",
+        "mic": "XNYS",
+        "security_id": "SEC:US-XNYS-BAC",
+        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_state": null
+      },
+      "sic": "6021",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0000070858.json",
+        "retrieved_at": "2026-10-12T12:26:38Z",
+        "sha256": "d2d7154a50fb16547f9cbaf7d27dbee3723cebd1e40635b7ced5ed24b45d03c3",
+        "sic_description": "National Commercial Banks",
+        "source_url": "https://data.sec.gov/submissions/CIK0000070858.json"
+      },
       "ticker": "BAC"
     },
     {
@@ -541,6 +613,24 @@
       "identity_binding_state": "generic_path_only",
       "issuer_class": "industrial",
       "legal_name": "Alphabet Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0001652044",
+        "issuer_id": "ISS:US-XNAS-GOOG",
+        "listing_key": "US-XNAS-GOOGL",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-GOOGL",
+        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_state": null
+      },
+      "sic": "7370",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0001652044.json",
+        "retrieved_at": "2026-10-12T12:26:38Z",
+        "sha256": "9434407b197d6322de4bece8ad3b69459c8d6ddf3a68526b4b22b02e8175d33c",
+        "sic_description": "Services-Computer Programming, Data Processing, Etc.",
+        "source_url": "https://data.sec.gov/submissions/CIK0001652044.json"
+      },
       "ticker": "GOOGL"
     }
   ],
