@@ -10,10 +10,13 @@ protected-evidence gate.
 from __future__ import annotations
 
 import json
+import os
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from jinja2 import Environment
 
 from engine.intelligence_workspace.context_compiler import compile_envelope
 from engine.neuralweb import brain_gateway
@@ -238,3 +241,135 @@ def test_guest_and_unknown_do_not_receive_protected_context(tmp_path: Path) -> N
     assert brain_gateway._rotation_risk_grounding_digest(
         tmp_path, user_id="unknown", now=EVAL_FRESH,
     ) == ""
+
+
+_PAGE_PANELS = (
+    ("crypto", "crypto-overview"),
+    ("vector", "vector-sectionbar"),
+)
+
+
+def test_compile_envelope_keeps_supplied_crypto_and_vector_page() -> None:
+    """A supplied ambient page stays that page. The compiler does not rewrite it to dashboard."""
+    now = datetime(2026, 10, 12, 4, 20, tzinfo=timezone.utc)
+    captured = "2026-10-12T04:19:00Z"
+    for page, panel in _PAGE_PANELS:
+        block = compile_envelope(
+            "what is on this page",
+            {"ai_context": {
+                "schema": "ai_context_client.v1",
+                "origin_id": page + "-page",
+                "context_revision": 1,
+                "captured_at": captured,
+                "pinned": [],
+                "active": None,
+                "ambient": {"symbol": None, "timeframe": None, "page": page, "panel": panel},
+            }},
+            now=now,
+            request_id="t20w-" + page,
+        )
+        ambient = block["ambient_widget_context"]
+        assert ambient["page"] == page
+        assert ambient["panel"] == panel
+        assert ambient["page"] != "dashboard"
+        assert ambient["panel"] != "dashboard"
+        assert block["context_flags"]["malformed"] is False
+        assert block["context_flags"]["echo_sanitized"] is False
+
+        legacy = compile_envelope(
+            "what is on this page",
+            {"page": page, "panel": panel},
+            now=now,
+            request_id="t20w-legacy-" + page,
+        )
+        legacy_ambient = legacy["ambient_widget_context"]
+        assert legacy_ambient["page"] == page
+        assert legacy_ambient["panel"] == panel
+        assert legacy_ambient["page"] != "dashboard"
+
+
+def test_compile_envelope_does_not_invent_dashboard_for_a_missing_page() -> None:
+    now = datetime(2026, 10, 12, 4, 20, tzinfo=timezone.utc)
+    envelope = compile_envelope(
+        "what is on this page", {}, now=now, request_id="t20w-absent",
+    )
+    assert envelope["ambient_widget_context"]["page"] is None
+    assert envelope["ambient_widget_context"]["panel"] is None
+
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def _page_template(name: str) -> str:
+    override = os.environ.get("T20W_TEMPLATE_DIR")
+    directory = Path(override) if override else ROOT / "templates"
+    return (directory / name).read_text(encoding="utf-8")
+
+
+def _last_inline_script(source: str) -> str:
+    scripts = re.findall(r"<script>(.*?)</script>", source, flags=re.S)
+    assert scripts, "template has no inline script"
+    return scripts[-1]
+
+
+def _assert_script_is_served_verbatim(script: str) -> None:
+    """The Ask script has no jinja tags, so the served page carries these bytes."""
+    assert "{{" not in script and "{%" not in script and "{#" not in script
+    rendered = Environment().from_string(script).render()
+    assert rendered.strip() == script.strip()
+
+
+def _assert_open_carries_page(source: str, script: str, *, page: str, panel: str, arm: str) -> None:
+    assert source.index('<script src="theme.js"></script>') < source.index(f"function {arm}()")
+    assert f"function {arm}()" in script
+    assert "var cfg=window.MM_BRAIN_CFG;" in script
+    assert "if(!cfg)return;" in script
+    assert "window.MM_BRAIN_CFG=" not in script
+    assert "window.MM_BRAIN_CFG =" not in script
+    assert "cfg.getAiContext=function()" in script
+    assert "cfg.symbol" in script
+    assert "schema:'ai_context_client.v1'" in script
+    assert f"origin_id:'{page}-page'" in script
+    assert f"page:'{page}'" in script
+    assert f"panel:'{panel}'" in script
+    assert "dashboard" not in script
+    assert f"document.addEventListener('DOMContentLoaded',{arm})" in script
+    assert script.count("MMBrain.open(") == script.count("MMBrain.open()")
+    calls = [match.start() for match in re.finditer(re.escape(arm + "();"), script)]
+    open_at = script.find("window.MMBrain.open()")
+    boot_at = script.find("getElementById('mmb-boot')")
+    assert calls and open_at > 0 and boot_at > 0
+    assert any(pos < open_at for pos in calls)
+    assert any(pos < boot_at for pos in calls)
+
+
+def test_crypto_template_passes_page_into_open() -> None:
+    source = _page_template("crypto.html.j2")
+    script = _last_inline_script(source)
+    if "cfg.getAiContext=function()" not in script:
+        pytest.skip(
+            "templates/crypto.html.j2 does not carry the T20w page hook yet; "
+            "apply research/crypto_science/patches/cx-t20w-20261012__crypto.html.j2.patch"
+        )
+    _assert_script_is_served_verbatim(script)
+    assert 'id="crypto-overview"' in source
+    assert "ready();note.hidden=false;entry.focus()" in script
+    _assert_open_carries_page(
+        source, script, page="crypto", panel="crypto-overview", arm="armCryptoPage",
+    )
+
+
+def test_vector_template_passes_page_into_open() -> None:
+    source = _page_template("vector.html.j2")
+    script = _last_inline_script(source)
+    if "cfg.getAiContext=function()" not in script:
+        pytest.skip(
+            "templates/vector.html.j2 does not carry the T20w page hook yet; "
+            "apply research/crypto_science/patches/cx-t20w-20261012__vector.html.j2.patch"
+        )
+    _assert_script_is_served_verbatim(script)
+    assert 'class="vector-sectionbar"' in source
+    assert 'class="vector-brain-error" role="status"' in source
+    _assert_open_carries_page(
+        source, script, page="vector", panel="vector-sectionbar", arm="armVectorPage",
+    )

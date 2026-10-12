@@ -1,0 +1,91 @@
+--- a/templates/vector.html.j2
++++ b/templates/vector.html.j2
+@@ -348,7 +348,7 @@
+     <button class="vector-brain-entry" type="button" data-vector-brain aria-haspopup="dialog" aria-controls="mmb-panel">
+       <span aria-hidden="true">✦</span>
+       <span class="vector-brain-ready">{{ t('Ask Mastermind','询问操盘大脑') }}</span>
+-      <span class="vector-brain-error">{{ t('Mastermind unavailable','操盘大脑暂不可用') }}</span>
++      <span class="vector-brain-error" role="status">{{ t('Mastermind unavailable','操盘大脑暂不可用') }}</span>
+     </button>
+   </div>
+ 
+@@ -773,24 +773,62 @@
+     panels.forEach(function(x){x.hidden=x.getAttribute('data-strategy-panel')!==id});
+   })});
+   var brain=document.querySelector('[data-vector-brain]');
+-  if(brain){brain.addEventListener('click',function(){
+-    brain.removeAttribute('data-state');
+-    brain.setAttribute('aria-busy','true');
+-    var bootClicked=false,tries=0,timer=null;
+-    function ready(){brain.removeAttribute('aria-busy')}
+-    function openBrain(){
+-      if(window.MMBrain&&typeof window.MMBrain.open==='function'){window.MMBrain.open();ready();return true}
+-      var boot=document.getElementById('mmb-boot');
+-      if(boot&&!bootClicked){bootClicked=true;boot.click()}
+-      return false;
++  if(brain){
++    var pageArmed=false;
++    // Attach after theme.js initChatLauncher; do not replace MM_BRAIN_CFG.
++    function armVectorPage(){
++      if(pageArmed)return;
++      var cfg=window.MM_BRAIN_CFG;
++      if(!cfg)return;
++      pageArmed=true;
++      var prior=cfg.getAiContext;
++      cfg.getAiContext=function(){
++        var block=null;
++        if(typeof prior==='function'){try{block=prior()}catch(e){block=null}}
++        if(!block||typeof block!=='object'){
++          var symbol='';
++          try{symbol=(typeof cfg.symbol==='function'?cfg.symbol():'')||''}catch(e){}
++          symbol=String(symbol||'').toUpperCase().slice(0,24);
++          return {
++            schema:'ai_context_client.v1',
++            origin_id:'vector-page',
++            context_revision:0,
++            captured_at:new Date().toISOString(),
++            pinned:[],
++            active:symbol?{type:'security',id:symbol}:null,
++            ambient:{page:'vector',panel:'vector-sectionbar'}
++          };
++        }
++        var ambient=block.ambient&&typeof block.ambient==='object'?block.ambient:{};
++        ambient.page='vector';
++        if(!ambient.panel)ambient.panel='vector-sectionbar';
++        block.ambient=ambient;
++        return block;
++      };
+     }
+-    if(openBrain())return;
+-    timer=setInterval(function(){
+-      tries+=1;
+-      if(openBrain()){clearInterval(timer);return}
+-      if(tries>=60){clearInterval(timer);ready();brain.setAttribute('data-state','error')}
+-    },50);
+-  })}
++    document.addEventListener('DOMContentLoaded',armVectorPage);
++    brain.addEventListener('click',function(){
++      if(!window.MM_BRAIN_CFG){document.addEventListener('DOMContentLoaded',function(){brain.click()},{once:true});return}
++      armVectorPage();
++      brain.removeAttribute('data-state');
++      brain.setAttribute('aria-busy','true');
++      var bootClicked=false,tries=0,timer=null;
++      function ready(){brain.removeAttribute('aria-busy')}
++      function openBrain(){
++        armVectorPage();
++        if(window.MMBrain&&typeof window.MMBrain.open==='function'){window.MMBrain.open();ready();return true}
++        var boot=document.getElementById('mmb-boot');
++        if(boot&&!bootClicked){bootClicked=true;boot.click()}
++        return false;
++      }
++      if(openBrain())return;
++      timer=setInterval(function(){
++        tries+=1;
++        if(openBrain()){clearInterval(timer);return}
++        if(tries>=60){clearInterval(timer);ready();brain.setAttribute('data-state','error')}
++      },50);
++    });
++  }
+   var el=document.getElementById('vec-risk-chart'),sc=document.getElementById('vrc-score'),lab=document.getElementById('vrc-variant-label');
+   if(!el||!window.VectorChart)return;
+   var cards={};if(sc){try{cards=JSON.parse(sc.getAttribute('data-cards'))}catch(e){}}
