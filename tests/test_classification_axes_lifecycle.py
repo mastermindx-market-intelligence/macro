@@ -264,10 +264,8 @@ def test_empty_nodes_frame_is_owner_missing():
 
 
 def test_nodes_frame_missing_a_column_is_owner_degraded():
-    nodes, life = _frames(
-        {"status": "canonical", "kind": "company"},
-        lifecycle=(),
-    )
+    nodes = pd.DataFrame([{"status": "canonical"}], columns=["status"])
+    life = pd.DataFrame(columns=list(store.NODE_LIFECYCLE_COLUMNS))
     got = _read("co:us:AAPL", nodes=nodes, lifecycle=life)
     assert got["status"] == "unavailable"
     assert got["reason_code"] == "owner_degraded"
@@ -284,7 +282,8 @@ def test_lifecycle_frame_missing_a_column_is_owner_degraded():
     got = _read("co:us:AAPL", nodes=nodes, lifecycle=life)
     assert got["status"] == "unavailable"
     assert got["reason_code"] == "owner_degraded"
-    assert got["provenance"] == ["missing_column:computed_at"]
+    # The report names the first gap in NODE_LIFECYCLE_COLUMNS order.
+    assert got["provenance"] == ["missing_column:retire_date"]
 
 
 def test_empty_lifecycle_frame_is_normal_not_degraded():
