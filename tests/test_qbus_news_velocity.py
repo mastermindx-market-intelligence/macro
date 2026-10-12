@@ -660,6 +660,7 @@ def test_naive_now_is_rejected(tmp_path):
 # Spec 3.5 banned vocabulary for the flow surfaces. The legacy BANNED_WORDS
 # above stays as it is; these lists additionally cover the flow-rail copy.
 # EN words are checked as whole words, ZH terms as substrings.
+# Verbatim from WAVE_B_NEWS_FLOW_RAIL_SPEC_2026-10-12.md section 3.5 (EN 23, ZH 22); do not edit one list without the spec.
 SPEC_BANNED_WORDS_EN = (
     "unusual",
     "spike",
@@ -673,22 +674,40 @@ SPEC_BANNED_WORDS_EN = (
     "sentiment",
     "buy",
     "sell",
+    "bullish",
+    "bearish",
+    "positive",
+    "negative",
+    "beat",
+    "miss",
+    "upgrade",
+    "downgrade",
+    "hot",
+    "momentum",
     "impact",
 )
 SPEC_BANNED_WORDS_ZH = (
     "异常",
-    "急升",
+    "激增",
     "飙升",
     "警报",
+    "预警",
     "评分",
+    "分数",
     "信号",
-    "已验证",
     "验证",
     "排名",
     "置信",
     "情绪",
-    "买入",
-    "卖出",
+    "买",
+    "卖",
+    "利好",
+    "利空",
+    "看涨",
+    "看跌",
+    "超预期",
+    "不及预期",
+    "热度",
     "影响",
 )
 
