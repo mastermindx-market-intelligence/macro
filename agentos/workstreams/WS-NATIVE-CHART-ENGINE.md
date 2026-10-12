@@ -71,9 +71,11 @@ artifacts:
   - docs/chart-engine/
   - terminal/lib/chart-engine/
 next_action: >
-  Read agentos/handoffs/WS-NATIVE-CHART-ENGINE-2026-10-12.md, then confirm whether Terminal
-  PR 969 merged and whether the five wave-3 lanes (run-ids ce-m01/m02/accept-1012c on ubuntu2,
-  ce-m03/review-1012c on ubuntu1) pushed their branches.
+  Confirm Terminal PR 969 merged, then open PR2 from claude/ce-integrate2-1012 (cc140a0b3: decor,
+  ACCEPT, M01/M02/M03 tests+patches, REVIEW) with merge-on-green and native auto-merge; deploy each
+  merged master with the git-gated build. Then fan out a Grok/GLM wave for the four P1 review
+  findings (F-01..F-04) and the ACCEPT gaps, and hand-rebase the M01 -> M02 -> M03 ChartPanel
+  patches with the six-crop recapture as a separate PR.
 ---
 
 # Native Chart Engine
