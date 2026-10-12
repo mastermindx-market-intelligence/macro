@@ -5361,6 +5361,7 @@ jobs:
       - "scripts/reconcile_us_candidate_episodes.py"
       - "tests/test_us_candidate_episode.py"
       - "tests/test_us_candidate_episode_intake.py"
+      - "tests/test_prophet_today_provenance.py"
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
       - "tests/fixtures/us_candidate_episode/**"
@@ -5399,6 +5400,8 @@ jobs:
       # the context-and-grades data job only runs after merge.
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
         run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
+      - name: US Today receipt compatibility with immutable native source keys
+        run: python -m pytest tests/test_prophet_today_provenance.py -q
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
