@@ -52,6 +52,14 @@ def scan(tickers, *packets, event_id=None, as_of=NOW):
                         event_id=event_id, as_of=as_of)
 
 
+def _synthetic_source_figures(*, eps=-0.04, revenue=15034000000.0, basis="gaap"):
+    from engine.marketing.catalyst_packets import VerifiedEarningsFigure
+    return (
+        VerifiedEarningsFigure("eps_actual", eps, basis, "a" * 64, "b" * 64),
+        VerifiedEarningsFigure("rev_actual", revenue, "reported", "a" * 64, "c" * 64),
+    )
+
+
 def verified_packet(**changes):
     from dataclasses import replace
     from engine.marketing.catalyst_packets import VerifiedDocumentObservation
@@ -65,6 +73,7 @@ def verified_packet(**changes):
         first_verified_at_utc="2026-08-04T11:03:10Z",
         checked_at_utc=NOW,
         source_snapshot_version="test-snapshot-001",
+        verified_figures=_synthetic_source_figures(),
         official_published_at_utc=None,
     )
     def version_rights(sid, now):
@@ -250,6 +259,7 @@ def test_stage_a_observed_first_availability_and_nullable_publication_survive_sc
         first_verified_at_utc="2026-08-04T11:03:10Z",
         checked_at_utc=NOW,
         source_snapshot_version="test-snapshot-001",
+        verified_figures=_synthetic_source_figures(),
         official_published_at_utc=None,
     )
     def version_rights(sid, now):
@@ -428,6 +438,7 @@ def test_stage_a_event_freshness_expires_at_seven_day_acceptance_boundary():
         first_verified_at_utc="2026-08-04T11:03:10Z",
         checked_at_utc=built_at,
         source_snapshot_version="test-snapshot-001",
+        verified_figures=_synthetic_source_figures(),
         official_published_at_utc=None,
     )
     raw = dict(RAW)

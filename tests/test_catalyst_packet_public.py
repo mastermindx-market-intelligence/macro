@@ -5,6 +5,7 @@ producer shape; the rights grants are TEST DOUBLES, never a claim of a real
 public source-rights owner receipt. TST is a deliberately imaginary issuer.
 """
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from copy import deepcopy
 
 import pytest
@@ -394,8 +395,15 @@ DOC_SHA = "a" * 64
 def stage_a_receipt(*, first="2026-08-04T11:03:10Z",
                     checked=NOW, digest=DOC_SHA,
                     url=SEC_URL, published=None,
-                    pub_ref=""):
-    from engine.marketing.catalyst_packets import VerifiedDocumentObservation
+                    pub_ref="", eps=-0.04, basis="gaap",
+                    revenue=15034000000.0):
+    from engine.marketing.catalyst_packets import (
+        VerifiedDocumentObservation, VerifiedEarningsFigure)
+    # These are explicit SYNTHETIC test-double claims, not native spans.
+    facts = (
+        VerifiedEarningsFigure("eps_actual", eps, basis, digest, "b" * 64),
+        VerifiedEarningsFigure("rev_actual", revenue, "reported", digest, "c" * 64),
+    )
     return VerifiedDocumentObservation(
         source_id=SEC_ID,
         document_url=url,
@@ -405,6 +413,7 @@ def stage_a_receipt(*, first="2026-08-04T11:03:10Z",
         first_verified_at_utc=first,
         checked_at_utc=checked,
         source_snapshot_version="test-snapshot-001",
+        verified_figures=facts,
         status="verified",
         official_published_at_utc=published,
         official_publication_ref=pub_ref,
@@ -629,8 +638,8 @@ def test_real_earnings_wire_adjusted_and_gaap_bases_never_conflated():
     assert source["eps_actual"] == 0.77
     assert source["_eps_gaap"] == -0.04
     assert source["_eps_basis"] == "adjusted"
-    public = build(source, document_observation=stage_a_receipt(),
-                   rights_resolver=versioned_rights)
+    public = build(source, document_observation=stage_a_receipt(
+        eps=0.77, basis="adjusted"), rights_resolver=versioned_rights)
     assert public["public_disposition"] == "PUBLIC_READY"
     texts = " ".join(item["text"] for item in public["what_changed"])
     assert "ADJUSTED EPS of 0.77" in texts
@@ -734,7 +743,7 @@ def test_stage_a_first_appearance_before_acceptance_is_not_attested():
 
 def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
                         document_name="test8k.htm",
-                        amendment=False, linked=True):
+                        amendment=False, linked=True, altered_release=False):
     """Real private SEC archive contracts, synthetic bytes and clocks."""
     from collectors.sec_document_spine import persist_archive_document, retain_filing_manifest
     from engine.fundamental_forensics.sec_document_spine import (
@@ -769,7 +778,10 @@ def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
     doc = next(row for row in manifest["documents"]
                if row["document_name"] == document_name)
     receipt = persist_archive_document(
-        archive, doc, b"synthetic test document",
+        archive, doc, (Path(__file__).resolve().parent /
+                       "fixtures/earnings_release" /
+                       ("ex99_1_release_tampered.htm" if altered_release
+                        else "ex99_1_release.htm")).read_bytes(),
         retrieved_at=retrieved)
     stored = with_document_retrievals(
         manifest, {doc["document_id"]: receipt.to_dict()})
@@ -781,6 +793,7 @@ def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
         snapshot_at="2026-08-05T11:59:00Z", publish_latest=False)
     authority = PinnedSourceAuthority(store=local, snapshot_id=snap.snapshot_id)
     raw_event = {**event(), "source_url": doc["archive_url"],
+                 "eps_actual": 2.18, "rev_actual": 8412000000.0,
                  "filing_key": f"0000078003:{accession}",
                  "form": "8-K/A" if amendment else "8-K",
                  "acceptance_datetime": accepted,
@@ -1113,11 +1126,15 @@ def _retained_8k_amendment_chain(tmp_path, *, explicit_parent=True):
     manifests = build_filing_manifests(
         sec, ticker="PFE", recorded_at="2026-08-04T11:32:00Z")
     result = []
+    golden = (Path(__file__).resolve().parent /
+              "fixtures/earnings_release/ex99_1_release.htm").read_text(
+                  encoding="utf-8")
     for manifest, fetched, eps in zip(manifests, (
-        "2026-08-04T11:03:10Z", "2026-08-04T11:31:00Z"), (-0.04, -0.03)):
+        "2026-08-04T11:03:10Z", "2026-08-04T11:31:00Z"), (2.18, 2.19)):
         doc = manifest["documents"][0]
+        content = golden if eps == 2.18 else golden.replace("2.18", "2.19")
         receipt = persist_archive_document(
-            archive, doc, f"synthetic SEC filing {eps}".encode(),
+            archive, doc, content.encode("utf-8"),
             retrieved_at=fetched)
         version = with_document_retrievals(
             manifest, {doc["document_id"]: receipt.to_dict()})
@@ -1145,7 +1162,7 @@ def test_canonical_amendment_chain_selects_corrected_v2_scan_without_identity_sp
     for manifest, doc, receipt, manifest_key, eps in filings:
         # The filing identity comes from the validated SEC manifest.
         key = f"0000078003:{manifest['filing']['accession']}"
-        corrected = eps == -0.03
+        corrected = eps == 2.19
         raw = {**event(), "filing_key": key,
                "source_url": doc["archive_url"],
                "form": "8-K/A" if corrected else "8-K",
@@ -1153,7 +1170,7 @@ def test_canonical_amendment_chain_selects_corrected_v2_scan_without_identity_sp
                    "2026-08-04T11:30:00Z" if corrected else "2026-08-04T11:02:43Z"),
                "when": ("2026-08-04T11:31:00" if corrected
                         else "2026-08-04T11:03:10"),
-               "eps_actual": eps}
+               "eps_actual": eps, "rev_actual": 8412000000.0}
         if corrected:
             raw.update(correction_generation=1, revision_status="corrected",
                        supersedes_generation=0,
@@ -1195,7 +1212,7 @@ def test_canonical_amendment_chain_selects_corrected_v2_scan_without_identity_sp
         "SUPPORTED", "NOT_COVERED"]
     assert scan["results"][0]["correction_state"] == "CORRECTED"
     assert scan["results"][0]["sources"][0]["url"].endswith("/amended8k.htm")
-    assert "-0.03" in str(scan["results"][0]["what_changed"])
+    assert "2.19" in str(scan["results"][0]["what_changed"])
 
 
 def test_same_period_inferred_8ka_predecessor_is_not_an_official_link(tmp_path):
@@ -1245,3 +1262,115 @@ def test_multi_amendment_generation_requires_separate_root_chain_evidence(tmp_pa
     assert denied["public_disposition"] == "UNAVAILABLE"
     assert "amendment_lineage_not_attested" in denied["missing_data"]
     assert not denied["what_changed"]
+
+
+def test_v2_forged_eps_and_revenue_never_gain_source_backed_claims():
+    raw = {**event(), "eps_actual": 123.45, "rev_actual": 99999999999.0}
+    raw.pop("publication_time_utc")
+    p = build(raw, document_observation=stage_a_receipt(),
+              rights_resolver=versioned_rights)
+    assert p["schema"] == "catalyst.public_event/v2"
+    assert p["public_disposition"] == "UNAVAILABLE"
+    assert p["public_safe"] is False
+    assert p["what_changed"] == p["evidence"] == p["sources"] == []
+    assert p["source_refs"] == p["rights_receipt_ids"] == []
+    assert p["cache_expires_at_utc"] is None
+    assert "no_replayed_source_figure_eps_actual" in p["missing_data"]
+    assert "no_replayed_source_figure_rev_actual" in p["missing_data"]
+    assert "99999999999" not in str(p)
+
+
+def test_v2_wrong_basis_cannot_relabel_adjusted_eps_as_gaap():
+    raw = {**event(), "_eps_basis": "adjusted", "rev_actual": None}
+    raw.pop("publication_time_utc")
+    p = build(raw, document_observation=stage_a_receipt(),
+              rights_resolver=versioned_rights)
+    assert p["public_disposition"] == "UNAVAILABLE"
+    assert "no_replayed_source_figure_eps_actual" in p["missing_data"]
+    assert "ADJUSTED EPS" not in str(p)
+    assert p["what_changed"] == []
+
+
+def test_v2_partial_only_shows_replayed_numbers_not_unverified_eps():
+    raw = {**event(), "eps_actual": 88.88}
+    raw.pop("publication_time_utc")
+    p = build(raw, document_observation=stage_a_receipt(),
+              rights_resolver=versioned_rights)
+    assert p["public_disposition"] == "PUBLIC_READY"
+    assert [e["kind"] for e in p["evidence"]] == ["rev_actual"]
+    assert "no_replayed_source_figure_eps_actual" in p["missing_data"]
+    assert all("EPS" not in item["text"] for item in p["what_changed"])
+    assert all(item["evidence_ids"] for item in p["what_changed"])
+
+
+def test_v2_bad_native_span_or_document_digest_does_not_publish_values(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+    obs = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert obs is not None
+    assert {f.field for f in obs.verified_figures} == {"eps_actual", "rev_actual"}
+    def allow(sid, at):
+        return replace(grants()(sid, at), document_url=raw["source_url"],
+                       document_sha256=obs.document_sha256)
+    fake_span = replace(obs, verified_figures=tuple(
+        replace(f, span_sha256="invalid-span") for f in obs.verified_figures))
+    bad = build(raw, document_observation=fake_span, rights_resolver=allow)
+    assert bad["public_disposition"] == "UNAVAILABLE"
+    assert bad["sources"] == bad["what_changed"] == []
+    fake_document = replace(obs, verified_figures=tuple(
+        replace(f, document_sha256="f" * 64) for f in obs.verified_figures))
+    bad = build(raw, document_observation=fake_document, rights_resolver=allow)
+    assert bad["public_disposition"] == "UNAVAILABLE"
+    assert bad["sources"] == bad["what_changed"] == []
+
+
+def test_real_release_one_digit_change_rejects_stale_eps_but_retains_cited_revenue(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, owner, key, receipt = _pinned_sec_fixture(
+        tmp_path, altered_release=True)
+    observation = observation_from_pinned_sec_archive(
+        raw, authority=owner, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observation is not None
+    # Native Earnings Release parser did not read the stale 2.18 EPS.
+    native_eps = [f for f in observation.verified_figures
+                  if f.field == "eps_actual" and f.basis == "gaap"]
+    assert len(native_eps) == 1
+    assert native_eps[0].value != raw["eps_actual"]
+
+    def matching_rights(sid, at):
+        return replace(grants()(sid, at), document_url=raw["source_url"],
+                       document_sha256=observation.document_sha256)
+    packet = build(raw, document_observation=observation,
+                   rights_resolver=matching_rights)
+    assert packet["public_disposition"] == "PUBLIC_READY"
+    assert "no_replayed_source_figure_eps_actual" in packet["missing_data"]
+    assert [e["kind"] for e in packet["evidence"]] == ["rev_actual"]
+    assert "GAAP EPS of 2.18" not in str(packet)
+    assert all("EPS" not in claim["text"] for claim in packet["what_changed"])
+
+
+def test_real_release_tamper_and_forged_revenue_refuses_all_material_claims(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, owner, key, receipt = _pinned_sec_fixture(
+        tmp_path, altered_release=True)
+    raw["rev_actual"] = 99999999999.0
+    observation = observation_from_pinned_sec_archive(
+        raw, authority=owner, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observation is not None
+    def matching_rights(sid, at):
+        return replace(grants()(sid, at), document_url=raw["source_url"],
+                       document_sha256=observation.document_sha256)
+    packet = build(raw, document_observation=observation,
+                   rights_resolver=matching_rights)
+    assert packet["public_disposition"] == "UNAVAILABLE"
+    assert packet["sources"] == packet["source_refs"] == []
+    assert packet["what_changed"] == packet["evidence"] == []
+    assert "no_replayed_source_figure_eps_actual" in packet["missing_data"]
+    assert "no_replayed_source_figure_rev_actual" in packet["missing_data"]

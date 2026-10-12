@@ -83,6 +83,21 @@ class PublicSourceGrant:
 
 
 @dataclass(frozen=True, slots=True)
+class VerifiedEarningsFigure:
+    """Document-byte-replayed numeric evidence from the incumbent release parser.
+
+    This value is not a license, a forecast or an independent earnings estimate.
+    It must come from deterministic earnings_release.span receipts bound to the
+    already pinned document SHA-256. Test doubles are explicitly synthetic.
+    """
+    field: str
+    value: float
+    basis: str
+    document_sha256: str
+    span_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
 class VerifiedDocumentObservation:
     """Immutable successful source-owner observation; not a client claim.
 
@@ -102,6 +117,7 @@ class VerifiedDocumentObservation:
     source_snapshot_version: str = ""
     filing_form: str = ""
     amends_filing_key: str = ""
+    verified_figures: tuple[VerifiedEarningsFigure, ...] = ()
     status: str = "verified"
     official_published_at_utc: datetime | None = None
     official_publication_ref: str = ""
@@ -310,6 +326,49 @@ def observation_from_pinned_sec_archive(
         )
         if sha256(verified_bytes.content).hexdigest() != selected["content_sha256"]:
             return None
+        # Existing Earnings Release owns fact extraction and exact span replay.
+        # Our public adapter only projects native, byte-bound results; if
+        # parsing is unavailable no numeric evidence is admitted.
+        validated_figures: list[VerifiedEarningsFigure] = []
+        try:
+            from engine.earnings_release.binding import bind_release_document
+            from engine.earnings_release.receipts import replay_receipt
+            body = verified_bytes.content.decode("utf-8")
+            bound = bind_release_document(
+                cik=cik, accession=filing_key.split(":", 1)[1],
+                body=body, form=manifest["filing"]["form"],
+                filing_date=manifest["clocks"]["filed_on"],
+                acceptance_datetime=manifest["clocks"]["accepted_at"],
+                report_date=manifest["filing"]["report_date"],
+                exhibit_url=expected_url,
+            )
+            if bound.revision.source_sha256 != selected["content_sha256"]:
+                return None
+            for f in bound.figures.figures:
+                candidate: tuple[str, str, float] | None = None
+                if (f.concept == "eps_diluted" and f.units == "per_share"
+                        and f.currency == "USD" and f.scale_factor == 1.0
+                        and f.basis in ("gaap", "non_gaap")):
+                    candidate = ("eps_actual", "gaap" if f.basis == "gaap" else "adjusted", f.value)
+                elif (f.concept == "revenue" and f.currency == "USD"
+                      and f.basis == "gaap" and f.scale_factor is not None
+                      and f.scale_factor > 0):
+                    candidate = ("rev_actual", "reported", f.value * f.scale_factor)
+                if candidate is None:
+                    continue
+                replay_receipt(f.receipt, source=body)
+                field, basis, amount = candidate
+                if _finite(amount) is None:
+                    continue
+                validated_figures.append(VerifiedEarningsFigure(
+                    field=field, value=amount, basis=basis,
+                    document_sha256=selected["content_sha256"],
+                    span_sha256=f.receipt.span_sha256,
+                ))
+        except Exception:
+            # A source may be a correctly retained but unreadable attachment.
+            # It can establish document availability, not financial facts.
+            validated_figures.clear()
         lineage = manifest["lineage"]
         parent = ""
         if (manifest["filing"]["form"] == "8-K/A"
@@ -330,6 +389,7 @@ def observation_from_pinned_sec_archive(
             source_snapshot_version=authority.snapshot_id,
             filing_form=manifest["filing"]["form"] or "",
             amends_filing_key=parent,
+            verified_figures=tuple(validated_figures),
             official_published_at_utc=None,
         )
     except Exception:
@@ -683,12 +743,36 @@ def build_event_packet(
             if field == "eps_actual" and basis not in ("gaap", "adjusted"):
                 out["missing_data"].append("unqualified_eps_basis")
                 continue
-            evid = _fingerprint(f"{event_id}:{generation}:{field}")
+            matched_figure = None
+            if observation is not None:
+                qualified = observation.verified_figures
+                # The pure source adapter never self-mints numeric observations.
+                # Stage-A facts require a unique native, doc-hash-bound Earnings
+                # Release span: knowing that a document exists is insufficient.
+                matches = ([figure for figure in qualified
+                            if type(figure) is VerifiedEarningsFigure
+                            and figure.field == field and figure.basis == basis
+                            and figure.document_sha256 == observation.document_sha256
+                            and isinstance(figure.span_sha256, str)
+                            and _SHA256_HEX.fullmatch(figure.span_sha256)]
+                           if isinstance(qualified, tuple) and len(qualified) <= 24
+                           else [])
+                if (len(matches) != 1 or _finite(matches[0].value) is None
+                        or not math.isclose(value, matches[0].value,
+                                            rel_tol=1e-13, abs_tol=1e-8)):
+                    out["missing_data"].append("no_replayed_source_figure_" + field)
+                    continue
+                matched_figure = matches[0]
+            evid = _fingerprint(f"{event_id}:{generation}:{field}" +
+                                (f":{matched_figure.span_sha256}" if matched_figure else ""))
             copy = (f"{ticker} reported {basis.upper()} EPS of {_number(value)} USD/share."
                     if field == "eps_actual" else
                     f"{ticker} reported revenue of {_number(value)} USD.")
-            out["evidence"].append({"evidence_id": evid, "source_id": primary_source_id,
-                                     "kind": field, "value": value, "unit": unit, "basis": basis})
+            evidence = {"evidence_id": evid, "source_id": primary_source_id,
+                        "kind": field, "value": value, "unit": unit, "basis": basis}
+            if matched_figure:
+                evidence["replayed_span_sha256"] = matched_figure.span_sha256
+            out["evidence"].append(evidence)
             out["what_changed"].append({"text": copy, "evidence_ids": [evid]})
         out["missing_data"].append("consensus_not_independently_evidenced")
     else:
@@ -768,6 +852,14 @@ def build_event_packet(
         out["missing_data"].append("no_evidence_qualified_scenarios")
     if not out["what_changed"]:
         out["missing_data"].append("no_supported_material_facts")
+        # An unavailable packet must not accidentally carry qualified-source
+        # links, receipt IDs or relations to an unsanitized downstream consumer.
+        out["source_refs"] = []
+        out["sources"] = []
+        out["rights_receipt_ids"] = []
+        out["evidence"] = []
+        out["affected_tickers"] = []
+        out["cache_expires_at_utc"] = None
         return out
     out["public_safe"] = True
     out["public_disposition"] = "PUBLIC_READY"
