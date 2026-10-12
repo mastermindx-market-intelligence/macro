@@ -370,7 +370,11 @@ def test_nan_master_cells_become_nulls():
         "listing_key": None,
         "domicile": None,
     }
-    assert got["provenance"] == ["resolution_state:RESOLVED", "domicile:no_owner"]
+    assert got["provenance"] == [
+        "resolution_state:RESOLVED",
+        "domicile:no_owner",
+        "join_method:master_inception_exact",
+    ]
 
 
 # ---------------------------------------------------------------------------
