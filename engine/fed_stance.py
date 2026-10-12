@@ -25,16 +25,29 @@ def snapshot(latest: dict | None) -> dict:
     """Return an explicit monetary-stance descriptor from latest.json. Defensive:
     {stance: 'unknown', ...} when the inputs are missing."""
     latest = latest or {}
-    fp = latest.get("fed_path") or {}
+    raw_fp = latest.get("fed_path") or {}
+    raw_fp = raw_fp if isinstance(raw_fp, dict) else {}
+    versioned = "calculation_version" in raw_fp
+    fp = raw_fp
+    if versioned:
+        try:
+            from engine.fed_path import validated_pricing_view
+            fp = validated_pricing_view(raw_fp)
+        except Exception:  # Optional pricing cannot revive an unqualified fallback.
+            fp = {"pricing_comparison_status": "normalizer_unavailable"}
     gap = fp.get("gap") or {}
     cat = latest.get("catalyst_tone") or {}
+    cat = cat if isinstance(cat, dict) else {}
 
-    cuts12 = _num(fp.get("implied_cuts_12m"))      # negative = HIKES priced by the market
+    cuts12 = _num(fp.get("implied_cut_equivalents_12m" if versioned else "implied_cuts_12m"))
     guidance = str(cat.get("guidance_direction") or "").strip().lower()  # tightening/easing/on_hold/mixed/unknown
     gap_bp = _num(gap.get("gap_bp"))
 
     drivers_en, drivers_zh = [], []
-    if cuts12 is not None:
+    if versioned:
+        drivers_en.append(fp.get("headline_en") or "Dated pricing comparison unavailable")
+        drivers_zh.append(fp.get("headline_zh") or "有日期的定价比较不可用")
+    elif cuts12 is not None:
         if cuts12 <= -0.25:
             drivers_en.append(f"market prices ~{abs(round(cuts12,1))} hike(s) over 12m")
             drivers_zh.append(f"市场计入未来12个月约{abs(round(cuts12,1))}次加息")
@@ -57,25 +70,48 @@ def snapshot(latest: dict | None) -> dict:
     # stance: combine market-implied path + statement guidance
     hawkish = (cuts12 is not None and cuts12 <= -0.5) or guidance == "tightening"
     dovish = (cuts12 is not None and cuts12 >= 1.5) or guidance == "easing"
-    if hawkish and not dovish:
+    conflict = bool(hawkish and dovish)
+    if conflict:
+        # Keep the established stance enum closed for downstream compatibility;
+        # expose the two-sided read explicitly instead of inventing a fifth state.
+        stance, lab_en, lab_zh, color = "neutral", "Mixed / two-sided", "混合 / 双向", "muted"
+    elif hawkish:
         stance, lab_en, lab_zh, color = "hawkish", "Hawkish", "鹰派", "down"
-    elif dovish and not hawkish:
+    elif dovish:
         stance, lab_en, lab_zh, color = "dovish", "Dovish", "鸽派", "up"
     elif cuts12 is None and guidance in ("", "unknown"):
         stance, lab_en, lab_zh, color = "unknown", "Unknown", "未知", "muted"
     else:
         stance, lab_en, lab_zh, color = "neutral", "Neutral / on-hold", "中性 / 按兵", "muted"
 
-    return {
+    if versioned and stance == "neutral" and not conflict:
+        lab_en, lab_zh = "No strong stance tilt", "未形成明显立场倾向"
+    out = {
         "stance": stance, "label_en": lab_en, "label_zh": lab_zh, "color": color,
         "implied_cuts_12m": cuts12, "guidance": guidance or "unknown",
         "market_vs_fed_bp": gap_bp, "market_vs_fed_en": gap.get("lean_en"),
         "market_vs_fed_zh": gap.get("lean_zh"),
         "drivers_en": drivers_en, "drivers_zh": drivers_zh,
+        "stance_conflict": conflict, "stance_detail": "mixed" if conflict else stance,
         "is_context_only": True, "phase0": "display-only — never scored",
         "note_en": "Explicit reaction-function read off fed_path + the FOMC-statement guidance. A market price is reactive, not a forecast; display only.",
         "note_zh": "基于 fed_path 与 FOMC 声明指引的显式“反应函数”读数。市场价格是被动反应而非预测；仅供展示。",
     }
+    if versioned:
+        out.update({
+            "policy_pricing_version": raw_fp.get("calculation_version"),
+            "implied_bp_12m": fp.get("implied_bp_12m"),
+            "implied_cut_equivalents_12m": fp.get("implied_cut_equivalents_12m"),
+            "pricing_comparison_status": fp.get("pricing_comparison_status"),
+            "pricing_headline_en": fp.get("headline_en"),
+            "pricing_headline_zh": fp.get("headline_zh"),
+            "pricing_source_asof": ((fp.get("path_evidence") or {}).get("zq") or {}).get("source_asof"),
+            "policy_reference_asof": fp.get("policy_reference_asof"),
+            "pricing_validation": fp.get("consumer_validation"),
+            "pricing_change_established": False,
+            "historical_availability_qualified": False,
+        })
+    return out
 
 
 # --------------------------------------------------------------------------- #
