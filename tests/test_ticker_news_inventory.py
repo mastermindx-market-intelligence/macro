@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import os
 from pathlib import Path
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -16,6 +17,7 @@ from engine.qbus_news_contract import normalize_news
 from engine.qbus_news_receipts import load_health_receipt
 from engine.qbus_news_store import NewsStore, RoutedRevision
 from scripts import ticker_news_inventory as inventory
+from scripts.qbus_news_cluster_audit import audit_store
 
 
 UTC = timezone.utc
@@ -309,6 +311,30 @@ def test_empty_store_reports_zeros_and_no_rest_catchup(tmp_path, capsys):
         },
         "cursors": [],
         "health": {"state": "unavailable", "reason": "health_path_unset"},
+        "universe": {
+            "state": "unavailable",
+            "reason": "universe_path_unset",
+            "known_at": "2026-10-05T22:00:00Z",
+        },
+        "cluster_summary": {
+            "stories": 0,
+            "clusters": 0,
+            "multi_member_clusters": 0,
+            "size_histogram": {},
+            "audit": {
+                "state": "ran",
+                "near_misses_listed": 0,
+                "near_miss_list_limit": 50,
+                "number_mismatch_pairs": 0,
+                "number_mismatch_clusters": 0,
+            },
+            "known_at": "2026-10-05T22:00:00Z",
+        },
+        "flow_read_latency": {
+            "state": "unavailable",
+            "reason": "universe_path_unset",
+            "known_at": "2026-10-05T22:00:00Z",
+        },
         "rest_catchup_proven": False,
     }
 
@@ -796,3 +822,665 @@ def test_docs_inventory_section_describes_sidecars_and_root_privilege():
     # The ZH mirror carries the same measured facts.
     assert "32 KiB 的" in body
     assert "仅 root" in body
+
+
+# --- W11-05: store-API open pin and the universe / cluster / flow sections ---
+
+RIGHTS_FILE = REPO_ROOT / "config" / "ticker_news_rights_alpaca_benzinga.json"
+FLOW_NOW = datetime(2026, 10, 12, 15, 0, tzinfo=UTC)
+EXPIRED_NOW = datetime(2027, 10, 12, 15, 0, tzinfo=UTC)
+KNOWN_AT = "2026-10-12T15:00:00Z"
+RANKING_WORDS = (
+    "top",
+    "most",
+    "rank",
+    "ranked",
+    "best",
+    "worst",
+    "hot",
+    "leader",
+    "热门",
+    "最多",
+    "排名",
+    "领先",
+)
+
+
+def _usec(
+    sid,
+    ticker,
+    *,
+    aliases=(),
+    valid_from=None,
+    valid_to=None,
+    known_at=None,
+    base=FLOW_NOW,
+):
+    return {
+        "security_id": sid,
+        "ticker": ticker,
+        "aliases": list(aliases) or [ticker],
+        "valid_from": _stamp(valid_from or (base - timedelta(days=100))),
+        "valid_to": None if valid_to is None else _stamp(valid_to),
+        "known_at": _stamp(known_at or (base - timedelta(days=10))),
+    }
+
+
+def _usnap(securities, *, base=FLOW_NOW, **kw):
+    payload = {
+        "owner": "security_reference.sp500",
+        "revision": "sp500-2026-10-12-r1",
+        "complete": True,
+        "truncated": False,
+        "effective_at": _stamp(base - timedelta(days=1)),
+        "known_at": _stamp(base - timedelta(hours=2)),
+        "fresh_until": _stamp(base + timedelta(days=2)),
+        "securities": list(securities),
+    }
+    payload.update(kw)
+    return payload
+
+
+def _write_universe(tmp_path, securities, *, name="universe.json", base=FLOW_NOW, **kw):
+    path = tmp_path / name
+    path.write_text(json.dumps(_usnap(securities, base=base, **kw)), encoding="utf-8")
+    return path
+
+
+def _titled_payload(*, item_id, updated, title, ticker):
+    payload = _rest_payload(item_id=item_id, updated=updated, tickers=(ticker,))
+    payload["title"] = title
+    return payload
+
+
+def _commit_routed(db, routed, *, source_key="benzinga-rest"):
+    with NewsStore(db, source_key=source_key) as store:
+        return store.commit(routed, expected_cursor=None, next_cursor="c1")
+
+
+def _flow_store(tmp_path):
+    """Six active stories in the 7 days before FLOW_NOW: ZZZ 3, MMM 2, AAA 1."""
+
+    db = tmp_path / "flow.sqlite3"
+    plan = (
+        ("sec-901", "ZZZ", (9100001, 9100002, 9100003)),
+        ("sec-902", "MMM", (9100011, 9100012)),
+        ("sec-903", "AAA", (9100021,)),
+    )
+    routed = []
+    for slot, (sid, ticker, item_ids) in enumerate(plan):
+        for offset, item_id in enumerate(item_ids):
+            updated = FLOW_NOW - timedelta(hours=24 + 6 * slot + offset)
+            routed.append(
+                RoutedRevision(
+                    revision=normalize_news(
+                        _rest_payload(item_id=item_id, updated=updated, tickers=(ticker,)),
+                        transport="benzinga_rest",
+                        received_at=updated + timedelta(seconds=5),
+                    ),
+                    security_ids=(sid,),
+                    universe_revision="sp500-r1",
+                )
+            )
+    _commit_routed(db, routed)
+    return db
+
+
+def _flow_universe(tmp_path, *, name="universe.json", base=FLOW_NOW):
+    return _write_universe(
+        tmp_path,
+        [
+            _usec("sec-901", "ZZZ", base=base),
+            _usec("sec-902", "MMM", base=base),
+            _usec("sec-903", "AAA", base=base),
+        ],
+        name=name,
+        base=base,
+    )
+
+
+def _invoke_flow(capsys, database, universe, rights, *extra, now=FLOW_NOW):
+    args = ["--database", str(database), "--now", now.isoformat()]
+    if universe is not None:
+        args += ["--universe", str(universe)]
+    if rights is not None:
+        args += ["--rights", str(rights)]
+    rc = inventory.main(args + list(extra))
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    return rc, captured.out
+
+
+def test_inventory_opens_store_through_open_readonly(tmp_path, capsys, monkeypatch):
+    db = _flow_store(tmp_path)
+    calls = []
+    real = NewsStore.open_readonly.__func__
+
+    def spy(cls, *args, **kwargs):
+        calls.append((args, kwargs))
+        return real(cls, *args, **kwargs)
+
+    monkeypatch.setattr(NewsStore, "open_readonly", classmethod(spy))
+    rc, out = _invoke_flow(capsys, db, _flow_universe(tmp_path), RIGHTS_FILE)
+
+    assert rc == 0
+    assert json.loads(out)["schema"] == inventory.SCHEMA
+    assert len(calls) == 1
+    assert calls[0][1].get("source_key") == "ticker-news-inventory"
+
+
+def test_every_sqlite_connect_is_uri_read_only(tmp_path, capsys, monkeypatch):
+    db = _flow_store(tmp_path)
+    seen = []
+    real = sqlite3.connect
+
+    def wrapped(*args, **kwargs):
+        target = str(args[0]) if args else str(kwargs.get("database"))
+        assert kwargs.get("uri") is True, (target, kwargs)
+        assert "mode=ro" in target, target
+        seen.append(target)
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(sqlite3, "connect", wrapped)
+    rc, out = _invoke_flow(capsys, db, _flow_universe(tmp_path), RIGHTS_FILE)
+
+    assert rc == 0
+    # store open + cluster audit + flow reads
+    assert len(seen) >= 3
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root ignores file modes")
+def test_report_runs_against_a_0444_copy(tmp_path, capsys):
+    db = _flow_store(tmp_path)
+    universe = _flow_universe(tmp_path)
+    copy = tmp_path / "locked.sqlite3"
+    shutil.copyfile(db, copy)
+    conn = sqlite3.connect(copy)
+    try:
+        conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        conn.execute("PRAGMA journal_mode=DELETE")
+    finally:
+        conn.close()
+    before = _snapshot(copy)
+    copy.chmod(0o444)
+    tmp_path.chmod(0o555)
+    try:
+        rc, out = _invoke_flow(capsys, copy, universe, RIGHTS_FILE)
+        after = _snapshot(copy)
+        wal = (tmp_path / "locked.sqlite3-wal").exists()
+        shm = (tmp_path / "locked.sqlite3-shm").exists()
+    finally:
+        tmp_path.chmod(0o755)
+        copy.chmod(0o644)
+
+    assert rc == 0
+    assert json.loads(out)["schema"] == inventory.SCHEMA
+    assert after[0] == before[0]
+    assert after[1] == before[1]
+    assert not wal and not shm
+
+
+def test_new_sections_omit_titles_ids_and_content(tmp_path, capsys):
+    db = _flow_store(tmp_path)
+    universe = _flow_universe(tmp_path)
+    receipt_id = json.loads(RIGHTS_FILE.read_text(encoding="utf-8"))["receipt_id"]
+
+    json_rc, raw = _invoke_flow(capsys, db, universe, RIGHTS_FILE)
+    text_rc, text = _invoke_flow(capsys, db, universe, RIGHTS_FILE, "--text")
+    report = json.loads(raw)
+
+    assert json_rc == 0 and text_rc == 0
+    blob = raw + text
+    for sentinel in (TITLE, TEASER, URL, BODY):
+        assert sentinel not in blob
+    conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    try:
+        story_ids = [
+            str(row[0])
+            for row in conn.execute("SELECT story_id FROM news_cluster_members")
+        ]
+        item_ids = [
+            str(row[0])
+            for row in conn.execute("SELECT source_item_id FROM news_cluster_members")
+        ]
+        cluster_ids = [
+            str(row[0]) for row in conn.execute("SELECT cluster_id FROM news_clusters")
+        ]
+    finally:
+        conn.close()
+    for leaked in (*story_ids, *item_ids, *cluster_ids, receipt_id):
+        assert leaked not in blob, leaked
+    assert _CONTENT_KEYS.isdisjoint(_keys(report))
+
+
+def test_new_section_text_labels_are_bilingual(tmp_path, capsys):
+    db = _flow_store(tmp_path)
+    universe = _flow_universe(tmp_path)
+
+    rc, text = _invoke_flow(capsys, db, universe, RIGHTS_FILE, "--text")
+    assert rc == 0
+    blobs = [text]
+
+    skipped = inventory.build_inventory(
+        database=db,
+        health=None,
+        now=FLOW_NOW,
+        universe=universe,
+        rights=RIGHTS_FILE,
+        audit_cap=1,
+    )
+    blobs.append(inventory.format_text(skipped))
+
+    broken = tmp_path / "broken.sqlite3"
+    shutil.copyfile(db, broken)
+    conn = sqlite3.connect(broken)
+    try:
+        conn.execute("UPDATE news_clusters SET subject_ids_json='not-json'")
+        conn.commit()
+    finally:
+        conn.close()
+    failed = inventory.build_inventory(
+        database=broken,
+        health=None,
+        now=FLOW_NOW,
+        universe=universe,
+        rights=RIGHTS_FILE,
+    )
+    blobs.append(inventory.format_text(failed))
+
+    unset = inventory.build_inventory(database=db, health=None, now=FLOW_NOW)
+    blobs.append(inventory.format_text(unset))
+
+    blob = "\n".join(blobs)
+    for label in (
+        "universe / 股票池:",
+        "qualified/合格",
+        "excluded/排除",
+        "ambiguous/歧义",
+        "revision/版本",
+        "asof/截至",
+        "unavailable/不可用",
+        "clusters / 聚类:",
+        "multi-member/多成员",
+        "stories/条目",
+        "cluster audit / 聚类审计:",
+        "near misses/近似未合并",
+        "number mismatches/数字不符",
+        "pairs/对",
+        "clusters/聚类",
+        "cluster audit skipped / 聚类审计已跳过:",
+        "cap/上限",
+        "run/手动运行",
+        "cluster audit failed / 聚类审计失败:",
+        "flow reads / 流量读取:",
+        "over/共",
+        "reads/次",
+        "tickers / 抽样代码",
+    ):
+        assert label in blob, label
+
+
+def test_universe_section_counts_and_reasons(tmp_path, capsys):
+    db = _flow_store(tmp_path)
+
+    unset_rc, unset_out = _invoke_flow(capsys, db, None, None)
+    assert unset_rc == 0
+    assert json.loads(unset_out)["universe"] == {
+        "state": "unavailable",
+        "reason": "universe_path_unset",
+        "known_at": KNOWN_AT,
+    }
+
+    garbage = tmp_path / "garbage.json"
+    garbage.write_text("not-json{", encoding="utf-8")
+    bad_rc, bad_out = _invoke_flow(capsys, db, garbage, None)
+    assert bad_rc == 0
+    assert json.loads(bad_out)["universe"] == {
+        "state": "unavailable",
+        "reason": "universe_unreadable",
+        "known_at": KNOWN_AT,
+    }
+
+    universe = _write_universe(
+        tmp_path,
+        [
+            _usec("sec-901", "ZZZ", aliases=("ZZZ", "DUPX")),
+            _usec("sec-902", "MMM", aliases=("MMM", "DUPX")),
+            _usec("sec-903", "AAA", valid_to=FLOW_NOW - timedelta(days=1)),
+        ],
+        name="counts.json",
+    )
+    rc, out = _invoke_flow(capsys, db, universe, RIGHTS_FILE)
+
+    assert rc == 0
+    assert json.loads(out)["universe"] == {
+        "state": "held",
+        "revision": "sp500-2026-10-12-r1",
+        "asof": KNOWN_AT,
+        "qualified": 2,
+        "excluded": 1,
+        "ambiguous_aliases": 1,
+        "reason_codes": ["ambiguous_alias"],
+        "known_at": KNOWN_AT,
+    }
+
+
+def test_cluster_summary_equals_audit_store(tmp_path, capsys):
+    db = tmp_path / "shapes.sqlite3"
+    base = FLOW_NOW - timedelta(hours=3)
+    rows = (
+        (9200001, base, "Zed Corp opens new regional plant", "sec-921"),
+        (9200002, base + timedelta(minutes=10), "Zed Corp opens new regional plant", "sec-921"),
+        (9200003, base + timedelta(minutes=30), "Yon Ltd wins tender 7 for campus work", "sec-922"),
+    )
+    routed = [
+        RoutedRevision(
+            revision=normalize_news(
+                _titled_payload(
+                    item_id=item_id,
+                    updated=updated,
+                    title=title,
+                    ticker=title.split()[0].upper(),
+                ),
+                transport="benzinga_rest",
+                received_at=updated + timedelta(seconds=5),
+            ),
+            security_ids=(sid,),
+            universe_revision="sp500-r1",
+        )
+        for item_id, updated, title, sid in rows
+    ]
+    _commit_routed(db, routed)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute(
+            "INSERT INTO news_clusters(cluster_id, anchor_story_id, anchor_title,"
+            " anchor_observed_at, subject_ids_json, event_family)"
+            " VALUES('ev2_zero_member_fixture_0000','benzinga:0','unused',?,?,'')",
+            (_stamp(base), '["sec-921"]'),
+        )
+        conn.execute(
+            "INSERT INTO news_cluster_members(source, source_item_id, cluster_id, story_id)"
+            " VALUES('benzinga','9200099','ev2_orphan_member_fixture_9999','benzinga:9200099')"
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    universe = _write_universe(
+        tmp_path, [_usec("sec-921", "ZED"), _usec("sec-922", "YON")]
+    )
+    rc, out = _invoke_flow(capsys, db, universe, RIGHTS_FILE)
+    report = json.loads(out)
+
+    assert rc == 0
+    expected = audit_store(db)
+    summary = report["cluster_summary"]
+    assert summary["clusters"] == expected["clusters"] == 4
+    assert summary["multi_member_clusters"] == expected["multi_member_clusters"] == 1
+    assert summary["size_histogram"] == expected["size_histogram"] == {
+        "0": 1,
+        "1": 2,
+        "2": 1,
+    }
+    assert summary["stories"] == 4
+    # Gap observation: totals.clusters counts news_clusters rows only, so the
+    # orphan member id widens cluster_summary.clusters by one.
+    assert report["totals"]["clusters"] == 3
+
+
+def test_cluster_audit_skips_over_cap_with_hand_run_line(tmp_path):
+    db = _flow_store(tmp_path)
+
+    report = inventory.build_inventory(
+        database=db,
+        health=None,
+        now=FLOW_NOW,
+        audit_cap=1,
+    )
+
+    assert report["cluster_summary"]["audit"] == {
+        "state": "skipped",
+        "reason": "story_count_over_cap",
+        "stories": 6,
+        "cap": 1,
+        "hand_run": f"python3 scripts/qbus_news_cluster_audit.py --store {db}",
+    }
+    text = inventory.format_text(report)
+    assert (
+        "cluster audit skipped / 聚类审计已跳过: stories/条目 6 > cap/上限 1; "
+        f"run/手动运行: python3 scripts/qbus_news_cluster_audit.py --store {db}"
+    ) in text
+
+
+def test_cluster_audit_under_cap_projects_counts_only(tmp_path, capsys):
+    db = tmp_path / "mismatch.sqlite3"
+    base = FLOW_NOW - timedelta(hours=2)
+    rows = (
+        (9300001, base, "Zed Corp wins contract worth 3 million", "sec-931"),
+        (9300002, base + timedelta(minutes=5), "Zed Corp wins contract worth 4 million", "sec-931"),
+        (9300003, base + timedelta(minutes=20), "Ace Ltd lifts target to 20 dollars", "sec-932"),
+        (9300004, base + timedelta(minutes=25), "Ace Ltd lifts target to 30 dollars", "sec-932"),
+    )
+    routed = [
+        RoutedRevision(
+            revision=normalize_news(
+                _titled_payload(
+                    item_id=item_id,
+                    updated=updated,
+                    title=title,
+                    ticker=title.split()[0].upper(),
+                ),
+                transport="benzinga_rest",
+                received_at=updated + timedelta(seconds=5),
+            ),
+            security_ids=(sid,),
+            universe_revision="sp500-r1",
+        )
+        for item_id, updated, title, sid in rows
+    ]
+    _commit_routed(db, routed)
+    conn = sqlite3.connect(db)
+    try:
+        ace_cluster = conn.execute(
+            "SELECT cluster_id FROM news_cluster_members WHERE source_item_id='9300003'"
+        ).fetchone()[0]
+        conn.execute(
+            "UPDATE news_cluster_members SET cluster_id=? WHERE source_item_id='9300004'",
+            (ace_cluster,),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    universe = _write_universe(
+        tmp_path, [_usec("sec-931", "ZED"), _usec("sec-932", "ACE")]
+    )
+    rc, out = _invoke_flow(capsys, db, universe, RIGHTS_FILE)
+    report = json.loads(out)
+
+    assert rc == 0
+    assert report["cluster_summary"]["audit"] == {
+        "state": "ran",
+        "near_misses_listed": 1,
+        "near_miss_list_limit": 50,
+        "number_mismatch_pairs": 1,
+        "number_mismatch_clusters": 1,
+    }
+    assert set(report["cluster_summary"]["audit"]) == {
+        "state",
+        "near_misses_listed",
+        "near_miss_list_limit",
+        "number_mismatch_pairs",
+        "number_mismatch_clusters",
+    }
+    for row_key in ("a_story", "b_story", "a_numbers", "b_numbers", "similarity"):
+        assert row_key not in out
+
+
+def test_flow_latency_with_injected_timer(tmp_path):
+    db = _flow_store(tmp_path)
+    universe = _flow_universe(tmp_path)
+    ticks = []
+
+    def timer():
+        call = len(ticks)
+        ticks.append(call)
+        slot, after = divmod(call, 2)
+        return (slot * (slot + 1) // 2 + after * (slot + 1)) * 0.001
+
+    report = inventory.build_inventory(
+        database=db,
+        health=None,
+        now=FLOW_NOW,
+        universe=universe,
+        rights=RIGHTS_FILE,
+        flow_tickers=2,
+        flow_reads=20,
+        timer=timer,
+    )
+
+    # The timer is used only for flow reads: exactly two calls per read.
+    assert len(ticks) == 40
+    assert report["flow_read_latency"] == {
+        "state": "measured",
+        "reads": 20,
+        "tickers": ["MMM", "ZZZ"],
+        "reports_7d": {"MMM": 2, "ZZZ": 3},
+        "p50_ms": 10.0,
+        "p95_ms": 19.0,
+        "max_ms": 20.0,
+        "method": "in-process store.news_flow reads; not HTTP; nearest-rank percentiles",
+        "known_at": KNOWN_AT,
+    }
+
+
+def test_flow_latency_unavailable_reasons(tmp_path, capsys):
+    db = _flow_store(tmp_path)
+    universe = _flow_universe(tmp_path)
+    held = _write_universe(
+        tmp_path, [_usec("sec-901", "ZZZ")], name="held.json", complete=False
+    )
+
+    def flow(out):
+        return json.loads(out)["flow_read_latency"]
+
+    rc, out = _invoke_flow(capsys, db, None, None)
+    assert rc == 0
+    assert flow(out) == {
+        "state": "unavailable",
+        "reason": "universe_path_unset",
+        "known_at": KNOWN_AT,
+    }
+    rc, out = _invoke_flow(capsys, db, tmp_path / "absent.json", None)
+    assert rc == 0
+    assert flow(out) == {
+        "state": "unavailable",
+        "reason": "universe_unreadable",
+        "known_at": KNOWN_AT,
+    }
+    rc, out = _invoke_flow(capsys, db, held, RIGHTS_FILE)
+    assert rc == 0
+    assert flow(out) == {
+        "state": "unavailable",
+        "reason": "universe_unqualified",
+        "known_at": KNOWN_AT,
+    }
+    rc, out = _invoke_flow(capsys, db, universe, None)
+    assert rc == 0
+    assert flow(out) == {
+        "state": "unavailable",
+        "reason": "rights_path_unset",
+        "known_at": KNOWN_AT,
+    }
+
+    expired_universe = _flow_universe(tmp_path, name="expired.json", base=EXPIRED_NOW)
+    rc, out = _invoke_flow(capsys, db, expired_universe, RIGHTS_FILE, now=EXPIRED_NOW)
+    assert rc == 0
+    assert flow(out) == {
+        "state": "unavailable",
+        "reason": "rights_unavailable",
+        "known_at": "2027-10-12T15:00:00Z",
+    }
+
+    mixed_db, *_times = _mixed_store(tmp_path)
+    mixed_universe = _write_universe(
+        tmp_path,
+        [
+            _usec("sec-NVDA", "NVDA"),
+            _usec("sec-AMD", "AMD"),
+            _usec("sec-MSFT", "MSFT"),
+            _usec("sec-AAPL", "AAPL"),
+        ],
+        name="mixed.json",
+    )
+    rc, out = _invoke_flow(capsys, mixed_db, mixed_universe, RIGHTS_FILE)
+    assert rc == 0
+    assert flow(out) == {"state": "no_reports_7d", "reads": 0, "known_at": KNOWN_AT}
+
+
+def test_new_sections_use_no_ranking_words(tmp_path, capsys):
+    db = _flow_store(tmp_path)
+    universe = _flow_universe(tmp_path)
+    held = _write_universe(
+        tmp_path, [_usec("sec-901", "ZZZ")], name="held.json", complete=False
+    )
+    outputs = []
+
+    for universe_arg, rights_arg, now, extra in (
+        (None, None, FLOW_NOW, "--json"),
+        (None, None, FLOW_NOW, "--text"),
+        (universe, RIGHTS_FILE, FLOW_NOW, "--json"),
+        (universe, RIGHTS_FILE, FLOW_NOW, "--text"),
+        (tmp_path / "absent.json", None, FLOW_NOW, "--json"),
+        (held, RIGHTS_FILE, FLOW_NOW, "--text"),
+        (universe, None, FLOW_NOW, "--text"),
+    ):
+        rc, out = _invoke_flow(capsys, db, universe_arg, rights_arg, extra, now=now)
+        assert rc == 0
+        outputs.append(out)
+
+    expired_universe = _flow_universe(tmp_path, name="expired.json", base=EXPIRED_NOW)
+    rc, out = _invoke_flow(capsys, db, expired_universe, RIGHTS_FILE, "--text", now=EXPIRED_NOW)
+    assert rc == 0
+    outputs.append(out)
+
+    skipped = inventory.build_inventory(
+        database=db, health=None, now=FLOW_NOW, universe=universe, rights=RIGHTS_FILE, audit_cap=1
+    )
+    outputs.append(inventory.format_text(skipped))
+
+    broken = tmp_path / "broken.sqlite3"
+    shutil.copyfile(db, broken)
+    conn = sqlite3.connect(broken)
+    try:
+        conn.execute("UPDATE news_clusters SET subject_ids_json='not-json'")
+        conn.commit()
+    finally:
+        conn.close()
+    failed = inventory.build_inventory(
+        database=broken, health=None, now=FLOW_NOW, universe=universe, rights=RIGHTS_FILE
+    )
+    outputs.append(inventory.format_text(failed))
+
+    mixed_db, *_times = _mixed_store(tmp_path)
+    mixed_universe = _write_universe(
+        tmp_path,
+        [
+            _usec("sec-NVDA", "NVDA"),
+            _usec("sec-AMD", "AMD"),
+            _usec("sec-MSFT", "MSFT"),
+            _usec("sec-AAPL", "AAPL"),
+        ],
+        name="mixed.json",
+    )
+    rc, out = _invoke_flow(capsys, mixed_db, mixed_universe, RIGHTS_FILE, "--text")
+    assert rc == 0
+    outputs.append(out)
+
+    for out in outputs:
+        # The mandated statistical term "nearest-rank" is a method name, not
+        # ranking language; the banned words are checked around it.
+        low = out.lower().replace("nearest-rank", "")
+        for word in RANKING_WORDS:
+            assert word not in low, (word, out)
