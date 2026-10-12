@@ -46,7 +46,9 @@ sys.path.insert(0, str(ROOT))
 
 # Module-level imports so tests can patch them
 from engine.signal_foundry.screen import screen_candidate  # noqa: E402
-from engine.signal_foundry.spec import stamp_gates_hash  # noqa: E402
+from engine.signal_foundry.spec import (  # noqa: E402
+    CONSTRUCTION_HASH_VERSION, construction_hash, stamp_gates_hash,
+)
 
 log = logging.getLogger(__name__)
 
@@ -640,6 +642,17 @@ def _file_specs(
         if not spec.get("registered_at"):
             spec = dict(spec, registered_at=datetime.now(timezone.utc).date().isoformat())
 
+        # Identity is backend-authored, never inherited from a model field.
+        spec = dict(spec)
+        spec.pop("construction_hash", None)
+        spec.pop("construction_hash_version", None)
+        spec.pop("identity_error", None)
+        try:
+            spec["construction_hash"] = construction_hash(spec)
+            spec["construction_hash_version"] = CONSTRUCTION_HASH_VERSION
+        except (ValueError, TypeError):
+            spec["identity_error"] = "construction_not_canonical_json"
+
         # SF-R7 two-key: deterministic screen must independently admit
         screen_result = screen_candidate(spec, repo_root=root)
         if screen_result.get("admit"):
@@ -664,6 +677,9 @@ def _file_specs(
         else:
             # Filed as screen_rejected (honest funnel — SF-R7)
             row = {
+                # Keep hashable rejected definitions, but never write malformed
+                # computational fields back into the prior-identity input stream.
+                **(spec if "construction_hash" in spec else {"identity_error": "construction_not_canonical_json"}),
                 "id": sid,
                 "name": spec.get("name", ""),
                 "status": "screen_rejected",

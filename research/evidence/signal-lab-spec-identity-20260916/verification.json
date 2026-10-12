@@ -1,0 +1,61 @@
+{
+  "operation": "signal-lab-spec-identity-20260916-sol-001",
+  "source_base": "27ec910d04fc81692cf9640347ac31fd3de40170",
+  "procedure_pin": "4537f066775c73d305f82acf0643701f01f5e53c",
+  "observed_at_utc": "2026-09-17T01:01:43.928778+00:00",
+  "initial_red": {
+    "pid": 89286,
+    "failed": 20,
+    "passed": 1
+  },
+  "final_foundry_suite": {
+    "pid": 90424,
+    "tests": 156,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 11.35,
+    "junit_sha256": "9378e3b8d54aa6dceda6ddabc7b6cbae9c493e967ee8a29df9e6ffaf3e398a3b",
+    "command": "python3.12 -m pytest tests/test_sf_spec_identity.py tests/test_sf_spec.py tests/test_sf_screen.py tests/test_sf_brainstorm.py tests/test_sf_harness.py tests/test_sf_harness_runner.py tests/test_sf_results.py tests/test_sf_seeds.py tests/test_sf_transforms.py --basetemp=.pytest_cache/spec-identity-final-001 --junitxml=.pytest_cache/spec-identity-final-001.xml -q --tb=short"
+  },
+  "signal_lane_compatibility": {
+    "pid": 76562,
+    "tests": 21,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "deselected": 162,
+    "qualification": "Existing Signal tests; GIT_CEILING_DIRECTORIES is scoped to private pytest cache so fake nonrepository fixtures do not inherit the enclosing source repo."
+  },
+  "full_contract_delta": {
+    "pid": 44611,
+    "exit_code": 0,
+    "seconds": 443.75,
+    "introduced": 0,
+    "inherited": 0,
+    "command": "python3.12 scripts/check_contract_delta.py --base 27ec910d04fc81692cf9640347ac31fd3de40170",
+    "log_sha256": "5fc0c99e4d4e23a6af9fba9ded6c923087aecacb0c5dcaeccd9a433dc2c856b7"
+  },
+  "mutation_proof": "mutation-receipt.json",
+  "legacy_replay": "legacy-identity-replay.json",
+  "wider_failures": "compatibility-attribution.json",
+  "source_sha256": {
+    "engine/signal_foundry/spec.py": "9f2b5d1c295242e7827c8aaa86011d6983925ea18752041841b9e46d87d56fad",
+    "engine/signal_foundry/screen.py": "822833d70db617602eff4a6cafdc8bccadfb3d1ba07cb27d5497aecccdf6e2f1",
+    "scripts/run_signal_foundry_brainstorm.py": "0c3f90d4ff3c27550f5894891206855718a53d9f9417d126711f966ba34681ac",
+    "scripts/codex_signal_lane.py": "db08563af7f831af7b519437204a7688f825f7ab1344f093fb1def05cee9456d",
+    ".github/ci/legacy-jobs.yml": "78ae98709d668cfbae4e3430400fa16c0cdcbc55f135e21928e58ae4337c5212",
+    "tests/test_sf_spec_identity.py": "8cfd860d2f8f0fc64a827a0a677aa3e3db70a2ed85a1b7011c08f23aa18b5781"
+  },
+  "canonical_data_unchanged": true,
+  "numerical_harness_and_trial_ledger_implementation_unchanged": true,
+  "production_proven": false,
+  "alpha_admitted": false,
+  "independent_review_complete": false,
+  "limitations": [
+    "Hash version binds a declared construction, not a dataset version or economic independence.",
+    "The old per-ID result storage and post-registration full-spec immutability are not repaired here.",
+    "A future evaluation may add a versioned trial configuration; historical trial counts are not reset.",
+    "An optional additional historical-trial consumer test write was platform-blocked, verified absent and not retried. Existing idempotent-ledger tests passed."
+  ]
+}

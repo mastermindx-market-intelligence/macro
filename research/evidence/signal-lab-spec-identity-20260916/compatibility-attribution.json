@@ -1,0 +1,45 @@
+{
+  "scope": "Original selected source archive vs candidate; three existing fake-repo tests only, not whole-suite baseline",
+  "original_commit": "27ec910d04fc81692cf9640347ac31fd3de40170",
+  "runs": [
+    {
+      "label": "original_same_parent",
+      "exit_code": 1,
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "output_tail": "------------------------------ Captured log call -------------------------------\nWARNING  scripts.codex_signal_lane:codex_signal_lane.py:329 codex_signal_lane: screen_candidate not importable; filing all as screen_rejected\n=========================== short test summary info ============================\nFAILED tests/test_codex_lanes.py::TestSignalLaneProvenanceAlwaysStamped::test_admitted_row_provenance_without_brainstorm\nFAILED tests/test_codex_lanes.py::TestSignalLaneProvenanceAlwaysStamped::test_admitted_ids_reflect_only_this_call\nFAILED tests/test_codex_lanes.py::TestSignalLaneNamePreDedup::test_novel_name_passes_through_to_screen\n3 failed in 19.20s",
+      "git_ceiling": null
+    },
+    {
+      "label": "original_isolated_git",
+      "exit_code": 1,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "output_tail": "E    +  where 0 = len([])\n------------------------------ Captured log call -------------------------------\nWARNING  scripts.codex_signal_lane:codex_signal_lane.py:329 codex_signal_lane: screen_candidate not importable; filing all as screen_rejected\n=========================== short test summary info ============================\nFAILED tests/test_codex_lanes.py::TestSignalLaneProvenanceAlwaysStamped::test_admitted_ids_reflect_only_this_call\nFAILED tests/test_codex_lanes.py::TestSignalLaneNamePreDedup::test_novel_name_passes_through_to_screen\n2 failed, 1 passed in 8.06s",
+      "git_ceiling": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/signal-lab-spec-identity-20260916-sol-001/.pytest_cache/spec-identity-base-fixture-001/.pytest_cache"
+    },
+    {
+      "label": "candidate_isolated_git",
+      "exit_code": 1,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "output_tail": "WARNING  scripts.codex_signal_lane:codex_signal_lane.py:329 codex_signal_lane: screen_candidate not importable; filing all as screen_rejected\n\nNOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_codex_lanes.py::TestSignalLaneProvenanceAlwaysStamped::test_admitted_ids_reflect_only_this_call\nFAILED tests/test_codex_lanes.py::TestSignalLaneNamePreDedup::test_novel_name_passes_through_to_screen\n2 failed, 1 passed in 10.28s",
+      "git_ceiling": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/signal-lab-spec-identity-20260916-sol-001/.pytest_cache"
+    }
+  ],
+  "initial_wider_suite": {
+    "passed": 231,
+    "failed": 13
+  },
+  "remaining_case_lane_failures": 10,
+  "notes": [
+    "The ten case-lane failures are outside the changed numerical/filing modules; no waiver or baseline pass is claimed for them.",
+    "An earlier in-memory baseline attempt had import interference and is not used as equivalence evidence."
+  ]
+}
