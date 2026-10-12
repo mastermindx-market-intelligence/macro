@@ -3,82 +3,79 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Current delivery frontier — 2026-10-11
+## Current delivery frontier — October 12
 
-**19:44 UTC active continuation:** the Chairman directed root to qualify the input directly; historical owner labels are not a pickup gate. The existing R2 full-audit workflow now has a tested body-free discovery receipt (`b6428b41905836ac8cd6474e6948987b3893cd2a`), with unresolved rights and no staging/emit authority. Single-attempt qualification and discovery are integrated locally with main `1761e5bd5d8ba223719e797bca54549c8fc9f324` as `1c7b997f92fbe611d84a5e0c48a16291c90a6f1f`; 275 affected tests pass and the 69-output estate is byte-identical. The earlier separate-follow-on intention is superseded by substantive same-carrier delivery. PR #8786 is OPEN at old head 24bad, visibly disarmed with only merge-blocked and no attached lease. The global refresh lease names PR #7300, not this lane. The import-closure regression passed (1 test, 143.73s), Agent OS validated 1,657 records with zero errors, and the integrated local Blog → Glossary browser path passed. Push the new verified head normally, re-arm last and consume exact-head CI through the existing retained observer. No duplicate PR, R2 retry, provider call, historical-attempt replay, publication or credential substitution occurred. See `STORY_DISCOVERY.md` for implementation and current source-input boundaries.
+**Original Macro carrier:** [PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786),
+head `cc5d31160dd3584b067453bc3b11d78440133000`, with protected landing armed.
+[CI 38191946377](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38191946377)
+is running; the latest retained observation at 01:49 UTC had 15 passing checks
+and five test packs pending. The inactive merge-queue-pilot context is nonbinding.
+Do not infer a merge or installation from this dated snapshot. The one retained
+observer has a live return path to this attended parent, not a future idle wake.
 
-The live TTWO dossier and its existing earnings-record link were verified in Chrome, with existing Terminal continuation URLs intact; this is existing product behavior, not a new Press story. Read-only updater preflight at 19:17 found `/opt/macro` at `78776a0a165e0a0e8672bdc8945357b11b01f285`, the installed updater matching its checked-in script, and the Press inspector still absent. `public_pathway_browser_20261011.json` and `updater_preflight_20261011.json` retain bounded evidence. Latest observed controller verdict 38167705007 held old 24bad for changed check definitions at main 98a40e3f4b13 and 12 indexed proofs against cap 8. No manual stale-proof merge was attempted. The snapshots below are history.
+The preceding d425 head passed all 21 binding checks. Controller 38189419480
+required fresh proof after changed main CI definitions and deferred refresh at
+10 indexed runs against cap 8. New main then conflicted in an inherited Tiingo
+record. Root disarmed the original PR, integrated main 7cb33d3a as 8d304ac93cda,
+preserved main's Tiingo record byte-for-byte, and passed 29 affected checks
+(including curated import closure) in 585.15 seconds. All 13 installation-source
+hashes and three acceptance-page hashes are unchanged. No admin merge or
+controller-capacity bypass occurred. Earlier refresh history remains in Git and
+the same cumulative PR evidence comment; it is not current readiness proof.
 
-**19:15 UTC active continuation:** exact PR #8786 head `24bad8a41a9a03bb65cfe5d2c39810709fa9fcf7` passed all 21 binding checks in CI `38161506271` at 18:26:58 UTC. Controller `38165706231` subsequently found changed main paths inside the proof surface and deferred its refresh at 11 indexed proofs against cap 8. Preserve that release gate and the armed original carrier. The sole retained observer is active in the current parent; its process identity is temporary, not a future wake promise. Exact local browser navigation passed on Blog, Learning Center and the nested calculator at desktop/mobile with sampled EN/ZH behavior; source remains uninstalled at the last 18:07 origin check. The next safe source phase is implemented separately as `2343aaec13bb13acff087fbd5fd61e72173c5634`: opt-in single-attempt qualification, with 218 affected tests plus a final overlapping 95-test runner/writer suite passing. See `SINGLE_ATTEMPT_QUALIFICATION.md`. No real provider call, unknown-attempt replay, duplicate PR or publication occurred.
+**Genuinely live:** [Terminal PR 956](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956)
+passed exact-head CI at 2fd1b1a9, protected-merged as
+`8520e5d77e9f0b83973a988cf4f4adff300994cf`, and was installed by the existing VPS
+builder. Installed HEAD and marker match, service is active, checkout clean and
+postinstall release preflight CLEAN. A real saved-credential sign-in closed the
+dialog automatically in 2.58 seconds and retained the NVIDIA destination and
+attribution after a fresh reload. No new account or new follow write is claimed.
+`terminal956_live_acceptance.json`, `terminal956_install_excerpt.txt` and the actual
+`live-terminal956-signin-complete.jpg` bind the result. Do not repeat this accepted
+installation or sign-in merely to recreate evidence.
 
-**17:48 UTC continuation:** all initial repairs passed current-head CI at 3b8a, but current main has since changed CI definitions. The same disarmed PR now receives the tested durable-staging recovery slice; integration source is `28bc4468a090775630b24473a0176746fce4197d` before this evidence save. See `STAGING_RECOVERY.md`. No second PR, provider retry or publication occurred. The original 12:07 provider attempt remains unsettled. Finish current integrated checks, push normally to the same carrier, re-arm last and obtain fresh CI/landing/install/live proof. The following snapshots are history, not current readiness claims.
+**Working source, not installed:** recovery branch
+`claude/ssd-mmx-press-single-attempt-20261011-565fd14116bdcee2` is pushed through
+`bf425eab705c`, with source integration `4f99f76d2f8f3f9198c4c79e9028d91a9d6b8c31`.
+It retains the existing White House sentinel's source bytes, adds opt-in source
+planning and a fixed manual adjusted-NVDA analytical qualifier, and consumes the
+original cc5d refresh. Integrated suites passed 338 tests; differential contract
+checking found zero introduced/inherited findings. The subsequent event-clock
+correction 44866cbe79ec reproduced two failures before repair and passed 161
+affected tests afterward. Its exact source hash was independently reviewed,
+consumed and accepted through Fabric. After integration, 280 CI jobs validate,
+trigger closure has zero gaps, and Agent OS reports 1,668 records / zero errors.
+Test counts overlap and must not be summed.
 
-**16:53 UTC recovery:** the current PR is OPEN at `b76706cfb9ccdd713d66ef29dca2d00c430c04e6`, visibly disarmed with `merge-blocked`; no attached open refresh lease was found. Both binding CI failures are the same 19 missing import-closure declarations. The root owns their minimal repair and the already-tested staged novelty fix in `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-staging-cohort-20261011-f95888901b9489c4`. The local combined application suite passed 209 tests with no skips. One interrupted real staging attempt is unsettled and must not be replayed. It produced no new retained draft. No watcher survived the interruption. The next action is finish the dependency audit, merge fresh main while disarmed, push this substantive repair to the same PR, re-arm last, and obtain current binding CI/merge/install/live evidence.
+**Publication readiness:** no new Press story is admitted or published. The
+October 8 NVIDIA candidate is now outside the three-day Brief window and still
+fails first-party value and receipt floors; the 15/17 result was an October 11
+replay. Current read-only planning returned no Brief slot from the retained
+Chronicle inputs. The newer October 10 manufacturing report supplies a possible
+report-release premise, but older issuer pledges and manufacturing/R&D categories
+must retain their real dates and scope; see SOURCE_RETENTION.md. It has not been
+ingested or admitted. Existing five-receipt, value-density, rights, editorial,
+ten-consecutive-article and release controls remain unchanged.
 
-The capacity hold below is historical: the automatic controller refresh ceiling does not prohibit ordinary authored repair pushes. Subsequent source, CI and recovery history follows.
+**Exact next action:** consume cc5d's terminal CI and protected landing; verify
+merged ancestry plus stable installed source/site/served hashes; execute the
+prepared read-only installed staging inspector and public browser paths. Then
+run the existing earnings workflow once with `promote=false`, `full_audit=true`,
+`initialize_journal=false`, consume its exact discovery artifact, and qualify
+one actual packet and rights through its existing interface. Integrate the saved
+follow-on delta from fresh main after 8786 lands. The fixed analytical workflow
+runs only from main and has not been dispatched; POLYGON_API_KEY is confirmed by
+name only, not by authentication. Dedicated earnings stage-read credentials are
+still absent; broad publisher credentials are not a substitute.
 
-**Earlier continuation:** both first-stage heads (`f60d77e...` and `bf6e3957...`) passed 21 binding checks, but later main changes invalidated freshness. Controller run [38135914337](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38135914337) deferred the latest refresh at 10 indexed CI runs / cap 8. The parent marked/disarmed the same PR and confirmed no attached refresh lease. Its observer was positively stopped (exit 130, PID absent); no autonomous wake is claimed.
-
-The parent continued the next safe build phase: an explicit, compatibility-preserving immutable earnings dossier contract. Source commit `b7aeed5d83c28e29b1e8cb02072f13fa210c2943` has 154 passing affected tests and independent review. It is consolidated with the original PR in `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-earnings-dossier-contract-20261011-68f2215de362b65d`, through merge `439c0d80c11b8a8b9a66155124f1e4cfc83b2a63`, then main `f5dce71faf5b7f87cfaefb7a12380869422baa1d` through `ebd22b1a9e49fcd0c95d6e9d20a2e4e6d4366c09`. There is one PR, #8786. Original provider accounting changes are preserved in the primary worktree.
-
-The final integration regression exposed an apex/www mismatch between the new packet and the existing Press contract. It failed on the real link validator before repair; the adapter now uses the existing canonical www destination. The combined earnings plus Press-validator suite passed **248 tests in 19.85 seconds**, exit 0. The local raw log is `/tmp/mmx-dossier-integrated-tests.log`; the exact invocation and durable contract evidence are in `EARNINGS_DOSSIER_CONTRACT.md`. This does not establish live packet rights or publication. At the 11:37 UTC capacity read, 9 indexed CI runs still exceeded cap 8, so the PR branch update was held. Reconcile current capacity and writer/source state before the next push.
-
-Fable's [11:09 reply](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1243#issuecomment-6108389713) identifies `WS:EARNINGS-INTELLIGENCE-OS` as the semantic story owner; C19 does not own the packet or Press adapter. The new contract preserves that ownership and existing v1 hashes. Exact packet/revision IDs reside in the generation manifest and immutable packet object, not journal receipts alone. Integrity receipts do not establish public-article rights. No qualified tuple or permitted read path was supplied.
-
-The following paragraphs retain the earlier refresh history; the latest source and execution state is above and in the cumulative PR evidence comment.
-
-The first repaired candidate, `f60d77e228b2c8e8352e4bb70041c497271240b9`,
-concluded **21 binding CI checks green**, including pack 11 and `ci-gate`.
-The inactive merge-queue-pilot context was nonbinding for base main. The merge
-controller then found that main had changed CI definitions, so those greens
-were insufficient to land the stale candidate. Sweep
-[38133090174](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38133090174)
-recorded that diagnosis; the next completed sweep left the branch unchanged and
-the attached refresh-lease inventory was empty.
-
-The parent marked and disarmed the same PR, verified it was OPEN at that exact
-head with only `merge-blocked`, and merged fresh main
-`395e5d6089e95aa907c48fae811ecb918fb26f95` as
-`d0fa95bafb0c9fd56519a81d255e05de65430399`. This was conflict-free. Press
-implementation, configuration and tests are byte-unchanged from the accepted
-candidate, and the inspection test remains registered in the merged CI lane.
-Fresh candidate proof and installation remain pending; no new PR or sweep was
-created and no release check was bypassed. The old observer ended on a transient
-GitHub read error and is no longer running. Exact post-refresh proof and delivery
-readbacks belong to the existing [PR evidence comment](https://github.com/mastermindx-market-intelligence/macro/pull/8786#issuecomment-6107930181).
-
-Refresh validation: CI-plan validation accepted all 276 registered legacy jobs;
-`tests/test_press_workflow.py` plus `tests/test_press_staging_inspection.py`
-passed **33 tests** (one inherited temporary Chromium cleanup warning), exit 0.
-The free-content check remains **69 byte-identical files, zero orphans**;
-both Press property trees have no drift. Agent OS validation passed **1,623
-records, zero errors, 109 inherited warnings**. `git diff --check` passed.
-The earlier 342-test Press and 120-test free-content results remain accepted
-for their unchanged implementation; the refreshed remote head still needs its
-own binding checks before release.
-
-The Chairman-authorized bounded Fable request was posted and exact-body read
-back on [existing issue 1243](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1243#issuecomment-6107955309).
-It requests the existing packet/generation/revision, rights receipt, permitted
-read-only admission path and owner-qualified dossier link. It does not transfer
-Commission 19, replay a frozen operation or prove pickup. No reply had arrived at that earlier bounded read; the later reply is recorded above. Historical owner labels alone are not a current-writer
-fence; the actual story dependency is the missing qualified artifact and
-permitted admission path. The legacy canonical adapter admits `allowed_links: []`. The new explicit v2 construction path freezes a canonical dossier before hashing; a link still cannot be appended after immutable admission.
-
-An independent check also exhausted the currently retained ordinary Brief route:
-the planner reads Chronicle, not PRESS-FEEDS wire artifacts. Its October 8–11
-window has one macro print without a ticker/source URL/receipt and 17 Prophet
-closes. The 31 retained current wire items contain no recorded rights identifiers;
-the closest stock headline is secondary Benzinga commentary with no issuer-primary
-receipt or recorded source publication date. The existing CLI cannot admit that
-wire item. `ordinary_brief_dependency.json` retains identifiers, artifact hashes
-and the bounded search scope. No feed ingestion, provider generation, credential
-action or retry of the refused R2 manifest was performed for this check.
-
-The two-desk overlap is substantive: both generated drafts repeat the same
-AI-breadth figures and closely similar wording. This is not a validator defect;
-retain the 0.381 rejection and unchanged 0.18 limit. No historical pass counts
-as current batch, rights or editorial approval.
+**Frozen effects and custody:** the original accounted 12:07 staging provider
+call has no retained final result and remains EFFECT_UNKNOWN, without replay.
+The two earlier stage peers still fail overlap 0.381 > 0.18. The optional Grok
+source-review request `mmx-press-current-report-review-20261012-001` failed before
+launch on Ubuntu0 because active support policy was stale; same-ID status is
+TERMINAL_FAILURE, rc75, with no result. It was not retried on another host. The
+parent's public-source screen did not retry that support-publication effect.
+Commission 19 and Catalyst 8678 remain unchanged. No live worker remains here.
 
 ## Source and custody
 
@@ -87,20 +84,21 @@ as current batch, rights or editorial approval.
 - Delivery carrier: [Macro PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786).
   Binding CI and protected landing are pending at this checkpoint; no merged or
   installed claim follows from the pushed branch.
-- Working branch: `claude/mmx-public-intelligence-press-20261011` in
-  `/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main`.
+- Original PR refresh worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-single-attempt-20261011-565fd14116bdcee2`, local branch `claude/mmx-8786-conflict-refresh-20261012`, head cc5d3116.
+- Follow-on worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-attempt-recovery-20261011-a46f27ad11045cb8`, recovery branch named above. Preserve both owned trees.
+- Shared primary `/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main` remains at its older local head with dirty provider accounting; do not mutate it.
 - Governing Mastermind protected master refreshed for the replacement assigned-principal instructions:
-  `70e9ef1ede16628d00a7cc1d749387d893a1d5b3`;
+  `85807cf48e29e2fe5df19534d6b181fc25b9746f`;
   Sol skillpack `mastermind.sol_skillpack.v1`, version `1.0.1`, bootstrap major 1.
 - Existing D14 owner: `research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md`;
   publication ownership stays with the existing Press workflow and append-only ledger.
-- Commission 19 stays with Fable and its current recovery parent. No C19 source changed.
+- Commission 19 retains its existing source/interface; no C19 source changed or duplicate operation was created.
 - Catalyst Loop PR [8678](https://github.com/mastermindx-market-intelligence/macro/pull/8678)
-  remains a separate open/held source at `ed1ceabd723c5285d1eb4911575ef553d9f66673`.
+  is the separate existing carrier, last source-qualified here at `ed1ceabd723c5285d1eb4911575ef553d9f66673`; its current release state is not re-certified by this checkpoint.
   Its checkout and acquisition implementation were not modified.
 - The named `MASTERMIND_INTELLIGENCE_NETWORK_LOCAL_CEO_HANDOFF_2026-10-11.md`
-  was not supplied as an accessible file. A path/link request is pending. The
-  direct Chairman commission, not a reconstructed handoff, assigned this work.
+  was not accessible at entry. The direct Chairman commission and existing PR
+  supplied the executable scope; an unavailable handoff is not proof of prior work.
 
 ## Actual implementation and staging
 
