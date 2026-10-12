@@ -157,6 +157,93 @@
     });
   }
 
+  /* ---- consumer recovery (S3-01 consumer half) ------------------------------
+     loadIndexes() is fail-OPEN, so a market whose index read failed comes back as an
+     empty part and the caller cannot tell "nothing here" from "not loaded yet". The
+     loader re-fetches after its failure window, but only when someone asks again —
+     and the pages ask once, at init. These two read-only additions let a consumer
+     ask again without polling. Nothing above changes: same caches, same failure
+     windows, same shared in-flight reads (a re-ask goes through loadIndexes).
+
+     indexRetryAt(markets) -> epoch ms of the earliest failure window among the named
+       markets that are still unloaded, or null when none failed. It may already be
+       in the past (the window has closed but nobody has asked since). Never fetches.
+
+     indexRecovery(marketsFn, onRecover) -> { check }. The consumer calls check()
+       after it applies a read. While a market in marketsFn() is unloaded after a
+       failure, it arms ONE timer per failed market for when that market's window
+       closes, and re-asks on `visibilitychange` (visible) and `online`. onRecover(r)
+       runs with the fresh merged read whenever a re-ask loads a market that had
+       failed. A timed re-ask that fails again is not re-timed — from then on only
+       those page events re-ask, so an outage costs one extra read per market, not a
+       loop. */
+  function _failedMkts(markets) {
+    var want = [];
+    (markets || ['us']).forEach(function (m) {
+      m = normMkt(m);
+      if (MKT_DIR[m] && want.indexOf(m) < 0) want.push(m);
+    });
+    if (!want.length) want = ['us'];
+    return want.filter(function (m) { return !_mkt[m] && _mktNeg[m] != null; });
+  }
+  function indexRetryAt(markets) {
+    var at = null;
+    _failedMkts(markets).forEach(function (m) { if (at == null || _mktNeg[m] < at) at = _mktNeg[m]; });
+    return at;
+  }
+  var RECOVER_SLACK = 250;   // ms past the window, so the re-ask never lands inside it
+  function indexRecovery(marketsFn, onRecover) {
+    var timer = null, busy = false, wired = false, timed = {};
+    function markets() { try { return marketsFn() || ['us']; } catch (e) { return ['us']; } }
+    function hidden() { return typeof document !== 'undefined' && document.hidden === true; }
+    function offline() { return typeof navigator !== 'undefined' && navigator.onLine === false; }
+    function arm(at) {
+      if (timer) return;
+      timer = setTimeout(fire, Math.max(0, at - Date.now()) + RECOVER_SLACK);
+    }
+    function fire() {
+      timer = null;
+      var now = Date.now();
+      _failedMkts(markets()).forEach(function (m) { if (_mktNeg[m] <= now) timed[m] = 1; });
+      if (hidden() || offline()) return;   // the visible / online event re-asks instead
+      reask();
+    }
+    function reask() {
+      if (busy) return;
+      var ms = markets(), before = _failedMkts(ms).length;
+      if (!before) return;
+      busy = true;
+      loadIndexes(ms).then(function (r) {
+        busy = false;
+        if (_failedMkts(ms).length < before && onRecover) onRecover(r);
+        check();
+      }, function () { busy = false; });
+    }
+    function onEvent() {
+      if (hidden()) return;
+      var at = indexRetryAt(markets());
+      if (at == null) return;
+      if (Date.now() >= at) reask(); else arm(at);
+    }
+    function check() {
+      var failed = _failedMkts(markets());
+      if (!failed.length) {
+        if (timer) { clearTimeout(timer); timer = null; }
+        return false;
+      }
+      if (!wired) {
+        wired = true;
+        if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('visibilitychange', onEvent);
+        if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('online', onEvent);
+      }
+      var at = null;
+      failed.forEach(function (m) { if (!timed[m] && (at == null || _mktNeg[m] < at)) at = _mktNeg[m]; });
+      if (at != null) arm(at);
+      return true;
+    }
+    return { check: check };
+  }
+
   /* ---- per-ticker reads ----------------------------------------------------
      Two properties this layer must hold that it did not before W2, both of which
      the large-list gate (55 and 100 names) makes load-bearing:
@@ -274,6 +361,7 @@
     lang: lang, lz: lz, disp: disp, label: label, action: action, dir: dir,
     stClass: stClass, safeTicker: safeTicker, storeOf: storeOf,
     loadIndex: loadIndex, loadIndexes: loadIndexes,
+    indexRetryAt: indexRetryAt, indexRecovery: indexRecovery,
     loadTicker: loadTicker, loadTickers: loadTickers
   };
 })();
