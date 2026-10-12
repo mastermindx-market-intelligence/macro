@@ -64,6 +64,7 @@ from engine.entry_radar import challengers as ch
 from engine.entry_radar import four_hour as fh
 from engine.entry_radar import live_eval as le
 from engine.entry_radar import live_ledger as ll
+from engine.entry_radar import minute_resolution as mr
 from engine.entry_radar import vendor_minutes as vm
 from engine.session_digest import is_early_close, session_window_et
 from tests.test_entry_radar_w4_pack import (
@@ -956,3 +957,680 @@ def test_W4R_H4_the_fingerprint_moves_with_the_ADJUSTED_CLOSE_and_nothing_else()
     missing = ll.session_at_offset(AS_OF, -5000)
     assert le.substrate_fingerprint(daily, missing) is None, \
         "a session outside the substrate must be UNCHECKABLE, never a false match"
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 — bounded minute ambiguity resolution, no new data plane
+# ---------------------------------------------------------------------------
+
+def _tti_minute(start: datetime, *, o: float = 100.0, h: float = 100.2,
+                l: float = 99.8, c: float = 100.0, v: float = 100.0) -> ch.MinuteBar:
+    return ch.MinuteBar(start=start, open=o, high=h, low=l, close=c, volume=v)
+
+
+def _tti_tape(start: datetime, overrides: dict[int, dict] | None = None,
+              *, basis: str = ch.BASIS_ADJUSTED) -> ch.SessionTape:
+    rows = []
+    overrides = overrides or {}
+    for i in range(5):
+        kw = {"o": 100.0, "h": 100.2, "l": 99.8, "c": 100.0, "v": 100.0}
+        kw.update(overrides.get(i, {}))
+        rows.append(_tti_minute(start + timedelta(minutes=i), **kw))
+    return ch.SessionTape(session=start.date(), minutes=tuple(rows),
+                          price_basis=basis, vintage="synthetic-minute-resolution")
+
+
+def test_TTID1_target_first_is_resolved_from_complete_positive_volume_minutes():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {1: {"h": 101.2}, 3: {"l": 98.8}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "target_first"
+    assert got.event_minute_start == start + timedelta(minutes=1)
+    assert got.minutes_inspected == 2
+    assert got.complete_window is True
+
+
+def test_TTID1_adverse_first_is_resolved_before_a_later_target():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {0: {"l": 98.9}, 4: {"h": 101.1}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "adverse_first"
+    assert got.event_minute_start == start
+    assert got.minutes_inspected == 1
+
+
+def test_TTID1_open_beyond_one_barrier_resolves_same_minute_range_order():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {2: {"o": 101.1, "h": 101.3, "l": 98.8, "c": 99.5}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "target_first"
+    assert got.reason == "minute_open_at_or_beyond_target"
+
+
+def test_TTID1_same_minute_both_touch_is_preserved_when_open_is_between_barriers():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {2: {"o": 100.0, "h": 101.2, "l": 98.8, "c": 100.1}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "same_minute_ambiguous"
+    assert got.event_minute_start == start + timedelta(minutes=2)
+
+
+def test_TTID1_missing_minute_refuses_to_resolve_even_when_later_hit_is_visible():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {4: {"h": 101.2}})
+    tape = ch.SessionTape(session=tape.session, minutes=tape.minutes[:2] + tape.minutes[3:],
+                          price_basis=tape.price_basis, vintage=tape.vintage)
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "unavailable"
+    assert got.reason == "incomplete_minute_window"
+    assert got.complete_window is False
+
+
+def test_TTID1_zero_volume_minute_refuses_price_order_evidence():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {1: {"v": 0.0}, 4: {"h": 101.2}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "unavailable"
+    assert got.reason == "nonpositive_volume_minute"
+
+
+def test_TTID1_wrong_basis_and_malformed_order_refuse_instead_of_sorting_or_guessing():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    wrong = _tti_tape(start, basis=ch.BASIS_RAW)
+    got = mr.resolve_long_barrier_order(wrong, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "price_basis_mismatch")
+
+    good = _tti_tape(start)
+    unordered = ch.SessionTape(session=good.session,
+                               minutes=(good.minutes[1], good.minutes[0], *good.minutes[2:]),
+                               price_basis=good.price_basis, vintage=good.vintage)
+    got2 = mr.resolve_long_barrier_order(unordered, interval_start=start,
+                                         interval_end=start + timedelta(minutes=5),
+                                         entry=100.0, target=101.0, adverse=99.0)
+    assert (got2.status, got2.reason) == ("unavailable", "unordered_or_duplicate_minutes")
+
+
+def test_TTID1_neither_and_provenance_are_explicit_on_a_complete_window():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start)
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "neither"
+    assert got.minutes_inspected == 5
+    assert got.source_vintage == "synthetic-minute-resolution"
+    assert got.price_basis == ch.BASIS_ADJUSTED
+    assert got.to_dict()["authority"] == "research_resolution_only"
+
+
+
+def test_TTID1_open_beyond_adverse_resolves_adverse_before_same_minute_target():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {2: {"o": 98.9, "h": 101.2, "l": 98.7, "c": 100.0}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "adverse_first"
+    assert got.reason == "minute_open_at_or_beyond_adverse"
+
+
+def test_TTID1_invalid_ohlc_is_unavailable_not_repaired():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {1: {"o": 100.0, "h": 99.5, "l": 99.0, "c": 100.0}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "invalid_minute_ohlcv")
+
+
+def test_TTID1_caller_contract_refuses_wrong_window_and_barrier_order():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start)
+    with pytest.raises(mr.MinuteResolutionError, match="exact_five_minute"):
+        mr.resolve_long_barrier_order(tape, interval_start=start,
+                                      interval_end=start + timedelta(minutes=4),
+                                      entry=100.0, target=101.0, adverse=99.0)
+    with pytest.raises(mr.MinuteResolutionError, match="long_barrier_order"):
+        mr.resolve_long_barrier_order(tape, interval_start=start,
+                                      interval_end=start + timedelta(minutes=5),
+                                      entry=100.0, target=99.0, adverse=101.0)
+    off_grid = start + timedelta(minutes=1)
+    off_grid_tape = _tti_tape(off_grid)
+    with pytest.raises(mr.MinuteResolutionError, match="session_five_minute_grid"):
+        mr.resolve_long_barrier_order(off_grid_tape, interval_start=off_grid,
+                                      interval_end=off_grid + timedelta(minutes=5),
+                                      entry=100.0, target=101.0, adverse=99.0)
+
+
+def test_TTID1_interval_outside_the_tapes_session_is_unavailable():
+    start = datetime(2026, 9, 17, 22, 0, tzinfo=timezone.utc)  # 18:00 ET, post-RTH
+    tape = _tti_tape(start)
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "interval_outside_tape_session")
+
+
+
+def test_TTID1_resolver_is_pure_and_cannot_fetch_write_or_emit_events():
+    path = RADAR_DIR / "minute_resolution.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    imports: set[str] = set()
+    calls: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imports.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            imports.add(node.module or "")
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                calls.add(node.func.id)
+            elif isinstance(node.func, ast.Attribute):
+                calls.add(node.func.attr)
+    forbidden_import_roots = {
+        "requests", "httpx", "urllib", "urllib3", "socket", "boto3", "aiohttp",
+        "engine.entry_radar.vendor_minutes", "engine.entry_radar.entry_events",
+        "engine.entry_radar.live_ledger", "engine.entry_radar.spool",
+    }
+    assert not any(i in forbidden_import_roots for i in imports), imports
+    assert not ({"open", "write", "write_text", "write_bytes", "replace", "unlink"} & calls)
+
+
+
+def test_TTID1_missing_source_vintage_refuses_a_resolution_claim():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start)
+    tape = ch.SessionTape(session=tape.session, minutes=tape.minutes,
+                          price_basis=tape.price_basis, vintage="")
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "source_vintage_missing")
+
+
+def test_TTID1_resolution_never_claims_historical_availability_from_session_tape():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    got = mr.resolve_long_barrier_order(_tti_tape(start), interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    payload = got.to_dict()
+    assert payload["source_clock_proven"] is False
+    assert payload["source_evidence_class"] == "availability_time_unproven"
+
+
+def test_TTID1_authority_and_clock_class_are_not_caller_overridable():
+    fields = mr.MinuteResolution.__dataclass_fields__
+    assert fields["authority"].init is False
+    assert fields["source_clock_proven"].init is False
+    assert fields["source_evidence_class"].init is False
+
+
+def test_TTID1_adjusted_basis_is_a_fixed_contract_not_a_caller_override():
+    import inspect
+    sig = inspect.signature(mr.resolve_long_barrier_order)
+    assert "expected_price_basis" not in sig.parameters
+
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 arrival receipts — client-observed source timing, no raw persistence
+# ---------------------------------------------------------------------------
+
+class _ReceiptClock:
+    def __init__(self, *values: datetime) -> None:
+        self.values = list(values)
+        self.calls = 0
+
+    def __call__(self) -> datetime:
+        self.calls += 1
+        if not self.values:
+            raise AssertionError("receipt clock called more times than expected")
+        return self.values.pop(0)
+
+
+def _minute_vendor_rows(session: date, count: int, *, skip: set[int] | None = None) -> list[dict]:
+    open_dt, _close_dt = session_window_et(session)
+    skip = skip or set()
+    rows: list[dict] = []
+    for i in range(count):
+        if i in skip:
+            continue
+        price = 100.0 + i * 0.01
+        rows.append({
+            "t": (open_dt + timedelta(minutes=i)).timestamp() * 1000.0,
+            "o": price, "h": price + 0.02, "l": price - 0.02,
+            "c": price + 0.01, "v": 100.0,
+        })
+    return rows
+
+
+def test_TTID1_arrival_receipt_binds_request_response_and_latest_completed_minute(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=5)
+    clock = _ReceiptClock(request, response)
+    recorder = Recorder(lambda _day: _minute_vendor_rows(session, 10))
+    reader = vm.VendorMinuteReader(transport=recorder, state_dir=tmp_path, sleep_seconds=0.0)
+
+    tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert len(tape.minutes) == 10
+    assert clock.calls == 2
+    assert len(recorder.calls) == 1
+    assert receipt.request_started_at == request
+    assert receipt.response_received_at == response
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.latest_observed_completed_known_at == open_dt + timedelta(minutes=10)
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.latest_observed_age_seconds == 5.0
+    assert receipt.tail_observation_gap_minutes == 0
+    assert receipt.returned_rows == 10
+    assert receipt.completed_rows == 10
+    assert receipt.forming_or_future_rth_rows == 0
+    assert receipt.fetch_clock_observed is True
+    assert receipt.historical_availability_proven is False
+    assert receipt.authority == "source_arrival_observation_only"
+
+
+def test_TTID1_arrival_receipt_does_not_count_a_forming_minute_as_completed(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10, seconds=5)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    clock = _ReceiptClock(request, response)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 11)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+
+    _tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert receipt.returned_rows == 11
+    assert receipt.completed_rows == 10
+    assert receipt.forming_or_future_rth_rows == 1
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.tail_observation_gap_minutes == 0
+
+
+def test_TTID1_arrival_receipt_exposes_observation_tail_gap_without_calling_it_vendor_delay(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=4)
+    clock = _ReceiptClock(request, response)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 8)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+
+    _tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=7)
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.tail_observation_gap_minutes == 2
+    assert "vendor_delay" not in receipt.to_dict()
+
+
+def test_TTID1_arrival_receipt_keeps_empty_response_honest(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=2)
+    clock = _ReceiptClock(request, response)
+    reader = vm.VendorMinuteReader(transport=lambda _path, _params: [],
+                                   state_dir=tmp_path, sleep_seconds=0.0)
+
+    tape, receipt = reader.read_with_receipt("GHOST", session, now_fn=clock)
+
+    assert tape.minutes == ()
+    assert receipt.returned_rows == 0
+    assert receipt.completed_rows == 0
+    assert receipt.latest_observed_completed_start is None
+    assert receipt.tail_observation_gap_minutes is None
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.empty_response is True
+    assert reader.empty == 1
+
+
+def test_TTID1_arrival_receipt_refuses_naive_or_backwards_clock(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    rows = Recorder(lambda _day: _minute_vendor_rows(session, 10))
+    reader = vm.VendorMinuteReader(transport=rows, state_dir=tmp_path, sleep_seconds=0.0)
+    naive = datetime(2026, 9, 17, 14, 0)
+    with pytest.raises(vm.VendorMinutesError, match="timezone-aware"):
+        reader.read_with_receipt("WASH", session, now_fn=_ReceiptClock(naive))
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    with pytest.raises(vm.VendorMinutesError, match="moved backwards"):
+        reader.read_with_receipt("WASH", session,
+                                 now_fn=_ReceiptClock(request, request - timedelta(seconds=1)))
+
+
+def test_TTID1_arrival_receipt_clock_stops_before_pacing_sleep(monkeypatch, tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=3)
+    clock = _ReceiptClock(request, response)
+    sleeps: list[float] = []
+    monkeypatch.setattr(vm.time, "sleep", sleeps.append)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=7.5,
+    )
+
+    _tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert receipt.response_received_at == response
+    assert receipt.latest_observed_age_seconds == 3.0
+    assert clock.calls == 2
+    assert sleeps == [7.5]
+
+
+def test_TTID1_arrival_receipt_is_in_memory_only_and_authority_is_non_overridable(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+    _tape, receipt = reader.read_with_receipt("WASH", session,
+                                              now_fn=_ReceiptClock(request, response))
+    assert list(tmp_path.rglob("*")) == []
+    fields = vm.MinuteFetchReceipt.__dataclass_fields__
+    assert fields["authority"].init is False
+    assert fields["historical_availability_proven"].init is False
+    payload = receipt.to_dict()
+    assert payload["source_evidence_class"] == "prospective_fetch_arrival_receipt"
+    assert payload["historical_availability_proven"] is False
+
+
+
+def test_TTID1_arrival_receipt_exposes_unparsed_timestamp_rows(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    rows = _minute_vendor_rows(session, 10)
+    rows.append({"t": None, "o": 1.0, "h": 1.0, "l": 1.0, "c": 1.0, "v": 1.0})
+    reader = vm.VendorMinuteReader(transport=lambda _path, _params: rows,
+                                   state_dir=tmp_path, sleep_seconds=0.0)
+
+    tape, receipt = reader.read_with_receipt("WASH", session,
+                                              now_fn=_ReceiptClock(request, response))
+    assert len(tape.minutes) == 10
+    assert receipt.returned_rows == 11
+    assert receipt.parsed_rows == 10
+    assert receipt.unparsed_rows == 1
+
+
+def test_TTID1_receipt_path_returns_the_same_tape_as_the_plain_reader(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    rows = _minute_vendor_rows(session, 10)
+    plain = vm.VendorMinuteReader(transport=lambda _path, _params: list(rows),
+                                  state_dir=tmp_path / "plain", sleep_seconds=0.0)
+    receipted = vm.VendorMinuteReader(transport=lambda _path, _params: list(rows),
+                                      state_dir=tmp_path / "receipted", sleep_seconds=0.0)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    plain_tape = plain("WASH", session)
+    receipt_tape, _receipt = receipted.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+    assert receipt_tape == plain_tape
+
+
+
+def test_TTID1_arrival_receipt_transport_failure_keeps_existing_pacing_and_error_accounting(monkeypatch, tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    clock = _ReceiptClock(request)
+    sleeps: list[float] = []
+    monkeypatch.setattr(vm.time, "sleep", sleeps.append)
+
+    def boom(_path, _params):
+        raise RuntimeError("synthetic transport failure")
+
+    reader = vm.VendorMinuteReader(transport=boom, state_dir=tmp_path, sleep_seconds=2.5)
+    with pytest.raises(RuntimeError, match="synthetic transport failure"):
+        reader.read_with_receipt("WASH", session, now_fn=clock)
+    assert clock.calls == 1
+    assert sleeps == [2.5]
+    assert reader.errors == 1
+    assert reader.fetched_n == 0
+
+
+def test_TTID1_arrival_receipt_tail_expectation_is_anchored_to_request_start(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    # At request start, the minute beginning +9m is the latest bar that has closed.
+    # The +10m bar closes while the request is in flight and must not become an
+    # expected bar whose absence is mislabelled as source lag.
+    request = (open_dt + timedelta(minutes=10, seconds=59)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=3)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+
+    _tape, receipt = reader.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.tail_observation_gap_minutes == 0
+
+
+def test_TTID1_arrival_receipt_separates_off_session_rows_from_forming_rth(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    rows = _minute_vendor_rows(session, 10)
+    pre = open_dt - timedelta(minutes=30)
+    rows.insert(0, {
+        "t": pre.timestamp() * 1000.0,
+        "o": 99.0, "h": 99.1, "l": 98.9, "c": 99.0, "v": 100.0,
+    })
+    reader = vm.VendorMinuteReader(transport=lambda _path, _params: list(rows),
+                                   state_dir=tmp_path, sleep_seconds=0.0)
+
+    _tape, receipt = reader.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+
+    assert receipt.returned_rows == 11
+    assert receipt.completed_rows == 10
+    assert receipt.off_session_rows == 1
+    assert receipt.forming_or_future_rth_rows == 0
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 live projection — same reader, same health plane, no new authority
+# ---------------------------------------------------------------------------
+
+def test_TTID1_plain_reader_captures_latest_receipt_only_when_clock_is_injected(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close = session_window_et(session)
+    now = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    plain = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path / "plain", sleep_seconds=0.0)
+    plain("WASH", session)
+    assert plain.latest_fetch_receipt() is None
+
+    observed = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path / "observed", sleep_seconds=0.0,
+        receipt_clock=lambda: now)
+    observed("WASH", session)
+    receipt = observed.latest_fetch_receipt()
+    assert receipt is not None
+    assert receipt.session == session
+    assert receipt.request_started_at == now
+    assert receipt.response_received_at == now
+    assert receipt.authority == "source_arrival_observation_only"
+
+
+def test_TTID1_explicit_receipt_read_updates_the_same_latest_receipt_slot(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=2)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=0.0)
+    _tape, returned = reader.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+    assert reader.latest_fetch_receipt() == returned
+
+
+def test_TTID1_live_entrypoint_enables_reader_arrival_clock_without_fetching(tmp_path):
+    import scripts.entry_radar_live as erl
+    reader = erl._reader(tmp_path)
+    assert isinstance(reader, vm.VendorMinuteReader)
+    assert reader.latest_fetch_receipt() is None
+    assert callable(reader._receipt_clock)
+
+
+def test_TTID1_live_health_projects_latest_reader_arrival_as_observability_only(tmp_path):
+    pack = late_wash_pack()
+    open_dt, _close = session_window_et(NEXT_SESSION)
+    pass_now = (open_dt + timedelta(minutes=32)).astimezone(timezone.utc)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(), state_dir=tmp_path, sleep_seconds=0.0,
+        receipt_clock=lambda: pass_now)
+
+    result = run_live_pass(pack, tmp_path, reader=reader)
+    arrival = result.health["inputs"]["c3_reader"]["source_arrival"]
+
+    assert arrival is not None
+    assert arrival["session"] == NEXT_SESSION.isoformat()
+    assert arrival["authority"] == "source_arrival_observation_only"
+    assert arrival["source_evidence_class"] == "prospective_fetch_arrival_receipt"
+    assert arrival["historical_availability_proven"] is False
+    assert arrival["fetch_clock_observed"] is True
+    assert not any(str(reason).startswith("source_arrival")
+                   for reason in result.health["reasons"])
+
+
+def test_TTID1_refusal_health_has_explicit_null_source_arrival(tmp_path):
+    now = datetime(2026, 8, 17, 8, 0, tzinfo=timezone.utc)
+    _payload, health = le.failure_payload(now=now, pack=None, state_dir=tmp_path,
+                                          error="synthetic refusal")
+    assert health["inputs"]["c3_reader"]["source_arrival"] is None
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 response identity — bind arrival timing to exact returned evidence
+# ---------------------------------------------------------------------------
+
+def _receipt_for_rows(tmp_path, rows: list[dict], *, ticker: str = "WASH"):
+    session = NEXT_SESSION
+    open_dt, _close = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    reader = vm.VendorMinuteReader(
+        transport=lambda _path, _params: list(rows),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+    _tape, receipt = reader.read_with_receipt(
+        ticker, session, now_fn=_ReceiptClock(request, response))
+    return receipt
+
+
+def test_TTID1_response_content_identity_is_key_order_invariant(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 3)
+    reordered = [{k: row[k] for k in reversed(tuple(row))} for row in rows]
+    left = _receipt_for_rows(tmp_path / "left", rows)
+    right = _receipt_for_rows(tmp_path / "right", reordered)
+    assert left.response_content_sha256 == right.response_content_sha256
+    assert len(left.response_content_sha256) == 64
+
+
+def test_TTID1_response_content_identity_changes_with_value_order_or_duplicate(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 3)
+    changed = [dict(row) for row in rows]
+    changed[1]["c"] += 0.25
+    reordered = list(reversed([dict(row) for row in rows]))
+    duplicated = [*map(dict, rows), dict(rows[-1])]
+    baseline = _receipt_for_rows(tmp_path / "base", rows).response_content_sha256
+    assert _receipt_for_rows(tmp_path / "value", changed).response_content_sha256 != baseline
+    assert _receipt_for_rows(tmp_path / "order", reordered).response_content_sha256 != baseline
+    assert _receipt_for_rows(tmp_path / "duplicate", duplicated).response_content_sha256 != baseline
+
+
+def test_TTID1_response_content_identity_includes_vendor_fields_not_kept_in_tape(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 2)
+    enriched = [dict(row) for row in rows]
+    enriched[0]["vw"] = 100.1234
+    enriched[0]["n"] = 17
+    changed = [dict(row) for row in enriched]
+    changed[0]["vw"] = 100.5678
+    changed[0]["n"] = 18
+    a = _receipt_for_rows(tmp_path / "a", enriched)
+    b = _receipt_for_rows(tmp_path / "b", changed)
+    assert a.response_content_sha256 != b.response_content_sha256
+    assert a.parsed_rows == b.parsed_rows == 2
+
+
+def test_TTID1_response_content_identity_includes_unparsed_timestampless_rows(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 2)
+    extra = {"t": None, "o": 1.0, "h": 1.0, "l": 1.0, "c": 1.0, "v": 1.0,
+             "vw": 1.0, "n": 1}
+    baseline = _receipt_for_rows(tmp_path / "base", rows)
+    with_unparsed = _receipt_for_rows(tmp_path / "extra", [*rows, extra])
+    assert with_unparsed.returned_rows == 3
+    assert with_unparsed.parsed_rows == 2
+    assert with_unparsed.unparsed_rows == 1
+    assert with_unparsed.response_content_sha256 != baseline.response_content_sha256
+
+
+def test_TTID1_empty_response_has_stable_content_identity(tmp_path):
+    import hashlib
+    receipt = _receipt_for_rows(tmp_path, [], ticker="GHOST")
+    assert receipt.empty_response is True
+    assert receipt.response_content_sha256 == hashlib.sha256(b"[]").hexdigest()
+
+
+def test_TTID1_unsupported_response_content_does_not_invent_identity(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 2)
+    rows[0]["unsupported_metadata"] = {"not", "json"}
+    receipt = _receipt_for_rows(tmp_path, rows)
+    assert receipt.returned_rows == 2
+    assert receipt.parsed_rows == 2
+    assert receipt.response_content_sha256 is None
+
+
+def test_TTID1_live_health_projects_hash_not_raw_response(tmp_path):
+    pack = late_wash_pack()
+    open_dt, _close = session_window_et(NEXT_SESSION)
+    pass_now = (open_dt + timedelta(minutes=32)).astimezone(timezone.utc)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(), state_dir=tmp_path, sleep_seconds=0.0,
+        receipt_clock=lambda: pass_now)
+    result = run_live_pass(pack, tmp_path, reader=reader)
+    arrival = result.health["inputs"]["c3_reader"]["source_arrival"]
+    assert arrival is not None
+    assert isinstance(arrival["response_content_sha256"], str)
+    assert len(arrival["response_content_sha256"]) == 64
+    assert "raw_rows" not in arrival
+    assert "response_rows" not in arrival
