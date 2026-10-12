@@ -19,7 +19,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from engine.qbus_news_receipts import load_health_receipt
-from engine.qbus_news_store import SCHEMA as STORE_SCHEMA
+from engine.qbus_news_store import NewsStore, NewsStoreError, StoreSchemaError
 
 SCHEMA = "ticker_news.inventory.v1"
 _UNSET_HEALTH = {"state": "unavailable", "reason": "health_path_unset"}
@@ -75,39 +75,6 @@ def _parse_now(value: str) -> datetime:
         raise InventoryError("invalid_now") from None
 
 
-def _connect_readonly(path: Path) -> sqlite3.Connection:
-    # mode=ro refuses to create the file. query_only refuses writes if the
-    # URI flag is ignored by a future sqlite build.
-    uri = path.resolve().as_uri() + "?mode=ro"
-    try:
-        conn = sqlite3.connect(
-            uri,
-            uri=True,
-            timeout=5.0,
-            isolation_level=None,
-        )
-    except sqlite3.Error as exc:
-        raise InventoryError("database_unreadable") from exc
-    conn.row_factory = sqlite3.Row
-    try:
-        conn.execute("PRAGMA query_only=ON")
-    except sqlite3.Error as exc:
-        conn.close()
-        raise InventoryError("database_unreadable") from exc
-    return conn
-
-
-def _require_store_schema(conn: sqlite3.Connection) -> None:
-    try:
-        row = conn.execute(
-            "SELECT value FROM qbus_meta WHERE key='schema'"
-        ).fetchone()
-    except sqlite3.Error as exc:
-        raise InventoryError("database_unreadable") from exc
-    if row is None or str(row["value"]) != STORE_SCHEMA:
-        raise InventoryError("schema_mismatch")
-
-
 def _clock(value: object) -> str | None:
     if value is None:
         return None
@@ -139,17 +106,21 @@ def build_inventory(
     except OSError as exc:
         raise InventoryError("database_unreadable") from exc
 
-    conn = _connect_readonly(path)
     try:
-        _require_store_schema(conn)
+        store = NewsStore.open_readonly(path, source_key="ticker-news-inventory")
+    except StoreSchemaError as exc:
+        raise InventoryError("schema_mismatch") from exc
+    except NewsStoreError as exc:
+        raise InventoryError("database_unreadable") from exc
+    try:
         try:
-            transport_rows = conn.execute(_TRANSPORTS_SQL).fetchall()
-            totals_row = conn.execute(_TOTALS_SQL).fetchone()
-            cursor_rows = conn.execute(_CURSORS_SQL).fetchall()
+            transport_rows = store._conn.execute(_TRANSPORTS_SQL).fetchall()
+            totals_row = store._conn.execute(_TOTALS_SQL).fetchone()
+            cursor_rows = store._conn.execute(_CURSORS_SQL).fetchall()
         except sqlite3.Error as exc:
             raise InventoryError("database_unreadable") from exc
     finally:
-        conn.close()
+        store.close()
 
     transports = [
         {
