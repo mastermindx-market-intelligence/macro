@@ -73,6 +73,53 @@ danger_areas:
 prs: [8698, 8870, 8875, 945, 955]
 ---
 
+Active continuation, 2026-10-12 08:46 UTC. The historical blocked ending in the
+frontmatter predates the Chairman's instruction to continue; the mission is now
+being executed in the same original task. This paragraph supersedes dated queued
+CI, archive-settled and ticker-entitlement inferences below.
+
+The original finite operation `eod-wave8-fixed-unattempted-20261012-01a12ab6` is
+running on unchanged collector head 2a08250f, with four in flight and twelve prior
+failed exact requests excluded. Retained scope hash
+38aafc8460af7dead299c92bbafc1b64f3770752a1d86c1e552e474cd005ecda binds actual quota,
+source, prior settlement and method. The original exec return and task artifact log
+remain its return path; no observer, recurring runtime or completion is inferred.
+The temporary credential/counter overwrite was reproduced offline and independently
+reviewed fixed at 9c471937. Fabric review completed on stable ID
+`tiingo-eod-fixed-harness-review-01a12ab6-v1`; parent code acceptance is proven, but
+the denied ledger lock write remains unrecorded and unretried on its original carrier.
+DVVDF/DVXB/DVYA/EA do not prove ticker entitlement and remain excluded anyway.
+
+Latest qualified snapshot: 9916 nonempty histories / 20761012 distinct bars, 191
+new immutable responses qualified, and reused-catalogue census 37755 uncaptured
+windows / 18 empty candidates. Installed 2c90 Data and Lab read new EBAY/DWCH
+histories, retaining raw/adjusted prices and source lineage. Thirty new ten-company
+fundamentals captures qualified 58501 rows with 9940 unambiguous compared fiscal
+keys / 518 changed original-revised values. Three new JPM modes were read by the
+installed selector. Actual response dates remain about three years despite deep
+request starts. PIT, dated canonical identity and full served scope remain open.
+
+A first standalone AAPL splits request returned HTTP 403 with the stable correct
+credential; the cohort settled after one failure. That exact request stays held,
+with no retry, alternate account or successful corporate-action projection. No
+purchase, support email or account change was made. The metadata approximate quota
+clock has an explicit erratum; corrected EOD continuation uses an actual loaded
+browser timestamp and a nonnegative maximum 900-second quota age.
+
+Current Terminal 955 head de8aca83cd6a3072eba861ce494d9e644baca75f passed all twelve
+dispatched jobs on 38214240947. Its original run 38214248199 is still action_required.
+The exact human approval request is pending; no approval or protected merge is
+assumed. Continue completed-response qualification while capture runs. After actual
+required CI/merge, refresh narrow VPS preflight, invoke the single prepared existing
+builder only when all real preconditions pass, then complete original finite BOATS
+publication and raw/relay/Hub/API/responsive-browser joins. Preserve every earlier
+refusal and same-carrier reconciliation obligation.
+
+Current safe evidence: `docs/tiingo-evidence/20261012-delivery-frontier/safe-frontier.json`
+and `capture-harness-and-consumer-delta.json`. This is a material save during active
+execution, not another programme stop.
+
+
 The assigned mission remains active and incomplete. This checkpoint saves a real
 human CI admission gate after independent permitted work; it creates no observer,
 schedule or promise of unattended continuation. Current aggregate evidence is
