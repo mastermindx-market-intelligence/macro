@@ -1914,3 +1914,350 @@ def test_d1_latest_pointer_unreadable_is_typed(
     )
     assert _store_files(store) == files_corrupt  # no writes beyond the corruption
     assert len(files_corrupt) == len(files_before)
+
+
+# ---------------------------------------------------------------------------
+# D13: contract-acquire-summary (T5) + the contract_acquire report block (T6)
+# ---------------------------------------------------------------------------
+
+
+def _acquire_form(form: str, status: str, selected: list[str]) -> dict:
+    return {
+        "form": form,
+        "requested_comparables": 2,
+        "selected_accessions": selected,
+        "manifest_keys": [],
+        "stored_documents": len(selected),
+        "missing_documents": 0,
+        "reused_documents": 0,
+        "status": status,
+        "failures": (
+            [
+                {
+                    "stage": f"select_{form}",
+                    "error_type": "ComparableCoverageShortfall",
+                    "message": (
+                        f"only {len(selected)} of 2 comparable {form} filings "
+                        "were eligible at as_of"
+                    ),
+                }
+            ]
+            if status != "complete"
+            else []
+        ),
+    }
+
+
+def _acquire_ticker(ticker: str, cik: str, forms: list[dict], status: str) -> dict:
+    return {
+        "schema": "fundamental_forensics.acquisition_ticker/v1",
+        "run_id": "ffsecacq_" + "0" * 64,
+        "ticker": ticker,
+        "cik": cik,
+        "as_of": "2026-10-13T02:31:00Z",
+        "recorded_at": "2026-10-13T02:31:00Z",
+        "limits": {},
+        "submissions": None,
+        "forms": forms,
+        "bytes_retained": 0,
+        "bytes_reused": 0,
+        "status": status,
+        "failures": [],
+    }
+
+
+def _contract_acquire_result(status: str = "partial") -> dict:
+    """A wave-2 outcome shaped like acquire_bounded_filings' run dict
+    (collectors/fundamental_forensics_acquisition.py:976-989): one synthetic
+    issuer complete, one PARTIAL on its 10-K — the D13 motivating shape (a
+    recent window holding a single 10-K, selected 1 of the contractual 2)."""
+    complete = _acquire_ticker(
+        "FXT",
+        "0000000001",
+        [
+            _acquire_form("10-K", "complete", ["0000000001-26-000004", "0000000001-25-000005"]),
+            _acquire_form("10-Q", "complete", ["0000000001-26-000001", "0000000001-26-000002"]),
+        ],
+        "complete",
+    )
+    partial = _acquire_ticker(
+        "FXU",
+        "0000000002",
+        [
+            _acquire_form("10-K", "partial", ["0000000002-26-000009"]),
+            _acquire_form("10-Q", "complete", ["0000000002-26-000003", "0000000002-26-000002"]),
+        ],
+        "partial",
+    )
+    return {
+        "schema": "fundamental_forensics.wave2_operator_flow/v1",
+        "targets": [],
+        "actions": {"acquire": True, "sync": True},
+        "clocks": {},
+        "results": {
+            "acquire": {
+                "schema": "fundamental_forensics.acquisition_run/v1",
+                "run_id": "ffsecacq_" + "0" * 64,
+                "as_of": "2026-10-13T02:31:00Z",
+                "recorded_at": "2026-10-13T02:31:00Z",
+                "targets": [],
+                "limits": {},
+                "bytes_retained": 0,
+                "bytes_reused": 0,
+                "reuse_local_archive": True,
+                "status": status,
+                "ticker_receipts": [complete, partial],
+                "observations": [],
+            }
+        },
+        "timings": {},
+    }
+
+
+def test_d13_t5_partial_summary_warns_and_records_shortfalls(tmp_path, capsys) -> None:
+    """T5: a typed partial acquire prints a line-start
+    ``::warning title=fif-contract-acquire::`` per shortfall on STDOUT (bare
+    print, never a logger), exits 0, and the shortfalls ride the summary."""
+    result = tmp_path / "result.json"
+    result.write_text(
+        json.dumps(_contract_acquire_result("partial"), indent=2), encoding="utf-8"
+    )
+    summary_path = tmp_path / "summary.json"
+    rc = producer.main(
+        [
+            "contract-acquire-summary",
+            "--result", str(result),
+            "--report-path", str(summary_path),
+        ]
+    )
+    assert rc == 0
+    captured = capsys.readouterr()
+    warning_lines = [
+        line
+        for line in captured.out.splitlines()
+        if line.startswith("::warning title=fif-contract-acquire::")
+    ]
+    assert warning_lines, captured.out
+    assert any("FXU 10-K 1/2" in line for line in warning_lines), warning_lines
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert summary["schema"] == "fundamental_forensics.fif_contract_acquire_summary/v1"
+    assert summary["status"] == "partial"
+    shortfall = next(
+        row for row in summary["shortfalls"] if row["ticker"] == "FXU" and row["form"] == "10-K"
+    )
+    assert set(shortfall) == {"ticker", "cik", "form", "selected", "required"}
+    assert (shortfall["selected"], shortfall["required"]) == (1, 2)
+
+
+def test_d13_t5_complete_summary_is_silent(tmp_path, capsys) -> None:
+    """T5: a complete acquire emits NO annotation and exits 0."""
+    result = tmp_path / "result.json"
+    result.write_text(
+        json.dumps(_contract_acquire_result("complete"), indent=2), encoding="utf-8"
+    )
+    rc = producer.main(["contract-acquire-summary", "--result", str(result)])
+    assert rc == 0
+    captured = capsys.readouterr()
+    assert not any(
+        line.startswith("::") for line in captured.out.splitlines()
+    ), captured.out
+
+
+def test_d13_t5_missing_result_is_typed_refusal(tmp_path, capsys) -> None:
+    """T5: a missing result file is the typed crash-class refusal — rc != 0,
+    stderr line-start ::error naming contract_acquire_result_unreadable."""
+    rc = producer.main(
+        ["contract-acquire-summary", "--result", str(tmp_path / "absent.json")]
+    )
+    assert rc == 1
+    error_lines = [
+        line for line in capsys.readouterr().err.splitlines() if line.startswith("::error")
+    ]
+    assert error_lines and any(
+        "contract_acquire_result_unreadable" in line for line in error_lines
+    )
+
+
+def test_d13_t5_malformed_result_is_typed_refusal(tmp_path, capsys) -> None:
+    """T5: a result without ``results.acquire`` (malformed) is the same typed
+    refusal, never a guessed-at summary."""
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({"schema": "unrelated", "results": {}}), encoding="utf-8")
+    rc = producer.main(["contract-acquire-summary", "--result", str(bad)])
+    assert rc == 1
+    error_lines = [
+        line for line in capsys.readouterr().err.splitlines() if line.startswith("::error")
+    ]
+    assert error_lines and any(
+        "contract_acquire_result_unreadable" in line for line in error_lines
+    )
+
+
+def test_d13_t5_summary_parses_final_json_despite_mixed_stdout(tmp_path, capsys) -> None:
+    """C5 robustness: wave-2's stdout is pure JSON today (its logging rides
+    stderr), but the summary must still find the outcome when stray lines land
+    on stdout around the final JSON object."""
+    outcome = _contract_acquire_result("partial")
+    mixed = (
+        "some future stray stdout line\n"
+        + json.dumps(outcome, indent=2)
+        + "\ntrailing noise without braces\n"
+    )
+    result = tmp_path / "result.json"
+    result.write_text(mixed, encoding="utf-8")
+    summary_path = tmp_path / "summary.json"
+    rc = producer.main(
+        ["contract-acquire-summary", "--result", str(result), "--report-path", str(summary_path)]
+    )
+    assert rc == 0
+    captured = capsys.readouterr()
+    assert any(
+        line.startswith("::warning title=fif-contract-acquire::")
+        for line in captured.out.splitlines()
+    )
+    # The parsed object was the WHOLE final outcome, never a nested fragment:
+    # the written summary carries the outer status plus both issuers' rows.
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert summary["status"] == "partial"
+    assert {row["ticker"] for row in summary["shortfalls"]} == {"FXU"}
+
+
+def test_d13_t6_capture_report_carries_contract_acquire_block(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """T6: capture-members copies the validated contract_acquire block into
+    its capture report (schema/status/shortfalls verbatim)."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    summary_path = tmp_path / "summary.json"
+    rc = producer.main(
+        [
+            "contract-acquire-summary",
+            "--result", _write_result(tmp_path, "partial"),
+            "--report-path", str(summary_path),
+        ]
+    )
+    assert rc == 0
+    capture_report = tmp_path / "capture_report.json"
+    rc = producer.main(
+        [
+            "capture-members",
+            "--coverage-file", str(contract),
+            "--raw-root", str(lane["raw_root"]),
+            "--archive-root", str(lane["archive_root"]),
+            "--recorded-at", CAPTURE_CLOCK,
+            "--user-agent", USER_AGENT,
+            "--contract-acquire-report", str(summary_path),
+            "--report-path", str(capture_report),
+        ]
+    )
+    assert rc == 0
+    capture = json.loads(capture_report.read_text(encoding="utf-8"))
+    block = capture["contract_acquire"]
+    assert block["schema"] == "fundamental_forensics.fif_contract_acquire_summary/v1"
+    assert block["status"] == "partial"
+    assert any(row["form"] == "10-K" and row["selected"] == 1 for row in block["shortfalls"])
+
+
+def _write_result(tmp_path: Path, status: str) -> str:
+    result = tmp_path / f"result-{status}.json"
+    result.write_text(
+        json.dumps(_contract_acquire_result(status), indent=2), encoding="utf-8"
+    )
+    return str(result)
+
+
+def test_d13_t6_publish_report_carries_contract_acquire_block_and_moves_no_byte(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """T6: publish carries the block onward from the capture report — and the
+    block is REPORT ONLY: two stores published from identical inputs, one with
+    the block and one without, mint the SAME generation ids and the same store
+    bytes (the existing AAPL pins stay green in the same suite)."""
+    generation_ids: dict[str, list[str]] = {}
+    for variant, with_block in (("with", True), ("without", False)):
+        lane = _materialize_lane(tmp_path / variant)
+        identity = lane["identity"]
+        contract = _write_contract(tmp_path / variant, identity, None)
+        store = tmp_path / variant / "store"
+        report_path = tmp_path / variant / "publish_report.json"
+        capture_report = tmp_path / variant / "capture_report.json"
+        summary_path = tmp_path / variant / "summary.json"
+        assert producer.main(
+            [
+                "contract-acquire-summary",
+                "--result", _write_result(tmp_path / variant, "partial"),
+                "--report-path", str(summary_path),
+            ]
+        ) == 0
+        capture_args = [
+            "capture-members",
+            "--coverage-file", str(contract),
+            "--raw-root", str(lane["raw_root"]),
+            "--archive-root", str(lane["archive_root"]),
+            "--recorded-at", CAPTURE_CLOCK,
+            "--user-agent", USER_AGENT,
+            "--report-path", str(capture_report),
+        ]
+        if with_block:
+            capture_args[-2:-2] = ["--contract-acquire-report", str(summary_path)]
+        assert producer.main(capture_args) == 0
+        publish_args = [
+            "publish",
+            "--coverage-file", str(contract),
+            "--raw-root", str(lane["raw_root"]),
+            "--archive-root", str(lane["archive_root"]),
+            "--recorded-at", RUN_CLOCK,
+            "--store-dir", str(store),
+            "--repo-root", str(ROOT),
+            "--report-path", str(report_path),
+            "--capture-report", str(capture_report),
+        ]
+        assert producer.main(publish_args) == 0
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        if with_block:
+            assert report["contract_acquire"]["status"] == "partial"
+        else:
+            assert "contract_acquire" not in report
+        generation_ids[variant] = [row["generation_id"] for row in report["published"]]
+        if with_block:
+            with_block_store_files = _store_files(store)
+        else:
+            without_block_store_files = _store_files(store)
+    assert generation_ids["with"] == generation_ids["without"]
+    assert with_block_store_files == without_block_store_files
+
+
+def test_d13_t6_capture_refuses_malformed_contract_acquire_report(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """Fail closed: a present-but-malformed summary file is the typed
+    contract_acquire_result_unreadable refusal BEFORE any SEC fetch."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    bad_summary = tmp_path / "summary.json"
+    bad_summary.write_text(json.dumps({"schema": "unrelated"}), encoding="utf-8")
+    rc = producer.main(
+        [
+            "capture-members",
+            "--coverage-file", str(contract),
+            "--raw-root", str(lane["raw_root"]),
+            "--archive-root", str(lane["archive_root"]),
+            "--recorded-at", CAPTURE_CLOCK,
+            "--user-agent", USER_AGENT,
+            "--contract-acquire-report", str(bad_summary),
+            "--report-path", str(tmp_path / "capture_report.json"),
+        ]
+    )
+    assert rc == 1
+    error_lines = [
+        line for line in capsys.readouterr().err.splitlines() if line.startswith("::error")
+    ]
+    assert error_lines and any(
+        "contract_acquire_result_unreadable" in line for line in error_lines
+    )
+    # Fail-closed BEFORE the fetch leg: not even a collector was constructed,
+    # so no member could be requested from SEC.
+    assert offline_collector["collectors"] == []

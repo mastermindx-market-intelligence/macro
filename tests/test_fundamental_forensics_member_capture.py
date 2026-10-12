@@ -1235,3 +1235,141 @@ def test_cross_device_staging_is_a_typed_refusal_never_a_copy(tmp_path, monkeypa
         assert not package_dir_for(
             lane["archive_root"], identity["cik"], accession
         ).exists()
+
+
+# ---------------------------------------------------------------------------
+# D13: the isolated, non-gating contract acquire lane (T4 harness)
+# ---------------------------------------------------------------------------
+
+
+def test_d13_t4_partial_acquire_retains_selected_manifests_and_syncs(
+    tmp_path, monkeypatch
+) -> None:
+    """D13 T4: a PARTIAL bounded acquire — one issuer whose recent Submissions
+    window holds a single 10-K (the motivating contract shape) — retains every
+    selected manifest AND lands it in the latest synced snapshot, when run
+    through ``run_operator_flow`` WITHOUT ``--require-complete-acquisition``
+    (the isolated contract lane's invocation shape: acquire + reuse-local +
+    sync + incremental-sync, no gate).
+
+    Reuses the repo's existing acquisition fakes — ``_SubmissionsCollector``
+    and ``_ArchiveCollector`` (tests/test_fundamental_forensics_acquisition.py)
+    over the ``_submissions`` rows fixture — with the one-10-K row variant;
+    the sync/restore legs ride the REAL source_sync over a LocalStore.
+    """
+    import json as _json
+
+    from collectors import fundamental_forensics_acquisition as acquisition
+    from collectors.edgar_forensics import endpoint_url, persist_response
+    from engine.fundamental_forensics.source_sync import restore_source_roots
+    from engine.research_vault.r2_store import LocalStore
+    from scripts import run_fundamental_forensics_wave2 as operator
+    from tests.test_fundamental_forensics_acquisition import (
+        _ArchiveCollector,
+        _SubmissionsCollector,
+        _submissions,
+    )
+
+    def _one_ten_k_rows(cik: int) -> dict:
+        """The fixture rows with every 10-K except FY2025 dropped, so the
+        bounded selection finds exactly ONE 10-K comparable (1 of 2) — the
+        same shape as a recent window that no longer reaches the prior 10-K."""
+        rows = _submissions(cik)
+        recent = rows["filings"]["recent"]
+        keep = [
+            index
+            for index, (form, report_date) in enumerate(
+                zip(recent["form"], recent["reportDate"])
+            )
+            if not (form == "10-K" and report_date != "2025-12-31")
+        ]
+        rows["filings"]["recent"] = {
+            key: [value[index] for index in keep] for key, value in recent.items()
+        }
+        return rows
+
+    class _OneTenKSubmissionsCollector(_SubmissionsCollector):
+        def fetch(self, cik, endpoint, *, retrieved_at, max_response_bytes=None):
+            cik10 = f"{int(cik):010d}"
+            self.calls.append((cik10, endpoint, max_response_bytes))
+            content = _json.dumps(_one_ten_k_rows(int(cik))).encode("utf-8")
+            return persist_response(
+                self.raw_root,
+                cik=cik,
+                endpoint=endpoint,
+                url=endpoint_url(cik, endpoint),
+                content=content,
+                retrieved_at=retrieved_at,
+            )
+
+    def _acquire(**kwargs):
+        return acquisition.acquire_bounded_filings(
+            submissions_collector_factory=_OneTenKSubmissionsCollector,
+            archive_collector_factory=_ArchiveCollector,
+            **kwargs,
+        )
+
+    monkeypatch.setattr(operator, "acquire_bounded_filings", _acquire)
+    monkeypatch.setattr(
+        operator, "_user_agent", lambda root: "MastermindX D13 test bench test@example.invalid"
+    )
+
+    raw_root = tmp_path / "raw"
+    archive_root = tmp_path / "archive"
+    outcome = operator.run_operator_flow(
+        root=tmp_path,
+        targets=("FXT=1",),
+        as_of="2026-08-01T23:59:59Z",
+        recorded_at="2026-08-02T00:05:00Z",
+        computed_at="2026-08-02T00:10:00Z",
+        acquire=True,
+        sync=True,
+        incremental_sync=True,
+        reuse_local_archive=True,
+        require_complete_acquisition=False,
+        raw_root=raw_root,
+        archive_root=archive_root,
+        observation_root=tmp_path / "observations-contract",
+        local_store=tmp_path / "private-store",
+    )
+
+    acquired = outcome["results"]["acquire"]
+    assert acquired["status"] == "partial"  # the 10-K shortfall, no exception
+    forms = [
+        (form["form"], len(form["selected_accessions"]), form["status"])
+        for receipt in acquired["ticker_receipts"]
+        for form in receipt["forms"]
+    ]
+    assert ("10-K", 1, "partial") in forms
+    assert ("10-Q", 2, "complete") in forms
+
+    cik = "0000000001"
+    selected = [
+        accession
+        for receipt in acquired["ticker_receipts"]
+        for form in receipt["forms"]
+        for accession in form["selected_accessions"]
+    ]
+    assert len(selected) == 3  # 1 10-K + 2 10-Q
+    # Every selected manifest exists under archive_root/manifests/<cik>/...
+    for accession in selected:
+        directory = archive_root / "manifests" / cik / accession
+        assert directory.is_dir(), directory
+        assert list(directory.glob("*.json")), directory
+
+    # AND appears in the latest synced snapshot manifest: restoring the LATEST
+    # snapshot into FRESH roots materializes every selected manifest again —
+    # the public restore path follows the latest pointer, so a file landing
+    # here proves the latest manifest names it.
+    fresh_raw = tmp_path / "fresh-raw"
+    fresh_archive = tmp_path / "fresh-archive"
+    restored = restore_source_roots(
+        raw_root=fresh_raw,
+        archive_root=fresh_archive,
+        store=LocalStore(tmp_path / "private-store"),
+    )
+    for accession in selected:
+        assert list(
+            (fresh_archive / "manifests" / cik / accession).glob("*.json")
+        ), accession
+    assert restored.to_dict()["restored_files"] >= 2 * len(selected) + 1

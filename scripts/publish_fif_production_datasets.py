@@ -1,6 +1,6 @@
 """FIF C0-b: publish production issuer datasets from lane-retained bytes (hard gate).
 
-Scheduled-lane producer for the D3 production dataset store. Four subcommands,
+Scheduled-lane producer for the D3 production dataset store. Five subcommands,
 one frozen coverage contract, and NO ticker or CIK literal anywhere — the
 issuer universe is read from the contract at runtime:
 
@@ -13,6 +13,12 @@ issuer universe is read from the contract at runtime:
   ``--raw-root``/``--archive-root`` trees under the ONE shared
   ``SecRequestPacer``. It is offline on every input except the SEC archive
   fetches it makes through the incumbent collector.
+* ``contract-acquire-summary`` (D13) reads the ISOLATED contract lane's
+  wave-2 result: ``complete`` is silent, a typed ``partial`` prints one
+  line-start ``::warning title=fif-contract-acquire::`` per shortfall (never
+  fatal — a contract issuer's bounded acquire is partial by construction),
+  and a missing/unreadable/malformed result is the typed
+  ``contract_acquire_result_unreadable`` refusal (crash class).
 * ``publish`` admits every retained package per contract issuer, computes the
   CLOCK RULE admission clock, mints lineage evidence through the S2-p seam,
   publishes one immutable generation per published issuer through
@@ -99,6 +105,7 @@ from collectors.sec_filing_parser import (  # noqa: E402
 
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
+CONTRACT_ACQUIRE_SUMMARY_SCHEMA = "fundamental_forensics.fif_contract_acquire_summary/v1"
 EXCLUSION_IDENTITY_NOT_FROZEN = "identity_not_frozen"
 EXCLUSION_NO_RETAINED_PACKAGE = "no_retained_package"
 PUBLISHER_ERROR_CODES = frozenset(
@@ -121,6 +128,10 @@ PUBLISHER_ERROR_CODES = frozenset(
         # ERRATA-3 1.c: changed content with no lawful clock later than the
         # latest published clock refuses instead of rewinding the pointer.
         "admission_clock_not_after_latest",
+        # D13: the isolated contract-acquire lane's result/summary is missing,
+        # unreadable, or outside the closed shape — the acquisition state is
+        # UNKNOWN, so capture/publish must refuse rather than guess.
+        "contract_acquire_result_unreadable",
     }
 )
 
@@ -242,6 +253,188 @@ def _run_targets(args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# contract-acquire-summary (D13: the isolated, non-gating contract lane)
+# ---------------------------------------------------------------------------
+
+
+def _parse_final_json_object(text: str) -> dict[str, Any]:
+    """Parse the LAST complete top-level JSON object in a stdout capture.
+
+    C5: wave-2 prints its outcome JSON as its final stdout write and every
+    logger line rides stderr, so a plain ``json.loads`` would already work —
+    but the summary must not BREAK if a future stray line lands on stdout, so
+    the parse is robust by construction: scan every candidate start, prefer
+    the object whose decode consumes the remainder (the printed outcome ends
+    at EOF), and fall back to the object with the furthest reach. Nested
+    objects never win: an inner start always leaves trailing text.
+    """
+    decoder = json.JSONDecoder()
+    candidates: list[tuple[int, int, dict[str, Any]]] = []
+    for index, char in enumerate(text):
+        if char != "{":
+            continue
+        try:
+            value, end = decoder.raw_decode(text, index)
+        except ValueError:
+            continue
+        if isinstance(value, dict):
+            candidates.append((index, end, value))
+    if not candidates:
+        raise ValueError("no JSON object found")
+    for index, end, value in reversed(candidates):
+        if not text[end:].strip():
+            return value
+    return max(candidates, key=lambda item: (item[1], -item[0]))[2]
+
+
+def _contract_acquire_shortfalls(acquire: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Every form whose coverage is not complete, as frozen shortfall rows.
+
+    A ticker-level failure (e.g. a submissions outage) keeps its form receipts
+    in a non-complete state, so it surfaces here as 0/``required`` rows rather
+    than silence. Malformed rows are the typed unreadable refusal: the
+    acquisition state must never be guessed at.
+    """
+    receipts = acquire.get("ticker_receipts")
+    if not isinstance(receipts, list):
+        _fail(
+            "contract acquire result has no ticker_receipts list",
+            code="contract_acquire_result_unreadable",
+        )
+    rows: list[dict[str, Any]] = []
+    for receipt in receipts:
+        if not isinstance(receipt, Mapping):
+            _fail(
+                "contract acquire ticker receipt is malformed",
+                code="contract_acquire_result_unreadable",
+            )
+        for form in receipt.get("forms") or []:
+            if not isinstance(form, Mapping) or not isinstance(form.get("form"), str):
+                _fail(
+                    "contract acquire form receipt is malformed",
+                    code="contract_acquire_result_unreadable",
+                )
+            if str(form.get("status") or "") == "complete":
+                continue
+            selected = form.get("selected_accessions")
+            required = form.get("requested_comparables")
+            if not isinstance(selected, list) or type(required) is not int:
+                _fail(
+                    "contract acquire form receipt is malformed",
+                    code="contract_acquire_result_unreadable",
+                )
+            rows.append(
+                {
+                    "ticker": str(receipt.get("ticker") or ""),
+                    "cik": str(receipt.get("cik") or ""),
+                    "form": str(form["form"]),
+                    "selected": len(selected),
+                    "required": required,
+                }
+            )
+    return rows
+
+
+def _validated_summary_shape(document: Any, *, origin: str) -> dict[str, Any]:
+    """Validate one contract-acquire summary object (file or embedded block)."""
+    if not isinstance(document, Mapping) or document.get(
+        "schema"
+    ) != CONTRACT_ACQUIRE_SUMMARY_SCHEMA:
+        _fail(
+            f"contract acquire summary shape is invalid: {origin}",
+            code="contract_acquire_result_unreadable",
+        )
+    status = document.get("status")
+    if status not in ("complete", "partial"):
+        _fail(
+            f"contract acquire summary status is outside the closed vocabulary: {status!r}",
+            code="contract_acquire_result_unreadable",
+        )
+    shortfalls = document.get("shortfalls")
+    if not isinstance(shortfalls, list):
+        _fail(
+            f"contract acquire summary shortfalls are malformed: {origin}",
+            code="contract_acquire_result_unreadable",
+        )
+    for row in shortfalls:
+        if not isinstance(row, Mapping) or set(row) != {
+            "ticker",
+            "cik",
+            "form",
+            "selected",
+            "required",
+        }:
+            _fail(
+                f"contract acquire summary shortfall row is malformed: {origin}",
+                code="contract_acquire_result_unreadable",
+            )
+    return {
+        "schema": CONTRACT_ACQUIRE_SUMMARY_SCHEMA,
+        "status": str(status),
+        "shortfalls": [dict(row) for row in shortfalls],
+    }
+
+
+def _run_contract_acquire_summary(args: argparse.Namespace) -> int:
+    path = Path(args.result)
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise PublisherError(
+            f"contract acquire result is unreadable: {path}",
+            code="contract_acquire_result_unreadable",
+        ) from exc
+    try:
+        outcome = _parse_final_json_object(text)
+    except ValueError as exc:
+        raise PublisherError(
+            f"contract acquire result carries no JSON outcome object: {path}",
+            code="contract_acquire_result_unreadable",
+        ) from exc
+    results = outcome.get("results")
+    acquire = results.get("acquire") if isinstance(results, Mapping) else None
+    if not isinstance(acquire, Mapping) or not isinstance(acquire.get("status"), str):
+        _fail(
+            f"contract acquire result has no results.acquire.status: {path}",
+            code="contract_acquire_result_unreadable",
+        )
+    status = str(acquire["status"])
+    if status not in ("complete", "partial"):
+        _fail(
+            f"contract acquire status is outside the closed vocabulary: {status!r}",
+            code="contract_acquire_result_unreadable",
+        )
+    shortfalls = _contract_acquire_shortfalls(acquire)
+    summary = {
+        "schema": CONTRACT_ACQUIRE_SUMMARY_SCHEMA,
+        "status": status,
+        "shortfalls": shortfalls,
+    }
+    _write_report(summary, args.report_path)
+    print(json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
+    if status == "complete":
+        return 0
+    # R4: a typed partial is EXPECTED for the contract lane — one line-start
+    # ::warning per shortfall (bare print, flush=True; never a logger), and
+    # the shortfalls ride the summary into the capture/publish reports.
+    if shortfalls:
+        for row in shortfalls:
+            print(
+                f"::warning title=fif-contract-acquire::{row['ticker']} {row['form']} "
+                f"{row['selected']}/{row['required']} comparables selected at as_of "
+                f"(partial contract acquire; shortfall recorded)",
+                flush=True,
+            )
+    else:
+        print(
+            "::warning title=fif-contract-acquire::acquire status partial with no "
+            "shortfall rows (unexpected result shape; shortfall recorded)",
+            flush=True,
+        )
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # capture-members
 # ---------------------------------------------------------------------------
 
@@ -252,12 +445,33 @@ def _resolve_user_agent(args: argparse.Namespace) -> str:
     return _user_agent(_ROOT)
 
 
+def _load_contract_acquire_summary(path_value: Any) -> dict[str, Any] | None:
+    """D13 W3: read the contract-acquire summary file for the capture report.
+
+    Fail closed BEFORE any SEC fetch: an unreadable or wrong-shaped summary is
+    the typed ``contract_acquire_result_unreadable`` refusal — the capture
+    report must never silently drop the contract acquisition state it was
+    handed (the publish report carries the block onward from here).
+    """
+    if not path_value:
+        return None
+    try:
+        document = json.loads(Path(path_value).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PublisherError(
+            f"contract acquire summary is unreadable: {path_value}",
+            code="contract_acquire_result_unreadable",
+        ) from exc
+    return _validated_summary_shape(document, origin=str(path_value))
+
+
 def _run_capture_members(args: argparse.Namespace) -> int:
     contract = load_fif_coverage_contract(args.coverage_file)
     raw_root = Path(args.raw_root)
     archive_root = Path(args.archive_root)
     refuse_repository_fixture_inputs(raw_root, archive_root)
     recorded_at = _require_clock(args.recorded_at, "--recorded-at")
+    contract_acquire_summary = _load_contract_acquire_summary(args.contract_acquire_report)
     user_agent = _resolve_user_agent(args)
     if "@" not in user_agent:
         _fail("SEC user agent must identify an application and contact email", code="contract_malformed")
@@ -278,6 +492,11 @@ def _run_capture_members(args: argparse.Namespace) -> int:
         recorded_at=utc_text(recorded_at) or "",
         run_budget_bytes=args.run_budget_bytes,
     )
+    if contract_acquire_summary is not None:
+        # D13 W3: the isolated contract acquire's state rides the capture
+        # report verbatim (schema/status/shortfalls); publish carries the same
+        # block onward. Report ONLY — no manifest or generation byte moves.
+        report["contract_acquire"] = contract_acquire_summary
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
     # D6: the capture report is an artifact too — written BEFORE any refusal
     # below, so a red capture night still leaves its evidence on disk.
@@ -478,6 +697,31 @@ def _load_capture_failures(path_value: Any) -> dict[str, list[tuple[str, str]]]:
                 rows.append((outcome.split(":", 1)[1], str(row.get("error") or outcome)))
         failures[issuer["cik"]] = rows
     return failures
+
+
+def _load_contract_acquire_block(path_value: Any) -> dict[str, Any] | None:
+    """D13 W3: the capture report's ``contract_acquire`` block, validated.
+
+    The block is written by capture-members from the contract lane's summary
+    file; carrying it into the publish report keeps one acquisition-state
+    trail across capture -> publish. An absent block (a capture run without
+    --contract-acquire-report) is lawful; a PRESENT but malformed block is the
+    typed refusal — never silently dropped.
+    """
+    if not path_value:
+        return None
+    try:
+        document = json.loads(Path(path_value).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PublisherError(
+            f"capture report is unreadable: {path_value}", code="contract_malformed"
+        ) from exc
+    if not isinstance(document, dict) or not isinstance(document.get("issuers"), list):
+        _fail(f"capture report shape is invalid: {path_value}", code="contract_malformed")
+    block = document.get("contract_acquire")
+    if block is None:
+        return None
+    return _validated_summary_shape(block, origin=f"{path_value}#contract_acquire")
 
 
 def _stage_contract_issuers(
@@ -845,6 +1089,10 @@ def _run_publish(args: argparse.Namespace) -> int:
         archive_root=archive_root,
         capture_failures=_load_capture_failures(args.capture_report),
     )
+    # D13 W3: the contract acquire state rides the publish report too (report
+    # ONLY — no generation byte moves; the block was validated against the
+    # frozen summary shape above).
+    contract_acquire = _load_contract_acquire_block(args.capture_report)
 
     # FUTURE-CLOCK REFUSAL (seat amendment (a)) — still FIRST and unchanged
     # (ERRATA-3 1.d): every issuer's CLOCK RULE is computed BEFORE any store
@@ -948,6 +1196,8 @@ def _run_publish(args: argparse.Namespace) -> int:
             "failed": failed,
             "not_attempted": not_attempted,
         }
+        if contract_acquire is not None:
+            partial["contract_acquire"] = contract_acquire
         _write_report(partial, args.report_path)
         print(json.dumps(partial, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
         _fail(
@@ -961,6 +1211,8 @@ def _run_publish(args: argparse.Namespace) -> int:
         "published": published,
         "excluded": excluded,
     }
+    if contract_acquire is not None:
+        report["contract_acquire"] = contract_acquire
     _write_report(report, args.report_path)
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
     verify_report(report, store)
@@ -1097,10 +1349,33 @@ def build_parser() -> argparse.ArgumentParser:
     # the publisher carries no second 256 MiB literal.
     capture.add_argument("--run-budget-bytes", type=int, default=DEFAULT_RUN_BUDGET_BYTES)
     capture.add_argument(
+        "--contract-acquire-report",
+        type=Path,
+        default=None,
+        help="The contract acquire step's summary JSON; its contract_acquire block is copied into the capture report",
+    )
+    capture.add_argument(
         "--report-path",
         type=Path,
         default=None,
         help="Write the JSON capture report here (the workflow uploads it)",
+    )
+
+    summary = subparsers.add_parser(
+        "contract-acquire-summary",
+        help="D13: summarize the isolated contract acquire (partial -> ::warning, never fatal)",
+    )
+    summary.add_argument(
+        "--result",
+        type=Path,
+        required=True,
+        help="The isolated contract wave-2 run's stdout result JSON",
+    )
+    summary.add_argument(
+        "--report-path",
+        type=Path,
+        default=None,
+        help="Write the JSON summary here (the workflow uploads it)",
     )
 
     publish = subparsers.add_parser("publish", help="Publish production generations (hard gate)")
@@ -1134,6 +1409,8 @@ def main(argv: list[str] | None = None) -> int:
             return _run_targets(args)
         if args.command == "capture-members":
             return _run_capture_members(args)
+        if args.command == "contract-acquire-summary":
+            return _run_contract_acquire_summary(args)
         if args.command == "publish":
             return _run_publish(args)
         if args.command == "verify":
