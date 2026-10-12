@@ -1,0 +1,23 @@
+{
+  "reviewed_head": "0aa432bf5f24de8f131db0572aff5fc8122b274c",
+  "route": "existing ChatGPT-authenticated Codex gpt-5.6-terra, read-only sandbox, medium effort",
+  "operation": "regime-hmm-w0-review-terra-20260909-sol-001",
+  "result": "REQUEST_CHANGES",
+  "finding": "Oversized integer probability can raise OverflowError before explicit refusal.",
+  "source": "engine/regime_one.py::_valid_hmm_prediction",
+  "reviewer_final_text": "The review identified one introduced fail-open/crash path for oversized JSON numeric values, which is within the requested corrupt-input handling scope. Unverified boundaries: no tests were executed, no runtime ledger contents or production behavior were read, and review was limited to the specified commit diff, three implementation files, and their changed tests. Terminal STOP.\n\nReview comment:\n\n- [P2] Reject oversized JSON integers without crashing \u2014 engine/regime_one.py:955-956\n  When the saved ledger contains a syntactically valid but oversized integer probability\u2014for example `\"p_quad_filtered\":{\"Q1\":<401-digit integer>,\"Q2\":0,\"Q3\":0,\"Q4\":0}`\u2014`math.isfinite(v)` converts that `int` to a float and raises `OverflowError`. Neither `read_hmm_issuance` nor the ledger-validation path in `accrue_hmm_row` catches that exception, so the read-only inspection exits without the required explicit `invalid_record`/`invalid_ledger` evidence and an existing nightly ledger can crash rather than fail closed. Treat conversion overflow as an invalid prediction (and add an oversized-integer case alongside the nonfinite-number tests).",
+  "sol_verification": "Two failing pytest cases reproduced OverflowError for +10**400 and -10**400; range comparison now precedes math.isfinite.",
+  "repair_scope": "One ordering change plus explanatory comment in shared prediction validator; two regression cases cover reader and append.",
+  "post_repair_independent_review": "owed",
+  "prior_review_attempts": [
+    {
+      "route": "Codex gpt-6-astra",
+      "outcome": "provider400 requires newer CLI; exited1; no review supplied; no upgrade performed"
+    },
+    {
+      "route": "Claude Sonnet tool-free CLI, two finite invocations",
+      "outcome": "both exited0 but result text empty; neither counted as substantive review or PASS"
+    }
+  ],
+  "dialogue": "All listed finite review processes exited; no watcher or continuing worker assignment; no Executive Job created."
+}

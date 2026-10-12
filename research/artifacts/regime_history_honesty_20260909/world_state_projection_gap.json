@@ -1,0 +1,51 @@
+{
+  "source_pin": "2419398dde91e08563e91399786046ff7ec8c069",
+  "source_path": "engine/neuralweb/world_state.py::_compose_regime",
+  "method": "actual pinned pure function extracted by AST; synthetic input, no project writes or model execution",
+  "input": {
+    "quad": "Q1",
+    "confidence": 0.7,
+    "quad_vector": {
+      "p": {
+        "Q1": 0.55,
+        "Q2": 0.35,
+        "Q3": 0.05,
+        "Q4": 0.05
+      },
+      "degraded": false,
+      "confidence_basis": "heuristic_not_calibrated_probability"
+    },
+    "regime_one": {
+      "forward": {
+        "p_quad": {
+          "history_basis": "reconstructed_with_current_fit"
+        }
+      }
+    }
+  },
+  "output": {
+    "quad": "Q1",
+    "quad_name": null,
+    "label": null,
+    "confidence": 0.7,
+    "growth_score": null,
+    "inflation_score": null,
+    "cycle_tag": null,
+    "transition_state": null,
+    "flip_condition": null,
+    "flip_margin": null,
+    "liquidity_quality": null,
+    "business_cycle": null,
+    "liquidity_overlay": null,
+    "sector_rs": null,
+    "freshness": null,
+    "asof": null,
+    "schema_version": null
+  },
+  "missing_context": [
+    "quad_vector probabilities and degraded basis",
+    "regime_one historical reconstruction basis"
+  ],
+  "next_consumer": "engine/neuralweb/brief_context.py::_block_market_core also only projects quad, confidence, transition_state, flip_margin",
+  "capability_scope": "disconnected context propagation at these two existing projections; no claim all neural web readers lack every regime probability"
+}
