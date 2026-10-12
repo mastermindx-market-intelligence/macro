@@ -34,7 +34,7 @@ Not frozen unless every item holds:
 |---|---|---|
 | One reuse matrix | §9 below (from the C3_owners census, seat-corrected) | pending C3 |
 | #6514 hold/disposition understood | §1.1 | DONE (seat) |
-| Benchmark sampling plan | §6 | DRAFT (seat design; counts pending C1) |
+| Benchmark sampling plan | §6 | DRAFT (seat design; counts filled from C1_tape, 2026-10-11 — §6, §8) |
 | No rival schema/store | §1.2 | DONE (seat) |
 | Four remaining research questions frozen | §1.3 | DONE (seat) |
 
@@ -111,6 +111,24 @@ questions rather than by salience:
   conditional, completed, withdrawn, rumoured}. Default: both — status carries the
   category, the bounded string carries the condition text with its span.
 
+### 4.1 Resolutions recorded before the synthesis (seat, 2026-10-11)
+
+Recorded from the seat ledger (D6–D12) so the synthesis in §5 starts from closed forks. Each resolution names the existing-owner fact that closed it. No owner file is edited in Phase 0.
+
+- **F1 — RESOLVED (D6).** The leaf contract is `news_impact.<template>.v1`, keyed by CIK `company_id` (`cik:` + 10 digits, the E0 identity key) plus `source_document_id` plus the span ids it cites. It links to `company_event.v1` only when the extracted event type is in that contract's closed `EVENT_TYPES`; otherwise `ci_event_id` is a typed absence. Why: `company_event.v1` has no `news` type, and `canonical_event_id(None, …)` mints `evt_cik0000000000_<period>_<type>` for a missing CIK, so a news leaf that forced a link would either invent an event type or collide on the CIK-floor id.
+- **F2 — RESOLVED (D7, D8).** Evidence spans are `byte_replayed` through `documents.text_span()`; the `sub_kind: transcript_segment` stamp it applies is accepted as-is. `address_only_span()` stays limited to `table_cell` / `slide_region`, exactly as the owner defines it. Because a non-filing `source_document.v1` has no `url` field and refuses `document_kind='news'` / `source_class='news'`, the Phase 1 adapter is a leaf `news_impact.source_locator.v1` — `{url (https only, is_safe_source_url), capture_time, source_sha256, qbus item_id}` — wrapping, never modifying, a `source_document.v1`. `documents.py` is not edited.
+- **F3 — RESOLVED (D13, review attack 4 = A4).** `quantity_basis` is not a free per-slot choice. Each quantity slot carries a `basis` CONST fixed by the template (`incremental_amount` → `incremental`, `remaining_authorization` → `total`, per-share slots → `per_share`, percentage slots → `percent`); `run_rate` is admitted only on slots the template names. A4 (basis `total` on an incremental slot, `percent` unit with `NA` currency, inverted range) must be REJECTED by the schema, not by prose. Range ordering (`low` ≤ `high`) stays a NAMED validator because JSON Schema cannot compare two fields; it is listed in §3 as a validator, never as a schema promise.
+- **F4 — RESOLVED (D9).** The baseline for any delta follows a fixed ladder: `prior_guidance` → `prior_reported_period` → `prior_announced_programme` → typed absence `not_stated`. Consensus is never written as a number by this program.
+- **F5 — RESOLVED (D14, review attack 5 = A5).** Conditionality is a closed `commitment_status` enum, not a bounded free string. Coherence is enforced in schema by `if/then`: `commitment_status ∈ {executed, completed}` requires `executed_amount.form ≠ absent`; `primary_amount_role = X` requires the matching slot's `form ≠ absent`; a present quantity forbids the absence branch of its evidence. One negation flag per fact (slot-level `negated` is dropped — two flags that can disagree are a defect, A5). A condition's text, where one exists, is a bounded quoted span on the evidence wrapper (`claimed_quote`), never a second free field.
+- **D10.** Issuer role is a closed enum: `{subject, counterparty, competitor, supplier, customer, incidental, unknown}`.
+- **D11.** Novelty is read from the qbus tape's `novelty_z` and echo context only; the program mints no second novelty score.
+- **D12.** Issuer resolution ladder: `data/symbol_directory/cik_map/<date>.parquet` snapshot at or before the capture date → `data/edgar/ticker_cik_ledger.json` (flagged `ledger_fallback`) → typed absence. `data/edgar/dead_name_cik.json` feeds the benchmark's failure quota. Resolver version and snapshot date ride as provenance on every row.
+- **D13.** Evidence shape (review F1/F3, graft G1): every numeric critical field binds `evidence = oneOf(owner source_span.v1 payload EXACTLY as documents.py SourceSpan emits it — receipt_state ∈ {byte_replayed, address_only}, byte locator keys, receipt required when byte_replayed — | field_absence.v1)`. `typed_absence` is NOT a receipt state; the frozen assumption that said so was wrong and is withdrawn. The evidence wrapper keeps an extractor-side `claimed_quote` (1–500 chars). The owner's own serialized SourceSpan must validate unchanged (R3 of the counterexample suite).
+- **D14.** Absence (graft G2): the program's absence is `field_absence.v1` with reasons `{not_stated, stated_without_number, range_only, redacted_rights, parse_failed}` plus optional `owner_reason ∈ documents.py ABSENCE_REASONS`. It is never named `typed_absence.v1`, which is the owner's absence schema with a disjoint reason set (review F2).
+- **D15.** Period (graft G3): the owner `FiscalPeriod.to_payload()` keys `{year, quarter 1–4|null, calendar_end ISO date|null}` are adopted verbatim, plus `period_kind ∈ {quarter, half_year, nine_months, fiscal_year, multi_year}` with optional `end_year`. No second period type.
+- **D16.** Envelope (graft G4, review F5): every fact carries `fact_id` (`fact_` + 24 hex), `document_id`, `observed_at`, `source_available_at` (date-time) and `supersedes_fact_id` (null or `fact_` pattern), with `novelty = corrected_fact ⇒ supersedes_fact_id` required non-null. This is what makes the §11 "successful correction replay" gradeable.
+- **D17.** Injection containment (graft G5, §3.5): every free string carries a not-pattern for `ignore previous|prior`, `system prompt` and `http://`-style URLs; `quarantine_reason` lives OUTSIDE the publishable templates so a quarantined item can never be published by accident. A1 (instruction smuggled through bounded fields) must be rejected by the schema.
+
 ## 5. Parsimony demotions (fields proposed and dropped, with the reason)
 
 _pending_
@@ -128,6 +146,7 @@ _pending_
   and carrying a quota of deliberately misleading near-duplicates and indirect-transfer
   targets. Minimum per cell is set from C1's measured counts; a cell the tape cannot
   fill is reported short, never padded from synthetic text.
+- **Counts (from C1_tape, 2026-10-11; §8).** Draw population = the trailing 90 days of publisher `seendate` on the qbus tape, frozen by tape sha and date bounds in the sampling manifest. Candidate pools per template (tagged rows / distinct issuers / pool-to-target ratio for 200): T1 964 / 870 / 4.8×; T2 793 / 826 / 4.0×; T3 549 / 443 / 2.7×. Per template of 200: 90 positive / 50 negative / 30 ambiguous / 30 no-change. Tagged within those cells: ≥20 misleading near-duplicates (drawn from the 1,905 size-2–5 `event_key` clusters plus cross-outlet duplicates found at labeling) and ≥10 indirect-transfer targets. Caps: ≤6 clusters per issuer per template (so ≥100 issuers per template); the seven megacaps (NVDA, MSFT, AAPL, GOOGL, TSLA, AMZN, META) ≤10% of each template's draw against 26% raw; no economic cluster >25%. Positives are supplemented from the 177-row `event_log` feeder (buyback 15, dividend_change 15, equity_offering 34, guidance_raise+guidance_cut 84, contract_award+customer_win 6, product_launch 23); negatives from the 1,764-row `reject_sample`. A cell that comes up short is reported short in the manifest, never back-filled.
 - **Issuer mix.** The 100 deep issuers span several economically distinct clusters and
   include less-followed names and failures; megacaps are capped so no cluster exceeds
   a fixed share of cases.
@@ -158,7 +177,32 @@ _pending_
 
 ## 8. Tape fit (what the benchmark population looks like on the current qbus tape)
 
-_pending C1_tape_
+Source: seat census C1_tape (run under the continuation law at head `cf4ca641fb9d`, script `c1_tape.py`, seeds 7 and 11; sentinel `C1_tape: PASS cf4ca641fb9d`). Numbers are from the tape as read on 2026-10-11 and will move with the tape; the sampling manifest freezes its own.
+
+**Answer first.** The tape carries enough tagged, issuer-resolved headlines to fill all three 200-row templates from a 90-day window at 2.7–4.8× oversampling, but it carries headlines only: no bodies, no labels, and a duplicate structure that is mostly singletons. The benchmark therefore samples candidates from the tape, re-fetches bodies through the allowlisted owner, and labels by hand. The tape is a recall net, never ground truth.
+
+| Fact | Value |
+|---|---|
+| Rows / date range | 53,658 rows, 2026-05-05 → 2026-10-11; `_crawled_at` populated from 2026-09-12 (352 distinct values) |
+| Daily volume | median 461 / p10 218 / p90 757 rows per day; 0 zero-days of 91 |
+| Bodies | none on the tape (`body_sha256` only); `classify_event(title, body="")` returns null for 95.0% (n=10,000, seed 11) |
+| Issuer tags | `entities` present on 52.6% of rows |
+| Low-value filter | `is_low_value` fires on 0.3% (n=20,000, seed 7) |
+| Duplicate structure | 50,896 `event_key` values; 91% singletons; 94.9% of rows are first-in-cluster |
+| Template families (rows / tagged / issuers / 90-day clusters) | T1 1,348 / 964 / 870 / 156 · T2 1,297 / 793 / 826 / 46 · T3 744 / 549 / 443 / 20 · ANY 3,263 / 2,210 / 1,603 / 227 |
+| Family overlaps | T1∩T2 84 · T1∩T3 17 · T2∩T3 26 · all three 1 |
+| Rates | 30.8 family matches/day; 21.5 tagged/day; 1,476 distinct issuers |
+| Megacap share | 848 of 3,263 family matches (26%) are NVDA/MSFT/AAPL/GOOGL/TSLA/AMZN/META |
+| Labeled seed | none. `event_log` has 1,335 rows / 592 tickers of machine labels only; 177 rows match the feeder types |
+| Reject sample | 1,764 rows: stock_pick_roundup 804, single_stock_advertorial 429, calendar_preview 345, personal_finance_advice 74, morning_aggregator 57 |
+
+**Consequences for the plan.**
+
+- The family regexes are a RECALL net. Precision is settled by labeling, so the sampler draws from the families and never treats a family match as a positive.
+- A per-issuer cap of ≤6 clusters per template keeps the 26% megacap mass under the 10% ceiling without exhausting the pool (≥100 issuers per template remain).
+- Bodies are re-fetched through the allowlisted retrieval owner (masterplan §3.5). A row whose body cannot be fetched is `deferred: body_unavailable`, counted in the accounting, never silently dropped.
+- Cross-outlet clustering is Phase 1 work. The holdout group id is `(resolved issuer, template, event date ± 2 d)`, never `event_key`, because `event_key` is 91% singletons and would leak mirrors across folds.
+- Known gaps: `_crawled_at` is blank before 2026-09-12, so publisher `seendate` is the sampling clock; there is no labeled seed, so the first 600 labels are all hand adjudication; indirect-transfer targets are found at labeling, not by regex.
 
 ## 9. Reuse matrix
 
