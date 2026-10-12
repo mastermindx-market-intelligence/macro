@@ -413,11 +413,32 @@ def compose_bea_industry_accounting_change(
     earlier, latest = history["observations"][-2:]
     if earlier["accounting_year"] != 2023 or latest["accounting_year"] != 2024:
         raise BEAContextRefused("only exact 2023->2024 research comparison admitted")
-    region_changes = {
-        name: (latest["regional_import_million_USD"][name]
-               - earlier["regional_import_million_USD"][name])
-        for name, _ in REGIONS
-    }
+    def signed_change(before: Mapping[str, Any], after: Mapping[str, Any]) -> dict[str, Any]:
+        return {
+            "total_use": after["total_use_million_USD"] - before["total_use_million_USD"],
+            "world_import": after["world_import_million_USD"] - before["world_import_million_USD"],
+            "regions": {
+                name: (after["regional_import_million_USD"][name]
+                       - before["regional_import_million_USD"][name])
+                for name, _ in REGIONS
+            },
+        }
+
+    annual = history["observations"]
+    adjacent = [
+        {
+            "earlier_accounting_year": annual[i - 1]["accounting_year"],
+            "later_accounting_year": annual[i]["accounting_year"],
+            "earlier_research_capture_at": annual[i - 1]["source"]["research_capture_at"],
+            "later_research_capture_at": annual[i]["source"]["research_capture_at"],
+            "publisher_edition_date": PUBLISHER_EDITION_DATE,
+            "publisher_edition_precision": "DAY",
+            "original_historical_known_at": None,
+            "historical_pit_eligible": False,
+            "signed_change_million_USD": signed_change(annual[i - 1], annual[i]),
+        }
+        for i in range(1, len(annual))
+    ]
     return {
         "schema": "market_ontology.bea_industry_accounting_change_research/v1",
         "authority": "PRIVATE_RESEARCH_ONLY",
@@ -465,13 +486,9 @@ def compose_bea_industry_accounting_change(
             }
             for row in history["observations"]
         ],
-        "signed_change_2024_minus_2023_million_USD": {
-            "total_use": (latest["total_use_million_USD"]
-                          - earlier["total_use_million_USD"]),
-            "world_import": (latest["world_import_million_USD"]
-                             - earlier["world_import_million_USD"]),
-            "regions": region_changes,
-        },
+        "signed_change_2024_minus_2023_million_USD": signed_change(earlier, latest),
+        "signed_change_2024_minus_2017_million_USD": signed_change(annual[0], latest),
+        "consecutive_year_signed_changes_million_USD": adjacent,
         "publisher_day_precision_only": True,
         "historical_pit_eligible": False,
         "source_bytes_authenticated_by_this_projection": False,

@@ -552,6 +552,11 @@ class BEAAccountingChangeBriefTests(unittest.TestCase):
             "earliest": "2026-10-08T03:01:00+00:00",
             "latest": "2026-10-10T05:02:00+00:00",
         })
+        changes = report["consecutive_year_signed_changes_million_USD"]
+        self.assertEqual(changes[0]["earlier_research_capture_at"],
+                         "2026-10-08T03:01:00+00:00")
+        self.assertEqual(changes[-1]["later_research_capture_at"],
+                         "2026-10-10T05:02:00+00:00")
         earlier, latest = report["annual_observations"][0], report["annual_observations"][-1]
         self.assertEqual(earlier["research_capture_at"], "2026-10-08T03:01:00+00:00")
         self.assertEqual(latest["research_capture_at"], "2026-10-10T05:02:00+00:00")
@@ -573,6 +578,51 @@ class BEAAccountingChangeBriefTests(unittest.TestCase):
         self.assertFalse(report["historical_pit_eligible"])
         self.assertFalse(report["may_publish"])
         self.assertFalse(report["named_company_relationship"])
+
+    def test_seven_signed_annual_changes_cover_full_retrospective_history(self):
+        response = _synthetic_workspace_response()
+        small = dict(zip(_KEYS, (0, 10, 0, 0, 0, 0, 9)))
+        negative = dict(zip(_KEYS, (-8, 0, -60, 0, 0, -1, -1)))
+        response["result"]["rows"][0] = synthetic_row(
+            year=2017, use=700, world=19, regions=small,
+        )
+        response["result"]["rows"][3] = synthetic_row(
+            year=2020, use=-2, world=-69, regions=negative,
+        )
+        report = compose_bea_industry_accounting_change(
+            response, industry_code="3341", commodity_code="3344",
+        )
+        annual_changes = report["consecutive_year_signed_changes_million_USD"]
+        self.assertEqual(len(annual_changes), 7)
+        self.assertEqual(
+            [(r["earlier_accounting_year"], r["later_accounting_year"])
+             for r in annual_changes],
+            [(year, year + 1) for year in range(2017, 2024)],
+        )
+        self.assertEqual(annual_changes[0]["signed_change_million_USD"]["world_import"], 193)
+        self.assertEqual(annual_changes[2]["signed_change_million_USD"]["world_import"], -281)
+        self.assertEqual(annual_changes[2]["signed_change_million_USD"]["regions"]["europe"], -90)
+        self.assertEqual(annual_changes[3]["signed_change_million_USD"]["world_import"], 281)
+        self.assertEqual(annual_changes[-1]["signed_change_million_USD"],
+                         report["signed_change_2024_minus_2023_million_USD"])
+        for item in annual_changes:
+            with self.subTest(year=item["later_accounting_year"]):
+                self.assertEqual(item["publisher_edition_date"], "2026-05-21")
+                self.assertEqual(item["publisher_edition_precision"], "DAY")
+                self.assertIsNone(item["original_historical_known_at"])
+                self.assertIs(item["historical_pit_eligible"], False)
+                self.assertTrue(item["earlier_research_capture_at"].startswith("2026-"))
+                self.assertTrue(item["later_research_capture_at"].startswith("2026-"))
+        total = report["signed_change_2024_minus_2017_million_USD"]
+        self.assertEqual(total["world_import"], 193)
+        self.assertEqual(total["total_use"], 101)
+        self.assertEqual(len(report["annual_observations"]), 8)
+        self.assertIsNone(report["annual_observations"][0]["regional_origin_fraction_of_world"])
+        self.assertIsNone(report["annual_observations"][3]["regional_origin_fraction_of_world"])
+        self.assertTrue(report["publisher_day_precision_only"])
+        self.assertFalse(report["historical_pit_eligible"])
+        self.assertFalse(report["may_train"])
+        self.assertFalse(report["may_publish"])
 
     def test_negative_accounting_changes_survive_brief(self):
         response = _synthetic_workspace_response()
