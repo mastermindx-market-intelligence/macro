@@ -174,10 +174,6 @@ def test_page_endpoints_in_js_and_registered_gets():
         assert _js_knows_endpoint(path, js), path
         if method == "GET":
             assert path in gets, path
-        elif path.endswith(".xlsx"):
-            # X1-only route: the JS constant is asserted even where the server
-            # has not registered the route yet (the control then stays disabled).
-            continue
         else:
             assert path in posts, path
 
@@ -236,11 +232,7 @@ def test_first_viewport_measured_is_false():
 
 
 def test_doc_mentions_journeys_and_every_dom_id():
-    # The journeys doc ships with the P0 freeze; this lane branched before that
-    # merge, so the doc-guard runs only where the file is present (it is on
-    # main, where this amendment is consumed).
-    if not DOC.is_file():
-        return
+    assert DOC.is_file()
     text = DOC.read_text(encoding="utf-8")
     for journey_id in JOURNEY_IDS:
         assert journey_id in text
@@ -252,8 +244,6 @@ def test_doc_mentions_journeys_and_every_dom_id():
 
 def test_owned_files_omit_ci_guarded_claim_token():
     for path in (CONTRACT, DOC):
-        if not path.is_file():
-            continue
         body = path.read_text(encoding="utf-8").replace(LITERAL_SCRIPT, "")
         assert CI_GUARDED_CLAIM not in body, path
 

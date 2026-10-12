@@ -414,6 +414,8 @@ _PACKAGE_MANIFEST_PASSTHROUGH_FIELDS = (
     "retained_count",
     "statement_roles",
     "related_event_ref",
+    "capture_basis",
+    "capture_recorded_at",
 )
 
 
