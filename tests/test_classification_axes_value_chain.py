@@ -297,6 +297,8 @@ def test_equal_inputs_give_byte_identical_json():
     lifecycle = _lifecycle()
     first = value_chain.read_value_chain(SUBJECT, as_of=AS_OF, nodes=nodes, lifecycle=lifecycle)
     second = value_chain.read_value_chain(SUBJECT, as_of=AS_OF, nodes=nodes, lifecycle=lifecycle)
+    assert cell.validate_cell(first) == []
+    assert cell.validate_cell(second) == []
     assert cell.to_json(first) == cell.to_json(second)
     assert cell.to_json(first) == cell.to_json(first)
 
@@ -322,5 +324,83 @@ def test_source_text_guards():
     assert "datetime.now" not in source
     assert "date.today" not in source
     assert "ltheme" not in source
-    assert "read_nodes(current=False)" in source
-    assert "read_node_lifecycle(latest=False)" in source
+    assert "read_nodes(current=False, strict=True)" in source
+    assert "read_node_lifecycle(latest=False, strict=True)" in source
+
+
+# --- repair round r3 (R-strict, R-birth; R-determinism above) --------------
+
+
+def _read_default(subject_id: str = SUBJECT, *, as_of: str = AS_OF) -> dict:
+    got = value_chain.read_value_chain(subject_id, as_of=as_of)
+    assert cell.validate_cell(got) == []
+    return got
+
+
+def _write_nodes(rows: list[dict], path: Path) -> Path:
+    pd.DataFrame(rows, columns=list(store.NODE_COLUMNS)).to_parquet(path)
+    return path
+
+
+def test_a_corrupt_default_nodes_file_is_owner_degraded(monkeypatch, tmp_path):
+    nodes = tmp_path / "nodes.parquet"
+    nodes.write_bytes(b"not parquet")
+    monkeypatch.setattr(store, "nodes_path", lambda: nodes)
+    monkeypatch.setattr(store, "node_lifecycle_path", lambda: tmp_path / "node_lifecycle.parquet")
+    got = _read_default()
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_degraded"
+    assert got["provenance"] == ["store_read_failed"]
+
+
+def test_an_absent_default_nodes_file_is_owner_missing(monkeypatch, tmp_path):
+    monkeypatch.setattr(store, "nodes_path", lambda: tmp_path / "nodes.parquet")
+    monkeypatch.setattr(store, "node_lifecycle_path", lambda: tmp_path / "node_lifecycle.parquet")
+    got = _read_default()
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_missing"
+
+
+def test_a_valid_default_nodes_file_answers_with_an_absent_lifecycle_file(monkeypatch, tmp_path):
+    nodes = _write_nodes([_node_row()], tmp_path / "nodes.parquet")
+    monkeypatch.setattr(store, "nodes_path", lambda: nodes)
+    monkeypatch.setattr(store, "node_lifecycle_path", lambda: tmp_path / "absent.parquet")
+    got = _read_default()
+    assert got == _read(_nodes(_node_row()), None)
+
+
+def test_a_corrupt_default_lifecycle_file_is_owner_degraded(monkeypatch, tmp_path):
+    nodes = _write_nodes([_node_row()], tmp_path / "nodes.parquet")
+    lifecycle = tmp_path / "node_lifecycle.parquet"
+    lifecycle.write_bytes(b"not parquet")
+    monkeypatch.setattr(store, "nodes_path", lambda: nodes)
+    monkeypatch.setattr(store, "node_lifecycle_path", lambda: lifecycle)
+    got = _read_default()
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_degraded"
+    assert got["provenance"] == ["store_read_failed"]
+
+
+def test_an_empty_birth_date_gives_no_effective_at():
+    got = _read(_nodes(_node_row(birth_date="")), None)
+    assert got["status"] == "available"
+    assert got["effective_at"] is None
+
+
+def test_an_unparseable_birth_date_is_owner_degraded():
+    got = _read(_nodes(_node_row(birth_date="2026-01-45")), None)
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_degraded"
+    assert "birth_date_unparseable" in got["provenance"]
+
+
+def test_a_birth_datetime_is_truncated_to_its_calendar_day():
+    got = value_chain.read_value_chain(
+        SUBJECT,
+        as_of="2026-10-12",
+        nodes=_nodes(_node_row(birth_date="2026-06-27T00:00:00")),
+        lifecycle=_lifecycle(),
+    )
+    assert cell.validate_cell(got) == []
+    assert got["status"] == "available"
+    assert got["effective_at"] == "2026-06-27"
