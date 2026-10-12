@@ -8,6 +8,11 @@ immutable-anchor title match.
 v2 keeps that bias and stops merging different amount scales (million versus
 billion, 5bn versus 9bn), compact or spelled fiscal periods (2Q, 2Q25, second
 quarter), and contraction negation (isn't, cannot).
+
+Under the same v2 id (seat ruling 2026-10-12) it also stops merging opposite
+earnings outcomes (beats versus misses), rating moves to opposite target
+classes (to Buy versus to Sell), and terminated versus ongoing actions (ends
+talks versus in talks).
 """
 from __future__ import annotations
 
@@ -126,6 +131,42 @@ _RATING_VERB_RE = re.compile(
     r"\b(?:upgrade[sd]?|downgrade[sd]?|raises?|cuts?)\b", re.I
 )
 _GENERIC_ACTORS = {"broker", "analyst", "company", "firm", "bank"}
+# Earnings-outcome polarity: a beat-family-only title never merges with a
+# miss-family-only one. Two titles from the same family stay compatible.
+_BEAT_RE = re.compile(
+    r"\b(?:beat|beats|tops|topped|exceeds|exceeded|surpasses|surpassed)\b"
+    r"|\babove\s+(?:estimates?|expectations?)\b",
+    re.I,
+)
+_MISS_RE = re.compile(
+    r"\b(?:miss|misses|missed)\b"
+    r"|\b(?:falls|fell)\s+short\b"
+    r"|\bbelow\s+(?:estimates?|expectations?)\b",
+    re.I,
+)
+# Rating moves are compared by the class of the target they name, not by the
+# surface verb, so "upgraded to Buy" still merges with "raised to Buy".
+_RATING_TARGET_RE = re.compile(
+    r"\bto\s+(strong\s+buy|outperform|overweight|accumulate|buy|add|"
+    r"strong\s+sell|underperform|underweight|sell|reduce|hold|neutral|"
+    r"equal-weight|market\s+perform|sector\s+perform|in-line|peer\s+perform)\b",
+    re.I,
+)
+_BULLISH_TARGETS = frozenset(
+    {"strong buy", "buy", "outperform", "overweight", "accumulate", "add"}
+)
+_BEARISH_TARGETS = frozenset(
+    {"strong sell", "sell", "underperform", "underweight", "reduce"}
+)
+# Terminated versus ongoing actions compare like negation: an ended deal never
+# merges with a live one. Only inflected forms are listed; bare "end"/"halt"
+# stay free ("end of year", "halt" alone are not termination signals).
+_TERMINATED_RE = re.compile(
+    r"\b(?:ends|ended|terminates|terminated|calls\s+off|called\s+off|"
+    r"abandons|abandoned|scraps|scrapped|walks\s+away|walked\s+away|"
+    r"breaks\s+off|broke\s+off|halts|halted|collapses|collapsed)\b",
+    re.I,
+)
 
 
 def new_cluster_id(item: ClusterItem) -> str:
@@ -169,6 +210,34 @@ def _actions(title: str) -> frozenset[str]:
     return frozenset(name for name, rx in _ACTIONS if rx.search(title))
 
 
+def _outcome_polarity(title: str) -> frozenset[str]:
+    """Beat/miss families found in the title ("beat", "miss", both, or none)."""
+    found: set[str] = set()
+    if _BEAT_RE.search(title):
+        found.add("beat")
+    if _MISS_RE.search(title):
+        found.add("miss")
+    return frozenset(found)
+
+
+def _rating_target_classes(title: str) -> frozenset[str]:
+    """Classes of the rating targets a title moves to (bullish/bearish/neutral)."""
+    classes: set[str] = set()
+    for match in _RATING_TARGET_RE.finditer(title):
+        rating = re.sub(r"\s+", " ", match.group(1).lower())
+        if rating in _BULLISH_TARGETS:
+            classes.add("bullish")
+        elif rating in _BEARISH_TARGETS:
+            classes.add("bearish")
+        else:
+            classes.add("neutral")
+    return frozenset(classes)
+
+
+def _terminated(title: str) -> bool:
+    return bool(_TERMINATED_RE.search(title))
+
+
 def _analyst_actor(title: str) -> str | None:
     match = _RATING_VERB_RE.search(title)
     if not match:
@@ -195,6 +264,14 @@ def _compatible(a: str, b: str) -> bool:
     rating_a = bool(_RATING_VERB_RE.search(a))
     rating_b = bool(_RATING_VERB_RE.search(b))
     if rating_a and rating_b and actor_a and actor_b and actor_a != actor_b:
+        return False
+    oa, ob = _outcome_polarity(a), _outcome_polarity(b)
+    if oa and ob and not (oa & ob):
+        return False
+    ta, tb = _rating_target_classes(a), _rating_target_classes(b)
+    if ta and tb and not (ta & tb):
+        return False
+    if _terminated(a) != _terminated(b):
         return False
     return True
 

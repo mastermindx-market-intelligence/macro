@@ -339,3 +339,51 @@ def test_same_contraction_still_joins():
         "Apple isn't in talks to acquire Disney this year",
         "Apple isn't in talks to acquire Disney this year",
     )
+
+
+def test_beats_estimates_does_not_join_misses_estimates():
+    """Dropping the outcome-polarity check in _compatible joins these titles."""
+    _blocked(
+        "Nvidia beats quarterly estimates on strong demand",
+        "Nvidia misses quarterly estimates on strong demand",
+    )
+
+
+def test_upgrades_to_buy_does_not_join_opposite_target():
+    """Dropping the rating-target check in _compatible joins these titles."""
+    _blocked(
+        "Citi upgrades NVDA to Buy on strong AI demand across its business",
+        "Citi moves NVDA to Sell on strong AI demand across its business",
+    )
+
+
+def test_ends_talks_does_not_join_ongoing_talks():
+    """Dropping the termination check in _compatible joins these titles."""
+    _blocked(
+        "Apple in talks to acquire Disney this week",
+        "Apple ends talks to acquire Disney this week",
+    )
+
+
+def test_tops_estimates_still_joins_beats_estimates():
+    """Splitting the beat family by surface verb splits this same-outcome pair."""
+    _joined(
+        "Nvidia beats quarterly estimates on strong demand",
+        "Nvidia tops quarterly estimates on strong demand",
+    )
+
+
+def test_raised_to_buy_still_joins_upgrades_to_buy():
+    """Splitting rating moves by verb instead of by target class splits this pair."""
+    _joined(
+        "Citi upgrades NVDA to Buy on strong AI demand",
+        "Citi raised NVDA to Buy on strong AI demand",
+    )
+
+
+def test_two_ongoing_talks_reports_still_join():
+    """Treating every talks headline as terminated splits this same-talks pair."""
+    _joined(
+        "Apple in talks to acquire Disney this week",
+        "Apple is in talks to acquire Disney this week",
+    )

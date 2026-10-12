@@ -37,8 +37,11 @@ from engine.qbus_news_cluster import (  # noqa: E402
     _analyst_actor,
     _negated,
     _numbers,
+    _outcome_polarity,
     _periods,
+    _rating_target_classes,
     _seconds,
+    _terminated,
     cluster_candidates,
 )
 from engine.qkernel import title_similarity  # noqa: E402
@@ -107,6 +110,14 @@ def _title_reject_reason(left: str, right: str) -> str | None:
         and actor_left != actor_right
     ):
         return "analyst_actor_mismatch"
+    outcome_left, outcome_right = _outcome_polarity(left), _outcome_polarity(right)
+    if outcome_left and outcome_right and not (outcome_left & outcome_right):
+        return "outcome_polarity_mismatch"
+    target_left, target_right = _rating_target_classes(left), _rating_target_classes(right)
+    if target_left and target_right and not (target_left & target_right):
+        return "rating_target_mismatch"
+    if _terminated(left) != _terminated(right):
+        return "termination_mismatch"
     return None
 
 
