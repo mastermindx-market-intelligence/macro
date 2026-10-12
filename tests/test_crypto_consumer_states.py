@@ -8,20 +8,29 @@ it writes ``vector/signals.parquet``, spawns sibling builders, and publishes
 ``config["storage"]["site_dir"]`` (``scripts/build_vector.py``:4425, 5062).
 The Vector HTML below repeats only the Environment, filters, render, and
 whitespace collapse at ``scripts/build_vector.py``:5045-5061.
+
+``CRYPTO_T19P_TEMPLATE_ROOT`` points both renders at another template
+directory (stacked proof or an unpatched copy). Includes still resolve from
+this repository's ``templates/``. The four patch-proof tests skip only when
+that variable is unset and the T19p marker is absent from the repository
+template.
 """
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from engine.btc_options import build_contract as build_btc_options
 from engine.eth_state import build_states as build_asset_states
 from scripts import build_crypto, build_vector
 
 ROOT = Path(__file__).resolve().parent.parent
+T19P_TEMPLATE_ROOT = "CRYPTO_T19P_TEMPLATE_ROOT"
 AS_OF = "2026-09-26"
 PREV = "2026-09-25"
 _HISTORY = ["2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24", "2026-09-25", AS_OF]
@@ -31,6 +40,40 @@ def _slice(html: str, start: str, end: str) -> str:
     i = html.index(start)
     j = html.index(end, i + len(start))
     return html[i:j]
+
+
+def _template_roots() -> list[str]:
+    override = os.environ.get(T19P_TEMPLATE_ROOT)
+    roots = [override] if override else []
+    roots.append(str(ROOT / "templates"))
+    return roots
+
+
+def _require_t19p(name: str, marker: str) -> None:
+    """Skip only when the override is unset and the repository template lacks the marker."""
+    if os.environ.get(T19P_TEMPLATE_ROOT):
+        return
+    source = (ROOT / "templates" / name).read_text(encoding="utf-8")
+    if marker not in source:
+        pytest.skip(
+            f"{T19P_TEMPLATE_ROOT} is unset and the T19p patch marker is absent "
+            f"from templates/{name}; this skip becomes a hard assert after integration"
+        )
+
+
+def _bind_crypto_templates(monkeypatch) -> None:
+    if not os.environ.get(T19P_TEMPLATE_ROOT):
+        return
+    real = build_crypto.FileSystemLoader
+    roots = _template_roots()
+    repo = (ROOT / "templates").resolve()
+
+    def loader(searchpath, *args, **kwargs):
+        if Path(str(searchpath)).resolve() == repo:
+            return real(roots, *args, **kwargs)
+        return real(searchpath, *args, **kwargs)
+
+    monkeypatch.setattr(build_crypto, "FileSystemLoader", loader)
 
 
 def _none_reader(*_args, **_kwargs):
@@ -177,6 +220,7 @@ def _render_crypto(tmp_path: Path, monkeypatch, case: dict) -> str:
     import engine.event_calendar as event_calendar
     import lib.pages as pages
 
+    _bind_crypto_templates(monkeypatch)
     site = tmp_path / "site"
     site.mkdir()
     signals = case["signals"]
@@ -291,13 +335,13 @@ def _vector_case(name: str) -> dict:
     return {"decision": decision, "flow": flow, "contract": contract}
 
 
-def _render_vector(case: dict) -> str:
+def _render_vector(case: dict, *, price: float | None = 100, chg24: float | None = 0.0) -> str:
     from jinja2 import Environment, FileSystemLoader
 
     vm = {
         "as_of": AS_OF,
-        "price": 100,
-        "chg24": 0.0,
+        "price": price,
+        "chg24": chg24,
         "built": "2026-09-26 00:00 UTC",
         "master": {"ok": False},
         "decision": case["decision"],
@@ -324,7 +368,7 @@ def _render_vector(case: dict) -> str:
         "cards": {},
     }
     env = Environment(
-        loader=FileSystemLoader(str(ROOT / "templates")),
+        loader=FileSystemLoader(_template_roots()),
         autoescape=True,
     )
     try:
@@ -451,3 +495,60 @@ def test_partial_keeps_known_budget_and_withholds_the_split(tmp_path, monkeypatc
     assert "Incomplete 24-hour window" in vector
     assert "Missing observations are not zero" in vector
     assert 'data-decision-exposure="40"' in vector
+
+
+def test_short_history_does_not_paint_the_null_hairline(tmp_path, monkeypatch):
+    _require_t19p("crypto.html.j2", "market.history.dates|length >= 4")
+    for n in (2, 3):
+        case = _crypto_case("valid_zero")
+        case["market"] = _market(dates=_HISTORY[:n], vals=[2.1e12, 2.15e12, 2.2e12][:n])
+        dest = tmp_path / f"h{n}"
+        dest.mkdir()
+        crypto = _render_crypto(dest, monkeypatch, case)
+        overview = _slice(crypto, 'id="crypto-overview"', 'id="universe-snapshot"')
+        assert "ilx-null" not in overview, f"{n}-point history painted the ilx-null hairline"
+        assert 'data-market-history-state="unavailable"' in overview
+        assert "ilx-path" not in overview
+
+
+def test_altseason_none_does_not_paint_a_zero_rail(tmp_path, monkeypatch):
+    _require_t19p(
+        "crypto.html.j2",
+        'meter-rail"{% if market.heat.altseason.value is not none %} style="--v:{{ market.heat.altseason.value }}%"',
+    )
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
+    heat = _slice(crypto, 'id="leverage-heat"', 'id="allocation"')
+    rail = _slice(heat, 'class="meter-rail"', ">")
+    assert "--v:0%" not in heat
+    assert "style=" not in rail
+    assert ">—<" in heat
+
+
+def test_vector_quote_none_renders_without_a_number():
+    _require_t19p(
+        "vector.html.j2",
+        '{% if price is not none %}${{ "{:,.0f}".format(price) }}',
+    )
+    try:
+        html = _render_vector(_vector_case("valid_zero"), price=None, chg24=None)
+    except Exception as exc:
+        pytest.fail(f"vector quote None did not render: {type(exc).__name__}: {exc}")
+    quote = _slice(html, 'class="live-quote"', 'class="asof-chip"')
+    assert "—" in quote
+    assert re.search(r"\d", quote) is None
+    assert "pos" not in quote
+    assert "neg" not in quote
+
+
+def test_s2_withholds_risk_word_when_index_is_none():
+    _require_t19p(
+        "vector.html.j2",
+        "{% if risk_index is not none %}{{ risk_index }}/100{% else %}—{% endif %}",
+    )
+    html = _render_vector(_vector_case("valid_zero"))
+    ctx = _slice(html, 'class="risk-context"', "</div>")
+    assert "高风险" not in ctx
+    assert "低风险" not in ctx
+    assert "/100" not in ctx
+    assert "暂无" in ctx
+    assert "—" in ctx

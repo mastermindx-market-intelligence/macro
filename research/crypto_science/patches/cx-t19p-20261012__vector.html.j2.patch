@@ -1,7 +1,7 @@
 diff --git a/templates/vector.html.j2 b/templates/vector.html.j2
 --- a/templates/vector.html.j2
 +++ b/templates/vector.html.j2
-@@ -357,8 +357,8 @@
+@@ -363,8 +363,8 @@
        <div class="hero-line">
          <div class="wordmark"><span class="mark">₿</span><span>Bitcoin Vector</span></div>
          <div class="live-quote">
@@ -12,10 +12,10 @@ diff --git a/templates/vector.html.j2 b/templates/vector.html.j2
          </div>
          <span class="asof-chip"><i></i>{{ t('Daily close','日线收盘') }} · {{ as_of }}</span>
        </div>
-@@ -491,7 +491,7 @@
+@@ -504,7 +504,7 @@
        <div class="decision-detail">
          <div class="exposure-top">
-           <div><div class="decision-eyebrow">{{ t('Final BTC exposure','最终 BTC 仓位') }}</div><div class="exposure-band">{% if decision_ok %}{{ target_pct }}%{% else %}—{% endif %}</div></div>
+           <div><div class="decision-eyebrow">{{ t('Final BTC exposure','最终 BTC 仓位') }}</div><div class="exposure-band">{% if decision_ok %}{{ target_pct }}%{% else %}—{% endif %}</div><div class="decision-eyebrow">{{ decision_as_of or '—' }}</div></div>
 -          <div class="risk-context">{{ t('Risk level','风险程度') }}<b>{{ risk_index }}/100</b>{{ t(risk_label, '低风险' if risk_on else '高风险') }}</div>
 +          <div class="risk-context">{{ t('Risk level','风险程度') }}<b>{% if risk_index is not none %}{{ risk_index }}/100{% else %}—{% endif %}</b>{% if risk_index is not none %}{{ t(risk_label, '低风险' if risk_on else '高风险') }}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</div>
          </div>

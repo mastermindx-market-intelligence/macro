@@ -116,9 +116,9 @@ Fixtures live in `tests/test_crypto_consumer_states.py`. No live provider call. 
 | Stale / unknown budget | Status `ok`, `integrity_ok`, exposure `60`, `as_of` `2026-09-25` against signals date `2026-09-26` (`CANONICAL_DECISION_AS_OF_MISMATCH`). History present. `CANONICAL_DECISION_UNAVAILABLE` hits the same template else branch (`:326-328`, `:439-444`); this fixture is the dated one. | Finite prices and alloc `0.4`. Decision `status=unavailable`, `integrity.ok` false, `final` None. Flow `stale=True`. `risk_index` None. | Crypto: `data-desk-budget-state="unavailable"`, "Budget unavailable", "An unavailable target is not a cash recommendation.", decision date `2026-09-25`, reason "The decision belongs to a different snapshot…". `60%` absent from the budget and H5 slices. Vector: "DECISION TEMPORARILY UNAVAILABLE", `data-decision-status="unavailable"`, no `data-decision-exposure`, "Stale observations", share `—`. Overview risk copy is "Unavailable" (`:430-431`). Shelf S2 still prints a Chinese high/low word from `risk_on` (`:494`) until the patch lands. |
 | Partial | Exposure `40`, matching `as_of`, signals column `open` only (no `close`). History present. | Finite closes, `alloc_optimal` `[0.4, NaN, 0.4, 0.4]` so `valid` stays true and `performance_valid` is false. Decision exposure `40`. Flow `n_hours=23`. | Crypto: both state attributes `breakdown-unavailable`, "Breakdown unavailable", "Total budget known; asset breakdown unavailable.", `40%` and `60%`, no `alloc-seg`, "No asset percentages are inferred." Vector: `#vec-risk-chart` present, "the chart preserves them as unknown", "Allocation simulation unavailable", `data-flow-state="coverage_gap"`, "Incomplete 24-hour window", "Missing observations are not zero", `data-decision-exposure="40"`. The valid-branch template does not print `issue.message_en`; the test does not require it. |
 
-Altseason state word "Unavailable" is in the leverage slice. The test does not lock `--v:0%`, so the meter patch does not turn the test red.
+Altseason state word "Unavailable" is in the leverage slice. `test_altseason_none_does_not_paint_a_zero_rail` locks the absence of `--v:0%` on that meter. `test_short_history_does_not_paint_the_null_hairline` renders 2-point and 3-point market history and refuses `ilx-null`. `test_vector_quote_none_renders_without_a_number` renders `price=None` and `chg24=None`. `test_s2_withholds_risk_word_when_index_is_none` refuses `高风险` / `低风险` and `/100` in S2 `risk-context` when `risk_index` is none. Each skips only when `CRYPTO_T19P_TEMPLATE_ROOT` is unset and its marker is absent from the repository template. With the variable set, the skip is bypassed.
 
-`python -m pytest tests/test_crypto_consumer_states.py -q -p no:cacheprovider -x` → `4 passed in 1.37s`. No case is marked `needs_full_checkout`. Rendered HTML is asserted free of the promotion word.
+`python -m pytest tests/test_crypto_consumer_states.py -q -p no:cacheprovider` with the override unset → `4 passed, 4 skipped in 3.06s`. `CRYPTO_T19P_TEMPLATE_ROOT=/tmp/cx-t19p-r2-20261012-stack/templates` → `8 passed in 1.96s` (0 skipped). The same variable pointed at an unpatched template copy → `4 failed, 4 passed in 1.80s`; the failures are the four proof tests. No case is marked `needs_full_checkout`. `data/` stayed absent. Rendered HTML is asserted free of the promotion word.
 
 ## 3. Concrete assertions
 
@@ -166,13 +166,17 @@ Not still a proof of current pixels or of the merge:
 
 ## Patches for the integration writer
 
-Not applied. `git apply --check` succeeded for both.
+Not applied to the worktree templates. Regenerated against the post-T08 stack so `git apply` exits 0 in the order T06 → T18b → T07 → T08 → T19p → T20w. The substituted lines are the same strings as the first draft: no new markup, class, or copy.
 
 - `research/crypto_science/patches/cx-t19p-20261012__crypto.html.j2.patch`
-  - `crypto.html.j2:312`: history gate `>= 2` → `>= 4`, matching `regime_tape`'s floor so a 2–3 point series shows "Market history unavailable" instead of the hairline.
-  - `crypto.html.j2:404`: omit `style="--v:…"` when `market.heat.altseason.value` is none. A missing score must not paint a 0% rail.
+  - History gate `>= 2` → `>= 4` (hunk remains `@@ -309`), matching `regime_tape`'s floor (`lib/illus.py:463`) so a 2–3 point series shows "Market history unavailable" instead of the hairline.
+  - Altseason hunk header is `@@ -416` because T07 and T08 insert lines above the meter. The R2 line is still `:404`. Omit `style="--v:…"` when `market.heat.altseason.value` is none. `git apply --check` of this file on the bare R2 template exits 0.
 - `research/crypto_science/patches/cx-t19p-20261012__vector.html.j2.patch`
-  - `vector.html.j2:360-361`: `price` or `chg24` none renders `—` and skips the pos/neg class.
-  - `vector.html.j2:494`: `risk_index` none renders `—` and "Unavailable" / "暂无", matching the overview guard at `:430-431`.
+  - Quote guard text is unchanged. On the stack the hunk is `@@ -363` (R2 lines `:360-361`). `price` or `chg24` none renders `—` and skips the pos/neg class.
+  - Risk hunk context is T18b's exposure-band line, including `<div class="decision-eyebrow">{{ decision_as_of or '—' }}</div>`. The substituted `risk-context` line is unchanged: `risk_index` none renders `—` and "Unavailable" / "暂无", matching the overview guard. `git apply --check` on the bare R2 template exits 1 (`templates/vector.html.j2:504`). It exits 0 after T18b's vector patch. The previous draft failed on the full prefix at `templates/vector.html.j2:491`.
+
+Checked in `/tmp/cx-t19p-r2-20261012-stack` (copies of the two templates, both builders, and the two T20w test files). Exit codes: T06 build_vector 0, T06 vector 0, T18b crypto 0, T18b vector 0, T07 build_crypto 0, T07 crypto 0, T08 build_crypto 0, T08 crypto 0, these two T19p patches 0 and 0, T20w crypto 0, T20w vector 0, T20w `test_crypto_wave2.py` 0, T20w `test_vector_r2_frontdoor.py` 0.
+
+`CRYPTO_T19P_TEMPLATE_ROOT=/tmp/cx-t19p-r2-20261012-stack/templates` renders that stack. The four proof tests skip on this branch until integration copies the markers into `templates/`. After integration, remove the skip and keep the asserts.
 
 No patch to `scripts/build_crypto.py`, `scripts/build_vector.py`, `scripts/capture_page_evidence.py`, or the allocation engine.
