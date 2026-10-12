@@ -979,7 +979,7 @@ def validate_native_closure(
         pairings: dict[str, dict[str, Any]] = {}
         events: dict[tuple[str, str], str] = {}
         for selection_slug in native["selections"]:
-            if selection_slug not in records:
+            if selection_slug not in value["records"]:
                 raise EarningsPrivateClosureError("malformed_native_section")
         for slug, record in records.items():
             interpretation = record.get("economic_interpretation")
