@@ -13,6 +13,14 @@ ROOT = Path(__file__).resolve().parents[1]
 @pytest.mark.parametrize("book", [
     [], 7, True, "plans",
     {"plans": None}, {"plans": {}}, {"plans": "LFUS"}, {"plans": 7},
+    {"plans": [], "lifecycle_counts": [1]},
+    {"plans": [], "lifecycle_counts": []},
+    {"plans": [], "lifecycle_counts": "counts"},
+    {"plans": [], "lifecycle_counts": 7},
+    {"plans": [], "lifecycle_counts": False},
+    {"plans": [], "intake": 7},
+    {"plans": [], "intake": True},
+    {"plans": [], "intake": 1.5},
     {"plans": [None]}, {"plans": ["LFUS"]},
     {"plans": [{"id": "P1", "asset": "LFUS"}, None]},
     {"plans": [{"asset": "LFUS"}]},
@@ -675,3 +683,32 @@ def test_appended_detail_template_view_in_plans_control_for_valid_book():
     from scripts.build_site import _plan_relations_for, _plan_relation_for_row
     html = str(_detail().body({"ticker": "LFUS"}, "board", None, _relation(_lfus_book())))
     assert 'View in Plans' in html
+
+
+@pytest.mark.parametrize("counts", [None, {}, {"entered": 3, "resolved": 1}])
+def test_plan_book_reader_preserves_valid_lifecycle_counts(tmp_path, counts):
+    import json
+    from scripts.build_site import _read_us_prophet_book
+    book = {"plans": [], "lifecycle_counts": counts}
+    path = tmp_path / "index.json"
+    original = json.dumps(book).encode()
+    path.write_bytes(original)
+    assert _read_us_prophet_book(path) == (book, False)
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize("intake", [None, False, 0, {}, [], "", "early_turn_watch", ["early_turn_watch"], {"early_turn_watch": 2}])
+def test_plan_book_reader_preserves_supported_intake(tmp_path, intake):
+    import json
+    from scripts.build_site import _read_us_prophet_book
+    from tests.test_dashboard_template_render import _env, _base_vm
+    book = {"plans": [], "intake": intake}
+    path = tmp_path / "index.json"
+    original = json.dumps(book).encode()
+    path.write_bytes(original)
+    admitted, error = _read_us_prophet_book(path)
+    assert (admitted, error) == (book, False)
+    assert path.read_bytes() == original
+    vm = _base_vm()
+    vm.update(us_prophet_book=admitted, us_prophet_book_error=error)
+    _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")

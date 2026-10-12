@@ -5424,6 +5424,12 @@ def _read_us_prophet_book(path: Path) -> "tuple[dict | None, bool]":
         book = json.loads(path.read_text())
         if not isinstance(book, dict):
             raise ValueError("plan book must be an object")
+        counts = book.get("lifecycle_counts")
+        if counts is not None and not isinstance(counts, dict):
+            raise ValueError("lifecycle counts must be an object when provided")
+        intake = book.get("intake")
+        if intake and not isinstance(intake, (dict, list, str)):
+            raise ValueError("intake must support the published membership check")
         plans = book.get("plans", [])
         if not isinstance(plans, list):
             raise ValueError("plan collection must be a list")
