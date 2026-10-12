@@ -4489,6 +4489,7 @@ jobs:
           tests/test_rlt_sector_stance_enrich.py
           tests/test_stock_personality_w4_surfaces.py
           tests/test_fundamental_forensics_page.py
+          tests/test_fundamental_forensics_state_peer_cohort.py
           tests/test_fundamental_forensics_private_state.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_coverage_contract.py
