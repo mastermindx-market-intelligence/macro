@@ -3,10 +3,11 @@ dashboard banner (scripts/build_site.py) and the machine-readable contract
 (data/regime/latest.json, via engine/run.py), so the two can never drift.
 
 Reads the VALIDATED index dealer-gamma store (SPX, data/cboe/gex — the same that
-drives the dealer-gamma board, computed by engine.gex_engine). ABOVE the gamma-flip
-strike dealers are net long gamma and hedge AGAINST price (pinning / vol suppressed);
-BELOW it they are short gamma and hedge WITH price (amplifying moves) — the air-pocket
-precondition. A whole-market vol CONTEXT, not a per-stock signal, and an estimate from
+drives the dealer-gamma board, computed by engine.gex_engine). The regime is the
+engine's direct sign read from cboe/gex_SPX (gamma_regime of the same session as
+the cboe/gex row); regime_basis is "engine_direct_sign" when that row exists and
+"unavailable" otherwise. The flip strike is reported, never used to derive the
+regime. A whole-market vol CONTEXT, not a per-stock signal, and an estimate from
 delayed CBOE chains, not ground truth.
 
 Degrade-never-raise: returns None when the store is missing / empty / NaN (callers
@@ -131,7 +132,10 @@ def _engine_direct_sign(gex: pd.DataFrame, gex_spx) -> tuple[str | None, str]:
     ``spot_vs_flip_pct``, and never defaulted to ``"long"``.
     """
     if gex_spx is _READ_STORE:
-        gex_spx = store.read("cboe", "gex_SPX")
+        try:
+            gex_spx = store.read("cboe", "gex_SPX")
+        except Exception:  # noqa: BLE001 — a store hiccup must not raise out of view()
+            return None, "unavailable"
     if gex_spx is None or not len(gex_spx) or "gamma_regime" not in gex_spx.columns:
         return None, "unavailable"
     gex_spx = nyse_calendar.session_rows(gex_spx, label="cboe/gex_SPX")
@@ -211,11 +215,12 @@ def snapshot(now: "datetime | None" = None) -> dict | None:
     machine-readable contract (engine/run.py writes this into latest['market_gamma']).
     None when the store is absent/empty so the leaf degrades to a null contract field.
 
-    P1.1b upgrade: the CBOE/polygon current-day path stays the source of today's regime,
-    flip and net-GEX (view() is unchanged); we ADD a `context` block derived from the
-    reconstructed multi-year SPY history — net-GEX percentile vs own history + standing-
-    regime persistence. DISPLAY-ONLY vol context, never a score input. When the history
-    store is absent, `context` is None and the verdict is byte-identical to pre-upgrade.
+    snapshot() calls the one-argument view(store.read("cboe", "gex")), which reads
+    cboe/gex_SPX itself. A failed or absent gex_SPX read yields regime None with the
+    other fields intact. A `context` block is added from the reconstructed multi-year
+    SPY history — net-GEX percentile vs own history + standing-regime persistence.
+    DISPLAY-ONLY vol context, never a score input. When the history store is absent,
+    `context` is None.
 
     OIP E3c: when the history store IS present, `context` additionally carries the
     window bounds, how many trading sessions behind the latest close it sits, and a
