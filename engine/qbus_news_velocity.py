@@ -37,8 +37,10 @@ _DAILY_WINDOW_DAYS = 28
 # The sixth column is the stored cluster policy stamp. Stores created before
 # the column existed (and hand-built fixtures) lack it; the literal NULL keeps
 # the query valid there and _distinct_stories labels those stories
-# "unknown (pre-column)". The two texts are byte-identical except for that
-# one selected expression.
+# "unknown (pre-column)". The first two texts are byte-identical except for
+# that one selected expression. The third text is for databases whose cluster
+# tables are absent (a shape NewsStore never writes): it drops both cluster
+# joins, so every report is its own story and no policy stamp exists.
 _STORY_SQL = """
 SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
        c.cluster_policy_version
@@ -81,10 +83,37 @@ WHERE i.security_id = ?
 ORDER BY i.source, i.source_item_id
 """
 
+_STORY_SQL_NO_CLUSTER_TABLES = """
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, NULL, NULL
+FROM news_security_index AS i
+JOIN news_states AS s
+  ON s.source = i.source
+ AND s.source_item_id = i.source_item_id
+JOIN news_state_projection AS p
+  ON p.source = i.source
+ AND p.source_item_id = i.source_item_id
+WHERE i.security_id = ?
+  AND s.status = 'active'
+  AND s.source IN ({placeholders})
+ORDER BY i.source, i.source_item_id
+"""
+
 
 def _has_cluster_policy_column(conn: sqlite3.Connection) -> bool:
     rows = conn.execute("PRAGMA table_info(news_clusters)").fetchall()
     return any(str(row[1]) == "cluster_policy_version" for row in rows)
+
+
+def _cluster_tables_present(conn: sqlite3.Connection) -> bool:
+    rows = conn.execute(
+        "SELECT name FROM sqlite_master"
+        " WHERE type='table'"
+        " AND name IN ('news_clusters','news_cluster_members')"
+    ).fetchall()
+    return {str(row[0]) for row in rows} == {
+        "news_clusters",
+        "news_cluster_members",
+    }
 
 
 def compute_news_velocity(
@@ -121,11 +150,14 @@ def compute_news_velocity(
         # "IN ()" is invalid SQLite, and there is nothing to count anyway.
         return _assemble(security_id, as_of, {}, counted_sources)
     placeholders = ",".join("?" for _ in counted_sources)
-    story_sql = (
-        _STORY_SQL
-        if _has_cluster_policy_column(conn)
-        else _STORY_SQL_NO_POLICY_COLUMN
-    )
+    if _cluster_tables_present(conn):
+        story_sql = (
+            _STORY_SQL
+            if _has_cluster_policy_column(conn)
+            else _STORY_SQL_NO_POLICY_COLUMN
+        )
+    else:
+        story_sql = _STORY_SQL_NO_CLUSTER_TABLES
     rows = conn.execute(
         story_sql.format(placeholders=placeholders),
         (security_id, *counted_sources),
