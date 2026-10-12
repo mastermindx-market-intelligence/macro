@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T0941",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T1337",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -9609,5 +9609,83 @@
     "whole_J1_accepted": false,
     "whole_audit20_complete": false,
     "cleanup_owed": false
+  },
+  "current_capability_frontier_20261012T1337": {
+    "observed_at": "2026-10-12T13:37:09.416208+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T0941",
+    "material": "Actual B PR967 protected-merged source/required CI independently qualified. One new guarded canonical release launched; authenticated J1 read-only proof follows same attempt settlement.",
+    "source": {
+      "merge": "0deb7fb798b897a1cc53e269256099f34db3fa61",
+      "head": "061a7930d48efb2b6832baf59c9e68ff57b0e674",
+      "parent": "f41acb4bc689dab364b47a0193f4fa8cc4b13a6a",
+      "equal_full_tree": "d027c2d711ecdc715854d8ea9acd3009ba471de3",
+      "all_23_blobs_match": true,
+      "ci_run": 38250821317,
+      "suite": 103634421454,
+      "attempt": 1,
+      "event": "pull_request",
+      "run_pull_requests": [],
+      "required": {
+        "Terminal typecheck + tests": {
+          "id": 114832450680,
+          "job_id": 114832450680,
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38250821317/job/114832450680",
+          "app_id": 15368
+        },
+        "Quote Hub tests": {
+          "id": 114816347650,
+          "job_id": 114816347650,
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38250821317/job/114816347650",
+          "app_id": 15368
+        },
+        "Ingest + signal-layer tests": {
+          "id": 114816347975,
+          "job_id": 114816347975,
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38250821317/job/114816347975",
+          "app_id": 15368
+        }
+      },
+      "all_10_jobs_success": true,
+      "all_5_browser_shards_success": true,
+      "review": "B retained independent review REQUEST_CHANGES; sole symbol-cleanup finding discriminating RED then repaired/35 mounted GREEN. Final J1 blob equals reviewed successor; exact quote repair equals independently qualified Paper source. No root test reruns; review artifact export refusal remains unretried."
+    },
+    "source_receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/967-merged-source-required-ci-parent-qualification.json",
+      "bytes": 4858,
+      "sha256": "27a84e5deffd08f77c266548d334447c12350a3fd580b68c595488fd87cd7b99"
+    },
+    "preflight_receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/0deb7fb-canonical-release-preflight.json",
+      "bytes": 1230,
+      "sha256": "2a0f9359e138268a62f95b1d5ab7bbba8bc8fdbc13c7f321ddb83638331c4ff8"
+    },
+    "release": {
+      "operation": "canonical-volume-release-0deb7fb-20261012-v1",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "target": "0deb7fb798b897a1cc53e269256099f34db3fa61",
+      "phase": "guarded_canonical_release_running",
+      "started_at": "2026-10-12T13:35:27.331654+00:00",
+      "controller_pid": 11818,
+      "wrapper_sha256": "bd22d2fed7e558d02a4252c0abfa00beb59a37f0bf96e1a33187229c7e673a84",
+      "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-volume-release-0deb7fb-20261012-v1.log",
+      "whole_Audit20_accepted": false,
+      "child_pid": 11822,
+      "exec_session": 94403,
+      "launch_ps_verified": true,
+      "locked_RELEASE_PREFLIGHT_observed": true,
+      "application_acceptance_pending": true
+    },
+    "browser": {
+      "owned_tab": "1925918025",
+      "Chris_extension": "8c79a09c-f98f-4027-8969-f620ae705b18",
+      "state": "New owned task tab on natural Transmission page; visible MU link observed unchanged. No Terminal UI verification yet.",
+      "cleanup_owed": "Close own task tab at end; no preference/viewport changes yet."
+    },
+    "next_ready_phase": "Consume SAME exec94403 actual settled return, qualify exact installed source/fulltree/runtime/guard/health then authenticated existing archived MU A3/B2 ENZH three sizes and fast A/Back/Forward/B with actual timing and restoration. Never restart this attempt or deploy unmerged source.",
+    "whole_J1_accepted": false,
+    "whole_audit20_complete": false
   }
 }
