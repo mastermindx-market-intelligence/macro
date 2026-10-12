@@ -5,6 +5,7 @@ spot vs flip."""
 import numpy as np
 import pandas as pd
 
+from engine import market_gamma
 from scripts.build_site import market_gamma_view
 
 
@@ -25,7 +26,7 @@ def _engine(gamma_regime, asof="2026-06-13"):
     )
 
 
-def test_short_gamma_below_flip():
+def test_injected_engine_short_below_flip():
     v = market_gamma_view(_gex(17.7, 8100, 7394.3, -8.71), gex_spx=_engine("short"))
     assert v["regime"] == "short"                  # engine direct sign, spot below flip
     assert v["spot_vs_flip_pct"] == -8.7
@@ -37,17 +38,17 @@ def test_short_gamma_below_flip():
     assert v["gamma_flip"] == 8100 and v["flip_strike"] == 8100
 
 
-def test_long_gamma_above_flip():
+def test_injected_engine_long_above_flip():
     v = market_gamma_view(_gex(25.0, 5000, 5150.0, 3.0), gex_spx=_engine("long"))
     assert v["regime"] == "long"                    # engine direct sign, spot above flip
 
 
-def test_at_flip_is_long():
+def test_at_flip_follows_injected_engine_sign():
     # spot exactly at flip (0%). The engine row says long; view does not invent it.
     assert market_gamma_view(_gex(1.0, 5000, 5000.0, 0.0), gex_spx=_engine("long"))["regime"] == "long"
 
 
-def test_uses_flip_side_not_net_sign():
+def test_engine_sign_not_net_sign():
     # net_gex POSITIVE. Regime is SHORT because the engine row says short
     # (this book's flip side), not "long" off the net-$ sign.
     assert market_gamma_view(_gex(50.0, 8100, 7400.0, -8.6), gex_spx=_engine("short"))["regime"] == "short"
@@ -138,3 +139,61 @@ def test_regime_unchanged_when_engine_agrees_with_flip_side():
         "regime", "regime_basis", "spot_vs_flip_pct", "net_gex_bn",
         "flip", "gamma_flip", "flip_strike", "spot", "asof",
     }
+
+
+# M01 repair 1: production one-argument view() path
+
+def test_default_path_reads_gex_spx_and_uses_engine_sign(monkeypatch):
+    """One-argument view() reads cboe/gex_SPX and uses that sign.
+
+    Spot is below the flip (spot_vs_flip_pct -9.63). The retired flip-side
+    rule would call this short; the engine row says long.
+    """
+    calls = []
+
+    def _read(group, name):
+        calls.append((group, name))
+        if (group, name) == ("cboe", "gex_SPX"):
+            return pd.DataFrame(
+                {"gamma_regime": ["long"]},
+                index=pd.to_datetime(["2026-06-13"]),
+            )
+        return None
+
+    monkeypatch.setattr(market_gamma.store, "read", _read)
+    v = market_gamma.view(_gex(6.8, 8300, 7500.58, -9.63))
+    assert v["regime"] == "long"
+    assert v["regime_basis"] == "engine_direct_sign"
+    assert ("cboe", "gex_SPX") in calls
+
+
+def test_default_path_absent_gex_spx_yields_no_regime(monkeypatch):
+    """A missing cboe/gex_SPX row leaves regime unset. Flip, spot and net GEX stay."""
+    def _read(group, name):
+        if (group, name) == ("cboe", "gex_SPX"):
+            return None
+        return None
+
+    monkeypatch.setattr(market_gamma.store, "read", _read)
+    v = market_gamma.view(_gex(6.8, 8300, 7500.58, -9.63))
+    assert v["regime"] is None
+    assert v["regime_basis"] == "unavailable"
+    assert v["gamma_flip"] is not None
+    assert v["spot"] is not None
+    assert v["net_gex_bn"] is not None
+
+
+def test_default_path_raising_gex_spx_read_is_unavailable(monkeypatch):
+    """A raising cboe/gex_SPX read must not escape view(); regime stays unavailable."""
+    def _read(group, name):
+        if (group, name) == ("cboe", "gex_SPX"):
+            raise RuntimeError("store down")
+        return None
+
+    monkeypatch.setattr(market_gamma.store, "read", _read)
+    v = market_gamma.view(_gex(6.8, 8300, 7500.58, -9.63))
+    assert v["regime"] is None
+    assert v["regime_basis"] == "unavailable"
+    assert v["gamma_flip"] is not None
+    assert v["spot"] is not None
+    assert v["net_gex_bn"] is not None
