@@ -424,6 +424,118 @@ def test_title_search_drops_one_trailing_parenthesised_suffix() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Capture-only rows are retained and flagged, never admitted.
+# ---------------------------------------------------------------------------
+
+
+def test_committed_capture_only_rows_are_never_admitted() -> None:
+    seen_capture_only = 0
+    for cik10 in _g_src_issuers():
+        rows = json.loads((_G_SRC / cik10 / "capture_index.json").read_text(encoding="utf-8"))
+        for row in rows:
+            if row["selection"] == "capture_only":
+                seen_capture_only += 1
+                assert row["admission"] == gsrc.CAPTURE_ONLY_ADMISSION, row["accession"]
+                assert row["manifest_sha256"], row["accession"]
+            else:
+                assert row["selection"] == "admission_candidate", row["accession"]
+                assert row["admission"] != gsrc.CAPTURE_ONLY_ADMISSION, row["accession"]
+    assert seen_capture_only > 0
+
+
+_AAPL_10Q = Path(__file__).resolve().parent / "fixtures" / "fundamental_forensics" / "aapl_10q_2026q3"
+
+
+class _FixtureFetch:
+    """Serves the committed AAPL 10-Q package bytes by archive URL (no network)."""
+
+    def __init__(self, cik10: str, accession: str) -> None:
+        self.urls: dict[str, bytes] = {
+            gsrc.archive_index_url(cik10, accession): (_AAPL_10Q / "index.json").read_bytes()
+        }
+        for member in (_AAPL_10Q / "members").iterdir():
+            self.urls[gsrc.archive_document_url(cik10, accession, member.name)] = (
+                member.read_bytes()
+            )
+
+    def get(self, url: str) -> tuple[bytes, str | None]:
+        return self.urls[url], None
+
+
+def _capture_aapl_10q(tmp_path: Path, selection: str) -> tuple[dict, dict]:
+    witness = json.loads((_AAPL_10Q / "sec_submissions_witness.json").read_text(encoding="utf-8"))
+    issuer_row = _d0_issuer_rows()["AAPL"]
+    cik10 = gsrc.canonical_cik(issuer_row["cik"])
+    accession = witness["accessionNumber"]
+    selected = gsrc.SelectedAccession(
+        accession=accession,
+        form=witness["form"],
+        filing_date=witness["filingDate"],
+        period_of_report=witness["reportDate"],
+        selection=selection,
+    )
+    fields = {
+        key: witness[key]
+        for key in (
+            "accessionNumber",
+            "form",
+            "filingDate",
+            "reportDate",
+            "acceptanceDateTime",
+            "primaryDocument",
+        )
+    }
+    return gsrc.capture_package(
+        fetch=_FixtureFetch(cik10, accession),
+        issuer_row=issuer_row,
+        selected=selected,
+        submissions_entry={
+            "fields": fields,
+            "source_url": witness["source_url"],
+            "source_path": witness["source_path"],
+        },
+        stage_root=tmp_path / "stage",
+        out_issuer_dir=tmp_path / "out",
+        fixture_recorded_at="2026-10-12T00:00:00Z",
+        declared_reason="not required for XBRL statement reconstruction",
+    )
+
+
+def test_capture_only_package_never_reaches_d1(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[str] = []
+
+    def _refuse_admission(**kwargs: object) -> None:
+        calls.append(str(kwargs.get("capture_recorded_at")))
+        raise AssertionError("D1 admission must not be attempted for a capture-only row")
+
+    monkeypatch.setattr(gsrc, "admit_retained_filing_package", _refuse_admission)
+    row, detail = _capture_aapl_10q(tmp_path, "capture_only")
+    assert calls == []
+    assert row["selection"] == "capture_only"
+    assert row["admission"] == gsrc.CAPTURE_ONLY_ADMISSION
+    assert detail["admission"] == gsrc.CAPTURE_ONLY_ADMISSION
+    assert row["statement_roles_state"] == "extracted"
+    manifest_path = tmp_path / "out" / row["accession"] / "package_manifest.json"
+    assert hashlib.sha256(manifest_path.read_bytes()).hexdigest() == row["manifest_sha256"]
+
+
+def test_admission_candidate_package_is_self_checked_by_d1(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[str] = []
+
+    def _record_admission(**kwargs: object) -> None:
+        calls.append(str(kwargs.get("capture_recorded_at")))
+
+    monkeypatch.setattr(gsrc, "admit_retained_filing_package", _record_admission)
+    row, _detail = _capture_aapl_10q(tmp_path, "admission_candidate")
+    assert calls == ["2026-10-12T00:00:00Z"]
+    assert row["admission"] == "ADMITTED"
+
+
+# ---------------------------------------------------------------------------
 # data_gate: byte-level digest re-check + D1 re-admission over staged bytes.
 # ---------------------------------------------------------------------------
 
@@ -475,6 +587,11 @@ def test_staged_bytes_match_manifests_and_readmit() -> None:
                 assert len(payload) == member["byte_length"]
                 members[member["name"]] = payload
             checked += 1
+            if row["selection"] == "capture_only":
+                # Retained bytes are digest-checked above; capture-only rows
+                # are never admitted, so D1 is not consulted for them.
+                assert row["admission"] == gsrc.CAPTURE_ONLY_ADMISSION, accession
+                continue
             if row["statement_roles_state"] != "extracted":
                 # Capture-side role refusal: D1 was never the arbiter.
                 continue

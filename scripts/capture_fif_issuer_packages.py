@@ -43,10 +43,15 @@ Frozen rules implemented here (G_PACK spec R5/R7/R8):
   a guess. ``title_search`` is derived by one stated rule: the title with a
   single trailing parenthesised suffix removed, so
   "STATEMENTS OF OPERATIONS (Unaudited)" -> "STATEMENTS OF OPERATIONS".
-* Every fully-assembled package (roles included) is self-checked with the
-  UNMODIFIED D1 function ``admit_retained_filing_package``
-  (capture_basis="reconstruction"); its verdict or typed refusal code is
-  recorded. The admission function is never modified to make a package pass.
+* Every fully-assembled ADMISSION-CANDIDATE package (roles included) is
+  self-checked with the UNMODIFIED D1 function
+  ``admit_retained_filing_package`` (capture_basis="reconstruction"); its
+  verdict or typed refusal code is recorded. The admission function is never
+  modified to make a package pass.
+* CAPTURE-ONLY rows (the year-ago 10-Q and ``--extra-accession`` vintages)
+  are retained and flagged but NEVER admitted: D1 is not consulted for them,
+  and their capture_index ``admission`` is the fixed marker
+  ``CAPTURE_ONLY_ADMISSION`` rather than any admission outcome.
 * Retained bytes stay OUTSIDE git: staged under ``--stage-root`` (default
   ``~/lanes/stage/fif-gsrc``) per package as
   ``<stage>/<cik10>/<accession>/{index.json, sec_submissions_witness.json,
@@ -146,6 +151,11 @@ class SelectedAccession:
     filing_date: str
     period_of_report: str
     selection: str  # "admission_candidate" | "capture_only"
+
+
+# capture_index ``admission`` for a capture-only row. It is a fixed marker,
+# never an admission outcome: capture-only rows never reach D1.
+CAPTURE_ONLY_ADMISSION = "not_admitted:capture_only"
 
 
 # ---------------------------------------------------------------------------
@@ -848,6 +858,11 @@ def capture_package(
         witness_bytes=witness_bytes,
         witness_source_url=str(submissions_entry["source_url"]),
     )
+    if selected.selection == "capture_only":
+        detail["admission_message"] = (
+            "capture-only row: retained and flagged, never admitted"
+        )
+        return finish(CAPTURE_ONLY_ADMISSION, manifest=manifest)
     if roles is None:
         detail["admission_message"] = roles_state
         return finish(roles_state, manifest=manifest)

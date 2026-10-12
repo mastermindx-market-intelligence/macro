@@ -41,7 +41,7 @@
     "period_of_report": "2025-06-30",
     "selection": "capture_only",
     "manifest_sha256": "08846e666e59d28250e15cfe6ef42cf6b9f435d4af658c2654762d5dc4a01cd4",
-    "admission": "primary_unparseable",
+    "admission": "not_admitted:capture_only",
     "statement_roles_state": "extracted"
   }
 ]
