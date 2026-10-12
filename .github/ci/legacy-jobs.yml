@@ -4439,6 +4439,8 @@ jobs:
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_sec_document_spine.py
           tests/test_fundamental_forensics_filing_package.py
+          tests/test_fundamental_forensics_production_dataset_store.py
+          tests/test_fundamental_forensics_production_provider.py
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_query_api.py
           tests/test_fundamental_forensics_ixbrl_raw_ledger.py
@@ -22356,6 +22358,8 @@ jobs:
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/production_datasets.py"
+      - "engine/fundamental_forensics/production_provider.py"
       - "engine/fundamental_forensics/query.py"
       - "engine/fundamental_forensics/query_service.py"
       - "engine/fundamental_forensics/query_snapshots.py"
