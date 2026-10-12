@@ -388,3 +388,17 @@ def test_an_episode_older_than_the_cap_is_not_drawn_partially():
     assert len(path["dates"]) == PATH_MAX_CLOSES
     assert read["peak_session"] not in path["dates"]
     assert episode_window(read) is None
+
+
+def test_a_chart_near_the_cap_draws_every_close_the_owner_kept():
+    import re
+
+    from lib.pullback_depth import present
+
+    read = dict(result(_long_decline(PATH_MAX_CLOSES - 13)), market="us", clock="settled_close")
+    view = present(read, market="us", aria_en="Observed drawdown", aria_zh="已观察回撤")
+    drawn = view["detail_path"]
+    # Past the chart helper's default sample size, yet within the owner's cap.
+    assert drawn is not None and 220 < len(drawn["dates"]) <= PATH_MAX_CLOSES
+    line = re.search(r'class="ilx-path[^"]*" d="([^"]+)"', view["detail_chart_html"]).group(1)
+    assert len(re.findall(r"[ML]", line)) == len(drawn["dates"])

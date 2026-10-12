@@ -225,6 +225,7 @@ def present(observation: dict, *, market: str, aria_en: str, aria_zh: str) -> di
                 else "short" if window is not None else "uncovered")
     if shown is not None:
         from lib import illus
+        from lib.pullback_observation import PATH_MAX_CLOSES
         chart = illus.illus(
             shown,
             kind="drawdown",
@@ -233,6 +234,8 @@ def present(observation: dict, *, market: str, aria_en: str, aria_zh: str) -> di
             reference=0,
             # "z": a value that rounds to zero prints 0.0%, as the metric does.
             value_fmt="{:z.1f}%",
+            # The owner caps the path; draw every close it keeps, never a min/max sample.
+            max_points=PATH_MAX_CLOSES,
             aria_en=aria_en,
             aria_zh=aria_zh,
         )
