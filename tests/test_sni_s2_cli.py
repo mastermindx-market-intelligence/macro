@@ -15,6 +15,22 @@ RUNNER = (ROOT / "research" / "single_name_intelligence" / "event_response"
 INPUT_REF = "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
 
 
+def _ensure_input_ref() -> None:
+    """Depth-1 CI checkouts lack BASE: one bounded fetch, else skip (never ERROR)."""
+    def present() -> bool:
+        return subprocess.run(["git", "cat-file", "-e", f"{INPUT_REF}^{{commit}}"],
+                              cwd=ROOT, capture_output=True).returncode == 0
+    if present():
+        return
+    try:
+        subprocess.run(["git", "fetch", "--no-tags", "--depth=1", "origin", INPUT_REF],
+                       cwd=ROOT, capture_output=True, timeout=90)
+    except Exception:
+        pass
+    if not present():
+        pytest.skip("input ref 5ef7a7f39f99 not present in this checkout (depth-1 CI)")
+
+
 def _run(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(
         [sys.executable, str(RUNNER), "--input-ref", INPUT_REF, *args],
@@ -50,6 +66,7 @@ def test_run_local_ledger_outside_data_is_accepted(tmp_path: Path) -> None:
     """A tmp_path ledger (never data/) runs the full pipeline against the
     committed seal and produces the evidence files at the EXACT
     --trial-ledger-path given."""
+    _ensure_input_ref()
     out = tmp_path / "o"
     ledger = tmp_path / "trial_ledger.jsonl"
     proc = _run("--out-dir", str(out), "--trial-ledger-path", str(ledger),

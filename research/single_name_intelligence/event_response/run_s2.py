@@ -200,6 +200,38 @@ def abstention_state(primary: dict) -> str:
     return TESTED
 
 
+PLAIN_NULL_TESTED = (
+    "Across the counted episodes the post-event directional agreement with "
+    "each frozen baseline cannot be distinguished from a coin flip at this "
+    "sample size; the rows describe conditional post-event co-movement over "
+    "fixed windows and are not forecasts, signals or attribution.")
+_PLAIN_NULL_TAIL = ("The rows describe conditional post-event co-movement over "
+                    "fixed windows and are not forecasts, signals or attribution.")
+PLAIN_NULL_NOT_TESTED = {
+    ABSTAIN_NO_EPISODES: (
+        "This family abstains: no episode was counted in this block, so no "
+        "agreement rate, no interval and no test against the frozen baselines "
+        "is estimable. " + _PLAIN_NULL_TAIL),
+    ABSTAIN_INSUFFICIENT_CLUSTERS: (
+        "This family abstains: fewer than two independent clusters, so no "
+        "agreement rate, no interval and no test against the frozen baselines "
+        "is estimable. " + _PLAIN_NULL_TAIL),
+    DESCRIPTIVE_ONLY: (
+        "This family is descriptive only: the counted episodes are below the "
+        f"pre-registered minimum of {MIN_EPISODES} for a test, so no agreement "
+        "rate test and no interval is reported. " + _PLAIN_NULL_TAIL),
+}
+
+
+def plain_word_null(state_token: str) -> str:
+    """REG §5 item 1. The coin-flip sentence only when a test exists (TESTED);
+    every other state gets its own plain-word line (A25: abstain, never fill).
+    An unknown token raises KeyError (fail closed)."""
+    if state_token == TESTED:
+        return PLAIN_NULL_TESTED
+    return PLAIN_NULL_NOT_TESTED[state_token]
+
+
 def pooled_prior(state: dict, occ: dict, h: int) -> tuple[int | None, str]:
     """Baseline (iii): sign of the mean excess of all counted TRAIN episodes
     across the three families at h (PRIMARY), TRAIN only."""
@@ -273,14 +305,9 @@ def build_block(pid: str, state: dict, occ: dict, h: int, split: str,
         ci_block = "CI NOT ESTIMABLE (cluster-N < 2)"
 
     pooling = POOLING_WEIGHT_TOKEN  # printed, never a number by default (E7)
-    plain_null = (
-        "Across the counted episodes the post-event directional agreement with "
-        "each frozen baseline cannot be distinguished from a coin flip at this "
-        "sample size; the rows describe conditional post-event co-movement over "
-        "fixed windows and are not forecasts, signals or attribution.")
 
     block = {
-        "plain_word_null": plain_null,
+        "plain_word_null": plain_word_null(state_token),
         "analysis_set": {
             "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
             "SENS_A": {"honest_n": evals[BASELINE_ALWAYS_LONG]["summary"]["SENS_A"]["honest_n"],
@@ -713,7 +740,7 @@ def render_report(results: dict, retirement_records: dict) -> str:
                     if "state" in bobj:
                         a(f"- {label}: {bobj['state']}")
                     eps = bobj["episodes"]
-                    if not eps:
+                    if not eps and "state" not in bobj:
                         a(f"- {label}: no counted episodes in this block")
                     for r in eps:
                         d = r["direction"]

@@ -21,7 +21,7 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from s2_loaders import GitBlobLoader, verify_pinned_blobs  # noqa: E402
 from s2_selection import coverage_census_rows  # noqa: E402

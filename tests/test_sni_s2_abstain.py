@@ -51,3 +51,39 @@ def test_pooling_weight_is_the_token_when_not_estimable() -> None:
     # here they never hold at S2 sample sizes, so the token must be the value
     from run_s2 import build_block  # noqa: F401  (integration exercised in evidence run)
     assert POOLING_WEIGHT_TOKEN.startswith("NOT ESTIMABLE")
+
+
+def test_abstain_plain_null_never_describes_a_coin_flip() -> None:
+    from run_s2 import plain_word_null
+    from s2_seal import (ABSTAIN_INSUFFICIENT_CLUSTERS, ABSTAIN_NO_EPISODES,
+                         DESCRIPTIVE_ONLY, TESTED)
+    for tok in (ABSTAIN_NO_EPISODES, ABSTAIN_INSUFFICIENT_CLUSTERS,
+                DESCRIPTIVE_ONLY):
+        s = plain_word_null(tok)
+        assert "coin flip" not in s and "cannot be distinguished" not in s, tok
+        assert "not forecasts, signals or attribution" in s
+    assert plain_word_null(ABSTAIN_INSUFFICIENT_CLUSTERS).startswith(
+        "This family abstains: fewer than two independent clusters")
+    assert plain_word_null(ABSTAIN_NO_EPISODES).startswith(
+        "This family abstains: no episode was counted")
+    assert "cannot be distinguished from a coin flip" in plain_word_null(TESTED)
+
+
+def test_committed_results_plain_null_matches_state() -> None:
+    import json
+    from run_s2 import plain_word_null
+    from s2_seal import TESTED
+    runs = ROOT / "research" / "single_name_intelligence" / "runs" / "s2_event_response"
+    n_tested = 0
+    for pid in ("P04", "P05", "P06"):
+        d = json.loads((runs / "results" / f"{pid}.json").read_text(encoding="utf-8"))
+        blocks = [b for split in d["splits"].values() if isinstance(split, dict)
+                  for b in split.values() if isinstance(b, dict)
+                  and "plain_word_null" in b]
+        assert len(blocks) == 9, (pid, len(blocks))
+        for b in blocks:
+            st = b["family_row"]["abstention_state"]
+            assert b["plain_word_null"] == plain_word_null(st), (pid, st)
+            n_tested += st == TESTED
+    report = (runs / "REPORT.md").read_text(encoding="utf-8")
+    assert report.count("cannot be distinguished from a coin flip") == n_tested

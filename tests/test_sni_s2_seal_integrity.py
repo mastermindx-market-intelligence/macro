@@ -6,7 +6,9 @@ refused before any outcome is computed.
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -24,10 +26,36 @@ COMMITTED_SEAL = (ROOT / "research" / "single_name_intelligence" / "runs"
                   / "s2_event_response")
 
 
+def _ensure_input_ref() -> None:
+    """Depth-1 CI checkouts lack BASE: one bounded fetch, else skip (never ERROR)."""
+    def present() -> bool:
+        return subprocess.run(["git", "cat-file", "-e", f"{INPUT_REF}^{{commit}}"],
+                              cwd=ROOT, capture_output=True).returncode == 0
+    if present():
+        return
+    try:
+        subprocess.run(["git", "fetch", "--no-tags", "--depth=1", "origin", INPUT_REF],
+                       cwd=ROOT, capture_output=True, timeout=90)
+    except Exception:
+        pass
+    if not present():
+        pytest.skip("input ref 5ef7a7f39f99 not present in this checkout (depth-1 CI)")
+
+
 @pytest.fixture(scope="module")
 def state():
+    _ensure_input_ref()
     loader = GitBlobLoader(ROOT, INPUT_REF)
     return compute_state(loader)
+
+
+def test_build_seal_runs_standalone_from_repo_root() -> None:
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    builder = ROOT / "research" / "single_name_intelligence" / "event_response" / "build_seal.py"
+    r = subprocess.run([sys.executable, str(builder), "--help"], cwd=ROOT, env=env,
+                       capture_output=True, text=True, timeout=180)
+    assert r.returncode == 0, r.stderr[-2000:]
+    assert "--out-dir" in r.stdout
 
 
 def test_committed_seal_verifies(state) -> None:
