@@ -443,3 +443,27 @@ def test_slashes_jobs_still_joins_cuts_jobs():
         "Company slashes 500 jobs in restructuring",
         "Company cuts 500 jobs in restructuring",
     )
+
+
+def test_resumes_talks_does_not_join_suspends_talks():
+    """Dropping the termination check in _compatible joins these titles."""
+    _blocked(
+        "Apple resumes talks to acquire Disney this week",
+        "Apple suspends talks to acquire Disney this week",
+    )
+
+
+def test_suspends_talks_still_joins_ends_talks():
+    """Treating suspends as outside the terminated family splits this pair."""
+    _joined(
+        "Apple suspends talks to acquire Disney this week",
+        "Apple ends talks to acquire Disney this week",
+    )
+
+
+def test_resumes_talks_still_joins_ongoing_talks():
+    """Treating resumes as terminated splits this ongoing-talks pair."""
+    _joined(
+        "Apple resumes talks to acquire Disney this week",
+        "Apple is in talks to acquire Disney this week",
+    )

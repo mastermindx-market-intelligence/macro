@@ -165,7 +165,8 @@ _BEARISH_TARGETS = frozenset(
 _TERMINATED_RE = re.compile(
     r"\b(?:ends|ended|terminates|terminated|calls\s+off|called\s+off|"
     r"abandons|abandoned|scraps|scrapped|walks\s+away|walked\s+away|"
-    r"breaks\s+off|broke\s+off|halts|halted|collapses|collapsed)\b",
+    r"breaks\s+off|broke\s+off|halts|halted|suspends|suspended|"
+    r"collapses|collapsed)\b",
     re.I,
 )
 # Move directions compare like outcome polarity: an up-move headline never
