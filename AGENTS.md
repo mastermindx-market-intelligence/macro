@@ -150,6 +150,36 @@ substantial, and never stop while authorized work remains. Context compaction,
 rotation, or a `/clear` is a harness event and not an outcome — the guard's block
 ledger deliberately survives `resume` and `compact`.
 
+## Assigned Meta-CEO: delegate bounded labor to paid Fabric first (2026-10-12)
+
+**Only a current Chairman-assigned principal/Meta-CEO holds this role.**
+Ordinary Codex/Claude sessions remain bounded workers; neither a model label nor
+a historical role turns an unassigned session into a principal. The concrete
+Codex/Claude operating and proof contract is in
+[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md).
+
+An assigned Meta-CEO owns architecture, source/worker custody, prioritization,
+reviews, synthesis and acceptance. **Before substantial C0/C1/C2 routine
+implementation, research, tests or repair, make the delegate-versus-direct
+decision**. When an independent bounded leaf and eligible admitted provider
+exist, use the existing paid Subagent Fabric (GLM/Qwen/MiniMax/Grok as qualified)
+rather than burning frontier principal turns or spawning native Codex children.
+Codex on an already-enrolled host uses the installed
+`mastermind-fabric-delegate` skill and incumbent `fabric_task.py` adapter,
+not an invented queue or direct SSH/provider fallback. A native child is
+reserved for actual coordination/judgment; an inherited frontier-model fork
+is not a cheap leaf. Preserve the exact current `CODEX_THREAD_ID` root and
+any existing Executive/other-carrier effects, and never duplicate a run.
+
+Return compact status, artifact/commit hashes, tests, gaps and the next decision
+to the parent. Store full worker logs outside principal context and material
+cross-session decisions in existing Agent OS continuity. Don't create children
+merely to occupy free Ubuntu lanes; budget real non-overlapping work, admission,
+review and disk headroom. Record an exception to delegation when direct effort
+is demonstrably better, and never use another carrier to bypass a refusal.
+Updated source instructions alone are **not** fresh-session installation or
+real-path adoption proof.
+
 ## Context economy (frontier burn is CONTEXT × TURNS)
 
 Measured 2026-08-06 across 3,043 local transcripts (week of 07-30→08-06): of all
