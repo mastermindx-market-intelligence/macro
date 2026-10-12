@@ -106,25 +106,27 @@ Main H5 still does `round(100 * latest["alloc_optimal"])` and substitutes `0` wh
 
 ## 4. Capability ledger
 
-States: LIVE means an anonymous GET on 2026-10-12 showed it, or the merged main source that produces that GET is cited. ACCRUING means the work exists on an open carrier and is not what the origin served. REJECTED means the masterplan or a recorded decision closed that promotion. BLOCKED means a named gate still stops it. “Unavailable” is the word for missing inputs. A null is not zero.
+States: LIVE means a recorded anonymous GET only. The evidence cell names the command, the UTC time, the HTTP status, and the matched selector or string with a count. A source citation alone is not LIVE. A match count of zero is not LIVE. SOURCE-CITED means the merged main source is cited and the served bytes were not checked. ACCRUING means the work exists on an open carrier and is not what the origin served. REJECTED means the masterplan or a recorded decision closed that promotion. BLOCKED means a named gate still stops it. “Unavailable” is the word for missing inputs. A null is not zero.
+
+Repair GETs, two requests total, both anonymous and read-only. Crypto command `curl -sS -A 'MastermindCensus/1.0' --max-time 25 https://www.mastermind-x.com/crypto.html` issued 2026-10-12T05:52:57Z, HTTP 200 (`content-type: text/html; charset=utf-8`, `last-modified: Mon, 12 Oct 2026 05:06:29 GMT`). Vector command `curl -sS -A 'MastermindCensus/1.0' --max-time 25 https://www.mastermind-x.com/vector.html` issued 2026-10-12T05:53:00Z, HTTP 200 (`last-modified: Mon, 12 Oct 2026 05:06:35 GMT`). Counts in the table are local matches on those two bodies, not further requests. `gh pr view 8935 -R mastermindx-market-intelligence/macro --json isDraft,headRefOid` during this repair, before the commit that contains this sentence, returned `isDraft` true and `headRefOid` `f82dbaa52426325722eb21184c20bd45cf9820c5`.
 
 | Capability the masterplan names | State | Evidence |
 |---|---|---|
-| Open Crypto and read the class | LIVE | Step 2. H1 as-of `2026-10-09`. Masterplan §2. |
-| See whether participation is broadening | LIVE as display | Dominance and board are on the served cockpit. The capitalization-versus-flow wording review is T08, ACCRUING (masterplan §5, §8). |
-| Comparable asset board | LIVE as today’s top-N | `#market-board`, 30 live-bound price nodes. Dated historical membership is T07, ACCRUING. |
-| Price evidence | LIVE | Baked board and vector close, plus public `quotes.json` BTC-USD. The two prices differ (`$82,482` baked vs `84064.99` quote). |
-| Stablecoin supply display | LIVE as the H3 shelf on main’s template | `templates/crypto.html.j2:207` DefiLlama receipt. Issuance-versus-cap separation is T08, ACCRUING. |
-| ETF subscription display | LIVE as the H3 Farside shelf | `templates/crypto.html.j2:206`. Its own as-of is not printed on the shelf (`engine/crypto_market_state.py:317`). |
+| Open Crypto and read the class | LIVE | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200. `data-shelf="H1"` count 1. `As of` count 1, civil date `2026-10-09`. Masterplan §2. |
+| See whether participation is broadening | LIVE as display | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200. `BTC share` count 1. `Spot participation proxy` count 1. The capitalization-versus-flow wording review is T08, ACCRUING (masterplan §5, §8). |
+| Comparable asset board | LIVE as today’s top-N | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200. `id="market-board"` count 1. Board price cells `class="market-value nb-px"` count 20. Page-wide `nb-px` count is 30 and also includes asset-lane and equity cells, so 30 is not the board count. Dated historical membership is T07, ACCRUING. |
+| Price evidence | LIVE | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200, `class="market-value nb-px"` count 20. Vector command above, 2026-10-12T05:53:00Z, HTTP 200, `class="live-price"` count 1, text `$82,482`. `/live/quotes.json` was not re-read; the previous quote comparison is not this LIVE record. |
+| Stablecoin supply display | LIVE as the H3 shelf | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200. `Stablecoin tide` count 1. Receipt `Aggregate circulating supply from DefiLlama.` count 1. Issuance-versus-cap separation is T08, ACCRUING. |
+| ETF subscription display | LIVE as the H3 Farside shelf | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200. `US spot-BTC ETFs` count 1. `Farside fund-level net flows` count 1. That sensor’s text has no as-of date. `templates/crypto.html.j2:206` does not print `flows.etf.as_of` (`engine/crypto_market_state.py:317`). |
 | Venue-flow interval, unit, and finality | ACCRUING | Masterplan §5 R10. Candidate tests in `tests/test_vector_r2_frontdoor.py` (`test_r13_*`) are on #8050, not on the served page. |
-| On-chain valuation family on Vector | LIVE as existing panels | Main template prints reserve-risk and VDD vintages (`templates/vector.html.j2:496-497`). Dependence map (MVRV and NUPL are not independent votes) is T11, ACCRUING (masterplan §5). |
-| Short-horizon close versus cycle read | LIVE | `.asof-chip` “Daily close” and the master/decision shelves are separate nodes. |
-| Canonical Bitcoin decision on Vector | LIVE | `data-decision-status="ok"`, exposure `100`, action `HOLD 100% BTC`. Authority module `engine/btc_decision.py`. P0A PR #6294. |
+| On-chain valuation family on Vector | LIVE as existing panels | Vector command above, 2026-10-12T05:53:00Z, HTTP 200. `Reserve Risk and VDD use backfill vintages only` count 1. Matched text includes `Reserve Risk through 2026-06-13; VDD through 2026-06-13`. Dependence map (MVRV and NUPL are not independent votes) is T11, ACCRUING (masterplan §5). |
+| Short-horizon close versus cycle read | LIVE | Vector command above, 2026-10-12T05:53:00Z, HTTP 200. `Daily close` count 1, text `Oct 10, 2026`. `data-shelf="S2"` count 1. The chip and the decision shelf are separate nodes. |
+| Canonical Bitcoin decision on Vector | LIVE | Vector command above, 2026-10-12T05:53:00Z, HTTP 200. `data-decision-status="ok"` count 1. `data-decision-exposure="100"` count 1. `HOLD 100% BTC` count 1. `engine/btc_decision.py` and P0A PR #6294 name the authority and are not the LIVE basis. |
 | H5 uses that decision and fails closed | ACCRUING | #8050 `project_budget` and `_allocation`. Served H5 is still `scripts/build_crypto.py:207-214`. WS P0B is `in_progress` and the workstream status is `blocked` (`agentos/workstreams/WS-CRYPTO-INTELLIGENCE.md:13`, `:31-48`). |
-| Source line a reader can check | LIVE for the class board | CoinGecko / CoinPaprika line, step 2. |
+| Source line a reader can check | LIVE for the class board | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200. `Universe data: CoinGecko primary` count 1. |
 | Source table with source_id and a non-asserted availability clock | ACCRUING | Candidate `scripts/build_vector.py:300-320`. Absent from the served vector body. |
-| Public quote snapshot | LIVE | Step 4 quote pass. `meta.realtime` is false. |
-| Ask Mastermind on the product pages | LIVE as the existing launcher and guest quota | Step 5. POST was not sent. Failure and privacy behavior is T20, ACCRUING (masterplan §8). |
+| Public quote snapshot | SOURCE-CITED | Not LIVE. §1 Step 4 recorded GET `/live/quotes.json` at 05:21Z, HTTP 200. This repair did not repeat that path, and this cell has no selector match count. Served quote bytes were not re-checked. |
+| Ask Mastermind on the product pages | LIVE as the launcher script on the page | Crypto command above, 2026-10-12T05:52:57Z, HTTP 200, `src="theme.js` count 1 (`theme.js?v=17255989`). Vector command above, 2026-10-12T05:53:00Z, HTTP 200, `src="theme.js` count 1. The guest-quota GET was not repeated and is not this LIVE record. POST was not sent. Failure and privacy behavior is T20, ACCRUING (masterplan §8). |
 | Chart-led Vector frontdoor from #8050 | ACCRUING | PR #8050 OPEN draft, head still `fd8095012e91`. Served page has no `overview-source`. |
 | Accessible market rows from #7645 | ACCRUING | PR #7645 OPEN, head `74298e32bb`. Shared path is `templates/crypto.html.j2` (masterplan §3). Not merged. |
 | Valid 0% distinct from a missing decision, and a known total with an unavailable sleeve | ACCRUING | Candidate `_allocation_unavailable` and `tests/test_vector_r2_data_boundary.py`. Not on the served H5. |
@@ -137,7 +139,7 @@ States: LIVE means an anonymous GET on 2026-10-12 showed it, or the merged main 
 | P0B Executive admission | BLOCKED | Workstream `blocked_by` Personal-Pro path. This plan does not clear it. |
 | Anonymous read of `crypto_cockpit.json` and `crypto_class_state.json` | BLOCKED | HTTP 401 at 05:21Z. |
 | T24 executed production proof | BLOCKED | This document is the plan. Section 1 has not been re-run after a later nightly. T23 independent exact-head review has not been recorded here. |
-| Measured pages already on main | LIVE | Steps 2 and 3. A measured-only release of further candidate work is a separate gate (section 6) and is not this row. |
+| Measured pages already on main | SOURCE-CITED | Not LIVE. The previous cell named Steps 2 and 3 and the main tree, not a shelf selector with a count. HTTP 200 on the two repair GETs does not prove the “already on main” claim. A measured-only release of further candidate work is a separate gate (section 6) and is not this row. |
 
 ## 5. Proposed text for `agentos/workstreams/WS-CRYPTO-INTELLIGENCE.md`
 
