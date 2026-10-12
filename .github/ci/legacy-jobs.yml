@@ -24207,3 +24207,23 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: sni s1 residual baseline tests
         run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py -q -p no:cacheprovider
+  c19-wp11-reader-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP11 (MAS-263) acceptance pins: MRI release_forecast.v2 reader + expectation read. Hermetic: tmp_path only, no data/ reads.
+    timeout-minutes: 10
+    paths:
+      - "engine/event_window.py"
+      - "engine/validation.py"
+      - "engine/release_market_context.py"
+      - "tests/test_c19_wp11_reader_pins.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: c19-wp11-reader-pins
+        run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
