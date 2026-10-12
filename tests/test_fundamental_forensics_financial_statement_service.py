@@ -1386,3 +1386,87 @@ def test_production_package_without_trees_never_parses(monkeypatch) -> None:
 
     with pytest.raises(FinancialQueryUnavailableError):
         _execute(provider=_TreelessProvider())
+
+
+# ---------------------------------------------------------------------------
+# FIF P1-b (I3): canonical decimal-text cell values — boundary pin, not a
+# conversion. The served value is the parser's canonical text or an explicit
+# null; any other type is the file's typed unavailability with nothing leaked.
+# ---------------------------------------------------------------------------
+
+
+def _all_cells(envelope: dict) -> list:
+    return [
+        cell
+        for statement in envelope["statements"]
+        for row in statement["rows"]
+        for cell in row["cells"]
+    ]
+
+
+def _forged_tree_package(tree: dict) -> GoldenFilingPackage:
+    """The golden package carrying a forged precomputed statement tree."""
+    base = load_golden_aapl_package(ROOT)
+    package = GoldenFilingPackage.__new__(GoldenFilingPackage)
+    object.__setattr__(package, "manifest", base.manifest)
+    object.__setattr__(package, "members", base.members)
+    object.__setattr__(package, "statement_trees", tree)
+    return package
+
+
+class _ForgedTreeProvider(GoldenAaplStatementProvider):
+    def __init__(self, tree: dict) -> None:
+        super().__init__(ROOT)
+        self._tree = tree
+
+    def resolve(self, entity_id: str, accession: str) -> GoldenFilingPackage:
+        super().resolve(entity_id, accession)  # keeps the golden admission gates
+        return _forged_tree_package(self._tree)
+
+
+def test_statement_cell_values_are_canonical_decimal_text_or_none() -> None:
+    result = _execute()
+    envelope = json.loads(result.body)
+    cells = _all_cells(envelope)
+    assert cells
+    assert all(cell["value"] is None or isinstance(cell["value"], str) for cell in cells)
+    assert any(isinstance(cell["value"], str) for cell in cells)
+
+
+def test_statement_cell_numeric_value_is_refused_as_typed_unavailability() -> None:
+    import copy
+
+    tree = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    forged = copy.deepcopy(tree)
+    cell = _all_cells(forged)[0]
+    cell["value"] = 78000000  # int — a producer contract break, not text to convert
+
+    with pytest.raises(FinancialQueryUnavailableError) as excinfo:
+        _execute(provider=_ForgedTreeProvider(forged))
+    assert excinfo.value.args == ()  # the generic unavailability detail, nothing leakable
+
+    float_forged = copy.deepcopy(tree)
+    _all_cells(float_forged)[0]["value"] = 78000000.0
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(provider=_ForgedTreeProvider(float_forged))
+
+
+def test_statement_cell_exponent_text_passes_through_unchanged() -> None:
+    import copy
+
+    tree = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    forged = copy.deepcopy(tree)
+    sales = next(
+        cell
+        for cell in _all_cells(forged)
+        if cell["value"] not in (None, "") and isinstance(cell["value"], str)
+    )
+    sales["value"] = "1E+2"  # non-canonical exponent TEXT still passes byte-identically
+
+    result = _execute(provider=_ForgedTreeProvider(forged))
+    envelope = json.loads(result.body)
+    assert any(cell["value"] == "1E+2" for cell in _all_cells(envelope))

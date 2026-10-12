@@ -321,6 +321,20 @@ def execute_financial_statements(
     else:
         raise FinancialQueryUnavailableError()
 
+    # FIF P1-b (I3): boundary pin, not a conversion. Every served cell value
+    # must already be the parser's canonical decimal TEXT or an explicit null;
+    # any other type (int, float, Decimal, ...) is a producer contract break
+    # answered with this file's typed unavailability — no re-formatting, no
+    # rounding, no scale math here. Scale and decimals already ride beside the
+    # value as display hints, and both paths above (precomputed trees and the
+    # golden reconstruction) sit behind this same rule.
+    for statement in reconstructed["statements"]:
+        for statement_row in statement["rows"]:
+            for cell in statement_row["cells"]:
+                value = cell["value"]
+                if value is not None and not isinstance(value, str):
+                    raise FinancialQueryUnavailableError()
+
     envelope = {
         "schema": _RESPONSE_SCHEMA,
         "entity": {
