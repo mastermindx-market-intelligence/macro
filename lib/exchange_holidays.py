@@ -6,7 +6,7 @@ and retain those calendars' historical fallback. Dates list weekday closures onl
 Early closes remain sessions. Times are local and include HKEX's latest CAS end
 (12:10); store-completion settle buffers belong to the existing calendar modules.
 
-CN: SSE/SZSE 2026 notices. HK: SEHK 2026/2027 circulars. US: NYSE 2026/2027
+CN: SSE/SZSE 2023-2026 notices. HK: SEHK 2026/2027 circulars. US: NYSE 2026/2027
 with Nasdaq independently corroborating 2026 only. CA: TSX/TSXV 2026; only
 2027 New Year's Day is independently verified, so 2027 is NOT a verified year.
 JP: JPX 2026/2027 cash-equity notices, verified 2026-10-08.
@@ -20,8 +20,19 @@ from datetime import date, time
 from types import MappingProxyType
 
 _VERIFIED_ON = date(2026, 10, 7)
+# 2023-2025 notices were checked on this date. The market-level verified_on stays
+# 2026-10-07: HK/US/CA share that original table date and tests pin it. Per-year
+# dates are calendar_coverage()["year_verified_on"].
+_CN_NOTICE_VERIFIED_ON = date(2026, 10, 11)
 _SSE = "https://www.sse.com.cn/disclosure/announcement/general/c/c_20251222_10802507.shtml"
 _SZSE = "https://www.szse.cn/disclosure/notice/t20251222_618087.html"
+# 2023 SZSE notice 深证会〔2022〕448号 matches the SSE text, but its szse.cn page
+# is no longer in the disclosure index, so 2023 cites the SSE notice only.
+_SSE_2023 = "https://www.sse.com.cn/disclosure/announcement/general/c/c_20221227_5714458.shtml"
+_SSE_2024 = "https://www.sse.com.cn/disclosure/announcement/general/c/c_20231226_5733939.shtml"
+_SZSE_2024 = "https://www.szse.cn/disclosure/notice/t20231226_605108.html"
+_SSE_2025 = "https://www.sse.com.cn/disclosure/announcement/general/c/c_20241223_10767108.shtml"
+_SZSE_2025 = "https://www.szse.cn/disclosure/notice/t20241223_611283.html"
 _HK_2026 = "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2025/ce_SEHK_CT_075_2025.pdf"
 _HK_2027 = "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2026/ce_SEHK_CT_077_2026.pdf"
 _NYSE = "https://www.nyse.com/trade/hours-calendars"
@@ -77,6 +88,37 @@ _ANNOUNCED = MappingProxyType({
         ("Sports Day", "10-11"),
         ("Culture Day", "11-03"),
         ("Labor Thanksgiving Day", "11-23"),
+    )),
+    # Merged notice span 09-29..10-06. 09-29 is Mid-Autumn; later weekdays are
+    # National Day. 10-01 is a Sunday. Weekend 调休 days are not rows.
+    ("CN", 2023): _slate(2023, (
+        ("New Year's Day", "01-02"),
+        ("Spring Festival", "01-23 01-24 01-25 01-26 01-27"),
+        ("Qingming Festival", "04-05"),
+        ("Labour Day", "05-01 05-02 05-03"),
+        ("Dragon Boat Festival", "06-22 06-23"),
+        ("Mid-Autumn Festival", "09-29"),
+        ("National Day", "10-02 10-03 10-04 10-05 10-06"),
+    )),
+    ("CN", 2024): _slate(2024, (
+        ("New Year's Day", "01-01"),
+        ("Spring Festival", "02-09 02-12 02-13 02-14 02-15 02-16"),
+        ("Qingming Festival", "04-04 04-05"),
+        ("Labour Day", "05-01 05-02 05-03"),
+        ("Dragon Boat Festival", "06-10"),
+        ("Mid-Autumn Festival", "09-16 09-17"),
+        ("National Day", "10-01 10-02 10-03 10-04 10-07"),
+    )),
+    # Merged notice span 10-01..10-08. 10-06 is Mid-Autumn; the other weekdays
+    # are National Day. Weekend 调休 days are not rows.
+    ("CN", 2025): _slate(2025, (
+        ("New Year's Day", "01-01"),
+        ("Spring Festival", "01-28 01-29 01-30 01-31 02-03 02-04"),
+        ("Qingming Festival", "04-04"),
+        ("Labour Day", "05-01 05-02 05-05"),
+        ("Dragon Boat Festival", "06-02"),
+        ("Mid-Autumn Festival", "10-06"),
+        ("National Day", "10-01 10-02 10-03 10-07 10-08"),
     )),
     ("CN", 2026): _slate(2026, (
         ("New Year's Day", "01-01 01-02"),
@@ -186,7 +228,12 @@ _HALF_TIMES = MappingProxyType({
 
 _YEAR_SOURCES = MappingProxyType({
     "JP": MappingProxyType({2026: (_JPX,), 2027: (_JPX,)}),
-    "CN": MappingProxyType({2026: (_SSE, _SZSE)}),
+    "CN": MappingProxyType({
+        2023: (_SSE_2023,),
+        2024: (_SSE_2024, _SZSE_2024),
+        2025: (_SSE_2025, _SZSE_2025),
+        2026: (_SSE, _SZSE),
+    }),
     "HK": MappingProxyType({2026: (_HK_2026,), 2027: (_HK_2027,)}),
     "US": MappingProxyType({2026: (_NYSE, _NASDAQ), 2027: (_NYSE,)}),
     "CA": MappingProxyType({2026: (_TSX,)}),
@@ -199,6 +246,14 @@ _COVERAGE = MappingProxyType({
         "partial_years": frozenset(year for m, year in _PARTIAL if m == market),
         "partial_source_urls": MappingProxyType({2027: (_TSX,)} if market == "CA" else {}),
         "verified_on": date(2026, 10, 8) if market == "JP" else _VERIFIED_ON,
+        "year_verified_on": MappingProxyType({
+            year: (
+                _CN_NOTICE_VERIFIED_ON if market == "CN" and year < 2026
+                else date(2026, 10, 8) if market == "JP"
+                else _VERIFIED_ON
+            )
+            for year in year_sources
+        }),
     })
     for market, year_sources in _YEAR_SOURCES.items()
 })
