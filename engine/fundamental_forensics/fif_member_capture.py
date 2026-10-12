@@ -680,6 +680,41 @@ def _retained_package_state(package_dir: Path) -> str:
     return "manifest"
 
 
+def _parse_archive_index(index_bytes: bytes) -> list[dict[str, Any]]:
+    """Parse the fetched archive ``index.json`` into its ``directory.item`` rows.
+
+    D3: a status-200 throttle page, truncated JSON, or a wrong-shape payload is
+    the typed refusal ``malformed_member`` — never a ``JSONDecodeError`` /
+    ``KeyError`` escaping the capture loop (only ``FifMemberCaptureError`` is
+    caught there, so an untyped parse crash would abort the whole run).
+    """
+    try:
+        payload = json.loads(index_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise FifMemberCaptureError(
+            f"archive index is not UTF-8 JSON: {exc}", code="malformed_member"
+        ) from exc
+    if not isinstance(payload, dict):
+        raise FifMemberCaptureError(
+            "archive index is not a JSON object", code="malformed_member"
+        )
+    directory = payload.get("directory")
+    if not isinstance(directory, dict):
+        raise FifMemberCaptureError(
+            "archive index carries no directory object", code="malformed_member"
+        )
+    items = directory.get("item")
+    if not isinstance(items, list) or not items:
+        raise FifMemberCaptureError(
+            "archive index directory.item is missing or empty", code="malformed_member"
+        )
+    if not all(isinstance(item, dict) for item in items):
+        raise FifMemberCaptureError(
+            "archive index directory.item rows are malformed", code="malformed_member"
+        )
+    return items
+
+
 def _write_package(
     package_dir: Path,
     *,
@@ -705,8 +740,7 @@ def _write_package(
     back to a copy. Returns ``(manifest, files_written, bytes_written)`` so the
     run report can state the real per-night snapshot delta.
     """
-    index_payload = json.loads(index_bytes.decode("utf-8"))
-    items = index_payload["directory"]["item"]
+    items = _parse_archive_index(index_bytes)
     if len(items) > MAX_INDEX_MEMBERS:
         raise FifMemberCaptureError(
             "archive index exceeds the member-count ceiling", code="member_count_exceeded"

@@ -502,6 +502,41 @@ def _capture_report(lane) -> dict:
     )
 
 
+def test_d3_non_json_archive_index_is_typed_malformed_member(tmp_path) -> None:
+    """D3: an HTML throttle page served as index.json (status-200 garbage) must
+    be a typed row refusal, never an untyped JSONDecodeError that aborts the
+    whole capture run."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    accession_key = identity["accessions"][0].replace("-", "")
+    lane["collector"]._served[accession_key]["index.json"] = b"<html>throttle</html>"
+    report = _capture_report(lane)
+    assert report["issuers"][0]["accessions"][0]["outcome"] == (
+        "member_capture_failed:malformed_member"
+    )
+    assert report["issuers"][0]["accessions"][1]["outcome"] == "captured"
+
+
+def test_d3_wrong_shape_archive_index_is_typed_malformed_member(tmp_path) -> None:
+    """D3: JSON that parses but is not {directory: {item: [dicts]}} is the same
+    typed refusal — a truncated-but-parseable index must not crash untyped."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    accession_key = identity["accessions"][0].replace("-", "")
+    for bogus in (
+        b'{"directory": {}}',                  # item missing
+        b'{"directory": {"item": "not-a-list"}}',  # item not a list
+        b'{"directory": {"item": ["plain-string"]}}',  # rows not dicts
+        b'{"no_directory": true}',             # directory missing
+        b'[1, 2, 3]',                          # not an object at all
+    ):
+        lane["collector"]._served[accession_key]["index.json"] = bogus
+        report = _capture_report(lane)
+        assert report["issuers"][0]["accessions"][0]["outcome"] == (
+            "member_capture_failed:malformed_member"
+        ), bogus
+
+
 def test_member_byte_ceiling_enforced(tmp_path, monkeypatch) -> None:
     lane = _materialized_lane(tmp_path)
     monkeypatch.setattr(CAP, "MAX_MEMBER_BYTES", 64)
