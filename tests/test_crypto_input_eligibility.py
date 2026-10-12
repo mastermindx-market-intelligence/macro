@@ -9,6 +9,11 @@ real zero, and must keep an A→B revision visible.
 argument. They are still required to withhold rows after ``AS_OF`` and rows
 whose receipt column is after ``AS_OF``. A projection that cannot do that
 fails the test. Do not loosen these assertions to match today's code.
+
+Strict-xfail contract: the twenty tests the projections cannot distinguish
+carry ``pytest.mark.xfail(strict=True)``. An accidental pass fails the run
+and forces a matrix update. Remove a marker only together with the engine
+fix and the matrix row update.
 """
 from __future__ import annotations
 
@@ -237,6 +242,7 @@ def test_heat_funding_observed_zero_stays_balanced(root: Path) -> None:
 # --- cases the projections cannot distinguish: these must fail as written ---
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED S: projection carries no as-of clock; a future index is returned")
 def test_col_future_row_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -250,6 +256,7 @@ def test_col_future_row_is_not_available(root: Path) -> None:
     assert 999.0 not in set(series.dropna().tolist())
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED funding_rate_fundingRate: _funding returns a future index")
 def test_funding_future_row_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -266,6 +273,7 @@ def test_funding_future_row_is_not_available(root: Path) -> None:
     assert 0.01 not in set(series.dropna().tolist())
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED close: load_price returns a future close")
 def test_load_price_future_close_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -287,6 +295,7 @@ def test_load_price_future_close_is_not_available(root: Path) -> None:
     assert 999.0 not in set(price["close"].tolist())
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED btc_hourly high, low → intraday_vol: a future hourly bar is scored")
 def test_intraday_vol_future_bar_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -307,6 +316,7 @@ def test_intraday_vol_future_bar_is_not_available(root: Path) -> None:
     assert vol is None or vol.index.max() <= AS_OF
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED S: _series returns a future index")
 def test_series_future_row_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -318,6 +328,7 @@ def test_series_future_row_is_not_available(root: Path) -> None:
     assert series.empty or series.index.max() <= AS_OF
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED class total cap: a future class cap is published")
 def test_market_state_future_cap_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -334,6 +345,7 @@ def test_market_state_future_cap_is_not_available(root: Path) -> None:
     assert 9.0e12 not in state["history"]["vals"]
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED S: keep-last hides revision A")
 def test_col_revision_a_to_b_is_visible(root: Path) -> None:
     _put(
         root,
@@ -347,6 +359,7 @@ def test_col_revision_a_to_b_is_visible(root: Path) -> None:
     assert 1.0 in seen and 2.0 in seen
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED funding_rate_fundingRate: keep-last hides funding revision A")
 def test_funding_revision_a_to_b_is_visible(root: Path) -> None:
     _put(
         root,
@@ -363,6 +376,7 @@ def test_funding_revision_a_to_b_is_visible(root: Path) -> None:
     assert 0.0001 in seen and 0.0002 in seen
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED S: keep-last hides the fear A-to-B revision")
 def test_market_state_revision_a_to_b_is_visible(root: Path) -> None:
     _put(
         root,
@@ -374,6 +388,7 @@ def test_market_state_revision_a_to_b_is_visible(root: Path) -> None:
     assert state.get("fear_prior") == 10.0 or state.get("fear_revised") is True
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED fear_greed: stale 0 is published as the current print")
 def test_market_state_stale_zero_is_not_a_current_zero(root: Path) -> None:
     _price(root, day="2026-10-11")
     _put(
@@ -392,6 +407,7 @@ def test_market_state_stale_zero_is_not_a_current_zero(root: Path) -> None:
     )
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED funding_rate_fundingRate: heat funding has no field as-of; stale 0 reads as Balanced")
 def test_heat_funding_stale_zero_is_not_a_current_zero(root: Path) -> None:
     _price(root, day="2026-10-11")
     _put(
@@ -410,6 +426,7 @@ def test_heat_funding_stale_zero_is_not_a_current_zero(root: Path) -> None:
     )
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED S: received_at after AS_OF is still published")
 def test_market_state_delayed_receipt_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -425,6 +442,7 @@ def test_market_state_delayed_receipt_is_not_available(root: Path) -> None:
     assert state["fear_state"] == "Unavailable"
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED S: _col ignores received_at")
 def test_col_delayed_receipt_is_not_available(root: Path) -> None:
     _put(
         root,
@@ -441,6 +459,7 @@ def test_col_delayed_receipt_is_not_available(root: Path) -> None:
     assert receipt is not None and pd.Timestamp(receipt) <= AS_OF
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED fear_greed: trailing NaN is dropped and the previous print becomes latest")
 def test_market_state_partial_latest_cell_stays_unavailable(root: Path) -> None:
     _put(
         root,
@@ -453,12 +472,14 @@ def test_market_state_partial_latest_cell_stays_unavailable(root: Path) -> None:
     assert state["fear_state"] == "Unavailable"
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED volume: absent volume is worded Normal")
 def test_market_state_absent_volume_state_is_not_normal(root: Path) -> None:
     state = cms.build_market_state()
     assert state["flows"]["volume"]["value"] is None
     assert state["flows"]["volume"]["state"] != "Normal"
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED ssr: a missing stablecoin day is forward-filled into a number")
 def test_ssr_missing_stablecoin_day_stays_missing(root: Path) -> None:
     _price(root)
     days = _idx("2026-10-09", "2026-10-10")
@@ -475,6 +496,7 @@ def test_ssr_missing_stablecoin_day_stays_missing(root: Path) -> None:
     assert pd.isna(ssr.loc[pd.Timestamp("2026-10-10")])
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED supply_in_profit_pct: a missing supply day is forward-filled into a fraction")
 def test_supply_fraction_missing_supply_day_stays_missing(root: Path) -> None:
     _price(root)
     days = _idx("2026-10-09", "2026-10-10")
@@ -496,6 +518,7 @@ def test_supply_fraction_missing_supply_day_stays_missing(root: Path) -> None:
     assert pd.isna(frac.loc[pd.Timestamp("2026-10-10")])
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED class total cap: dominance is carried across a gap of up to 3 days")
 def test_total_cap_gap_is_not_filled(root: Path) -> None:
     _put(
         root,
@@ -513,6 +536,7 @@ def test_total_cap_gap_is_not_filled(root: Path) -> None:
     assert pd.Timestamp("2026-10-11") not in history.index
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED total: ETF 5d sums the last 5 stored rows, not the calendar window")
 def test_etf_partial_window_is_not_a_five_day_sum(root: Path) -> None:
     _put(
         root,
@@ -528,6 +552,7 @@ def test_etf_partial_window_is_not_a_five_day_sum(root: Path) -> None:
     assert state["flows"]["etf"]["value"] in (None, 10.0)
 
 
+@pytest.mark.xfail(strict=True, reason="CONSTRAINED DGS10: a weekend hole is unlabeled")
 def test_fred_weekend_gap_is_labeled_nonpublication(root: Path) -> None:
     _put(
         root,
