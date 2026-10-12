@@ -22424,6 +22424,7 @@ jobs:
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_universe_snapshot.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -22637,6 +22638,7 @@ jobs:
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
       - "tests/test_qbus_news_universe_snapshot.py"
+      - "tests/test_qbus_news_velocity.py"
       - "tests/test_run_qbus_news.py"
       - "tests/test_run_qbus_news_health.py"
       - "tests/test_run_qbus_news_provider.py"
@@ -22675,6 +22677,7 @@ jobs:
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
           tests/test_qbus_news_universe_snapshot.py
+          tests/test_qbus_news_velocity.py
           tests/test_run_qbus_news.py
           tests/test_run_qbus_news_health.py
           tests/test_run_qbus_news_provider.py
