@@ -150,6 +150,17 @@ def test_d6_capture_report_written_and_consumed() -> None:
     assert '--capture-report "$CAPTURE_REPORT"' in publish["run"]
 
 
+def test_d7_capture_step_carries_no_secrets() -> None:
+    """D7: member capture fetches from SEC through the collector and writes to
+    the warm archive root — it never touches the store, so the capture step
+    gets NO credentials at all, least of all the four R2_RESEARCH_* secrets it
+    was previously handed."""
+    workflow = _workflow()
+    capture = next(step for step in _steps(workflow) if step.get("name") == CAPTURE_STEP)
+    assert "env" not in capture
+    assert "R2_" not in capture["run"]
+
+
 def test_capture_step_uses_the_contract_coverage_file() -> None:
     workflow = _workflow()
     steps = _steps(workflow)

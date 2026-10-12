@@ -215,11 +215,9 @@ jobs:
         # the retained Submissions bytes, and write the package subtree under a
         # NEW fif-packages/ prefix in the warm archive root. Hard gate: no
         # continue-on-error, the script exits non-zero on any failure.
-        env:
-          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
-          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
-          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
-          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+        # No env block: capture touches only SEC (through the collector) and
+        # the warm archive root — never the object store, so it gets no
+        # credentials at all (D7).
         run: |
           set -euo pipefail
           utc_now() { python -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"))'; }
