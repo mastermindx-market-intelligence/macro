@@ -1,0 +1,733 @@
+{
+  "attested": false,
+  "capture_basis": "reconstruction",
+  "contract_id": "five_issuer_v1",
+  "field_denominator": {
+    "metric_catalog": "config/fundamental_forensics/metrics/v1/metric_catalog.yaml",
+    "metric_ids": [
+      "accounts_payable",
+      "accounts_receivable_net",
+      "basic_earnings_per_share",
+      "basic_weighted_average_shares",
+      "capital_expenditures",
+      "cash_and_cash_equivalents",
+      "cash_dividends_paid",
+      "cash_to_total_debt",
+      "common_shares_outstanding",
+      "common_stock_repurchases",
+      "cost_of_revenue",
+      "current_assets",
+      "current_liabilities",
+      "current_ratio",
+      "debt_to_equity",
+      "depreciation_depletion_amortization",
+      "diluted_earnings_per_share",
+      "diluted_weighted_average_shares",
+      "free_cash_flow",
+      "goodwill",
+      "gross_margin",
+      "gross_profit",
+      "income_tax_expense_benefit",
+      "intangible_assets_net",
+      "inventory_net",
+      "inventory_to_revenue",
+      "long_term_debt",
+      "long_term_debt_current",
+      "net_cash_from_financing_activities",
+      "net_cash_from_investing_activities",
+      "net_cash_from_operating_activities",
+      "net_debt",
+      "net_income_loss",
+      "operating_expenses",
+      "operating_income_loss",
+      "operating_lease_right_of_use_asset",
+      "pretax_income_loss",
+      "property_plant_equipment_net",
+      "receivables_to_revenue",
+      "research_and_development_expense",
+      "retained_earnings_accumulated_deficit",
+      "revenue",
+      "share_based_compensation_expense",
+      "short_term_debt",
+      "short_term_investments",
+      "stockholders_equity",
+      "total_assets",
+      "total_debt",
+      "total_liabilities",
+      "working_capital"
+    ],
+    "not_applicable": {
+      "BAC": {
+        "cost_of_revenue": "bank-class; CostOfRevenue / CostOfGoodsAndServicesSold absent from companyfacts (fif-g3-bac.md#3.2; A30)",
+        "free_cash_flow": "bank-class; industrial FCF not applicable; PaymentsToAcquirePropertyPlantAndEquipment absent (fif-g3-bac.md#3.2, #5.2; A30)",
+        "gross_margin": "bank-class; GrossProfit absent; generic gross-margin detector must refuse (fif-g3-bac.md#3.2, #5.2; A30)",
+        "gross_profit": "bank-class; GrossProfit absent from companyfacts (fif-g3-bac.md#3.2; A30)",
+        "inventory_net": "bank-class; InventoryNet absent from companyfacts (fif-g3-bac.md#3.2, #5.2; A30)"
+      }
+    }
+  },
+  "historical_attestation": "unavailable_until_d2_admission",
+  "issuers": [
+    {
+      "accessions": [
+        {
+          "accession": "0000320193-25-000079",
+          "census_ref": "fif-grok-aapl-golden-audit.md#0",
+          "filing_date": "2025-10-31",
+          "form": "10-K",
+          "period_of_report": "2025-09-27",
+          "retention_state": "retained_golden_fixture"
+        },
+        {
+          "accession": "0000320193-26-000020",
+          "census_ref": "fif-grok-aapl-golden-audit.md#0",
+          "filing_date": "2026-07-31",
+          "form": "10-Q",
+          "period_of_report": "2026-06-27",
+          "retention_state": "retained_golden_fixture"
+        }
+      ],
+      "cik": "0000320193",
+      "fiscal_year_end": "09-27",
+      "identity_binding_state": "golden_committed",
+      "issuer_class": "industrial",
+      "legal_name": "Apple Inc.",
+      "ticker": "AAPL"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0001640147-26-000008",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2026-03-20",
+          "form": "10-K",
+          "period_of_report": "2026-01-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-25-000052",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2025-03-21",
+          "form": "10-K",
+          "period_of_report": "2025-01-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-24-000101",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2024-03-26",
+          "form": "10-K",
+          "period_of_report": "2024-01-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-26-000037",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2026-09-04",
+          "form": "10-Q",
+          "period_of_report": "2026-07-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-26-000030",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2026-05-29",
+          "form": "10-Q",
+          "period_of_report": "2026-04-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-25-000211",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2025-12-05",
+          "form": "10-Q",
+          "period_of_report": "2025-10-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary.xml presence not fetched (index-page budget); row is isXBRL=1 in submissions (fif-g1-snow.md#1, #11)"
+        },
+        {
+          "accession": "0001640147-25-000187",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2025-09-05",
+          "form": "10-Q",
+          "period_of_report": "2025-07-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary.xml presence not fetched (index-page budget); row is isXBRL=1 in submissions (fif-g1-snow.md#1, #11)"
+        },
+        {
+          "accession": "0001640147-25-000110",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2025-05-30",
+          "form": "10-Q",
+          "period_of_report": "2025-04-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary.xml presence not fetched (index-page budget); row is isXBRL=1 in submissions (fif-g1-snow.md#1, #11)"
+        },
+        {
+          "accession": "0001640147-24-000250",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2024-11-27",
+          "form": "10-Q",
+          "period_of_report": "2024-10-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary.xml presence not fetched (index-page budget); row is isXBRL=1 in submissions (fif-g1-snow.md#1, #11)"
+        },
+        {
+          "accession": "0001640147-24-000207",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2024-08-29",
+          "form": "10-Q",
+          "period_of_report": "2024-07-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary.xml presence not fetched (index-page budget); row is isXBRL=1 in submissions (fif-g1-snow.md#1, #11)"
+        },
+        {
+          "accession": "0001640147-24-000135",
+          "census_ref": "fif-g1-snow.md#1",
+          "filing_date": "2024-05-31",
+          "form": "10-Q",
+          "period_of_report": "2024-04-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary.xml presence not fetched (index-page budget); row is isXBRL=1 in submissions (fif-g1-snow.md#1, #11)"
+        },
+        {
+          "accession": "0001640147-26-000033",
+          "census_ref": "fif-g1-snow.md#6",
+          "filing_date": "2026-09-02",
+          "form": "8-K",
+          "period_of_report": "2026-09-02",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0001640147",
+      "fiscal_year_end": "01-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "Snowflake Inc.",
+      "ticker": "SNOW"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000018230-26-000008",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2026-02-13",
+          "form": "10-K",
+          "period_of_report": "2025-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000018230-25-000008",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2025-02-14",
+          "form": "10-K",
+          "period_of_report": "2024-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000018230-24-000009",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2024-02-16",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000018230-26-000046",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2026-08-05",
+          "form": "10-Q",
+          "period_of_report": "2026-06-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000018230-26-000021",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2026-05-06",
+          "form": "10-Q",
+          "period_of_report": "2026-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy not confirmed (six index-page cap; fif-g2-cat.md#Q1, GAPS)"
+        },
+        {
+          "accession": "0000018230-25-000048",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2025-11-03",
+          "form": "10-Q",
+          "period_of_report": "2025-09-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary unconfirmed \u2014 directory listing enumerated only *-index.html, *-index-headers.html, 0000018230-25-000048.txt, 0000018230-25-000048-xbrl.zip (fif-g2-cat.md#Q1)"
+        },
+        {
+          "accession": "0000018230-25-000040",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2025-08-06",
+          "form": "10-Q",
+          "period_of_report": "2025-06-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy not confirmed (six index-page cap; fif-g2-cat.md#Q1, GAPS)"
+        },
+        {
+          "accession": "0000018230-25-000016",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2025-05-07",
+          "form": "10-Q",
+          "period_of_report": "2025-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy not confirmed (six index-page cap; fif-g2-cat.md#Q1, GAPS)"
+        },
+        {
+          "accession": "0000018230-24-000053",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2024-11-06",
+          "form": "10-Q",
+          "period_of_report": "2024-09-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy not confirmed (six index-page cap; fif-g2-cat.md#Q1, GAPS)"
+        },
+        {
+          "accession": "0000018230-24-000045",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2024-08-07",
+          "form": "10-Q",
+          "period_of_report": "2024-06-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy not confirmed (six index-page cap; fif-g2-cat.md#Q1, GAPS)"
+        },
+        {
+          "accession": "0000018230-24-000020",
+          "census_ref": "fif-g2-cat.md#Q1",
+          "filing_date": "2024-05-01",
+          "form": "10-Q",
+          "period_of_report": "2024-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy not confirmed (six index-page cap; fif-g2-cat.md#Q1, GAPS)"
+        },
+        {
+          "accession": "0000018230-26-000040",
+          "census_ref": "fif-g2-cat.md#Q6",
+          "filing_date": "2026-08-04",
+          "form": "8-K",
+          "period_of_report": "2026-08-04",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0000018230",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "Caterpillar Inc.",
+      "ticker": "CAT"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000070858-26-000157",
+          "census_ref": "fif-g3-bac.md#1.1",
+          "filing_date": "2026-02-25",
+          "form": "10-K",
+          "period_of_report": "2025-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-25-000139",
+          "census_ref": "fif-g3-bac.md#1.1",
+          "filing_date": "2025-02-25",
+          "form": "10-K",
+          "period_of_report": "2024-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-24-000122",
+          "census_ref": "fif-g3-bac.md#1.1",
+          "filing_date": "2024-02-20",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-26-000394",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2026-07-31",
+          "form": "10-Q",
+          "period_of_report": "2026-06-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-26-000249",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2026-05-01",
+          "form": "10-Q",
+          "period_of_report": "2026-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy unconfirmed (six-page budget; fif-g3-bac.md#1.2, GAPS)"
+        },
+        {
+          "accession": "0000070858-25-000405",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2025-10-31",
+          "form": "10-Q",
+          "period_of_report": "2025-09-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy unconfirmed (six-page budget; fif-g3-bac.md#1.2, GAPS)"
+        },
+        {
+          "accession": "0000070858-25-000268",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2025-07-31",
+          "form": "10-Q",
+          "period_of_report": "2025-06-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-25-000200",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2025-04-30",
+          "form": "10-Q",
+          "period_of_report": "2025-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy unconfirmed (six-page budget; fif-g3-bac.md#1.2, GAPS)"
+        },
+        {
+          "accession": "0000070858-24-000280",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2024-10-29",
+          "form": "10-Q",
+          "period_of_report": "2024-09-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy unconfirmed (six-page budget; fif-g3-bac.md#1.2, GAPS)"
+        },
+        {
+          "accession": "0000070858-24-000208",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2024-07-30",
+          "form": "10-Q",
+          "period_of_report": "2024-06-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy unconfirmed (six-page budget; fif-g3-bac.md#1.2, GAPS)"
+        },
+        {
+          "accession": "0000070858-24-000156",
+          "census_ref": "fif-g3-bac.md#1.2",
+          "filing_date": "2024-04-30",
+          "form": "10-Q",
+          "period_of_report": "2024-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / schema / taxonomy unconfirmed (six-page budget; fif-g3-bac.md#1.2, GAPS)"
+        },
+        {
+          "accession": "0000070858-26-000353",
+          "census_ref": "fif-g3-bac.md#1.3",
+          "filing_date": "2026-07-14",
+          "form": "8-K",
+          "period_of_report": "2026-07-14",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0000070858",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "bank",
+      "legal_name": "BANK OF AMERICA CORP /DE/",
+      "ticker": "BAC"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0001652044-26-000018",
+          "census_ref": "fif-g4-googl.md#2.1",
+          "filing_date": "2026-02-05",
+          "form": "10-K",
+          "period_of_report": "2025-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001652044-25-000014",
+          "census_ref": "fif-g4-googl.md#2.1",
+          "filing_date": "2025-02-05",
+          "form": "10-K",
+          "period_of_report": "2024-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001652044-24-000022",
+          "census_ref": "fif-g4-googl.md#2.1",
+          "filing_date": "2024-01-31",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001652044-26-000071",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2026-07-23",
+          "form": "10-Q",
+          "period_of_report": "2026-06-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001652044-26-000048",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2026-04-30",
+          "form": "10-Q",
+          "period_of_report": "2026-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / taxonomy not fetched (6-index-page cap); submissions isInlineXBRL=1 (fif-g4-googl.md#2.2, #11)"
+        },
+        {
+          "accession": "0001652044-25-000091",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2025-10-30",
+          "form": "10-Q",
+          "period_of_report": "2025-09-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001652044-25-000062",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2025-07-24",
+          "form": "10-Q",
+          "period_of_report": "2025-06-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / taxonomy not fetched (6-index-page cap); submissions isInlineXBRL=1 (fif-g4-googl.md#2.2, #11)"
+        },
+        {
+          "accession": "0001652044-25-000043",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2025-04-25",
+          "form": "10-Q",
+          "period_of_report": "2025-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / taxonomy not fetched (6-index-page cap); submissions isInlineXBRL=1 (fif-g4-googl.md#2.2, #11)"
+        },
+        {
+          "accession": "0001652044-24-000118",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2024-10-30",
+          "form": "10-Q",
+          "period_of_report": "2024-09-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / taxonomy not fetched (6-index-page cap); submissions isInlineXBRL=1 (fif-g4-googl.md#2.2, #11)"
+        },
+        {
+          "accession": "0001652044-24-000079",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2024-07-24",
+          "form": "10-Q",
+          "period_of_report": "2024-06-30",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / taxonomy not fetched (6-index-page cap); submissions isInlineXBRL=1 (fif-g4-googl.md#2.2, #11)"
+        },
+        {
+          "accession": "0001652044-24-000053",
+          "census_ref": "fif-g4-googl.md#2.2",
+          "filing_date": "2024-04-26",
+          "form": "10-Q",
+          "period_of_report": "2024-03-31",
+          "retention_state": "not_retained",
+          "uncertain": "FilingSummary / instance / taxonomy not fetched (6-index-page cap); submissions isInlineXBRL=1 (fif-g4-googl.md#2.2, #11)"
+        },
+        {
+          "accession": "0001652044-26-000066",
+          "census_ref": "fif-g4-googl.md#2.3",
+          "filing_date": "2026-07-22",
+          "form": "8-K",
+          "period_of_report": "2026-07-22",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0001652044",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "Alphabet Inc.",
+      "ticker": "GOOGL"
+    }
+  ],
+  "known_contradictions": [
+    {
+      "evidence": "collectors/fundamental_forensics_acquisition.py:76",
+      "id": "d0-2docs-vs-3fy",
+      "statement": "Wave-2 HARD_MAX_DOCUMENTS_PER_FORM = 2 (latest + 1 prior comparable per form family) is below a 3-fiscal-year annual + interim window. The freeze records the incumbent ceiling; it does not lift it."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/statement_graph.py:167",
+      "id": "d0-8k-item-202-retained-nowhere",
+      "statement": "8-K Item 2.02 is referenced as earnings_release_8k_accession on the AAPL golden related_event_ref and listed in G-pack approved sets, including BAC 0000070858-26-000353, but no acquisition lane retains 8-K documents. RELEVANT_FORMS and FORM_FAMILIES omit 8-K."
+    },
+    {
+      "evidence": "collectors/edgar_forensics.py:232",
+      "id": "d0-a20-duplicated-pacer-no-shared-budget",
+      "statement": "A20 requires one incumbent SEC request budget. Pacing is duplicated across SecForensicsCollector, SecFilingArchiveCollector, and SecCompanyFactsCollector (each per-process, 0.1 s floor). This contract names collectors.edgar_forensics:SecForensicsCollector as the single incumbent owner and does not add a second scheduler, queue, pacer, or budget owner. Aggregate per-IP limit remains a scheduler duty."
+    },
+    {
+      "evidence": "collectors/fundamental_forensics_acquisition.py:67",
+      "id": "d0-d1-observation-taxonomy",
+      "statement": "D1 taxonomy names unchanged source, new filing, correction, partial capture, failed observation. Incumbent Wave-2 outcomes are four of those five (unchanged, new_content, new_filing, missing). Correction exists only as broad-SEC reason edgar_index_correction_requires_reconciliation."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/ixbrl_raw_ledger.py:56",
+      "id": "d0-plan-version-skew",
+      "statement": "D0 census \u00a78 notes the plan assessment pinned 44a4536961 while this lane reads 5267c66846. Provider facts at this head still serve exactly the two committed golden accessions."
+    },
+    {
+      "evidence": "tests/fixtures/fundamental_forensics/aapl_10q_2026q3/package_manifest.json:49",
+      "id": "d0-aapl-8k-referenced-not-dated",
+      "statement": "AAPL 10-Q golden related_event_ref names earnings_release_8k_accession 0000320193-26-000018 without a census filing_date or period_of_report. This contract does not invent those dates and therefore does not list that 8-K as an accession row."
+    },
+    {
+      "evidence": "tests/fixtures/fundamental_forensics/aapl_10k_2025/package_manifest.json:11",
+      "id": "d0-aapl-fye-last-saturday",
+      "statement": "AAPL fiscal_year_end is stored as 09-27 from the committed FY2025 10-K period_of_report. Apple's fiscal year-end is last-Saturday-of-September (year-specific); C1 census records only fiscal_year_end_month 9."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/statement_graph.py:76",
+      "id": "g2-met-vs-mpe-rename",
+      "statement": "MASTERPLAN/G2 planning language still describes Machinery, Energy & Transportation versus Financial Products. The FY2025 10-K 0000018230-26-000008 defines Machinery, Power & Energy (MP&E) and renames Energy & Transportation to Power & Energy. Issuer source wins. No CAT branch exists in GOLDEN_AAPL_FIXTURES."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/metric_registry.py:53",
+      "id": "g3-companyfacts-entityname",
+      "statement": "Submissions name for CIK 0000070858 is BANK OF AMERICA CORP /DE/. The companyfacts payload for the same CIK carried entityName BofA Finance LLC. Facts on 0000070858-26-000157 match the BAC 10-K. This contract binds legal_name to the submissions name and does not bind the pack to the companyfacts display name."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/statement_graph.py:76",
+      "id": "g3-planning-vs-aapl-only-goldens",
+      "statement": "Commissioning MASTERPLAN names BAC as a five-issuer stress pack. This worktree's only golden accessions are AAPL 0000320193-25-000079 and 0000320193-26-000020. Expected: G3 is a research pack, not a committed golden."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/statement_graph.py:32",
+      "id": "g4-apple-primary-statement-roles",
+      "statement": "PRIMARY_STATEMENT_ROLES is hardcoded to http://www.apple.com/role/... GOOGL FY2025 roles are http://www.google.com/role/.... A GOOGL pack must not add a google.com branch to this map (A33)."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/statement_graph.py:62",
+      "id": "g4-prefixes-omit-goog",
+      "statement": "_PREFIXES includes apple_ / aapl_ and does not include goog_. Custom goog: concepts are outside ALLOWED_TAXONOMIES {us-gaap, dei}."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/metric_registry.py:53",
+      "id": "g4-companyfacts-no-goog-taxonomy",
+      "statement": "CompanyFacts for CIK 0001652044 has zero dimensional facts and no goog: taxonomy. Segment and share-class members live in the filing package. v1 dimensional profile is consolidated_only."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/statement_graph.py:76",
+      "id": "g4-aapl-golden-admission-copy",
+      "statement": "Golden admission still checks XBRL entity identifiers equal the package manifest CIK and raises StatementGraphError when the identifier is not the source-native AAPL CIK. That is AAPL-golden admission copy, not a GOOGL numeric patch."
+    },
+    {
+      "evidence": "tests/fixtures/fundamental_forensics/aapl_10q_2026q3/package_manifest.json:9",
+      "id": "aapl-a2-is-10q-not-10k-2026",
+      "statement": "A2 accession 0000320193-26-000020 is a 10-Q (FY2026 Q3, period 2026-06-27), not a 10-K 2026 comparative reprint."
+    },
+    {
+      "evidence": "collectors/fundamental_forensics_companyfacts.py:90",
+      "id": "c0c2-a20-mutex-is-not-a-budget",
+      "statement": "GitHub concurrency group filing-forensics-sec serializes Wave-2 and FF-1. That is a mutex, not a shared per-IP request-rate limiter. C0C2 verdict: A20 is not met. This contract names the incumbent pacer and forbids a tenth one."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/broad_sec_store.py:113",
+      "id": "broad-sec-8k-absent-from-relevant-forms",
+      "statement": "FF-1 RELEVANT_FORMS is 10-K/10-Q/20-F/40-F and amendments. 8-K is absent. Wave-2 FORM_FAMILIES is 10-K and 10-Q only."
+    },
+    {
+      "evidence": "collectors/fundamental_forensics_acquisition.py:7",
+      "id": "wave2-primary-only-vs-nine-component-package",
+      "statement": "Wave-2 acquires at most the latest two comparable 10-K and two comparable 10-Q primary documents. Deep retained-package law requires the nine component types (manifest, index, witness, primary, schema, cal, def, lab, pre). Wave-2 primary-only is not a complete admitted source package."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/broad_sec_store.py:145",
+      "id": "d1-correction-only-as-broad-sec-reason",
+      "statement": "D1 'correction' maps onto broad-SEC reason_code edgar_index_correction_requires_reconciliation, not a Wave-2 observation outcome."
+    },
+    {
+      "evidence": "engine/fundamental_forensics/ixbrl_raw_ledger.py:69",
+      "id": "served-goldens-attested-false",
+      "statement": "The two committed AAPL goldens are served attested=False, production_issuer_service=False. Downloaded-today data is reconstruction. Historical attestation is unavailable until D2 admission."
+    }
+  ],
+  "known_credential_names_not_used": [
+    "R2_RESEARCH_ACCESS_KEY_ID",
+    "R2_RESEARCH_BUCKET",
+    "R2_RESEARCH_ENDPOINT",
+    "R2_RESEARCH_SECRET_ACCESS_KEY",
+    "RESEARCH_LOCAL_STORE"
+  ],
+  "retained_package_law": {
+    "component_types": [
+      {
+        "artifact": "package_manifest.json",
+        "name": "package_manifest",
+        "role": "package identity/inventory"
+      },
+      {
+        "artifact": "index.json",
+        "name": "archive_index",
+        "role": "package-level, digest-bound"
+      },
+      {
+        "artifact": "acceptance_witness",
+        "name": "acceptance_witness",
+        "role": "package-level, binds accessionNumber/form/primaryDocument/reportDate/filingDate/acceptanceDateTime"
+      },
+      {
+        "artifact": ".htm",
+        "name": "primary_ixbrl",
+        "role": "primary"
+      },
+      {
+        "artifact": ".xsd",
+        "name": "schema",
+        "role": "schema"
+      },
+      {
+        "artifact": "_cal.xml",
+        "name": "calculation_linkbase",
+        "role": "calculation"
+      },
+      {
+        "artifact": "_def.xml",
+        "name": "definition_linkbase",
+        "role": "definition"
+      },
+      {
+        "artifact": "_lab.xml",
+        "name": "label_linkbase",
+        "role": "label"
+      },
+      {
+        "artifact": "_pre.xml",
+        "name": "presentation_linkbase",
+        "role": "presentation"
+      }
+    ],
+    "declared_reason": "not required for XBRL statement reconstruction",
+    "member_states": [
+      "stored",
+      "missing",
+      "not_requested",
+      "rejected_by_policy"
+    ],
+    "not_requested_member_classes": [
+      "archive_index_headers_html",
+      "archive_index_html",
+      "raw_complete_submission_txt",
+      "xbrl_zip_bundle",
+      "exhibits",
+      "graphics",
+      "extracted_xbrl_instance_htm_xml",
+      "FilingSummary.xml",
+      "MetaLinks.json",
+      "R_files"
+    ]
+  },
+  "schema": "fundamental_forensics.coverage_contract/v1",
+  "sec_request_budget_owner": "collectors.edgar_forensics:SecForensicsCollector",
+  "source_rights": {
+    "access_policy": "sec_fair_access_declared_user_agent",
+    "credentials_required": [],
+    "licences_accepted": [],
+    "provider": "sec_edgar_public_filings",
+    "purchases": []
+  }
+}
