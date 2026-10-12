@@ -1,0 +1,283 @@
+{
+  "schema": "research_vault.r22_acceptance_spec.v1",
+  "state": "SPEC_ONLY_NOT_EXECUTED",
+  "producer_cases": [
+    {
+      "id": "P01_explicit_id_create",
+      "given": "eligible report, body present, no W2 latest, W1 returns grounded ok",
+      "expect": [
+        "one W1 call",
+        "W2 state created",
+        "exact body hash preserved",
+        "coverage state returned"
+      ]
+    },
+    {
+      "id": "P02_unchanged_zero_call",
+      "given": "eligible report, W2 latest body+prompt identity current",
+      "expect": [
+        "zero W1 calls",
+        "zero W2 writes",
+        "state skipped_current/unchanged"
+      ]
+    },
+    {
+      "id": "P03_summary_hygiene_zero_call",
+      "given": "same body+prompt identity; only catalog summary_points changed",
+      "expect": [
+        "zero W1 calls",
+        "no new artifact"
+      ]
+    },
+    {
+      "id": "P04_prompt_identity_correction",
+      "given": "same body; institution/title/desk/published_at changed",
+      "expect": [
+        "one W1 call",
+        "exact previous artifact hash supplied",
+        "state corrected",
+        "history retained"
+      ]
+    },
+    {
+      "id": "P05_body_change_correction",
+      "given": "stored body hash changed",
+      "expect": [
+        "one W1 call",
+        "correction through exact predecessor",
+        "new source_content_sha256"
+      ]
+    },
+    {
+      "id": "P06_stale_predecessor",
+      "given": "latest pointer changes after producer freezes predecessor",
+      "expect": [
+        "typed conflict",
+        "no blind retry",
+        "no second carrier"
+      ]
+    },
+    {
+      "id": "P07_effect_unknown",
+      "given": "W2 returns effect-unknown state",
+      "expect": [
+        "effect uncertainty preserved",
+        "no retry/write duplication"
+      ]
+    },
+    {
+      "id": "P08_rights_denied",
+      "given": "no positive internal-model-processing grant for document",
+      "expect": [
+        "zero W1 calls",
+        "zero W2 writes",
+        "no source-derived content in result"
+      ]
+    },
+    {
+      "id": "P09_no_text",
+      "given": "text_layer=none",
+      "expect": [
+        "zero W1 calls",
+        "honest no_text state"
+      ]
+    },
+    {
+      "id": "P10_extraction_unavailable",
+      "given": "text_layer empty/unavailable",
+      "expect": [
+        "zero W1 calls",
+        "honest extraction_unavailable state"
+      ]
+    },
+    {
+      "id": "P11_prefix_only",
+      "given": "measured char_count > len(stored body)",
+      "expect": [
+        "W1 may analyze stored prefix",
+        "coverage state prefix_only",
+        "no whole-report absence claim"
+      ]
+    },
+    {
+      "id": "P12_complete_body",
+      "given": "char_count known <= len(stored body)",
+      "expect": [
+        "coverage state complete_stored_body"
+      ]
+    },
+    {
+      "id": "P13_unknown_coverage",
+      "given": "char_count missing",
+      "expect": [
+        "coverage_unknown",
+        "no complete-report claim"
+      ]
+    },
+    {
+      "id": "P14_provider_unavailable",
+      "given": "W1 providers_unavailable",
+      "expect": [
+        "no W2 write",
+        "existing provider failure state preserved"
+      ]
+    },
+    {
+      "id": "P15_invalid_model_output",
+      "given": "W1 invalid_model_output",
+      "expect": [
+        "no W2 write",
+        "no empty RIO treated as truth"
+      ]
+    },
+    {
+      "id": "P16_provenance_and_cost",
+      "given": "successful provider exposes usage",
+      "expect": [
+        "requested and served model/provider retained",
+        "existing ai_costs lane receives actual usage",
+        "no new cost ledger"
+      ]
+    },
+    {
+      "id": "P17_private_context",
+      "given": "report was selected because of a private portfolio/watch context",
+      "expect": [
+        "only report ID/selection reason enters shared producer",
+        "no holdings/position sizes/private prompt persisted in RIO shared state"
+      ]
+    },
+    {
+      "id": "P18_ingest_isolation",
+      "given": "producer failure at any point",
+      "expect": [
+        "Research Vault catalog/corpus/PDF/source receipt unchanged",
+        "hourly ingestion outcome independent"
+      ]
+    },
+    {
+      "id": "P19_gold_g4_prefix",
+      "given": "IEA decisive qualification outside current stored prefix",
+      "expect": [
+        "partial/abstain producer-stage result",
+        "not full-document green"
+      ]
+    },
+    {
+      "id": "P20_frozen_waves",
+      "given": "G2/G3 require cross-document relation",
+      "expect": [
+        "producer emits per-document RIO only",
+        "no W5/W6 storage or synthesis created"
+      ]
+    }
+  ],
+  "discovery_cases": [
+    {
+      "id": "D01_metadata_control",
+      "given": "relevant terms in current catalog title/summary",
+      "expect": [
+        "legacy metadata search remains compatible"
+      ]
+    },
+    {
+      "id": "D02_body_only",
+      "given": "relevant permitted term only in stored body",
+      "expect": [
+        "approved source_text scope can discover real report ID",
+        "metadata-only scope may honestly miss"
+      ]
+    },
+    {
+      "id": "D03_wrong_company",
+      "given": "query names company A plus generic margin; report only supports company B margin",
+      "expect": [
+        "company-scoped result not admitted from generic word alone"
+      ]
+    },
+    {
+      "id": "D04_eligibility_before_limit",
+      "given": "ineligible high-ranked rows precede eligible match",
+      "expect": [
+        "eligible match survives final result budget",
+        "no access widening"
+      ]
+    },
+    {
+      "id": "D05_unavailable_vs_empty",
+      "given": "corpus/search backend unavailable",
+      "expect": [
+        "unavailable distinct from healthy no-match all the way to consumer"
+      ]
+    },
+    {
+      "id": "D06_denied_no_fallback",
+      "given": "body-conditioned search denied",
+      "expect": [
+        "no local/browser/body fallback widens disclosure"
+      ]
+    },
+    {
+      "id": "D07_prefix_no_absence",
+      "given": "query absent in 60k prefix but full extracted char_count proves truncation",
+      "expect": [
+        "no claim source lacks term",
+        "coverage partial"
+      ]
+    },
+    {
+      "id": "D08_support_preservation",
+      "given": "matching summary bullet is fifth or match late in bullet",
+      "expect": [
+        "returned support retains relevant bounded context or discloses only document relevance"
+      ]
+    },
+    {
+      "id": "D09_request_freshness",
+      "given": "older request completes after new query/filter/context",
+      "expect": [
+        "old response cannot replace current results"
+      ]
+    },
+    {
+      "id": "D10_w3_missing",
+      "given": "report discovered but RIO missing",
+      "expect": [
+        "report remains readable under existing policy",
+        "RIO state missing; no fabricated synthesis"
+      ]
+    },
+    {
+      "id": "D11_w3_stale_body",
+      "given": "W2 body hash differs from current stored body",
+      "expect": [
+        "RIO state stale; literal report reader still source-bound"
+      ]
+    },
+    {
+      "id": "D12_w3_metadata_mismatch",
+      "given": "W2 body fresh but W1 prompt metadata differs from current catalog",
+      "expect": [
+        "content freshness and metadata freshness reported separately",
+        "current catalog metadata not overwritten by stale RIO receipt"
+      ]
+    },
+    {
+      "id": "D13_source_open",
+      "given": "answer uses one report",
+      "expect": [
+        "viewer opens same report/source identity",
+        "no locator fabricated if mapping unavailable"
+      ]
+    },
+    {
+      "id": "D14_signal_firewall",
+      "given": "research answer changes",
+      "expect": [
+        "Prophet signal/rank/size/execution artifacts unchanged"
+      ]
+    }
+  ],
+  "gold_stage_reference": "research/research_vault_expectations_r3/r22/gold_stage_matrix_r22.json",
+  "acceptance_boundary": "Fixture/local tests prove semantics only. Parent completion requires permitted original source, actual gateway/reader/viewer journey, and explicit negative-state proof."
+}

@@ -1,0 +1,44 @@
+  function laneMatch(x) {
+    if (LANE === 'picks') return x.top;
+    if (LANE === 'saved') return DocState.isSaved(x.id);
+    return true;
+  }
+
+  /* ═══════════ feed ═══════════ */
+  function matchItem(x) {
+    if (!laneMatch(x)) return false;
+    if (FILT.inst && x.inst !== FILT.inst) return false;
+    if (FILT.side && x.side !== FILT.side) return false;
+    if (FILT.theme && x.tags.indexOf(FILT.theme) < 0) return false;
+    if (FILT.q) {
+      // when the server search has resolved, restrict to its hit ids; otherwise
+      // fall back to a client-side substring over the baked fields (instant).
+      if (SEARCH_HITS) return SEARCH_HITS[x.id];
+      var hay = (x.title + ' ' + x.inst + ' ' + x.desk + ' ' + x.points.join(' ') + ' ' + x.tags.join(' ') + ' ' + x.tickers.join(' ')).toLowerCase();
+      if (hay.indexOf(FILT.q.toLowerCase()) < 0) return false;
+    }
+    return true;
+  }
+
+  /* ═══════════ live search (debounced → /api/research/search) ═══════════ */
+  var _searchTimer = null;
+  function onSearchInput() {
+    FILT.q = $('q').value.trim();
+    SEARCH_HITS = null;              // fall back to instant client match while the server call is in flight
+    renderFeed();
+    clearTimeout(_searchTimer);
+    if (!FILT.q) return;
+    var q = FILT.q;
+    _searchTimer = setTimeout(function () {
+      var url = API + '/api/research/search?q=' + encodeURIComponent(q)
+        + (FILT.inst ? '&institution=' + encodeURIComponent(FILT.inst) : '');
+      withAuth().then(function (h) { return fetch(url, { headers: h, credentials: 'include' }); })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (!j || FILT.q !== q) return;      // stale response
+          var hits = {}; (j.items || []).forEach(function (it) { if (it && it.id) hits[it.id] = 1; });
+          SEARCH_HITS = hits; renderFeed();
+        })
+        .catch(function () { /* keep the client-side fallback result */ });
+    }, 280);
+  }

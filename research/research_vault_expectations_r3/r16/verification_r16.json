@@ -1,0 +1,17 @@
+{
+ "record_kind":"research.chunk16_verification",
+ "status":"CAPTURE_VERIFIED_QUALIFICATION_PARTIAL",
+ "native_acquisition":{"pid":26531,"exit_code":0,"capture_time_utc":"2026-09-17T05:23:20.687246+00:00","bytes":921134,"sha256":"f6a3bbf9178d2b9994cbaefcc356bd17fd5828a46f5e86a7021ed41765bd3c0a"},
+ "native_assay":{"pid":33703,"exit_code":0,"time_utc":"2026-09-17T05:24:49.087899+00:00","sqlite":"3.53.4","corpus_blob":"0b035b34489a4efd2ae7a3c59d153b3d1977701a"},
+ "observations":{"extracted_characters":155368,"physical_pages":56,"formfeeds":57,"sql_length_returned":6747,"chosen_anchors":8,"candidate_hits":7},
+ "derived_static_policy_tallies":{"anchors_after_configured_cap_only":6,"candidate_hits_for_after_cap_anchors":5,"not_measured_recall_or_coverage":true},
+ "withdrawn":["4.34% search/storage coverage","6747 as complete stored-character count","raw prefix flags based on6747","raw form-feed indexes as qualified page locators"],
+ "persisted_body_length_unknown":true,"embedded_nul_root_cause_unconfirmed":true,
+ "blocked_followup_result":false,"blocked_followup_rerun_or_rerouted":false,
+ "r14_held_tests_run":false,"older_suites_rerun":false,"new_product_tests":0,"model_cases_scored":0,
+ "artifact_consistency_checks":"PASS: completed-output fields, explicit unknowns,8 target records,7 candidate flags,6 static beyond-cap targets,5 beyond-cap candidate hits",
+ "source_pdf_in_sandbox":false,"source_originals_distributed":false,
+ "gateway_adoption":false,"source_use_grant":false,"customer_proof":false,"production_modified":false,
+ "parent_capability":"SPEC_ONLY",
+ "serialization":"Compact repository projection; local package includes expanded record and file-level hash manifest. No claim of identical report/JSON serialization."
+}

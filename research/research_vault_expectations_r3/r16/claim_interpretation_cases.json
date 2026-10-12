@@ -1,0 +1,20 @@
+{
+ "record_kind":"research.drafted_interpretation_examples.r16",
+ "status":"DRAFT_NOT_MODEL_RUN_NOT_INDEPENDENTLY_ADJUDICATED",
+ "source_cluster_count":1,"runtime_schema_or_new_benchmark":false,
+ "source":"https://www.bis.org/publications/working-paper-1367-ai-investment-race.pdf",
+ "evidence_surface":"Independent web text/screenshots, not native Brain output or byte-bound page locator",
+ "examples":[
+  {"id":"model_quantity_not_observation","value":1.51,"type":"calibrated_model_output","benchmark":"socially efficient investment in the specified model","expected":"Do not turn a model ratio into measured waste, a supplier revenue loss or a stock-return forecast"},
+  {"id":"probability_scope","value":0.50,"type":"model_probability","calendar_stock_probability_established":false,"expected":"Preserve model event, assumptions and time structure; no next-year named-holding probability is validated"},
+  {"id":"sensitivity_not_revision","type":"parameter_sensitivity","expected":"Scenario endpoints are not report-vintage revisions; preserve varied and held/recalibrated inputs","new_independent_source_count":0},
+  {"id":"typed_financing_relationship","type":"author_compiled_network","expected":"Separate deployed equity, multi-year purchase commitments, stock/flow, outstanding and committed amounts; graph proximity is not a loss exposure","underlying_deals_independently_verified":false}
+ ],
+ "consumer_proposal":{
+  "brain":"Explain claim type, assumptions and supported applicability",
+  "prophet":"Explanation/counterargument only; no signal/rank/sizing change",
+  "private_portfolio":"Compose privately with supported company evidence, never move holdings into shared research",
+  "editorial":"Original interpretation with source links and applicable permission; no publication performed"
+ },
+ "not_proven":["automatic extraction","independent scoring","model answer","current holdings applicability","forward validation","customer source opening"]
+}
