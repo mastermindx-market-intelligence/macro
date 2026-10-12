@@ -4424,6 +4424,7 @@ jobs:
           tests/test_intraday_flow.py
           tests/test_intraday_flow_stance.py
           tests/test_intraday_flow_w11_r1.py
+          tests/test_fundamental_forensics_p0_view_contract.py
           tests/test_intraday_flow_w11_r2.py
           tests/test_intraday_flow_w11_r3.py
           tests/test_intraday_flow_w11_r4.py
