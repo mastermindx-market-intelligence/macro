@@ -23,7 +23,7 @@
 <div class="ff-workspace" id="ff-workspace" data-tab="radar">
   <main class="ff-main" id="ff-main">
     <header class="ff-desk-header" id="ff-desk-header" aria-labelledby="ff-company-label">
-      <p class="ff-eyebrow">{{ t('Filing forensics', '财报取证') }}</p>
+      <h1 class="ff-eyebrow ff-page-title">{{ t('Filing forensics', '财报取证') }}</h1>
       <div class="ff-desk-row">
         <div class="ff-company-picker">
           <label id="ff-company-label" for="ff-company-search">{{ t('Company', '公司') }}</label>
@@ -79,7 +79,9 @@
             <dd id="ff-source-label">—</dd>
           </div>
         </dl>
-        <div class="ff-desk-export">
+        <div class="ff-desk-export" id="ff-desk-export"
+          data-tip-en="Export is unavailable until this issuer, cutoff and policy can be queried."
+          data-tip-zh="在可查询该发行人、截止日和策略之前，导出不可用。">
           <a class="ff-export-link" id="ff-export-link" href="#" hidden>{{ t('Export', '导出') }}</a>
           <button type="button" class="ff-export-btn" id="ff-export-btn" disabled
             data-tip-en="Export is unavailable until this issuer, cutoff and policy can be queried."
@@ -243,7 +245,7 @@
           <div class="ff-snapshot-stat is-coverage">
             <span class="ff-snapshot-stat-icon" aria-hidden="true">◒</span>
             <strong id="ff-stat-coverage">—</strong>
-            <small>{{ t('Metrics compared', '已对比指标') }}</small>
+            <small id="ff-stat-coverage-label">{{ t('Metrics compared', '已对比指标') }}</small>
           </div>
           <div class="ff-snapshot-stat is-source" hidden>
             <span class="ff-snapshot-stat-icon" aria-hidden="true">↗</span>

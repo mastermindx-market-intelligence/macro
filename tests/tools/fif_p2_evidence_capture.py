@@ -37,6 +37,30 @@ HOW IT WORKS
   ``scripts.build_fundamental_forensics.compose_state``, and copies the
   produced gzip object to the tree's gitignored
   ``data/fundamental_forensics/private/state.json.gz``.
+* Unavailable mode (entitled through the same override) sets the tree's local
+  private state aside for the run, so the REAL loader finds no object: the REAL
+  ``/api/forensics/state`` answers 503 and the REAL health route reports
+  ``unavailable``. Both answers are verified before any capture.
+* Degraded mode builds the golden state into a temp root WITHOUT installing it,
+  primes the REAL loader's in-process cache through a temporary ``LocalStore``
+  (``RESEARCH_LOCAL_STORE``, removed again before capture), then serves with the
+  store unreachable: the REAL loader answers ``last_good`` and the REAL health
+  route reports ``degraded`` (``LAST_GOOD_STALE``; ``--generated-at`` must be
+  older than the engine's freshness budget). Verified before any capture.
+* ``--force-state NAME:[data-ff-evidence-interaction=<interaction>]`` never
+  writes that attribute: the page proxy intercepts the capture tool's attribute
+  force and performs a REAL browser interaction instead (``drawer_open`` = a
+  pointer click on the primary-finding control; ``tab_keys`` = Tab presses to
+  the selected tab, then ArrowRight; ``drawer_trap`` = Tab presses to the
+  primary-finding control, Enter, then Tab through the open drawer). The force
+  is reported applied only when a post-interaction DOM probe confirms it, and
+  every receipt lands in ``interactions.json``.
+* An interaction cell whose screenshot would be taken while the page's modal is
+  open (``body.ff-modal-open``) is captured as the first VIEWPORT instead of the
+  full page: Chromium's full-page capture resizes the surface and drops or
+  under-paints the fixed modal layer, so a full-page PNG of an open drawer can
+  show no drawer at all. The receipt records the scope in ``capture``; every
+  other cell keeps the capture tool's full-page shot unchanged.
 * Every exchange is appended to ``network_log.json`` (metadata + digests only;
   response bodies are never stored), and ``--fold-selector`` measures named
   selectors' fold position at screenshot time into ``fold_measurement.json``.
@@ -68,6 +92,7 @@ SEAT FENCES (P2 evidence ruling, 2026-10-12)
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import ipaddress
 import json
@@ -78,8 +103,9 @@ import sys
 import tempfile
 import traceback
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Iterator, Mapping, Sequence
 from urllib.parse import urlparse, urlunparse
 
 TOOL_MODULE_REF = "tests/tools/fif_p2_evidence_capture.py"
@@ -131,6 +157,10 @@ LOCAL_STATE_RELATIVE = "data/fundamental_forensics/private/state.json.gz"
 
 MODE_POPULATED = "populated"
 MODE_ANONYMOUS = "anonymous"
+MODE_UNAVAILABLE = "unavailable"
+MODE_DEGRADED = "degraded"
+ENTITLED_MODES = (MODE_POPULATED, MODE_UNAVAILABLE, MODE_DEGRADED)
+ALL_MODES = (MODE_POPULATED, MODE_ANONYMOUS, MODE_UNAVAILABLE, MODE_DEGRADED)
 
 POPULATED_LABEL = "fixture-backed (golden), local"
 ANONYMOUS_LABEL = "anonymous-unavailable, local (real 401 from require_site_full_user)"
@@ -149,6 +179,95 @@ ANONYMOUS_ENTITLEMENT = (
     "none: the real app.forensics.require_site_full_user ran with no Authorization "
     "header and produced the real 401"
 )
+
+UNAVAILABLE_LABEL = (
+    "entitled-unavailable, local (real 503 from /api/forensics/state: no private "
+    "state object reachable)"
+)
+DEGRADED_LABEL = (
+    "fixture-backed (golden), local, served as last-good after the private store "
+    "became unreachable (real health: degraded)"
+)
+UNAVAILABLE_ACCESS = "entitled_test_override_state_missing_local"
+DEGRADED_ACCESS = "fixture_backed_golden_last_good_local"
+UNAVAILABLE_HONESTY = (
+    "entitled-unavailable, local: entitlement satisfied by the repository's router-test "
+    "dependency override, no credential entered, stored or synthesized; the tree's local "
+    "private state was set aside and no private store was reachable, so the real "
+    "/api/forensics/state answered 503 and the real health route reported unavailable; "
+    "not a production capture"
+)
+DEGRADED_HONESTY = (
+    "fixture-backed (golden), local, last-good: the real FIF kernel built the golden "
+    "state, the real private-state loader cached it from a temporary local store that "
+    "was then removed, so every capture request was served from the loader's last-good "
+    "copy and the real health route reported degraded; entitlement satisfied by the "
+    "repository's router-test dependency override, no credential entered, stored or "
+    "synthesized; not a production capture"
+)
+MODE_LABELS = {
+    MODE_POPULATED: POPULATED_LABEL,
+    MODE_ANONYMOUS: ANONYMOUS_LABEL,
+    MODE_UNAVAILABLE: UNAVAILABLE_LABEL,
+    MODE_DEGRADED: DEGRADED_LABEL,
+}
+MODE_ACCESS = {
+    MODE_POPULATED: POPULATED_ACCESS,
+    MODE_ANONYMOUS: "anonymous",
+    MODE_UNAVAILABLE: UNAVAILABLE_ACCESS,
+    MODE_DEGRADED: DEGRADED_ACCESS,
+}
+MODE_HONESTY = {
+    MODE_POPULATED: POPULATED_HONESTY,
+    MODE_UNAVAILABLE: UNAVAILABLE_HONESTY,
+    MODE_DEGRADED: DEGRADED_HONESTY,
+}
+CELL_ID_ACCESS_NOTE = (
+    "cell_id strings carry the capture tool's fixed 'anonymous' access token; the "
+    "per-state 'access' field and axes.access carry this run's real access mode"
+)
+DEGRADED_STATE_DELIVERY = (
+    "real private-state loader last-good cache (temporary local store removed after "
+    "priming); never installed in the tree"
+)
+# Mirrors engine.fundamental_forensics.health.FRESHNESS_BUDGET_SECONDS (pinned equal
+# by the unit test) so the degraded clock pre-check runs before any import or scrub.
+FRESHNESS_BUDGET_SECONDS = 4 * 24 * 60 * 60
+
+INTERACTION_ATTRIBUTE = "data-ff-evidence-interaction"
+INTERACTION_DRAWER_OPEN = "drawer_open"
+INTERACTION_TAB_KEYS = "tab_keys"
+INTERACTION_DRAWER_TRAP = "drawer_trap"
+INTERACTION_INPUTS = {
+    INTERACTION_DRAWER_OPEN: "pointer: real click on [data-open-primary-finding]",
+    INTERACTION_TAB_KEYS: "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    INTERACTION_DRAWER_TRAP: (
+        "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab "
+        "through the open drawer"
+    ),
+}
+PRIMARY_FINDING_SELECTOR = "[data-open-primary-finding]"
+SELECTED_TAB_SELECTOR = '.ff-tab[aria-selected="true"]'
+EVIDENCE_SELECTOR = "#ff-evidence"
+# Browser-truth focusables, declared here rather than read from the page, so the
+# drawer_trap probe checks the page's own focus-trap list instead of trusting it.
+FOCUSABLE_PROBE_SELECTOR = (
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), '
+    'textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
+)
+TAB_WALK_CAP = 160
+POINTER_PARK = (1, 1)
+MODAL_OPEN_BODY_CLASS = "ff-modal-open"
+_MODAL_OPEN_PROBE_SCRIPT = (
+    "() => document.body.classList.contains('" + MODAL_OPEN_BODY_CLASS + "')"
+)
+CAPTURE_SCOPE_FULL_PAGE = "full_page"
+CAPTURE_SCOPE_MODAL_VIEWPORT = (
+    "viewport: modal open; Chromium's full-page capture drops or under-paints the "
+    "fixed modal layer, so this cell is the first viewport only"
+)
+INTERACTION_SETTLE_MS = 350
+INTERACTION_TIMEOUT_MS = 4000
 
 EVIDENCE_RECEIPT_SCHEMA = "mastermind.page_evidence_receipt.v1"
 
@@ -530,6 +649,227 @@ def measure_fold(
 
 
 # ---------------------------------------------------------------------------
+# real browser interactions (force-state interception)
+# ---------------------------------------------------------------------------
+
+
+_NO_ARG = object()
+
+_ACTIVE_PROBE_SCRIPT = """
+(selector) => {
+  const active = document.activeElement;
+  const real = !!(active && active !== document.body && active.matches);
+  return {
+    matches: real ? active.matches(selector) : false,
+    tag: active ? active.tagName.toLowerCase() : null,
+    id: active && active.id ? active.id : null,
+    tab: real ? active.getAttribute('data-tab') : null,
+  };
+}
+"""
+
+_DRAWER_PROBE_SCRIPT = """
+(config) => {
+  const evidence = document.querySelector(config.evidence);
+  const active = document.activeElement;
+  if (!evidence) {
+    return {present: false, open: false, modal: false, focus_inside: false,
+            focus_id: null, focus_tag: null, focus_index: -1, focusable: 0};
+  }
+  const list = Array.prototype.slice.call(evidence.querySelectorAll(config.focusable))
+    .filter(function (node) { return node.offsetParent !== null; });
+  const inside = !!(active && evidence.contains(active));
+  return {
+    present: true,
+    open: evidence.classList.contains('is-open'),
+    modal: evidence.getAttribute('aria-modal') === 'true',
+    focus_inside: inside,
+    focus_id: active && active.id ? active.id : null,
+    focus_tag: active ? active.tagName.toLowerCase() : null,
+    focus_index: inside ? list.indexOf(active) : -1,
+    focusable: list.length,
+  };
+}
+"""
+
+_TABLIST_PROBE_SCRIPT = """
+() => {
+  const active = document.activeElement;
+  const isTab = !!(active && active.classList && active.classList.contains('ff-tab'));
+  const selected = Array.prototype.slice.call(
+    document.querySelectorAll('.ff-tab[aria-selected="true"]')
+  ).map(function (node) { return node.getAttribute('data-tab'); });
+  return {
+    focus_is_tab: isTab,
+    focus_tab: isTab ? active.getAttribute('data-tab') : null,
+    selected: selected,
+  };
+}
+"""
+
+_FOCUS_RESET_SCRIPT = """
+() => {
+  const active = document.activeElement;
+  if (active && active !== document.body && active.blur) {
+    active.blur();
+  }
+  window.scrollTo(0, 0);
+  return true;
+}
+"""
+
+
+def is_interaction_payload(arg: Any) -> bool:
+    """The capture tool's attribute-force payload naming this wrapper's attribute."""
+    return (
+        isinstance(arg, Mapping)
+        and arg.get("kind") == "attribute"
+        and arg.get("attribute") == INTERACTION_ATTRIBUTE
+    )
+
+
+def _settle(page: Any) -> None:
+    try:
+        page.wait_for_timeout(INTERACTION_SETTLE_MS)
+    except Exception:  # noqa: BLE001 - the probe after the wait decides, never the wait
+        pass
+
+
+def _drawer_probe(page: Any) -> dict[str, Any]:
+    config = {"evidence": EVIDENCE_SELECTOR, "focusable": FOCUSABLE_PROBE_SELECTOR}
+    return dict(page.evaluate(_DRAWER_PROBE_SCRIPT.strip(), config) or {})
+
+
+def tab_walk_to(page: Any, selector: str, *, cap: int = TAB_WALK_CAP) -> dict[str, Any]:
+    """Press the REAL Tab key until ``selector`` holds focus (at most ``cap`` presses)."""
+    page.evaluate(_FOCUS_RESET_SCRIPT.strip())
+    focus: dict[str, Any] = {}
+    for presses in range(1, cap + 1):
+        page.keyboard.press("Tab")
+        focus = dict(page.evaluate(_ACTIVE_PROBE_SCRIPT.strip(), selector) or {})
+        if focus.get("matches"):
+            return {"reached": True, "tab_presses": presses, "focus": focus}
+    return {"reached": False, "tab_presses": cap, "focus": focus}
+
+
+def _interact_drawer_open(page: Any) -> tuple[bool, dict[str, Any]]:
+    before = _drawer_probe(page)
+    page.locator(PRIMARY_FINDING_SELECTOR).first.click(timeout=INTERACTION_TIMEOUT_MS)
+    # Park the pointer on the scrim corner: left where the click landed, it hovers
+    # whichever drawer row now sits under it and the shot shows a hover state.
+    mouse = getattr(page, "mouse", None)
+    if mouse is not None:
+        mouse.move(*POINTER_PARK)
+    _settle(page)
+    after = _drawer_probe(page)
+    verified = bool(not before.get("open") and after.get("open") and after.get("modal"))
+    parked = list(POINTER_PARK) if mouse is not None else None
+    return verified, {"before": before, "after": after, "pointer_parked": parked}
+
+
+def _interact_tab_keys(page: Any) -> tuple[bool, dict[str, Any]]:
+    walk = tab_walk_to(page, SELECTED_TAB_SELECTOR)
+    facts: dict[str, Any] = {"walk": walk}
+    if not walk["reached"]:
+        return False, facts
+    before = dict(page.evaluate(_TABLIST_PROBE_SCRIPT.strip()) or {})
+    page.keyboard.press("ArrowRight")
+    _settle(page)
+    after = dict(page.evaluate(_TABLIST_PROBE_SCRIPT.strip()) or {})
+    facts.update(before=before, after=after, key="ArrowRight")
+    moved = after.get("focus_tab")
+    verified = bool(
+        before.get("focus_is_tab")
+        and after.get("focus_is_tab")
+        and moved
+        and moved != before.get("focus_tab")
+        and after.get("selected") == [moved]
+    )
+    return verified, facts
+
+
+def _interact_drawer_trap(page: Any) -> tuple[bool, dict[str, Any]]:
+    walk = tab_walk_to(page, PRIMARY_FINDING_SELECTOR)
+    facts: dict[str, Any] = {"walk": walk}
+    if not walk["reached"]:
+        return False, facts
+    page.keyboard.press("Enter")
+    _settle(page)
+    opened = _drawer_probe(page)
+    facts["opened"] = opened
+    count = int(opened.get("focusable") or 0)
+    if not (opened.get("open") and opened.get("modal") and opened.get("focus_inside") and count >= 1):
+        return False, facts
+    trail: list[dict[str, Any]] = []
+    for _ in range(count + 2):
+        page.keyboard.press("Tab")
+        probe = _drawer_probe(page)
+        trail.append(
+            {
+                "focus_index": probe.get("focus_index"),
+                "inside": bool(probe.get("focus_inside")),
+                "focus_id": probe.get("focus_id"),
+                "focus_tag": probe.get("focus_tag"),
+            }
+        )
+    indices = [opened.get("focus_index")] + [step["focus_index"] for step in trail]
+    wrapped = any(
+        first == count - 1 and second == 0 for first, second in zip(indices, indices[1:])
+    )
+    visited = {index for index in indices if isinstance(index, int) and 0 <= index < count}
+    escaped = sum(1 for step in trail if not step["inside"])
+    facts.update(
+        trail=trail,
+        focusable=count,
+        tab_presses_inside=len(trail),
+        wrapped=wrapped,
+        visited=len(visited),
+        escaped=escaped,
+    )
+    verified = bool(escaped == 0 and wrapped and visited == set(range(count)))
+    return verified, facts
+
+
+_INTERACTIONS: dict[str, Callable[[Any], tuple[bool, dict[str, Any]]]] = {
+    INTERACTION_DRAWER_OPEN: _interact_drawer_open,
+    INTERACTION_TAB_KEYS: _interact_tab_keys,
+    INTERACTION_DRAWER_TRAP: _interact_drawer_trap,
+}
+
+
+def run_interaction(page: Any, payload: Mapping[str, Any], cell: Any) -> dict[str, Any]:
+    """Perform the REAL interaction an interception payload names; never raises.
+
+    ``verified`` is True only when the post-interaction DOM probe confirms the
+    state, and the capture tool is told the force applied only in that case.
+    """
+    name = str(payload.get("value") or "")
+    receipt: dict[str, Any] = {
+        "cell_id": getattr(cell, "cell_id", None),
+        "viewport": getattr(cell, "viewport", None),
+        "locale": getattr(cell, "locale", None),
+        "theme": getattr(cell, "theme", None),
+        "force_state": payload.get("name"),
+        "interaction": name,
+        "input": INTERACTION_INPUTS.get(name),
+        "verified": False,
+        "facts": {},
+    }
+    action = _INTERACTIONS.get(name)
+    if action is None:
+        receipt["error"] = f"unknown interaction {name!r}; known: {sorted(_INTERACTIONS)}"
+        return receipt
+    try:
+        verified, facts = action(page)
+    except Exception as exc:  # noqa: BLE001 - a failed interaction is a recorded gap
+        receipt["error"] = f"{type(exc).__name__}: {exc}"
+        return receipt
+    receipt["verified"] = bool(verified)
+    receipt["facts"] = facts
+    return receipt
+
+
+# ---------------------------------------------------------------------------
 # driver proxies
 # ---------------------------------------------------------------------------
 
@@ -548,10 +888,12 @@ class DriverProxy:
         *,
         route_handler_factory: Callable[[], Callable[[Any, Any], None]],
         fold_recorder: Callable[[Any, Any], None],
+        interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
     ) -> None:
         self._real = real_driver
         self._route_handler_factory = route_handler_factory
         self._fold_recorder = fold_recorder
+        self._interaction_runner = interaction_runner
         self._current_cell: Any = None
         self._wrapped = False
 
@@ -567,6 +909,7 @@ class DriverProxy:
                 handler=self._route_handler_factory(),
                 fold_recorder=self._fold_recorder,
                 get_cell=lambda: self._current_cell,
+                interaction_runner=self._interaction_runner,
             )
             self._wrapped = True
         return self._real.capture(url=rewrite_evidence_host(url), cell=cell, timeout_s=timeout_s)
@@ -585,17 +928,22 @@ class BrowserProxy:
         handler: Callable[[Any, Any], None],
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
+        interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
     ) -> None:
         self._real = real_browser
         self._handler = handler
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
+        self._interaction_runner = interaction_runner
 
     def new_context(self, **kwargs: Any) -> Any:
         real_context = self._real.new_context(**kwargs)
         real_context.route("**/*", self._handler)
         return ContextProxy(
-            real_context, fold_recorder=self._fold_recorder, get_cell=self._get_cell
+            real_context,
+            fold_recorder=self._fold_recorder,
+            get_cell=self._get_cell,
+            interaction_runner=self._interaction_runner,
         )
 
     def close(self) -> None:
@@ -614,16 +962,19 @@ class ContextProxy:
         *,
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
+        interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
     ) -> None:
         self._real = real_context
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
+        self._interaction_runner = interaction_runner
 
     def new_page(self) -> Any:
         return PageProxy(
             self._real.new_page(),
             fold_recorder=self._fold_recorder,
             get_cell=self._get_cell,
+            interaction_runner=self._interaction_runner,
         )
 
     def __getattr__(self, name: str) -> Any:
@@ -631,7 +982,14 @@ class ContextProxy:
 
 
 class PageProxy:
-    """Measure the fold first, then delegate the screenshot. All else delegates."""
+    """Measure the fold before the screenshot; turn interaction forces into REAL input.
+
+    An ``evaluate`` whose argument is the capture tool's attribute-force payload
+    for ``INTERACTION_ATTRIBUTE`` is intercepted on the payload SHAPE alone: the
+    attribute is never written; the interaction runner drives the real page and
+    the tool is told the force applied only when the runner verified it. With no
+    runner the force fails closed (``applied: None``). Everything else delegates.
+    """
 
     def __init__(
         self,
@@ -639,10 +997,37 @@ class PageProxy:
         *,
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
+        interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
     ) -> None:
         self._real = real_page
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
+        self._interaction_runner = interaction_runner
+        # (cell id at interaction time, the receipt dict the runner returned): the
+        # same object the run appended to interaction_rows, so annotating it here
+        # lands in interactions.json.
+        self._last_receipt: tuple[Any, dict[str, Any]] | None = None
+
+    def evaluate(self, expression: Any, arg: Any = _NO_ARG, *args: Any, **kwargs: Any) -> Any:
+        if is_interaction_payload(arg):
+            return self._intercept_interaction(arg)
+        if arg is _NO_ARG:
+            return self._real.evaluate(expression, *args, **kwargs)
+        return self._real.evaluate(expression, arg, *args, **kwargs)
+
+    def _intercept_interaction(self, payload: Mapping[str, Any]) -> dict[str, Any]:
+        runner = self._interaction_runner
+        if runner is None:
+            return {"applied": None}
+        cell = self._get_cell()
+        try:
+            receipt = runner(self._real, payload, cell)
+        except Exception:  # noqa: BLE001 - an unverified interaction is a gap, never a pass
+            return {"applied": None}
+        if isinstance(receipt, dict):
+            self._last_receipt = (getattr(cell, "cell_id", None), receipt)
+        verified = isinstance(receipt, Mapping) and bool(receipt.get("verified"))
+        return {"applied": payload.get("name") if verified else None}
 
     def screenshot(self, **kwargs: Any) -> Any:
         cell = self._get_cell()
@@ -651,7 +1036,27 @@ class PageProxy:
                 self._fold_recorder(self._real, cell)
             except Exception:  # noqa: BLE001 - measurement must never kill the shot
                 pass
+        receipt = self._receipt_for(cell)
+        if receipt is not None and kwargs.get("full_page"):
+            if self._modal_open():
+                kwargs = {**kwargs, "full_page": False}
+                receipt["capture"] = CAPTURE_SCOPE_MODAL_VIEWPORT
+            else:
+                receipt["capture"] = CAPTURE_SCOPE_FULL_PAGE
         return self._real.screenshot(**kwargs)
+
+    def _receipt_for(self, cell: Any) -> dict[str, Any] | None:
+        """The interaction receipt of THIS cell, or None (non-interaction cells)."""
+        if self._last_receipt is None or cell is None:
+            return None
+        cell_id, receipt = self._last_receipt
+        return receipt if cell_id == getattr(cell, "cell_id", None) else None
+
+    def _modal_open(self) -> bool:
+        try:
+            return self._real.evaluate(_MODAL_OPEN_PROBE_SCRIPT) is True
+        except Exception:  # noqa: BLE001 - an unreadable probe keeps the full-page shot
+            return False
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._real, name)
@@ -668,7 +1073,8 @@ class KernelStateReceipt:
     sha256: str
     bytes: int
     input_symlinks: tuple[str, ...]
-    state_path: Path
+    state_path: Path | None
+    blob: bytes | None = field(default=None, repr=False)
 
 
 def prepare_kernel_temp_root(tree_root: Path, temp_root: Path) -> list[str]:
@@ -689,8 +1095,14 @@ def prepare_kernel_temp_root(tree_root: Path, temp_root: Path) -> list[str]:
     return created
 
 
-def build_kernel_state(tree_root: Path, *, generated_at: str) -> KernelStateReceipt:
-    """Build the private state into a temp root; copy the gzip object into the tree."""
+def build_kernel_state(
+    tree_root: Path, *, generated_at: str, install: bool = True
+) -> KernelStateReceipt:
+    """Build the private state into a temp root; copy the gzip object into the tree.
+
+    ``install=False`` (degraded mode) keeps the object OUT of the tree: the
+    receipt carries the bytes for the loader prime and ``state_path`` is None.
+    """
     import scripts.build_fundamental_forensics as builder  # noqa: PLC0415 - heavy (pandas)
 
     temp_root = Path(tempfile.mkdtemp(prefix="fif-evidence-kernel-"))
@@ -700,15 +1112,18 @@ def build_kernel_state(tree_root: Path, *, generated_at: str) -> KernelStateRece
         blob_path = temp_root / LOCAL_STATE_RELATIVE
         builder._write_state_atomic(blob_path, state)
         blob = blob_path.read_bytes()
-        destination = tree_root / LOCAL_STATE_RELATIVE
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(blob_path, destination)
+        destination: Path | None = None
+        if install:
+            destination = tree_root / LOCAL_STATE_RELATIVE
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(blob_path, destination)
         return KernelStateReceipt(
             generated_at=str(generated_at),
             sha256=hashlib.sha256(blob).hexdigest(),
             bytes=len(blob),
             input_symlinks=tuple(created),
             state_path=destination,
+            blob=blob,
         )
     finally:
         shutil.rmtree(temp_root, ignore_errors=True)
@@ -772,6 +1187,172 @@ def verify_real_anonymous_denial(forensics_api: Any) -> None:
 
 
 # ---------------------------------------------------------------------------
+# unavailable / degraded modes (real loader, real routes, verified first)
+# ---------------------------------------------------------------------------
+
+
+@contextlib.contextmanager
+def local_state_set_aside(tree_root: Path) -> Iterator[dict[str, Any]]:
+    """Move the tree's local private state out of the loader's reach for the run.
+
+    The holding directory is created in the SAME directory as the object, so the
+    ``os.replace`` both ways never crosses a filesystem; the object goes back in
+    ``finally``, on success and on error alike.
+    """
+    local = tree_root / LOCAL_STATE_RELATIVE
+    if local.is_symlink() or (local.exists() and not local.is_file()):
+        raise FifEvidenceError(
+            f"refusing to set aside a non-regular local state path: {LOCAL_STATE_RELATIVE}"
+        )
+    if not local.exists():
+        yield {"set_aside": False, "sha256": None}
+        return
+    digest = hashlib.sha256(local.read_bytes()).hexdigest()
+    holding = Path(tempfile.mkdtemp(prefix=".fif-evidence-setaside-", dir=local.parent))
+    parked = holding / local.name
+    os.replace(local, parked)
+    try:
+        yield {"set_aside": True, "sha256": digest}
+    finally:
+        os.replace(parked, local)
+        shutil.rmtree(holding, ignore_errors=True)
+
+
+def clear_private_state_cache() -> None:
+    from engine.fundamental_forensics.private_state import clear_state_cache  # noqa: PLC0415
+
+    clear_state_cache()
+
+
+def prime_last_good_state(tree_root: Path, blob: bytes | None) -> dict[str, Any]:
+    """Make the REAL loader hold ``blob`` as its last-good copy, then prove it.
+
+    A temporary ``LocalStore`` (``RESEARCH_LOCAL_STORE``) serves the object for one
+    zero-TTL read; the store and the env name are removed again, so the next read
+    finds no store and the real loader answers ``last_good``. No loader code is
+    patched and no cache entry is written by hand.
+    """
+    from engine.fundamental_forensics import private_state  # noqa: PLC0415
+
+    if not blob:
+        raise FifEvidenceError("degraded mode needs the built state bytes to prime the loader")
+    local = tree_root / LOCAL_STATE_RELATIVE
+    if local.exists() or local.is_symlink():
+        raise FifEvidenceError(
+            "degraded mode refuses to prime while a local private state is installed "
+            "(the loader would answer 'local', not 'last_good')"
+        )
+    private_state.clear_state_cache()
+    store_root = Path(tempfile.mkdtemp(prefix="fif-evidence-store-")).resolve()
+    prior = os.environ.get("RESEARCH_LOCAL_STORE")
+    try:
+        target = store_root / private_state.STATE_KEY
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(blob)
+        os.environ["RESEARCH_LOCAL_STORE"] = str(store_root)
+        primed = private_state.load_state_record(tree_root, cache_seconds=0)
+    finally:
+        if prior is None:
+            os.environ.pop("RESEARCH_LOCAL_STORE", None)
+        else:
+            os.environ["RESEARCH_LOCAL_STORE"] = prior
+        shutil.rmtree(store_root, ignore_errors=True)
+    if primed.origin != private_state.ORIGIN_R2 or primed.blob != blob:
+        raise ModeUnavailable(
+            f"real loader did not read the primed object (origin={primed.origin!r})"
+        )
+    served = private_state.load_state_record(tree_root)
+    if served.origin != private_state.ORIGIN_LAST_GOOD or served.blob != blob:
+        raise ModeUnavailable(
+            "real loader did not fall back to its last-good copy once the store was "
+            f"removed (origin={served.origin!r})"
+        )
+    return {
+        "primed_origin": primed.origin,
+        "served_origin": served.origin,
+        "sha256": hashlib.sha256(blob).hexdigest(),
+        "store": "temporary LocalStore via RESEARCH_LOCAL_STORE, removed before capture",
+    }
+
+
+def _json_or_empty(response: Any) -> dict[str, Any]:
+    try:
+        payload = response.json()
+    except Exception:  # noqa: BLE001 - a non-JSON answer is a recorded fact, not a crash
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def verify_real_state_unavailable(client: Any) -> dict[str, Any]:
+    """The REAL routes must answer 503 (state) and ``unavailable`` (health)."""
+    state = client.get("/api/forensics/state")
+    health = client.get("/api/forensics/health")
+    payload = _json_or_empty(health)
+    private_object = payload.get("private_object") or {}
+    facts = {
+        "state_status": state.status_code,
+        "health_status": health.status_code,
+        "health_state": payload.get("status"),
+        "health_reason_code": payload.get("reason_code"),
+        "private_object_origin": private_object.get("origin"),
+    }
+    if not (
+        state.status_code == 503
+        and health.status_code == 200
+        and facts["health_state"] == "unavailable"
+    ):
+        raise ModeUnavailable(f"real routes did not report the unavailable state: {facts}")
+    return facts
+
+
+def verify_real_degraded_health(client: Any, *, expected_sha256: str) -> dict[str, Any]:
+    """The REAL routes must serve the last-good object and report ``degraded``."""
+    state = client.get("/api/forensics/state")
+    health = client.get("/api/forensics/health")
+    payload = _json_or_empty(health)
+    private_object = payload.get("private_object") or {}
+    facts = {
+        "state_status": state.status_code,
+        "state_sha256": hashlib.sha256(state.content).hexdigest() if state.status_code == 200 else None,
+        "health_status": health.status_code,
+        "health_state": payload.get("status"),
+        "health_reason_code": payload.get("reason_code"),
+        "age_seconds": payload.get("age_seconds"),
+        "freshness_budget_seconds": payload.get("freshness_budget_seconds"),
+        "private_object_origin": private_object.get("origin"),
+    }
+    if not (
+        state.status_code == 200
+        and facts["state_sha256"] == expected_sha256
+        and health.status_code == 200
+        and facts["health_state"] == "degraded"
+        and facts["private_object_origin"] == "last_good"
+    ):
+        raise ModeUnavailable(f"real routes did not report the degraded state: {facts}")
+    return facts
+
+
+def degraded_clock_problem(generated_at: str | None, *, now: datetime) -> str | None:
+    """Why ``generated_at`` cannot yield a degraded health answer, or None."""
+    if not generated_at:
+        return "--generated-at is required in degraded mode (kernel state clock)"
+    try:
+        parsed = datetime.fromisoformat(str(generated_at).replace("Z", "+00:00"))
+    except ValueError:
+        return f"--generated-at is not an ISO-8601 instant: {generated_at!r}"
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    age = (now - parsed).total_seconds()
+    if age <= FRESHNESS_BUDGET_SECONDS:
+        return (
+            "degraded mode needs --generated-at older than the engine freshness budget "
+            f"({FRESHNESS_BUDGET_SECONDS}s); {generated_at} is {int(age)}s old, so health "
+            "would report current, not degraded"
+        )
+    return None
+
+
+# ---------------------------------------------------------------------------
 # manifest post-process
 # ---------------------------------------------------------------------------
 
@@ -785,40 +1366,62 @@ def postprocess_manifest(
     scrubbed_env_names: Sequence[str],
     aborted_hosts: Sequence[str],
     state_receipt: KernelStateReceipt | None,
+    interactions: str | None = None,
+    mode_verification: Mapping[str, Any] | None = None,
 ) -> None:
-    """Keep everything the capture tool wrote; add the fixture-backed provenance."""
-    populated = mode == MODE_POPULATED
-    label = POPULATED_LABEL if populated else ANONYMOUS_LABEL
+    """Keep everything the capture tool wrote; add the fixture-backed provenance.
+
+    Entitled modes also correct the per-state ``access`` field (and the page's
+    ``metrics.measured_in.access``): the capture tool stamps its fixed
+    ``anonymous`` token on every row, which is false for an entitled crop.
+    """
+    entitled = mode in ENTITLED_MODES
+    label = MODE_LABELS[mode]
+    access = MODE_ACCESS[mode]
     for page in manifest.get("pages", []):
         for state_row in page.get("states", []):
             state_row["evidence_label"] = label
-    if populated:
-        manifest.setdefault("axes", {})["access"] = [POPULATED_ACCESS]
-        manifest.setdefault("honesty", {})["access"] = POPULATED_HONESTY
-        manifest["honesty"]["entitlement"] = ENTITLED_CROPS_FENCE
+            if entitled:
+                state_row["access"] = access
+        measured_in = (page.get("metrics") or {}).get("measured_in")
+        if entitled and isinstance(measured_in, dict) and "access" in measured_in:
+            measured_in["access"] = access
+    if entitled:
+        manifest.setdefault("axes", {})["access"] = [access]
+        honesty = manifest.setdefault("honesty", {})
+        honesty["access"] = MODE_HONESTY[mode]
+        honesty["entitlement"] = ENTITLED_CROPS_FENCE
+        honesty["cell_id_access"] = CELL_ID_ACCESS_NOTE
     evidence_source: dict[str, Any] = {
         "label": label,
         "mode": mode,
         "generator_command": generator_command,
         "wrapper_module": TOOL_MODULE_REF,
         "wrapper_module_sha256": wrapper_module_sha256,
-        "entitlement": POPULATED_ENTITLEMENT if populated else ANONYMOUS_ENTITLEMENT,
+        "entitlement": POPULATED_ENTITLEMENT if entitled else ANONYMOUS_ENTITLEMENT,
         "host_rewrite": HOST_REWRITE,
     }
-    if populated and state_receipt is not None:
-        evidence_source["state"] = {
+    if mode in (MODE_POPULATED, MODE_DEGRADED) and state_receipt is not None:
+        state: dict[str, Any] = {
             "builder": KERNEL_BUILDER_REF,
             "generated_at": state_receipt.generated_at,
             "sha256": state_receipt.sha256,
             "bytes": state_receipt.bytes,
         }
-    if populated:
+        if mode == MODE_DEGRADED:
+            state["delivery"] = DEGRADED_STATE_DELIVERY
+        evidence_source["state"] = state
+    if entitled:
         evidence_source["entitlement_fence"] = ENTITLED_CROPS_FENCE
     evidence_source["financial_dataset_mode"] = "golden"
     evidence_source["scrubbed_env_names"] = sorted(scrubbed_env_names)
     evidence_source["aborted_hosts"] = sorted(set(aborted_hosts))
     evidence_source["network_log"] = "network_log.json"
     evidence_source["fold_measurement"] = "fold_measurement.json"
+    if interactions:
+        evidence_source["interactions"] = interactions
+    if mode_verification is not None:
+        evidence_source["mode_verification"] = dict(mode_verification)
     manifest["evidence_source"] = evidence_source
 
 
@@ -880,7 +1483,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("--mode", required=True, choices=(MODE_POPULATED, MODE_ANONYMOUS))
+    parser.add_argument("--mode", required=True, choices=ALL_MODES)
     parser.add_argument("--route", default="/fundamental_forensics.html?symbol=AAPL")
     parser.add_argument("--out-dir", required=True)
     parser.add_argument(
@@ -929,12 +1532,19 @@ def _wrapped_driver_factory(
     fold_rows: list[dict[str, Any]],
     fold_selectors: Sequence[tuple[str, str]],
     mode: str,
+    interaction_rows: list[dict[str, Any]] | None = None,
 ) -> Callable[..., DriverProxy]:
     from scripts.capture_page_evidence import playwright_page_driver  # noqa: PLC0415
 
     # The route handler must read the CURRENT cell off the exact proxy this
     # factory returns, so the proxy registers itself through this slot.
     slot: list[DriverProxy | None] = [None]
+
+    def interaction_runner(page: Any, payload: Mapping[str, Any], cell: Any) -> dict[str, Any]:
+        receipt = run_interaction(page, payload, cell)
+        if interaction_rows is not None:
+            interaction_rows.append(receipt)
+        return receipt
 
     def factory(**kwargs: Any) -> DriverProxy:
         real_driver = playwright_page_driver(**kwargs)
@@ -948,6 +1558,7 @@ def _wrapped_driver_factory(
             fold_recorder=lambda page, cell: measure_fold(
                 page, cell, selectors=fold_selectors, mode=mode, sink=fold_rows
             ),
+            interaction_runner=interaction_runner,
         )
         slot[0] = proxy
         return proxy
@@ -970,13 +1581,19 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     tree_root = Path(__file__).resolve().parents[2]
     out_dir = Path(args.out_dir).expanduser().resolve()
-    populated = args.mode == MODE_POPULATED
-    if populated and not args.generated_at:
+    mode = args.mode
+    entitled = mode in ENTITLED_MODES
+    if mode in (MODE_POPULATED, MODE_DEGRADED) and not args.generated_at:
         print(
-            "error: --generated-at is required in populated mode (kernel state clock)",
+            f"error: --generated-at is required in {mode} mode (kernel state clock)",
             file=sys.stderr,
         )
         return EXIT_USAGE
+    if mode == MODE_DEGRADED:
+        problem = degraded_clock_problem(args.generated_at, now=datetime.now(timezone.utc))
+        if problem is not None:
+            print(f"error: {problem}", file=sys.stderr)
+            return EXIT_USAGE
 
     try:
         fold_selectors = parse_fold_selectors(args.fold_selector)
@@ -991,23 +1608,50 @@ def main(argv: Sequence[str] | None = None) -> int:
         forensics_api = load_forensics_module()
         prior_repo = forensics_api.REPO
         forensics_api.REPO = tree_root
+        stack = contextlib.ExitStack()
         try:
             state_receipt: KernelStateReceipt | None = None
-            if populated:
+            mode_verification: dict[str, Any] | None = None
+            interaction_rows: list[dict[str, Any]] = []
+            if mode in (MODE_UNAVAILABLE, MODE_DEGRADED):
+                set_aside = stack.enter_context(local_state_set_aside(tree_root))
+                clear_private_state_cache()
+                stack.callback(clear_private_state_cache)
+                mode_verification = {"local_state_set_aside": set_aside}
+            if mode == MODE_POPULATED:
                 state_receipt = build_kernel_state(tree_root, generated_at=args.generated_at)
                 print(
                     f"kernel state: {state_receipt.bytes} bytes sha256={state_receipt.sha256[:16]} "
                     f"-> {LOCAL_STATE_RELATIVE}"
                 )
-            else:
+            elif mode == MODE_DEGRADED:
+                state_receipt = build_kernel_state(
+                    tree_root, generated_at=args.generated_at, install=False
+                )
+                mode_verification["loader_prime"] = prime_last_good_state(
+                    tree_root, state_receipt.blob
+                )
+                print(
+                    f"kernel state: {state_receipt.bytes} bytes sha256={state_receipt.sha256[:16]} "
+                    "-> real loader last-good cache only (not installed)"
+                )
+            elif mode == MODE_ANONYMOUS:
                 verify_real_anonymous_denial(forensics_api)
 
             network_log = NetworkLog()
             fold_rows: list[dict[str, Any]] = []
-            router_app = build_router_app(forensics_api, populated=populated)
+            router_app = build_router_app(forensics_api, populated=entitled)
             from fastapi.testclient import TestClient  # noqa: PLC0415
 
             with TestClient(router_app, raise_server_exceptions=False) as client:
+                if mode == MODE_UNAVAILABLE:
+                    mode_verification["routes"] = verify_real_state_unavailable(client)
+                elif mode == MODE_DEGRADED:
+                    mode_verification["routes"] = verify_real_degraded_health(
+                        client, expected_sha256=state_receipt.sha256
+                    )
+                if mode_verification is not None:
+                    print(f"mode verification: {json.dumps(mode_verification.get('routes'), sort_keys=True)}")
                 capture_rc = _run_wrapped_capture(
                     args,
                     tree_root=tree_root,
@@ -1016,9 +1660,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                     network_log=network_log,
                     fold_rows=fold_rows,
                     fold_selectors=fold_selectors,
+                    interaction_rows=interaction_rows,
                 )
         finally:
-            forensics_api.REPO = prior_repo
+            try:
+                stack.close()
+            finally:
+                forensics_api.REPO = prior_repo
     except ModeUnavailable as exc:
         print(
             f"::error title=fif-p2-evidence::{args.mode} mode unavailable; reporting the "
@@ -1054,10 +1702,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         scrubbed_env_names=scrub.scrubbed_names,
         aborted_hosts=sorted(network_log.aborted_hosts),
         state_receipt=state_receipt,
+        interactions="interactions.json" if interaction_rows else None,
+        mode_verification=mode_verification,
     )
     manifest_path.write_bytes(canonical_json_bytes(manifest))
     (out_dir / "network_log.json").write_bytes(canonical_json_bytes(network_log.as_payload()))
     (out_dir / "fold_measurement.json").write_bytes(canonical_json_bytes(fold_rows))
+    if interaction_rows:
+        (out_dir / "interactions.json").write_bytes(canonical_json_bytes(interaction_rows))
 
     if args.changed_path:
         manifest_relative = (
@@ -1079,12 +1731,25 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"forensics exchanges: {sum(1 for e in network_log.entries if e['category'] == CATEGORY_FORENSICS_FORWARDED)}")
     print(f"aborted hosts: {sorted(network_log.aborted_hosts)}")
     print(f"manifest: {manifest_path}")
+    unverified = [str(row.get("cell_id")) for row in interaction_rows if not row.get("verified")]
+    if interaction_rows:
+        print(
+            f"interactions: {len(interaction_rows) - len(unverified)}/{len(interaction_rows)} "
+            "verified"
+        )
+    if unverified:
+        print(
+            "::warning title=fif-p2-evidence::interactions not verified: "
+            + "; ".join(unverified[:5]),
+            flush=True,
+        )
     if misses:
         print(
             "::warning title=fif-p2-evidence::rest cells not captured: "
             + "; ".join(misses[:5]),
             flush=True,
         )
+    if misses or unverified:
         return EXIT_PARTIAL
     return EXIT_OK
 
@@ -1098,6 +1763,7 @@ def _run_wrapped_capture(
     network_log: NetworkLog,
     fold_rows: list[dict[str, Any]],
     fold_selectors: Sequence[tuple[str, str]],
+    interaction_rows: list[dict[str, Any]] | None = None,
 ) -> int:
     from scripts.capture_page_evidence import main as capture_main  # noqa: PLC0415
 
@@ -1131,6 +1797,7 @@ def _run_wrapped_capture(
         fold_rows=fold_rows,
         fold_selectors=fold_selectors,
         mode=args.mode,
+        interaction_rows=interaction_rows,
     )
     return capture_main(capture_argv, driver_factory=factory)
 

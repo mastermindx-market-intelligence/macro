@@ -15,6 +15,8 @@ import ast
 import os
 import subprocess
 import sys
+import types
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -1051,3 +1053,596 @@ def test_fence5_manifest_carries_env_names_never_values(monkeypatch) -> None:
     blob = json.dumps(manifest)
     assert "R2_FENCE_PROBE" in manifest["evidence_source"]["scrubbed_env_names"]
     assert "fence-value-must-not-leak" not in blob
+
+
+# ---------------------------------------------------------------------------
+# real browser interactions: interception + scripted DOM probes (no browser)
+# ---------------------------------------------------------------------------
+
+
+def _interaction_payload(name: str) -> dict[str, Any]:
+    from scripts.capture_page_evidence import parse_force_state
+
+    return parse_force_state(f"{name}:[{tool.INTERACTION_ATTRIBUTE}={name}]").as_payload()
+
+
+class _ScriptedLocator:
+    def __init__(self, page: "_ScriptedPage", selector: str) -> None:
+        self._page = page
+        self._selector = selector
+
+    @property
+    def first(self) -> "_ScriptedLocator":
+        return self
+
+    def click(self, **kwargs: Any) -> None:
+        self._page.clicks.append(self._selector)
+        if self._page.click_error is not None:
+            raise self._page.click_error
+
+
+class _ScriptedKeyboard:
+    def __init__(self, page: "_ScriptedPage") -> None:
+        self._page = page
+
+    def press(self, key: str) -> None:
+        self._page.keys.append(key)
+
+
+class _ScriptedPage:
+    """Answers each DOM probe from its own queue; records every real input."""
+
+    def __init__(self, *, drawer: Any = (), active: Any = (), tablist: Any = ()) -> None:
+        self.queues = {"drawer": list(drawer), "active": list(active), "tablist": list(tablist)}
+        self.keys: list[str] = []
+        self.clicks: list[str] = []
+        self.waits: list[int] = []
+        self.resets = 0
+        self.click_error: Exception | None = None
+        self.keyboard = _ScriptedKeyboard(self)
+        self.moves: list[tuple[int, int]] = []
+        self.mouse = types.SimpleNamespace(move=lambda x, y: self.moves.append((x, y)))
+
+    def locator(self, selector: str) -> _ScriptedLocator:
+        return _ScriptedLocator(self, selector)
+
+    def wait_for_timeout(self, ms: int) -> None:
+        self.waits.append(ms)
+
+    def evaluate(self, script: str, arg: Any = None) -> Any:
+        if script == tool._FOCUS_RESET_SCRIPT.strip():
+            self.resets += 1
+            return None
+        queue = {
+            tool._DRAWER_PROBE_SCRIPT.strip(): "drawer",
+            tool._ACTIVE_PROBE_SCRIPT.strip(): "active",
+            tool._TABLIST_PROBE_SCRIPT.strip(): "tablist",
+        }[script]
+        return self.queues[queue].pop(0)
+
+
+def _trap_probe(index: int | None, *, inside: bool = True, count: int = 3) -> dict[str, Any]:
+    return {
+        "present": True,
+        "open": True,
+        "modal": True,
+        "focus_inside": inside,
+        "focus_index": index if inside else None,
+        "focusable": count,
+    }
+
+
+def _raising_runner(*_args: Any) -> Any:
+    raise RuntimeError("interaction runner failed")
+
+
+def _proxy_page(runner: Any) -> tuple[FakePage, Any]:
+    real = FakePage()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: _cell(),
+        interaction_runner=runner,
+    )
+    return real, page
+
+
+def test_interaction_force_spec_parses_to_the_intercepted_payload_shape() -> None:
+    for name in tool.INTERACTION_INPUTS:
+        payload = _interaction_payload(name)
+        assert payload["kind"] == "attribute"
+        assert payload["attribute"] == tool.INTERACTION_ATTRIBUTE
+        assert payload["name"] == name and payload["value"] == name
+        assert tool.is_interaction_payload(payload)
+    assert set(tool.INTERACTION_INPUTS) == {
+        tool.INTERACTION_DRAWER_OPEN,
+        tool.INTERACTION_TAB_KEYS,
+        tool.INTERACTION_DRAWER_TRAP,
+    }
+    assert not tool.is_interaction_payload(
+        {"name": "empty", "kind": "attribute", "value": "", "attribute": "data-empty"}
+    )
+    assert not tool.is_interaction_payload(None)
+
+
+def test_page_proxy_reports_applied_only_for_a_verified_interaction() -> None:
+    seen: list[tuple[Any, str, str]] = []
+
+    def runner(page: Any, payload: Any, cell: Any) -> dict[str, Any]:
+        seen.append((page, payload["value"], cell.cell_id))
+        return {"verified": True}
+
+    real, page = _proxy_page(runner)
+    assert page.evaluate("FORCE", _interaction_payload("drawer_open")) == {"applied": "drawer_open"}
+    # The attribute is never written: the real page saw no evaluate at all.
+    assert real.evaluated == []
+    assert seen == [(real, "drawer_open", _cell().cell_id)]
+
+
+@pytest.mark.parametrize(
+    "runner",
+    [lambda *_: {"verified": False}, lambda *_: None, _raising_runner, None],
+    ids=["unverified", "no-receipt", "raises", "no-runner"],
+)
+def test_page_proxy_fails_closed_on_an_unverified_interaction(runner: Any) -> None:
+    real, page = _proxy_page(runner)
+    assert page.evaluate("FORCE", _interaction_payload("drawer_trap")) == {"applied": None}
+    assert real.evaluated == []
+
+
+def test_page_proxy_delegates_every_other_evaluate() -> None:
+    real, page = _proxy_page(lambda *_: {"verified": True})
+    other = {"name": "empty", "kind": "attribute", "value": "", "attribute": "data-empty"}
+    page.evaluate("FORCE", other)
+    page.evaluate("1 + 1")
+    assert real.evaluated == [("FORCE", other), ("1 + 1", None)]
+
+
+class _ModalShotPage(FakePage):
+    def __init__(self, *, modal: Any) -> None:
+        super().__init__()
+        self.modal = modal
+        self.shot_kwargs: list[dict[str, Any]] = []
+
+    def evaluate(self, script: str, arg: Any = None) -> Any:
+        self.evaluated.append((script, arg))
+        if script == tool._MODAL_OPEN_PROBE_SCRIPT:
+            if isinstance(self.modal, Exception):
+                raise self.modal
+            return self.modal
+        return None
+
+    def screenshot(self, **kwargs: Any) -> bytes:
+        self.shot_kwargs.append(dict(kwargs))
+        return super().screenshot(**kwargs)
+
+
+def _modal_proxy(modal: Any) -> tuple[_ModalShotPage, Any]:
+    real = _ModalShotPage(modal=modal)
+    cell = _cell()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: cell,
+        interaction_runner=lambda *_: {"verified": True, "facts": {}},
+    )
+    return real, page
+
+
+def test_page_proxy_captures_the_viewport_while_an_interaction_modal_is_open() -> None:
+    real, page = _modal_proxy(True)
+    page.evaluate("FORCE", _interaction_payload("drawer_open"))
+    page.screenshot(full_page=True)
+    assert real.shot_kwargs == [{"full_page": False}]
+    receipt = page._last_receipt[1]
+    assert receipt["capture"] == tool.CAPTURE_SCOPE_MODAL_VIEWPORT
+    assert receipt["capture"].startswith("viewport: modal open")
+
+
+@pytest.mark.parametrize("modal", [False, None, {"open": True}, RuntimeError("probe died")])
+def test_page_proxy_keeps_the_full_page_shot_unless_the_modal_probe_says_true(modal: Any) -> None:
+    real, page = _modal_proxy(modal)
+    page.evaluate("FORCE", _interaction_payload("drawer_trap"))
+    page.screenshot(full_page=True)
+    assert real.shot_kwargs == [{"full_page": True}]
+    assert page._last_receipt[1]["capture"] == tool.CAPTURE_SCOPE_FULL_PAGE
+
+
+def test_page_proxy_never_probes_the_modal_on_a_cell_without_an_interaction() -> None:
+    real, page = _modal_proxy(True)
+    page.screenshot(full_page=True)
+    assert real.shot_kwargs == [{"full_page": True}]
+    assert all(script != tool._MODAL_OPEN_PROBE_SCRIPT for script, _ in real.evaluated)
+
+
+def test_page_proxy_never_carries_a_receipt_into_another_cell() -> None:
+    first = _cell()
+    second = _cell(theme="light")
+    assert first.cell_id != second.cell_id
+    real = _ModalShotPage(modal=True)
+    current = [first]
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: current[0],
+        interaction_runner=lambda *_: {"verified": True, "facts": {}},
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_open"))
+    current[0] = second
+    page.screenshot(full_page=True)
+    assert real.shot_kwargs == [{"full_page": True}]
+    assert "capture" not in page._last_receipt[1]
+
+
+def test_driver_proxy_plumbs_the_interaction_runner_to_every_page() -> None:
+    calls: list[tuple[Any, str, Any]] = []
+
+    def runner(page: Any, payload: Any, cell: Any) -> dict[str, Any]:
+        calls.append((page, payload["value"], cell))
+        return {"verified": True}
+
+    real_driver = FakeRealDriver(FakeBrowser())
+    proxy = tool.DriverProxy(
+        real_driver,
+        route_handler_factory=lambda: (lambda route, request: None),
+        fold_recorder=lambda page, cell: None,
+        interaction_runner=runner,
+    )
+    cell = _cell()
+    proxy.capture(url="http://127.0.0.1:4567/fundamental_forensics.html", cell=cell, timeout_s=5)
+    page = real_driver._browser.new_context(viewport={"width": 1440, "height": 900}).new_page()
+    assert isinstance(page, tool.PageProxy)
+    assert page.evaluate("FORCE", _interaction_payload("tab_keys")) == {"applied": "tab_keys"}
+    assert len(calls) == 1
+    assert isinstance(calls[0][0], FakePage) and calls[0][1] == "tab_keys" and calls[0][2] is cell
+
+
+def test_run_interaction_drawer_open_is_a_real_click_verified_by_the_dom() -> None:
+    page = _ScriptedPage(drawer=[{"open": False}, {"open": True, "modal": True, "focus_inside": True}])
+    receipt = tool.run_interaction(page, _interaction_payload("drawer_open"), _cell())
+    assert receipt["verified"] is True
+    assert page.clicks == [tool.PRIMARY_FINDING_SELECTOR]
+    assert receipt["input"] == tool.INTERACTION_INPUTS["drawer_open"]
+    assert receipt["cell_id"] == _cell().cell_id
+    assert receipt["force_state"] == "drawer_open" and receipt["interaction"] == "drawer_open"
+    assert receipt["facts"]["after"]["modal"] is True
+    # The pointer leaves the click point so no drawer row is captured hovered.
+    assert page.moves == [tool.POINTER_PARK]
+    assert receipt["facts"]["pointer_parked"] == list(tool.POINTER_PARK)
+
+
+def test_run_interaction_drawer_open_unverified_when_the_drawer_stays_shut() -> None:
+    page = _ScriptedPage(drawer=[{"open": False}, {"open": False}])
+    receipt = tool.run_interaction(page, _interaction_payload("drawer_open"), _cell())
+    assert receipt["verified"] is False and "error" not in receipt
+
+
+def test_run_interaction_tab_keys_requires_selection_to_follow_keyboard_focus() -> None:
+    page = _ScriptedPage(
+        active=[{"matches": False}, {"matches": True, "tab": "overview"}],
+        tablist=[
+            {"focus_is_tab": True, "focus_tab": "overview", "selected": ["overview"]},
+            {"focus_is_tab": True, "focus_tab": "accounting", "selected": ["accounting"]},
+        ],
+    )
+    receipt = tool.run_interaction(page, _interaction_payload("tab_keys"), _cell())
+    assert receipt["verified"] is True
+    assert page.keys == ["Tab", "Tab", "ArrowRight"]
+    assert page.resets == 1
+    assert receipt["facts"]["walk"]["tab_presses"] == 2
+
+    stuck = _ScriptedPage(
+        active=[{"matches": True}],
+        tablist=[
+            {"focus_is_tab": True, "focus_tab": "overview", "selected": ["overview"]},
+            {"focus_is_tab": True, "focus_tab": "accounting", "selected": ["overview"]},
+        ],
+    )
+    assert tool.run_interaction(stuck, _interaction_payload("tab_keys"), _cell())["verified"] is False
+
+
+def test_tab_walk_cap_is_a_recorded_gap() -> None:
+    page = _ScriptedPage(active=[{"matches": False}] * 3)
+    walk = tool.tab_walk_to(page, tool.SELECTED_TAB_SELECTOR, cap=3)
+    assert walk["reached"] is False and walk["tab_presses"] == 3
+    assert page.keys == ["Tab"] * 3
+
+
+def test_run_interaction_drawer_trap_wraps_inside_and_never_escapes() -> None:
+    page = _ScriptedPage(
+        active=[{"matches": True}],
+        drawer=[_trap_probe(0)] + [_trap_probe(index) for index in (1, 2, 0, 1, 2)],
+    )
+    receipt = tool.run_interaction(page, _interaction_payload("drawer_trap"), _cell())
+    assert receipt["verified"] is True
+    assert page.keys == ["Tab", "Enter"] + ["Tab"] * 5
+    facts = receipt["facts"]
+    assert facts["wrapped"] is True and facts["escaped"] == 0
+    assert facts["visited"] == 3 and facts["focusable"] == 3
+    assert [step["focus_index"] for step in facts["trail"]] == [1, 2, 0, 1, 2]
+
+
+def test_run_interaction_drawer_trap_escape_is_not_verified() -> None:
+    page = _ScriptedPage(
+        active=[{"matches": True}],
+        drawer=[_trap_probe(0), _trap_probe(1), _trap_probe(2), _trap_probe(None, inside=False)]
+        + [_trap_probe(0), _trap_probe(1)],
+    )
+    receipt = tool.run_interaction(page, _interaction_payload("drawer_trap"), _cell())
+    assert receipt["verified"] is False
+    assert receipt["facts"]["escaped"] == 1
+
+
+def test_run_interaction_drawer_trap_needs_the_keyboard_to_open_the_drawer() -> None:
+    page = _ScriptedPage(active=[{"matches": True}], drawer=[{"open": False}])
+    receipt = tool.run_interaction(page, _interaction_payload("drawer_trap"), _cell())
+    assert receipt["verified"] is False
+    assert page.keys == ["Tab", "Enter"]
+
+
+def test_run_interaction_unknown_or_raising_is_a_recorded_gap() -> None:
+    unknown = dict(_interaction_payload("drawer_open"), value="bogus")
+    receipt = tool.run_interaction(_ScriptedPage(), unknown, _cell())
+    assert receipt["verified"] is False and "unknown interaction" in receipt["error"]
+
+    page = _ScriptedPage(drawer=[{"open": False}])
+    page.click_error = TimeoutError("no primary finding")
+    receipt = tool.run_interaction(page, _interaction_payload("drawer_open"), _cell())
+    assert receipt["verified"] is False
+    assert receipt["error"].startswith("TimeoutError")
+
+
+# ---------------------------------------------------------------------------
+# manifest post-process: entitled modes + per-state access
+# ---------------------------------------------------------------------------
+
+
+def _postprocess(mode: str, **kwargs: Any) -> dict[str, Any]:
+    manifest = _fake_manifest()
+    manifest["pages"][0]["metrics"] = {"measured_in": {"viewport": "desktop", "access": "anonymous"}}
+    kwargs.setdefault("state_receipt", None)
+    tool.postprocess_manifest(
+        manifest,
+        mode=mode,
+        generator_command=f"python3 -m tests.tools.fif_p2_evidence_capture --mode {mode}",
+        wrapper_module_sha256="e" * 64,
+        scrubbed_env_names=[],
+        aborted_hosts=[],
+        **kwargs,
+    )
+    return manifest
+
+
+def _receipt() -> Any:
+    return tool.KernelStateReceipt(
+        generated_at="2026-10-01T00:00:00Z",
+        sha256="c" * 64,
+        bytes=4321,
+        input_symlinks=tool.KERNEL_INPUTS,
+        state_path=None,
+    )
+
+
+def test_manifest_postprocess_entitled_modes_correct_the_per_state_access() -> None:
+    manifest = _postprocess(tool.MODE_POPULATED, state_receipt=_receipt())
+    states = manifest["pages"][0]["states"]
+    assert {row["access"] for row in states} == {tool.POPULATED_ACCESS}
+    assert manifest["pages"][0]["metrics"]["measured_in"]["access"] == tool.POPULATED_ACCESS
+    assert manifest["honesty"]["cell_id_access"] == tool.CELL_ID_ACCESS_NOTE
+    source = manifest["evidence_source"]
+    assert "interactions" not in source and "mode_verification" not in source
+    assert "delivery" not in source["state"]
+
+
+def test_manifest_postprocess_anonymous_keeps_the_capture_tool_access() -> None:
+    manifest = _postprocess(tool.MODE_ANONYMOUS)
+    assert all("access" not in row for row in manifest["pages"][0]["states"])
+    assert manifest["pages"][0]["metrics"]["measured_in"]["access"] == "anonymous"
+    assert "cell_id_access" not in manifest["honesty"]
+
+
+def test_manifest_postprocess_unavailable() -> None:
+    verification = {"routes": {"state_status": 503, "health_state": "unavailable"}}
+    manifest = _postprocess(tool.MODE_UNAVAILABLE, mode_verification=verification)
+    states = manifest["pages"][0]["states"]
+    assert all(row["evidence_label"] == tool.UNAVAILABLE_LABEL for row in states)
+    assert {row["access"] for row in states} == {tool.UNAVAILABLE_ACCESS}
+    assert manifest["axes"]["access"] == [tool.UNAVAILABLE_ACCESS]
+    assert manifest["honesty"]["access"] == tool.UNAVAILABLE_HONESTY
+    assert manifest["honesty"]["entitlement"] == tool.ENTITLED_CROPS_FENCE
+    source = manifest["evidence_source"]
+    assert source["mode"] == tool.MODE_UNAVAILABLE and source["label"] == tool.UNAVAILABLE_LABEL
+    assert source["entitlement"] == tool.POPULATED_ENTITLEMENT
+    assert source["entitlement_fence"] == tool.ENTITLED_CROPS_FENCE
+    assert source["mode_verification"] == verification
+    assert "state" not in source
+
+
+def test_manifest_postprocess_degraded_names_the_last_good_delivery() -> None:
+    manifest = _postprocess(
+        tool.MODE_DEGRADED,
+        state_receipt=_receipt(),
+        interactions="interactions.json",
+        mode_verification={"routes": {"health_state": "degraded"}},
+    )
+    source = manifest["evidence_source"]
+    assert manifest["axes"]["access"] == [tool.DEGRADED_ACCESS]
+    assert manifest["honesty"]["access"] == tool.DEGRADED_HONESTY
+    assert source["state"]["delivery"] == tool.DEGRADED_STATE_DELIVERY
+    assert source["state"]["sha256"] == "c" * 64
+    assert source["interactions"] == "interactions.json"
+    assert source["label"] == tool.DEGRADED_LABEL
+
+
+# ---------------------------------------------------------------------------
+# unavailable / degraded: set-aside, real loader prime, real routes
+# ---------------------------------------------------------------------------
+
+
+def _install_local_state(root: Path, blob: bytes = b"state-bytes") -> Path:
+    path = root / tool.LOCAL_STATE_RELATIVE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(blob)
+    return path
+
+
+def _stale_state_blob() -> bytes:
+    document = {
+        "schema": "fundamental_forensics_state.v1",
+        "generated_at": "2020-01-01T00:00:00Z",
+        "companies": {"AAPL": {"ticker": "AAPL", "findings": []}},
+    }
+    return gzip.compress(
+        json.dumps(document, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+        mtime=0,
+    )
+
+
+@pytest.fixture
+def isolated_loader(monkeypatch):
+    for name in list(os.environ):
+        if name.startswith(tool.SCRUB_ENV_PREFIXES) or name in tool.SCRUB_ENV_NAMES:
+            monkeypatch.delenv(name, raising=False)
+    tool.clear_private_state_cache()
+    yield
+    tool.clear_private_state_cache()
+
+
+def test_local_state_set_aside_restores_the_object(tmp_path: Path) -> None:
+    path = _install_local_state(tmp_path)
+    with tool.local_state_set_aside(tmp_path) as facts:
+        assert not path.exists()
+        assert facts == {"set_aside": True, "sha256": hashlib.sha256(b"state-bytes").hexdigest()}
+        holding = [p for p in path.parent.iterdir() if p.name.startswith(".fif-evidence-setaside-")]
+        assert len(holding) == 1
+    assert path.read_bytes() == b"state-bytes"
+    assert [p.name for p in path.parent.iterdir()] == [path.name]
+
+
+def test_local_state_set_aside_restores_on_error(tmp_path: Path) -> None:
+    path = _install_local_state(tmp_path)
+    with pytest.raises(RuntimeError):
+        with tool.local_state_set_aside(tmp_path):
+            raise RuntimeError("capture failed")
+    assert path.read_bytes() == b"state-bytes"
+    assert [p.name for p in path.parent.iterdir()] == [path.name]
+
+
+def test_local_state_set_aside_refuses_a_symlink(tmp_path: Path) -> None:
+    target = tmp_path / "elsewhere.gz"
+    target.write_bytes(b"x")
+    path = tmp_path / tool.LOCAL_STATE_RELATIVE
+    path.parent.mkdir(parents=True)
+    path.symlink_to(target)
+    with pytest.raises(tool.FifEvidenceError):
+        with tool.local_state_set_aside(tmp_path):
+            pass
+    assert path.is_symlink() and target.read_bytes() == b"x"
+
+
+def test_local_state_set_aside_absent_is_a_recorded_fact(tmp_path: Path) -> None:
+    with tool.local_state_set_aside(tmp_path) as facts:
+        assert facts == {"set_aside": False, "sha256": None}
+
+
+def test_prime_last_good_state_drives_the_real_loader(isolated_loader, tmp_path: Path) -> None:
+    from engine.fundamental_forensics import private_state
+
+    blob = _stale_state_blob()
+    facts = tool.prime_last_good_state(tmp_path, blob)
+    assert facts["primed_origin"] == private_state.ORIGIN_R2
+    assert facts["served_origin"] == private_state.ORIGIN_LAST_GOOD
+    assert facts["sha256"] == hashlib.sha256(blob).hexdigest()
+    assert "RESEARCH_LOCAL_STORE" not in os.environ
+    again = private_state.load_state_record(tmp_path)
+    assert again.origin == private_state.ORIGIN_LAST_GOOD and again.blob == blob
+
+
+def test_prime_last_good_state_refuses_unusable_inputs(isolated_loader, tmp_path: Path) -> None:
+    with pytest.raises(tool.FifEvidenceError):
+        tool.prime_last_good_state(tmp_path, b"")
+    _install_local_state(tmp_path)
+    with pytest.raises(tool.FifEvidenceError):
+        tool.prime_last_good_state(tmp_path, _stale_state_blob())
+    assert "RESEARCH_LOCAL_STORE" not in os.environ
+
+
+def test_verify_real_state_unavailable_reads_the_real_routes(
+    isolated_loader, monkeypatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(forensics_api, "REPO", tmp_path)
+    facts = tool.verify_real_state_unavailable(_populated_client())
+    assert facts["state_status"] == 503 and facts["health_status"] == 200
+    assert facts["health_state"] == "unavailable"
+    assert facts["health_reason_code"] == "STATE_MISSING"
+
+
+def test_verify_real_state_unavailable_refuses_a_served_state(
+    isolated_loader, monkeypatch, tmp_path: Path
+) -> None:
+    _install_local_state(tmp_path, _state_blob())
+    monkeypatch.setattr(forensics_api, "REPO", tmp_path)
+    with pytest.raises(tool.ModeUnavailable):
+        tool.verify_real_state_unavailable(_populated_client())
+
+
+def test_verify_real_degraded_health_reads_the_real_routes(
+    isolated_loader, monkeypatch, tmp_path: Path
+) -> None:
+    blob = _stale_state_blob()
+    tool.prime_last_good_state(tmp_path, blob)
+    monkeypatch.setattr(forensics_api, "REPO", tmp_path)
+    client = _populated_client()
+    facts = tool.verify_real_degraded_health(client, expected_sha256=hashlib.sha256(blob).hexdigest())
+    assert facts["state_status"] == 200
+    assert facts["health_state"] == "degraded"
+    assert facts["health_reason_code"] == "LAST_GOOD_STALE"
+    assert facts["private_object_origin"] == "last_good"
+    assert facts["age_seconds"] > tool.FRESHNESS_BUDGET_SECONDS
+    with pytest.raises(tool.ModeUnavailable):
+        tool.verify_real_degraded_health(client, expected_sha256="0" * 64)
+
+
+def test_kernel_build_without_install_leaves_the_tree_untouched() -> None:
+    local = ROOT / tool.LOCAL_STATE_RELATIVE
+    before = local.read_bytes() if local.exists() else None
+    receipt = tool.build_kernel_state(ROOT, generated_at="2026-10-01T00:00:00Z", install=False)
+    assert receipt.state_path is None
+    assert receipt.blob and receipt.sha256 == hashlib.sha256(receipt.blob).hexdigest()
+    assert receipt.bytes == len(receipt.blob)
+    after = local.read_bytes() if local.exists() else None
+    assert after == before
+
+
+def test_freshness_budget_matches_the_engine() -> None:
+    from engine.fundamental_forensics.health import FRESHNESS_BUDGET_SECONDS
+
+    assert tool.FRESHNESS_BUDGET_SECONDS == FRESHNESS_BUDGET_SECONDS
+
+
+def test_degraded_clock_problem() -> None:
+    now = datetime(2026, 10, 12, tzinfo=timezone.utc)
+    assert tool.degraded_clock_problem("2026-10-01T00:00:00Z", now=now) is None
+    assert tool.degraded_clock_problem("2026-10-01T00:00:00", now=now) is None
+    assert "older than" in tool.degraded_clock_problem("2026-10-11T00:00:00Z", now=now)
+    assert "ISO-8601" in tool.degraded_clock_problem("yesterday", now=now)
+    assert "required" in tool.degraded_clock_problem(None, now=now)
+
+
+def test_cli_offers_exactly_the_four_modes() -> None:
+    parser = tool.build_parser()
+    for mode in tool.ALL_MODES:
+        assert parser.parse_args(["--mode", mode, "--out-dir", "x"]).mode == mode
+    with pytest.raises(SystemExit):
+        parser.parse_args(["--mode", "bogus", "--out-dir", "x"])
+
+
+def test_degraded_needs_a_stale_kernel_clock_before_any_capture(monkeypatch, tmp_path: Path) -> None:
+    calls = _forbid_any_capture(monkeypatch)
+    out_dir = tmp_path / "out"
+    assert tool.main(["--mode", tool.MODE_DEGRADED, "--out-dir", str(out_dir)]) == tool.EXIT_USAGE
+    fresh = datetime.now(timezone.utc).isoformat()
+    rc = tool.main(["--mode", tool.MODE_DEGRADED, "--out-dir", str(out_dir), "--generated-at", fresh])
+    assert rc == tool.EXIT_USAGE
+    assert calls == []
+    assert not out_dir.exists()

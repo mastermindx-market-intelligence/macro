@@ -146,6 +146,8 @@
     ui.asofInput = byId('ff-asof-input');
     ui.exportLink = byId('ff-export-link');
     ui.exportBtn = byId('ff-export-btn');
+    ui.exportWrap = byId('ff-desk-export');
+    ui.statCoverageLabel = byId('ff-stat-coverage-label');
     ui.search = byId('ff-company-search');
     ui.searchClear = byId('ff-search-clear');
     ui.companyOptions = byId('ff-company-options');
@@ -326,6 +328,148 @@
     if (numeric === 0) return formatValue(numeric, format);
     var prefix = numeric > 0 ? '+' : '−';
     return prefix + formatValue(Math.abs(numeric), format);
+  }
+
+  // P2 repair (item 7): the difference between two percentages is a move in
+  // percentage POINTS, never a percent change — "−3.8% → 0.1%" reads
+  // "+3.9 pts", not "+4.0%". Non-percent formats keep formatSigned.
+  function isPercentFormat(format) {
+    return /percent|percentage|pct/.test(String(format || '').toLowerCase());
+  }
+
+  function formatChange(value, format, preferred) {
+    var numeric = numberValue(value);
+    if (numeric == null || !isPercentFormat(format)) return formatSigned(value, format);
+    var points = Math.abs(numeric * 100).toLocaleString('en-US', { maximumFractionDigits: 1 });
+    var prefix = numeric > 0 ? '+' : numeric < 0 ? '−' : '';
+    return prefix + points + (preferred === 'zh' ? ' 个百分点' : ' pts');
+  }
+
+  // The first value that actually moved: the glance number, the card summary
+  // and the rail all describe this one value (R2: never a sort key).
+  function firstChangedValue(finding) {
+    var values = Array.isArray(finding && finding.values) ? finding.values : [];
+    for (var index = 0; index < values.length; index += 1) {
+      var value = objectValue(values[index]);
+      if (value && numberValue(value.delta) != null) return value;
+    }
+    return null;
+  }
+
+  // Item 8: the value the change is measured FROM. When a sibling value's
+  // current equals this value's prior, that sibling names the basis (an
+  // annual series compares the latest year with the oldest, not the year
+  // before); otherwise the finding's prior filing period does.
+  function basisValue(finding, value) {
+    var prior = numberValue(value && value.prior);
+    var values = Array.isArray(finding && finding.values) ? finding.values : [];
+    if (prior == null) return null;
+    for (var index = 0; index < values.length; index += 1) {
+      var other = objectValue(values[index]);
+      if (other && other !== value && numberValue(other.current) === prior) return other;
+    }
+    return null;
+  }
+
+  function periodToken(label) {
+    var match = String(label || '').match(/^(FY\d{4}(?:\s?Q\d)?)(?:\s|$)/);
+    return match ? match[1] : '';
+  }
+
+  function trimSharedMetric(label, ownLabel) {
+    var a = String(label || '').match(/^(FY\d{4}(?:\s?Q\d)?)\s+(.+)$/);
+    var b = String(ownLabel || '').match(/^(FY\d{4}(?:\s?Q\d)?)\s+(.+)$/);
+    return a && b && a[2] === b[2] ? a[1] : String(label || '');
+  }
+
+  function comparisonBasis(finding, value) {
+    var basis = basisValue(finding, value);
+    if (basis) {
+      var basisEn = String(basis.label_en || basis.label || '');
+      var basisZh = String(basis.label_zh || basisEn);
+      var ownEn = String(value.label_en || value.label || '');
+      var ownZh = String(value.label_zh || ownEn);
+      return { en: trimSharedMetric(basisEn, ownEn), zh: trimSharedMetric(basisZh, ownZh) };
+    }
+    if (finding && finding.period_prior) return { en: String(finding.period_prior), zh: String(finding.period_prior) };
+    return { en: 'the comparison period', zh: '对比期' };
+  }
+
+  // Item 8: the period chip names the comparison the numbers make. An annual
+  // series ("FY2025 accrual intensity" vs "FY2023 …") names its own years;
+  // otherwise the finding's filing periods stand.
+  function findingPeriodText(finding) {
+    finding = finding || {};
+    var value = firstChangedValue(finding);
+    var basis = value ? basisValue(finding, value) : null;
+    var currentToken = value ? periodToken(value.label_en || value.label) : '';
+    var basisToken = basis ? periodToken(basis.label_en || basis.label) : '';
+    if (currentToken && basisToken) return currentToken + ' vs ' + basisToken;
+    var periods = [finding.period_current, finding.period_prior].filter(Boolean);
+    return periods.length > 1 ? periods[0] + ' vs ' + periods[1] : periods[0] || '—';
+  }
+
+  // Item 7: a percent-format change is described from the structured values
+  // (level, basis, move in points) instead of the engine sentence, whose
+  // ratio-difference wording prints points as a percent. Other formats keep
+  // the engine summary.
+  function findingSummaryHtml(finding, fallback) {
+    var value = firstChangedValue(finding);
+    var current = value ? numberValue(value.current) : null;
+    var prior = value ? numberValue(value.prior) : null;
+    var delta = value ? numberValue(value.delta) : null;
+    if (!value || !isPercentFormat(value.format) || current == null || prior == null || delta == null) {
+      return fieldPair(finding, 'summary', fallback);
+    }
+    var basis = comparisonBasis(finding, value);
+    var labelEn = String(value.label_en || value.label || prettify(value.key));
+    var labelZh = String(value.label_zh || labelEn);
+    var currentText = formatValue(current, value.format);
+    var priorText = formatValue(prior, value.format);
+    if (delta === 0) {
+      return pair(labelEn + ' was ' + currentText + ', unchanged from ' + basis.en + '.',
+        labelZh + '为 ' + currentText + '，与' + basis.zh + '持平。');
+    }
+    var up = delta > 0;
+    return pair(
+      labelEn + ' was ' + currentText + ', ' + (up ? 'up ' : 'down ') +
+        formatChange(Math.abs(delta), value.format, 'en').replace(/^\+/, '') +
+        ' from ' + basis.en + ' (' + priorText + ').',
+      labelZh + '为 ' + currentText + '，较' + basis.zh + '（' + priorText + '）' + (up ? '上升 ' : '下降 ') +
+        formatChange(Math.abs(delta), value.format, 'zh').replace(/^\+/, '') + '。'
+    );
+  }
+
+  // Item 9: GICS sector names carry a ZH twin at glance.
+  var SECTOR_ZH = {
+    'Information Technology': '信息技术',
+    'Health Care': '医疗保健',
+    'Financials': '金融',
+    'Consumer Discretionary': '非必需消费品',
+    'Consumer Staples': '必需消费品',
+    'Communication Services': '通信服务',
+    'Industrials': '工业',
+    'Energy': '能源',
+    'Materials': '原材料',
+    'Utilities': '公用事业',
+    'Real Estate': '房地产'
+  };
+
+  function sectorZh(sector) {
+    var text = String(sector || '');
+    return SECTOR_ZH[text] || text;
+  }
+
+  // Item 9: the glance names the source in plain words, never the state
+  // contract's internal projection label.
+  function plainSourcePair(source) {
+    source = source || {};
+    var rawEn = localized(source.label, 'en') || localized(source.basis, 'en');
+    var probe = [rawEn, localized(source.name, 'en'), localized(source.basis, 'en')].join(' ');
+    if (/\bSEC\b|EDGAR|company ?facts/i.test(probe)) return pair('SEC company filings', 'SEC 公司财报');
+    if (!rawEn) return '—';
+    var rawZh = localized(source.label, 'zh') || localized(source.basis, 'zh') || rawEn;
+    return pair(rawEn, translatedDataPhrase(rawZh, 'zh'));
   }
 
   function periodLabel(period) {
@@ -1078,17 +1222,18 @@
     if (ui.freshnessStatus) ui.freshnessStatus.innerHTML = pair(copy[0], copy[1]);
     if (ui.asOf) ui.asOf.textContent = filing ? formatDate(filing) : '—';
     if (ui.sourceSnapshot) ui.sourceSnapshot.textContent = snapshot ? formatDate(snapshot) : '—';
-    var sourceName = translatedDataPhrase(
-      localized(source.label, lang()) || localized(source.basis, lang()), lang()
-    ) || '—';
-    if (ui.sourceLabel) ui.sourceLabel.textContent = sourceName;
+    if (ui.sourceLabel) ui.sourceLabel.innerHTML = plainSourcePair(source);
     // One as-of line for the desk (doctrine Law 4): the hidden dd cells above
     // keep their ids for renderRunMeta and the tests, and the stamp carries the
     // same two facts in one band.
     var stampDate = (state.asOfDate || filing || snapshot || '').toString();
     var stampText = formatDate(stampDate) || '—';
     if (ui.deskStamp) {
-      ui.deskStamp.innerHTML = pair('As of ' + stampText + ' · ' + copy[0], '截止 ' + stampText + ' · ' + copy[1]);
+      // At <=700px the run-meta strip folds away (R-a), so the stamp also names
+      // the source there; CSS hides this span from 701px up.
+      var stampSource = plainSourcePair(source);
+      ui.deskStamp.innerHTML = pair('As of ' + stampText + ' · ' + copy[0], '截止 ' + stampText + ' · ' + copy[1]) +
+        (stampSource && stampSource !== '—' ? '<span class="ff-desk-stamp-source"> · ' + stampSource + '</span>' : '');
     }
     setAsofControlsFromState();
     refreshExportState();
@@ -1101,9 +1246,10 @@
       return;
     }
     var symbol = target.symbol || state.symbol;
-    var identityCore = [target.sector, target.latest_period].filter(Boolean).join(' · ');
-    var identityDetailEn = [identityCore, target.latest_filed ? 'Filed ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
-    var identityDetailZh = [identityCore, target.latest_filed ? '披露于 ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
+    var identityCoreEn = [target.sector, target.latest_period].filter(Boolean).join(' · ');
+    var identityCoreZh = [sectorZh(target.sector), target.latest_period].filter(Boolean).join(' · ');
+    var identityDetailEn = [identityCoreEn, target.latest_filed ? 'Filed ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
+    var identityDetailZh = [identityCoreZh, target.latest_filed ? '披露于 ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
     ui.companyIdentity.innerHTML = '<div class="ff-company-mark" aria-hidden="true">' + esc(String(symbol).slice(0, 5)) + '</div>' +
       '<div><div class="ff-company-name">' + esc(target.name || symbol) + '</div>' +
       '<div class="ff-company-detail">' + pair(identityDetailEn || '—', identityDetailZh || '—') + '</div></div>';
@@ -1158,6 +1304,14 @@
     ui.statAttention.textContent = String(high.length);
     ui.statWatch.textContent = String(watch.length);
     ui.statCoverage.textContent = coverageValue == null ? '—' : formatPercent(coverageValue);
+    // Item 3: partial coverage is disclosed at glance in the stat itself (the
+    // duplicate notice band is gone); nulls stay printed, gaps stay blank.
+    if (ui.statCoverageLabel) {
+      var partial = coverageValue != null && (coverageValue <= 1 ? coverageValue < 0.999 : coverageValue < 99.9);
+      ui.statCoverageLabel.innerHTML = partial
+        ? pair('of expected metrics compared · gaps left blank', '预期指标已对比 · 缺失值留空')
+        : pair('Metrics compared', '已对比指标');
+    }
     ui.statSources.textContent = String(evidenceCount);
 
     var statusKey = high.length ? 'attention' : watch.length ? 'watch' : first ? 'watch' : 'clear';
@@ -1192,16 +1346,18 @@
     ui.quickSignal.setAttribute('data-priority', first.priority || 'watch');
     ui.quickSignalLabel.innerHTML = pair('Why it matters', '为什么重要');
     ui.quickSignalTitle.innerHTML = fieldPair(first, 'title', 'Filing change');
-    ui.quickSignalSummary.innerHTML = fieldPair(first, 'summary', 'Open this signal to see the numbers and source.');
+    ui.quickSignalSummary.innerHTML = findingSummaryHtml(first, 'Open this signal to see the numbers and source.');
     // R2: magnitude is a value on the card, never the sort key — the ranking
-    // stays orderedFindings (review priority, then recency).
+    // stays orderedFindings (review priority, then recency). Item 7: it is the
+    // first value that MOVED (values[0] of an annual series has no delta), in
+    // percentage points for percent-format values.
     if (ui.quickSignalMagnitude) {
-      var firstValue = Array.isArray(first.values) && objectValue(first.values[0]) ? first.values[0] : null;
-      var magnitude = firstValue && firstValue.delta != null && firstValue.delta !== '' ? firstValue.delta : null;
+      var firstValue = firstChangedValue(first);
+      var magnitude = firstValue ? firstValue.delta : null;
       if (magnitude != null) {
         ui.quickSignalMagnitude.innerHTML = pair(
-          'Change ' + formatSigned(magnitude, firstValue.format),
-          '变化 ' + formatSigned(magnitude, firstValue.format)
+          'Change ' + formatChange(magnitude, firstValue.format, 'en'),
+          '变化 ' + formatChange(magnitude, firstValue.format, 'zh')
         );
         ui.quickSignalMagnitude.hidden = false;
       } else {
@@ -1240,27 +1396,17 @@
     ui.viewStatus.innerHTML = pair('No companies this run', '本次更新没有公司');
   }
 
+  // Item 3: partial coverage is disclosed in #ff-stat-coverage at glance and
+  // the source limitations live in the Trace tab ("What to know about this
+  // data"), so the band carries only the one notice nothing else shows: an
+  // uncovered requested symbol.
   function renderNotice(target) {
-    var coverage = target.coverage || {};
-    var source = state.payload.source || {};
-    var pct = numberValue(coverage.metrics_pct);
-    var limitationsEn = Array.isArray(source.limitations_en) ? source.limitations_en : [];
-    var limitationsZh = Array.isArray(source.limitations_zh) ? source.limitations_zh : [];
     var headline = '';
     var details = '';
 
     if (state.unknownRequestedSymbol) {
       headline = pair(state.unknownRequestedSymbol + ' is not covered yet, so we are showing ' + state.symbol + '.',
         '尚未覆盖 ' + state.unknownRequestedSymbol + '，现显示 ' + state.symbol + '。');
-    } else if (pct != null && (pct <= 1 ? pct < 0.999 : pct < 99.9)) {
-      headline = pair(
-        'We could compare ' + formatPercent(pct) + ' of the expected metrics. Missing values were left blank.',
-        '本次可对比 ' + formatPercent(pct) + ' 的预期指标；缺失值保持空白。'
-      );
-    }
-    if (limitationsEn.length || limitationsZh.length) {
-      details = '<details class="ff-coverage-details"><summary>' + pair('About this coverage', '关于本次覆盖') +
-        '</summary><p>' + pair(limitationsEn[0] || limitationsZh[0], limitationsZh[0] || limitationsEn[0]) + '</p></details>';
     }
     if (!headline && !details) {
       ui.notice.hidden = true;
@@ -1315,7 +1461,7 @@
       button.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
 
-    ui.filterSummary.innerHTML = pair(visible.length + ' of ' + all.length + ' signals',
+    ui.filterSummary.innerHTML = pair(visible.length + ' of ' + all.length + (all.length === 1 ? ' signal' : ' signals'),
       '显示 ' + visible.length + ' / ' + all.length + ' 个信号');
 
     if (!visible.length) {
@@ -1353,8 +1499,7 @@
     ui.findings.innerHTML = visible.map(function (finding) {
       var priority = priorityInfo(finding.priority);
       var selected = String(finding.id) === String(state.findingId);
-      var periods = [finding.period_current, finding.period_prior].filter(Boolean);
-      var periodText = periods.length > 1 ? periods[0] + ' vs ' + periods[1] : periods[0] || '—';
+      var periodText = findingPeriodText(finding);
       return '<div role="listitem"><button type="button" class="ff-finding' + (selected ? ' is-selected' : '') + '"' +
         ' data-finding-id="' + esc(finding.id) + '" data-priority="' + esc(finding.priority || 'watch') + '"' +
         ' aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
@@ -1362,7 +1507,7 @@
         '<span class="ff-finding-copy"><span class="ff-finding-overline"><span class="ff-priority-label">' +
         pair(priority.en, priority.zh) + '</span><span aria-hidden="true">·</span><span>' + topicPair(finding.topic) + '</span></span>' +
         '<h3>' + fieldPair(finding, 'title', 'Untitled finding') + '</h3>' +
-        '<span class="ff-finding-summary">' + fieldPair(finding, 'summary', 'No summary supplied.') + '</span></span>' +
+        '<span class="ff-finding-summary">' + findingSummaryHtml(finding, 'No summary supplied.') + '</span></span>' +
         '<span class="ff-finding-periods"><strong>' + esc(periodText) + '</strong>' +
         pair('Why this matters', '为什么重要') + ' <span aria-hidden="true">→</span></span></button></div>';
     }).join('');
@@ -1497,14 +1642,15 @@
   function valueControlOpts(value, which) {
     var node = queryNodeForValue(value);
     var text = which === 'prior' ? value.prior : which === 'delta' ? value.delta : value.current;
+    var shown = which === 'delta' ? formatChange(text, value.format, lang()) : formatValue(text, value.format);
     if (node) {
-      var control = controlFromQueryNode(node, formatValue(text, value.format));
+      var control = controlFromQueryNode(node, shown);
       control.kind = 'finding';
       control.exactText = node.value == null ? '' : String(node.value);
       control.unit = node.unit || '';
       return control;
     }
-    return { kind: 'finding', compactText: formatValue(text, value.format) };
+    return { kind: 'finding', compactText: shown };
   }
 
   // The plain-word cell glossary (R7): one sentence per glance metric, no
@@ -1904,6 +2050,7 @@
     ui.asofLatest.classList.toggle('is-active', latestActive);
     ui.asofLatest.setAttribute('aria-pressed', latestActive ? 'true' : 'false');
     ui.asofInput.value = state.asOfDate || '';
+    ui.asofInput.setAttribute('lang', lang() === 'zh' ? 'zh-CN' : 'en');
     // §3.1 — with no health clocks and no picked day there is no lawful
     // cutoff, so the control is disabled rather than guessing one.
     var clocks = (state.health && state.health.clocks) || {};
@@ -2226,6 +2373,28 @@
     return legal ? 'ready' : 'unavailable';
   }
 
+  // Item 11: the tooltip names the actual reason the export is off.
+  function exportTip(phase) {
+    if (phase === 'signin') return ['Sign in to download this company\'s numbers as a workbook.', '登录后可将该公司的数据下载为工作簿。'];
+    if (phase === 'upgrade') return ['Workbook export is included in the Essential plan.', '工作簿导出包含在 Essential 方案中。'];
+    if (phase === 'ready') return ['Download this company\'s numbers as of the selected date.', '下载所选日期的该公司数据。'];
+    if (state.exportUnavailable) {
+      return state.exportUnavailableCause === 'route'
+        ? ['Export unavailable: this server does not offer workbook downloads yet.', '导出不可用：此服务器尚未提供工作簿下载。']
+        : ['Export unavailable: the last download request failed. Reload to try again.', '导出不可用：上次下载请求失败，请重新载入后再试。'];
+    }
+    var target = company() || {};
+    var body = buildQueryBody();
+    var en = [];
+    var zh = [];
+    if (!target.entity_id) { en.push('this company has no SEC identifier in this run'); zh.push('本次数据缺少该公司的 SEC 识别码'); }
+    if (!body.periods.length) { en.push('there are no filing periods to export'); zh.push('没有可导出的财报期间'); }
+    if (!body.policy.source_snapshot_at) { en.push('the source snapshot date is unknown'); zh.push('来源快照日期未知'); }
+    if (!body.policy.recorded_at) { en.push('the recording date is unknown'); zh.push('记录日期未知'); }
+    if (!en.length) return ['Export unavailable for this view.', '此视图暂不支持导出。'];
+    return ['Export unavailable: ' + en.join('; ') + '.', '导出不可用：' + zh.join('；') + '。'];
+  }
+
   function refreshExportState() {
     if (!ui.exportBtn) return;
     var phase = exportPhase();
@@ -2238,6 +2407,14 @@
     ui.exportBtn.setAttribute('data-label-zh', copy[1]);
     var current = lang();
     ui.exportBtn.setAttribute('aria-label', current === 'zh' ? copy[1] : copy[0]);
+    var tip = exportTip(phase);
+    // A disabled button receives no pointer events, so the wrapper carries
+    // the same tip for hover; the button keeps it for focus/assistive tech.
+    [ui.exportBtn, ui.exportWrap].forEach(function (node) {
+      if (!node) return;
+      node.setAttribute('data-tip-en', tip[0]);
+      node.setAttribute('data-tip-zh', tip[1]);
+    });
   }
 
   function exportFilename(response) {
@@ -2267,6 +2444,7 @@
           // The workbook route is not present at this base (X1): the control
           // goes disabled and stays disabled — no fallback download.
           state.exportUnavailable = true;
+          state.exportUnavailableCause = 'route';
           refreshExportState();
           return null;
         }
@@ -2289,6 +2467,7 @@
       })
       .catch(function () {
         state.exportUnavailable = true;
+        state.exportUnavailableCause = 'failed';
         refreshExportState();
       });
   }
@@ -3872,10 +4051,17 @@
     ui.evidenceTitle.innerHTML = fieldPair(finding, 'title', 'Untitled finding');
     var values = Array.isArray(finding.values) ? finding.values : [];
     var valueRows = values.length ? values.map(function (value) {
-      return '<div class="ff-value-row"><div class="ff-value-label">' + fieldPair(value, 'label', prettify(value.key)) + '</div>' +
-        '<div class="ff-value-cell"><small>' + pair('Current', '本期') + '</small>' + sourceControlHtml(valueControlOpts(value, 'current')) + '</div>' +
-        '<div class="ff-value-cell"><small>' + pair('Prior', '上期') + '</small>' + sourceControlHtml(valueControlOpts(value, 'prior')) + '</div>' +
-        '<div class="ff-value-cell"><small>' + pair('Change', '变化') + '</small>' + sourceControlHtml(valueControlOpts(value, 'delta')) + '</div></div>';
+      var cellOpts = [valueControlOpts(value, 'current'), valueControlOpts(value, 'prior'), valueControlOpts(value, 'delta')];
+      // Item 2 (§2.1): an unavailable span is shown, not dimmed — the number
+      // keeps full ink, the control takes a dashed hairline, and the row
+      // prints the visible .ff-source-unavail label once under its metric
+      // (each control still carries it in its accessible name and tip).
+      var rowUnavailable = cellOpts.some(function (opts) { return !spanOk(opts || {}); });
+      return '<div class="ff-value-row"><div class="ff-value-label">' + fieldPair(value, 'label', prettify(value.key)) +
+        (rowUnavailable ? '<span class="ff-source-unavail ff-value-row-unavail">' + pair('Source span unavailable', '来源片段不可用') + '</span>' : '') + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Current', '本期') + '</small>' + sourceControlHtml(cellOpts[0]) + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Compared with', '对比基准') + '</small>' + sourceControlHtml(cellOpts[1]) + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Change', '变化') + '</small>' + sourceControlHtml(cellOpts[2]) + '</div></div>';
     }).join('') : '<div class="ff-empty-state"><div><p>' + pair('No value bridge was supplied for this result.', '此结果未提供数值变化桥。') + '</p></div></div>';
 
     var receipts = Array.isArray(finding.evidence) ? finding.evidence : [];
@@ -3902,10 +4088,7 @@
     ui.evidenceBody.innerHTML = '<div class="ff-proof-badge" data-priority="' + esc(finding.priority || 'watch') + '"><span aria-hidden="true">' +
       priority.icon + '</span>' + pair(priority.en, priority.zh) + '</div>' +
       '<section class="ff-signal-meaning"><span>' + pair('Why this matters', '为什么重要') + '</span><p>' +
-      fieldPair(finding, 'summary', 'No summary supplied.') + '</p></section><div class="ff-proof-basis">' +
-      '<span><b>' + pair('Normalized inputs', '标准化输入') + '</b>' + esc([finding.period_current, finding.period_prior].filter(Boolean).join(' / ') || '—') + '</span>' +
-      '<span><b>' + pair('Calculated', '规则计算') + '</b>' + pair('Deterministic rule', '确定性规则') + '</span>' +
-      '<span><b>' + pair('Limits', '局限') + '</b>' + limitationCount + '</span></div>' +
+      findingSummaryHtml(finding, 'No summary supplied.') + '</p></section>' +
       '<section class="ff-proof-section"><h3>' + pair('Numbers behind the signal', '信号背后的数字') + '</h3><div class="ff-value-grid">' + valueRows + '</div></section>' +
       '<section class="ff-proof-section ff-proof-actions"><h3>' + pair('Explore the full picture', '继续查看完整情况') + '</h3><div class="ff-proof-action-grid">' +
       '<button type="button" data-go-tab="compare">' + pair('Compare periods', '对比期间') + '<span aria-hidden="true">→</span></button>' +
@@ -3913,7 +4096,10 @@
       '<button type="button" data-go-tab="trace">' + pair('Verify SEC sources', '核对 SEC 来源') + '<span aria-hidden="true">→</span></button>' +
       '</div></section>' +
       '<section class="ff-proof-section"><h3>' + pair('Verify with the SEC', '通过 SEC 核对') + '</h3><ol class="ff-receipts">' + receiptHtml + '</ol></section>' +
-      '<details class="ff-proof-details"><summary>' + pair('How this signal was detected', '这个信号如何识别') + '</summary><div><code class="ff-proof-code">' +
+      '<details class="ff-proof-details"><summary>' + pair('How this signal was detected', '这个信号如何识别') + '</summary><div>' +
+      // Item 10: the method facts sit here, in plain words, not at glance.
+      '<p class="ff-proof-method">' + pair('Compared: ' + findingPeriodText(finding) + '. Method: the same fixed rule for every company.',
+        '对比：' + findingPeriodText(finding) + '。方法：对每家公司使用同一固定规则。') + '</p><code class="ff-proof-code">' +
       fieldPair(finding, 'formula', 'Formula not supplied') + '</code><p class="ff-threshold"><strong>' + pair('Signal appears when: ', '信号触发条件：') + '</strong>' +
       fieldPair(finding, 'threshold', 'Threshold not supplied') + '</p></div></details>' +
       '<details class="ff-proof-details"><summary>' + pair('What this signal cannot tell you', '这个信号无法说明什么') + '</summary><div><ul class="ff-limitations">' + limitationHtml + '</ul></div></details>';
@@ -3988,7 +4174,7 @@
       return total + (Array.isArray(finding.evidence) ? finding.evidence.length : 0);
     }, 0);
     if (state.tab === 'radar') {
-      ui.viewStatus.innerHTML = pair(findings.length + ' signals · filed ' + formatDate(target.latest_filed),
+      ui.viewStatus.innerHTML = pair(findings.length + (findings.length === 1 ? ' signal' : ' signals') + ' · filed ' + formatDate(target.latest_filed),
         findings.length + ' 个信号 · 披露于 ' + formatDate(target.latest_filed));
     } else if (state.tab === 'statements') {
       ui.viewStatus.innerHTML = pair(periods.length + ' normalized periods', periods.length + ' 个标准化期间');
@@ -4064,7 +4250,7 @@
       return '<button type="button" class="ff-company-option' + (index === state.searchIndex ? ' is-active' : '') + '" role="option"' +
         ' id="' + optionId + '" data-symbol="' + esc(entry.key) + '" aria-selected="' + (index === state.searchIndex ? 'true' : 'false') + '">' +
         '<span class="ff-option-symbol">' + esc(target.symbol || entry.key) + '</span><span><span class="ff-option-name">' +
-        esc(target.name || entry.key) + '</span><span class="ff-option-sector">' + esc(target.sector || '—') + '</span></span></button>';
+        esc(target.name || entry.key) + '</span><span class="ff-option-sector">' + pair(target.sector || '—', sectorZh(target.sector) || '—') + '</span></span></button>';
     }).join('');
     ui.companyOptions.hidden = false;
     ui.search.setAttribute('aria-expanded', 'true');
@@ -4165,13 +4351,13 @@
 
   function focusableInEvidence() {
     return Array.prototype.slice.call(ui.evidence.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
     )).filter(function (node) { return node.offsetParent !== null; });
   }
 
   function focusableInReceiptInspector() {
     return Array.prototype.slice.call(ui.receiptInspector.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
     )).filter(function (node) { return node.offsetParent !== null; });
   }
 
@@ -4225,8 +4411,15 @@
     }
   }
 
+  // Act only when the desktop match really CROSSES. A full-page capture (and some
+  // zoom / devtools resizes) re-dispatches `change` with an unchanged match; closing on
+  // that would drop an analysis drawer the reader opened on purpose.
+  var lastDesktopMatch = desktopMedia.matches;
   function handleViewportChange() {
-    if (desktopMedia.matches) {
+    var matches = desktopMedia.matches;
+    var crossed = matches !== lastDesktopMatch;
+    lastDesktopMatch = matches;
+    if (matches && crossed) {
       closeEvidence(false);
       closeReceiptInspector(false);
     }
