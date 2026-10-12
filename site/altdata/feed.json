@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-11T19:07:19.941954+00:00",
+  "generated_utc": "2026-10-11T22:25:56.431663+00:00",
   "as_of": "2026-10-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28360,10 +28360,10 @@
         {
           "ticker": "PSX",
           "buy_usd": 0.0,
-          "sell_usd": 7464006880.0,
-          "net_usd": -7464006880.0,
+          "sell_usd": 7461912595.0,
+          "net_usd": -7461912595.0,
           "buyers": 0,
-          "sellers": 13
+          "sellers": 12
         },
         {
           "ticker": "IHT",
@@ -28406,14 +28406,6 @@
           "sellers": 51
         },
         {
-          "ticker": "DELL",
-          "buy_usd": 0.0,
-          "sell_usd": 1173176764.0,
-          "net_usd": -1173176764.0,
-          "buyers": 0,
-          "sellers": 1047
-        },
-        {
           "ticker": "CRWV",
           "buy_usd": 0.0,
           "sell_usd": 1147723669.0,
@@ -28428,6 +28420,14 @@
           "net_usd": -1102769135.0,
           "buyers": 0,
           "sellers": 1
+        },
+        {
+          "ticker": "DELL",
+          "buy_usd": 0.0,
+          "sell_usd": 1098352961.0,
+          "net_usd": -1098352961.0,
+          "buyers": 0,
+          "sellers": 983
         },
         {
           "ticker": "PRMB",

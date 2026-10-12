@@ -34,6 +34,15 @@ verified:
   - claim: The exact GMI runtime layout agrees with the repaired source.
     command: gh api contents at d55a1b97d6a111fbc9c0b646d88c8444de9aa4e1; base64 decode and SHA256; compare PRIVATE_RUNTIME_LAYOUT.md with helper and unit
     result: Layout SHA256 b3f14a3a8ce1882bdcd3d46f63cf9c9b425c6a319f915496ae1c5753460eab0a matched; state/artifacts readonly and publisher inaccessible, fixed root and empty provisioning agree.
+  - claim: The inherited calendar-scope CI blocker has a protected repair and a successful natural main baseline.
+    command: gh api repos/mastermindx-market-intelligence/macro/actions/runs/38187866979; gh api repos/mastermindx-market-intelligence/macro/actions/jobs/114614031931; canonical integration_baseline_state
+    result: PR8870 merged as de0c202a016502ce521db66a70e5905b76e0c9c2; exact push baseline and job concluded success at 2026-10-12T00:36Z. Receipt SHA256 16ff9bb2f48352d94ecb169dc4a51a2d11e1b8cfbc279001bba01537885ccce4. No watcher was launched; one permitted terminal snapshot supplied the result.
+  - claim: The normal main refresh preserves this PR's provisioning boundary and the complete protected updater and CI registry.
+    command: git merge --no-ff --no-commit 1f25c4abd1eae583d4166c7b970e70aabea95377; compare complete updater after removing only the original provisioning block, registry after removing only the private-runtime job, and inventory after removing only its item with git show at that main revision
+    result: All three complete comparisons match protected main byte-for-byte. Four runtime files are unchanged; update.sh incorporates only protected PR8864 W2C lane-freeze behavior and the unchanged original guard. Its new SHA256 is 91e8db62d40670b0bb1f710be5481b39644a22474ae580411b33d8c3d6c77cc6. Eight PR-owned paths remain; no conflict or sibling rewrite.
+  - claim: The affected checks pass on the integrated updater and current protected CI definitions.
+    command: python3 -m pytest tests/test_company_intelligence_private_roots.py tests/test_deploy_update_self_heal.py tests/test_market_memory_experience_deploy.py tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared -q
+    result: 333 passed in 67.89s. Receipt SHA256 471544b1560aca2fad9850bbca06f45485d3adfb9e855b347ff9bdbf940372e6 binds prepared tree 600342ec7bd186802948adab969bfba096fe68d5; this later continuity-only handoff update changes the final tree, not the tested source. Prior 306-test results above remain historical.
 unverified:
   - claim: The private directory boundary is installed and enforced in the running API namespace.
     what_would_verify: Protected source landing followed by existing updater/setup, exact installed helper/unit bytes, API process generation, read-only state/artifacts and inaccessible publisher probes under the actual service namespace.
@@ -41,7 +50,7 @@ unverified:
     what_would_verify: GMI protected producer/current-generation release and admission, exact permitted publication, Terminal944 shared-host integration and the actual authenticated positive/negative browser journey.
 unresolved:
   - The source is independently reviewed and GMI layout is pinned; required CI, release and runtime proof remain open.
-  - Original Fabric operation mo-a-f04-runtime-install-01a128b5-v1 is terminal rc0 and cleaned; raw draft was rejected and preserved. Corrected derivative acceptance follows the independently reviewed source and verified GMI pin. Usage/served model/cost remain unknown.
+  - Original Fabric operation mo-a-f04-runtime-install-01a128b5-v1 was accepted on the corrected derivative after independent review and verified GMI pin; its rejected raw draft remains preserved. Usage/served model/cost remain unknown. Later review of the normal main refresh has its own bounded operation and does not replace the original worker.
   - The repaired helper creates no current.json, generation record, artifact, retained source or journal; directory existence conveys no publication or serving authority.
 next_actions:
   - Requalify the released GMI source before installation; preserve GMI8810 source custody and its staged/adopted distinction.
@@ -56,7 +65,7 @@ danger_areas:
   - The privileged producer runs outside the API namespace; API uid0 alone is not read-only proof.
   - Nonoptional mounts require safe directories before restart. An unsafe existing layout must stop deployment without normalizing it.
   - Shared Terminal hosts remain separately coordinated with the E20 incumbent; this source does not edit them.
-prs: [8810]
+prs: [8842, 8810]
 ---
 
 The agreed root is `/var/lib/macro-company-intelligence`. `state/current.json` and
@@ -75,4 +84,20 @@ Raw worker output, two independent RED security probes, repaired source review,
 and test logs are retained under
 `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5/f04-private-adoption/runtime-install/`.
 Original worker raw SHA256: `6f0dc2085216385578c81ab7c33ee5a85f9477b1fff3af7c6ef9b260fb161648`.
+
+The current refresh follows PR8870's calendar-scope repair. Protected main
+`1f25c4abd1eae583d4166c7b970e70aabea95377` includes PR8864's W2C lane freeze;
+the updater is therefore deliberately not described as byte-identical to the
+previous PR8842 head. Its complete protected behavior is preserved, with only
+this PR's original empty-directory provisioning guard added. A frozen W2C lane
+and the private directory boundary remain independent controls. No deployment,
+directory creation, service restart, STAGE, adoption or publication occurred.
+
+Installation sequencing remains: protected GMI8803 then8810 and independent
+runtime8842 release; existing updater installs the released PROPOSED owner with
+safe empty roots; GMI executes its exact STAGE intent; actual observed members
+remain unadmitted until protected PRODUCED adoption and normal updater adoption;
+GMI then issues a new adoption-bound PROMOTE intent. The resulting API namespace
+and authenticated Terminal workflow still require live verification.
+
 MISSION_COMPLETE: false. This handoff records source continuity, not session termination.
