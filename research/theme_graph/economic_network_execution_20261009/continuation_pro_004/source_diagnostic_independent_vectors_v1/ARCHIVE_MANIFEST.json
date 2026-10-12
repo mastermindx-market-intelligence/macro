@@ -1,0 +1,305 @@
+{
+  "all_members_reopened_and_verified": true,
+  "archive": {
+    "byte_length": 310065,
+    "path": "SOURCE_ARCHIVE.tar.gz",
+    "sha256": "9c3e3267c8dfed2ddeccf6a2e69d8db8b8c716dd94f4a56b58767501ff09c5d0"
+  },
+  "archived_test_filename_does_not_create_runnable_source_path": true,
+  "deterministic_metadata": {
+    "gid": 0,
+    "gzip_mtime": 0,
+    "mode": "0644",
+    "tar_mtime": 0,
+    "uid": 0
+  },
+  "files": [
+    {
+      "byte_length": 11047,
+      "path": "DRAFT_BASELINE.json.gz",
+      "sha256": "f7125abb5b3c059bce6decdd6553abfcf1b79eb14b3c3a044ca5eaba542d2bf6"
+    },
+    {
+      "byte_length": 17726,
+      "path": "DRAFT_INPUT_CONTRACT.md",
+      "sha256": "940da98f5edc9fab650d04ad69c79dc761e2b4a9559c0419d2dbf434a2cd9bbe"
+    },
+    {
+      "byte_length": 19710,
+      "path": "ENCODE_VECTORS.py",
+      "sha256": "840c4ac53faca8910fb9abed672966bd9dc8391f13c2637a6b5be5359f2a7f48"
+    },
+    {
+      "byte_length": 0,
+      "path": "ENCODING.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 76,
+      "path": "ENCODING_RECEIPT.json",
+      "sha256": "566f38be1b9900a6d233764d45536b074b390ab169aa56ea0b4c5c38caa9aae6"
+    },
+    {
+      "byte_length": 12700,
+      "path": "EXPECTED_RESULTS.md",
+      "sha256": "fa96efd0540fd342fef32ccfae6aa479b8f4c4d71017e4252ee1c2ffb3438b9d"
+    },
+    {
+      "byte_length": 5543,
+      "path": "HALL_18_CAPACITY_VECTOR.json",
+      "sha256": "a5c76f838331c97b1887bf687536e8f0b4f459a3b46b826d6f19eb0a5e1241f6"
+    },
+    {
+      "byte_length": 2716,
+      "path": "HISTORY_SET_VECTORS.json",
+      "sha256": "23e764dba1df43ca116a9a127c7c8022837c7c03beb90ca5936838a322cdcca4"
+    },
+    {
+      "byte_length": 11041,
+      "path": "INDEPENDENT_EXPECTATIONS.json",
+      "sha256": "9f66124cd771eb23cb05d5a5bdccddd17399e92606e232b9770cd7046087143a"
+    },
+    {
+      "byte_length": 1142,
+      "path": "INTERFACE_SNAPSHOT.json",
+      "sha256": "42383ee01ad558e20e32208966cfbb05d327695dc1e49c7179a3297f6f50060e"
+    },
+    {
+      "byte_length": 10401,
+      "path": "MANIFEST.json",
+      "sha256": "f9343b7dd56bae9f31166e79feb4674766d0fd79d7137a0afaaf12bb52d69ff1"
+    },
+    {
+      "byte_length": 1844,
+      "path": "NUMERIC_VECTORS.json",
+      "sha256": "08d52f5995bdee66e19c3d90aa2ad3072a214926d02091063417e8d08a3888c7"
+    },
+    {
+      "byte_length": 3165,
+      "path": "PREPARATION_RECEIPT.json",
+      "sha256": "8ac0dd3619c3d05039655c7ac600a3ad63d602428f1b52c86ace0918135fd425"
+    },
+    {
+      "byte_length": 27502,
+      "path": "WIRE_INDEX.json",
+      "sha256": "768dc39863643f6a8365fc2e796ce312af2a19bf053d95c41c03773b5acb1e5f"
+    },
+    {
+      "byte_length": 1799,
+      "path": "WIRE_RECIPES.json",
+      "sha256": "27407afdb67d0b3b799589a6f8cefcb2988d222c840482ccefc07cbb5ad19c6a"
+    },
+    {
+      "byte_length": 11193,
+      "path": "wire/V01_COMPLETE_MODEL.request.gz",
+      "sha256": "c2bdb659380f09bc8ebb1126c98a1d1d39c461c82153716c95a7560e861de74b"
+    },
+    {
+      "byte_length": 11332,
+      "path": "wire/V02_INT_HALL_DEFICIENCY.request.gz",
+      "sha256": "dcbc51a893547dcd52baa6f9ed702054438ba582ab259b242077697ca5518693"
+    },
+    {
+      "byte_length": 11192,
+      "path": "wire/V03_BOUNDARY_TIE.request.gz",
+      "sha256": "4238ea854ee25876069c985d9a877d59aef340791da4a9d3b9f48caf938d70be"
+    },
+    {
+      "byte_length": 11191,
+      "path": "wire/V04_ALL_TIED.request.gz",
+      "sha256": "17693d10f3bdf4dfa71f08d1e4eee0e1401c20a9439811f0e7d45f25bc1455f4"
+    },
+    {
+      "byte_length": 11196,
+      "path": "wire/V05_DUPLICATE_ISSUER.request.gz",
+      "sha256": "8bf08918e88771be7b46d81b04ec569c9604116f93a27e3f4d8d1fe8663356f6"
+    },
+    {
+      "byte_length": 11545,
+      "path": "wire/V06_FORWARD_SET_MISMATCH.request.gz",
+      "sha256": "18f9434a0f3ab086def7b0da162911f29ba377886727ec34e7785e145b328a4d"
+    },
+    {
+      "byte_length": 12967,
+      "path": "wire/V07_REVERSE_AFTER_STATE.request.gz",
+      "sha256": "c208a203e46b0ebb61ef01f90637f856a2e07b9c91774d110dae13355cae4fd0"
+    },
+    {
+      "byte_length": 12868,
+      "path": "wire/V07_REVERSE_SET_MISMATCH.request.gz",
+      "sha256": "9e020a70d781972e27326a66587510ba848c815e43a5fff147d0f2343394d0d1"
+    },
+    {
+      "byte_length": 11572,
+      "path": "wire/V08_SAME_FACT_CONFLICT.request.gz",
+      "sha256": "6029a2d67b7d0c5b7b7751fe6c8bb2c6233897ca5a504d266e41667ab5ce364c"
+    },
+    {
+      "byte_length": 11576,
+      "path": "wire/V09_MEASUREMENT_ORDER.request.gz",
+      "sha256": "d0fd4118f2d2867b26357d17b7d5702363540bec17a0f8e75505522b43fa7d26"
+    },
+    {
+      "byte_length": 11832,
+      "path": "wire/V10_POST_K_REVISION.request.gz",
+      "sha256": "80d99c1165aad21c44a60b8007c4d056744d946a2c7f690a67d7cd7942ac76da"
+    },
+    {
+      "byte_length": 11593,
+      "path": "wire/V11_PERSISTENT_SCOPE_HOLD.request.gz",
+      "sha256": "f30536dd79f96dbf04a65e3ed3ec66c40d0db320052d2f03d3b00fec82dad520"
+    },
+    {
+      "byte_length": 11519,
+      "path": "wire/V12_NEGATIVE.request.gz",
+      "sha256": "c72ac022c848cb9973fa9c205660d92252af9f2f1ebd23af9a2a64edcf036c48"
+    },
+    {
+      "byte_length": 11516,
+      "path": "wire/V12_POSITIVE.request.gz",
+      "sha256": "81980ae7240cc311019f29aca3734617ee88422331f0f079664d15cf56717878"
+    },
+    {
+      "byte_length": 11657,
+      "path": "wire/V12_ZERO_EVIDENCED.request.gz",
+      "sha256": "cc17ecc000dec04f9f07d849635626090812e6f7e54651583b729e71a6c35ffe"
+    },
+    {
+      "byte_length": 11512,
+      "path": "wire/V12_ZERO_MISSING_EVIDENCE.request.gz",
+      "sha256": "3246319a1c2017cb63cf9ef49bccf7a646b19289420e6e6af418ee3572c09863"
+    },
+    {
+      "byte_length": 11445,
+      "path": "wire/V13_SPLIT_COMPLETE_BRIDGE.request.gz",
+      "sha256": "8391af513b4681004841d5cd6a0fa59491b956631600ff8a10cc89e5d05d8919"
+    },
+    {
+      "byte_length": 11447,
+      "path": "wire/V13_SPLIT_MISSING_PRICE_BRIDGE.request.gz",
+      "sha256": "17442936ac0665d9810ee14e81c4fa639c5eda1bcec2c8514912faa54a372c2a"
+    },
+    {
+      "byte_length": 11368,
+      "path": "wire/V14_ORDINARY.request.gz",
+      "sha256": "45ce3f3cd33d30c6dca7464dda18edfe466b4a541a90131b9438237010645025"
+    },
+    {
+      "byte_length": 11383,
+      "path": "wire/V14_ZERO_OR_CEASED.request.gz",
+      "sha256": "0f948eeb6d83ebe53934e76138d52cb083336b651e9cb77082e6a511d3cb378d"
+    },
+    {
+      "byte_length": 11323,
+      "path": "wire/V15_DEFAULT_REAL.request.gz",
+      "sha256": "60d0cef72cc3deb2ab1cd203cb414a6093191ca61b0c2b41f3141d2ca502aec6"
+    },
+    {
+      "byte_length": 11336,
+      "path": "wire/V15_REAL_SOURCE.request.gz",
+      "sha256": "1b2a517e0feb145e9bc4d2c6e16c34519d35c0b704b3d763c99ffd8fe7831e1e"
+    },
+    {
+      "byte_length": 11346,
+      "path": "wire/V16_SYNTHETIC_CLAIMS.request.gz",
+      "sha256": "152ea08cbbfa18ca9f4b667d733b6ca35926286102ee931a0cf84c6676c55844"
+    },
+    {
+      "byte_length": 11195,
+      "path": "wire/V17_DUPLICATE_NESTED_KEY.request.gz",
+      "sha256": "3af449e123c6de54e6c3e1db186708f459d1e4bd17426e9ec9988767f5b1e26e"
+    },
+    {
+      "byte_length": 11240,
+      "path": "wire/V17_DUPLICATE_TOP_KEY.request.gz",
+      "sha256": "ec4c5deb399c2c481cb8553f7d42fb2bfd086fa0bf1660ceb321850e27322f2c"
+    },
+    {
+      "byte_length": 11203,
+      "path": "wire/V17_INFINITY.request.gz",
+      "sha256": "6cda211d1229c55beeeaedcd72011f35fb6f9c79315ad10c412b016cf84edc9b"
+    },
+    {
+      "byte_length": 11196,
+      "path": "wire/V17_INVALID_UTF8.request.gz",
+      "sha256": "4629b75f1f41ac1a618f30dd57811cdfad15f6501b25422525b28fbc314675df"
+    },
+    {
+      "byte_length": 11199,
+      "path": "wire/V17_NAN.request.gz",
+      "sha256": "a776892174238e340424899d9a66be65c1a3dd8d549cb80fb9d5950aee93ece1"
+    },
+    {
+      "byte_length": 11206,
+      "path": "wire/V17_UNPAIRED_SURROGATE.request.gz",
+      "sha256": "f4cf4311a443d6ccaf1aaba7c0b5d4f9ba41baba106e41c75fd4fe9a575fae17"
+    },
+    {
+      "byte_length": 11312,
+      "path": "wire/V18_ASSERTIONS_17.request.gz",
+      "sha256": "8a64405115e9156fe39efffffb8444d766abbbaed3fc07dd5a7f15e8cabcdb14"
+    },
+    {
+      "byte_length": 11198,
+      "path": "wire/V18_COUNT_BOOL.request.gz",
+      "sha256": "fa0a5f8e4149b4f94d662c91c6b0788aeb2b1b330a9ba3333064f7fad11b3e94"
+    },
+    {
+      "byte_length": 11196,
+      "path": "wire/V18_COUNT_FLOAT.request.gz",
+      "sha256": "3f55f00d4630cab69a6c1ca1ff21bee86b939af1abe3e5301a8036a54c8bc605"
+    },
+    {
+      "byte_length": 11197,
+      "path": "wire/V18_COUNT_INTEGER_13_DIGITS.request.gz",
+      "sha256": "5a144ae889d4a3c5c171cac9350d323a28968d40006702b6a6a1a3678d9f0b2a"
+    },
+    {
+      "byte_length": 11197,
+      "path": "wire/V18_COUNT_NEGATIVE.request.gz",
+      "sha256": "5e4decb10f2544d27d00d9666d7ad8913d6effd586443f234dcdb7cbc5da67e9"
+    },
+    {
+      "byte_length": 11313,
+      "path": "wire/V18_NONPOSITIVE_PRICE.request.gz",
+      "sha256": "5d4aa2062c52f62a34e120b21e5c1793ff102ade9401c540d7718dc725d097bd"
+    },
+    {
+      "byte_length": 13779,
+      "path": "wire/V18_REQUEST_2097152.request.gz",
+      "sha256": "7675fcf9cffcf32bb9590ce6a7e682c4a55517d55ab4236fe0ac1e85cd383839"
+    },
+    {
+      "byte_length": 13779,
+      "path": "wire/V18_REQUEST_2097153.request.gz",
+      "sha256": "1c8d7283b5f842c095f9c6e1d12a76d28813565400ed842c17998c6c7bf74691"
+    },
+    {
+      "byte_length": 12105,
+      "path": "wire/V18_SOURCE_262144.request.gz",
+      "sha256": "928f27df79086d5301dab0bfba194b52d2fe560f461279673f9943f72556064b"
+    },
+    {
+      "byte_length": 12104,
+      "path": "wire/V18_SOURCE_262145.request.gz",
+      "sha256": "8baf2778250ba42279faa853634ee00f417c988cd40d4d1872bb1d1bf420cc5d"
+    },
+    {
+      "byte_length": 11201,
+      "path": "wire/V18_VALUE_BOOL.request.gz",
+      "sha256": "7e235e2010dbfdae00a8f003d159615a8e1eb7c80893d5d7333d805ed1189a1b"
+    },
+    {
+      "byte_length": 11200,
+      "path": "wire/V18_VALUE_FLOAT.request.gz",
+      "sha256": "3dd21ac8bc66f9599b56e1da196ebe6ee1a36099706af74a0c295a54d332dd5f"
+    }
+  ],
+  "member_count": 56,
+  "no_archived_code_executed": true,
+  "original_directory": "lanes/source_diagnostic_independent_vectors_v1",
+  "original_manifest_sha256": "f9343b7dd56bae9f31166e79feb4674766d0fd79d7137a0afaaf12bb52d69ff1",
+  "readable_report_exact_original": "EXPECTED_RESULTS.md",
+  "schema": "economic_network.frozen_packet_archive/v1",
+  "uncompressed_file_bytes": 601141
+}

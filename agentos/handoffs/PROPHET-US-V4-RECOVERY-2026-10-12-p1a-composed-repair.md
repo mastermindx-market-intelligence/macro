@@ -84,22 +84,33 @@ verified:
   command: python3 -m pytest tests/test_us_board_gate.py -k shipped -q
   result: 5 passed, 87 intentional deselections, after final label-tail retained-VM rendering. Original
     configuration and actual native cache hashes unchanged.
+- claim: Current-main composition preserves every reviewed application source, test and capture byte.
+  command: Compare original owned publication paths between fb366eba9a9e7423d2df097ac27b9898486cf1e7 and
+    the 17afadc7ed8ab82ec3b49f8d88ffd3a193bee58c merge index/worktree.
+  result: Only the CI manifest, its upstream test_ci_pack.py and the combined workstream narrative changed
+    among owned paths. Premium conflict was only upstream built time; exact newer canonical native payload
+    retained. All 1096 unrelated build outputs archived and byte-verified before narrow restoration; no
+    reset or stash.
 unverified:
-- claim: Final label-tail independent review, qualified visual adjudication, hosted exact-head CI, source
+- claim: Qualified visual adjudication, current-composition planner proof, hosted exact-head CI, source
     release and authenticated four-market production acceptance.
-  what_would_verify: 'Consume the original label-tail review, adjudicate supplied source and actual pixels,
-    publish original #8444, conclude exact-head semantic CI and gates, then normal merge, actual publication/adoption
-    and required live journeys.'
+  what_would_verify: Adjudicate actual pixels at the published draft, consume the active planner execution
+    and exact-head semantic CI/gates, then normal merge, actual publication/adoption and required live
+    journeys.
 unresolved:
-- Source reviews of pre-fix composition remain consumed scoped evidence; later parent findings are preserved
-  and repaired. Coverage markup review is accepted for actual-template DOM behavior only. The final label-tail
-  review is active. No source review proves visual taste or production.
-- The current integration is not yet committed. Normal publication, review and release gates remain.
+- Pre-fix composition reviews remain consumed scoped evidence; later findings are preserved and repaired.
+  Coverage markup and final label-tail reviews are accepted for their exact source/DOM deltas. The latter
+  independently verified excerpts and narrow dependency files, with full build/test file hashes retained
+  as parent bindings. Parent exact-source test execution remains separate. No source review proves visual
+  taste or production.
+- Original integration is composed with pinned main 17afadc7ed8ab82ec3b49f8d88ffd3a193bee58c. Normal draft
+  publication, qualified visual review and exact-head release gates remain. Seven concrete CI dependencies
+  are retained alongside upstream additions; the new materialized planner check is active.
 - HK/China adoption depends on actual accepted shared P1a release; Canada native Plan remains unavailable
   until its real owner exists.
 next_actions:
-- Consume the same-id label-tail review and obtain qualified visual judgment over the concrete draft;
-  preserve the final scoped parent proofs.
+- Finish qualified visual judgment over the concrete draft and consume the existing current-composition
+  planner proof; retain scoped source acceptance and exact parent test evidence.
 - Finish original current-main integration and normal exact-head source release, then continue dependent
   owner-native integration and authenticated journeys.
 do_not_redo:

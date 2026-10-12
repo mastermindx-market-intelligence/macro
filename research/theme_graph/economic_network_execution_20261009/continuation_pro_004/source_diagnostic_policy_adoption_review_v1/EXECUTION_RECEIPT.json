@@ -1,0 +1,28 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 python -B lanes/source_diagnostic_policy_adoption_review_v1/DELTA_CHECK.py > lanes/source_diagnostic_policy_adoption_review_v1/DELTA_CHECK.json 2> lanes/source_diagnostic_policy_adoption_review_v1/DELTA_CHECK.stderr",
+  "created_at_utc": "2026-10-09T12:11:12.139003+00:00",
+  "native_PID": null,
+  "native_source_or_Git_effects": false,
+  "observed_exit_code": 0,
+  "ongoing_session_id": null,
+  "reported_wall_time_seconds": 2.8034e-05,
+  "schema": "research.gmi.wp02.adoption_delta_execution_receipt/v1",
+  "scope": "Named scratch artifact binding/recomputation and exact synthetic arithmetic only; not parser, source-proof verifier or application test.",
+  "script": {
+    "byte_length": 7967,
+    "path": "DELTA_CHECK.py",
+    "sha256": "9611ad78c96e374749855b707892df0225eb27c99c5c347488ebd2d00bde38e4"
+  },
+  "stderr": {
+    "byte_length": 0,
+    "path": "DELTA_CHECK.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "byte_length": 3733,
+    "path": "DELTA_CHECK.json",
+    "sha256": "39139d810d542192932c71d0e7499d8ce837436d8fbcfae929539a7457d4f728"
+  },
+  "tool": "exec_command",
+  "tool_chunk_id": "cfc70d"
+}
