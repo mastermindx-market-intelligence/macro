@@ -1538,3 +1538,11 @@ Single current frontier remains `EXECUTION_HANDOFF_2026-10-12.md`; its current c
 Same original #8677 worktree; accepted parent 6857e56c708cbd40e6287334447d3a4d05df6160. The source-fitness assessor falsely treated fabricated nanosecond-offset vendor bar clocks as exact-minute observations because datetime.fromisoformat truncates at microseconds. The original assessor now rejects nonzero fractional minute offsets and overprecision source text. Existing downstream nanosecond preflight, S2 research algorithms and Data OS ownership are unchanged.
 
 Fail-first observed, then 99/99 targeted and 573/573 all 17 registered research suites. Source/test and logs bound by session2/evidence/native_tiingo_minute_clock_tests.json. No original market source reread, capital pressure result, rights, identity, PIT or consumer/trading authority. All historic data-source, identity inspection, P4/P6, BOATS and independent-review effect holds remain. PR stays Draft/HOLD, no merge/deploy.
+
+## 2026-10-12 — consolidated Tiingo no-fill request qualification
+
+Original #8677 parent 8e1fa7888afde56c0d98c8acb71a4e1789414904. Current official Tiingo Equity Realtime documentation offers optional force-filled chart bars but does not attest the default when the parameter is absent. Original S2 source-fitness research contract accepted omitted forceFill, risking false observed-minute completeness. Now require explicit forceFill=false for equity-intraday-bars before source-minute coverage; BOATS/IEX research-only requests preserve their separate behavior.
+
+One new synthetic negative test failed first, then 101/101 focused and 575/575 original 17-suite research tests passed; the existing positive consolidated fixture now contains explicit false. Receipt session2/evidence/native_tiingo_forcefill_tests.json binds code/log hashes. Existing authentic four-name original source was already explicitly no-fill; no refetch or market source re-admission.
+
+All source/PIT/rights/volume/price-basis/reader/consumer gates remain NOT_ADMITTED; source-safety work does not grant institutional-flow claims. Original Executive reviewer effect unresolved and previous platform-denied operations fenced. New-head hosted Actions status read was explicitly blocked pre-dispatch; no retry and no hosted green claimed. PR remains Draft/HOLD, no merge/deploy.

@@ -223,9 +223,16 @@ def _request(source: str, uri: str) -> tuple[str,date,date]:
         raise ValueError("source_request_dates_invalid")
     if source!="eod-bars":
         fields=set(q.get("columns",[""])[-1].split(","))
+        # The consolidated beta API permits force-filled chart bars. If its
+        # request omitted this choice, the source cannot attest unfilled
+        # observation intervals; do not silently assume the vendor default.
+        unfilled_not_proven=(
+            q.get("forceFill")!=["false"]
+            if source=="equity-intraday-bars"
+            else ("forceFill" in q and q["forceFill"]!=["false"]))
         if (q.get("resampleFreq")!=["1min"] or
                 not {"open","high","low","close","volume"}.issubset(fields) or
-                "forceFill" in q and q["forceFill"]!=["false"]):
+                unfilled_not_proven):
             raise ValueError("requested_one_minute_unfilled_volume_invalid")
     return symbol,start,end
 

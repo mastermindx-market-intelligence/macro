@@ -221,7 +221,7 @@ def test_consolidated_beta_source_is_a_potential_candidate_but_not_admitted():
     x=row(at="2026-10-08T09:30:00-04:00",source="equity-intraday-bars",
           venue=None,scope="vendor_equity_reference",session="unqualified",unit="unqualified")
     ref=view(rows=(x,),source="equity-intraday-bars",
-        source_request_path="/tiingo/equity/intraday/AAPL/prices?startDate=2026-10-08&endDate=2026-10-09&resampleFreq=1min&columns=open,high,low,close,volume")
+        source_request_path="/tiingo/equity/intraday/AAPL/prices?startDate=2026-10-08&endDate=2026-10-09&resampleFreq=1min&columns=open,high,low,close,volume&forceFill=false")
     result=assess(ref)
     assert result.status=="CONSOLIDATED_BETA_CANDIDATE_NOT_ADMITTED"
     assert "CONSOLIDATED_VOLUME_UNIT_UNQUALIFIED" in result.refusals
@@ -807,3 +807,23 @@ def test_consolidated_reference_bar_with_one_nanosecond_offset_not_counted_as_rt
     mutated=replace(complete,rows=(first,*complete.rows[1:]))
     with pytest.raises(ValueError,match="invalid_vendor_minute_clock"):
         assess(mutated)
+
+
+def test_consolidated_minute_bar_without_explicit_forcefill_false_is_unqualified():
+    # The documented endpoint permits optional chart-filling. A missing
+    # request option does NOT prove the retained bars are unfilled observations.
+    candidate=_synthetic_rth()
+    omitted=replace(candidate,source_request_path=
+       candidate.source_request_path.replace("&forceFill=false",""))
+    with pytest.raises(ValueError,match="requested_one_minute_unfilled_volume"):
+        assess(omitted)
+    # The genuine four-name original collector DID specify forceFill=false.
+    assert not assess(candidate).source_admitted
+
+
+def test_research_only_other_venues_keep_their_distinct_request_contract():
+    # No assumption about the older BOATS and IEX optional defaults is made
+    # by the consolidated-only tightening. Neither venue grants S2 daytime use.
+    boats=assess()
+    assert boats.status=="BOATS_OVERNIGHT_SINGLE_ATS_RESEARCH_ONLY"
+    assert not boats.source_admitted
