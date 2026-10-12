@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T1357",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T1402",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -10086,5 +10086,43 @@
     },
     "next_ready_phase": "Consume actual B overall J1 adjudication or relevant original-owner review/platform/rights/reconciliation/producer event, or independently useful admitted new work. Root PR967 install and bounded live proof complete; no source/CI/release/browser rerun or cleanup owed.",
     "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261012T1402": {
+    "observed_at": "2026-10-12T14:02:16.411870+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "event": "Actual B owning overall adjudication received",
+    "owner_thread": "01a128b7-bd2b-7a91-891d-39d38f74ad55",
+    "owner_receipt": {
+      "path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/marketontology-consumer/j1-history-selection/live-parent-adjudication.json",
+      "bytes": 9606,
+      "sha256": "be6241285839af9a645058268197a83f6a7537a1a26a7bd45ed1c502d18bc973"
+    },
+    "bound_root_final": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/final-parent-qualification.json",
+      "bytes": 20855,
+      "sha256": "805f380ded76f3f132f3c1debecbb10346a10befdcf87d56423efd2733d2d19c"
+    },
+    "verdict": "ACCEPTED_PR967_J1_READONLY_LIVE_NAVIGATION",
+    "named_PR962_PR967_J1_defect_closed": true,
+    "scope": "Protected source, actual installation and scoped authenticated readonly live navigation; 24 opening/reload observations, six settled history phases, both natural fast sequences, exact return, 12 actual images, cleanup accepted by B. Owner checks consumed, not re-executed.",
+    "limits": "A detail visibly loading at B click request in both fast sequences. Actual DOM event dispatch versus A response/canonical settlement ordering was not instrumented. No live controlled race/error/cross-company injection; source-test proof remains separately scoped. Old e0 fast-failure evidence is preserved, not erased.",
+    "published_acceptance_owner_report": [
+      "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/967#issuecomment-6125789890",
+      "https://github.com/mastermindx-market-intelligence/macro/pull/6819#issuecomment-6125797587"
+    ],
+    "publication_query_performed": false,
+    "cleanup_owed": false,
+    "further_J1_work_owed": false,
+    "outgoing_reply_needed": false,
+    "independent_holds_unchanged": true,
+    "whole_Audit20_complete": false,
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T1357",
+    "receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/B-overall-adjudication-parent-consumption.json",
+      "bytes": 1999,
+      "sha256": "f9aec12a410421a4fc5b5004b0a11f996b8fad7820c05446c6ac35d763fba0de"
+    },
+    "next_ready_phase": "Only relevant original-owner review/platform/rights/reconciliation/producer terminal event or independently useful new admitted mission work. Named PR962/967 J1 repair closed; no deploy/browser/source/CI/reply owed."
   }
 }
