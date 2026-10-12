@@ -4515,6 +4515,7 @@ jobs:
           tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r3.py
           tests/test_fundamental_forensics_query_snapshots.py
+          tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
           tests/test_fundamental_forensics_admitted_filing_package.py
           tests/test_fundamental_forensics_attested_history_reader.py
@@ -21960,6 +21961,7 @@ jobs:
       - scripts/tiingo_corpus_audit.py
       - tests/test_tiingo_corpus_audit.py
       - tests/test_tiingo_additional_history.py
+      - tests/test_tiingo_capture_admission.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21979,7 +21981,8 @@ jobs:
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
-          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q
+          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
+          tests/test_tiingo_capture_admission.py -q
 
 
   dataos-web-workspace:
@@ -22531,6 +22534,7 @@ jobs:
       - "engine/fundamental_forensics/attested_query_snapshots.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
+      - "engine/fundamental_forensics/detectors.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
       - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/filing_attestation.py"
@@ -22542,6 +22546,7 @@ jobs:
       - "engine/fundamental_forensics/lineage_evidence.py"
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/normalize.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
