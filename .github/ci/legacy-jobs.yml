@@ -6610,6 +6610,9 @@ jobs:
       - "collectors/holdings.py"
       - "collectors/openfigi.py"
       - "collectors/polygon_options.py"
+      # FIF C0 pacer consolidation closure widening 2026-10-12 (contract-delta):
+      # companyfacts/spine import the shared SecRequestPacer from here now.
+      - "collectors/edgar_forensics.py"
       - "collectors/sec_document_spine.py"
       - "collectors/sec_insider.py"
       - "collectors/sector_holdings.py"
@@ -11229,6 +11232,9 @@ jobs:
       - collectors/ipo_prospectus.py
       - collectors/openfigi.py
       - collectors/polygon_options.py
+      # FIF C0 pacer consolidation closure widening 2026-10-12 (contract-delta):
+      # companyfacts/spine import the shared SecRequestPacer from here now.
+      - collectors/edgar_forensics.py
       - collectors/sec_document_spine.py
       - collectors/sec_insider.py
       - collectors/sector_holdings.py

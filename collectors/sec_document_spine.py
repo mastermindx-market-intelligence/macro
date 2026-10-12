@@ -21,8 +21,6 @@ from typing import Any, Callable, Mapping
 
 import requests
 
-from collectors.edgar_forensics import SecRequestPacer
-
 # Re-export the engine's exact pure contracts; HTTP and persistence stay here.
 from engine.fundamental_forensics.sec_document_spine import (
     ArchiveReceipt,
@@ -838,6 +836,11 @@ class SecFilingArchiveCollector:
         # One incumbent SEC request pacer per process (A20): inject a shared
         # ``pacer`` or get a private one bound to this collector's interval and
         # injected clocks.  ``_sleep``/``_monotonic`` stay for retry backoff.
+        # The import is constructor-scoped on purpose: this module must stay
+        # importable in CI jobs that install no pandas, and only constructing
+        # the paced collector needs the pacer's home module.
+        from collectors.edgar_forensics import SecRequestPacer
+
         self._pacer = (
             pacer
             if pacer is not None
