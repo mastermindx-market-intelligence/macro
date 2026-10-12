@@ -538,7 +538,7 @@
      No second vendor connection, and no claim of exchange real-time entitlement.
      All 1D surfaces use one >=95%-covered, source-timestamped HK cohort. */
   var _hkLiveStates = Object.create(null);
-  var HK_LIVE_URL = 'live/quotes.json', HK_LIVE_POLL_MS = 60000;
+  var HK_LIVE_URL = 'live/hk_heatmap.json', HK_LIVE_POLL_MS = 60000;
   var HK_LIVE_MAX_AGE_MS = 12 * 60000;
   function hkLiveDay(ts) { return new Date(ts + 28800000).toISOString().slice(0, 10); }
   function hkLiveMinute(ts) {
@@ -547,6 +547,7 @@
   }
   function hkLiveProject(snapshot, base, now) {
     if (!base || base.market !== 'hk' || base.map_type !== 'stocks' ||
+        !snapshot || snapshot.baseline_asof !== base.asof ||
         !Array.isArray(base.tiles) || !base.tiles.length ||
         !/^\d{4}-\d{2}-\d{2}$/.test(base.asof || '') ||
         !snapshot || snapshot.source !== 'snapshot' ||

@@ -50,7 +50,7 @@ function fixture(n = 158, quoteCount = n, quoteTs = LAST_PRINT) {
   }
   const base = {market:'hk', map_type:'stocks', asof:'2026-10-09',
     n_tiles:n, tiles, _url:'marketdata/hk_heatmap.json'};
-  return {base, feed:{source:'snapshot',ts:NOW-60000, quotes}};
+  return {base, feed:{source:'snapshot',baseline_asof:'2026-10-09',ts:NOW-60000, quotes}};
 }
 test('current HK delayed closing-auction cohort replaces 1D, not 1W or daily data', () => {
   const f=prepare(), {base,feed}=fixture();
@@ -112,7 +112,7 @@ test('later stale heartbeat cannot keep an accepted map live',()=>{
 test('both renderer owners share HK live state and never open a second vendor lane',()=>{
   const js=source();
   assert.equal((js.match(/startHKLiveRefresh\(data\);/g)||[]).length,2);
-  assert.match(js,/HK_LIVE_URL = 'live\/quotes.json'/);
+  assert.match(js,/HK_LIVE_URL = 'live\/hk_heatmap.json'/);
   assert.match(js,/chinaLiveFetch\(HK_LIVE_URL, generation\)/);
   assert.ok((js.match(/hkLiveDescriptor\(data\)/g)||[]).length>=3);
   assert.match(js,/data\.market !== 'china' && data\.market !== 'hk'/);
@@ -138,4 +138,10 @@ test('HK live expiry repaints the daily fallback even when the next request fail
   assert.equal(f.events.length,2,'expiry repaints despite transport failure');
   assert.equal(f.meta(base),null);
   assert.equal(f.value(base,base.tiles[0],'1D'),9);
+});
+
+test('HK cannot splice a valid quote cohort into a mismatched daily baseline',()=>{
+ const f=prepare(), {base,feed}=fixture();
+ feed.baseline_asof='2026-10-08';
+ assert.equal(f.project(feed,base,NOW),null);
 });

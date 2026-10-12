@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import re
 import sys
 from datetime import datetime, timezone
@@ -355,6 +356,69 @@ def display_universe(site_dir: Path) -> list[str]:
     return ordered
 
 
+def display_public_universe(site_dir: Path) -> list[str]:
+    """The original anonymous quote population, WITHOUT paid HK heatmap members."""
+    ordered, seen = [], set()
+    for raw in list(DISPLAY_SYMBOLS) + board_display_symbols(site_dir):
+        ticker = str(raw).strip().upper()
+        if ticker and _SYMBOL_RE.fullmatch(ticker) and ticker not in seen:
+            seen.add(ticker)
+            ordered.append(ticker)
+    return ordered
+
+
+def project_public_display_snapshot(snapshot: dict, site_dir: Path) -> dict:
+    """Do not widen /live/quotes.json when the single FAST fetch also serves HK."""
+    allow = display_public_universe(site_dir)
+    raw = snapshot.get("quotes") or {}
+    raw = raw if isinstance(raw, dict) else {}
+    out = dict(snapshot)
+    out["quotes"] = {ticker: raw[ticker] for ticker in allow if ticker in raw}
+    out["meta"] = dict(snapshot.get("meta") or {})
+    out["meta"]["requested"] = len(allow)
+    out["meta"]["resolved"] = len(out["quotes"])
+    return out
+
+
+def project_hk_heatmap_snapshot(snapshot: dict, site_dir: Path) -> dict | None:
+    """Member-gated HK quote projection from the SAME one-minute display fetch.
+
+    Original daily map is the sole ticker/session/sector authority. Never publish
+    a private provenance field, credential, nonmember or synthetic timestamp.
+    """
+    members = heatmap_hk_symbols(site_dir)
+    if not members:
+        return None
+    try:
+        baseline = json.loads((site_dir / "marketdata" / "hk_heatmap.json").read_text(encoding="utf-8"))
+        asof = baseline.get("asof")
+        if not isinstance(asof, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", asof):
+            return None
+        datetime.fromisoformat(asof)
+    except (ValueError, TypeError, OSError):
+        return None
+    if not isinstance(snapshot, dict) or snapshot.get("source") != "snapshot":
+        return None
+    ts, raw = snapshot.get("ts"), snapshot.get("quotes")
+    if type(ts) not in (int, float) or not math.isfinite(ts) or not isinstance(raw, dict):
+        return None
+    out = {}
+    allowed_fields = ("source", "basis", "price", "prevClose", "changePct", "ts")
+    for ticker in members:
+        q = raw.get(ticker)
+        if not isinstance(q, dict) or q.get("source") != "yahoo" or q.get("basis") != "regular":
+            continue
+        vals = (q.get("price"), q.get("prevClose"), q.get("ts"))
+        if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in vals):
+            continue
+        change = q.get("changePct")
+        if type(change) not in (int, float) or not math.isfinite(change) or q["ts"] > ts + 60000:
+            continue
+        out[ticker] = {k: q[k] for k in allowed_fields}
+    return {"source": "snapshot", "baseline_asof": asof, "ts": ts,
+            "quotes": out, "meta": {"requested": len(members), "resolved": len(out)}}
+
+
 def basket_member_symbols() -> list[str]:
     """Active members of every tracked basket, straight from the membership
     files (US + HK). The basket-pulse builders (FTR W2 + the HK extension)
@@ -609,6 +673,8 @@ def main() -> None:
     ap.add_argument("--symbols", default=None,
                     help="comma-separated EXACT universe (bypass CORE+scrape+conviction); "
                          "e.g. 'BTC-USD' for the hourly crypto-only snapshot")
+    ap.add_argument("--hk-heatmap-out", default=None,
+                    help="protected HK quotes from the same --display fetch")
     ap.add_argument("--display", action="store_true",
                     help="EXACT universe = DISPLAY_SYMBOLS (the site's glance-tier live "
                          "tiles) + the board leg scraped from DISPLAY_BOARD_PAGES — the "
@@ -625,6 +691,8 @@ def main() -> None:
         ),
     )
     args = ap.parse_args()
+    if args.hk_heatmap_out and not args.display:
+        ap.error("--hk-heatmap-out requires --display")
 
     site_dir = (Path(args.site) if args.site
                 else config.ROOT / config.load()["storage"]["site_dir"])
@@ -647,10 +715,20 @@ def main() -> None:
         include_private_provenance=args.private_provenance,
     )
 
+    hk_sidecar = (project_hk_heatmap_snapshot(snap, site_dir)
+                  if args.display and args.hk_heatmap_out else None)
+    if args.display:
+        snap = project_public_display_snapshot(snap, site_dir)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     # allow_nan=False: a NaN would make the JSON unparseable in the browser.
     out.write_text(json.dumps(snap, separators=(",", ":"), allow_nan=False) + "\n")
+    if hk_sidecar is not None:
+        restricted = Path(args.hk_heatmap_out)
+        restricted.parent.mkdir(parents=True, exist_ok=True)
+        restricted.write_text(json.dumps(hk_sidecar, separators=(",", ":"), allow_nan=False) + "\n")
+        log.info("member-gated HK map quotes: %d/%d", hk_sidecar["meta"]["resolved"],
+                 hk_sidecar["meta"]["requested"])
     log.info("wrote %s — %d/%d symbols resolved (polygon=%s)", out,
              snap["meta"]["resolved"], snap["meta"]["requested"],
              snap["meta"]["polygon_status"])
