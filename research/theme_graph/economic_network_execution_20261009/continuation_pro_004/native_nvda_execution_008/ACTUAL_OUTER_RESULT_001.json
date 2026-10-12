@@ -1,0 +1,103 @@
+{
+  "action_script_sha256": "264535ec562043a18e4bc75c92fbbe9b5cba12428422b2a9677e89c0f769f699",
+  "bootstrap_method": "Existing scripts.close_pass_host_runner.load_env_file only; no shell source, build_env, main, run, lane refresh or publisher.",
+  "child_argv": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-I",
+    "-B",
+    "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-capture-runner-001.py"
+  ],
+  "child_exit_code": 0,
+  "child_pid": 28310,
+  "child_public_result": {
+    "byte_length": 26399,
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-split-pro-004-001/PUBLIC_RESULT.json",
+    "sha256": "3fe5f660d92703e370c716135bd078d57fd281b8f30da611c65b5a6d8346414d"
+  },
+  "child_started": true,
+  "child_stderr_identity": {
+    "byte_length": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "child_stdout_identity": {
+    "byte_length": 658,
+    "sha256": "9546f3704775316788eacaa56407830288dbbcb32da92d21051d6deecb9b33bf"
+  },
+  "credential_file_copied_or_modified": false,
+  "credential_values_published_or_written": false,
+  "finished_utc_ns": "1791562620933222000",
+  "forwarded_owner_env_names": [
+    "MASSIVE_API_KEY"
+  ],
+  "git_mutation": false,
+  "head": "74c542beb6e137958e3babe91a78b50aef651768",
+  "helper_bytes_unchanged_after": true,
+  "helper_sha256": "20335fb0f694ca904e130a2b9016f379161c10946adb2e15dbfc5bdff3addd69",
+  "ignored_paths_absent_after": true,
+  "native_head_after": "74c542beb6e137958e3babe91a78b50aef651768",
+  "operation_provenance": "Separate NVDA known-event convenience probe; no prior NVDA attempt is asserted",
+  "outer_exit_code": 0,
+  "owner_env_metadata_after": {
+    "device": 16777234,
+    "inode": 1035475373,
+    "mode": 384,
+    "mtime_ns": "1786287063173714000",
+    "regular": true,
+    "size": 1225,
+    "symlink": false,
+    "uid": 501
+  },
+  "owner_env_metadata_before": {
+    "device": 16777234,
+    "inode": 1035475373,
+    "mode": 384,
+    "mtime_ns": "1786287063173714000",
+    "regular": true,
+    "size": 1225,
+    "symlink": false,
+    "uid": 501
+  },
+  "owner_env_metadata_unchanged": true,
+  "owner_env_path": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.env",
+  "owner_environment_parser_called_once": true,
+  "owner_file_search_performed": false,
+  "owner_primary": "/Users/chriswong/Documents/Cluade/Macro Dashboard",
+  "provider_accounts_substituted": false,
+  "python_pid": 28236,
+  "result": {
+    "F": {
+      "precision": "exact decimal strings for native integer nanoseconds",
+      "producer_completed_utc_ns": "1791562616998504000",
+      "producer_started_utc_ns": "1791562616274811000",
+      "public_by_K": "UNPROVED"
+    },
+    "producer_call_count": 1,
+    "provider_request_attempts_recorded": 1,
+    "retained_row_count": 1,
+    "row_summary": {
+      "all_retained_rows_requested_vendor_token": true,
+      "candidate_comparison_status": "EVALUATED_ON_RETAINED_ROWS",
+      "candidate_issuer_profile_match": true,
+      "comparison_definition_sha256": "7cd0ee632314baf4ac57489dbd58e5fe26675323a6840ef5bb6740885111a25b",
+      "comparison_source_case_sha256": "c0fdd60f75ae4a741d77f452c6859938b75825c9e6fba9384942427f511ae5b9",
+      "nonempty_actual_rows": true,
+      "profile_id": "issuer_terms_and_june_window/v1",
+      "public_review_limit": "If evaluated, the private comparison is executed by the principal under the bound script; actual candidate_comparison_status records whether evaluation occurred. Row bytes are not independently read by the public reviewer.",
+      "retained_row_count": 1,
+      "vendor_execution_date_semantics": "UNRECONCILED"
+    },
+    "same_artifact_repeat_calls": 1,
+    "source_failure_kind": null,
+    "source_status": "complete",
+    "source_store_exists": true,
+    "stage": "SAME_ARTIFACT_REPEAT",
+    "status": "CAPTURE_STORE_READ_REPEAT_VERIFIED"
+  },
+  "schema": "economic_network.native_nvda_owner_bootstrap/v1",
+  "shell_env_executed": false,
+  "source_registry_or_production_activation": false,
+  "stage": "CHILD_RESULT_RECONCILIATION",
+  "started_utc_ns": "1791562609494749000",
+  "status": "OWNER_BOOTSTRAP_AND_ACTUAL_CHILD_RESULT_RECONCILED",
+  "workspace_clean_after": true
+}

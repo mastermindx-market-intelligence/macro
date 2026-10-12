@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 import signal
 import sys
 import threading
@@ -102,6 +103,21 @@ def _frame_size(raw: object) -> int:
     return 0
 
 
+def _error_code(exc: BaseException) -> str:
+    # Secret-free by construction: only a pre-sanitized ``code`` attribute or
+    # the exception class name is ever read. This must NEVER use str(exc),
+    # repr(exc), exc.args, or any message text — exception messages can carry
+    # URLs, headers, and credential material.
+    code = getattr(exc, "code", None)
+    if (
+        isinstance(code, str)
+        and re.fullmatch(r"[a-z0-9_]{1,64}", code) is not None
+    ):
+        return code
+    fallback = re.sub(r"[^a-z0-9_]", "_", type(exc).__name__.lower())
+    return ("exception_" + fallback)[:64]
+
+
 class NewsIngestRunner:
     """One serialized upstream writer. Browser clients never instantiate this."""
 
@@ -161,6 +177,8 @@ class NewsIngestRunner:
         self._last_successful_catchup: datetime | None = None
         self._last_stream_event_at: datetime | None = None
         self._gap_unresolved = False
+        self._last_catchup_error: str | None = None
+        self._last_stream_error: str | None = None
 
     def _health_payload(self, state: str) -> dict:
         observed = self.clock()
@@ -184,6 +202,8 @@ class NewsIngestRunner:
             "connect_attempts": self.stats.connect_attempts,
             "disconnects": self.stats.disconnects,
             "catchups_failed": self.stats.catchups_failed,
+            "last_catchup_error": self._last_catchup_error,
+            "last_stream_error": self._last_stream_error,
         }
 
     def _publish_health(self, state: str) -> None:
@@ -213,8 +233,9 @@ class NewsIngestRunner:
                 universe=self.universe_provider(),
                 observed_at=observed_at,
             )
-        except Exception:  # source/service loop records class, never raw secret text
+        except Exception as exc:  # source/service loop records class, never raw secret text
             self.stats.catchups_failed += 1
+            self._last_catchup_error = _error_code(exc)
             state = "degraded" if self._last_successful_catchup else "catching_up"
             self._publish_health(state)
             return
@@ -225,6 +246,7 @@ class NewsIngestRunner:
         elif result.committed:
             self.stats.catchups_ok += 1
             self._last_successful_catchup = observed_at
+            self._last_catchup_error = None
             self._gap_unresolved = False
             self._publish_health("live")
 
@@ -313,6 +335,7 @@ class NewsIngestRunner:
                         if self.stream_handshake is not None:
                             self.stream_handshake(ws)
                         backoff = self.reconnect_base_seconds
+                        self._last_stream_error = None
                         next_catchup = (
                             self.monotonic() + self.catchup_interval_seconds
                         )
@@ -334,8 +357,9 @@ class NewsIngestRunner:
                                 self.stop.set()
                                 break
                             self._handle_frame(raw)
-                except Exception:
+                except Exception as exc:
                     self.stats.disconnects += 1
+                    self._last_stream_error = _error_code(exc)
                     state = (
                         "degraded"
                         if self._last_successful_catchup is not None

@@ -957,3 +957,67 @@ def test_episode_generation_text_is_canonical_in_validation_reader_and_supersess
         }
         with pytest.raises(EpisodeContractError, match="supersession"):
             apply_commands(opened.events, [command], recorded_at=RECORDED_AT, definition_era=ERA)
+
+
+def test_replay_relations_visit_each_event_linearly_without_changing_projection(monkeypatch):
+    """Adding episodes must not rescan every immutable relation for every row."""
+    from engine import us_candidate_episode as core
+
+    observations = [_observation(source_event_id=f"turn-watch:linear:{index}",
+                                security_id=f"SEC:US-XNAS-X{index:03d}",
+                                company_id=f"ISS:US-XNAS-X{index:03d}",
+                                ticker_at_observation=f"X{index:03d}") for index in range(48)]
+    result = reconcile_observations([], observations, recorded_at=RECORDED_AT, definition_era=ERA)
+    baseline = project_events(result.events)
+    reads = 0
+
+    class CountedEnvelope(dict):
+        def __getitem__(self, key):
+            nonlocal reads
+            if key == "episode_id":
+                reads += 1
+            return super().__getitem__(key)
+
+    original = core.validate_events
+
+    def validated_with_counting(events):
+        return [CountedEnvelope(row) for row in original(events)]
+
+    monkeypatch.setattr(core, "validate_events", validated_with_counting)
+    assert core.project_events(result.events) == baseline
+    assert reads <= 8 * len(result.events)
+
+
+def test_replay_grouping_preserves_interleaved_clock_ties_and_late_retractions():
+    """Post-replay grouping preserves tie order and removes retracted relations/rows."""
+    opened = reconcile_observations([], [
+        _observation(source_event_id=f"turn-watch:group:{index}",
+                     security_id=f"SEC:US-XNAS-X{index}", company_id=f"ISS:US-XNAS-X{index}",
+                     ticker_at_observation=f"X{index}") for index in range(2)
+    ], recorded_at=RECORDED_AT, definition_era=ERA)
+    a, b = [row["episode_id"] for row in opened.episodes]
+    early_tie = _event("OBSERVED", a, source_event_id="a-observed", payload={},
+                       known_at="2026-08-24T20:00:00.1Z")
+    late_tie = _event("OBSERVED", a, source_event_id="c-observed", payload={},
+                      known_at="2026-08-24T20:00:00.100Z")
+    expert_a = _event("EXPERT_EVENT_ATTACHED", a, source_event_id="d-expert",
+                      payload={"expert_event_id": "radar:a"})
+    expert_b = _event("EXPERT_EVENT_ATTACHED", b, source_event_id="b-expert",
+                      payload={"expert_event_id": "radar:b"})
+    events = [*opened.events, early_tie, expert_b, late_tie, expert_a]
+    before = project_events(list(reversed(events)))
+    row_a = next(row for row in before if row["episode_id"] == a)
+    assert row_a["observation_count"] == 2
+    assert row_a["last_observed_at"] == early_tie["known_at"]
+    assert row_a["expert_events"] == ["radar:a"]
+    open_b = next(event for event in opened.events if event["episode_id"] == b)
+    for index, target in enumerate((early_tie, expert_a, open_b)):
+        events.append(_event("RETRACTED", target["episode_id"],
+                             source_event_id=f"retract:{index}", correction_of=target["event_id"],
+                             known_at="2026-08-24T20:01:00Z", payload={"reason": "source withdrew"}))
+    after = project_events(list(reversed(events)))
+    assert len(after) == 1 and after[0]["episode_id"] == a
+    assert after[0]["observation_count"] == 1
+    assert after[0]["last_observed_at"] == late_tie["known_at"]
+    assert after[0]["source_event_ids"] == ["c-observed"]
+    assert after[0]["expert_events"] == []

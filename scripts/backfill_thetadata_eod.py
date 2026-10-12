@@ -94,8 +94,10 @@ import pandas as pd
 # Ensure repo root on path when run as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine.thetadata_store import (drained_store_candidates,  # noqa: E402
-                                    resolve_thetadata_store)
+from engine.thetadata_store import (_unmounted_volume,  # noqa: E402
+                                    drained_store_candidates,
+                                    resolve_thetadata_store,
+                                    unmounted_store_candidates)
 
 log = logging.getLogger("backfill_thetadata_eod")
 
@@ -575,6 +577,23 @@ def main() -> int:
                  "refusing to proceed while canonical resolution is uncertain "
                  "(no mutation)", type(e).__name__, e)
         return 1
+    if resolved is None:
+        # Unmounted volume is not a fresh install. Check before _store_dir(),
+        # which mkdirs — minting that directory would be the second store.
+        unmounted = unmounted_store_candidates()
+        if unmounted:
+            vols: list[str] = []
+            for candidate in unmounted:
+                try:
+                    vol = _unmounted_volume(candidate)
+                except OSError:
+                    vol = None
+                vols.append(str(vol if vol is not None else candidate))
+            log.error(
+                "backfill: the store's volume is unmounted and no second "
+                "store may be minted (unmounted volume path(s): %s).",
+                ", ".join(vols))
+            return 1
     own_store = _store_dir()
     if resolved is None:
         # AD-1T2b: `None` stopped meaning "no store anywhere". A DRAINED canonical
