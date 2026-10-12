@@ -23159,6 +23159,9 @@ jobs:
       # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
       - "templates/_curve_panel.html.j2"
       - "tests/test_macro_rates_curves_route.py"
+      # Preservation renders use the original paired input generation rather
+      # than the independently refreshed nightly macrodata publication.
+      - "tests/fixtures/macro_suite_t11/**"
       # T11 reads these fourteen committed pages (thirteen siblings + the hub).
       # Listed literally: they are computed from SUITE_PAGES at runtime and
       # would otherwise be invisible to the trigger-closure checker. T10 no

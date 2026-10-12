@@ -199,3 +199,58 @@ Terminal #955 still has head `de8aca83cd6a3072eba861ce494d9e644baca75f` and its
 original run **38214248199** requires maintainer approval. This exact current
 binding supersedes the historical run links above. No new dispatch, approval,
 runtime release or public BOATS publication is implied by this save.
+
+
+## Paired publication fixture repair and completed archive delivery
+
+The original repaired PR #8986 run **38236030243** at
+`55808ccf2925ba39e9a4b53b3f7e1d7fec1eb26d` concluded FAILURE. The protected
+semantic gate found 505 passed and three unknown proofs. Both failing macro
+preservation tests also failed on the actual base, but their signatures differ;
+no inherited-failure waiver is accepted. A full fourteen-target diagnostic found
+both publication-context and real national-debt freshness/coverage drift, so
+provenance restamping and production-page rebaking were rejected.
+
+The repair changes only the preservation tests' data root to fifteen original
+manifest/snapshot JSON blobs from published Git commit
+`a58cf3cb6de26b702069515292beeba8309e32ab`. All 1347546 source bytes remain
+unchanged. All fourteen original contract/content-hash/manifest-size validations
+pass and their generation hashes match the actual committed pages. Complete
+region comparisons remain unconditional, including the hub's fourteen inputs,
+per-page and altered build clocks, body mutations and a new rendered-provenance
+mutation. The existing CI job explicitly owns the fixture folder. No renderer,
+page, producer, failure-signature or CI-acceptance rule changes. Independent
+architecture review accepts the actual paired-input repair; 175 affected tests
+pass in 30.24 seconds. Fresh hosted proof for the new exact head is still required.
+
+The original 5000-symbol EOD scope is settled: 4988 successful captures are
+qualified (4980 nonempty, eight empty; 11045978 bars), with twelve original vendor
+failures held. Its fixed remaining operation completed 3541 successes with no
+failures. A disjoint next 5000-symbol operation started at 10:27:56 UTC after real
+source, quota and reserve checks, preserving all sixteen known held symbols and
+existing requests. It remains running, without retries of failed vendor effects.
+Its accepted prefix03 brings the archive to **14641 nonempty histories /
+31135440 bars**, with 26 empty and 33022 uncaptured catalogue windows. These are
+bounded research facts, not full-vendor history or point-in-time admission.
+
+The actually selected existing Data & Lab release read the new CHFN history
+through its unchanged launcher and produced version-pinned source/query receipts.
+Its 4050 adjusted-price bars pass the real retrospective Lab input profile. The
+new registry release and one actual Tiingo-input Lab canary remain prepared and
+unexecuted behind PR #8986's fresh hosted/merge gate. No installation replay or
+new runtime selection is claimed.
+
+Terminal #955 is now at incumbent head
+`0e63c97ddb5d60a19c4c6ade1487f1a662b73199`, after a base refresh whose only
+changes from `de8aca83` are the peer ticker-news hook and its race tests. Original
+pull-request run **38237168665** requires maintainer approval; original dispatched
+run **38237161644** was running when observed. This exact binding supersedes all
+earlier Terminal run links, without another approval attempt or replacement
+dispatch. Deployment and public BOATS consumer acceptance remain unexecuted.
+
+Official BOATS venue scheduling places the next published opening at
+**2026-10-13 00:00 UTC**; the current venue session is closed. There is no scheduler
+or subscriber launch receipt for that future opening. Preserve authentic venue
+semantics and the original human CI gate, frozen provider/permission effects,
+incumbent writers, current consumer ceilings and original retained evidence while
+continuing independent capture and qualification.
