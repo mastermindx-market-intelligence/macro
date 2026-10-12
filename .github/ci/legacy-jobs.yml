@@ -4490,6 +4490,7 @@ jobs:
           tests/test_rlt_sector_stance_enrich.py
           tests/test_stock_personality_w4_surfaces.py
           tests/test_fundamental_forensics_page.py
+          tests/test_fundamental_forensics_state_peer_cohort.py
           tests/test_fundamental_forensics_private_state.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_coverage_contract.py
@@ -6659,6 +6660,7 @@ jobs:
       - "contracts/capital_structure_source_manifest.schema.json"
       - "scripts/compile_capital_structure_events.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/financial_intelligence_packet.schema.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
@@ -6702,6 +6704,7 @@ jobs:
       - "collectors/edgar_eps.py"
       - "collectors/edgar_facts.py"
       - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_forensics.py"
       - "collectors/edgar_headcount.py"
       - "collectors/edgar_rpo.py"
       - "collectors/edgar_share_quality.py"
@@ -6711,10 +6714,13 @@ jobs:
       - "collectors/fda_shortages.py"
       - "collectors/finra.py"
       - "collectors/fred.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
       - "collectors/holdings.py"
       - "collectors/openfigi.py"
       - "collectors/polygon_options.py"
       - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
       - "collectors/sec_insider.py"
       - "collectors/sector_holdings.py"
       - "collectors/sponsors.py"
@@ -11320,6 +11326,7 @@ jobs:
       - collectors/edgar_eps.py
       - collectors/edgar_facts.py
       - collectors/edgar_flow_quality.py
+      - collectors/edgar_forensics.py
       - collectors/edgar_headcount.py
       - collectors/edgar_rpo.py
       - collectors/edgar_share_quality.py
@@ -11329,12 +11336,15 @@ jobs:
       - collectors/fda_shortages.py
       - collectors/finra.py
       - collectors/fred.py
+      - collectors/fundamental_forensics_acquisition.py
+      - collectors/fundamental_forensics_companyfacts.py
       - collectors/holdings.py
       - collectors/ipo_calendar.py
       - collectors/ipo_prospectus.py
       - collectors/openfigi.py
       - collectors/polygon_options.py
       - collectors/sec_document_spine.py
+      - collectors/sec_filing_parser.py
       - collectors/sec_insider.py
       - collectors/sector_holdings.py
       - collectors/sponsors.py
@@ -11344,6 +11354,7 @@ jobs:
       - config/delisted_symbols.yml
       - config/earnings_story_promotion.yml
       - config/flow_score.yml
+      - config/fundamental_forensics/coverage/five_issuer_v1.json
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/metabolism_budget.yml
       - config/sector_legs.json
@@ -11356,6 +11367,7 @@ jobs:
       - contracts/evidence_foundation/recipe.v1.schema.json
       - contracts/evidence_foundation/reference.v1.schema.json
       - contracts/evidence_foundation/vocabulary.v1.json
+      - contracts/financial_intelligence_packet.schema.json
       - contracts/market_os/macro_workspace_snapshot.v1.schema.json
       - contracts/market_os/security_state.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
@@ -11598,11 +11610,27 @@ jobs:
       - engine/forward_dist.py
       - engine/froth_fragility.py
       - engine/fundamental_forensics/context_projection.py
+      - engine/fundamental_forensics/detectors.py
       - engine/fundamental_forensics/disclosure_diff.py
       - engine/fundamental_forensics/disclosure_projection.py
+      - engine/fundamental_forensics/filing_attestation.py
+      - engine/fundamental_forensics/filing_package.py
+      - engine/fundamental_forensics/financial_intelligence_packet.py
+      - engine/fundamental_forensics/ixbrl_extraction.py
+      - engine/fundamental_forensics/lineage_evidence.py
+      - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
+      - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/peer_cohort.py
+      - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
+      - engine/fundamental_forensics/production_datasets.py
+      - engine/fundamental_forensics/query.py
+      - engine/fundamental_forensics/query_service.py
+      - engine/fundamental_forensics/raw_ledger.py
       - engine/fundamental_forensics/sec_document_spine.py
+      - engine/fundamental_forensics/source_sync.py
+      - engine/fundamental_forensics/statement_graph.py
       - engine/gdelt_client.py
       - engine/gex_confirm.py
       - engine/gex_engine.py
@@ -23652,6 +23680,7 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       # Contracts and research inputs the closure loads at import time.
       - "contracts/evidence_foundation/**"
+      - "contracts/financial_intelligence_packet.schema.json"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "contracts/market_os/security_state.v1.schema.json"
       - "research/DO_NOT_REBUILD.md"
