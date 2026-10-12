@@ -365,7 +365,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no source component changed value (no-change republication).",
-    "predecessor_generation_id": "liquidity_regime-US-6429c607973900b5"
+    "predecessor_generation_id": "liquidity_regime-US-2388774c97c37afa"
   },
   "drivers": {
     "balance_sheet": [
@@ -472,11 +472,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-11T03:40:41Z",
+    "built_at": "2026-10-12T07:54:54Z",
     "calculation_as_of": "2026-10-09",
-    "code_version": "49319de9aafa51427b9c50cbb653d73d35d5288b",
-    "content_sha256": "2388774c97c37afa0580b11031fae6abc28ce5e5bc0ef6f8f6e4d8ac5651e1e4",
-    "generation_id": "liquidity_regime-US-2388774c97c37afa",
+    "code_version": "ec95e0f6877b1210e0fda34ff2477854519e8032",
+    "content_sha256": "0ede8a0cd444b8cb095b285ae473bc865366c2eb468bd8c8855eb62ebdccc093",
+    "generation_id": "liquidity_regime-US-0ede8a0cd444b8cb",
     "producer": "engine.market_os.macro_workspaces.liquidity_regime",
     "rendered_at": null
   },

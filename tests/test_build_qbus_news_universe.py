@@ -231,3 +231,116 @@ def test_direct_script_invocation_bootstraps_repo_imports(tmp_path):
     assert payload["mode"] == "check_only"
     assert payload["qualified"] is True
     assert not out.exists()
+
+
+def _diagnose_argv(paths, out, *extra):
+    return [
+        "--diagnose",
+        "--current", str(paths["current"]),
+        "--pit", str(paths["pit"]),
+        "--aliases", str(paths["aliases"]),
+        "--security-master", str(paths["security"]),
+        "--output", str(out),
+        "--min-count", "1",
+        "--observed-at", NOW.isoformat(),
+        *extra,
+    ]
+
+
+def test_cli_diagnose_prints_resolution_and_writes_nothing(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    out = tmp_path / "qbus" / "news_universe.json"
+    before = {key: path.read_bytes() for key, path in paths.items()}
+
+    rc = cli.main(_diagnose_argv(paths, out))
+    printed = capsys.readouterr().out
+    payload = json.loads(printed)
+
+    assert rc == 0
+    assert printed.strip() == json.dumps(payload, sort_keys=True)
+    assert payload["schema"] == "qbus.news_universe_diagnosis.v1"
+    assert payload["current_count"] == 2
+    assert payload["resolved_count"] == 2
+    assert payload["unresolved"] == []
+    assert payload["table_errors"] == []
+    assert "securities" not in payload
+    assert not out.exists()
+    assert {key: path.read_bytes() for key, path in paths.items()} == before
+
+
+def test_cli_diagnose_lists_unresolved_tickers_and_still_exits_0(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    frame = pd.read_parquet(paths["aliases"])
+    frame = frame[
+        ~((frame["vendor"] == "membership") & (frame["vendor_symbol"] == "MMC"))
+    ]
+    frame.to_parquet(paths["aliases"], index=False)
+    out = tmp_path / "qbus" / "news_universe.json"
+
+    rc = cli.main(_diagnose_argv(paths, out))
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 0
+    assert payload["unresolved"] == [
+        {"reason": "membership_alias_unresolved", "ticker": "MMC"}
+    ]
+    assert payload["resolved_count"] == 1
+    assert payload["reason_counts"] == {"membership_alias_unresolved": 1}
+    assert not out.exists()
+
+
+def test_cli_diagnose_read_failure_exits_2_without_writing(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    paths["aliases"].unlink()
+    out = tmp_path / "qbus" / "news_universe.json"
+
+    rc = cli.main(_diagnose_argv(paths, out))
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload == {
+        "error": "owner_artifact_unreadable",
+        "ok": False,
+        "schema": "qbus.news_universe_build.v1",
+    }
+    assert not out.exists()
+
+
+def test_cli_diagnose_invalid_observed_at_exits_2(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    out = tmp_path / "out.json"
+    argv = _diagnose_argv(paths, out)
+    argv[argv.index("--observed-at") + 1] = "not-a-date"
+
+    rc = cli.main(argv)
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload["error"] == "observed_at_invalid"
+    assert not out.exists()
+
+
+def test_cli_diagnose_and_write_are_mutually_exclusive():
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["--diagnose", "--write"])
+    assert exc.value.code == 2
+
+
+def test_cli_diagnose_does_not_apply_the_fresh_hours_guard(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    out = tmp_path / "out.json"
+
+    rc = cli.main(_diagnose_argv(paths, out, "--fresh-hours", "0"))
+
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["resolved_count"] == 2
+    assert not out.exists()
+
+
+def test_cli_fresh_hours_guard_still_rejects_non_positive_without_diagnose(capsys):
+    rc = cli.main(["--fresh-hours", "0", "--observed-at", NOW.isoformat()])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload["error"] == "fresh_hours_invalid"

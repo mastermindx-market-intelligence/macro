@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-12T06:23:33.864273+00:00",
+  "generated_utc": "2026-10-12T07:45:47.813565+00:00",
   "as_of": "2026-10-12",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -29532,14 +29532,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "MSFT",
-        "mentions": 25,
-        "sentiment": 0.015
-      },
-      {
         "ticker": "QQQ",
         "mentions": 25,
         "sentiment": 0.074
+      },
+      {
+        "ticker": "MSFT",
+        "mentions": 25,
+        "sentiment": 0.015
       },
       {
         "ticker": "OKLO",

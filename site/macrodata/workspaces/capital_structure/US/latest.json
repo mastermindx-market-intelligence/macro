@@ -160,18 +160,18 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "capital_structure-US-e7cf1d7febc97051"
+    "predecessor_generation_id": "capital_structure-US-0f1fea9d4cb8394d"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-10-11T03:40:41Z",
+    "built_at": "2026-10-12T07:54:54Z",
     "calculation_as_of": "2026-09-26T16:09:20.593676Z",
-    "code_version": "49319de9aafa51427b9c50cbb653d73d35d5288b",
-    "content_sha256": "0f1fea9d4cb8394d7a45970b138ef6d466ec0cf6f37c59e8d19a84c5ad176a68",
-    "generation_id": "capital_structure-US-0f1fea9d4cb8394d",
+    "code_version": "ec95e0f6877b1210e0fda34ff2477854519e8032",
+    "content_sha256": "fe9abc7f368a8da19caf0edef184460301300536590748d065a131ffc5956ac5",
+    "generation_id": "capital_structure-US-fe9abc7f368a8da1",
     "producer": "engine.market_os.macro_workspaces.capital_structure",
     "rendered_at": null
   },

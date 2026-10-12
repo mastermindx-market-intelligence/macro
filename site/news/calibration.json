@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-10-10",
-  "n_events_logged": 1335,
+  "asof": "2026-10-12",
+  "n_events_logged": 1344,
   "n_events_graded": 772,
   "classes": [
     {
@@ -86,7 +86,7 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 546,
+      "n": 547,
       "n_graded": 303,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 253,
+      "n": 260,
       "n_graded": 213,
       "hit_5d": 0.5164319248826291,
       "hit_21d": 0.4367816091954023,
@@ -164,7 +164,7 @@
     {
       "event_type": "management_change",
       "direction": "mixed",
-      "n": 28,
+      "n": 29,
       "n_graded": 19,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1764,
+    "n_sampled": 1781,
     "n_graded": 0,
     "classes": []
   }
