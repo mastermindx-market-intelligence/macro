@@ -686,3 +686,47 @@ def test_duplicate_source_id_with_different_attested_evidence_is_quarantined():
     assert all(s["source_id"] != one["source_id"] for s in p["sources"])
     assert all(row["ticker"] != "TST" for row in p["affected_tickers"])
     assert "Synthetic contract" not in str(p)
+
+
+def test_conflicting_duplicate_source_observed_clock_quarantined():
+    source = {"source_id": "second_doc_clock", "title": "Documented contract",
+              "url": "https://example.com/filing",
+              "published_at_utc": "2026-08-04T13:58:00Z",
+              "first_observed_at_utc": "2026-08-04T14:00:00Z",
+              "evidence_ids": ["rel_555"]}
+    mismatch = {**source, "first_observed_at_utc": "2026-08-04T15:00:00Z"}
+    p = build(source_refs=[source, mismatch])
+    assert p["public_disposition"] == "PUBLIC_READY"
+    assert all(s["source_id"] != source["source_id"] for s in p["sources"])
+    assert "Documented contract" not in str(p)
+
+
+def test_unhashable_scenarios_and_relationship_types_are_ignored_safely():
+    bad_scenarios = [
+        {"case": [], "trigger": "guidance_raised",
+         "invalidator": "source_withdrawn", "evidence_ids": ["fake"]},
+        {"case": "bull", "trigger": {"bad": True},
+         "invalidator": "source_withdrawn", "evidence_ids": ["fake"]},
+        {"case": "base", "trigger": "guidance_raised",
+         "invalidator": ["bad"], "evidence_ids": ["fake"]},
+    ]
+    bad_relation = {
+        "ticker": "TST", "issuer_id": "cik:0000123456",
+        "primary_issuer_id": "cik:0000078003",
+        "relationship": "EVIDENCED_INDIRECT",
+        "relation_type": ["supplier"], "source_id": "secondary",
+        "evidence_id": "rel_001", "source_anchor": "document:section-1"}
+    result = build(scenarios=bad_scenarios, relationships=[bad_relation])
+    assert result["public_disposition"] == "PUBLIC_READY"
+    assert result["scenarios"] == []
+    assert [x["ticker"] for x in result["affected_tickers"]] == ["PFE"]
+
+
+def test_stage_a_first_appearance_before_acceptance_is_not_attested():
+    raw = event()
+    raw.pop("publication_time_utc")
+    earlier = "2026-08-04T11:01:55Z"  # prior to 11:02:43 SEC accepted
+    packet = build(raw, document_observation=stage_a_receipt(first=earlier),
+                   rights_resolver=versioned_rights)
+    assert packet["public_safe"] is False
+    assert "unqualified_verified_document_observation" in packet["missing_data"]

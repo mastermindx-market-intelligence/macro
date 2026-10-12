@@ -342,6 +342,11 @@ def build_event_packet(
     if event_time is None or event_time > now + timedelta(minutes=2):
         out["missing_data"].append("unqualified_source_clocks")
         return out
+    # The Stage-A source's official SEC acceptance cannot be in the future,
+    # even when a legacy processing-clock path tolerates modest clock skew.
+    if document_observation is not None and event_time > now:
+        out["missing_data"].append("future_sec_acceptance")
+        return out
     if processing is not None and (processing > now + timedelta(minutes=2)
                                    or processing < event_time - timedelta(minutes=2)):
         processing = None
@@ -362,14 +367,14 @@ def build_event_packet(
                 or not isinstance(receipt.source_snapshot_version, str)
                 or not _SNAPSHOT_VERSION.fullmatch(receipt.source_snapshot_version)
                 or first is None or checked is None
-                or first < event_time - timedelta(minutes=2)
-                or first > checked or checked > now + timedelta(minutes=2)
+                or first < event_time
+                or first > checked or checked > now
                 or now - checked > timedelta(minutes=10)):
             out["missing_data"].append("unqualified_verified_document_observation")
             return out
         official = _utc(receipt.official_published_at_utc)
         if receipt.official_published_at_utc is not None:
-            if (official is None or official < event_time - timedelta(minutes=2)
+            if (official is None or official < event_time
                     or official > first or not isinstance(receipt.official_publication_ref, str)
                     or not receipt.official_publication_ref.strip()):
                 out["missing_data"].append("unqualified_official_publication_provenance")
@@ -484,7 +489,8 @@ def build_event_packet(
             # One source ID cannot alias differing title/URL/publication data.
             if (accepted[sid]["url"] != url
                     or accepted[sid]["title"] != entry.get("title")
-                    or accepted[sid]["published_at_utc"] != _stamp(_utc(entry.get("published_at_utc")))):
+                    or accepted[sid]["published_at_utc"] != _stamp(_utc(entry.get("published_at_utc")))
+                    or accepted[sid]["first_observed_at_utc"] != _stamp(_utc(entry.get("first_observed_at_utc")))):
                 blocked.add(sid)
                 accepted.pop(sid)
             continue
@@ -582,7 +588,8 @@ def build_event_packet(
         if not isinstance(sid, str) or not isinstance(eid, str) or not _SOURCE_ID.fullmatch(eid):
             continue
         anchor = relation.get("source_anchor")
-        if (relkind not in _RELATION_COPY or not isinstance(anchor, str)
+        if (not isinstance(relkind, str) or relkind not in _RELATION_COPY
+                or not isinstance(anchor, str)
                 or not 0 < len(anchor.strip()) <= 256
                 or eid in known_evidence_ids or eid in ambiguous_source_evidence
                 or eid not in attested_evidence.get(sid, set())):
@@ -607,7 +614,9 @@ def build_event_packet(
             continue
         case, trigger, invalidator = row.get("case"), row.get("trigger"), row.get("invalidator")
         evidence_ids = row.get("evidence_ids")
-        if (case not in _SCENARIO_CASES or case in cases or trigger not in _TRIGGER_COPY
+        if (not isinstance(case, str) or case not in _SCENARIO_CASES
+                or case in cases or not isinstance(trigger, str)
+                or trigger not in _TRIGGER_COPY or not isinstance(invalidator, str)
                 or invalidator not in _INVALIDATOR_COPY
                 or not isinstance(evidence_ids, (list, tuple)) or not evidence_ids
                 or not all(isinstance(x, str) and x in known for x in evidence_ids)):

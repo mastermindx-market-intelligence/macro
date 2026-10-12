@@ -445,3 +445,38 @@ def test_stage_a_event_freshness_expires_at_seven_day_acceptance_boundary():
                          as_of=overdue,coverage=eligible)
     assert after["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
     assert not after["results"][0]["what_changed"]
+
+
+@pytest.mark.parametrize("window_end_offset,checked_offset", [
+    (timedelta(minutes=1), timedelta(0)),
+    (timedelta(seconds=1), timedelta(0)),
+    (timedelta(0), timedelta(seconds=1)),
+])
+def test_future_or_unchecked_source_window_cannot_certify_no_event(
+    window_end_offset, checked_offset,
+):
+    from dataclasses import replace
+    receipt = replace(
+        coverage_receipt(returned_events=0),
+        window_end_utc=NOW + window_end_offset,
+        checked_at_utc=NOW + checked_offset,
+    )
+    result = compose_scan(["PFE"], packets=[], issuers=UNIVERSE,
+                          as_of=NOW, coverage=receipt)
+    assert result["publication_state"] == "UNAVAILABLE"
+    assert result["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    assert not result["results"][0]["what_changed"]
+
+
+def test_event_accepted_after_checked_window_cannot_be_certified():
+    from dataclasses import replace
+    versioned = deepcopy(verified_packet())
+    new_accept = NOW - timedelta(seconds=30)
+    first_verified = NOW - timedelta(seconds=20)
+    versioned["event_time_utc"] = new_accept.isoformat().replace("+00:00", "Z")
+    versioned["first_observed_at_utc"] = first_verified.isoformat().replace("+00:00", "Z")
+    window = replace(coverage_receipt(), window_end_utc=NOW-timedelta(seconds=60))
+    result = compose_scan(["PFE"], packets=[versioned], issuers=UNIVERSE,
+                          as_of=NOW, coverage=window)
+    assert result["publication_state"] == "UNAVAILABLE"
+    assert result["results"][0]["sources"] == []

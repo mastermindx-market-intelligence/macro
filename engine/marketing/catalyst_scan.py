@@ -272,8 +272,8 @@ def _complete_current_coverage(receipt: SourceCoverageReceipt | None,
                            _utc(receipt.window_end_utc), _utc(receipt.checked_at_utc))
     if (start is None or end is None or checked is None
             or start > end or start > now - _PILOT_WINDOW
-            or end > checked + timedelta(minutes=2)
-            or checked > now + timedelta(minutes=2)
+            or end > checked
+            or checked > now
             or now - checked > _CURRENT_RECEIPT
             or now - end > _CURRENT_RECEIPT):
         return False
@@ -304,11 +304,11 @@ def _complete_current_coverage(receipt: SourceCoverageReceipt | None,
         doc_checked = _utc(packet.get("document_checked_at_utc"))
         digest = packet.get("document_sha256")
         receipt_id = packet.get("observation_receipt_id")
-        if (accepted is None or not start <= accepted <= end + timedelta(minutes=2)
-                or first is None or first < accepted - timedelta(minutes=2)
-                or first > now + timedelta(minutes=2)
+        if (accepted is None or not start <= accepted <= end
+                or first is None or first < accepted
+                or first > now
                 or doc_checked is None or first > doc_checked
-                or doc_checked > checked + timedelta(minutes=2)
+                or doc_checked > checked
                 or now - doc_checked > _CURRENT_RECEIPT
                 or not isinstance(digest, str) or not _DOC_DIGEST.fullmatch(digest)
                 or not isinstance(receipt_id, str) or not receipt_id.strip()):
