@@ -8,7 +8,10 @@ import shutil
 import sqlite3
 from pathlib import Path
 
+import pytest
+
 from engine.qbus_news_cluster import CLUSTER_POLICY_VERSION
+from engine.qbus_news_cluster import ClusterPolicy
 from engine.qbus_news_contract import normalize_news
 from engine.qbus_news_store import NewsReadRights, NewsStore, RoutedRevision
 from engine.qbus_news_velocity import compute_news_velocity
@@ -358,3 +361,217 @@ def test_orphan_member_reads_unknown(tmp_path):
         == UNKNOWN_CLUSTER_POLICY_VERSION
     )
     assert _versions_24h(db) == [UNKNOWN_CLUSTER_POLICY_VERSION]
+
+
+def test_concurrent_writable_open_tolerates_duplicate_column(
+    tmp_path, monkeypatch
+):
+    db = _legacy_db(tmp_path)
+    real_connect = sqlite3.connect
+    fired = []
+
+    class _StalePragmaRows:
+        """fetchall() replays the column list captured before the racing ALTER."""
+
+        def __init__(self, rows):
+            self._rows = rows
+
+        def fetchall(self):
+            return self._rows
+
+    class _RacingConnection(sqlite3.Connection):
+        def execute(self, sql, params=()):
+            if not fired and sql.strip() == "PRAGMA table_info(news_clusters)":
+                fired.append(True)
+                rows = super().execute(sql).fetchall()
+                # A second concurrent writable open of the same legacy
+                # store adds the column after this PRAGMA read its rows.
+                other = real_connect(str(db), timeout=5.0, isolation_level=None)
+                try:
+                    other.execute(
+                        "ALTER TABLE news_clusters"
+                        " ADD COLUMN cluster_policy_version TEXT"
+                    )
+                finally:
+                    other.close()
+                return _StalePragmaRows(rows)
+            return super().execute(sql, params)
+
+    def _connect(*args, **kwargs):
+        kwargs["factory"] = _RacingConnection
+        return real_connect(*args, **kwargs)
+
+    monkeypatch.setattr(sqlite3, "connect", _connect)
+    with NewsStore(db, source_key="benzinga-rest") as store:
+        assert _table_columns(store._conn).count("cluster_policy_version") == 1
+        # A swallowed race must leave the store writable: commit one report
+        # (a fresh cluster, stamped by the policy in force) and read it back.
+        store.commit(
+            [_routed(3, UNRELATED_TITLE, minute=2)],
+            expected_cursor="c1",
+            next_cursor="c2",
+        )
+    assert fired == [True]
+    assert _columns_on_disk(db).count("cluster_policy_version") == 1
+    flow = _flow(db)
+    assert flow["stories_24h"] == 2
+    assert flow["provenance"]["cluster_policy_version"] == (
+        f"{CLUSTER_POLICY_VERSION} + {UNKNOWN_CLUSTER_POLICY_VERSION}"
+    )
+
+
+def test_alter_non_duplicate_error_still_raises(tmp_path, monkeypatch):
+    db = _legacy_db(tmp_path)
+    real_connect = sqlite3.connect
+
+    class _LockedAlterConnection(sqlite3.Connection):
+        def execute(self, sql, params=()):
+            if sql.strip() == (
+                "ALTER TABLE news_clusters"
+                " ADD COLUMN cluster_policy_version TEXT"
+            ):
+                raise sqlite3.OperationalError("database is locked")
+            return super().execute(sql, params)
+
+    def _connect(*args, **kwargs):
+        kwargs["factory"] = _LockedAlterConnection
+        return real_connect(*args, **kwargs)
+
+    monkeypatch.setattr(sqlite3, "connect", _connect)
+    with pytest.raises(sqlite3.OperationalError, match="database is locked"):
+        NewsStore(db, source_key="benzinga-rest")
+
+
+def test_alter_duplicate_error_without_column_still_raises(
+    tmp_path, monkeypatch
+):
+    db = _legacy_db(tmp_path)
+    real_connect = sqlite3.connect
+
+    class _DuplicateAlterConnection(sqlite3.Connection):
+        def execute(self, sql, params=()):
+            if sql.strip() == (
+                "ALTER TABLE news_clusters"
+                " ADD COLUMN cluster_policy_version TEXT"
+            ):
+                raise sqlite3.OperationalError(
+                    "duplicate column name: cluster_policy_version"
+                )
+            return super().execute(sql, params)
+
+    def _connect(*args, **kwargs):
+        kwargs["factory"] = _DuplicateAlterConnection
+        return real_connect(*args, **kwargs)
+
+    monkeypatch.setattr(sqlite3, "connect", _connect)
+    with pytest.raises(
+        sqlite3.OperationalError, match="duplicate column name"
+    ):
+        NewsStore(db, source_key="benzinga-rest")
+    assert "cluster_policy_version" not in _columns_on_disk(db)
+
+
+def test_custom_policy_is_stamped_not_the_constant(tmp_path):
+    db = tmp_path / "custom-policy.sqlite3"
+    label = (
+        "qbus_news_cluster.v2 (title_threshold=0.9, "
+        "window_seconds=21600, max_candidates=128)"
+    )
+    with NewsStore(
+        db,
+        source_key="benzinga-rest",
+        cluster_policy=ClusterPolicy(title_threshold=0.9),
+    ) as store:
+        store.commit(
+            [_routed(1, TITLE_A, minute=0), _routed(2, TITLE_B, minute=1)],
+            expected_cursor=None,
+            next_cursor="c1",
+        )
+        rows = store._conn.execute(
+            "SELECT cluster_policy_version FROM news_clusters"
+        ).fetchall()
+    assert len(rows) == 1
+    assert rows[0][0] == label
+    _checkpoint(db)
+    assert _flow(db)["provenance"]["cluster_policy_version"] == label
+
+
+def test_default_policy_stamps_exactly_v2(tmp_path):
+    db = tmp_path / "default-policy.sqlite3"
+    with NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit(
+            [_routed(1, TITLE_A, minute=0), _routed(2, TITLE_B, minute=1)],
+            expected_cursor=None,
+            next_cursor="c1",
+        )
+        rows = store._conn.execute(
+            "SELECT cluster_policy_version FROM news_clusters"
+        ).fetchall()
+    assert [row[0] for row in rows] == ["qbus_news_cluster.v2"]
+    from engine.qbus_news_cluster import cluster_policy_version
+
+    assert cluster_policy_version(ClusterPolicy()) == "qbus_news_cluster.v2"
+    assert " + " not in cluster_policy_version(
+        ClusterPolicy(title_threshold=0.9)
+    )
+
+
+def test_velocity_without_cluster_table_returns_empty_versions(tmp_path):
+    db = tmp_path / "no-clusters-table.sqlite3"
+    _clustered_store(db)
+    pristine = tmp_path / "pristine.sqlite3"
+    shutil.copyfile(db, pristine)
+    expected = _velocity(pristine)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys=OFF")
+        conn.execute("DROP TABLE news_clusters")
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+    got = _velocity(db)
+    assert set(got) == set(expected)
+    assert got["cluster_policy_versions_24h"] == []
+    assert got["stories_24h"] == got["count_24h"]
+
+
+def test_velocity_without_any_cluster_tables_returns_empty_versions(tmp_path):
+    db = tmp_path / "no-cluster-tables.sqlite3"
+    _clustered_store(db)
+    pristine = tmp_path / "pristine-both.sqlite3"
+    shutil.copyfile(db, pristine)
+    expected = _velocity(pristine)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys=OFF")
+        conn.execute("DROP TABLE news_cluster_members")
+        conn.execute("DROP TABLE news_clusters")
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+    got = _velocity(db)
+    assert set(got) == set(expected)
+    assert got["cluster_policy_versions_24h"] == []
+    assert got["stories_24h"] == got["count_24h"]
+
+
+def test_velocity_without_members_table_returns_empty_versions(tmp_path):
+    db = tmp_path / "no-members-table.sqlite3"
+    _clustered_store(db)
+    pristine = tmp_path / "pristine-members.sqlite3"
+    shutil.copyfile(db, pristine)
+    expected = _velocity(pristine)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys=OFF")
+        conn.execute("DROP TABLE news_cluster_members")
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+    got = _velocity(db)
+    assert set(got) == set(expected)
+    assert got["cluster_policy_versions_24h"] == []
+    assert got["stories_24h"] == got["count_24h"]

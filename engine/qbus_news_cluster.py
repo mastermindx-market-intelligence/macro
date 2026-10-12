@@ -17,6 +17,7 @@ lifts versus lowers, including past forms).
 """
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
 from datetime import datetime
 import hashlib
@@ -61,6 +62,23 @@ class ClusterPolicy:
     title_threshold: float = 0.72
     window_seconds: int = 6 * 3600
     max_candidates: int = 128
+
+
+def cluster_policy_version(policy: ClusterPolicy) -> str:
+    """Return the provenance stamp naming exactly the policy in force.
+
+    A default-constructed ClusterPolicy is stamped with the bare
+    CLUSTER_POLICY_VERSION constant.
+    A non-default policy is stamped with that constant plus every field as
+    ``name=repr(value)`` in declaration order, which never contains the
+    `` + `` provenance join separator.
+    """
+    if policy == ClusterPolicy():
+        return CLUSTER_POLICY_VERSION
+    return f"{CLUSTER_POLICY_VERSION} (" + ", ".join(
+        f"{f.name}={getattr(policy, f.name)!r}"
+        for f in dataclasses.fields(policy)
+    ) + ")"
 
 
 @dataclass(frozen=True, slots=True)

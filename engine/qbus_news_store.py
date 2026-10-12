@@ -30,6 +30,7 @@ from engine.qbus_news_cluster import (
     ClusterItem,
     ClusterPolicy,
     cluster_candidates,
+    cluster_policy_version,
 )
 from engine.qbus_news_reducer import NewsState, reduce_revision
 from engine.qbus_news_velocity import (
@@ -699,9 +700,25 @@ class NewsStore:
             "PRAGMA table_info(news_clusters)"
         ).fetchall()
         if not any(str(col[1]) == "cluster_policy_version" for col in columns):
-            self._conn.execute(
-                "ALTER TABLE news_clusters ADD COLUMN cluster_policy_version TEXT"
-            )
+            # A second concurrent writable open of the same legacy store can
+            # add this column between our PRAGMA and our ALTER; only that race.
+            try:
+                self._conn.execute(
+                    "ALTER TABLE news_clusters"
+                    " ADD COLUMN cluster_policy_version TEXT"
+                )
+            except sqlite3.OperationalError as exc:
+                recheck = self._conn.execute(
+                    "PRAGMA table_info(news_clusters)"
+                ).fetchall()
+                if (
+                    "duplicate column name" not in str(exc).lower()
+                    or not any(
+                        str(col[1]) == "cluster_policy_version"
+                        for col in recheck
+                    )
+                ):
+                    raise
         self._backfill_read_projection()
 
     def _backfill_read_projection(self) -> None:
@@ -1054,7 +1071,7 @@ class NewsStore:
                     incoming.observed_at.isoformat(),
                     _stable_json(list(incoming.subject_ids)),
                     incoming.event_family,
-                    CLUSTER_POLICY_VERSION,
+                    cluster_policy_version(self.cluster_policy),
                 ),
             )
         self._conn.execute(
