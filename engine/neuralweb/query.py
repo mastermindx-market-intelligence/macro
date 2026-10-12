@@ -980,13 +980,17 @@ def adapt_qledger(root: Path | str | None = None) -> tuple[pd.DataFrame, list[st
     claims_path = data / "qledger" / "claims.jsonl"
     grades_path = data / "qledger" / "grades.jsonl"
 
-    if not claims_path.exists():
+    from engine.qledger_store import uses_native_claims
+
+    if not uses_native_claims(claims_path) and not claims_path.exists():
         gaps.append("qledger: data/qledger/claims.jsonl absent — zero rows")
         return _empty_df(), gaps
 
     # Load claims
     try:
-        with claims_path.open(encoding="utf-8") as fh:
+        from engine.qledger_store import open_raw_lines
+
+        with open_raw_lines(claims_path) as fh:
             claims_raw = [json.loads(ln) for ln in fh if ln.strip()]
     except Exception as e:  # noqa: BLE001
         gaps.append(f"qledger: claims.jsonl read failed ({e}) — zero rows")

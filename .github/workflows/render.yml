@@ -131,6 +131,11 @@ on:
       - "scripts/build_crossmarket.py"
       - "scripts/build_crypto.py"
       - "scripts/build_cycle.py"
+      # B-F09-3 debt-maturity producer: this lane never runs it, but
+      # build_stock_library imports its load_debt_maturity_facts reader, so an
+      # edit here changes the debt_maturity/cash_runway blocks in every stockdata
+      # JSON the spine re-bakes.
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_demand.py"
       - "scripts/build_discovery.py"
       - "scripts/build_flow_desk.py"
@@ -165,6 +170,7 @@ on:
       - "scripts/build_measurement.py"
       - "scripts/build_methodology.py"
       - "scripts/build_news.py"
+      - "scripts/build_ontology_explorer.py"
       - "scripts/build_options_command.py"
       - "scripts/build_options_entry_state.py"
       - "scripts/build_options_flow.py"
@@ -180,6 +186,7 @@ on:
       - "scripts/build_regime_prior.py"
       - "scripts/build_reports.py"
       - "scripts/build_research_pages.py"
+      - "scripts/build_research_screener.py"
       - "scripts/build_research_vault.py"
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"

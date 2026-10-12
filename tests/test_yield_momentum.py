@@ -5,6 +5,7 @@ import copy
 import unittest
 
 import numpy as np
+import pytest
 import pandas as pd
 
 from engine import yield_momentum
@@ -168,11 +169,18 @@ def test_identical_flat_frames_distinguish_new_observations_from_carry():
     assert observed['observation_origin'] == 'captured_source_row'
     assert observed['velocity_bp']['5d'] == 0.0
     assert carried['observation_origin'] == 'carried'
-    assert carried['level'] is None
+    # A-RIC-F3-W2: one trailing carried row is a publication lag within tolerance,
+    # so the carry is measured AT the last captured row and dated there -- the
+    # distinction from a fresh observation is the origin + dating, not a null.
+    assert observed['measurement_origin'] == 'latest_grid_row'
+    assert carried['measurement_origin'] == 'last_captured_source_row'
+    assert carried['trailing_publication_lag_rows'] == 1
+    assert carried['level'] == 4.0
     assert carried['carried_level'] == 4.0
     assert carried['as_of'] == str(f.index[-2].date())
-    assert all(v is None for v in carried['velocity_bp'].values())
-    assert carried['turn_watch'] is None
+    assert carried['frame_as_of'] == str(f.index[-1].date())
+    assert carried['velocity_bp']['5d'] == 0.0
+    assert carried['turn_watch'] == observed['turn_watch']
 
 
 def test_unverified_frame_never_certifies_a_turn():
@@ -248,7 +256,12 @@ def test_real_feature_builder_preserves_numeric_fill_but_carries_origin(monkeypa
     out = tx.snapshot(f.copy())['yield_momentum']['series']['10y']
     assert out['observation_origin'] == 'carried'
     assert out['carried_level'] == raw.iloc[-1]
-    assert out['level'] is None and out['turn_watch'] is None
+    # A-RIC-F3-W2: this IS the nightly production shape (FRED prints T+1); the
+    # single carried frame row is a publication lag, measured at the captured row.
+    assert out['measurement_origin'] == 'last_captured_source_row'
+    assert out['trailing_publication_lag_rows'] == 1
+    assert out['level'] == round(raw.iloc[-1], 3)
+    assert out['status'] == 'available' and out['null_reason'] is None
     assert out['source_id'] == 'DGS10'
     assert out['as_of'] == str(idx[-2].date())
     assert out['frame_as_of'] == str(idx[-1].date())
@@ -311,9 +324,14 @@ def test_carried_tail_retains_last_measured_change_with_its_own_dates():
     f.loc[f.index[-3:], 'us10y'] = raw.iloc[-1]
     out = _origin_read(_attach_origin(f, raw))
     last = out['last_observed']
-    assert out['status'] == 'stale' and out['level'] is None
-    assert all(v is None for v in out['velocity_bp'].values())
-    assert out['turn_watch'] is None
+    # A-RIC-F3-W2: three trailing carried rows sit at the tolerance edge -> measured
+    # at the last captured row; `last_observed` still describes the FULL grid.
+    assert out['status'] == 'available' and out['level'] == round(raw.iloc[-1], 3)
+    assert out['as_of'] == str(raw.index[-1].date())
+    assert out['trailing_publication_lag_rows'] == 3
+    assert out['velocity_bp']['5d'] == 5.0
+    assert out['endpoint_dates']['5d'] == [str(f.index[-9].date()), str(f.index[-4].date())]
+    assert out['turn_watch'] == 'extreme_high_watch'
     assert last['as_of'] == str(raw.index[-1].date())
     assert last['previous_as_of'] == str(raw.index[-2].date())
     assert last['level'] == round(raw.iloc[-1], 3)
@@ -493,3 +511,110 @@ def test_turn_watch_percentile_excludes_carried_holiday_nans():
     below = len(measured_positions) - 97
     assert below / len(measured_positions) > 0.90 > below / n
     assert out['turn_watch'] == 'extreme_high_watch'
+
+
+# --- A-RIC-F3-W2 (2026-09-25): trailing publication-lag tolerance -------------
+def _lagged(n, f=None):
+    f = _origin_frame(100) if f is None else f
+    raw = f.us10y.iloc[:-n].copy()
+    f.loc[f.index[-n:], 'us10y'] = raw.iloc[-1]
+    return f, raw
+
+
+@pytest.mark.parametrize('n', [1, 2, 3])
+def test_trailing_publication_lag_within_tolerance_measures_at_last_captured_row(n):
+    f, raw = _lagged(n)
+    out = _origin_read(_attach_origin(f, raw))
+    assert out['measurement_origin'] == 'last_captured_source_row'
+    assert out['trailing_publication_lag_rows'] == n
+    assert out['trailing_expected_absent_rows'] == 0
+    assert out['lag_tolerance_rows'] == 3
+    assert out['lag_basis'] == 'fred_next_business_day_publication_v1'
+    assert out['observation_origin'] == 'carried'  # the FRAME's latest row is still a carry
+    assert out['as_of'] == str(raw.index[-1].date())
+    assert out['frame_as_of'] == str(f.index[-1].date())
+    assert out['level'] == round(raw.iloc[-1], 3)
+    assert out['path_qualified'] is True and out['status'] == 'available'
+    assert out['null_reason'] is None
+    assert out['velocity_bp']['5d'] == 5.0 and out['velocity_bp']['22d'] == 22.0
+    assert out['endpoint_dates']['5d'] == [str(f.index[-n - 6].date()), str(f.index[-n - 1].date())]
+    assert out['turn_watch'] == 'extreme_high_watch'
+
+
+def test_trailing_lag_beyond_tolerance_stays_stale_and_names_the_lag():
+    f, raw = _lagged(4)
+    out = _origin_read(_attach_origin(f, raw))
+    assert out['measurement_origin'] == 'latest_grid_row'
+    assert out['trailing_publication_lag_rows'] == 4
+    assert out['status'] == 'stale' and out['level'] is None
+    assert all(v is None for v in out['velocity_bp'].values())
+    assert out['turn_watch'] is None
+    assert out['null_reason'].startswith('latest grid value is missing, nonfinite or carried')
+    assert out['null_reason'].endswith('; trailing publication lag 4 rows exceeds tolerance 3')
+
+
+def test_interior_unexpected_absence_plus_trailing_lag_withholds_the_path():
+    f = _origin_frame(100)
+    unexpected = pd.Timestamp('2025-03-05')  # an ordinary Wednesday inside the grid
+    assert unexpected in f.index
+    raw = f.us10y.drop([unexpected]).iloc[:-2].copy()
+    f.loc[f.index[-2:], 'us10y'] = raw.iloc[-1]
+    out = _origin_read(_attach_origin(f, raw))
+    assert out['path_qualified'] is False
+    assert out['measurement_origin'] == 'latest_grid_row'
+    assert out['trailing_publication_lag_rows'] == 2
+    assert out['unexpected_carried_grid_rows'] == 3  # interior + 2 trailing
+    assert out['level'] is None and out['turn_watch'] is None
+    assert out['null_reason'].endswith('; interior unexpected absence withholds the path')
+
+
+def test_holiday_inside_the_trailing_run_is_skipped_to_the_last_captured_row():
+    # 100 bdays ending 2025-02-18 (Tue); index[-2] = 2025-02-17 (Presidents' Day).
+    idx = pd.bdate_range(end='2025-02-18', periods=100)
+    assert idx[-2] == pd.Timestamp('2025-02-17')
+    f = pd.DataFrame({'us10y': 4.0 + np.arange(100) / 100}, index=idx)
+    raw = f.us10y.iloc[:-2].copy()          # holiday did not print; Tuesday not yet published
+    f.loc[idx[-2:], 'us10y'] = raw.iloc[-1]
+    out = _origin_read(_attach_origin(f, raw))
+    assert out['trailing_publication_lag_rows'] == 1
+    assert out['trailing_expected_absent_rows'] == 1
+    assert out['measurement_origin'] == 'last_captured_source_row'
+    assert out['path_qualified'] is True
+    assert out['as_of'] == str(idx[-3].date())
+    assert out['level'] == round(raw.iloc[-1], 3)
+    assert out['velocity_bp']['5d'] == 5.0
+
+
+def test_frame_ending_on_a_holiday_without_lag_keeps_the_w1_state():
+    # W1 state (a): the latest grid row is an expected absence and nothing lags
+    # behind it -> path qualified, but no measurement is promoted.
+    idx = pd.bdate_range(end='2025-02-17', periods=100)
+    f = pd.DataFrame({'us10y': 4.0 + np.arange(100) / 100}, index=idx)
+    raw = f.us10y.iloc[:-1].copy()
+    f.loc[idx[-1:], 'us10y'] = raw.iloc[-1]
+    out = _origin_read(_attach_origin(f, raw))
+    assert out['trailing_publication_lag_rows'] == 0
+    assert out['trailing_expected_absent_rows'] == 1
+    assert out['measurement_origin'] == 'latest_grid_row'
+    assert out['path_qualified'] is True and out['status'] == 'stale'
+    assert out['level'] is None
+
+
+def test_nonfinite_trailing_print_is_not_a_publication_lag():
+    f = _origin_frame(100); raw = f.us10y.copy(); raw.iloc[-1] = np.inf
+    f.iloc[-1, 0] = np.inf
+    out = _origin_read(_attach_origin(f, raw))
+    assert out['measurement_origin'] == 'latest_grid_row'
+    assert out['level'] is None and out['turn_watch'] is None
+
+
+def test_lag_read_is_deterministic_and_keeps_every_wire_key():
+    f, raw = _lagged(2)
+    a = _origin_read(_attach_origin(f.copy(), raw))
+    b = _origin_read(_attach_origin(f.copy(), raw))
+    assert a == b
+    baseline = _origin_read(_attach_origin(_origin_frame(100)))
+    assert set(baseline) <= set(a)
+    payload = yield_momentum.build_yield_momentum(_attach_origin(f.copy(), raw))
+    assert payload['calculation_version'] == 'fixed_grid_origin.v4'
+    assert any('publication lag' in c and 'at most 3' in c for c in payload['caveats'])

@@ -5,9 +5,11 @@ Two interchangeable backends behind one small interface
 list_prefix / exists / upload_time``):
 
   - :class:`R2Store` — boto3 wrapper on the private bucket ``R2_RESEARCH_BUCKET``.
-    Reuses the account access key (env ``R2_ENDPOINT / R2_ACCESS_KEY_ID /
-    R2_SECRET_ACCESS_KEY``) exactly like ``scripts/publish_r2._client`` but
-    targets a DIFFERENT bucket. Degrades to ``None`` (no-op) when creds absent.
+    Uses the dedicated ``R2_RESEARCH_ENDPOINT / R2_RESEARCH_ACCESS_KEY_ID /
+    R2_RESEARCH_SECRET_ACCESS_KEY`` credential family. Generic ``R2_*``
+    delivery-plane credentials are never inherited implicitly. Degrades to
+    ``None`` (no-op) when the dedicated research configuration is absent or
+    incomplete.
   - :class:`LocalStore` — a filesystem backend rooted at a dir. Selected when
     env ``RESEARCH_LOCAL_STORE=<dir>`` is set. REQUIRED for tests + local
     dry-runs so nothing needs live R2 credentials.
@@ -31,6 +33,7 @@ import errno
 import fcntl
 import logging
 import os
+import ssl
 import stat
 import time
 from dataclasses import dataclass
@@ -180,18 +183,26 @@ def _validate_bounded_lengths(*, expected_byte_length: int, max_byte_length: int
 # ---------------------------------------------------------------------------
 
 def _r2_client():
-    """S3 client for R2, or None when creds are absent (graceful no-op).
+    """S3 client for the private Research Vault plane, or None when unavailable.
 
-    Copies scripts/publish_r2._client construction verbatim (region 'auto',
-    s3v4, when_required checksum). A SEPARATE Cloudflare account for the research
-    vault is supported via R2_RESEARCH_ENDPOINT / R2_RESEARCH_ACCESS_KEY_ID /
-    R2_RESEARCH_SECRET_ACCESS_KEY (+ R2_RESEARCH_BUCKET); each falls back to the
-    shared R2_* var when unset (the same-account case).
+    The private research store has its own explicit credential namespace.
+    ``R2_RESEARCH_*`` never inherits generic ``R2_*`` delivery-plane values.
+    Operators intentionally using the same Cloudflare account/credentials may set
+    the dedicated research variables to the same values explicitly; bucket
+    separation is enforced by :func:`build_store`.
     """
-    ep = os.environ.get("R2_RESEARCH_ENDPOINT") or os.environ.get("R2_ENDPOINT")
-    ak = os.environ.get("R2_RESEARCH_ACCESS_KEY_ID") or os.environ.get("R2_ACCESS_KEY_ID")
-    sk = os.environ.get("R2_RESEARCH_SECRET_ACCESS_KEY") or os.environ.get("R2_SECRET_ACCESS_KEY")
-    if not (ep and ak and sk):
+    ep = (os.environ.get("R2_RESEARCH_ENDPOINT") or "").strip()
+    ak = (os.environ.get("R2_RESEARCH_ACCESS_KEY_ID") or "").strip()
+    sk = (os.environ.get("R2_RESEARCH_SECRET_ACCESS_KEY") or "").strip()
+    configured = (ep, ak, sk)
+    if not any(configured):
+        return None
+    if not all(configured):
+        # Names only: never interpolate credential values into logs.
+        log.error(
+            "partial R2_RESEARCH endpoint/access-key/secret configuration — "
+            "refusing private Research Vault client"
+        )
         return None
     import boto3
     from botocore.config import Config
@@ -229,6 +240,50 @@ def _is_authoritative_r2_not_found(error: Exception) -> bool:
     if not isinstance(details, dict):
         return False
     return str(details.get("Code", "")) in {"404", "NoSuchKey", "NotFound"}
+
+
+# Retry ONLY a transport that failed to deliver authoritative bytes. Botocore
+# retries the GET request, but not failures while reading its StreamingBody.
+# Every new attempt must create a NEW GET and close the previous response.
+_STRICT_STREAM_READ_RETRY_DELAYS = (0.25, 0.75)
+
+# A mature, receipt-idempotent search corpus is too large to rely on one TLS
+# response. Use the existing private R2 object's If-Match range semantics to
+# rebuild the EXACT same version after the first interrupted full-body read.
+_STRICT_CORPUS_OBJECT_KEY = "research_vault/corpus.sqlite"
+_STRICT_CORPUS_RANGE_BYTES = 4 * 1024 * 1024
+_STRICT_CORPUS_MAX_BYTES = 1024 * 1024 * 1024
+
+
+def _retryable_strict_stream_error(error: Exception) -> bool:
+    if isinstance(error, ssl.SSLError):
+        return True
+    # These imports stay lazy: LocalStore/tests have no boto3 requirement.
+    try:
+        import botocore.exceptions as botocore_errors
+    except ImportError:
+        botocore_errors = None
+    try:
+        import urllib3.exceptions as urllib3_errors
+    except ImportError:
+        urllib3_errors = None
+    for module, names in (
+        (botocore_errors, (
+            "SSLError", "ReadTimeoutError", "ConnectionClosedError",
+            "ResponseStreamingError", "IncompleteReadError",
+        )),
+        (urllib3_errors, (
+            "SSLError", "ReadTimeoutError", "ProtocolError",
+            "IncompleteRead",
+        )),
+    ):
+        if module is None:
+            continue
+        for name in names:
+            exception_type = getattr(module, name, None)
+            if isinstance(exception_type, type) and isinstance(error, exception_type):
+                return True
+    return False
 
 
 def _is_authoritative_r2_conditional_conflict(error: Exception) -> bool:
@@ -273,38 +328,145 @@ class R2Store:
             log.debug("r2 get miss %s: %s", key, e)
             return None
 
-    def get_bytes_strict(self, key: str) -> bytes | None:
-        """Read an immutable object without converting operational failure to a miss.
+    def _read_corpus_versioned_ranges(self, key: str) -> bytes:
+        """Reconstruct one immutable R2 corpus from exact same-version GET ranges.
 
-        ``None`` means R2 returned one of its explicit not-found ``ClientError``
-        codes (404, ``NoSuchKey``, or ``NotFound``).  Missing credentials, a
-        permission error, network/service failure, or body read failure all
-        propagate so snapshot publication cannot silently publish from an
-        incomplete view of the object store.
+        HEAD is merely a read-only size/version observation. Every chunk must
+        satisfy If-Match against that ETag, HTTP 206, the exact advertised
+        Content-Range and Content-Length, a complete streamed byte count and
+        a clean body close. Any ambiguity is fatal; never bootstrap from it.
+        """
+        meta = self._s3.head_object(Bucket=self.bucket, Key=key)
+        if not isinstance(meta, dict):
+            raise RuntimeError("R2 corpus HEAD returned a malformed response")
+        size = meta.get("ContentLength")
+        etag = meta.get("ETag")
+        if (
+            type(size) is not int or not 0 < size <= _STRICT_CORPUS_MAX_BYTES
+            or not isinstance(etag, str) or not etag.strip()
+        ):
+            raise RuntimeError("R2 corpus HEAD lacks a bounded length and version")
+        pieces: list[bytes] = []
+        for first in range(0, size, _STRICT_CORPUS_RANGE_BYTES):
+            last = min(size - 1, first + _STRICT_CORPUS_RANGE_BYTES - 1)
+            expected = last - first + 1
+            content_range = f"bytes {first}-{last}/{size}"
+            for retry in range(len(_STRICT_STREAM_READ_RETRY_DELAYS) + 1):
+                try:
+                    response = self._s3.get_object(
+                        Bucket=self.bucket,
+                        Key=key,
+                        Range=f"bytes={first}-{last}",
+                        IfMatch=etag,
+                    )
+                    if not isinstance(response, dict):
+                        raise RuntimeError("R2 range GET response is malformed")
+                    body = response.get("Body")
+                    close = getattr(body, "close", None)
+                    if not callable(close) or not callable(getattr(body, "read", None)):
+                        raise RuntimeError("R2 range GET body is not readable/closeable")
+                    try:
+                        if (
+                            (response.get("ResponseMetadata") or {}).get("HTTPStatusCode") != 206
+                            or response.get("ContentRange") != content_range
+                            or response.get("ContentLength") != expected
+                            or response.get("ETag") != etag
+                        ):
+                            raise RuntimeError(
+                                "R2 ranged corpus response violated version or range"
+                            )
+                        remaining = expected
+                        chunks: list[bytes] = []
+                        calls = 0
+                        while remaining:
+                            calls += 1
+                            if calls > _MAX_STRICT_STREAM_READ_CALLS:
+                                raise RuntimeError("R2 ranged corpus read iteration limit")
+                            data = body.read(min(remaining, 1024 * 1024))
+                            if type(data) is not bytes or not data or len(data) > remaining:
+                                raise RuntimeError("R2 ranged corpus body incomplete")
+                            chunks.append(data)
+                            remaining -= len(data)
+                        if body.read(1) != b"":
+                            raise RuntimeError("R2 ranged corpus body overran announced range")
+                        pieces.append(b"".join(chunks))
+                    finally:
+                        close()
+                    break
+                except Exception as error:
+                    if (
+                        retry >= len(_STRICT_STREAM_READ_RETRY_DELAYS)
+                        or not _retryable_strict_stream_error(error)
+                    ):
+                        raise
+                    log.warning(
+                        "R2 versioned range read transport interrupted; retrying "
+                        "chunk (%d/%d)", retry + 1,
+                        len(_STRICT_STREAM_READ_RETRY_DELAYS),
+                    )
+                    time.sleep(_STRICT_STREAM_READ_RETRY_DELAYS[retry])
+        result = b"".join(pieces)
+        if len(result) != size:
+            raise RuntimeError("R2 versioned corpus read length mismatch")
+        return result
+
+    def get_bytes_strict(self, key: str) -> bytes | None:
+        """Read exact authoritative bytes; never turn transport failure into absence.
+
+        A TLS/stream interruption can occur AFTER S3's GET header succeeded.
+        Retry only that narrow class of transport failure with a fresh GET and
+        deterministic bound; partial bodies are never returned. 404 remains the
+        sole authoritative absent result; permissions, protocol, malformed
+        bodies and exhausted retries still raise (publication stays fail-closed).
         """
         if not self.available:
             raise RuntimeError("R2 store unavailable: missing bucket or credentials")
-        try:
-            response = self._s3.get_object(Bucket=self.bucket, Key=key)
-        except Exception as error:
-            if _is_authoritative_r2_not_found(error):
-                return None
-            raise
-        if not isinstance(response, dict):
-            raise RuntimeError("R2 get_object returned a malformed response")
-        body = response.get("Body")
-        if body is None or not callable(getattr(body, "read", None)):
-            raise RuntimeError("R2 get_object response is missing a readable body")
-        close = getattr(body, "close", None)
-        if not callable(close):
-            raise RuntimeError("R2 get_object response body is not closeable")
-        try:
-            content = body.read()
-        finally:
-            close()
-        if not isinstance(content, bytes):
-            raise RuntimeError("R2 object body returned non-bytes")
-        return content
+        for attempt in range(len(_STRICT_STREAM_READ_RETRY_DELAYS) + 1):
+            try:
+                try:
+                    response = self._s3.get_object(Bucket=self.bucket, Key=key)
+                except Exception as error:
+                    if _is_authoritative_r2_not_found(error):
+                        return None
+                    raise
+                if not isinstance(response, dict):
+                    raise RuntimeError("R2 get_object returned a malformed response")
+                body = response.get("Body")
+                if body is None or not callable(getattr(body, "read", None)):
+                    raise RuntimeError("R2 get_object response is missing a readable body")
+                close = getattr(body, "close", None)
+                if not callable(close):
+                    raise RuntimeError("R2 get_object response body is not closeable")
+                try:
+                    content = body.read()
+                finally:
+                    close()
+                if not isinstance(content, bytes):
+                    raise RuntimeError("R2 object body returned non-bytes")
+                return content
+            except Exception as error:
+                retryable = _retryable_strict_stream_error(error)
+                if (
+                    retryable
+                    and attempt == 0
+                    and key == _STRICT_CORPUS_OBJECT_KEY
+                    and callable(getattr(self._s3, "head_object", None))
+                ):
+                    log.warning(
+                        "R2 corpus full-body TLS read interrupted; "
+                        "reconstructing one version through checked ranges"
+                    )
+                    return self._read_corpus_versioned_ranges(key)
+                if attempt >= len(_STRICT_STREAM_READ_RETRY_DELAYS) or not retryable:
+                    raise
+                log.warning(
+                    "R2 strict read transport interrupted; retrying fresh GET "
+                    "(%d/%d)", attempt + 1,
+                    len(_STRICT_STREAM_READ_RETRY_DELAYS),
+                )
+                time.sleep(_STRICT_STREAM_READ_RETRY_DELAYS[attempt])
+        raise AssertionError("bounded strict read retry loop exhausted")
+
 
     def get_bytes_strict_bounded(
         self,
@@ -1058,24 +1220,52 @@ class LocalStore:
 # ---------------------------------------------------------------------------
 
 def build_store(local_dir: str | Path | None = None) -> Store | None:
-    """Build the active store.
+    """Build the active store without crossing the private/public R2 boundary.
 
     Precedence:
       1. explicit ``local_dir`` arg → :class:`LocalStore`.
       2. env ``RESEARCH_LOCAL_STORE`` set → :class:`LocalStore` at that dir.
-      3. env ``R2_RESEARCH_BUCKET`` + R2 creds → :class:`R2Store`.
-      4. otherwise → ``None`` (no store available; caller no-ops like publish_r2).
+      3. explicit, distinct ``R2_RESEARCH_BUCKET`` + complete dedicated
+         ``R2_RESEARCH_*`` endpoint/credential family → :class:`R2Store`.
+      4. otherwise → ``None`` (no private research store available).
+
+    Generic ``R2_*`` credentials are intentionally not a fallback. If the shared
+    delivery bucket is configured, the research bucket must also differ from it.
     """
     if local_dir:
         return LocalStore(local_dir)
     env_local = os.environ.get("RESEARCH_LOCAL_STORE")
     if env_local:
         return LocalStore(env_local)
-    bucket = os.environ.get("R2_RESEARCH_BUCKET")
+
+    bucket = (os.environ.get("R2_RESEARCH_BUCKET") or "").strip()
     if bucket:
+        shared_bucket = (os.environ.get("R2_BUCKET") or "").strip()
+        if shared_bucket and bucket == shared_bucket:
+            log.error(
+                "R2_RESEARCH_BUCKET aliases shared R2_BUCKET — "
+                "refusing private Research Vault store"
+            )
+            return None
         store = R2Store(bucket)
         if store.available:
             return store
-        log.info("R2_RESEARCH_BUCKET set but R2 creds absent — no store")
+        log.info(
+            "R2_RESEARCH_BUCKET set but dedicated R2_RESEARCH endpoint/credentials "
+            "are absent or incomplete — no private store"
+        )
         return None
+
+    if any(
+        (os.environ.get(name) or "").strip()
+        for name in (
+            "R2_RESEARCH_ENDPOINT",
+            "R2_RESEARCH_ACCESS_KEY_ID",
+            "R2_RESEARCH_SECRET_ACCESS_KEY",
+        )
+    ):
+        log.error(
+            "R2_RESEARCH endpoint/credentials configured without R2_RESEARCH_BUCKET "
+            "— refusing private Research Vault store"
+        )
     return None

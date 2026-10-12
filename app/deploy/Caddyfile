@@ -223,7 +223,7 @@
 	# authenticated route. The matcher also provides a zero-downtime fallback:
 	# when a file is absent externally, the canonical site.served file wins.
 	@vps_external {
-		path /live/* /marketdata/sp500_heatmap.json
+		path /live/* /marketdata/sp500_heatmap.json /am_edition.json
 		file {
 			root /var/lib/macro-live/public
 		}
@@ -436,6 +436,27 @@
 			}
 			header Cache-Control "public, max-age=60, must-revalidate"
 			header X-Robots-Tag "noindex, noarchive"
+			# AM Edition premarket overlay (A-MOR-2b lane B). The VPS lane writes
+			# /var/lib/macro-live/public/am_edition.html during the ET premarket
+			# and removes it the moment a newer nightly bake lands; a
+			# Caddy `file { root ... }` existence matcher means a missing overlay
+			# falls through to the canonical `site.served` copy on disk instead
+			# of returning a 404. Cache-Control: no-store because every tick is a
+			# fresh render — a stale cache would defeat the lane's whole purpose.
+			# X-Robots-Tag: noindex is set on the open_html route above; an
+			# anonymous `GET /am_edition.html` therefore returns 200 + noindex, not
+			# 401, exactly as gate 2 names.
+			@am_edition_live {
+				path /am_edition.html
+				file {
+					root /var/lib/macro-live/public
+				}
+			}
+			handle @am_edition_live {
+				root * /var/lib/macro-live/public
+				header Cache-Control "no-store"
+				file_server
+			}
 			file_server {
 				index index.html
 			}

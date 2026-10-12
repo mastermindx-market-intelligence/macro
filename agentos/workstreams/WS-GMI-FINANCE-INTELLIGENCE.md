@@ -12,18 +12,20 @@ objective: >
 status: active
 program: sector-rotation-intelligence
 repos: [macro]
-owner: coo-fable
+owner: fable-meta-ceo
 class: build
 blast_radius: user_facing
 ambiguity: scoped
 depends_on:
   - WS:GMI-THEME-GRAPH
+  - WS:GMI-SEMICONDUCTORS
 owns_paths:
   - contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json
   - data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json
   - engine/sector_intelligence/finance_projection.py
   - engine/sector_intelligence/finance_overlap.py
   - engine/sector_intelligence/finance_private.py
+  - engine/sector_intelligence/finance_research_registration.py
   - app/finance_intelligence.py
   - scripts/build_finance_intelligence_page.py
   - templates/finance_intelligence.html.j2
@@ -32,15 +34,29 @@ owns_paths:
   - templates/_finance_sector_deep_dive.html.j2
   - tests/test_finance_intelligence_*.py
   - tests/test_finance_overlap.py
+  - tests/test_finance_research_registration.py
   - tests/test_finance_owner_preservation.py
   - tests/test_finance_private_publication.py
   - tests/js/finance_intelligence.test.mjs
   - research/finance/implementation/
+  - mockups/evidence/finance-t11-conformance/
 decisions:
   - DEC:FINANCE-IMPL-CARRIER-IS-SEAT-PR-TASKS-SHIP-OFF-MAIN
   - DEC:FINANCE-EVIDENCE-GRAMMAR-MIRRORS-SHARED-ASSERTION-NEVER-FORKS
+  - DEC:FINANCE-DOSSIER-SPEC-SURFACE-TIERS-STATE-SCOPED-FRESHNESS-AND-ANSWER-FIRST-COMPOSITION
+  - DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE
+  - DEC:FINANCE-DOSSIER-SPEC-T11-ERRATA
+  - DEC:FINANCE-ZH-MARKS-UNTRANSLATED-SOURCE-PROSE-NEVER-MACHINE-TRANSLATES
+  - DEC:FINANCE-REGISTRATION-OMISSIONS-ARE-A-CLOSED-VOCABULARY-AND-EVIDENCE-EMBEDS-THE-VALIDATORS-COPY
+  - DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF
+  - DEC:FINANCE-AN-OBSERVATION-HAS-ONE-DATE
+  - DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11
+  - DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE
+  - DEC:FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED
 artifacts:
   - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-24.md
+  - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-27.md
+  - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-28.md
 landmines:
   - "#7786 (sol/finance-sector-research-20260923, head 615f1050) is records-only: 26k files behind main; never rebase it in, never merge it to reach the research — read by exact path/SHA."
   - "The shared curation assertion (#7870) requires scope.canonical_theme_id + subject.company_node_id; Finance has no canonical theme and unvalidated witness identities — consume by reference, request the R11 §14.1 extension sections on #7870, never fork."
@@ -76,18 +92,39 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Wave 1 closed 2026-09-24 08:29Z (T1 #7896, T3 #7900, records #7887/#7902/#7913/#7939 merged); T2
-  composer #7920 MERGED 11:53Z (e4ac3730). D1 CLOSED: spec FROZEN at 2e5c3df6 after five read-only
-  Opus audits + the seat freeze repair, mockup accepted at ce7fc986 after browser proof at 1440/390 ×
-  dark/light × EN/ZH + keyboard; #7903 MERGED 2026-09-24T14:58:16Z (0293b9cfd76f)
-  (DEC:FINANCE-DOSSIER-SPEC-SURFACE-TIERS-STATE-SCOPED-FRESHNESS-AND-ANSWER-FIRST-COMPOSITION,
-  DSC:EXTERNAL-REPAIR-LANES-OVER-EDIT-LONG-SPECS-EVEN-WHEN-SURGICAL-CAP-THE-AUDITS-AND-LET-THE-SEAT-CLOSE).
-  Chairman directive (Astra CEO): Finance integrates into the Semiconductor-built shared foundation and
-  never rebuilds base layers — T4/T5/T6/T7 HELD (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE).
-  Next: T8 shell + hydration behind the FI_READ_URL constant (lane fin_t8_ui_shell; residual appendix
-  binds) → seat browser acceptance of the shell in its not-connected state → T9 entry points → integration
-  once #7870 lands (adapter to the foundation's source_record.v1 / evidence_claim.v1 /
-  sector_intelligence_packet.v1 as recorded in the handoff; three open questions for the shared owner).
+  2026-10-11 CONSOLIDATION: owner is now fable-meta-ceo (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11); the Finance seat
+  938d17d6 has been silent since 2026-09-29 and no live writer exists on these paths. H1 on #7870
+  is ruled B and implemented at acc72f3fb3efb1ad092359ce2ba4190de66d75e1: the adapter raises
+  vertical_registration_held:sector_profile before construction; Sol's "do not edit either Finance
+  file" fence is superseded (#7870 comment 6105015260 section C-3). The P-FIN-1 packet (register
+  _finance_sector_deep_dive.html.j2 in _SUPPORT_PARTIALS; 30 TemplateNotFound reds on main in
+  tests/test_research_priority_ordering.py) is the first Finance labor to dispatch after #7870 lands.
+  .
+  2026-09-28 wave closed (handoff GMI-FINANCE-INTELLIGENCE-2026-09-28; the one before it,
+  GMI-FINANCE-INTELLIGENCE-2026-09-27, carries the history of T1-T3, T8-T11 and the composer
+  follow-ups #8113 to #8138). This wave closed every composer item the 09-27 handoff left open:
+  #8146 (the registration limitations read theme evidence through the composer's own gate) MERGED
+  3b9a451f; #8159 (an owner input reads the same whatever container holds its rows) MERGED
+  a4236bb0, with its independent review answered in #8165 MERGED e2fb0a01; and #8167 (an
+  observation has one date, which every reader reads through one helper, and a timestamp parted
+  by a space dates its row and its published clocks) MERGED 867b6b87
+  (DEC:FINANCE-AN-OBSERVATION-HAS-ONE-DATE). The page stays NOT CONNECTED by design
+  (FI_READ_URL = "") and T4/T5/T6/T7 stay HELD
+  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). The seat's T10/T11 lane ids
+  are not the waves list's original "Tasks 10-11" breadth verticals, which remain todo in W4.
+  Next, all gated on other owners: (1) when #7870 (the Semiconductors shared base) merges, open
+  the integration wave: the adapter onto source_record.v1 / evidence_claim.v1 /
+  sector_intelligence_packet.v1, then the serving route once accepted, then set FI_READ_URL
+  (DSC:FINANCE-PAGE-READS-THE-BARE-READ-MODEL-NOT-THE-RESEARCH-ENVELOPE: the page accepts only the
+  bare read model), then a connected browser proof on live data. The T6 publish step MUST run
+  validate_contract on the composed document before serving: the composer does not, and the
+  sealed contract is the only complete key check. The adapter also owns two input duties the
+  composer does not: refuse a malformed owner container per record, as a named omission (the
+  composer crashes, closed, on 70 of 184 malformed container shapes on the default fixture), and
+  write a source record's own clocks as dates (the contract refuses a timestamp there). (2) Wire
+  the Financials launch include when #7669 merges. (3) Carry the deferred review MINORs and the
+  T10 gaps (the #7870 owner-bundle wire grammar is not adopted; the round trip's absorbing xfail is RETIRED and the §8 sector_profile case is
+  ADJUDICATED as a typed hold (DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE); forwarding view_keys/build_query waits on Option A) into the integration wave.
 ---
 
 # Finance Intelligence workstream

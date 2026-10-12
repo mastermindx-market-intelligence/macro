@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MIR-BULL-20260831",
-  "asof": "2026-09-24",
+  "asof": "2026-10-09",
   "phase": "at_t1",
   "detection_phase": "at_t1",
-  "management_confidence": 72.7,
-  "raw_confidence": 74.1,
-  "delta_vs_base": 12.7,
+  "management_confidence": 62.2,
+  "raw_confidence": 61.6,
+  "delta_vs_base": 2.2,
   "recommended_action": "hold",
   "human_state": "T1 Hit \u2014 Holding",
   "components": {
     "validity": 100.0,
-    "progress": 59.8,
-    "pace": 79.6,
-    "retention": 70.4,
-    "overlay": 67.0
+    "progress": 57.4,
+    "pace": 49.1,
+    "retention": 61.8,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.191,
-    "dist_to_t1_r": 0.309,
-    "dist_to_t2_r": 1.809,
-    "horizon_pct_used": 53.3,
-    "p1": 0.7939,
-    "p2": 0.397,
+    "dist_to_stop_r": 2.045,
+    "dist_to_t1_r": 0.455,
+    "dist_to_t2_r": 1.955,
+    "horizon_pct_used": 86.7,
+    "p1": 0.697,
+    "p2": 0.3485,
     "p3": null,
-    "move_r": 1.191,
+    "move_r": 1.045,
     "mfe_r": 1.691,
-    "mae_r": -0.0
+    "mae_r": -0.864
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.860000305175781,
-  "_mae": -3.051757815342171e-07,
+  "_mae": -0.9500001144409183,
   "_max_p1": 1.127272912227747,
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": "2026-09-04",
   "_first_t2_ts": null,
-  "days_elapsed": 24,
-  "tau": 0.5333
+  "days_elapsed": 39,
+  "tau": 0.8667
 }

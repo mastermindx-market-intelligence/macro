@@ -26,11 +26,11 @@
     <h1 id="fi-hero-title">{{ t('Finance Intelligence', '金融情报') }}</h1>
     <p class="fi-deck">{{ t('Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.', '阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。') }}</p>
     <p class="fi-meta">
-      <span class="fi-meta-asof l-en" data-fi-mount="hero-asof" data-aria-en="As of {{ '{' }}common_as_of{{ '}' }}" data-aria-zh="截至 {{ '{' }}common_as_of{{ '}' }}" hidden></span><span class="fi-meta-asof-zh l-zh" data-fi-mount="hero-asof-zh" hidden></span>
+      <span class="fi-meta-asof l-en" data-fi-mount="hero-asof" hidden></span><span class="fi-meta-asof-zh l-zh" data-fi-mount="hero-asof-zh" hidden></span>
       <span aria-hidden="true">·</span>
-      <span class="fi-meta-cutoff l-en" data-fi-mount="hero-cutoff" data-aria-en="Knowledge cutoff {{ '{' }}knowledge_cutoff{{ '}' }}" data-aria-zh="知识截止 {{ '{' }}knowledge_cutoff{{ '}' }}" hidden></span><span class="fi-meta-cutoff-zh l-zh" data-fi-mount="hero-cutoff-zh" hidden></span>
-      <span class="fi-chip" data-fi-mount="hero-freshness" data-state-freshness="" data-aria-en="Evidence freshness: {{ '{' }}§D.12 label of freshness.state{{ '}' }}" data-aria-zh="证据新鲜度：{{ '{' }}§D.12 label of freshness.state{{ '}' }}" hidden></span>
-      <span class="fi-chip" data-fi-mount="hero-outer" data-state-outer-dossier="" data-aria-en="Outer dossier: {{ '{' }}§D.14 label of outer_dossier_ref.state{{ '}' }}" data-aria-zh="外部报告：{{ '{' }}§D.14 label of outer_dossier_ref.state{{ '}' }}" hidden></span>
+      <span class="fi-meta-cutoff l-en" data-fi-mount="hero-cutoff" hidden></span><span class="fi-meta-cutoff-zh l-zh" data-fi-mount="hero-cutoff-zh" hidden></span>
+      <span class="fi-chip" data-fi-mount="hero-freshness" data-state-freshness="" hidden></span>
+      <span class="fi-chip" data-fi-mount="hero-outer" data-state-outer-dossier="" hidden></span>
     </p>
   </header>
 
@@ -91,7 +91,7 @@
 
     <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察"></ul>
 
-    <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
+    <div class="fi-conflicts" data-fi-mount="conflicts">
       <h3 id="fi-conflicts-title" class="fi-conflicts-title">
         <span class="l-en">Where the planes disagree</span>
         <span class="l-zh">各维度之间的分歧</span>
@@ -131,7 +131,7 @@
         <span class="l-en">Subtheme atlas</span>
         <span class="l-zh">子主题图谱</span>
       </h2>
-      <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow" data-state-coverage="" data-aria-en="Domains and slices mapped" data-aria-zh="已映射的子域与切片" hidden></span>
+      <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow" data-state-coverage="" hidden></span>
     </header>
 
     <div class="fi-domain-grid" data-fi-mount="domain-grid"></div>
@@ -229,6 +229,13 @@
       </table>
     </details>
     <ul class="fi-macro-cards" data-fi-mount="macro-cards" hidden></ul>
+    <details class="fi-disc fi-macro-cards-more" data-fi-mount="macro-cards-more" hidden>
+      <summary>
+        <span class="l-en">See all slices</span>
+        <span class="l-zh">查看全部切片</span>
+      </summary>
+      <ul class="fi-macro-cards" data-fi-mount="macro-cards-list"></ul>
+    </details>
   </section>
 
   <section id="constraint-map" class="fi-section fi-panel fi-constraint" aria-labelledby="fi-constraint-title" data-fi-mount="constraint-map">
@@ -247,10 +254,12 @@
 
   <footer class="fi-provenance" data-fi-mount="provenance" data-aria-en="Input receipts" data-aria-zh="输入凭据"></footer>
 
-  <p class="mx-empty fi-notice" data-fi-mount="notice" hidden>
-    <span class="l-en" data-fi-mount="notice-en"></span>
-    <span class="l-zh" data-fi-mount="notice-zh"></span>
-  </p>
+  <div class="fi-notice-live" role="status" aria-live="polite">
+    <p class="mx-empty fi-notice" data-fi-mount="notice" hidden>
+      <span class="l-en" data-fi-mount="notice-en"></span>
+      <span class="l-zh" data-fi-mount="notice-zh"></span>
+    </p>
+  </div>
 </main>
 
 <aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"
@@ -268,6 +277,14 @@
       <span class="l-en">Choose an evidence action in any section</span>
       <span class="l-zh">请在任一板块选择证据操作</span>
     </p>
+    <p class="fi-evidence-empty" data-fi-mount="evidence-missing" hidden>
+      <span class="l-en">This evidence record is not on file.</span>
+      <span class="l-zh">该证据记录暂无存档。</span>
+    </p>
+    <p class="fi-evidence-empty" data-fi-mount="evidence-none" hidden>
+      <span class="l-en">No evidence on file.</span>
+      <span class="l-zh">暂无证据。</span>
+    </p>
     <p class="fi-evidence-private-notice" data-fi-mount="evidence-private-notice" hidden>
       <span class="l-en">Value and excerpt withheld — source rights held.</span>
       <span class="l-zh">数值与摘录已隐去 — 来源权利受限。</span>
@@ -278,6 +295,7 @@
 <div class="fi-scrim" id="fi-scrim" hidden></div>
 
 <script>(function(){function applyAria(){var lang=document.documentElement.getAttribute('data-lang')||'en';document.querySelectorAll('[data-aria-en]').forEach(function(el){el.setAttribute('aria-label',lang==='zh'?(el.getAttribute('data-aria-zh')||el.getAttribute('data-aria-en')):el.getAttribute('data-aria-en'));});}document.addEventListener('langchange',applyAria);applyAria();})();</script>
+<script src="theme.js" defer></script>
 <script src="finance_intelligence.js"></script>
 </body>
 </html>

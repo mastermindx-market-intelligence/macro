@@ -1,0 +1,483 @@
+{
+  "schema": "gmi.research.temporal_compatibility_witness/v1",
+  "authority": "RESEARCH_FIXTURE_ONLY_NO_OWNER_PROFILE_OR_CLOCK_CHANGE",
+  "inputs": "Synthetic clock rows; no real economic relationships or registered-dataset admission.",
+  "python": "3.12.14",
+  "executable_status": "EXECUTED_PINNED_DATAOS_SOURCE",
+  "source_receipts": [
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+      "ref": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+      "blob": "847c47e557aa9b5b3e2a0bab11a0b3c9fc2a9907",
+      "local": "source_snapshots/contracts__economic_propagation__propagation_hypothesis.v1.schema.json",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/74b6426c8be71adec27df00f2f98172f8528c2b2/contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+      "sha256": "2fb402368b71693d457a173efe03d5b3e7144bae7bba1573eb90730e01a375d6",
+      "bytes": 22585,
+      "verified_git_blob": "847c47e557aa9b5b3e2a0bab11a0b3c9fc2a9907",
+      "verified_sha256": "2fb402368b71693d457a173efe03d5b3e7144bae7bba1573eb90730e01a375d6"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "lib/dataos/temporal.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "local": "source_snapshots/lib__dataos__temporal.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/lib/dataos/temporal.py",
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+      "bytes": 12847,
+      "verified_git_blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "verified_sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/theme_graph/theme_state.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "38274c5002bcd5d5773c28dee27016fb2eef830e",
+      "local": "source_snapshots/engine__theme_graph__theme_state.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/theme_graph/theme_state.py",
+      "sha256": "2cb329073277cb9e037b2fc8602226d7e375d144a06d0c9d847d77ff3ab4dbc6",
+      "bytes": 31552,
+      "verified_git_blob": "38274c5002bcd5d5773c28dee27016fb2eef830e",
+      "verified_sha256": "2cb329073277cb9e037b2fc8602226d7e375d144a06d0c9d847d77ff3ab4dbc6"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "BARS_published_precedence",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": "2026-10-08T08:00:00Z",
+        "ingested_at": "2026-10-08T20:00:00Z"
+      },
+      "expected": "2026-10-08T08:00:00+00:00",
+      "actual": "2026-10-08T08:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Publication takes precedence over later ingestion. This helper defines profile knowability, not proof the actual system had ingested the row then."
+    },
+    {
+      "case_id": "BARS_publication_filter",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "profile": "BARS",
+        "row": {
+          "published_at": "2026-10-08T08:00:00Z",
+          "ingested_at": "2026-10-08T20:00:00Z"
+        },
+        "cutoff": "2026-10-08T12:00:00Z"
+      },
+      "expected": 1,
+      "actual": 1,
+      "status": "PASS",
+      "interpretation": "The incumbent publication-clock coalesce allows this helper row before its later ingestion; do not describe this as historical system replay."
+    },
+    {
+      "case_id": "BARS_ingestion_fallback",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": null,
+        "ingested_at": "2026-10-08T10:00:00Z"
+      },
+      "expected": "2026-10-08T10:00:00+00:00",
+      "actual": "2026-10-08T10:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Null publication falls back to ingestion under the declared profile."
+    },
+    {
+      "case_id": "REVISABLE_RELEASE_published_precedence",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": "2026-10-08T08:00:00Z",
+        "ingested_at": "2026-10-08T20:00:00Z"
+      },
+      "expected": "2026-10-08T08:00:00+00:00",
+      "actual": "2026-10-08T08:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Publication takes precedence over later ingestion. This helper defines profile knowability, not proof the actual system had ingested the row then."
+    },
+    {
+      "case_id": "REVISABLE_RELEASE_publication_filter",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "profile": "REVISABLE_RELEASE",
+        "row": {
+          "published_at": "2026-10-08T08:00:00Z",
+          "ingested_at": "2026-10-08T20:00:00Z"
+        },
+        "cutoff": "2026-10-08T12:00:00Z"
+      },
+      "expected": 1,
+      "actual": 1,
+      "status": "PASS",
+      "interpretation": "The incumbent publication-clock coalesce allows this helper row before its later ingestion; do not describe this as historical system replay."
+    },
+    {
+      "case_id": "REVISABLE_RELEASE_ingestion_fallback",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": null,
+        "ingested_at": "2026-10-08T10:00:00Z"
+      },
+      "expected": "2026-10-08T10:00:00+00:00",
+      "actual": "2026-10-08T10:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Null publication falls back to ingestion under the declared profile."
+    },
+    {
+      "case_id": "SNAPSHOT_SERIES_published_precedence",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": "2026-10-08T08:00:00Z",
+        "ingested_at": "2026-10-08T20:00:00Z"
+      },
+      "expected": "2026-10-08T08:00:00+00:00",
+      "actual": "2026-10-08T08:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Publication takes precedence over later ingestion. This helper defines profile knowability, not proof the actual system had ingested the row then."
+    },
+    {
+      "case_id": "SNAPSHOT_SERIES_publication_filter",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "profile": "SNAPSHOT_SERIES",
+        "row": {
+          "published_at": "2026-10-08T08:00:00Z",
+          "ingested_at": "2026-10-08T20:00:00Z"
+        },
+        "cutoff": "2026-10-08T12:00:00Z"
+      },
+      "expected": 1,
+      "actual": 1,
+      "status": "PASS",
+      "interpretation": "The incumbent publication-clock coalesce allows this helper row before its later ingestion; do not describe this as historical system replay."
+    },
+    {
+      "case_id": "SNAPSHOT_SERIES_ingestion_fallback",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": null,
+        "ingested_at": "2026-10-08T10:00:00Z"
+      },
+      "expected": "2026-10-08T10:00:00+00:00",
+      "actual": "2026-10-08T10:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Null publication falls back to ingestion under the declared profile."
+    },
+    {
+      "case_id": "EVENT_published_precedence",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": "2026-10-08T08:00:00Z",
+        "ingested_at": "2026-10-08T20:00:00Z"
+      },
+      "expected": "2026-10-08T08:00:00+00:00",
+      "actual": "2026-10-08T08:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Publication takes precedence over later ingestion. This helper defines profile knowability, not proof the actual system had ingested the row then."
+    },
+    {
+      "case_id": "EVENT_publication_filter",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "profile": "EVENT",
+        "row": {
+          "published_at": "2026-10-08T08:00:00Z",
+          "ingested_at": "2026-10-08T20:00:00Z"
+        },
+        "cutoff": "2026-10-08T12:00:00Z"
+      },
+      "expected": 1,
+      "actual": 1,
+      "status": "PASS",
+      "interpretation": "The incumbent publication-clock coalesce allows this helper row before its later ingestion; do not describe this as historical system replay."
+    },
+    {
+      "case_id": "EVENT_ingestion_fallback",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": null,
+        "ingested_at": "2026-10-08T10:00:00Z"
+      },
+      "expected": "2026-10-08T10:00:00+00:00",
+      "actual": "2026-10-08T10:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "Null publication falls back to ingestion under the declared profile."
+    },
+    {
+      "case_id": "same_day_date_string_refused",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": "2026-10-08",
+        "ingested_at": "2026-10-08T08:00:00Z",
+        "profile": "EVENT"
+      },
+      "expected": {
+        "type": "TemporalError",
+        "refused": true
+      },
+      "actual": {
+        "type": "TemporalError",
+        "refused": true
+      },
+      "status": "PASS",
+      "interpretation": "Date-only nonnull publication is rejected, not converted to midnight or bypassed by ingestion fallback."
+    },
+    {
+      "case_id": "date_object_refused",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "utc",
+      "inputs": {
+        "python_date": "2026-10-08"
+      },
+      "expected": {
+        "type": "TemporalError",
+        "refused": true
+      },
+      "actual": {
+        "type": "TemporalError",
+        "refused": true
+      },
+      "status": "PASS",
+      "interpretation": "A calendar date cannot prove an instant."
+    },
+    {
+      "case_id": "naive_datetime_refused",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "utc",
+      "inputs": {
+        "naive_datetime": "2026-10-08T08:00:00"
+      },
+      "expected": {
+        "type": "TemporalError",
+        "refused": true
+      },
+      "actual": {
+        "type": "TemporalError",
+        "refused": true
+      },
+      "status": "PASS",
+      "interpretation": "No implicit UTC/timezone assumption."
+    },
+    {
+      "case_id": "exact_utc_cutoff_inclusive",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "rows": [
+          {
+            "id": "offset_equal",
+            "published_at": "2026-10-08T10:00:00+02:00"
+          },
+          {
+            "id": "one_microsecond_later",
+            "published_at": "2026-10-08T08:00:00.000001Z"
+          }
+        ],
+        "cutoff": "2026-10-08T08:00:00Z",
+        "profile": "EVENT"
+      },
+      "expected": [
+        "offset_equal"
+      ],
+      "actual": [
+        "offset_equal"
+      ],
+      "status": "PASS",
+      "interpretation": "Normalize offsets, include equality, exclude even one microsecond later."
+    },
+    {
+      "case_id": "before_exact_cutoff_excluded",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "row": {
+          "id": "offset_equal",
+          "published_at": "2026-10-08T10:00:00+02:00"
+        },
+        "cutoff": "2026-10-08T07:59:59.999999Z"
+      },
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS",
+      "interpretation": "One microsecond before the lawful instant cannot include the row."
+    },
+    {
+      "case_id": "intelligence_served_clock",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "profile": "INTELLIGENCE",
+        "row": {
+          "published_at": "2026-10-08T08:00:00Z",
+          "ingested_at": "2026-10-08T08:00:00Z",
+          "computed_at": "2026-10-08T08:00:00Z",
+          "served_at": "2026-10-08T13:00:00Z"
+        }
+      },
+      "expected": "2026-10-08T13:00:00+00:00",
+      "actual": "2026-10-08T13:00:00+00:00",
+      "status": "PASS",
+      "interpretation": "INTELLIGENCE uses served_at; publication, ingestion, and computation cannot substitute for it."
+    },
+    {
+      "case_id": "intelligence_before_served_excluded",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "profile": "INTELLIGENCE",
+        "row": {
+          "published_at": "2026-10-08T08:00:00Z",
+          "ingested_at": "2026-10-08T08:00:00Z",
+          "computed_at": "2026-10-08T08:00:00Z",
+          "served_at": "2026-10-08T13:00:00Z"
+        },
+        "cutoff": "2026-10-08T12:00:00Z"
+      },
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS",
+      "interpretation": "Before actual served_at this artifact is not replayable via this helper."
+    },
+    {
+      "case_id": "intelligence_missing_served_refused",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "published_at": "2026-10-08T08:00:00Z",
+        "ingested_at": "2026-10-08T08:00:00Z",
+        "profile": "INTELLIGENCE"
+      },
+      "expected": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "actual": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "status": "PASS",
+      "interpretation": "Promised replay clock must be present, even when other clocks exist."
+    },
+    {
+      "case_id": "derived_pit_refused_even_with_clocks",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "profile": "DERIVED",
+        "row": {
+          "published_at": "2026-10-08T08:00:00Z",
+          "ingested_at": "2026-10-08T08:00:00Z",
+          "computed_at": "2026-10-08T08:00:00Z",
+          "served_at": "2026-10-08T13:00:00Z",
+          "code_version": "research-synthetic",
+          "input_cutoffs": {}
+        },
+        "cutoff": "2026-10-08T12:00:00Z"
+      },
+      "expected": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "actual": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "status": "PASS",
+      "interpretation": "Extra publication/ingestion/served clocks do not silently change DERIVED's registered profile."
+    },
+    {
+      "case_id": "derived_empty_input_still_refused",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "as_of_filter",
+      "inputs": {
+        "profile": "DERIVED",
+        "rows": [],
+        "cutoff": "2026-10-08T12:00:00Z"
+      },
+      "expected": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "actual": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "status": "PASS",
+      "interpretation": "Profile guard runs before touching rows; empty input does not legitimize PIT."
+    },
+    {
+      "case_id": "missing_event_clocks_refused",
+      "execution": "EXECUTED_PINNED_SOURCE",
+      "method": "known_at",
+      "inputs": {
+        "profile": "EVENT",
+        "row": {}
+      },
+      "expected": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "actual": {
+        "type": "PointInTimeError",
+        "refused": true
+      },
+      "status": "PASS",
+      "interpretation": "Unanswerable knowability is explicit refusal, not silent omission."
+    }
+  ],
+  "source_traces": [
+    {
+      "surface": "held K3D candidate",
+      "execution": "SOURCE_TRACED_NOT_EXECUTED",
+      "ref": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+      "source_path": "contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+      "source_location": "properties.asof.description; freeze clock law and validator _date_key/K3D_R061",
+      "declared_rule": "Composition cutoff. Evidence known after this cutoff must not participate (validator K3D_R061; applies to leg/admission asof+known_at, source event clocks, and BOTH identity resolution_asof values). Clock comparison is DATE-granular by declared law: evidence known intraday on the cutoff date counts as knowable at the cutoff.",
+      "interpretation": "A DATE cutoff cannot be represented as an intraday cut such as 12:00Z. Same-day evidence is admitted by its declared date rule. This is compatibility evidence, not a demonstrated defect against that held contract, and not production/live proof."
+    },
+    {
+      "surface": "current ThemeState",
+      "execution": "SOURCE_TRACED_NOT_EXECUTED",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "source_path": "engine/theme_graph/theme_state.py",
+      "source_locations": [
+        "_clock",
+        "_proven_by",
+        "_clock_reasons"
+      ],
+      "traced_behavior": {
+        "same_day_date_at_intraday_cutoff": "KNOWLEDGE_TIME_UNPROVEN",
+        "prior_day_date_at_intraday_cutoff": "date interval completed before cutoff day",
+        "precise_instant_at_equal_cutoff": "eligible on <= comparison"
+      },
+      "interpretation": "Traced directly from pinned source; this script does not import ThemeState or execute guessed replicas. Its DATE rule differs from DataOS utc, which refuses DATE entirely, and from held K3D's declared DATE cutoff."
+    }
+  ],
+  "summary": {
+    "executed_cases": 23,
+    "passed": 23,
+    "failed": 0,
+    "theme_state": "SOURCE_TRACED_NOT_EXECUTED",
+    "k3d": "SOURCE_TRACED_NOT_EXECUTED"
+  },
+  "limitations": [
+    "Generic helper behavior is not full schema/registry/owner dataset validation.",
+    "Publication-clock eligibility is not ingestion proof or historical system replay.",
+    "INTELLIGENCE helper checks served_at only; full artifact-required fields and log custody were not validated.",
+    "No ThemeState state producer, natural generation, K3D positive-path composer, network, portfolio, or live consumer was executed.",
+    "No guessed clock helper or replica is treated as canonical."
+  ]
+}

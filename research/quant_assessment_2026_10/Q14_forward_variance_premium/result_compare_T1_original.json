@@ -1,0 +1,186 @@
+{
+  "attrition": {
+    "close_vs_close_price_rows_agreeing_rel_1e-6": 9235,
+    "close_vs_close_price_rows_compared": 9235,
+    "cohort_rows": 9235,
+    "dropped_embargo_gap": 18,
+    "dropped_har_nan": 0,
+    "dropped_label_incomplete": 21,
+    "dropped_trailing_incomplete": 0,
+    "dropped_vix_missing": 4,
+    "gspc_days_from_1990": 9260,
+    "holdout_rows": 3673,
+    "train_rows": 5544
+  },
+  "authority": "none",
+  "decision_bearing": true,
+  "decomposition": {
+    "holdout": {
+      "frac_premium_ex_post_negative": 0.1532806969779472,
+      "mean_f_h": 0.0016777833371636412,
+      "mean_iv2_h": 0.002926944786203656,
+      "mean_premium_ex_post": 0.0006376477263592982,
+      "mean_premium_ex_post_ann_variance": 0.007758047337371462,
+      "mean_premium_hat": 0.0012491614490400147,
+      "mean_rv_fwd": 0.0022892970598443574,
+      "median_premium_ex_post": 0.0008954868558124877
+    },
+    "train": {
+      "frac_premium_ex_post_negative": 0.12860750360750361,
+      "mean_f_h": 0.002168705056310132,
+      "mean_iv2_h": 0.004039827758405977,
+      "mean_premium_ex_post": 0.0011375998028740329,
+      "mean_premium_ex_post_ann_variance": 0.013840797601634066,
+      "mean_premium_hat": 0.0018711227020958452,
+      "mean_rv_fwd": 0.0029022279555319446,
+      "median_premium_ex_post": 0.0011611012053278518
+    }
+  },
+  "diagnostics": {
+    "f_only": {
+      "beta": [
+        0.0009648040866672216,
+        0.8933551675123063
+      ],
+      "holdout_mse": 2.711776880033333e-05
+    },
+    "iv2_only": {
+      "beta": [
+        -0.0006566622413670673,
+        0.8809509735888511
+      ],
+      "holdout_mse": 2.3639046105229418e-05
+    },
+    "nonpositive_forecasts_augmented": 0,
+    "nonpositive_forecasts_controls": 0,
+    "rv_trail_only": {
+      "beta": [
+        0.0008766730928535,
+        0.6794324265414977
+      ],
+      "holdout_mse": 3.1535046854330476e-05
+    }
+  },
+  "inputs_sha256": {
+    "PREREG.md": "97ec3b0439a46cd9de225a993730114e196c916918c89818a7db70fc32c4ff56",
+    "engine/vol_forecast.py": "bcd6ec2cc8c116b469173ab475dc495be7e024b4ea452b9d1cf6de58301e06c0",
+    "engine/vol_horizon_variance_premium.py": "149d83b67615e2566c8abc2da8bfb5a8079e139507d14ee8571493007737cb68",
+    "evaluate.py": "6b65b3b61131e7d6d0b5fc7ca31a96a539585e1cf00d80bacb02ea6dcd953164",
+    "fred/VIXCLS.parquet": "9c2cf59813a9415be7c657f1a312f5e86673a82de6e99dab65d882946b85a25a",
+    "yahoo/_GSPC.parquet": "35570905ff8d16c2284cd02cc32ebcfa7f67f025638e00783a7390ecb0358ac1",
+    "yahoo/_VIX.parquet": "cc85989435aecf3c24fd4ca24fac8979e771577543a4a73c609e4e903b57228e"
+  },
+  "mode": "compare",
+  "receipt_example_last_holdout_row": {
+    "asof": 20704,
+    "authority": "none",
+    "day_count": "calendar365",
+    "horizon_calendar_days": 30,
+    "implied_coverage": {
+      "jump_correction": "none",
+      "overnight": "risk_neutral_horizon_includes_overnight",
+      "source": "FRED VIXCLS (CBOE 30cd strip, vendor-computed)",
+      "tail_strikes": "strip_truncated"
+    },
+    "implied_variance": 0.0020311101369863012,
+    "measure_kind": "strip",
+    "notes": [
+      "physical method: incumbent engine.vol_forecast.har_vol lags (2,5,22,66), equal weight"
+    ],
+    "physical_coverage": {
+      "demeaned": false,
+      "intraday_path": "not_observed_daily_sampling",
+      "overnight": "included",
+      "sampling": "close_to_close",
+      "tail_strikes": "not_applicable_physical_leg"
+    },
+    "physical_kind": "forecast",
+    "physical_variance": 0.0005934532722547732,
+    "premium_variance": 0.001437656864731528,
+    "session_note": "session offset acknowledged: implied cboe_1615_et vs physical nyse_1600_et",
+    "timing": "ex_ante",
+    "units": "horizon_variance"
+  },
+  "result": {
+    "authority": "none",
+    "beta_augmented": [
+      -8.863767501645259e-06,
+      0.6293719748994405,
+      0.2551364727337425,
+      -0.20954644596407893
+    ],
+    "beta_controls": [
+      -4.2400939588665987e-05,
+      0.4558444300231626,
+      0.37001176656425344
+    ],
+    "keep_predictive_upgrade": false,
+    "loss_diff_bootstrap": {
+      "block": 63,
+      "hi": 1.7580995011134287e-06,
+      "lo": -7.282676878845887e-08,
+      "mean": 5.388478809387391e-07,
+      "n_boot": 2000,
+      "seed": 14
+    },
+    "loss_diff_hac": {
+      "lags": 42,
+      "mean": 5.388478809387391e-07,
+      "se": 4.903820408516211e-07,
+      "t": 1.098832820229203
+    },
+    "mse_augmented": 2.6083274757953908e-05,
+    "mse_controls": 2.6622122638892646e-05,
+    "practical_bar": 0.05,
+    "qlike_augmented": 0.3764033672467205,
+    "qlike_controls": 0.3753754774831634,
+    "qlike_diff_hac": {
+      "lags": 42,
+      "mean": -0.0010278897635571241,
+      "se": 0.0037904890625243604,
+      "t": -0.27117602678757713
+    },
+    "relative_mse_reduction": 0.020240605463650287,
+    "segment_relative_reduction": [
+      0.005466542703845703,
+      0.02288816695906974,
+      -0.008779977931689917
+    ],
+    "segments_needed": 2,
+    "segments_positive": 2
+  },
+  "spec": {
+    "augmented": [
+      "1",
+      "iv2_h",
+      "rv_trail",
+      "premium_hat"
+    ],
+    "bar": 0.05,
+    "block": 63,
+    "controls": [
+      "1",
+      "iv2_h",
+      "rv_trail"
+    ],
+    "embargo_days": 31,
+    "h": 30,
+    "hac_lags": 42,
+    "n_boot": 2000,
+    "seed": 14,
+    "train_end": "2011-12-31"
+  },
+  "support": {
+    "holdout_63d_blocks": 58,
+    "holdout_first": "2012-01-30",
+    "holdout_last": "2026-09-08",
+    "holdout_nonoverlap_30cd_windows": 170,
+    "train_63d_blocks": 88,
+    "train_first": "1990-01-02",
+    "train_last": "2011-12-30",
+    "train_nonoverlap_30cd_windows": 256
+  },
+  "trial": "Q14-T1",
+  "verdict_measurement": "retained as research-only measurement (horizon-matched receipts)",
+  "verdict_predictive_upgrade": "REJECT"
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "fable_mode.qualification_evidence.v1",
+  "source_base": "4a1882bf510a642674d110c3c5c5dec3111e8ea2",
+  "original_r3_base": "ad38f308945cdcd36a01111e88009ab895f9367c",
+  "candidate_files": {
+    ".agents/skills/fable-mode/SKILL.md": {
+      "sha256": "f406217325dd87d866f0ba12c3c000bbf04258cdedd49d37e000423ba1d47ee6",
+      "bytes": 1823
+    },
+    ".claude/skills/fable-mode/SKILL.md": {
+      "sha256": "0fd573ca40952a53089a40c7ae2dc8c64b77b48c1bcd829eedd9dd90a5365864",
+      "bytes": 38677
+    },
+    ".claude/skills/fable-mode/references/harness-adapters.md": {
+      "sha256": "967b7ee339ac1cd3983f7885c7d7880a96f60092146e9700e2f02e7e55f6ba42",
+      "bytes": 13764
+    },
+    ".claude/skills/fable-mode/references/long-horizon.md": {
+      "sha256": "e1ebab436e8cb3ae9b32aa8761d31842c905825ebff1b126b70a037e64633227",
+      "bytes": 17520
+    },
+    ".claude/skills/fable-mode/references/orchestration.md": {
+      "sha256": "3480c42092e8110fa3897e0d6a8b37bf22384a9d613690af0eac2e2c5493cceb",
+      "bytes": 16384
+    },
+    "config/fable_mode_core.md": {
+      "sha256": "f8fcebc8f3b44eccc54214a7364637a2fc826220d497cedb0b29bf4e74d36913",
+      "bytes": 5526
+    },
+    "config/grader_manifest.yml": {
+      "sha256": "84dd2b70f002a3a392f1647e8551943138f48303fa1817215afd242520d85d3d",
+      "bytes": 6430
+    },
+    "tests/test_grader_manifest.py": {
+      "sha256": "41debc4c4221fcbe31473e3628d042e85ce8ccce1f9e127d4c4ee89945e46e17",
+      "bytes": 11272
+    }
+  },
+  "source_contract_tests": {
+    "baseline": {
+      "tests": 9,
+      "failures": [
+        "baseline.R31Contract.test_codex_checks_discovery_and_child_effort",
+        "baseline.R31Contract.test_distillation_requires_return_proof",
+        "baseline.R31Contract.test_economics_not_universal_fable_price",
+        "baseline.R31Contract.test_missing_return_does_not_duplicate_worker",
+        "baseline.R31Contract.test_missing_watch_has_no_fictional_wake",
+        "baseline.R31Contract.test_no_effect_does_not_authorize_retry",
+        "baseline.R31Contract.test_ownership_gate_accepts_native_return_binding",
+        "baseline.R31Contract.test_user_scope_cannot_reuse_checkout_relative_stub"
+      ],
+      "errors": []
+    },
+    "candidate": {
+      "tests": 9,
+      "failures": [],
+      "errors": []
+    }
+  },
+  "existing_grader_suite": "19 passed; 10 existing tests retained plus 9 Fable contracts",
+  "ci_integration": "New contracts moved into existing tests/test_grader_manifest.py; no CI manifest modification or new runner. Original PR pack 8 failed at dependency installation, not a Fable assertion. New candidate still requires its own concluded checks.",
+  "directory_permission": {
+    "exact_target": "/Users/chriswong/.agents/skills/fable-mode",
+    "authorization": "Current explicit Chairman authorization",
+    "allowlist_readback": true,
+    "target_preinstall": "not present"
+  },
+  "codex": {
+    "reported_cli_version": "0.154.0",
+    "previous_proof": "Native skills/list discovered an enabled repo-scope candidate; its core bytes are unchanged in this continuation.",
+    "user_scope_rule": "Deploy complete verified canonical package, never reuse the checkout-relative pointer in the user root.",
+    "model_turns_started": 0,
+    "installed": false
+  },
+  "not_proven": [
+    "independent source review",
+    "fresh-model behavior",
+    "user-scope native discovery",
+    "live orchestration acceptance"
+  ]
+}

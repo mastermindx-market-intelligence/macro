@@ -17,6 +17,89 @@ function classSet(name) {
   return String(name || '').trim().split(/\s+/).filter(Boolean);
 }
 
+// Every string a painter assigns to innerHTML, in order (item 1 scans these).
+var htmlWrites = [];
+var VOID_TAGS = { area: 1, base: 1, br: 1, col: 1, embed: 1, hr: 1, img: 1, input: 1,
+                  link: 1, meta: 1, param: 1, source: 1, track: 1, wbr: 1 };
+function decodeEntities(text) {
+  return String(text).replace(/&(#x[0-9a-f]+|#[0-9]+|amp|lt|gt|quot|apos);/gi, function (_, ent) {
+    var e = ent.toLowerCase();
+    if (e === 'amp') return '&';
+    if (e === 'lt') return '<';
+    if (e === 'gt') return '>';
+    if (e === 'quot') return '"';
+    if (e === 'apos') return "'";
+    return String.fromCharCode(e.charAt(1) === 'x' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10));
+  });
+}
+function escText(text) { return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function escAttr(text) { return escText(text).replace(/"/g, '&quot;'); }
+function makeText(text) {
+  var t = makeNode('#text');
+  t.nodeType = 3;
+  t._text = text;
+  return t;
+}
+// Stack-based parser: nested elements, void tags, quoted attributes, text nodes.
+function parseHtmlInto(parent, raw) {
+  var stack = [parent];
+  var re = /<!--[\s\S]*?-->|<\/([a-zA-Z][\w-]*)\s*>|<([a-zA-Z][\w-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>|([^<]+)|</g;
+  var m;
+  while ((m = re.exec(raw)) !== null) {
+    var top = stack[stack.length - 1];
+    if (m[1]) {
+      var closing = m[1].toUpperCase();
+      for (var i = stack.length - 1; i > 0; i -= 1) {
+        if (stack[i].tagName === closing) { stack.length = i; break; }
+      }
+    } else if (m[2]) {
+      var tag = m[2].toLowerCase();
+      var attrText = m[3] || '';
+      var child = makeNode(tag, {});
+      var attrRe = /([^\s=\/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
+      var am;
+      while ((am = attrRe.exec(attrText)) !== null) {
+        var value = am[2] != null ? am[2] : am[3] != null ? am[3] : am[4] != null ? am[4] : '';
+        if (am[1] === 'hidden') { child.hidden = true; continue; }
+        child.setAttribute(am[1], decodeEntities(value));
+      }
+      top.appendChild(child);
+      if (!VOID_TAGS[tag] && !/\/\s*$/.test(attrText)) stack.push(child);
+    } else if (m[4] != null) {
+      top.appendChild(makeText(decodeEntities(m[4])));
+    } else if (m[0] === '<') {
+      top.appendChild(makeText('<'));
+    }
+  }
+}
+function serializeNode(node) {
+  if (node.nodeType === 3) return escText(node._text || '');
+  var tag = node.tagName.toLowerCase();
+  var out = '<' + tag;
+  if (node.className) out += ' class="' + escAttr(node.className) + '"';
+  if (node.id) out += ' id="' + escAttr(node.id) + '"';
+  Object.keys(node.attributes).forEach(function (name) {
+    if (name === 'class' || name === 'id' || name === 'hidden') return;
+    out += ' ' + name + '="' + escAttr(node.attributes[name]) + '"';
+  });
+  Object.keys(node.dataset).forEach(function (key) {
+    var name = 'data-' + key.replace(/[A-Z]/g, function (ch) { return '-' + ch.toLowerCase(); });
+    if (!Object.prototype.hasOwnProperty.call(node.attributes, name)) out += ' ' + name + '="' + escAttr(node.dataset[key]) + '"';
+  });
+  if (node.hidden) out += ' hidden';
+  out += '>';
+  if (VOID_TAGS[tag]) return out;
+  return out + serializeChildren(node) + '</' + tag + '>';
+}
+function serializeChildren(node) {
+  if (!node.childNodes.length) return escText(node._text || '');
+  return node.childNodes.map(serializeNode).join('');
+}
+function isConnected(node) {
+  for (var n = node; n; n = n.parentNode) if (n === html) return true;
+  return false;
+}
+
 function makeNode(tag, attrs) {
   attrs = attrs || {};
   var node = {
@@ -90,6 +173,34 @@ function makeNode(tag, attrs) {
     child.parentNode = null;
     return child;
   };
+  node.insertBefore = function (child, ref) {
+    if (!ref) return node.appendChild(child);
+    if (child.parentNode) child.parentNode.removeChild(child);
+    var at = node.childNodes.indexOf(ref);
+    if (at < 0) throw new Error('insertBefore: reference is not a child');
+    child.parentNode = node;
+    node.childNodes.splice(at, 0, child);
+    return child;
+  };
+  node.matches = function (sel) {
+    return String(sel).split(',').some(function (part) { return matchSel(node, part.trim()); });
+  };
+  node.closest = function (sel) {
+    for (var n = node; n && n.tagName && n.nodeType !== 9; n = n.parentNode) {
+      if (n.matches && n.matches(sel)) return n;
+    }
+    return null;
+  };
+  Object.defineProperty(node, 'nextSibling', { get: function () {
+    var p = node.parentNode; if (!p) return null;
+    return p.childNodes[p.childNodes.indexOf(node) + 1] || null;
+  } });
+  Object.defineProperty(node, 'previousSibling', { get: function () {
+    var p = node.parentNode; if (!p) return null;
+    return p.childNodes[p.childNodes.indexOf(node) - 1] || null;
+  } });
+  Object.defineProperty(node, 'parentElement', { get: function () { return node.parentNode; } });
+  Object.defineProperty(node, 'isConnected', { get: function () { return isConnected(node); } });
   node.contains = function (other) {
     if (other === node) return true;
     return node.childNodes.some(function (c) { return c.contains && c.contains(other); });
@@ -108,13 +219,14 @@ function makeNode(tag, attrs) {
     (node.listeners[event.type || event] || []).forEach(function (fn) { fn.call(node, event); });
   };
   node.focus = function () { document.activeElement = node; };
+  node.nodeType = 1;
   node.blur = function () {};
   node.click = function () { node.dispatchEvent({ type: 'click', target: node }); };
   node.querySelector = function (sel) { return queryAll(node, sel)[0] || null; };
   node.querySelectorAll = function (sel) { return queryAll(node, sel); };
   Object.defineProperty(node, 'firstChild', { get: function () { return node.childNodes[0] || null; } });
   Object.defineProperty(node, 'lastChild', { get: function () { return node.childNodes[node.childNodes.length - 1] || null; } });
-  Object.defineProperty(node, 'children', { get: function () { return node.childNodes.slice(); } });
+  Object.defineProperty(node, 'children', { get: function () { return node.childNodes.filter(function (c) { return c.nodeType !== 3; }); } });
   Object.defineProperty(node, 'options', {
     get: function () {
       var out = [];
@@ -135,40 +247,14 @@ function makeNode(tag, attrs) {
     }
   });
   Object.defineProperty(node, 'innerHTML', {
-    get: function () { return node.textContent; },
+    get: function () { return serializeChildren(node); },
     set: function (value) {
-      // Stub-level innerHTML: parse a small subset (option/li/tr/button) into
-      // real child nodes so renderSliceSelector / renderRerating populate the
-      // DOM tree the way a real browser would. Anything else falls back to a
-      // flat text representation.
       var raw = value == null ? '' : String(value);
+      htmlWrites.push(raw);
+      node.childNodes.forEach(function (c) { c.parentNode = null; });
       node.childNodes = [];
-      var re = /<([a-z][a-z0-9]*)\b([^>]*)>([\s\S]*?)<\/\1>/gi;
-      var m, lastIdx = 0;
-      while ((m = re.exec(raw)) !== null) {
-        if (m.index > lastIdx) {
-          var txt = raw.slice(lastIdx, m.index).trim();
-          if (txt) node.appendChild(makeNode('span', {}))._text = txt;
-        }
-        var tag = m[1].toLowerCase();
-        var attrs = m[2] || '';
-        var body = m[3] || '';
-        var child = makeNode(tag, {});
-        var attrRe = /([a-zA-Z][\w-]*)\s*=\s*"([^"]*)"/g;
-        var am;
-        while ((am = attrRe.exec(attrs)) !== null) {
-          child.setAttribute(am[1], am[2]);
-        }
-        // Recurse for nested tags (simple single-level).
-        child.innerHTML = body;
-        node.appendChild(child);
-        lastIdx = re.lastIndex;
-      }
-      if (lastIdx < raw.length) {
-        var tail = raw.slice(lastIdx).trim();
-        if (tail) node.appendChild(makeNode('span', {}))._text = tail;
-      }
       node._text = '';
+      parseHtmlInto(node, raw);
     }
   });
   Object.defineProperty(node, 'offsetParent', { get: function () { return node.hidden ? null : node.parentNode || document.body; } });
@@ -180,21 +266,31 @@ function makeNode(tag, attrs) {
   return node;
 }
 
+// One compound selector: an optional tag, then any mix of #id, .class, [attr],
+// [attr="v"] and :not(<those>). Anything else THROWS: a selector the harness
+// cannot evaluate used to match nothing, which is how `.fi-view-tab[data-view=…]`
+// (the langchange focus restore) and `button:not([disabled])` (the drawer's
+// focus trap) went untested until T11 round 3.
+var SIMPLE = '#[\\w-]+|\\.[\\w-]+|\\[[\\w-]+(?:="[^"]*")?\\]';
+var PART = new RegExp(SIMPLE + '|:not\\((?:' + SIMPLE + ')+\\)', 'g');
+var COMPOUND = new RegExp('^([a-z][\\w-]*|\\*)?((?:' + SIMPLE + '|:not\\((?:' + SIMPLE + ')+\\))*)$', 'i');
+function matchSimple(node, p) {
+  if (p.slice(0, 5) === ':not(') {
+    return !p.slice(5, -1).match(new RegExp(SIMPLE, 'g')).every(function (q) { return matchSimple(node, q); });
+  }
+  if (p.charAt(0) === '#') return node.id === p.slice(1);
+  if (p.charAt(0) === '.') return classSet(node.className).indexOf(p.slice(1)) >= 0;
+  var a = p.match(/^\[([\w-]+)(?:="([^"]*)")?\]$/);
+  var value = node.getAttribute(a[1]);
+  return a[2] === undefined ? value !== null : value === a[2];
+}
 function matchSel(node, sel) {
   sel = String(sel || '').trim();
-  if (!sel) return false;
-  if (sel.charAt(0) === '#') return node.id === sel.slice(1);
-  if (sel.charAt(0) === '.') return classSet(node.className).indexOf(sel.slice(1)) >= 0;
-  var attr = sel.match(/^([a-z][\w-]*)?\[([^=\]]+)="([^"]*)"\]$/i);
-  if (attr) {
-    if (attr[1] && node.tagName !== attr[1].toUpperCase()) return false;
-    return node.getAttribute(attr[2]) === attr[3];
-  }
-  var tagged = sel.match(/^([a-z][\w-]*)$/i);
-  if (tagged) return node.tagName === tagged[1].toUpperCase();
-  var combo = sel.match(/^([a-z][\w-]*)\.([\w-]+)$/i);
-  if (combo) return node.tagName === combo[1].toUpperCase() && classSet(node.className).indexOf(combo[2]) >= 0;
-  return false;
+  var m = sel.match(COMPOUND);
+  if (!sel || !m) throw new Error('harness cannot evaluate selector: ' + sel);
+  if (!node || !node.tagName) return false;
+  if (m[1] && m[1] !== '*' && node.tagName !== m[1].toUpperCase()) return false;
+  return (m[2].match(PART) || []).every(function (p) { return matchSimple(node, p); });
 }
 
 function walk(node, visit) {
@@ -202,28 +298,51 @@ function walk(node, visit) {
   node.childNodes.forEach(function (child) { walk(child, visit); });
 }
 
+// Selector lists of compound selectors joined by descendant (space) or child
+// (>) combinators. Like the DOM: only DESCENDANTS of root match, and results
+// come back in document order.
 function queryAll(root, selector) {
-  var parts = String(selector || '').split(',').map(function (i) { return i.trim(); }).filter(Boolean);
-  var found = [];
-  parts.forEach(function (part) {
-    var tokens = part.split(/\s+/);
+  var hits = [];
+  String(selector || '').split(',').map(function (i) { return i.trim(); }).filter(Boolean).forEach(function (part) {
     var pool = [root];
-    tokens.forEach(function (token, index) {
+    var child = false;
+    part.replace(/\s*>\s*/g, ' > ').split(/\s+/).forEach(function (token) {
+      if (token === '>') { child = true; return; }
       var next = [];
       pool.forEach(function (start) {
-        walk(start, function (node) {
-          if ((index === 0 ? true : node !== start) && matchSel(node, token)) next.push(node);
+        var candidates = [];
+        if (child) candidates = start.childNodes || [];
+        else walk(start, function (node) { if (node !== start) candidates.push(node); });
+        candidates.forEach(function (node) {
+          if (next.indexOf(node) < 0 && matchSel(node, token)) next.push(node);
         });
       });
       pool = next;
+      child = false;
     });
-    pool.forEach(function (node) { if (found.indexOf(node) < 0) found.push(node); });
+    pool.forEach(function (node) { if (hits.indexOf(node) < 0) hits.push(node); });
   });
+  var found = [];
+  walk(root, function (node) { if (hits.indexOf(node) >= 0) found.push(node); });
   found.item = function (i) { return found[i]; };
   return found;
 }
 
 var byId = {};
+var docListeners = {};
+var winListeners = {};
+function makeEvent(type, extra) {
+  var ev = { type: type, defaultPrevented: false };
+  ev.preventDefault = function () { ev.defaultPrevented = true; };
+  Object.keys(extra || {}).forEach(function (k) { ev[k] = extra[k]; });
+  return ev;
+}
+function fireDoc(type, extra) {
+  var ev = makeEvent(type, extra);
+  (docListeners[type] || []).slice().forEach(function (fn) { fn(ev); });
+  return ev;
+}
+function fireWin(type) { (winListeners[type] || []).slice().forEach(function (fn) { fn({ type: type }); }); }
 function attach(node) { if (node.id) byId[node.id] = node; return node; }
 
 var html = makeNode('html');
@@ -234,10 +353,14 @@ var document = {
   activeElement: null,
   querySelector: function (sel) { return queryAll(html, sel)[0] || null; },
   querySelectorAll: function (sel) { return queryAll(html, sel); },
-  getElementById: function (id) { return byId[id] || null; },
+  getElementById: function (id) {
+    var hit = null;
+    walk(html, function (n) { if (!hit && n.id === id) hit = n; });
+    return hit;
+  },
   getElementsByClassName: function () { return []; },
   getElementsByTagName: function () { return []; },
-  addEventListener: function () {},
+  addEventListener: function (type, fn) { (docListeners[type] = docListeners[type] || []).push(fn); },
   createElement: function (tag) { return makeNode(tag); },
   createElementNS: function (_ns, tag) { return makeNode(tag); },
   readyState: 'complete'
@@ -254,6 +377,11 @@ var main = attach(makeNode('main', { id: 'fi-main', class: 'fi-shell' }));
 main.setAttribute('data-fi-mount', 'shell');
 body.appendChild(main);
 
+// the contents' Evidence link: an evidence trigger that carries no list
+var tocEvidence = attach(makeNode('button', { type: 'button', class: 'fi-toc-evidence', 'aria-controls': 'evidence-drawer' }));
+tocEvidence.innerHTML = '<span class="l-en">Evidence</span><span class="l-zh">证据</span>';
+main.appendChild(tocEvidence);
+
 // hero mounts
 [
   'hero-asof', 'hero-asof-zh', 'hero-cutoff', 'hero-cutoff-zh',
@@ -267,18 +395,34 @@ body.appendChild(main);
 // seven L1 sections + their mounts
 var sections = ['what-changed', 'rerating-map', 'system-map', 'subtheme-atlas',
                 'company-exposure', 'macro-matrix', 'constraint-map'];
+var sectionOf = {};
 sections.forEach(function (sid) {
-  var sec = attach(makeNode('section', { id: sid }));
+  var sec = attach(makeNode('section', { id: sid, class: 'fi-section' }));
   sec.setAttribute('data-fi-mount', sid);
+  var head = makeNode('header', { class: 'fi-section-head' });
+  head.appendChild(makeNode('h2', { class: 'fi-section-title' }));
+  sec.appendChild(head);
   main.appendChild(sec);
+  sectionOf[sid] = sec;
 });
+// Mount -> owning section, as templates/finance_intelligence.html.j2 nests them.
+function homeOf(mount) {
+  if (mount === 'what-changed-list') return sectionOf['what-changed'];
+  if (/^(slice-select|rerating-|falsifiers|conflict)/.test(mount)) return sectionOf['rerating-map'];
+  if (/^view-/.test(mount)) return sectionOf['system-map'];
+  if (/^(coverage-eyebrow|domain-grid|atlas-gap)$/.test(mount)) return sectionOf['subtheme-atlas'];
+  if (/^exposure-/.test(mount)) return sectionOf['company-exposure'];
+  if (/^macro-/.test(mount)) return sectionOf['macro-matrix'];
+  if (mount === 'constraint-list') return sectionOf['constraint-map'];
+  return main;
+}
 
 var mounts = [
   'what-changed-list', 'slice-select', 'rerating-steps', 'rerating-bridge',
   'falsifiers', 'conflict-list', 'view-tabs', 'view-panels', 'domain-grid',
   'coverage-eyebrow', 'atlas-gap',
   'exposure-thead', 'exposure-thead-more', 'exposure-rows', 'exposure-rows-more',
-  'exposure-more', 'exposure-cards', 'exposure-cards-more', 'exposure-cards-list',
+  'exposure-more', 'exposure-cards',
   'macro-thead', 'macro-thead-more', 'macro-rows', 'macro-rows-more', 'macro-more', 'macro-cards',
   'constraint-list', 'provenance',
   'notice', 'notice-en', 'notice-zh'
@@ -289,9 +433,20 @@ mounts.forEach(function (m) {
             m.indexOf('cards') >= 0 ? 'ul' :
             m.indexOf('select') >= 0 ? 'select' :
             m.indexOf('tabs') >= 0 ? 'div' : 'div';
-  var el = attach(makeNode(tag, { 'data-fi-mount': m }));
+  var el = attach(makeNode(tag, m === 'slice-select' ? { 'data-fi-mount': m, id: 'fi-slice-select' } : { 'data-fi-mount': m }));
   el.hidden = false;
-  main.appendChild(el);
+  homeOf(m).appendChild(el);
+});
+
+// Phone rows 9..N live in a <details class="fi-disc"> sibling of the first card list,
+// exactly as templates/finance_intelligence.html.j2 nests them (item 9).
+[['company-exposure', 'exposure-cards-more', 'exposure-cards-list', 'fi-exposure-cards-more', 'fi-exposure-cards'],
+ ['macro-matrix', 'macro-cards-more', 'macro-cards-list', 'fi-macro-cards-more', 'fi-macro-cards']].forEach(function (d) {
+  var det = attach(makeNode('details', { class: 'fi-disc ' + d[3], 'data-fi-mount': d[1] }));
+  det.hidden = true;
+  det.appendChild(makeNode('summary', {}));
+  det.appendChild(attach(makeNode('ul', { class: d[4], 'data-fi-mount': d[2] })));
+  sectionOf[d[0]].appendChild(det);
 });
 
 var sliceSelect = byId['fi-slice-select'] || (function () {
@@ -306,7 +461,7 @@ var drawer = attach(makeNode('aside', { id: 'evidence-drawer', class: 'fi-drawer
 drawer.setAttribute('role', 'dialog');
 drawer.setAttribute('aria-modal', 'true');
 body.appendChild(drawer);
-['evidence-empty', 'evidence-private-notice', 'evidence-fields'].forEach(function (m) {
+['evidence-empty', 'evidence-missing', 'evidence-none', 'evidence-private-notice', 'evidence-fields'].forEach(function (m) {
   var tag = m === 'evidence-fields' ? 'dl' : 'p';
   var el = attach(makeNode(tag, { 'data-fi-mount': m }));
   el.hidden = true;
@@ -337,14 +492,29 @@ function fetch(url) {
   });
 }
 
+// Like a browser, assigning a new location.hash queues ONE hashchange task;
+// the page's evidence triggers open the drawer through it.
+var hashValue = scenario.hash || '';
+var locationObj = {};
+Object.defineProperty(locationObj, 'hash', {
+  get: function () { return hashValue; },
+  set: function (value) {
+    value = String(value);
+    if (value && value.charAt(0) !== '#') value = '#' + value;
+    if (value === hashValue) return;
+    hashValue = value;
+    setTimeout(function () { fireWin('hashchange'); }, 0);
+  }
+});
+
 var windowObj = {
-  location: { hash: '' },
+  location: locationObj,
   history: { replaceState: function () {} },
   document: document,
   fetch: fetch,
   MDXAuth: null,
   matchMedia: function () { return { matches: false, addEventListener: function () {} }; },
-  addEventListener: function () {},
+  addEventListener: function (type, fn) { (winListeners[type] = winListeners[type] || []).push(fn); },
   innerWidth: 1440,
   requestAnimationFrame: function (fn) { return setTimeout(fn, 0); }
 };
@@ -393,6 +563,21 @@ function snapshot() {
       });
       return count;
     })(),
+    heroChipAria: ['hero-freshness', 'hero-outer'].map(function (mount) {
+      var el = document.querySelector('[data-fi-mount="' + mount + '"]');
+      return (el && el.getAttribute('aria-label')) || '';
+    }),
+    evidenceAriaLabels: (function () {
+      var labels = [];
+      ['rerating-steps', 'what-changed-list', 'conflict-list', 'constraint-list'].forEach(function (mount) {
+        var root = document.querySelector('[data-fi-mount="' + mount + '"]');
+        if (!root) return;
+        walk(root, function (node) {
+          if (node !== root && /fi-step-evidence/.test(node.className || '')) labels.push(node.getAttribute('aria-label') || '');
+        });
+      });
+      return labels;
+    })(),
     atlasCardCount: (function () {
       if (!atlasGridEl) return 0;
       var count = 0;
@@ -406,8 +591,73 @@ function snapshot() {
       var sel = sliceSel || byId['fi-slice-select'];
       return sel ? sel.childNodes.filter(function (c) { return c.tagName === 'OPTION'; }).length : 0;
     })(),
-    fetchCalls: fetchCalls.slice()
+    fetchCalls: fetchCalls.slice(),
+    // The whole live document, serialised, plus every painter write — the
+    // Python side parses these with html.parser for structural assertions.
+    dom: serializeNode(html),
+    htmlWrites: htmlWrites.slice(),
+    active: describeActive()
   };
+}
+
+var marks = { focused: null, pressed: null };
+function describeActive() {
+  var a = document.activeElement;
+  if (!a) return null;
+  return {
+    tag: a.tagName.toLowerCase(),
+    className: a.className || '',
+    dataView: a.getAttribute ? a.getAttribute('data-view') : null,
+    tabindex: a.getAttribute ? a.getAttribute('tabindex') : null,
+    ariaSelected: a.getAttribute ? a.getAttribute('aria-selected') : null,
+    connected: isConnected(a),
+    isPriorFocus: !!marks.focused && a === marks.focused,
+    isPressed: !!marks.pressed && a === marks.pressed,
+    id: a.id || null
+  };
+}
+
+// Scripted interactions after the first paint: each action is one user-level
+// event the runtime listens for. `press` focuses then clicks, and the click
+// reaches the element's own listeners and then the document (the page binds
+// evidence triggers by delegation). `tick` yields one macrotask, so the
+// drawer's requestAnimationFrame focus move runs before the next action.
+function runAction(a) {
+  if (a.do === 'tick') return new Promise(function (resolve) { setTimeout(resolve, 0); });
+  if (a.do === 'clickTab' || a.do === 'focusTab') {
+    var tab = document.querySelectorAll('.fi-view-tab')[a.index];
+    if (!tab) throw new Error('no .fi-view-tab at index ' + a.index);
+    if (a.do === 'clickTab') tab.click();
+    tab.focus();
+    marks.focused = tab;
+  } else if (a.do === 'focus') {
+    var el = document.querySelector(a.selector);
+    if (!el) throw new Error('no element for ' + a.selector);
+    el.focus();
+    marks.focused = el;
+  } else if (a.do === 'press') {
+    var target = document.querySelector(a.selector);
+    if (!target) throw new Error('no element for ' + a.selector);
+    target.focus();
+    marks.pressed = target;
+    target.dispatchEvent({ type: 'click', target: target });
+    fireDoc('click', { target: target });
+  } else if (a.do === 'key') {
+    fireDoc('keydown', { key: a.key, shiftKey: !!a.shiftKey, target: document.activeElement });
+  } else if (a.do === 'lang') {
+    html.setAttribute('data-lang', a.lang);
+    fireDoc('langchange');
+  } else if (a.do === 'langchange') {
+    fireDoc('langchange');
+  } else {
+    throw new Error('unknown action ' + a.do);
+  }
+  return null;
+}
+function runActions(actions) {
+  return (actions || []).reduce(function (chain, a) {
+    return chain.then(function () { return runAction(a); });
+  }, Promise.resolve());
 }
 
 function settled() {
@@ -442,7 +692,11 @@ function waitFor(predicate, leftover) {
 }
 
 waitFor(settled).then(function () {
-  process.stdout.write(JSON.stringify({ first: snapshot(), second: null }));
+  var first = snapshot();
+  if (!scenario.actions) return { first: first, second: null };
+  return runActions(scenario.actions).then(function () { return { first: first, second: snapshot() }; });
+}).then(function (out) {
+  process.stdout.write(JSON.stringify(out));
 }, function (error) {
   process.stderr.write(String(error && error.stack || error));
   process.exit(1);

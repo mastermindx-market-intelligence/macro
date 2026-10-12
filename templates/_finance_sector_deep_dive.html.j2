@@ -4,21 +4,24 @@
    is a link only — no theme semantics, no stage, no rank, no score. The card
    reuses the tracker's existing card idiom (`.lane-grid` + `.theme-row`) so a
    reader sees it as a peer of the theme cards above it. No new stylesheet, no
-   inline style block. The card's whole surface is the link.            #}
-<section class="sec-head-wrap" aria-label="Sector deep dives">
-<div class="sec-head"><span class="sh-dot"></span><span class="l-en">Sector deep dives</span><span class="l-zh">行业深度</span></div>
+   inline style block. The card's whole surface is the link. Accessible names
+   come from `aria-labelledby` over the bilingual spans (the house idiom, see
+   `_market_regime_strip.html.j2`), never a literal `aria-label`: the inactive
+   language is display:none, so the name follows the EN/中文 toggle.     #}
+<section class="sec-head-wrap" aria-labelledby="fi-sdd-head">
+<div class="sec-head" id="fi-sdd-head"><span class="sh-dot"></span><span class="l-en">Sector deep dives</span><span class="l-zh">行业深度</span></div>
 <p class="sec-sub"><span class="l-en">A dedicated look at one sector — outside the canonical lanes, no watchlist, no call.</span><span class="l-zh">对一个行业的专门观察——不在主题分组内，既不是观察清单，也不是操作建议。</span></p>
 <div class="lane-grid">
-  <a class="theme-row sector-deep-dive" href="finance_intelligence.html" data-lane="sector-deep-dive" aria-label="Open the Finance Intelligence dossier">
+  <a class="theme-row sector-deep-dive" href="finance_intelligence.html" data-lane="sector-deep-dive" aria-labelledby="fi-sdd-name fi-sdd-cta" aria-describedby="fi-sdd-story">
     <div class="tc-top">
       <div class="tc-nameline">
-        <span class="tc-name"><span class="l-en">Finance Intelligence</span><span class="l-zh">金融情报</span></span>
+        <span class="tc-name" id="fi-sdd-name"><span class="l-en">Finance Intelligence</span><span class="l-zh">金融情报</span></span>
         <span class="badge clean"><span class="l-en">Sector deep dive</span><span class="l-zh">行业深度</span></span>
       </div>
-      <p class="tc-story"><span class="l-en">A rerating-first read of the financial system — what changed, why it matters, and where the evidence lives. Not a theme, not a watchlist, not a call.</span><span class="l-zh">面向金融体系的重估视角——发生了什么、为何重要、证据在哪里。不是主题，不是观察清单，也不是操作建议。</span></p>
+      <p class="tc-story" id="fi-sdd-story"><span class="l-en">A rerating-first read of the financial system — what changed, why it matters, and where the evidence lives. Not a theme, not a watchlist, not a call.</span><span class="l-zh">面向金融体系的重估视角——发生了什么、为何重要、证据在哪里。不是主题，不是观察清单，也不是操作建议。</span></p>
     </div>
     <div class="tc-foot">
-      <span class="tc-stance"><span class="bdot"></span><span class="l-en">Open the dossier</span><span class="l-zh">打开档案</span></span>
+      <span class="tc-stance" id="fi-sdd-cta"><span class="bdot"></span><span class="l-en">Open the dossier</span><span class="l-zh">打开档案</span></span>
     </div>
   </a>
 </div>

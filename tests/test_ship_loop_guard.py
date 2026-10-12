@@ -2547,6 +2547,96 @@ def test_stop_reuses_render_proof_while_production_catches_up(monkeypatch, tmp_p
     assert set(proofs) >= {"merged_pull", "ci", "origin_main", "render"}
 
 
+def test_pull_only_live_stale_block_names_the_durable_exit(
+    monkeypatch, tmp_path, capsys
+):
+    """The first stale-live block teaches the session to stop polling a durable pull."""
+    repo, state_path = _session_repo(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: _MERGED_PR)
+    monkeypatch.setattr(GUARD, "_check_ci", lambda *_a, **_k: (True, ""))
+    monkeypatch.setattr(GUARD, "_needs_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_public_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_api_restart", lambda *_a: False)
+    monkeypatch.setattr(
+        GUARD,
+        "_get_json",
+        lambda _url: {"checkout": "not-a-commit", "commit": "not-a-commit"},
+    )
+    _stub_remote_git(monkeypatch)
+
+    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert emitted["decision"] == "block"
+    assert emitted["reason"].startswith("SHIP LOOP live_stale:")
+    assert "SESSION END: DURABLE_EXECUTION_RUNNING" in emitted["reason"]
+    assert "do not spend another turn polling" in emitted["reason"]
+
+
+def test_durable_execution_releases_pull_only_live_stale(
+    monkeypatch, tmp_path, capsys
+):
+    """A pull-only merge may hand the last few minutes to the durable VPS pull loop."""
+    repo, state_path = _session_repo(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: _MERGED_PR)
+    monkeypatch.setattr(GUARD, "_check_ci", lambda *_a, **_k: (True, ""))
+    monkeypatch.setattr(GUARD, "_needs_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_public_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_api_restart", lambda *_a: False)
+    monkeypatch.setattr(
+        GUARD,
+        "_get_json",
+        lambda _url: {"checkout": "not-a-commit", "commit": "not-a-commit"},
+    )
+    _stub_remote_git(monkeypatch)
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_durable_execution_does_not_release_api_restart_live_stale(
+    monkeypatch, tmp_path, capsys
+):
+    """API-code work still waits for a restarted process; a pull loop cannot prove it."""
+    repo, state_path = _session_repo(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: _MERGED_PR)
+    monkeypatch.setattr(GUARD, "_check_ci", lambda *_a, **_k: (True, ""))
+    monkeypatch.setattr(GUARD, "_needs_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_public_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_api_restart", lambda *_a: True)
+    monkeypatch.setattr(
+        GUARD,
+        "_get_json",
+        lambda _url: {"checkout": "not-a-commit", "commit": "not-a-commit"},
+    )
+    _stub_remote_git(monkeypatch)
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert emitted["decision"] == "block"
+    assert emitted["reason"].startswith("SHIP LOOP live_stale:")
+    assert "only a RESTARTED API" in emitted["reason"]
+
+
 def test_stop_defers_an_in_flight_render_and_proceeds_to_the_live_gate(
     monkeypatch, tmp_path, capsys
 ):
@@ -2972,6 +3062,472 @@ def test_a_session_that_never_moved_head_may_still_stop(monkeypatch, tmp_path, c
     GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
 
     assert capsys.readouterr().out.strip() == ""
+
+
+def _main_sync_session(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """A session whose checkout IS `main` — the shape of the designated local root.
+
+    Repository law makes that root a checkout of `main` and requires
+    `git fetch origin && git merge --ff-only origin/main` at session start. A real
+    bare origin stands behind it, and a second clone (`other`) plays the rest of
+    the fleet landing work there. Returns (repo, state_path, other).
+    """
+    repo = _repo(tmp_path)
+    bare = tmp_path / "origin.git"
+    subprocess.run(
+        ("git", "init", "--bare", "-b", "main", str(bare)), check=True, capture_output=True
+    )
+    _git(repo, "remote", "add", "origin", str(bare))
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+    other = tmp_path / "other"
+    _git(tmp_path, "clone", str(bare), str(other))
+    _git(other, "config", "user.name", "Fleet")
+    _git(other, "config", "user.email", "fleet@example.com")
+    state_path = tmp_path / "state.json"
+    GUARD._save(state_path, {
+        "root": str(repo),
+        "start_head": _git(repo, "rev-parse", "HEAD"),
+        "baseline": GUARD._fingerprint(repo),
+        "last_blocker": "",
+        "blocker_count": 0,
+    })
+    return repo, state_path, other
+
+
+def _land_elsewhere(other: Path, rel: str) -> str:
+    """Another session's work reaching origin/main — what a sync then follows."""
+    _git(other, "pull", "--no-rebase", "--ff-only", "origin", "main")
+    sha = _commit(other, rel, f"{rel}\n", f"other: {rel}")
+    _git(other, "push", "origin", "main")
+    return sha
+
+
+def _sync_main(repo: Path) -> None:
+    """The session-start sync the workspace law mandates on the local root."""
+    _git(repo, "fetch", "origin")
+    _git(repo, "merge", "--ff-only", "origin/main")
+
+
+def _reflog_window(repo: Path, start_head: str) -> list[str]:
+    """HEAD-reflog subjects strictly newer than start_head's OLDEST entry, newest first."""
+    lines = subprocess.run(
+        ("git", "reflog", "show", "--format=%H%x09%gs", "HEAD"),
+        cwd=repo, text=True, capture_output=True, check=True,
+    ).stdout.splitlines()
+    entries = [line.partition("\t") for line in lines]
+    starts = [index for index, (sha, _t, _s) in enumerate(entries) if sha == start_head]
+    assert starts, "precondition: start_head is in the reflog"
+    return [subject for _sha, _t, subject in entries[: starts[-1]]]
+
+
+def _rewrite_start(state_path: Path, repo: Path, start_head: str) -> None:
+    state = GUARD._load(state_path)
+    state["start_head"] = start_head
+    state["baseline"] = GUARD._fingerprint(repo)
+    GUARD._save(state_path, state)
+
+
+def _refuse_github(monkeypatch) -> None:
+    for name in ("_github_slug", "_latest_merged_pr", "_open_pull", "_check_ci"):
+        monkeypatch.setattr(
+            GUARD, name, lambda *_a, _n=name: pytest.fail(f"a sync-only main asked GitHub ({_n})")
+        )
+
+
+def test_a_main_checkout_moved_only_by_fast_forward_syncs_may_stop(monkeypatch, tmp_path, capsys):
+    """T1 — the measured false positive, reproduced and cleared.
+
+    Seat session 0e657eec (2026-10-06) sat on the designated local root, which is
+    `main`, and ran the mandated `merge --ff-only origin/main` twice. HEAD moved
+    off start_head with zero session commits, the no-op exemption stopped
+    matching, and the branch gate filed `unsafe_branch` 31 times. Its reflog
+    window was exactly two fast-forward entries — the shape built here. Nothing
+    shipped, so GitHub must not even be consulted.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _land_elsewhere(other, "first.txt")
+    _sync_main(repo)
+    _land_elsewhere(other, "second.txt")
+    _sync_main(repo)
+
+    assert _git(repo, "rev-parse", "HEAD") != start_head
+    assert _reflog_window(repo, start_head) == ["merge origin/main: Fast-forward"] * 2
+    _refuse_github(monkeypatch)
+
+    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["last_blocker"] == ""
+    assert state["blocker_count"] == 0
+
+
+def test_a_main_commit_pushed_to_origin_still_blocks_after_syncs(monkeypatch, tmp_path, capsys):
+    """T2 — authorship survives a sync on either side of it.
+
+    The session syncs, commits on main, pushes straight to origin/main, and syncs
+    again after the fleet lands more work, so HEAD is origin's tip with a zero
+    ahead-count: POSITION says exempt. The `commit:` entry in the reflog window is
+    the only thing that says otherwise, and it must — work pushed to main really
+    shipped, so exempting it would skip the render and live gates (fail-open).
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _land_elsewhere(other, "first.txt")
+    _sync_main(repo)
+    _commit(repo, "hotfix.txt", "straight to main\n", "fix: pushed without a PR")
+    _git(repo, "push", "origin", "main")
+    _land_elsewhere(other, "later.txt")
+    _sync_main(repo)
+
+    head = _git(repo, "rev-parse", "HEAD")
+    assert head == _git(repo, "rev-parse", "origin/main")
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert "commit: fix: pushed without a PR" in _reflog_window(repo, start_head)
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is False
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
+def test_a_main_checkout_moved_only_by_a_reset_to_origin_main_may_stop(
+    monkeypatch, tmp_path, capsys
+):
+    """T3 — `git reset --hard origin/main` is a sync too, and is exempt."""
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _land_elsewhere(other, "fix.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "reset", "--hard", "origin/main")
+
+    assert _reflog_window(repo, start_head) == ["reset: moving to origin/main"]
+    _refuse_github(monkeypatch)
+
+    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+@pytest.mark.parametrize("absence", ("never_held", "fabricated", "expired"))
+def test_a_start_head_missing_from_the_reflog_fails_closed(
+    monkeypatch, tmp_path, capsys, absence
+):
+    """T4 — no start_head entry, no proof, the old block.
+
+    Three ways the entry goes missing: a real origin/main ancestor HEAD jumped
+    over and so never logged (`never_held`), a sha that names nothing
+    (`fabricated`), and reflog expiry pruning the entry under a real start_head
+    (`expired`). In every case the window's own entries are pure syncs and
+    POSITION would exempt — so the decline below is the missing anchor alone.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    skipped = _land_elsewhere(other, "skipped.txt")
+    _land_elsewhere(other, "landed.txt")
+    if absence == "expired":
+        _git(repo, "reflog", "expire", "--expire=now", "--expire-unreachable=now", "--all")
+    _sync_main(repo)
+    if absence == "never_held":
+        start_head = skipped
+    elif absence == "fabricated":
+        start_head = "1" * 40
+    _rewrite_start(state_path, repo, start_head)
+
+    head = _git(repo, "rev-parse", "HEAD")
+    reflog = _git(repo, "reflog", "show", "--format=%H", "HEAD").splitlines()
+    assert start_head not in reflog, "precondition: start_head has no reflog entry"
+    assert reflog[0] == head
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is False
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
+def test_a_sol_branch_fast_forwarded_onto_main_still_blocks(monkeypatch, tmp_path, capsys):
+    """T5 — the exemption is `main` exactly; a sol/* sync is still unsafe_branch.
+
+    The session starts on sol/x (state recorded after the checkout, so the window
+    holds only the sync) and fast-forwards onto origin/main. Both the position
+    and the reflog tests WOULD exempt it — asserted below — so the block is the
+    branch name alone. Sol authority branches are the hold wrapper's to judge.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    _git(repo, "checkout", "-b", "sol/x")
+    _land_elsewhere(other, "first.txt")
+    _sync_main(repo)
+    start_head = _git(repo, "rev-parse", "HEAD")
+    _rewrite_start(state_path, repo, start_head)
+    _land_elsewhere(other, "second.txt")
+    _sync_main(repo)
+
+    head = _git(repo, "rev-parse", "HEAD")
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head), (
+        "precondition: the reflog alone would exempt"
+    )
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
+def test_a_detached_head_at_the_origin_main_tip_still_blocks(monkeypatch, tmp_path, capsys):
+    """T6 — a detached HEAD is not `main`, wherever it points (unchanged)."""
+    repo, state_path, other = _main_sync_session(tmp_path)
+    _land_elsewhere(other, "fix.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "checkout", "--detach", "origin/main")
+
+    assert _git(repo, "branch", "--show-current") == ""
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+
+    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert "SHIP LOOP unsafe_branch" in emitted["reason"]
+    assert "detached HEAD" in emitted["reason"]
+
+
+def _plumbing_commit_on_scratch(repo: Path) -> str:
+    """A commit HEAD's reflog never sees: `commit-tree` + `update-ref` on scratch."""
+    sha = _git(repo, "commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "feat: made off HEAD")
+    _git(repo, "update-ref", "refs/heads/scratch", sha)
+    return sha
+
+
+def test_a_fast_forward_onto_a_local_ref_then_a_push_to_main_still_blocks(
+    monkeypatch, tmp_path, capsys
+):
+    """T7 — the fail-open the first cut of the sync set allowed, built exactly.
+
+    A commit made with plumbing on another ref writes nothing to HEAD's reflog;
+    `merge --ff-only scratch` on main writes `merge scratch: Fast-forward`; and
+    once `push origin main` lands it, every window sha is an ancestor of
+    origin/main. A subject set accepting `merge <any ref>: Fast-forward` exempted
+    that direct push to main. Only origin/main-targeted syncs count now.
+    """
+    repo, state_path, _other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    authored = _plumbing_commit_on_scratch(repo)
+    _git(repo, "merge", "--ff-only", "scratch")
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+
+    head = _git(repo, "rev-parse", "HEAD")
+    assert head == authored == _git(repo, "rev-parse", "origin/main")
+    assert _reflog_window(repo, start_head) == ["merge scratch: Fast-forward"]
+    assert re.fullmatch(r"merge \S+: Fast-forward", "merge scratch: Fast-forward"), (
+        "precondition: the first cut's subject pattern would have accepted it"
+    )
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is False
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
+def _sync_by_ff_merge(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _sync_main(repo)
+
+
+def _sync_by_ff_pull(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "pull", "--no-rebase", "--ff-only", "origin", "main")
+
+
+def _sync_by_named_pull(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "config", "pull.rebase", "false")
+    _git(repo, "pull", "origin", "main")
+
+
+def _sync_by_ff_only_named_pull(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "pull", "--ff-only", "origin", "main")
+
+
+def _sync_by_bare_pull_tracking_origin_main(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "branch", "--set-upstream-to=origin/main", "main")
+    _git(repo, "config", "pull.rebase", "false")
+    _git(repo, "pull")
+
+
+def _bare_pull_from_a_local_upstream(repo: Path, other: Path) -> None:
+    _plumbing_commit_on_scratch(repo)
+    _git(repo, "branch", "--set-upstream-to=scratch", "main")
+    _git(repo, "config", "pull.rebase", "false")
+    _git(repo, "pull")
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+
+
+def _merge_a_local_ref(repo: Path, other: Path) -> None:
+    _plumbing_commit_on_scratch(repo)
+    _git(repo, "merge", "--ff-only", "scratch")
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+
+
+def _merge_fetch_head(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin", "main")
+    _git(repo, "merge", "--ff-only", "FETCH_HEAD")
+    _git(repo, "fetch", "origin")
+
+
+def _sync_by_reset(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "reset", "--hard", "origin/main")
+
+
+def _author_and_push(repo: Path, other: Path) -> None:
+    _commit(repo, "mine.txt", "session work\n", "feat: authored on main")
+    _git(repo, "push", "origin", "main")
+
+
+def _merge_without_fast_forward(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "merge", "--no-ff", "--no-edit", "origin/main")
+    _git(repo, "push", "origin", "main")
+
+
+@pytest.mark.parametrize(
+    ("move", "subject", "exempt"),
+    (
+        (_sync_by_ff_merge, r"merge origin/main: Fast-forward", True),
+        (_sync_by_ff_pull, r"pull --no-rebase --ff-only origin main: Fast-forward", True),
+        (_sync_by_named_pull, r"pull origin main: Fast-forward", True),
+        (_sync_by_ff_only_named_pull, r"pull --ff-only origin main: Fast-forward", True),
+        (_sync_by_bare_pull_tracking_origin_main, r"pull: Fast-forward", True),
+        (_sync_by_reset, r"reset: moving to origin/main", True),
+        (_author_and_push, r"commit: feat: authored on main", False),
+        (_merge_without_fast_forward, r"merge origin/main: Merge made by the '\w+' strategy\.", False),
+        (_merge_a_local_ref, r"merge scratch: Fast-forward", False),
+        (_bare_pull_from_a_local_upstream, r"pull: Fast-forward", False),
+        (_merge_fetch_head, r"merge [0-9a-f]{40}: Fast-forward", False),
+    ),
+    ids=(
+        "ff-merge", "ff-pull", "pull-origin-main", "pull-ff-only-origin-main",
+        "bare-pull-upstream-origin-main", "reset-origin-main", "commit", "non-ff-merge",
+        "ff-merge-local-ref", "bare-pull-local-upstream", "ff-merge-fetch-head",
+    ),
+)
+def test_head_moved_only_by_sync_accepts_exactly_the_sync_subjects(tmp_path, move, subject, exempt):
+    """The sync-only subject set, pinned against git's OWN reflog wording.
+
+    Every case ends with HEAD an ancestor of origin/main (the authored ones push
+    first), so the ancestry clause is satisfied throughout and the verdict is the
+    reflog SUBJECT alone. Syncs: a fast-forward merge of origin/main, a
+    fast-forward pull naming `origin main` (with or without leading flags), a bare
+    pull while main's upstream is origin/main, and a reset to origin/main.
+    Declined: a commit, a non-fast-forward merge, a fast-forward onto a local ref
+    (by merge, or by a bare pull whose upstream is that ref), and a FETCH_HEAD
+    merge — which git logs as `merge <sha>`, naming no ref at all.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    move(repo, other)
+    head = _git(repo, "rev-parse", "HEAD")
+
+    window = _reflog_window(repo, start_head)
+    assert len(window) == 1 and re.fullmatch(subject, window[0]), window
+    _git(repo, "merge-base", "--is-ancestor", head, "origin/main")
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is exempt
+
+
+def _log_forged_entry(repo: Path, subject: str, sha: str) -> None:
+    """Move main to ``sha`` with an exact HEAD-reflog subject (`update-ref -m`)."""
+    _git(repo, "update-ref", "-m", subject, "HEAD", sha)
+
+
+@pytest.mark.parametrize(
+    ("subject", "upstream", "exempt"),
+    (
+        ("merge origin/main: Fast-forward", None, True),
+        ("pull origin main: Fast-forward", None, True),
+        ("pull --ff-only origin main: Fast-forward", None, True),
+        ("pull --no-rebase -q --ff-only origin main: Fast-forward", None, True),
+        ("pull: Fast-forward", "origin/main", True),
+        ("pull --ff-only: Fast-forward", "origin/main", True),
+        ("reset: moving to origin/main", None, True),
+        ("merge FETCH_HEAD: Fast-forward", None, False),
+        ("merge scratch: Fast-forward", None, False),
+        ("merge claude/x: Fast-forward", None, False),
+        ("merge origin/main~0: Fast-forward", None, False),
+        ("pull: Fast-forward", None, False),
+        ("pull: Fast-forward", "scratch", False),
+        ("pull --ff-only: Fast-forward", "scratch", False),
+        ("pull origin scratch: Fast-forward", None, False),
+        ("pull upstream main: Fast-forward", None, False),
+        ("pull origin main:main: Fast-forward", None, False),
+        ("reset: moving to scratch", None, False),
+        ("reset: moving to HEAD~1", None, False),
+    ),
+)
+def test_head_moved_only_by_sync_accepts_only_origin_main_targeted_subjects(
+    tmp_path, subject, upstream, exempt
+):
+    """The exact accepted set, string by string, ancestry held constant.
+
+    Each entry moves main onto a commit origin/main already holds, so only the
+    SUBJECT (and, for a bare pull, main's configured upstream) decides. A sync
+    must name origin/main: a fast-forward onto any other ref, FETCH_HEAD
+    included, is how a commit made off HEAD's reflog reaches main.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    landed = _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    if upstream == "scratch":
+        _git(repo, "update-ref", "refs/heads/scratch", landed)
+    if upstream is not None:
+        _git(repo, "branch", f"--set-upstream-to={upstream}", "main")
+    _log_forged_entry(repo, subject, landed)
+
+    assert _reflog_window(repo, start_head) == [subject]
+    assert GUARD._head_moved_only_by_sync(repo, start_head, landed) is exempt
+
+
+@pytest.mark.parametrize(
+    ("subjects", "reads"),
+    (
+        (("merge origin/main: Fast-forward", "pull origin main: Fast-forward"), 0),
+        (("pull: Fast-forward", "pull --ff-only: Fast-forward"), 1),
+    ),
+    ids=("no-bare-pull", "two-bare-pulls"),
+)
+def test_main_upstream_is_read_once_and_only_for_a_bare_pull(
+    monkeypatch, tmp_path, subjects, reads
+):
+    """`main`'s upstream costs one git call per helper call, and none without a bare pull."""
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _git(repo, "fetch", "origin")
+    for index, subject in enumerate(subjects):
+        landed = _land_elsewhere(other, f"landed-{index}.txt")
+        _git(repo, "fetch", "origin")
+        _log_forged_entry(repo, subject, landed)
+    _git(repo, "branch", "--set-upstream-to=origin/main", "main")
+
+    calls: list[tuple[str, ...]] = []
+    real_run = GUARD._run
+
+    def counting_run(root, *args, **kwargs):
+        if args[:2] == ("git", "for-each-ref"):
+            calls.append(args)
+        return real_run(root, *args, **kwargs)
+
+    monkeypatch.setattr(GUARD, "_run", counting_run)
+
+    assert GUARD._head_moved_only_by_sync(repo, start_head, landed) is True
+    assert len(calls) == reads
 
 
 def _pushed_session_repo(tmp_path: Path) -> tuple[Path, Path]:
@@ -3598,9 +4154,11 @@ def test_guard_error_falls_back_to_a_plain_block_when_state_cannot_load(monkeypa
 # check, and the work had to be reopened by hand.
 #
 # The label still works and the sweeper may still perform the merge. What it can
-# no longer do is end a session. `unmerged` is satisfied by an actually-merged
-# pull request and by nothing else, so every test below asserts a BLOCK; the only
-# question the armed pull request answers now is WHICH block, and with what detail.
+# no longer do is silently turn an armed pull request into success. The one narrow
+# exception is an explicit `SESSION END: DURABLE_EXECUTION_RUNNING` declaration:
+# an exact armed head in the benign `unmerged` wait may hand its wait to the
+# existing controller, while any head-owned red remains blocking. Tests below pin
+# both sides so the durable handoff cannot regress into the old unconditional exit.
 
 
 def _pushed_unmerged_session(tmp_path: Path) -> tuple[Path, Path, str]:
@@ -3731,9 +4289,99 @@ def test_an_armed_pull_request_with_checks_pending_does_NOT_release_the_session(
     assert "unmerged" in reason
     assert "#4242" in reason, "the block must name the pull request it is waiting on"
     assert "ci-pack-1" in reason, "and what it is waiting on"
+    assert "SESSION END: DURABLE_EXECUTION_RUNNING" in reason
+    assert "do not spend another turn polling" in reason
     assert state_path.exists(), "a blocked session keeps its state file"
     # The old release path's machine receipt must not survive anywhere.
     assert "CI_HANDOFF" not in reason
+
+
+def test_armed_pending_pull_releases_only_for_explicit_durable_execution(
+    monkeypatch, tmp_path, capsys
+):
+    """The common CI wait may leave only when the session names the durable owner state.
+
+    This is the field shape that previously produced 9+ consecutive Stop-hook
+    blocks even after a watcher/controller owned the wait. The label is not a
+    success receipt; the explicit terminal classification is load-bearing.
+    """
+    repo, state_path, head = _pushed_unmerged_session(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
+    monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
+    monkeypatch.setattr(
+        GUARD, "_head_check_runs", lambda *_a: [_run_stub("ci-pack-1", "in_progress")]
+    )
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_durable_execution_does_not_release_an_armed_head_with_its_own_red(
+    monkeypatch, tmp_path, capsys
+):
+    """The 2026-08-12 safety failure stays impossible under the durable release."""
+    repo, state_path, head = _pushed_unmerged_session(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
+    monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
+    monkeypatch.setattr(
+        GUARD,
+        "_head_check_runs",
+        lambda *_a: [
+            _run_stub("ci-pack-1", conclusion="failure"),
+            _run_stub("nav-gap", conclusion="success"),
+        ],
+    )
+    monkeypatch.setattr(GUARD, "_base_side_pre_merge", lambda *_a, **_k: ({}, []))
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert emitted["decision"] == "block"
+    assert emitted["reason"].startswith("SHIP LOOP ci_failed_unmerged:")
+
+
+def test_durable_execution_does_not_release_an_unarmed_pull(
+    monkeypatch, tmp_path, capsys
+):
+    """A declaration never substitutes for the controller's actual armed identity."""
+    repo, state_path, head = _pushed_unmerged_session(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
+    monkeypatch.setattr(
+        GUARD,
+        "_open_pull",
+        lambda *_a: _armed_pr(head, labels=()),
+    )
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert emitted["decision"] == "block"
+    assert emitted["reason"].startswith("SHIP LOOP unmerged:")
 
 
 def test_an_armed_pull_request_with_every_check_green_still_blocks(
@@ -3971,16 +4619,17 @@ def test_a_red_main_is_currently_red_on_is_reported_as_inherited_not_as_yours(
     assert "INHERITED FROM MAIN" in detail and "ci-pack-3" in detail
     assert "ci.yml run 77" in detail, "the block must cite the proof it read"
     assert "Fix the cause" not in detail, "there is nothing here for this session to fix"
-    assert "--ref main" in detail, "and it must name main's lever"
-    assert "instead of re-dispatching over it" in detail, "with the livelock preflight"
+    assert "merge-on-green controller drains an inherited backlog" in detail
+    assert "Do not dispatch another baseline" in detail
+    assert "shell/REST polling loop" in detail
 
 
 def test_the_inherited_verdict_still_blocks_and_is_not_an_external_blocker(monkeypatch):
     """An inherited red is a reclassification, never a release.
 
-    The session still owns the pull request through the merge; only the ADVICE
-    changes. `unmerged` is internal, so this cannot become a cheaper exit than the
-    red it replaced.
+    Without an explicit durable-execution declaration the session still blocks;
+    only the ADVICE changes. `unmerged` is internal, so this cannot become a cheap
+    generic escape from the red it replaced.
     """
     _fake_pre_merge_api(
         monkeypatch,
@@ -4201,6 +4850,251 @@ def test_an_armed_pull_request_with_no_check_runs_blocks_and_says_why(
     assert "no sweep will ever merge it" in emitted["reason"]
 
 
+# --------------------------------------------------------------------------
+# A rollup ci.yml has not reached yet is NOT "concluded clean" (#7969, 2026-09-25).
+#
+# The check-run listing holds only runs that already EXIST. A head whose ci.yml run
+# is still `pending` (queued behind the same PR's previous-head run in its
+# concurrency group) has published nothing from ci.yml, so the fast workflows are
+# the whole rollup and every one of them has concluded. The hook called that
+# "every check has concluded clean; the next sweep should merge it", which invites a
+# hand merge before one pack has run: CLAUDE.md's "Merge on CONCLUDED checks, never
+# mid-flight" (#3867). The sweeper was never fooled, because `proof_anchor_verdict`
+# requires `ci-gate`. The hook now asks the sweeper's own question of the rollup it
+# already holds.
+# --------------------------------------------------------------------------
+
+
+def _actions_check(name: str, conclusion, run_id: int, status: str = "completed") -> dict:
+    """A check run as GitHub Actions publishes it. The sweeper counts a proof anchor
+    only when `app.slug` is `github-actions`, so the fixture has to carry it."""
+    return {
+        "id": run_id,
+        "name": name,
+        "status": status,
+        "conclusion": conclusion,
+        "app": {"slug": "github-actions"},
+    }
+
+
+def _fork_fence_expression(anchor: str) -> str:
+    """The unevaluated job-name expression fences.yml's skipped fork jobs publish."""
+    return (
+        "github.event_name == 'pull_request' && github.event.pull_request.head.repo."
+        f"full_name != github.repository && '{anchor}' || 'fork-{anchor}-unused'"
+    )
+
+
+#: PR #7969's head bd260bbe as the Stop hook read it at ~00:50Z on 2026-09-25: the
+#: eleven check runs registered while its ci.yml run 36078725703 sat `pending`.
+#: ci-plan did not start until 01:08:29Z; ci-gate concluded at 01:40:08Z.
+_PR_7969_BEFORE_CI_YML = (
+    _actions_check(_fork_fence_expression("capability-broker"), "skipped", 1),
+    _actions_check(_fork_fence_expression("grader-manifest"), "skipped", 2),
+    _actions_check(_fork_fence_expression("self-mod-fence"), "skipped", 3),
+    _actions_check("ci-authority", "success", 4),
+    _actions_check("fence-pack", "success", 5),
+    _actions_check("ci-authority", "success", 6),
+    _actions_check("ci-authority/codex/merge-queue-pilot", "failure", 7),
+    _actions_check("ci-authority/main", "success", 8),
+    _actions_check("capability-broker", "success", 9),
+    _actions_check("self-mod-fence", "success", 10),
+    _actions_check("grader-manifest", "success", 11),
+)
+#: The same head once ci.yml had run: all 27 check runs it finally carried.
+_PR_7969_AFTER_CI_YML = (
+    *_PR_7969_BEFORE_CI_YML,
+    _actions_check("ci-plan", "success", 12),
+    _actions_check("contract-delta", "success", 13),
+    _actions_check("trusted-ci", "skipped", 14),
+    *(_actions_check(f"ci-pack-{pack}", "success", 15 + pack) for pack in range(12)),
+    _actions_check("ci-gate", "success", 27),
+)
+
+
+def _refuse_rest(monkeypatch) -> None:
+    """The anchor question is answered from the rollup already fetched. A Stop that
+    spent a REST call on it would multiply across every armed session in the fleet."""
+
+    def refuse(url):
+        raise AssertionError(f"the anchor check must reuse the fetched rollup: {url}")
+
+    monkeypatch.setattr(GUARD, "_get_json", refuse)
+
+
+def test_a_rollup_ci_yml_has_not_reached_is_not_called_concluded_clean(monkeypatch):
+    """#7969, replayed from its real rollup. The hook before this fix FAILS this:
+    it answered "every check has concluded clean; the next sweep should merge it".
+
+    Eleven concluded checks, no red, and nothing from ci.yml. The sweeper refuses
+    this head (`ci-gate` is missing), so the advice has to say so, and it must not
+    give the session a reason to merge by hand mid-flight.
+    """
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(monkeypatch, _PR_7969_BEFORE_CI_YML)
+    assert code == "unmerged", f"an armed, unmerged head still blocks, got {code}"
+    assert "concluded clean" not in detail, detail
+    assert "should merge it" not in detail, detail
+    assert (
+        "ci.yml has not started or published ci-gate for this head yet — the sweeper "
+        "will not merge until ci-gate concludes"
+    ) in detail
+    assert "NOT concluded-green" in detail, "and it must name the hand-merge hazard"
+    assert "never merge it by hand" in detail
+    assert "gh run list --workflow ci.yml --branch claude/feature" in detail, (
+        "the session needs a way to see the queued run the rollup cannot show"
+    )
+    assert not GUARD._armed_wait_has_durable_owner(code, detail), (
+        "an unproven/maybe-unscheduled head has no durable owner to release Stop to"
+    )
+
+
+def test_the_same_head_after_ci_yml_concludes_is_still_called_clean(monkeypatch):
+    """Control: the test above cannot pass by the clean verdict having been deleted.
+    Once ci.yml has published ci-gate and every scheduled pack, the sweeper's anchor
+    gate is satisfied and the old advice is true again."""
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(monkeypatch, _PR_7969_AFTER_CI_YML)
+    assert code == "unmerged"
+    assert "every check has concluded clean; the next sweep should merge it" in detail
+    assert GUARD._armed_wait_has_durable_owner(code, detail)
+
+
+@pytest.mark.parametrize(
+    "runs,expected",
+    [
+        # ci-gate published but not a pass: `neutral` is not red, and it is not proof.
+        (
+            (*_PR_7969_BEFORE_CI_YML, _actions_check("ci-gate", "neutral", 40)),
+            "ci-gate has not concluded `success` on this head (neutral)",
+        ),
+        # ci-gate green but fences.yml never ran: the sweeper still wants fence-pack.
+        (
+            (_actions_check("ci-plan", "success", 41), _actions_check("ci-gate", "success", 42)),
+            "the sweeper's proof anchors are incomplete on this head (fence-pack)",
+        ),
+        # A ci-gate from some other app is not the anchor the sweeper counts.
+        (
+            (
+                *_PR_7969_BEFORE_CI_YML,
+                {**_actions_check("ci-gate", "success", 43), "app": {"slug": "impostor"}},
+            ),
+            "ci.yml has not started or published ci-gate for this head yet",
+        ),
+    ],
+    ids=["ci-gate-neutral", "fence-pack-missing", "non-actions-ci-gate"],
+)
+def test_every_anchor_gap_names_what_the_sweeper_still_lacks(monkeypatch, runs, expected):
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(monkeypatch, runs)
+    assert code == "unmerged"
+    assert expected in detail, detail
+    assert "concluded clean" not in detail, detail
+
+
+def test_a_head_nothing_has_concluded_on_gets_no_unproven_hand_merge_advice(monkeypatch):
+    """The empty rollup is the same hazard one step earlier: a ci.yml run queued in
+    its concurrency group publishes no check runs at all. The old advice ended "push
+    a change CI can see, or merge by hand", which offers a hand merge with zero proof
+    to a session whose proof is merely queued. #4779's warning stays: when no run
+    was ever scheduled, no sweep is coming."""
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(
+        monkeypatch, [_actions_check("Workers Builds: macro", "failure", 1)]
+    )
+    assert code == "unmerged"
+    assert "ci.yml has not started or published ci-gate for this head yet" in detail
+    assert "no sweep will ever merge it" in detail, "#4779's warning must survive"
+    assert "push a change CI can see" in detail
+    assert "or merge by hand" not in detail, detail
+
+
+def _load_sweeper_module():
+    """`scripts/merge_on_green.py`, loaded by path the way the spurious-check parity
+    test above loads it (the hook itself may not import it)."""
+    spec = importlib.util.spec_from_file_location(
+        "_test_merge_on_green_anchors", ROOT / "scripts" / "merge_on_green.py"
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["_test_merge_on_green_anchors"] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+#: Rollups whose anchor verdict the hook and the sweeper must agree on. Each is a
+#: shape the sweeper's `proof_anchor_verdict` distinguishes; one case would pin
+#: nothing, since drift shows up at an edge.
+_ANCHOR_PARITY_CASES = {
+    "pr-7969-before-ci-yml": _PR_7969_BEFORE_CI_YML,
+    "pr-7969-after-ci-yml": _PR_7969_AFTER_CI_YML,
+    "empty": (),
+    "no-app-slug": (
+        _run_stub("ci-gate", conclusion="success"),
+        _run_stub("fence-pack", conclusion="success"),
+    ),
+    "ci-gate-only": (_actions_check("ci-gate", "success", 1),),
+    "fork-fences-stand-in-for-skipped-fence-pack": (
+        _actions_check("fence-pack", "skipped", 1),
+        _actions_check("self-mod-fence", "success", 2),
+        _actions_check("capability-broker", "success", 3),
+        _actions_check("grader-manifest", "success", 4),
+        _actions_check("ci-gate", "success", 5),
+    ),
+    "skipped-fence-pack-without-fork-fences": (
+        _actions_check("fence-pack", "skipped", 1),
+        _actions_check("ci-gate", "success", 2),
+    ),
+    "ci-gate-running": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", None, 2, status="in_progress"),
+    ),
+    "ci-gate-neutral": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "neutral", 2),
+    ),
+    "ci-gate-failed": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "failure", 2),
+    ),
+    "ci-gate-cancelled": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "cancelled", 2),
+    ),
+    "newest-attempt-wins": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "failure", 2),
+        _actions_check("ci-gate", "success", 3),
+    ),
+    "scheduled-pack-skipped": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-pack-3", "skipped", 2),
+        _actions_check("ci-gate", "success", 3),
+    ),
+    "pack-outside-the-anchor-set": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-pack-12", "success", 2),
+        _actions_check("ci-gate", "success", 3),
+    ),
+}
+
+
+def test_the_hook_asks_the_sweepers_anchor_question_and_gets_its_answer():
+    """The hook holds a COPY of `proof_anchor_verdict` (it is loaded by file path and
+    may not acquire the sweeper's import graph), so the copy is pinned to the
+    original here. A divergence would put the old #7969 lie back: the hook says the
+    next sweep merges, and the sweeper refuses."""
+    sweeper = _load_sweeper_module()
+    assert GUARD.PROOF_CI_GATE_ANCHOR == sweeper.REQUIRED_CI_GATE
+    assert GUARD.PROOF_FENCE_ANCHOR == sweeper.REQUIRED_FENCE_ANCHOR
+    assert GUARD.PROOF_FORK_FENCE_ANCHORS == sweeper.REQUIRED_FORK_FENCE_ANCHORS
+    assert GUARD.PROOF_CI_PACK_ANCHORS == sweeper.REQUIRED_CI_ANCHORS
+    for label, runs in _ANCHOR_PARITY_CASES.items():
+        assert GUARD._proof_anchor_verdict(list(runs)) == sweeper.proof_anchor_verdict(
+            list(runs)
+        ), label
+
+
 def test_an_open_pull_request_without_the_label_is_not_probed(monkeypatch, tmp_path, capsys):
     """An unlabeled PR costs no check-run listing: the ordinary `unmerged` block
     already says everything true about it, and the REST pool is shared."""
@@ -4350,6 +5244,12 @@ def test_settings_wire_session_start_and_stop():
     assert "Stop" in hooks
     commands = json.dumps(hooks)
     assert "ship_loop_guard.py" in commands
+    # Claude Code defaults to overriding a Stop hook after the ninth consecutive
+    # block (default cap 8, override when count > cap). Our evidence-gated ladder
+    # intentionally needs as many as 15 total blocks in a mixed internal cycle.
+    # Let the repository's own explicit SHIP LOOP BLOCKED escape decide first
+    # instead of the provider silently forcing the turn to end one block early.
+    assert settings["env"]["CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"] == "15"
 
 
 def test_ui_contract_separates_scores_from_axis_labels():

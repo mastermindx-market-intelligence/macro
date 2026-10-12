@@ -64,6 +64,26 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+# A decimal character reference is read at its limit before it is resolved (R187).  ``html.unescape`` converts the
+# digits of every decimal reference with ``int()``, which refuses a run longer than the interpreter's integer
+# string-conversion limit (4,300 digits by default, as low as 640), so whether a document raised was a property of
+# the process, not of the document.  Leading zeros carry no value and are dropped; every value above 0x10FFFF
+# resolves to U+FFFD, so a run of more than seven significant digits reads as 1114112 (0x110000) and resolves as
+# its full value did.  Hexadecimal references are converted without a limit and are left alone.
+_DECIMAL_REFERENCE = re.compile(r"(?<=&#)[0-9]+")
+
+
+def _reference_at_limit(match: re.Match[str]) -> str:
+    digits = match.group().lstrip("0")
+    return (digits or "0") if len(digits) <= 7 else "1114112"
+
+
+def unescape(text: str) -> str:
+    """``html.unescape`` with each decimal character reference read at its limit first (R187): the same text
+    wherever ``html.unescape`` returns one, and never the interpreter's integer-conversion ValueError."""
+    return _html.unescape(_DECIMAL_REFERENCE.sub(_reference_at_limit, text))
+
+
 def visible_text(markup: str) -> str:
     """Strip tags, resolve entities, normalize invisible space — deterministically.
 
@@ -72,7 +92,7 @@ def visible_text(markup: str) -> str:
     negotiable one.
     """
     text = _TAG_RE.sub(" ", markup)
-    text = _html.unescape(text)
+    text = unescape(text)
     text = text.translate(_INVISIBLE)
     return _WS_RE.sub(" ", text).strip()
 
@@ -281,5 +301,6 @@ __all__ = [
     "replay_receipt",
     "sha256_bytes",
     "sha256_text",
+    "unescape",
     "visible_text",
 ]
