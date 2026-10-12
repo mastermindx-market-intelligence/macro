@@ -28,6 +28,21 @@ findings in298.8seconds, exit0. Those inherited closure findings are not
 waived or represented as clean main; the original repair carrier remains
 required. Raw evidence is aggregate_feed_current_main_contract_delta.txt.
 This branch has not entered protected CI or installed.
+The integrated generated estate also passes:69free-content pages byte-identical,
+zero orphans,3hand-authored exemptions; both Press properties show no drift.
+The three prepared acceptance pages differ from9019only in their theme.js
+asset stamp (f29b7083to17255989), recorded in the bounded page diff. Rebind
+exact page hashes to the actual admitted release; do not call old page hashes
+proof of the later merge. Of21source checks only the intentional separate
+aggregate-feed implementation differs in this follow-on tree.
+
+Later controller38220382241 at07:55Z accepted8960as its one repair candidate
+but deferred that repair's own stale-proof refresh at16active CIruns against
+cap8. It kept8786behind the main-red breaker. Neither existing carrier changed.
+The exact new notices are appended to pr8786_9019_main_red_gate.txt.
+The browser connection was recovered: Chrome/Chris now has browser ID1,
+public Blog verification tab1925917959. This is browser readiness and a
+current pre-release page observation, not8786installation acceptance.
 
 The expired earlier PR observer was proven absent before one same-cursor
 replacement started (exec83265, output/tmp/mmx-8786-watch-20261012-0748.log).

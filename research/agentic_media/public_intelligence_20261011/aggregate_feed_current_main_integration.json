@@ -30,5 +30,17 @@
     "wall_seconds": 298.8,
     "exit_code": 0,
     "output_sha256": "c776a21dca28375934e70593187eb892512971ef8e9250716c4813306b390ab7"
-  }
+  },
+  "generated_page_checks": [
+    {
+      "command": "python3 -m scripts.build_free_content --check",
+      "result": "69 byte-identical files, no orphans, 3 hand-authored exemptions",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m scripts.build_press_properties --check",
+      "result": "No drift across 2 publications",
+      "exit_code": 0
+    }
+  ]
 }
