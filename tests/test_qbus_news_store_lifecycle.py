@@ -269,6 +269,116 @@ def test_withdrawal_of_visible_cluster_member_keeps_survivor_title_and_teaser(tm
     assert scoped == list(fresh)
 
 
+def test_partial_cluster_withdrawal_never_refeeds_paged_cluster_and_pins_row_sequence(tmp_path):
+    survivor_title = "Nvidia launches new AI accelerator"
+    visible_title = "Nvidia launches its new AI accelerator"
+    survivor = _rest(item_id=11, title=survivor_title, minute=0)
+    visible = _rest(item_id=12, title=visible_title, minute=1)
+    outside = _rest(item_id=30, title="Nvidia CFO resigns", minute=2)
+
+    with _open(tmp_path) as store:
+        store.commit(
+            [survivor, visible, outside], expected_cursor=None, next_cursor="c1"
+        )
+        page_one = store.snapshot(
+            "sec-NVDA", limit=1, cursor=None, rights=_rights()
+        )
+        assert [row.source_item_id for row in page_one.rows] == ["30"]
+        assert page_one.next_cursor == 3
+        page_two = store.snapshot(
+            "sec-NVDA", limit=5, cursor=3, rights=_rights()
+        )
+        assert [row.source_item_id for row in page_two.rows] == ["12"]
+        assert page_two.next_cursor == 2
+        story_id = page_two.rows[0].story_id
+
+        receipt = store.commit(
+            [_remove(12, minute=3)], expected_cursor="c1", next_cursor="c2"
+        )
+        continuation = store.snapshot(
+            "sec-NVDA", limit=5, cursor=2, rights=_rights()
+        )
+        fresh = _snap(store)
+        scoped = _changes(store, security_id="sec-NVDA")
+
+    assert receipt.withdrawn_states == 1
+    # The client already received this cluster on page two (watermark 2). The
+    # partial withdrawal moves the cluster watermark FORWARD to the withdrawal
+    # upsert, so continuing from cursor 2 must not re-feed it.
+    assert continuation.rows == ()
+    assert continuation.next_cursor == 2
+    assert continuation.has_more is False
+
+    # Every visible row's sequence equals the latest change row addressed to
+    # this security for that cluster, for corrections and withdrawals alike.
+    latest_change: dict[str, int] = {}
+    for row in scoped.rows:
+        latest_change[row.story_id] = max(
+            latest_change.get(row.story_id, 0), row.sequence
+        )
+    assert [row.source_item_id for row in fresh.rows] == ["11", "30"]
+    assert fresh.rows[0].story_id == story_id
+    assert fresh.rows[0].title == survivor_title
+    withdrawal_upsert = [
+        row for row in scoped.rows if row.source_item_id == "11"
+    ][-1]
+    assert fresh.rows[0].sequence == withdrawal_upsert.sequence
+    for row in fresh.rows:
+        assert row.sequence == latest_change[row.story_id]
+
+
+def test_partial_withdrawal_representative_is_newest_survivor_of_three_member_cluster(tmp_path):
+    oldest_title = "Nvidia launches new AI accelerator"
+    middle_title = "Nvidia launches its new AI accelerator"
+    newest_title = "Nvidia launches a new AI accelerator"
+    oldest = _rest(
+        item_id=21, title=oldest_title, minute=0, teaser="survivor-teaser-oldest"
+    )
+    middle = _rest(
+        item_id=22, title=middle_title, minute=1, teaser="survivor-teaser-middle"
+    )
+    newest = _rest(
+        item_id=23, title=newest_title, minute=2, teaser="teaser-newest"
+    )
+
+    with _open(tmp_path) as store:
+        store.commit(
+            [oldest, middle, newest], expected_cursor=None, next_cursor="c1"
+        )
+        before = _snap(store)
+        assert len(before.rows) == 1
+        assert before.rows[0].item_count == 3
+        story_id = before.rows[0].story_id
+        detail = store.story(story_id, rights=_rights())
+        assert {member.source_item_id for member in detail.members} == {
+            "21",
+            "22",
+            "23",
+        }
+        prior_last = _changes(store).rows[-1].sequence
+
+        store.commit([_remove(23, minute=3)], expected_cursor="c1", next_cursor="c2")
+        snap = _snap(store)
+        fresh = _changes(store, after_sequence=prior_last).rows
+
+    # The newest member was the representative; withdrawing it must promote
+    # the newest SURVIVOR (item 22), not the oldest member.
+    assert len(fresh) == 1
+    assert fresh[0].kind == "upsert"
+    assert fresh[0].story_id == story_id
+    assert fresh[0].source_item_id == "22"
+    assert fresh[0].title == middle_title
+    assert fresh[0].teaser == "survivor-teaser-middle"
+
+    assert len(snap.rows) == 1
+    assert snap.rows[0].story_id == story_id
+    assert snap.rows[0].item_count == 2
+    assert snap.rows[0].source_item_id == "22"
+    assert snap.rows[0].title == middle_title
+    assert snap.rows[0].teaser == "survivor-teaser-middle"
+    assert oldest_title not in (fresh[0].title, snap.rows[0].title)
+
+
 def test_identical_revision_committed_twice_is_duplicate_without_second_change(tmp_path):
     first = _rest(item_id=3, title="Nvidia launches accelerator", minute=0)
     replay = _rest(item_id=3, title="Nvidia launches accelerator", minute=0)
