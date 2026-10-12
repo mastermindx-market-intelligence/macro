@@ -34,13 +34,16 @@ waves:
     status: in_progress
     pr: [8698, 945, 955]
 next_action: >-
-  Finish current protected Terminal 955 source checks and the incumbent VPS release,
-  using the accepted feature-copy repair with 554 files / 9,141 tests and six EN/ZH browser passes; Terminal 945 is
-  already merged, installed and healthy. Settle/materialize/audit the attended
-  interrupted fourth 1000-request EOD wave: 838 raw responses / 835 new views verified and full archive qualified at 4,386 histories / 8,919,835 bars; settle the active 161-request continuation within the original combined cap.
-  Before real BOATS publication, qualify exact producer source/CI, original runtime
-  controls, sole writer and object/cache replacement. Reconcile the existing
-  account's served fundamentals HTTP 400 discrepancy; the intended Chrome Chris profile is already signed in with BOATS ACTIVE and current quota remaining.
+  Conclude genuine main baseline 38187866979 after the accepted one-path CI repair
+  landed as de0c202a. Land the independently reviewed BOATS ASCII casing repair
+  from fresh branch claude/tiingo-boats-vendor-case-20261012 after exact-head hosted
+  acceptance. Verify protected Terminal 955 at 88bdb412 and deploy its actual merge
+  with the existing VPS builder. Prepare and review one finite attended publisher
+  through the original exec carrier after actual source, consumer, relay-writer,
+  target, resource and clock proof; persistent publication remains refused. Settle
+  the existing 1000-request EOD wave six before materialization and lineage
+  qualification, then continue full history and served fundamentals diagnosis.
+  Preserve peer MAG 7 intraday captures and all retrospective/PIT boundaries.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -55,9 +58,10 @@ artifacts:
   - docs/tiingo-evidence/20261011-history-wave2/
   - docs/tiingo-evidence/20261011-history-wave3/
   - docs/tiingo-evidence/20261011-boats-source/
+  - docs/tiingo-evidence/20261012-real-open-case-repair/
 landmines:
-  - Keep one existing collector, archive writer, provider/runtime owner and source carrier; News PR 8697 is separate.
-  - The source archive retains a directory-swap TOCTOU limit; trust one writer and do not rename archive directories concurrently.
+  - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
+  - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
   - Full fundamentals activation is Chairman-attested but AMD current-key responses still expose evaluation restrictions; do not infer absent purchase or purchase again.
   - Authentic BOATS controls and historical bars do not prove actual Q/T/B or session coverage.
   - Reviewed source admits a complete BOATS-only public projection; installation and old object/cache replacement still need proof. Never inject BOATS under a legacy provider label.
@@ -245,3 +249,62 @@ Dated wave-four qualification, 2026-10-11 22:49 UTC: all 4,403 receipts were che
 Wave-four continuation settled: 161/161 succeeded, 343,787 row hints / 80,194,781 raw bytes in 368.882 seconds. Combined original batch: 999 verified bodies (996 nonempty / three empty), one absent BAFE timeout; all 4,564 archive receipts inspected. Materializer settled rc=0, final archive qualification running. Protected main 3a92cf50 integrated without source conflict; five LIVE receipt changes and three unchanged unique anchor relocations passed independent review d7ae07de, then 21 classification tests passed. CI additions retain all prior tests and add actual BOATS display coverage. No raw writer is active.
 
 Final wave-four qualification: 2026-10-11T22:56:35.691310+00:00, 4,547 nonempty EOD histories / 9,263,622 bars / 4,564 receipts; raw/checksum/exact-context/row-lineage/date/economic-overlap proof passed. Physical archive 604,537,634 bytes, free 255.4 GiB, reserve 35 GiB. Safe exact proof and timeout are retained under docs/tiingo-evidence/20261011-history-wave4/. Original Macro #8698 accepted source is pushed at 82feebf630999c0b5a4a3ec6c922ec92f720105f; current hosted gates remain separate.
+
+## CI continuation at 2026-10-11 23:29 UTC
+
+The original Macro carrier landed prematurely at `fba80a12`; hosted contract-delta
+run `38182746681` then found the missing calendar dependency. The fresh-main
+continuation widens the existing job by one path and preserves producer/archive
+bytes. `python3 scripts/check_contract_delta.py --base
+8ad47787d83be8625fb387e279220b5a40efc7b2` passed with zero introduced/inherited
+findings in 440.3 seconds. Actual red/green/parity/landing evidence is retained at
+`docs/tiingo-evidence/20261011-ci-continuation/`. This does not establish hosted
+acceptance, publication or full-programme completion.
+
+
+Current qualification checkpoint, 2026-10-12 00:25 UTC: Macro #8870's exact
+1cea273c source passed all twelve CI packs and active authority and landed as
+de0c202a. The original red CI and main 308cc evidence remain retained. Natural
+main baseline 38187866979 is running; no duplicate dispatch or baseline-success
+claim follows. The reviewed casing repair now has a fresh branch from this main.
+
+Actual bounded BOATS capture settled at its 20,000-message cap after about four
+seconds: 19,651 Q / 347 T / zero B / two authenticated controls, twenty immutable
+segments, all original raw hashes and exact research projections verified. Every
+market symbol was lowercase. Original public display replay admitted zero; the
+narrow ASCII-validated uppercase display key repair leaves raw/research identity
+exact, reproduces seven red regressions and passes seventy affected checks. At
+the original capture clock authentic repaired replay admits only AAPL among the
+nine chosen display keys and verifies raw event/price lineage. This is historical
+replay, not current production or continuous break/session coverage. The unchanged
+public allowlist and source boundaries were independently accepted; one qualified
+LIVE source-pin refresh passes all twenty-one classification checks.
+
+The settled fifth history wave qualifies 5,046 nonempty EOD histories and
+10,306,265 distinct bars at the original dated observation, with 5,068 receipts,
+all checksums, exact contexts, lineage, unique dates and overlaps verified. That
+snapshot predates three new AAPL fundamentals captures and twenty BOATS segments.
+Fundamentals requested from 1990 still serve only roughly three years; original
+reported/restated dimensions retain 962 matched metrics and 45 differences. Full
+vendor coverage, dated issuer identity and PIT known-at remain unproved.
+
+Wave six is an actual attended 1,000-request EOD invocation of the original
+collector, excluding already captured symbols and preserving the 35-GiB reserve.
+Its scope/result/log live in the current task's tiingo-phase1 directory. It is
+still running at this checkpoint; no later settlement or projection is assumed.
+The Chairman identifies four separate intraday captures as a likely Web MAG 7
+test. Disjoint immutable BOATS/EOD appends preserve those artifacts and any actual
+wider lease; this record is advisory and grants no relay-key or runtime authority.
+
+Terminal #955 at 88bdb412 integrates the whole peer #957 ledger correction without
+SQL execution or peer rewrites. Real strict pull-request ingest checks now pass,
+as do Hub and unit/typecheck; hosted desktop/tablet/mobile shards and protected
+merge remain pending. #945's d0973ef6 VPS release remains the installed provenance
+prerequisite only. The original persistent publisher/schedule refusal remains
+held. No new R2 write, schedule, service or consumer deployment occurred.
+
+Verification methods, red/green logs, original dated safe proofs and independent
+hash-bound judgments are retained in docs/tiingo-evidence/20261012-real-open-case-repair/.
+Fabric's original prelaunch failures remain on their IDs; diagnosis shows a log
+override alone would orphan installed status/result/stdin paths outside the grant.
+No retry, replacement operation or alternate ledger was created.

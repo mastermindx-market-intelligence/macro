@@ -1,0 +1,23 @@
+{
+  "actual_grant_boundary": "Original adapter state/remote_sub and lanes are outside current writable roots",
+  "adapter_or_permissions_changed": false,
+  "adapter_status_result_paths_honor_override": false,
+  "adapter_stdin_packet_dir_honors_override": false,
+  "alternate_ledger_created": false,
+  "conclusion": "A log-only override cannot provide the existing same-ID retained result/status path under current grants. Continue directly; do not redirect the shared outcome ledger or launch an unconsumable worker.",
+  "original_failure": {
+    "before_launch": true,
+    "before_lease": true,
+    "errno": 1
+  },
+  "own_workspace_exclusive_log_write_passed": true,
+  "preserve_frozen_ids": true,
+  "remote_sub_log_override_supported": true,
+  "schema": "tiingo_fabric_local_permission_diagnosis.v1",
+  "source_sha256": {
+    "fabric_task.py": "4bee52ebbe056fa271f1170286f8ef0976842c8bf9397de4c8d1d693adefa87a",
+    "remote_sub.sh": "f4333d88e547dc2a2c06a4d6919793cbd62adc1cad5c8ccdee792ff1daba5bf8"
+  },
+  "thread_id": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "worker_dispatched": false
+}
