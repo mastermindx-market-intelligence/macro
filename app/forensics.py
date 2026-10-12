@@ -1,6 +1,7 @@
 """Authenticated serving route for the private Filing Forensics state."""
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -868,6 +869,63 @@ async def financial_query(
         headers={
             **_PRIVATE_HEADERS,
             "X-FIF-Response-SHA256": result.sha256,
+        },
+    )
+
+
+@router.api_route(
+    "/api/forensics/v1/financial/query.xlsx",
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+)
+def financial_query_xlsx_method_not_allowed(
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> None:
+    """Auth first, then a private 405. Starlette's default 405 has no no-store policy."""
+    del response
+    raise _private_error(405, "method not allowed")
+
+
+@router.post("/api/forensics/v1/financial/query.xlsx")
+async def financial_query_xlsx(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Same admission as the JSON query; return a deterministic .xlsx attachment."""
+    from engine.fundamental_forensics.excel_export import (  # noqa: PLC0415
+        XLSX_MEDIA_TYPE,
+        response_query_id,
+        to_xlsx_bytes,
+    )
+    from engine.fundamental_forensics.query_service import (  # noqa: PLC0415
+        FinancialQueryAdmissionError,
+        FinancialQueryUnavailableError,
+        execute_financial_query,
+    )
+
+    body = await _admit_json_post_body(request)
+    provider = _financial_query_provider()
+
+    try:
+        result = execute_financial_query(body=body, provider=provider)
+    except FinancialQueryAdmissionError as exc:
+        raise _private_error(exc.status_code, exc.detail) from None
+    except FinancialQueryUnavailableError:
+        raise _private_error(503, "financial query temporarily unavailable") from None
+    except Exception:  # noqa: BLE001
+        raise _private_error(503, "financial query temporarily unavailable") from None
+
+    envelope = dict(result.envelope)
+    envelope["sha256"] = result.sha256
+    payload = to_xlsx_bytes(envelope)
+    filename = f"{response_query_id(envelope)}.xlsx"
+    return Response(
+        content=payload,
+        media_type=XLSX_MEDIA_TYPE,
+        headers={
+            **_PRIVATE_HEADERS,
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-FIF-Response-SHA256": hashlib.sha256(payload).hexdigest(),
         },
     )
 
