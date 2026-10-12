@@ -554,3 +554,21 @@ The temporary foreground observer13739/exec83265 stopped with exit130.
 First scheduled execution is not yet observed. continuation_registration.json
 retains body-free proof; current implementation/page-proof frontier6199fbe0
 is pushed and clean. Original8786and follow-on installation remain unproven.
+
+## October12 original-carrier conflict repair
+
+PR8786becameDIRTYat9019. Root disarmed and read back the exact OPEN head,
+no native auto-merge and no controller refresh lease. Protected main2853362
+merged as0dde7248after one exact-union paths conflict in ticker-news-qbus.
+All285main jobs/paths and the21original source hashes are preserved.
+Verification: python3 -m pytest tests/test_ci_pack.py -q --tb=short reports
+166passed,2mockups-dependent skips in320.33s. The free-content check reports
+69byte-identical outputs. Differential contract checking reports0introduced/0inherited findings in252.1s.
+Push/readback/re-arm last, then fresh CI and
+protected delivery. The tested follow-on stays separate at3464db53with
+registered same-thread continuation complete-press-delivery; see CHECKPOINT.md.
+
+The tested repair was subsequently pushed to original8786asde63b3a9,
+read back and re-armed. Fresh CI38223150169 is running. Protected landing,
+installation and browser acceptance remain unproven. This follow-on now
+integrates that repaired carrier; only root-owned continuity prose conflicted.

@@ -3,6 +3,72 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Current active release
+
+Original PR8786 is OPEN and re-armed atde63b3a93eb3715cc9f84a86d1ae034b822b9fd5.
+Fresh exact-head CI38223150169 is running. No old green run proves this head.
+This follow-on branch now integrates that repaired carrier; its only merge
+conflicts were these three root-owned continuity records. The separate
+aggregate-feed application source is preserved. Continue exact-head CI,
+protected landing, installation and browser verification before shipping
+this follow-on. The same-chat continuation remains ACTIVE and quiet on
+unchanged state; first scheduled execution remains unobserved.
+The integrated follow-on's four affected suites pass186tests; raw proof is
+aggregate_feed_de63_green.txt. Both implementation/test hashes match the
+accepted aggregate-feed repair. No second source review is inferred or needed
+for unchanged bytes; protected CI and installed consumption remain outstanding.
+
+The portable postlanding bundle is now under
+/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding/de63b3a93eb3715cc9f84a86d1ae034b822b9fd5/.
+It binds21source hashes and3page hashes tode63, with reviewed theme.js stamps,
+and all three scripts compile. Expected files and outputs are relative to the
+bundle instead of/tmp. Execution remains unperformed. Pass the actual protected
+merge SHA, notde63, after verifying landing; fresh source/page differences must
+be reviewed before rebinding. pr8786_de63_acceptance_preparation.json records
+the preparation hashes. This is continuity repair, not production acceptance.
+
+## October12 original-carrier conflict repair
+
+The final pre-continuation read found PR8786OPEN at9019with mergeStateStatus
+DIRTY. Root visibly disarmed it with merge-blocked, read back auto-merge null
+and the exact9019head, and confirmed the controller refresh-lease census empty.
+This is a real source conflict repair, not a refresh-cap override.
+
+Protected main2853362cf71d95669c96ddd1b8f33a50509d59eb integrated as
+0dde7248becc396c6f15f3f64d47b422649019e2. The sole conflict was the
+paths list of ticker-news-qbus in .github/ci/legacy-jobs.yml. The resolution
+is the exact union of both required path sets. All285protected-main jobs
+and their existing paths are preserved; that job's non-path fields exactly
+match main. Commission19's landed disclosure declarations remain intact.
+All21original Press acceptance-source hashes are unchanged.
+
+The full CI-manifest suite passes166tests with2existing mockups-dependent
+skips in320.33seconds. The integrated generated-page check reports69byte-
+identical pages, zero orphans and3hand-authored exemptions. No authored
+manifest whitespace errors are present; upstream generated-page whitespace
+and the old retained raw failure log are not rewritten. Exact receipts are
+pr8786_current_main_conflict_resolution.json, pr8786_current_main_manifest_tests.txt
+and pr8786_current_main_pages_check.txt. The differential contract check against2853362completed with0introduced
+and0inherited findings in252.1seconds, exit0; its raw result is retained
+in pr8786_current_main_contract_delta.txt.
+
+The tested repair is pushed to original8786asde63b3a93eb3715cc9f84a86d1ae034b822b9fd5.
+Exact remote readback succeeded and merge-on-green was restored last. Fresh
+CI38223150169 started at08:22:15Z. Pre-push integration with newer main
+2dbdc9b9455818955bf75e25d61deafad1f49ddb was conflict-free; hosted proof and
+the protected main-baseline decision remain required. Source repair does not waive8960or its
+controller capacity gate. No merge/install/browser acceptance is claimed.
+
+The separately tested aggregate-feed follow-on and its page-proof evidence
+are pushed through6199fbe0, with continuation registration saved at3464db53
+on claude/ssd-mmx-press-aggregate-feed-20261012-a9aa65ed7b847bd2. Do not fold
+that application change into8786or start a duplicate PR. App continuation
+complete-press-delivery is ACTIVE every20minutes for the original native
+thread; its first scheduled execution is unobserved. Foreground observer
+13739/83265 stopped with exit130. The app continuation owns attention only;
+GitHub retains protected release authority. It must finish8786installation
+and real browser verification, then ship the tested follow-on.
+
 ## Active delivery continuation
 
 App automation complete-press-delivery is ACTIVE, registered and read back for

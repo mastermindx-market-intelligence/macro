@@ -1,0 +1,17 @@
+{
+  "candidate_head": "de63b3a93eb3715cc9f84a86d1ae034b822b9fd5",
+  "installation_executed": false,
+  "source_bindings": 21,
+  "acceptance_pages": 3,
+  "page_rebind_basis": "Only reviewed theme.js asset stamp changed since9019; all69generated pages match current source",
+  "script_syntax_validated": true,
+  "temporary_file_dependencies": false,
+  "run_requirement": "Supply actual verified protected merge SHA, never this unmerged candidate SHA",
+  "files": {
+    "mmx-8786-runtime-inspect.py": "78a682ef905d1bab2a4c46018d561cfa6c66d52dd37b87bc78304f0551f7a811",
+    "mmx-8786-install-check.py": "31a89bb96966f5b1336a0e540435096361ae10fe8cd21d2474254d8f48e7b929",
+    "mmx-8786-expected-hashes.json": "58de14632f61e98f592fb515671697c623f0620e173c32ca9eb02d927cff609c",
+    "mmx-8786-http-check.py": "3f1b3e558d28235342b7ef3344b207d40c1440d0f1b4c93763f965d1ed94a83d",
+    "mmx-8786-expected-pages.json": "aacb655752064620112cd0db5a66973d88bc3dac3ea33b445ae9b611bf820448"
+  }
+}
