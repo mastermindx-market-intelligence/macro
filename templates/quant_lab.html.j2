@@ -104,6 +104,24 @@
            color:var(--muted); font-size:12.5px; max-width:82ch; }
   .quote cite { display:block; margin-top:4px; font-size:11px; font-style:normal; opacity:.85; }
 
+  /* ---- versioned external-method dossier ---- */
+  .sce-hero { display:grid; gap:10px; grid-template-columns:minmax(0,1.4fr) minmax(250px,.6fr);
+              border:1px solid var(--line); border-radius:9px; padding:12px 14px; background:var(--panel2); }
+  @media (max-width:800px){ .sce-hero { grid-template-columns:1fr; } }
+  .sce-status { font-size:13px; font-weight:700; overflow-wrap:anywhere; }
+  .sce-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:8px 0 12px; }
+  @media (max-width:760px){ .sce-grid { grid-template-columns:1fr; } }
+  .sce-box { border:1px solid var(--line); border-radius:8px; padding:9px 11px; background:var(--panel2); }
+  .sce-box .k { font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+                font-weight:650; margin-bottom:3px; }
+  .sce-timeline { margin:5px 0 12px; border-left:1px solid var(--line); }
+  .sce-step { position:relative; padding:3px 8px 11px 16px; }
+  .sce-step::before { content:''; position:absolute; left:-4px; top:8px; width:7px; height:7px;
+                      border-radius:50%; background:var(--panel); border:1px solid var(--muted); }
+  .sce-step .date { font-size:10.5px; color:var(--muted); }
+  .sce-step .title { font-size:12.5px; font-weight:650; margin:1px 0 2px; }
+  .sce-scope { border-left:2px solid color-mix(in srgb,var(--info) 45%,var(--line)); padding-left:10px; }
+
   /* ---- fidelity ledger: one row per leg, vendor -> ours -> coverage -> verdict ---- */
   .ledger { width:100%; font-size:12.5px; }
   .ledger th { font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; }
@@ -376,22 +394,107 @@
   <div class="mhead">
     <h3>{{ t(x.name, x.name_zh or x.name) }}</h3>
     <span class="vendor">{{ x.proposer }}</span>
-    {% if x.has_result %}
+    {% if x.has_result and x.display_kind == 'versioned_dossier' %}
+      <span class="pill v-none mono">{{ x.result.current.status }}</span>
+    {% elif x.has_result %}
       {% set mv = VERD.get(x.result.verdict, VERD['no_data']) %}
       <span class="pill {{ mv[0] }}">{{ t(mv[1], mv[2]) }}</span>
     {% else %}
       <span class="pill v-none">{{ t('Not measured yet','尚未实测') }}</span>
     {% endif %}
   </div>
-  <p class="sm muted" style="margin:0 0 2px">{{ x.one_line }}</p>
+  <p class="sm muted" style="margin:0 0 2px">{{ t(x.one_line, x.one_line_zh or x.one_line) }}</p>
 
   <div class="quote">
     {{ t(x.proposal_says, x.proposal_says_zh or x.proposal_says) }}
-    <cite>{{ t('The proposal, as received','原始提案') }}
+    <cite>{% if x.display_kind == 'versioned_dossier' %}{{ t('Version-matched disclosures','按版本匹配的披露') }}{% else %}{{ t('The proposal, as received','原始提案') }}{% endif %}
       {% for p in x.provenance %} · {% if p.url %}<a href="{{ p.url }}" rel="nofollow noopener" target="_blank">{{ p.publisher }}</a>{% else %}{{ p.publisher }}{% endif %}{% if p.date %}, {{ p.date }}{% endif %}{% endfor %}
     </cite>
   </div>
 
+  {% if x.display_kind == 'versioned_dossier' %}
+    {% if x.has_result %}
+    <div class="sce-hero">
+      <div>
+        <div class="xs muted">{{ t('Current-version ruling','当前版本裁定') }}</div>
+        <div class="sce-status mono">{{ x.result.current.status }}</div>
+        <p class="sm" style="margin:6px 0 0">{{ t(x.result.headline_en, x.result.headline_zh) }}</p>
+        <div class="chips">
+          {% for ticker in x.result.current.universe %}<span class="chip mono"><b>{{ ticker }}</b></span>{% endfor %}
+          {% for engine in x.result.current.architecture %}<span class="chip"><b>{{ engine }}</b></span>{% endfor %}
+        </div>
+      </div>
+      <div class="sce-scope">
+        <div class="xs muted">{{ t('Authority boundary','权限边界') }}</div>
+        <p class="sm" style="margin:3px 0 0"><strong>{{ t('Display only','仅展示') }}</strong> — {{ t(x.result.authority.line_en, x.result.authority.line_zh) }}</p>
+        <p class="xs muted" style="margin:7px 0 0">{{ t(x.result.current.portfolio_shape_en, x.result.current.portfolio_shape_zh) }}</p>
+      </div>
+    </div>
+
+    <h2 style="margin-top:16px">{{ t('Version timeline','版本时间线') }}</h2>
+    <div class="sce-timeline">
+      {% for v in x.result.timeline %}
+      <div class="sce-step">
+        <div class="date mono">{{ v.period }}</div>
+        <div class="title">{{ t(v.title_en, v.title_zh) }}</div>
+        <div class="sm muted">{{ t(v.detail_en, v.detail_zh) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2>{{ t('Evidence partition','证据分区') }}</h2>
+    <div class="sce-grid">
+      {% for b in x.result.evidence_partition %}
+      <div class="sce-box">
+        <div class="k mono">{{ b.class }}</div>
+        <strong class="sm">{{ t(b.label_en, b.label_zh) }}</strong>
+        <div class="xs muted" style="margin-top:3px">{{ t(b.summary_en, b.summary_zh) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2>{{ t('Claim ledger','主张账本') }}</h2>
+    <div class="sce-grid">
+      {% for c in x.result.claim_ledger %}
+      <div class="sce-box">
+        <div class="k mono">{{ c.class }}</div>
+        <div class="sm">{{ t(c.claim_en, c.claim_zh) }}</div>
+        <div class="xs muted" style="margin-top:5px"><strong>{{ t('Mastermind state','Mastermind 状态') }}:</strong> {{ t(c.state_en, c.state_zh) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2 style="margin-top:16px">{{ t('Scoped negative result','限定范围的负结果') }}</h2>
+    {% for r in x.result.scoped_results %}
+    <div class="sce-box sce-scope" style="margin-bottom:8px">
+      <div class="mhead" style="margin:0 0 4px">
+        <strong class="mono">{{ r.status }}</strong>
+        <span class="vendor">{{ t(r.scope, r.scope_zh) }}</span>
+      </div>
+      <div class="sm">{{ t(r.meaning_en, r.meaning_zh) }}</div>
+      <div class="sm muted" style="margin-top:3px"><strong>{{ t('Does not mean','不代表') }}:</strong> {{ t(r.does_not_mean_en, r.does_not_mean_zh) }}</div>
+    </div>
+    {% endfor %}
+
+    <details>
+      <summary>{{ t('Failed / retired reconstruction paths','失败／退出的复刻路径') }}</summary>
+      <div class="sce-grid">
+      {% for f in x.result.failed_reconstruction_families %}
+        <div class="sce-box"><div class="k mono">{{ f.state }}</div><strong class="sm">{{ t(f.name_en, f.name_zh) }}</strong><div class="xs muted" style="margin-top:3px">{{ t(f.detail_en, f.detail_zh) }}</div></div>
+      {% endfor %}
+      </div>
+    </details>
+
+    <h2 style="margin-top:16px">{{ t('Current rules still unknown','当前仍未知的规则') }}</h2>
+    <ul class="sm muted" style="margin:0; padding-left:18px; max-width:92ch">
+      {% for u in x.result.unresolved_current_rules %}<li>{{ t(u.en, u.zh) }}</li>{% endfor %}
+    </ul>
+    <p class="sm" style="margin:10px 0 0"><strong>{{ t('Reopen only on new current-version evidence','仅在出现新的当前版本证据时重启') }}:</strong> {{ t(x.result.reopen_event.en, x.result.reopen_event.zh) }}</p>
+    {% else %}
+    <p class="sm muted">{{ t('The result file for this method is not present, so nothing is claimed here.',
+                              '该方法的结果文件缺失，因此此处不作任何结论。') }}</p>
+    {% endif %}
+  {% else %}
   {% if x.has_result %}
   {# ---------- the one sentence that matters ---------- #}
   <p class="sm" style="max-width:88ch; margin:10px 0 2px">
@@ -473,18 +576,19 @@
   <p class="sm muted">{{ t('The result file for this method is not present, so nothing is claimed here.',
                             '该方法的结果文件缺失，因此此处不作任何结论。') }}</p>
   {% endif %}
+  {% endif %}
 
   {# ---------- why it is not in the tables above ---------- #}
   <details>
     <summary>{{ t('Why this is not scored like the models above','为何不按上方模型的方式评分') }}</summary>
-    <p class="sm" style="max-width:88ch">{{ x.not_a_ranker_because }}</p>
+    <p class="sm" style="max-width:88ch">{{ t(x.not_a_ranker_because, x.not_a_ranker_because_zh or x.not_a_ranker_because) }}</p>
   </details>
 
   <p class="sm" style="max-width:88ch; margin:10px 0 0">
-    <strong>{{ t('What still stands','仍然成立的部分') }}:</strong> {{ x.still_live }}
+    <strong>{{ t('What still stands','仍然成立的部分') }}:</strong> {{ t(x.still_live, x.still_live_zh or x.still_live) }}
   </p>
   <p class="sm muted" style="max-width:88ch; margin:4px 0 0">
-    <strong>{{ t('What would reopen it','何时重启') }}:</strong> {{ x.reopen_when }}
+    <strong>{{ t('What would reopen it','何时重启') }}:</strong> {{ t(x.reopen_when, x.reopen_when_zh or x.reopen_when) }}
   </p>
 </div>
 {% endfor %}
