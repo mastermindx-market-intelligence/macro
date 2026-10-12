@@ -26,6 +26,7 @@ import pandas as pd
 import requests
 
 from collectors.base import Adapter
+from collectors import _crypto_observations as observations
 from lib import config, store
 
 log = logging.getLogger(__name__)
@@ -57,6 +58,7 @@ class BgeoAdapter(Adapter):
         return True
 
     # -- fetch ------------------------------------------------------------------
+    @observations.recording_run
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         metrics: dict[str, str] = self.cfg["metrics"]
         budget = int(self.cfg["daily_request_budget"])
@@ -93,16 +95,22 @@ class BgeoAdapter(Adapter):
             raise ValueError(f"bgeo fetched nothing (spent={spent}, skipped={skipped})")
         return out
 
+    def fetch_result_status(self, frames: dict[str, pd.DataFrame]) -> str | None:
+        return observations.fetch_result_status(self, frames)
+
     def _fetch_metric(self, endpoint: str, col: str, startday: str) -> pd.DataFrame | None:
         url = f"{self.cfg['base_url']}/v1/{endpoint}"
         params = {"startday": startday, "size": str(self.cfg["page_size"])}
         r = requests.get(url, params=params, timeout=60,
                          headers={"User-Agent": config.load()["sponsors"]["user_agent"]})
+        received_at = observations.now_utc()
         self._note_quota(r)
         if r.status_code == 429:
             raise QuotaExhausted(r.headers.get("X-RateLimit-Reset-Hour", "?"))
         r.raise_for_status()
         rows = r.json()
+        if endpoint == "funding-rate":
+            observations.record_response(self, "bgeo_funding", params, r, rows, received_at, endpoint=url)
         if not isinstance(rows, list) or not rows:
             return None
         df = pd.DataFrame(rows)
