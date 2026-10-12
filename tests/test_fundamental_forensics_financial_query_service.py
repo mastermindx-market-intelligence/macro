@@ -847,3 +847,142 @@ def test_execute_does_not_open_the_network(monkeypatch: pytest.MonkeyPatch) -> N
 
     monkeypatch.setattr(socket, "socket", _forbidden_socket)
     execute_financial_query(body=_make_request(), provider=_fip1_provider())
+
+
+# ---------------------------------------------------------------------------
+# FIF D3: production delivery law + golden bytes unchanged
+# ---------------------------------------------------------------------------
+
+_LAWFUL_PRODUCTION_DELIVERY = {
+    "kind": "production_issuer_dataset",
+    "attested": False,
+    "production_issuer_service": True,
+    "dataset_generation_id": "ffprods_" + "a" * 64,
+    "capture_basis": "reconstruction",
+}
+
+
+def _production_dataset(delivery=None, admitted_at=None):
+    base = fip1_fixture_dataset(ROOT)
+    return FinancialQueryDataset(
+        binding=base.binding,
+        ledger=base.ledger,
+        filing_metadata=base.filing_metadata,
+        registry=base.registry,
+        delivery=delivery if delivery is not None else dict(_LAWFUL_PRODUCTION_DELIVERY),
+        dataset_admitted_at=admitted_at,
+    )
+
+
+class _StaticProvider:
+    def __init__(self, dataset) -> None:
+        self._dataset = dataset
+
+    def resolve(self, entity_id: str) -> FinancialQueryDataset:
+        if entity_id == self._dataset.binding.entity_id:
+            return self._dataset
+        raise FinancialQueryAdmissionError(400, "unknown entity")
+
+
+def test_production_delivery_object_is_lawful_and_exact() -> None:
+    from engine.fundamental_forensics.query_service import (
+        _LAWFUL_GOLDEN_DELIVERY_KIND,
+        _LAWFUL_PRODUCTION_CAPTURE_BASES,
+        _LAWFUL_PRODUCTION_DELIVERY_KIND,
+        canonical_financial_delivery,
+    )
+
+    assert _LAWFUL_PRODUCTION_DELIVERY_KIND == "production_issuer_dataset"
+    assert _LAWFUL_PRODUCTION_CAPTURE_BASES == frozenset({"reconstruction"})
+
+    lawful = canonical_financial_delivery(dict(_LAWFUL_PRODUCTION_DELIVERY))
+    assert lawful == _LAWFUL_PRODUCTION_DELIVERY
+
+    unlawful = [
+        {**_LAWFUL_PRODUCTION_DELIVERY, "extra": 1},                      # extra key
+        {k: v for k, v in _LAWFUL_PRODUCTION_DELIVERY.items() if k != "capture_basis"},  # missing key
+        {**_LAWFUL_PRODUCTION_DELIVERY, "kind": "committed_golden_fixture"},            # wrong kind
+        {**_LAWFUL_PRODUCTION_DELIVERY, "kind": "production_attested"},                 # red-team kind
+        {**_LAWFUL_PRODUCTION_DELIVERY, "attested": 1},                                 # non-bool
+        {**_LAWFUL_PRODUCTION_DELIVERY, "attested": True},                              # D2 does not exist yet
+        {**_LAWFUL_PRODUCTION_DELIVERY, "production_issuer_service": False},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "production_issuer_service": "yes"},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "dataset_generation_id": "ffprods_short"},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "dataset_generation_id": "ffprod_" + "a" * 64},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "capture_basis": "historic_capture"},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "capture_basis": None},
+        "not-a-mapping",
+        7,
+    ]
+    for candidate in unlawful:
+        with pytest.raises(FinancialQueryUnavailableError):
+            canonical_financial_delivery(candidate)
+
+    # The golden branch is unchanged and still refuses every production flag.
+    golden = {
+        "kind": _LAWFUL_GOLDEN_DELIVERY_KIND,
+        "attested": False,
+        "production_issuer_service": False,
+    }
+    assert canonical_financial_delivery(dict(golden)) == golden
+    with pytest.raises(FinancialQueryUnavailableError):
+        canonical_financial_delivery(
+            {"kind": _LAWFUL_GOLDEN_DELIVERY_KIND, "attested": False, "production_issuer_service": True}
+        )
+    # The end-to-end adapter accepts a lawful production dataset and stamps
+    # the exact delivery object on the envelope.
+    result = execute_financial_query(
+        body=_make_request(), provider=_StaticProvider(_production_dataset())
+    )
+    assert result.envelope["delivery"] == _LAWFUL_PRODUCTION_DELIVERY
+
+
+def test_golden_delivery_and_bytes_unchanged_by_production_path() -> None:
+    from engine.fundamental_forensics.query_service import (
+        _LAWFUL_GOLDEN_DELIVERY_KIND,
+        _LAWFUL_GOLDEN_DELIVERY_KEYS,
+    )
+
+    # The frozen constants are untouched.
+    assert _LAWFUL_GOLDEN_DELIVERY_KIND == "committed_golden_fixture"
+    assert _LAWFUL_GOLDEN_DELIVERY_KEYS == frozenset(
+        {"kind", "attested", "production_issuer_service"}
+    )
+
+    # FIP1 (delivery absent) and the golden delivery object both produce the
+    # exact pre-D3 bytes for all three selections — frozen pre-D3 baselines
+    # captured on the untouched tree at 5267c66846e.
+    pre_d3_shas = {
+        ("absent", "as_reported"): "c7c7c6b285f697597d50139e5991277bdac57e1c325d63424f35b12cf0201ba1",
+        ("absent", "latest_known_as_of"): "086a59ef400af43103d4e13572e384e6b7766b58a9179eabbb709265ad0aa019",
+        ("absent", "latest_restated"): "8044e58d7a09690d93111408c5f7df186f010a58a88f9c425af2bf4b24b84859",
+    }
+    golden_delivery = {
+        "kind": "committed_golden_fixture",
+        "attested": False,
+        "production_issuer_service": False,
+    }
+    base = fip1_fixture_dataset(ROOT)
+    for delivery, selection in pre_d3_shas:
+        dataset = FinancialQueryDataset(
+            binding=base.binding,
+            ledger=base.ledger,
+            filing_metadata=base.filing_metadata,
+            registry=base.registry,
+            delivery=None if delivery == "absent" else dict(golden_delivery),
+        )
+        result = execute_financial_query(
+            body=_make_request(
+                policy={
+                    "selection": selection,
+                    "source_snapshot_at": T1_SOURCE,
+                    "recorded_at": T2_RECORDED,
+                }
+            ),
+            provider=_StaticProvider(dataset),
+        )
+        assert result.sha256 == pre_d3_shas[(delivery, selection)], (delivery, selection)
+        if delivery == "absent":
+            assert "delivery" not in result.envelope
+        else:
+            assert result.envelope["delivery"] == golden_delivery
