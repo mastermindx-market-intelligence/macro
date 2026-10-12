@@ -171,3 +171,31 @@ Specific human admission:
 [current run 38209480199](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38209480199).
 Existing installed research and settled archive evidence can be consumed without
 repeating accepted installation or collection.
+
+## Contract discovery adoption — hosted wiring repair
+
+PR #8986 registers exactly four existing EOD/fundamentals L0/L1 research contracts
+as PRODUCED. The original hosted run 38233444256 tested head
+`5dc4c86aa6711a480f9a6b08b80bc852e0cfd678` and reported one introduced defect:
+the new `tests/test_tiingo_produced_contracts.py` suite was not named by a hosted
+run step. The repair wires it into the existing `dataos-web-workspace` job and
+adds job/workflow triggers for the suite and its actual accepted-corpus evidence.
+No waiver, permission, secret, approval rule or qualification boundary changes.
+The 39 affected consumer tests pass; the existing planner's inferred closure has
+no uncovered paths for that job and the audit recognizes the run-step binding.
+The repaired source requires its own original hosted CI acceptance before merge
+and immutable Data & Lab release preparation or selection.
+
+The newer completed-response snapshot has 12336 nonempty histories / 26192729
+distinct bars. Its reused-catalogue census records 23 empty candidates and 35330
+uncaptured windows; uncaptured does not imply unattempted. A disjoint next finite
+5000-symbol EOD plan excludes all 16 known held symbols and existing/reserved EOD
+requests. It has launched no requests and requires the original running batch to
+settle plus fresh source, storage and account-quota checks before capture.
+Fundamentals expansion remains held after the new PFE statements HTTP 400; the
+previous 75 successful captures and installed-reader proof remain accepted.
+
+Terminal #955 still has head `de8aca83cd6a3072eba861ce494d9e644baca75f` and its
+original run **38214248199** requires maintainer approval. This exact current
+binding supersedes the historical run links above. No new dispatch, approval,
+runtime release or public BOATS publication is implied by this save.
