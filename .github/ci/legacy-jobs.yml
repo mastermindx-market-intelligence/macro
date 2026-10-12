@@ -6693,6 +6693,8 @@ jobs:
       # EXP1 deterministic expectation query and hermetic consumer tests.
       - "scripts/query_k3e_expectation_surface.py"
       - "tests/test_k3e_expectation_surface.py"
+      # C19 WP09 non-consensus record-class pins.
+      - "tests/test_k3e_wp09_pins.py"
       # E1 K3E provider-family + semantic-seam qualification suites (strict-xfail GAP-E-*).
       - "tests/test_k3e_provider_family_qualification.py"
       - "tests/test_k3e_semantic_seam_qualification.py"
@@ -6746,7 +6748,7 @@ jobs:
       - name: "EXP1 deterministic K3E expectation query consumer"
         run: |
           python scripts/query_k3e_expectation_surface.py --help
-          python -m pytest --noconftest tests/test_k3e_expectation_surface.py -q
+          python -m pytest --noconftest tests/test_k3e_expectation_surface.py tests/test_k3e_wp09_pins.py -q
 
       - name: "E1 K3E provider-family + semantic-seam qualification (strict xfail gaps)"
         run: python -m pytest --noconftest tests/test_k3e_provider_family_qualification.py tests/test_k3e_semantic_seam_qualification.py -q

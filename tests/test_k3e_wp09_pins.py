@@ -1,7 +1,7 @@
 """C19 WP09 pins: non-consensus record classes stay off the k3e surface."""
 from engine.k3e_expectation_surface import (
     CONSENSUS_RECORD_CLASSES, NON_CONSENSUS_RECORD_CLASS)
-from tests.test_k3e_expectation_surface import capture, inspect, payload, selected
+from tests.test_k3e_expectation_surface import capture, payload, selected
 
 
 def _guidance():
@@ -81,3 +81,17 @@ def test_anchored_rows_unchanged_by_guidance_guard():
     assert result["period_continuity"] == "SAME_NATIVE_PERIOD"
     assert result["denominators"]["invalid_or_inconsistent_excluded_records"] == 0
     assert NON_CONSENSUS_RECORD_CLASS not in result["denominators"]["reason_counts"]
+
+
+def test_missing_or_empty_record_class_never_fires_the_guard():
+    # The guard reads only a non-empty string class; None, "" and an absent key are
+    # left to the existing validation, never counted as NON_CONSENSUS_RECORD_CLASS.
+    for value in (None, "", "<absent>"):
+        rows, attempts = capture()
+        for row in rows:
+            if value == "<absent>":
+                row.pop("provider_record_class", None)
+            else:
+                row["provider_record_class"] = value
+        result = payload(rows, attempts)
+        assert NON_CONSENSUS_RECORD_CLASS not in result["denominators"]["reason_counts"]
