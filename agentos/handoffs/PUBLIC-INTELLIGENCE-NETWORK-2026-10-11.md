@@ -220,3 +220,40 @@ tablet browser shards passed; desktop1/mobile were running at the last accepted
 read. A repeated direct Terminal PR read was refused by the CI wait guard before
 execution and not retried. Neither PR's installation nor pristine production
 acceptance is claimed. All prepared install paths remain gated on actual merge.
+
+
+## Consumed main CI repair and refreshed Terminal proof — 23:55 UTC
+
+The sole observer reported ci-pack-0 red on f4. The first completed-job log read
+(`gh run view --job114601457342 --log`) identifies only
+ci-control-plane-contracts: dataos-prospective-reference omitted lib/nyse_calendar.py.
+Root reproduced the same failure locally, verified a one-path repair green, then
+found the incumbent main-red-repair PR8870. Its exact source1cea273c72487f1fae77dc579b3e628ec435a55c
+was consumed with `git cherry-pick -x` as40875489f82b, preserving authorship,
+producer source and its existing proof. No duplicate heal PR was created.
+Original8786 was disarmed before authoring; fresh main308cc1578147d85a64e4aa7d9328355917e9f4c4
+was integrated first. All13 prepared installation-source SHA256 expectations are
+unchanged. The hosted red excerpt is retained inprotected_ci_f4_calendar_failure.txt.
+
+The separate Press baseline qualifier is pushed at01097050608bb9966a572eb8b106e998613e41ea,
+with43focused tests,28workflow tests,source binding andbounded review accepted.
+It has not run a live authenticated fetch or been admitted for publication.
+The local independent calendar fix was superseded for original8786 by consuming
+PR8870; preserve the incumbent source rather than opening another heal carrier.
+
+Terminal956 refresh2fd1b1a9 includes existing annotation-sync source. Integrated
+local proof:104unit tests, typecheck and18responsive sign-in/recovery cases pass.
+The installed M2 Fabric adapter admitted and completed an independent MiniMax
+integration review; root consumed and accepted the same retained result.
+Exact scope and commands are inTERMINAL_REFRESH_ACCEPTANCE.md. Hosted current-head
+CI38185449454, protected landing, installation and pristine browser acceptance
+remain outstanding. No fresh account, new follow, migration or deployment occurred.
+
+
+Original8786 repair validation: curated import closure passed1test in242.52s on
+consumed40875489f82b source. Agent OS1667records,0errors,141existingwarnings.
+Root pushed exactheadd425cc87f5da4214f53fa1fbc0ee72f0284870f5 to the original
+branch, verified remote PR identity OPEN at that hash with no refresh lease and
+native auto-merge null, then re-armed merge-on-green. The separate recovery branch
+reverted its unpublished parallel one-line fix and integrated the incumbent
+repair plus the original PR checkpoint. No second heal carrier was opened.

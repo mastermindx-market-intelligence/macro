@@ -20804,6 +20804,7 @@ jobs:
       - lib/config.py
       - lib/dataos/**
       - lib/delisted_symbols.py
+      - lib/nyse_calendar.py
       - lib/ticker_aliases.py
       - engine/theme_graph/__init__.py
       - engine/theme_graph/identity.py
