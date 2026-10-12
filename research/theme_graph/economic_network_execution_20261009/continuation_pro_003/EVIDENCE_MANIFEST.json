@@ -1,0 +1,82 @@
+{
+  "schema": "economic_network.research_evidence_manifest/v1",
+  "frozen_on": "2026-10-09",
+  "scope": "Frozen research, semantic judgments and storage adjudication. Hashes bind artifact bytes; they do not authenticate source custody, authorship, independence, rights or admission.",
+  "files": [
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/case_adjudications.jsonl",
+      "byte_length": 23612,
+      "sha256": "039cfbfa04738612457e5ed04be4b20864c088103bb5a8309ff7839938830b25"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/native_adoption_return.md",
+      "byte_length": 15228,
+      "sha256": "fe175837da1b64eea082bc8873071c93fb5c582263d11928b48a59733e079c1f"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/protocol.json",
+      "byte_length": 8673,
+      "sha256": "cfff2160744ca51c6aabd1e6dd023ec07d6ddf99a345b93641056696b779763a"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/replay_receipt.json",
+      "byte_length": 5130,
+      "sha256": "75dfbc580ce302c9802bf6d6da12d48401434f405505219cfdfb38719e2e502f"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/source_attempts.jsonl",
+      "byte_length": 12185,
+      "sha256": "52a82c80857ba403b8db5bd1d971638e5fe4daec2e3416789386906ade9679a9"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/first_reader_judgments_v1.jsonl",
+      "byte_length": 15718,
+      "sha256": "e1f997bb0036596c6822b7ecf5a30f7a990652ce8f952d1adfda980587bd43c6"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/first_source_attempts_v1.jsonl",
+      "byte_length": 12186,
+      "sha256": "ff54a27862fedf7a29c3dc3d8aa2f6524210a69b4b2a3f0ab1d72dd7b46a5ef2"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/independent_semantic_judgments.json",
+      "byte_length": 10309,
+      "sha256": "4357ab18cd8dddafd944b30641bf4c9168f755e1da60059a6ee5d8ded9192652"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/integration_receipt.json",
+      "byte_length": 1402,
+      "sha256": "bf41c0f6e1cdb81ab855487a7b3d9e8108bdedd756fee4dbddd2e1242bf899ee"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/native_adoption_pilot_v1/supporting_evidence/independent_semantic_review.md",
+      "byte_length": 32181,
+      "sha256": "c24cd161708a5ad696eedcf5159b976716581e2fe29cd8dcd1231d2c590c22b3"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/first_reader_judgment.json",
+      "byte_length": 6032,
+      "sha256": "3a9ce686a0593f9731c89ef63c20afb92dce810681aa3d0039bd72ce0f4d6408"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/native_read_receipt.json",
+      "byte_length": 6185,
+      "sha256": "890ff36f83f707e16ad320b0062cefdd4042385b3d677cddb804eb12054bccea"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/retained_micron_semantic_return.md",
+      "byte_length": 9728,
+      "sha256": "4a0d75214e2160f702301bda55490afc611b311c3090f37af166f554086b852d"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/retained_micron_semantic_addendum_v1/principal_independent_judgment.json",
+      "byte_length": 3732,
+      "sha256": "96c5a97fd64a3c4330bba160310e5ade8babb211fd61d567fc5b119346837d9a"
+    },
+    {
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/NATIVE_OBSERVATION_STORAGE_ADJUDICATION.md",
+      "byte_length": 45586,
+      "sha256": "e4966d1e38fe0c5cc495982b74600ab77860fdf0d807db1129d70638bba67543"
+    }
+  ]
+}

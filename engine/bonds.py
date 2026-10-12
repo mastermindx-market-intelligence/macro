@@ -13,7 +13,7 @@ families that layer does not compute:
 
   • Curve & growth   — 3m10y + the NY Fed recession probit, the near-term forward
                        spread (Engstrom-Sharpe, statistically beats 2s10s), the
-                       term-premium-adjusted slope, the bull/bear x steepener/
+                       legacy TP10 curve heuristic, the bull/bear x steepener/
                        flattener move taxonomy, and the un-inversion alarm.
   • Credit           — HY/IG OAS distress bands, the HY-IG ratio, the Moody's
                        Baa-Aaa deep-history gauge, and the monthly Excess Bond
@@ -548,8 +548,8 @@ def _verdict(s: dict) -> tuple[str, str]:
         en.append("Curve un-inverted (watch the dis-inversion).")
         zh.append("曲线已解除倒挂（留意解除倒挂信号）。")
     elif c.get("tp_adj_inverted"):
-        en.append("Term-premium-adjusted curve inverted.")
-        zh.append("期限溢价调整后的曲线倒挂。")
+        en.append("Legacy TP10 curve heuristic is below zero (context only).")
+        zh.append("旧版TP10曲线启发式低于零（仅供背景参考）。")
     elif c.get("inverted") is False:
         en.append("Curve positively sloped.")
         zh.append("曲线正向倾斜。")
@@ -575,8 +575,8 @@ def _verdict(s: dict) -> tuple[str, str]:
 
 
 def _drivers_for(s: dict) -> dict:
-    """The explicit cross-asset hand-off: what bonds imply for each other dashboard.
-    This is the bond layer's contribution to the holistic AI synthesis."""
+    """The explicit cross-asset hand-off: descriptive bond-side context for other dashboards.
+    It preserves associations and mechanisms without claiming a directed causal lead."""
     c = s["pillars"]["curve"]
     ri = s["pillars"]["real_inflation"]
     cr = s["pillars"]["credit"]
@@ -601,7 +601,7 @@ def _drivers_for(s: dict) -> dict:
         },
         "equities": {
             "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; "
-                       "credit (HY OAS) is the canary that leads equity drawdowns; the SPEED of yield moves "
+                       "HY OAS widening is associated with equity drawdowns in stress episodes; this snapshot does not establish a lead; the SPEED of yield moves "
                        "(MOVE) matters more than the level.",
             "hy_oas": cr.get("hy_oas"), "credit_canary": cr.get("direction") == "widening",
             "stock_bond_corr": s["pillars"]["cross_asset"].get("stock_bond_corr"),

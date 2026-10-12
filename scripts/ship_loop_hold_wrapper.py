@@ -168,10 +168,12 @@ def _hold_protocol_is_complete(pull: dict[str, Any], comments: list[dict[str, An
 def _hold_probe(guard: ModuleType, payload: dict[str, Any]) -> dict[str, Any] | None:
     """Resolve a fully authenticated hold candidate without granting an exit.
 
-    ``status`` is ``parked`` only when all binding checks are concluded green.
-    ``pending`` and ``red`` are actionable only for the ``sol/*`` authority-branch
-    interception in ``main``; ordinary ``claude/*`` behavior still delegates unless
-    the hold is fully PARKED.
+    ``status`` is ``parked`` only when all binding checks are concluded green: the
+    rollup holds no red and nothing pending, AND the sweeper's proof anchors are
+    ``clean`` (``guard._proof_anchor_verdict``), because a rollup holds only the
+    checks that already exist. ``pending`` and ``red`` are actionable only for the
+    ``sol/*`` authority-branch interception in ``main``; ordinary ``claude/*``
+    behavior still delegates unless the hold is fully PARKED.
     """
     root = guard._repo_root(payload)
     if root is None:
@@ -221,13 +223,25 @@ def _hold_probe(guard: ModuleType, payload: dict[str, Any]) -> dict[str, Any] | 
     red, pending, passed = guard._split_head_runs(runs)
     if red:
         status = "red"
-    elif pending or not passed:
-        # No concluded-green binding check is evidence-incomplete, not permission
-        # to PARK. Treat it like pending so the Sol authority branch cannot fall
-        # back to the misleading rename-oriented unsafe_branch message.
-        status = "pending"
     else:
-        status = "parked"
+        # `_split_head_runs` sorts only the check runs that EXIST. While this head's
+        # ci.yml run is still `pending` in its concurrency group it has published
+        # none, so the fast workflows are the whole rollup and all of them have
+        # concluded: #7969 read that way at ~00:50Z on 2026-09-25, eleven concluded
+        # checks and no ci.yml check at all. So "no red, nothing pending, something
+        # passed" is not "every binding check concluded green" until the sweeper's
+        # proof anchors (ci-gate, every scheduled ci-pack-N, a fence anchor) are
+        # clean too. Asked of the rollup already fetched: no extra REST call.
+        anchor_verdict, anchor_names = guard._proof_anchor_verdict(runs)
+        if anchor_verdict != "clean":
+            pending = [*pending, *(name for name in anchor_names if name not in pending)]
+        if pending or not passed or anchor_verdict != "clean":
+            # No concluded-green binding check is evidence-incomplete, not permission
+            # to PARK. Treat it like pending so the Sol authority branch cannot fall
+            # back to the misleading rename-oriented unsafe_branch message.
+            status = "pending"
+        else:
+            status = "parked"
 
     return {
         "number": number,

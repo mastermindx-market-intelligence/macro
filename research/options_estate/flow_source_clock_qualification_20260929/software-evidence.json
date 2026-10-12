@@ -1,0 +1,36 @@
+{
+  "schema": "options.flow_clock_software_evidence/v1",
+  "classification": "BUILT_NOT_PROVEN",
+  "source_files": {
+    "collectors/flow_signals.py": "833c6b02e59d4e1005060e936879bedf6d0ed9a1224f7dde3ca1eab26865dbda",
+    "scripts/build_flow_signals.py": "4842014ea7404a7603f4e7b541360db8cf04f825302417b895acd5ba30c4452f",
+    "tests/test_flow_signals.py": "195ea3912814ef8f6db736ef33a4fda25d233e38ebf1f4b4f68e50f20f1dcade"
+  },
+  "baseline_tests": 38,
+  "final_tests": 68,
+  "initial_red_cases": 22,
+  "malformed_offset_red_cases": 2,
+  "verification": "native collector -> temporary parquet -> native ledger_stats -> native gate writer; actual configured feature constructor unchanged",
+  "logs": {
+    "baseline-tests.log": {
+      "sha256": "a8db4ae4db01dd4d4742e68534cd24c7c73d93be4e25696af4babae606a44c49",
+      "remote_evidence_path": "/Volumes/Mastermind/agent-evidence/options-prophet-completion-20260929-sol/flow-clock-qualification/baseline-tests.log"
+    },
+    "red-tests.log": {
+      "sha256": "3ce5151829f8120b3dc535156174169397cfb7799c6f843f4049496f8fbd7996",
+      "remote_evidence_path": "/Volumes/Mastermind/agent-evidence/options-prophet-completion-20260929-sol/flow-clock-qualification/red-tests.log"
+    },
+    "malformed-offset-red.log": {
+      "sha256": "0f440284ed43535c49d08f91608c5fe76dd395543de32786642122c88546778c",
+      "remote_evidence_path": "/Volumes/Mastermind/agent-evidence/options-prophet-completion-20260929-sol/flow-clock-qualification/malformed-offset-red.log"
+    },
+    "review-final-tests.log": {
+      "sha256": "db4d1a9a80d5c703c1c58ad9019d2efb68b73a443d284ad68317386dd6ab40a8",
+      "remote_evidence_path": "/Volumes/Mastermind/agent-evidence/options-prophet-completion-20260929-sol/flow-clock-qualification/review-final-tests.log"
+    }
+  },
+  "model_fit": false,
+  "price_or_outcome_evaluation": false,
+  "production_enabled": false,
+  "supplementary_test_correction": "An initial test incorrectly treated RFC3339 -00:00 as an unknown UTC instant. RFC3339 4.3 says UTC is known and only local offset is unknown. Corrected that test, not production behavior; do not count it as a production defect."
+}

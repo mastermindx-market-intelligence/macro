@@ -464,29 +464,85 @@ class TestDeadConstantsDeleted:
         assert uet.STAGE_EARLY == "EARLY"
 
 
-# ── the field ships DARK ──────────────────────────────────────────────────────
+# ── lifecycle adoption stays scoped to the plan-record migration ──────────────
 
-def test_no_prophet_surface_renders_lifecycle_state_yet():
-    """§9: "Explicitly not in PR-0(c): any template/rail change... The field ships
-    dark; surfaces adopt at migration."  This fails loudly if a Prophet surface starts
-    reading the field before the Board migration lands its ladder + same-PR rail
-    retirement (§10.1) — two lifecycle vocabularies may never co-render on one card.
+# An Event Workspace lifecycle is not the Prophet plan lifecycle. Exempt only
+# this exact, existing context-only response read; every other occurrence remains
+# subject to the one-plan-consumer gate (including another read in this file).
+_EVENT_LIFECYCLE_READ = "appendLine(grid,'Lifecycle',contextText(body.lifecycle_state));"
 
-    Scoped to PROPHET surfaces on purpose.  `lifecycle_state` is not a unique token in
-    this estate: templates/capital_structure.js reads an unrelated
-    `event.lifecycle_state` off the capital-structure event payload, a different
-    program with a different contract.  Scoping by "does this file mention Prophet at
-    all" separates the two namespaces without an exemption list to rot.
-    """
+
+def _plan_lifecycle_consumers(root):
     hits = []
-    for path in sorted((_REPO / "templates").rglob("*")):
+    for path in sorted((root / "templates").rglob("*")):
         if not path.is_file() or path.suffix not in {".j2", ".html", ".js", ".css"}:
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
+        relative = path.relative_to(root).as_posix()
+        if relative == "templates/_us_candidate_pool.html.j2":
+            assert text.count(_EVENT_LIFECYCLE_READ) == 1
+            assert "event_workspace_public_glance.v1" in text
+            assert "context_only" in text
+            text = text.replace(_EVENT_LIFECYCLE_READ, "", 1)
         if "prophet" in text.lower() and "lifecycle_state" in text:
-            hits.append(path.relative_to(_REPO).as_posix())
-    assert not hits, (
-        f"lifecycle_state is rendered by Prophet surface(s) {hits} — PR-0(c) ships the "
-        f"field DARK; a surface adopting it must also retire the 4-dot rail in the "
-        f"SAME PR (§10.1)"
+            hits.append(relative)
+    return hits
+
+
+def test_prophet_lifecycle_surface_adoption_is_scoped_to_plan_records():
+    """§10.1 migration gate after board adoption.
+
+    The old PR-0(c) guard required the field to stay dark until a surface adopted it
+    together with the record-card rail retirement.  That migration is now present on
+    the US plan-record partial: it reads `lifecycle_state` and opts into the shared
+    card's `record_only` anatomy.  Keep the consumer closed to that one surface so a
+    second Prophet template cannot silently start a competing lifecycle vocabulary.
+    """
+    assert _plan_lifecycle_consumers(_REPO) == ["templates/_us_prophet_plan_cards.html.j2"]
+
+    plan_partial = (_REPO / "templates" / "_us_prophet_plan_cards.html.j2").read_text(
+        encoding="utf-8"
     )
+    shared_card = (_REPO / "templates" / "_prophet_card.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert "p.get('lifecycle_state')" in plan_partial
+    assert "'record_only': true" in plan_partial
+    assert "if _record_only" in shared_card
+    assert '{%- set _article = _record_only or _setup -%}' in shared_card
+    assert '{% if _article %}<article{% else %}<a{% endif %} class="pvcard' in shared_card
+    assert "{% if _article %}</article>{% else %}</a>{% endif %}" in shared_card
+
+
+def test_plan_consumer_guard_rejects_second_or_disguised_consumer(tmp_path):
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    context = (_REPO / "templates/_us_candidate_pool.html.j2").read_text()
+    (templates / "_us_candidate_pool.html.j2").write_text(context)
+    (templates / "_us_prophet_plan_cards.html.j2").write_text("prophet p.get('lifecycle_state')")
+    assert _plan_lifecycle_consumers(tmp_path) == ["templates/_us_prophet_plan_cards.html.j2"]
+    (templates / "rogue_prophet.html.j2").write_text("prophet row.lifecycle_state")
+    assert _plan_lifecycle_consumers(tmp_path) != ["templates/_us_prophet_plan_cards.html.j2"]
+    (templates / "rogue_prophet.html.j2").unlink()
+    (templates / "_us_candidate_pool.html.j2").write_text(context + "\nrow.lifecycle_state")
+    assert _plan_lifecycle_consumers(tmp_path) != ["templates/_us_prophet_plan_cards.html.j2"]
+    for mutation in [context.replace("contextText(body.lifecycle_state)", "contextText(plan.lifecycle_state)"),
+                     context + "\n" + _EVENT_LIFECYCLE_READ]:
+        (templates / "_us_candidate_pool.html.j2").write_text(mutation)
+        with pytest.raises(AssertionError):
+            _plan_lifecycle_consumers(tmp_path)
+
+
+def test_article_setup_does_not_promote_candidate_into_plan_record():
+    from bs4 import BeautifulSoup
+    from jinja2 import Environment
+    src = (_REPO / "templates/_prophet_card.html.j2").read_text()
+    card = Environment(autoescape=True).from_string(src).module
+    base = {"tk": "PROOF", "mkt": "us", "href": "stock.html#PROOF", "verb": "wait", "stage": 0}
+    for record in [False, True]:
+        for detail in [None, "<div>detail proof</div>"]:
+            root = BeautifulSoup(str(card.pv_card(dict(base, record_only=record, setup_detail=detail))), "html5lib").select_one(".pvcard")
+            assert root.name == ("article" if record or detail else "a")
+            assert (root.get("data-record-only") == "1") is record
+            if record:
+                assert not root.select(".nb-px,.pv-edge,.pv-trg,.pv-live")

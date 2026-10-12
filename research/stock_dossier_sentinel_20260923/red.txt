@@ -1,0 +1,57 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_canonical_issuer_name_is_not_a_nonfinite_number _____________
+
+    def test_canonical_issuer_name_is_not_a_nonfinite_number():
+        text = prepare_checkable_text(_infinity_company_page())
+>       assert check_machine_sentinel(Path('INR.html'), text, _issuer_context()) == []
+E       assert [{'page': 'IN...ier"}…'}, ...] == []
+E
+E         Left contains 9 more items, first extra item: {'page': 'INR.html', 'check': 'machine_sentinel', 'pattern': 'Infinity', 'snippet': '<html><head><title>INR — Infinity Natural Resources Inc: signals</title> …'}
+E         Use -v to get more diff
+
+tests/test_check_stock_dossier_integrity.py:563: AssertionError
+__ test_company_identity_cannot_whitelist_a_real_infinite_price_on_same_page ___
+
+    def test_company_identity_cannot_whitelist_a_real_infinite_price_on_same_page():
+        page = _infinity_company_page().replace('</body>', '<p>Price: Infinity</p></body>')
+        findings = check_machine_sentinel(Path('INR.html'), prepare_checkable_text(page), _issuer_context())
+>       assert len(findings) == 1 and findings[0]['pattern'] == 'Infinity'
+E       assert (10 == 1)
+E        +  where 10 = len([{'page': 'INR.html', 'check': 'machine_sentinel', 'pattern': 'Infinity', 'snippet': '<html><head><title>INR — Infinit...finity', 'snippet': '…aph":[ {"@type":"WebPage","name":"INR — Infinity Natural Resources Inc company dossier"}…'}, ...])
+
+tests/test_check_stock_dossier_integrity.py:569: AssertionError
+__________ test_company_identity_cannot_hide_nonstandard_numeric_json __________
+
+    def test_company_identity_cannot_hide_nonstandard_numeric_json():
+        page = _infinity_company_page().replace('"tickerSymbol":"INR"', '"tickerSymbol":"INR","marketCap":Infinity')
+        findings = check_machine_sentinel(Path('INR.html'), prepare_checkable_text(page), _issuer_context())
+>       assert len(findings) == 1 and 'marketCap' in findings[0]['snippet']
+E       assert (10 == 1)
+E        +  where 10 = len([{'page': 'INR.html', 'check': 'machine_sentinel', 'pattern': 'Infinity', 'snippet': '<html><head><title>INR — Infinit...finity', 'snippet': '…aph":[ {"@type":"WebPage","name":"INR — Infinity Natural Resources Inc company dossier"}…'}, ...])
+
+tests/test_check_stock_dossier_integrity.py:575: AssertionError
+______ test_full_guard_still_runs_identity_and_sentinel_for_named_issuer _______
+
+tmp_path = PosixPath('/private/tmp/mmx-dossier-name-red-20260923/test_full_guard_still_runs_ide0')
+
+    def test_full_guard_still_runs_identity_and_sentinel_for_named_issuer(tmp_path):
+        # Hub uses the native data-row contract; no ticker/name is hard-coded in guard.
+        _write_page(tmp_path, 'index.html', '<script>const rows=[["INR","Infinity Natural Resources Inc","Energy"]];</script>')
+        _write_page(tmp_path, 'INR.html', _infinity_company_page())
+        scanned, violations = scan(tmp_path)
+>       assert scanned == 2 and violations == []
+E       AssertionError: assert (2 == 2 and [{'page': 'IN...…', ...}, ...] == []
+E
+E         Left contains 9 more items, first extra item: {'page': 'INR.html', 'check': 'machine_sentinel', 'pattern': 'Infinity', 'snippet': '<html><head><title>INR — Infinity Natural Resources Inc: signals</title> …', ...}
+E         Use -v to get more diff)
+
+tests/test_check_stock_dossier_integrity.py:610: AssertionError
+
+NOTE: sparse worktree — .agents, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_check_stock_dossier_integrity.py::test_canonical_issuer_name_is_not_a_nonfinite_number
+FAILED tests/test_check_stock_dossier_integrity.py::test_company_identity_cannot_whitelist_a_real_infinite_price_on_same_page
+FAILED tests/test_check_stock_dossier_integrity.py::test_company_identity_cannot_hide_nonstandard_numeric_json
+FAILED tests/test_check_stock_dossier_integrity.py::test_full_guard_still_runs_identity_and_sentinel_for_named_issuer
+4 failed, 41 deselected in 1.31s

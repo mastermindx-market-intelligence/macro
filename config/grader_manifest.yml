@@ -32,13 +32,19 @@ files:
 
     '
 - path: engine/qledger_falsifier.py
-  sha256: 3306d374655bc8a2c2f5311c7718ddcb5e96bb3610aebefc8112dabe9e24975f
+  sha256: b13aaa95bf2fa7c39172eb9aca3893b99ed5f837802d2d11069b184eeb24bd59
   role: falsifier
   notes: 'Falsifier auto-evaluation: evaluates qledger claims whose check_by has arrived
     and appends FALSIFIER_TRIPPED / CONFIRMED / UNVERIFIABLE rows to data/qledger/falsifier_evaluations.jsonl
     (append-only, capped). 2026-07-16 hash update ratifies the #2598 COLLECT_LANE=nightly
     write gate (single-writer hardening, write-site only): replay vs the frozen claims
     corpus yields identical evaluations; grading semantics unchanged.
+    2026-10-09 registration accepts the reader-only compatibility seam under the
+    current user-delegated rotation/risk implementation (PR #8693). Root reviewed
+    a frozen synthetic OLD/NEW replay: 12 cases, 29 rows per version, identical
+    outcomes, tape bytes and summaries. Evaluation math and write gate unchanged.
+    This is synthetic compatibility evidence, not historical performance proof.
+    Scoped acceptance and evidence hashes: research/QLEDGER_CONTINUITY_IMPLEMENTATION_2026-10-09.md.
 
     '
 - path: scripts/sample_qledger_placebo.py
@@ -57,16 +63,18 @@ files:
 
     '
 - path: config/fable_mode_core.md
-  sha256: 01cbed1af475793ebe1cee3b63d676131652207f172f74f050d26fd94da9ab00
+  sha256: f8fcebc8f3b44eccc54214a7364637a2fc826220d497cedb0b29bf4e74d36913
   role: doctrine
-  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): six commitments + pre-send
-    gate. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
-    — loop PRs may not modify. Runner never reads ~/. 2026-08-06 hash update ratifies
-    the operator-requested Revision 2 of the fable-mode doctrine: commitment 6
-    (testimony is not observation — open the artifact, never trust the relay) and
-    two new gate items (promise check: turns end on states, not intentions;
-    standalone-reader check: the final message stands alone). Synced with
-    .claude/skills/fable-mode/SKILL.md Revision 2; injection semantics unchanged.
+  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + pre-send gate,
+    near the R-V2-2 byte budget. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
+    — loop PRs may not modify. Runner never reads ~/. 2026-09-24 hash update ratifies
+    Revision 3 of the fable-mode doctrine (Fable 5.1, seat edition): four seat
+    commitments (the seat judges / one owner per artifact / the nine-rung delivery
+    ladder / state lives on disk), and gate items 8–12
+    (ladder, ownership, durable state, quiet, session end). Synced with
+    .claude/skills/fable-mode/SKILL.md Revision 3; injection semantics unchanged.
+    2026-09-25 Revision 3.1 candidate updates ownership and quiet gates to require a verified
+    return path rather than infer a wake. No grader or injection logic changed.
 
     '
 - path: config/metabolism_schedule.yml

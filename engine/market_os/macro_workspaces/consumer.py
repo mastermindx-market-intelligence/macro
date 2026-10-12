@@ -105,7 +105,7 @@ def summarize(snapshot: Any, *, allow_stale: bool = False) -> dict:
         "audit": {
             "consumer": "engine.market_os.macro_workspaces.consumer",
             "reason_code": "OK",
-            "detail": "snapshot validated against mastermind.macro_workspace_snapshot.v1",
+            "detail": "snapshot checked against mastermind.macro_workspace_snapshot.v1",
             "contract_ok": True,
             "generation_id": gen["generation_id"],
             "content_sha256": gen["content_sha256"],

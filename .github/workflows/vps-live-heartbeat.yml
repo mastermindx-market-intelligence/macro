@@ -11,6 +11,8 @@ on:
       - "engine/research_vault/__init__.py"
       - "engine/research_vault/catalog.py"
       - "engine/research_vault/sidecar.py"
+      - "engine/research_vault/fulltext.py"
+      - "tests/test_research_vault_fulltext.py"
       - "app/research.py"
       - "scripts/check_research_vault_source_freshness.py"
       - ".github/workflows/research-ingest.yml"
@@ -45,7 +47,15 @@ jobs:
             /engine/research_vault/__init__.py
             /engine/research_vault/catalog.py
             /engine/research_vault/sidecar.py
+            /engine/research_vault/fulltext.py
+            /tests/test_research_vault_fulltext.py
             /app/research.py
+      - name: Install Research Vault contract test dependency
+        run: python -m pip install --quiet pytest
+
+      - name: Research Vault exact full-text and segment contract
+        run: python -m pytest -q tests/test_research_vault_fulltext.py
+
       - name: Research Vault source-freshness guard self-test
         run: python -m scripts.check_research_vault_source_freshness --selftest
       - name: Research Vault source-freshness behavioral regressions

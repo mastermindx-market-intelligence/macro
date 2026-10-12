@@ -1,7 +1,7 @@
 /* Macro & Monetary suite — shared page behaviour for all twelve workspaces.
  *
  * Deliberately small. The page is rendered SERVER-SIDE from an already
- * hash-validated snapshot, so this file never fetches, never computes a state,
+ * hash-checked snapshot, so this file never fetches, never computes a state,
  * and never writes a value into the document. It only moves the reader around:
  * tab selection, deep links, and the evidence drawer.
  *

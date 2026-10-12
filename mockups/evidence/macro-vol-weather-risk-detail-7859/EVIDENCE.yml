@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - site/macro.html
+  - site/assets/css/384d3e15.css
+manifest: mockups/evidence/macro-vol-weather-risk-detail-7859/manifest.json

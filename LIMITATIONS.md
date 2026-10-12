@@ -289,9 +289,10 @@ cross-sectional equity factors.)
   Cleveland/Atlanta inflation nowcasts and the Sahm rule are model outputs that
   Fed banks revise; a same-day read is the current vintage, not a final value.
   The recession-risk composite is a transparent weighted blend, not a fitted
-  probit. The **term-premium-adjusted curve** is `2s10s + ACM 10y term premium` —
-  a heuristic to flag the 2019/2022-24 "inverted-but-no-recession" episodes, not
-  a calibrated model.
+  probit. The compatibility field historically called the **term-premium-adjusted curve**
+  is `2s10s + the current 10y term-premium model estimate`. It is a legacy
+  heuristic, not a matched-maturity expectations-only decomposition or a calibrated
+  causal model; missing term-premium input stays missing.
 - **Stock-bond correlation uses a yield-change proxy for Treasury returns**
   (−Δ10y yield), ignoring convexity/level — fine for the correlation *sign*
   (the "bonds aren't hedging" 2022-style regime), not a duration-accurate return.

@@ -1,0 +1,91 @@
+{
+  "synthetic": true,
+  "issuer": {
+    "company_id": "synthetic:northgate",
+    "display_name": "Northgate Testing Services",
+    "external_ids": {
+      "cik": "0000987654"
+    }
+  },
+  "sources": [
+    {
+      "source_id": "northgate-negative-cash",
+      "url": "https://example.invalid/negative-cash.json",
+      "mode": "filing",
+      "rights_state": "unknown",
+      "recorded_at": "2026-08-01T12:00:00Z"
+    }
+  ],
+  "cells": [
+    {
+      "owner_ref": "synthetic:cell:negative-operating-cash",
+      "revision": "r1",
+      "digest": "7777777777777777777777777777777777777777777777777777777777777777",
+      "semantic_selector": {
+        "statement": "cash-flow",
+        "row": "operating-cash",
+        "column": "quarter"
+      },
+      "value": "-12",
+      "metric": "operating_cash_flow",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-02",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "testing"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "cash_generated_by_operations"
+      }
+    },
+    {
+      "owner_ref": "synthetic:cell:capital-payments",
+      "revision": "r1",
+      "digest": "8888888888888888888888888888888888888888888888888888888888888888",
+      "semantic_selector": {
+        "statement": "cash-flow",
+        "row": "capital-payments",
+        "column": "quarter"
+      },
+      "value": "3",
+      "metric": "capital_payments",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-02",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "testing"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "payments_for_property_and_equipment"
+      }
+    }
+  ]
+}

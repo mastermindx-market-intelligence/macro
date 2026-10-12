@@ -1,0 +1,47 @@
+{
+  "continuity": {
+    "R3_comment": 5789921339,
+    "R3_local_sha256_verified": "4ad7b39e8b4916029755f863d3b56ba0dc30d75ff46d95b031ceb24cb8946ff5"
+  },
+  "document_kind": "R4_RESEARCH_SOURCE_MAP",
+  "full_blob_locally_rehashed": false,
+  "ref": "fcaabf582def45fae8f2ae93bb9776e5df0bac4b",
+  "repository": "mastermindx-market-intelligence/macro",
+  "sources": [
+    {
+      "connector_reported_blob": "691e31da855184889ac75fe30e5882d1893db8b2",
+      "id": "I1",
+      "path": "engine/prophet_lab/intelligence_vector.py",
+      "read_lines": "1-190",
+      "use": "three revenue lanes; current-event discovery; all-false authority"
+    },
+    {
+      "connector_reported_blob": "2a60d3e7a3c5a179e821c8fda23437cefe9b7b91",
+      "id": "I2",
+      "path": "research/earnings_intelligence/E0_E1_E2_CONTRACT_FREEZE.md",
+      "read_lines": "1-180",
+      "use": "Earnings identity, facts, guidance, rights/basis and publication ownership"
+    },
+    {
+      "connector_reported_blob": "efdbd91156b2a94e6e8bdca7e8cae454a6860e68",
+      "id": "I3",
+      "path": "engine/company_intelligence/event_workspace.py",
+      "read_lines": "210-340",
+      "use": "context-only workspace validation and clock fields"
+    },
+    {
+      "connector_reported_blob": "e82575fa77332342e1d64094e8e00f4ce8083a3f",
+      "id": "I4",
+      "path": "engine/prophet_strategy_definition.py",
+      "read_lines": "1-120",
+      "use": "current sole Early Leadership control; not ER or CC accepted versions"
+    },
+    {
+      "connector_reported_blob": "27e83df3307ad2fabe954a5327b425f8570b9e58",
+      "id": "I5",
+      "path": "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md",
+      "read_lines": "265-530",
+      "use": "existing Cycle economic/hold/risk/no-duplicate law"
+    }
+  ]
+}

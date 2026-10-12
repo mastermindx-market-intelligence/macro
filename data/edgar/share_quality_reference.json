@@ -1,6 +1,11 @@
 {
-"built": "2026-08-29T07:21:10.710915+00:00",
+"built": "2026-09-27T05:18:39.365059+00:00",
 "tickers": {
+"AADX": {
+"fetched": "2026-09-27",
+"first_trade": "2026-06-01",
+"splits": {}
+},
 "AAP": {
 "fetched": "2026-07-10",
 "first_trade": "2001-11-01",
@@ -252,6 +257,11 @@
 "splits": {
 "2026-03-31": 0.04
 }
+},
+"AGNC": {
+"fetched": "2026-09-27",
+"first_trade": "2008-05-01",
+"splits": {}
 },
 "AGNT": {
 "fetched": "2026-07-10",
@@ -614,6 +624,11 @@
 "APGE": {
 "fetched": "2026-08-06",
 "first_trade": "2023-07-01",
+"splits": {}
+},
+"APMD": {
+"fetched": "2026-09-27",
+"first_trade": "2026-07-01",
 "splits": {}
 },
 "APO": {
@@ -1043,6 +1058,11 @@
 "first_trade": "2020-01-01",
 "splits": {}
 },
+"BE": {
+"fetched": "2026-09-27",
+"first_trade": "2018-07-01",
+"splits": {}
+},
 "BEAM": {
 "fetched": "2026-08-14",
 "first_trade": "2020-02-01",
@@ -1345,6 +1365,11 @@
 "splits": {
 "1986-08-25": 0.3333333333333333
 }
+},
+"BRUN": {
+"fetched": "2026-09-27",
+"first_trade": "2024-12-01",
+"splits": {}
 },
 "BSRR": {
 "fetched": "2026-08-06",
@@ -2641,6 +2666,11 @@
 "first_trade": "2020-03-01",
 "splits": {}
 },
+"EMAT": {
+"fetched": "2026-09-27",
+"first_trade": "2026-01-01",
+"splits": {}
+},
 "EMBC": {
 "fetched": "2026-07-10",
 "first_trade": "2022-03-01",
@@ -3474,6 +3504,11 @@
 "first_trade": "2021-06-01",
 "splits": {}
 },
+"GMRS": {
+"fetched": "2026-09-27",
+"first_trade": "2026-05-01",
+"splits": {}
+},
 "GNK": {
 "fetched": "2026-08-06",
 "first_trade": "2014-07-01",
@@ -3629,6 +3664,11 @@
 "splits": {
 "2019-07-08": 0.2
 }
+},
+"HAWK": {
+"fetched": "2026-09-27",
+"first_trade": "2026-05-01",
+"splits": {}
 },
 "HAYW": {
 "fetched": "2026-07-10",
@@ -3799,6 +3839,11 @@
 "HTZ": {
 "fetched": "2026-07-10",
 "first_trade": "2021-07-01",
+"splits": {}
+},
+"HUBS": {
+"fetched": "2026-09-27",
+"first_trade": "2014-10-01",
 "splits": {}
 },
 "HUMA": {
@@ -4215,6 +4260,11 @@
 "2001-07-12": 0.2
 }
 },
+"KARD": {
+"fetched": "2026-09-27",
+"first_trade": "2026-06-01",
+"splits": {}
+},
 "KD": {
 "fetched": "2026-07-10",
 "first_trade": "2021-10-01",
@@ -4507,9 +4557,19 @@
 "first_trade": "2021-06-01",
 "splits": {}
 },
+"LFTO": {
+"fetched": "2026-09-27",
+"first_trade": "2026-06-01",
+"splits": {}
+},
 "LIF": {
 "fetched": "2026-07-10",
 "first_trade": "2024-06-01",
+"splits": {}
+},
+"LIME": {
+"fetched": "2026-09-27",
+"first_trade": "2026-07-01",
 "splits": {}
 },
 "LIN": {
@@ -4914,6 +4974,11 @@
 "MNTN": {
 "fetched": "2026-08-06",
 "first_trade": "2025-05-01",
+"splits": {}
+},
+"MOBI": {
+"fetched": "2026-09-27",
+"first_trade": "2026-05-01",
 "splits": {}
 },
 "MPAA": {
@@ -5527,6 +5592,11 @@
 "first_trade": "2014-07-01",
 "splits": {}
 },
+"ODTX": {
+"fetched": "2026-09-27",
+"first_trade": "2026-05-01",
+"splits": {}
+},
 "OFLX": {
 "fetched": "2026-08-06",
 "first_trade": "2005-08-01",
@@ -5829,6 +5899,11 @@
 "PAYO": {
 "fetched": "2026-07-10",
 "first_trade": "2020-10-01",
+"splits": {}
+},
+"PBLS": {
+"fetched": "2026-09-27",
+"first_trade": "2026-06-01",
 "splits": {}
 },
 "PBYI": {
@@ -6389,6 +6464,11 @@
 "first_trade": "2022-01-01",
 "splits": {}
 },
+"REA": {
+"fetched": "2026-09-27",
+"first_trade": "2026-05-01",
+"splits": {}
+},
 "REAL": {
 "fetched": "2026-08-14",
 "first_trade": "2019-06-01",
@@ -6401,6 +6481,11 @@
 "2021-06-01": 0.25,
 "2021-07-23": 4.0
 }
+},
+"REF": {
+"fetched": "2026-09-27",
+"first_trade": "2026-07-01",
+"splits": {}
 },
 "REFI": {
 "fetched": "2026-08-06",
@@ -6734,6 +6819,11 @@
 "1994-12-16": 2.0,
 "2012-12-17": 2.0
 }
+},
+"SCTX": {
+"fetched": "2026-09-27",
+"first_trade": "2026-07-01",
+"splits": {}
 },
 "SD": {
 "fetched": "2026-08-14",
@@ -7156,6 +7246,11 @@
 "2019-08-23": 2.0
 }
 },
+"SPTX": {
+"fetched": "2026-09-27",
+"first_trade": "2026-05-01",
+"splits": {}
+},
 "SRBK": {
 "fetched": "2026-08-06",
 "first_trade": "2023-09-01",
@@ -7188,6 +7283,11 @@
 "2004-12-20": 1.05,
 "2007-03-07": 1.05
 }
+},
+"SSMR": {
+"fetched": "2026-09-27",
+"first_trade": "2026-06-01",
+"splits": {}
 },
 "STAA": {
 "fetched": "2026-07-10",
@@ -7289,6 +7389,11 @@
 "SVCO": {
 "fetched": "2026-08-06",
 "first_trade": "2024-05-01",
+"splits": {}
+},
+"SVIA": {
+"fetched": "2026-09-27",
+"first_trade": "2025-06-01",
 "splits": {}
 },
 "SVRA": {

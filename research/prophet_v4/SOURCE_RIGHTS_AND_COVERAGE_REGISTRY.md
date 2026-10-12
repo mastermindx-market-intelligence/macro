@@ -47,7 +47,7 @@ Census by the V4-0A intelligence archaeology (receipts in module docstrings/path
 
 ## 4. Earnings
 
-Owner: **Earnings Intelligence OS** (E0 in progress; E1/E2 todo). V4's earnings family publishes **`ACCRUING`** (null_reason `canonical_event_workspace_not_live`) until EIOS ships a stable consumer contract. Known estate hazard V4 must not inherit: the Wire and Company-Intelligence planes currently disagree per-issuer (`DSC:EARNINGS-WIRE-AND-CI-DIVERGE-ON-THE-SAME-ISSUER`); the V4-D6 adapter binds to EIOS's canonical event workspace, never to both planes at once.
+Owner: **Earnings Intelligence OS**. WS-EIO status: **done** — E1P is live and the E2/E2-D arc is complete (`agentos/workstreams/WS-EARNINGS-INTELLIGENCE-OS.md:9,63-68,74-81`). V4's canonical D5 source is the live `event_workspace.v1`; consensus is unlicensed → beat/miss is permanently **ABSENT** (typed absence, never inferred). Known estate hazard V4 must not inherit: the Wire and Company-Intelligence planes currently disagree per-issuer (`DSC:EARNINGS-WIRE-AND-CI-DIVERGE-ON-THE-SAME-ISSUER`); the V4-D6 adapter binds to EIOS's canonical event workspace, never to both planes at once.
 
 ## 5. Market data / quotes
 

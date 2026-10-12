@@ -1,0 +1,2168 @@
+{
+  "mapping_version": "VERDICT_MAPPING_V2",
+  "tier": "display_research",
+  "contract": "research/macro_regime_intelligence/STATE_PATH_AND_SCIENCE_CONTRACT_2026-10-03.md",
+  "contract_revision": "3.2",
+  "producer_pin": "698f58a0c74beff717cd6b69bb728fd7e21581f2",
+  "note": "Machine form of Appendix A: A.0, A.1, A.4, and the A.2 fields an A.4 row or A.1 note names. An authored display-tier vocabulary: never tested against outcomes, never a rank, gate or forecast. A change to `artifacts`, `fields`, `paths`, `families` or `retired_condition_ids` is a new mapping version.",
+  "artifacts": {
+    "T": "data/transmission/latest.json",
+    "R": "data/regime/latest.json",
+    "M": "data/market_state/latest.json",
+    "D": "data/dispersion/regime.json",
+    "L": "data/leadership_crack/latest.json",
+    "B": "data/bonds/bond_health.json",
+    "C": "data/commodity/latest.json"
+  },
+  "readings": [
+    "fits",
+    "does_not_fit",
+    "not_discriminating",
+    "unknown"
+  ],
+  "family_readings": [
+    "fits",
+    "does_not_fit",
+    "mixed",
+    "not_discriminating",
+    "unknown"
+  ],
+  "families": [
+    {
+      "evidence_family_id": "core_pce",
+      "coverage": "admitted"
+    },
+    {
+      "evidence_family_id": "treasury_curve",
+      "coverage": "admitted"
+    },
+    {
+      "evidence_family_id": "policy_pricing",
+      "coverage": "admitted"
+    },
+    {
+      "evidence_family_id": "labour",
+      "coverage": "admitted"
+    },
+    {
+      "evidence_family_id": "credit_and_funding",
+      "coverage": "admitted"
+    },
+    {
+      "evidence_family_id": "participation",
+      "coverage": "admitted"
+    },
+    {
+      "evidence_family_id": "leader_damage",
+      "coverage": "admitted"
+    },
+    {
+      "evidence_family_id": "dispersion",
+      "coverage": "evidence_only"
+    },
+    {
+      "evidence_family_id": "dollar",
+      "coverage": "evidence_only"
+    },
+    {
+      "evidence_family_id": "oil",
+      "coverage": "evidence_only"
+    },
+    {
+      "evidence_family_id": "wages_services",
+      "coverage": "evidence_only"
+    },
+    {
+      "evidence_family_id": "correlation",
+      "coverage": "evidence_only"
+    },
+    {
+      "evidence_family_id": "volatility",
+      "coverage": "evidence_only"
+    },
+    {
+      "evidence_family_id": "inflation_breadth",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "real_activity",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "earnings",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "positioning",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "macro_confirmation",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "issuance_and_demand",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "concentration",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "leader_turnover",
+      "coverage": "no_owner"
+    },
+    {
+      "evidence_family_id": "revision_breadth",
+      "coverage": "no_owner"
+    }
+  ],
+  "fields": [
+    {
+      "field_id": "T.state.inflation.direction",
+      "artifact": "T",
+      "path": [
+        "state",
+        "inflation",
+        "direction"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "re-accelerating",
+        "cooling",
+        "steady",
+        null
+      ],
+      "middle_tokens": [
+        "steady"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "core_pce",
+      "producer": "engine/rate_inflation_transmission.py:260-262,266-268,338",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": "steady",
+        "needs": [
+          [
+            "state",
+            "inflation",
+            "core_pce_3m_ann"
+          ],
+          [
+            "state",
+            "inflation",
+            "core_pce_yoy"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "T.state.inflation.regime",
+      "artifact": "T",
+      "path": [
+        "state",
+        "inflation",
+        "regime"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "above target",
+        "at target",
+        "below target",
+        null
+      ],
+      "middle_tokens": [
+        "at target"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "core_pce",
+      "producer": "engine/rate_inflation_transmission.py:260,263-265,338",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": "below target",
+        "needs": [
+          [
+            "state",
+            "inflation",
+            "core_pce_yoy"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "T.state.expectations.anchoring",
+      "artifact": "T",
+      "path": [
+        "state",
+        "expectations",
+        "anchoring"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "drifting up",
+        "drifting down",
+        "anchored",
+        null
+      ],
+      "middle_tokens": [
+        "anchored"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/rate_inflation_transmission.py:271-272,274-277,346-347",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": "anchored",
+        "needs": [
+          [
+            "state",
+            "expectations",
+            "market_minus_model_bp"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "T.state.rates.direction",
+      "artifact": "T",
+      "path": [
+        "state",
+        "rates",
+        "direction"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rising",
+        "falling",
+        "stable",
+        null
+      ],
+      "middle_tokens": [
+        "stable"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/rate_inflation_transmission.py:234-235,239-241,320",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": "stable",
+        "needs": [
+          [
+            "state",
+            "rates",
+            "real_10y_chg_63d_bp"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "T.state.rates.regime",
+      "artifact": "T",
+      "path": [
+        "state",
+        "rates",
+        "regime"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "restrictive",
+        "accommodative",
+        "neutral",
+        null
+      ],
+      "middle_tokens": [
+        "neutral"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/rate_inflation_transmission.py:233,236-238,319",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": "neutral",
+        "needs": [
+          [
+            "state",
+            "rates",
+            "real_10y_pctile"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "T.breakeven_decomp.direction",
+      "artifact": "T",
+      "path": [
+        "breakeven_decomp",
+        "direction"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "falling",
+        "rising",
+        "flat"
+      ],
+      "middle_tokens": [
+        "flat"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/rate_inflation_transmission.py:442,463-464,489,497",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "breakeven_decomp",
+          "as_of"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": "flat",
+        "needs": [
+          [
+            "breakeven_decomp",
+            "velocity_bp",
+            "chg_20d_bp"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "T.breakeven_decomp.trend",
+      "artifact": "T",
+      "path": [
+        "breakeven_decomp",
+        "trend"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "downtrend",
+        "uptrend",
+        "choppy",
+        "n/a"
+      ],
+      "middle_tokens": [],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/rate_inflation_transmission.py:451-462",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "breakeven_decomp",
+          "as_of"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "owner_missing_token",
+        "missing_token": "n/a"
+      }
+    },
+    {
+      "field_id": "T.yield_curve.regime.term_premium_dir",
+      "artifact": "T",
+      "path": [
+        "yield_curve",
+        "regime",
+        "term_premium_dir"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rising",
+        "falling",
+        "stable",
+        null
+      ],
+      "middle_tokens": [
+        "stable"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_curve.py:522-523",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_curve",
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "owner_publishes_null"
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.2y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "2y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "2y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "2y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "2y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "2y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.5y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "5y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "5y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "5y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "5y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "5y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.10y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "10y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "10y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "10y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "10y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "10y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.20y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "20y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "20y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "20y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "20y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "20y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "T.yield_momentum.series.30y.turn_watch",
+      "artifact": "T",
+      "path": [
+        "yield_momentum",
+        "series",
+        "30y",
+        "turn_watch"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "rolldown_forming",
+        "extreme_high_watch",
+        "rollup_forming",
+        "extreme_low_watch",
+        null
+      ],
+      "middle_tokens": [
+        null
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "treasury_curve",
+      "producer": "engine/yield_momentum.py:159-182,274-275,297-300",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_momentum",
+          "series",
+          "30y",
+          "as_of"
+        ],
+        "semantics": "source_observation_date"
+      },
+      "guard": {
+        "kind": "turn_watch_null",
+        "applies_to": "null_token",
+        "status_path": [
+          "yield_momentum",
+          "series",
+          "30y",
+          "status"
+        ],
+        "status_required": "available",
+        "qualified_path": [
+          "yield_momentum",
+          "series",
+          "30y",
+          "path_qualified"
+        ],
+        "needs": [
+          [
+            "yield_momentum",
+            "series",
+            "30y",
+            "velocity_bp",
+            "22d"
+          ]
+        ],
+        "null_is_middle_when_guarded": true
+      }
+    },
+    {
+      "field_id": "R.conditions.labor_nowcast.read",
+      "artifact": "R",
+      "path": [
+        "conditions",
+        "labor_nowcast",
+        "read"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "labor cooling",
+        "labor firm",
+        "labor mixed"
+      ],
+      "middle_tokens": [
+        "labor mixed"
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "labour",
+      "producer": "engine/conditions.py:738-748",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": "labor mixed",
+        "needs": [
+          [
+            "conditions",
+            "labor_nowcast",
+            "claims_yoy_pct"
+          ],
+          [
+            "conditions",
+            "labor_nowcast",
+            "indeed_chg_3m_pct"
+          ],
+          [
+            "conditions",
+            "labor_nowcast",
+            "withheld_tax_yoy_pct"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "R.conditions.financial_conditions.state",
+      "artifact": "R",
+      "path": [
+        "conditions",
+        "financial_conditions",
+        "state"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "loose",
+        "neutral",
+        "tight",
+        null
+      ],
+      "middle_tokens": [
+        "neutral"
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "credit_and_funding",
+      "producer": "engine/conditions.py:535-538,622",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "conditions",
+          "vintages",
+          "nfci",
+          "asof"
+        ],
+        "semantics": "source_observation_date",
+        "stale_flag_path": [
+          "conditions",
+          "vintages",
+          "nfci",
+          "stale"
+        ]
+      },
+      "guard": {
+        "kind": "owner_publishes_null"
+      }
+    },
+    {
+      "field_id": "R.conditions.complacency.breadth_div",
+      "artifact": "R",
+      "path": [
+        "conditions",
+        "complacency",
+        "breadth_div"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        true,
+        false
+      ],
+      "middle_tokens": [],
+      "verdict_class": "banded",
+      "evidence_family_id": "participation",
+      "producer": "engine/conditions.py:973-974",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "conditions",
+          "vintages",
+          "pct_above_200",
+          "asof"
+        ],
+        "semantics": "source_observation_date",
+        "stale_flag_path": [
+          "conditions",
+          "vintages",
+          "pct_above_200",
+          "stale"
+        ]
+      },
+      "guard": {
+        "kind": "default_token_needs",
+        "default_token": false,
+        "needs": [
+          [
+            "conditions",
+            "complacency",
+            "spy_high_prox"
+          ],
+          [
+            "conditions",
+            "complacency",
+            "breadth_above200_pctile"
+          ]
+        ]
+      }
+    },
+    {
+      "field_id": "R.liquidity_quality.label",
+      "artifact": "R",
+      "path": [
+        "liquidity_quality",
+        "label"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "benign-expansion",
+        "stress-expansion",
+        "neutral",
+        "neutral-hollow",
+        "contracting",
+        "unknown"
+      ],
+      "middle_tokens": [],
+      "verdict_class": "composite",
+      "evidence_family_id": "credit_and_funding",
+      "producer": "engine/regime.py:111-124,218-227",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "liquidity_quality",
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "owner_missing_token",
+        "missing_token": "unknown"
+      }
+    },
+    {
+      "field_id": "R.liquidity_quality.stress_overlay.confirming_stress",
+      "artifact": "R",
+      "path": [
+        "liquidity_quality",
+        "stress_overlay",
+        "confirming_stress"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        true,
+        false
+      ],
+      "middle_tokens": [],
+      "verdict_class": "composite",
+      "evidence_family_id": "credit_and_funding",
+      "producer": "engine/regime.py:183-202",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "liquidity_quality",
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date",
+        "inherited": true
+      },
+      "guard": {
+        "kind": "credit_stress_leg",
+        "hy_oas_z_path": [
+          "liquidity_quality",
+          "stress_overlay",
+          "hy_oas_z"
+        ],
+        "nfci_path": [
+          "liquidity_quality",
+          "stress_overlay",
+          "nfci"
+        ],
+        "admit_true_when": "hy_oas_z > 1.00 or nfci < 0",
+        "admit_false_when": "hy_oas_z is finite and nfci < 0",
+        "otherwise_issue_when_published": "contains_sign_only_leg",
+        "otherwise_issue_when_missing": "owner_default_on_missing"
+      }
+    },
+    {
+      "field_id": "M.components.breadth.tone",
+      "artifact": "M",
+      "path": [
+        "components",
+        {
+          "key": "breadth"
+        },
+        "tone"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "good",
+        "warn",
+        "bad"
+      ],
+      "middle_tokens": [
+        "warn"
+      ],
+      "verdict_class": "composite",
+      "evidence_family_id": "participation",
+      "producer": "engine/market_state.py:100-105,317-321",
+      "clock": {
+        "artifact": "M",
+        "path": [
+          "input_vintages",
+          "pct_above_200",
+          "asof"
+        ],
+        "semantics": "source_observation_date",
+        "stale_flag_path": [
+          "input_vintages",
+          "pct_above_200",
+          "stale"
+        ]
+      },
+      "guard": {
+        "kind": "component_not_degraded",
+        "degraded_path": [
+          "components",
+          {
+            "key": "breadth"
+          },
+          "degraded"
+        ]
+      }
+    },
+    {
+      "field_id": "L.state",
+      "artifact": "L",
+      "path": [
+        "state"
+      ],
+      "kind": "categorical",
+      "tokens": [
+        "INTACT",
+        "CRACKING",
+        "BROKEN"
+      ],
+      "middle_tokens": [],
+      "verdict_class": "banded",
+      "evidence_family_id": "leader_damage",
+      "producer": "engine/leadership_crack.py:40-58,237-288,319-323,342",
+      "clock": {
+        "artifact": "L",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "same_run_owner_copy",
+        "applies_to": "every_token",
+        "copy_artifact": "R",
+        "copy_path": [
+          "leadership_crack"
+        ],
+        "copy_clock_path": [
+          "leadership_crack",
+          "asof"
+        ],
+        "own_clock_path": [
+          "asof"
+        ],
+        "fail_status": "stale",
+        "fail_issue": "owner_did_not_write"
+      }
+    },
+    {
+      "field_id": "B.fed_path.implied_cuts_12m",
+      "artifact": "B",
+      "path": [
+        "fed_path",
+        "implied_cuts_12m"
+      ],
+      "kind": "market_pricing",
+      "tokens": {
+        "type": "integer"
+      },
+      "middle_tokens": [
+        {
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "verdict_class": "banded",
+      "evidence_family_id": "policy_pricing",
+      "producer": "engine/fed_path.py:32,131-132,155-158",
+      "clock": {
+        "artifact": "B",
+        "path": [
+          "fed_path",
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "guard": {
+        "kind": "sign_consistency",
+        "other_path": [
+          "fed_path",
+          "implied_bp_12m"
+        ],
+        "rule": "implied_cuts_12m * implied_bp_12m <= 0",
+        "fail_issue": "owner_sign_inconsistent"
+      }
+    }
+  ],
+  "paths": [
+    {
+      "path_id": "orderly_disinflation",
+      "family": "rates",
+      "assumption_en": "Inflation pressure eases without broad deterioration in labour or credit.",
+      "conditions": [
+        {
+          "condition_id": "OD-1",
+          "statement_id": "core_inflation_recent_below_12m",
+          "statement_en": "The recent pace of core inflation is below its 12-month pace",
+          "field_id": "T.state.inflation.direction",
+          "fits": [
+            "cooling"
+          ],
+          "does_not_fit": [
+            "re-accelerating"
+          ],
+          "not_discriminating": [
+            "steady"
+          ],
+          "evidence_family_id": "core_pce",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Inflation pressure eases\" is this owner's own comparison"
+        },
+        {
+          "condition_id": "OD-2",
+          "statement_id": "expectations_drifting_down",
+          "statement_en": "Market-implied inflation expectations are drifting down against the model estimate (5-year-5-year-forward breakeven against a 5-year model)",
+          "field_id": "T.state.expectations.anchoring",
+          "fits": [
+            "drifting down"
+          ],
+          "does_not_fit": [
+            "drifting up"
+          ],
+          "not_discriminating": [
+            "anchored"
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "The parent names expectations without a side; reading `drifting down` as the side that fits is this mapping's authored choice (RI-3 is its mirror). `anchored` is the owner's dead-band and says nothing either way"
+        },
+        {
+          "condition_id": "OD-3",
+          "statement_id": "labour_firm",
+          "statement_en": "The labour read is firm",
+          "field_id": "R.conditions.labor_nowcast.read",
+          "fits": [
+            "labor firm"
+          ],
+          "does_not_fit": [
+            "labor cooling"
+          ],
+          "not_discriminating": [
+            "labor mixed"
+          ],
+          "evidence_family_id": "labour",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Without broad deterioration in labour\""
+        },
+        {
+          "condition_id": "OD-4",
+          "statement_id": "credit_stress_flag_off",
+          "statement_en": "The owner's credit-stress flag is off",
+          "field_id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "fits": [
+            false
+          ],
+          "does_not_fit": [
+            true
+          ],
+          "not_discriminating": [],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Without broad deterioration in credit\"; guarded by R-C"
+        },
+        {
+          "condition_id": "OD-5",
+          "statement_id": "financial_conditions_loose",
+          "statement_en": "Financial conditions are loose",
+          "field_id": "R.conditions.financial_conditions.state",
+          "fits": [
+            "loose"
+          ],
+          "does_not_fit": [
+            "tight"
+          ],
+          "not_discriminating": [
+            "neutral"
+          ],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Same clause; the level band, not the change"
+        },
+        {
+          "condition_id": "OD-7",
+          "statement_id": "real_yields_falling",
+          "statement_en": "Real yields are falling",
+          "field_id": "T.state.rates.direction",
+          "fits": [
+            "falling"
+          ],
+          "does_not_fit": [
+            "rising"
+          ],
+          "not_discriminating": [
+            "stable"
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "The parent's \"real-rate velocity\". Inflation pressure that eases in an orderly way is read with real yields easing alongside it; rising real yields are the opposite side. Identical to GD-1"
+        },
+        {
+          "condition_id": "OD-8",
+          "statement_id": "inflation_composition",
+          "statement_en": "Inflation composition",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "inflation_breadth",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "Named by the parent; no owner verdict audited"
+        }
+      ]
+    },
+    {
+      "path_id": "growth_deterioration",
+      "family": "rates",
+      "assumption_en": "Lower yield pressure comes with weakening activity and financing conditions.",
+      "conditions": [
+        {
+          "condition_id": "GD-1",
+          "statement_id": "real_yields_falling",
+          "statement_en": "Real yields are falling",
+          "field_id": "T.state.rates.direction",
+          "fits": [
+            "falling"
+          ],
+          "does_not_fit": [
+            "rising"
+          ],
+          "not_discriminating": [
+            "stable"
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Lower yield pressure\"; identical to OD-7 by R-H"
+        },
+        {
+          "condition_id": "GD-2",
+          "statement_id": "labour_cooling",
+          "statement_en": "The labour read is cooling",
+          "field_id": "R.conditions.labor_nowcast.read",
+          "fits": [
+            "labor cooling"
+          ],
+          "does_not_fit": [
+            "labor firm"
+          ],
+          "not_discriminating": [
+            "labor mixed"
+          ],
+          "evidence_family_id": "labour",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Weakening activity\"; mirror of OD-3"
+        },
+        {
+          "condition_id": "GD-3",
+          "statement_id": "credit_stress_flag_on",
+          "statement_en": "The owner's credit-stress flag is on",
+          "field_id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "fits": [
+            true
+          ],
+          "does_not_fit": [
+            false
+          ],
+          "not_discriminating": [],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Weakening financing conditions\"; mirror of OD-4; guarded by R-C"
+        },
+        {
+          "condition_id": "GD-4",
+          "statement_id": "financial_conditions_tight",
+          "statement_en": "Financial conditions are tight",
+          "field_id": "R.conditions.financial_conditions.state",
+          "fits": [
+            "tight"
+          ],
+          "does_not_fit": [
+            "loose"
+          ],
+          "not_discriminating": [
+            "neutral"
+          ],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Mirror of OD-5"
+        },
+        {
+          "condition_id": "GD-5",
+          "statement_id": "real_activity_weakening",
+          "statement_en": "Real activity is weakening",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "real_activity",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "The one composite that exists has legs of unequal freshness (A.2)"
+        },
+        {
+          "condition_id": "GD-6",
+          "statement_id": "earnings_context",
+          "statement_en": "Earnings context",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "earnings",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "Per-theme sign rules only; no market-level verdict"
+        },
+        {
+          "condition_id": "GD-7",
+          "statement_id": "dollar_behaviour",
+          "statement_en": "Dollar behaviour",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "dollar",
+          "open_reason": "unknown_date",
+          "evidence_refs": [
+            "T.dollar_channel.usd_dir"
+          ],
+          "rationale": "Readable once slice E0 publishes the number and its date; no side authored"
+        },
+        {
+          "condition_id": "GD-8",
+          "statement_id": "credit_spreads_wide_level",
+          "statement_en": "Credit spreads are wide in level",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": "no_owner_verdict",
+          "evidence_refs": [
+            "R.liquidity_quality.stress_overlay.hy_oas_pct"
+          ],
+          "rationale": "The owner bands the change in spreads, not their level"
+        }
+      ]
+    },
+    {
+      "path_id": "renewed_inflation_pressure",
+      "family": "rates",
+      "assumption_en": "Price pressure broadens or persists rather than a single transitory print.",
+      "conditions": [
+        {
+          "condition_id": "RI-1",
+          "statement_id": "core_inflation_recent_above_12m",
+          "statement_en": "The recent pace of core inflation is above its 12-month pace",
+          "field_id": "T.state.inflation.direction",
+          "fits": [
+            "re-accelerating"
+          ],
+          "does_not_fit": [
+            "cooling"
+          ],
+          "not_discriminating": [
+            "steady"
+          ],
+          "evidence_family_id": "core_pce",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Mirror of OD-1"
+        },
+        {
+          "condition_id": "RI-2",
+          "statement_id": "core_inflation_above_owner_band",
+          "statement_en": "Core inflation is above the owner's 1.7–2.3% band",
+          "field_id": "T.state.inflation.regime",
+          "fits": [
+            "above target"
+          ],
+          "does_not_fit": [
+            "below target"
+          ],
+          "not_discriminating": [
+            "at target"
+          ],
+          "evidence_family_id": "core_pce",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Persists\"; the band is the owner's, not a policy statement"
+        },
+        {
+          "condition_id": "RI-3",
+          "statement_id": "expectations_drifting_up",
+          "statement_en": "Market-implied inflation expectations are drifting up against the model estimate (same tenors as OD-2)",
+          "field_id": "T.state.expectations.anchoring",
+          "fits": [
+            "drifting up"
+          ],
+          "does_not_fit": [
+            "drifting down"
+          ],
+          "not_discriminating": [
+            "anchored"
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Mirror of OD-2"
+        },
+        {
+          "condition_id": "RI-4",
+          "statement_id": "breakevens_rising",
+          "statement_en": "Breakevens are rising",
+          "field_id": "T.breakeven_decomp.direction",
+          "fits": [
+            "rising"
+          ],
+          "does_not_fit": [
+            "falling"
+          ],
+          "not_discriminating": [
+            "flat"
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "The parent's \"breakevens (with liquidity caveats)\"; the caveat is shown beside it from the cause badge (A.2)"
+        },
+        {
+          "condition_id": "RI-5",
+          "statement_id": "wages_services_firming",
+          "statement_en": "Wage and services inflation are firming",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "wages_services",
+          "open_reason": "no_owner_verdict",
+          "evidence_refs": [
+            "T.state.inflation.eci_comp_yoy"
+          ],
+          "rationale": "Numbers are published; no owner token"
+        },
+        {
+          "condition_id": "RI-6",
+          "statement_id": "market_prices_rate_rises_12m",
+          "statement_en": "The market prices rate rises over the next 12 months",
+          "field_id": "B.fed_path.implied_cuts_12m",
+          "fits": [
+            {
+              "op": "le",
+              "value": -1
+            }
+          ],
+          "does_not_fit": [
+            {
+              "op": "ge",
+              "value": 1
+            }
+          ],
+          "not_discriminating": [
+            {
+              "op": "eq",
+              "value": 0
+            }
+          ],
+          "evidence_family_id": "policy_pricing",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "The parent's \"policy repricing\""
+        },
+        {
+          "condition_id": "RI-7",
+          "statement_id": "inflation_broadening",
+          "statement_en": "Inflation is broadening across components",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "inflation_breadth",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "\"Broadens … rather than a single transitory print\""
+        },
+        {
+          "condition_id": "RI-8",
+          "statement_id": "oil_mechanism",
+          "statement_en": "Oil mechanism",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "oil",
+          "open_reason": "sign_only_verdict",
+          "evidence_refs": [
+            "C.assets.oil.trend"
+          ],
+          "rationale": "The only owner token is a bare sign"
+        }
+      ]
+    },
+    {
+      "path_id": "long_end_premium_shock",
+      "family": "rates",
+      "assumption_en": "Long-end yields rise for reasons the near-term policy path does not capture.",
+      "conditions": [
+        {
+          "condition_id": "LP-1",
+          "statement_id": "term_premium_rising",
+          "statement_en": "The term-premium estimate is rising",
+          "field_id": "T.yield_curve.regime.term_premium_dir",
+          "fits": [
+            "rising"
+          ],
+          "does_not_fit": [
+            "falling"
+          ],
+          "not_discriminating": [
+            "stable"
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "One model's estimate; LP-6 says agreement between models is unread"
+        },
+        {
+          "condition_id": "LP-2",
+          "statement_id": "real_yields_rising",
+          "statement_en": "Real yields are rising",
+          "field_id": "T.state.rates.direction",
+          "fits": [
+            "rising"
+          ],
+          "does_not_fit": [
+            "falling"
+          ],
+          "not_discriminating": [
+            "stable"
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Mirror of OD-7 and GD-1"
+        },
+        {
+          "condition_id": "LP-4",
+          "statement_id": "curve_steepening_long_end",
+          "statement_en": "The curve is steepening from the long end",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": "sign_only_verdict",
+          "evidence_refs": [
+            "T.yield_curve.regime.key"
+          ],
+          "rationale": "Bare signs of a 21-observation change"
+        },
+        {
+          "condition_id": "LP-5",
+          "statement_id": "issuance_demand_deteriorating",
+          "statement_en": "Issuance and demand at the long end are deteriorating",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "issuance_and_demand",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "Named by the parent; no owner"
+        },
+        {
+          "condition_id": "LP-6",
+          "statement_id": "term_premium_models_agree",
+          "statement_en": "Term-premium models agree",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "One estimate is published; cross-model disagreement is not measured"
+        },
+        {
+          "condition_id": "LP-7",
+          "statement_id": "long_end_rise_not_explained_by_policy",
+          "statement_en": "The rise in long-end yields is not explained by the priced policy path",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "policy_pricing",
+          "open_reason": "no_owner_verdict",
+          "evidence_refs": [],
+          "rationale": "The path's defining claim. No owner decomposes it, and the direction of priced policy alone is not evidence either way"
+        }
+      ]
+    },
+    {
+      "path_id": "technical_pause",
+      "family": "rates",
+      "assumption_en": "A price or yield reversal is visible but durable fundamental confirmation is incomplete.",
+      "conditions": [
+        {
+          "condition_id": "TP-1",
+          "statement_id": "turn_forming_10y",
+          "statement_en": "The owner flags a turn forming in the 10-year yield",
+          "field_id": "T.yield_momentum.series.10y.turn_watch",
+          "fits": [
+            "rolldown_forming",
+            "rollup_forming"
+          ],
+          "does_not_fit": [
+            "extreme_high_watch",
+            "extreme_low_watch"
+          ],
+          "not_discriminating": [
+            null
+          ],
+          "evidence_family_id": "treasury_curve",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"A reversal is visible\". The owner's extreme tokens mean stretched and not turning — the opposite; null means it flags nothing. The parent names \"multi-horizon yield turns\"; the other tenors' flags are shown in Now, not read into the card"
+        },
+        {
+          "condition_id": "TP-4",
+          "statement_id": "positioning_stretched",
+          "statement_en": "Positioning is stretched",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "positioning",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "Named by the parent; no owner"
+        },
+        {
+          "condition_id": "TP-5",
+          "statement_id": "later_macro_not_confirmed",
+          "statement_en": "Later macro data have not confirmed the move",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "macro_confirmation",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "The path's defining claim; no owner verdict. Inflation and labour evidence is shown beside the card, not read into it: which side confirms depends on the direction of the turn"
+        },
+        {
+          "condition_id": "TP-6",
+          "statement_id": "breadth_confirms_turn",
+          "statement_en": "Market breadth confirms the turn",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "participation",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [
+            "M.components.breadth.tone"
+          ],
+          "rationale": "Named by the parent without a side. Which side confirms depends on the direction of the turn, as for TP-5; an equity-breadth side for a rates turn would be authored"
+        }
+      ]
+    },
+    {
+      "path_id": "continued_selective_concentration",
+      "family": "market_structure",
+      "assumption_en": "Index strength stays carried by a narrow group while the rest lags.",
+      "conditions": [
+        {
+          "condition_id": "SC-1",
+          "statement_id": "index_near_high_breadth_low",
+          "statement_en": "The index is within 3% of its high while the share of stocks above their 200-day average is in the lower 40% of its own history",
+          "field_id": "R.conditions.complacency.breadth_div",
+          "fits": [
+            true
+          ],
+          "does_not_fit": [
+            false
+          ],
+          "not_discriminating": [],
+          "evidence_family_id": "participation",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Index strength carried by a narrow group\", in the owner's exact construction"
+        },
+        {
+          "condition_id": "SC-2",
+          "statement_id": "credit_stress_flag_off",
+          "statement_en": "The owner's credit-stress flag is off",
+          "field_id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "fits": [
+            false
+          ],
+          "does_not_fit": [
+            true
+          ],
+          "not_discriminating": [],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Credit and funding stability\"; identical to OD-4"
+        },
+        {
+          "condition_id": "SC-3",
+          "statement_id": "financial_conditions_loose",
+          "statement_en": "Financial conditions are loose",
+          "field_id": "R.conditions.financial_conditions.state",
+          "fits": [
+            "loose"
+          ],
+          "does_not_fit": [
+            "tight"
+          ],
+          "not_discriminating": [
+            "neutral"
+          ],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Identical to OD-5"
+        },
+        {
+          "condition_id": "SC-4",
+          "statement_id": "cap_weight_ahead_of_equal_weight",
+          "statement_en": "Cap-weighted returns are ahead of equal-weighted",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "concentration",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "Named by the parent; no owner on `origin/main`"
+        },
+        {
+          "condition_id": "SC-5",
+          "statement_id": "same_leaders_persist",
+          "statement_en": "The same leaders persist",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "leader_turnover",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "Named by the parent; no owner"
+        }
+      ]
+    },
+    {
+      "path_id": "genuine_broadening",
+      "family": "market_structure",
+      "assumption_en": "Participation widens with fundamental support.",
+      "conditions": [
+        {
+          "condition_id": "GB-1",
+          "statement_id": "breadth_component_strong",
+          "statement_en": "The breadth component reads strong",
+          "field_id": "M.components.breadth.tone",
+          "fits": [
+            "good"
+          ],
+          "does_not_fit": [
+            "bad"
+          ],
+          "not_discriminating": [
+            "warn"
+          ],
+          "evidence_family_id": "participation",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"Participation widens\". It re-bands SC-1's input and subtracts for SC-1's flag (when the flag is true the tone is `bad` by construction), so the two are one family and never two confirmations"
+        },
+        {
+          "condition_id": "GB-2",
+          "statement_id": "dispersion_falling_without_correlation_rising",
+          "statement_en": "Dispersion is falling without correlation rising",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "dispersion",
+          "open_reason": "no_owner_verdict",
+          "evidence_refs": [
+            "D.state",
+            "D.avg_corr"
+          ],
+          "rationale": "The owner publishes a level tercile and a proxy number; neither is the change the parent names"
+        },
+        {
+          "condition_id": "GB-3",
+          "statement_id": "revision_breadth_widening",
+          "statement_en": "Revision breadth is widening",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "revision_breadth",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "\"With fundamental support\"; per-theme sign rules only"
+        },
+        {
+          "condition_id": "GB-4",
+          "statement_id": "participation_rising_fixed_universe",
+          "statement_en": "Participation is rising on a fixed historical universe",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "participation",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "Needs historical membership (slice D1)"
+        }
+      ]
+    },
+    {
+      "path_id": "internal_leadership_handoff",
+      "family": "market_structure",
+      "assumption_en": "Leadership rotates inside a healthy theme or market.",
+      "conditions": [
+        {
+          "condition_id": "LH-1",
+          "statement_id": "leader_damage_monitor_intact",
+          "statement_en": "The owner's leader-damage monitor for the tracked AI-hardware cohort reads intact",
+          "field_id": "L.state",
+          "fits": [
+            "INTACT"
+          ],
+          "does_not_fit": [
+            "CRACKING",
+            "BROKEN"
+          ],
+          "not_discriminating": [],
+          "evidence_family_id": "leader_damage",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "\"No absolute damage to the cohort\", limited to the cohort and monitor that exist; the drawdown numbers and the date the state was entered (`state_since`) are shown beside it"
+        },
+        {
+          "condition_id": "LH-2",
+          "statement_id": "leaders_turning_over_inside_theme",
+          "statement_en": "Leaders are turning over inside a theme",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "leader_turnover",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "The path's defining claim; no owner"
+        },
+        {
+          "condition_id": "LH-3",
+          "statement_id": "theme_participation_holding",
+          "statement_en": "Theme-level participation is holding",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "participation",
+          "open_reason": "no_admitted_owner_field",
+          "evidence_refs": [],
+          "rationale": "No theme-level participation verdict"
+        }
+      ]
+    },
+    {
+      "path_id": "deterioration_spreading_to_leaders",
+      "family": "market_structure",
+      "assumption_en": "Weakness in non-leaders reaches the leaders.",
+      "conditions": [
+        {
+          "condition_id": "DS-1",
+          "statement_id": "leader_damage_monitor_cracking_or_broken",
+          "statement_en": "The owner's leader-damage monitor for the tracked AI-hardware cohort reads cracking or broken",
+          "field_id": "L.state",
+          "fits": [
+            "CRACKING",
+            "BROKEN"
+          ],
+          "does_not_fit": [
+            "INTACT"
+          ],
+          "not_discriminating": [],
+          "evidence_family_id": "leader_damage",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Mirror of LH-1"
+        },
+        {
+          "condition_id": "DS-2",
+          "statement_id": "credit_stress_flag_on",
+          "statement_en": "The owner's credit-stress flag is on",
+          "field_id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "fits": [
+            true
+          ],
+          "does_not_fit": [
+            false
+          ],
+          "not_discriminating": [],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Identical to GD-3"
+        },
+        {
+          "condition_id": "DS-3",
+          "statement_id": "financial_conditions_tight",
+          "statement_en": "Financial conditions are tight",
+          "field_id": "R.conditions.financial_conditions.state",
+          "fits": [
+            "tight"
+          ],
+          "does_not_fit": [
+            "loose"
+          ],
+          "not_discriminating": [
+            "neutral"
+          ],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": null,
+          "evidence_refs": [],
+          "rationale": "Identical to GD-4"
+        },
+        {
+          "condition_id": "DS-4",
+          "statement_id": "correlation_rising_with_dispersion",
+          "statement_en": "Correlation is rising together with dispersion",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "correlation",
+          "open_reason": "vocabulary_not_audited",
+          "evidence_refs": [],
+          "rationale": "Named by the parent"
+        },
+        {
+          "condition_id": "DS-5",
+          "statement_id": "funding_credit_worsening",
+          "statement_en": "Funding and credit are worsening",
+          "field_id": null,
+          "fits": [],
+          "does_not_fit": [],
+          "not_discriminating": [],
+          "evidence_family_id": "credit_and_funding",
+          "open_reason": "sign_only_verdict",
+          "evidence_refs": [
+            "R.conditions.financial_conditions.trend",
+            "R.liquidity_quality.stress_overlay.nfci_trend"
+          ],
+          "rationale": "\"Worsening\" is a change; the owner's change tokens are bare signs. DS-2 and DS-3 read levels and a flag"
+        }
+      ]
+    }
+  ],
+  "retired_condition_ids": [
+    "OD-6",
+    "LP-3",
+    "TP-2",
+    "TP-3"
+  ],
+  "evidence_only": [
+    {
+      "evidence_id": "T.dollar_channel.usd_dir",
+      "artifact": "T",
+      "path": [
+        "dollar_channel",
+        "usd_dir"
+      ],
+      "evidence_family_id": "dollar",
+      "issue": null,
+      "kind": "categorical",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "dollar_channel",
+          "asof"
+        ],
+        "semantics": "unknown"
+      },
+      "note": "Banded by the owner, but the number it was decided from is not published and the block date is the newest of several pairs, not this field's. Status unknown_date until slice E0 publishes both."
+    },
+    {
+      "evidence_id": "R.liquidity_quality.stress_overlay.hy_oas_pct",
+      "artifact": "R",
+      "path": [
+        "liquidity_quality",
+        "stress_overlay",
+        "hy_oas_pct"
+      ],
+      "evidence_family_id": "credit_and_funding",
+      "issue": "no_owner_verdict",
+      "kind": "level",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "liquidity_quality",
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date",
+        "inherited": true
+      },
+      "note": "The spread level; a number with no owner verdict."
+    },
+    {
+      "evidence_id": "T.state.inflation.eci_comp_yoy",
+      "artifact": "T",
+      "path": [
+        "state",
+        "inflation",
+        "eci_comp_yoy"
+      ],
+      "evidence_family_id": "wages_services",
+      "issue": "no_owner_verdict",
+      "kind": "change",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "note": "Written through a zero default at the pin: an exact 0.00 carries possible_missing_as_zero."
+    },
+    {
+      "evidence_id": "C.assets.oil.trend",
+      "artifact": "C",
+      "path": [
+        "assets",
+        "oil",
+        "trend"
+      ],
+      "evidence_family_id": "oil",
+      "issue": "sign_only_verdict",
+      "kind": "categorical",
+      "clock": {
+        "artifact": "C",
+        "path": [
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "note": "A bare sign."
+    },
+    {
+      "evidence_id": "T.yield_curve.regime.key",
+      "artifact": "T",
+      "path": [
+        "yield_curve",
+        "regime",
+        "key"
+      ],
+      "evidence_family_id": "treasury_curve",
+      "issue": "sign_only_verdict",
+      "kind": "categorical",
+      "clock": {
+        "artifact": "T",
+        "path": [
+          "yield_curve",
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "note": "Bare signs of a 21-observation change."
+    },
+    {
+      "evidence_id": "D.state",
+      "artifact": "D",
+      "path": [
+        "state"
+      ],
+      "evidence_family_id": "dispersion",
+      "issue": "no_owner_verdict",
+      "kind": "categorical",
+      "clock": {
+        "artifact": "D",
+        "path": [
+          "as_of"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "note": "A level tercile; no path condition reads a level."
+    },
+    {
+      "evidence_id": "D.avg_corr",
+      "artifact": "D",
+      "path": [
+        "avg_corr"
+      ],
+      "evidence_family_id": "correlation",
+      "issue": "no_owner_verdict",
+      "kind": "level",
+      "clock": {
+        "artifact": "D",
+        "path": [
+          "as_of"
+        ],
+        "semantics": "owner_snapshot_date"
+      },
+      "note": "A variance-ratio proxy over the last 63 rows, not a measured correlation."
+    },
+    {
+      "evidence_id": "R.conditions.financial_conditions.trend",
+      "artifact": "R",
+      "path": [
+        "conditions",
+        "financial_conditions",
+        "trend"
+      ],
+      "evidence_family_id": "credit_and_funding",
+      "issue": "sign_only_verdict",
+      "kind": "categorical",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "conditions",
+          "vintages",
+          "nfci",
+          "asof"
+        ],
+        "semantics": "source_observation_date",
+        "stale_flag_path": [
+          "conditions",
+          "vintages",
+          "nfci",
+          "stale"
+        ]
+      },
+      "note": "Two tokens split at zero on the 13-week change."
+    },
+    {
+      "evidence_id": "R.liquidity_quality.stress_overlay.nfci_trend",
+      "artifact": "R",
+      "path": [
+        "liquidity_quality",
+        "stress_overlay",
+        "nfci_trend"
+      ],
+      "evidence_family_id": "credit_and_funding",
+      "issue": "sign_only_verdict",
+      "kind": "categorical",
+      "clock": {
+        "artifact": "R",
+        "path": [
+          "liquidity_quality",
+          "asof"
+        ],
+        "semantics": "owner_snapshot_date",
+        "inherited": true
+      },
+      "note": "Two tokens split at zero."
+    }
+  ],
+  "possible_missing_as_zero": {
+    "artifact": "T",
+    "paths": []
+  }
+}

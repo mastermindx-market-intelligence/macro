@@ -27,6 +27,7 @@ log = logging.getLogger(__name__)
 class HkSouthboundHoldingsAdapter(Adapter):
     name = "hk_southbound_holdings"
     group = "hk_southbound"
+    session_calendar = "CONNECT"  # observation dates follow the cash/Connect session
     stale_after_days = 5            # Connect-holdings disclosure is daily on HK trading days
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:

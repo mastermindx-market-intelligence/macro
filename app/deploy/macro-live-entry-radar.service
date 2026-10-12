@@ -48,6 +48,11 @@ Wants=network-online.target
 Type=oneshot
 WorkingDirectory=/opt/macro
 EnvironmentFile=-/etc/macro-live.env
+# Wave 2b (DEC:ENTRY-RADAR-CATALYST-LIVE-READ-IS-OPT-IN): the catalyst attach asks the
+# EDGAR owner at decision time ONLY when this is "1". Tests and CI leave it unset, so no
+# test ever fetches. Bounded by the reader itself: <=48 tickers / 20 s per pass, the
+# collector's own 0.12 s pace, fail-open to the nightly store read.
+Environment=ENTRY_RADAR_CATALYST_LIVE=1
 ExecStart=/opt/macro/.venv/bin/python -m scripts.entry_radar_live
 TimeoutStartSec=120
 Nice=10

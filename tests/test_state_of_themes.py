@@ -65,10 +65,15 @@ def _render(root: Path) -> str:
 # _site_nav.html.j2 (the whole product header, adopted 2026-08-01) is the one
 # entry here WITH a transitive include: it pulls in _navlinks.html.j2, which is
 # why both must be present even though the page template names only the former.
+# FIN-T9 (2026-09-24): _finance_sector_deep_dive.html.j2 is included once by
+# state_of_themes.html.j2 between the lanes loop close and the STUDY SHELF
+# region — synthetic roots must mirror it the same way as the nav partials
+# so jinja2 can resolve the include.
 _SUPPORT_PARTIALS = (
     "_site_nav.html.j2",
     "_navlinks.html.j2",
     "_seo_head.html.j2",
+    "_finance_sector_deep_dive.html.j2",
 )
 
 

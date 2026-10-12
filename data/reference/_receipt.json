@@ -13,12 +13,12 @@
     "evidence_sources": {
       "cn": {
         "dataset": "data/china_filings/filings.parquet",
-        "newest_observation": "2026-09-18",
+        "newest_observation": "2026-10-10",
         "provenance": "CNInfo (\u5de8\u6f6e\u8d44\u8baf\u7f51) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
       },
       "hk": {
         "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
-        "newest_observation": "2026-09-18",
+        "newest_observation": "2026-10-09",
         "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
       }
     },
@@ -37,18 +37,6 @@
           "symbol": "300229.SZ"
         },
         {
-          "listing_key": "CN-XSHE-301556",
-          "node_id": "co:cn:301556.SZ",
-          "reason": "no_committed_primary_source_evidence",
-          "symbol": "301556.SZ"
-        },
-        {
-          "listing_key": "CN-XSHE-301600",
-          "node_id": "co:cn:301600.SZ",
-          "reason": "no_committed_primary_source_evidence",
-          "symbol": "301600.SZ"
-        },
-        {
           "listing_key": "CN-XSHG-600059",
           "node_id": "co:cn:600059.SS",
           "reason": "no_committed_primary_source_evidence",
@@ -58,7 +46,7 @@
       "hk": []
     },
     "refused_this_run": {
-      "cn": 5,
+      "cn": 3,
       "hk": 0
     },
     "resolved_this_run": {
@@ -66,7 +54,7 @@
       "hk": 0
     },
     "resolved_total": {
-      "cn": 1016,
+      "cn": 1018,
       "hk": 147
     },
     "target_n": {
@@ -75,22 +63,28 @@
     },
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
-  "cik_map_snapshot": "2026-09-21",
-  "code_version": "b7289166c9a4fcae67c7a41228a465ea6f96962f",
+  "cik_map_snapshot": "2026-10-05",
+  "code_version": "bb0830d8d778ba4d9e5b56b9b4c2f2a856f70112",
   "coverage": {
-    "resolved": 708,
-    "total": 718,
-    "unresolved": 10,
+    "resolved": 1618,
+    "total": 1634,
+    "unresolved": 16,
     "unresolved_names": [
       "ANGPY",
       "B",
       "BLD",
-      "CBOE",
+      "BLFS",
+      "CWEN-A",
       "EA",
       "GATO",
+      "HLX",
       "IMPUY",
       "MAG",
+      "PSKY",
+      "QRVO",
       "RHHBY",
+      "TCBI",
+      "WBD",
       "WBS"
     ]
   },
@@ -101,7 +95,7 @@
     "reference.issuer_migrations",
     "reference.security_migrations"
   ],
-  "generated_at": "2026-09-21T03:19:29",
+  "generated_at": "2026-10-11T16:03:17",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -117,22 +111,24 @@
     }
   ],
   "inputs": {
-    "config.yml": "dff5590f19283a3d7cd49a523847acf0f06a086f056cdc23e7d93c1257a319f9",
+    "config.yml": "21390831fc7bba585a6393862bfbed934c1755efabb701f5dd2dd59d888eb3e3",
     "config/delisted_symbols.yml": "6cefebced6f19f7d612078f369e47ae4cd4d23ac35f6ecfbd732f4dd4a6e661a",
     "data/baskets/membership.json": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
-    "data/breadth/constituents.parquet": "c6164db37521667ec55d0a5ce88654954d60042a2f102d5a914171224260f6ce",
-    "data/china_filings/filings.parquet": "77db08671bdef666d1b22bb6d4bb656140780d1fc2c34eb2f237125b5afb9517",
-    "data/hk_shorts/positions.parquet": "41458c0e3ca7438615aeaf89887cd92dacfb243c2633686d570654e362bdce85",
-    "data/hk_shorts/turnover.parquet": "57c7c68fe77023787e33669beb6275bde316a6a5381b4c96772c397c51b54bc1",
-    "data/symbol_directory/cik_map": "3130a3bb8df3bc3ad8e7c563e4fbddddfd06d550f894c59fd80d3f88ae5feb49",
-    "data/symbol_directory/snapshots": "a04a81f86a5ebd1446696226a6dcb006d5ac57d4d8ab87221b7e384bdc527ed0",
-    "data/theme_graph/nodes.parquet": "c93b4e840bf83b18b53343acd15ecb01c22f38d22d2ff979eea13a6f0910934b",
+    "data/breadth/constituents.parquet": "ecdd7e77ac36198b45c4ff6b854e7a46281bd3504d82540853f29c09a1f64aaf",
+    "data/china_filings/filings.parquet": "018c6ad3cff2ba36f518d3ebb936f24ef74136ea72813101aacc218093c8ea7d",
+    "data/hk_shorts/positions.parquet": "21bfb0e27fdb52f6da24d619ddba278dbf3dce218c9052793f72796b1c7639f3",
+    "data/hk_shorts/turnover.parquet": "8bc79e221fdd2b931b7b8ae1a5fb63d6e0f69fb1056820e13193767e6606a1e9",
+    "data/midcap_breadth/constituents.parquet": "0527370c62ee9a805228873bbaecd8bf8e33d86c18f28877a36b07fe70f2af5f",
+    "data/smallcap_breadth/constituents.parquet": "c7461d5d2931ad0b746cd99206f63dd46a13d260c965ffa7c81029cab27ffd2e",
+    "data/symbol_directory/cik_map": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+    "data/symbol_directory/snapshots": "a96d477d51c73b86b7fe58e131fc1022b6cf921d89e974872d6b433c54b1cc0f",
+    "data/theme_graph/nodes.parquet": "8edbd36ee252ccf9f556685aa3b16d41546d4f4330c006eac2551ef561eb5f38",
     "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
   },
   "issuer": {
     "era": "issuer_semantic_correction_v1",
     "era_migrations_total": 3,
-    "evidence_snapshot": "2026-09-21",
+    "evidence_snapshot": "2026-10-05",
     "migrations_this_run": 0,
     "multi_security_groups": [
       {
@@ -155,17 +151,32 @@
           "SEC:US-XNAS-NWS",
           "SEC:US-XNAS-NWSA"
         ]
+      },
+      {
+        "issuer_id": "ISS:US-XNYS-UAA",
+        "security_ids": [
+          "SEC:US-XNYS-UA",
+          "SEC:US-XNYS-UAA"
+        ]
       }
     ],
     "state_counts": {
       "DEFERRED_IDENTITY_EXCEPTION": 1,
-      "NO_ISSUER_EVIDENCE": 1166,
-      "RESOLVED": 1212
+      "EVIDENCE_CONFLICT": 2,
+      "NO_ISSUER_EVIDENCE": 1168,
+      "RESOLVED": 1931
     }
   },
   "listing_continuity": [
     "ATAI",
+    "CSAN",
+    "DBRG",
+    "DOMO",
+    "ET",
+    "GWH",
     "KHC",
+    "QRVO",
+    "WBD",
     "WBS",
     "YYGH",
     {
@@ -179,16 +190,392 @@
       "listing_key": "US-XNYS-KHC",
       "lost_rows": [
         "SEC:US-XNAS-ATAI",
+        "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-KHC",
+        "SEC:US-XNAS-QRVO",
+        "SEC:US-XNAS-WBD",
         "SEC:US-XNAS-YYGH",
+        "SEC:US-XNYS-CSAN",
+        "SEC:US-XNYS-DBRG",
+        "SEC:US-XNYS-ET",
+        "SEC:US-XNYS-GWH",
         "SEC:US-XNYS-WBS"
       ],
-      "reason": "pending-transition fence: 4 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
-      "snapshot_date": "2026-09-21",
+      "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "snapshot_date": "2026-10-05",
       "symbol": "KHC"
     }
   ],
   "producer": "scripts/build_security_master.py",
+  "prospective_reference": {
+    "authority": {
+      "research_admitted": false,
+      "trading_authority": false
+    },
+    "clock_semantics": "known_at observes binding evidence; not publication or Radar read availability",
+    "consumer_requirement": "candidate input additionally requires actual native snapshot read receipt by cutoff",
+    "evidence": {
+      "listing_receipt_sha256": "30b69c79a1c2cf0ce3b4babb91a4dc12e45f4ca67688ef67e59592b8cd1621f8",
+      "listing_snapshot_sha256": "7c4e48fb0b9de67487c0cc87c2b3362ce7ce438960050907a35503426e0f9c13",
+      "mic_evidence_sha256": "e18b3d21914c09e037f42fcc8d76445cafae271dbe2db8b37b9b1ea77346b3ee",
+      "source_read_completed_at_utc_ns": 1791354276802797000
+    },
+    "input": {
+      "authority": {
+        "h1_tested": false,
+        "h2_tested": false,
+        "h3_tested": false,
+        "promotion": false,
+        "research_source_evidence_only": true,
+        "trading": false
+      },
+      "mic_evidence": {
+        "http_status": 200,
+        "request_started_at_utc": "2026-10-07T06:00:22.730636+00:00",
+        "response_bytes": 589482,
+        "response_headers": {
+          "Content-Type": "text/csv",
+          "ETag": null,
+          "Last-Modified": "Thu, 17 Sep 2026 18:15:54 GMT"
+        },
+        "response_read_completed_at_utc": "2026-10-07T06:00:25.048382+00:00",
+        "response_sha256": "79de0f7704e260bd49b0d2439f3084891cabc93481da8bdbaa716e15a27211ed",
+        "response_url": "https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv",
+        "row_count": 2883,
+        "scope": "Current primary-source MIC evidence; no historical listing or issuer inference.",
+        "selected_row": {
+          "ACRONYM": "NYSE",
+          "CITY": "NEW YORK",
+          "COMMENTS": "",
+          "CREATION DATE": "20060925",
+          "EXPIRY DATE": "",
+          "ISO COUNTRY CODE (ISO 3166)": "US",
+          "LAST UPDATE DATE": "20250428",
+          "LAST VALIDATION DATE": "20250428",
+          "LEGAL ENTITY NAME": "INTERCONTINENTAL EXCHANGE, INC.",
+          "LEI": "5493000F4ZO33MV32P92",
+          "MARKET CATEGORY CODE": "RMKT",
+          "MARKET NAME-INSTITUTION DESCRIPTION": "NYSE ARCA",
+          "MIC": "ARCX",
+          "OPERATING MIC": "XNYS",
+          "OPRT/SGMT": "SGMT",
+          "STATUS": "ACTIVE",
+          "WEBSITE": "WWW.NYSE.COM"
+        },
+        "source_url": "https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv"
+      },
+      "native_fetch_owner": {
+        "base_url": "https://api.polygon.io",
+        "credential_owner": "macro-market-memory-source-spy-rest.service existing LoadCredential directory",
+        "helper_attempt_limit": 3,
+        "helper_timeout_seconds": 30.0,
+        "logical_probe_count": 4,
+        "repository_commit": "45dd4e26166f8676f548631f24978580b4d8a723",
+        "source_sha256": {
+          "engine/close_pass/massive_close.py": "3eca10507261c4939263aee1a70e01a3be5ad56854f1409d5b343e19f6406211",
+          "scripts/ingest_market_memory_sources_spy.py": "1caba034ac3757037ab2b38bbfa7aeb80695cf0560116e2ea86c828fbaa7ffdb"
+        },
+        "transport": "scripts.ingest_market_memory_sources_spy._build_fetcher -> engine.close_pass.massive_close._default_fetch",
+        "wire_request_count": "not_observed"
+      },
+      "probes": {
+        "MU": {
+          "decoded_payload": {
+            "request_id": "a62968e8e53da634b651839e770caba0",
+            "results": {
+              "active": true,
+              "address": {
+                "address1": "8000 S FEDERAL WAY",
+                "address2": "PO BOX 6",
+                "city": "BOISE",
+                "postal_code": "83716-9632",
+                "state": "ID"
+              },
+              "branding": {
+                "icon_url": "https://api.polygon.io/v1/reference/company-branding/bWljcm9uLmNvbQ/images/2026-10-01_icon.jpeg",
+                "logo_url": "https://api.polygon.io/v1/reference/company-branding/bWljcm9uLmNvbQ/images/2026-10-01_logo.svg"
+              },
+              "cik": "0000723125",
+              "composite_figi": "BBG000C5Z1S3",
+              "currency_name": "usd",
+              "description": "Micron is one of the largest semiconductor companies in the world, specializing in memory and storage chips. Its primary revenue stream comes from dynamic random access memory, or DRAM, and it also has minority exposure to not-and or NAND, flash chips. Micron serves a global customer base, selling chips into data centers, mobile phones, consumer electronics, and industrial and automotive applications. The firm is vertically integrated.",
+              "homepage_url": "https://www.micron.com",
+              "list_date": "1984-06-01",
+              "locale": "us",
+              "market": "stocks",
+              "market_cap": 1201629136937.96,
+              "name": "Micron Technology, Inc.",
+              "phone_number": "(208) 368-4000",
+              "primary_exchange": "XNAS",
+              "round_lot": 40,
+              "share_class_figi": "BBG001S6P675",
+              "share_class_shares_outstanding": 1129393151,
+              "sic_code": "3674",
+              "sic_description": "SEMICONDUCTORS & RELATED DEVICES",
+              "ticker": "MU",
+              "ticker_root": "MU",
+              "total_employees": 53000,
+              "type": "CS",
+              "weighted_shares_outstanding": 1129393151
+            },
+            "status": "OK"
+          },
+          "decoded_payload_bytes": 1461,
+          "decoded_payload_observed_at_utc_ns": 1791353688062806012,
+          "decoded_payload_sha256": "a5462129eacb209d2efcfb9e4559a8479d4e5f50368e742ec8e675b79cf4e3f6",
+          "fetcher_available": true,
+          "logical_request_attempted": true,
+          "request_params": {
+            "date": "2026-10-07"
+          },
+          "request_path": "/v3/reference/tickers/MU",
+          "request_started_at_utc_ns": 1791353687774044318,
+          "requested_date": "2026-10-07"
+        },
+        "QQQ": {
+          "decoded_payload": {
+            "request_id": "2a32fae9498326b2863cfb592df1aae4",
+            "results": {
+              "active": true,
+              "cik": "0001067839",
+              "composite_figi": "BBG000BSWKH7",
+              "currency_name": "usd",
+              "list_date": "1999-03-10",
+              "locale": "us",
+              "market": "stocks",
+              "name": "Invesco QQQ Trust, Series 1",
+              "primary_exchange": "XNAS",
+              "round_lot": 40,
+              "share_class_figi": "BBG001S9GN63",
+              "share_class_shares_outstanding": 674600000,
+              "ticker": "QQQ",
+              "ticker_root": "QQQ",
+              "type": "ETF"
+            },
+            "status": "OK"
+          },
+          "decoded_payload_bytes": 422,
+          "decoded_payload_observed_at_utc_ns": 1791353688213954974,
+          "decoded_payload_sha256": "5d469e48a1f063f427b904f11e4c5901449879e301353b68a8a85e50e33d92bb",
+          "fetcher_available": true,
+          "logical_request_attempted": true,
+          "request_params": {
+            "date": "2026-10-07"
+          },
+          "request_path": "/v3/reference/tickers/QQQ",
+          "request_started_at_utc_ns": 1791353688138109839,
+          "requested_date": "2026-10-07"
+        },
+        "SMH": {
+          "decoded_payload": {
+            "request_id": "da0323e2bb428a6746dab52a85330d72",
+            "results": {
+              "active": true,
+              "cik": "0001137360",
+              "composite_figi": "BBG000BV7ZQ5",
+              "currency_name": "usd",
+              "list_date": "2011-12-20",
+              "locale": "us",
+              "market": "stocks",
+              "name": "VanEck Semiconductor ETF",
+              "primary_exchange": "XNAS",
+              "round_lot": 40,
+              "share_class_figi": "BBG002D68GN8",
+              "share_class_shares_outstanding": 122591874,
+              "ticker": "SMH",
+              "ticker_root": "SMH",
+              "type": "ETF"
+            },
+            "status": "OK"
+          },
+          "decoded_payload_bytes": 419,
+          "decoded_payload_observed_at_utc_ns": 1791353688289977271,
+          "decoded_payload_sha256": "6f6c915e4cc471c0957357d333773ef34a534cd5feee5274e08d9fd490b09ff3",
+          "fetcher_available": true,
+          "logical_request_attempted": true,
+          "request_params": {
+            "date": "2026-10-07"
+          },
+          "request_path": "/v3/reference/tickers/SMH",
+          "request_started_at_utc_ns": 1791353688214022458,
+          "requested_date": "2026-10-07"
+        },
+        "SPY": {
+          "decoded_payload": {
+            "request_id": "b4db58023f5bcfea6d106b35124cf2af",
+            "results": {
+              "active": true,
+              "cik": "0000884394",
+              "composite_figi": "BBG000BDTBL9",
+              "currency_name": "usd",
+              "list_date": "1993-01-22",
+              "locale": "us",
+              "market": "stocks",
+              "name": "State Street SPDR S&P 500 ETF Trust",
+              "primary_exchange": "ARCX",
+              "round_lot": 40,
+              "share_class_figi": "BBG001S72SM3",
+              "share_class_shares_outstanding": 1070432116,
+              "ticker": "SPY",
+              "ticker_root": "SPY",
+              "type": "ETF"
+            },
+            "status": "OK"
+          },
+          "decoded_payload_bytes": 431,
+          "decoded_payload_observed_at_utc_ns": 1791353688138033018,
+          "decoded_payload_sha256": "d6779c23fe37b8beb0bc80b0a29d3f35cd843822cd41e813703468021b51b7de",
+          "fetcher_available": true,
+          "logical_request_attempted": true,
+          "request_params": {
+            "date": "2026-10-07"
+          },
+          "request_path": "/v3/reference/tickers/SPY",
+          "request_started_at_utc_ns": 1791353688062956981,
+          "requested_date": "2026-10-07"
+        }
+      },
+      "schema": "mastermind.prospective_reference.v1"
+    },
+    "input_file_sha256": "d58729e9d5ceb295de7e61f3b17c9a298d23dd03c506dced5d58707b2255a4ef",
+    "input_sha256": "f20bd36b60b225f38667bb6893ab82cbe0d6c1eeecfbfbfca88a4b0f52b4d517",
+    "probes": {
+      "MU": {
+        "binding_sha256": "18e0acdb85f71a745c748af5bc90101d46fa21d0c4fa896003d48820ed421592",
+        "code": null,
+        "evidence_sha256": "0cc908e0fc9c3e1034498bc2bacd73ca7f6a1e14add94251db106e32a147ccd2",
+        "known_at": "2026-10-07T06:24:36.802797+00:00",
+        "listing_key": "US-XNAS-MU",
+        "native_identity": {
+          "active": true,
+          "composite_figi": "BBG000C5Z1S3",
+          "locale": "us",
+          "market": "stocks",
+          "primary_exchange": "XNAS",
+          "ticker": "MU",
+          "type": "CS"
+        },
+        "security_id": "SEC:US-XNAS-MU",
+        "status": "BOUND",
+        "symbol": "MU"
+      },
+      "QQQ": {
+        "code": "canonical_identity_refused",
+        "evidence_sha256": "4e948456ae50db1825c33b1deeb96cb2e9c19d6de27dff6a7e03352f4e621d6d",
+        "known_at": "2026-10-07T06:24:36.802797+00:00",
+        "native_identity": {
+          "active": true,
+          "composite_figi": "BBG000BSWKH7",
+          "locale": "us",
+          "market": "stocks",
+          "primary_exchange": "XNAS",
+          "ticker": "QQQ",
+          "type": "ETF"
+        },
+        "owner_refusals": [
+          {
+            "listing_key": "US-XNAS-QQQ",
+            "lost_rows": [
+              "SEC:US-XNAS-ATAI",
+              "SEC:US-XNAS-DOMO",
+              "SEC:US-XNAS-KHC",
+              "SEC:US-XNAS-PSKY",
+              "SEC:US-XNAS-QRVO",
+              "SEC:US-XNAS-YYGH",
+              "SEC:US-XNYS-CSAN",
+              "SEC:US-XNYS-DBRG",
+              "SEC:US-XNYS-ET",
+              "SEC:US-XNYS-GWH",
+              "SEC:US-XNYS-WBS"
+            ],
+            "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+            "snapshot_date": "2026-10-05",
+            "symbol": "QQQ"
+          }
+        ],
+        "status": "REFUSED",
+        "symbol": "QQQ"
+      },
+      "SMH": {
+        "code": "canonical_identity_refused",
+        "evidence_sha256": "9bd0c2170c7a7a172d49bd68dc3496b6151fdf5dbdd06c0b37646dd253dc18cb",
+        "known_at": "2026-10-07T06:24:36.802797+00:00",
+        "native_identity": {
+          "active": true,
+          "composite_figi": "BBG000BV7ZQ5",
+          "locale": "us",
+          "market": "stocks",
+          "primary_exchange": "XNAS",
+          "ticker": "SMH",
+          "type": "ETF"
+        },
+        "owner_refusals": [
+          {
+            "listing_key": "US-XNAS-SMH",
+            "lost_rows": [
+              "SEC:US-XNAS-ATAI",
+              "SEC:US-XNAS-DOMO",
+              "SEC:US-XNAS-KHC",
+              "SEC:US-XNAS-PSKY",
+              "SEC:US-XNAS-QRVO",
+              "SEC:US-XNAS-YYGH",
+              "SEC:US-XNYS-CSAN",
+              "SEC:US-XNYS-DBRG",
+              "SEC:US-XNYS-ET",
+              "SEC:US-XNYS-GWH",
+              "SEC:US-XNYS-WBS"
+            ],
+            "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+            "snapshot_date": "2026-10-05",
+            "symbol": "SMH"
+          }
+        ],
+        "status": "REFUSED",
+        "symbol": "SMH"
+      },
+      "SPY": {
+        "code": "canonical_identity_refused",
+        "evidence_sha256": "4b758c2b6e470e91a1e702dfd36f1e0319181c65883bc3b8417b4adae2c1c6c7",
+        "known_at": "2026-10-07T06:24:36.802797+00:00",
+        "native_identity": {
+          "active": true,
+          "composite_figi": "BBG000BDTBL9",
+          "locale": "us",
+          "market": "stocks",
+          "primary_exchange": "ARCX",
+          "ticker": "SPY",
+          "type": "ETF"
+        },
+        "owner_refusals": [
+          {
+            "listing_key": "US-ARCX-SPY",
+            "lost_rows": [
+              "SEC:US-XNAS-ATAI",
+              "SEC:US-XNAS-DOMO",
+              "SEC:US-XNAS-KHC",
+              "SEC:US-XNAS-PSKY",
+              "SEC:US-XNAS-QRVO",
+              "SEC:US-XNAS-YYGH",
+              "SEC:US-XNYS-CSAN",
+              "SEC:US-XNYS-DBRG",
+              "SEC:US-XNYS-ET",
+              "SEC:US-XNYS-GWH",
+              "SEC:US-XNYS-WBS"
+            ],
+            "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+            "snapshot_date": "2026-10-05",
+            "symbol": "SPY"
+          }
+        ],
+        "status": "REFUSED",
+        "symbol": "SPY"
+      }
+    },
+    "provider_date_semantics": "request date is not first-seen proof; filing-derived fields can include later-submitted filings and are unused",
+    "provider_reference_documentation": "https://massive.com/docs/rest/stocks/tickers/ticker-overview",
+    "schema": "mastermind.prospective_reference.v1",
+    "source_read_completed_at_utc_ns": 1791354276802797000
+  },
   "rename_events": [
     {
       "evidence": "lib/ticker_aliases.py module docstring (MMC->MRSH 2026-01-14, symbol change only: same listing, same CUSIP; Yahoo serves the NEW symbol); config.yml breadth.ticker_fixups MRSH->MMC",
@@ -220,35 +607,45 @@
         "ledger",
         "membership"
       ]
+    },
+    {
+      "evidence": "SEC EDGAR CIK 0002041610 Form 8-K filed 2026-10-06, accession 0001104659-26-113913, Items 2.01/5.03: on 2026-10-06 the Company transferred the listing of its Class B Common Stock from The Nasdaq Stock Market LLC to the New York Stock Exchange and changed the ticker symbol from PSKY to SKYD. Corroborated by data.sec.gov/submissions/CIK0002041610.json (name Skydance Corp, ticker SKYD, exchange NYSE, unbroken formerNames chain Paramount Skydance Corp 2025-08-07 -> 2026-10-06 under one CIK), Form 8-K filed 2026-09-25 accession 0001104659-26-111034 Item 3.01 (listing-transfer notice), Form 8-A12B filed 2026-10-05 accession 0001104659-26-113569, and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol).",
+      "new": "SKYD",
+      "old": "PSKY",
+      "on": "2026-10-06",
+      "vendors": [
+        "yahoo",
+        "membership"
+      ]
     }
   ],
   "resurrection_refusals": [],
   "row_counts": {
-    "issuer_master": 1213,
+    "issuer_master": 1931,
     "issuer_migrations": 3,
-    "security_master": 2380,
+    "security_master": 3103,
     "security_migrations": 1,
-    "vendor_alias_rows_readable": 6035,
-    "vendor_aliases": 6035
+    "vendor_alias_rows_readable": 8924,
+    "vendor_aliases": 8924
   },
   "security": {
     "era": "security_supersession_duplicate_mint_v1",
     "era_migrations_total": 1,
     "migrations_this_run": 0,
     "state_counts": {
-      "ACTIVE": 2379,
+      "ACTIVE": 3102,
       "SUPERSEDED_DUPLICATE_MINT": 1
     }
   },
   "seed_counts": {
     "delisted_keys": 6,
-    "directory_symbols": 13258,
+    "directory_symbols": 13293,
     "gmi_seed_keys": 1239,
     "ticker_fixups": 2,
     "ticker_key_migrations": 1,
-    "universe_keys": 713
+    "universe_keys": 1629
   },
-  "symbol_directory_snapshot": "2026-09-21",
+  "symbol_directory_snapshot": "2026-10-09",
   "undated_renames": [
     {
       "evidence": "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
@@ -289,11 +686,6 @@
         "code": "not_listed_no_cik",
         "reason": "absent from the newest symbol-directory snapshot under 'BLD' or 'BLD' (and from the exit ledger) \u2014 venue unknown",
         "symbol": "BLD"
-      },
-      {
-        "code": "unsupported_venue",
-        "reason": "listed on exchange code 'Z' (collectors/symbol_directory.py:184-185: P=NYSE Arca, Z=BATS, V=Investors Exchange) which has no MIC in lib/dataos/identity.KNOWN_MICS",
-        "symbol": "CBOE"
       },
       {
         "code": "not_listed_no_cik",
@@ -406,23 +798,55 @@
         "symbol": "UGRO"
       }
     ],
-    "refused_this_run": 25,
+    "refused_this_run": 24,
     "resolved_not_rederivable": [
       {
         "code": "ATAI",
         "security_id": "SEC:US-XNAS-ATAI"
       },
       {
+        "code": "CSAN",
+        "security_id": "SEC:US-XNYS-CSAN"
+      },
+      {
+        "code": "DBRG",
+        "security_id": "SEC:US-XNYS-DBRG"
+      },
+      {
+        "code": "DOMO",
+        "security_id": "SEC:US-XNAS-DOMO"
+      },
+      {
         "code": "EQR",
         "security_id": "SEC:US-XNYS-EQR"
+      },
+      {
+        "code": "ET",
+        "security_id": "SEC:US-XNYS-ET"
+      },
+      {
+        "code": "GWH",
+        "security_id": "SEC:US-XNYS-GWH"
       },
       {
         "code": "KHC",
         "security_id": "SEC:US-XNAS-KHC"
       },
       {
+        "code": "PSKY",
+        "security_id": "SEC:US-XNAS-PSKY"
+      },
+      {
+        "code": "QRVO",
+        "security_id": "SEC:US-XNAS-QRVO"
+      },
+      {
         "code": "SATS",
         "security_id": "SEC:US-XNAS-SATS"
+      },
+      {
+        "code": "WBD",
+        "security_id": "SEC:US-XNAS-WBD"
       },
       {
         "code": "WBS",
@@ -434,10 +858,29 @@
       }
     ],
     "resolved_this_run": 0,
-    "resolved_total": 1211,
+    "resolved_total": 1212,
     "structural_check_exempt_exit_ledger": [],
     "target_n": 1237,
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope=us)"
   },
-  "vendor_alias_prunes": []
+  "vendor_alias_prunes": [
+    {
+      "ingested_at": "2026-08-13T13:08:12",
+      "prune_class": "same_id_refinement",
+      "security_id": "SEC:US-XNAS-PSKY",
+      "valid_from": null,
+      "valid_to": null,
+      "vendor": "membership",
+      "vendor_symbol": "PSKY"
+    },
+    {
+      "ingested_at": "2026-08-13T13:08:12",
+      "prune_class": "same_id_refinement",
+      "security_id": "SEC:US-XNAS-PSKY",
+      "valid_from": null,
+      "valid_to": null,
+      "vendor": "yahoo",
+      "vendor_symbol": "PSKY"
+    }
+  ]
 }

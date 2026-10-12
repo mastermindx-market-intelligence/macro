@@ -14,7 +14,11 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
-from scripts.build_am_edition import build_payload  # noqa: E402
+from scripts.build_am_edition import (  # noqa: E402
+    _RESEARCH_WATCH_ZH_DISCLOSURE,
+    _RESEARCH_WATCH_ZH_DISCLOSURE_WHY,
+    build_payload,
+)
 from tests.test_am_edition_page import _fresh_tree  # noqa: E402
 
 OUT_DIR = _ROOT / "mockups" / "evidence" / "am_edition"
@@ -59,6 +63,27 @@ def _content_address_png(png: bytes) -> tuple[str, str, int, int]:
     return name, digest, int(width), int(height)
 
 
+def _extend_research_watch(rows: list[dict]) -> list[dict]:
+    """Append one disclosed-English research_watch row.
+
+    R1 fixture shipped a single translated ZH row whose ``condition_zh_disclosed_why``
+    was ``None``, so the ZH cells rendered no ``.mx-rw-zh-note`` and the receipt
+    could not show fix (2) of PR #8283. Keep row 1 verbatim, then append a copy
+    whose condition text is English-only and whose ``condition_zh`` /
+    ``condition_zh_disclosed_why`` carry the canonical disclosure strings —
+    importing them rather than hard-coding so the strings stay single-sourced.
+    Pure helper, no browser: tests/test_capture_am_edition_evidence.py pins it.
+    """
+    if not rows:
+        return rows
+    seed = dict(rows[0])
+    disclosed = dict(seed)
+    disclosed["condition_en"] = "Watch when the 2s10s curve re-steepens past +25 bp."
+    disclosed["condition_zh"] = _RESEARCH_WATCH_ZH_DISCLOSURE
+    disclosed["condition_zh_disclosed_why"] = _RESEARCH_WATCH_ZH_DISCLOSURE_WHY
+    return [*rows, disclosed]
+
+
 def _fixture_view_model() -> dict:
     scratch = _ROOT / ".am-edition-evidence-fixture"
     site = scratch / "site"
@@ -74,6 +99,29 @@ def _fixture_view_model() -> dict:
         data,
         now=datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc),
     )
+    # MOR-2b Lane C: the scratch tree carries no owner artifacts for the three
+    # new blocks, so the producer types them UNAVAILABLE. The evidence matrix
+    # must DEPICT the rows (§0.4 rendered falsifiers, §5 design matrix), so the
+    # three blocks are replaced by the same fixture blocks the page tests
+    # render — context_planes CURRENT, research_watch CURRENT and owner_links
+    # STALE_WITH_LAST_KNOWN (last-known links + dated reason) — an honest
+    # fixture view-model, labelled as such in the manifest note.
+    from tests.test_am_edition_page import _make_fresh_blocks
+
+    fixture_blocks = {b["key"]: b for b in _make_fresh_blocks(scratch, session_date="2026-09-08")}
+    fixture_blocks["owner_links"]["state"] = "STALE_WITH_LAST_KNOWN"
+    fixture_blocks["owner_links"]["state_reason_en"] = "Owner registry has not refreshed since 02:00 UTC."
+    fixture_blocks["owner_links"]["state_reason_zh"] = "主理页面注册表自UTC 02:00起未刷新。"
+    # R2: the research-watch fixture must carry one translated ZH row AND one
+    # disclosed-English row so the ZH cells render the canonical
+    # ``.mx-rw-zh-note`` (proof that #8283's fix (2) is in the receipt).
+    fixture_blocks["research_watch"]["rows"] = _extend_research_watch(
+        fixture_blocks["research_watch"]["rows"]
+    )
+    payload["blocks"] = [fixture_blocks.get(b.get("key"), b) for b in payload.get("blocks", [])]
+    for key in ("context_planes", "research_watch", "owner_links"):
+        if not any(b.get("key") == key for b in payload["blocks"]):
+            payload["blocks"].append(fixture_blocks[key])
     payload["morning_source_feasibility"] = "DEGRADED"
     payload["morning_source_feasibility_cause_en"] = (
         "The morning source is degraded, so the page shows its latest known readings."
@@ -176,6 +224,15 @@ def main() -> int:
                             f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(requested)})"
                         )
                         page = context.new_page()
+                        # R2 (D2): theme.js skyToggleFx mounts a moon/sun orb
+                        # over the Session clock + Tape panels and a glow on
+                        # the LIGHT theme — exactly what the light art
+                        # direction forbids. The orb is gated by
+                        # prefers-reduced-motion in theme.js:543; emulate it
+                        # BEFORE goto so the orb is never created. The
+                        # post-load DOM assertion below is the belt: a cell
+                        # that would show the orb is never written.
+                        page.emulate_media(reduced_motion="reduce")
                         entry = {
                             "viewport": viewport,
                             "locale": locale,
@@ -207,7 +264,37 @@ def main() -> int:
                                 raise RuntimeError(
                                     f"requested lang {locale!r}, observed {observed!r}"
                                 )
-                            page.wait_for_timeout(150)
+                            # R2 (D2): wait_for_timeout was 150 ms; the orb's
+                            # skyToggleFx mount window is up to 1100 ms, but
+                            # under reduced-motion the JS path returns early
+                            # (theme.js:543) so the orb is never created. 250 ms
+                            # is enough cover for the script hook + style
+                            # application before the DOM probe.
+                            page.wait_for_timeout(250)
+                            dom = page.evaluate(
+                                """() => ({
+                                  sky: document.querySelectorAll('.sky-fx').length,
+                                  note: Array.from(document.querySelectorAll('.mx-rw-zh-note'))
+                                    .filter(e => getComputedStyle(e).display !== 'none').length
+                                })"""
+                            ) or {}
+                            sky = int(dom.get("sky", -1))
+                            note = int(dom.get("note", -1))
+                            if sky != 0:
+                                raise RuntimeError(
+                                    f"theme-toggle orb visible (.sky-fx count={sky}); "
+                                    f"reduced-motion path did not suppress it"
+                                )
+                            if locale == "zh" and note < 1:
+                                raise RuntimeError(
+                                    f"ZH cell rendered no visible .mx-rw-zh-note "
+                                    f"(count={note}); disclosed-English fixture row missing"
+                                )
+                            if locale == "en" and note != 0:
+                                raise RuntimeError(
+                                    f"EN cell rendered a visible .mx-rw-zh-note "
+                                    f"(count={note}); zh-only chip leaked into en"
+                                )
                             alias = f"full-{theme}-{locale}-{viewport}.png"
                             entry = _record(
                                 page.screenshot(type="png", full_page=True),
@@ -272,6 +359,12 @@ def main() -> int:
                 "fixture view-model (no live data/ or site/ reads). Omitted "
                 "from live: the daily bake, write_page asset optimization, and "
                 "dynamic live-quote hydration."
+            ),
+            "fixture": (
+                "R2: the research-watch fixture carries one translated row and "
+                "one disclosed-English row so the ZH cells render the canonical "
+                ".mx-rw-zh-note; cells are captured under prefers-reduced-motion "
+                "so the theme-toggle flourish (skyToggleFx .sky-fx orb) is absent."
             ),
         },
         "pages": [

@@ -115,6 +115,38 @@ def main() -> int:
         log.error("transmission chains subset failed: %s", e)
         chains = None
 
+    # MO-J1A — identity-safe affected-company continuation (TXI W4 cascade monitor).
+    # Load the Data OS vendor-alias artifact ONCE and project every non-dormant chain's
+    # blast-channel membership through the EXACT identity law in
+    # engine/transmission_company_continuation. Any failure → aliases=None path
+    # (companies render as unlinked membership + identity_unavailable, page never breaks).
+    if isinstance(chains, dict) and chains.get("chains"):
+        from engine.intelligence_workspace.entity import VENDOR_ALIASES, _records
+        from engine.transmission_company_continuation import chain_decision_date, enrich_display_chains
+        from lib.dataos.identity import VendorAliasTable
+        txi_asof = chains.get("asof")
+        # Decision date = chain_state.asof (never today()). A malformed as-of takes the
+        # aliases=None path (membership renders unlinked, page never breaks) — the parse
+        # itself must not be able to kill write_page.
+        decision_date = chain_decision_date(txi_asof)
+        if decision_date is None:
+            log.error("transmission company continuation: chain asof unavailable or invalid")
+        aliases: VendorAliasTable | None = None
+        if decision_date is not None:
+            try:
+                alias_rows = _records(config.ROOT / VENDOR_ALIASES)
+                aliases = VendorAliasTable.from_records(alias_rows)
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.error("transmission company continuation (alias load) failed: %s", e)
+        try:
+            chains = enrich_display_chains(chains, aliases, decision_date)
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("transmission company continuation (enrich) failed: %s", e)
+            try:
+                chains = enrich_display_chains(chains, None, decision_date)
+            except Exception:  # noqa: BLE001
+                pass
+
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     html = env.get_template("transmission.html.j2").render(
         C=C, as_of=as_of, built=built, span=span, tx=tx, gate=gate, yc=yc,

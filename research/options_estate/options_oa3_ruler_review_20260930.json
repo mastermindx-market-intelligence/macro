@@ -1,0 +1,62 @@
+{
+  "head": "780c215d89ad2679beee2ef8fe22758022d7b54c",
+  "scope": "five native preregistration tests plus immutable policy mutations and generic quote-mechanics checks; not an implemented OA-3 lifecycle or market result",
+  "leaf_mutations_refused": 61,
+  "top_level_deletions_refused": 12,
+  "prose_clauses_checked": 9,
+  "generic_mechanics_checks": {
+    "first_valid_ask_not_best_later": true,
+    "exact_entry_window_end_included": true,
+    "post_window_rejected": true,
+    "unqualified_selected_condition_unavailable": true,
+    "zero_size_selected_ask_unavailable": true,
+    "unknown_selected_exchange_unavailable": true,
+    "missing_response_unavailable": true,
+    "crossed_nbbo_unavailable": true,
+    "exit_uses_first_bid_not_later_best": true,
+    "zero_bid_remains_unavailable_not_zero_return": true,
+    "same_timestamp_conflict_refused": true,
+    "return_1.00_1.20": true,
+    "return_2.2_2.1": true,
+    "return_0.01_0.01": true,
+    "return_10_10": true
+  },
+  "source_writes": 0,
+  "provider_requests": 0,
+  "activation": false,
+  "review_script_sha256": "2a6e95d75525fe52a8fa74769596760c3ac3da399d8efcf105ab61a067c75b75",
+  "review_id": 5374633275,
+  "review_body_sha256": "b4f80f1a52bbb54f2b05e2e4d088e0c51f800693502a8e7214d19c8d499bff72",
+  "verdict": "APPROVED_INACTIVE_PREREGISTRATION_ONLY",
+  "owner_tests_passed": 5,
+  "unrelated_tests_deselected": 58,
+  "review_source_manifest": {
+    "head": "780c215d89ad2679beee2ef8fe22758022d7b54c",
+    "files": {
+      "agentos/decisions/DEC-OPTIONS-ALPHA-EXACT-OPTION-OUTCOME-RULER.md": {
+        "blob": "d4bdf6b4d469f24891df83c0bd0309481825cc63",
+        "sha256": "23296759b2b3c8e4cb91f5231676435a05634c460d49f3c2b1559cfced729869"
+      },
+      "contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json": {
+        "blob": "d854655dd4f62ca0d5fce6c1754b206d40766bee",
+        "sha256": "556ba0647be28b10a1a0885471541e46c3378eac68cd3805a821f03b08bdf005"
+      },
+      "research/options_estate/options_alpha_exact_option_outcome_policy_v1.json": {
+        "blob": "898ef7195616956137444e2b76421af59066c8fd",
+        "sha256": "de7eb951b0d762a79c012a6668554a7389805ddd21e9a35e7396919a9a8e3989"
+      },
+      "research/options_estate/OPTIONS_ALPHA_EXACT_OPTION_OUTCOME_PREREG_2026-09-19.md": {
+        "blob": "f8ee50a4781b12b74acb6e5adcc61ea68082f922",
+        "sha256": "8b3a483b028756467145922db158aab4d73d612d5826df6bf4811fa25a044aca"
+      },
+      "tests/test_options_nbbo_cohort.py": {
+        "blob": "599a6c0426d1af6a380c2f94abf2311c2ffbf388",
+        "sha256": "86aef2b7103ac054beffb69ed9e8edd2ca9fcc52cd88c0c23a1e468b800e3afe"
+      },
+      "engine/options_nbbo_cohort.py": {
+        "blob": "b84426de82c9d55caa26e9dd95092460be6dda1b",
+        "sha256": "55ebf34be6ae56565eab36a4b4568a6f63331bc7d7c3c962285d87173ad4fb78"
+      }
+    }
+  }
+}

@@ -1,0 +1,229 @@
+..FFFFFFFFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[1-headwinds] ____
+
+side = 'headwinds', count = 1
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+        assert html.count('class="sx-item"') == count
+>       assert re.findall(r'data-asset="([^"]+)"', html) == [r['asset'] for r in rows]
+E       AssertionError: assert [] == ['ASSET0']
+E         
+E         Right contains one more item: 'ASSET0'
+E         Use -v to get more diff
+
+tests/test_transmission_publish.py:258: AssertionError
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[1-tailwinds] ____
+
+side = 'tailwinds', count = 1
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+        assert html.count('class="sx-item"') == count
+>       assert re.findall(r'data-asset="([^"]+)"', html) == [r['asset'] for r in rows]
+E       AssertionError: assert [] == ['ASSET0']
+E         
+E         Right contains one more item: 'ASSET0'
+E         Use -v to get more diff
+
+tests/test_transmission_publish.py:258: AssertionError
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[4-headwinds] ____
+
+side = 'headwinds', count = 4
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+        assert html.count('class="sx-item"') == count
+>       assert re.findall(r'data-asset="([^"]+)"', html) == [r['asset'] for r in rows]
+E       AssertionError: assert [] == ['ASSET0', 'A...T2', 'ASSET3']
+E         
+E         Right contains 4 more items, first extra item: 'ASSET0'
+E         Use -v to get more diff
+
+tests/test_transmission_publish.py:258: AssertionError
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[4-tailwinds] ____
+
+side = 'tailwinds', count = 4
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+        assert html.count('class="sx-item"') == count
+>       assert re.findall(r'data-asset="([^"]+)"', html) == [r['asset'] for r in rows]
+E       AssertionError: assert [] == ['ASSET0', 'A...T2', 'ASSET3']
+E         
+E         Right contains 4 more items, first extra item: 'ASSET0'
+E         Use -v to get more diff
+
+tests/test_transmission_publish.py:258: AssertionError
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[5-headwinds] ____
+
+side = 'headwinds', count = 5
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+>       assert html.count('class="sx-item"') == count
+E       assert 4 == 5
+E        +  where 4 = <built-in method count of str object at 0x70b14c800>('class="sx-item"')
+E        +    where <built-in method count of str object at 0x70b14c800> = '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...none</span><span class="l-zh">无</span></div>\n          \n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  '.count
+
+tests/test_transmission_publish.py:257: AssertionError
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[5-tailwinds] ____
+
+side = 'tailwinds', count = 5
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+>       assert html.count('class="sx-item"') == count
+E       assert 4 == 5
+E        +  where 4 = <built-in method count of str object at 0x70b147800>('class="sx-item"')
+E        +    where <built-in method count of str object at 0x70b147800> = '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...lass="l-en">more</span><span class="l-zh">项</span></div>\n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  '.count
+
+tests/test_transmission_publish.py:257: AssertionError
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[7-headwinds] ____
+
+side = 'headwinds', count = 7
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+>       assert html.count('class="sx-item"') == count
+E       assert 4 == 7
+E        +  where 4 = <built-in method count of str object at 0x70b140000>('class="sx-item"')
+E        +    where <built-in method count of str object at 0x70b140000> = '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...none</span><span class="l-zh">无</span></div>\n          \n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  '.count
+
+tests/test_transmission_publish.py:257: AssertionError
+___ test_scenario_ui_disclosure_keeps_all_source_rows_in_order[7-tailwinds] ____
+
+side = 'tailwinds', count = 7
+
+    @pytest.mark.parametrize('side', ['headwinds', 'tailwinds'])
+    @pytest.mark.parametrize('count', [0, 1, 4, 5, 7])
+    def test_scenario_ui_disclosure_keeps_all_source_rows_in_order(side, count):
+        import re
+        rows = _scenario_ui_rows(count, side == 'tailwinds')
+        html = _scenario_ui_render(rows if side == 'headwinds' else [],
+                                   rows if side == 'tailwinds' else [])
+>       assert html.count('class="sx-item"') == count
+E       assert 4 == 7
+E        +  where 4 = <built-in method count of str object at 0x70b145000>('class="sx-item"')
+E        +    where <built-in method count of str object at 0x70b145000> = '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...lass="l-en">more</span><span class="l-zh">项</span></div>\n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  '.count
+
+tests/test_transmission_publish.py:257: AssertionError
+____________ test_scenario_ui_reuses_canonical_chinese_asset_labels ____________
+
+    def test_scenario_ui_reuses_canonical_chinese_asset_labels():
+        row = {'asset': 'X', 'label': 'English name (context)', 'implied_move_pct': -2.5}
+        html = _scenario_ui_render([row], [], {'X': {'label': {'en': row['label'], 'zh': '中文名称（背景）'}}})
+>       assert '<span class="l-en">English name</span>' in html
+E       assert '<span class="l-en">English name</span>' in '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...none</span><span class="l-zh">无</span></div>\n          \n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  '
+
+tests/test_transmission_publish.py:273: AssertionError
+_______ test_scenario_ui_prefers_explicit_labels_and_has_honest_fallback _______
+
+    def test_scenario_ui_prefers_explicit_labels_and_has_honest_fallback():
+        rows = [{'asset': 'X', 'label': {'en': 'Preferred', 'zh': '明确名称'}, 'implied_move_pct': -1},
+                {'asset': 'Y', 'label': 'Unmapped asset', 'implied_move_pct': -2}]
+        html = _scenario_ui_render(rows, [], {'X': {'label': {'en': 'Old', 'zh': '旧名称'}}})
+>       assert '明确名称' in html and '旧名称' not in html
+E       assert ('明确名称' in '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...none</span><span class="l-zh">无</span></div>\n          \n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  ')
+
+tests/test_transmission_publish.py:282: AssertionError
+______________ test_scenario_ui_escapes_labels_in_both_languages _______________
+
+    def test_scenario_ui_escapes_labels_in_both_languages():
+        row = {'asset': 'X', 'label': {'en': '<script>bad</script>', 'zh': '<img src=x>'}, 'implied_move_pct': -1}
+        html = _scenario_ui_render([row], [])
+        assert '<script>bad' not in html and '<img src=x>' not in html
+>       assert '&lt;script&gt;' in html and '&lt;img src=x&gt;' in html
+E       assert ('&lt;script&gt;' in '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...none</span><span class="l-zh">无</span></div>\n          \n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  ' and '&lt;img src=x&gt;' in '\n\n\n\n\n\n<!-- ===================== SCENARIOS ===================== -->\n  <div class="sec-head"><span class="sh-d...none</span><span class="l-zh">无</span></div>\n          \n        </div>\n      </div>\n    </div>\n  \n  </div>\n\n  ')
+
+tests/test_transmission_publish.py:290: AssertionError
+_________ test_scenario_ui_retains_full_shared_scale_and_signed_values _________
+
+    def test_scenario_ui_retains_full_shared_scale_and_signed_values():
+        import re
+        head = _scenario_ui_rows(5)
+        tail = [{'asset': 'PLUS', 'label': 'Positive', 'implied_move_pct': 20.0}]
+        html = _scenario_ui_render(head, tail)
+        widths = re.findall(r'class="[du]" style="width:([0-9.]+)%"', html)
+>       assert widths == ['50.0', '45.0', '40.0', '35.0', '30.0', '100.0']
+E       AssertionError: assert ['50.0', '45....5.0', '100.0'] == ['50.0', '45....0.0', '100.0']
+E         
+E         At index 4 diff: '100.0' != '30.0'
+E         Right contains one more item: '100.0'
+E         Use -v to get more diff
+
+tests/test_transmission_publish.py:299: AssertionError
+____________ test_scenario_ui_controls_are_native_and_focus_visible ____________
+
+    def test_scenario_ui_controls_are_native_and_focus_visible():
+        src = _scenario_ui_source()
+>       assert '.sx-extra>summary' in src and 'min-height:40px' in src
+E       assert ('.sx-extra>summary' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...theme.js"></script>\n<footer class="site-footer">\n  <span>© 2026 Mastermind Inc</span>\n</footer>\n</body>\n</html>\n')
+
+tests/test_transmission_publish.py:306: AssertionError
+___________ test_scenario_ui_published_css_matches_canonical_source ____________
+
+    def test_scenario_ui_published_css_matches_canonical_source():
+        import re, hashlib
+        root = Path(__file__).resolve().parents[1]
+        html = (root / 'site/transmission.html').read_text()
+        refs = re.findall(r'assets/css/([0-9a-f]{8})\.css\?v=\1', html)
+        css = [root / 'site/assets/css' / (h + '.css') for h in refs]
+        owned = [p for p in css if p.exists() and '.sx-extra>summary' in p.read_text()]
+>       assert len(owned) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_transmission_publish.py:322: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[1-headwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[1-tailwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[4-headwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[4-tailwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[5-headwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[5-tailwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[7-headwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_disclosure_keeps_all_source_rows_in_order[7-tailwinds]
+FAILED tests/test_transmission_publish.py::test_scenario_ui_reuses_canonical_chinese_asset_labels
+FAILED tests/test_transmission_publish.py::test_scenario_ui_prefers_explicit_labels_and_has_honest_fallback
+FAILED tests/test_transmission_publish.py::test_scenario_ui_escapes_labels_in_both_languages
+FAILED tests/test_transmission_publish.py::test_scenario_ui_retains_full_shared_scale_and_signed_values
+FAILED tests/test_transmission_publish.py::test_scenario_ui_controls_are_native_and_focus_visible
+FAILED tests/test_transmission_publish.py::test_scenario_ui_published_css_matches_canonical_source
+14 failed, 2 passed, 18 deselected in 1.48s

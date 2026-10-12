@@ -1,0 +1,12 @@
+{
+  "scope": "five exact hosted-failure owners only; not full hosted contract-delta",
+  "owner": "scripts.run_ci_pack.infer_job_scopes",
+  "misses": {
+    "flow-surface": [],
+    "biocatalyst-serving": [],
+    "biocatalyst-history": [],
+    "unrun-government-revenue-candidate-projection": [],
+    "unrun-government-revenue-grader": []
+  },
+  "note": "derived scopes for 5/5 jobs"
+}

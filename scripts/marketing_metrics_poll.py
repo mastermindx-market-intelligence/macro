@@ -42,6 +42,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import os
 import sys
@@ -98,6 +99,10 @@ def _is_rate_limited(error: object) -> bool:
 #: list is newest-first) and the rest keep until tomorrow — this loop stops and
 #: keeps rather than dropping, so a capped run loses nothing but latency.
 _MAX_CALLS_PER_RUN = 8
+# Rolling budget across every workflow sweep. This preserves the previous
+# eight-calls-per-day ceiling while removing the brittle wall-clock slot.
+_MAX_CALLS_PER_24H = 8
+_RECONCILE_INTERVAL_H = 24
 
 
 def _metrics_ledger_path(root: Path) -> Path:
@@ -106,6 +111,32 @@ def _metrics_ledger_path(root: Path) -> Path:
 
 def _publications_path(root: Path) -> Path:
     return root / "data" / "marketing" / "publications.jsonl"
+
+
+def _configured_channel_ids(root: Path) -> dict[str, str]:
+    """Account → Buffer channel id from the existing marketing config.
+
+    Read-only and fail-soft. A missing account mapping does not invent an
+    identity; the provider adapter still verifies the post id and the response's
+    own channelId/channel.id pair. Lane B retains ownership of the config file.
+    """
+    try:
+        import yaml  # noqa: PLC0415
+
+        raw = yaml.safe_load((root / "config" / "marketing.yml").read_text(
+            encoding="utf-8")) or {}
+        publish = raw.get("publish") if isinstance(raw, dict) else {}
+        channels = publish.get("channels") if isinstance(publish, dict) else {}
+        if not isinstance(channels, dict):
+            return {}
+        return {
+            str(account): str(channel_id).strip()
+            for account, channel_id in channels.items()
+            if str(account).strip() and str(channel_id or "").strip()
+        }
+    except Exception as exc:  # noqa: BLE001
+        log.warning("configured channel read failed: %s", exc)
+        return {}
 
 
 _ISO_FMT = "%Y-%m-%dT%H:%M:%SZ"
@@ -221,6 +252,202 @@ def gather_targets(root: Path, *, now: datetime, max_age_days: int) -> list[dict
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Due-since-success reconciliation
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _reconciliation_due_state(
+    root: Path,
+    targets: list[dict],
+    *,
+    now: datetime,
+    interval_hours: int = _RECONCILE_INTERVAL_H,
+) -> tuple[list[dict], int, int]:
+    """Return (due targets, fresh count, calls in the last rolling 24h).
+
+    Success is per provider id and requires both the transport/GraphQL result
+    and the normalized delivery observation to be successful. There is no global
+    watermark: an unfinished target stays due even when siblings complete. Every
+    attempted network read writes one row, so all rows with a recent valid
+    ``polled_at`` count against the rolling budget, including failures.
+    """
+    from engine.marketing.ledgers import read_jsonl  # noqa: PLC0415
+
+    rows = read_jsonl(_metrics_ledger_path(root))
+    latest_success: dict[str, datetime] = {}
+    recent_calls = 0
+    rolling_cutoff = now - timedelta(hours=24)
+    success_cutoff = now - timedelta(hours=max(1, int(interval_hours)))
+    future_tolerance = now + timedelta(minutes=5)
+
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        polled_at = _parse_iso(row.get("polled_at"))
+        if polled_at is None or polled_at > future_tolerance:
+            continue
+        if polled_at >= rolling_cutoff:
+            recent_calls += 1
+
+        remote_id = str(row.get("remote_id") or "").strip()
+        delivery = row.get("delivery")
+        if (not remote_id or row.get("ok") is not True
+                or not isinstance(delivery, dict)
+                or delivery.get("read_ok") is not True
+                or str(delivery.get("provider_id") or "").strip() != remote_id):
+            continue
+        observed_at = _parse_iso(delivery.get("observed_at")) or polled_at
+        if observed_at > future_tolerance:
+            continue
+        prior = latest_success.get(remote_id)
+        if prior is None or observed_at > prior:
+            latest_success[remote_id] = observed_at
+
+    due: list[dict] = []
+    fresh = 0
+    for target in targets:
+        remote_id = str(target.get("remote_id") or "").strip()
+        last_success = latest_success.get(remote_id)
+        if last_success is not None and last_success >= success_cutoff:
+            fresh += 1
+        else:
+            due.append(target)
+
+    def _due_key(target: dict) -> tuple[datetime, str]:
+        remote_id = str(target.get("remote_id") or "").strip()
+        obligation_at = latest_success.get(remote_id) or target.get("source_ts")
+        if not isinstance(obligation_at, datetime):
+            obligation_at = _parse_iso(str(obligation_at or ""))
+        if obligation_at is None:
+            obligation_at = datetime.min.replace(tzinfo=timezone.utc)
+        elif obligation_at.tzinfo is None:
+            obligation_at = obligation_at.replace(tzinfo=timezone.utc)
+        return obligation_at, remote_id
+
+    due.sort(key=_due_key)
+    return due, fresh, recent_calls
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Bounded one-item provider delivery readback
+# ─────────────────────────────────────────────────────────────────────────────
+
+def delivery_readback(
+    root: Path,
+    *,
+    item_id: str,
+    now: datetime | None = None,
+    publisher=None,
+) -> dict:
+    """Read one canonically accepted outbox item from Buffer without mutation.
+
+    The caller supplies an outbox item id, not an arbitrary provider id. The
+    canonical fold binds that item to its accepted receipt, account, and the
+    account's configured channel before any provider call. This path never
+    appends to ``post_metrics.jsonl``, never transitions the outbox, and contains
+    no create/schedule/edit/delete/retry operation.
+    """
+    from engine.marketing import outbox as _outbox  # noqa: PLC0415
+    from engine.marketing.social_publisher import (  # noqa: PLC0415
+        BUFFER_TOKEN_ENV, BufferPublisher,
+    )
+
+    ts_now = now if now is not None else datetime.now(timezone.utc)
+    observed_at = ts_now.strftime(_ISO_FMT)
+    iid = str(item_id or "").strip()
+    result: dict = {
+        "ok": False,
+        "read_only": True,
+        "network_attempted": False,
+        "item_id": iid or None,
+        "observed_at": observed_at,
+    }
+    if not iid:
+        result["error"] = "empty_item_id"
+        return result
+
+    try:
+        state = _outbox.fold_state(root)
+    except Exception as exc:  # noqa: BLE001
+        result["error"] = f"outbox_read_failed: {str(exc)[:300]}"
+        return result
+
+    item = (state.get("items") or {}).get(iid)
+    if not isinstance(item, dict):
+        result["error"] = "item_not_found"
+        return result
+
+    outbox_status = str((state.get("status") or {}).get(iid) or "")
+    result["outbox_status"] = outbox_status or None
+    result["account"] = str(item.get("account") or "").strip() or None
+    if outbox_status != "posted":
+        result["error"] = "item_not_provider_accepted"
+        return result
+
+    row = (state.get("last") or {}).get(iid) or {}
+    receipt = row.get("receipt")
+    receipt = receipt if isinstance(receipt, dict) else {}
+    provider_id = str(receipt.get("external_id") or "").strip()
+    backend = str(receipt.get("backend") or "").strip()
+    accepted_at = str(
+        receipt.get("at") or row.get("at") or ""
+    ).strip() or None
+    booked_at = str(receipt.get("booked_at") or "").strip() or None
+    result["provider_id"] = provider_id or None
+    result["acceptance"] = {
+        "outbox_status": outbox_status,
+        "backend": backend or None,
+        "accepted_at": accepted_at,
+        "booked_at": booked_at,
+        "external_url": receipt.get("external_url") or None,
+    }
+    if backend != "buffer":
+        result["error"] = "unsupported_provider_backend"
+        return result
+    if not provider_id:
+        result["error"] = "accepted_receipt_missing_provider_id"
+        return result
+
+    account = str(item.get("account") or "").strip()
+    expected_channel_id = _configured_channel_ids(root).get(account)
+    result["expected_channel_id"] = expected_channel_id or None
+    if not expected_channel_id:
+        result["error"] = "configured_channel_id_unavailable"
+        return result
+
+    pub = publisher
+    if pub is None:
+        token = os.environ.get(BUFFER_TOKEN_ENV, "").strip()
+        if not token:
+            result["error"] = "buffer_token_unavailable"
+            return result
+        pub = BufferPublisher(token=token)
+
+    result["network_attempted"] = True
+    response = pub.fetch_post_metrics(
+        provider_id, expected_channel_id=expected_channel_id, now=ts_now)
+    delivery = getattr(response, "delivery", None)
+    result["lookup_ok"] = bool(getattr(response, "ok", False))
+    result["delivery"] = delivery if isinstance(delivery, dict) else None
+    result["metrics_present"] = bool(getattr(response, "metrics", {}) or {})
+
+    if not result["lookup_ok"]:
+        result["error"] = str(getattr(response, "error", None)
+                              or "provider_lookup_failed")[:700]
+        return result
+    if not isinstance(delivery, dict):
+        result["error"] = "provider_delivery_observation_missing"
+        return result
+    if delivery.get("read_ok") is not True:
+        result["error"] = str(delivery.get("error")
+                              or "provider_delivery_observation_degraded")[:700]
+        return result
+
+    result["ok"] = True
+    result["observed_at"] = delivery.get("observed_at") or observed_at
+    return result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Poll
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -232,8 +459,15 @@ def poll(
     dry_run: bool = False,
     publisher=None,
     max_calls: int = _MAX_CALLS_PER_RUN,
+    due_only: bool = False,
+    reconcile_interval_hours: int = _RECONCILE_INTERVAL_H,
+    daily_call_budget: int = _MAX_CALLS_PER_24H,
 ) -> dict:
     """Poll metrics for recently-posted items; append rows to post_metrics.jsonl.
+
+    With ``due_only=True``, select work per provider id from successful delivery
+    observations rather than wall clock. A rolling call budget preserves posting
+    and recall capacity across repeated workflow sweeps.
 
     Returns a summary dict {targets, polled, ok, empty, failed, dry_run, dark}.
     Fail-soft everywhere — one bad post never aborts the batch.
@@ -244,9 +478,17 @@ def poll(
     ts_now = now if now is not None else datetime.now(timezone.utc)
     polled_at = ts_now.strftime(_ISO_FMT)
 
-    targets = gather_targets(root, now=ts_now, max_age_days=max_age_days)
+    all_targets = gather_targets(root, now=ts_now, max_age_days=max_age_days)
+    targets = all_targets
+    fresh_count = 0
+    recent_calls = 0
+    if due_only:
+        targets, fresh_count, recent_calls = _reconciliation_due_state(
+            root, all_targets, now=ts_now,
+            interval_hours=reconcile_interval_hours)
+
     summary = {
-        "targets": len(targets),
+        "targets": len(all_targets),
         "polled": 0,
         "ok": 0,
         "empty": 0,
@@ -258,6 +500,13 @@ def poll(
         # count is never mistaken for "there was nothing to poll".
         "stopped": None,
     }
+    if due_only:
+        summary.update({
+            "due": len(targets),
+            "deferred_fresh": fresh_count,
+            "recent_calls": recent_calls,
+            "budget_remaining": max(0, int(daily_call_budget) - recent_calls),
+        })
 
     if dry_run:
         for t in targets:
@@ -267,6 +516,20 @@ def poll(
         log.info("marketing_metrics_poll: DRY-RUN — %d target(s), no network, no write",
                  len(targets))
         return summary
+
+    effective_call_cap = max(0, int(max_calls))
+    cap_reason = "max_calls"
+    if due_only:
+        rolling_remaining = int(summary["budget_remaining"])
+        if rolling_remaining <= effective_call_cap:
+            cap_reason = "rolling_budget"
+        effective_call_cap = min(effective_call_cap, rolling_remaining)
+        if targets and effective_call_cap <= 0:
+            summary["stopped"] = "rolling_budget"
+            log.info(
+                "marketing_metrics_poll: %d reconciliation target(s) due, but "
+                "the rolling 24h telemetry budget is exhausted", len(targets))
+            return summary
 
     # Dark by default: no token → one line + exit 0 (workflow-safe).
     token = os.environ.get(BUFFER_TOKEN_ENV, "").strip()
@@ -278,6 +541,7 @@ def poll(
 
     pub = publisher if publisher is not None else BufferPublisher(token=token)
     ledger_path = _metrics_ledger_path(root)
+    channel_ids = _configured_channel_ids(root)
 
     # ── THE POSTING ALLOWANCE IS NOT OURS TO SPEND (2026-08-03) ──────────────
     # The publisher and this poller share ONE Buffer token and ONE 24h quota.
@@ -297,13 +561,21 @@ def poll(
     # Metrics are diagnostics. Posting is the product. When they compete, the
     # product wins — that is the whole ruling.
     for t in targets:
-        if summary["polled"] >= max_calls:
-            summary["stopped"] = "max_calls"
-            log.info("marketing_metrics_poll: stopping at the %d-call cap — the "
-                     "rest keep until the next run", max_calls)
+        if summary["polled"] >= effective_call_cap:
+            summary["stopped"] = cap_reason
+            log.info("marketing_metrics_poll: stopping at the %d-call cap (%s) — "
+                     "the rest keep until the next run",
+                     effective_call_cap, cap_reason)
             break
-        res = pub.fetch_post_metrics(t["remote_id"], now=ts_now)
+        res = pub.fetch_post_metrics(
+            t["remote_id"],
+            expected_channel_id=channel_ids.get(str(t.get("account") or "")),
+            now=ts_now,
+        )
         summary["polled"] += 1
+        if due_only:
+            summary["budget_remaining"] = max(
+                0, int(summary["budget_remaining"]) - 1)
 
         if not res.ok and _is_rate_limited(res.error):
             summary["failed"] += 1
@@ -312,6 +584,7 @@ def poll(
                 "remote_id": t["remote_id"], "account": t["account"] or "",
                 "external_url": t.get("external_url") or None, "metrics": {},
                 "metrics_raw": None, "metrics_updated_at": None,
+                "delivery": getattr(res, "delivery", None),
                 "polled_at": polled_at, "ok": False,
                 "note": f"poll_failed: {res.error}",
             })
@@ -333,6 +606,9 @@ def poll(
             "metrics": res.metrics,
             "metrics_raw": res.raw,
             "metrics_updated_at": res.metrics_updated_at,
+            # Same append-only owner: lifecycle/readiness evidence is additive to
+            # the metrics row, never a second queue or status database.
+            "delivery": getattr(res, "delivery", None),
             "polled_at": polled_at,
             "ok": bool(res.ok),
         }
@@ -364,6 +640,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--dry-run", action="store_true",
                         help="list what WOULD be polled; zero network, zero write")
+    parser.add_argument(
+        "--if-due", action="store_true",
+        help=("reconcile only provider ids without a successful observation in "
+              "the last 24h; enforces the rolling telemetry call budget"),
+    )
+    parser.add_argument(
+        "--delivery-readback-item", default=None, metavar="OUTBOX_ID",
+        help=("read one canonically accepted outbox item from Buffer and print "
+              "safe delivery/channel evidence; zero ledger mutation"),
+    )
     parser.add_argument("--max-age-days", type=int, default=7,
                         help="only poll posts newer than this many days (default 7)")
     parser.add_argument("--root", default=None,
@@ -385,7 +671,17 @@ def main(argv: list[str] | None = None) -> int:
             log.warning("bad --now %r; using wall-clock", args.now)
         now = parsed
 
-    poll(root, now=now, max_age_days=args.max_age_days, dry_run=bool(args.dry_run))
+    if args.delivery_readback_item:
+        if args.dry_run:
+            parser.error("--delivery-readback-item and --dry-run are mutually exclusive")
+        result = delivery_readback(
+            root, item_id=args.delivery_readback_item, now=now)
+        print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+        return 0 if result.get("ok") is True else 2
+
+    poll(
+        root, now=now, max_age_days=args.max_age_days,
+        dry_run=bool(args.dry_run), due_only=bool(args.if_due))
     return 0
 
 

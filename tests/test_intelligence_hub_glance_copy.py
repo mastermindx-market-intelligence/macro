@@ -4,6 +4,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 from jinja2 import Environment, FileSystemLoader
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,9 +82,8 @@ def test_desk_rail_does_not_expose_raw_qledger_labels() -> None:
 
 
 def test_committed_page_matches_plain_language_contract() -> None:
+    """Conditional labels are exercised by explicit full-template states below."""
     html = SITE.read_text(encoding="utf-8")
-    for required in ("ready to review", "no history", "building record", "measured"):
-        assert required in html
     for banned in ("Validated confluence buy", "UNGRADED · n=0", "pre-registered significance bar", ">proven<", "⚡"):
         assert banned not in html
 
@@ -118,10 +119,168 @@ def test_mobile_command_rows_have_a_full_width_explanation() -> None:
     assert '{{ d.falsifier|e }}' not in src
 
 
-def test_generated_watch_conditions_have_no_serialized_check() -> None:
-    html = SITE.read_text(encoding="utf-8")
+def test_rendered_watch_conditions_have_no_serialized_check() -> None:
+    """The full template path stays safe even when today's page has zero watches."""
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=True)
+    env.globals["region_for"] = lambda _ticker: "us"
+    falsifier = {
+        "text": "Revenue falls below expectations.",
+        "text_zh": "营收低于预期。",
+        "check": {"subject_ticker": "TEST", "horizon_d": 20},
+    }
+    row = {
+        "ticker": "TEST",
+        "opportunity_score": 80,
+        "composite_conviction": 80,
+        "directions": {},
+        "stage": "emerging",
+        "entry_gate": None,
+        "trajectory": None,
+        "flags": [],
+        "leading_gap": 0,
+        "edge_drivers": [],
+        "falsifier": falsifier,
+        "price": None,
+        "edge_remaining": 0.5,
+        "n_confirm": 0,
+        "source_mix": [],
+        "sectors": [],
+    }
+    hub = {
+        "command": [row],
+        "emerging": [],
+        "discovery": [],
+        "exhausted": [],
+        "catalysts": [],
+        "track_record": None,
+        "desk_grader": {},
+        "sector_heat": [],
+        "disclaimer": "",
+        "n_universe": 1,
+        "n_actionable": 1,
+        "macro_context": {},
+        "desks": {},
+        "as_of": "2026-09-27",
+        "counts": {},
+    }
+    html = env.get_template("intelligence_hub.html.j2").render(
+        hub=hub,
+        built="2026-09-27T00:00:00+00:00",
+        mode="intel_hub",
+        qledger_chips={},
+        china=None,
+        market_pulse_roster=["TEST"],
+        research_implications={"cards": []},
+    )
     watches = re.findall(r'<div class="watch">(.*?)</div>', html, re.S)
-    assert watches
-    for watch in watches:
-        assert 'subject_ticker' not in watch and 'horizon_d' not in watch
-        assert '&#39;text&#39;' not in watch and '&#39;check&#39;' not in watch
+    assert len(watches) == 1
+    watch = watches[0]
+    assert "Revenue falls below expectations." in watch
+    assert "营收低于预期。" in watch
+    assert "subject_ticker" not in watch and "horizon_d" not in watch
+    assert "&#39;text&#39;" not in watch and "&#39;check&#39;" not in watch
+
+
+def _render_glance_page(*, entry_gate, qledger_chips=None) -> str:
+    """Render conditional copy through the shipped template with synthetic inputs."""
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=True)
+    env.globals["region_for"] = lambda _ticker: "us"
+    row = {
+        "ticker": "TEST",
+        "opportunity_score": 80,
+        "composite_conviction": 80,
+        "directions": {},
+        "stage": "emerging",
+        "entry_gate": entry_gate,
+        "trajectory": None,
+        "flags": [],
+        "leading_gap": 0,
+        "edge_drivers": [],
+        "falsifier": None,
+        "price": None,
+        "edge_remaining": 0.5,
+        "n_confirm": 0,
+        "source_mix": [],
+        "sectors": [],
+    }
+    hub = {
+        "command": [row],
+        "emerging": [],
+        "discovery": [],
+        "exhausted": [],
+        "catalysts": [],
+        "track_record": None,
+        "desk_grader": {},
+        "sector_heat": [],
+        "disclaimer": "",
+        "n_universe": 1,
+        "n_actionable": 1,
+        "macro_context": {},
+        "desks": {},
+        "as_of": "2026-09-27",
+        "counts": {},
+    }
+    return env.get_template("intelligence_hub.html.j2").render(
+        hub=hub,
+        built="2026-09-27T00:00:00+00:00",
+        mode="intel_hub",
+        qledger_chips=qledger_chips or {},
+        china=None,
+        market_pulse_roster=["TEST"],
+        research_implications={"cards": []},
+    )
+
+
+def test_full_template_renders_populated_plain_language_states() -> None:
+    html = _render_glance_page(
+        entry_gate={"buyable": True, "tier": "T2"},
+        qledger_chips={
+            "news": {"state": "UNGRADED", "css_class": "ql-ungraded"},
+            "alt_data": {"state": "ACCRUING", "css_class": "ql-accruing"},
+            "radar": {"state": "GRADED", "css_class": "ql-graded-pos"},
+        },
+    )
+    assert 'class="chip en-buy"' in html
+    assert '<span class="l-en">ready to review</span>' in html
+    assert '<span class="l-zh">可复核</span>' in html
+    for css, en, zh in (
+        ("ql-ungraded", "no history", "暂无记录"),
+        ("ql-accruing", "building record", "记录积累中"),
+        ("ql-graded-pos", "measured", "已有记录"),
+    ):
+        assert (
+            f'<span class="gw {css}"><span class="l-en">{en}</span>'
+            f'<span class="l-zh">{zh}</span></span>'
+        ) in html
+
+
+@pytest.mark.parametrize(
+    "entry_gate",
+    [None, {}, {"buyable": False, "tier": "T2"}],
+    ids=["absent", "empty", "not-buyable"],
+)
+def test_full_template_does_not_invent_conditional_states(entry_gate) -> None:
+    html = _render_glance_page(entry_gate=entry_gate, qledger_chips={})
+    assert 'class="chip en-buy"' not in html
+    assert '<span class="l-en">ready to review</span>' not in html
+    assert '<span class="l-zh">可复核</span>' not in html
+    states = re.findall(
+        r'<span class="gw ([^"]+)"><span class="l-en">([^<]+)</span>'
+        r'<span class="l-zh">([^<]+)</span></span>',
+        html,
+    )
+    assert states
+    assert set(states) == {("ql-ungraded", "no history", "暂无记录")}
+
+
+@pytest.mark.parametrize(
+    "banned",
+    ["Validated confluence buy", "UNGRADED · n=0", "pre-registered significance bar", ">proven<", "⚡"],
+)
+def test_committed_page_contract_rejects_forbidden_copy(tmp_path, monkeypatch, banned) -> None:
+    html = _render_glance_page(entry_gate=None)
+    synthetic_site = tmp_path / "intelligence_hub.html"
+    synthetic_site.write_text(html.replace("</body>", f"<div>{banned}</div></body>"), encoding="utf-8")
+    monkeypatch.setitem(globals(), "SITE", synthetic_site)
+    with pytest.raises(AssertionError):
+        test_committed_page_matches_plain_language_contract()

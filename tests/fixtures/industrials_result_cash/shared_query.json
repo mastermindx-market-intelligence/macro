@@ -1,0 +1,17 @@
+{
+  "synthetic": true,
+  "query": {
+    "contract": "industrials_theme_research.v1",
+    "entry": "industrial-flow",
+    "view_keys": [
+      "operating_views"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://example.invalid/shared_query.json",
+      "mode": "synthetic",
+      "rights_state": "unknown"
+    }
+  ]
+}

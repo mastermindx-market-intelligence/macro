@@ -1436,10 +1436,68 @@ def test_build_store_env_local(tmp_path, monkeypatch):
     assert isinstance(store, LocalStore)
 
 
+def _clear_research_store_env(monkeypatch):
+    for name in (
+        "RESEARCH_LOCAL_STORE",
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+        "R2_ENDPOINT",
+        "R2_ACCESS_KEY_ID",
+        "R2_SECRET_ACCESS_KEY",
+        "R2_BUCKET",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+
 def test_build_store_none_without_creds(monkeypatch):
-    monkeypatch.delenv("RESEARCH_LOCAL_STORE", raising=False)
-    monkeypatch.delenv("R2_RESEARCH_BUCKET", raising=False)
+    _clear_research_store_env(monkeypatch)
     assert build_store() is None
+
+
+def test_build_store_does_not_inherit_shared_r2_credentials(monkeypatch):
+    """A private research bucket is not allowed to borrow the public/shared
+    delivery-plane credential namespace merely because those variables exist."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
+    monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+
+    assert build_store() is None
+
+
+def test_build_store_refuses_partial_research_config_even_with_shared_values(
+        monkeypatch, caplog):
+    """One dedicated variable plus generic fallbacks is still partial config."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
+    monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+    monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
+
+    assert build_store() is None
+    assert "shared-ak" not in caplog.text
+    assert "shared-sk" not in caplog.text
+
+
+def test_build_store_refuses_shared_bucket_alias_before_client_construction(
+        monkeypatch, caplog):
+    """Even complete research credentials cannot make the public bucket private."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_BUCKET", "mastermindx")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx")
+    monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
+    monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "research-ak")
+    monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "research-sk")
+
+    assert build_store() is None
+    assert "aliases shared R2_BUCKET" in caplog.text
+    assert "research-sk" not in caplog.text
 
 
 def test_local_store_rejects_traversal(tmp_path):
@@ -1466,24 +1524,57 @@ def test_local_store_list_prefix(tmp_path):
     assert "research_vault/a.pdf" not in inbox
 
 
-def test_r2_client_prefers_research_account_creds(monkeypatch):
-    """R2_RESEARCH_* (a separate Cloudflare account) is preferred over the shared
-    R2_* creds, and each falls back to R2_* when unset. Skipped where boto3 is
-    absent (the minimal CI lane); client construction is offline (creds aren't
-    validated until a call), so we can assert the resolved endpoint."""
+def test_r2_client_requires_explicit_research_credentials(monkeypatch):
+    """Generic R2 credentials never substitute for the private research family."""
     import pytest as _pytest
     _pytest.importorskip("boto3")
     from engine.research_vault import r2_store as rs
+
+    _clear_research_store_env(monkeypatch)
     monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
     monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
     monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    assert rs._r2_client() is None
+
     monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
     monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "research-ak")
     monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "research-sk")
     assert rs._r2_client().meta.endpoint_url == "https://research.example.com"
-    for _k in ("R2_RESEARCH_ENDPOINT", "R2_RESEARCH_ACCESS_KEY_ID", "R2_RESEARCH_SECRET_ACCESS_KEY"):
-        monkeypatch.delenv(_k, raising=False)
-    assert rs._r2_client().meta.endpoint_url == "https://shared.example.com"
+
+    # Same-account credentials remain possible only when the research namespace
+    # is populated explicitly; deleting one member never falls through to shared.
+    monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.delenv("R2_RESEARCH_ENDPOINT")
+    assert rs._r2_client() is None
+
+
+def test_build_store_allows_explicit_same_account_credentials_on_distinct_bucket(
+        monkeypatch):
+    """Value equality is not implicit inheritance: dedicated names + distinct
+    bucket express an intentional same-account configuration."""
+    import pytest as _pytest
+    _pytest.importorskip("boto3")
+    from engine.research_vault import r2_store as rs
+
+    _clear_research_store_env(monkeypatch)
+    for name, value in (
+        ("R2_ENDPOINT", "https://same-account.example.com"),
+        ("R2_ACCESS_KEY_ID", "same-ak"),
+        ("R2_SECRET_ACCESS_KEY", "same-sk"),
+        ("R2_RESEARCH_ENDPOINT", "https://same-account.example.com"),
+        ("R2_RESEARCH_ACCESS_KEY_ID", "same-ak"),
+        ("R2_RESEARCH_SECRET_ACCESS_KEY", "same-sk"),
+    ):
+        monkeypatch.setenv(name, value)
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+
+    store = build_store()
+    assert isinstance(store, rs.R2Store)
+    assert store.available is True
+    assert store.bucket == "mastermindx-research"
+    assert store._s3.meta.endpoint_url == "https://same-account.example.com"
 
 
 # ===========================================================================
@@ -3823,6 +3914,11 @@ def test_census_reports_every_mismatch_direction_and_never_mutates(tmp_path,
 
     report = json.loads(out.read_text())
     mm = report["mismatches"]
+    health = report["corpus"]["body_health"]
+    assert health["schema"] == "research_vault.corpus_health.v1"
+    assert health["body_nonempty_rows"] == report["corpus"]["rows"]
+    assert health["body_empty_rows"] == 0
+    assert health["corpus_bytes"] > 0
     assert mm["catalog_minus_pdf"] == ["desk-000000"]
     assert mm["receipt_minus_catalog"] == ["desk-000001"]
     assert mm["corpus_minus_catalog"] == ["desk-000001"]
@@ -3839,6 +3935,117 @@ def test_census_reports_every_mismatch_direction_and_never_mutates(tmp_path,
     assert after == before, "the census must not mutate a single object"
 
 
+def test_census_body_health_distinguishes_identity_from_text_retrieval(
+        tmp_path, w4_canned_pdftotext, monkeypatch):
+    """Rows may all exist while retrieval is still degraded.
+
+    This fixture keeps all three catalog/corpus identities intact, then changes
+    only the published corpus bytes: one healthy full-text row, one bodyless
+    unavailable row that needs repair, and one bodyless scan that is a typed
+    no-text exclusion. The census must classify those states without returning
+    licensed body text or mutating the store.
+    """
+    import scripts.research_vault_census as census
+
+    store = _w4_store(tmp_path)
+    ids = [f"health-00000{n}" for n in range(3)]
+    for n, doc_id in enumerate(ids):
+        _w4_seed_pdf(
+            store,
+            f"research_inbox/h{n}.pdf",
+            _w4_sidecar(doc_id),
+        )
+    ingest_mod.run(store, tmp_path / "corpus.sqlite")
+
+    corpus_bytes = store.get_bytes(ingest_mod.CORPUS_KEY)
+    assert corpus_bytes
+    scratch = tmp_path / "health-corpus.sqlite"
+    scratch.write_bytes(corpus_bytes)
+    conn = sqlite3.connect(str(scratch))
+    healthy_body = (
+        "Institutional demand remains durable across the measured channel and "
+        "the research desk expects capacity additions to stay disciplined.\n\n"
+        "This second page preserves enough literal source structure for the "
+        "excerpt sampler to derive a bounded opening passage."
+        "\f"
+        "Tail page evidence remains present after the explicit PDF page break."
+    )
+    try:
+        conn.execute(
+            "UPDATE documents SET body=?, text_layer='full', char_count=?, pages=2 "
+            "WHERE doc_id=?",
+            (healthy_body, len(healthy_body), ids[0]),
+        )
+        conn.execute(
+            "UPDATE documents SET body='', text_layer='unavailable', "
+            "char_count=900, pages=4 WHERE doc_id=?",
+            (ids[1],),
+        )
+        conn.execute(
+            "UPDATE documents SET body='', text_layer='none', "
+            "char_count=0, pages=7 WHERE doc_id=?",
+            (ids[2],),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    store.put_bytes(ingest_mod.CORPUS_KEY, scratch.read_bytes(),
+                    "application/vnd.sqlite3")
+
+    before = {key: store.get_bytes(key) for key in store.list_prefix("")}
+    out = tmp_path / "health-census.json"
+    monkeypatch.setattr(
+        sys, "argv",
+        ["census", "--local", str(store.root),
+         "--repo-dir", str(tmp_path / "no_mirror"), "--json", str(out)],
+    )
+    monkeypatch.setattr(
+        "engine.research_vault.r2_store.build_store",
+        lambda local_dir=None: store,
+    )
+    assert census.main() == 0
+
+    report = json.loads(out.read_text())
+    assert report["mismatches"]["catalog_minus_corpus"] == []
+    assert report["mismatches"]["corpus_minus_catalog"] == []
+
+    health = report["corpus"]["body_health"]
+    assert health["body_nonempty_rows"] == 1
+    assert health["body_empty_rows"] == 2
+    assert health["text_layer"] == {
+        "full": 1,
+        "thin": 0,
+        "none": 1,
+        "unavailable": 1,
+        "null_or_unknown": 0,
+    }
+    assert health["measured_source_char_count_present_rows"] == 3
+    assert health["stored_body_chars_eq_source_rows"] == 2
+    assert health["stored_body_chars_lt_source_rows"] == 1
+    assert health["stored_body_chars_gt_source_or_inconsistent_rows"] == 0
+    assert health["page_separator_rows"] == 1
+    assert health["page_count_present_rows"] == 3
+    assert health["excerpt_derivable_rows"] == 1
+    assert health["catalog_rows_with_corpus_row_but_no_usable_body_count"] == 2
+    assert health["catalog_rows_with_corpus_row_but_no_usable_body_ids"] == ids[1:]
+    assert (
+        health["catalog_rows_with_corpus_row_but_no_usable_body_needing_repair_ids"]
+        == [ids[1]]
+    )
+    assert (
+        health["catalog_rows_with_corpus_row_but_no_usable_body_needing_repair_count"]
+        == 1
+    )
+    assert health["catalog_rows_with_corpus_row_typed_no_text_count"] == 1
+    assert health["valid_pdf_content_sha256_rows"] == 3
+    encoded_health = json.dumps(health)
+    assert healthy_body[:48] not in encoded_health
+    assert "Institutional demand remains durable" not in encoded_health
+
+    after = {key: store.get_bytes(key) for key in store.list_prefix("")}
+    assert after == before, "body-health census must remain byte-for-byte read-only"
+
+
 def test_census_refuses_rather_than_auditing_an_unreadable_catalog(tmp_path,
                                                                    monkeypatch):
     import scripts.research_vault_census as census
@@ -3849,3 +4056,387 @@ def test_census_refuses_rather_than_auditing_an_unreadable_catalog(tmp_path,
     monkeypatch.setattr("engine.research_vault.r2_store.build_store",
                         lambda local_dir=None: store)
     assert census.main() == 1
+
+
+def test_readonly_census_workflow_cannot_ingest_publish_or_cancel_ingest():
+    """The operator proof lane must stay observational, not a disguised ingest."""
+    import yaml
+
+    path = _W4_ROOT / ".github" / "workflows" / "research-vault-census.yml"
+    raw = path.read_text(encoding="utf-8")
+    payload = yaml.safe_load(raw)
+
+    assert payload["permissions"] == {"contents": "read"}
+    assert payload["concurrency"] == {
+        "group": "research-vault-readonly-census",
+        "cancel-in-progress": False,
+    }
+    job = payload["jobs"]["census"]
+    assert job["if"] == "github.ref == 'refs/heads/main'"
+
+    before_permissions = raw.split("permissions:", 1)[0]
+    assert "workflow_dispatch:" in before_permissions
+    assert "schedule:" not in before_permissions
+
+    runs = "\n".join(
+        step.get("run", "")
+        for step in job["steps"]
+        if isinstance(step, dict)
+    )
+    assert "python -m scripts.research_vault_census" in runs
+    # Adjacent Python literals can split this message across source lines.
+    # Inspect compiler-folded constants instead of weakening the config guard
+    # or requiring a particular formatting of the workflow's heredoc.
+    import ast
+    constants = [
+        node.value for node in ast.walk(ast.parse(_census_preflight_python()))
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+    ]
+    assert any("missing required private R2 configuration name(s)" in text
+               for text in constants)
+    assert "research bucket aliases shared/public bucket" in runs
+    for required_name in (
+        "R2_BUCKET",
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+    ):
+        assert required_name in runs
+    for forbidden in (
+        "scripts.ingest_research",
+        "git push",
+        "git commit",
+        "put_object",
+        "put_bytes",
+        "delete_object",
+        "publish_r2",
+    ):
+        assert forbidden not in runs
+
+    env = job["env"]
+    assert "R2_RESEARCH_ENDPOINT" in env
+    assert "R2_RESEARCH_ACCESS_KEY_ID" in env
+    assert "R2_RESEARCH_SECRET_ACCESS_KEY" in env
+    assert "R2_RESEARCH_BUCKET" in env
+    assert "R2_BUCKET" in env, "shared bucket name is needed only for F1 anti-alias"
+    assert "R2_ENDPOINT" not in env
+    assert "R2_ACCESS_KEY_ID" not in env
+    assert "R2_SECRET_ACCESS_KEY" not in env
+
+# ===========================================================================
+# Market Cognition: rights-safe Research Intelligence belief context
+# ===========================================================================
+
+def _market_cognition_belief_rio():
+    return {
+        "schema": "mastermind.research_intelligence.v1",
+        "document": {
+            "id": "belief-r1",
+            "source_type": "institutional_research",
+            "source_name": "Example Research",
+            "institution": "Example",
+            "desk": "Equity Strategy",
+            "title": "Rally review",
+            "published_at": "2026-09-24T20:00:00Z",
+            "content_sha256": "a" * 64,
+        },
+        "claims": [
+            {
+                "statement": "Clients remain cautious after the rally.",
+                "evidence": [{"quote_span": "Clients remain cautious after the rally."}],
+                "numbers": [],
+                "entities": ["clients"],
+                "horizon": "current",
+                "explicit": True,
+            },
+            {
+                "statement": "Consensus forecasts still assume slower growth.",
+                "evidence": [{"quote_span": "Consensus forecasts still assume slower growth."}],
+                "numbers": [],
+                "entities": ["consensus"],
+                "horizon": "next year",
+                "explicit": True,
+            },
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "The note describes caution despite stronger price action.",
+                "direction": "mixed",
+                "mechanism": [],
+                "conviction": "",
+                "support_claim_indices": [0, 1],
+            },
+            "assumptions": [],
+            "forecasts": [],
+            "catalysts": [],
+            "falsifiers": [],
+            "counterarguments": [],
+            "implications": [],
+            "belief_delta": {
+                "statement": "The desk is more constructive than in its prior note.",
+                "support_claim_indices": [0],
+            },
+            "consensus_relation": {
+                "statement": "The desk remains more cautious than the cited consensus view.",
+                "support_claim_indices": [1],
+            },
+            "uncertainties": [],
+        },
+        "authority": "descriptive_research_only",
+    }
+
+
+def test_market_cognition_belief_context_projects_only_grounded_relationships():
+    from engine.research_intelligence import belief_context_points
+
+    rows = belief_context_points(_market_cognition_belief_rio())
+    assert [row["relation"] for row in rows] == [
+        "belief_delta", "consensus_relation",
+    ]
+    assert [row["support_claim_indices"] for row in rows] == [[0], [1]]
+    assert all(row["schema"] == "mastermind.research_belief_context.v1" for row in rows)
+    assert all(row["source_document_id"] == "belief-r1" for row in rows)
+    assert all(row["source_content_sha256"] == "a" * 64 for row in rows)
+    assert all(row["published_at"] == "2026-09-24T20:00:00Z" for row in rows)
+    assert all(row["epistemic_layer"] == "model_synthesis" for row in rows)
+    assert all(row["text_visibility"] == "derived_summary" for row in rows)
+    assert all(row["authority"] == "descriptive_research_only" for row in rows)
+
+
+def test_market_cognition_belief_context_absence_does_not_become_neutral():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["analysis"]["belief_delta"] = {"statement": "", "support_claim_indices": []}
+    obj["analysis"]["consensus_relation"] = {"statement": "", "support_claim_indices": []}
+    assert belief_context_points(obj) == []
+
+
+def test_market_cognition_belief_context_rejects_private_evidence_reproduction():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["analysis"]["belief_delta"] = {
+        "statement": obj["claims"][0]["evidence"][0]["quote_span"],
+        "support_claim_indices": [0],
+    }
+    with pytest.raises(ValueError, match="belief_delta.*verbatim private evidence"):
+        belief_context_points(obj)
+
+
+def test_market_cognition_belief_context_rejects_ungrounded_source_claims():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["claims"][0]["evidence"] = []
+    with pytest.raises(ValueError, match="grounded evidence"):
+        belief_context_points(obj)
+
+
+def test_market_cognition_belief_context_carries_no_market_authority():
+    from engine.research_intelligence import belief_context_points
+
+    encoded = json.dumps(belief_context_points(_market_cognition_belief_rio()), sort_keys=True)
+    for forbidden in (
+        '"score"', '"confidence"', '"direction"', '"rank"', '"gate"',
+        '"sizing"', '"positioning"', '"constraints"', '"market_response"',
+        '"trade"',
+    ):
+        assert forbidden not in encoded
+    assert "Clients remain cautious after the rally." not in encoded
+    assert "Consensus forecasts still assume slower growth." not in encoded
+
+
+
+# F3 recovery: a read failure or reset must never publish a fresh empty corpus
+# over mature, receipt-idempotent history. These stores contain synthetic PDFs.
+class _F3ReadFaultStore(LocalStore):
+    corpus_fault = ""
+
+    def __init__(self, root):
+        super().__init__(root)
+        self.published_keys = []
+
+    def get_bytes(self, key):
+        if key == ingest_mod.CORPUS_KEY and self.corpus_fault == "unavailable":
+            return None  # legacy R2 getter conflates outage with absent object
+        return super().get_bytes(key)
+
+    def get_bytes_strict(self, key):
+        if key == ingest_mod.CORPUS_KEY and self.corpus_fault == "unavailable":
+            raise RuntimeError("synthetic corpus read outage")
+        return super().get_bytes_strict(key)
+
+    def put_bytes(self, key, data, content_type="application/octet-stream"):
+        self.published_keys.append(key)
+        return super().put_bytes(key, data, content_type)
+
+
+def _f3_mature_store(tmp_path):
+    store = _F3ReadFaultStore(tmp_path / "store")
+    _w4_seed_pdf(store, "research_inbox/old.pdf", _w4_sidecar("old-000001"))
+    first = ingest_mod.run(store, tmp_path / "first" / "corpus.sqlite")
+    assert first["ingested"] == 1
+    assert _w4_receipt_ids(store) == {"old-000001"}
+    store.published_keys.clear()
+    return store
+
+
+def test_f3_corpus_outage_never_becomes_a_bootstrap(tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    original = store.get_bytes(ingest_mod.CORPUS_KEY)
+    local = tmp_path / "second" / "corpus.sqlite"
+    local.parent.mkdir()
+    local.write_bytes(b"preserve-local-until-authoritative-read")
+    store.corpus_fault = "unavailable"
+
+    result = ingest_mod.run(store, local)
+
+    assert result.get("error") == "corpus_restore_failed"
+    assert store.published_keys == []
+    assert local.read_bytes() == b"preserve-local-until-authoritative-read"
+    assert LocalStore.get_bytes(store, ingest_mod.CORPUS_KEY) == original
+    assert _w4_receipt_ids(store) == {"old-000001"}
+
+
+@pytest.mark.parametrize("reset", ["missing", "empty_database"])
+def test_f3_zero_row_corpus_cannot_replace_mature_history(
+        tmp_path, w4_canned_pdftotext, reset):
+    store = _f3_mature_store(tmp_path)
+    if reset == "missing":
+        store._p(ingest_mod.CORPUS_KEY).unlink()
+    else:
+        empty = tmp_path / "empty.sqlite"
+        db = corpus_mod.open_db(empty)
+        db.close()
+        store.put_bytes(ingest_mod.CORPUS_KEY, empty.read_bytes())
+    store.published_keys.clear()
+    catalog_before = store.get_bytes(catalog_mod.CATALOG_KEY)
+
+    result = ingest_mod.run(store, tmp_path / "second" / "corpus.sqlite")
+
+    assert result.get("error") == "corpus_history_unavailable"
+    assert store.published_keys == []
+    assert store.get_bytes(catalog_mod.CATALOG_KEY) == catalog_before
+    assert _w4_receipt_ids(store) == {"old-000001"}
+
+
+@pytest.mark.parametrize("bad_bytes", [b"", b"not a sqlite database"])
+def test_f3_invalid_corpus_bytes_fail_before_local_replacement(tmp_path, bad_bytes):
+    store = LocalStore(tmp_path / "store")
+    store.put_bytes(ingest_mod.CORPUS_KEY, bad_bytes)
+    local = tmp_path / "corpus.sqlite"
+    local.write_bytes(b"existing-local-recovery-copy")
+
+    assert ingest_mod._restore_corpus(store, local) == "error"
+    assert local.read_bytes() == b"existing-local-recovery-copy"
+
+
+def test_f3_restore_refuses_legacy_only_unknown_absence(tmp_path):
+    class LegacyOnly:
+        def get_bytes(self, key):
+            raise AssertionError("ambiguous legacy getter must not be consulted")
+
+    local = tmp_path / "corpus.sqlite"
+    local.write_bytes(b"preserve")
+    assert ingest_mod._restore_corpus(LegacyOnly(), local) == "error"
+    assert local.read_bytes() == b"preserve"
+
+
+def test_f3_real_empty_store_still_bootstraps(tmp_path, w4_canned_pdftotext):
+    store = _F3ReadFaultStore(tmp_path / "store")
+    _w4_seed_pdf(store, "research_inbox/new.pdf", _w4_sidecar("new-000001"))
+    result = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert result.get("error") is None
+    assert result["ingested"] == 1
+    assert result["corpus_published"] is True
+    assert _w4_receipt_ids(store) == {"new-000001"}
+
+
+def test_f3_nonempty_catalog_alone_forbids_zero_row_republication(
+        tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    store._p(ingest_mod.CORPUS_KEY).unlink()
+    for key in store.list_prefix(ingest_mod.PROCESSED_PREFIX):
+        store._p(key).unlink()
+    store.published_keys.clear()
+    result = ingest_mod.run(store, tmp_path / "second" / "corpus.sqlite")
+    assert result.get("error") == "corpus_history_unavailable"
+    assert store.published_keys == []
+
+
+def test_f3_nonzero_degraded_corpus_is_not_mistaken_for_empty_bootstrap(
+        tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    _w4_seed_pdf(store, "research_inbox/other.pdf", _w4_sidecar("other-000002"))
+    local = tmp_path / "second" / "corpus.sqlite"
+    assert ingest_mod.run(store, local)["ingested"] == 1
+    conn = corpus_mod.open_db(local)
+    conn.execute("DELETE FROM documents WHERE doc_id=?", ("other-000002",))
+    conn.commit()
+    conn.close()
+    store.put_bytes(ingest_mod.CORPUS_KEY, local.read_bytes())
+    store.published_keys.clear()
+
+    result = ingest_mod.run(store, tmp_path / "third" / "corpus.sqlite")
+
+    assert result.get("error") is None
+    assert result["ingested"] == 0
+    assert result["skipped"] == 2
+    assert _w4_catalog_ids(store) == {"old-000001", "other-000002"}
+    assert _w4_receipt_ids(store) == {"old-000001", "other-000002"}
+    assert result["corpus_published"] is True
+    # The guard prevents a reset and never replays the receipted document
+    # (ingested == 0 and the receipts are unchanged above). The missing row is
+    # restored by the F3 catalog-gap backfill from the canonical vault PDF, not
+    # by re-ingestion.
+    assert result["backfill_rows"] == 1
+    conn = corpus_mod.open_db(tmp_path / "third" / "corpus.sqlite")
+    assert conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0] == 2
+    conn.close()
+
+
+def _census_preflight_python():
+    import yaml
+    workflow = yaml.safe_load((_W4_ROOT / ".github/workflows/research-vault-census.yml").read_text())
+    script = next(step["run"] for step in workflow["jobs"]["census"]["steps"]
+                  if step.get("name") == "Fail closed on private R2 configuration")
+    return script.split("<<'PY'\n", 1)[1].rsplit("\nPY", 1)[0]
+
+
+@pytest.mark.parametrize("case,expected", [
+    ("missing", 2), ("generic_only", 2), ("whitespace", 2),
+    ("aliased_bucket", 2), ("distinct_private", 0),
+])
+def test_census_private_config_guard_executes_fail_closed(case, expected):
+    import subprocess
+    # Only synthetic configuration enters this subprocess; no inherited secrets,
+    # network, store construction, ingestion, or shell command is involved.
+    env = {
+        "R2_BUCKET": "fixture-public",
+        "R2_RESEARCH_BUCKET": "fixture-private",
+        "R2_RESEARCH_ENDPOINT": "fixture-endpoint-no-network",
+        "R2_RESEARCH_ACCESS_KEY_ID": "fixture-private-access",
+        "R2_RESEARCH_SECRET_ACCESS_KEY": "fixture-private-secret",
+    }
+    if case == "missing":
+        env = {}
+    elif case == "generic_only":
+        env["R2_ENDPOINT"] = env.pop("R2_RESEARCH_ENDPOINT")
+    elif case == "whitespace":
+        env["R2_RESEARCH_ACCESS_KEY_ID"] = "  "
+    elif case == "aliased_bucket":
+        env["R2_RESEARCH_BUCKET"] = " fixture-public "
+    result = subprocess.run([sys.executable, "-I", "-c", _census_preflight_python()],
+                            env=env, capture_output=True, text=True, timeout=5)
+    assert result.returncode == expected, result.stderr
+    if case == "aliased_bucket":
+        assert "research bucket aliases shared/public bucket" in result.stdout
+    elif expected:
+        assert "missing required private R2 configuration name(s)" in result.stdout
+    else:
+        assert "bucket anti-alias passed" in result.stdout
+    for value in ("fixture-private-access", "fixture-private-secret",
+                  "fixture-endpoint-no-network"):
+        assert value not in result.stdout + result.stderr

@@ -1,0 +1,152 @@
+FFFFFFF.............                                                     [100%]
+=================================== FAILURES ===================================
+__ test_lowercase_live_vendor_trade_preserves_source_and_public_uppercase_key __
+
+    def test_lowercase_live_vendor_trade_preserves_source_and_public_uppercase_key():
+     from collectors.tiingo_archive import decode_boats
+     from scripts.build_ext_quotes import public_boats_payload
+     r=BoatsLastTrade(['AMD'],'12345678-1234-1234-1234-123456789abc')
+     r.reset('connected',1)
+     raw=frame(symbol='amd',conditions=['@','','',''])
+     consume(r,raw)
+     assert json.loads(raw)['data'][3]=='amd'
+     assert decode_boats(json.loads(raw),NOW.isoformat())['ticker']=='amd'
+     payload=r.snapshot(NOW)
+>    assert set(payload['quotes'])=={'AMD'}
+E    AssertionError: assert set() == {'AMD'}
+E      
+E      Extra items in the right set:
+E      'AMD'
+E      Use -v to get more diff
+
+tests/test_tiingo_boats_display.py:227: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_________________ test_case_variants_share_one_trade_watermark _________________
+
+    def test_case_variants_share_one_trade_watermark():
+     r=reducer();consume(r,frame(symbol='amd',offset=2,price=102),2)
+     consume(r,frame(symbol='AMD',offset=1,price=101),3)
+     consume(r,frame(symbol='aMd',offset=2,price=99),3)
+>    assert r.snapshot(NOW+timedelta(seconds=3))['quotes']['AMD']['extPrice']==102
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'AMD'
+
+tests/test_tiingo_boats_display.py:236: KeyError
+____ test_lowercase_break_invalidates_and_only_newer_case_variant_restores _____
+
+    def test_lowercase_break_invalidates_and_only_newer_case_variant_restores():
+     r=reducer();consume(r,frame())
+     consume(r,frame('B',1,symbol='amd',conditions=['Z','@','F','X']),1)
+     assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+     assert set(r.watermarks)=={'AMD'}
+     consume(r,frame(offset=1,symbol='AMD'),2)
+>    assert r.snapshot(NOW+timedelta(seconds=2))['quotes']=={}
+E    AssertionError: assert {'AMD': {'ext..._boats', ...}} == {}
+E      
+E      Left contains 1 more item:
+E      {'AMD': {'extBasis': 'LIVE',
+E               'extEventAt': '2026-10-12T00:01:01+00:00',
+E               'extPrice': 100,
+E               'extPriceKind': 'LAST_TRADE',
+E               'extReceivedAt': '2026-10-12T00:01:02+00:00',...
+E      
+E      ...Full output truncated (7 lines hidden), use '-vv' to show
+
+tests/test_tiingo_boats_display.py:247: AssertionError
+_________ test_lowercase_quote_cannot_erase_refresh_or_advance_a_trade _________
+
+    def test_lowercase_quote_cannot_erase_refresh_or_advance_a_trade():
+     r=reducer();consume(r,frame())
+     before=dict(r.watermarks)
+     consume(r,frame('Q',20,symbol='amd'),20)
+     assert r.watermarks==before
+>    assert r.snapshot(NOW+timedelta(seconds=20))['quotes']['AMD']['extTs']==NOW.timestamp()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'AMD'
+
+tests/test_tiingo_boats_display.py:257: KeyError
+__ test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks[Q] ___
+
+kind = 'Q'
+
+    @pytest.mark.parametrize('kind',['Q','T','B'])
+    def test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks(kind):
+     r=reducer();consume(r,frame())
+     quotes=dict(r.quotes);watermarks=dict(r.watermarks)
+     consume(r,frame(kind,1,symbol='msft'),1)
+>    assert r.quotes==quotes and r.watermarks==watermarks
+E    AssertionError: assert ({} == {'AMD': {'ext..._boats', ...}}
+E      
+E      Right contains 1 more item:
+E      {'AMD': {'extBasis': 'LIVE',
+E               'extEventAt': '2026-10-12T00:01:00+00:00',
+E               'extPrice': 100,
+E               'extPriceKind': 'LAST_TRADE',
+E               'extReceivedAt': '2026-10-12T00:01:00+00:00',...
+E      
+E      ...Full output truncated (7 lines hidden), use '-vv' to show)
+
+tests/test_tiingo_boats_display.py:266: AssertionError
+__ test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks[T] ___
+
+kind = 'T'
+
+    @pytest.mark.parametrize('kind',['Q','T','B'])
+    def test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks(kind):
+     r=reducer();consume(r,frame())
+     quotes=dict(r.quotes);watermarks=dict(r.watermarks)
+     consume(r,frame(kind,1,symbol='msft'),1)
+>    assert r.quotes==quotes and r.watermarks==watermarks
+E    AssertionError: assert ({} == {'AMD': {'ext..._boats', ...}}
+E      
+E      Right contains 1 more item:
+E      {'AMD': {'extBasis': 'LIVE',
+E               'extEventAt': '2026-10-12T00:01:00+00:00',
+E               'extPrice': 100,
+E               'extPriceKind': 'LAST_TRADE',
+E               'extReceivedAt': '2026-10-12T00:01:00+00:00',...
+E      
+E      ...Full output truncated (7 lines hidden), use '-vv' to show)
+
+tests/test_tiingo_boats_display.py:266: AssertionError
+__ test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks[B] ___
+
+kind = 'B'
+
+    @pytest.mark.parametrize('kind',['Q','T','B'])
+    def test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks(kind):
+     r=reducer();consume(r,frame())
+     quotes=dict(r.quotes);watermarks=dict(r.watermarks)
+     consume(r,frame(kind,1,symbol='msft'),1)
+>    assert r.quotes==quotes and r.watermarks==watermarks
+E    AssertionError: assert ({} == {'AMD': {'ext..._boats', ...}}
+E      
+E      Right contains 1 more item:
+E      {'AMD': {'extBasis': 'LIVE',
+E               'extEventAt': '2026-10-12T00:01:00+00:00',
+E               'extPrice': 100,
+E               'extPriceKind': 'LAST_TRADE',
+E               'extReceivedAt': '2026-10-12T00:01:00+00:00',...
+E      
+E      ...Full output truncated (7 lines hidden), use '-vv' to show)
+
+tests/test_tiingo_boats_display.py:266: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-c17676cf-0738-4a9a-a453-24884fcb66bc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-c17676cf-0738-4a9a-a453-24884fcb66bc/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_tiingo_boats_display.py::test_lowercase_live_vendor_trade_preserves_source_and_public_uppercase_key
+FAILED tests/test_tiingo_boats_display.py::test_case_variants_share_one_trade_watermark
+FAILED tests/test_tiingo_boats_display.py::test_lowercase_break_invalidates_and_only_newer_case_variant_restores
+FAILED tests/test_tiingo_boats_display.py::test_lowercase_quote_cannot_erase_refresh_or_advance_a_trade
+FAILED tests/test_tiingo_boats_display.py::test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks[Q]
+FAILED tests/test_tiingo_boats_display.py::test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks[T]
+FAILED tests/test_tiingo_boats_display.py::test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks[B]
+7 failed, 13 passed, 44 deselected, 1 warning in 2.04s

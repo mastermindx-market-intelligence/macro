@@ -1,0 +1,71 @@
+{
+  "activate": true,
+  "importance": 78,
+  "banner_days": 4,
+  "tone": "tailwind",
+  "banner_title": "U.S.-China '30-for-30' tariff reduction lists — trade-exposed industrials and ags reprice",
+  "banner_title_zh": "美中「30对30」关税减免清单——贸易敏感工业与农产品重新定价",
+  "summary": "The White House published reciprocal '30-for-30' product lists under the U.S.-China Board of Trade, signaling a concrete framework to cut tariffs on 30 U.S. exports to China and 30 Chinese imports to the U.S. This is a de-escalation step that should ease input costs and support trade-exposed sectors.",
+  "summary_zh": "白宫发布美中贸易委员会下的对等「30对30」产品清单，表明将就30项美国对华出口和30项中国对美进口削减关税。这是贸易缓和的实质步骤，应能降低投入成本并利好贸易敏感板块。",
+  "analysis": "The release confirms a working '30-for-30' reciprocal tariff-reduction mechanism under the standing U.S.-China Board of Trade. While the actual product names are not yet enumerated in this announcement, establishing the lists and the reciprocity principle is itself the policy signal: both governments are moving from tariff escalation to selective de-escalation through a standing bilateral channel.\n\nThe market transmission is twofold. First, reduced tariffs on Chinese imports to the U.S. lower input costs for U.S. manufacturers, retailers, and construction supply chains — a margin tailwind for importers of machinery, electronics, and industrial components. Second, reduced Chinese tariffs on U.S. exports improve access for U.S. agriculture, energy, and select manufactured goods, where China is a meaningful demand pool. In a reflation regime with low macro risk, this reads as a pro-growth supply-side improvement rather than a shock.\n\nKey uncertainty is composition: which 30 products make each list, and the depth of tariff cuts. If the lists skew toward politically sensitive goods (steel, autos, semiconductors), the impact is larger; if they are limited to non-strategic categories, the effect is more modest. The announcement's legal caveat — 'consistent with their respective domestic laws and processes' — also means implementation is not immediate and could face domestic scrutiny.\n\nThe overall read is risk-positive for trade-exposed cyclicals with direct China exposure, and a mild headwind for domestic pure-plays that have benefited from tariff protection (e.g., some steel and textile producers) if those products appear on the import list.",
+  "sectors": [
+    {
+      "name": "Agriculture & Food",
+      "impact": "tailwind",
+      "rationale": "U.S. farm exports (soybeans, corn, pork, beef) are historically the first category granted Chinese tariff relief; reduced duties would boost demand and pricing."
+    },
+    {
+      "name": "Energy & LNG",
+      "impact": "tailwind",
+      "rationale": "China is a top buyer of U.S. LNG and crude; tariff cuts improve competitiveness of U.S. energy exports in the Chinese market."
+    },
+    {
+      "name": "Industrial Machinery & Components",
+      "impact": "tailwind",
+      "rationale": "U.S. manufacturers importing Chinese components benefit from lower input tariffs, supporting margins."
+    },
+    {
+      "name": "Retail & Consumer Goods",
+      "impact": "tailwind",
+      "rationale": "Lower tariffs on Chinese consumer goods ease cost pressures for import-heavy retailers."
+    },
+    {
+      "name": "Domestic Steel & Protected Manufacturers",
+      "impact": "headwind",
+      "rationale": "If Chinese steel or similar protected categories appear on the import list, domestic producers lose tariff shield and face price competition."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "DE",
+      "direction": "benefit",
+      "rationale": "Deere's agricultural equipment demand is tied to U.S. farm income; Chinese tariff relief on soybeans and corn lifts farmer purchasing power."
+    },
+    {
+      "symbol": "ADM",
+      "direction": "benefit",
+      "rationale": "Archer-Daniels-Midland is a direct beneficiary of U.S. grain and oilseed export flows to China."
+    },
+    {
+      "symbol": "LNG",
+      "direction": "benefit",
+      "rationale": "Cheniere Energy is the largest U.S. LNG exporter; improved Chinese market access directly supports volumes and pricing."
+    },
+    {
+      "symbol": "CAT",
+      "direction": "benefit",
+      "rationale": "Caterpillar imports Chinese components and exports machinery; reciprocal tariff cuts help both its cost base and China sales."
+    },
+    {
+      "symbol": "NKE",
+      "direction": "benefit",
+      "rationale": "Nike has heavy China-sourced production and China consumer exposure; lower tariffs ease input costs and support demand."
+    },
+    {
+      "symbol": "X",
+      "direction": "hurt",
+      "rationale": "U.S. Steel could face renewed import competition if Chinese steel products appear on the U.S. import list."
+    }
+  ],
+  "confidence": "medium"
+}

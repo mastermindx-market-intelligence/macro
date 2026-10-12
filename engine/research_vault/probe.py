@@ -283,8 +283,10 @@ def text_facts(body_text: str | None, pages: int | None = None) -> dict:
     The four states are distinct on purpose:
       - ``unavailable`` — ``pdftotext`` is missing or crashed. We know nothing
         about the document; this is a TOOLING fault to fix on the host.
-      - ``none``        — the extractor ran and found no text. The PDF is
-        image-only, so body search is silently blind to it. A DOCUMENT fault.
+      - ``none``        — the extractor ran and found no text, or only
+        whitespace/form feeds (an image-only PDF emits one form feed per
+        page). The PDF is image-only, so body search is silently blind to
+        it. A DOCUMENT fault.
       - ``thin``        — text present but below a readable density (scanned with
         a text cover sheet, or a chart-only deck).
       - ``full``        — a genuine text layer.
@@ -298,7 +300,7 @@ def text_facts(body_text: str | None, pages: int | None = None) -> dict:
     text = body_text or ""
     chars = len(text)
     words = len(text.split())
-    if chars == 0:
+    if chars == 0 or text.strip() == "":
         layer = "none"
     elif pages and pages > 0:
         layer = "thin" if (chars / pages) < THIN_CHARS_PER_PAGE else "full"

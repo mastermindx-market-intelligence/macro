@@ -1,0 +1,165 @@
+{
+  "schema": "am_edition.v1",
+  "display_only": true,
+  "authority": "display_only",
+  "blocks": [
+    {
+      "key": "session_clock",
+      "title_en": "Session clock",
+      "title_zh": "交易时段",
+      "state": "CURRENT",
+      "source_ref": "computed",
+      "source_owner": "build_am_edition",
+      "max_age_minutes": null,
+      "classification": "deterministic_calendar",
+      "state_reason_en": null,
+      "state_reason_zh": null
+    },
+    {
+      "key": "tape_since_prior_close",
+      "title_en": "Since yesterday's close",
+      "title_zh": "自昨日收盘以来",
+      "state": "CURRENT",
+      "source_ref": "site/live/quotes.json",
+      "source_owner": "intraday-fastpath",
+      "source_as_of": "2026-09-08T13:00:00+00:00",
+      "source_as_of_precision": "minute",
+      "max_age_minutes": 240,
+      "classification": "deterministic_derived_comparison",
+      "state_reason_en": null,
+      "state_reason_zh": null,
+      "rows": [
+        {
+          "label_en": "S&P 500 ETF",
+          "label_zh": "标普500 ETF",
+          "symbol": "SPY",
+          "prior_close": 739.0,
+          "last": 740.0,
+          "change_pct": 0.14,
+          "quote_as_of": "2026-09-08T13:00:00+00:00"
+        },
+        {
+          "label_en": "Nasdaq 100 ETF",
+          "label_zh": "纳斯达克100 ETF",
+          "symbol": "QQQ",
+          "prior_close": 508.5,
+          "last": 510.0,
+          "change_pct": 0.3,
+          "quote_as_of": "2026-09-08T13:00:00+00:00"
+        }
+      ]
+    },
+    {
+      "key": "market_state",
+      "title_en": "Market state",
+      "title_zh": "市场状态",
+      "state": "CURRENT",
+      "source_ref": "data/market_state/latest.json",
+      "source_owner": "nightly",
+      "source_as_of": "2026-09-08T00:00:00+00:00",
+      "source_as_of_precision": "day",
+      "max_age_minutes": 1440,
+      "classification": "owner_fact",
+      "state_reason_en": null,
+      "state_reason_zh": null,
+      "rows": [
+        {
+          "label_en": "Risk-on",
+          "label_zh": "风险偏好",
+          "posture_en": "Constructive",
+          "posture_zh": "积极",
+          "headline_en": "Risk-on backdrop, supportive breadth.",
+          "headline_zh": "风险偏好格局，宽度支持。"
+        }
+      ]
+    },
+    {
+      "key": "regime",
+      "title_en": "Regime",
+      "title_zh": "宏观周期",
+      "state": "CURRENT",
+      "source_ref": "data/regime/latest.json",
+      "source_owner": "nightly",
+      "source_as_of": "2026-09-08T00:00:00+00:00",
+      "source_as_of_precision": "day",
+      "max_age_minutes": 1440,
+      "classification": "owner_fact",
+      "state_reason_en": null,
+      "state_reason_zh": null,
+      "rows": [
+        {
+          "quad_name_en": "Reflation",
+          "quad_name_zh": "再通胀"
+        }
+      ]
+    },
+    {
+      "key": "cross_asset_plane",
+      "title_en": "Cross-asset plane",
+      "title_zh": "跨资产全景",
+      "state": "CURRENT",
+      "source_ref": "data/neuralweb/market_plane.json",
+      "source_owner": "nightly",
+      "source_as_of": "2026-09-08T00:00:00+00:00",
+      "source_as_of_precision": "day",
+      "max_age_minutes": 1440,
+      "classification": "owner_fact",
+      "state_reason_en": null,
+      "state_reason_zh": null,
+      "rows": [
+        {
+          "verdict": {
+            "verdict": "RISK_ON",
+            "label_en": "Risk-on",
+            "label_zh": "风险偏好"
+          },
+          "contradictions_en": "No disagreements across the plane.",
+          "contradictions_zh": "各资产读数一致，无分歧。",
+          "freshness_en": "This plane reading is current.",
+          "freshness_zh": "该全景读数是最新的。"
+        }
+      ]
+    },
+    {
+      "key": "todays_calendar",
+      "title_en": "Today's calendar",
+      "title_zh": "今日日程",
+      "state": "CURRENT",
+      "source_ref": "data/release_forecast/latest.json",
+      "source_owner": "nightly",
+      "source_as_of": "2026-09-08T10:00:00+00:00",
+      "source_as_of_precision": "minute",
+      "max_age_minutes": 1440,
+      "classification": "deterministic_calendar",
+      "state_reason_en": null,
+      "state_reason_zh": null,
+      "rows": [
+        {
+          "release_date": "2026-09-08",
+          "title_en": "Headline CPI (consumer prices)",
+          "title_zh": "总体消费者物价指数"
+        }
+      ]
+    },
+    {
+      "key": "prior_close_brief_ref",
+      "title_en": "Yesterday's brief",
+      "title_zh": "昨日简报",
+      "state": "CURRENT",
+      "source_ref": "site/master_brief.json",
+      "source_owner": "master_brain",
+      "source_as_of": "2026-09-08T10:00:00+00:00",
+      "source_as_of_precision": "minute",
+      "max_age_minutes": 1440,
+      "classification": "existing_model_generated_prior_close_brief",
+      "state_reason_en": null,
+      "state_reason_zh": null,
+      "rows": [
+        {
+          "generated_at": "2026-09-08T10:00:00+00:00",
+          "link": "/aibrief.html"
+        }
+      ]
+    }
+  ]
+}

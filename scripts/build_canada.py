@@ -836,9 +836,8 @@ def _tailwind_freshness_gate(setups: dict | None, latest: dict) -> dict | None:
     except Exception as e:  # noqa: BLE001
         log.warning("CA tailwind freshness: panel unreadable (%s)", e)
         return None
-    # trading-day staleness ≈ business days between the two dates (calendar-day / weekend
-    # aware; holidays make this a slight over-count, which fails SAFE — suppress sooner).
-    stale_td = int(pd.bdate_range(tw_date, board_date).size - 1) if tw_date < board_date else 0
+    from lib.market_session import missed_sessions
+    stale_td = missed_sessions("CA", tw_date.date(), board_date.date())
     setups["tailwind_stale_days"] = stale_td
     if stale_td > 3:
         setups["tailwind_suppressed"] = True

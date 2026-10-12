@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/darkpool.html.j2
+- site/darkpool.html
+- site/assets/css/170de2e0.css
+manifest: mockups/evidence/uiux-darkpool-native-desk-20260923/manifest.json

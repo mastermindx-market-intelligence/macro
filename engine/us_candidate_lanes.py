@@ -896,3 +896,238 @@ def graduation_fields(
             "window_months_back": months_back,
         }
     return out
+
+
+# Browser projection of the EXISTING pool; not a new ranking or admission owner.
+def project_candidate_visibility(
+    board: Mapping[str, Any] | None, *, archive: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Expose every eligible receipt without changing its cohort, order or authority.
+
+    A cap-only exclusion is visible with its actual null final score. Neither the
+    pre-cap screen position nor a T1 marker becomes entry permission. Source clocks
+    and lossless population invariants are checked before a view is called current.
+    Only a small allowlist crosses into the renderer; raw/secret additions cannot
+    become public merely by appearing in an upstream record.
+    """
+    from datetime import date
+    import hashlib
+
+    counts = dict.fromkeys(("eligible", "in_buy_lane", "off_buy_lane", "scored", "unscored"))
+    result: dict[str, Any] = {
+        "status": "unavailable", "reason": "candidate_pool_absent",
+        "as_of": None, "counts": counts, "rows": [], "display_only": True, "source_digest": None,
+    }
+    if not isinstance(board, Mapping):
+        return result
+    pool = board.get("candidate_pool")
+    if not isinstance(pool, Mapping):
+        return result
+    as_of = _text(pool.get("as_of"))
+    result["as_of"] = as_of
+    try:
+        valid_date = date.fromisoformat(as_of or "").isoformat() == as_of
+    except ValueError:
+        valid_date = False
+    if not valid_date or as_of != _text(board.get("as_of")):
+        result["reason"] = "pool_board_session_mismatch"
+        return result
+    if pool.get("pool_definition") != POOL_DEFINITION:
+        result["reason"] = "pool_definition_unknown"
+        return result
+    raw = pool.get("rows")
+    expected = pool.get("eligible")
+    if (not isinstance(raw, list) or type(expected) is not int
+            or expected < 0 or len(raw) != expected):
+        result["reason"] = "pool_population_mismatch"
+        return result
+    fields = ("ticker", "name", "sector", "pool_rank", "in_buy_lane", "lane",
+              "headline_reason", "lane_reasons", "tier_cascade", "admission_class",
+              "prophet_score_basis")
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for source in raw:
+        if not isinstance(source, Mapping):
+            result["reason"] = "pool_row_malformed"
+            return result
+        ticker = _text(source.get("ticker"))
+        metadata_ok = all(source.get(field) is None or isinstance(source.get(field), str)
+                          for field in fields if field not in ("pool_rank", "in_buy_lane", "lane_reasons"))
+        reasons = source.get("lane_reasons")
+        rank = source.get("pool_rank")
+        if (not metadata_ok or not ticker or ticker.upper() in seen
+                or type(source.get("in_buy_lane")) is not bool
+                or (reasons is not None and (not isinstance(reasons, list)
+                    or not all(isinstance(reason, str) for reason in reasons)))
+                or (rank is not None and (isinstance(rank, bool) or _finite(rank) is None
+                    or _finite(rank) < 1 or not float(rank).is_integer()))):
+            result["reason"] = "pool_row_malformed"
+            return result
+        seen.add(ticker.upper())
+        row = {field: deepcopy(source.get(field)) for field in fields}
+        row["ticker"] = ticker
+        score_block = _mapping(source.get("prophet"))
+        score = _finite(score_block.get("score"))
+        # Never invent a score off the cohort on which the canonical scorer ran.
+        scored = (source["in_buy_lane"] is True and source.get("prophet_score_basis") == "buy_lane_pool"
+                  and type(score_block.get("score")) is not bool
+                  and score is not None and 0 <= score <= 100)
+        row["prophet"] = {"score": score} if scored else None
+        if not scored:
+            row["prophet_score_basis"] = None
+        rows.append(row)
+    in_buy = sum(row["in_buy_lane"] for row in rows)
+    scored_n = sum(row["prophet"] is not None for row in rows)
+    if archive is not None:
+        archive_ok = (isinstance(archive, Mapping) and archive.get("as_of") == as_of
+                      and archive.get("board_definition") == _text(board.get("board_definition"))
+                      and archive.get("status") in ("unavailable", "incomplete", "mismatch", "matched_fields")
+                      and _mapping(archive.get("counts")).get("expected") == len(rows))
+        summary = {"status": "unavailable", "exact_generation_verified": False,
+                   "counts": {"expected": len(rows), "matched": None, "missing": None,
+                              "mismatched": None, "extra_pool_rows": None,
+                              "duplicate_tickers": None}}
+        if archive_ok:
+            summary["status"] = archive["status"]
+            for field in summary["counts"]:
+                value = _mapping(archive.get("counts")).get(field)
+                summary["counts"][field] = value if type(value) is int and value >= 0 else None
+        result["archive"] = summary  # aggregate-only; never leak withheld ticker identities
+        state_by = _mapping(archive.get("by_ticker")) if archive_ok else {}
+        for row in rows:
+            state = state_by.get(row["ticker"].upper())
+            row["archive_state"] = state if state in ("missing", "mismatch", "matched_fields") else "unavailable"
+    # Bind the anonymous preview and protected remainder to the same exact object.
+    # The digest is provenance, not an admission or authorization decision.
+    digest = hashlib.sha256(json.dumps(
+        {"as_of": as_of, "pool_definition": POOL_DEFINITION, "rows": rows,
+         "archive": result.get("archive")},
+        sort_keys=True, ensure_ascii=True, separators=(",", ":"), allow_nan=False,
+    ).encode()).hexdigest()
+    result.update(status="ready" if rows else "empty", reason=None, rows=rows, source_digest=digest,
+                  counts={"eligible": len(rows), "in_buy_lane": in_buy,
+                          "off_buy_lane": len(rows) - in_buy, "scored": scored_n,
+                          "unscored": len(rows) - scored_n})
+    return result
+
+
+# Readback of this screen's saved evidence, through the existing archive owner.
+# These fields already persist via store_columns(); no new store columns are added.
+CANDIDATE_ARCHIVE_FIELDS = tuple(c for c in STORE_COLUMNS if c != "pool_open_plan")
+CANDIDATE_ARCHIVE_COLUMNS = (
+    "stamp_date", "ticker", "tier", "board_definition", *CANDIDATE_ARCHIVE_FIELDS,
+)
+
+
+def reconcile_candidate_archive(
+    board: Mapping[str, Any] | None,
+    archived_records: Sequence[Mapping[str, Any]] | None,
+) -> dict[str, Any]:
+    """Compare eligible receipts, not trading quality or the entire raw universe.
+
+    A same-date scan cohort is not a curated cohort. A matching date/ticker is
+    insufficient when the saved reason/order/membership differs. Even matching
+    all persisted pool fields does NOT establish byte-exact board-generation
+    identity: that historical writer has no such binding. Always disclose this.
+    Nothing here writes, ranks, admits, grades, repairs or starts execution.
+    """
+    from numbers import Real
+
+    view = project_candidate_visibility(board)
+    result: dict[str, Any] = {
+        "status": "unavailable", "reason": "archive_not_verified",
+        "as_of": view.get("as_of"), "board_definition": None,
+        "exact_generation_verified": False, "basis": "persisted_pool_fields",
+        "counts": {"expected": view["counts"]["eligible"], "matched": None,
+                   "missing": None, "mismatched": None, "extra_pool_rows": None,
+                   "duplicate_tickers": None},
+        "by_ticker": {},
+    }
+    if view["status"] not in ("ready", "empty"):
+        result["reason"] = "board_pool_unverified"
+        return result
+    pool = _mapping(_mapping(board).get("candidate_pool"))
+    definition = _text(_mapping(board).get("board_definition"))
+    if not definition or definition != _text(pool.get("board_definition")):
+        result["reason"] = "board_definition_mismatch"
+        return result
+    result["board_definition"] = definition
+    expected = store_columns(pool)
+    if not isinstance(archived_records, (list, tuple)) or not archived_records:
+        result["reason"] = "archive_rows_unavailable"
+        return result
+
+    # One record per canonical ticker/date/definition. Never pick a convenient
+    # duplicate, look back to yesterday, or use another ranker's observation.
+    saved: dict[str, list[Mapping[str, Any]]] = {}
+    for record in archived_records:
+        if not isinstance(record, Mapping):
+            result["reason"] = "archive_rows_malformed"
+            return result
+        if (_text(record.get("stamp_date")) != result["as_of"]
+                or _text(record.get("board_definition")) != definition
+                or _text(record.get("tier")) != "curated"):
+            continue
+        ticker = _text(record.get("ticker"))
+        if ticker:
+            saved.setdefault(ticker.upper(), []).append(record)
+
+    def same_value(field: str, actual: Any, wanted: Any) -> bool:
+        if field == "pool_in_buy_lane":
+            return type(actual) is bool and actual is wanted
+        if field in ("pool_rank", "pool_display_rank"):
+            if wanted is None:
+                return actual is None or (isinstance(actual, Real)
+                                          and not isinstance(actual, bool)
+                                          and actual != actual)
+            return (isinstance(actual, Real) and not isinstance(actual, bool)
+                    and _finite(actual) == wanted)
+        return _text(actual) == wanted
+
+    states: dict[str, str] = {}
+    for ticker, wanted in expected.items():
+        records = saved.get(ticker, [])
+        if not records:
+            states[ticker] = "missing"
+        elif len(records) != 1:
+            states[ticker] = "mismatch"
+        else:
+            row = records[0]
+            states[ticker] = "matched_fields" if all(
+                field in row and same_value(field, row[field], wanted[field])
+                for field in CANDIDATE_ARCHIVE_FIELDS
+            ) else "mismatch"
+    extras = sum(sum(_text(r.get("pool_definition")) == POOL_DEFINITION for r in rows)
+                 for ticker, rows in saved.items() if ticker not in expected)
+    duplicates = sum(len(rows) > 1 for rows in saved.values())
+    counts = {"expected": len(expected), "matched": sum(s == "matched_fields" for s in states.values()),
+              "missing": sum(s == "missing" for s in states.values()),
+              "mismatched": sum(s == "mismatch" for s in states.values()),
+              "extra_pool_rows": extras, "duplicate_tickers": duplicates}
+    status = ("mismatch" if counts["mismatched"] or extras or duplicates else
+              "incomplete" if counts["missing"] else "matched_fields")
+    result.update(status=status, reason=None, counts=counts, by_ticker=states)
+    return result
+
+
+def load_candidate_archive_status(
+    board: Mapping[str, Any] | None, *, root: Any = None,
+) -> dict[str, Any]:
+    """Bounded, read-only current-month read using the canonical archive reader.
+
+    Absent/unreadable input is unavailable, never a manufactured empty success.
+    Historical values are never filled using today's source. Error text and
+    local paths never enter the public view.
+    """
+    view = project_candidate_visibility(board)
+    if view["status"] not in ("ready", "empty"):
+        return reconcile_candidate_archive(board, None)
+    try:
+        from engine import us_context_vector as ucv  # noqa: PLC0415
+
+        frame = ucv.load_candidates(root, months=[view["as_of"][:7]],
+                                    columns=list(CANDIDATE_ARCHIVE_COLUMNS))
+        rows = frame.to_dict("records") if frame is not None else None
+        return reconcile_candidate_archive(board, rows)
+    except Exception:  # noqa: BLE001 — optional evidence must not break the screen
+        return reconcile_candidate_archive(board, None)

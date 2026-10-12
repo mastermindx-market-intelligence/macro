@@ -27,33 +27,33 @@
     },
     "status": {
       "enum": ["candidate", "canonical", "retired", "merged"],
-      "description": "Target state, from the SAME enum nodes.status carries. D2B3 mints only retired rows; merged is reserved for a future merge lineage using this same table."
+      "description": "Target state, from the SAME enum nodes.status carries. D2B3 mints retired and merged rows via scripts/correct_gmi_identity_lineage.py."
     },
     "retire_date": {
       "$ref": "#/$defs/nullable_date",
-      "description": "For reason=identity_break: the ratified break row's own break_date, VERBATIM (dates law, §9 — never invented, never backdated). For reason=entity_type_conflict: the correction's own execution date (there is no world-event break date; the company-plane interpretation was never true, so this records when the graph's active interpretation ENDED, not a fact about the world)."
+      "description": "For reason=identity_break: the ratified break row's own break_date, VERBATIM (dates law, §9 — never invented, never backdated). For reason=entity_type_conflict: the correction's own execution date (there is no world-event break date; the company-plane interpretation was never true, so this records when the graph's active interpretation ENDED, not a fact about the world). For reason=duplicate_mint: the correction run date (never back-dated)."
     },
     "merged_into": {
       "type": ["string", "null"],
-      "description": "Target node_id when status=merged. Null for every retired row D2B3 mints."
+      "description": "The surviving company node for a merged row (status=merged, reason=duplicate_mint). Null for every retired row and for identity_break / entity_type_conflict rows D2B3 mints."
     },
     "reason": {
-      "enum": ["identity_break", "entity_type_conflict"],
-      "description": "identity_break: a ratified row in config/theme_graph_identity_breaks.yml retires the PRIOR holder of a reused symbol. entity_type_conflict: a company-kind node collides with an etf-kind node for the same symbol in the committed store — the company-plane interpretation was structurally wrong, not historically superseded."
+      "enum": ["identity_break", "entity_type_conflict", "duplicate_mint"],
+      "description": "identity_break: a ratified row in config/theme_graph_identity_breaks.yml retires the PRIOR holder of a reused symbol. entity_type_conflict: a company-kind node collides with an etf-kind node for the same symbol in the committed store — the company-plane interpretation was structurally wrong, not historically superseded. duplicate_mint: a ratified row in config/theme_graph_duplicate_mints.yml merges a superseded re-mint into the incumbent company node (not an identity break; never feeds identity_epoch)."
     },
     "evidence": {
       "type": "string",
       "minLength": 1,
-      "description": "VERBATIM pointer, never free prose asserting a fact the pointer does not carry: for identity_break, the breaks-registry row's own (market, symbol) plus its ratified_at; for entity_type_conflict, the conflicting etf node id plus whatever machine-visible identity_resolution sidecar receipts already recorded the collision (same receipts the D2A sidecar's ENTITY_TYPE_CONFLICT rows already emit)."
+      "description": "VERBATIM pointer, never free prose asserting a fact the pointer does not carry: for identity_break, the breaks-registry row's own (market, symbol) plus its ratified_at; for entity_type_conflict, the conflicting etf node id plus whatever machine-visible identity_resolution sidecar receipts already recorded the collision (same receipts the D2A sidecar's ENTITY_TYPE_CONFLICT rows already emit); for duplicate_mint, config/theme_graph_duplicate_mints.yml#<node_id> plus the registry row's evidence verbatim."
     },
     "ratified_by": {
       "type": "string",
       "minLength": 1,
-      "description": "For identity_break: carried VERBATIM from the breaks-registry row's own ratified_by. For entity_type_conflict: the ratifying act — the V4-D2B3 frozen contract itself (Sol's commission), since no breaks-registry row exists for a structural entity-kind correction."
+      "description": "For identity_break: carried VERBATIM from the breaks-registry row's own ratified_by. For entity_type_conflict: the ratifying act — the V4-D2B3 frozen contract itself (Sol's commission), since no breaks-registry row exists for a structural entity-kind correction. For duplicate_mint: the DEC cited on the duplicate_mints registry row."
     },
     "computed_at": {
       "$ref": "#/$defs/clock",
-      "description": "The ACTUAL correction execution time — never backdated (§9 dates law). For reason=identity_break this must not predate the cited breaks-registry row's own ratified_at (guard-enforced, matrix 7 / R-A4 / R-A9)."
+      "description": "The ACTUAL correction execution time — never backdated (§9 dates law). For reason=identity_break this must not predate the cited breaks-registry row's own ratified_at (guard-enforced, matrix 7 / R-A4 / R-A9). For reason=duplicate_mint this must not predate the cited duplicate_mints row's ratified_at (same anti-backdating law)."
     },
     "engine_version": {"type": "string", "minLength": 1}
   },

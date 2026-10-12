@@ -1,0 +1,23 @@
+{
+  "document_kind": "PREPARED_HANDOFF_STATUS_NOT_RUNTIME_STATE",
+  "operation": "prophet-us-fable-meta-ceo-20260923-001",
+  "program": "Prophet US",
+  "parent": "macro#6805",
+  "workstream": "WS:PROPHET-US-V4-RECOVERY",
+  "intended_role": "Fable Meta-CEO",
+  "receiver_binding_mode": "CAPACITY_SELECTABLE",
+  "actual_receiver": null,
+  "delivery": "NOT_SENT_TO_CONCRETE_FABLE_SESSION",
+  "pickup_ack": false,
+  "started": false,
+  "requires_astra": false,
+  "source_adoption": "B00_OWNER_VALIDATED_PUBLICATION_REQUIRED",
+  "delegation_record": 5793406610,
+  "repository_source_changes": false,
+  "trials_registered": false,
+  "models_trained": false,
+  "product_acceptance_tests_run": 0,
+  "mission_complete": false,
+  "procedure_pin": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+  "macro_preparation_snapshot": "fc5c1fc49e4f552d8e3e55b5528a6d280d7415e8"
+}

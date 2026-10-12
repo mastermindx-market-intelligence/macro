@@ -1,0 +1,664 @@
+"""Probation kind hierarchy and ontology tier filtering (W-C3)."""
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+from types import SimpleNamespace
+
+import jsonschema
+import pytest
+import yaml
+
+from engine.theme_graph import probation, proposal_worklist
+from engine.theme_graph import ontology
+from engine.theme_graph.ontology import compose_neighborhood
+
+ROOT = Path(__file__).resolve().parents[1]
+_SCHEMA = json.loads(
+    (ROOT / "contracts/theme_graph/probation_proposal.v1.schema.json").read_text()
+)
+_VALIDATOR = jsonschema.Draft202012Validator(_SCHEMA)
+
+_EXISTING_KIND_PINS: dict[str, tuple[str, str]] = {
+    "new_theme": (
+        "prop:5d7dc649fc50b72a",
+        '{"adjudicated_at": null, "adjudication_note": null, "created": "2026-01-01T00:00:00Z", '
+        '"evidence": {}, "evidence_refs": [], "kind": "new_theme", "note": null, '
+        '"proposal_id": "prop:5d7dc649fc50b72a", "proposed_by": "coverage_gap", '
+        '"ratified_by": null, "status": "proposed", "subject": {"name_en": "Test", '
+        '"name_zh": "测试", "slug": "zz_test_theme"}}',
+    ),
+    "merge": (
+        "prop:2cd039cd8238008f",
+        '{"adjudicated_at": null, "adjudication_note": null, "created": "2026-01-01T00:00:00Z", '
+        '"evidence": {}, "evidence_refs": [], "kind": "merge", "note": null, '
+        '"proposal_id": "prop:2cd039cd8238008f", "proposed_by": "coverage_gap", '
+        '"ratified_by": null, "status": "proposed", "subject": {"left": "theme:aa", '
+        '"right": "theme:bb"}}',
+    ),
+    "split": (
+        "prop:74fc21e9cf7484ef",
+        '{"adjudicated_at": null, "adjudication_note": null, "created": "2026-01-01T00:00:00Z", '
+        '"evidence": {}, "evidence_refs": [], "kind": "split", "note": null, '
+        '"proposal_id": "prop:74fc21e9cf7484ef", "proposed_by": "coverage_gap", '
+        '"ratified_by": null, "status": "proposed", "subject": {"source": "theme:cc", '
+        '"targets": ["theme:dd", "theme:ee"]}}',
+    ),
+    "mapping": (
+        "prop:4600ebec43eb21cf",
+        '{"adjudicated_at": null, "adjudication_note": null, "created": "2026-01-01T00:00:00Z", '
+        '"evidence": {}, "evidence_refs": [], "kind": "mapping", "note": null, '
+        '"proposal_id": "prop:4600ebec43eb21cf", "proposed_by": "coverage_gap", '
+        '"ratified_by": null, "status": "proposed", "subject": {"basket": "basket:us:tech", '
+        '"local_theme": "ltheme:finviz:ai"}}',
+    ),
+    "key_rename": (
+        "prop:499a6de835171bb5",
+        '{"adjudicated_at": null, "adjudication_note": null, "created": "2026-01-01T00:00:00Z", '
+        '"evidence": {}, "evidence_refs": [], "kind": "key_rename", "note": null, '
+        '"proposal_id": "prop:499a6de835171bb5", "proposed_by": "coverage_gap", '
+        '"ratified_by": null, "status": "proposed", "subject": {"family": "finviz_themes", '
+        '"new_key": "new", "old_key": "old"}}',
+    ),
+    "identity_continuity": (
+        "prop:8197e49066ec3405",
+        '{"adjudicated_at": null, "adjudication_note": null, "created": "2026-01-01T00:00:00Z", '
+        '"evidence": {}, "evidence_refs": [], "kind": "identity_continuity", "note": null, '
+        '"proposal_id": "prop:8197e49066ec3405", "proposed_by": "coverage_gap", '
+        '"ratified_by": null, "status": "proposed", "subject": {"prior_ticker": "AAPL", '
+        '"ticker": "AAPL"}}',
+    ),
+}
+
+
+def _hierarchy_subject(**overrides) -> dict:
+    base = {
+        "parent_id": "theme:macro_energy",
+        "child_id": "theme:ai_power",
+        "child_tier": "theme",
+        "proposed_asserted_on": "2026-10-07",
+        "nominated_from": "vertical:energy:nuclear",
+    }
+    base.update(overrides)
+    return base
+
+
+def _hierarchy_row(
+    *,
+    subject: dict | None = None,
+    proposed_by: str = "coverage_gap",
+    created: str = "2026-10-07T00:00:00Z",
+    status: str = "proposed",
+    ratified_by: str | None = None,
+    adjudicated_at: str | None = None,
+) -> dict:
+    row = probation.make_proposal(
+        kind="hierarchy",
+        subject=subject or _hierarchy_subject(),
+        proposed_by=proposed_by,
+        created=created,
+    )
+    row["status"] = status
+    row["ratified_by"] = ratified_by
+    row["adjudicated_at"] = adjudicated_at
+    return row
+
+
+def _ont_node(node_id: str, kind: str, *, tier: str | None = "theme") -> dict:
+    return {
+        "node_id": node_id,
+        "kind": kind,
+        "name_en": node_id,
+        "name_zh": None,
+        "market_scope": "global",
+        "tier": tier,
+        "status": "canonical",
+        "merged_into": None,
+        "birth_date": "2026-01-01",
+        "retire_date": None,
+        "identity_epoch": 1,
+        "external_ids": "{}",
+        "provenance": "test",
+        "computed_at": "2026-01-01T00:00:00Z",
+        "engine_version": "theme_graph.v1",
+        "source_meta": None,
+    }
+
+
+def _ont_edge(edge_id: str, type_: str, src: str, dst: str, *, valid_from: str = "2026-10-07") -> dict:
+    return {
+        "edge_id": edge_id,
+        "type": type_,
+        "src": src,
+        "dst": dst,
+        "valid_from": valid_from,
+        "valid_to": None,
+        "evidence_time": valid_from,
+        "belief_time": valid_from,
+        "era": "observed",
+        "source_class": "curated",
+        "date_provenance": "crosswalk",
+        "evidence_refs": ["ev:test"],
+        "confidence_basis": "test.v1",
+        "computed_at": "2026-10-07T00:00:00Z",
+        "engine_version": "theme_graph.v1",
+    }
+
+
+def _store(**kwargs):
+    return SimpleNamespace(
+        read_nodes=lambda: kwargs.get("nodes", []),
+        read_node_lifecycle=lambda: kwargs.get("lifecycle", []),
+        read_edges=lambda: kwargs.get("edges", []),
+        read_proposals=lambda: kwargs.get("proposals", []),
+    )
+
+
+def test_hierarchy_row_passes_schema_validate_and_round_trips(tmp_path):
+    row = _hierarchy_row()
+    _VALIDATOR.validate(row)
+    assert probation.validate(row) == []
+    path = tmp_path / "proposals.jsonl"
+    assert probation.append_proposals([row], path) == (1, 0)
+    loaded = probation.read_proposals(path)[0]
+    assert loaded == row
+    assert loaded["proposal_id"] == probation.proposal_id("hierarchy", row["subject"])
+
+
+@pytest.mark.parametrize("kind", list(_EXISTING_KIND_PINS))
+def test_existing_kind_proposal_id_and_serialization_unchanged(kind):
+    expected_id, expected_line = _EXISTING_KIND_PINS[kind]
+    row = json.loads(expected_line)
+    assert row["proposal_id"] == expected_id
+    assert probation.proposal_id(kind, row["subject"]) == expected_id
+    serialized = json.dumps(
+        {key: row.get(key) for key in probation.ROW_FIELDS},
+        ensure_ascii=False,
+        sort_keys=True,
+    )
+    assert serialized == expected_line
+
+
+def test_require_valid_rows_accepts_production_probation_file_if_present():
+    path = ROOT / "data/theme_graph/probation/proposals.jsonl"
+    if not path.is_file():
+        pytest.skip("sparse checkout: production probation file absent")
+    probation.require_valid_rows(probation.read_proposals(path, strict=True))
+
+
+def test_llm_hierarchy_cannot_be_ratified():
+    row = _hierarchy_row(proposed_by="llm_proposed", status="ratified",
+                          ratified_by="bot", adjudicated_at="2026-10-08T00:00:00Z")
+    with pytest.raises(jsonschema.ValidationError):
+        _VALIDATOR.validate(row)
+    assert any(e.startswith("LLM_HIERARCHY_NOT_RATIFIABLE") for e in probation.validate(row))
+
+
+def test_llm_hierarchy_proposed_and_rejected_pass():
+    for status in ("proposed", "rejected"):
+        row = _hierarchy_row(
+            proposed_by="llm_proposed",
+            status=status,
+            ratified_by=None,
+            adjudicated_at="2026-10-08T00:00:00Z" if status == "rejected" else None,
+        )
+        _VALIDATOR.validate(row)
+        assert probation.validate(row) == []
+
+
+@pytest.mark.parametrize(
+    "nominated_from,reason",
+    [
+        ("basket:baskets_china_ths:thsc900001", "VENDOR_NOMINATOR"),
+        ("basket:finviz_themes:aicompute", "VENDOR_NOMINATOR"),
+        ("research:ths_dump", "VENDOR_NOMINATOR"),
+        ("not-a-valid-nominator", "NOMINATED_FROM_GRAMMAR"),
+    ],
+)
+def test_vendor_and_malformed_nominators_refused(nominated_from, reason):
+    row = _hierarchy_row(subject=_hierarchy_subject(nominated_from=nominated_from))
+    assert any(e.startswith(reason) for e in probation.validate(row))
+
+
+def test_house_nominators_accepted():
+    for nominated_from in ("vertical:energy:nuclear", "research:research/x.md",
+                           "basket:baskets:solar_us"):
+        row = _hierarchy_row(subject=_hierarchy_subject(nominated_from=nominated_from))
+        assert probation.validate(row) == []
+
+
+def test_pre_epoch_and_self_parent_refused():
+    row = _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="2026-10-06"))
+    assert any(e.startswith("HIERARCHY_EPOCH") for e in probation.validate(row))
+    row = _hierarchy_row(
+        subject=_hierarchy_subject(parent_id="theme:same", child_id="theme:same")
+    )
+    assert any(e.startswith("HIERARCHY_SELF_EDGE") for e in probation.validate(row))
+
+
+def test_ontology_neighborhood_unchanged_when_hierarchy_nodes_present():
+    theme = "theme:ai_semiconductors"
+    base_nodes = [_ont_node(theme, "theme", tier="theme")]
+    base_store = _store(nodes=base_nodes)
+    before = compose_neighborhood(base_store, node_id=theme, asof="2026-10-07")
+
+    extra_nodes = [
+        _ont_node("theme:macro_ai", "theme", tier="macro_category"),
+        _ont_node("theme:micro_hbm", "theme", tier="micro_theme"),
+    ]
+    extra_edges = [
+        _ont_edge("p1", "PARENT_OF", "theme:macro_ai", theme),
+        _ont_edge("p2", "PARENT_OF", theme, "theme:micro_hbm"),
+    ]
+    after = compose_neighborhood(
+        _store(nodes=base_nodes + extra_nodes, edges=extra_edges),
+        node_id=theme,
+        asof="2026-10-07",
+    )
+    assert after == before
+
+
+def test_macro_category_id_behaves_like_unknown():
+    macro = "theme:macro_ai"
+    store = _store(nodes=[_ont_node(macro, "theme", tier="macro_category")])
+    result = compose_neighborhood(store, node_id=macro, asof="2026-10-07")
+    assert result["availability"]["state"] == "SUBJECT_NOT_FOUND"
+
+
+def test_ratified_hierarchy_materialization_follows_parent_of_edge():
+    parent = "theme:macro_energy"
+    child = "theme:ai_power"
+    subject = _hierarchy_subject(parent_id=parent, child_id=child)
+    proposal = _hierarchy_row(
+        status="ratified",
+        ratified_by="curator:test",
+        adjudicated_at="2026-10-08T00:00:00Z",
+        subject=subject,
+    )
+    nodes = [
+        _ont_node(parent, "theme", tier="macro_category"),
+        _ont_node(child, "theme", tier="theme"),
+    ]
+    edge = _ont_edge("parent_of:1", "PARENT_OF", parent, child)
+    store_with = _store(nodes=nodes, edges=[edge], proposals=[proposal])
+    store_without = _store(nodes=nodes, proposals=[proposal])
+
+    materialized = compose_neighborhood(store_with, node_id=child, asof="2026-10-08")
+    assert materialized["curation"]["state"] == "RATIFIED_AND_MATERIALIZED"
+
+    not_yet = compose_neighborhood(store_without, node_id=child, asof="2026-10-08")
+    assert not_yet["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+
+def test_proposal_worklist_accepts_and_filters_hierarchy_kind():
+    rows = [
+        _hierarchy_row(),
+        probation.make_proposal(
+            kind="mapping",
+            subject={"basket": "basket:baskets:solar_us", "local_theme": "ltheme:finviz:solar"},
+            proposed_by="overlap_stats",
+        ),
+    ]
+    page = proposal_worklist.compose_worklist(rows, asof="2026-10-07", kind="hierarchy")
+    assert page["counts"]["matching"] == 1
+    assert page["items"][0]["proposal"]["kind"] == "hierarchy"
+
+
+_REASON_PREFIX = re.compile(r"^[A-Z][A-Z_]+: ")
+
+
+def _assert_schema_and_validate_reject(
+    row: dict,
+    *,
+    expected_token: str,
+    schema_must_reject: bool = True,
+) -> None:
+    errors = probation.validate(row)
+    assert errors
+    assert any(e.startswith(f"{expected_token}:") for e in errors)
+    assert all(_REASON_PREFIX.match(e) for e in errors)
+    schema_errors = list(_VALIDATOR.iter_errors(row))
+    if schema_must_reject:
+        assert schema_errors
+    else:
+        assert not schema_errors
+
+
+def _row_with_list_subject() -> dict:
+    row = _hierarchy_row()
+    row["subject"] = []
+    return row
+
+
+@pytest.mark.parametrize(
+    "row,expected_token,schema_must_reject",
+    [
+        (
+            _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "parent_id"}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "child_id"}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "child_tier"}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(
+                subject={k: v for k, v in _hierarchy_subject().items() if k != "proposed_asserted_on"}
+            ),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(
+                subject={k: v for k, v in _hierarchy_subject().items() if k != "nominated_from"}
+            ),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject={**_hierarchy_subject(), "extra": 1}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="20261008")),
+            "HIERARCHY_ASSERTED_ON_GRAMMAR",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="2026-13-01")),
+            "HIERARCHY_ASSERTED_ON_GRAMMAR",
+            False,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="2026-1-07")),
+            "HIERARCHY_ASSERTED_ON_GRAMMAR",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(child_tier="basket")),
+            "HIERARCHY_CHILD_TIER",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(parent_id="theme:A")),
+            "HIERARCHY_ID_GRAMMAR",
+            True,
+        ),
+        (
+            _row_with_list_subject(),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+    ],
+    ids=[
+        "missing_parent_id",
+        "missing_child_id",
+        "missing_child_tier",
+        "missing_proposed_asserted_on",
+        "missing_nominated_from",
+        "extra_key",
+        "asserted_on_compact",
+        "asserted_on_bad_month",
+        "asserted_on_short_month",
+        "child_tier_basket",
+        "parent_id_grammar",
+        "subject_not_object",
+    ],
+)
+def test_hierarchy_validate_matches_schema_on_bad_rows(
+    row, expected_token, schema_must_reject
+):
+    _assert_schema_and_validate_reject(
+        row, expected_token=expected_token, schema_must_reject=schema_must_reject
+    )
+
+
+def test_hierarchy_validate_errors_always_carry_reason_tokens():
+    bad_rows = [
+        _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "parent_id"}),
+        _hierarchy_row(subject={**_hierarchy_subject(), "extra": 1}),
+        _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="20261008")),
+        _hierarchy_row(subject=_hierarchy_subject(child_tier="basket")),
+        _hierarchy_row(
+            subject=_hierarchy_subject(parent_id="theme:same", child_id="theme:same")
+        ),
+        _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="2026-10-06")),
+        _hierarchy_row(subject=_hierarchy_subject(nominated_from="basket:finviz_themes:x")),
+        _hierarchy_row(
+            proposed_by="llm_proposed",
+            status="ratified",
+            ratified_by="bot",
+            adjudicated_at="2026-10-08T00:00:00Z",
+        ),
+    ]
+    for row in bad_rows:
+        errors = probation.validate(row)
+        assert errors
+        assert all(_REASON_PREFIX.match(e) for e in errors)
+
+
+def test_mapping_curation_parity_when_subject_node_absent():
+    local = "ltheme:finviz:ai"
+    basket = "basket:baskets:us_tech"
+    mapping = probation.make_proposal(
+        kind="mapping",
+        subject={"basket": basket, "local_theme": local},
+        proposed_by="coverage_gap",
+    )
+    mapping["status"] = "ratified"
+    mapping["ratified_by"] = "curator:test"
+    mapping["adjudicated_at"] = "2026-10-08T00:00:00Z"
+    edge = _ont_edge("exp:1", "EXPRESSES", basket, local)
+    store = _store(edges=[edge], proposals=[mapping])
+    result = compose_neighborhood(store, node_id=local, asof="2026-10-08")
+    assert result["availability"]["state"] == "SUBJECT_NOT_FOUND"
+    assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+
+def test_curation_collapse_scoped_to_incident_and_hierarchy(monkeypatch):
+    child = "theme:ai_power"
+    parent = "theme:macro_energy"
+    nodes = [
+        _ont_node(parent, "theme", tier="macro_category"),
+        _ont_node(child, "theme", tier="theme"),
+    ]
+    edge = _ont_edge("parent_of:1", "PARENT_OF", parent, child)
+    calls: list[int] = []
+    real_collapse = ontology._collapse_relevant_edges
+
+    def counting_collapse(rows, *, node_id, asof, knowledge_cutoff):
+        calls.append(1)
+        return real_collapse(
+            rows, node_id=node_id, asof=asof, knowledge_cutoff=knowledge_cutoff
+        )
+
+    monkeypatch.setattr(ontology, "_collapse_relevant_edges", counting_collapse)
+
+    store_plain = _store(nodes=nodes, edges=[edge])
+    calls.clear()
+    compose_neighborhood(store_plain, node_id=child, asof="2026-10-08")
+    assert len(calls) == 1
+
+    proposal = _hierarchy_row(
+        status="ratified",
+        ratified_by="curator:test",
+        adjudicated_at="2026-10-08T00:00:00Z",
+        subject=_hierarchy_subject(parent_id=parent, child_id=child),
+    )
+    store_hier = _store(nodes=nodes, edges=[edge], proposals=[proposal])
+    calls.clear()
+    compose_neighborhood(store_hier, node_id=child, asof="2026-10-08")
+    assert len(calls) == 2
+
+
+def test_ratified_hierarchy_not_materialized_when_parent_of_expired():
+    parent = "theme:macro_energy"
+    child = "theme:ai_power"
+    proposal = _hierarchy_row(
+        status="ratified",
+        ratified_by="curator:test",
+        adjudicated_at="2026-10-08T00:00:00Z",
+        subject=_hierarchy_subject(parent_id=parent, child_id=child),
+    )
+    nodes = [
+        _ont_node(parent, "theme", tier="macro_category"),
+        _ont_node(child, "theme", tier="theme"),
+    ]
+    edge = _ont_edge(
+        "parent_of:1",
+        "PARENT_OF",
+        parent,
+        child,
+        valid_from="2026-10-01",
+    )
+    edge["valid_to"] = "2026-10-08"
+    store = _store(nodes=nodes, edges=[edge], proposals=[proposal])
+    result = compose_neighborhood(store, node_id=parent, asof="2026-10-08")
+    assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:data/themes_heatmap/us.json",
+        "research:./data/themes_heatmap/us.json",
+        "research:data/themes_heatmap",
+        "research:data/baskets_china_ths/x.json",
+    ],
+)
+def test_research_vendor_path_nominator_refused(nominated_from):
+    errors = probation.nominated_from_errors(nominated_from)
+    assert len(errors) == 1
+    assert errors[0].startswith("VENDOR_NOMINATOR: ")
+
+    row = _hierarchy_row(
+        subject=_hierarchy_subject(nominated_from=nominated_from)
+    )
+    assert any(
+        error.startswith("VENDOR_NOMINATOR: ")
+        for error in probation.validate(row)
+    )
+
+
+def test_unregistered_research_source_refused():
+    errors = probation.nominated_from_errors(
+        "research:data/unregistered_x/y.json"
+    )
+    assert len(errors) == 1
+    assert errors[0].startswith("NOMINATOR_UNREGISTERED_SOURCE: ")
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:config/../data/themes_heatmap/us.json",
+        "research:research/../data/x.json",
+        "research:/etc/hosts",
+        "research:data\\themes_heatmap\\us.json",
+    ],
+)
+def test_unsafe_research_path_refused(nominated_from):
+    errors = probation.nominated_from_errors(nominated_from)
+    assert len(errors) == 1
+    assert errors[0].startswith("NOMINATOR_PATH_UNSAFE: ")
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:config/theme_pathways.yml",
+        "research:config/theme_thesis_registry.yml",
+        "research:research/energy/x.md",
+        "research:data/baskets/x.json",
+        "research:config/theme_pathways.yml#section",
+    ],
+)
+def test_house_research_paths_accepted(nominated_from):
+    assert probation.nominated_from_errors(nominated_from) == []
+
+
+def test_hierarchy_block_v1_nominators_validate_clean():
+    content = yaml.safe_load(
+        (ROOT / "research/theme_graph/hierarchy_content/HIERARCHY_BLOCK_V1.yaml")
+        .read_text()
+    )
+    values = [
+        entry["nominated_from"]
+        for entry in content["hierarchy"]["micro_themes"]
+    ]
+    assert values
+    assert [
+        (value, probation.nominated_from_errors(value))
+        for value in values
+        if probation.nominated_from_errors(value)
+    ] == []
+
+
+def test_llm_ratified_schema_message_carries_token():
+    row = _hierarchy_row(
+        proposed_by="llm_proposed",
+        status="ratified",
+        ratified_by="bot",
+        adjudicated_at="2026-10-08T00:00:00Z",
+    )
+    messages = [error.message for error in _VALIDATOR.iter_errors(row)]
+    assert any(
+        "LLM_HIERARCHY_NOT_RATIFIABLE" in message
+        for message in messages
+    )
+
+
+@pytest.mark.parametrize(
+    "nominated_from,reason_token",
+    [
+        ("research:research/x.md#/../../data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#/../../../../../../etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/%2e%2e/data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:config/%2e%2e/%2e%2e/%2e%2e/etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/\uff0e\uff0e/data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#..", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md%23/../../data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x\u00a0y.md", "NOMINATED_FROM_GRAMMAR"),
+        ("research:/etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#/etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x\x00.md", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md ", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/~x.md", "NOMINATOR_PATH_UNSAFE"),
+        ("research:#x", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#", "NOMINATOR_PATH_UNSAFE"),
+    ],
+)
+def test_research_path_laundering_refused(nominated_from, reason_token):
+    errors = probation.nominated_from_errors(nominated_from)
+    assert len(errors) == 1
+    assert errors[0].startswith(f"{reason_token}: ")
+
+    row = _hierarchy_row(subject=_hierarchy_subject(nominated_from=nominated_from))
+    validate_errors = probation.validate(row)
+    assert validate_errors
+    assert any(reason_token in error for error in validate_errors)
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:config/theme_pathways.yml",
+        "research:config/theme_thesis_registry.yml",
+        "research:config/trade_flow_codes.yml",
+        "research:research/defense_intelligence/D0R_DEFENSE_EQUITY_DRIVER_TAXONOMY.md",
+        "research:research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md",
+        "research:config/theme_pathways.yml#section",
+        "research:research/energy/x.md#part-2_a.b",
+    ],
+)
+def test_house_research_nominators_accepted(nominated_from):
+    assert probation.nominated_from_errors(nominated_from) == []

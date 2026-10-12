@@ -19,7 +19,12 @@ ALLOWLIST = {
                 f"{REPOSITORY}/.github/workflows/selfhosted-ci-canary.yml@{MAIN_REF}",
                 job,
             )
-            for job in ("selfhosted-pack", "cache-negative-control", "contamination-probe")
+            for job in (
+                "selfhosted-pack",
+                "four-slot-preflight",
+                "cache-negative-control",
+                "contamination-probe",
+            )
         },
         (
             "workflow_dispatch",
@@ -33,6 +38,31 @@ ALLOWLIST = {
             f"{REPOSITORY}/.github/workflows/m1-runner-canary.yml@{MAIN_REF}",
             "m1-service-canary",
         )
+    },
+    "m1-nightly-2": {
+        # Existing canary tuple — preserves the M1 wake-up round-trip W4 owns.
+        (
+            "workflow_dispatch",
+            f"{REPOSITORY}/.github/workflows/m1-runner-canary.yml@{MAIN_REF}",
+            "m1-service-canary",
+        ),
+        # AD-1T2 producer lane: ONLY the options-intel workflow's `options_intel`
+        # job, ONLY through dispatch OR workflow_run on `daily` completion. The
+        # workflow_run form lets the nightly's same-cycle inputs land before the
+        # M1 read; the dispatch form is W4's canary/measurement carrier. Every
+        # other workflow, event, job, ref or repository is refused here, so a
+        # misrouted cron, a fork pull request, or a candidate-built rogue
+        # workflow cannot quietly land on the store-bearing host.
+        (
+            "workflow_dispatch",
+            f"{REPOSITORY}/.github/workflows/options-intel.yml@{MAIN_REF}",
+            "options_intel",
+        ),
+        (
+            "workflow_run",
+            f"{REPOSITORY}/.github/workflows/options-intel.yml@{MAIN_REF}",
+            "options_intel",
+        ),
     },
     "pc-render": {
         (event, f"{REPOSITORY}/.github/workflows/{workflow}@{MAIN_REF}", job)

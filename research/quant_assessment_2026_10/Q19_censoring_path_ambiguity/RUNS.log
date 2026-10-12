@@ -1,0 +1,80 @@
+---
+utc: Fri Oct 9 10:52:46 UTC 2026
+command: python3.12 evaluate.py --mode baseline --utc Fri Oct 9 10:52:46 UTC 2026
+exit_code: 0
+note: baseline reproduced
+inputs_sha256:
+  PREREG.md: dedbe342c380b950a4b367e6295ad17b09661cec15fcd06f5ebe9aba9a644af6
+  evaluate.py: ea8e6f68c2b0b53d4c937a81a5337fc51fc0ff43a96c55abe2fe8e196d2f928a
+  engine/outcome_first_passage_ambiguity.py: bd11dc00240aed68a5ebb8ef08eb7aa07c78cf4aaa727027ca7947566a2ef52d
+  data/options_signal_episode/episodes.jsonl: a7c53ed59a9fd268470f9b107c8b9665707e31192e23331d2ad9e736f9270652 (prefix 45982874 bytes)
+  data/options_signal_episode/checkpoint.json: b5370e086dba0d86f0c41e95c223b8bf30ba6b56ac8ca5b628df2b51b2392505 (prefix 3987 bytes)
+  data/options_signal_episode/outcomes_session.jsonl: fc02c3f6d224ada2179f89fcf09d63866567e4132d6d6738ccc90c012c9b6311 (prefix 100471221 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000001.jsonl: a74f35d2d1f73b71e27cfdf0f5b7ae5b11e8750feb853f3eb50aeb2713c52637 (prefix 50327529 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000002.jsonl: 8e80c5a5d75a253155a94aa5c8c771c21a5ac40e79f1dceeb5fa8960bdc52c40 (prefix 50330070 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000003.jsonl: 02afa5176952bfb16705d3f2e87b5b3d23aa0d566616d8c14b664c6461a72bab (prefix 50330244 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000004.jsonl: 52096168b293aec42ac2f4bc203615903ab8c85fac80e21af21de1dff3b3836b (prefix 50330449 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000005.jsonl: bb1385bd20cf444daadf5125fe47789211d921680e6747c57137a6a57df2ad3f (prefix 50330419 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000006.jsonl: 2695f96d57a1c90bab3f056a055a063deeb08928f44c3bb042f7ec384414bab8 (prefix 50329411 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000007.jsonl: 0fa3ba19ab62321dcc8d11368535e18550635085debcf794da3ef2cfb67513f7 (prefix 26727345 bytes)
+outputs_sha256:
+  results/baseline.json: 6fc9ec37d8d3e30dd4084a6c2b53c18a4213a17413f4f85908b9e61ec70eacc0
+---
+utc: Fri Oct  9 10:56:39 UTC 2026
+command: python3.12 evaluate.py --mode primary --utc Fri Oct  9 10:56:39 UTC 2026
+exit_code: 0
+note: verdict=REJECT
+inputs_sha256:
+  PREREG.md: dedbe342c380b950a4b367e6295ad17b09661cec15fcd06f5ebe9aba9a644af6
+  evaluate.py: 37b160e5771e927ba08290228832110835565d3062684f27087083e02b0928dd
+  engine/outcome_first_passage_ambiguity.py: bd11dc00240aed68a5ebb8ef08eb7aa07c78cf4aaa727027ca7947566a2ef52d
+  PREREG_AMENDMENT.md: b306c8bc0d6485f216d0df43ee330005ca8ed7732cdb243966a8e1ee44a1ca25
+  data/options_signal_episode/episodes.jsonl: a7c53ed59a9fd268470f9b107c8b9665707e31192e23331d2ad9e736f9270652 (prefix 45982874 bytes)
+  data/options_signal_episode/checkpoint.json: b5370e086dba0d86f0c41e95c223b8bf30ba6b56ac8ca5b628df2b51b2392505 (prefix 3987 bytes)
+  data/options_signal_episode/outcomes_session.jsonl: fc02c3f6d224ada2179f89fcf09d63866567e4132d6d6738ccc90c012c9b6311 (prefix 100471221 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000001.jsonl: a74f35d2d1f73b71e27cfdf0f5b7ae5b11e8750feb853f3eb50aeb2713c52637 (prefix 50327529 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000002.jsonl: 8e80c5a5d75a253155a94aa5c8c771c21a5ac40e79f1dceeb5fa8960bdc52c40 (prefix 50330070 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000003.jsonl: 02afa5176952bfb16705d3f2e87b5b3d23aa0d566616d8c14b664c6461a72bab (prefix 50330244 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000004.jsonl: 52096168b293aec42ac2f4bc203615903ab8c85fac80e21af21de1dff3b3836b (prefix 50330449 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000005.jsonl: bb1385bd20cf444daadf5125fe47789211d921680e6747c57137a6a57df2ad3f (prefix 50330419 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000006.jsonl: 2695f96d57a1c90bab3f056a055a063deeb08928f44c3bb042f7ec384414bab8 (prefix 50329411 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000007.jsonl: 0fa3ba19ab62321dcc8d11368535e18550635085debcf794da3ef2cfb67513f7 (prefix 26727345 bytes)
+outputs_sha256:
+  results/primary.json: d4ef29bf49e891dce0c3e4bc224cf4159ed461fbad9101f3cc7d87be503b5f02
+  results/attrition.csv: aa1d6eb088efd2f1d7255f09254f1d5cc88601a387375307188c372d4ddba4b5
+---
+utc: Fri Oct  9 10:58:36 UTC 2026
+command: python3.12 _fabric/Q19-scratch/undated_diag.py   (MANUAL ENTRY - structural diagnostic, not evaluate.py; staging scratch script, not shipped)
+exit_code: 0
+note: post-primary support diagnostic only. Calls evaluate.build_units (no barrier, state, E or bound). Found: 10d undated units=26 (all administrative_pending, key (ticker, entry_time=None)), 134 episodes, 0 observed; 5d undated=16 units / 59 episodes, 0 observed. Verdict-neutral. See PREREG_AMENDMENT.md addendum B1.
+inputs_sha256:
+  _fabric/Q19-scratch/undated_diag.py: 2a1687fe5b479643baf312932166170f6b0112f29eb9889ad2fd7b47312626e9
+  evaluate.py: 37b160e5771e927ba08290228832110835565d3062684f27087083e02b0928dd
+  data/*: same 10 pinned prefixes as the primary entry above (read_pinned verified each sha256)
+outputs_sha256:
+  (stdout only; transcribed in PREREG_AMENDMENT.md addendum B1)
+---
+utc: Fri Oct  9 20:44:55 UTC 2026
+command: python3.12 evaluate.py --mode primary --utc Fri Oct  9 20:44:55 UTC 2026 --purpose reproducibility re-run per PREREG_AMENDMENT_ADDENDUM_C.md C4; verdict stays bound to entry 2
+exit_code: 0
+note: verdict=REJECT; purpose=reproducibility re-run per PREREG_AMENDMENT_ADDENDUM_C.md C4; verdict stays bound to entry 2
+inputs_sha256:
+  PREREG.md: dedbe342c380b950a4b367e6295ad17b09661cec15fcd06f5ebe9aba9a644af6
+  evaluate.py: 10e3cbe582799df98859da63ad558c2aa1123e53f156a989d7de047fe0215f4b
+  engine/outcome_first_passage_ambiguity.py: 30083c199565ba43fcf11114263ab623d8af6933ac6f52df7725d345779cdf01
+  PREREG_AMENDMENT.md: b306c8bc0d6485f216d0df43ee330005ca8ed7732cdb243966a8e1ee44a1ca25
+  PREREG_AMENDMENT_ADDENDUM_B.md: c17053bd8bd6c12018069a56e1a2a04a7e8a4c5dc8455b6cc9aadb14d4ec45a2
+  PREREG_AMENDMENT_ADDENDUM_C.md: 2870df346c568848624ca80327f094d59becb691d6f4487a4099c59f544e3a70
+  data/options_signal_episode/episodes.jsonl: a7c53ed59a9fd268470f9b107c8b9665707e31192e23331d2ad9e736f9270652 (prefix 45982874 bytes)
+  data/options_signal_episode/checkpoint.json: b5370e086dba0d86f0c41e95c223b8bf30ba6b56ac8ca5b628df2b51b2392505 (prefix 3987 bytes)
+  data/options_signal_episode/outcomes_session.jsonl: fc02c3f6d224ada2179f89fcf09d63866567e4132d6d6738ccc90c012c9b6311 (prefix 100471221 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000001.jsonl: a74f35d2d1f73b71e27cfdf0f5b7ae5b11e8750feb853f3eb50aeb2713c52637 (prefix 50327529 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000002.jsonl: 8e80c5a5d75a253155a94aa5c8c771c21a5ac40e79f1dceeb5fa8960bdc52c40 (prefix 50330070 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000003.jsonl: 02afa5176952bfb16705d3f2e87b5b3d23aa0d566616d8c14b664c6461a72bab (prefix 50330244 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000004.jsonl: 52096168b293aec42ac2f4bc203615903ab8c85fac80e21af21de1dff3b3836b (prefix 50330449 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000005.jsonl: bb1385bd20cf444daadf5125fe47789211d921680e6747c57137a6a57df2ad3f (prefix 50330419 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000006.jsonl: 2695f96d57a1c90bab3f056a055a063deeb08928f44c3bb042f7ec384414bab8 (prefix 50329411 bytes)
+  data/options_signal_episode/outcomes_session_parts/part-000007.jsonl: 0fa3ba19ab62321dcc8d11368535e18550635085debcf794da3ef2cfb67513f7 (prefix 26727345 bytes)
+outputs_sha256:
+  results/primary.json: d4ef29bf49e891dce0c3e4bc224cf4159ed461fbad9101f3cc7d87be503b5f02
+  results/attrition.csv: 0283ca304a5fc72451cfa0055198cd1efecd1bb72524b6664f85a54106a5c753

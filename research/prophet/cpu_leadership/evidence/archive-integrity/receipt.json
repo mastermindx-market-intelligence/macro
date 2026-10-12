@@ -1,0 +1,79 @@
+{
+  "procedure_pin": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 7572,
+  "branch": "sol/us-prophet-candidate-visibility-20260921",
+  "source_before_unit": "0c19885e3cb739f923e096087fbf19bee090ca67",
+  "observed_main": "08a4d1ba05876935d64339abd2784a6a7c827c87",
+  "state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "capability": "Canonical saved candidate receipts are compared with the current eligible pool and disclosed through the existing gated candidate view.",
+  "scope": "Evidence consumer only: no archive writer, ranker, grader, admission, sizing, portfolio, runtime, workflow or data artifact changed.",
+  "source_sha256": {
+    "engine/us_candidate_lanes.py": "7e4d727f934f87e80ff4d9ac1b1d9d5389abb1dad77fa49d1bd103ae7161d7c2",
+    "scripts/build_site.py": "18cb44cd8360318b9ce5f1a9d00457d6d07ce4a539e01988a775edcc7fdaafeb",
+    "templates/_us_candidate_pool.html.j2": "1e3b45f5c130a586223b575e21fc422441e2ea89fa840277823bc5d9b3311500",
+    "templates/_us_candidate_pool_rows.html.j2": "a58b67f6f24dc203f8a7609ca35942a3185220e325a666dae8d96ca55832a9c3",
+    "tests/test_us_candidate_lanes.py": "f32d9182e09244f6778f9a3b122fb24f5e380469bdcc2e65784ce6f6f48ef67f",
+    "tests/test_us_board_gate.py": "8ed66ac65a32fd8e87953211e59a89d5f744e30f63a16caef0f873d163f0da20"
+  },
+  "checks": {
+    "red": {
+      "failed_as_expected": 18,
+      "cause": "missing archive reconciliation APIs"
+    },
+    "archive_green": {
+      "passed": 18
+    },
+    "focused_source_view_payload_refresh": {
+      "passed": 39
+    },
+    "full_owner_suites": {
+      "passed": 205,
+      "skipped": 7,
+      "failed": 0,
+      "skip_reason": "Existing baked-page checks: isolated checkout lacks shipped page/payload artifacts."
+    },
+    "design_ratchet_blockers": 0,
+    "diff_check": "passed",
+    "agent_os": {
+      "records": 1160,
+      "errors": 0,
+      "warnings": 286
+    }
+  },
+  "behavior": [
+    "Only same-session, same-board-definition, curated-tier rows count toward candidate matches.",
+    "Scan rows, older/future rows, wrong definitions, malformed bool/number fields, changed reasons and duplicate records cannot produce a clean match.",
+    "Uses us_context_vector.load_candidates and existing us_candidate_lanes.store_columns, not a second archive or serialization law.",
+    "Matching saved fields still sets exact_generation_verified=false.",
+    "Public summary contains counts only; per-name history stays in each already-gated row.",
+    "Archive-only corrections change the existing source digest and refresh the same-day preview/payload together.",
+    "Missing/unreadable records do not hide current candidates or fabricate missing values."
+  ],
+  "browser_verification": {
+    "status": "blocked_this_unit",
+    "reason": "Tool platform blocked the combined new browser-proof update/run request.",
+    "same_carrier_reconciliation": "The proof script is unchanged against the starting head.",
+    "retried": false,
+    "prior_screenshots_are_new_head_proof": false,
+    "new_real_archive_or_browser_run_claimed": false
+  },
+  "review_transport": {
+    "reviewer_permission_preflight": {
+      "user": "MastermindX1",
+      "permission": "admin"
+    },
+    "china_review_request": {
+      "pr": 7567,
+      "comment_id": 5756273366,
+      "started_or_approved": false
+    }
+  },
+  "remaining": [
+    "#7180 retains archival publication/producer custody; persistent curated snapshot repair and exact-generation writer binding are not delivered here.",
+    "#6992 retains controlled global-ordering activation and its source/effect gates.",
+    "Current-head hosted CI, genuine independent approval and new deployed/browser proof are still required.",
+    "No semiconductor/CPU/memory rank, executable-entry or alpha promotion occurred."
+  ]
+}

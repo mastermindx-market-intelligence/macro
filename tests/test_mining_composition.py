@@ -1,0 +1,1097 @@
+"""Closed composition tests for the Mining per-sector research response (T04a).
+
+The Mining composition module is the per-sector composition the plan §6 T04 promised:
+two closed definitions loaded from the domain content file, a closed ``compose_mining_research``
+that validates against ``mining_theme_research.v1.schema.json`` on every return path, and a
+``select_mining_evidence`` binding mechanism/counter-thesis text to the exact selected revisions.
+No shared-kernel copy; no route; no I/O. Every authority flag stays literal False; every output
+validates against the closed schema.
+
+Seat rulings binding here:
+- R-MIN-22: validate_mining_research on every return path (lazy jsonschema, own CONTRACT_PATH).
+- R-MIN-23: limitations is closed-but-colon-aware (anyOf [enum] + [pattern]).
+- R-MIN-24: dataclasses imported from ``mining_dependency_binding``; no import of the kernel.
+- R-MIN-25: schema = 14 closed top-level keys; no ``neighborhood``; ``authorized_coverage.industry_total`` is null;
+  ``authority`` echoed on every response and every evidence object.
+- ADDENDUM §4 IR-01: a ``definition_unqualified:*`` may coexist with a ``comparable`` classification;
+  no badge / beat / miss / improvement / model-readable confirmed-surprise field is emitted from it.
+  Management point estimate stays a point estimate; no invented lower/upper range.
+- PLAN §6 T04: rows ordered by stable source identity, never by magnitude; unknown data is never zero;
+  industry_total stays null; a missing cutoff / wrong version / wrong slice / wrong theme /
+  bool-pagination / competing generation refuses with a typed reason.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import jsonschema
+import pytest
+
+from engine.market_ontology.mining_dependency_binding import (
+    MiningResearchQuery,
+    MiningResearchRefusal,
+    OMISSION_TO_LIMITATION,
+)
+from engine.market_ontology import mining_theme_research as composition
+from tests.mining_casebook import CASE_NAMES, synthetic_case
+
+SCHEMA_PATH = (
+    Path(__file__).parent.parent
+    / "contracts"
+    / "market_ontology"
+    / "mining_theme_research.v1.schema.json"
+)
+SCHEMA = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+_AUTHORITY = composition.AUTHORITY
+
+
+def _validate(payload: dict) -> None:
+    jsonschema.Draft202012Validator(SCHEMA).validate(payload)
+
+
+def _replace_offset(query: MiningResearchQuery, offset: int) -> MiningResearchQuery:
+    from dataclasses import replace as _replace
+
+    return _replace(query, offset=offset, expected_generation=query.expected_generation)
+
+
+def _replace_offset_no_generation(query: MiningResearchQuery, offset: int) -> MiningResearchQuery:
+    from dataclasses import replace as _replace
+
+    return _replace(query, offset=offset, expected_generation=None)
+
+
+# ---------------------------------------------------------------------------
+# verbatim plan test (T04 §6)
+# ---------------------------------------------------------------------------
+
+
+def test_missing_threshold_keeps_contract_explanation():
+    """Plan §6 T04 verbatim: missing stream threshold keeps the contract explanation."""
+    case = synthetic_case("missing_stream_threshold")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert result["summary"]["status"] == "ready"
+    assert "stream_threshold_unknown" in result["limitations"]
+    # The native-block list reflects the case's signed_native_blocks (empty here) — the
+    # contract explanation is retained (PLAN §6); the plan's verbatim economic-shape
+    # assertion is realised through ``economics.native_blocks``.
+    assert result["economics"]["native_blocks"] == case.expected["signed_native_blocks"]
+    _validate(result)
+
+
+# ---------------------------------------------------------------------------
+# positive witnesses
+# ---------------------------------------------------------------------------
+
+
+def test_copper_complete_is_ready_and_authority_literal_false():
+    case = synthetic_case("copper_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert result["request"]["slice_key"] == "mining_copper_economics"
+    assert result["request"]["anchor_theme_id"] == "theme:copper_steel_electrify"
+    assert result["summary"]["status"] == "ready"
+    # All five authority flags are literal False (MGD-34 / R-MIN-25).
+    assert result["authority"] == _AUTHORITY
+    assert all(v is False for v in result["authority"].values())
+    # The signed block is retained: the case's measure / value / basis travel through.
+    blocks = result["economics"]["native_blocks"]
+    assert len(blocks) == 1
+    assert blocks[0]["measure"] == "reported operating income"
+    assert blocks[0]["value"] == 1250
+    assert blocks[0]["basis"] == "fictional reported dollars"
+    _validate(result)
+
+
+def test_rare_earth_complete_is_ready_and_authority_literal_false():
+    case = synthetic_case("rare_earth_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert result["request"]["slice_key"] == "mining_rare_earth_economics"
+    assert result["request"]["anchor_theme_id"] == "theme:rare_earth_critical_min"
+    assert result["summary"]["status"] == "ready"
+    assert result["authority"] == _AUTHORITY
+    blocks = result["economics"]["native_blocks"]
+    assert len(blocks) == 1
+    assert blocks[0]["measure"] == "reported operating income"
+    assert blocks[0]["value"] == 940
+    assert blocks[0]["basis"] == "fictional reported dollars"
+    _validate(result)
+
+
+# ---------------------------------------------------------------------------
+# negative paths required by the seat ruling
+# ---------------------------------------------------------------------------
+
+
+def test_missing_issuer_refuses_financial_join():
+    """MGD-09 / case missing_issuer: a source without issuer identity keeps no financial join."""
+    case = synthetic_case("missing_issuer")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert "missing_issuer" in result["limitations"]
+    # No native block can be admitted without an issuer axis; the economics panel is honest, not silent.
+    assert result["economics"]["native_blocks"] == []
+    _validate(result)
+
+
+def test_source_only_business_stays_useful():
+    """MGD-11 / case source_only: a source-only mine description remains useful without invented IDs."""
+    case = synthetic_case("source_only")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert "source_only" in result["limitations"]
+    # The status is honest and the economics panel reflects the missing economic packet.
+    assert result["economics"]["status"] in {"ready", "degraded"}
+    assert result["summary"]["status"] in {"ready", "degraded"}
+    _validate(result)
+
+
+def test_mgd11_withheld_identity_is_never_invented_and_the_source_stays_useful():
+    """MGD-11 clause 2: with NO identity supplied, none is invented, and it stays useful.
+
+    The test above cannot observe this clause. The ``source_only`` fixture omits
+    ECONOMICS and still SUPPLIES ``Ardent Copper Holdings`` / CIK ``0000000421`` --
+    the very identifiers the obligation is about are handed to it. Emptying
+    ``identity_results`` on the same case is the arm that can observe it, and the
+    CONTROL arm is what makes the absence earned rather than vacuous: the bound
+    case must PRODUCE the identifiers the unbound case must not.
+    """
+    from dataclasses import replace as _replace
+
+    def _cik_shaped_paths(payload):
+        """Every 10-digit string anywhere in the payload, by path."""
+        found = []
+
+        def walk(obj, path=""):
+            if isinstance(obj, dict):
+                for key, value in obj.items():
+                    walk(value, path + "/" + str(key))
+            elif isinstance(obj, (list, tuple)):
+                for index, value in enumerate(obj):
+                    walk(value, path + "/%d" % index)
+            elif isinstance(obj, str) and obj.isdigit() and len(obj) == 10:
+                found.append(path)
+
+        walk(payload)
+        return sorted(found)
+
+    case = synthetic_case("source_only")
+
+    # CONTROL: identity supplied, so the identifiers do reach the payload.
+    bound = composition.compose_mining_research(case.query, case.bundle)
+    assert _cik_shaped_paths(bound) == [
+        "/companies/0/cik",
+        "/companies/0/stable_subject_id",
+        "/native_subjects/0/stable_subject_id",
+    ]
+
+    # CLAIM: identity withheld, so not one identifier is minted -- and the
+    # description is still useful. ``refused`` is the third status value the
+    # module can return, so ``degraded`` is a measured outcome, not the only one.
+    unbound = composition.compose_mining_research(
+        case.query, _replace(case.bundle, identity_results=())
+    )
+    assert _cik_shaped_paths(unbound) == []
+    assert unbound["companies"] == []
+    assert unbound["native_subjects"] == []
+    assert unbound["summary"]["status"] == "degraded"
+    assert unbound["limitations"] == ["source_only"]
+    _validate(unbound)
+
+
+# ---------------------------------------------------------------------------
+# row ordering: stable source identity, never magnitude
+# ---------------------------------------------------------------------------
+
+
+def test_economics_rows_ordered_by_stable_source_identity_not_magnitude():
+    """PLAN:203 — rows are ordered by stable subject identity, never by magnitude."""
+    # The synthetic copper fixture exposes one block; build a multi-row case at the same
+    # slice and assert the order is preserved.
+    block_a = {
+        "stable_subject_id": "subject:z-block",
+        "measure": "test_measure_z",
+        "value": 999,
+        "sign": "+",
+        "basis": "fictional",
+        "source_label": "z-block-source",
+    }
+    block_b = {
+        "stable_subject_id": "subject:a-block",
+        "measure": "test_measure_a",
+        "value": 1,
+        "sign": "+",
+        "basis": "fictional",
+        "source_label": "a-block-source",
+    }
+    rows = composition._order_rows_by_stable_source_identity([block_b, block_a])
+    assert [row["stable_subject_id"] for row in rows] == [
+        "subject:a-block",
+        "subject:z-block",
+    ]
+
+
+def test_economics_rows_ordered_through_compose_mining_research():
+    """MAJOR-9: ordering by stable source identity is enforced end-to-end, not only in the helper.
+
+    The probe froze the test above (private helper). This is the composed-channel assertion:
+    a bundle carrying two financial_packets with distinct stable_subject_ids is run through
+    ``compose_mining_research`` and the produced native_blocks list is asserted to come out
+    ordered by stable_subject_id, never by magnitude. Each packet keeps its own
+    stable_subject_id (no 'subject:unknown' fallback).
+    """
+    case = synthetic_case("copper_complete")
+    from dataclasses import replace as _replace
+
+    custom_packets = (
+        {
+            "stable_subject_id": "subject:z-block",
+            "measure": "test_measure_z",
+            "value": 999,
+            "basis": "fictional reported dollars",
+            "selection_label": "z-block-source",
+        },
+        {
+            "stable_subject_id": "subject:a-block",
+            "measure": "test_measure_a",
+            "value": 1,
+            "basis": "fictional reported dollars",
+            "selection_label": "a-block-source",
+        },
+    )
+    custom_bundle = _replace(case.bundle, financial_packets=custom_packets)
+    result = composition.compose_mining_research(case.query, custom_bundle)
+    ids = [b["stable_subject_id"] for b in result["economics"]["native_blocks"]]
+    assert ids == ["subject:a-block", "subject:z-block"], ids
+    # And no block has collapsed to the 'subject:unknown' fallback.
+    assert all(i != "subject:unknown" for i in ids)
+
+
+# ---------------------------------------------------------------------------
+# duplicate local asset labels and internal transfer / elimination sign
+# ---------------------------------------------------------------------------
+
+
+def test_duplicate_local_asset_labels_are_not_additional_supply():
+    """MGD-12 / duplicate local asset labels: same mine appearing twice is not additional supply."""
+    case = synthetic_case("copper_complete")
+    bundle = composition._make_industrial_views_bundle(
+        [
+            {"stable_subject_id": "subject:morro-mine", "view_kind": "industrial", "description": "morro mine", "evidence_refs": ["ev:1"]},
+            {"stable_subject_id": "subject:morro-mine", "view_kind": "industrial", "description": "morro mine again", "evidence_refs": ["ev:1"]},
+        ],
+        account_generation=case.account_generation,
+    )
+    result = composition.compose_mining_research(case.query, bundle)
+    distinct = {view["stable_subject_id"] for view in result["industrial_views"]}
+    assert len(distinct) == 1
+    assert len(result["industrial_views"]) == 2
+    _validate(result)
+
+
+def test_internal_transfer_keeps_elimination_sign():
+    """MGD-19 / W-R: an intersegment elimination row keeps its reported negative sign."""
+    # The synthetic rare-earth complete case exposes no internal-transfer row; the contract
+    # here is that any row composed with a negative value must retain its sign (zero / negative
+    # grow base must NOT be flipped). We pin this with a direct helper call.
+    signed = composition._signed_value({"value": -375, "sign_preserved": True})
+    assert signed == -375
+    # Zero is NOT a missing value: zero is zero (MGD-15 / IR-02).
+    assert composition._signed_value({"value": 0}) == 0
+    # And a missing value is None, not zero (PLAN §6 — unknown data never becomes zero).
+    assert composition._signed_value({}) is None
+
+
+# ---------------------------------------------------------------------------
+# partial coverage and unsupported contract calculation
+# ---------------------------------------------------------------------------
+
+
+def test_partial_coverage_industry_total_stays_null():
+    """MGD-39: industry_total stays null on partial coverage; never silently filled."""
+    case = synthetic_case("copper_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert result["authorized_coverage"]["industry_total"] is None
+    # If the input carries an industry_total_unknown limitation, it is propagated verbatim.
+    assert "industry_total_unknown" not in result["limitations"]
+
+
+def test_stream_threshold_omission_propagates_as_limitation():
+    """The stream_threshold omission translates to the closed stream_threshold_unknown code (R-MIN-15)."""
+    case = synthetic_case("rare_earth_complete")
+    bundle = composition._add_omission(case.bundle, "stream_threshold")
+    result = composition.compose_mining_research(case.query, bundle)
+    # stream_threshold_unknown is the contracted limitation for the stream-threshold omission.
+    assert "stream_threshold_unknown" in result["limitations"]
+
+
+def test_industry_total_unknown_is_minted_iff_slice_vocab_contracts_it():
+    """R-MIN-31 §4 / MAJOR-E: ``industry_total_unknown`` polarity — minted iff the slice's
+    own ``limitations_vocabulary`` names the code AND ``authorized_coverage.industry_total``
+    is contracted null (R-MIN-25). The rare-earth slice names it; copper does not.
+    Binding or not binding the issuer axis never toggles the code.
+    """
+    from dataclasses import replace as _replace
+
+    # Rare-earth slice — every case mints it (slice-vocab contract).
+    rare_case = synthetic_case("rare_earth_complete")
+    rare_bound = composition.compose_mining_research(rare_case.query, rare_case.bundle)
+    assert "industry_total_unknown" in rare_bound["limitations"]
+    assert rare_bound["authorized_coverage"]["industry_total"] is None
+    rare_unbound_bundle = _replace(rare_case.bundle, identity_results=())
+    rare_unbound = composition.compose_mining_research(rare_case.query, rare_unbound_bundle)
+    assert "industry_total_unknown" in rare_unbound["limitations"]
+    # Copper slice — never mints it (slice-vocab does not contract it).
+    copper_case = synthetic_case("copper_complete")
+    copper_result = composition.compose_mining_research(copper_case.query, copper_case.bundle)
+    assert "industry_total_unknown" not in copper_result["limitations"]
+    copper_unbound_bundle = _replace(copper_case.bundle, identity_results=())
+    copper_unbound = composition.compose_mining_research(copper_case.query, copper_unbound_bundle)
+    assert "industry_total_unknown" not in copper_unbound["limitations"]
+
+
+def test_industry_total_unknown_is_absent_on_w_c_slice():
+    """Copper does not contract industry_total_unknown; the closed bare-code set is slice-scoped."""
+    case = synthetic_case("copper_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert "industry_total_unknown" not in result["limitations"]
+
+
+def test_mgd39_coverage_scope_is_named_and_the_total_is_explicitly_null_on_both_slices():
+    """MGD-39 clause 1: the coverage gap is visible on EVERY slice, not only where a code is minted.
+
+    Two of this obligation's three delivered tests assert that
+    ``industry_total_unknown`` is ABSENT on W-C, which read alone says a null
+    total carries no signal there at all. What actually makes the gap visible is
+    ``authorized_coverage``: the field is present, the total is explicitly null,
+    and ``count_scope`` NAMES the scope as two closed definitions. That
+    declaration is slice-independent exactly where the limitation CODE is not --
+    and it had one site in the tree and zero assertions before this test.
+    """
+    minted = {}
+    for case_name in ("copper_complete", "rare_earth_complete"):
+        case = synthetic_case(case_name)
+        result = composition.compose_mining_research(case.query, case.bundle)
+        coverage = result["authorized_coverage"]
+        assert "industry_total" in coverage  # present and explicitly null,
+        assert coverage["industry_total"] is None  # never quietly omitted
+        assert coverage["count_scope"] == "two_closed_definitions"
+        minted[case_name] = "industry_total_unknown" in result["limitations"]
+        _validate(result)
+    # The scope declaration holds on both slices; the code is slice-scoped.
+    assert minted == {"copper_complete": False, "rare_earth_complete": True}
+
+
+def test_unsupported_contract_calculation_is_missing_derivation_not_invented_value():
+    """PLAN §6 / MGD-18: a contract without a verified threshold blocks entitlement; no value invented."""
+    case = synthetic_case("missing_stream_threshold")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert "stream_threshold_unknown" in result["limitations"]
+    # The economics panel must not invent a derivation to compensate.
+    assert result["economics"]["derived"] == []
+    # And the contract explanation (mechanism / counter-thesis) remains visible, not suppressed.
+    assert result["economics"]["reported_economic_context"]["policy"] == "reported_economic_context"
+    _validate(result)
+
+
+# ---------------------------------------------------------------------------
+# IR-01: definition_unqualified never becomes a badge
+# ---------------------------------------------------------------------------
+
+
+def test_ir01_both_null_definitions_no_badge_no_model_readable_field():
+    """IR-01: two null bases, warning present, no beat / miss / improvement / confirmed-surprise."""
+    # Build an expectation pair with both definitions missing to force a definition_unqualified:definition warning.
+    expectations_payload = [
+        {
+            "stable_subject_id": "subject:test",
+            "comparison_kind": "earlier_point_estimate_vs_later_actual",
+            "earlier_point_estimate": {"metric": "x", "value": 1.0, "basis": "?", "source_label": "earlier"},
+            "later_actual": {"metric": "x", "value": 2.0, "basis": "?", "source_label": "later"},
+            "definition_unqualified_fields": ["basis"],
+            "is_range": False,
+            "is_consensus": False,
+        }
+    ]
+    headlines = composition._summarize_expectations(
+        expectations_payload, defined_fields={"unit", "perimeter"}
+    )
+    # No badge vocabulary: beat / miss / improvement / above / below / surprise / confirmed.
+    assert not any(
+        word in headlines["headline"].lower()
+        for word in ("beat", "miss", "improvement", "above", "below", "confirmed")
+    )
+    # A model-readable confirmed-surprise field is never emitted: only the bounded fields exist.
+    assert "confirmed_surprise" not in headlines
+    assert "comparison_badge" not in headlines
+    # And the unqualified warning is preserved in the limitations — minted by the
+    # helper itself, never appended by this test (IR-01 / MAJOR-5).
+    assert "definition_unqualified:basis" in headlines["limitations"]
+
+
+def test_ir01_fully_qualified_genuine_comparison_not_suppressed():
+    """IR-01: a fully-qualified genuine positive comparison must not be suppressed."""
+    payload = [
+        {
+            "stable_subject_id": "subject:test",
+            "comparison_kind": "earlier_point_estimate_vs_later_actual",
+            "earlier_point_estimate": {"metric": "x", "value": 1.0, "basis": "ok", "source_label": "earlier"},
+            "later_actual": {"metric": "x", "value": 2.0, "basis": "ok", "source_label": "later"},
+            "definition_unqualified_fields": [],
+            "is_range": False,
+            "is_consensus": False,
+        }
+    ]
+    headlines = composition._summarize_expectations(payload, defined_fields={"basis", "unit", "perimeter"})
+    assert "definition_unqualified" not in headlines["headline"].lower()
+    assert not any(
+        word in headlines["headline"].lower()
+        for word in ("beat", "miss", "improvement", "above", "below", "confirmed")
+    )
+
+
+# ---------------------------------------------------------------------------
+# IR-04 / R-MIN-24: unknown version, unknown slice, unknown theme, bool pagination
+# ---------------------------------------------------------------------------
+
+
+def test_ir04_unknown_definition_version_refuses():
+    """IR-04: an unknown version refuses — versions never collapse silently to v1."""
+    case = synthetic_case("copper_complete")
+    with pytest.raises(MiningResearchRefusal) as raised:
+        composition.compose_mining_research(case.query, case.bundle, definition_version="v0.0-does-not-exist")
+    # Step 8 (no subclass bypass of CODES): the refusal uses the closed-vocab code
+    # that semantically matches "input doesn't match a closed Mining value".
+    assert raised.value.code == "unknown_slice"
+
+
+def test_unknown_slice_refuses():
+    case = synthetic_case("copper_complete")
+    from dataclasses import replace as _replace
+
+    bad_query = _replace(case.query, slice_key="mining_unknown_slice")
+    with pytest.raises(MiningResearchRefusal) as raised:
+        composition.compose_mining_research(bad_query, case.bundle)
+    assert raised.value.code == "unknown_slice"
+
+
+def test_slice_theme_mismatch_refuses():
+    case = synthetic_case("copper_complete")
+    from dataclasses import replace as _replace
+
+    bad_query = _replace(case.query, anchor_theme_id="theme:rare_earth_critical_min")
+    with pytest.raises(MiningResearchRefusal) as raised:
+        composition.compose_mining_research(bad_query, case.bundle)
+    assert raised.value.code == "slice_theme_mismatch"
+
+
+def test_bool_pagination_refuses():
+    case = synthetic_case("copper_complete")
+    from dataclasses import replace as _replace
+
+    bad_query = _replace(case.query, limit=True)
+    with pytest.raises(MiningResearchRefusal) as raised:
+        composition.compose_mining_research(bad_query, case.bundle)
+    assert raised.value.code == "limit_out_of_range"
+
+
+def test_missing_replay_cutoff_refuses():
+    case = synthetic_case("copper_complete")
+    from dataclasses import replace as _replace
+
+    bad_query = _replace(case.query, time_mode="system_replay", source_cutoff=None)
+    with pytest.raises(MiningResearchRefusal) as raised:
+        composition.compose_mining_research(bad_query, case.bundle)
+    assert raised.value.code == "replay_cutoffs_required"
+
+
+def test_competing_generation_refuses():
+    case = synthetic_case("copper_complete")
+    from dataclasses import replace as _replace
+
+    bad_query = _replace(case.query, expected_generation="competing-page")
+    with pytest.raises(MiningResearchRefusal) as raised:
+        composition.compose_mining_research(bad_query, case.bundle)
+    assert raised.value.code == "generation_changed"
+
+
+# ---------------------------------------------------------------------------
+# validate_mining_research is called on every return path
+# ---------------------------------------------------------------------------
+
+
+def test_payload_always_validates_against_schema():
+    """R-MIN-22 / MUTANT (return without validate): every composed payload validates."""
+    for name in CASE_NAMES:
+        case = synthetic_case(name)
+        result = composition.compose_mining_research(case.query, case.bundle)
+        _validate(result)
+
+
+def test_validate_mining_research_refuses_bad_payload():
+    """R-MIN-22: validate_mining_research raises on a non-conforming payload."""
+    with pytest.raises(jsonschema.ValidationError):
+        composition.validate_mining_research({"authority": _AUTHORITY})
+
+
+def test_select_mining_evidence_returns_authority_echo_and_binds_to_revisions():
+    """R-MIN-25: authority is echoed on every evidence object; revisions are bound verbatim."""
+    case = synthetic_case("copper_complete")
+    result = composition.select_mining_evidence(case.query, case.bundle, "assertion:synthetic")
+    assert result["authority"] == _AUTHORITY
+    assert result["selected_revisions"] == [list(pair) for pair in case.bundle.revision_tuple]
+    # Evidence ref also carries the authority echo (R-MIN-25).
+    for ev in result["evidence_refs"]:
+        assert ev["authority"] == _AUTHORITY
+
+
+def test_select_mining_evidence_blocks_changed_quantities_with_stale_causal_text():
+    """PLAN §6 / ADDENDUM §4 IR-01: a refresh cannot pair changed quantities with stale causal text."""
+    case = synthetic_case("changed_source")
+    with pytest.raises(MiningResearchRefusal) as raised:
+        composition.select_mining_evidence(case.query, case.bundle, "assertion:synthetic")
+    # Step 8: closed CODES; semantically the bound source revision changed.
+    assert raised.value.code == "generation_changed"
+
+
+# ---------------------------------------------------------------------------
+# MINING_DEFINITIONS: imported from the committed yaml
+# ---------------------------------------------------------------------------
+
+
+def test_mining_definitions_loaded_from_committed_domain_file():
+    definitions = composition.MINING_DEFINITIONS
+    assert set(definitions) == {"mining_copper_economics", "mining_rare_earth_economics"}
+    assert (
+        definitions["mining_copper_economics"]["anchor_theme_id"]
+        == "theme:copper_steel_electrify"
+    )
+    assert (
+        definitions["mining_rare_earth_economics"]["anchor_theme_id"]
+        == "theme:rare_earth_critical_min"
+    )
+    # Unknown slice raises KeyError (frozen spec).
+    with pytest.raises(KeyError):
+        definitions["mining_unknown_slice"]
+
+
+# ---------------------------------------------------------------------------
+# no shared-kernel import: grep-able proof
+# ---------------------------------------------------------------------------
+
+
+def test_no_import_of_semiconductor_theme_research_anywhere():
+    """ADDENDUM §2 / R-MIN-21: no shared-kernel copy in the Mining composition module."""
+    import re
+
+    src = Path(composition.__file__).read_text(encoding="utf-8")
+    # Grep only import statements; the module's docstring may reference forbidden names
+    # in prose, but the import surface must be Mining-owned.
+    import_lines = [
+        line for line in src.splitlines()
+        if re.match(r"^(from|import)\s+", line)
+    ]
+    joined = "\n".join(import_lines)
+    assert "semiconductor_theme_research" not in joined
+    assert "engine.theme_graph" not in joined  # the shared assertion contract is probed lazily elsewhere
+    assert "engine.market_ontology.semiconductor" not in joined
+
+
+def test_compose_does_not_perform_io():
+    """Composition must be pure; no file, network or clock reads inside the function."""
+    case = synthetic_case("copper_complete")
+    # Run twice and assert equality — a clock read would show drift.
+    first = composition.compose_mining_research(case.query, case.bundle)
+    second = composition.compose_mining_research(case.query, case.bundle)
+    assert first == second
+
+
+# ---------------------------------------------------------------------------
+# omisson -> limitation mapping is wired correctly
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("name", CASE_NAMES)
+def test_omission_to_limitation_is_wired(name):
+    """OMISSION_TO_LIMITATION propagates as a limitation code; never invented code."""
+    case = synthetic_case(name)
+    result = composition.compose_mining_research(case.query, case.bundle)
+    expected_limitations = {OMISSION_TO_LIMITATION[o] for o in case.bundle.omissions}
+    # All expected codes must be present; the response may also carry definition_unqualified warnings
+    # if a definition field is missing — that is acceptable because the case has no definition fields.
+    for code in expected_limitations:
+        assert code in result["limitations"], f"case {name!r}: missing {code!r}"
+
+
+# ---------------------------------------------------------------------------
+# packet-driven expectation rows (R-MIN-31 §3; literal expected values)
+# ---------------------------------------------------------------------------
+
+from dataclasses import replace as _replace  # noqa: E402  (local import per the ruling)
+
+
+def _copper_with_packets(*packets):
+    """Return (query, bundle) for a usable copper case with the given mev packets."""
+    case = synthetic_case("copper_complete")
+    return case.query, _replace(case.bundle, financial_packets=tuple(packets))
+
+
+def _mev_packet(pair, epe_value, la_value, **extras):
+    """Build a literal ``management_estimate_vs_actual`` packet for one comparison pair."""
+    base = {
+        "kind": "management_estimate_vs_actual",
+        "pair": pair,
+        "earlier_point_estimate": {
+            "value": epe_value,
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+        "later_actual": {
+            "value": la_value,
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+    }
+    base.update(extras)
+    return base
+
+
+def test_packet_driven_sales_pair_emits_one_row_with_literal_values():
+    """A copper sales packet (epe=1700, la=1680) emits exactly one row with literal values
+    and the comparison word ``below_estimate`` (la < epe). The row binds to the issuer
+    identity of the casebook fixture (Ardent Copper Holdings / cik 0000000421).
+    """
+    query, bundle = _copper_with_packets(_mev_packet("sales", 1700, 1680))
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 1, result["expectations"]
+    row = result["expectations"][0]
+    assert row["stable_subject_id"] == "0000000421"
+    assert row["comparison_kind"] == "earlier_point_estimate_vs_later_actual"
+    assert row["comparison"] == "below_estimate"
+    assert row["is_range"] is False and row["is_consensus"] is False
+    epe = row["earlier_point_estimate"]
+    la = row["later_actual"]
+    assert epe["value"] == 1700
+    assert la["value"] == 1680
+    assert epe["metric"] == "management_issued_copper_sales_estimate"
+    assert la["metric"] == "consolidated_copper_sales"
+    assert epe["basis"] == "fictional point estimate"
+    assert la["basis"] == "fictional reported measure"
+    # The casebook carries no native-block packet, so no native blocks; limitations
+    # carry ``omitted:expectations`` only (the row WAS attempted, successfully).
+    assert "omitted:expectations" not in result["limitations"]
+
+
+def test_packet_driven_sales_pair_above_estimate_when_la_exceeds_epe():
+    """A sales packet with la > epe emits ``above_estimate``."""
+    query, bundle = _copper_with_packets(_mev_packet("sales", 1700, 1750))
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 1
+    assert result["expectations"][0]["comparison"] == "above_estimate"
+
+
+def test_packet_driven_equal_legs_withhold_row_and_mint_omitted_expectations():
+    """Two equal leg values withhold the row (no fabricated surprise) and mint
+    ``omitted:expectations`` (R-MIN-31 §3 — never synthesize the comparison).
+    """
+    query, bundle = _copper_with_packets(_mev_packet("sales", 1700, 1700))
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+
+
+def test_packet_driven_missing_required_field_withholds_row_and_mints_unqualified():
+    """A leg whose ``unit`` field is missing withholds the row and mints
+    ``definition_unqualified:unit`` (R-MIN-31 §3, MAJOR-D). The code is
+    deduplicated across multiple bad legs.
+    """
+    bad_packet = _mev_packet("sales", 1700, 1680)
+    del bad_packet["earlier_point_estimate"]["unit"]
+    del bad_packet["later_actual"]["unit"]
+    query, bundle = _copper_with_packets(bad_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "definition_unqualified:unit" in result["limitations"]
+
+
+def test_mgd17_refused_comparison_does_not_delete_the_supported_facts():
+    """MGD-17 clause 2: a refused dependent comparison withholds its row WITHOUT deleting the
+    supported measurement facts.
+
+    The obligation's operative clause — "mismatches refuse dependent arithmetic" — is satisfied by
+    absence of capability, because ``economics["derived"]`` is the literal ``[]`` on every payload
+    and no dependent arithmetic is ever emitted. This pins the half that IS expressible today: the
+    measurement channel survives the refusal intact.
+
+    The control arm is load-bearing. "The block survived" would prove nothing if the pipeline kept
+    blocks unconditionally, so the same bundle is composed WITHOUT the bad comparison and the two
+    native-block lists are required to be identical — the refusal must change the expectations
+    channel and nothing else. ``definition_unqualified:unit`` is deliberately not in
+    ``OMISSION_TO_LIMITATION.values()``, so it must not reach ``_suppress_native_blocks``.
+    """
+    case = synthetic_case("copper_complete")
+    measurement = dict(case.bundle.financial_packets[0])
+    bad_packet = _mev_packet("sales", 1700, 1680)
+    del bad_packet["earlier_point_estimate"]["unit"]
+    del bad_packet["later_actual"]["unit"]
+
+    refused = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement, bad_packet))
+    )
+    control = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement,))
+    )
+
+    # The comparison is refused, and the refusal is named rather than silent.
+    assert refused["expectations"] == []
+    assert "definition_unqualified:unit" in refused["limitations"]
+
+    # The supported facts are not deleted, and are identical to the no-comparison control.
+    assert refused["economics"]["native_blocks"], refused["economics"]
+    assert refused["economics"]["native_blocks"] == control["economics"]["native_blocks"]
+    assert refused["summary"]["status"] != "refused"
+    _validate(refused)
+
+
+@pytest.mark.parametrize("slice_name", ["copper_complete", "rare_earth_complete"])
+def test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign(slice_name):
+    """MGD-19 clause 2: intra-group eliminations are not ignored, on BOTH slices.
+
+    The construct is delivered, but the only test that names MGD-19 asserts it through
+    ``composition._signed_value`` and its own comment concedes the casebook exposes no
+    internal-transfer row. **A helper pin is not a pin on the composed payload**, which is why the
+    obligation sat unpinned while its subject was already on main.
+
+    This pins the payload: the elimination is submitted as a native financial packet and must reach
+    ``economics["native_blocks"]`` carrying its negative value and ``sign == "-"``. Two control arms
+    keep the assertion from passing vacuously. The same bundle composed WITHOUT the elimination must
+    yield exactly one block fewer, so the elimination genuinely CONTRIBUTES rather than being
+    silently dropped at the builder -- a drop mints no limitation anywhere, so nothing else in the
+    payload would reveal it. And the measurement block beside it must be identical across both
+    compositions, so admitting a negative does not perturb the facts it is netted against.
+
+    Clause 1 -- product sales and contractual support income remaining separately DEFINED -- needs
+    T03's definition vocabulary and is deliberately NOT claimed here.
+
+    Parametrized across BOTH slices because MGD-19 governs both deliverables, W-C and
+    W-R, and MGD-17's pin is two-armed across slices for the same reason. The behaviour
+    was measured identical on both before widening, so this adds no claim about today --
+    it is the guard for tomorrow: if the rare-earth path ever gets its own netting or
+    sign handling, a copper-only pin stays green while the W-R half silently loses it.
+    """
+    case = synthetic_case(slice_name)
+    measurement = dict(case.bundle.financial_packets[0])
+    # ``positive_witness`` is a casebook oracle flag the engine never reads; signed_loss.json sets it
+    # False for a negative, so an elimination follows that shape rather than inheriting True.
+    elimination = dict(
+        measurement, measure="intersegment elimination", value=-120, positive_witness=False
+    )
+
+    composed = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement, elimination))
+    )
+    control = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement,))
+    )
+
+    blocks = composed["economics"]["native_blocks"]
+    netted = [b for b in blocks if b["measure"] == "intersegment elimination"]
+    assert len(netted) == 1, blocks
+    assert netted[0]["value"] == -120
+    assert netted[0]["sign"] == "-"
+
+    # The elimination contributes a row of its own, and perturbs nothing beside it.
+    assert len(blocks) == len(control["economics"]["native_blocks"]) + 1
+    assert [b for b in blocks if b["measure"] != "intersegment elimination"] == (
+        control["economics"]["native_blocks"]
+    )
+    _validate(composed)
+
+
+@pytest.mark.parametrize("slice_name", ["copper_complete", "rare_earth_complete"])
+def test_the_composer_never_interprets_a_submitted_measure(slice_name):
+    """``measure`` is opaque text to this program, and across 46 tests nothing asserted it.
+
+    Non-interpretation is a stated design property here -- the module mints no vocabulary and reads
+    no meaning -- and three NOT_RUN ledger rows cite it BY NAME as the ground for their status
+    (MGD-07, MGD-14, MGD-23: "the composer copies ``measure`` VERBATIM onto the block"). Before this
+    pin the only ``measure="..."`` anywhere in the suite was the MGD-19 elimination, so the premise
+    those reasons rest on was carried entirely by prose.
+
+    This guards the PREMISE, not the obligation. MGD-14 states the limit correctly and it still
+    holds: a passthrough can no more keep production, purchases, inventory, internal transfer and
+    external delivery DISTINCT than it can interchange them, so nothing here claims the distinctions
+    those rows owe -- they wait on T02/T03 to mint the kind vocabulary. What this adds is
+    falsifiability: if the composer ever begins reading a measure's meaning, THIS goes red instead of
+    three reasons going quietly stale.
+
+    The adversarial arms are the load-bearing part, because the obvious version of this test is
+    satisfiable by a mapper. One that normalized only the known vocabulary is caught by the plain
+    words; one that lowercased or trimmed would pass those and is caught by ``"PRODUCTION"`` and the
+    trailing space; one that whitelisted known kinds and substituted or dropped the rest would pass
+    every arm above and is caught by a string this program can have no opinion about.
+    """
+    case = synthetic_case(slice_name)
+    base = dict(case.bundle.financial_packets[0])
+    # A baseline that already equalled a probed value would make the arms pass without composing.
+    assert base["measure"] == "reported operating income", base["measure"]
+
+    for submitted in (
+        # the exact vocabulary MGD-14 and MGD-23 name
+        "production",
+        "purchases",
+        "inventory",
+        "internal transfer",
+        "external delivery",
+        "financing proceeds",
+        # a normalizer would pass every word above and fail these two
+        "PRODUCTION",
+        "production ",
+        # a whitelist with a fallback would pass everything above and fail this
+        "unmapped_nonsense_zzz",
+    ):
+        composed = composition.compose_mining_research(
+            case.query,
+            _replace(case.bundle, financial_packets=(dict(base, measure=submitted),)),
+        )
+        blocks = composed["economics"]["native_blocks"]
+        assert [b["measure"] for b in blocks] == [submitted], (submitted, blocks)
+        _validate(composed)
+
+
+def test_packet_driven_non_numeric_value_withholds_row_and_mints_omitted_expectations():
+    """A packet whose ``value`` is the string ``"quarter"`` (the BLOCKER-A fabrication)
+    withholds the row and mints ``omitted:expectations`` (MINOR-I) — the
+    ``definition_unqualified:value`` limitation is reserved for definition
+    fields, never for a missing measurement datum.
+    """
+    bad_packet = {
+        "kind": "management_estimate_vs_actual",
+        "pair": "sales",
+        "earlier_point_estimate": {
+            "value": "quarter",
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+        "later_actual": {
+            "value": "quarter",
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+    }
+    query, bundle = _copper_with_packets(bad_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+    assert "definition_unqualified:value" not in result["limitations"]
+
+
+def test_packet_driven_unknown_pair_withholds_row_and_mints_omitted_expectations():
+    """A packet whose ``pair`` is ``"foo"`` (unknown) withholds the row and mints
+    ``omitted:expectations``. No row is invented with a synthesised comparison.
+    """
+    bad_packet = _mev_packet("foo", 1700, 1680)
+    query, bundle = _copper_with_packets(bad_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+
+
+def test_packet_driven_row_order_sales_first_unit_net_cash_cost_second():
+    """MINOR-J: row order is pinned by pair name regardless of packet arrival order.
+    A reversed packet list still emits sales-then-unit_net_cash_cost.
+    """
+    unit_packet = _mev_packet(
+        "unit_net_cash_cost", 2.95, 2.85,
+        earlier_point_estimate={"value": 2.95, "unit": "USD/lb", "perimeter": "consolidated",
+                                "basis": "company_adjusted", "period": "Q2 2026"},
+        later_actual={"value": 2.85, "unit": "USD/lb", "perimeter": "consolidated",
+                      "basis": "company_adjusted", "period": "Q2 2026"},
+    )
+    sales_packet = _mev_packet("sales", 1700, 1750)
+    # Reversed order on input; ordered on output.
+    query, bundle = _copper_with_packets(unit_packet, sales_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 2
+    assert result["expectations"][0]["earlier_point_estimate"]["metric"] == "management_issued_copper_sales_estimate"
+    assert result["expectations"][1]["earlier_point_estimate"]["metric"] == "management_issued_copper_unit_net_cash_cost_estimate"
+    assert result["expectations"][0]["comparison"] == "above_estimate"
+    assert result["expectations"][1]["comparison"] == "below_estimate"
+
+
+def test_packet_driven_both_pairs_emitted_with_subject_id_from_identity_results():
+    """Sales + unit-cost packets together emit TWO rows, both bound to the issuer
+    identity of the casebook (cik 0000000421); MAJOR-F: the row's
+    ``stable_subject_id`` falls back to cik when ``stable_subject_id`` is absent
+    on the identity_results entry — never ``"subject:unknown"``.
+    """
+    unit_packet = _mev_packet(
+        "unit_net_cash_cost", 2.95, 2.85,
+        earlier_point_estimate={"value": 2.95, "unit": "USD/lb", "perimeter": "consolidated",
+                                "basis": "company_adjusted", "period": "Q2 2026"},
+        later_actual={"value": 2.85, "unit": "USD/lb", "perimeter": "consolidated",
+                      "basis": "company_adjusted", "period": "Q2 2026"},
+    )
+    sales_packet = _mev_packet("sales", 1700, 1750)
+    query, bundle = _copper_with_packets(sales_packet, unit_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 2
+    for row in result["expectations"]:
+        assert row["stable_subject_id"] != "subject:unknown"
+        assert row["stable_subject_id"] == "0000000421"
+
+
+def test_packet_driven_withdrawn_case_publishes_no_expectation_row():
+    """MAJOR-B: a case with any omission (bundle.omissions != ()) publishes NO row,
+    even when mev packets are present in ``financial_packets``.
+    """
+    case = synthetic_case("missing_issuer")
+    packets = (_mev_packet("sales", 1700, 1750),)
+    withdrawn_bundle = _replace(case.bundle, financial_packets=packets)
+    result = composition.compose_mining_research(case.query, withdrawn_bundle)
+    assert result["expectations"] == []
+
+
+def test_rare_earth_usable_case_carries_slice_definitional_codes_only():
+    """R-MIN-31 §2: rare-earth usable cases carry the closed slice-definitional codes
+    ``stream_threshold_unknown`` + ``industry_total_unknown`` +
+    ``definition_unqualified:management_estimate_vs_actual``, NEVER
+    ``omitted:expectations`` (the rare-earth mev declares both legs null —
+    the truthful "no comparison selected" marker is the definition_unqualified
+    code, not the omission-mapped code).
+    """
+    case = synthetic_case("rare_earth_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert "stream_threshold_unknown" in result["limitations"]
+    assert "industry_total_unknown" in result["limitations"]
+    assert "definition_unqualified:management_estimate_vs_actual" in result["limitations"]
+    assert "omitted:expectations" not in result["limitations"]
+    assert "missing_derivation" not in result["limitations"]
+
+
+def test_copper_usable_case_carries_no_slice_definitional_codes():
+    """R-MIN-31 §2: copper mints no slice-definitional codes; only the case's
+    own omission-mapped codes (none for a usable case) plus the truthful
+    ``omitted:expectations`` when no mev packet is present.
+    """
+    case = synthetic_case("copper_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    for code in ("stream_threshold_unknown", "industry_total_unknown",
+                 "definition_unqualified:management_estimate_vs_actual"):
+        assert code not in result["limitations"], (code, result["limitations"])
+    assert "omitted:expectations" in result["limitations"]
+
+
+def test_limitations_list_is_sorted_and_deduplicated():
+    """R-MIN-31 §4 / F3 colon-aware: limitations is a sorted, duplicate-free list."""
+    case = synthetic_case("rare_earth_complete")
+    from dataclasses import replace as _r
+    # Inject a known limitation, plus try to mint duplicates.
+    bundle = _r(case.bundle, omissions=("stream_threshold", "page_generation"))
+    result = composition.compose_mining_research(case.query, bundle)
+    limits = result["limitations"]
+    assert limits == sorted(limits), limits
+    assert len(limits) == len(set(limits)), limits
+
+
+def test_minor_h_empty_source_label_degrades_to_synthetic_source():
+    """MINOR-H: an empty ``source_label`` on a native-block packet degrades to the
+    closed ``synthetic-source`` fallback (never ``""``, which would trip the
+    schema's ``minLength: 1`` and raise a raw ``jsonschema.ValidationError``).
+    """
+    case = synthetic_case("copper_complete")
+    empty_packet = {
+        "measure": "reported operating income",
+        "value": 880,
+        "basis": "fictional reported dollars",
+        "source_label": "",
+    }
+    bundle = _replace(case.bundle, financial_packets=(empty_packet,))
+    result = composition.compose_mining_research(case.query, bundle)
+    assert result["economics"]["native_blocks"][0]["source_label"] == "synthetic-source"
+
+def test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices():
+    """MGD-08 clause 2 / R-MIN-34 as amended 2026-09-27: a wholly empty economic path
+    degrades — it never reports ``ready``.
+
+    Two-armed on purpose, and both arms are load-bearing:
+
+    * the EMPTY arm is the obligation — a bundle carrying no ``financial_packets`` at all
+      submitted nothing, so every content channel of the economics panel is empty and the
+      payload must not claim readiness over it;
+    * the POPULATED arm is the positive control — without it, a pipeline that degraded
+      *everything* would satisfy the empty arm vacuously and this pin would be a negative
+      assertion with no subject.
+
+    Both delivered slices are covered because the W-R vocabulary mints
+    ``stream_threshold_unknown`` on every payload, and that code used to short-circuit
+    ``_summarize_status`` to ``ready`` before the native-block channel was consulted: rare
+    earth reported ``ready`` over an empty panel (headline: "the contract explanation is
+    retained") while copper degraded on the identical input. The threshold code explains
+    why a *submitted* block was withheld — ``missing_stream_threshold`` ships one packet
+    and stays ``ready``, which this pin does not disturb — so it may not also excuse a
+    path that submitted nothing.
+    """
+    for name in ("copper_complete", "rare_earth_complete"):
+        case = synthetic_case(name)
+
+        # Positive control: the same fixture, economic input intact.
+        populated = composition.compose_mining_research(case.query, case.bundle)
+        assert populated["summary"]["status"] == "ready", (name, populated["summary"])
+        assert len(populated["economics"]["native_blocks"]) == 1, name
+        _validate(populated)
+
+        # The obligation, arm 1: strip every economic packet and nothing else.
+        empty = composition.compose_mining_research(
+            case.query, _replace(case.bundle, financial_packets=())
+        )
+        _assert_empty_path_degrades(empty, "%s/no-packets" % name)
+
+        # The obligation, arm 2: a packet the module routes out of EVERY channel must not buy
+        # readiness either. Each of these reached `ready` on W-R while the readiness clause was
+        # scoped to "a packet was submitted" rather than to a NAMED ABSENCE: an empty mapping, a
+        # None value and a non-numeric value are all dropped silently by the native-block
+        # builder, and a `management_estimate_vs_actual` packet is skipped out of native blocks
+        # outright. "Submitted" is not "contributed".
+        packet = dict(case.bundle.financial_packets[0])
+        for label, junk in (
+            ("empty-mapping", {}),
+            ("value-None", dict(packet, value=None)),
+            ("value-non-numeric", dict(packet, value="n/a")),
+            ("mev-only", {"kind": "management_estimate_vs_actual", "pair": "sales"}),
+        ):
+            junk_result = composition.compose_mining_research(
+                case.query, _replace(case.bundle, financial_packets=(junk,))
+            )
+            _assert_empty_path_degrades(junk_result, "%s/%s" % (name, label))
+
+
+def _assert_empty_path_degrades(result, label):
+    """A payload whose economic channels are all empty degrades, fabricates nothing, stays valid.
+
+    Only the INDEPENDENT channels are asserted as evidence. ``economics["derived"]`` is the
+    literal ``[]`` on every payload including the ready baseline, and
+    ``reported_economic_context.context_block_count`` is ``len(native_blocks)``, so neither is a
+    separate witness; ``economics["status"]`` and ``summary["status"]`` are the same value. The
+    two real channels are ``native_blocks`` and top-level ``expectations``.
+    """
+    economics = result["economics"]
+    assert economics["native_blocks"] == [], (label, economics["native_blocks"])
+    assert list(result.get("expectations") or []) == [], (label, result.get("expectations"))
+    # Both status fields are surfaced, because both are what a consumer reads.
+    assert economics["status"] == "degraded", (label, economics["status"])
+    assert result["summary"]["status"] == "degraded", (label, result["summary"])
+    # The glance-tier sentence may not assert retention over a panel with nothing in it.
+    assert "contract explanation is retained" not in result["summary"]["headline"], (
+        label, result["summary"]["headline"])
+    # An empty collection never becomes a fabricated total.
+    assert result["authorized_coverage"]["industry_total"] is None, label
+    # A degraded payload is still a VALID payload, never a raised exception.
+    _validate(result)

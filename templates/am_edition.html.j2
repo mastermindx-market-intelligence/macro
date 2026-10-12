@@ -4,6 +4,22 @@
 {% macro help(en, zh='') -%}
 <span class="help">?<span class="tip">{{ t(en, zh) }}</span></span>
 {%- endmacro %}
+{# ── Plane slug → plain-word EN/ZH (BLOCKER 5 round 2). The producer emits
+   machine slugs (rates / dollar / credit / commodity / international /
+   rates_and_credit); we surface them as glance-tier labels with both
+   EN and ZH so the row reads as words, not internals. Reference rows
+   (plane=None) render without a tag — the link label alone is the read.
+   Implemented as a top-level {% set %} dict (NOT a Jinja macro) because
+   macros stringify their return value when assigned via {% set %}, which
+   would break the [0]/[1] tuple index the consumer uses below. #}
+{% set _PLANE_WORDS = {
+  'rates':             ('Rates',          '利率'),
+  'dollar':            ('Dollar',         '美元'),
+  'credit':            ('Credit',         '信用'),
+  'commodity':         ('Commodity',      '商品'),
+  'international':     ('International',  '国际'),
+  'rates_and_credit':  ('Rates & Credit', '利率与信用'),
+} %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,18 +64,22 @@
   .ctx-row { display:flex; align-items:center; gap:6px; font-size:13px; line-height:1.4; }
   .ctx-label { color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase;
                letter-spacing:.05em; white-space:nowrap; }
-  .brief-link-panel { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+  .brief-link-panel { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:10px 16px; }
   .brief-link { display:inline-flex; align-items:center; gap:6px; background:var(--panel);
                 border:1px solid var(--link); border-radius:var(--r-ctl,6px); padding:7px 14px;
                 font-size:13px; font-weight:600; color:var(--ink-link, var(--link));
-                text-decoration:none; }
+                text-decoration:none; white-space:nowrap; }
   .brief-link:hover { opacity:0.8; }
+  .brief-link-label { white-space:nowrap; flex:0 0 auto; }
+  .brief-link-built { white-space:nowrap; font-variant-numeric:tabular-nums; }
+  @media (max-width:600px){ .brief-link-built { flex-basis:100%; } }
   .state-badge { display:inline-block; background:var(--panel); border:1px solid var(--line);
                  border-radius:var(--r-pill,999px); padding:3px 10px; font-size:12px; font-weight:600; }
   .state-open   { border-color:var(--up); color:var(--up); }
   .state-closed { border-color:var(--muted); color:var(--muted); }
   .state-pre    { border-color:var(--link); color:var(--ink-link, var(--link)); }
   .feasibility-note { font-size:12px; color:var(--muted); margin-top:4px; }
+{% include "_mor2b_blocks_css.j2" %}
 </style>
 </head>
 <body>
@@ -199,31 +219,49 @@
 </div>
 {% endif %}
 
-{# ── Market regime ─────────────────────────────────────────────────────────── #}
-{% if block.key == 'market_state' %}
+{# ── Owner regime readings ────────────────────────────────────────────────── #}
+{% if block.key in ('market_state', 'regime') %}
+{% set _regime_usable = block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') %}
+{% set _regime_chip = (
+  ('live', t('Current', '当前')) if block.state == 'CURRENT'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('pre', t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
 <div class="panel">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-    <h2 style="margin:0">{{ t('Market regime', '市场周期') }}</h2>
-    {{ help(
-      'Overall market regime: Risk-on (uptrend / positive momentum) or Risk-off (downtrend / negative momentum).',
-      '整体市场周期：风险偏好（上涨趋势/正向动能）或风险规避（下跌趋势/负向动能）。'
-    ) }}
+  <div class="mx-block-header">
+    <h2>{{ t('Market regime', '市场周期') if block.key == 'market_state' else t('Macroeconomic regime', '宏观周期') }}</h2>
+    <span class="mx-chip-slot"><span class="dtp-chip dtp-chip--{{ _regime_chip[0] }}">{{ _regime_chip[1] }}</span></span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('as of', '数据截至') }} {{ block.source_as_of[:10] if block.source_as_of_precision == 'day' else block.source_as_of[:16] }}</span>
+    {% endif %}
+    {% if block.key == 'market_state' %}
+    {{ help('Market state and posture from the existing market-state reading.', '由现有市场状态读数提供的市场状态与姿态。') }}
+    {% else %}
+    {{ help('Macroeconomic cycle from the existing regime reading, separate from market posture.', '由现有宏观周期读数提供的经济周期，与市场姿态分别展示。') }}
+    {% endif %}
   </div>
-  {% if block.state == 'CURRENT' and block.rows %}
+  {% if block.state_reason_en or block.state_reason_zh %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or 'Source limitation available in Chinese.', block.state_reason_zh or '数据源限制的中文说明暂缺。') }}</div>
+  {% endif %}
+  {% if _regime_usable and block.rows %}
     {% for row in block.rows %}
     <div class="ctx-strip">
       <span class="ctx-chip regime">
-        {{ t(row.label_en or 'Regime unavailable',
-             row.label_zh or row.label_en or '周期状态不可用') }}
+        {% if block.key == 'market_state' %}
+        {{ t(row.label_en or 'Regime unavailable', row.label_zh or '中文周期标签暂缺') }}
+        {% else %}
+        {{ t(row.quad_name_en or 'Regime unavailable', row.quad_name_zh or '中文周期标签暂缺') }}
+        {% endif %}
       </span>
-      {% if row.posture_en or row.posture_zh %}
+      {% if block.key == 'market_state' and (row.posture_en or row.posture_zh) %}
       <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span>
-        {{ t(row.posture_en or '', row.posture_zh or row.posture_en or '') }}</span>
+        {{ t(row.posture_en or 'Posture unavailable', row.posture_zh or '中文姿态说明暂缺') }}</span>
       {% endif %}
     </div>
-    {% if row.headline_en or row.headline_zh %}
-    <p class="muted sm" style="margin-top:6px">{{ t(row.headline_en or '',
-                                                     row.headline_zh or row.headline_en or '') }}</p>
+    {% if block.key == 'market_state' and (row.headline_en or row.headline_zh) %}
+    <p class="muted sm">{{ t(row.headline_en or 'Summary unavailable', row.headline_zh or '中文摘要暂缺') }}</p>
     {% endif %}
     {% endfor %}
   {% else %}
@@ -265,6 +303,130 @@
 </div>
 {% endif %}
 
+{# ── Context planes (MOR-2b Lane C) ─────────────────────────────────────────── #}
+{% if block.key == 'context_planes' %}
+{% set _cp_state_chip = (
+  ('live', t('Live', '实时')) if block.state == 'CURRENT'
+  else ('pre',  t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow">{{ t('Context planes', '背景面') }}</span>
+    <h2>{{ t(block.title_en or 'Context planes', block.title_zh or '背景面') }}</h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _cp_state_chip[0] }}">
+        {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
+        {{ _cp_state_chip[1] }}
+      </span>
+    </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    {% endif %}
+    {{ help(
+      'Five cross-asset planes (rates, dollar, credit, commodities, international) read from their own owner artifacts. Stale rows show last-known values with a dated reason.',
+      '五个跨资产背景面（利率、美元、信用、商品、国际），由各自的主理产出读取。滞后行展示最新已知值并给出日期原因。'
+    ) }}
+  </div>
+  {% set _cp_available_rows = block.rows | selectattr('state', 'in', ('CURRENT', 'STALE_WITH_LAST_KNOWN')) | list %}
+  {% if _cp_available_rows %}
+  {% if block.state_reason_en or block.state_reason_zh %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+  {% endif %}
+    {% for row in block.rows %}
+    {% set _plane_tag = _PLANE_WORDS.get(row.plane, ('', '')) %}
+    {% set _row_available = row.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') %}
+    <div class="mx-cp-row">
+      <span class="ctx-row">
+        <span class="ctx-label">{{ t(_plane_tag[0], _plane_tag[1]) }}</span>
+        {% if _row_available and (row.label_en or row.label_zh) %}
+        <span>{{ t(row.label_en or '', row.label_zh or row.label_en or '') }}</span>
+        {% endif %}
+      </span>
+      {% if _row_available and (row.read_en or row.read_zh) %}
+      <div class="mx-cp-read">
+        {{ t(row.read_en or '', row.read_zh or row.read_en or '') }}
+      </div>
+      {% endif %}
+      {% if not _row_available and not (row.state_reason_en or row.state_reason_zh) %}
+      <div class="mx-cp-read">{{ t('Reading unavailable.', '读数暂不可用。') }}</div>
+      {% endif %}
+      {% if (_row_available and row.as_of) or row.state_reason_en or row.state_reason_zh %}
+      <span class="mx-cp-meta">
+        {% if _row_available and row.as_of %}{{ t('as of', '数据截至') }} {{ row.as_of[:16] }}{% if row.state_reason_en or row.state_reason_zh %} — {% endif %}{% endif %}
+        {% if row.state_reason_en or row.state_reason_zh %}{{ t(row.state_reason_en or '', row.state_reason_zh or row.state_reason_en or '') }}{% endif %}
+      </span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="mx-empty">
+      <div class="mx-empty-line">{{ t('Context planes unavailable.', '背景面暂不可用。') }}</div>
+      {% if block.state_reason_en or block.state_reason_zh %}
+      <div class="mx-empty-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Research watch (MOR-2b Lane C) ─────────────────────────────────────────── #}
+{% if block.key == 'research_watch' %}
+{% set _rw_state_chip = (
+  ('live', t('Live', '实时')) if block.state == 'CURRENT'
+  else ('pre',  t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow">{{ t('Research watch', '研究观察') }}</span>
+    <h2>{{ t(block.title_en or 'Research watch', block.title_zh or '研究观察') }}</h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _rw_state_chip[0] }}">
+        {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
+        {{ _rw_state_chip[1] }}
+      </span>
+    </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    {% endif %}
+    {{ help(
+      'Conditions we are watching, in plain words. No direction, no magnitude, no order — only what would change the read.',
+      '我们正在观察的条件，以平实语言表达。不含方向、量级或指令——只列出会改变判断的条件。'
+    ) }}
+  </div>
+  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
+  {% if block.state == 'STALE_WITH_LAST_KNOWN' and (block.state_reason_en or block.state_reason_zh) %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+  {% endif %}
+    {% set _rw_zh_whys = block.rows | map(attribute='condition_zh_disclosed_why') | select | unique | list %}{% for _why in _rw_zh_whys %}<div class="mx-rw-zh-note l-zh">{{ _why }}</div>{% endfor %}
+    {% for row in block.rows %}
+    <div class="mx-rw-row">
+      <div class="mx-rw-text">
+        {{ t(row.condition_en or '', (row.condition_en or '') if row.condition_zh_disclosed_why else (row.condition_zh or row.condition_en or '')) }}
+      </div>
+      <span class="mx-rw-meta">
+        {% if row.since %}{{ t('since', '起始') }} {{ row.since[:10] }}{% endif %}
+        {% if row.as_of %} · {{ t('as of', '数据截至') }} {{ row.as_of[:10] }}{% endif %}
+        {% if block.calibration_note_en %} · {{ t(block.calibration_note_en, block.calibration_note_zh or block.calibration_note_en) }}{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="mx-empty">
+      <div class="mx-empty-line">{{ t('Research watch unavailable.', '研究观察暂不可用。') }}</div>
+      {% if block.state_reason_en or block.state_reason_zh %}
+      <div class="mx-empty-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
 {# ── Today's calendar ──────────────────────────────────────────────────────── #}
 {% if block.key == 'todays_calendar' %}
 <div class="panel">
@@ -297,15 +459,68 @@
 {% if block.key == 'prior_close_brief_ref' %}
 {% if block.rows and block.rows[0].link %}
 <div class="panel brief-link-panel">
-  <span class="muted sm">{{ t('Yesterday\'s brief:', '昨日简报：') }}</span>
+  <span class="muted sm brief-link-label">{{ t('Yesterday\'s brief:', '昨日简报：') }}</span>
   <a class="brief-link" href="{{ block.rows[0].link }}">
     {{ t('Read the AI Daily Brief →', '阅读 AI 每日简报 →') }}
   </a>
   {% if block.rows[0].generated_at %}
-  <span class="muted sm">{{ t('built', '构建于') }} {{ block.rows[0].generated_at }}</span>
+  <span class="muted sm brief-link-built">{{ t('built', '构建于') }} {{ block.rows[0].generated_at }}</span>
   {% endif %}
 </div>
 {% endif %}
+{% endif %}
+
+{# ── Owner links (MOR-2b Lane C) ───────────────────────────────────────────── #}
+{% if block.key == 'owner_links' %}
+{% set _ol_state_chip = (
+  ('live', t('Live', '实时')) if block.state == 'CURRENT'
+  else ('pre',  t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow">{{ t('Owner pages', '主理页面') }}</span>
+    <h2>{{ t(block.title_en or 'Owner pages & references', block.title_zh or '主理页面与参考') }}</h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _ol_state_chip[0] }}">
+        {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
+        {{ _ol_state_chip[1] }}
+      </span>
+    </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    {% endif %}
+    {{ help(
+      'Pages and references that own each plane — the canonical destinations for the dashboards behind the read.',
+      '每个背景面所属的主理页面与参考——读数背后的看板的标准入口。'
+    ) }}
+  </div>
+  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
+  {% if block.state == 'STALE_WITH_LAST_KNOWN' and (block.state_reason_en or block.state_reason_zh) %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+  {% endif %}
+    {% for row in block.rows %}
+    {% set _plane_tag = _PLANE_WORDS.get(row.plane, ('', '')) %}
+    <div class="mx-ol-row">
+      <a class="brief-link" href="{{ row.href }}">
+        {{ t(row.label_en or '', row.label_zh or row.label_en or '') }}
+      </a>
+      {% if row.plane %}
+      <span class="mx-ol-label">{{ t(_plane_tag[0], _plane_tag[1]) }}</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="mx-empty">
+      <div class="mx-empty-line">{{ t('Owner links unavailable.', '主理页面链接暂不可用。') }}</div>
+      {% if block.state_reason_en or block.state_reason_zh %}
+      <div class="mx-empty-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
 {% endif %}
 
 {% endfor %}

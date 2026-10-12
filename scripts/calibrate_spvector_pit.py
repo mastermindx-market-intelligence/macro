@@ -86,7 +86,7 @@ def main() -> int:
         f_pit["recession_prob"] = rp; swapped.append("recession_prob")
     if tp.notna().any() and "term_premium_10y" in f_pit:
         f_pit["term_premium_10y"] = tp
-        f_pit["curve_tp_adj"] = f_pit["spread_2s10s"] + f_pit["term_premium_10y"].fillna(0)
+        f_pit["curve_tp_adj"] = f_pit["spread_2s10s"] + f_pit["term_premium_10y"]
         swapped.append("term_premium_10y/curve_tp_adj")
 
     cf_std = conditions_frame(f); cf_pit = conditions_frame(f_pit)

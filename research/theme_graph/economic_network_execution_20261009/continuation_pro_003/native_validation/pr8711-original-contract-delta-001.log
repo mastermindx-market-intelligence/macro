@@ -1,0 +1,401 @@
+﻿2026-10-09T11:43:37.1957077Z Current runner version: '2.337.0'
+2026-10-09T11:43:37.1983024Z ##[group]Runner Image Provisioner
+2026-10-09T11:43:37.1984211Z Hosted Compute Agent
+2026-10-09T11:43:37.1984842Z Version: 20261002.596
+2026-10-09T11:43:37.1985578Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-09T11:43:37.1986361Z Build Date: 2026-10-02T22:28:27Z
+2026-10-09T11:43:37.1987171Z Worker ID: {5b18589e-2914-4f5a-bc23-f47c8f185875}
+2026-10-09T11:43:37.1987949Z Region: westus
+2026-10-09T11:43:37.1988520Z Cloud: Azure
+2026-10-09T11:43:37.1989126Z ##[endgroup]
+2026-10-09T11:43:37.1990674Z ##[group]Operating System
+2026-10-09T11:43:37.1991430Z Ubuntu
+2026-10-09T11:43:37.1991990Z 24.04.5
+2026-10-09T11:43:37.1992499Z LTS
+2026-10-09T11:43:37.1993060Z ##[endgroup]
+2026-10-09T11:43:37.1993826Z ##[group]Runner Image
+2026-10-09T11:43:37.1994516Z Image: ubuntu-24.04
+2026-10-09T11:43:37.1995226Z Version: 20261004.327.1
+2026-10-09T11:43:37.1996590Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-09T11:43:37.1998280Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+2026-10-09T11:43:37.1999258Z ##[endgroup]
+2026-10-09T11:43:37.2000468Z ##[group]GITHUB_TOKEN Permissions
+2026-10-09T11:43:37.2002496Z Contents: read
+2026-10-09T11:43:37.2003159Z Metadata: read
+2026-10-09T11:43:37.2003998Z ##[endgroup]
+2026-10-09T11:43:37.2006170Z Secret source: Actions
+2026-10-09T11:43:37.2007164Z Cache mode: write
+2026-10-09T11:43:37.2007977Z Prepare workflow directory
+2026-10-09T11:43:37.2344599Z Prepare all required actions
+2026-10-09T11:43:37.2394111Z Getting action download info
+2026-10-09T11:43:37.5922049Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-09T11:43:37.7195628Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-10-09T11:43:37.9439403Z Complete job name: contract-delta
+2026-10-09T11:43:38.0300557Z ##[group]Run actions/checkout@v4
+2026-10-09T11:43:38.0301479Z with:
+2026-10-09T11:43:38.0301916Z   filter: blob:none
+2026-10-09T11:43:38.0302374Z   fetch-depth: 1
+2026-10-09T11:43:38.0302871Z   sparse-checkout: /*
+!/site/
+!/data/
+
+2026-10-09T11:43:38.0303761Z   sparse-checkout-cone-mode: false
+2026-10-09T11:43:38.0304431Z   repository: mastermindx-market-intelligence/macro
+2026-10-09T11:43:38.0308351Z   token: ***
+2026-10-09T11:43:38.0308794Z   ssh-strict: true
+2026-10-09T11:43:38.0309234Z   ssh-user: git
+2026-10-09T11:43:38.0309690Z   persist-credentials: true
+2026-10-09T11:43:38.0310189Z   clean: true
+2026-10-09T11:43:38.0310613Z   fetch-tags: false
+2026-10-09T11:43:38.0311068Z   show-progress: true
+2026-10-09T11:43:38.0311519Z   lfs: false
+2026-10-09T11:43:38.0311936Z   submodules: false
+2026-10-09T11:43:38.0312407Z   set-safe-directory: true
+2026-10-09T11:43:38.0312928Z   allow-unsafe-pr-checkout: false
+2026-10-09T11:43:38.0313926Z ##[endgroup]
+2026-10-09T11:43:38.1336959Z Syncing repository: mastermindx-market-intelligence/macro
+2026-10-09T11:43:38.1339689Z ##[group]Getting Git version info
+2026-10-09T11:43:38.1340737Z Working directory is '/home/runner/work/macro/macro'
+2026-10-09T11:43:38.1342351Z [command]/usr/bin/git version
+2026-10-09T11:43:38.1437336Z git version 2.55.0
+2026-10-09T11:43:38.1463929Z ##[endgroup]
+2026-10-09T11:43:38.1481058Z Temporarily overriding HOME='/home/runner/work/_temp/e9238903-4ed2-4e3f-b3e9-81c39d7f8c1e' before making global git config changes
+2026-10-09T11:43:38.1483707Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-09T11:43:38.1487961Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/macro/macro
+2026-10-09T11:43:38.1545032Z Deleting the contents of '/home/runner/work/macro/macro'
+2026-10-09T11:43:38.1551336Z ##[group]Initializing the repository
+2026-10-09T11:43:38.1556471Z [command]/usr/bin/git init /home/runner/work/macro/macro
+2026-10-09T11:43:38.1688720Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-09T11:43:38.1702429Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-09T11:43:38.1712712Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-09T11:43:38.1714456Z hint: call:
+2026-10-09T11:43:38.1715223Z hint:
+2026-10-09T11:43:38.1716162Z hint: 	git config --global init.defaultBranch <name>
+2026-10-09T11:43:38.1717369Z hint:
+2026-10-09T11:43:38.1718468Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-09T11:43:38.1720094Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-09T11:43:38.1724382Z hint:
+2026-10-09T11:43:38.1725239Z hint: 	git branch -m <name>
+2026-10-09T11:43:38.1726125Z hint:
+2026-10-09T11:43:38.1727414Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-09T11:43:38.1729291Z Initialized empty Git repository in /home/runner/work/macro/macro/.git/
+2026-10-09T11:43:38.1732579Z [command]/usr/bin/git remote add origin https://github.com/mastermindx-market-intelligence/macro
+2026-10-09T11:43:38.1762556Z ##[endgroup]
+2026-10-09T11:43:38.1763426Z ##[group]Disabling automatic garbage collection
+2026-10-09T11:43:38.1775407Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-09T11:43:38.1805647Z ##[endgroup]
+2026-10-09T11:43:38.1806511Z ##[group]Setting up auth
+2026-10-09T11:43:38.1813975Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-09T11:43:38.1849842Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-09T11:43:38.2257523Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-09T11:43:38.2298529Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-09T11:43:38.2525646Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-09T11:43:38.2564472Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-09T11:43:38.2815877Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-09T11:43:38.2854942Z ##[endgroup]
+2026-10-09T11:43:38.2856908Z ##[group]Fetching the repository
+2026-10-09T11:43:38.2866409Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +c852221c2bc4d8275c11c686094ccbf472f82ad9:refs/remotes/pull/8711/merge
+2026-10-09T11:43:39.5848509Z From https://github.com/mastermindx-market-intelligence/macro
+2026-10-09T11:43:39.5851261Z  * [new ref]         c852221c2bc4d8275c11c686094ccbf472f82ad9 -> pull/8711/merge
+2026-10-09T11:43:39.5857572Z ##[endgroup]
+2026-10-09T11:43:39.5860272Z ##[group]Determining the checkout info
+2026-10-09T11:43:39.5862994Z ##[endgroup]
+2026-10-09T11:43:39.5866015Z ##[group]Setting up sparse checkout
+2026-10-09T11:43:39.5868010Z [command]/usr/bin/git config core.sparseCheckout true
+2026-10-09T11:43:39.5909982Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+2026-10-09T11:43:39.5934587Z .git/info/sparse-checkout
+2026-10-09T11:43:39.5942899Z ##[endgroup]
+2026-10-09T11:43:39.5944637Z ##[group]Checking out the ref
+2026-10-09T11:43:39.5947193Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/8711/merge
+2026-10-09T11:44:57.2615964Z Updating files:   0% (1/24859)
+2026-10-09T11:44:57.2789191Z Updating files:   1% (249/24859)
+2026-10-09T11:44:57.2968090Z Updating files:   2% (498/24859)
+2026-10-09T11:44:57.3137164Z Updating files:   3% (746/24859)
+2026-10-09T11:44:57.3325617Z Updating files:   4% (995/24859)
+2026-10-09T11:44:57.3568014Z Updating files:   5% (1243/24859)
+2026-10-09T11:44:57.3804482Z Updating files:   6% (1492/24859)
+2026-10-09T11:44:57.4038341Z Updating files:   7% (1741/24859)
+2026-10-09T11:44:57.4300722Z Updating files:   8% (1989/24859)
+2026-10-09T11:44:57.4664118Z Updating files:   9% (2238/24859)
+2026-10-09T11:44:57.4822485Z Updating files:  10% (2486/24859)
+2026-10-09T11:44:57.5560233Z Updating files:  11% (2735/24859)
+2026-10-09T11:44:57.5868898Z Updating files:  12% (2984/24859)
+2026-10-09T11:44:57.6202638Z Updating files:  13% (3232/24859)
+2026-10-09T11:44:57.6565652Z Updating files:  14% (3481/24859)
+2026-10-09T11:44:57.6951335Z Updating files:  15% (3729/24859)
+2026-10-09T11:44:57.7387877Z Updating files:  16% (3978/24859)
+2026-10-09T11:44:57.7778852Z Updating files:  17% (4227/24859)
+2026-10-09T11:44:57.8144114Z Updating files:  18% (4475/24859)
+2026-10-09T11:44:57.8588791Z Updating files:  19% (4724/24859)
+2026-10-09T11:44:57.8887621Z Updating files:  20% (4972/24859)
+2026-10-09T11:44:58.0978840Z Updating files:  20% (5014/24859)
+2026-10-09T11:44:58.2312029Z Updating files:  21% (5221/24859)
+2026-10-09T11:44:58.4409429Z Updating files:  22% (5469/24859)
+2026-10-09T11:44:58.5639986Z Updating files:  23% (5718/24859)
+2026-10-09T11:44:58.7941841Z Updating files:  24% (5967/24859)
+2026-10-09T11:44:58.8868168Z Updating files:  25% (6215/24859)
+2026-10-09T11:44:59.2449650Z Updating files:  25% (6261/24859)
+2026-10-09T11:44:59.7489117Z Updating files:  26% (6464/24859)
+2026-10-09T11:44:59.8874032Z Updating files:  27% (6712/24859)
+2026-10-09T11:45:00.0447807Z Updating files:  27% (6879/24859)
+2026-10-09T11:45:00.4395869Z Updating files:  28% (6961/24859)
+2026-10-09T11:45:00.6560269Z Updating files:  29% (7210/24859)
+2026-10-09T11:45:00.7914261Z Updating files:  30% (7458/24859)
+2026-10-09T11:45:00.8865446Z Updating files:  31% (7707/24859)
+2026-10-09T11:45:01.1190334Z Updating files:  31% (7820/24859)
+2026-10-09T11:45:01.1793852Z Updating files:  32% (7955/24859)
+2026-10-09T11:45:01.8180319Z Updating files:  33% (8204/24859)
+2026-10-09T11:45:01.8889957Z Updating files:  34% (8453/24859)
+2026-10-09T11:45:02.1105275Z Updating files:  34% (8486/24859)
+2026-10-09T11:45:02.3072563Z Updating files:  35% (8701/24859)
+2026-10-09T11:45:02.6724941Z Updating files:  36% (8950/24859)
+2026-10-09T11:45:02.8883924Z Updating files:  37% (9198/24859)
+2026-10-09T11:45:02.9955248Z Updating files:  37% (9343/24859)
+2026-10-09T11:45:03.1206413Z Updating files:  38% (9447/24859)
+2026-10-09T11:45:03.6760018Z Updating files:  39% (9696/24859)
+2026-10-09T11:45:03.8894466Z Updating files:  40% (9944/24859)
+2026-10-09T11:45:04.3318658Z Updating files:  40% (10011/24859)
+2026-10-09T11:45:04.5307155Z Updating files:  41% (10193/24859)
+2026-10-09T11:45:04.7127865Z Updating files:  42% (10441/24859)
+2026-10-09T11:45:04.8868496Z Updating files:  43% (10690/24859)
+2026-10-09T11:45:04.9052935Z Updating files:  43% (10909/24859)
+2026-10-09T11:45:05.2026022Z Updating files:  44% (10938/24859)
+2026-10-09T11:45:05.5888434Z Updating files:  45% (11187/24859)
+2026-10-09T11:45:05.7454587Z Updating files:  46% (11436/24859)
+2026-10-09T11:45:05.8879766Z Updating files:  47% (11684/24859)
+2026-10-09T11:45:05.9267875Z Updating files:  47% (11854/24859)
+2026-10-09T11:45:06.2902860Z Updating files:  48% (11933/24859)
+2026-10-09T11:45:06.4684470Z Updating files:  49% (12181/24859)
+2026-10-09T11:45:06.8881640Z Updating files:  50% (12430/24859)
+2026-10-09T11:45:06.9027378Z Updating files:  50% (12660/24859)
+2026-10-09T11:45:07.1104636Z Updating files:  51% (12679/24859)
+2026-10-09T11:45:07.1635606Z Updating files:  52% (12927/24859)
+2026-10-09T11:45:07.1998466Z Updating files:  53% (13176/24859)
+2026-10-09T11:45:07.2377596Z Updating files:  54% (13424/24859)
+2026-10-09T11:45:07.2770578Z Updating files:  55% (13673/24859)
+2026-10-09T11:45:07.3128720Z Updating files:  56% (13922/24859)
+2026-10-09T11:45:07.3506110Z Updating files:  57% (14170/24859)
+2026-10-09T11:45:07.5244940Z Updating files:  58% (14419/24859)
+2026-10-09T11:45:07.5773655Z Updating files:  59% (14667/24859)
+2026-10-09T11:45:07.6468508Z Updating files:  60% (14916/24859)
+2026-10-09T11:45:07.6761459Z Updating files:  61% (15164/24859)
+2026-10-09T11:45:07.7848721Z Updating files:  62% (15413/24859)
+2026-10-09T11:45:07.8322147Z Updating files:  63% (15662/24859)
+2026-10-09T11:45:07.8793372Z Updating files:  64% (15910/24859)
+2026-10-09T11:45:07.8865750Z Updating files:  65% (16159/24859)
+2026-10-09T11:45:07.9154692Z Updating files:  65% (16204/24859)
+2026-10-09T11:45:08.0202380Z Updating files:  66% (16407/24859)
+2026-10-09T11:45:08.0936267Z Updating files:  67% (16656/24859)
+2026-10-09T11:45:08.1750621Z Updating files:  68% (16905/24859)
+2026-10-09T11:45:08.2285732Z Updating files:  69% (17153/24859)
+2026-10-09T11:45:08.2613043Z Updating files:  70% (17402/24859)
+2026-10-09T11:45:08.2997363Z Updating files:  71% (17650/24859)
+2026-10-09T11:45:08.3664605Z Updating files:  72% (17899/24859)
+2026-10-09T11:45:08.3981421Z Updating files:  73% (18148/24859)
+2026-10-09T11:45:08.4311074Z Updating files:  74% (18396/24859)
+2026-10-09T11:45:08.4687857Z Updating files:  75% (18645/24859)
+2026-10-09T11:45:08.5000015Z Updating files:  76% (18893/24859)
+2026-10-09T11:45:08.5349744Z Updating files:  77% (19142/24859)
+2026-10-09T11:45:08.5702747Z Updating files:  78% (19391/24859)
+2026-10-09T11:45:08.5988055Z Updating files:  79% (19639/24859)
+2026-10-09T11:45:08.6636029Z Updating files:  80% (19888/24859)
+2026-10-09T11:45:08.7086564Z Updating files:  81% (20136/24859)
+2026-10-09T11:45:08.7549319Z Updating files:  82% (20385/24859)
+2026-10-09T11:45:08.7770402Z Updating files:  83% (20633/24859)
+2026-10-09T11:45:08.8082240Z Updating files:  84% (20882/24859)
+2026-10-09T11:45:08.8361245Z Updating files:  85% (21131/24859)
+2026-10-09T11:45:08.8685032Z Updating files:  86% (21379/24859)
+2026-10-09T11:45:08.8865930Z Updating files:  87% (21628/24859)
+2026-10-09T11:45:08.8972184Z Updating files:  87% (21787/24859)
+2026-10-09T11:45:08.9291360Z Updating files:  88% (21876/24859)
+2026-10-09T11:45:08.9547469Z Updating files:  89% (22125/24859)
+2026-10-09T11:45:08.9911526Z Updating files:  90% (22374/24859)
+2026-10-09T11:45:09.0257711Z Updating files:  91% (22622/24859)
+2026-10-09T11:45:09.0597641Z Updating files:  92% (22871/24859)
+2026-10-09T11:45:09.0912354Z Updating files:  93% (23119/24859)
+2026-10-09T11:45:09.1225588Z Updating files:  94% (23368/24859)
+2026-10-09T11:45:09.1544514Z Updating files:  95% (23617/24859)
+2026-10-09T11:45:09.2217604Z Updating files:  96% (23865/24859)
+2026-10-09T11:45:09.6304642Z Updating files:  97% (24114/24859)
+2026-10-09T11:45:09.8568898Z Updating files:  98% (24362/24859)
+2026-10-09T11:45:09.8872210Z Updating files:  99% (24611/24859)
+2026-10-09T11:45:10.1716920Z Updating files:  99% (24629/24859)
+2026-10-09T11:45:10.1717849Z Updating files: 100% (24859/24859)
+2026-10-09T11:45:10.1718306Z Updating files: 100% (24859/24859), done.
+2026-10-09T11:45:10.2583821Z Note: switching to 'refs/remotes/pull/8711/merge'.
+2026-10-09T11:45:10.2584410Z 
+2026-10-09T11:45:10.2584772Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-09T11:45:10.2585671Z changes and commit them, and you can discard any commits you make in this
+2026-10-09T11:45:10.2586542Z state without impacting any branches by switching back to a branch.
+2026-10-09T11:45:10.2587042Z 
+2026-10-09T11:45:10.2587370Z If you want to create a new branch to retain commits you create, you may
+2026-10-09T11:45:10.2588153Z do so (now or later) by using -c with the switch command. Example:
+2026-10-09T11:45:10.2588603Z 
+2026-10-09T11:45:10.2588788Z   git switch -c <new-branch-name>
+2026-10-09T11:45:10.2589093Z 
+2026-10-09T11:45:10.2589259Z Or undo this operation with:
+2026-10-09T11:45:10.2589535Z 
+2026-10-09T11:45:10.2589676Z   git switch -
+2026-10-09T11:45:10.2589883Z 
+2026-10-09T11:45:10.2590250Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-09T11:45:10.2590801Z 
+2026-10-09T11:45:10.2591431Z HEAD is now at c852221c Merge 9df735bbeaa8d0f4d4967296270bfb2246a5212f into c4cd21d597521603fb75fe7a4602424e088c6bfa
+2026-10-09T11:45:10.2995946Z ##[endgroup]
+2026-10-09T11:45:10.3041268Z [command]/usr/bin/git log -1 --format=%H
+2026-10-09T11:45:10.3069950Z c852221c2bc4d8275c11c686094ccbf472f82ad9
+2026-10-09T11:45:10.3335079Z ##[group]Run actions/setup-python@v5
+2026-10-09T11:45:10.3335382Z with:
+2026-10-09T11:45:10.3335596Z   python-version: 3.12.13
+2026-10-09T11:45:10.3335854Z   check-latest: false
+2026-10-09T11:45:10.3338331Z   token: ***
+2026-10-09T11:45:10.3338552Z   update-environment: true
+2026-10-09T11:45:10.3338805Z   allow-prereleases: false
+2026-10-09T11:45:10.3339041Z   freethreaded: false
+2026-10-09T11:45:10.3339255Z ##[endgroup]
+2026-10-09T11:45:10.4668063Z ##[group]Installed versions
+2026-10-09T11:45:10.4771378Z Version 3.12.13 was not found in the local cache
+2026-10-09T11:45:10.4948505Z (node:2352) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-09T11:45:10.4949947Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-09T11:45:11.2145533Z Version 3.12.13 is available for downloading
+2026-10-09T11:45:11.2147705Z Download from "https://github.com/actions/python-versions/releases/download/3.12.13-27650778726/python-3.12.13-linux-24.04-x64.tar.gz"
+2026-10-09T11:45:11.8875345Z Extract downloaded archive
+2026-10-09T11:45:11.9020265Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/02269d92-b764-42b5-93d4-fa2cd87b4309 -f /home/runner/work/_temp/8e8fb170-bc7e-41c2-a56e-b4160458622e
+2026-10-09T11:45:13.8608980Z Execute installation script
+2026-10-09T11:45:13.8704905Z Check if Python hostedtoolcache folder exist...
+2026-10-09T11:45:13.8710342Z Create Python 3.12.13 folder
+2026-10-09T11:45:13.8720300Z Copy Python binaries to hostedtoolcache folder
+2026-10-09T11:45:14.3961983Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-10-09T11:45:14.4003237Z Upgrading pip...
+2026-10-09T11:45:16.7968880Z Collecting pip
+2026-10-09T11:45:16.8252400Z Downloading pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)
+2026-10-09T11:45:16.8323067Z Downloading pip-26.2.1-py3-none-any.whl (1.8 MB)
+2026-10-09T11:45:16.8759114Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 98.1 MB/s eta 0:00:00
+2026-10-09T11:45:16.8759679Z 
+2026-10-09T11:45:16.9000655Z Installing collected packages: pip
+2026-10-09T11:45:16.9005107Z Attempting uninstall: pip
+2026-10-09T11:45:16.9025357Z Found existing installation: pip 25.0.1
+2026-10-09T11:45:16.9392698Z Uninstalling pip-25.0.1:
+2026-10-09T11:45:16.9452361Z Successfully uninstalled pip-25.0.1
+2026-10-09T11:45:17.8519935Z Successfully installed pip-26.2.1
+2026-10-09T11:45:17.9016645Z Create complete file
+2026-10-09T11:45:17.9057240Z Successfully set up CPython (3.12.13)
+2026-10-09T11:45:17.9058788Z ##[endgroup]
+2026-10-09T11:45:17.9236192Z ##[group]Run pip install pytest pyyaml
+2026-10-09T11:45:17.9236574Z [36;1mpip install pytest pyyaml[0m
+2026-10-09T11:45:17.9508773Z shell: /usr/bin/bash -e {0}
+2026-10-09T11:45:17.9509128Z env:
+2026-10-09T11:45:17.9509507Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:17.9510179Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-09T11:45:17.9510805Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:17.9511358Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:17.9511905Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:17.9512459Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-09T11:45:17.9512921Z ##[endgroup]
+2026-10-09T11:45:18.8882645Z Collecting pytest
+2026-10-09T11:45:18.9311783Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-09T11:45:18.9699815Z Collecting pyyaml
+2026-10-09T11:45:18.9730312Z   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-09T11:45:18.9834349Z Collecting iniconfig>=1.0.1 (from pytest)
+2026-10-09T11:45:18.9859516Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-09T11:45:18.9996064Z Collecting packaging>=22 (from pytest)
+2026-10-09T11:45:19.0020619Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-09T11:45:19.0130372Z Collecting pluggy<2,>=1.5 (from pytest)
+2026-10-09T11:45:19.0154634Z   Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+2026-10-09T11:45:19.0327061Z Collecting pygments>=2.7.2 (from pytest)
+2026-10-09T11:45:19.0351932Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-09T11:45:19.0423866Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-09T11:45:19.0595658Z Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+2026-10-09T11:45:19.0640420Z Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-09T11:45:19.0735912Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 99.0 MB/s  0:00:00
+2026-10-09T11:45:19.0762006Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-09T11:45:19.0804656Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-09T11:45:19.0850691Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-09T11:45:19.0955930Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 130.0 MB/s  0:00:00
+2026-10-09T11:45:19.1398465Z Installing collected packages: pyyaml, pygments, pluggy, packaging, iniconfig, pytest
+2026-10-09T11:45:20.3168813Z 
+2026-10-09T11:45:20.3182235Z Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.6.0 pygments-2.21.0 pytest-9.1.1 pyyaml-6.0.3
+2026-10-09T11:45:20.3700327Z ##[group]Run set -euo pipefail
+2026-10-09T11:45:20.3700673Z [36;1mset -euo pipefail[0m
+2026-10-09T11:45:20.3700963Z [36;1mtested_merge=$(git rev-parse HEAD)[0m
+2026-10-09T11:45:20.3701302Z [36;1mif [ "$tested_merge" != "$GITHUB_SHA" ]; then[0m
+2026-10-09T11:45:20.3701789Z [36;1m  echo "::error title=contract-delta::checkout HEAD does not match GITHUB_SHA" >&2[0m
+2026-10-09T11:45:20.3702221Z [36;1m  exit 1[0m
+2026-10-09T11:45:20.3702416Z [36;1mfi[0m
+2026-10-09T11:45:20.3702783Z [36;1m# `actions/checkout` uses fetch-depth: 1 above, so Git marks this merge[0m
+2026-10-09T11:45:20.3703303Z [36;1m# commit as a shallow boundary and revision-walking formats such as `%P`[0m
+2026-10-09T11:45:20.3704125Z [36;1m# hide its parents. Read the immutable raw commit headers instead; they[0m
+2026-10-09T11:45:20.3704648Z [36;1m# retain the exact parent OIDs even before either parent object is fetched.[0m
+2026-10-09T11:45:20.3705213Z [36;1mparents=$(git cat-file -p HEAD | sed -n 's/^parent //p')[0m
+2026-10-09T11:45:20.3705579Z [36;1mset -- $parents[0m
+2026-10-09T11:45:20.3705816Z [36;1mif [ "$#" -ne 2 ]; then[0m
+2026-10-09T11:45:20.3706262Z [36;1m  echo "::error title=contract-delta::PR checkout is not an exact two-parent tested merge" >&2[0m
+2026-10-09T11:45:20.3706723Z [36;1m  exit 1[0m
+2026-10-09T11:45:20.3706926Z [36;1mfi[0m
+2026-10-09T11:45:20.3707120Z [36;1mtested_base=$1[0m
+2026-10-09T11:45:20.3707348Z [36;1mtested_head=$2[0m
+2026-10-09T11:45:20.3707623Z [36;1mif [ "$tested_head" != "$EXPECTED_PR_HEAD" ]; then[0m
+2026-10-09T11:45:20.3708166Z [36;1m  echo "::error title=contract-delta::tested merge second parent does not match the exact PR head" >&2[0m
+2026-10-09T11:45:20.3708658Z [36;1m  exit 1[0m
+2026-10-09T11:45:20.3708872Z [36;1mfi[0m
+2026-10-09T11:45:20.3709116Z [36;1mecho "base_sha=$tested_base" >> "$GITHUB_OUTPUT"[0m
+2026-10-09T11:45:20.3709474Z [36;1mecho "head_sha=$tested_head" >> "$GITHUB_OUTPUT"[0m
+2026-10-09T11:45:20.3775961Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-09T11:45:20.3776307Z env:
+2026-10-09T11:45:20.3776577Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.3777011Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-09T11:45:20.3777447Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.3777852Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.3778262Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.3778822Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-09T11:45:20.3779220Z   EXPECTED_PR_HEAD: 9df735bbeaa8d0f4d4967296270bfb2246a5212f
+2026-10-09T11:45:20.3779541Z ##[endgroup]
+2026-10-09T11:45:20.3968414Z ##[group]Run git fetch --depth=1 origin c4cd21d597521603fb75fe7a4602424e088c6bfa
+2026-10-09T11:45:20.3968975Z [36;1mgit fetch --depth=1 origin c4cd21d597521603fb75fe7a4602424e088c6bfa[0m
+2026-10-09T11:45:20.4028272Z shell: /usr/bin/bash -e {0}
+2026-10-09T11:45:20.4028531Z env:
+2026-10-09T11:45:20.4028800Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.4029251Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-09T11:45:20.4029697Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.4030100Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.4030500Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:20.4030918Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-09T11:45:20.4031252Z ##[endgroup]
+2026-10-09T11:45:21.0026010Z From https://github.com/mastermindx-market-intelligence/macro
+2026-10-09T11:45:21.0026813Z  * branch              c4cd21d597521603fb75fe7a4602424e088c6bfa -> FETCH_HEAD
+2026-10-09T11:45:21.0119439Z ##[group]Run python scripts/check_contract_delta.py --base c4cd21d597521603fb75fe7a4602424e088c6bfa
+2026-10-09T11:45:21.0120180Z [36;1mpython scripts/check_contract_delta.py --base c4cd21d597521603fb75fe7a4602424e088c6bfa[0m
+2026-10-09T11:45:21.0184410Z shell: /usr/bin/bash -e {0}
+2026-10-09T11:45:21.0184674Z env:
+2026-10-09T11:45:21.0184953Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:21.0185423Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-09T11:45:21.0185880Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:21.0186286Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:21.0186698Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-09T11:45:21.0187097Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-09T11:45:21.0187435Z ##[endgroup]
+2026-10-09T11:56:33.6678932Z contract-delta: probe templates/index.html: head 135 jobs / 5,757 s / 10 packs; base 135 jobs / 5,757 s / 10 packs; ceilings 135 / 5,800 / 10
+2026-10-09T11:56:33.6680434Z contract-delta: probe scripts/build_free_content.py: head 133 jobs / 5,547 s / 10 packs; base 133 jobs / 5,547 s / 10 packs; ceilings 134 / 5,600 / 10
+2026-10-09T11:56:33.6681853Z contract-delta: probe engine/prophet/plan_book.py: head 128 jobs / 5,507 s / 10 packs; base 128 jobs / 5,507 s / 10 packs; ceilings 129 / 5,600 / 10
+2026-10-09T11:56:33.6683102Z contract-delta: head census seconds: closure_and_suites 395.3, probes 186.2, skip_only 26.7, trigger_gaps 47.4
+2026-10-09T11:56:33.6684422Z contract-delta: base census seconds: closure_and_suites 358.2, probes 157.5, skip_only 26.8, trigger_gaps 46.2
+2026-10-09T11:56:33.6711894Z ##[error]research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/test_company_relationship_observations.py is a new pytest suite named by no run: step in any workflow — wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml
+2026-10-09T11:56:33.6730373Z ##[error]research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/test_company_relationship_observations.py is a new pytest suite named by no run: step in any workflow — wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml
+2026-10-09T11:56:33.6733072Z contract-delta: 2 introduced, 0 inherited (base c4cd21d59752)
+2026-10-09T11:56:33.6733762Z contract-delta: wall 672.5 s
+2026-10-09T11:56:33.6992236Z ##[error]Process completed with exit code 1.
+2026-10-09T11:56:33.7134870Z Post job cleanup.
+2026-10-09T11:56:33.7987163Z [command]/usr/bin/git version
+2026-10-09T11:56:33.8032950Z git version 2.55.0
+2026-10-09T11:56:33.8073165Z Temporarily overriding HOME='/home/runner/work/_temp/4792e9b5-35ba-4f85-90d7-c0edd6730125' before making global git config changes
+2026-10-09T11:56:33.8075145Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-09T11:56:33.8079718Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/macro/macro
+2026-10-09T11:56:33.8119862Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-09T11:56:33.8156613Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-09T11:56:33.8489662Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-09T11:56:33.8518616Z http.https://github.com/.extraheader
+2026-10-09T11:56:33.8532712Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-09T11:56:33.8578914Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-09T11:56:33.8912323Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-09T11:56:33.8951920Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-09T11:56:33.9415348Z Cleaning up orphan processes
+2026-10-09T11:56:33.9704786Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

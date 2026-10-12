@@ -1,0 +1,264 @@
+{
+  "schema": "prophet.cpu_leadership.rs_threshold_inference.v1",
+  "source_study_schema": "prophet.cpu_leadership.rs_threshold_study.v1",
+  "source_study_path": "/Volumes/Mastermind/worktrees/us-prophet-candidate-visibility-20260921/research/prophet/cpu_leadership/evidence/rs-threshold-study.json",
+  "source_study_sha256": "2d9bb6c6226f95bd7b720e879b25a45bb48710239d3a5f95af0ba4cbd76eb297",
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_trade": false
+  },
+  "method": {
+    "aggregation": "mean per calendar month within cohort",
+    "pairing": "only months containing both compared cohorts",
+    "newey_west_lags": 3,
+    "moving_block_months": 3,
+    "bootstrap_draws": 5000,
+    "bootstrap_seed": 20260921
+  },
+  "contrasts": {
+    "A_incremental_075_085_minus_allowed_lt075": {
+      "left": "incremental_075_085",
+      "right": "allowed_lt075",
+      "metrics": {
+        "rel_21d": {
+          "n_overlapping_months": 267,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": 0.000628,
+          "median": 0.000399,
+          "newey_west": {
+            "mean": 0.00063,
+            "se": 0.00186,
+            "t": 0.338,
+            "p": 0.7352,
+            "n": 267,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 267,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              -0.003083,
+              0.004033
+            ]
+          }
+        },
+        "dd_21d": {
+          "n_overlapping_months": 267,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": 0.001075,
+          "median": 0.000572,
+          "newey_west": {
+            "mean": 0.00107,
+            "se": 0.00163,
+            "t": 0.661,
+            "p": 0.5087,
+            "n": 267,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 267,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              -0.002037,
+              0.004127
+            ]
+          }
+        },
+        "dd_risk_21d": {
+          "n_overlapping_months": 267,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": 0.003416,
+          "median": 0.0,
+          "newey_west": {
+            "mean": 0.00342,
+            "se": 0.01012,
+            "t": 0.338,
+            "p": 0.7357,
+            "n": 267,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 267,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              -0.015061,
+              0.024206
+            ]
+          }
+        },
+        "continuation_failure_21d": {
+          "n_overlapping_months": 267,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": -0.030643,
+          "median": 0.0,
+          "newey_west": {
+            "mean": -0.03064,
+            "se": 0.02364,
+            "t": -1.296,
+            "p": 0.1949,
+            "n": 267,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 267,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              -0.072657,
+              0.017192
+            ]
+          }
+        }
+      }
+    },
+    "B_blocked_both_ge085_minus_incremental_075_085": {
+      "left": "blocked_both_ge085",
+      "right": "incremental_075_085",
+      "metrics": {
+        "rel_21d": {
+          "n_overlapping_months": 261,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": -0.003226,
+          "median": -0.003601,
+          "newey_west": {
+            "mean": -0.00323,
+            "se": 0.00166,
+            "t": -1.947,
+            "p": 0.0515,
+            "n": 261,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 261,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              -0.006374,
+              -2.2e-05
+            ]
+          }
+        },
+        "dd_21d": {
+          "n_overlapping_months": 261,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": -0.00172,
+          "median": -0.00109,
+          "newey_west": {
+            "mean": -0.00172,
+            "se": 0.00118,
+            "t": -1.461,
+            "p": 0.144,
+            "n": 261,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 261,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              -0.003843,
+              0.000632
+            ]
+          }
+        },
+        "dd_risk_21d": {
+          "n_overlapping_months": 261,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": 0.005635,
+          "median": 0.0,
+          "newey_west": {
+            "mean": 0.00564,
+            "se": 0.01164,
+            "t": 0.484,
+            "p": 0.6283,
+            "n": 261,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 261,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              -0.018011,
+              0.026744
+            ]
+          }
+        },
+        "continuation_failure_21d": {
+          "n_overlapping_months": 261,
+          "span": [
+            "1999-06-01",
+            "2026-08-01"
+          ],
+          "mean": 0.060505,
+          "median": 0.035714,
+          "newey_west": {
+            "mean": 0.06051,
+            "se": 0.02459,
+            "t": 2.46,
+            "p": 0.0139,
+            "n": 261,
+            "lags": 3,
+            "lags_requested": 3
+          },
+          "moving_block_bootstrap": {
+            "n": 261,
+            "block": 3,
+            "draws": 5000,
+            "seed": 20260921,
+            "mean_ci95": [
+              0.013416,
+              0.104547
+            ]
+          }
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Second-stage inference was preregistered after the descriptive read and before this inference.",
+    "Monthly aggregation reduces cross-sector and overlapping-window pseudo-replication but does not create causal identification.",
+    "The US SPDR proxy is not the live theme-member universe.",
+    "No result changes production thresholds without the existing promotion process."
+  ]
+}

@@ -1,0 +1,1194 @@
+{
+  "prophet_ledger": {
+    "rows": 302,
+    "n_names": 282,
+    "month_x_outcome": [
+      {
+        "month": "2026-02",
+        "n": 1,
+        "n_names": 1,
+        "T1_HIT": 0,
+        "T2_HIT": 0,
+        "INVALIDATED": 0,
+        "EXPIRED": 1,
+        "CLOSED_EARLY": 0,
+        "other": 0
+      },
+      {
+        "month": "2026-03",
+        "n": 2,
+        "n_names": 2,
+        "T1_HIT": 0,
+        "T2_HIT": 0,
+        "INVALIDATED": 0,
+        "EXPIRED": 2,
+        "CLOSED_EARLY": 0,
+        "other": 0
+      },
+      {
+        "month": "2026-04",
+        "n": 3,
+        "n_names": 3,
+        "T1_HIT": 1,
+        "T2_HIT": 0,
+        "INVALIDATED": 0,
+        "EXPIRED": 1,
+        "CLOSED_EARLY": 0,
+        "other": 1
+      },
+      {
+        "month": "2026-05",
+        "n": 5,
+        "n_names": 4,
+        "T1_HIT": 2,
+        "T2_HIT": 0,
+        "INVALIDATED": 0,
+        "EXPIRED": 3,
+        "CLOSED_EARLY": 0,
+        "other": 0
+      },
+      {
+        "month": "2026-06",
+        "n": 35,
+        "n_names": 33,
+        "T1_HIT": 5,
+        "T2_HIT": 1,
+        "INVALIDATED": 9,
+        "EXPIRED": 14,
+        "CLOSED_EARLY": 0,
+        "other": 6
+      },
+      {
+        "month": "2026-07",
+        "n": 87,
+        "n_names": 79,
+        "T1_HIT": 10,
+        "T2_HIT": 1,
+        "INVALIDATED": 15,
+        "EXPIRED": 47,
+        "CLOSED_EARLY": 0,
+        "other": 14
+      },
+      {
+        "month": "2026-08",
+        "n": 154,
+        "n_names": 154,
+        "T1_HIT": 22,
+        "T2_HIT": 1,
+        "INVALIDATED": 38,
+        "EXPIRED": 56,
+        "CLOSED_EARLY": 0,
+        "other": 37
+      },
+      {
+        "month": "2026-09",
+        "n": 14,
+        "n_names": 14,
+        "T1_HIT": 4,
+        "T2_HIT": 0,
+        "INVALIDATED": 10,
+        "EXPIRED": 0,
+        "CLOSED_EARLY": 0,
+        "other": 0
+      },
+      {
+        "month": "unknown",
+        "n": 1,
+        "n_names": 1,
+        "T1_HIT": 0,
+        "T2_HIT": 0,
+        "INVALIDATED": 0,
+        "EXPIRED": 1,
+        "CLOSED_EARLY": 0,
+        "other": 0
+      }
+    ],
+    "totals": {
+      "month": "ALL",
+      "n": 302,
+      "n_names": 282,
+      "T1_HIT": 44,
+      "T2_HIT": 3,
+      "INVALIDATED": 72,
+      "EXPIRED": 125,
+      "CLOSED_EARLY": 0,
+      "other": 58
+    },
+    "by_outcome_stats": [
+      {
+        "outcome": "T1_HIT",
+        "n": 44,
+        "n_names": 42,
+        "n_stock_result_pct_nonnull": 44,
+        "mean_stock_result_pct": 16.78175909090909,
+        "median_stock_result_pct": 13.916699999999999,
+        "n_days_held_nonnull": 44,
+        "mean_days_held": 19.022727272727273,
+        "median_days_held": 16.0
+      },
+      {
+        "outcome": "T2_HIT",
+        "n": 3,
+        "n_names": 3,
+        "n_stock_result_pct_nonnull": 3,
+        "mean_stock_result_pct": 71.67443333333333,
+        "median_stock_result_pct": 13.0271,
+        "n_days_held_nonnull": 3,
+        "mean_days_held": 7.666666666666667,
+        "median_days_held": 8.0
+      },
+      {
+        "outcome": "INVALIDATED",
+        "n": 72,
+        "n_names": 68,
+        "n_stock_result_pct_nonnull": 72,
+        "mean_stock_result_pct": -10.152598611111111,
+        "median_stock_result_pct": -7.97095,
+        "n_days_held_nonnull": 72,
+        "mean_days_held": 20.0,
+        "median_days_held": 19.0
+      },
+      {
+        "outcome": "EXPIRED",
+        "n": 125,
+        "n_names": 117,
+        "n_stock_result_pct_nonnull": 125,
+        "mean_stock_result_pct": -0.5812088000000002,
+        "median_stock_result_pct": -2.2703,
+        "n_days_held_nonnull": 125,
+        "mean_days_held": 45.408,
+        "median_days_held": 45.0
+      },
+      {
+        "outcome": "CLOSED_EARLY",
+        "n": 0,
+        "n_names": 0,
+        "n_stock_result_pct_nonnull": 0,
+        "mean_stock_result_pct": null,
+        "median_stock_result_pct": null,
+        "n_days_held_nonnull": 0,
+        "mean_days_held": null,
+        "median_days_held": null
+      },
+      {
+        "outcome": "other",
+        "n": 58,
+        "n_names": 58,
+        "n_stock_result_pct_nonnull": 0,
+        "mean_stock_result_pct": null,
+        "median_stock_result_pct": null,
+        "n_days_held_nonnull": 58,
+        "mean_days_held": 45.43103448275862,
+        "median_days_held": 45.0
+      }
+    ],
+    "other_raw_outcomes": [
+      "NO_ENTRY"
+    ],
+    "signal_date_first": "2026-02",
+    "signal_date_last": "unknown"
+  },
+  "retro_grades": {
+    "rows": 13563,
+    "as_of_count": 48,
+    "as_of_first": "2026-06-15",
+    "as_of_last": "2026-09-17",
+    "as_of_dates": [
+      "2026-06-15",
+      "2026-06-16",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-22",
+      "2026-06-23",
+      "2026-06-24",
+      "2026-06-30",
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-06",
+      "2026-07-09",
+      "2026-07-10",
+      "2026-07-14",
+      "2026-07-15",
+      "2026-07-17",
+      "2026-07-20",
+      "2026-07-21",
+      "2026-07-24",
+      "2026-07-27",
+      "2026-07-28",
+      "2026-07-29",
+      "2026-07-30",
+      "2026-07-31",
+      "2026-08-07",
+      "2026-08-12",
+      "2026-08-13",
+      "2026-08-14",
+      "2026-08-17",
+      "2026-08-18",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-24",
+      "2026-08-25",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-31",
+      "2026-09-03",
+      "2026-09-04",
+      "2026-09-08",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-11",
+      "2026-09-14",
+      "2026-09-16",
+      "2026-09-17"
+    ],
+    "n_tickers": 1130,
+    "rank_by_values": [
+      "bottoming-alignment",
+      "confluence",
+      "conviction",
+      "us_prophet_v1",
+      "us_prophet_v2",
+      "us_prophet_v3"
+    ],
+    "lane_values": [
+      "buy",
+      "laggards",
+      "leaders",
+      "ran",
+      "watch"
+    ],
+    "horizon_values": [
+      5,
+      10,
+      21
+    ],
+    "rank_by_as_of_months": {
+      "bottoming-alignment": [
+        "2026-06",
+        "2026-07"
+      ],
+      "confluence": [
+        "2026-07"
+      ],
+      "conviction": [
+        "2026-06"
+      ],
+      "us_prophet_v1": [
+        "2026-08"
+      ],
+      "us_prophet_v2": [
+        "2026-08"
+      ],
+      "us_prophet_v3": [
+        "2026-08",
+        "2026-09"
+      ]
+    },
+    "share_ret_nonnull_is_structural": true,
+    "share_ret_nonnull_note": "share_ret_nonnull = 1.0000 in every cell is structural: retro_grades.parquet holds graded rows only (every row has a non-null ret). It is not a coverage statistic over the published board.",
+    "cells": [
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 208,
+        "n_ret_nonnull": 208,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 173
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 34,
+        "n_ret_nonnull": 34,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 34
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "buy",
+        "horizon": 21,
+        "n": 34,
+        "n_ret_nonnull": 34,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 34
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 32,
+        "n_ret_nonnull": 32,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 17
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 12,
+        "n_ret_nonnull": 12,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 12
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "laggards",
+        "horizon": 21,
+        "n": 12,
+        "n_ret_nonnull": 12,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 12
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 59,
+        "n_ret_nonnull": 59,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 30
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "watch",
+        "horizon": 10,
+        "n": 24,
+        "n_ret_nonnull": 24,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 24
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "bottoming-alignment",
+        "lane": "watch",
+        "horizon": 21,
+        "n": 24,
+        "n_ret_nonnull": 24,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 24
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "conviction",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 437,
+        "n_ret_nonnull": 437,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 208
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "conviction",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 177,
+        "n_ret_nonnull": 177,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 102
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "conviction",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 43,
+        "n_ret_nonnull": 43,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 25
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "conviction",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 15,
+        "n_ret_nonnull": 15,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 11
+      },
+      {
+        "as_of_month": "2026-06",
+        "rank_by": "conviction",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 49,
+        "n_ret_nonnull": 49,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 35
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 193,
+        "n_ret_nonnull": 193,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 137
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 193,
+        "n_ret_nonnull": 193,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 137
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "buy",
+        "horizon": 21,
+        "n": 193,
+        "n_ret_nonnull": 193,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 137
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 84,
+        "n_ret_nonnull": 84,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 22
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 84,
+        "n_ret_nonnull": 84,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 22
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "laggards",
+        "horizon": 21,
+        "n": 84,
+        "n_ret_nonnull": 84,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 22
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 168,
+        "n_ret_nonnull": 168,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 53
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "watch",
+        "horizon": 10,
+        "n": 168,
+        "n_ret_nonnull": 168,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 53
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "bottoming-alignment",
+        "lane": "watch",
+        "horizon": 21,
+        "n": 168,
+        "n_ret_nonnull": 168,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 53
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 523,
+        "n_ret_nonnull": 523,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 252
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 523,
+        "n_ret_nonnull": 523,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 252
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "buy",
+        "horizon": 21,
+        "n": 522,
+        "n_ret_nonnull": 522,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 251
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 103,
+        "n_ret_nonnull": 103,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 32
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 103,
+        "n_ret_nonnull": 103,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 32
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "laggards",
+        "horizon": 21,
+        "n": 103,
+        "n_ret_nonnull": 103,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 32
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "leaders",
+        "horizon": 5,
+        "n": 60,
+        "n_ret_nonnull": 60,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 21
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "leaders",
+        "horizon": 10,
+        "n": 60,
+        "n_ret_nonnull": 60,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 21
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "leaders",
+        "horizon": 21,
+        "n": 60,
+        "n_ret_nonnull": 60,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 21
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 312,
+        "n_ret_nonnull": 312,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 142
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "watch",
+        "horizon": 10,
+        "n": 312,
+        "n_ret_nonnull": 312,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 142
+      },
+      {
+        "as_of_month": "2026-07",
+        "rank_by": "confluence",
+        "lane": "watch",
+        "horizon": 21,
+        "n": 312,
+        "n_ret_nonnull": 312,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 142
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 78,
+        "n_ret_nonnull": 78,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 78
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 78,
+        "n_ret_nonnull": 78,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 78
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "buy",
+        "horizon": 21,
+        "n": 78,
+        "n_ret_nonnull": 78,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 78
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 12,
+        "n_ret_nonnull": 12,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 12
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 12,
+        "n_ret_nonnull": 12,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 12
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "laggards",
+        "horizon": 21,
+        "n": 12,
+        "n_ret_nonnull": 12,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 12
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "leaders",
+        "horizon": 5,
+        "n": 15,
+        "n_ret_nonnull": 15,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 15
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "leaders",
+        "horizon": 10,
+        "n": 15,
+        "n_ret_nonnull": 15,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 15
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "leaders",
+        "horizon": 21,
+        "n": 15,
+        "n_ret_nonnull": 15,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 15
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "ran",
+        "horizon": 5,
+        "n": 12,
+        "n_ret_nonnull": 12,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 12
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "ran",
+        "horizon": 10,
+        "n": 11,
+        "n_ret_nonnull": 11,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 11
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "ran",
+        "horizon": 21,
+        "n": 11,
+        "n_ret_nonnull": 11,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 11
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 48,
+        "n_ret_nonnull": 48,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 48
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "watch",
+        "horizon": 10,
+        "n": 48,
+        "n_ret_nonnull": 48,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 48
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v1",
+        "lane": "watch",
+        "horizon": 21,
+        "n": 48,
+        "n_ret_nonnull": 48,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 48
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 211,
+        "n_ret_nonnull": 211,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 129
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 211,
+        "n_ret_nonnull": 211,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 129
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "buy",
+        "horizon": 21,
+        "n": 211,
+        "n_ret_nonnull": 211,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 129
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 36,
+        "n_ret_nonnull": 36,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 18
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 36,
+        "n_ret_nonnull": 36,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 18
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "laggards",
+        "horizon": 21,
+        "n": 36,
+        "n_ret_nonnull": 36,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 18
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "leaders",
+        "horizon": 5,
+        "n": 44,
+        "n_ret_nonnull": 44,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 20
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "leaders",
+        "horizon": 10,
+        "n": 44,
+        "n_ret_nonnull": 44,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 20
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "leaders",
+        "horizon": 21,
+        "n": 44,
+        "n_ret_nonnull": 44,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 20
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "ran",
+        "horizon": 5,
+        "n": 36,
+        "n_ret_nonnull": 36,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 25
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "ran",
+        "horizon": 10,
+        "n": 36,
+        "n_ret_nonnull": 36,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 25
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "ran",
+        "horizon": 21,
+        "n": 36,
+        "n_ret_nonnull": 36,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 25
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 144,
+        "n_ret_nonnull": 144,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 62
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "watch",
+        "horizon": 10,
+        "n": 144,
+        "n_ret_nonnull": 144,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 62
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v2",
+        "lane": "watch",
+        "horizon": 21,
+        "n": 144,
+        "n_ret_nonnull": 144,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 62
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 622,
+        "n_ret_nonnull": 622,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 276
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 622,
+        "n_ret_nonnull": 622,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 276
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "buy",
+        "horizon": 21,
+        "n": 407,
+        "n_ret_nonnull": 407,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 200
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 132,
+        "n_ret_nonnull": 132,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 25
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 132,
+        "n_ret_nonnull": 132,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 25
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "laggards",
+        "horizon": 21,
+        "n": 84,
+        "n_ret_nonnull": 84,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 20
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "leaders",
+        "horizon": 5,
+        "n": 165,
+        "n_ret_nonnull": 165,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 29
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "leaders",
+        "horizon": 10,
+        "n": 165,
+        "n_ret_nonnull": 165,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 29
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "leaders",
+        "horizon": 21,
+        "n": 105,
+        "n_ret_nonnull": 105,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 23
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "ran",
+        "horizon": 5,
+        "n": 132,
+        "n_ret_nonnull": 132,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 64
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "ran",
+        "horizon": 10,
+        "n": 132,
+        "n_ret_nonnull": 132,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 64
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "ran",
+        "horizon": 21,
+        "n": 84,
+        "n_ret_nonnull": 84,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 45
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 528,
+        "n_ret_nonnull": 528,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 92
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "watch",
+        "horizon": 10,
+        "n": 528,
+        "n_ret_nonnull": 528,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 92
+      },
+      {
+        "as_of_month": "2026-08",
+        "rank_by": "us_prophet_v3",
+        "lane": "watch",
+        "horizon": 21,
+        "n": 336,
+        "n_ret_nonnull": 336,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 76
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "buy",
+        "horizon": 5,
+        "n": 476,
+        "n_ret_nonnull": 476,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 193
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "buy",
+        "horizon": 10,
+        "n": 301,
+        "n_ret_nonnull": 301,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 131
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "laggards",
+        "horizon": 5,
+        "n": 108,
+        "n_ret_nonnull": 108,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 24
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "laggards",
+        "horizon": 10,
+        "n": 60,
+        "n_ret_nonnull": 60,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 16
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "leaders",
+        "horizon": 5,
+        "n": 135,
+        "n_ret_nonnull": 135,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 34
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "leaders",
+        "horizon": 10,
+        "n": 75,
+        "n_ret_nonnull": 75,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 25
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "ran",
+        "horizon": 5,
+        "n": 108,
+        "n_ret_nonnull": 108,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 33
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "ran",
+        "horizon": 10,
+        "n": 60,
+        "n_ret_nonnull": 60,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 21
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "watch",
+        "horizon": 5,
+        "n": 432,
+        "n_ret_nonnull": 432,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 96
+      },
+      {
+        "as_of_month": "2026-09",
+        "rank_by": "us_prophet_v3",
+        "lane": "watch",
+        "horizon": 10,
+        "n": 240,
+        "n_ret_nonnull": 240,
+        "share_ret_nonnull": 1.0,
+        "n_tickers": 77
+      }
+    ]
+  }
+}

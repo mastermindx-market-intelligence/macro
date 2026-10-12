@@ -6,6 +6,7 @@ idempotency is a real second-call proof, not a static fixture.
 from __future__ import annotations
 
 import json
+import re
 import urllib.error
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -16,6 +17,27 @@ from engine import recurring_briefs as rb
 from scripts import build_recurring_briefs as entry
 
 ROOT = Path(__file__).resolve().parents[1]
+
+_CJK_RE = re.compile(r"[一-鿿]")
+
+
+def _assert_real_zh_from_block(sentences_zh: list[str]) -> None:
+    """Every weekly ``sentence_zh`` is Chinese text and at least one is the
+    artifact's own.
+
+    The earlier form pinned three words of one week's zh block (收益率 /
+    美联储 / 格局变化). The 2026-09-23 weekly bake published a real zh block
+    carrying none of them and turned both callers red with no code change.
+    The contract is CJK text that the published ``zh`` block actually
+    carries, never a particular week's vocabulary.
+    """
+    zh_blob = json.dumps(_production_weekly().get("zh") or {}, ensure_ascii=False)
+    assert all(z and _CJK_RE.search(z) for z in sentences_zh), (
+        f"weekly sentence_zh must be real Chinese; got {sentences_zh!r}"
+    )
+    assert any(z in zh_blob for z in sentences_zh), (
+        f"weekly sentence_zh must come from the published zh block; got {sentences_zh!r}"
+    )
 
 SUB_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 THESIS_ID = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
@@ -586,9 +608,7 @@ def test_weekly_body_draws_real_zh_from_published_block():
         "weekly sentence_zh must not carry the translation-pending marker "
         "(the artifact publishes a real zh block)"
     )
-    assert any("收益率" in z or "美联储" in z or "格局变化" in z for z in sentences_zh), (
-        "weekly sentence_zh must contain real Chinese from the zh block"
-    )
+    _assert_real_zh_from_block(sentences_zh)
 
 
 def test_daily_body_uses_only_situation_not_evidence():
@@ -990,10 +1010,8 @@ def test_user_facing_strings_reject_translation_pending_for_weekly():
     assert "（翻译待补）" not in joined, (
         f"weekly sentence_zh must be real Chinese; got {joined!r}"
     )
-    # And at least one sentence must carry real Chinese from the artifact.
-    assert any("收益率" in z or "美联储" in z or "格局变化" in z for z in sentences_zh), (
-        f"weekly sentence_zh must contain real Chinese from the zh block; got {sentences_zh!r}"
-    )
+    # And the sentences must be real Chinese carried by the artifact's zh block.
+    _assert_real_zh_from_block(sentences_zh)
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,71 @@
+{
+  "alignment_strata": [
+    false,
+    true
+  ],
+  "classification": "exploratory_descriptive_not_confirmatory",
+  "denominators": [
+    "all source episodes in right stratum",
+    "outcome rows observed",
+    "complete",
+    "terminal incomplete",
+    "absent at source snapshot",
+    "complete target-aligned false and true"
+  ],
+  "dependence": "Repeated episodes and shared market paths are dependent. Session-balanced mean is weighting disclosure, not an independent sample estimate. No confidence intervals or significance tests.",
+  "eligible_statistics": "Complete research_only rows with finite underlying.ret, separately by horizon/right/target_aligned; never pool horizons or impute missing returns.",
+  "empty_cell": "count=0; all return statistics null; no dropping empty aligned-true cells.",
+  "exclusions": [
+    "All campaign ledgers excluded; no quarantine/effective-view claim.",
+    "No M1 Theta archive access."
+  ],
+  "forbidden_claims": [
+    "option PnL",
+    "executable strategy returns",
+    "alpha validation",
+    "out-of-sample forecasting performance",
+    "precise intended event-time returns when target_aligned=false",
+    "production or training eligibility"
+  ],
+  "frozen_at": "2026-10-02T08:21:46.151497+00:00",
+  "horizons": [
+    "h60",
+    "eod",
+    "1d",
+    "3d",
+    "5d",
+    "10d"
+  ],
+  "inputs": [
+    "data/options_signal_episode/episodes.jsonl",
+    "data/options_signal_episode/outcomes_h60.jsonl",
+    "data/options_signal_episode/outcomes_session.jsonl"
+  ],
+  "population": "All 9641 unique canonical episode IDs at source_commit, 2026-08-10 through 2026-09-04; include absent outcome rows in denominator.",
+  "post_result_policy": "Report every registered cell and missingness. No selecting winners or expanding strata/horizons after inspecting results.",
+  "prior_access": "Source schemas, covariates, row counts, join validation and coverage metadata examined; no return aggregation yet. Prior history is not an untouched OOS set.",
+  "return_unit": "Decimal simple underlying return exit_price/entry_price-1; presentation may multiply by100 for percent.",
+  "schema": "options.science.exploratory_descriptive_protocol/v1",
+  "source_commit": "dc4fd0766709188cba8d16a9fc16479c0e9c110f",
+  "statistics": [
+    "count",
+    "mean",
+    "median",
+    "q10 (linear interpolation)",
+    "q90 (linear interpolation)",
+    "equal-session mean of per-session means over eligible observations",
+    "eligible session count",
+    "eligible ticker count"
+  ],
+  "strata": [
+    "ALL",
+    "C",
+    "P"
+  ],
+  "validation_before_aggregation": [
+    "Verify exact source hashes against canonical-quality-audit.json.",
+    "Unique episode IDs and episode+horizon outcomes, no missing joins.",
+    "Use canonical full row validators where available, plus frozen semantic joins; report exactly what was and was not validated.",
+    "Fail on any non-finite complete return or inconsistent authority, option availability, status or alignment."
+  ]
+}

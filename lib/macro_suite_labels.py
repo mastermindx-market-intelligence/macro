@@ -346,6 +346,27 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "Note": _pair("Note", "中期国债"),
     "Bill": _pair("Bill", "短期国债"),
     "Bond": _pair("Bond", "长期国债"),
+    # Policy-lever state (`scripts/build_policy_lever.py`, frozen v1 PS-R9:
+    # QUIET | ELEVATED | ARMED), republished by the monetary_policy workspace as
+    # the categorical `policy_uncertainty_state`. The producer's tokens are
+    # UPPER-CASE and `label()` matches exactly, so the 2026-09-23 bake deslugged
+    # `QUIET` into an untranslated "Quiet" ZH span on macro_monetary_policy.html
+    # (copy-law red). Same pairs the dashboard / allocation cards already use.
+    "QUIET": _pair("Quiet", "平静"),
+    "ELEVATED": _pair("Elevated", "警戒"),
+    "ARMED": _pair("Armed", "已触发"),
+    # Bond desk cycle phase (`scripts/build_bonds.py` `PHASE`, the owner's closed
+    # vocabulary {recession, early, mid, late}), republished by the national_debt
+    # workspace as the categorical `bond_desk_cycle_phase` (pass-through, never
+    # re-derived). The 2026-10-02 regime bake deslugged `recession` into an
+    # untranslated "Recession" ZH span on macro_national_debt_liabilities.html
+    # (copy-law red, ci-pack-10 on main). Same EN/ZH pairs the bond desk page
+    # itself renders; pinned by tests/test_macro_suite_pages.py::
+    # test_bond_desk_cycle_phase_tokens_have_reviewed_pairs.
+    "recession": _pair("Recession", "衰退"),
+    "early": _pair("Early-cycle recovery", "周期早段复苏"),
+    "mid": _pair("Mid-cycle", "周期中段"),
+    "late": _pair("Late-cycle", "周期晚段"),
 }
 
 # --- metric identities -------------------------------------------------------

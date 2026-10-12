@@ -138,6 +138,14 @@ def is_quad_witching(d: date) -> bool:
     return d.month in (3, 6, 9, 12) and d == third_friday(d.year, d.month)
 
 
+def fomc_decision_dates(start: date, end: date) -> list[date]:
+    """FOMC decision dates inside ``[start, end]``, sorted. Reads ``_FOMC`` only."""
+    if start > end:
+        return []
+    found = [date.fromisoformat(raw) for raw, _has_sep in _FOMC]
+    return sorted(day for day in found if start <= day <= end)
+
+
 def nth_business_day(y: int, m: int, n: int) -> date:
     """The n-th weekday (Mon-Fri) of month m. Weekends only (holidays not modelled —
     ISM occasionally slips a day around a federal holiday; this is display context)."""

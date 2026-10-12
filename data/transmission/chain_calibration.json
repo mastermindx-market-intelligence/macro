@@ -1,7 +1,7 @@
 {
   "schema": "transmission_calibration.v1",
-  "asof": "2026-09-18",
-  "built": "2026-09-19 21:44 UTC",
+  "asof": "2026-09-25",
+  "built": "2026-09-26 21:49 UTC",
   "n_floor": 8,
   "regime_history_available": true,
   "chains": [
@@ -109,14 +109,14 @@
         "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
         "horizons": {
           "21d": {
-            "mean_excess_pct": -0.178,
-            "median_excess_pct": -0.573,
-            "n": 3146
+            "mean_excess_pct": -0.184,
+            "median_excess_pct": -0.578,
+            "n": 3151
           },
           "63d": {
-            "mean_excess_pct": -1.147,
-            "median_excess_pct": -1.987,
-            "n": 3104
+            "mean_excess_pct": -1.143,
+            "median_excess_pct": -1.939,
+            "n": 3109
           }
         }
       },
@@ -221,9 +221,9 @@
         "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
         "horizons": {
           "21d": {
-            "mean_excess_pct": -0.023,
-            "median_excess_pct": 0.18,
-            "n": 2700
+            "mean_excess_pct": -0.016,
+            "median_excess_pct": 0.183,
+            "n": 2705
           },
           "63d": {
             "mean_excess_pct": 0.492,
@@ -334,9 +334,9 @@
             "n": 4141
           },
           "63d": {
-            "mean_excess_pct": 1.175,
-            "median_excess_pct": 0.979,
-            "n": 4117
+            "mean_excess_pct": 1.171,
+            "median_excess_pct": 0.976,
+            "n": 4122
           }
         }
       },
@@ -360,7 +360,7 @@
             "to": "series:fred"
           },
           "p_confirm": 1.0,
-          "n": 33,
+          "n": 34,
           "per_regime": {
             "inflation_down_or_flat": {
               "p": 1.0,
@@ -368,13 +368,13 @@
             },
             "inflation_up": {
               "p": 1.0,
-              "n": 14
+              "n": 15
             }
           },
           "regime_split": "available",
           "span": {
             "first": "2008-10-08",
-            "last": "2025-06-13"
+            "last": "2026-03-27"
           },
           "regime_scheme": "inflation_regime"
         },
@@ -420,9 +420,9 @@
         "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
         "horizons": {
           "21d": {
-            "mean_excess_pct": 7.71,
-            "median_excess_pct": 0.873,
-            "n": 860
+            "mean_excess_pct": 7.716,
+            "median_excess_pct": 1.013,
+            "n": 865
           },
           "63d": {
             "mean_excess_pct": 25.999,
@@ -451,7 +451,7 @@
             "to": "series:fred"
           },
           "p_confirm": 1.0,
-          "n": 33,
+          "n": 34,
           "per_regime": {
             "inflation_down_or_flat": {
               "p": 1.0,
@@ -459,13 +459,13 @@
             },
             "inflation_up": {
               "p": 1.0,
-              "n": 14
+              "n": 15
             }
           },
           "regime_split": "available",
           "span": {
             "first": "2008-10-08",
-            "last": "2025-06-13"
+            "last": "2026-03-27"
           },
           "regime_scheme": "inflation_regime"
         },
@@ -507,9 +507,9 @@
         "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
         "horizons": {
           "21d": {
-            "mean_excess_pct": -0.095,
-            "median_excess_pct": -0.665,
-            "n": 1704
+            "mean_excess_pct": -0.118,
+            "median_excess_pct": -0.701,
+            "n": 1709
           },
           "63d": {
             "mean_excess_pct": -0.537,
@@ -570,14 +570,14 @@
         "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
         "horizons": {
           "21d": {
-            "mean_excess_pct": 0.093,
+            "mean_excess_pct": 0.092,
             "median_excess_pct": -0.081,
             "n": 1871
           },
           "63d": {
-            "mean_excess_pct": 1.024,
-            "median_excess_pct": 0.581,
-            "n": 1843
+            "mean_excess_pct": 1.021,
+            "median_excess_pct": 0.578,
+            "n": 1844
           }
         }
       },

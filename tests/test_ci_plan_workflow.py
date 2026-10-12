@@ -325,12 +325,99 @@ def test_ci_pack_is_gated_on_an_affirmative_has_work() -> None:
     """
     condition = _job("ci-pack")["if"]
     assert condition == (
-        "always() && needs.ci-plan.result == 'success' && "
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
+
+
+def _bare_expression(condition: Any) -> str:
+    """A job-level `if:` without its optional `${{ }}` wrapper, whitespace-normalized."""
+    text = " ".join(str(condition).split())
+    if text.startswith("${{") and text.endswith("}}"):
+        text = text[3:-2].strip()
+    return text
+
+
+def _top_level_conjuncts(expression: str) -> list[str]:
+    """Split `a && (b || c) && d` at paren depth 0, refusing a top-level `||`.
+
+    A conjunct is only a veto if nothing at the same level can OR around it:
+    `!cancelled() && a || b` still survives a cancel whenever `b` is true.
+    """
+    parts: list[str] = []
+    depth = 0
+    quoted = False
+    start = 0
+    index = 0
+    while index < len(expression):
+        char = expression[index]
+        if char == "'":
+            quoted = not quoted
+        elif not quoted and char == "(":
+            depth += 1
+        elif not quoted and char == ")":
+            depth -= 1
+        elif not quoted and depth == 0 and expression.startswith("||", index):
+            raise AssertionError(f"top-level `||` in {expression!r}")
+        elif not quoted and depth == 0 and expression.startswith("&&", index):
+            parts.append(expression[start:index].strip())
+            start = index + 2
+            index += 1
+        index += 1
+    parts.append(expression[start:].strip())
+    return parts
+
+
+def test_superseded_packs_stop_when_their_run_is_cancelled() -> None:
+    """`ci-pack` must be cancellable, or `cancel-in-progress` saves nothing.
+
+    A cancel re-evaluates the job-level `if:` of every RUNNING job and spares any
+    job whose condition is still true. `always()` is true by definition, so a
+    started pack outlived its own supersession and held the PR's next run
+    `pending` with zero jobs until it finished: PR #8102's newer run 36354874511
+    sat jobless from 22:19:13Z until a force-cancel of 36353898581 at ~22:30Z
+    (2026-09-27); #7996, #8018 and #8011 held 20 min, 33 min and 1h25m.
+    `!cancelled()` still starts the pack when `trusted-ci` is skipped, which was
+    the only reason for `always()`, and it turns false once the run is cancelled.
+    It must be a TOP-LEVEL conjunct, so no other clause can OR around it.
+    """
+    expression = _bare_expression(_job("ci-pack")["if"])
+    assert not expression.startswith("always()"), expression
+    assert "always()" not in expression, (
+        "any `always()` in ci-pack's job-level `if:` survives a cancel; use `!cancelled()`"
+    )
+    assert "!cancelled()" in expression
+    assert "!cancelled()" in _top_level_conjuncts(expression)
+
+
+def test_only_ci_gate_may_outlive_a_cancelled_run() -> None:
+    """Exactly one job survives a cancel, and it is the short fail-closed verdict.
+
+    Every job whose `if:` carries `always()` keeps running in a cancelled run and
+    holds the concurrency group, so the next run cannot start. `ci-gate` is the
+    single deliberate exception. `!cancelled()` would leave it `skipped` in a
+    cancelled run, and GitHub reports a skipped job as passing even a required
+    check; ruleset 21813020 (c0b-native-main-interlock) names `ci-gate` as one.
+    Under `always()` it publishes a real failure instead: one short hosted job
+    (timeout 10 min) against a false proof.
+    """
+    jobs = _workflow()["jobs"]
+    survivors = {
+        name
+        for name, job in jobs.items()
+        if isinstance(job, dict) and "always()" in _bare_expression(job.get("if", ""))
+    }
+    assert survivors == {"ci-gate"}, (
+        f"jobs that outlive a cancelled run: {sorted(survivors)}; a long one holds "
+        "the PR's next run `pending` with zero jobs (see ci.yml's concurrency block)"
+    )
+    gate = jobs["ci-gate"]
+    assert gate["if"] == "always()"
+    assert gate["runs-on"] == "ubuntu-latest"
+    assert gate["timeout-minutes"] <= 10
 
 
 def test_ci_pack_passes_pack_count_twelve() -> None:

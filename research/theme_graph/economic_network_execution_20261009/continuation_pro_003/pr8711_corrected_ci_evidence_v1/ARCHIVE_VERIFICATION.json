@@ -1,0 +1,107 @@
+{
+  "accepted_code_pins_verified": 53,
+  "actual_artifact_json_member_count": 15,
+  "actual_artifact_zip_count": 15,
+  "all_manifest_entries_extracted_and_verified": true,
+  "all_preserved_extracted_files_unchanged_after_verifiers": true,
+  "archive": {
+    "bytes": 3809105,
+    "name": "PR8711_CORRECTED_CANDIDATE_CI_EVIDENCE.tar.gz",
+    "sha256": "9723b71acf3d44f6918ddb8c1d319e49bcc760c048106ec3277d09c94a7a7805"
+  },
+  "attempt": 1,
+  "authority": {
+    "application_imports_or_tests": false,
+    "ci_rerun": false,
+    "git_mutation": false,
+    "merge_authorized": false,
+    "native_mutation": false,
+    "policy_waiver": false
+  },
+  "ci_verifier_assertions_passed": 2295,
+  "deterministic_reencode_byte_identical": true,
+  "disposition": "CONCLUDED_RUN_PASS__COMPLETE_ALL_PASS_SEMANTIC_RECONCILIATION_VALID",
+  "extra_extracted_outputs_accounted_for": [
+    "pr8711_corrected_ci_release_evidence_v1/ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json",
+    "pr8711_corrected_ci_release_evidence_v1/ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json"
+  ],
+  "identity": {
+    "base_sha": "40ebaebdbcd57eedaa627623f1cfd1860ff3ee3a",
+    "event": "pull_request",
+    "plan_sha256": "e637d0f4907e040b1a4069d7c14748fba81137387e83ea6ec255bf0d53c5ce88",
+    "role": "pr_head",
+    "subject_head_sha": "42174563149254d2399e23e101baafd8b06f9b1e",
+    "tested_tree_sha": "04b70807e6b0a7d48091997eb405f9cc53ade9ad",
+    "workflow": "ci",
+    "workflow_run_id": "37932039980"
+  },
+  "manifest": {
+    "bytes": 27011,
+    "name": "ARCHIVE_MANIFEST.json",
+    "sha256": "48561925c0d7d08cd829db8407380ee83f5fb5060447970c5bedcd3a1331143b"
+  },
+  "normalized_metadata_verified": true,
+  "observed_fragments": 12,
+  "original_file_mtimes_unchanged": true,
+  "original_files_unchanged_after_packaging": true,
+  "proof_steps": 316,
+  "regular_file_count": 90,
+  "replay_verifiers": [
+    {
+      "exit_code": 0,
+      "matches_original_except_created_at_utc": true,
+      "original_preserved_report": "pr8711_corrected_ci_release_evidence_v1/SOURCE_PIN_VERIFICATION.json",
+      "output": {
+        "archive_relative_path": "pr8711_corrected_ci_release_evidence_v1/ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json",
+        "bytes": 17455,
+        "name": "ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json",
+        "sha256": "12f2abe3f7368e2dc8dd267faeb19410e251a0dc95c9302a961f3fafdac67bda"
+      },
+      "relative_command": [
+        "python",
+        "-B",
+        "pr8711_corrected_ci_release_evidence_v1/verify_tested_code_pins.py",
+        "--output",
+        "ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json"
+      ],
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 459,
+      "stdout_sha256": "0f9b7dd7728f047a02f515c130472cd312600e40e4a52ec29b43c9f6cf3344f4"
+    },
+    {
+      "exit_code": 0,
+      "matches_original_except_created_at_utc": true,
+      "original_preserved_report": "pr8711_corrected_ci_release_evidence_v1/CI_EVIDENCE_VERIFICATION.json",
+      "output": {
+        "archive_relative_path": "pr8711_corrected_ci_release_evidence_v1/ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json",
+        "bytes": 708130,
+        "name": "ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json",
+        "sha256": "cd57ac0a0c6951aeb43729c75273f3b06ca056d04f2ac285eee0dfe34763f8b7"
+      },
+      "relative_command": [
+        "python",
+        "-B",
+        "pr8711_corrected_ci_release_evidence_v1/verify_corrected_artifacts.py",
+        "--snapshot",
+        "artifact_read_005_and_snapshot_006.json",
+        "--output",
+        "ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json"
+      ],
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1215,
+      "stdout_sha256": "685cbc7aaf319826a19f37125becb76705f424b73c8ebcf30540339315a7515f"
+    }
+  ],
+  "schema": "gmi.pr8711.corrected_deterministic_evidence_archive_verification/v1",
+  "selected_jobs": 98,
+  "status": "VERIFIED_FROZEN_CORRECTED_CANDIDATE_COMPLETE_CI_EVIDENCE",
+  "step_classifications": {
+    "passed": 316
+  },
+  "uncompressed_file_bytes": 10470166,
+  "unique_regular_files_only": true,
+  "verified_at_utc": "2026-10-09T13:26:31.200284+00:00",
+  "whole_raw_log_count": 3
+}

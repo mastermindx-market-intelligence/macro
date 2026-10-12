@@ -153,7 +153,8 @@ _COVERAGE_QUALITY_VOCABULARY: dict[tuple[str, str], tuple[str, ...]] = {
 _MAX_REVENUE = 1_000_000_000_000_000
 _MIN_GUIDANCE_PCT = -100.0
 _MAX_GUIDANCE_PCT = 1_000.0
-_REVENUE_UNITS = frozenset({"USD", "usd_millions"})
+_REVENUE_UNIT_SCALE = {"USD": 1, "usd_millions": 1_000_000}
+_REVENUE_UNITS = frozenset(_REVENUE_UNIT_SCALE)
 _REVISION_CHAIN_BOUND_DISCLOSURE = (
     "CALLER_INJECTED_READER_BOUND; OWNER_DEFAULT_MAX_HOPS=500"
 )
@@ -500,14 +501,20 @@ def _candidate_fact(workspace: Mapping[str, Any]) -> tuple[int, Mapping[str, Any
     for index, fact in enumerate(_as_list(workspace.get("facts"))):
         if not isinstance(fact, Mapping) or fact.get("metric") != "revenue":
             continue
+        scale = _REVENUE_UNIT_SCALE.get(fact.get("unit"))
+        value_usd = (
+            _bounded_number(
+                fact.get("value") * scale, minimum=0, maximum=_MAX_REVENUE,
+            )
+            if scale is not None else None
+        )
         if (
-            fact.get("unit") in _REVENUE_UNITS
-            and _bounded_number(
-                fact.get("value"), minimum=0, maximum=_MAX_REVENUE,
-            ) is not None
+            value_usd is not None
             and fact.get("basis") in {"reported", "gaap"}
         ):
-            accepted.append((index, fact))
+            admitted = dict(fact)
+            admitted["value_usd"] = value_usd
+            accepted.append((index, admitted))
     return accepted[0] if len(accepted) == 1 else None
 
 
@@ -804,7 +811,7 @@ def _dependence_group_id(root_ids: Sequence[str]) -> str:
 
 
 def _observation(
-    *, native_metric_id: str, value: Any, units: Any,
+    *, native_metric_id: str, value: Any, units: Any, value_usd: Any = None,
     source_ref_ids: list[str], root_ids: list[str], dependence_group_ids: list[str],
     correction_lineage_state: str, quality_flags: list[str] | None = None,
     value_state: str = "PRESENT", absence_reasons: list[str] | None = None,
@@ -824,6 +831,11 @@ def _observation(
         "value_state": value_state,
         "value": clean_value,
         "units": _scalar(units),
+        **(
+            {"value_usd": _scalar(value_usd)}
+            if native_metric_id == "fact:revenue" and value_state == "PRESENT"
+            else {}
+        ),
         "method_class": "ADAPTER_MECHANICAL_PROJECTION",
         "method_version": ADAPTER_SET_VERSION,
         "source_ref_ids": sorted(set(source_ref_ids)),
@@ -868,7 +880,8 @@ def _observations(
         )
         item = _observation(
             native_metric_id="fact:revenue", value=fact.get("value"),
-            units=fact.get("unit"), source_ref_ids=source_ref_ids, root_ids=root_ids,
+            units=fact.get("unit"), value_usd=fact["value_usd"],
+            source_ref_ids=source_ref_ids, root_ids=root_ids,
             dependence_group_ids=dependence_group_ids,
             correction_lineage_state=correction_lineage_state,
         )
@@ -1501,12 +1514,26 @@ def _validate_source_ref(value: Any) -> None:
 
 
 def _validate_observation(value: Any) -> None:
-    item = _require_keys(value, frozenset({
+    expected_keys = frozenset({
         "observation_id", "native_metric_id", "value_state", "value", "units",
         "method_class", "method_version", "source_ref_ids", "evidence_root_ids",
         "economic_dependence_group_ids", "quality_flags", "absence_reasons",
         "neutral_definition_ref", "correction_lineage_state",
-    }), name="observation")
+    })
+    is_present_revenue = (
+        isinstance(value, Mapping)
+        and value.get("native_metric_id") == "fact:revenue"
+        and value.get("value_state") == "PRESENT"
+    )
+    if is_present_revenue:
+        expected_keys |= {"value_usd"}
+        item = dict(value)
+    elif isinstance(value, Mapping) and "value_usd" in value:
+        item = dict(value)
+        del item["value_usd"]
+    else:
+        item = _require_keys(value, expected_keys, name="observation")
+    item = _require_keys(item, expected_keys, name="observation")
     if not str(item["observation_id"]).startswith("obs:"):
         raise IntelligenceVectorContractError("observation_id invalid")
     if item["method_class"] != "ADAPTER_MECHANICAL_PROJECTION":
@@ -1553,10 +1580,15 @@ def _validate_observation(value: Any) -> None:
     if item["value_state"] == "PRESENT" and item["native_metric_id"] == "fact:revenue":
         if (
             _bounded_number(item["value"], minimum=0, maximum=_MAX_REVENUE) is None
+            or _bounded_number(
+                item["value_usd"], minimum=0, maximum=_MAX_REVENUE,
+            ) is None
             or item["units"] not in _REVENUE_UNITS
             or item["quality_flags"] != []
         ):
             raise IntelligenceVectorContractError("fact:revenue metric value or bound invalid")
+        if item["value_usd"] != item["value"] * _REVENUE_UNIT_SCALE[item["units"]]:
+            raise IntelligenceVectorContractError("fact:revenue USD normalization invalid")
     elif item["value_state"] == "PRESENT" and item["native_metric_id"] == "guidance:revenue_yoy_pct":
         range_item = _require_keys(
             item["value"], frozenset({"low", "high"}), name="observation range",

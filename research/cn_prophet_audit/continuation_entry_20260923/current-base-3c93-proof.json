@@ -1,0 +1,36 @@
+{
+  "schema": "china_action.current_base_proof.v1",
+  "semantic_head": "7fb604011c30f6c738e57c67eb7ed83d33424f83",
+  "incoming_main": "3c93f8194f6c2cb19dad21c1347d8b3b8474aa31",
+  "procedure_pin": "294b4c00ed668b497edb834be8108f14bc1bee8a",
+  "purpose": "Consume the existing native HK/CN snapshot producer repair for the diagnosed hosted contract failure, not an ancestry-only refresh.",
+  "owned_runtime_and_test_bytes_unchanged": true,
+  "source_sha256": {
+    "engine/china_act_now.py": "fcb9c8996294e1f9cf0fe5e6835c27785ef4006cf43b9aba58cebff0b05cc8f7",
+    "templates/_china_act_now_board.html.j2": "5b675277a749806129a92968acd0de77dc51d39fcdfeef8a3cebcde5eb16ebcc",
+    "tests/test_china_act_now.py": "e7d26abbea0981fdff457721dc8d0dbe129db69a44e597adfaa5b34721e22086"
+  },
+  "tests_passed": 150,
+  "tests_failed": 0,
+  "log": "current-base-3c93-tests.txt",
+  "log_sha256": "73996abec6408e1468206f5c8e70f714a435a3acd7f8373098a056bea1230e9a",
+  "historical_source_suites_passed": 331,
+  "historical_browser_captures": 88,
+  "hosted_current_head": "OWED_AFTER_PUBLICATION",
+  "production_proven": false,
+  "review_scope": "Prior bounded source findings remain closed on unchanged runtime; current integration evidence is separate.",
+  "data/hk_market_state/latest.json": {
+    "asof": "2026-09-23",
+    "participation_scope_present": true,
+    "value": null,
+    "sha256": "a4670ba3e5ada10deb456b780cd63ac3ac3bb805f6a23ae07561d3c20736f044",
+    "date_limited_test_exemption_applies": false
+  },
+  "data/china_market_state/latest.json": {
+    "asof": "2026-09-23",
+    "participation_scope_present": true,
+    "value": null,
+    "sha256": "8a9cb408ce2e804e84940c173c90d687cc7b14af2c250b654489be79d947748e",
+    "date_limited_test_exemption_applies": false
+  }
+}

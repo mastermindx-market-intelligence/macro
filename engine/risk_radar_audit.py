@@ -13,6 +13,7 @@ Pure-ish + never raises into the build.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from datetime import datetime, timezone
@@ -29,6 +30,21 @@ HORIZONS = {"h5": 5, "h10": 10, "h21": 21}        # business-day forward windows
 DD_THRESHOLDS = (0.05, 0.08)                       # a >=5% pullback = a "drawdown"; 8% = a bigger one
 PRIMARY_DD = 0.05
 ALERT_STATES = ("elevated", "risk-off")            # which states count as a loud alert for precision
+
+# Prospective issue identity starts with rows written after this contract lands.
+# Historical rows are never backfilled or upgraded. A source/calibration change
+# changes model_fingerprint automatically, splitting the prospective cohort.
+FORWARD_ISSUE_CONTRACT = "risk_radar_forward_issue.v1"
+FORWARD_PROSPECTIVE_EPOCH = "2026-09-23-prospective-v1"
+# Source closure for the US probability/state computation. Daily market INPUT bytes
+# are intentionally not model identity; implementation/helper semantics are.
+FORWARD_MODEL_SOURCE_FILES = (
+    "engine/risk_radar.py",
+    "engine/indicators.py",
+    "lib/nyse_calendar.py",
+    "lib/store.py",
+    "lib/config.py",
+)
 
 
 def ledger_lane_armed() -> bool:
@@ -76,7 +92,72 @@ def _write(p: Path, rows: list[dict]) -> None:
     p.write_text("\n".join(json.dumps(r, separators=(",", ":"), default=str) for r in rows) + "\n")
 
 
-def _entry_from_snapshot(snap: dict) -> dict | None:
+def _sha256_json(value) -> str:
+    payload = json.dumps(
+        value, sort_keys=True, separators=(",", ":"), default=str
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _forward_model_identity(root=None) -> dict | None:
+    """Return a conservative identity for the model that is issuing today's row.
+
+    The source bundle intentionally changes for edits to the core Risk Radar
+    implementation or its signal/calendar/store helpers. That can split cohorts
+    more often than strictly necessary, but can never silently mix materially
+    different probability/state implementations. The calibration hash also catches
+    runtime overlay changes that do not touch source bytes.
+    """
+    try:
+        from engine import risk_radar as rr  # noqa: PLC0415
+
+        repo_root = Path(__file__).resolve().parent.parent
+        source_files = {}
+        for rel in FORWARD_MODEL_SOURCE_FILES:
+            source_files[rel] = hashlib.sha256(
+                (repo_root / rel).read_bytes()
+            ).hexdigest()
+        engine_sha = source_files["engine/risk_radar.py"]
+        source_bundle_sha = _sha256_json(source_files)
+        calib = rr._calib(root=root)
+        calibration_sha = _sha256_json(calib)
+        identity = {
+            "model_contract": "risk_radar_forward_model.v1",
+            "risk_schema": "risk_radar.v2",
+            "engine_source_sha256": engine_sha,
+            "source_bundle_sha256": source_bundle_sha,
+            "source_files_sha256": source_files,
+            "calibration_sha256": calibration_sha,
+        }
+        identity["model_fingerprint"] = _sha256_json(identity)
+        return identity
+    except Exception as exc:  # noqa: BLE001
+        log.warning("risk_radar_audit model identity failed: %s", exc)
+        return None
+
+
+def _forward_issue_receipt(root=None, issued_at: str | None = None) -> dict | None:
+    """Bind a new ledger row to its first-write clock and exact model identity."""
+    identity = _forward_model_identity(root=root)
+    if not identity:
+        return None
+    issued_at = issued_at or datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return {
+        "contract": FORWARD_ISSUE_CONTRACT,
+        "epoch": FORWARD_PROSPECTIVE_EPOCH,
+        "issued_at": issued_at,
+        "ledger_lane": "nightly",
+        "first_writer_wins": True,
+        **identity,
+    }
+
+
+def _entry_from_snapshot(
+    snap: dict,
+    *,
+    issue_receipt: dict | None = None,
+    logged_at: str | None = None,
+) -> dict | None:
     """Slim a risk_radar.compute() snapshot to the loggable fields (no recompute)."""
     if not snap or not snap.get("asof") or snap.get("state") is None:
         return None
@@ -137,7 +218,15 @@ def _entry_from_snapshot(snap: dict) -> dict | None:
         "deescalation_eligible": (snap.get("deescalation") or {}).get("eligible"),
         "deescalation_reason": (snap.get("deescalation") or {}).get("reason"),
         "dislocation_active": snap.get("dislocation_active"),
-        "logged_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        # New rows carry an explicit prospective issue receipt. Historical rows are
+        # untouched. logged_at and issued_at share one clock so the scorecard can
+        # verify the ledger's first-write timing contract without inferring it.
+        **({"forecast_issue": issue_receipt} if issue_receipt else {}),
+        "logged_at": (
+            logged_at
+            or (issue_receipt or {}).get("issued_at")
+            or datetime.now(timezone.utc).isoformat(timespec="seconds")
+        ),
         "graded": None,
     }
 
@@ -149,7 +238,11 @@ def log_snapshot(snap: dict, root=None) -> bool:
         if not ledger_lane_armed():
             log.debug("risk_radar_audit log skipped: lane not armed")
             return False
-        entry = _entry_from_snapshot(snap)
+        issued_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        issue_receipt = _forward_issue_receipt(root=root, issued_at=issued_at)
+        entry = _entry_from_snapshot(
+            snap, issue_receipt=issue_receipt, logged_at=issued_at
+        )
         if entry is None:
             return False
         p = _path(root)

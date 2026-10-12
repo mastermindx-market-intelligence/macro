@@ -932,6 +932,9 @@ pages:
   macro:alerts:
     archetype: "monitor"
 
+  macro:ontology:
+    archetype: "instrument_analyzer"
+
   macro:china_news:
     archetype: "monitor"
 

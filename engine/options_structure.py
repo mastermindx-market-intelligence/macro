@@ -199,6 +199,79 @@ def _campaign_lean(ask_share: float | None) -> str:
     return "contested"
 
 
+_CATEGORY_PROXY_SCHEMA = "options_flow.category_proxy/v1"
+_CATEGORY_PROXY_BASIS = "side_category"
+
+
+def _bounded_category_share(value: object) -> float | None:
+    """Return a finite, bounded [0, 1] category-proxy share, else ``None``.
+
+    ``None`` means the category is *unknown* (or the supplied value is not a
+    usable fraction) — never a measured neutral.  Booleans are rejected so
+    ``True`` cannot masquerade as ``1.0``.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    # float() conversion can raise on numeric types that are individually
+    # representable but not float-convertible (e.g. an int too large to fit a
+    # C double raises OverflowError).  Any such failure means "not a usable
+    # fraction" → unknown (None), never a coerced zero or a crash.
+    try:
+        share = float(value)
+    except (OverflowError, ValueError, TypeError):
+        return None
+    if not math.isfinite(share) or share < 0.0 or share > 1.0:
+        return None
+    return share
+
+
+def _finite_nonneg_amount(value: object) -> float | None:
+    """Return a finite, nonnegative float amount, else ``None``.
+
+    Booleans are rejected (``bool`` is an ``int`` subclass) so ``True`` cannot
+    masquerade as ``1.0`` USD of premium mass.  A missing key, ``None``, a
+    string, any other non-numeric type, a nonfinite value, or a negative value
+    is INVALID and returns ``None`` — it is never coerced to a valid zero.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    # float() conversion can raise on numeric types that are individually
+    # representable but not float-convertible (e.g. an int too large to fit a
+    # C double raises OverflowError).  Any such failure means INVALID → None;
+    # it is never coerced to a valid zero and never propagates a crash.
+    try:
+        amount = float(value)
+    except (OverflowError, ValueError, TypeError):
+        return None
+    if not math.isfinite(amount) or amount < 0.0:
+        return None
+    return amount
+
+
+#: Money accumulators that must stay finite for a group to be publishable.  A
+#: nonfinite value means the group's sums overflowed (e.g. 1e308 + 1e308); the
+#: whole campaign is refused rather than clipped or replaced with a bounded or
+#: zero total.
+_CHAIN_HEAT_FINITE_ACCUMULATORS = (
+    "total_premium",
+    "ask_prem_sum",
+    "total_prem_for_ask",
+    "cat_proxy_num",
+    "cat_proxy_known_prem",
+    "cat_proxy_unknown_prem",
+    "cat_proxy_source_prem",
+)
+
+
+def _accumulators_finite(g: dict) -> bool:
+    """True when every money accumulator in a group is finite."""
+    return all(math.isfinite(g[key]) for key in _CHAIN_HEAT_FINITE_ACCUMULATORS)
+
+
 def aggregate_chain_heat(
     events: list[dict],
     min_premium_mn: float = _CHAIN_HEAT_PREMIUM_MN_DEFAULT,
@@ -218,7 +291,8 @@ def aggregate_chain_heat(
         engine/live_flow.py:process_batch).  Required keys per event:
             root, strike, exp (YYYY-MM-DD), right ("C"|"P" or "CALL"/"PUT"),
             premium (float, in dollars), ts (ISO-8601 str).
-        Optional keys: ask_share (float 0-1).
+        Optional keys: ask_share (float 0-1, legacy lean input),
+        category_proxy_share (float 0-1 or None, side-category proxy input).
     min_premium_mn:
         Minimum total_premium_mn ($ millions) for a campaign to be emitted.
         Default 3.0 (matches MomoEdge $3M gate; operator-adjustable).
@@ -237,6 +311,16 @@ def aggregate_chain_heat(
     -------
     List of campaign dicts sorted by total_premium_mn descending.  Each dict
     matches the ChainHeatCampaign field layout (serialisable as-is).
+
+    Legacy fields (total_premium_mn, alert_count, span_minutes, first_seen,
+    ask_share, lean, direction_reliability, authority_tier) are byte-for-byte
+    unchanged.  A distinct, additive ``category_proxy`` object is emitted on
+    every campaign; its ``share`` is the side-category mapping over the
+    KNOWN-premium denominator, while ``source_premium_usd`` carries the full
+    selected recorded premium (known + unknown).  Callers that never supply
+    ``category_proxy_share`` get an unknown proxy (``share=None``).  This is
+    selected raw recorded premium, NOT complete economic turnover, and it is
+    never a measured NBBO.
 
     Reliability contract
     --------------------
@@ -259,7 +343,6 @@ def aggregate_chain_heat(
             continue
 
         key = (root, strike, exp, right)
-        prem = float(ev.get("premium", 0))
 
         if key not in groups:
             groups[key] = {
@@ -271,28 +354,71 @@ def aggregate_chain_heat(
                 "alert_count": 0,
                 "ask_prem_sum": 0.0,
                 "total_prem_for_ask": 0.0,
+                # category_proxy accumulators (SEPARATE from legacy ask_share).
+                # Known = valid bounded share; unknown = no/!usable share.
+                # source = all valid (nonnegative finite) recorded premium.
+                "cat_proxy_num": 0.0,
+                "cat_proxy_known_prem": 0.0,
+                "cat_proxy_unknown_prem": 0.0,
+                "cat_proxy_source_prem": 0.0,
+                "cat_proxy_invalid_count": 0,
                 "ts_list": [],
             }
 
         g = groups[key]
-        g["total_premium"] += prem
         g["alert_count"]   += 1
 
         ts = str(ev.get("ts", ""))
         if ts:
             g["ts_list"].append(ts)
 
-        # ask_share contribution
-        ask_share_ev = ev.get("ask_share")
+        # Premium gate — only a non-bool, finite, nonnegative numeric amount is
+        # valid mass.  Missing / None / bool / string / other types / nonfinite /
+        # negative are INVALID: they contribute NO mass to the legacy total, the
+        # ask sums, or the proxy sums (never defaulted to zero-as-valid), are
+        # counted, and force the campaign proxy share to None below.
+        prem = _finite_nonneg_amount(ev.get("premium"))
+        if prem is None:
+            g["cat_proxy_invalid_count"] += 1
+            continue
+
+        g["total_premium"] += prem
+
+        # ask_share contribution — legacy path.  Only a bounded, finite [0, 1]
+        # fraction on valid premium mass contributes; bool / nonfinite /
+        # out-of-bounds / non-numeric ask_share is ignored (the existing None
+        # fallback is retained), which keeps the legacy ask_share JSON-safe.
+        ask_share_ev = _bounded_category_share(ev.get("ask_share"))
         if ask_share_ev is not None and prem > 0:
-            try:
-                g["ask_prem_sum"]        += float(ask_share_ev) * prem
-                g["total_prem_for_ask"]  += prem
-            except (TypeError, ValueError):
-                pass
+            g["ask_prem_sum"]        += ask_share_ev * prem
+            g["total_prem_for_ask"]  += prem
+
+        # category_proxy contribution — explicitly named and INDEPENDENT of the
+        # legacy ask_share path above.  Never uses ask_share as the new proxy and
+        # never infers a measured NBBO from categories.  Only nonnegative finite
+        # premium is admitted; anything else is counted, not silently accepted.
+        cat_share_ev = _bounded_category_share(ev.get("category_proxy_share"))
+        g["cat_proxy_source_prem"] += prem
+        if cat_share_ev is not None:
+            g["cat_proxy_num"]         += cat_share_ev * prem
+            g["cat_proxy_known_prem"]  += prem
+        else:
+            g["cat_proxy_unknown_prem"] += prem
 
     campaigns: list[dict] = []
     for key, g in groups.items():
+        # Finite-overflow guard: if any accumulator overflowed to a nonfinite
+        # value, REFUSE the whole campaign and omit it rather than clip, bound,
+        # or invent a total.  Each addend can be finite while the sum is not
+        # (e.g. two 1e308 premiums), so this must be checked after accumulation.
+        if not _accumulators_finite(g):
+            log.warning(
+                "chain_heat: refusing campaign %s — non-finite premium "
+                "accumulator (overflow); omitting rather than fabricating mass",
+                key,
+            )
+            continue
+
         total_prem_mn = g["total_premium"] / 1_000_000.0
         if total_prem_mn < min_premium_mn:
             continue
@@ -331,6 +457,28 @@ def aggregate_chain_heat(
 
         lean = _campaign_lean(ask_share)
 
+        # category_proxy aggregate: numerator / KNOWN premium denominator, with
+        # the full selected source premium (known + unknown) carried alongside
+        # so coverage is visible.  Any invalid amount forces share=None so we
+        # never present an incomplete mass as complete.  Legacy (converted)
+        # neutral is NOT re-labelled as a measurement.
+        cat_known   = g["cat_proxy_known_prem"]
+        cat_invalid = g["cat_proxy_invalid_count"]
+        if cat_invalid > 0 or cat_known <= 0.0:
+            cat_share_out: float | None = None
+        else:
+            cat_share_out = round(g["cat_proxy_num"] / cat_known, 4)
+        category_proxy = {
+            "schema":                  _CATEGORY_PROXY_SCHEMA,
+            "basis":                   _CATEGORY_PROXY_BASIS,
+            "share":                   cat_share_out,
+            "known_premium_usd":       round(cat_known, 2),
+            "unknown_premium_usd":     round(g["cat_proxy_unknown_prem"], 2),
+            "source_premium_usd":      round(g["cat_proxy_source_prem"], 2),
+            "invalid_premium_count":   cat_invalid,
+            "source_certified_accepted": False,
+        }
+
         # DTE from expiry string relative to session_date (PIT-safe; pure).
         # When session_date is None, dte is left as None — the writer stamps
         # it using the correct session date before persisting.
@@ -366,6 +514,7 @@ def aggregate_chain_heat(
             "lean":                lean,
             "direction_reliability": "soft",
             "authority_tier":      AUTHORITY_DISPLAY,
+            "category_proxy":      category_proxy,
         })
 
     campaigns.sort(key=lambda c: c["total_premium_mn"], reverse=True)

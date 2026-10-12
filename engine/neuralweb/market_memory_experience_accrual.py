@@ -20,6 +20,7 @@ the state.
 
 from __future__ import annotations
 
+import contextvars
 import copy
 import fcntl
 import json
@@ -27,6 +28,7 @@ import math
 import os
 import re
 import stat
+import sys
 import time as time_module
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -1247,6 +1249,15 @@ def _publish_boundary(_stage: str, _path: Path) -> None:
     """Fault-injection seam for durability-boundary crash tests."""
 
 
+# Set only while accrue_spy_experience holds writer.lock (LOCK_EX); read-only
+# authentication and the completed-pilot fast path never hold it.
+_WRITER_LOCK_HELD: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "w2c_writer_lock_held", default=False
+)
+
+_PENDING_CREATE_NAME = re.compile(r"\.(?P<final>.+)\.(?P<digest>[a-f0-9]{64})\.pending")
+
+
 def _pending_create_path(path: Path, body: bytes) -> Path:
     return path.parent / f".{path.name}.{_digest(body)}.pending"
 
@@ -1258,6 +1269,54 @@ def _pending_create_paths(path: Path) -> list[Path]:
         raise MarketMemoryExperienceStoreError(
             "W2C create-once pending publications cannot be inspected"
         ) from exc
+
+
+def _discard_torn_prepublication_pending(
+    pending: Path, *, final: Path, body: bytes, label: str
+) -> bool:
+    """Discard one torn pre-publication pending; False when it must stay.
+
+    The create-once publisher links the final only after the pending's fsync,
+    and the pending name binds sha256 of its intended body, so a pending whose
+    bytes do not hash to that digest, with no final beside it, provably never
+    published.  Only the writer-lock holder may discard it; lock-free readers
+    keep failing closed.  A 0-byte technical-view pending wedged every later
+    run from 2026-09-05 until this recovery existed.
+    """
+
+    if not _WRITER_LOCK_HELD.get():
+        return False
+    match = _PENDING_CREATE_NAME.fullmatch(pending.name)
+    if match is None or match.group("final") != final.name:
+        _fail(f"pending {label} filename does not bind its bytes")
+    if _digest(body) == match.group("digest"):
+        return False
+    if final.exists() or final.is_symlink():
+        _fail(f"pending {label} filename does not bind its bytes")
+    try:
+        pending.unlink()
+    except OSError as exc:
+        raise MarketMemoryExperienceStoreError(
+            f"torn pending {label} cannot be removed"
+        ) from exc
+    _fsync_directory(pending.parent)
+    print(
+        "W2C_TORN_PENDING_DISCARDED "
+        + json.dumps(
+            {
+                "label": label,
+                "directory": pending.parent.name,
+                "pending": pending.name,
+                "bytes": len(body),
+                "observed_sha256": _digest(body),
+                "bound_sha256": match.group("digest"),
+            },
+            sort_keys=True,
+        ),
+        file=sys.stderr,
+        flush=True,
+    )
+    return True
 
 
 def _write_create_once(path: Path, body: bytes, *, limit: int, label: str) -> None:
@@ -1345,9 +1404,12 @@ def _read_one_pending_create(
         return None
     if len(pending) != 1:
         _fail(f"{label} has multiple pending publications")
-    raw, body = _read_json_path(
-        pending[0], limit=limit, label=f"pending {label}"
-    )
+    body = _read_bounded(pending[0], limit=limit, label=f"pending {label}")
+    if _discard_torn_prepublication_pending(
+        pending[0], final=path, body=body, label=label
+    ):
+        return None
+    raw = _strict_json(body, label=f"pending {label}")
     if pending[0] != _pending_create_path(path, body):
         _fail(f"pending {label} filename does not bind its bytes")
     return raw, body
@@ -2397,8 +2459,9 @@ def _recover_technical_view_chain_head(
             label="W2C technical view",
             validator=validate_view,
         )
-        if clean is None:  # pragma: no cover - inventory proves a candidate
-            _fail("W2C technical-view publication disappeared during recovery")
+        if clean is None:
+            # Its only candidate was a torn pre-publication pending, discarded under writer.lock.
+            continue
         views[view_id] = clean
     if not views:
         if head_path.exists() or head_path.is_symlink() or _pending_create_paths(
@@ -3734,11 +3797,20 @@ def _cleanup_unsealed_prepared_staging(
         )
         if prepared_id in referenced_ids:
             continue
-        raw, body = _read_json_path(
+        body = _read_bounded(
             item,
             limit=_MAX_PREPARED_BYTES,
             label="W2C unsealed prepared staging object",
         )
+        if pending_match is not None and _discard_torn_prepublication_pending(
+            item,
+            final=_safe_path(root, "prepared_objects", f"{prepared_id}.json"),
+            body=body,
+            label="W2C unsealed prepared staging object",
+        ):
+            removed = True
+            continue
+        raw = _strict_json(body, label="W2C unsealed prepared staging object")
         prepared = _validate_prepared(raw, registration=registration)
         if (
             prepared["prepared_id"] != prepared_id
@@ -8287,8 +8359,10 @@ def accrue_spy_experience(
     opportunity_ids: list[str] = []
     outcome_ids: list[str] = []
     population_id: str | None = None
+    lock_token: contextvars.Token[bool] | None = None
     try:
         fcntl.flock(descriptor, fcntl.LOCK_EX)
+        lock_token = _WRITER_LOCK_HELD.set(True)
         _manifest, _installation = _initialize_or_load_store(
             root,
             registration=registration,
@@ -8665,6 +8739,8 @@ def accrue_spy_experience(
                     root, registration=registration, marker=marker
                 )
     finally:
+        if lock_token is not None:
+            _WRITER_LOCK_HELD.reset(lock_token)
         fcntl.flock(descriptor, fcntl.LOCK_UN)
         os.close(descriptor)
     return AccrualResult(

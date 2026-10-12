@@ -46,11 +46,14 @@ import argparse
 import json
 import logging
 import os
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+from lib.live_flow_event_stage import parse_stage_bytes
 
 log = logging.getLogger(__name__)
 
@@ -59,11 +62,36 @@ LEDGER_DIR = "flow_signals"
 LEDGER_FILE = "ledger.parquet"
 R2_ARCHIVE_PREFIX = "live_flow/archive/"
 R2_FEED_KEY = "live_flow/feed_current.json"
+R2_EVENT_PREFIX = "live_flow/events/"
 ARCHIVE_WINDOW_HOURS = 48
 
 # Detector version loaded from config/flow_detector.yml at module import.
 # Cached after first load; consumers see the same version for the process lifetime.
 _DETECTOR_VERSION: str | None = None
+
+# Raw event producer clocks, read under their original payload names and stored
+# under a dedicated diagnostic namespace. These must not collide with the FS-5
+# verified-stage receipts (decision_at / available_at / source_stage_*). Older
+# parquet rows remain null when ordinary keep-first appends add these columns.
+_SOURCE_CLOCK_INPUT_FIELDS = (
+    "observed_at", "decision_at", "available_at", "published_at", "source_snapshot_asof",
+)
+_SOURCE_EVENT_CLOCK_FIELDS = (
+    "source_event_observed_at",
+    "source_event_decision_at",
+    "source_event_available_at",
+    "source_event_published_at",
+    "source_event_snapshot_asof",
+)
+_SOURCE_CLOCK_INPUT_TO_OUTPUT = dict(
+    zip(_SOURCE_CLOCK_INPUT_FIELDS, _SOURCE_EVENT_CLOCK_FIELDS)
+)
+_SOURCE_CLOCK_STATES = ("ordered", "partial", "unavailable", "invalid")
+_SOURCE_TIME_RE = re.compile(
+    r"[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]"
+    r"(?:\.[0-9]{1,9})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])"
+)
+
 
 # Full event schema columns (all fields from engine/live_flow.py event dict).
 # These are the ingest fields — never mutated after first write (keep-first law).
@@ -115,10 +143,23 @@ _EVENT_COLS = [
     "quote_age_max_ms",
     "bid_size_median",
     "ask_size_median",
+    # Additive raw-event source-clock diagnostics. Distinct from the FS-5
+    # verified-stage receipts below. Diagnostic status is NOT strategy,
+    # publication, or execution eligibility. Grader/model anchors are unchanged.
+    *_SOURCE_EVENT_CLOCK_FIELDS,
+    "source_clock_status",
     # Collector-stamped metadata
     "detector_version",
     "source",         # 'live_feed'
     "ingested_at",    # aware-UTC ISO string
+    # Immutable FS-5 stage evidence.  Absent for archive/feed display fallback.
+    "decision_at",
+    "available_at",
+    "source_stage_observed_at",
+    "source_stage_key",
+    "source_stage_schema",
+    "source_stage_prefix_records",
+    "source_stage_prefix_sha256",
 ]
 
 
@@ -259,6 +300,96 @@ def _normalize_ts(ts_val: Any) -> str:
     else:
         ts = ts.tz_convert("UTC")
     return ts.isoformat()  # includes +00:00 offset for aware timestamps
+
+
+def _strict_source_clock(value: Any) -> tuple[str | None, bool]:
+    """Return an explicit ISO/offset clock plus whether supplied input was invalid.
+
+    Unlike the legacy trade-time normalizer, this never assumes UTC for a naive
+    source clock or interprets a numeric value as a nanosecond epoch.
+    """
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None, False
+    if not isinstance(value, str) or not _SOURCE_TIME_RE.fullmatch(value.strip()):
+        return None, True
+    try:
+        stamp = pd.Timestamp(value.strip())
+        if pd.isna(stamp) or stamp.tzinfo is None:
+            return None, True
+        return stamp.tz_convert("UTC").isoformat(), False
+    except (ValueError, TypeError, OverflowError):
+        return None, True
+
+
+def _source_clock_cols(ev: dict, ingested_at: str) -> dict[str, Any]:
+    """Preserve raw event clocks under source_event_* and describe structure.
+
+    Reads original payload names. Writes a dedicated diagnostic namespace so
+    FS-5 verified-stage receipts stay exclusive owners of decision_at /
+    available_at / source_stage_*. Valid fields survive another field's failure.
+    Status is computed only from these raw event inputs plus the existing
+    trade/ingestion order rules; the stage envelope cannot elevate it. Values
+    are never borrowed from ts, ingested_at, the wrapper, or a stage receipt.
+    Even 'ordered' does not prove source authenticity, public delivery, rights,
+    or a tradable entry. No old event is restamped on re-harvest.
+    """
+    parsed: dict[str, Any] = {}
+    invalid = False
+    for key in _SOURCE_CLOCK_INPUT_FIELDS:
+        parsed[key], bad = _strict_source_clock(ev.get(key))
+        invalid |= bad
+    values: dict[str, Any] = {
+        _SOURCE_CLOCK_INPUT_TO_OUTPUT[key]: parsed[key]
+        for key in _SOURCE_CLOCK_INPUT_FIELDS
+    }
+    if not invalid and not any(values.values()):
+        values["source_clock_status"] = "unavailable"
+        return values
+
+    trade, bad_trade = _strict_source_clock(ev.get("ts"))
+    invalid |= bad_trade
+    chain = [
+        trade,
+        parsed["observed_at"],
+        parsed["decision_at"],
+        parsed["available_at"],
+        parsed["published_at"],
+    ]
+    known = [pd.Timestamp(v) for v in chain if v is not None]
+    invalid |= any(a > b for a, b in zip(known, known[1:]))
+    ingested = pd.Timestamp(ingested_at)
+    invalid |= any(pd.Timestamp(v) > ingested for v in values.values() if v is not None)
+    required = (
+        trade,
+        parsed["observed_at"],
+        parsed["decision_at"],
+        parsed["available_at"],
+    )
+    values["source_clock_status"] = (
+        "invalid" if invalid else "ordered" if all(v is not None for v in required) else "partial"
+    )
+    return values
+
+
+def _source_clock_coverage(df: pd.DataFrame) -> dict[str, Any]:
+    """Diagnostic counts in the incumbent gate, not eligibility or score flags."""
+    counts = {key: 0 for key in (*_SOURCE_CLOCK_STATES, "legacy_unknown", "unrecognized")}
+    if "source_clock_status" not in df.columns:
+        counts["legacy_unknown"] = len(df)
+    else:
+        for status, count in df["source_clock_status"].value_counts(dropna=False).items():
+            key = "legacy_unknown" if pd.isna(status) else str(status)
+            counts[key if key in counts else "unrecognized"] += int(count)
+    return {
+        "schema": "flow_signals.clock_coverage/v1",
+        "authority": "diagnostic_only",
+        "rows_total": len(df),
+        "status_counts": counts,
+        "field_non_null": {
+            key: int(df[key].notna().sum()) if key in df.columns else 0
+            for key in _SOURCE_EVENT_CLOCK_FIELDS
+        },
+    }
 
 
 def _infer_session_date_from_archive_key(key: str) -> str | None:
@@ -414,9 +545,20 @@ def _events_from_blob(blob: dict, session_date_hint: str | None = None) -> list[
             "signing_source":  str(ev.get("signing_source", "tape")),
             "swept":           _coerce_bool(ev.get("swept", False)),
             **_measured_microstructure_cols(ev),
+            **_source_clock_cols(ev, ingested_at),
             "detector_version": detector_version,
             "source":          "live_feed",
             "ingested_at":     ingested_at,
+            # Archive/feed_current are display continuity inputs only.  Keep
+            # every FS-5 receipt field explicitly absent; never synthesize a
+            # stage clock from ingestion or object metadata.
+            "decision_at": None,
+            "available_at": None,
+            "source_stage_observed_at": None,
+            "source_stage_key": None,
+            "source_stage_schema": None,
+            "source_stage_prefix_records": None,
+            "source_stage_prefix_sha256": None,
         }
         results.append(row)
 
@@ -553,6 +695,84 @@ def _r2_feed_current(s3, bucket: str) -> dict | None:
     return _fetch_r2_json(s3, bucket, R2_FEED_KEY)
 
 
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _event_stage_keys_within_window(s3, bucket: str,
+                                    window_hours: int = ARCHIVE_WINDOW_HOURS,
+                                    now: datetime | None = None) -> list[str]:
+    """Return only recent date-keyed stages; never use R2 listing as replay."""
+    try:
+        keys: list[str] = []
+        token = None
+        while True:
+            request: dict[str, Any] = {"Bucket": bucket, "Prefix": R2_EVENT_PREFIX}
+            if token:
+                request["ContinuationToken"] = token
+            page = s3.list_objects_v2(**request)
+            keys.extend(str(item.get("Key") or "") for item in page.get("Contents") or [])
+            if not page.get("IsTruncated"):
+                break
+            token = page.get("NextContinuationToken")
+            if not token:
+                return []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("flow_signals: list event-stage keys failed: %s", exc)
+        return []
+    current = now or datetime.now(timezone.utc)
+    cutoff_date = (current - timedelta(hours=window_hours)).date()
+    upper_date = current.date()
+    valid: list[str] = []
+    for key in keys:
+        if not key.startswith(R2_EVENT_PREFIX) or not key.endswith(".jsonl"):
+            continue
+        session = key[len(R2_EVENT_PREFIX):-len(".jsonl")]
+        try:
+            parsed = datetime.strptime(session, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if parsed.isoformat() == session and cutoff_date <= parsed <= upper_date:
+            valid.append(key)
+    return sorted(valid)
+
+
+def _fetch_staged_rows(s3, bucket: str, key: str) -> list[dict[str, Any]] | None:
+    """Fetch one stage and bind new rows to original-byte prefix receipts.
+
+    The observation clock is sampled after ``Body.read`` completes.  It is never
+    derived from R2 metadata, local ingestion, or the poller's local durability
+    clock (``available_at``).
+    """
+    session = key[len(R2_EVENT_PREFIX):-len(".jsonl")]
+    try:
+        raw = s3.get_object(Bucket=bucket, Key=key)["Body"].read()
+        observed_at = _utc_now_iso()
+        paired = parse_stage_bytes(
+            raw, expected_session_date=session, source_stage_key=key,
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning("flow_signals: staged event key %s rejected: %s", key, exc)
+        return None
+    rows: list[dict[str, Any]] = []
+    for item in paired:
+        normalized = _events_from_blob({"session_date": session, "events": [item["event"]]})
+        if len(normalized) != 1:
+            continue
+        row = normalized[0]
+        row.update({
+            "decision_at": item["decision_at"],
+            "available_at": item["available_at"],
+            "source_stage_observed_at": observed_at,
+            "source_stage_key": item["source_stage_key"],
+            "source_stage_schema": item["source_stage_schema"],
+            "source_stage_prefix_records": item["source_stage_prefix_records"],
+            "source_stage_prefix_sha256": item["source_stage_prefix_sha256"],
+        })
+        rows.append(row)
+    return rows
+
+
 # ── main harvest function ─────────────────────────────────────────────────────
 
 def harvest(dry_run: bool = False) -> int:
@@ -581,6 +801,16 @@ def harvest(dry_run: bool = False) -> int:
     # ── 1. R2 archive blobs ───────────────────────────────────────────────────
     n_archive_blobs = 0
     if s3 is not None:
+        # FS-5 science source: append-only staged evidence wins before the
+        # archive/display paths.  The bounded date window avoids history replay.
+        for key in _event_stage_keys_within_window(s3, bucket, ARCHIVE_WINDOW_HOURS):
+            staged_rows = _fetch_staged_rows(s3, bucket, key)
+            if staged_rows is None:
+                continue
+            for row in staged_rows:
+                eid = row["event_id"]
+                if eid not in existing_ids and eid not in all_new_rows:
+                    all_new_rows[eid] = row
         archive_keys = _archive_keys_within_window(s3, bucket, ARCHIVE_WINDOW_HOURS)
         log.info("flow_signals: found %d archive blobs within %dh window",
                  len(archive_keys), ARCHIVE_WINDOW_HOURS)
@@ -643,8 +873,16 @@ def ledger_stats() -> dict:
     if not ledger_path.exists():
         return {"n_rows": 0, "n_sessions": 0, "dte_bucket_counts": {}, "last_ts": None}
     try:
-        df = pd.read_parquet(ledger_path,
-                             columns=["event_id", "session_date", "dte_bucket", "ts"])
+        # Project only existing optional columns so pre-clock ledgers remain
+        # readable and their rows are counted as legacy_unknown, not zero rows.
+        import pyarrow.parquet as pq
+
+        names = set(pq.read_schema(ledger_path).names)
+        columns = ["event_id", "session_date", "dte_bucket", "ts"]
+        columns.extend(
+            key for key in (*_SOURCE_EVENT_CLOCK_FIELDS, "source_clock_status") if key in names
+        )
+        df = pd.read_parquet(ledger_path, columns=columns)
         n_rows = len(df)
         n_sessions = df["session_date"].nunique()
         dte_counts = df["dte_bucket"].value_counts().to_dict()
@@ -660,6 +898,7 @@ def ledger_stats() -> dict:
 
         return {
             "n_rows": n_rows,
+            "source_clock_coverage": _source_clock_coverage(df),
             "n_sessions": n_sessions,
             "dte_bucket_counts": {str(k): int(v) for k, v in dte_counts.items()},
             "events_per_day":    {str(k): int(v) for k, v in events_per_day.items()},

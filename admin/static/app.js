@@ -3198,29 +3198,88 @@ RENDER.cost = async () => {
 };
 
 /* ---- CONTENT ------------------------------------------------------------ */
+function adminInventoryPage(pages, query = "", page = 1) {
+  const needle = String(query || "").trim().toLowerCase();
+  const matches = (Array.isArray(pages) ? pages : []).filter(p => p &&
+    typeof p.name === "string" && p.name.toLowerCase().includes(needle));
+  const total = matches.length, size = 50, pagesN = Math.max(1, Math.ceil(total / size));
+  const requested = Number.isFinite(Number(page)) ? Math.floor(Number(page)) : 1;
+  const current = Math.max(1, Math.min(pagesN, requested));
+  const offset = (current - 1) * size;
+  return {rows: matches.slice(offset, offset + size), total, page: current, pages: pagesN,
+    from: total ? offset + 1 : 0, to: Math.min(offset + size, total)};
+}
+
 RENDER.content = async () => {
-  const v = $("#view"); const d = await api("/api/content");
-  v.innerHTML = `
-    <div class="grid">
-      ${card("Pages", `<div class="big">${d.total_pages}</div><div class="sub">published pages</div>`)}
-      ${card("Total size", `<div class="big">${d.total_mb} MB</div><div class="sub">${d.total_kb} KB</div>`)}
-      ${card("Is the site up?", `<div id="upBox"><button class="btn" id="upBtn2">Check live site</button></div>`)}
-      ${card("Links", `<div id="lkBox"><button class="btn" id="lkBtn">Check internal links</button></div>`)}
+  const v = $("#view"), renderEpoch = ADMIN_RENDER_EPOCH;
+  const current = () => CURRENT === "content" && renderEpoch === ADMIN_RENDER_EPOCH && v.isConnected;
+  const d = await api("/api/content");
+  if (!current()) return;
+  if (!d || !Array.isArray(d.pages) || d.pages.some(p => !p || typeof p.name !== "string")) {
+    throw new Error("The Site inventory could not be read. Try again.");
+  }
+  const number = n => typeof n === "number" && Number.isFinite(n) && n >= 0 ? String(n) : "—";
+  v.innerHTML = `<div class="grid">
+    ${card("Pages", `<div class="big">${number(d.total_pages)}</div><div class="sub">published pages</div>`)}
+    ${card("Total size", `<div class="big">${number(d.total_mb)} MB</div><div class="sub">${number(d.total_kb)} KB</div>`)}
+    ${card("Is the site up?", '<div id="upBox"><button class="btn" id="upBtn2">Check live site</button><div id="inventoryUptime" role="status"></div></div>')}
+    ${card("Links", '<div id="lkBox"><button class="btn" id="lkBtn">Check internal links</button><div id="inventoryLinks" role="status"></div></div>')}
     </div>
-    <div class="section">All pages <span class="cnt">${d.total_pages}</span></div>
-    <table><thead><tr><th>Page</th><th class="r">Size (KB)</th><th class="r">Updated</th></tr></thead><tbody>
-      ${d.pages.map(p => `<tr><td class="mono">${esc(p.name)}</td><td class="r">${p.kb}</td><td class="r sub">${fmtAge(p.age_hours)} ago</td></tr>`).join("")}
-    </tbody></table>`;
-  $("#upBtn2").onclick = async () => {
-    $("#upBox").innerHTML = "<span class='muted'>probing…</span>"; const u = await api("/api/uptime");
-    $("#upBox").innerHTML = u.ok ? `<div class="big" style="font-size:18px;color:var(--ok)">200 OK</div><div class="sub">${u.ms} ms · ${(u.bytes / 1024).toFixed(0)} KB</div>`
-      : `<div class="big" style="font-size:18px;color:var(--bad)">${esc(u.status || "down")}</div><div class="sub">${esc(u.error || "")}</div>`;
+    <div class="section">Find a page</div>
+    <div class="cs-review-controls">
+      <label for="inventorySearch">Search page names<input id="inventorySearch" type="search" placeholder="Page name or folder…" autocomplete="off"></label>
+      <button type="button" class="btn" id="inventoryClear">Clear search</button>
+    </div>
+    <div id="inventoryCount" class="sub" role="status" aria-live="polite"></div>
+    <div class="table-wrap"><table aria-label="Site inventory"><thead><tr><th>Page</th><th class="r">Size (KB)</th><th class="r">Updated</th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
+    <div class="cs-review-pager" aria-label="Inventory pages">
+      <button type="button" class="btn" id="inventoryPrev">Previous</button>
+      <span id="inventoryPage" class="sub"></span>
+      <button type="button" class="btn" id="inventoryNext">Next</button>
+    </div><div id="inventoryLinkResults"></div>`;
+  const search = $("#inventorySearch"), rows = $("#inventoryRows");
+  const prev = $("#inventoryPrev"), next = $("#inventoryNext");
+  let page = 1;
+  const draw = () => {
+    if (!current()) return;
+    const result = adminInventoryPage(d.pages, search.value, page);
+    page = result.page;
+    $("#inventoryCount").textContent = `Showing ${result.from}–${result.to} of ${result.total} matching pages`;
+    $("#inventoryPage").textContent = `Page ${page} of ${result.pages}`;
+    prev.disabled = page <= 1; next.disabled = page >= result.pages;
+    rows.innerHTML = result.rows.length ? result.rows.map(p => `<tr><td class="mono">${esc(p.name)}</td><td class="r">${number(p.kb)}</td><td class="r sub">${typeof p.age_hours === "number" && Number.isFinite(p.age_hours) && p.age_hours >= 0 ? fmtAge(p.age_hours) + " ago" : "—"}</td></tr>`).join("")
+      : `<tr><td colspan="3" class="muted">${d.pages.length ? "No matching pages. Clear or change your search." : "No published pages were returned."}</td></tr>`;
   };
-  $("#lkBtn").onclick = async () => {
-    $("#lkBox").innerHTML = "<span class='muted'>scanning…</span>"; const l = await api("/api/content/links");
-    $("#lkBox").innerHTML = `<div class="big" style="font-size:18px;color:${l.count ? "var(--warn)" : "var(--ok)"}">${l.count} broken</div><div class="sub">scanned ${l.checked_pages} of ${l.total_pages != null ? l.total_pages : l.checked_pages} pages${l.truncated ? " · TRUNCATED" : ""}${l.ci_built_count ? ` · ${l.ci_built_count} built by CI (not broken)` : ""}</div>`;
-    if (l.count) { const sec = h(`<div></div>`); sec.innerHTML = `<div class="section">Broken internal links <span class="cnt">${l.count}</span></div>
-      <table><thead><tr><th>Page</th><th>Link</th></tr></thead><tbody>${l.broken.map(b => `<tr><td class="mono">${esc(b.page)}</td><td class="mono" style="color:var(--bad)">${esc(b.link)}</td></tr>`).join("")}</tbody></table>`; $("#view").appendChild(sec); }
+  search.oninput = () => { page = 1; draw(); };
+  $("#inventoryClear").onclick = () => { search.value = ""; page = 1; draw(); search.focus(); };
+  prev.onclick = () => { page -= 1; draw(); };
+  next.onclick = () => { page += 1; draw(); };
+  draw();
+  const uptimeButton = $("#upBtn2"), uptime = $("#inventoryUptime");
+  uptimeButton.onclick = async () => {
+    if (!current() || uptimeButton.disabled) return;
+    uptimeButton.disabled = true; uptime.textContent = "Checking live site…";
+    try {
+      const u = await api("/api/uptime");
+      if (!current()) return;
+      uptime.innerHTML = u && u.ok === true
+        ? `<div class="sub">200 OK · ${number(u.ms)} ms · ${number(typeof u.bytes === "number" ? Math.round(u.bytes / 1024) : null)} KB</div>`
+        : `<div class="sub">${esc((u && (u.error || u.status)) || "Live site unavailable.")}</div>`;
+    } catch (_) { if (current()) uptime.textContent = "Live-site check unavailable. Try again."; }
+    finally { if (current()) uptimeButton.disabled = false; }
+  };
+  const linksButton = $("#lkBtn"), links = $("#inventoryLinks"), linkRows = $("#inventoryLinkResults");
+  linksButton.onclick = async () => {
+    if (!current() || linksButton.disabled) return;
+    linksButton.disabled = true; links.textContent = "Checking internal links…"; linkRows.innerHTML = "";
+    try {
+      const l = await api("/api/content/links");
+      if (!current()) return;
+      if (!l || typeof l.count !== "number" || !Number.isFinite(l.count) || l.count < 0 || !Array.isArray(l.broken)) throw new Error("Invalid link result");
+      links.innerHTML = `<div class="sub">${number(l.count)} broken · scanned ${number(l.checked_pages)} of ${number(l.total_pages == null ? l.checked_pages : l.total_pages)} pages${l.truncated ? " · partial scan" : ""}${l.ci_built_count ? ` · ${number(l.ci_built_count)} built by CI (not broken)` : ""}</div>`;
+      if (l.count) linkRows.innerHTML = `<div class="section">Broken internal links</div><div class="sub">${l.broken.length} results shown of ${number(l.count)}</div><div class="table-wrap"><table><thead><tr><th>Page</th><th>Link</th></tr></thead><tbody>${l.broken.map(b => `<tr><td class="mono">${esc(b.page)}</td><td class="mono">${esc(b.link)}</td></tr>`).join("")}</tbody></table></div>`;
+    } catch (_) { if (current()) links.textContent = "Link check unavailable. Try again."; }
+    finally { if (current()) linksButton.disabled = false; }
   };
 };
 

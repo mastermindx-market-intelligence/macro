@@ -2,10 +2,10 @@
 
 Rules:
 - One parquet per logical series/table: data/<group>/<name>.parquet
-- upsert() merges on the index and NEVER drops rows that exist only on disk.
-  This is what makes the FRED OAS cache permanent: once an observation is
-  stored it survives every later fetch, even though FRED itself now serves
-  only a rolling 3-year window.
+- Default upsert() merges on the index and never drops rows present only on disk.
+  This makes the FRED OAS cache permanent despite its rolling fetch window.
+  Adjusted-series overwrite_overlap replaces its complete refresh span, but
+  rejects responses that would move the stored latest timestamp backwards.
 - Outlier guard (Phase 4): |daily change| > N sigma is quarantined to
   data/quarantine/, not silently ingested.
 """
@@ -60,7 +60,7 @@ def _quarantine(group: str, name: str, rows: pd.DataFrame, reason: str) -> None:
 def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = None,
            normalize_index: bool = True, overwrite_overlap: bool = False) -> pd.DataFrame:
     """Merge new rows into the stored series. New values win on date collision;
-    rows present only on disk are always kept (append-only history guarantee).
+    The default path keeps rows present only on disk (append-only history).
     normalize_index=False preserves intraday timestamps (hourly candles).
 
     overwrite_overlap=True — for DIVIDEND/SPLIT-ADJUSTED series (yfinance
@@ -72,8 +72,12 @@ def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = N
     clustered) that seasonally biases rev_z and can fabricate MACD/StochRSI crosses.
     With overwrite_overlap=True the fresh pull FULLY OVERWRITES its own date span
     [new.index.min(), new.index.max()]; only stored rows OUTSIDE that span (older deep
-    history the short refresh window did not reach) are carried forward. See
-    research/ENGINE_FIX_MASTERPLAN.md §W6-CN fix 2."""
+    history the short refresh window did not reach) are carried forward. A response
+    that does not reach the stored latest timestamp, or becomes empty after outlier
+    filtering, is rejected with ValueError before writing. Retain the whole known-good
+    cache rather than splice a stale adjustment basis against newer stored rows.
+    Reaching that timestamp still allows complete overlap replacement, including
+    omitted interior bars. See research/ENGINE_FIX_MASTERPLAN.md §W6-CN fix 2."""
     if new is None or new.empty:
         raise ValueError(f"upsert called with empty frame for {group}/{name}")
     new = new.copy()
@@ -89,6 +93,18 @@ def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = N
     if old is None or old.empty:
         merged = new
     elif overwrite_overlap:
+        # A closure-time/throttled response may end before the last stored bar.
+        # Keeping its changed adjustment window alongside newer old bars would mix
+        # bases; deleting those newer bars would regress the cache. Reject both.
+        if new.empty:
+            raise ValueError(
+                f"empty overwrite_overlap frame after filtering for {group}/{name}; "
+                "retained complete stored history")
+        if new.index.max() < old.index.max():
+            raise ValueError(
+                f"stale overwrite_overlap frame for {group}/{name}: latest returned "
+                f"{new.index.max()} precedes stored {old.index.max()}; "
+                "retained complete stored history to avoid mixing adjustment bases")
         # Keep only stored rows strictly OLDER than the fresh pull's window; the fresh
         # pull owns its whole overlapping span (no combine_first seam).
         lo = new.index.min()

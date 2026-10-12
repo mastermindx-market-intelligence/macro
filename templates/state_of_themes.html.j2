@@ -600,6 +600,9 @@ html[data-theme="dark"] body::before{
 </section>
 {% endfor %}
 
+{# ── FINANCE T9 ENTRY POINT · Sector deep dives (link only, outside the lanes) ── #}
+{% include "_finance_sector_deep_dive.html.j2" %}
+
 {# ── STUDY SHELF (tier 3) ── #}
 <div class="sec-head" style="margin-top:40px"><span class="sh-dot" style="--sh-c:var(--quiet)"></span>{{ t('The fine print', '细则与依据') }}</div>
 <p class="sec-sub">{{ t('How to read the board, and the receipts behind it.', '如何解读看板，及其背后的依据。') }}</p>

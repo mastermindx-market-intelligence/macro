@@ -1,0 +1,253 @@
+{
+  "artifact_kind": "BOUNDED_CURATOR_RESEARCH_REVIEW_NOT_CURATION_LEDGER",
+  "authority_ceiling": "research_internal_only",
+  "closed_counts": {
+    "application_scope_holds": 1,
+    "canonical_proposals_added": 0,
+    "draft_mapping_scope_reviews": 2,
+    "new_graph_mappings": 0,
+    "ratifications": 0,
+    "reviewed_gap_concepts": 5,
+    "source_membership_receipts_present_owner_binding_required": 2
+  },
+  "coverage_unchanged": true,
+  "decisions": [
+    {
+      "adjudication_applied": false,
+      "canonical_mapping_after": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_mapping_before": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_queue_status_after": "NO_PROPOSAL",
+      "canonical_queue_status_before": "NO_PROPOSAL",
+      "draft_proposal_id": null,
+      "falsifier": "An exact source-scope receipt or independently accepted owner curation with matching node/code, relation meaning and clocks changes the relevant evidence; label similarity or a larger overlap alone does not.",
+      "label_zh": "锂电池概念",
+      "next_action": "Independent curation/source-owner review must decide whether and how this exact concept receives a stable basket_id under the existing THS owner. Do not import raw snapshot rows directly into graph truth, backdate a current concept-to-basket binding, or infer a canonical theme mapping from membership alone.",
+      "node_id": "ltheme:ths:300733",
+      "primary_source_ids": [
+        "THS_DEF_300733"
+      ],
+      "rationale": "Exact THS definition confirms the lithium-battery concept. Four stored raw THS snapshots (2026-06-30, 2026-08-22, 2026-08-29, 2026-09-05) contain label-keyed source memberships, but current membership.json does not bind 锂电池概念 to any basket_id. D2C correctly excludes ths_concept_dump rows from graph membership because their concept-to-basket resolution is current-basis. Source evidence is now present; stable owner binding and graph admission remain absent.",
+      "research_disposition": "SOURCE_MEMBERSHIP_RECEIPTS_PRESENT_OWNER_BINDING_REQUIRED",
+      "source_code": "300733",
+      "source_membership_receipt_id": "THS_RAW_PIT_300733"
+    },
+    {
+      "adjudication_applied": false,
+      "canonical_mapping_after": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_mapping_before": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_queue_status_after": "NO_PROPOSAL",
+      "canonical_queue_status_before": "NO_PROPOSAL",
+      "draft_proposal_id": "prop:de400c2bb566c04c",
+      "falsifier": "An exact source-scope receipt or independently accepted owner curation with matching node/code, relation meaning and clocks changes the relevant evidence; label similarity or a larger overlap alone does not.",
+      "label_zh": "钠离子电池",
+      "next_action": "Send the nonexclusive EXPRESSES candidate through independent curation review; do not admit, ratify or rank it automatically.",
+      "node_id": "ltheme:ths:301096",
+      "primary_source_ids": [
+        "THS_DEF_301096",
+        "DOE_SODIUM_GRID_2017",
+        "DOE_SODIUM_EV_2023"
+      ],
+      "rationale": "The exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. Together with the existing application evidence, this supports a nonexclusive EXPRESSES candidate to Grid & Electrification while ruling out equivalence/exclusivity. The local-control overlap remains descriptive only.",
+      "research_disposition": "NONEXCLUSIVE_EXPRESSES_CANDIDATE",
+      "source_code": "301096"
+    },
+    {
+      "adjudication_applied": false,
+      "canonical_mapping_after": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_mapping_before": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_queue_status_after": "NO_PROPOSAL",
+      "canonical_queue_status_before": "NO_PROPOSAL",
+      "draft_proposal_id": "prop:a1b11d839c5d789d",
+      "falsifier": "An exact source-scope receipt or independently accepted owner curation with matching node/code, relation meaning and clocks changes the relevant evidence; label similarity or a larger overlap alone does not.",
+      "label_zh": "钒电池",
+      "next_action": "Send the nonexclusive EXPRESSES candidate through independent curation review; do not admit, ratify or rank it automatically.",
+      "node_id": "ltheme:ths:301174",
+      "primary_source_ids": [
+        "THS_DEF_301174",
+        "DOE_VANADIUM_GRID_2017"
+      ],
+      "rationale": "The exact THS definition explicitly places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company local-control overlap; it does not prove equivalence or every issuer exposure.",
+      "research_disposition": "NONEXCLUSIVE_EXPRESSES_CANDIDATE",
+      "source_code": "301174"
+    },
+    {
+      "adjudication_applied": false,
+      "canonical_mapping_after": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_mapping_before": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_queue_status_after": "NO_PROPOSAL",
+      "canonical_queue_status_before": "NO_PROPOSAL",
+      "draft_proposal_id": null,
+      "falsifier": "An exact source-scope receipt or independently accepted owner curation with matching node/code, relation meaning and clocks changes the relevant evidence; label similarity or a larger overlap alone does not.",
+      "label_zh": "动力电池回收",
+      "next_action": "Independent curation/source-owner review must decide whether and how this exact concept receives a stable basket_id under the existing THS owner. Do not import raw snapshot rows directly into graph truth, backdate a current concept-to-basket binding, or infer a canonical theme mapping from membership alone.",
+      "node_id": "ltheme:ths:307822",
+      "primary_source_ids": [
+        "THS_DEF_307822"
+      ],
+      "rationale": "Exact THS definition confirms power-battery recycling. Four stored raw THS snapshots (2026-06-30, 2026-08-22, 2026-08-29, 2026-09-05) contain label-keyed source memberships, but current membership.json does not bind 动力电池回收 to any basket_id. D2C correctly excludes ths_concept_dump rows from graph membership because their concept-to-basket resolution is current-basis. Source evidence is now present; stable owner binding and graph admission remain absent.",
+      "research_disposition": "SOURCE_MEMBERSHIP_RECEIPTS_PRESENT_OWNER_BINDING_REQUIRED",
+      "source_code": "307822",
+      "source_membership_receipt_id": "THS_RAW_PIT_307822"
+    },
+    {
+      "adjudication_applied": false,
+      "canonical_mapping_after": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_mapping_before": {
+        "state": "UNMAPPED",
+        "theme_node_ids": []
+      },
+      "canonical_queue_status_after": "NO_PROPOSAL",
+      "canonical_queue_status_before": "NO_PROPOSAL",
+      "draft_proposal_id": null,
+      "falsifier": "An exact source-scope receipt or independently accepted owner curation with matching node/code, relation meaning and clocks changes the relevant evidence; label similarity or a larger overlap alone does not.",
+      "label_zh": "固态电池",
+      "next_action": "Hold mapping. Require exact application-scope evidence or independent curation that resolves grid relevance before creating a new candidate; overlap alone is insufficient.",
+      "node_id": "ltheme:ths:308294",
+      "primary_source_ids": [
+        "THS_DEF_308294",
+        "ORNL_SOLID_STATE_SCOPE_2025"
+      ],
+      "rationale": "The exact THS definition confirms solid-state battery technology but does not establish grid-specific application scope. ORNL documents multiple applications, so the five-company storage-control overlap cannot elevate this to a Grid & Electrification candidate.",
+      "research_disposition": "APPLICATION_SCOPE_HOLD",
+      "source_code": "308294"
+    }
+  ],
+  "detached_preview": {
+    "all_relations_absent": true,
+    "canonical_queue_rows": 234,
+    "existing_consumer": "compose_worklist + compose_proposal_review",
+    "in_memory_overlay_rows": 236,
+    "review_previews": 2,
+    "rows_written_to_queue": 0
+  },
+  "external_source_boundary": "Exact public THS definition receipts are source-code-bound scope evidence only. Stored THS raw snapshots additionally provide label-keyed PIT membership receipts, but they do not create the missing stable owner basket_id, authorize redistribution, admit proposals, ratify mappings, or write graph truth.",
+  "primary_sources": [
+    {
+      "boundary": "A historical grid application; does not define THS board 301174 or verify its individual issuers.",
+      "date": "2017-08-04",
+      "id": "DOE_VANADIUM_GRID_2017",
+      "publisher": "U.S. Department of Energy, Office of Electricity",
+      "retrieved_on": "2026-09-21",
+      "support": "Reports a vanadium-redox demonstration at a municipal power plant, including peak-demand leveling.",
+      "url": "https://www.energy.gov/oe/articles/arra-sgdp-city-painesville-ohio-vanadium-redox-battery-demonstration-program"
+    },
+    {
+      "boundary": "One sodium-ion technology and project; not a definition of the full THS sodium-ion board.",
+      "date": "2017-08-04",
+      "id": "DOE_SODIUM_GRID_2017",
+      "publisher": "U.S. Department of Energy, Office of Electricity",
+      "retrieved_on": "2026-09-21",
+      "support": "Describes an aqueous sodium-ion grid-storage demonstration.",
+      "url": "https://www.energy.gov/oe/articles/arra-sgdp-aquion-energy-sodium-ion-battery-grid-level-applications"
+    },
+    {
+      "boundary": "Confirms multi-application scope; does not establish a board-level mapping or current commercialization.",
+      "date": "2023-10-16",
+      "id": "DOE_SODIUM_EV_2023",
+      "publisher": "U.S. Department of Energy, Basic Energy Sciences",
+      "retrieved_on": "2026-09-21",
+      "support": "Describes sodium-ion cathode research relevant to electric vehicles and potential grid-storage costs.",
+      "url": "https://www.energy.gov/science/bes/articles/scientists-find-potential-key-longer-lasting-sodium-batteries-electric"
+    },
+    {
+      "boundary": "Technology-application evidence, not THS board identity, issuer exposure, or exclusive grid classification.",
+      "date": "2025-10-29",
+      "id": "ORNL_SOLID_STATE_SCOPE_2025",
+      "publisher": "Oak Ridge National Laboratory",
+      "retrieved_on": "2026-09-21",
+      "support": "Lists vehicle, grid, portable-electronics and aerospace uses for the described solid-state lithium technology.",
+      "url": "https://www.ornl.gov/technology/202405807"
+    },
+    {
+      "boundary": "Exact THS concept definition for source code 300733 / displayed index 885710. It defines lithium batteries and emphasizes automotive electrification; it does not provide the missing dated local membership path or prove a canonical theme mapping.",
+      "date": null,
+      "displayed_index_code": "885710",
+      "id": "THS_DEF_300733",
+      "publisher": "Hithink RoyalFlush Information Network Co., Ltd. (同花顺)",
+      "receipt_kind": "EXACT_THS_DEFINITION_PAGE",
+      "retrieved_on": "2026-09-21",
+      "source_code": "300733",
+      "support": "Defines lithium batteries as lithium-metal/alloy negative-electrode batteries using non-aqueous electrolyte and notes automotive electrification as a major application context.",
+      "url": "https://q.10jqka.com.cn/gn/detail/code/300733/"
+    },
+    {
+      "boundary": "Exact THS concept definition for source code 307822 / displayed index 885944. It establishes power-battery recycling/traceability and echelon-use policy scope; it does not provide the missing dated local membership path or equate recycling with extraction or stationary storage.",
+      "date": null,
+      "displayed_index_code": "885944",
+      "id": "THS_DEF_307822",
+      "publisher": "Hithink RoyalFlush Information Network Co., Ltd. (同花顺)",
+      "receipt_kind": "EXACT_THS_DEFINITION_PAGE",
+      "retrieved_on": "2026-09-21",
+      "source_code": "307822",
+      "support": "Describes policy measures for new-energy-vehicle power-battery recycling, traceability management, and echelon utilization.",
+      "url": "https://q.10jqka.com.cn/gn/detail/code/307822/"
+    },
+    {
+      "boundary": "Exact THS concept definition for source code 308294 / displayed index 886032. It defines solid-state battery technology but does not establish grid-specific application scope; overlap cannot substitute for that missing semantic evidence.",
+      "date": null,
+      "displayed_index_code": "886032",
+      "id": "THS_DEF_308294",
+      "publisher": "Hithink RoyalFlush Information Network Co., Ltd. (同花顺)",
+      "receipt_kind": "EXACT_THS_DEFINITION_PAGE",
+      "retrieved_on": "2026-09-21",
+      "source_code": "308294",
+      "support": "Defines solid-state batteries by solid electrodes/electrolytes and higher energy-density technology, without a grid-storage application claim in the definition.",
+      "url": "https://q.10jqka.com.cn/gn/detail/code/308294/"
+    },
+    {
+      "boundary": "Exact THS concept definition for source code 301096 / displayed index 885928. It expressly spans grid storage, renewable-energy storage and electric transport, supporting only a nonexclusive application relationship.",
+      "date": null,
+      "displayed_index_code": "885928",
+      "id": "THS_DEF_301096",
+      "publisher": "Hithink RoyalFlush Information Network Co., Ltd. (同花顺)",
+      "receipt_kind": "EXACT_THS_DEFINITION_PAGE",
+      "retrieved_on": "2026-09-21",
+      "source_code": "301096",
+      "support": "Defines sodium-ion batteries and explicitly names grid storage, renewable-energy storage, and electric transportation as application fields.",
+      "url": "https://q.10jqka.com.cn/gn/detail/code/301096/"
+    },
+    {
+      "boundary": "Exact THS concept definition for source code 301174 / displayed index 886003. It expressly describes vanadium redox-flow batteries in long-duration/new-energy storage context; this supports a nonexclusive storage expression candidate, not equivalence or issuer-level proof.",
+      "date": null,
+      "displayed_index_code": "886003",
+      "id": "THS_DEF_301174",
+      "publisher": "Hithink RoyalFlush Information Network Co., Ltd. (同花顺)",
+      "receipt_kind": "EXACT_THS_DEFINITION_PAGE",
+      "retrieved_on": "2026-09-21",
+      "source_code": "301174",
+      "support": "Defines vanadium redox-flow batteries and cites flow batteries as long-duration energy-storage technology moving toward commercialization.",
+      "url": "https://q.10jqka.com.cn/gn/detail/code/301174/"
+    }
+  ],
+  "procedure_pin": "9a7ed19091dd82609f8ee405687f16c861c4d8c1",
+  "proposal_draft_count": 2,
+  "scope": "Research synthesis for five exact gaps plus controls: two nonexclusive EXPRESSES candidates, one application-scope hold, and two source-membership receipts whose stable owner basket binding is absent; not an exhaustive classifier, approved curation act, queue, or new workflow authority.",
+  "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+}

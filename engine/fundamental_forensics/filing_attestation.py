@@ -31,7 +31,11 @@ from typing import Any, Mapping, Protocol, runtime_checkable
 from .filing_package import FilingPackage, FilingPackageError, HARD_MAX_MEMBER_BYTES, build_filing_package
 from .ixbrl_extraction import IxbrlExtraction, IxbrlExtractionError, verify_ixbrl_extraction_source
 from .models import canonical_json, parse_utc, stable_id, utc_text
-from .sec_document_spine import canonical_cik, manifest_from_json_bytes
+from .sec_document_spine import (
+    HARD_MAX_ARCHIVE_RECEIPT_BYTES, archive_receipt_from_json_bytes,
+    canonical_cik, manifest_from_json_bytes, manifest_storage_key,
+    read_archive_object_bytes, receipt_storage_key,
+)
 
 
 FILING_ATTESTATION_SCHEMA = "fundamental_forensics.filing_attestation/v1"
@@ -44,7 +48,6 @@ HARD_MAX_CANDIDATES = 100_000
 HARD_MAX_JSON_DEPTH = 64
 HARD_MAX_JSON_NODES = 1_200_000
 MAX_TEXT_BYTES = 16 * 1024
-HARD_MAX_ARCHIVE_RECEIPT_BYTES = 64 * 1024
 MAX_DECIMAL_TEXT_BYTES = 4_096
 
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
@@ -450,20 +453,11 @@ class PinnedSourceAuthority:
         receipt_id = expected.get("receipt_id")
         if not isinstance(receipt_id, str):
             raise FilingAttestationError("expected archive receipt id is invalid")
-        # These collector wrappers are intentionally imported at use time:
-        # collectors depend on the engine package, so importing them while
-        # this module is exposed from ``engine.fundamental_forensics.__init__``
-        # would create a package-initialization cycle.
-        from collectors.sec_document_spine import (
-            archive_receipt_from_json_bytes,
-            read_archive_object_bytes,
-            receipt_storage_key,
-        )
         sidecar_key = receipt_storage_key(receipt_id)
         receipt_read = self._read(kind="archive", relative_path=sidecar_key, maximum_bytes=HARD_MAX_ARCHIVE_RECEIPT_BYTES)
         try:
             decoded = archive_receipt_from_json_bytes(receipt_read.content)
-        except Exception as exc:  # collector owns the canonical sidecar contract.
+        except Exception as exc:  # native spine owns the canonical sidecar contract.
             raise FilingAttestationError("source archive receipt sidecar is invalid") from exc
         if decoded.to_dict() != expected:
             raise FilingAttestationError("source archive receipt sidecar differs from package receipt")
@@ -490,7 +484,7 @@ class PinnedSourceAuthority:
         )
         try:
             raw = read_archive_object_bytes(obj.content, decoded)
-        except Exception as exc:  # collector owns exact bounded gzip replay.
+        except Exception as exc:  # native spine owns exact bounded gzip replay.
             raise FilingAttestationError("source archive gzip object does not match sidecar receipt") from exc
         if len(raw) > maximum_bytes:
             raise FilingAttestationError("source archive object exceeds requested raw byte limit")
@@ -1159,7 +1153,6 @@ def build_filing_attestation(
     except Exception as exc:  # spine owns canonical filing-manifest restore.
         raise FilingAttestationError("pinned filing manifest is invalid") from exc
     _package_filing_matches_manifest(package_value, source_manifest)
-    from collectors.sec_document_spine import manifest_storage_key
     if manifest_storage_key(source_manifest) != manifest_key:
         raise FilingAttestationError("pinned filing manifest storage path does not bind source manifest")
     if parse_utc(snapshot_at, field="source snapshot_at") < parse_utc(source_manifest["clocks"]["recorded_at"], field="filing manifest recorded_at"):
