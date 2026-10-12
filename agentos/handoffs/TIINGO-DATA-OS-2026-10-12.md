@@ -73,10 +73,45 @@ danger_areas:
 prs: [8698, 8870, 8875, 945, 955]
 ---
 
-Active continuation, 2026-10-12 08:46 UTC. The historical blocked ending in the
+Active continuation, 2026-10-12 09:38 UTC. The historical blocked ending in the
 frontmatter predates the Chairman's instruction to continue; the mission is now
 being executed in the same original task. This paragraph supersedes dated queued
 CI, archive-settled and ticker-entitlement inferences below.
+
+The completed prefix04 snapshot qualifies 11,690 nonempty EOD histories and
+24,600,974 distinct bars. Reused-catalogue coverage records 21 empty candidates
+and 35,978 uncaptured windows; absence of an accepted capture does not prove an
+unattempted request. Its qualification and coverage hashes are bound in
+`docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json`. Capture
+continues on the same original operation; whole-batch completion is not assumed.
+
+Two new fundamentals cohorts qualify 75 successful requests, 146,717 projected
+rows and 1,598 original/revised differences over 25,342 unambiguous fiscal metric
+keys. The installed immutable 2c90 reader consumes new JPM and AXP original,
+revised and daily modes, plus EBAY/DWCH EOD. Actual served depth is three years.
+SHW and PFE exact original-statement HTTP 400 failures remain held; no purchase,
+account change, denied-request replay or support email occurred.
+
+The independently adjudicated source change registers exactly four existing
+EOD/fundamentals L0/L1 contracts as PRODUCED for this completed research corpus.
+Its storage/context declarations are corrected; partition-dependent fundamentals
+grains retain their actual statement/daily shapes. The other twenty contracts,
+all adapter qualifiers, source-access and host bindings remain unchanged. All
+100 affected tests and architectural integration review passed. Hosted CI, landing
+and selecting/testing a new immutable installed registry are the next source lane;
+the existing 2c90 installation is retained until then.
+
+A new artifact-worker request `tiingo-four-contract-registration-builder-01a12ab6-v1`
+failed before launch with PermissionError in its original adapter state directory.
+Same-id status was NOT_FOUND: no lease/worker/result is claimed, and no denied
+dispatch retry or native labor replacement occurred. The principal applied the
+frozen bounded change directly in its already-permitted SSD worktree. The separate
+native reasoning coordinator performed source-contract adjudication only.
+
+Macro evidence PR #8981 merged at 63592923260e240d5cbbd24916ad4d8dc865db9a;
+its original hosted CI 38227044117 completed SUCCESS at tested head 6ced964c.
+This closes that source/evidence chain, not the Tiingo mission. Continue the
+original capture and remaining authorized lanes without ending at this save.
 
 The original finite operation `eod-wave8-fixed-unattempted-20261012-01a12ab6` is
 running on unchanged collector head 2a08250f, with four in flight and twelve prior
