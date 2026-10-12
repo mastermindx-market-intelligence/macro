@@ -3,8 +3,7 @@
 Boundary matrix for the display-tier preserved-verdict registry: row validation
 edges, registry-level validation edges, pin-anchor edge behavior, and the
 build() failure/success shapes. Every case pins behavior OBSERVED on the
-accepted V1 base; the two known-defect gaps (non-UTF-8 bytes raising instead of
-failing closed) are pinned as strict xfails naming the engine lines.
+accepted V1 base; the two non-UTF-8 cases (G-d/G-e) pin the fail-closed behavior.
 
 Hermetic: fixtures live under tmp_path only; the single real-repo touch is the
 read-only smoke test. No network, no wall-clock, no randomness.
@@ -422,19 +421,11 @@ def test_gap_gi_unknown_row_keys_pass_through(tmp_path: Path):
 
 
 # ---------------------------------------------------------------------------
-# group 6: known-defect gaps, strict xfails (G-d/G-e: non-UTF-8 raises)
+# group 6: non-UTF-8 inputs fail closed (G-d/G-e; formerly strict xfails, fixed in the engine)
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=UnicodeDecodeError,
-    reason="GAP(owner: engine/verdict_preservation.py — WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT, "
-    "V1 PR #8529/#8588): _pin_ok catches only OSError at its utf-8 read_text, so a non-UTF-8 "
-    "source file raises UnicodeDecodeError out of build_verdict_preservation instead of "
-    "yielding pin_ok False (engine/verdict_preservation.py:144-145)",
-)
-def test_gap_gd_non_utf8_source_should_pin_false(tmp_path: Path):
+def test_non_utf8_source_pins_false(tmp_path: Path):
     data = _write_registry_fixture(tmp_path)
     bad = tmp_path / data["rows"][5]["source_path"]
     bad.write_bytes(b"\xff\xfe bad bytes")
@@ -444,19 +435,23 @@ def test_gap_gd_non_utf8_source_should_pin_false(tmp_path: Path):
     assert built["pin_ok_count"] == 7
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=UnicodeDecodeError,
-    reason="GAP(owner: engine/verdict_preservation.py — WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT, "
-    "V1 PR #8529/#8588): build catches only OSError and json.JSONDecodeError at its utf-8 "
-    "read_text, so a non-UTF-8 registry raises UnicodeDecodeError instead of returning "
-    "{'available': False} (engine/verdict_preservation.py:159-160)",
-)
-def test_gap_ge_non_utf8_registry_should_be_unavailable(tmp_path: Path):
+def test_non_utf8_registry_is_unavailable(tmp_path: Path):
     cfg = tmp_path / "config"
     cfg.mkdir(parents=True)
     (cfg / "verdict_preservation_registry.json").write_bytes(b"\xff\xfe not json")
     assert vp.build_verdict_preservation(tmp_path) == {"available": False}
+
+
+def test_non_utf8_registry_logs_exactly_one_warning(tmp_path: Path, caplog):
+    cfg = tmp_path / "config"
+    cfg.mkdir(parents=True)
+    (cfg / "verdict_preservation_registry.json").write_bytes(b"\xff\xfe not json")
+    with caplog.at_level(logging.WARNING, logger=LOGGER_NAME):
+        built = vp.build_verdict_preservation(tmp_path)
+    assert built == {"available": False}
+    warnings = _module_warnings(caplog)
+    assert len(warnings) == 1
+    assert "unreadable" in warnings[0].getMessage()
 
 
 # ---------------------------------------------------------------------------
