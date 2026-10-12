@@ -5255,6 +5255,7 @@ jobs:
       # load-bearing for the Prophet Lab adapter, so its PR owner must be this
       # gate:code job rather than only neural-web-core's nightly data lane.
       - "tests/test_company_intelligence_workspace_chain.py"
+      - "tests/test_company_intelligence_event_evolution.py"
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
@@ -5306,6 +5307,7 @@ jobs:
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
           tests/test_company_intelligence_workspace_chain.py
+          tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
