@@ -3753,6 +3753,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -13525,6 +13526,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rate_inflation_transmission.py"
       - "engine/yield_momentum.py"
       - "engine/rebalance_calendar.py"
@@ -14032,6 +14034,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -16703,6 +16706,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -20764,6 +20768,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -22889,6 +22894,7 @@ jobs:
       - "tests/test_qbus_news_cluster_adversarial.py"
       - "tests/test_qbus_news_cluster_audit.py"
       - "tests/test_qbus_news_contract.py"
+      - "tests/test_qbus_news_flow_store.py"
       - "tests/test_qbus_news_migration.py"
       - "tests/test_qbus_news_receipts.py"
       - "tests/test_qbus_news_reducer.py"
@@ -22948,6 +22954,7 @@ jobs:
           tests/test_qbus_news_cluster_adversarial.py
           tests/test_qbus_news_cluster_audit.py
           tests/test_qbus_news_contract.py
+          tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
           tests/test_qbus_news_reducer.py
