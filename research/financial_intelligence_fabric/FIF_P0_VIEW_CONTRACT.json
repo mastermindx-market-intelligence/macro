@@ -1,0 +1,307 @@
+{
+  "schema": "fundamental_forensics.p0_view_contract/v1",
+  "frozen_at_commit": "5267c66846e7733bc1eb30edc1524daff51598ca",
+  "amendment_rule": "P2 may change the surface only by editing this file and its test in the same PR, bumping /v1 when a key is removed or renamed",
+  "surface": {
+    "template": "templates/fundamental_forensics.html.j2",
+    "script": "templates/fundamental_forensics.js",
+    "styles": "templates/fundamental_forensics.css",
+    "api": "app/forensics.py"
+  },
+  "journeys": [
+    {
+      "journey_id": "J1",
+      "name_en": "Open a new filing and inspect its largest supported changes",
+      "name_zh": "打开一份新财报并查看其中最大的受支持变化",
+      "status": "exists",
+      "evidence": [
+        "templates/fundamental_forensics.js:833",
+        "templates/fundamental_forensics.js:979",
+        "templates/fundamental_forensics.js:1100",
+        "templates/fundamental_forensics.js:1334",
+        "scripts/build_fundamental_forensics.py:731",
+        "tests/test_fundamental_forensics_page.py:85"
+      ],
+      "gap": "Largest is review-priority then recency, not magnitude; only the built detector set is supported.",
+      "p2_question": "Should J1 rank by magnitude, or keep today's review-priority then recency order?"
+    },
+    {
+      "journey_id": "J2",
+      "name_en": "Open a displayed metric to its exact source occurrence or permitted document span and basis",
+      "name_zh": "从展示的指标打开到精确来源出现位置或允许的文档区间及其依据",
+      "status": "partial",
+      "evidence": [
+        "engine/fundamental_forensics/disclosure_projection.py:369",
+        "templates/fundamental_forensics.js:1474",
+        "templates/fundamental_forensics.js:2522",
+        "templates/fundamental_forensics.js:2690",
+        "scripts/build_fundamental_forensics.py:183"
+      ],
+      "gap": "Disclosure receipts carry document spans; numeric findings and statements/compare cells link only to company-level EDGAR URLs or plain td values.",
+      "p2_question": "Should statements and compare cells open an occurrence-level source span, or stay company-level EDGAR links?"
+    },
+    {
+      "journey_id": "J3",
+      "name_en": "Rewind the query cutoff to a historical answer or absence",
+      "name_zh": "将查询截止日回拨到历史答案或缺失",
+      "status": "partial",
+      "evidence": [
+        "app/forensics.py:627",
+        "app/forensics.py:841",
+        "engine/fundamental_forensics/query_service.py:322",
+        "engine/fundamental_forensics/query_service.py:519",
+        "templates/fundamental_forensics.js:916",
+        "templates/fundamental_forensics.js:2171"
+      ],
+      "gap": "Cutoff-aware financial query and addressable attested-history snapshots exist on the API; the page has no cutoff control and reads only /latest.",
+      "p2_question": "Where does the cutoff or as-of control live, and how does the page show a historical absence?"
+    },
+    {
+      "journey_id": "J4",
+      "name_en": "Compare a valid peer cohort, see excluded peers, and recover the saved comparison",
+      "name_zh": "对比有效同业组、查看被排除同业并恢复已保存的对比",
+      "status": "missing",
+      "evidence": [
+        "templates/fundamental_forensics.js:862",
+        "templates/fundamental_forensics.js:3275"
+      ],
+      "gap": "No peer or cohort UI, no exclusion reasons, no saved-comparison store; the only shareable page state is ?symbol= for one company.",
+      "p2_question": "Who owns peer-cohort membership, exclusion reasons, and saved-comparison persistence?"
+    },
+    {
+      "journey_id": "J5",
+      "name_en": "Export and refresh the same values, policies, and source references through API and Excel",
+      "name_zh": "通过 API 和 Excel 导出并刷新相同的数值、策略和来源引用",
+      "status": "partial",
+      "evidence": [
+        "app/forensics.py:128",
+        "app/forensics.py:147",
+        "app/forensics.py:627",
+        "app/forensics.py:841",
+        "templates/fundamental_forensics.js:643",
+        "templates/fundamental_forensics.js:765"
+      ],
+      "gap": "State, health, attested-history, and financial POST APIs exist; the page has no export control, no Excel, and refresh is reload plus cache no-store.",
+      "p2_question": "Where is the export entry point on this page, and does it cover API, Excel, or both?"
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "run_meta",
+      "dom_id": "ff-run-meta",
+      "data_source": "GET /api/forensics/health clocks plus state as_of/generated_at/source",
+      "journeys": ["J1", "J3"]
+    },
+    {
+      "panel_id": "company_context",
+      "dom_id": "ff-company-search",
+      "data_source": "payload.companies search over symbol/name/sector",
+      "journeys": ["J1"]
+    },
+    {
+      "panel_id": "data_notice",
+      "dom_id": "ff-data-notice",
+      "data_source": "renderNotice from load/access failures",
+      "journeys": ["J5"]
+    },
+    {
+      "panel_id": "access_gate",
+      "dom_id": "ff-gate",
+      "data_source": "JS gate states plus template state_summary preview counts",
+      "journeys": []
+    },
+    {
+      "panel_id": "overview",
+      "dom_id": "ff-overview",
+      "data_source": "first high/watch finding, coverage.metrics_pct, evidence counts",
+      "journeys": ["J1"]
+    },
+    {
+      "panel_id": "radar",
+      "dom_id": "ff-panel-radar",
+      "data_source": "company().findings ordered by payload.ranked_findings",
+      "journeys": ["J1"]
+    },
+    {
+      "panel_id": "statements",
+      "dom_id": "ff-panel-statements",
+      "data_source": "company().periods x METRICS keys as plain table cells",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "disclosures",
+      "dom_id": "ff-panel-disclosures",
+      "data_source": "disclosure bundle tracks/comparison findings and evidence_receipts",
+      "journeys": ["J1", "J2"]
+    },
+    {
+      "panel_id": "redlines",
+      "dom_id": "ff-panel-redlines",
+      "data_source": "comparison.redline_ops or redlines joined by accession and block_id",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "timeline",
+      "dom_id": "ff-panel-timeline",
+      "data_source": "disclosure documents with accession and source_url",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "compare",
+      "dom_id": "ff-panel-compare",
+      "data_source": "any two company().periods x METRICS cards",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "trace",
+      "dom_id": "ff-panel-trace",
+      "data_source": "state source/detectors map plus GET attested-history latest/roots/detail",
+      "journeys": ["J2", "J3", "J5"]
+    },
+    {
+      "panel_id": "evidence",
+      "dom_id": "ff-evidence",
+      "data_source": "selected finding evidence/formula/threshold or disclosure receipts",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "receipt_inspector",
+      "dom_id": "ff-receipt-inspector",
+      "data_source": "attested-history root waterfall for the selected root_cell_id",
+      "journeys": ["J2", "J3"]
+    }
+  ],
+  "page_endpoints": [
+    {"method": "GET", "path": "/api/forensics/state"},
+    {"method": "GET", "path": "/api/forensics/health"},
+    {"method": "GET", "path": "/api/forensics/v1/attested-history/latest"},
+    {"method": "GET", "path": "/api/forensics/v1/attested-history/snapshots/{snapshot_id}/roots"},
+    {"method": "GET", "path": "/api/forensics/v1/attested-history/snapshots/{snapshot_id}/roots/{root_cell_id}"}
+  ],
+  "api_not_called_by_page": [
+    {"method": "POST", "path": "/api/forensics/v1/financial/query"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/revisions"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/packet"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/statements"}
+  ],
+  "payload_contract": {
+    "state_keys": [
+      "companies",
+      "ranked_findings",
+      "default_symbol",
+      "as_of",
+      "generated_at",
+      "source",
+      "detectors"
+    ],
+    "company_keys": [
+      "symbol",
+      "name",
+      "sector",
+      "cik",
+      "latest_filed",
+      "action",
+      "coverage",
+      "periods",
+      "findings",
+      "disclosure_bundle",
+      "tracks",
+      "documents",
+      "comparison",
+      "latest_comparison",
+      "disclosure_comparison",
+      "prior_document",
+      "current_document",
+      "redline_ops",
+      "redlines"
+    ],
+    "period_keys": [
+      "fiscal_year",
+      "fiscal_quarter",
+      "period_end",
+      "filed",
+      "revenue",
+      "gross_profit",
+      "receivables",
+      "inventory",
+      "cfo",
+      "capex",
+      "op_income",
+      "ni",
+      "contract_liabilities"
+    ],
+    "finding_keys": [
+      "id",
+      "priority",
+      "topic",
+      "title_en",
+      "title_zh",
+      "values",
+      "evidence",
+      "limitations_en",
+      "limitations_zh",
+      "period_current",
+      "period_prior",
+      "current_accession",
+      "detector",
+      "authority"
+    ],
+    "disclosure_finding_keys": [
+      "finding_id",
+      "detector_id",
+      "labels",
+      "state",
+      "priority",
+      "review_level",
+      "prior_accession",
+      "current_accession",
+      "prior_section_ids",
+      "current_section_ids",
+      "evidence_receipts",
+      "why_flagged",
+      "benign_explanation",
+      "limitations"
+    ],
+    "evidence_receipt_keys": [
+      "accession",
+      "form",
+      "source_url",
+      "source_excerpt",
+      "display_excerpt",
+      "block_id",
+      "section_id",
+      "filing_role"
+    ],
+    "health_keys": [
+      "status",
+      "clocks",
+      "latest_source_filing_date",
+      "broad_source_at",
+      "composed_state_at"
+    ],
+    "attested_history_latest_keys": [
+      "snapshot_id",
+      "base_snapshot_id",
+      "query_hash",
+      "published_at",
+      "policy",
+      "clocks",
+      "coverage_summary",
+      "companyfacts_conversion_receipt",
+      "authority"
+    ]
+  },
+  "first_viewport": {
+    "desktop_1440": "At 1440 the first viewport is narrative: site nav, hero promise, run-meta strip, company picker, then overview quick-signal and glance counts; ranked findings start at or just below the fold.",
+    "mobile_390": "At 390 the first viewport is nav plus hero headline, deck, and promise chips; picker and quick-signal sit two to three screens down.",
+    "measured": false
+  },
+  "i18n": {
+    "mechanism": "Template macro t(en, zh) emits .l-en/.l-zh spans; JS pair(en, zh) and fieldPair(obj, stem) read stem_en/stem_zh.",
+    "template_title_attributes": 0
+  },
+  "authority": {
+    "display_only": true,
+    "finding_authority": "review_priority_only"
+  }
+}
