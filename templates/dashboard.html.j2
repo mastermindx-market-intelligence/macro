@@ -18256,17 +18256,22 @@ window.__CHART_SWAP__ = {
 </script>
 <script src="theme.js"></script>
 <script src="tier_preview.js"></script>
+{# The macro shell has no Plotly graphs or Time Machine panel. Avoid three
+   do-nothing JS downloads on its mobile critical path; retain the existing
+   assets for the stock dashboard while its independent use is assessed. #}
+{% if mode == 'stocks' %}
 <script src="chart_i18n.js"></script>
 <script src="timemachine.js"></script>
+{% endif %}
 <script src="tablesort.js"></script>
-<script src="charts.js"></script>
+{% if mode == 'stocks' %}<script src="charts.js"></script>{% endif %}
 {# live_config.js + live.js already load via _navlinks.html.j2 on every page;
    live.js is __mmLiveInit-guarded so this second include was a no-op — dropped. #}
 <script src="risk_state_live.js"></script>
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
    include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
-{% if mode != 'stocks' %}<script src="risk_envelope_live.js"></script>{% endif %}
-<script src="release_publications_live.js"></script>
+{% if mode != 'stocks' %}<script async src="risk_envelope_live.js"></script>{% endif %}
+<script async src="release_publications_live.js"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
    the viewport, and clamp horizontally near the left/right edges. Hover-only,
