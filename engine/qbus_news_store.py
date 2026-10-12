@@ -19,6 +19,7 @@ import json
 import os
 from pathlib import Path
 import sqlite3
+import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
@@ -620,7 +621,7 @@ class NewsStore:
         obj._read_only = True
         try:
             obj._conn = sqlite3.connect(
-                f"file:{db}?mode=ro",
+                f"file:{urllib.parse.quote(str(db))}?mode=ro",
                 uri=True,
                 timeout=5.0,
                 isolation_level=None,
@@ -1600,7 +1601,7 @@ class NewsStore:
 
     def _open_flow_connection(self) -> sqlite3.Connection:
         conn = sqlite3.connect(
-            f"file:{self.path}?mode=ro",
+            f"file:{urllib.parse.quote(str(self.path))}?mode=ro",
             uri=True,
             timeout=5.0,
             isolation_level=None,
