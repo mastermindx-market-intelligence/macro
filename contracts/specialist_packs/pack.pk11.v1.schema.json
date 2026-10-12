@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk11.v1.schema.json",
+  "title": "Specialist pack PK11 v1 catalogue",
+  "description": "Financial-institution credit/capital/liquidity. Result instances validate against specialist_pack_result.v1. Field catalogue is empty because FIF_K1K2_PACKS.md and FIF_K3K4_PACKS.md were not present on disk; no field_id is invented.",
+  "pack_schema_id": "pack.pk11/v1",
+  "name": "Financial-institution credit/capital/liquidity",
+  "boundary": "Bank-specific denominators and disclosed regulatory definitions, accounting-context only.",
+  "requires": [
+    "schema",
+    "source-qualified golden set",
+    "independent domain review",
+    "held-out quality test",
+    "typed absences",
+    "production source trace",
+    "BAC (cik 0000070858)"
+  ],
+  "catalogue_state": "unspecified",
+  "fields": [],
+  "type": "object",
+  "additionalProperties": false
+}

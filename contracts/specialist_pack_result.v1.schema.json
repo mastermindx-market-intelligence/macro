@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/specialist_pack_result.v1.schema.json",
+  "title": "Specialist pack result v1",
+  "description": "Single result envelope for the twelve FIF specialist packs. Seat ruling: one envelope, pack catalogues live in contracts/specialist_packs/. entity/query $ref financial_intelligence_packet.schema.json $defs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "pack_id",
+    "pack_schema_id",
+    "pack_schema_digest",
+    "pack_content_sha256",
+    "packet_id",
+    "entity",
+    "query",
+    "applicability",
+    "fields",
+    "checks",
+    "coverage",
+    "limitations",
+    "receipts",
+    "authority"
+  ],
+  "properties": {
+    "schema": {"const": "specialist_pack_result.v1"},
+    "pack_id": {
+      "enum": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ]
+    },
+    "pack_schema_id": {"type": "string", "pattern": "^pack\\.[a-z0-9_]+/v[0-9]+$"},
+    "pack_schema_digest": {"$ref": "#/$defs/sha256"},
+    "pack_content_sha256": {"$ref": "#/$defs/sha256"},
+    "packet_id": {"type": "string", "pattern": "^fip_[a-f0-9]{24}$"},
+    "entity": {
+      "$ref": "https://mastermind-x.com/contracts/financial_intelligence_packet.schema.json#/$defs/entity"
+    },
+    "query": {
+      "$ref": "https://mastermind-x.com/contracts/financial_intelligence_packet.schema.json#/$defs/query"
+    },
+    "applicability": {"$ref": "#/$defs/applicability"},
+    "fields": {
+      "type": "array",
+      "maxItems": 1600,
+      "items": {"$ref": "#/$defs/fieldRow"}
+    },
+    "checks": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/checkRow"}
+    },
+    "coverage": {"$ref": "#/$defs/coverage"},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    },
+    "receipts": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {"type": "string", "minLength": 1, "maxLength": 256}
+    },
+    "authority": {"$ref": "#/$defs/authority"}
+  },
+  "$defs": {
+    "sha256": {
+      "$ref": "https://mastermind-x.com/contracts/financial_intelligence_packet.schema.json#/$defs/sha256"
+    },
+    "nullableSha256": {
+      "$ref": "https://mastermind-x.com/contracts/financial_intelligence_packet.schema.json#/$defs/nullableSha256"
+    },
+    "nullableDecimal": {
+      "$ref": "https://mastermind-x.com/contracts/financial_intelligence_packet.schema.json#/$defs/nullableDecimal"
+    },
+    "nonValueState": {
+      "$ref": "https://mastermind-x.com/contracts/financial_intelligence_packet.schema.json#/$defs/nonValueState"
+    },
+    "period": {
+      "$ref": "https://mastermind-x.com/contracts/financial_intelligence_packet.schema.json#/$defs/periodObject"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "display_only"],
+      "properties": {
+        "class": {"const": "context_only"},
+        "display_only": {"const": true}
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason", "rule_id", "sic", "sic_source"],
+      "properties": {
+        "state": {"enum": ["applicable", "not_applicable", "not_evaluable"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "rule_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "sic": {"type": ["string", "null"], "maxLength": 16},
+        "sic_source": {"enum": ["sec_submissions", "dei", "unbound", null]}
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valued_fields",
+        "missing_fields",
+        "unsupported_fields",
+        "not_applicable_fields",
+        "not_evaluable_fields",
+        "disclosure_coverage_state"
+      ],
+      "properties": {
+        "valued_fields": {"type": "integer", "minimum": 0},
+        "missing_fields": {"type": "integer", "minimum": 0},
+        "unsupported_fields": {"type": "integer", "minimum": 0},
+        "not_applicable_fields": {"type": "integer", "minimum": 0},
+        "not_evaluable_fields": {"type": "integer", "minimum": 0},
+        "disclosure_coverage_state": {"enum": ["not_supplied", "empty", "present"]}
+      }
+    },
+    "sourceSpan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "accession": {"type": ["string", "null"], "maxLength": 32},
+        "document_id": {"type": ["string", "null"], "maxLength": 256},
+        "start_offset": {"type": ["integer", "null"], "minimum": 0},
+        "end_offset": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "tableCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "table_id": {"type": ["string", "null"], "maxLength": 256},
+        "row": {"type": ["integer", "null"], "minimum": 0},
+        "column": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "member"],
+      "properties": {
+        "axis": {"type": "string", "minLength": 1, "maxLength": 256},
+        "member": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "fieldRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field_id",
+        "name",
+        "type",
+        "unit",
+        "period",
+        "value",
+        "non_value_state",
+        "evidence_kind",
+        "required_evidence_kind",
+        "source_occurrence_ids",
+        "source_span",
+        "table_cell",
+        "concept",
+        "taxonomy",
+        "dimensions",
+        "mapping_rule_id",
+        "mapping_rule_digest",
+        "formula_rule_id",
+        "dependency_field_ids",
+        "quality_state",
+        "coverage_state",
+        "reason"
+      ],
+      "properties": {
+        "field_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "name": {"type": "string", "minLength": 1, "maxLength": 256},
+        "type": {"type": "string", "minLength": 1, "maxLength": 64},
+        "unit": {"type": ["string", "null"], "maxLength": 64},
+        "period": {"$ref": "#/$defs/period"},
+        "value": {"$ref": "#/$defs/nullableDecimal"},
+        "non_value_state": {
+          "anyOf": [
+            {"$ref": "#/$defs/nonValueState"},
+            {"type": "null"}
+          ]
+        },
+        "evidence_kind": {"type": "string", "minLength": 1, "maxLength": 64},
+        "required_evidence_kind": {"type": "string", "minLength": 1, "maxLength": 64},
+        "source_occurrence_ids": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 256}
+        },
+        "source_span": {
+          "anyOf": [
+            {"$ref": "#/$defs/sourceSpan"},
+            {"type": "null"}
+          ]
+        },
+        "table_cell": {
+          "anyOf": [
+            {"$ref": "#/$defs/tableCell"},
+            {"type": "null"}
+          ]
+        },
+        "concept": {"type": ["string", "null"], "maxLength": 256},
+        "taxonomy": {"type": ["string", "null"], "maxLength": 256},
+        "dimensions": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/dimension"}
+        },
+        "mapping_rule_id": {"type": ["string", "null"], "maxLength": 256},
+        "mapping_rule_digest": {"$ref": "#/$defs/nullableSha256"},
+        "formula_rule_id": {"type": ["string", "null"], "maxLength": 256},
+        "dependency_field_ids": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 256}
+        },
+        "quality_state": {
+          "enum": ["valued", "missing", "unsupported", "not_evaluable", "not_applicable"]
+        },
+        "coverage_state": {
+          "enum": [
+            "source_trace_complete",
+            "source_trace_incomplete",
+            "unmapped",
+            "not_applicable_period"
+          ]
+        },
+        "reason": {"type": ["string", "null"], "maxLength": 1024}
+      }
+    },
+    "checkRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "kind",
+        "status",
+        "operands",
+        "tolerance",
+        "evidence_field_ids",
+        "reason"
+      ],
+      "properties": {
+        "check_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "kind": {
+          "enum": [
+            "sum_identity",
+            "rollforward",
+            "reconcile_to_consolidated",
+            "cross_statement",
+            "qualitative_presence"
+          ]
+        },
+        "status": {
+          "enum": ["pass", "fail", "not_evaluable", "not_applicable"]
+        },
+        "operands": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {"type": "string", "minLength": 1, "maxLength": 256}
+        },
+        "tolerance": {"$ref": "#/$defs/nullableDecimal"},
+        "evidence_field_ids": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 256}
+        },
+        "reason": {"type": ["string", "null"], "maxLength": 1024}
+      }
+    }
+  }
+}

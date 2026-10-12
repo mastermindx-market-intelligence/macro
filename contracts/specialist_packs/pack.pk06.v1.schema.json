@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk06.v1.schema.json",
+  "title": "Specialist pack PK06 v1 catalogue",
+  "description": "Leases and off-balance commitments. Result instances validate against specialist_pack_result.v1. Field catalogue is empty because FIF_K1K2_PACKS.md and FIF_K3K4_PACKS.md were not present on disk; no field_id is invented.",
+  "pack_schema_id": "pack.pk06/v1",
+  "name": "Leases and off-balance commitments",
+  "boundary": "Lease types, terms and commitments at their stated scope; avoid double counting.",
+  "requires": [
+    "schema",
+    "source-qualified golden set",
+    "independent domain review",
+    "held-out quality test",
+    "typed absences",
+    "production source trace"
+  ],
+  "catalogue_state": "unspecified",
+  "fields": [],
+  "type": "object",
+  "additionalProperties": false
+}

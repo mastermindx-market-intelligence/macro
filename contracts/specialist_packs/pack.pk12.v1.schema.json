@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk12.v1.schema.json",
+  "title": "Specialist pack PK12 v1 catalogue",
+  "description": "Biotech cash/R&D/financing disclosures. Result instances validate against specialist_pack_result.v1. Field catalogue is empty because FIF_K1K2_PACKS.md and FIF_K3K4_PACKS.md were not present on disk; no field_id is invented.",
+  "pack_schema_id": "pack.pk12/v1",
+  "name": "Biotech cash/R&D/financing disclosures",
+  "boundary": "Accounting disclosures and explicit static assumptions; no trial success, catalyst forecast or Grey Deer Risk model.",
+  "requires": [
+    "schema",
+    "source-qualified golden set",
+    "independent domain review",
+    "held-out quality test",
+    "typed absences",
+    "production source trace",
+    "NVAX"
+  ],
+  "catalogue_state": "unspecified",
+  "fields": [],
+  "type": "object",
+  "additionalProperties": false
+}

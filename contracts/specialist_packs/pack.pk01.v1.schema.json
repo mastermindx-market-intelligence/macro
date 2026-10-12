@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk01.v1.schema.json",
+  "title": "Specialist pack PK01 v1 catalogue",
+  "description": "Debt, liquidity, covenants and maturities. Result instances validate against specialist_pack_result.v1. Field catalogue is empty because FIF_K1K2_PACKS.md and FIF_K3K4_PACKS.md were not present on disk; no field_id is invented.",
+  "pack_schema_id": "pack.pk01/v1",
+  "name": "Debt, liquidity, covenants and maturities",
+  "boundary": "Amounts, maturity schedule, covenant wording and source dates; consume Capital Structure state rather than recomputing it.",
+  "requires": [
+    "schema",
+    "source-qualified golden set",
+    "independent domain review",
+    "held-out quality test",
+    "typed absences",
+    "production source trace"
+  ],
+  "catalogue_state": "unspecified",
+  "fields": [],
+  "type": "object",
+  "additionalProperties": false
+}
