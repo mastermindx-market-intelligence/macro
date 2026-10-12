@@ -628,3 +628,170 @@ def test_refusal_reasons_not_as_known_and_rights_gate(monkeypatch):
     with pytest.raises(ValueError) as info_b:
         _hp(FakeStore(nodes_b, edges_b), micro["node_id"])
     assert "hierarchy family not emission-allowed" in str(info_b.value)
+
+
+def _path_ids(paths):
+    return [tuple(el["node_id"] for el in rec["path"]) for rec in paths]
+
+
+def _lifecycle_retired(node_id):
+    return {
+        "schema": "gmi.node_lifecycle/v1",
+        "node_id": node_id,
+        "status": "retired",
+        "retire_date": "2024-03-01",
+        "merged_into": None,
+        "reason": "fixture",
+        "evidence": "fixture",
+        "ratified_by": "fixture",
+        "computed_at": STAMP,
+        "engine_version": store.ENGINE_VERSION,
+    }
+
+
+def test_sub_theme_micro_returns_four_tier_path():
+    nodes = [
+        _theme("theme:cat", "macro_category"),
+        _theme("theme:t", "theme"),
+        _theme("theme:sub", "sub_theme"),
+        _theme("theme:m", "micro_theme"),
+    ]
+    edges = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:sub"),
+        _parent_of("theme:sub", "theme:m", valid_from="2024-01-02"),
+    ]
+    paths = _hp(FakeStore(nodes, edges), "theme:m")
+    assert len(paths) == 1
+    assert [el["node_id"] for el in paths[0]["path"]] == [
+        "theme:cat", "theme:t", "theme:sub", "theme:m",
+    ]
+    assert [el["tier"] for el in paths[0]["path"]] == [
+        "macro_category", "theme", "sub_theme", "micro_theme",
+    ]
+    assert len(paths[0]["parent_of_edge_ids"]) == 3
+
+
+def test_micro_directly_under_theme_stays_three_tier_path():
+    nodes = [
+        _theme("theme:cat", "macro_category"),
+        _theme("theme:t", "theme"),
+        _theme("theme:m", "micro_theme"),
+    ]
+    edges = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:m", valid_from="2024-01-02"),
+    ]
+    paths = _hp(FakeStore(nodes, edges), "theme:m")
+    assert len(paths) == 1
+    assert [el["node_id"] for el in paths[0]["path"]] == ["theme:cat", "theme:t", "theme:m"]
+    assert [el["tier"] for el in paths[0]["path"]] == ["macro_category", "theme", "micro_theme"]
+
+
+def test_sub_theme_subject_returns_category_theme_sub():
+    nodes = [
+        _theme("theme:cat", "macro_category"),
+        _theme("theme:t", "theme"),
+        _theme("theme:sub", "sub_theme"),
+    ]
+    edges = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:sub"),
+    ]
+    paths = _hp(FakeStore(nodes, edges), "theme:sub")
+    assert len(paths) == 1
+    assert [el["node_id"] for el in paths[0]["path"]] == ["theme:cat", "theme:t", "theme:sub"]
+    assert [el["tier"] for el in paths[0]["path"]] == ["macro_category", "theme", "sub_theme"]
+
+
+def test_sub_theme_nonadjacent_pairs_refused():
+    refused = (
+        ("sub_theme", "sub_theme"),
+        ("macro_category", "sub_theme"),
+        ("micro_theme", "sub_theme"),
+    )
+    for src_tier, dst_tier in refused:
+        src = _theme("theme:src", src_tier)
+        dst = _theme("theme:dst", dst_tier)
+        with pytest.raises(ValueError, match="invalid tier adjacency"):
+            _hp(
+                FakeStore([src, dst], [_parent_of(src["node_id"], dst["node_id"])]),
+                dst["node_id"],
+            )
+
+
+def test_withdrawn_or_retired_sub_theme_matches_micro():
+    """A sub_theme is dropped or kept by the same incumbent rules as a micro_theme.
+
+    A PARENT_OF whose valid_to equals the as-of is not live, so the subject path is
+    empty (same assertion as the withdrawn edge in test_asof_excludes_future_valid_from).
+    A lifecycle status of retired overlays the node and does not remove it; the chain
+    through that node stays, for a micro_theme and for a sub_theme alike.
+    """
+    cat = _theme("theme:cat", "macro_category")
+    mid = _theme("theme:t", "theme")
+    micro = _theme("theme:m", "micro_theme")
+    sub = _theme("theme:sub", "sub_theme")
+    micro_nodes = [cat, mid, micro]
+    micro_live = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:m", valid_from="2024-01-02"),
+    ]
+    live_micro = _hp(FakeStore(micro_nodes, micro_live), "theme:m")
+    assert [el["node_id"] for el in live_micro[0]["path"]] == ["theme:cat", "theme:t", "theme:m"]
+
+    micro_withdrawn = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:m", valid_from="2024-01-02", valid_to="2024-06-01"),
+    ]
+    assert _hp(FakeStore(micro_nodes, micro_withdrawn), "theme:m", asof="2024-06-01") == []
+    assert _path_ids(_hp(FakeStore(micro_nodes, micro_withdrawn), "theme:t", asof="2024-06-01")) == [
+        ("theme:cat", "theme:t"),
+    ]
+
+    sub_nodes = [cat, mid, sub, micro]
+    sub_live = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:sub"),
+        _parent_of("theme:sub", "theme:m", valid_from="2024-01-02"),
+    ]
+    live_sub = _hp(FakeStore(sub_nodes, sub_live), "theme:m")
+    assert [el["node_id"] for el in live_sub[0]["path"]] == [
+        "theme:cat", "theme:t", "theme:sub", "theme:m",
+    ]
+
+    sub_withdrawn = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:sub", valid_to="2024-06-01"),
+        _parent_of("theme:sub", "theme:m", valid_from="2024-01-02", valid_to="2024-06-01"),
+    ]
+    assert _hp(FakeStore(sub_nodes, sub_withdrawn), "theme:sub", asof="2024-06-01") == []
+    assert _hp(FakeStore(sub_nodes, sub_withdrawn), "theme:m", asof="2024-06-01") == []
+    assert _path_ids(_hp(FakeStore(sub_nodes, sub_withdrawn), "theme:t", asof="2024-06-01")) == [
+        ("theme:cat", "theme:t"),
+    ]
+
+    # Edge into the sub is withdrawn; sub → micro stays live, so the upper chain
+    # breaks and the micro path stops at the sub.
+    sub_cut = [
+        _parent_of("theme:cat", "theme:t"),
+        _parent_of("theme:t", "theme:sub", valid_to="2024-06-01"),
+        _parent_of("theme:sub", "theme:m", valid_from="2024-01-02"),
+    ]
+    cut = FakeStore(sub_nodes, sub_cut)
+    assert _path_ids(_hp(cut, "theme:t", asof="2024-06-01")) == [("theme:cat", "theme:t")]
+    assert _path_ids(_hp(cut, "theme:sub", asof="2024-06-01")) == [("theme:sub", "theme:m")]
+    assert _path_ids(_hp(cut, "theme:m", asof="2024-06-01")) == [("theme:sub", "theme:m")]
+
+    retired_micro = _hp(
+        FakeStore(micro_nodes, micro_live, lifecycle=[_lifecycle_retired("theme:m")]),
+        "theme:m",
+    )
+    assert [el["node_id"] for el in retired_micro[0]["path"]] == ["theme:cat", "theme:t", "theme:m"]
+    retired_sub = _hp(
+        FakeStore(sub_nodes, sub_live, lifecycle=[_lifecycle_retired("theme:sub")]),
+        "theme:m",
+    )
+    assert [el["node_id"] for el in retired_sub[0]["path"]] == [
+        "theme:cat", "theme:t", "theme:sub", "theme:m",
+    ]

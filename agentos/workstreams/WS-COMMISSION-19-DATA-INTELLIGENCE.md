@@ -48,17 +48,28 @@ waves:
     next_action: "None: both censuses returned and were judged by artifact, and the first qualification builds merged and landed on main — WP16-D1 #8813, WP11 #8836, WP06 #8831, WP07 #8858, WP05 #8862 (blob-verified against origin/main), plus Mastermind ledger #1352 and this record's W0-W2 refresh #8796. WP03/WP04 are DO_NOT_REDO. WP12 (event evolution contract tests) was judged ACCEPT by artifact (7/7 new tests, 120 neighbouring tests green, a mutation of event_workspace.py previous_generation_id kills 3 of 7) and ships as PR #8886."
   - id: W3
     title: "Qualification lanes WP08-WP33 per the masterplan seat map — admitted only as a ready, path-disjoint subset under observed capacity"
-    status: in_progress
+    status: done
     depends_on: [W2]
-    pr: [8886]
-    next_action: "Seat 7ab343c8 pivoted labor to Grok (grok-4.6) lanes on ubuntu0/ubuntu2/ubuntu3 via `pool remote <host> grok <packet> '~/lanes/repos/macro' grok-4.6` (never `pool remote auto`; ubuntu1 fails its load gate, mb and m1 are not used). Two native Opus orchestrators run the wave: ORCH-G (builds — WP08 consumer receipt on app/integrated_answer.py, test hygiene on tests/test_event_window.py + engine/trial_ledger.py, WP09 k3e pins) and ORCH-H (nine read-only census lanes WP10/13/14/15-pre/23/24/25/26/30 with delegated authority for up to six builds, never WP15 or WP30). The seat judges every return by artifact, opens, arms and merges the PRs, and runs the landing check."
-next_action: "Merge WP12 PR #8886 on concluded-green checks and blob-verify it on origin/main; judge the ORCH-G and ORCH-H returns by artifact (lane stdout sentinels, diffs, test output); open, arm last, merge and land each accepted build; record accepted results in the Mastermind ledger (r4) on a fresh branch off origin/master; then admit the next path-disjoint ready subset after a fresh writer-lease read on app/integrated_answer.py and engine/fundamental_forensics/*."
+    pr: [8886, 8906]
+    next_action: "None: the ORCH-H wave-3 census returned 9/9 and was accepted by artifact; WP12 #8886 merged 2026-10-12T05:19:48Z (squash 240fc255) and WP30 #8906 merged 05:30:06Z (c5a79a69), both blob-verified on origin/main. The ORCH-G build returns became #8943 (WP08 consumer receipt), #8954 (WP09) and #8957 (event-window test hygiene); they are carried to merge in W4."
+  - id: W4
+    title: "Wave 4 — ORCH-I census and design inputs (WP13/14/17-20/22/23/25/27-29/31/32), the WP24-G availability guard, and the ORCH-G build PRs carried to merge"
+    status: in_progress
+    depends_on: [W3]
+    pr: [8943, 8954, 8957, 8958]
+    next_action: "Merge #8943 (WP08), #8954 (WP09), #8957 (hygiene) and #8958 (WP24-G short-pressure availability guard) on concluded checks and blob-verify each on origin/main; all four are armed merge-on-green, and the only failing context is the standing inactive ci-authority/codex/merge-queue-pilot. ORCH-I lane verdicts: WP29 READY_TO_FREEZE (build relaunched under an escalation reason, review lane follows); WP17, WP22, WP28 and WP31 BLOCKED on named upstreams; WP18, WP19, WP20, WP27 and WP32 NEEDS_DESIGN; WP13/WP14 returned DQ1 design inputs; WP23/WP25 relaunched after an economic refusal. Seat rulings owed: WP17 issuer contract, WP13/14 DQ1, WP20, WP19, WP18; WP27 is deferred."
+  - id: W5
+    title: "Wave 5 — ORCH-J WP15/WP24 census and post-merge acceptance audits (lanes J1-J10)"
+    status: in_progress
+    depends_on: [W3]
+    next_action: "Judge the J1-J10 returns (run ids c19-w5-j<n>-<slug>-20261012) by artifact; freeze WP15/WP24 build packets only on files no open PR or live lane owns (#8958 owns engine/short_pressure.py; #8125 leases scripts/build_commodities.py)."
+next_action: "Land the four armed wave-4 PRs (#8943, #8954, #8957, #8958) on concluded checks and blob-verify them on origin/main; judge the ORCH-I and ORCH-J returns by artifact; open and land the WP29 build; issue the seat design rulings (WP17 issuer contract, WP13/14 DQ1, WP20, WP19, WP18; WP27 deferred) and freeze the next build packets against them; record each result in the Mastermind ledger (r5) on origin/master."
 landmines:
   - "C19 is sticky: the original effects (native parent 01a108b6-7f12-76a2-9123-2b49492f654c, ops c19-program-recovery-20261004-01a108b6 and c19-mas269-exposure-custody-20261004-01a108b6, request req-4a8daf76317cfe92f436991444c58281) are frozen. Never retry with a fresh key, invent an intent ID, submit an equivalent new root, switch account/carrier, or transfer them before original-target reconciliation."
   - "MAS-282 owns recovery of the missing original full C19 package and C6 (surprise/residual methods) remains NOT_LOCATED_IN_BOUNDED_SEARCH. The 2026-10-11 packet is a successor masterplan, not that recovery; a bounded search that finds nothing is an absence claim with search bounds, never a verdict that C6 does not exist."
   - "The I1 spec's H06 label 'MAS-273 FIF publication' conflates two seams. H06a is the FIF private-default publication seam (query_snapshots.py, Mastermind #673, WS:FUNDAMENTAL-FORENSICS). H06b is MAS-273 proper, the typed macro release/expectations bundle (C17) whose MRI seam is BROKEN. Acceptance namespace is MAS issue + owner, never the Hxx label."
-  - "The composer (Macro #8596, app/integrated_answer.py) is default-OFF with an AAPL-only financial leg; activation is a Chairman decision gated on all four legs (DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS). A census that reads it ON in a dev tree proves nothing about the deployed flag."
-  - "Native Claude children are not labor lanes on this program: census, build, review go to the external pool or the Fabric. `pool placement` eligibility (ubuntu0/ubuntu1/ubuntu3) is host eligibility, not runnable-capacity proof; m2 fails its load gate. Fabric admission needs the authenticated Executive connector (human OAuth) and QUEUED is not STARTED."
+  - "The composer route (Macro #8596, app/integrated_answer.py) is flag-ON in production: app/deploy/macro-api.service sets MACRO_INTEGRATED_ANSWER_ENABLED=1 since #8811 (commit 70f42ccb, 2026-10-11T14:19Z, seat ruling I-R12 by owner seat fd47d431), and an anonymous GET answers 401, so the route is live and auth-gated. No DEC record supersedes DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS; reconciling that record belongs to WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT, not C19. C19 never sets or unsets the flag; it qualifies legs against the live route and proves entitled-user behaviour, never an anonymous read."
+  - "Native Claude children are not labor lanes on this program: census, build and review go to external Grok lanes (`pool remote <host> grok <packet> '~/lanes/repos/macro' grok-4.6`, never `pool remote auto`) or the Fabric. Hosts as of 2026-10-12: ubuntu1 (cap 5) and ubuntu2 (cap 8) carry the lanes; ubuntu0 (cap 3) only when `pool placement` reports it ELIGIBLE; ubuntu3 sits under a reconciliation hold this seat never clears; mb takes at most one read-only canary; m1 has no Grok. Outside the provider-screenshot window the economic guard refuses leaf labor unless POOL_ESCALATION_REASON (12+ chars) names the authority; never edit pools.yaml or mint a window. Fabric admission needs the authenticated Executive connector (human OAuth) and QUEUED is not STARTED."
   - "The kit's `pool` launcher deadlocks under the host's bash 5.3 and refuses an unclassified packet (ECONOMIC_POLICY_REFUSED unknown_task_class): launch with a bash shim first on PATH, REMOTE_SUB_PYTHON set to the Homebrew python3, and POOL_TASK_CLASS set to one of census/build/review/extract/mechanical. grok-4.6 refuses the draft, research, analysis, implementation and code task classes. Never `pool remote auto`, never reuse a burned run id, and key every wait on the lane's final `<LANE>: PASS|PARTIAL|FAIL <sha>` sentinel or the kit log's `DONE rc=` line, never on the nohup pid."
   - "Earnings story/press publication dependencies — the a0e1546f generation bound in site/stocks/earnings/route-catalog.json, engine/press/earnings_adapter.py allowed_links, storypacket/storyrev admission in the R2 journal — are owned by WS:EARNINGS-INTELLIGENCE-OS (coo-fable, DEC:EARNINGS-INTELLIGENCE-PROGRAM-OWNERSHIP), not by C19. The ONE C19 reply on #1243 comment 6107955309 is comment 6108389713 (2026-10-11T11:09:05Z); do not post on that dependency again, never synthesize a story-packet or revision id (they are content hashes), and route any further ask to the owner carrier."
   - "The writer-lease read is a title/body search heuristic (`gh pr list --search '<term> in:title,body'`), not a file-path search. Only Macro #8630 (draft) touched expectation_state as of 2026-10-11; re-read before any lane that writes near integrated_answer.py, query_snapshots.py or the macro release seam."
@@ -98,14 +109,16 @@ verification, and truthful acceptance. It is published verbatim (33 hash-verifie
 
 Fable principal (this seat) -> native Opus suborchestrators only for bounded decomposition judgment
 (ROUTE: ORCHESTRATION) -> external pool lanes (`pool remote <host> grok <packet> <cwd> grok-4.6`
-on ubuntu0/2/3 since 2026-10-11 W3; never `pool remote auto`) or Fabric
+on ubuntu1/ubuntu2, ubuntu0 when eligible; never `pool remote auto`) or Fabric
 operators for all census/build/review labor -> workers. Seat map from the packet: O1 -> WP03/04/05,
 O2 -> WP12/15/22, O3 -> WP09/10/11/30, O4 -> WP13/14/28, O5 -> WP23/24/25, O6 -> WP26/27/29,
 O7 -> WP06/07/31, O8 -> WP08/16-20/32. Fable retains WP00/WP01/WP02/WP21/WP33. Only the useful
 ready subset is admitted under actually observed capacity.
+Orchestrators so far: O1/O8 (W2), ORCH-G/ORCH-H (W3), ORCH-I (W4), ORCH-J (W5); each is
+messaged, never re-spawned.
 
 ## Open items carried in the ledger
 
 Executive connector OAuth (human gate); Linear OAuth for the MAS-263 backlink (human gate); writer
 leases on the composer and macro release seams (re-read per lane); C6 / MAS-282 search bounds;
-the deployed value of the composer flag; external pool runnable capacity.
+the owner's reconciliation of the composer DEC with the flag-ON route; external pool runnable capacity.

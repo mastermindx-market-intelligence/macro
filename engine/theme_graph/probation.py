@@ -47,7 +47,7 @@ _HOUSE_PATH_CHARS_RE = re.compile(r"[A-Za-z0-9._/#-]+")
 _HOUSE_FRAGMENT_RE = re.compile(r"[A-Za-z0-9._-]+")
 _VENDOR_SUBSTRINGS = ("finviz_themes", "ths_concepts")
 _VENDOR_TOKENS = frozenset({"finviz", "ths"})
-_HIERARCHY_CHILD_TIERS = frozenset({"theme", "micro_theme"})
+_HIERARCHY_CHILD_TIERS = frozenset({"theme", "sub_theme", "micro_theme"})
 _HIERARCHY_SUBJECT_REQUIRED: tuple[str, ...] = (
     "parent_id",
     "child_id",
@@ -185,7 +185,7 @@ def _validate_hierarchy_row(row: dict) -> list[str]:
     if child_tier not in _HIERARCHY_CHILD_TIERS:
         out.append(
             "HIERARCHY_CHILD_TIER: hierarchy child_tier "
-            f"{child_tier!r} is outside ['micro_theme', 'theme']"
+            f"{child_tier!r} is outside ['micro_theme', 'sub_theme', 'theme']"
         )
     if parent_id and child_id and parent_id == child_id:
         out.append("HIERARCHY_SELF_EDGE: parent_id must differ from child_id")

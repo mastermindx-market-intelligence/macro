@@ -29,17 +29,17 @@
     },
     "type": {
       "enum": ["MEMBER_OF", "EXPRESSES", "SAME_AS", "TRANSLATES_TO", "PARENT_OF", "RELATED", "SUPPLIES", "ENABLES", "BOTTLENECK_OF", "BENEFITS_FROM", "CATALYST_OF", "TRACKS", "HEDGES"],
-      "description": "PARENT_OF (GMI hierarchy, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK): src is the PARENT, dst is the CHILD; adjacent tiers only (macro_category→theme or theme→micro_theme); DAG with at most three parents per child; display-tier only — no weight/share/count/score. The #8324 typed vocabulary (EQUIVALENT, NARROWER_THAN, BROADER_THAN, OVERLAPS, RELATED_NOT_EQUIVALENT, NO_CANONICAL_MAPPING, PENDING_ADJUDICATION, REJECTED) is probation/mapping vocabulary, not a graph edge type in v1. Tier adjacency, endpoint existence, cycles, and the three-parent cap are enforced per store by scripts/check_theme_graph_contracts.py."
+      "description": "PARENT_OF (GMI hierarchy, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK): src is the PARENT, dst is the CHILD; adjacent tiers only (exactly macro_category→theme, theme→sub_theme, sub_theme→micro_theme, theme→micro_theme); DAG with at most three parents per child; display-tier only — no weight/share/count/score. The #8324 typed vocabulary (EQUIVALENT, NARROWER_THAN, BROADER_THAN, OVERLAPS, RELATED_NOT_EQUIVALENT, NO_CANONICAL_MAPPING, PENDING_ADJUDICATION, REJECTED) is probation/mapping vocabulary, not a graph edge type in v1. Tier adjacency, endpoint existence, cycles, and the three-parent cap are enforced per store by scripts/check_theme_graph_contracts.py."
     },
     "src": {
       "type": "string",
       "minLength": 1,
-      "description": "node_id of the source node. For PARENT_OF, the PARENT (tier macro_category or theme)."
+      "description": "node_id of the source node. For PARENT_OF, the PARENT (tier macro_category|theme|sub_theme)."
     },
     "dst": {
       "type": "string",
       "minLength": 1,
-      "description": "node_id of the destination node. For PARENT_OF, the CHILD (tier theme or micro_theme)."
+      "description": "node_id of the destination node. For PARENT_OF, the CHILD (tier theme|sub_theme|micro_theme)."
     },
     "valid_from": {"$ref": "#/$defs/date", "description": "VALID time: when the fact became true in the world."},
     "valid_to": {"$ref": "#/$defs/nullable_date", "description": "Null while the fact is still true. A closed interval never deletes the row that opened it."},

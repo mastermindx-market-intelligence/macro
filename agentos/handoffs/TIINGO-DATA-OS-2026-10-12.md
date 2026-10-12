@@ -1,132 +1,91 @@
 ---
 workstream: WS:TIINGO-DATA-OS
-session: claude/tiingo-boats-vendor-case-20261012
+session: claude/tiingo-delivery-frontier-20261012-01a12ab6
 model: codex
-ended_because: ci_handoff
-mission: Deliver existing Tiingo history and genuine BOATS through incumbent Data
-  OS and Terminal, with actual source, CI, runtime and browser proof.
-state_before: One-path main CI repair pending; original uppercase-only display reducer
-  rejected authentic lowercase vendor events; history and deployed BOATS consumer
-  acceptance incomplete.
+ended_because: blocked
+mission: Deliver licensed Tiingo history and genuine BOATS through the incumbent Data OS and Terminal, with actual source, CI, runtime and browser acceptance.
+state_before: Producer casing repair had a source checkpoint; history qualification, Data and Lab selection, Terminal protected landing and live BOATS acceptance remained incomplete.
 changed:
-- path: scripts/build_ext_quotes.py
-  what: Validate ASCII vendor ticker syntax before a local uppercase display key;
-    preserve exact raw/research identity and all existing condition, clock, expiry,
-    provider and publication rules.
-- path: tests/test_tiingo_boats_display.py
-  what: Add twenty meaningful casing and malformed-identity regressions, retaining
-    red evidence before repair.
-- path: tests/fixtures/r2_delivery_macro_evidence_files.v1.tsv
-  what: Refresh the single independently qualified LIVE producer hash/line count;
-    preserve classification and unchanged anchors.
-- path: docs/tiingo-evidence/20261012-real-open-case-repair/
-  what: Retain safe actual-open counts/lineage, original/repaired replay, red/green/reviews,
-    wave-five full proof and served-depth fundamentals evidence.
+- path: docs/tiingo-evidence/20261012-delivery-frontier/
+  what: Record safe aggregate facts from accepted local receipts, exact source and installed selector identities, original CI approval control and remaining production obligations.
 - path: agentos/workstreams/WS-TIINGO-DATA-OS.md
-  what: Record genuine main repair landing, real BOATS capture, current history and
-    partition-specific writer obligations.
+  what: Replace the stale next action with the original Terminal CI approval gate and qualified research/archive frontier; preserve dated historical evidence.
+- path: agentos/handoffs/TIINGO-DATA-OS-2026-10-12.md
+  what: Save current continuation instructions in the existing canonical handoff; previous source checkpoint remains in Git history.
 verified:
-- claim: CI repair 8870 passed all twelve packs and landed the tested head.
-  command: gh pr view 8870 --repo mastermindx-market-intelligence/macro --json state,headRefOid,mergeCommit,mergedAt,statusCheckRollup
-  result: Tested 1cea273c72487f1fae77dc579b3e628ec435a55c; manual squash de0c202a016502ce521db66a70e5905b76e0c9c2
-    at 00:24:11Z. Natural main baseline 38187866979 is running, not accepted yet.
-- claim: Authentic 20,000-frame sample has immutable raw and research projection proof.
-  command: python3 docs/tiingo-evidence/20261012-real-open-case-repair/verify-open.py;
-    python3 docs/tiingo-evidence/20261012-real-open-case-repair/verify-vendor-case.py
-  result: 19,651 Q, 347 T, zero B, two controls; twenty segments; exact projections
-    and raw hashes verified. All market symbols lowercase; AAPL retains one event-order
-    regression. Message cap ended capture after about four seconds.
-- claim: Narrow display casing repair passes original affected checks without policy
-    relaxation.
-  command: PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_tiingo_boats_display.py
-    tests/test_tiingo_boats_stream_chain.py -p no:cacheprovider
-    -q --tb=short
-  result: Seventy passed; new cases first produced seven failed/thirteen passed. Consumer
-    source review PASS binds 25e2866a producer and 554564e2 test hashes. Other top-level
-    ASTs and public/storage/default coverage boundaries identical.
-- claim: The LIVE producer pin was qualified and unchanged classification checks passed.
-  command: PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_r2_delivery_plane_classification.py
-    -p no:cacheprovider
-    -q --tb=short
-  result: Stale pin reproduced one failed/twenty passed; qualified one-row 763-line/25e2866a
-    refresh produces twenty-one passed. Independent source-pin PASS; anchors remain
-    lines 57/373.
-- claim: Historical authentic replay matches admitted display to exact original raw
-    frame.
-  command: python3 docs/tiingo-evidence/20261012-real-open-case-repair/verify-repaired-replay.py
-  result: Only AAPL admitted at original capture clock among nine coverage keys; exact
-    raw event/price verified and unchanged public allowlist passes. No current market
-    freshness or downstream production claim.
-- claim: Fifth EOD wave full corpus qualification passes.
-  command: python3 docs/tiingo-evidence/20261012-real-open-case-repair/verify-eod-wave5.py
-  result: 'Original dated proof: 5,046 nonempty histories, 10,306,265 distinct bars,
-    5,068 receipts; all raw/exact context/lineage/date/overlap checks pass. Proof
-    SHA256 8e06ca8646fb2c45264551b4433d4a30c7ce21f8ecf76460b20da3312bcf6dde. Later
-    captures are separate.'
-- claim: AAPL deep-start requests actually serve roughly three years and all projections
-    verify.
-  command: python3 /private/tmp/tiingo-aapl-deep-qualified-01a12ab6.py after the settled
-    original three-task collector/materializer invocation
-  result: Three HTTP 200 responses, 791 raw records, 231225 bytes. Reported 15/restated
-    13/daily 763; earliest returned dates 2023-11-03/2023-12-30/2023-10-11 despite
-    1990 start; 962 common fiscal metrics and 45 differences.
+- claim: Macro producer PR 8875 landed its hosted-accepted casing repair.
+  command: gh pr view 8875 --repo mastermindx-market-intelligence/macro --json state,headRefOid,mergeCommit,mergedAt,statusCheckRollup; gh run view 38188184848 --repo mastermindx-market-intelligence/macro --json headSha,status,conclusion,jobs
+  result: Tested f591bb609b6d55b85366e6a2d1eafbfe52025b5b passed all twelve jobs and landed at 2c90e1c01d53516c6920e8cb1edd835f82354e28. Producer checkout stays frozen for the pending finite effect.
+- claim: Existing Data and Lab selector actually selects the accepted release and reads Tiingo research data.
+  command: "python3 -c \"from pathlib import Path; import hashlib; p=Path('/Users/chriswong/.codex/visualizations/2026/10/11/01a12ab6-92cb-7c42-a711-42673ebb6b50/tiingo-phase1/tiingo-lab-2c90-installed-accepted.json'); print(hashlib.sha256(p.read_bytes()).hexdigest())\""
+  result: Completed original installation and installed capabilities/search/read observations are bound to receipt SHA256 1c965200b2bf0be022a3be8a0b89b8d6553a735eb362ffe97d1e8cfa5cb33762. Launcher SHA256 2c8594ad29821982a3d87605509c78fcb6d10c8ffe9dd6280b63cd6bd43923f4; full 1880-file export and canonical-store Lab compatibility canary passed. Access bindings and prior selector/release preserved; 24 Tiingo contracts remain PROPOSED.
+- claim: Latest settled EOD continuation and qualification preserve source receipts and research lineage.
+  command: python3 /private/tmp/tiingo-eod-wave8-resume6-network-recovered-serial64-01a12ab6.py on original calling carrier 2a08250fe61aa59ad3e1581149f0b93e9d5a17cf; python3 /private/tmp/tiingo-eod-wave8-cont6-qualify-01a12ab6.py
+  result: One successful request (307 bars) and one DVVDF HTTP 403, then stopped. Qualification settled rc=0, verified raw/exact request/window/reader lineage and reused accepted preceding evidence. Total 9722 nonempty histories and 20230153 distinct bars; qualification SHA256 70f65ed4c806cead64b810a171c404530ab94cc4f317ebbef3d35a7c30b4c6e8. All own raw operations settled; 403 not retried.
+- claim: Reused catalogue census distinguishes uncaptured windows from unattempted requests.
+  command: python3 /private/tmp/tiingo-eod-coverage-cont6-delta-01a12ab6.py
+  result: Accepted catalogue SHA256 015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0; 47689 eligible unambiguous US/USD stock/ETF candidates, 9722 nonempty, 18 empty and 37949 uncaptured windows. Failed/refused attempts remain uncaptured; complete attempt ledger and bar completeness not claimed. Coverage SHA256 c8bef35a902d7899e2e8bda266117469a714e814bbccc799f13b8c39815dbf21.
+- claim: Previous Terminal 955 head passed twelve dispatched jobs; its original PR run was held at that observation.
+  command: gh run view 38202935132 --repo mastermindx-market-intelligence/mastermind-terminal --json headSha,status,conclusion,jobs; gh api repos/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38202937001; authenticated browser inspection of the exact original run
+  result: Dispatched run completed success at 0bc4850632c1496e3e216cac7a25260baa76ed82. Original pull_request run 38202937001 concluded action_required and displays Awaiting approval. PR OPEN/blocked with required contexts Expected. Workflow diff only completes tablet/mobile shard pairs; permissions, tests, limits and triggers preserved. No protected merge or new deployment observed.
+- claim: Controller refreshed the original branch without changing Tiingo or workflow files.
+  command: gh api repos/mastermindx-market-intelligence/mastermind-terminal/pulls/955; gh api repos/mastermindx-market-intelligence/mastermind-terminal/compare/0bc4850632c1496e3e216cac7a25260baa76ed82...aadf407e101b99f2fbe23b43d277c792a32571d2; gh api repos/mastermindx-market-intelligence/mastermind-terminal/actions/runs?head_sha=aadf407e101b99f2fbe23b43d277c792a32571d2
+  result: Current head aadf407e101b99f2fbe23b43d277c792a32571d2 integrates protected base 9493fd800dd18965ee66627cdcf066bb23643328; all 66 changed paths are settings/evidence. Previous green proof is retained for 0bc only. Current dispatch 38209476208 queued; current original PR run 38209480199 action_required, with Approve and run visible. Scope receipt SHA256 5311eeaf7664a0f17e84febaf3802b5934f6ddeca14cb4e4589663f6ba8e5045. PR remains OPEN/blocked.
+- claim: Exact original run approval attempt was rejected before execution.
+  command: gh api --method POST repos/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38202937001/approve --include on the original exec approval carrier
+  result: Automatic approval review denied authorizing workflow execution with repository permissions/secrets without authorization for this exact run. No POST executed; no alternate account/tool approved it. Specific human Approve and run action requested, no answer or approval assumed.
+- claim: Dated incumbent VPS source and deployment marker agree; both services active.
+  command: Original narrow read-only SSH preflight recorded in terminal-955-vps-narrow-preflight-0507.json
+  result: At 2026-10-12T05:07:18Z source and marker e0c405a09b6897df3b5e4a2f22344f3560b800a4; no builder process; Terminal and Quote Hub active. Builder SHA256 7870780dd471076e26e4b9840980414a6ebc59c942f4ac1957c2ad7b770c9ea9. This read is too old for a release precondition.
 unverified:
-- claim: Fresh main baseline and this new producer head hosted acceptance.
-  what_would_verify: Concluded actual baseline 38187866979 and exact new-head required
-    CI; retain old red evidence and no duplicate dispatch.
-- claim: Current Terminal consumer production and real BOATS chain.
-  what_would_verify: Actual protected 955 merge, existing VPS builder installation
-    and identity/Hub proof, separately admitted same-carrier finite publisher, actual
-    raw/R2/Hub/API/responsive EN/ZH joins and final ended/empty/expiry observation.
-- claim: Full history, served fundamentals depth and dated/PIT identity.
-  what_would_verify: Complete catalogue history and requested originally reported/restated
-    coverage, current vendor scope resolution, incumbent dated identities and known-at
-    admission.
+- claim: Original Terminal required CI acceptance, protected merge and installed production consumer.
+  what_would_verify: Actual maintainer approval and successful original run bound to current head, actual protected merge, then fresh VPS source/marker/builder/ownership evidence and settled existing-builder installation.
+- claim: Current real BOATS publication and full consumer acceptance.
+  what_would_verify: Fresh source/consumer/entitlement/writer/resource/clock preconditions, separately admitted finite attended publisher on original exec carrier, exact raw/R2/Hub/API/responsive EN/ZH joins and final ended/empty/expiry observations.
+- claim: Complete EOD/fundamentals history, dated identity and genuine PIT eligibility.
+  what_would_verify: Remaining catalogue windows, requested original/revised statement depth, actual account served-scope resolution, incumbent dated issuer identity and known-at admission. Roughly three-year AAPL/MSFT responses do not prove full access.
 unresolved:
-- Wave six is still running on the original collector; settle and audit exact planned
-  scope before EOD-only materialization and full qualification.
-- Terminal 955 head 88bdb412 Hub/unit/ingest/PostgreSQL pass; desktop/tablet/mobile
-  hosted shards, protected merge and new release remain pending.
-- Original persistent publisher/schedule auto-review refusal remains held; source-only
-  review and raw capture do not grant publication.
-- Fabric log override cannot alone preserve installed same-run status/result/stdin
-  under actual grants; original failed IDs remain untouched.
-- Current-key AMD evaluation/Dow-30 HTTP 400 and AAPL roughly three-year served depth
-  remain despite Chairman purchase/activation attestation.
+- Current original CI run 38209480199 held for maintainer approval after controller base refresh; current dispatched CI 38209476208 queued. Earlier 0bc green and held 38202937001 remain historical evidence.
+- Full history incomplete. DVVDF HTTP 403 and DTV_1 HTTP 404 stay held on original effects; prior transport failures and incomplete attempt-ledger semantics remain explicit.
+- Producer accepted and research consumer installed, but finite BOATS publication, Terminal 955 deployment and actual live end-to-end acceptance have not executed.
+- Original persistent publisher/scheduler refusal, old authenticated probe/collector rewrite refusals, frozen Fabric failures and private GitHub screenshot/handoff refusals remain preserved.
+- Chairman-attested fundamentals activation is distinct from limited served scope. No purchase, token change or support email authorized by this record.
 next_actions:
-- Commit/push the reviewed casing candidate and safe proof on this fresh branch; obtain
-  exact hosted acceptance and genuine landing.
-- Consume actual main baseline 38187866979 conclusion and preserve source binding;
-  do not duplicate it.
-- Complete protected Terminal 955 landing and release via existing builder, preserving
-  peer source and no SQL execution.
-- Prepare finite publisher observation method and current source/consumer/relay writer/target/resource/clocks;
-  submit concrete finite effect on original exec approval carrier.
-- Settle wave-six exact 1000 tasks, audit original raw scope, materialize EOD-only
-  and qualify lineage; continue full history with measured quota/storage.
+- The earlier human approval question names superseded run 38202937001. Use current original run 38209480199 on PR 955 for the precise human approval action, then inspect actual current-head required CI after the polling interval. No replacement dispatch or protection changes.
+- After original required CI and protected merge, refresh narrow VPS preflight and use the prepared single existing-builder invocation only if exact merged-target preconditions pass. Recover the same operation if effect becomes uncertain.
+- Once the consumer is installed and healthy, complete finite BOATS preconditions and submit that concrete attended effect on original exec approval carrier. A refusal ends the effect; no recurring schedule or alternate publication follows.
+- Join actual events through existing public relay, Quote Hub, API and responsive EN/ZH browser; qualify ended/empty clearing and expiry before claiming delivery.
+- Continue history only with actual lawful entitlement, writer, measured quota/storage and original-effect controls resolved. Preserve catalogue ambiguity exclusions, corporate-action/revision dimensions and research-only identity/PIT limits.
 do_not_redo:
-- Do not publish or repackage the original blocked untracked CEO handoff.
-- Do not replay refused effects, frozen Fabric IDs, legacy persistent publisher schedule,
-  or unknown operations through another carrier.
-- Do not reacquire accepted catalogue/history, introduce a collector/service/queue/cron,
-  or reuse squash-merged source branches.
-- Do not purchase again, email support, rotate/expose credentials, publish licensed
-  rows, or execute peer SQL.
-- Do not displace peer intraday writers or infer an actual lease from advisory workstream
-  prose.
+- Do not publish or repackage original blocked untracked CEO handoff at the original Sol source carrier.
+- Do not replay rejected CI approval through Chrome's different GitHub account, another tool or dispatch; do not export refused private screenshot or mark refused tab handoff through substitutes.
+- Do not retry refused vendor paths, frozen Fabric IDs, persistent publication/scheduling or unknown operations through another carrier.
+- Do not repeat completed Data and Lab installation or accepted canary, reacquire accepted catalogue or redownload qualified histories just for another checkpoint.
+- Keep producer f591bb60 frozen for prepared publisher pins; documentation continuation uses its own fresh branch in the principal's already-owned SSD worktree.
+- Do not add collector, quote service, queue, cron, runtime registry, authority store, Vercel deployment or SQL execution.
+- Preserve likely Web MAG 7 intraday tests, News 8697 and peer source. Advisory prose clears no actual wider lease.
+- Do not purchase, email support, rotate/disclose credentials or commit licensed raw rows/private logs.
 danger_areas:
-- Trusted stable archive ancestors and no directory renames are necessary for disjoint
-  immutable append; any actual broader lease remains binding.
-- Old public relay is still Yahoo v1; classification is not source installation, target
-  replacement or runtime proof.
-- Capture, event, publication and expiry clocks and exact vendor vs display identity
-  remain distinct.
-- Source, CI, merge, install, consumer selection and real feed acceptance are separate.
-prs:
-- 8698
-- 8870
-- 945
-- 955
+- Trusted stable archive ancestors remain necessary for disjoint immutable append; no directory rename or incumbent writer displacement authorized.
+- Old public relay is Yahoo v1. Source classification/research installation do not prove BOATS replacement or production acceptance.
+- Keep vendor identity, display normalization, capture/event/publication/expiry clocks and known-at evidence distinct.
+- Prepared helpers require actual precondition receipts; never synthesize true values or deploy a candidate test-merge SHA while a PR is OPEN.
+prs: [8698, 8870, 8875, 945, 955]
 ---
 
-This is an active continuation checkpoint. The principal continues the assigned mission; ci_handoff denotes the source checkpoint and does not end the task or promise unattended work. All current source and safe evidence are on the fresh external-SSD carrier. Raw archive remains /Volumes/Mastermind/market-data/tiingo; active wave-six log/scope/result remain in the same task tiingo-phase1 artifact directory. Original source and peer artifacts remain preserved.
+The assigned mission remains active and incomplete. This checkpoint saves a real
+human CI admission gate after independent permitted work; it creates no observer,
+schedule or promise of unattended continuation. Current aggregate evidence is
+`docs/tiingo-evidence/20261012-delivery-frontier/safe-frontier.json`.
+
+Original raw archive: `/Volumes/Mastermind/market-data/tiingo`. Accepted private
+receipts and prepared helper scopes remain in the original task's `tiingo-phase1`
+artifact directory under thread `01a12ab6-92cb-7c42-a711-42673ebb6b50`. Source and
+permissions must be freshly checked before consequential continuation.
+
+Original Terminal carrier:
+[PR 955](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/955).
+Specific human admission:
+[current run 38209480199](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38209480199).
+Existing installed research and settled archive evidence can be consumed without
+repeating accepted installation or collection.
