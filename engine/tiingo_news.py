@@ -195,19 +195,27 @@ def fetch_articles(token: str, *, limit: int = 250,
 
 def audit_sample(rows: list[object], *, received_at: datetime) -> dict:
     """Aggregate only: field quality and concentration, not editorial accuracy."""
-    _received(received_at)
+    receipt_time = _received(received_at)
     reasons: Counter[str] = Counter()
     kept = []
     for raw in rows:
         try:
-            kept.append(normalize_article(raw, received_at=received_at))
+            kept.append(normalize_article(raw, received_at=receipt_time))
         except TiingoArticleError as exc:
             reasons[str(exc)] += 1
     sources = Counter(x["source"] for x in kept)
     lag = sorted(x["publication_crawl_delay_seconds"] / 60 for x in kept)
+    # Provider crawl -> our independent observation is *apparent age*, not an
+    # upstream publication SLA or proof that the article was historically seen.
+    observed_age = sorted(
+        (receipt_time - datetime.fromisoformat(x["provider_crawled_at"])).total_seconds() / 60
+        for x in kept
+    )
+    ids = Counter(x["provider_id"] for x in kept)
+    urls = Counter(x["url"].split("#", 1)[0] for x in kept)
 
-    def quantile(q: float) -> float | None:
-        return round(lag[int((len(lag) - 1) * q)], 1) if lag else None
+    def quantile(values: list[float], q: float) -> float | None:
+        return round(values[int((len(values) - 1) * q)], 1) if values else None
 
     return {
         "sample_rows": len(rows), "valid_rows": len(kept),
@@ -218,11 +226,22 @@ def audit_sample(rows: list[object], *, received_at: datetime) -> dict:
         "description_rate": round(sum(bool(x["description"]) for x in kept) / len(kept), 4) if kept else None,
         "source_count": len(sources),
         "top_three_source_share": round(sum(v for _, v in sources.most_common(3)) / len(kept), 4) if kept else None,
-        "crawl_delay_minutes_p50": quantile(.5),
-        "crawl_delay_minutes_p90": quantile(.9),
+        "crawl_delay_minutes_p50": quantile(lag, .5),
+        "crawl_delay_minutes_p90": quantile(lag, .9),
+        # Distinct arrival-clock axis. This describes only this retrieved slice.
+        "provider_crawl_to_observation_minutes_p50": quantile(observed_age, .5),
+        "provider_crawl_to_observation_minutes_p90": quantile(observed_age, .9),
+        "observed_within_60m_of_provider_crawl_share": (
+            round(sum(age <= 60 for age in observed_age) / len(observed_age), 4)
+            if observed_age else None
+        ),
+        "duplicate_provider_id_rows": sum(n - 1 for n in ids.values()),
+        "duplicate_url_rows": sum(n - 1 for n in urls.values()),
+        "largest_source_share": round(max(sources.values()) / len(kept), 4) if kept else None,
+        "apparent_age_scope": "one_observation_slice_not_provider_sla",
         "backfill_count": sum(x["delayed_observation"] for x in kept),
-        "reported_publication_to_crawl_minutes_p50": quantile(.5),
-        "reported_publication_to_crawl_minutes_p90": quantile(.9),
+        "reported_publication_to_crawl_minutes_p50": quantile(lag, .5),
+        "reported_publication_to_crawl_minutes_p90": quantile(lag, .9),
         "publication_time_basis": PUBLICATION_TIME_BASIS,
         "delayed_observation_count": sum(x["delayed_observation"] for x in kept),
         "editorial_accuracy": "not_measured", "entity_precision": "not_measured",

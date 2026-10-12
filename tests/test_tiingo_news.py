@@ -452,3 +452,35 @@ def test_other_providers_keep_the_existing_compact_row_shape(monkeypatch):
            "source": "Reuters", "seendate": "date", "summary": "summary"}
     result = fin.mastermind_by_ticker({"by_ticker": {"MU": [row]}})["MU"]["top"][0]
     assert set(result) == {"title", "url", "source", "published", "sentiment", "summary"}
+
+
+def test_quality_snapshot_separates_provider_age_from_publication_lag():
+    # One bounded observation only; repeat IDs/URLs are audit evidence, not
+    # proof that the underlying publisher published multiple distinct stories.
+    rows = [
+        article(id=81, url="https://reuters.com/a"),
+        article(id=81, url="https://reuters.com/a",
+                publishedDate="2026-10-09T05:50:00Z", crawlDate="2026-10-09T06:00:00Z"),
+        article(id=82, url="https://reuters.com/b",
+                publishedDate="2026-10-09T03:50:00Z", crawlDate="2026-10-09T04:00:00Z"),
+    ]
+    report = tn.audit_sample(rows, received_at=NOW)
+    assert report["valid_rows"] == 3
+    assert report["duplicate_provider_id_rows"] == 1
+    assert report["duplicate_url_rows"] == 1
+    assert report["provider_crawl_to_observation_minutes_p50"] == 120.0
+    assert report["observed_within_60m_of_provider_crawl_share"] == 0.3333
+    assert report["reported_publication_to_crawl_minutes_p50"] == 10.0
+    assert report["largest_source_share"] == 1.0
+    assert report["apparent_age_scope"] == "one_observation_slice_not_provider_sla"
+    assert "Chipmaker" not in json.dumps(report)
+    assert "/reuters.com/a" not in json.dumps(report)
+
+
+def test_quality_snapshot_empty_or_rejected_data_has_no_apparent_age_estimate():
+    report = tn.audit_sample([article(id=True)], received_at=NOW)
+    assert report["valid_rows"] == 0
+    assert report["provider_crawl_to_observation_minutes_p50"] is None
+    assert report["observed_within_60m_of_provider_crawl_share"] is None
+    assert report["duplicate_provider_id_rows"] == 0
+    assert report["largest_source_share"] is None
