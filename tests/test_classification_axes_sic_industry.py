@@ -137,6 +137,36 @@ def test_blank_and_null_sic_are_value_missing(ticker):
     assert got["value"] is None
 
 
+def _nullable_profiles(missing_value) -> pd.DataFrame:
+    rows = [
+        ("AAPL", "Apple Inc.", "Electronic Computers", pd.Timestamp("2026-09-30")),
+        ("NULLSIC", "Null Corp", missing_value, pd.Timestamp("2026-09-01")),
+    ]
+    frame = pd.DataFrame(rows, columns=["ticker", "name", "sic_description", "as_of"])
+    return frame.set_index("ticker")
+
+
+def test_nullable_dtype_missing_sic_is_value_missing():
+    string_frame = _nullable_profiles(pd.NA).astype({"sic_description": "string"})
+    got = sic_industry.read_sic_industry(
+        "co:us:NULLSIC", as_of=AS_OF, profiles=string_frame
+    )
+    assert cell.validate_cell(got) == []
+    assert got["status"] == "unknown"
+    assert got["reason_code"] == "value_missing"
+    assert got["value"] is None
+
+    object_frame = _nullable_profiles(pd.NaT)
+    assert object_frame["sic_description"].dtype == object
+    nat = sic_industry.read_sic_industry(
+        "co:us:NULLSIC", as_of=AS_OF, profiles=object_frame
+    )
+    assert cell.validate_cell(nat) == []
+    assert nat["status"] == "unknown"
+    assert nat["reason_code"] == "value_missing"
+    assert nat["value"] is None
+
+
 def test_ticker_absent_from_artifact_is_value_missing():
     got = sic_industry.read_sic_industry("co:us:NOPE", as_of=AS_OF, profiles=_profiles())
     assert cell.validate_cell(got) == []
@@ -193,6 +223,26 @@ def test_default_path_missing_corrupt_and_valid(tmp_path):
     assert good["value"] == {"sic_description": "Electronic Computers"}
 
 
+def test_empty_root_falls_back_to_repo_root(monkeypatch, tmp_path):
+    repo = tmp_path / "repo"
+    profile_dir = repo / "data" / "profile"
+    profile_dir.mkdir(parents=True)
+    parquet_path = profile_dir / "profiles.parquet"
+    _profiles().astype({"as_of": str}).to_parquet(parquet_path)
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.setattr(sic_industry, "_REPO_ROOT", repo)
+    monkeypatch.chdir(elsewhere)
+
+    from_empty_root = sic_industry.read_sic_industry("co:us:AAPL", as_of=AS_OF, root="")
+    assert cell.validate_cell(from_empty_root) == []
+    assert from_empty_root["status"] != "unavailable"
+
+    from_repo_root = sic_industry.read_sic_industry("co:us:AAPL", as_of=AS_OF, root=repo)
+    assert cell.validate_cell(from_repo_root) == []
+    assert cell.to_json(from_empty_root) == cell.to_json(from_repo_root)
+
+
 def test_ticker_column_is_accepted_instead_of_the_index():
     frame = _profiles().reset_index()
     assert "ticker" in frame.columns
@@ -205,6 +255,8 @@ def test_ticker_column_is_accepted_instead_of_the_index():
 def test_two_calls_are_byte_identical():
     first = sic_industry.read_sic_industry("co:us:AAPL", as_of=AS_OF, profiles=_profiles())
     second = sic_industry.read_sic_industry("co:us:AAPL", as_of=AS_OF, profiles=_profiles())
+    assert cell.validate_cell(first) == []
+    assert cell.validate_cell(second) == []
     assert cell.to_json(first) == cell.to_json(second)
 
 
