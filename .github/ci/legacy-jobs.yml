@@ -925,6 +925,28 @@ jobs:
       - name: integrated answer v0 composer
         run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py -q
 
+  c19-wp19-integrated-answer-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP19: integrated-answer SHA header + private headers on the real entitlement-denial path (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
+      - "app/integrated_answer.py"
+      - "app/forensics.py"
+      - "tests/test_integrated_answer_v0.py"
+      - "tests/test_company_theme_exposure.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
+      - name: c19-wp19-integrated-answer-pins
+        run: python -m pytest tests/test_c19_wp19_integrated_answer_entitlement_pins.py -q -p no:cacheprovider
+
   inline-js:
     if: ${{ false }}
     gate: data
