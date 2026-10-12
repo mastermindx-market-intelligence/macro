@@ -1,0 +1,7 @@
+{
+  "proof_class": "exact_preimage_valid_geometry_differential",
+  "cases": 1500,
+  "source_sha256": "8ecf73a79dc160c482f5c6ca39ac1161cb42e819a34810598764ee588e418442",
+  "unchanged_results": 1500,
+  "production": false
+}

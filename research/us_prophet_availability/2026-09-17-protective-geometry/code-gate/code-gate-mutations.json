@@ -1,0 +1,24 @@
+{
+  "source_sha256": "68cf2df55a47215a76a8e5b1ae9f752cd3948f660c382bf178ce1136e8158c83",
+  "proof_class": "actual_PR_selected_cases_with_in_memory_counterfactuals",
+  "source_file_changes": 0,
+  "mutations": [
+    {
+      "name": "old_false_success_copy",
+      "summary": "3 failed, 60 passed, 210 deselected",
+      "returncode": 1
+    },
+    {
+      "name": "exact_original_compute_geometry",
+      "summary": "34 failed, 29 passed, 210 deselected in 2.85s",
+      "returncode": 1
+    }
+  ],
+  "restored": {
+    "returncode": 0,
+    "summary": "63 passed, 210 deselected in 2.41s"
+  },
+  "initial_driver_error": "wrong _geometry symbol did not execute tests; not counted as a mutation kill",
+  "provider_calls": 0,
+  "production": false
+}

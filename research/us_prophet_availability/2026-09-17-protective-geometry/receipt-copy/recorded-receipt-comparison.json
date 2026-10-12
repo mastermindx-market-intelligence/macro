@@ -1,0 +1,22 @@
+{
+  "proof_class": "real_recorded_full_builder_receipt_through_existing_producer_and_template",
+  "original_board_sha256": "3cfa5b63b84b8010e53b17fef781ead9814083189fbf7d191f7b21e80a75588a",
+  "source_sha256": "68cf2df55a47215a76a8e5b1ae9f752cd3948f660c382bf178ce1136e8158c83",
+  "template_sha256": "53227df0fe8806c3da6efe76354cf8c594b2f15722fc29e8c5d499268f5aad2d",
+  "rows": 42,
+  "planned": 15,
+  "already_open": 8,
+  "failed_plan_names": [
+    "HON",
+    "TRN",
+    "RBA"
+  ],
+  "only_changes": [
+    "plan_not_built.en",
+    "plan_not_built.zh"
+  ],
+  "all_counts_names_order_and_codes_unchanged": true,
+  "source_data_changes": 0,
+  "plan_or_ledger_writes": 0,
+  "production": false
+}

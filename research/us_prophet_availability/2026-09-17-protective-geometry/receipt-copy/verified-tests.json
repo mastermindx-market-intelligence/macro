@@ -1,0 +1,23 @@
+{
+  "returncode": 0,
+  "summary": "333 passed in 10.41s",
+  "command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-3/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--basetemp=/Users/chriswong/.cache/mastermind-proof/prophet-geometry-receipt-truth-20260917T2000/verified-tmp",
+    "tests/test_prophet_whynot_receipts.py",
+    "tests/test_prophet_bridge.py",
+    "tests/test_prophet_arena.py",
+    "tests/test_prophet_integrity.py",
+    "tests/test_prophet_arena_clock_parity.py",
+    "tests/test_prophet_anticipation_intake.py::TestWaitResetAcceptance",
+    "tests/test_prophet_anticipation_intake.py::test_protective_geometry_stretched_reset_requires_protection_below_its_band"
+  ],
+  "test_helper_repairs": [
+    "match production us_stance_projection global",
+    "use current explicit plan-grid closing marker; preserve shelf-before-footnote ordering"
+  ],
+  "production": false
+}

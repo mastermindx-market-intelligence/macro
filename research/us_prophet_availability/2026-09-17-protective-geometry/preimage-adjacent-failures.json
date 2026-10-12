@@ -1,0 +1,12 @@
+{
+  "proof_class": "exact_preimage_bridge_same_dependency_context",
+  "base": "8b688809239d760be0cdcf8cd64f0d6f7ee05316",
+  "rc": 1,
+  "summary": "4 failed, 2 passed in 14.55s",
+  "failed": [
+    "FAILED tests/test_prophet_anticipation_intake.py::TestLeaderPullbackContextBackend::test_a_LIVE_read_now_resolves_real_coverage",
+    "FAILED tests/test_prophet_earnings_split_brain.py::test_legacy_parquet_blast_radius_is_exactly_the_ratified_hold_horizon",
+    "FAILED tests/test_prophet_management.py::TestStaleFrameActionSafety::test_overtime_from_halted_tape_carries_no_action",
+    "FAILED tests/test_prophet_outage_backfill.py::TestTheDocsAndTheArtifactCannotDisagree::test_a_schema_addendum_claiming_execution_requires_the_artifact"
+  ]
+}

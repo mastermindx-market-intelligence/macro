@@ -1,0 +1,9 @@
+{
+  "semantic_head": "72ffa974ffe7aec76f4514512cf36d52fec8a1b3",
+  "gate": "code",
+  "local_plan_sha256": "999cfcdae36149b43d90c2501ee48b567f5b2da8144407bfb36ead50ace3ffa8",
+  "washout_turn_owner_selected": true,
+  "eligible_job_count": 141,
+  "reason": "full suite: global invalidator changed (.github/ci/legacy-jobs.yml)",
+  "hosted_run_claimed": false
+}

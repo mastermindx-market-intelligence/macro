@@ -1,0 +1,10 @@
+{
+  "source_tree": "f7c7533043dd2901c4462a446c133d2cbe601aba",
+  "summary": "555 passed in 58.91s",
+  "suites": 12,
+  "source_files_checked": 6447,
+  "source_changes": 0,
+  "full_packet_owner": "#7187 docs/pr-crops/us-prophet-source-date-20260916/gated-journey-20260917/",
+  "proof_class": "code-path composition, not full-PR/latest-main acceptance",
+  "production": false
+}
