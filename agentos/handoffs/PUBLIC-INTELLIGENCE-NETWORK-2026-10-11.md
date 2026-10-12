@@ -257,3 +257,16 @@ branch, verified remote PR identity OPEN at that hash with no refresh lease and
 native auto-merge null, then re-armed merge-on-green. The separate recovery branch
 reverted its unpublished parallel one-line fix and integrated the incumbent
 repair plus the original PR checkpoint. No second heal carrier was opened.
+
+
+## Integrated follow-on proof — 2026-10-12 00:12 UTC
+
+Recovery source2e32caabc6bf passes338affected tests in31.06s and the differential
+CI contract check against originald425 with0introduced/0inherited violations.
+Commands and limits are inADJUSTED_BASELINE_QUALIFICATION.md. GitHub secret-name
+readback confirms existingPOLYGON_API_KEY; no secret value was exposed. The Press
+kill-switch variable and stage-only earnings read credential names remain absent.
+The October8 candidate's15/17 replay is historical as ofOctober11; the existing
+planner refuses it atOctober12. Never backdate generation to preserve eligibility.
+The fixed baseline workflow can qualify historical analytical data after landing,
+but a live article still needs a current source and the full editorial gates.

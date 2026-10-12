@@ -61,3 +61,38 @@ editorial relevance review and explicit fact-pool admission. Five computed metri
 do not automatically meet D14's first-party-value requirement. The article remains
 15/17, unstaged and unpublished. The original interrupted Press provider attempt
 remains EFFECT_UNKNOWN and is not retried by this workflow.
+
+## Integrated qualification at 2e32caabc6bf
+
+The combined retained-source, external planner, adjusted baseline, existing REST
+transport, Press planner/validators/workflow and White House regressions passed:
+338 tests in 31.06 seconds. One unrelated pytest cleanup warning concerned an
+older temporary Chromium fixture; no test skipped or failed. The first command
+used a nonexistent test filename and collected no tests; the corrected command
+used `tests/test_press_planner.py`.
+
+`python3 scripts/check_contract_delta.py --base
+d425cc87f5da4214f53fa1fbc0ee72f0284870f5` passed with zero introduced and zero
+inherited violations in 374.9 seconds. This qualifies the differential CI scope,
+not protected landing or execution of the analytical workflow.
+
+At 2026-10-12 00:12 UTC, `gh secret list --repo
+mastermindx-market-intelligence/macro --json name` confirmed the existing
+POLYGON_API_KEY name. No value was read. MASSIVE_API_KEY and the two requested
+EARNINGS_R2_READ credential names were absent. The PRESS_PUBLISH_ENABLED variable
+was absent. Credential-name presence does not prove successful authentication.
+
+The source candidate's original 15/17 replay is tied to its October 11 observation.
+The external planner already rejects October 12 for the October 8 event under the
+unchanged three-day Brief window. Preserve this historical replay; do not backdate
+a new generation or relabel its event date. The fixed October 7 baseline remains
+a bounded historical analytical qualification, not a way to restore fresh-story
+eligibility. A future live story must independently qualify its current source,
+editorial relevance and all existing Press gates.
+
+The installed Data Lab command was also read through Studio Direct: capabilities,
+Tiingo search, and bounded cohort metadata completed successfully. The adapter
+revision was a4d48836a69eedd8572a63bd926cd99d036c65cc and source access was read-only.
+The Tiingo dataset registry still describes a proposed source; its incumbent
+research view keeps redistribution_admitted=false. No Tiingo data rows, collector,
+network fetch or publication admission were obtained by that investigation.
