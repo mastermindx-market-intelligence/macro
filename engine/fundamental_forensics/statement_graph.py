@@ -83,11 +83,26 @@ _DEFAULT_GOLDEN_ACCESSION = "0000320193-25-000079"
 _RELATED_EVENT_REF_KEYS = frozenset(
     {"plane", "event_id", "relation", "source_filing_distinction"}
 )
+# Full month names first, then the longest abbreviation first, so alternation
+# cannot take a shorter token out of a longer one ("Sept." before "Sep.").
+_MONTH_TOKEN = (
+    "January|February|March|April|May|June|July|August|September|October|November|December"
+    "|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec"
+)
+# Word boundaries keep month tokens from matching inside words ("Decor. 31, 2025"
+# is not December). The optional period covers EDGAR viewer dates ("Dec. 31, 2025").
 _DATE_RE = re.compile(
-    r"(January|February|March|April|May|June|July|August|September|October|November|December)"
-    r"\s+(\d{1,2}),\s*(\d{4})",
+    r"\b(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2}),\s*(\d{4})\b",
     re.I,
 )
+# A month-day phrase WITHOUT a year ("Fiscal Year Ended January 31,"): the
+# negative lookahead rejects the day whenever a 4-digit year follows it, so a
+# full date never doubles as a bare month-day phrase.
+_MONTH_DAY_RE = re.compile(
+    r"\b(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2})(?!\s*,?\s*\d{4})\b",
+    re.I,
+)
+_YEAR_CELL_RE = re.compile(r"^\d{4}$")
 _MONTHS = {
     "january": 1,
     "february": 2,
@@ -101,6 +116,18 @@ _MONTHS = {
     "october": 10,
     "november": 11,
     "december": 12,
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sept": 9,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
 }
 
 
@@ -292,13 +319,37 @@ def _stored_member(package: GoldenFilingPackage, role: str) -> bytes:
     raise StatementGraphError(f"golden AAPL stored {role} member is missing")
 
 
-def _statement_identity(package: GoldenFilingPackage, statement_type: str) -> tuple[str, str, str]:
+def _statement_identity(
+    package: GoldenFilingPackage, statement_type: str
+) -> tuple[str, str, str | list[str]]:
+    """Declared role URI and titles for one statement kind.
+
+    Manifest shape: ``statement_roles[statement_type] = {"role_uri": str,
+    "title": str, "title_search": str | list[str]}``. ``title_search`` names the
+    row text that locates the captured table: a ``str`` is matched exactly as
+    written (the golden AAPL default path, byte-pinned), a ``list`` is tried in
+    declared order case-insensitively over whitespace-normalised text and the
+    first candidate present in the filing wins. The apple.com defaults are the
+    identity of the admitted golden AAPL packages alone (``accession`` keyed by
+    ``GOLDEN_AAPL_FIXTURES``, the same keying ``load_golden_aapl_package``
+    admits by); any other package without a declared ``statement_roles`` entry
+    carrying both ``role_uri`` and ``title`` is refused rather than silently
+    searched against Apple's roles.
+    """
     extras = package.manifest.get("statement_roles")
     spec = extras.get(statement_type) if isinstance(extras, dict) else None
     if isinstance(spec, dict) and spec.get("role_uri") and spec.get("title"):
         title = str(spec["title"])
-        search = str(spec.get("title_search") or title)
+        raw_search = spec.get("title_search")
+        if isinstance(raw_search, list):
+            search: str | list[str] = [str(item) for item in raw_search if str(item).strip()] or [title]
+        else:
+            search = str(raw_search or title)
         return str(spec["role_uri"]), title, search
+    if str(package.manifest.get("accession") or "") not in GOLDEN_AAPL_FIXTURES:
+        raise StatementGraphError(
+            f"statement identity is not declared for issuer: {statement_type}"
+        )
     return (
         PRIMARY_STATEMENT_ROLES[statement_type],
         STATEMENT_TITLES[statement_type],
@@ -486,12 +537,76 @@ def parse_calculations(content: bytes) -> dict[str, dict[str, tuple[tuple[str, s
     }
 
 
+def _search_normalize(text: str) -> str:
+    """Case-insensitive, whitespace-normalised form for title search lists."""
+    return re.sub(r"\s+", " ", text).strip().casefold()
+
+
 def _iso_dates_from_text(text: str) -> list[str]:
     out: list[str] = []
     for match in _DATE_RE.finditer(text):
         month = _MONTHS[match.group(1).lower()]
         out.append(f"{int(match.group(3)):04d}-{month:02d}-{int(match.group(2)):02d}")
     return out
+
+
+def _month_day_pairs_from_text(text: str) -> list[tuple[int, int]]:
+    """Month-day phrases without a year, in text order ("January 31," -> (1, 31))."""
+    return [
+        (_MONTHS[match.group(1).lower()], int(match.group(2)))
+        for match in _MONTH_DAY_RE.finditer(text)
+    ]
+
+
+def _compose_year_row_header(
+    rows: list[list[dict[str, Any]]],
+) -> tuple[list[str], frozenset[int]] | None:
+    """Compose year-only header columns from a month-day banner over a year row.
+
+    Fiscal-year statements (the SNOW shape) print the period as
+    "Fiscal Year Ended January 31," on one header row and bare 4-digit years on
+    the next. When no row yields two full dates, the banner's single month-day
+    phrase plus the year row's display order compose one ISO date per year
+    column. Both rows must sit above the first fact-bearing row and carry no
+    facts. An ambiguous banner (two distinct month-days) or a year row that is
+    not purely years (fewer than two, or any other non-empty cell besides "$")
+    returns None so the caller keeps its existing refusal. Returns the composed
+    ISO dates and the consumed row indices.
+    """
+    first_fact_row = next(
+        (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
+        None,
+    )
+    header_limit = first_fact_row if first_fact_row is not None else len(rows)
+    for index in range(min(header_limit, len(rows) - 1)):
+        banner_cells = rows[index]
+        if any(cell["facts"] for cell in banner_cells):
+            continue
+        month_days = _month_day_pairs_from_text(
+            " ".join(cell["text"] for cell in banner_cells)
+        )
+        if not month_days:
+            continue
+        distinct = sorted(set(month_days))
+        if len(distinct) != 1:
+            return None
+        month, day = distinct[0]
+        year_cells = rows[index + 1]
+        if any(cell["facts"] for cell in year_cells):
+            return None
+        years: list[str] = []
+        for cell in year_cells:
+            text = str(cell["text"]).strip()
+            if not text or text == "$":
+                continue
+            if not _YEAR_CELL_RE.match(text):
+                return None
+            years.append(text)
+        if len(years) < 2:
+            return None
+        composed = [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
+        return composed, frozenset({index, index + 1})
+    return None
 
 
 def _is_ix_numeric(tag: str) -> bool:
@@ -616,12 +731,25 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
 
 
 class _StatementTableParser(HTMLParser):
-    """Visible HTML table for one captured primary statement title."""
+    """Visible HTML table for one captured primary statement title.
 
-    def __init__(self, title: str) -> None:
+    ``title`` is a single string (matched exactly as written -- the byte-pinned
+    golden AAPL path) or a list of candidates tried in declared order
+    case-insensitively over whitespace-normalised text; the first candidate
+    present in the filing locates the table.
+    """
+
+    def __init__(self, title: str | list[str]) -> None:
         super().__init__(convert_charrefs=True)
-        self.title = title
+        if isinstance(title, str):
+            self._titles: tuple[str, ...] = (title,)
+            self._folded_titles: tuple[str, ...] | None = None
+        else:
+            candidates = tuple(str(item) for item in title if str(item).strip())
+            self._titles = candidates
+            self._folded_titles = tuple(_search_normalize(item) for item in candidates)
         self.rows: list[list[dict[str, Any]]] = []
+        self.chrome_row_indices: set[int] = set()
         self._hidden = 0
         self._table_depth = 0
         self._capturing = False
@@ -637,6 +765,19 @@ class _StatementTableParser(HTMLParser):
         self._cell_rowspan = 1
         self._cell_span_overflow = False
         self._grid_finalized = False
+
+    def _title_hit(self, text: str) -> str | None:
+        """The first declared title present in ``text``, or None."""
+        if self._folded_titles is None:
+            for candidate in self._titles:
+                if candidate and candidate in text:
+                    return candidate
+            return None
+        normalized = _search_normalize(text)
+        for candidate, folded_candidate in zip(self._titles, self._folded_titles):
+            if folded_candidate and folded_candidate in normalized:
+                return candidate
+        return None
 
     def _finalize_grid(self) -> None:
         if self._grid_finalized:
@@ -656,8 +797,11 @@ class _StatementTableParser(HTMLParser):
         if tag == "table":
             self._table_depth += 1
             return
-        if tag == "tr" and (self._capturing or self._seen_title):
-            self._capturing = True
+        if tag == "tr":
+            # Rows buffer even before the title is seen: EDGAR R-file viewer
+            # chrome prints the statement title inside the first header row's
+            # th cells, so that row must be capturable for the decision at its
+            # own </tr>. Pre-title rows are dropped at their row end.
             self._in_row = True
             self._row_cells = []
             return
@@ -716,10 +860,22 @@ class _StatementTableParser(HTMLParser):
             self._in_row = False
             if self._row_cells:
                 joined = " ".join(cell["text"] for cell in self._row_cells)
-                if self.title in joined:
+                hit = self._title_hit(joined)
+                if hit is not None:
                     self._seen_title = True
                     self._capturing = True
-                elif self._capturing:
+                    if self._carries_span_structure(self._row_cells):
+                        # EDGAR R-file viewer chrome carries the header block's
+                        # spans on the title row itself (label th rowspan over
+                        # the date row, period-group th colspan defining the
+                        # width). Dropping that row would tear the grid, so it
+                        # stays captured for structure; the composer skips it as
+                        # a display row. A span-free title row (the AAPL shape)
+                        # stays dropped exactly as before.
+                        self.chrome_row_indices.add(len(self.rows))
+                        self.rows.append(self._row_cells)
+                elif self._capturing or self._seen_title:
+                    self._capturing = True
                     if "see accompanying notes" in joined.lower():
                         self._ended = True
                         self._row_cells = []
@@ -737,30 +893,60 @@ class _StatementTableParser(HTMLParser):
             self._cell_facts.append(self._ix_open)
             self._ix_open = None
 
+    @staticmethod
+    def _carries_span_structure(cells: list[dict[str, Any]]) -> bool:
+        return any(
+            int(cell.get("colspan") or 1) > 1 or int(cell.get("rowspan") or 1) > 1
+            for cell in cells
+        )
+
     def handle_data(self, data: str) -> None:
         if self._ended or self._hidden:
             return
         if self._in_cell:
             self._cell_text.append(data)
-        elif self.title in data:
+        elif self._titles and self._title_hit(data) is not None:
             self._seen_title = True
 
 
-def parse_displayed_primary_table(html: str, *, title: str) -> dict[str, Any]:
-    """Source-backed composition of one captured primary filing table."""
+def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[str, Any]:
+    """Source-backed composition of one captured primary filing table.
+
+    ``title`` follows ``_StatementTableParser``: a single string matched exactly
+    as written, or a list of candidates tried in order. Columns come from a
+    header row printing two or more full dates; when no row does, a month-day
+    banner over a bare-year row (the fiscal-year SNOW shape) composes the
+    columns and the output carries ``"columns_source": "composed_year_row"``
+    (absent on the full-date path).
+    """
+    title_label = title if isinstance(title, str) else ", ".join(str(item) for item in title)
+    if not title_label.strip():
+        raise StatementGraphError("displayed statement title search is empty")
     parser = _StatementTableParser(title)
     parser.feed(html)
     parser.close()
     parser._finalize_grid()
     if not parser.rows:
-        raise StatementGraphError(f"displayed statement table is absent: {title}")
+        raise StatementGraphError(f"displayed statement table is absent: {title_label}")
+    composed: tuple[list[str], frozenset[int]] | None = None
+    if not any(
+        len(_iso_dates_from_text(" ".join(cell["text"] for cell in cells))) >= 2
+        for cells in parser.rows
+    ):
+        composed = _compose_year_row_header(parser.rows)
+    consumed = composed[1] if composed is not None else frozenset()
     header_dates: list[str] = []
     display_rows: list[dict[str, Any]] = []
-    for cells in parser.rows:
+    for index, cells in enumerate(parser.rows):
+        if index in consumed:
+            continue
         joined = " ".join(cell["text"] for cell in cells)
         dates = _iso_dates_from_text(joined)
         if not header_dates and len(dates) >= 2:
             header_dates = dates
+            continue
+        if index in parser.chrome_row_indices and not any(cell["facts"] for cell in cells):
+            # Viewer-chrome title row kept only so its spans expand; no facts, no dates.
             continue
         label_cell = next((cell for cell in cells if cell["text"] and cell["text"] != "$"), None)
         if label_cell is None and not any(cell["facts"] for cell in cells):
@@ -789,9 +975,14 @@ def parse_displayed_primary_table(html: str, *, title: str) -> dict[str, Any]:
                 "order": len(display_rows),
             }
         )
+    if composed is not None:
+        header_dates = composed[0]
     if len(header_dates) < 2:
-        raise StatementGraphError(f"displayed statement columns are absent: {title}")
-    return {"columns_iso": header_dates, "rows": display_rows}
+        raise StatementGraphError(f"displayed statement columns are absent: {title_label}")
+    output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
+    if composed is not None:
+        output["columns_source"] = "composed_year_row"
+    return output
 
 
 def resolve_label(labels: Mapping[tuple[str, str], str], concept: str, preferred: str | None) -> tuple[str, str]:
