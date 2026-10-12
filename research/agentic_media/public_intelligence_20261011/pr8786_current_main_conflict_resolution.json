@@ -40,11 +40,19 @@
     "passed": 166,
     "skipped": 2,
     "elapsed_seconds": 320.33,
-    "exit_code": 0
+    "exit_code": 0,
+    "skip_reason": "Two existing tests require omitted mockups; no changed Press or manifest test was waived"
   },
   "generated_pages": {
     "command": "python3 -m scripts.build_free_content --check",
     "result": "69 byte-identical files; zero orphans; three hand-authored exemptions",
+    "exit_code": 0
+  },
+  "contract_delta": {
+    "command": "python3 scripts/check_contract_delta.py --base 2853362cf71d95669c96ddd1b8f33a50509d59eb",
+    "introduced": 0,
+    "inherited": 0,
+    "wall_seconds": 252.1,
     "exit_code": 0
   }
 }

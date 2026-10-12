@@ -454,3 +454,16 @@ VPS virtualenv, and the real browser path. Continue into the existing
 nonpromoting earnings audit and fixed baseline workflow only from qualified
 protected main. Terminal956 remains installed and browser accepted; Press
 publication, rights-qualified story and D14 acceptance remain unproven.
+
+## October12 original-carrier conflict repair
+
+PR8786becameDIRTYat9019. Root disarmed and read back the exact OPEN head,
+no native auto-merge and no controller refresh lease. Protected main2853362
+merged as0dde7248after one exact-union paths conflict in ticker-news-qbus.
+All285main jobs/paths and the21original source hashes are preserved.
+Verification: python3 -m pytest tests/test_ci_pack.py -q --tb=short reports
+166passed,2mockups-dependent skips in320.33s. The free-content check reports
+69byte-identical outputs. Differential contract checking reports0introduced/0inherited findings in252.1s.
+Push/readback/re-arm last, then fresh CI and
+protected delivery. The tested follow-on stays separate at3464db53with
+registered same-thread continuation complete-press-delivery; see CHECKPOINT.md.
