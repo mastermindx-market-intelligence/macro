@@ -3424,6 +3424,13 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/ledger_lane.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
       - "config.yml"
       - "engine/__init__.py"
       - "engine/gex_engine.py"
@@ -3469,6 +3476,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -4022,6 +4032,8 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5255,6 +5267,7 @@ jobs:
       # load-bearing for the Prophet Lab adapter, so its PR owner must be this
       # gate:code job rather than only neural-web-core's nightly data lane.
       - "tests/test_company_intelligence_workspace_chain.py"
+      - "tests/test_company_intelligence_event_evolution.py"
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
@@ -5306,6 +5319,7 @@ jobs:
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
           tests/test_company_intelligence_workspace_chain.py
+          tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
@@ -6465,6 +6479,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -8685,6 +8701,15 @@ jobs:
       # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
       - name: stockdata.js cache resilience — index validation, dedupe, transient TTL (site20 S3)
         run: node --test tests/js/stockdata_cache_resilience.test.mjs
+      # S3-01 consumer half: a consumer whose first index read landed inside a
+      # transient failure re-asks ONCE after the failure window (Retry-After honoured),
+      # then only on visibilitychange->visible / online — never a polling loop. The
+      # mjs suite pins the loader-side recovery API; the pytest drives the REAL
+      # portfolio.js under fake timers (503 once -> names fill after the window).
+      - name: stockdata.js consumer recovery — one re-ask after the failure window (S3-01)
+        run: node --test tests/js/stockdata_consumer_recovery.test.mjs
+      - name: portfolio consumer recovery — names fill after a transient index failure (S3-01)
+        run: python -m pytest tests/test_stockdata_consumer_recovery_js.py -q
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
@@ -11006,6 +11031,12 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -13029,6 +13060,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -13611,6 +13647,8 @@ jobs:
       - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -13727,6 +13765,11 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -14121,6 +14164,8 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -15301,11 +15346,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest fastapi httpx pyyaml requests
+        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
-        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
+        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
       # WS:COMMERCIAL-ACTIVATION CA1A (2026-09-04): the event-spine acceptance
       # battery — registry-as-whitelist derivation (W2-1), envelope-v1 eid/schema/
       # meta validation and replay identity through the mounted /api/collect route,
@@ -15353,6 +15398,8 @@ jobs:
     # the repo it imports only stdlib + numpy, pytest.
     scope: exclusive
     paths:
+      - research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json
+      - research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json
       - "engine/__init__.py"
       - "engine/vol_noise_robust_realized.py"
       - "tests/test_vol_noise_robust_realized.py"
@@ -15961,6 +16008,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
@@ -16076,6 +16126,8 @@ jobs:
       - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -16367,6 +16419,11 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -16761,6 +16818,8 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -17466,6 +17525,10 @@ jobs:
       # code gate so a session-policy edit and the registration can red each other.
       - name: MI-S2 theme-relative intraday registration (prospective; session-policy binding, one-trial ledger)
         run: python -m pytest tests/test_mi_s2_theme_relative_intraday_registration.py -q
+      # Daily Brief is a zero-I/O read model over owner receipts, not B4 policy.
+      # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
+      - name: prophet Daily Brief compositor (owner receipts + fail-closed presentation)
+        run: python -m pytest tests/test_prophet_daily_brief.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
@@ -17799,6 +17862,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
       - "engine/intl_performance_records.py"
       - "engine/intl_workspace_overview.py"
       # MO-PAID-006 closure widening 2026-10-02 (#8276): engine/international_macro_dashboard.py
@@ -20413,6 +20479,11 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -20803,6 +20874,8 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -21931,6 +22004,19 @@ jobs:
     paths:
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "lib/live_flow_event_stage.py"
+      - "config/issuer_group_allowlist.yml"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "app/company_disclosures.py"
+      - "engine/company_intelligence/current_company_context.py"
+      - "engine/company_intelligence/current_context_runtime.py"
+      - "engine/company_intelligence/issuer_disclosure_selection.py"
+      - "engine/company_intelligence/issuer_disclosures.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -22653,6 +22739,10 @@ jobs:
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
       - "tests/test_verify_ticker_news.py"
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -23947,7 +24037,7 @@ jobs:
 
 
   company-relationship-candidates:
-    # Private analyst inspection and immutable retained observation contracts.
+    # Private inspection, retained observations and native issuer disclosures.
     # Curated native imports/reads, package initialization and shared pytest hooks.
     # Avoid broad runtime-input fallbacks selecting this utility for unrelated
     # homepage/strategy changes; contract-delta keeps those packing limits.
@@ -23968,12 +24058,16 @@ jobs:
       - engine/catalyst_tone.py
       - engine/company_intelligence/__init__.py
       - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/documents.py
       - engine/company_intelligence/health.py
+      - engine/company_intelligence/identity.py
+      - engine/company_intelligence/issuer_disclosures.py
       - engine/company_intelligence/pinned_relationship_candidates.py
       - engine/company_intelligence/relationship_candidates.py
       - engine/company_intelligence/relationship_observations.py
       - engine/company_intelligence/views.py
       - engine/desk_ledger.py
+      - engine/earnings_narrative/contracts.py
       - engine/earnings_release/__init__.py
       - engine/earnings_release/receipts.py
       - engine/fundamental_forensics/__init__.py
@@ -24022,10 +24116,29 @@ jobs:
       - scripts/worktree_sparse.py
       - tests/__init__.py
       - tests/conftest.py
+      - tests/test_company_disclosure_owner.py
+      - tests/test_company_disclosure_preflight.py
+      - tests/test_company_issuer_disclosures.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
       - tests/test_company_relationship_observations.py
       - tests/test_company_relationship_review_set.py
+      - research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json
+      - research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json
+      - config/delisted_symbols.yml
+      - config/issuer_group_allowlist.yml
+      - engine/company_intelligence/current_company_context.py
+      - engine/company_intelligence/current_context_runtime.py
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - engine/company_intelligence/issuer_disclosure_selection.py
+      - lib/delisted_symbols.py
+      - lib/ticker_aliases.py
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - scripts/build_security_master.py
+      - scripts/publish_company_disclosure.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24034,8 +24147,8 @@ jobs:
           python-version: "3.12"
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
-      - name: File, pinned-source and immutable observation replay contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py -q
+      - name: File, pinned-source, observation and native disclosure contracts
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_preflight.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
@@ -24086,6 +24199,30 @@ jobs:
         run: pip install pytest
       - name: WP02 source diagnostic kernel contracts
         run: python -m pytest tests/test_gmi_source_diagnostic_kernel.py -q
+
+  # Guards the news-impact Phase 0 freeze contract (closed templates, evidence
+  # binding, F3 basis consts) and its owner-payload conformance (documents.py /
+  # events.py minted spans, absences and fiscal periods).
+  news-impact-contracts:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/news_impact/**"
+      - "tests/test_news_impact_contracts.py"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/contracts.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install news impact contract test dependencies
+        run: pip install pytest jsonschema pyyaml
+      - name: news impact contract freeze and owner payload conformance
+        run: python -m pytest tests/test_news_impact_contracts.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
