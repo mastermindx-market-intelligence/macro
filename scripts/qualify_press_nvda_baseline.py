@@ -10,12 +10,15 @@ import os
 from pathlib import Path
 import platform
 import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from engine.close_pass import massive_close
 from engine.press.adjusted_baseline import BaselineRefused, PATH, PARAMS, canonical_payload, qualify
 from lib import config
 
-ROOT = Path(__file__).resolve().parents[1]
 SOURCES = (
     "scripts/qualify_press_nvda_baseline.py", "engine/press/adjusted_baseline.py",
     "engine/stock_technicals.py", "engine/technicals.py", "engine/indicators.py",
