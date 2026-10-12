@@ -22239,6 +22239,8 @@ jobs:
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/production_datasets.py"
+      - "engine/fundamental_forensics/production_provider.py"
       - "engine/fundamental_forensics/query.py"
       - "engine/fundamental_forensics/query_service.py"
       - "engine/fundamental_forensics/query_snapshots.py"
