@@ -404,8 +404,20 @@ def test_concurrent_writable_open_tolerates_duplicate_column(
     monkeypatch.setattr(sqlite3, "connect", _connect)
     with NewsStore(db, source_key="benzinga-rest") as store:
         assert _table_columns(store._conn).count("cluster_policy_version") == 1
+        # A swallowed race must leave the store writable: commit one report
+        # (a fresh cluster, stamped by the policy in force) and read it back.
+        store.commit(
+            [_routed(3, UNRELATED_TITLE, minute=2)],
+            expected_cursor="c1",
+            next_cursor="c2",
+        )
     assert fired == [True]
     assert _columns_on_disk(db).count("cluster_policy_version") == 1
+    flow = _flow(db)
+    assert flow["stories_24h"] == 2
+    assert flow["provenance"]["cluster_policy_version"] == (
+        f"{CLUSTER_POLICY_VERSION} + {UNKNOWN_CLUSTER_POLICY_VERSION}"
+    )
 
 
 def test_alter_non_duplicate_error_still_raises(tmp_path, monkeypatch):
@@ -535,6 +547,26 @@ def test_velocity_without_any_cluster_tables_returns_empty_versions(tmp_path):
         conn.execute("PRAGMA foreign_keys=OFF")
         conn.execute("DROP TABLE news_cluster_members")
         conn.execute("DROP TABLE news_clusters")
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+    got = _velocity(db)
+    assert set(got) == set(expected)
+    assert got["cluster_policy_versions_24h"] == []
+    assert got["stories_24h"] == got["count_24h"]
+
+
+def test_velocity_without_members_table_returns_empty_versions(tmp_path):
+    db = tmp_path / "no-members-table.sqlite3"
+    _clustered_store(db)
+    pristine = tmp_path / "pristine-members.sqlite3"
+    shutil.copyfile(db, pristine)
+    expected = _velocity(pristine)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys=OFF")
+        conn.execute("DROP TABLE news_cluster_members")
         conn.commit()
     finally:
         conn.close()
