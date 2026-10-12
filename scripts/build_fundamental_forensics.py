@@ -853,6 +853,33 @@ def public_summary_projection(summary: dict[str, Any]) -> dict[str, int]:
     }
 
 
+def _reusable_public_summary_stamp(path: Path, projection: dict[str, int]) -> str | None:
+    """Return the prior file's stamp when it carries the identical projection.
+
+    A rewrite of unchanged counts must produce byte-identical bytes, never a
+    fresher stamp: ``generated_at`` here is a source-snapshot clock, and a
+    render that only re-projects the same counts has no source event to
+    freshen it with (FIF A21 — no re-render freshness). The wall-clock
+    fallback stays for the genuine no-prior-file case (fresh clone, first
+    build).
+    """
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(raw, dict) or raw.get("schema") != PUBLIC_SUMMARY_SCHEMA:
+        return None
+    try:
+        if public_summary_projection(raw) != projection:
+            return None
+    except (TypeError, ValueError):
+        return None
+    stamped = raw.get("generated_at")
+    if not isinstance(stamped, str) or not stamped:
+        return None
+    return stamped
+
+
 def _write_public_summary(root: Path, summary: dict[str, Any], *, generated_at: str | None = None) -> Path:
     """Persist the counts-only projection so BOTH render paths read one number.
 
@@ -866,11 +893,16 @@ def _write_public_summary(root: Path, summary: dict[str, Any], *, generated_at: 
     """
     path = root / PUBLIC_SUMMARY_RELATIVE
     path.parent.mkdir(parents=True, exist_ok=True)
-    stamped = generated_at or datetime.now(timezone.utc).isoformat()
+    projection = public_summary_projection(summary)
+    stamped = (
+        generated_at
+        or _reusable_public_summary_stamp(path, projection)
+        or datetime.now(timezone.utc).isoformat()
+    )
     payload = {
         "schema": PUBLIC_SUMMARY_SCHEMA,
         "generated_at": stamped,
-        **public_summary_projection(summary),
+        **projection,
     }
     temp = _temp_sibling(path)
     try:
