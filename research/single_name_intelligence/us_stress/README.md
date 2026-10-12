@@ -16,16 +16,38 @@ Stock Identity, Options, Research Vault, or qledger/Evaluation.
 - Not a product surface, registration, or seal.
 - Not a signal, rank, gate, size, escalation, or trade path. Every authority
   flag in every profile is `false`; the module raises if a caller sets any of
-  them true.
+  them to a value other than literal `False` (`value is False`).
 - Not a forecast and not a 50/50 default.
-- Not identity minting. `canonical_issuer_id` is null; `security_id` is null;
-  `issuer_link` is `UNRESOLVED`. Stock Identity / Data OS owns those ids.
-  Unknown identity stays unresolved. This draft does not construct HK/US
-  issuer or security identifiers from a ticker, name, code, or CIK.
+- Not identity minting. Identity ids (`canonical_issuer_id`, `issuer_id`,
+  `security_id`, `canonical_security_id`, `instrument_id`, `listing_id`) are
+  refused at any depth unless the value is null. `issuer_link` is the literal
+  `UNRESOLVED` (or null). Stock Identity / Data OS owns those ids. Unknown
+  identity stays unresolved. This draft does not construct HK/US issuer or
+  security identifiers from a ticker, name, code, or CIK.
 - Not a then-known view of later facts. Residual windows end at `t-1`
   (strictly before `t`).
 - Parquet contents were not read when writing these drafts (`data_read:
   false`). No committed file claims numbers from real market data.
+
+## Date alignment and gap abstention
+
+Closes are ordered `(date_iso, close)` pairs. `load_closes_from_parquet`
+takes dates from the parquet DatetimeIndex, or from a `date`/`Date` column
+when the index is not datetime, and returns `None` when neither exists — it
+never fabricates dates. Unsorted or duplicate dates raise `ValueError`.
+
+Returns are computed between consecutive rows of **that** series. Stock and
+benchmark returns are then **inner-joined on the return's end date** before
+beta and residual. Position truncation (`min(len)` from the start) is not
+used; a residual is only defined when both legs are the same calendar day.
+
+A missing, non-finite, or `<=0` close leaves the date in the series and sets
+the returns that touch that date to `None`. The next finite positive close
+does not form a bridged multi-day return. `simple_returns`, residuals, and
+`_summary` never emit NaN; `_summary` excludes `None` and non-finite values.
+Each per-benchmark summary also reports `first_date`, `last_date` (of the
+defined normalized residuals) and `n_shared_dates` (inner-join size). The
+table records `window`.
 
 ## No-ticker-branch law (A36)
 
