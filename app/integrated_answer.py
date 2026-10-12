@@ -644,6 +644,85 @@ def _leg_fixed_absent(leg_id: str, degraded_reason: str) -> dict[str, Any]:
     return leg
 
 
+_SURFACED_STATUS = frozenset({"ok", "stale"})
+_MEMBERSHIP_BASIS = {
+    "value": "current_generation_not_point_in_time",
+    "en": "Theme membership reflects the current published generation, not membership as of each past date.",
+    "zh": "主题成分反映当前发布的版本，而非各历史日期当时的成分。",
+}
+
+
+def _is_surfaced(leg: dict[str, Any]) -> bool:
+    return leg.get("status") in _SURFACED_STATUS
+
+
+def _shared_source_groups(legs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Group surfaced legs that share a non-null owner or generation key.
+
+    A group is emitted only when at least two legs share that key. Null keys
+    never group. There is no count, score, or agreement field.
+    """
+    surfaced = [leg for leg in legs if _is_surfaced(leg) and isinstance(leg.get("ref"), dict)]
+    groups: list[dict[str, Any]] = []
+    for key_kind in ("generation_id", "owner_hash"):
+        buckets: dict[str, list[str]] = {}
+        for leg in surfaced:
+            raw = leg["ref"].get(key_kind)
+            if not isinstance(raw, str):
+                continue
+            buckets.setdefault(raw, []).append(str(leg["leg"]))
+        for key in sorted(buckets):
+            members = sorted(set(buckets[key]))
+            if len(members) < 2:
+                continue
+            groups.append({"key_kind": key_kind, "key": key, "legs": members})
+    groups.sort(key=lambda item: (item["key_kind"], item["key"]))
+    return groups
+
+
+def _price_derived_leg_ids(legs: list[dict[str, Any]]) -> list[str]:
+    """Legs whose surfaced payload is a price fact.
+
+    theme_tape is price-derived whenever it is surfaced. earnings_expectation
+    is price-derived only when expectation_chip is present: pead_drift_20d and
+    bad_news_absorption are market-relative price facts.
+    """
+    by_leg = {leg["leg"]: leg for leg in legs}
+    derived: list[str] = []
+    tape = by_leg.get("theme_tape")
+    if tape is not None and _is_surfaced(tape):
+        derived.append("theme_tape")
+    earnings = by_leg.get("earnings_expectation")
+    if earnings is not None and _is_surfaced(earnings):
+        payload = earnings.get("payload")
+        chip = payload.get("expectation_chip") if isinstance(payload, dict) else None
+        if chip is not None:
+            derived.append("earnings_expectation")
+    derived.sort()
+    return derived
+
+
+def _provenance(legs: list[dict[str, Any]]) -> dict[str, Any]:
+    block: dict[str, Any] = {
+        "schema": "integrated_answer.provenance.v0",
+        "shared_sources": _shared_source_groups(legs),
+        "price_derived_legs": _price_derived_leg_ids(legs),
+    }
+    cte = next((leg for leg in legs if leg.get("leg") == "company_theme_exposure"), None)
+    if cte is not None and _is_surfaced(cte):
+        block = {
+            "schema": block["schema"],
+            "shared_sources": block["shared_sources"],
+            "membership_basis": {
+                "value": _MEMBERSHIP_BASIS["value"],
+                "en": _MEMBERSHIP_BASIS["en"],
+                "zh": _MEMBERSHIP_BASIS["zh"],
+            },
+            "price_derived_legs": block["price_derived_legs"],
+        }
+    return block
+
+
 def _compose_page(ticker: str) -> dict[str, Any]:
     composed_at = _utc_now()
     legs = [
@@ -703,6 +782,7 @@ def _compose_page(ticker: str) -> dict[str, Any]:
         "footer": {"en": "Heads-up only, not a buy signal.", "zh": "仅为提示，非买入信号。"},
         "coverage_note": coverage_note,
         "legs": legs,
+        "provenance": _provenance(legs),
     }
 
 
