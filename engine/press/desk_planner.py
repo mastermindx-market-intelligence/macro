@@ -854,7 +854,12 @@ def chronicle_context(as_of: date, *, tickers=None, topics=None,
 
 def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
                 blocked_refs: set[str], *, name: str = "brief") -> list[dict]:
+    from lib.pages import rendered_ticker_pages  # noqa: PLC0415
+
     events = _chronicle_events(root)
+    # Existing shipped dossiers only; the shared helper includes indexed pages
+    # omitted from sparse checkouts and excludes the stocks landing page.
+    rendered_tickers = rendered_ticker_pages(repo_root(root) / "site")
     window = int(desk_cfg.get("window_days") or 3)
     excluded = {str(s) for s in (desk_cfg.get("exclude_sources") or [])}
 
@@ -950,10 +955,12 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
             "min_words": int(desk_cfg.get("min_words") or 300),
             "max_words": int(desk_cfg.get("max_words") or 600),
             "min_anchored_receipts": int(desk_cfg.get("min_anchored_receipts") or 0),
-            # What the writer may link. Usually empty for a Brief: the pages
-            # that carry these numbers are gated, so the piece carries dated
-            # receipts instead. Vault coverage is the existing public exception.
-            "allowed_links": _allowed_links(cfg, [primary_url]),
+            # Link only the story's existing public dossiers alongside any
+            # independently admitted primary source. Receipts stay inline.
+            "allowed_links": _allowed_links(cfg, [primary_url] + [
+                f"{_SITE_BASE}/stocks/{ticker}.html"
+                for ticker in tickers if ticker in rendered_tickers
+            ]),
             "story": {
                 "kind": ev.get("kind"),
                 "title_hint": event_title,
@@ -1391,3 +1398,14 @@ def plan(desks=None, *, as_of=None, root=None, cfg: dict | None = None,
         except Exception as exc:  # noqa: BLE001
             log.warning("press.desk_planner: desk %s planning failed: %s", name, exc)
     return slots
+
+
+def plan_external_candidate(**inputs) -> dict:
+    """Opt-in retained-source planning only; never included in ordinary slots.
+
+    The envelope is a validation context, not writer/provider admission. The
+    ordinary Brief cadence and publication gates remain with run_press.
+    """
+    from engine.press.external_candidate import plan_whitehouse_candidate
+
+    return plan_whitehouse_candidate(**inputs)

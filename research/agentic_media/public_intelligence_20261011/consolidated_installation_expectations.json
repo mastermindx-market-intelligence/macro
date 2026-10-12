@@ -1,0 +1,55 @@
+{
+  "source_revision": "47069bb68a23218217b356f87175fc2c9ce2ed9d",
+  "source_files": 21,
+  "expected_sha256": "d6f1eb32a9a46c9f0754cfeb1db97daf6d2090a0881e9f285dec5221f444d7af",
+  "source": {
+    "scripts/inspect_press_staging.py": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
+    "scripts/run_press.py": "7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6",
+    "engine/press/validators.py": "33d293ae15910607785cd2340ae04e012b32cfee084d5b636e175b8e3d944ffe",
+    "engine/press/desk_planner.py": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+    "engine/press/earnings_adapter.py": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163",
+    "engine/earnings_narrative/story_packets.py": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e",
+    "engine/earnings_narrative/story_store.py": "83037ae9ce5201f8bfca267bfa2f45e7ae7b47e6d3b7287d52bf7620c3c7762b",
+    "engine/earnings_narrative/admission.py": "aee12aff2521d0810e31984cbda7c1f3f1fbcee7ed527069ebe20ca40bfbb5a5",
+    "scripts/stage_earnings_story_press.py": "c6673e8a0bf8ad9dfc411cf159cfe21338c00cab57fc8cb086df5298efc1a60c",
+    "engine/press/writer.py": "f74be94741ec26180420e4f607552d1cf56bc7bc70307753c167338d9624fed6",
+    "scripts/publish_earnings_story_packets_r2.py": "1dea622fd8e045c9831cca9643b84a2018c121c66c476be753e9d2328f037ddf",
+    ".github/workflows/earnings-story-packets.yml": "b7c8dbb670f777ddefcec98ce0f5afbeebc8f020bd67712ac88037b3a51b03bb",
+    "engine/press/external_candidate.py": "f109055b0638d34193a50fe296bb2e545ee073184329e793dc1a5d98b1266675",
+    "engine/press/adjusted_baseline.py": "76dbd36d2754f170e2fb2e1a09f9453f2d19866674a91c9250dd0ea6957f0f16",
+    "engine/whitehouse_feed.py": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e",
+    "engine/close_pass/massive_close.py": "63b137a6c35a8346e0ed6adfbfd80c17ec3fc0e1e08fcf828c6dcfe1670d209b",
+    "scripts/build_whitehouse.py": "56a4b5f535fafb7ffee0d0df873674e7f0677708d47d6ad968f0af99b31dc534",
+    "scripts/qualify_press_nvda_baseline.py": "db32f50eda2bd4b6a78ecf4e957ad1cdbf67d056e09d684983d0f8a363917203",
+    ".github/workflows/press-source-qualification.yml": "9fbb03ece7326998995a0444b05246c6bfef43d5b3a00999ce399b22d8981e79",
+    "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891"
+  },
+  "pages": {
+    "blog/index.html": {
+      "sha256": "39c2dc0b28268522df41f1e1ab96fd744cfbeb2798b3292a46f128a7a469bd8f",
+      "bytes": 29500,
+      "title": "Blog \u2014 MastermindX",
+      "canonical": "https://www.mastermind-x.com/blog/index.html",
+      "glossary": 1,
+      "morning_edition": 1
+    },
+    "learn/index.html": {
+      "sha256": "a511e8bac07d82558488fa1286187539a0e0d54141750e201ea574693556db13",
+      "bytes": 35308,
+      "title": "Learning Center \u2014 MastermindX",
+      "canonical": "https://www.mastermind-x.com/learn/index.html",
+      "glossary": 1,
+      "morning_edition": 1
+    },
+    "tools/calculators/position-size.html": {
+      "sha256": "b9e55b86a3dfa17567998398b4057458e6550e15379e5e411b43c03b1713e6db",
+      "bytes": 45748,
+      "title": "Position Size Calculator \u2014 MastermindX",
+      "canonical": "https://www.mastermind-x.com/tools/calculators/position-size.html",
+      "glossary": 1,
+      "morning_edition": 1
+    }
+  },
+  "installed_verified": false
+}

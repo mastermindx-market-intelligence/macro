@@ -7577,6 +7577,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/consumer_cyclical_intelligence_read_model.v1.valid.json"
       - "tests/test_consumer_cyclical_intelligence_read_model_contract.py"
@@ -12915,6 +12919,10 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "collectors/biocatalyst/**"
       - "config/**"
       - "contracts/**"
@@ -14182,6 +14190,7 @@ jobs:
           tests/test_publish_company_theme_exposure_r2.py
           tests/test_earnings_story_promotion.py
           tests/test_earnings_story_packets.py
+          tests/test_earnings_dossier_link_contract.py
           tests/test_earnings_story_press_workflow.py
           tests/test_earnings_story_press_admission.py
           tests/test_earnings_story_press_ingress.py
@@ -14742,18 +14751,10 @@ jobs:
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: data
-    # D14 W1 Media Network press engine (2026-07-26). The press lane emits INTO
-    # the free acquisition estate, so its own suite has to run wherever that
-    # estate's drift law runs — a press change that breaks the frontmatter
-    # contract would otherwise surface as a red free-content-estate job on
-    # somebody else's PR. The dependency line follows free-content-estate's
-    # minimal-deps convention verbatim (`pytest pyyaml jinja2`) — the same three
-    # packages cover the same closure, so there is no reason to spell it
-    # differently. (run_ci_pack.py does share a venv between adjacent jobs with
-    # byte-identical install lines, but these two land in different packs, so
-    # matching buys convention here, not a shared environment.)
-    # Network-free: the validator suite is 100% deterministic and the writer
-    # (the one module that would make an LLM call) is never invoked by tests.
+    # D14 Press emits into the free acquisition estate, so keep its validation
+    # in the same data gate. The fixed offline baseline adds the incumbent
+    # pandas/numpy analytical engine and requests transport tests to the estate
+    # pytest/pyyaml/jinja2 closure. Tests never invoke a real provider or writer.
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -14762,11 +14763,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2
+        run: pip install pytest pyyaml jinja2 numpy pandas requests
       - name: press validator suite (paraphrase, fact-anchor, our-value, lexicons)
         run: python -m pytest tests/test_press_validators.py -q
       - name: press planner + writer + orchestrator suites
-        run: python -m pytest tests/test_press_planner.py tests/test_press_writer.py tests/test_press_run.py tests/test_earnings_canonical_story.py -q
+        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
       - name: press admin panel + workflow shape
         run: python -m pytest tests/test_press_admin.py tests/test_press_workflow.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
@@ -18221,6 +18222,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "tests/test_pg_economic_source_selection.py"
       - "scripts/refresh_event_workspaces.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -18283,6 +18288,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/economic_observations.py"
@@ -21166,6 +21175,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/pages.py"
       # B03 coverage reads the exact producer preview partition.
       - "site/turn_watch/turn_watch.json"
       # Auth app imports reach the B03 observation projection and B1 intake.
@@ -22792,6 +22803,8 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/pages.py"
       - "lib/exchange_holidays.py"
       - "ops/launchd/run_skew_accrual.sh"
       - "ops/launchd/run_with_env.sh"
@@ -22973,6 +22986,10 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"
@@ -23123,6 +23140,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/config.py"
+      - "lib/pages.py"
       - "engine/__init__.py"
       - "engine/pb_d_cohort.py"
       - "engine/pb_d_evaluation.py"
