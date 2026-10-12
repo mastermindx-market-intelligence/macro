@@ -141,3 +141,25 @@ integration review; root consumed and accepted the same retained result.
 Exact scope and commands are inTERMINAL_REFRESH_ACCEPTANCE.md. Hosted current-head
 CI38185449454, protected landing, installation and pristine browser acceptance
 remain outstanding. No fresh account, new follow, migration or deployment occurred.
+
+
+## Latest recovery frontier — 2026-10-12
+
+Verified: git merge from original d425 integrated main7cb33d3a as8d304ac93cda;
+only Tiingo continuity conflicted and main's exact blob was preserved. The13-file
+source hash check passes and Agent OS validates1668records,0errors,141advisories.
+The original PR remains disarmed until fresh affected checks and its normal
+fast-forward push complete. Read exact current PR head/CI before landing.
+
+Terminal956 is now merged8520e5d7, installed and real-browser accepted, with the
+full safe receipt and screenshot committed at2b5726b91805 on the existing Press
+recovery branch. Do not repeat that successful sign-in or builder installation.
+That branch also contains the next-phase338test/contract-delta proof. No Press
+publication, adjusted-data fetch, read-only earnings audit or domain cutover has
+occurred. Original12:07 provider uncertainty remains frozen without replay.
+
+Conflict-refresh validation at8d304ac93cdaad471f4c3765ba305d8ef47c1408:
+`python3 -m pytest tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_press_workflow.py -q --tb=short`
+passed29tests in585.15seconds. Agent OS final validation remains1668records,
+0errors and141existing advisories; git diff --check is clean. These tests prove
+the integrated local tree only; fresh hosted proof and Macro installation remain owed.

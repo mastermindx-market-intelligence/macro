@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Complete original PR8786 after consuming incumbent PR8870 calendar-scope fix with authorship preserved, then verify merged installation and public browser routes and run the prepared nonpromoting earnings audit. Terminal956 is now2fd1b1a9 with integrated104unit/typecheck/18browser local proof and accepted Fabric review, pending hostedCI38185449454 and protected installation. Separate Press baseline qualification source01097050608b is pushed and tested but has no live fetch, staging or publication admission. Integrate the retained-source follow-on from fresh main after8786 lands.
+next_action: Complete original PR8786 exact-head refresh after merging main7cb33d3a and preserving the landed Tiingo record, then verify installation and public browser routes and dispatch the prepared nonpromoting earnings audit. Terminal956 is protected-merged8520e5d7, installed through the existing builder, and verified by real saved-credential sign-in plus reload with the NVDA destination preserved. Follow-on source and 338-test/contract-delta evidence are pushed on recovery branch2b5726b91805; integrate from fresh main after8786 lands. The October8 candidate is now stale; preserve event and publication clocks separately.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
@@ -50,3 +50,39 @@ The 2026-10-11 checkpoint contains the actual staging invocation and output, sou
 identities, regression evidence, current live probes and unresolved dependencies.
 The named incoming handoff was not available at entry; the direct commission supplied
 the scope. No prior handoff or archived chat is treated as execution evidence.
+
+
+## Conflict refresh and installed Terminal — 2026-10-12
+
+Original d425 CI38186335600 passed all21binding checks. Controller38189419480
+required fresh proof after the landed CI-definition repair de0c202a and deferred
+refresh at10indexed CI runs against cap8. New main7cb33d3aaac3512bee53d7254a785af38f3bd172
+then conflicts only in the inherited Tiingo workstream record. Root disarmed the
+original carrier and integrated main as8d304ac93cdaad471f4c3765ba305d8ef47c1408,
+preserving main's Tiingo record byte-for-byte. All13installation-source hashes
+remain unchanged. Agent OS validates1668records with0errors and141advisories.
+Commands: git merge --no-commit origin/main; git restore --source=MERGE_HEAD
+--staged --worktree agentos/workstreams/WS-TIINGO-DATA-OS.md; source SHA256
+comparison against the retained13-file expectation; python3 scripts/agentos.py validate.
+
+Terminal956's exacthead2fd1b1a9 passed CI38185449454 and protected-merged as
+8520e5d77e9f0b83973a988cf4f4adff300994cf. The existing terminal-build.sh installed
+that exact target; installed HEAD/marker match, service active, checkout clean,
+and postinstall preflight CLEAN. One real saved-credential Sign in click closed
+the dialog automatically in2.58seconds; a fresh reload preserved sym=NVDA and
+existing attribution/entry without another dialog. No account creation or follow
+write is claimed. Exact commands, actual browser screenshot and preflight hashes
+are committed on the recovery branch at2b5726b91805e083641b04348e7347c74dea8ebd.
+
+The recovery branch's integrated338test passes and differential contract result
+(zero introduced/inherited) are retained in648072805858. Its source is not installed.
+A name-only GitHub read confirms POLYGON_API_KEY exists; no live authentication or
+workflow dispatch occurred. October12 planning has no current Brief slot and the
+October8 external candidate is outside its three-day window, in addition to the
+existing first-party value/receipt shortfall. Do not backdate or publish it.
+
+Conflict-refresh validation at8d304ac93cdaad471f4c3765ba305d8ef47c1408:
+`python3 -m pytest tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_press_workflow.py -q --tb=short`
+passed29tests in585.15seconds. Agent OS final validation remains1668records,
+0errors and141existing advisories; git diff --check is clean. These tests prove
+the integrated local tree only; fresh hosted proof and Macro installation remain owed.
