@@ -27,6 +27,8 @@ Environment=MM_TICKER_NEWS_DB=/var/lib/macro-ticker-news/qbus.sqlite3
 Environment=MM_TICKER_NEWS_UNIVERSE=/var/lib/macro-ticker-news/news_universe.json
 Environment=MM_TICKER_NEWS_RIGHTS=/etc/macro-ticker-news-rights.json
 Environment=MM_TICKER_NEWS_HEALTH=/var/lib/macro-ticker-news/health.json
+# Integrated Answer v0 read API (app/integrated_answer.py _require_enabled): flag-on; route 404s when unset.
+Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1
 StateDirectory=macro-codex macro-codex-2 macro-codex-3
 StateDirectoryMode=0700
 # ── Site Access Gate env (all optional; safe defaults apply when absent) ─────
@@ -106,6 +108,12 @@ InaccessiblePaths=/var/lib/macro-market-memory/state
 InaccessiblePaths=/var/lib/macro-market-memory-options
 InaccessiblePaths=/etc/macro-market-memory-options
 InaccessiblePaths=-/etc/macro-market-memory.env
+# Company Intelligence provisioning runs before validation and restart. Metadata
+# and immutable artifacts are readable; retained source and publisher journals
+# stay outside the API namespace. Missing paths fail service startup closed.
+ReadOnlyPaths=/var/lib/macro-company-intelligence/state
+ReadOnlyPaths=/var/lib/macro-company-intelligence/artifacts
+InaccessiblePaths=/var/lib/macro-company-intelligence/publisher
 # Provider credentials belong only to macro-ticker-news.service.
 InaccessiblePaths=-/etc/macro-ticker-news.env
 

@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-11T07:15:34.713450+00:00",
+  "generated_utc": "2026-10-11T23:56:39.247653+00:00",
   "as_of": "2026-10-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -6785,14 +6785,6 @@
       },
       {
         "ticker": "NVNI",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "PSKY",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -21288,14 +21280,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "IPEXR",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "JENA-RI",
         "category": "Delistings",
         "confidence": "high",
@@ -21928,7 +21912,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "LGNZZ",
+        "ticker": "LGNYZ",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -22144,7 +22128,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "FHN-PF",
+        "ticker": "FHN-PH",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -25552,7 +25536,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "AQNB",
+        "ticker": "AGQPF",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -25816,7 +25800,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RWTQ",
+        "ticker": "RWTN",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -26008,7 +25992,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "TCBIO",
+        "ticker": "TCBI-PB",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -26334,14 +26318,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "MSSAF",
-        "category": "Liquidations",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Liquidations"
       },
       {
         "ticker": "PRGS",
@@ -28349,10 +28325,10 @@
         },
         {
           "ticker": "COE",
-          "buy_usd": 133514854.0,
+          "buy_usd": 124202047.0,
           "sell_usd": 0.0,
-          "net_usd": 133514854.0,
-          "buyers": 40,
+          "net_usd": 124202047.0,
+          "buyers": 37,
           "sellers": 0
         },
         {
@@ -28384,10 +28360,10 @@
         {
           "ticker": "PSX",
           "buy_usd": 0.0,
-          "sell_usd": 7464006880.0,
-          "net_usd": -7464006880.0,
+          "sell_usd": 7461912595.0,
+          "net_usd": -7461912595.0,
           "buyers": 0,
-          "sellers": 13
+          "sellers": 12
         },
         {
           "ticker": "IHT",
@@ -28430,14 +28406,6 @@
           "sellers": 51
         },
         {
-          "ticker": "DELL",
-          "buy_usd": 0.0,
-          "sell_usd": 1173176764.0,
-          "net_usd": -1173176764.0,
-          "buyers": 0,
-          "sellers": 1047
-        },
-        {
           "ticker": "CRWV",
           "buy_usd": 0.0,
           "sell_usd": 1147723669.0,
@@ -28454,6 +28422,14 @@
           "sellers": 1
         },
         {
+          "ticker": "DELL",
+          "buy_usd": 0.0,
+          "sell_usd": 1098352961.0,
+          "net_usd": -1098352961.0,
+          "buyers": 0,
+          "sellers": 983
+        },
+        {
           "ticker": "PRMB",
           "buy_usd": 0.0,
           "sell_usd": 994799972.0,
@@ -28462,20 +28438,20 @@
           "sellers": 2
         },
         {
-          "ticker": "ANET",
-          "buy_usd": 0.0,
-          "sell_usd": 991557230.0,
-          "net_usd": -991557230.0,
-          "buyers": 0,
-          "sellers": 281
-        },
-        {
           "ticker": "NVDA",
           "buy_usd": 0.0,
           "sell_usd": 989524042.0,
           "net_usd": -989524042.0,
           "buyers": 0,
           "sellers": 32
+        },
+        {
+          "ticker": "ANET",
+          "buy_usd": 0.0,
+          "sell_usd": 914667757.0,
+          "net_usd": -914667757.0,
+          "buyers": 0,
+          "sellers": 269
         },
         {
           "ticker": "MDLN",
@@ -28494,12 +28470,12 @@
           "sellers": 163
         },
         {
-          "ticker": "UMC",
+          "ticker": "ILMN",
           "buy_usd": 0.0,
-          "sell_usd": 755150200.0,
-          "net_usd": -755150200.0,
+          "sell_usd": 724475263.0,
+          "net_usd": -724475263.0,
           "buyers": 0,
-          "sellers": 7
+          "sellers": 122
         }
       ]
     },
@@ -32009,13 +31985,6 @@
         "last_surprise_pct": -3.3
       },
       {
-        "ticker": "UMC",
-        "next_date": "2026-10-28",
-        "days_to": 17,
-        "eps_forecast": 0.23,
-        "last_surprise_pct": 237.5
-      },
-      {
         "ticker": "URI",
         "next_date": "2026-10-28",
         "days_to": 17,
@@ -32119,6 +32088,13 @@
         "days_to": 18,
         "eps_forecast": 2.55,
         "last_surprise_pct": 2.3
+      },
+      {
+        "ticker": "ILMN",
+        "next_date": "2026-10-29",
+        "days_to": 18,
+        "eps_forecast": 1.36,
+        "last_surprise_pct": 6.5
       },
       {
         "ticker": "IR",

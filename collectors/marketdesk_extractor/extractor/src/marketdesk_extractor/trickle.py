@@ -32,7 +32,7 @@ from __future__ import annotations
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable
 
 from . import allocator, db
@@ -45,6 +45,7 @@ from .marketdesk import (
     MarketDeskClient,
     MarketDeskError,
     SessionExpired,
+    TransientHTTPError,
 )
 from .pipeline import publish_vault_pending, upload_pending
 from .schemas import Status
@@ -56,6 +57,11 @@ log = get_logger("trickle")
 # Backstop only: the token-bucket pace in run_tick is the real rate governor;
 # this just caps a single tick's drain so nothing runs away.
 DOWNLOADS_PER_ACCOUNT_PER_TICK = 15
+
+# A failed PDF response is not proof of a bad document. Keep exactly one
+# attempt per failed tick and delay re-selection of the same provider account.
+# This does not add quota or bypass the existing token bucket/rolling ledger.
+TRANSIENT_PDF_RETRY_DELAY = timedelta(minutes=5)
 
 # ---------------------------------------------------------------------------
 # Dead-driver watchdog
@@ -114,6 +120,7 @@ class AccountState:
     client: MarketDeskClient | None = None
     authed: bool = False
     cooldown_until: datetime | None = None  # cap-bounce backoff
+    transient_retry_after: datetime | None = None  # transport/5xx backoff
     tokens: float = 0.0                      # pacing token bucket (see _refill_tokens)
     last_refill: datetime | None = None
     # dead-driver watchdog: consecutive ticks whose every download attempt died on
@@ -126,7 +133,13 @@ class AccountState:
         return self.profile.name
 
     def in_cooldown(self, now: datetime) -> bool:
-        return self.cooldown_until is not None and now < self.cooldown_until
+        return (
+            (self.cooldown_until is not None and now < self.cooldown_until)
+            or (
+                self.transient_retry_after is not None
+                and now < self.transient_retry_after
+            )
+        )
 
 
 @dataclass
@@ -144,6 +157,7 @@ class AccountPlan:
     new_pending: int
     backfill_pending: int
     cooldown_until: datetime | None = None
+    transient_retry_after: datetime | None = None
 
     def describe(self) -> str:
         if not self.authed:
@@ -151,6 +165,8 @@ class AccountPlan:
         cd = ""
         if self.cooldown_until is not None:
             cd = f" cooldown_until={self.cooldown_until.isoformat()}"
+        if self.transient_retry_after is not None:
+            cd += f" transient_retry_after={self.transient_retry_after.isoformat()}"
         nxt = self.next_blob_id or "(none eligible)"
         return (
             f"[{self.account}] quota={self.available_quota} "
@@ -166,6 +182,7 @@ class TickResult:
     downloaded_new: int = 0
     downloaded_backfill: int = 0
     cap_bounces: int = 0
+    transient_errors: int = 0  # safely requeued provider TLS/HTTP 5xx
     unsupported: int = 0
     errors: int = 0
     driver_dead: int = 0  # attempts that died on the Playwright transport
@@ -174,7 +191,8 @@ class TickResult:
     def summary(self) -> str:
         return (
             f"downloaded new={self.downloaded_new} backfill={self.downloaded_backfill} "
-            f"cap_bounces={self.cap_bounces} unsupported={self.unsupported} "
+            f"cap_bounces={self.cap_bounces} transient_errors={self.transient_errors} "
+            f"unsupported={self.unsupported} "
             f"errors={self.errors} driver_dead={self.driver_dead} "
             f"session_expired={self.session_expired}"
         )
@@ -216,6 +234,11 @@ def plan_account(
         new_pending=new_pending,
         backfill_pending=backfill_pending,
         cooldown_until=state.cooldown_until,
+        transient_retry_after=(
+            state.transient_retry_after
+            if state.transient_retry_after is not None
+            and now < state.transient_retry_after else None
+        ),
     )
 
 
@@ -353,6 +376,23 @@ def run_tick(
                     "[%s] cap bounce on %s: %s — cooldown until %s",
                     state.name, blob_id, e,
                     free_at.isoformat() if free_at else "next tick",
+                )
+                break
+            except TransientHTTPError as e:
+                # A server-side 5xx or a request that never established TLS is
+                # NOT a bad PDF. Keep the source row eligible for later retry,
+                # spend this tick's pacing token (no speculative extra request),
+                # and delay this ACCOUNT rather than hammering the same blob.
+                # The confirmed download ledger remains untouched, so the
+                # existing 70/24h cap and quota accounting stay authoritative.
+                res.transient_errors += 1
+                db.set_status(conn, blob_id, Status.DISCOVERED,
+                              error_message=None)
+                state.transient_retry_after = now + TRANSIENT_PDF_RETRY_DELAY
+                log.warning(
+                    "[%s] transient PDF failure on %s: %s — requeued with "
+                    "account retry after %s", state.name, blob_id, e,
+                    state.transient_retry_after.isoformat(),
                 )
                 break
             except MarketDeskError as e:
