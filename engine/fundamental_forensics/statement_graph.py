@@ -116,9 +116,9 @@ class GoldenFilingPackage:
     members: dict[str, bytes]
 
 
-def mint_fixture_recorded_at(now: datetime | None = None) -> str:
-    """Capture-process clock. Request time must never mint this."""
-    stamp = now or datetime.now(timezone.utc)
+def mint_fixture_recorded_at(now: datetime) -> str:
+    """Capture-process clock, injected by the capture script. Request time must never mint this."""
+    stamp = now
     if stamp.tzinfo is None:
         raise StatementGraphError("fixture_recorded_at requires an aware UTC clock")
     return stamp.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
