@@ -76,5 +76,10 @@ decided_at: 2026-10-12
 - Branch protection names the aggregate job, not the shards; renaming the aggregate or
   changing the required contexts requires updating `merge-on-green.yml`, its tests and
   AGENTS.md in the same PR.
-- At the time of writing #963 is armed on 12a78fa3c with nine of ten jobs green and
-  desktop-1 still running; it lands before any other armed E20 PR.
+- Landing vehicle (2026-10-12 05:38Z): #963's head b1ee4676c was folded into landing
+  train 3 (#960, fold head f810a5ca9) so one squash lands the split together with the
+  train's eight features; #963 itself was disarmed to avoid a race under strict
+  protection and stays open as the fallback until #960 squashes. Its own refreshed heads
+  were held in `action_required` by the controller refresh
+  (DSC:TERMINAL-CONTROLLER-REFRESH-RUN-IS-HELD-FOR-APPROVAL), which is why the fold was
+  faster than waiting for it.
