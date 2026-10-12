@@ -50,9 +50,11 @@ from s1_infoleak import detect as leak_detect  # noqa: E402
 from s1_infoleak import vintage_series  # noqa: E402
 from s1_manifest import (TRAIN_END, build_rows, is_session_fn,  # noqa: E402
                          last_session_before, manifest_bytes, split_digests, time_split)
-from s1_prereg import (BASE, BRANCH, BENCHES, D1_LABELS, HORIZONS, INPUT_PINS,  # noqa: E402
-                       LANE, RUNS_REL, SUBJECTS, VERSION, prereg_digest)
-from s1_report import block_key, make_block, render_report_md  # noqa: E402
+from s1_prereg import (AUTHORITY_FLAGS, BASE, BRANCH, BENCHES, D1_LABELS,  # noqa: E402
+                       HORIZONS, INPUT_PINS, LANE, POWER_FLOOR_N, RUNS_REL,
+                       SUBJECTS, VERSION, assert_authority_false, prereg_digest)
+from s1_report import (LABEL_BLOCKED, LABEL_HK_VINTAGE, block_key,  # noqa: E402
+                       make_block, render_report_md, version_record_obj)
 from s1_stats import (ALPHA, binom_p_one_sided_greater, mirror_mean_ci,  # noqa: E402
                       sign_test_two_sided)
 
@@ -68,6 +70,10 @@ NOMINAL_6827 = 0.6827
 LABEL_TUNE_RETIRED = "NON-CONFIRMATORY — TUNE RETIRED (A23 INFO-LEAK)"
 LABEL_IN_SAMPLE = "IN-SAMPLE for Gamma"
 LABEL_DESCRIPTIVE_HK = "DESCRIPTIVE — outside the P03 cohort (V0 row 14 / X7)"
+POWER_FLOOR_ABSTAIN = (
+    "ABSTAIN — honest_n {n} < " + str(POWER_FLOOR_N)
+    + " (REG power floor); not a test result"
+)
 
 # per-run deterministic stamps (BASE commit date / last input bar), set in main()
 DETECTED_AT: str | None = None
@@ -113,10 +119,38 @@ def code_tree_sha(repo_root: Path) -> str:
     return git_out(repo_root, ["rev-parse", f"HEAD:{RESIDUAL_REL}"]) or "UNAVAILABLE"
 
 
-def seal_commit_sha(repo_root: Path) -> str:
+def seal_commit_sha(repo_root: Path, runs_rel: str = RUNS_REL) -> str:
     """The commit that introduced the seal file (deterministic at/after C3)."""
     return git_out(repo_root, ["log", "--format=%H", "-n", "1", "--",
-                               f"{RUNS_REL}/SEAL_AND_BUDGET.json"]) or "UNAVAILABLE"
+                               f"{runs_rel}/SEAL_AND_BUDGET.json"]) or "UNAVAILABLE"
+
+
+def retired_scope_pairs(leak: dict) -> set[tuple[str, str]]:
+    """Map US-series vintage hits to retired (protocol, subject) pairs.
+
+    Prereg action: TUNE RETIRED for every protocol using that series
+    (P01, P03-BABA). A BABA/SPY/KWEB hit never retires an HK subject.
+    """
+    hits = {name: bool((leak.get(name) or {}).get("detection"))
+            for name in ("BABA", "SPY", "KWEB")}
+    out: set[tuple[str, str]] = set()
+    if hits["BABA"] or hits["SPY"]:
+        out.add(("P01", "adr_baba"))
+        out.add(("P03", "adr_baba"))
+    if hits["KWEB"]:
+        out.add(("P03", "adr_baba"))
+    return out
+
+
+def coverage_hole_0700(rows: list, h: int) -> str:
+    abstain = [r for r in rows if r["split"] == "ABSTAIN_RESOLVER_NONE"]
+    if not abstain:
+        return (f"COVERAGE HOLE: 0700 anchors none..none ABSTAIN_RESOLVER_NONE "
+                f"(0/{len(rows)} h={h} units; qledger HK clock floor 2014-01-01)")
+    first = min(r["anchor_session_date"] for r in abstain)
+    last = max(r["anchor_session_date"] for r in abstain)
+    return (f"COVERAGE HOLE: 0700 anchors {first}..{last} ABSTAIN_RESOLVER_NONE "
+            f"({len(abstain)}/{len(rows)} h={h} units; qledger HK clock floor 2014-01-01)")
 
 
 # --------------------------------------------------------------------------- #
@@ -138,11 +172,19 @@ def rebuild_manifests(store) -> dict:
     return out
 
 
-def verify_seal(store, repo_root: Path, input_ref: str) -> tuple[dict, dict]:
-    seal_path = repo_root / RUNS_REL / "SEAL_AND_BUDGET.json"
+def verify_seal(store, repo_root: Path, input_ref: str,
+                runs_rel: str = RUNS_REL) -> tuple[dict, dict]:
+    seal_path = repo_root / runs_rel / "SEAL_AND_BUDGET.json"
     if not seal_path.exists():
         raise SealMismatch(f"seal file missing: {seal_path}")
     seal = json.loads(seal_path.read_text(encoding="utf-8"))
+    try:
+        assert_authority_false(seal.get("authority_flags"))
+        labels = seal.get("labels")
+        if isinstance(labels, dict):
+            assert_authority_false(labels)
+    except ValueError as e:
+        raise SealMismatch(str(e)) from e
     if seal.get("prereg_digest_sha256") != prereg_digest():
         raise SealMismatch("prereg digest mismatch: the working PREREG_SPEC is not the "
                            "sealed spec")
@@ -163,7 +205,7 @@ def verify_seal(store, repo_root: Path, input_ref: str) -> tuple[dict, dict]:
                     row["membership_sha256"] != info["membership_sha256"]:
                 raise SealMismatch(f"membership mismatch for {(pid, counter, h, sp)}")
             sealed_rows += info["count"]
-        committed = repo_root / RUNS_REL / "manifests" / f"{pid}_{counter}_{h}.jsonl"
+        committed = repo_root / runs_rel / "manifests" / f"{pid}_{counter}_{h}.jsonl"
         if not committed.exists():
             raise SealMismatch(f"sealed manifest missing from the tree: {committed.name}")
         if committed.read_bytes() != entry["bytes"]:
@@ -265,7 +307,7 @@ def directional_blocks(pid: str, evaluation: dict, rebuilt: dict, leak_retired: 
                     missing[o["split"]] += 1
             for baseline in BASELINES:
                 for split in ("TRAIN", "TUNE"):
-                    retired = pid in leak_retired and split == "TUNE"
+                    retired = (pid, subj["counter"]) in leak_retired and split == "TUNE"
                     usable, dir0, ties = [], 0, 0
                     for o in obs_rows:
                         if o["manifest_split"] != split:
@@ -298,6 +340,10 @@ def directional_blocks(pid: str, evaluation: dict, rebuilt: dict, leak_retired: 
                                if (p_sign is None or p_sign >= ALPHA) else
                                "median excess departs from zero (descriptive, "
                                "non-confirmatory)")
+                    below = n < POWER_FLOOR_N
+                    if below:
+                        hit_null = POWER_FLOOR_ABSTAIN.format(n=n)
+                        ex_null = POWER_FLOOR_ABSTAIN.format(n=n)
                     split_name = f"{split} ({LABEL_TUNE_RETIRED})" if retired else split
                     res_a, mism_a = abstain_by_time[split]
                     exclusions = {"excluded_listed": res_a + mism_a + missing[split],
@@ -309,8 +355,9 @@ def directional_blocks(pid: str, evaluation: dict, rebuilt: dict, leak_retired: 
                                              "direction_0_abstain": dir0,
                                              "ties_non_hit": ties}}
                     receipt = dict(receipt_base)
+                    receipt.pop("runs_rel", None)
                     receipt["seal_row"] = {
-                        "path": f"{RUNS_REL}/SEAL_AND_BUDGET.json",
+                        "path": f"{receipt_base.get('runs_rel', RUNS_REL)}/SEAL_AND_BUDGET.json",
                         "membership_sha256": mem.get(split, ""),
                         **({"retirement_note": LABEL_TUNE_RETIRED} if retired else {}),
                     }
@@ -338,11 +385,14 @@ def directional_blocks(pid: str, evaluation: dict, rebuilt: dict, leak_retired: 
                             ci["note"] = "CI NOT ESTIMABLE (cluster-N < 2)"
                         key = block_key(pid, subj["counter"], h, split_name,
                                         f"{baseline}|{test_id}")
-                        blocks[key] = make_block(
+                        blk = make_block(
                             null=null_txt, split=split_name, honest_n=n,
                             cluster_n=len(set(cluster)), literal_rows=len(obs_rows),
                             exclusions=exclusions, test=test_def, ci=ci,
                             trial_accounting=trial_accounting, receipt=receipt)
+                        if split == "TRAIN":
+                            blk["analysis_set"] = blk["analysis_set"] + f"; {LABEL_BLOCKED}"
+                        blocks[key] = blk
                         order.append(key)
     return blocks, order
 
@@ -559,8 +609,12 @@ def p03_blocks(p03_obs: dict, rebuilt: dict, leak_retired: set, trial_accounting
                         label = LABEL_DESCRIPTIVE_HK
                     elif nxt == "IPCA" and split == "TRAIN":
                         label = LABEL_IN_SAMPLE
-                    if split == "TUNE" and "P03" in leak_retired:
+                    if split == "TUNE" and ("P03", counter) in leak_retired:
                         label = (label + "; " if label else "") + LABEL_TUNE_RETIRED
+                    elif split == "TUNE" and not cohort:
+                        label = (label + "; " if label else "") + LABEL_HK_VINTAGE
+                    if split == "TRAIN":
+                        label = (label + "; " if label else "") + LABEL_BLOCKED
                     key = block_key("P03", counter, h, split, f"{nxt}_vs_{prev}")
                     blocks[key] = _comparison_block(
                         by_model[prev], by_model[nxt], prev, nxt, split,
@@ -591,18 +645,36 @@ def _comparison_block(prev_rows: dict, next_rows: dict, prev: str, nxt: str, spl
     delta_r2 = (sum_d / sum_r2) if sum_r2 > 0 else None
     ci = mirror_mean_ci(ds, cluster) if ds else None
     if delta_r2 is None:
-        verdict = "NOT ESTIMABLE (no paired units on this split)"
+        v1_verdict = "NOT ESTIMABLE (no paired units on this split)"
+        met = False
     elif delta_r2 > 0 and ci is not None and ci[0] > 0:
-        verdict = (f"{nxt} beats {prev} on this split (S0 criterion met; descriptive, "
-                   "non-confirmatory)")
+        v1_verdict = (f"{nxt} beats {prev} on this split (S0 criterion met; descriptive, "
+                      "non-confirmatory)")
+        met = True
     else:
-        verdict = (f"KILL/HOLD-AS-RESEARCH — {nxt} shows no incremental explanation "
-                   f"over {prev} on this split")
-    met = verdict.startswith(f"{nxt} beats")
-    null_txt = (f"incremental explanation of {nxt} over {prev} is zero on this split; "
-                + ("the pre-registered S0 criterion is met (descriptive, "
-                   "non-confirmatory)" if met else
-                   "the pre-registered S0 criterion is not met"))
+        v1_verdict = (f"KILL/HOLD-AS-RESEARCH — {nxt} shows no incremental explanation "
+                      f"over {prev} on this split")
+        met = False
+    retired = LABEL_TUNE_RETIRED in (label or "")
+    n_paired = len(ds)
+    below = n_paired < POWER_FLOOR_N
+    if below:
+        verdict = POWER_FLOOR_ABSTAIN.format(n=n_paired)
+        null_txt = verdict
+    elif retired:
+        desc = (v1_verdict.replace("S0 criterion met; ", "")
+                .replace("S0 criterion met", "")
+                .replace("criterion met", ""))
+        verdict = ("criterion not assessable — TUNE RETIRED (A23 INFO-LEAK); "
+                   f"descriptive comparison: {desc}")
+        null_txt = (f"incremental explanation of {nxt} over {prev} is zero on this split; "
+                    "criterion not assessable — TUNE RETIRED (A23 INFO-LEAK)")
+    else:
+        verdict = v1_verdict
+        null_txt = (f"incremental explanation of {nxt} over {prev} is zero on this split; "
+                    + ("the pre-registered S0 criterion is met (descriptive, "
+                       "non-confirmatory)" if met else
+                       "the pre-registered S0 criterion is not met"))
     ci_block = {"method": "mirror-trick block_bootstrap_ci (grading_stats L121, default "
                           "draws 800 seed 7) on mean(d)",
                 "block": "one non-overlapping anchor unit (h+1 sessions >= h)",
@@ -627,8 +699,19 @@ def _comparison_block(prev_rows: dict, next_rows: dict, prev: str, nxt: str, spl
                   "detail": {"pair_incomplete": pair_incomplete,
                              "challenger_not_ok": challenger_not_ok}}
     receipt = dict(receipt_base)
-    receipt["seal_row"] = {"path": f"{RUNS_REL}/SEAL_AND_BUDGET.json",
-                           "membership_sha256": membership.get(split, "")}
+    receipt.pop("runs_rel", None)
+    receipt["seal_row"] = {
+        "path": f"{receipt_base.get('runs_rel', RUNS_REL)}/SEAL_AND_BUDGET.json",
+        "membership_sha256": membership.get(split, ""),
+    }
+    if below:
+        receipt["below_floor_receipt"] = {
+            "delta_R2": None if delta_r2 is None else round(delta_r2, 8),
+            "ci95": ci, "paired_units": n_paired,
+            "descriptive_comparison": (v1_verdict.replace("criterion met", "")
+                                       .replace(" beats ", " vs ")
+                                       .replace("rejects", "")),
+        }
     b = make_block(null=null_txt, split=split, honest_n=len(ds),
                    cluster_n=len(set(cluster)), literal_rows=rows_total,
                    exclusions=exclusions, test=test_def, ci=ci_block,
@@ -680,14 +763,16 @@ def retirement_membership(rebuilt: dict, pid: str, counter: str) -> str:
 
 
 def log_retirement(ledger: TrialLedger, family: str, pid: str, counter: str,
-                   rebuilt: dict, leak: dict) -> None:
+                   rebuilt: dict, leak: dict, retired_scope: str | None = None) -> None:
     evidence = {name: {"first_offending_date": leak[name]["detection"]["first_offending_date"],
                        "count_of_steps_in_window":
                            leak[name]["detection"]["count_of_steps_in_window"],
                        "count_of_steps_total": leak[name]["steps_total"]}
                 for name in ("BABA", "SPY", "KWEB") if leak[name]["detection"]}
+    scope = retired_scope or pid
     ledger.log_trial(
-        config={"event": "holdout_retired", "protocol_id": pid, "version": VERSION,
+        config={"event": "holdout_retired", "protocol_id": pid, "retired_scope": scope,
+                "version": VERSION,
                 "split": "TUNE", "membership_sha256": retirement_membership(rebuilt, pid, counter),
                 "contamination_class": "information_leak",
                 "detected_at": DETECTED_AT, "evidence": evidence},
@@ -744,12 +829,12 @@ def log_p03_configs(ledger: TrialLedger, challenger_ctx: dict | None) -> None:
 # main pipeline
 # --------------------------------------------------------------------------- #
 def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
-                 ledger_file: Path | None = None) -> dict:
+                 ledger_file: Path | None = None, runs_rel: str = RUNS_REL) -> dict:
     repo_root = repo_root.resolve()
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    seal, rebuilt = verify_seal(store, repo_root, store.input_ref)
+    seal, rebuilt = verify_seal(store, repo_root, store.input_ref, runs_rel=runs_rel)
 
     frames, last_bar = load_frames(store)
     global INFO_CUTOFF
@@ -758,7 +843,6 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
     # -- D10 INFO-LEAK predicate -------------------------------------------- #
     earliest_tune = _earliest_tune_anchor(rebuilt, ("P01", "P03"), "adr_baba")
     leak: dict = {}
-    leak_retired: set = set()
     for name in ("BABA", "SPY", "KWEB"):
         d, close, close_price = frames[name]
         steps, state = vintage_series(d, [close.get(x) for x in d],
@@ -766,13 +850,12 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
                                        for x in d])
         hit = leak_detect(steps, state, earliest_tune, last_bar)
         leak[name] = {"state": state, "detection": hit, "steps_total": len(steps)}
-        if hit:
-            leak_retired.update(("P01", "P03") if name in ("BABA", "SPY") else ("P03",))
+    leak_retired: set = retired_scope_pairs(leak)
     for name in ("9988", "0700", "2800.HK", "3033.HK"):
         leak[name] = {"state": "VINTAGE_UNVERIFIABLE", "detection": None, "steps_total": 0}
 
     # -- challenger context --------------------------------------------------- #
-    universe = json.loads((repo_root / RUNS_REL / "CHALLENGER_UNIVERSE.json").read_text("utf-8"))
+    universe = json.loads((repo_root / runs_rel / "CHALLENGER_UNIVERSE.json").read_text("utf-8"))
     challenger_ctx = build_challenger_context(store, universe)
 
     receipt_base = {
@@ -781,6 +864,7 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
         "prereg_digest_sha256": seal["prereg_digest_sha256"],
         "ledger_path": ledger_path_arg,
         "prior_looks": "none for v1",
+        "runs_rel": runs_rel,
     }
 
     # The ledger FILE is where this run writes; the receipt string is what the
@@ -796,7 +880,7 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
                          reason="baseline(always_long, trail63) x h(5,21,63) "
                                 "x subject(adr_baba)",
                          ledger=ledger):
-        if "P01" in leak_retired:
+        if ("P01", "adr_baba") in leak_retired:
             log_retirement(ledger, "sni.s1_residual.P01", "P01", "adr_baba", rebuilt, leak)
         log_directional_configs(ledger, "P01", PROTOCOL_SUBJECTS["P01"])
         evaluation = evaluate_directional("P01", store, rebuilt)
@@ -829,8 +913,9 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
                                 "ipca_vs_M1 x h = 3; HK descriptive 2 subjects x 2 pairs "
                                 "x h = 12",
                          ledger=ledger):
-        if "P03" in leak_retired:
-            log_retirement(ledger, "sni.s1_residual.P03", "P03", "adr_baba", rebuilt, leak)
+        if ("P03", "adr_baba") in leak_retired:
+            log_retirement(ledger, "sni.s1_residual.P03", "P03", "adr_baba", rebuilt, leak,
+                           retired_scope="P03-BABA")
         log_p03_configs(ledger, challenger_ctx)
         p03_obs = evaluate_p03(store, rebuilt, frames, challenger_ctx)
         observations_out.update(p03_obs)
@@ -854,16 +939,43 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
             doc["diagnostics"] = r["diagnostics"]
         write_json(out_dir / "results" / f"{pid}.json", doc)
     lane = _lane_manifest(store, repo_root, seal, leak, leak_retired, rebuilt, ledger,
-                          challenger_ctx)
+                          challenger_ctx, runs_rel=runs_rel)
     write_json(out_dir / "LANE_MANIFEST.json", lane)
+    holes = {}
+    for h in HORIZONS:
+        rows_0700 = rebuilt[("P02", "hkd_0700", h)]["rows"]
+        holes[h] = coverage_hole_0700(rows_0700, h)
+    ch_line = (
+        f"IPCA challenger universe = {universe['files_examined']}/"
+        f"{universe['admitted_count']} (files_examined/admitted); "
+        "survivorship: today's file set, no point-in-time membership; "
+        "FX pairs/ETFs mixed with single names (e.g. USDBRL_X); "
+        "the IPCA challenger cannot support any coverage claim"
+    )
+    lane_doc = {"title": "SNI S1 residual baseline — P01/P02/P03 "
+                         "(historical-descriptive)",
+                "labels": D1_LABELS, "base": BASE, "branch": BRANCH,
+                "prereg_digest_sha256": seal["prereg_digest_sha256"],
+                "runs_rel": runs_rel}
+    membership_equal = True
+    v1_seal_p = repo_root / RUNS_REL / "SEAL_AND_BUDGET.json"
+    v11_seal_p = repo_root / runs_rel / "SEAL_AND_BUDGET.json"
+    if runs_rel != RUNS_REL and v1_seal_p.exists() and v11_seal_p.exists():
+        v1_tab = json.loads(v1_seal_p.read_text("utf-8"))["membership_table"]
+        v11_tab = json.loads(v11_seal_p.read_text("utf-8"))["membership_table"]
+        membership_equal = v1_tab == v11_tab
+    extra = {
+        "coverage_holes": holes,
+        "challenger_line": ch_line,
+        "seal_path": f"{runs_rel}/SEAL_AND_BUDGET.json",
+        "membership_table_unchanged": membership_equal,
+    }
     (out_dir / "REPORT.md").write_text(
-        render_report_md({"title": "SNI S1 residual baseline — P01/P02/P03 "
-                                   "(historical-descriptive)",
-                          "labels": D1_LABELS, "base": BASE, "branch": BRANCH,
-                          "prereg_digest_sha256": seal["prereg_digest_sha256"]},
-                         results), encoding="utf-8")
+        render_report_md(lane_doc, results, extra), encoding="utf-8")
+    rec = version_record_obj(lane_doc, results, membership_equal)
+    write_json(out_dir / "VERSION_RECORD.json", rec)
     return {"results": results, "lane": lane, "challenger": challenger_ctx,
-            "leak": leak, "rebuilt": rebuilt}
+            "leak": leak, "rebuilt": rebuilt, "leak_retired": leak_retired}
 
 
 def _resolve_ledger(repo_root: Path, ledger_arg: str) -> Path:
@@ -885,12 +997,14 @@ def _earliest_tune_anchor(rebuilt: dict, pids: tuple, counter: str) -> date:
 
 
 def _lane_manifest(store, repo_root, seal, leak, leak_retired, rebuilt, ledger,
-                   challenger_ctx) -> dict:
+                   challenger_ctx, runs_rel: str = RUNS_REL) -> dict:
     ret_rows = []
-    for pid in sorted(leak_retired):
+    pids = sorted({pid for pid, _ in leak_retired})
+    for pid in pids:
         names = [n for n in ("BABA", "SPY", "KWEB") if leak[n]["detection"]]
+        scope = "P03-BABA" if pid == "P03" else pid
         ret_rows.append({
-            "protocol_id": pid, "version": VERSION, "split": "TUNE",
+            "protocol_id": pid, "retired_scope": scope, "version": VERSION, "split": "TUNE",
             "membership_sha256": retirement_membership(rebuilt, pid, "adr_baba"),
             "contamination_class": "information_leak",
             "detected_at": DETECTED_AT,
@@ -901,7 +1015,7 @@ def _lane_manifest(store, repo_root, seal, leak, leak_retired, rebuilt, ledger,
     return {
         "lane": LANE, "version": VERSION, "base": BASE, "branch": BRANCH,
         "input_ref": store.input_ref,
-        "seal_commit_sha": seal_commit_sha(repo_root),
+        "seal_commit_sha": seal_commit_sha(repo_root, runs_rel),
         "prereg_digest_sha256": seal["prereg_digest_sha256"],
         "labels": D1_LABELS,
         "authority_flags": {"rank": False, "gate": False, "size": False,
@@ -937,6 +1051,9 @@ def parse_args(argv):
     ap.add_argument("--trial-ledger-path", required=True,
                     help="run-local trial ledger JSONL (REQUIRED, no default)")
     ap.add_argument("--repo-root", default=".")
+    ap.add_argument("--runs-dir", default=None,
+                    help="sealed runs directory (defaults to RUNS_REL so synthetic "
+                         "tests keep working; v1.1 sets this to the v1.1 dir)")
     ap.add_argument("--check", action="store_true",
                     help="run into a temp dir and byte-compare against the committed runs/")
     return ap.parse_args(argv)
@@ -983,7 +1100,19 @@ def _ledger_equal(a: Path, b: Path) -> bool:
 def main(argv=None, store=None) -> int:
     global DETECTED_AT
     args = parse_args(argv if argv is not None else sys.argv[1:])
+    try:
+        assert_authority_false(AUTHORITY_FLAGS)
+    except ValueError as e:
+        print(f"REFUSED: {e}", file=sys.stderr)
+        return 2
     repo_root = Path(args.repo_root).resolve()
+    runs_rel = args.runs_dir or RUNS_REL
+    rp = Path(runs_rel)
+    if rp.is_absolute():
+        try:
+            runs_rel = str(rp.resolve().relative_to(repo_root)).replace("\\", "/")
+        except ValueError:
+            runs_rel = RUNS_REL
 
     data_root = repo_root / "data"
     ledger_arg = args.trial_ledger_path
@@ -1013,15 +1142,19 @@ def main(argv=None, store=None) -> int:
             with tempfile.TemporaryDirectory(prefix="sni_s1_check_") as td:
                 out_dir = Path(td) / "out"
                 run_pipeline(store, repo_root, out_dir, ledger_arg,
-                             ledger_file=out_dir / "trial_ledger.jsonl")
-                ok = _byte_compare(repo_root / RUNS_REL, out_dir)
-                print("check:", "IDENTICAL" if ok else "DIFFERS")
+                             ledger_file=out_dir / "trial_ledger.jsonl",
+                             runs_rel=runs_rel)
+                ok = _byte_compare(repo_root / runs_rel, out_dir)
+                if ok:
+                    print("--check OK")
+                else:
+                    print("--check DIFFERS")
                 return 0 if ok else 1
 
         out_dir = Path(args.out_dir)
         if not out_dir.is_absolute():
             out_dir = repo_root / out_dir
-        run_pipeline(store, repo_root, out_dir, ledger_arg)
+        run_pipeline(store, repo_root, out_dir, ledger_arg, runs_rel=runs_rel)
         return 0
     except SealMismatch as e:
         print(f"SEAL MISMATCH — refusing to run: {e}", file=sys.stderr)

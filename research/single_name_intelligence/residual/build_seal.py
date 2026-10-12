@@ -31,8 +31,8 @@ from s1_manifest import (build_rows, canonical_line, manifest_bytes,  # noqa: E4
                          split_digests)
 from s1_prereg import (BASE, BRANCH, BENCHES, D1_LABELS, ENGINE_CITATIONS,  # noqa: E402
                        AUTHORITY_FLAGS, HORIZONS, INPUT_PINS, LANE, RUNS_REL,
-                       S0_BLOBS, SUBJECTS, VERSION, build_spec, canonical_json,
-                       prereg_digest)
+                       S0_BLOBS, SUBJECTS, VERSION, assert_authority_false,
+                       build_spec, canonical_json, prereg_digest)
 
 SECURITY_MASTER = "data/reference/security_master.parquet"
 SECURITY_IDS = ["SEC:US-XNYS-BABA", "SEC:HK-XHKG-09988", "SEC:HK-XHKG-00700"]
@@ -116,6 +116,8 @@ def build_all(repo_root: Path, input_ref: str, out_dir: Path) -> dict:
 
     spec = build_spec()
     digest = prereg_digest(spec)
+    assert_authority_false(AUTHORITY_FLAGS)
+    assert_authority_false(spec.get("authority_flags"))
 
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "manifests").mkdir(exist_ok=True)
@@ -150,7 +152,7 @@ def build_all(repo_root: Path, input_ref: str, out_dir: Path) -> dict:
             "P03": {"family": "sni.s1_residual.P03", "declared_budget": 4,
                     "itemized_count": 21, "reg_s8_canonical": "sni.s0.P03"},
         },
-        "trial_ledger_path": f"{RUNS_REL}/trial_ledger.jsonl",
+        "trial_ledger_path": f"{_runs_rel(repo_root, out_dir)}/trial_ledger.jsonl",
         "membership_table": sorted(membership_rows,
                                    key=lambda r: (r["protocol_id"], r["subject"], r["h"],
                                                   r["split"])),
@@ -166,11 +168,22 @@ def build_all(repo_root: Path, input_ref: str, out_dir: Path) -> dict:
     write_json(out_dir / "CHALLENGER_UNIVERSE.json", universe)
     for name, m in sorted(manifests.items()):
         (out_dir / "manifests" / name).write_bytes(m["bytes"])
+    assert_authority_false(seal.get("authority_flags"))
+    labels = seal.get("labels")
+    if isinstance(labels, dict):
+        assert_authority_false(labels)
     write_json(out_dir / "SEAL_AND_BUDGET.json", seal)
     (out_dir / "SEAL_AND_BUDGET.md").write_text(render_seal_md(seal, manifests, universe),
                                                 encoding="utf-8")
     return {"seal": seal, "manifests": manifests, "universe": universe, "spec": spec,
             "digest": digest}
+
+
+def _runs_rel(repo_root: Path, out_dir: Path) -> str:
+    try:
+        return str(out_dir.resolve().relative_to(repo_root.resolve())).replace("\\", "/")
+    except ValueError:
+        return RUNS_REL
 
 
 def write_json(path: Path, obj: dict) -> None:

@@ -97,6 +97,30 @@ D1_LABELS = [
 AUTHORITY_FLAGS = {"rank": False, "gate": False, "size": False, "signal": False,
                    "escalation": False, "trade": False}
 
+# S0_PROTOCOL_REGISTER.md power floor (REG §9 Common rules, L322-325):
+# one-sided α = 0.05 and power 0.80, hit rate 0.60 vs 0.50, n = ceil(152.5) = 153.
+POWER_FLOOR_N = 153
+
+# Default sealed-runs directory. v1.1 passes a different --runs-dir; this
+# constant stays the v1 default so the prereg digest is unchanged.
+
+
+def assert_authority_false(flags) -> None:
+    """Raise ValueError naming the key when any authority value is not literal False."""
+    if isinstance(flags, (list, tuple, str)):
+        return
+    if not isinstance(flags, dict):
+        raise ValueError(
+            f"authority flags must be a dict (got {type(flags).__name__})"
+        )
+    for key in ("rank", "gate", "size", "signal", "escalation", "trade"):
+        if key not in flags:
+            continue
+        if flags[key] is not False:
+            raise ValueError(
+                f"authority flag {key!r} is not literal False (got {flags[key]!r})"
+            )
+
 
 def build_spec() -> dict:
     return {
