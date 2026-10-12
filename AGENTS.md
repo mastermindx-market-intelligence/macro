@@ -225,7 +225,16 @@ are in where work happens and how large the context is.
 
 ## Required context at the start of every task
 
-1. Read `CLAUDE.md` in full and follow it as the authoritative project guide.
+1. Follow `CLAUDE.md` as the authoritative project guide. **For an explicitly
+   assigned Codex Meta-CEO only**, after loading this repository's `AGENTS.md`,
+   read the *relevant* `CLAUDE.md` sections for this mission (at minimum:
+   shared workspace/completion, routing, context economy and any task-specific
+   authority/CI/production gate); inspect any additional section needed by the
+   actual source or effect. Do not redundantly ingest the entire Claude guide
+   into costly principal context when those sections are already sufficient.
+   This does not waive required source laws, safety/permission checks, agent
+   custody or acceptance. Ordinary workers and Claude-native sessions retain
+   their existing full-guide/context requirements.
 2. Search the Claude project memory index at
    `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/memory/MEMORY.md`
    and open the entries relevant to the task. For delivery work, always include
