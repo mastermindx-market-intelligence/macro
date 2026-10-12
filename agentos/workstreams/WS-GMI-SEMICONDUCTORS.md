@@ -91,10 +91,10 @@ waves:
       1db9cad1 tests/test_ci_pack.py also auto-merges with 0 markers; it is a main-side change
       between 363b4e62 and f191b7f1 that 1db9cad1 inherits, not an #8250-owned path).
       Per-tree evidence, each for its own tree only: acc72f3f hosted green (check-runs read
-      19:13:04Z: 21 success, 4 skipped, 1 failure which is the non-gating
+      19:13:04Z, the seat's own log timestamp, not reproducible from the carrier: 21 success, 4 skipped, 1 failure which is the non-gating
       ci-authority/codex/merge-queue-pilot check run 114379982885; command in the 2026-10-11
       base-sync-delta-review handoff's verified block) and delta review ACCEPT_DELTA
-      (6105402719); 36e2064d hosted green (check-runs read 19:13:06Z: 21 success, 4 skipped, 1
+      (6105402719); 36e2064d hosted green (check-runs read 19:13:06Z, the seat's own log timestamp, not reproducible from the carrier: 21 success, 4 skipped, 1
       failure, the same non-gating pilot, check run 114439966726), the docfix that repaired in
       full the REQUEST_REPAIR read of 2b770ade; 1eb871d6 hosted RED (run 38158831326) with the
       delta read ACCEPT (6111839715); 839bd6a1 delta read ACCEPT, delta only (6112221196);
