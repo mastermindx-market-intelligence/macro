@@ -925,6 +925,28 @@ jobs:
       - name: integrated answer v0 composer
         run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py -q
 
+  c19-wp19-integrated-answer-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP19: integrated-answer SHA header + private headers on the real entitlement-denial path (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
+      - "app/integrated_answer.py"
+      - "app/forensics.py"
+      - "tests/test_integrated_answer_v0.py"
+      - "tests/test_company_theme_exposure.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
+      - name: c19-wp19-integrated-answer-pins
+        run: python -m pytest tests/test_c19_wp19_integrated_answer_entitlement_pins.py -q -p no:cacheprovider
+
   inline-js:
     if: ${{ false }}
     gate: data
@@ -11168,6 +11190,7 @@ jobs:
       - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
       - tests/test_leadership_receipt.py
+      - tests/test_leadership_receipt_edge_matrix.py
       - collectors/_drip.py
       - collectors/base.py
       - collectors/breadth.py
@@ -12006,7 +12029,7 @@ jobs:
         # Wired 2026-10-06 (#8519): engine/leadership_receipt.py reads
         # site/neuralwebdata/theme_state.json with a 5-day ceiling; this job owns
         # views.py + theme_graph_state, the receipt's two inputs.
-        run: TZ=UTC python -m pytest tests/test_leadership_receipt.py -q
+        run: TZ=UTC python -m pytest tests/test_leadership_receipt.py tests/test_leadership_receipt_edge_matrix.py -q
       - name: GMI finalized selection cohort contract and owner-state interface
         run: |
           set -eu
@@ -14999,6 +15022,7 @@ jobs:
           tests/test_publish_r2.py
           tests/test_company_intelligence_contracts.py
           tests/test_company_intelligence_views.py
+          tests/test_c19_wp20_generation_delta.py
           tests/test_company_intelligence_health.py
           tests/test_publish_company_intelligence_r2.py
           tests/test_company_intelligence_refresh.py
@@ -24354,3 +24378,23 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: sni s1 residual baseline tests
         run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py -q -p no:cacheprovider
+  c19-wp11-reader-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP11 (MAS-263) acceptance pins: MRI release_forecast.v2 reader + expectation read. Hermetic: tmp_path only, no data/ reads.
+    timeout-minutes: 10
+    paths:
+      - "engine/event_window.py"
+      - "engine/validation.py"
+      - "engine/release_market_context.py"
+      - "tests/test_c19_wp11_reader_pins.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: c19-wp11-reader-pins
+        run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider

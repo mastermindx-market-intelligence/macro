@@ -1,6 +1,6 @@
 {
   "schema": "tiingo.delivery_frontier.v1",
-  "recorded_at_utc": "2026-10-12T06:00:22.176185+00:00",
+  "recorded_at_utc": "2026-10-12T08:54:11.212023+00:00",
   "programme_complete": false,
   "producer": {
     "pr": 8875,
@@ -23,16 +23,27 @@
     "canonical_lab_compatibility_canary_passed": true,
     "access_bindings_changed": false,
     "prior_selector_and_release_retained": true,
-    "acceptance_receipt_sha256": "1c965200b2bf0be022a3be8a0b89b8d6553a735eb362ffe97d1e8cfa5cb33762"
+    "acceptance_receipt_sha256": "1c965200b2bf0be022a3be8a0b89b8d6553a735eb362ffe97d1e8cfa5cb33762",
+    "new_eod_consumer_receipt_sha256": "05b2b8bd8bbdd955e6fad206a2d26a6b93a70493789c6b4e1fb068b1ebd4f764",
+    "new_eod_vendor_histories_read": [
+      "EBAY",
+      "DWCH"
+    ],
+    "new_fundamentals_consumer_receipt_sha256": "f4a273fc5f49b425e473f6c7c6ff95a8757e6eb6c9129568cfd4f298dd90de8b",
+    "new_jpm_modes_read": [
+      "asReported=true",
+      "asReported=false",
+      "daily"
+    ]
   },
   "eod_archive": {
-    "qualified_nonempty_histories": 9722,
-    "qualified_distinct_bars": 20230153,
+    "qualified_nonempty_histories": 9916,
+    "qualified_distinct_bars": 20761012,
     "eligible_catalogue_candidates": 47689,
     "captured_empty_candidates": 18,
-    "uncaptured_catalogue_windows": 37949,
+    "uncaptured_catalogue_windows": 37755,
     "uncaptured_does_not_mean_unattempted": true,
-    "all_own_raw_operations_settled": true,
+    "all_own_raw_operations_settled": false,
     "last_continuation_successful_requests": 1,
     "last_continuation_failed_requests": 1,
     "last_refused_request": {
@@ -42,41 +53,74 @@
       "retried": false
     },
     "earlier_dtv_1_http_404_retried": false,
-    "latest_qualification_sha256": "70f65ed4c806cead64b810a171c404530ab94cc4f317ebbef3d35a7c30b4c6e8",
-    "coverage_receipt_sha256": "c8bef35a902d7899e2e8bda266117469a714e814bbccc799f13b8c39815dbf21",
+    "latest_qualification_sha256": "5f4af7f1fddd706f2ceb91e1af6916048efc7d24d608856436a70cf80691a444",
+    "coverage_receipt_sha256": "7b7257f1f51985b264044d922dff9c2c00f00a82ac89daaefd563570e8317e56",
     "complete_vendor_history_proven": false,
     "canonical_identity_admitted": false,
-    "pit_backtest_eligible": false
+    "pit_backtest_eligible": false,
+    "running_original_operation": {
+      "id": "eod-wave8-fixed-unattempted-20261012-01a12ab6",
+      "scope_sha256": "38aafc8460af7dead299c92bbafc1b64f3770752a1d86c1e552e474cd005ecda",
+      "method_sha256": "9c4719372609f6cd6df8b4c3904fbe95ecb858010fd3b13bfc923080ddfcf6e6",
+      "untouched_request_cap": 3541,
+      "held_requests_excluded": 12,
+      "max_inflight": 4,
+      "own_maximum_requests_per_hour": 2880,
+      "whole_batch_completion_observed": false
+    },
+    "credential_argument_diagnosis": {
+      "defect": "Temporary continuation counter iterator shadowed its credential argument. Original collector and provisioned credential are unchanged.",
+      "offline_reproduction_sha256": "67d119b08a9fc3bf42fc72edd67f1e425d267b030c3b786e33bcd9fd45658235",
+      "independent_review_stable_id": "tiingo-eod-fixed-harness-review-01a12ab6-v1",
+      "retained_review_stdout_sha256": "661c33130423fd4759c9f9430f8aa3bad9cd2c9085542e343923d81dfd0c1f9b",
+      "reviewer_verdict": "PASS",
+      "parent_code_review_accepted": true,
+      "fabric_ledger_acceptance": "OUTCOME_WRITE_UNCONFIRMED errno 1 at ledger lock; denied write not retried",
+      "four_exact_bad_auth_requests_held": [
+        "DVVDF",
+        "DVXB",
+        "DVYA",
+        "EA"
+      ],
+      "ticker_specific_entitlement_inference_invalidated": true,
+      "new_real_consecutive_captures_observed": true
+    }
   },
   "fundamentals": {
-    "served_depth": "roughly three years in actual AAPL and MSFT responses despite deep-start requests",
+    "served_depth": "Actual ten-company original/revised/daily cohort serves 2023-10-12 through 2026-10-09 despite 1990 requested start.",
     "original_and_revised_dimensions_preserved": true,
     "full_account_scope_proven": false,
     "activation_or_purchase_changed": false,
-    "support_email_sent": false
+    "support_email_sent": false,
+    "new_cohort_successful_requests": 30,
+    "new_cohort_projected_rows": 58501,
+    "unambiguous_original_revised_keys_compared": 9940,
+    "original_revised_changed_values": 518,
+    "qualification_receipt_sha256": "94aa7890f142910655dd9c78876a528be66048dc19c3c52b5767dd0980e53d74"
   },
   "terminal": {
     "pr": 955,
-    "successful_dispatched_run": 38202935132,
+    "successful_dispatched_run": 38214240947,
     "successful_jobs": 12,
     "workflow_file_change": "Complete tablet/mobile 1/2 and 2/2 shard pairs only; existing permissions, limits and tests preserved.",
     "original_run_approval_executed": false,
-    "approval_control": "Original run 38202937001 approval was rejected by automatic approval review. Controller refreshed the branch; current original run 38209480199 also awaits maintainer approval. No approval attempt or execution on the refreshed run.",
+    "approval_control": "Original approval effect remains denied on its carrier. Current original PR run 38214248199 needs maintainer Approve and run; exact human question pending, no approval or protected merge assumed.",
     "protected_merge_observed": false,
     "new_deployment_executed": false,
     "previous_tested_head": "0bc4850632c1496e3e216cac7a25260baa76ed82",
     "previous_original_pr_run": 38202937001,
-    "current_head": "aadf407e101b99f2fbe23b43d277c792a32571d2",
-    "current_base": "9493fd800dd18965ee66627cdcf066bb23643328",
-    "current_dispatched_run": 38209476208,
-    "current_dispatched_run_status": "queued",
-    "current_original_pr_run": 38209480199,
+    "current_head": "de8aca83cd6a3072eba861ce494d9e644baca75f",
+    "current_base": "b4095c3debbd8395570c42bf492561472d262f4b",
+    "current_dispatched_run": 38214240947,
+    "current_dispatched_run_status": "completed",
+    "current_original_pr_run": 38214248199,
     "current_original_pr_run_conclusion": "action_required",
-    "automatic_base_integration": "66 protected settings/evidence paths; Tiingo, BOATS, startup and workflow files unchanged",
+    "automatic_base_integration": "Protected large-trades/evidence/shared UI integration. Targeted Tiingo/BOATS/extfeed/workflow diff unchanged; TerminalShell chart-focus call now also passes active symbol.",
     "scope_preservation_receipt_sha256": "5311eeaf7664a0f17e84febaf3802b5934f6ddeca14cb4e4589663f6ba8e5045",
-    "successful_jobs_apply_to_current_head": false,
+    "successful_jobs_apply_to_current_head": true,
     "previous_original_pr_run_conclusion": "action_required",
-    "previous_original_pr_run_event": "pull_request"
+    "previous_original_pr_run_event": "pull_request",
+    "current_dispatched_run_conclusion": "success"
   },
   "last_observed_vps": {
     "observed_at_utc": "2026-10-12T05:07:18.061320+00:00",
@@ -99,5 +143,25 @@
     "blocked_untracked_ceo_handoff_published": false,
     "new_worker_queue_or_lifecycle": false,
     "licensed_raw_rows_or_secrets_in_this_receipt": false
+  },
+  "corporate_actions": {
+    "first_cohort_operation": "corporate-actions-eight-20261012-01a12ab6",
+    "result_sha256": "93f40ed6b82d64ad07ef35a7f70cab2ca4ea40be2e5afcfcabb815e38270886c",
+    "attempted": 1,
+    "successful": 0,
+    "failed_path": "/tiingo/corporate-actions/aapl/splits",
+    "http_status": 403,
+    "credential_iterator_collision_absent": true,
+    "retry_or_alternate_account_used": false,
+    "further_requests_stopped": true,
+    "standalone_beta_endpoint_access_not_proven": true,
+    "eod_embedded_actions_remain_distinct_source_evidence": true
+  },
+  "metadata_quota_clock_erratum": {
+    "receipt_sha256": "0e388879ee29975a1362bbdaa182fa5c80e01b95fd87ae6ae472a951a5865999",
+    "old_future_prospective_quota_clock_excluded_from_temporal_acceptance": true,
+    "raw_metadata_capture_clocks_unchanged": true,
+    "corrected_continuation_actual_loaded_browser_clock": "2026-10-12T08:39:22.598Z",
+    "quota_age_enforced_nonnegative_and_maximum_900_seconds": true
   }
 }
