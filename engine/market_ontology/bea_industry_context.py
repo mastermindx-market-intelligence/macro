@@ -24,6 +24,11 @@ LINEAGE_SHA256 = "e8856b6f546d55b8e0c41561cb0e60f28ddcd06a78fd04f70d05355890c745
 PUBLISHER_EDITION_DATE = "2026-05-21"
 EXACT_CODE_NAMESPACE = "BEA_APP157_MAY2026_EXACT"
 SOURCE_KIND = "industry_commodity_input"
+RESEARCH_VIEW_SUBDIR = (
+    "bea_2024_public_itable_research/"
+    "bea_2017_2022_may2026_remaining_six_regions/"
+    "data_workspace_views_20261011"
+)
 REGIONS = (
     ("canada", "Canada"),
     ("china", "China"),
@@ -385,6 +390,7 @@ def adapt_workspace_bea_history(
         "native_dataset_admission": False,
         "public_or_historical_pit_serving": False,
         "source_row_count": len(rows),
+        "source_records_scanned": scanned,
         "scan_complete": True,
     }
     return history
@@ -481,10 +487,7 @@ def read_private_bea_accounting_brief(
     if type(workspace) is not DataWorkspace:
         raise BEAContextRefused("host-bound DataWorkspace required")
 
-    ref = (
-        "free_source_research:data_workspace_views_20261011/"
-        f"industry_{industry_code}.jsonl"
-    )
+    ref = f"free_source_research:{RESEARCH_VIEW_SUBDIR}/industry_{industry_code}.jsonl"
     try:
         description = workspace.describe(ref)
         if (description.get("schema_version") != "mastermind.data_workspace/v1"

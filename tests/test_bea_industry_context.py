@@ -577,11 +577,19 @@ class BEAHostBoundQueryTests(unittest.TestCase):
             source_revision="synthetic-pre-admission",
         )
 
-    def _fixture(self, root: Path, *, extra_year: bool = False) -> Path:
-        location = root / "data_workspace_views_20261011"
-        location.mkdir()
+    def _fixture(self, root: Path, *, extra_year: bool = False,
+                 full_panel_shape: bool = False) -> Path:
+        location = (root / "bea_2024_public_itable_research"
+                    / "bea_2017_2022_may2026_remaining_six_regions"
+                    / "data_workspace_views_20261011")
+        location.mkdir(parents=True)
         path = location / "industry_3341.jsonl"
-        rows = [synthetic_row(year=y) for y in range(2017, 2025)]
+        rows = []
+        for year in range(2017, 2025):
+            rows.append(synthetic_row(year=year))
+            if full_panel_shape:
+                rows.extend(synthetic_row(year=year, commodity=f"A{k:03d}")
+                            for k in range(1, 139))
         if extra_year:
             rows.append(synthetic_row(year=2024))
         path.write_text(
@@ -593,7 +601,7 @@ class BEAHostBoundQueryTests(unittest.TestCase):
     def test_end_to_end_host_bound_reader_returns_exact_accounting_brief(self):
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
-            self._fixture(root)
+            self._fixture(root, full_panel_shape=True)
             workspace = self._research_workspace(root)
             report = read_private_bea_accounting_brief(
                 workspace, industry_code="3341", commodity_code="3344",
@@ -602,6 +610,7 @@ class BEAHostBoundQueryTests(unittest.TestCase):
             self.assertEqual(report["periods"]["latest_year"], 2024)
             self.assertEqual(len(report["annual_observations"]), 8)
             self.assertEqual(report["reader_provenance"]["source_row_count"], 8)
+            self.assertEqual(report["reader_provenance"]["source_records_scanned"], 1112)
             self.assertTrue(report["reader_provenance"]["scan_complete"])
             self.assertFalse(report["dataos_native_admitted"])
             self.assertFalse(report["may_publish"])
