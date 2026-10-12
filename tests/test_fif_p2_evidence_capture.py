@@ -11,8 +11,10 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
+import ast
 import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -440,6 +442,7 @@ def test_manifest_postprocess_populated() -> None:
         "aborted_hosts",
         "network_log",
         "fold_measurement",
+        "entitlement_fence",
     }
     assert source["state"] == {
         "builder": "scripts.build_fundamental_forensics.compose_state",
@@ -813,3 +816,229 @@ def test_parse_fold_selectors() -> None:
         tool.parse_fold_selectors(["no-equals-sign"])
     with pytest.raises(Exception):
         tool.parse_fold_selectors(["=x"])
+
+
+# ---------------------------------------------------------------------------
+# seat fences (P2 evidence ruling, 2026-10-12)
+# ---------------------------------------------------------------------------
+
+FENCE_SENTENCE = (
+    "entitled crops = fixture-backed golden, local, entitlement satisfied by test "
+    "dependency override; not production entitlement proof"
+)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.0.0.1:8000",
+        "http://127.0.0.2:8000/",
+        "http://localhost:8000",
+        "http://fif-evidence.localhost:41234",
+        "http://[::1]:8000",
+    ],
+)
+def test_fence1_local_origins_accepted(url: str) -> None:
+    assert tool.refuse_non_local_targets(base_url=url, route="/fundamental_forensics.html") == []
+    assert tool.refuse_non_local_targets(base_url=None, route=url + "/fundamental_forensics.html") == []
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://macro.example.com",
+        "http://10.0.0.5:8000",
+        "http://0.0.0.0:8000",
+        "http://localhost.example.com",
+        "http://fif-evidence.localhost.example.com",
+        "file:///etc/hosts",
+    ],
+)
+def test_fence1_non_local_origins_refused(url: str) -> None:
+    assert tool.refuse_non_local_targets(base_url=url, route="/fundamental_forensics.html")
+
+
+def _forbid_any_capture(monkeypatch) -> list[str]:
+    calls: list[str] = []
+
+    def _guard(name: str):
+        def _boom(*_args: Any, **_kwargs: Any) -> Any:
+            calls.append(name)
+            raise AssertionError(f"{name} ran although the target origin is not local")
+
+        return _boom
+
+    for name in ("scrub_process_env", "load_forensics_module", "build_kernel_state", "_run_wrapped_capture"):
+        monkeypatch.setattr(tool, name, _guard(name))
+    return calls
+
+
+def test_fence1_non_local_base_url_exits_nonzero_before_capture(monkeypatch, tmp_path: Path) -> None:
+    calls = _forbid_any_capture(monkeypatch)
+    out_dir = tmp_path / "out"
+    rc = tool.main(
+        ["--mode", tool.MODE_ANONYMOUS, "--out-dir", str(out_dir), "--base-url", "https://macro.example.com"]
+    )
+    assert rc != 0 and rc == tool.EXIT_USAGE
+    assert calls == []
+    assert not out_dir.exists()
+
+
+def test_fence1_non_local_absolute_route_exits_nonzero_before_capture(monkeypatch, tmp_path: Path) -> None:
+    calls = _forbid_any_capture(monkeypatch)
+    out_dir = tmp_path / "out"
+    rc = tool.main(
+        [
+            "--mode",
+            tool.MODE_POPULATED,
+            "--generated-at",
+            "2026-10-12T00:00:00Z",
+            "--out-dir",
+            str(out_dir),
+            "--route",
+            "https://macro.example.com/fundamental_forensics.html?symbol=AAPL",
+        ]
+    )
+    assert rc != 0
+    assert calls == []
+    assert not out_dir.exists()
+
+
+def test_fence1_cli_refuses_non_local_base_url_in_a_subprocess(tmp_path: Path) -> None:
+    out_dir = tmp_path / "out"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "tests.tools.fif_p2_evidence_capture",
+            "--mode",
+            "anonymous",
+            "--out-dir",
+            str(out_dir),
+            "--base-url",
+            "https://macro.example.com",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert proc.returncode != 0
+    assert "refusing to start" in proc.stderr
+    assert not out_dir.exists()
+
+
+def test_fence2_app_and_engine_never_import_the_tool() -> None:
+    offenders: list[str] = []
+    for top in ("app", "engine"):
+        for path in sorted((ROOT / top).rglob("*.py")):
+            text = path.read_text(encoding="utf-8", errors="replace")
+            if "fif_p2_evidence_capture" in text or "tests.tools" in text or "tests/tools" in text:
+                offenders.append(path.relative_to(ROOT).as_posix())
+    assert offenders == []
+
+
+def test_fence3_override_assigned_only_on_the_tool_created_app() -> None:
+    tree = ast.parse(Path(tool.__file__).read_text(encoding="utf-8"))
+    owners: list[str] = []
+    for func in [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]:
+        created = {
+            target.id
+            for node in ast.walk(func)
+            if isinstance(node, ast.Assign)
+            and isinstance(node.value, ast.Call)
+            and isinstance(node.value.func, ast.Name)
+            and node.value.func.id == "FastAPI"
+            for target in node.targets
+            if isinstance(target, ast.Name)
+        }
+        for node in ast.walk(func):
+            if not isinstance(node, ast.Assign):
+                continue
+            for target in node.targets:
+                if (
+                    isinstance(target, ast.Subscript)
+                    and isinstance(target.value, ast.Attribute)
+                    and target.value.attr == "dependency_overrides"
+                ):
+                    holder = target.value.value
+                    assert isinstance(holder, ast.Name) and holder.id in created, ast.dump(target)
+                    owners.append(func.name)
+    module_level = [
+        node
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(t, ast.Subscript) and isinstance(t.value, ast.Attribute) and t.value.attr == "dependency_overrides"
+            for t in node.targets
+        )
+    ]
+    assert owners == ["build_router_app"]
+    assert module_level == []
+
+
+def test_fence3_runtime_override_never_reaches_a_shared_app() -> None:
+    from fastapi import FastAPI
+
+    first = tool.build_router_app(forensics_api, populated=True)
+    second = tool.build_router_app(forensics_api, populated=True)
+    anonymous = tool.build_router_app(forensics_api, populated=False)
+    assert first is not second
+    assert forensics_api.require_site_full_user in first.dependency_overrides
+    assert anonymous.dependency_overrides == {}
+    mine = {id(first), id(second), id(anonymous)}
+    for module_name, module in list(sys.modules.items()):
+        for attr, value in list(getattr(module, "__dict__", {}).items()):
+            if isinstance(value, FastAPI) and id(value) not in mine:
+                assert forensics_api.require_site_full_user not in value.dependency_overrides, (
+                    f"{module_name}.{attr}"
+                )
+
+
+def test_fence4_entitled_crops_sentence_verbatim() -> None:
+    assert tool.ENTITLED_CROPS_FENCE == FENCE_SENTENCE
+    manifest = _fake_manifest()
+    tool.postprocess_manifest(
+        manifest,
+        mode=tool.MODE_POPULATED,
+        generator_command="python3 -m tests.tools.fif_p2_evidence_capture --mode populated",
+        wrapper_module_sha256="c" * 64,
+        scrubbed_env_names=[],
+        aborted_hosts=[],
+        state_receipt=None,
+    )
+    assert manifest["evidence_source"]["entitlement_fence"] == FENCE_SENTENCE
+    assert manifest["honesty"]["entitlement"] == FENCE_SENTENCE
+    anonymous = _fake_manifest()
+    tool.postprocess_manifest(
+        anonymous,
+        mode=tool.MODE_ANONYMOUS,
+        generator_command="python3 -m tests.tools.fif_p2_evidence_capture --mode anonymous",
+        wrapper_module_sha256="c" * 64,
+        scrubbed_env_names=[],
+        aborted_hosts=[],
+        state_receipt=None,
+    )
+    assert "entitlement_fence" not in anonymous["evidence_source"]
+
+
+def test_fence5_manifest_carries_env_names_never_values(monkeypatch) -> None:
+    monkeypatch.setenv("R2_FENCE_PROBE", "fence-value-must-not-leak")
+    scrub = tool.scrub_process_env()
+    try:
+        manifest = _fake_manifest()
+        tool.postprocess_manifest(
+            manifest,
+            mode=tool.MODE_POPULATED,
+            generator_command="python3 -m tests.tools.fif_p2_evidence_capture --mode populated",
+            wrapper_module_sha256="d" * 64,
+            scrubbed_env_names=scrub.scrubbed_names,
+            aborted_hosts=[],
+            state_receipt=None,
+        )
+    finally:
+        tool.restore_process_env(scrub)
+    blob = json.dumps(manifest)
+    assert "R2_FENCE_PROBE" in manifest["evidence_source"]["scrubbed_env_names"]
+    assert "fence-value-must-not-leak" not in blob

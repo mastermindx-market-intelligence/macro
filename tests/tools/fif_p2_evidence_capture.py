@@ -50,12 +50,26 @@ USAGE
 
 This module lives under ``tests/tools/`` on purpose: it is evidence tooling,
 never product code. It originates no signal, score or escalation (A7).
+
+SEAT FENCES (P2 evidence ruling, 2026-10-12)
+--------------------------------------------
+1. Every target origin must be loopback or ``*.localhost``: a non-local
+   ``--base-url`` or absolute ``--route`` makes ``main`` exit non-zero BEFORE the
+   env scrub, the kernel build or any capture (``refuse_non_local_targets``).
+2. ``app/`` and ``engine/`` never import this module (asserted by its unit test).
+3. The ``require_site_full_user`` override is installed only on the
+   ``FastAPI()`` instance ``build_router_app`` creates for this run's TestClient,
+   never on a module-level app a real server could share.
+4. Populated manifests state ``ENTITLED_CROPS_FENCE`` verbatim; the PR body and
+   DEVIATIONS repeat it. A45 entitled-browser proof stays with A0.
+5. Environment variables are recorded by NAME only, never by value.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import ipaddress
 import json
 import os
 import shlex
@@ -79,6 +93,11 @@ EVIDENCE_HOST = "fif-evidence.localhost"
 SOURCE_HOST = "127.0.0.1"
 LOCAL_HOSTS = frozenset({EVIDENCE_HOST, SOURCE_HOST})
 HOST_REWRITE = "127.0.0.1 -> fif-evidence.localhost"
+# Seat fence 4: stated verbatim in every populated manifest, the PR body and DEVIATIONS.
+ENTITLED_CROPS_FENCE = (
+    "entitled crops = fixture-backed golden, local, entitlement satisfied by test "
+    "dependency override; not production entitlement proof"
+)
 
 FORENSICS_PREFIX = "/api/forensics/"
 FINANCIAL_POST_PREFIX = "/api/forensics/v1/financial/"
@@ -159,6 +178,40 @@ def rewrite_evidence_host(url: str) -> str:
         return url
     netloc = EVIDENCE_HOST if parsed.port is None else f"{EVIDENCE_HOST}:{parsed.port}"
     return urlunparse(parsed._replace(netloc=netloc))
+
+
+def is_local_origin_host(host: str) -> bool:
+    """Seat fence 1: ``localhost``, ``*.localhost`` or a loopback IP literal only."""
+    name = (host or "").strip().lower().rstrip(".")
+    if not name:
+        return False
+    if name == "localhost" or name.endswith(".localhost"):
+        return True
+    try:
+        return ipaddress.ip_address(name.strip("[]")).is_loopback
+    except ValueError:
+        return False
+
+
+def refuse_non_local_targets(*, base_url: str | None, route: str) -> list[str]:
+    """Seat fence 1: every origin this run could load; a non-empty answer = refuse to start.
+
+    The default origin is the wrapped tool's own ``127.0.0.1`` static server
+    (rewritten to ``fif-evidence.localhost``), which is local by construction; an
+    explicit ``--base-url`` and an absolute ``--route`` are the only other origins
+    the wrapped tool would navigate to, so both are checked here.
+    """
+    targets: list[tuple[str, str]] = []
+    if base_url is not None:
+        targets.append(("--base-url", base_url))
+    if "://" in route:
+        targets.append(("--route", route))
+    refusals: list[str] = []
+    for flag, url in targets:
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https") or not is_local_origin_host(parsed.hostname or ""):
+            refusals.append(f"{flag} {url!r} is not a loopback or *.localhost origin")
+    return refusals
 
 
 # ---------------------------------------------------------------------------
@@ -669,7 +722,12 @@ def load_forensics_module() -> Any:
 
 
 def build_router_app(forensics_api: Any, *, populated: bool) -> Any:
-    """FastAPI() with app.forensics.router; populated adds the router-test override."""
+    """FastAPI() with app.forensics.router; populated adds the router-test override.
+
+    Seat fence 3: the override lands on the fresh instance created HERE for this
+    run's in-process TestClient, never on ``app.main.app`` or any other
+    module-level app a real server could share.
+    """
     from fastapi import FastAPI  # noqa: PLC0415
 
     app = FastAPI()
@@ -732,6 +790,7 @@ def postprocess_manifest(
     if populated:
         manifest.setdefault("axes", {})["access"] = [POPULATED_ACCESS]
         manifest.setdefault("honesty", {})["access"] = POPULATED_HONESTY
+        manifest["honesty"]["entitlement"] = ENTITLED_CROPS_FENCE
     evidence_source: dict[str, Any] = {
         "label": label,
         "mode": mode,
@@ -748,6 +807,8 @@ def postprocess_manifest(
             "sha256": state_receipt.sha256,
             "bytes": state_receipt.bytes,
         }
+    if populated:
+        evidence_source["entitlement_fence"] = ENTITLED_CROPS_FENCE
     evidence_source["financial_dataset_mode"] = "golden"
     evidence_source["scrubbed_env_names"] = sorted(scrubbed_env_names)
     evidence_source["aborted_hosts"] = sorted(set(aborted_hosts))
@@ -817,6 +878,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--mode", required=True, choices=(MODE_POPULATED, MODE_ANONYMOUS))
     parser.add_argument("--route", default="/fundamental_forensics.html?symbol=AAPL")
     parser.add_argument("--out-dir", required=True)
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        help="optional LOCAL origin already serving site/ (loopback or *.localhost only; "
+        "anything else is refused before capture). Default: the wrapped tool's own "
+        "127.0.0.1 server for site/",
+    )
     parser.add_argument("--as-of", help="pin the capture tool's generated_at (ISO)")
     parser.add_argument("--generated-at", help="kernel state clock for compose_state (ISO)")
     parser.add_argument(
@@ -885,6 +953,11 @@ def _wrapped_driver_factory(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    refusals = refuse_non_local_targets(base_url=args.base_url, route=args.route)
+    if refusals:
+        for refusal in refusals:
+            print(f"error: refusing to start (seat fence 1): {refusal}", file=sys.stderr)
+        return EXIT_USAGE
     invoked = list(sys.argv[1:] if argv is None else argv)
     generator_command = shlex.join(
         ["python3", "-m", "tests.tools.fif_p2_evidence_capture", *invoked]
@@ -1023,9 +1096,10 @@ def _run_wrapped_capture(
 ) -> int:
     from scripts.capture_page_evidence import main as capture_main  # noqa: PLC0415
 
+    base_url = getattr(args, "base_url", None)
+    origin_argv = ["--base-url", base_url] if base_url else ["--site-dir", str(tree_root / "site")]
     capture_argv: list[str] = [
-        "--site-dir",
-        str(tree_root / "site"),
+        *origin_argv,
         "--routes",
         args.route,
         "--output-dir",
