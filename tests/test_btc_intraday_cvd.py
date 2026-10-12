@@ -342,4 +342,56 @@ def test_r12_unchanged_numeric_coverage_and_freshness(monkeypatch,n,seed,shape):
     elif shape=='stale_clock':clock+=pd.Timedelta(hours=72)
     reader=lambda ns,nm:p.copy() if ns=='coinbase' else h.copy()
     old.store=SimpleNamespace(read=reader);monkeypatch.setattr(CVD.store,'read',reader)
-    assert CVD.compute(as_of=clock)==old.compute(as_of=clock)
+    got=CVD.compute(as_of=clock)
+    # Elapsed coverage is additive. The pinned numeric contract stays the reference.
+    assert 'elapsed_coverage' in got
+    pinned={k:v for k,v in got.items() if k!='elapsed_coverage'}
+    assert pinned==old.compute(as_of=clock)
+
+
+def _span_hours(hours):
+    start=pd.Timestamp('2026-01-01 00:00:00')
+    idx=pd.DatetimeIndex([start+pd.Timedelta(hours=h) for h in hours])
+    return pd.DataFrame({'taker_buy_vol':np.full(len(idx),2.),
+                         'taker_sell_vol':np.full(len(idx),1.)}, index=idx)
+
+
+def test_elapsed_24_rows_across_33_hours_are_not_complete_activity(monkeypatch):
+    """24 labels whose first-to-last span is 33 hours are not 24-hour activity."""
+    frame=_span_hours(list(range(23))+[33])
+    assert len(frame)==24
+    assert float((frame.index[-1]-frame.index[0])/pd.Timedelta(hours=1))==33.0
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:frame if ns=='okx' else None)
+    out=CVD.compute(as_of='2026-01-02T09:00:00Z')
+    assert out['elapsed_coverage']=={
+        'rows':24,
+        'first_ts':'2026-01-01 00:00:00',
+        'last_ts':'2026-01-02 09:00:00',
+        'elapsed_hours':33.0,
+        'completeness':'incomplete',
+    }
+    assert out['window_24h_complete'] is False
+    assert out['flow_state']=='unavailable'
+    assert out['ok'] is False
+    assert out['n_hours']==1
+    assert out['net_flow_24h_native'] is None
+    assert out['scope']=='OKX/BTC/CONTRACTS'
+    assert out['volume_unit'] is None
+    assert out['net_flow_24h_mn'] is None and out['cvd_last_bn'] is None
+
+
+def test_elapsed_24_hourly_labels_are_complete_23_hour_span(monkeypatch):
+    """24 one-hour labels run 00:00 through 23:00: elapsed hours are 23, not 24."""
+    frame=_span_hours(list(range(24)))
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:frame if ns=='okx' else None)
+    out=CVD.compute(as_of='2026-01-01T23:00:00Z')
+    assert out['elapsed_coverage']=={
+        'rows':24,
+        'first_ts':'2026-01-01 00:00:00',
+        'last_ts':'2026-01-01 23:00:00',
+        'elapsed_hours':23.0,
+        'completeness':'complete',
+    }
+    assert out['window_24h_complete'] is True
+    assert out['ok'] is True
+    assert out['buy_share_24h']==2/3
