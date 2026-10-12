@@ -3,7 +3,44 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Current release gate and live continuation proof
+## Active October12 continuation — current-main integration
+
+The Chairman explicitly continued the complete release and follow-on chain.
+Original PR8786 remains OPEN at9019a29c2e35da499fb5c822e515be9ce9c21027;
+its previous exact-head CI is accepted historical proof, not current landing.
+Controller38219404229 at07:44Z now reports the source-main baseline red.
+Integration-baseline38217383023 at67bb1d66a3bb failed the curated import-closure
+assertion across nine existing jobs. Existing repair carrier8960 is preserved;
+no second fleet repair, label bypass or replacement CI controller was created.
+Subsequent bounded review found8960already designated main-red-repair by its
+existing delivery path. All12packs and ci-gate were green atf1152e29; its
+posted independent review matches the exact nine missing-path sets. Root
+made no change to that repair or its labels. The controller still owns landing.
+The bounded controller evidence is pr8786_9019_main_red_gate.txt.
+
+The separate aggregate-feed branch cleanly integrated protected mainc40e39c7
+asfbc73b7792869af73d3f26e71082bb168a2b64d7. Press source and affected tests
+are byte-unchanged by that merge. The four affected suites pass186tests in6.62s
+at this integrated revision; aggregate_feed_current_main_integration.json and
+aggregate_feed_current_main_green.txt retain the command and raw result.
+The current-main contract check completed with0introduced and31inherited
+findings in298.8seconds, exit0. Those inherited closure findings are not
+waived or represented as clean main; the original repair carrier remains
+required. Raw evidence is aggregate_feed_current_main_contract_delta.txt.
+This branch has not entered protected CI or installed.
+
+The expired earlier PR observer was proven absent before one same-cursor
+replacement started (exec83265, output/tmp/mmx-8786-watch-20261012-0748.log).
+It observed original9019at07:46:11Z. The inactive merge-queue pilot remains
+nonbinding; no duplicate observer or unattended native wake is claimed.
+
+Next: consume the incumbent main repair and admitted8786refresh, then fresh
+binding CI, protected merge, installed21source/3page verification and real
+browser checks. Only afterward ship the tested aggregate-feed follow-on.
+Do not replay the original uncertain12:07provider attempt or promote any
+reference-only source to article rights.
+
+## Prior release gate and live continuation proof
 
 Exact-head CI38202742004 completed SUCCESS at9019a29c, with21binding checks
 passing. Protected controller38205397750 then refused stale proof because

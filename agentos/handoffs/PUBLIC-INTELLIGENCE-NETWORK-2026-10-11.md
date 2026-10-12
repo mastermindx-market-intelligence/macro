@@ -38,7 +38,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Finish the substantive same-carrier integration on disarmed PR 8786, then fresh CI, protected landing, installed source and browser checks. CI 38161506271 passed the previous exact head 24bad; it does not prove the new integrated candidate.
+  - Continue armed PR8786 at9019 through the existing controller after the main-red repair8960; consume the admitted refresh and fresh exact-head CI, protected merge, installed source and browser checks. The aggregate follow-on integrates mainc40e39c7 asfbc73b77 and passes186 affected tests; ship it afterward.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -526,3 +526,21 @@ installed staging replay and public browser routes. The existing nonpromoting
 earnings full audit and fixed baseline qualifier run only after source lands.
 Preserve the original12:07EFFECT_UNKNOWN provider attempt and all rights/D14
 publication gates. There is no autonomous wake implied by this checkpoint.
+
+## October12 current-main integration
+
+The original release is still9019 with accepted historical green CI. Controller
+38219404229 holds it behind red integration-baseline38217383023. Existing
+repair8960atf1152e29has all12packs and ci-gate green and is now correctly
+designated main-red-repair by its existing delivery path. Root reviewed its
+exact nine-job path additions against the failure, made no repair mutation,
+and preserved protected controller custody.
+
+The separate follow-on merged mainc40e39c7 conflict-free asfbc73b77.
+Verification: python3 -m pytest tests/test_press_external_candidate.py
+tests/test_press_planner.py tests/test_press_validators.py
+tests/test_whitehouse_feed.py -q --tb=short reports186passed in6.62s.
+The original Press source/test blobs did not change during this merge.
+The current-main contract check completed with0introduced and31inherited
+findings in298.8seconds, exit0. The inherited main failure remains held.
+See the cumulative CHECKPOINT.md and body-free integration receipt.

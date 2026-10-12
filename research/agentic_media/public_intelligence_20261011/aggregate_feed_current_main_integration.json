@@ -1,0 +1,34 @@
+{
+  "schema": "mastermind.press.integration_check.v1",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "observed_at": "2026-10-12T07:49:37.816522+00:00",
+  "original_pr": 8786,
+  "original_head": "9019a29c2e35da499fb5c822e515be9ce9c21027",
+  "follow_on_head": "fbc73b7792869af73d3f26e71082bb168a2b64d7",
+  "protected_base": "c40e39c754747b649a508891bc86e1668b19c4d8",
+  "merge_conflicts": false,
+  "press_implementation_and_tests_unchanged_by_main_merge": true,
+  "test_command": "python3 -m pytest tests/test_press_external_candidate.py tests/test_press_planner.py tests/test_press_validators.py tests/test_whitehouse_feed.py -q --tb=short",
+  "test_result": "186 passed in 6.62s",
+  "test_output_sha256": "877831f972d73fee0538224301e64ce100934b7dd65dbf117e4926b6df1f9629",
+  "protected_gate": {
+    "controller_run": 38219404229,
+    "baseline_run": 38217383023,
+    "baseline_sha": "67bb1d66a3bb1f6ad7f432a546b5936a8940c6fb",
+    "state": "red",
+    "repair_carrier": 8960,
+    "repair_designation_observed": "main-red-repair",
+    "repair_tested_head": "f1152e29c8979499652c0df382f6b1a957a7a779",
+    "repair_root_mutations": false
+  },
+  "publication_approved": false,
+  "installed": false,
+  "contract_check": {
+    "command": "python3 scripts/check_contract_delta.py --base c40e39c754747b649a508891bc86e1668b19c4d8",
+    "introduced": 0,
+    "inherited": 31,
+    "wall_seconds": 298.8,
+    "exit_code": 0,
+    "output_sha256": "c776a21dca28375934e70593187eb892512971ef8e9250716c4813306b390ab7"
+  }
+}
