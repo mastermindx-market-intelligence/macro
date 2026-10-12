@@ -4508,6 +4508,27 @@ jobs:
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
 
+  c19-wp13-debt-maturity-as-of:
+    if: ${{ false }}
+    gate: code
+    # C19 WP13: point-in-time (as_of) debt-maturity ladder — later filings never visible (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp13_debt_maturity_as_of.py"
+      - "engine/debt_maturity.py"
+      - "tests/fixtures/debt_maturity/**"
+      - "tests/test_debt_maturity.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: c19-wp13-debt-maturity-as-of
+        run: python -m pytest tests/test_c19_wp13_debt_maturity_as_of.py tests/test_debt_maturity.py -q -p no:cacheprovider
+
   international-workspace-pure-js:
     if: ${{ false }}
     gate: code
