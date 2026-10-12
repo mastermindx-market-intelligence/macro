@@ -1,0 +1,802 @@
+{
+  "document_type": "implementation_dependency_plan",
+  "not_runtime_queue": true,
+  "not_dispatch": true,
+  "task_count": 39,
+  "tasks": [
+    {
+      "id": "R0",
+      "domain": "O1",
+      "requires_all": [],
+      "legacy_wave": "FIF-0",
+      "title": "Recover current owner, source, effects and scope",
+      "outputs": "Accepted source/custody map; current release holds; new scoped completion contract",
+      "acceptance_evidence": "Current owner/PR readback; no displaced live writer; included/excluded legacy mapping",
+      "scope_paths": [
+        "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A49",
+        "A50"
+      ]
+    },
+    {
+      "id": "T1",
+      "domain": "O1",
+      "requires_all": [
+        "R0"
+      ],
+      "legacy_wave": "FIF-3A4",
+      "title": "Repair complete lineage evidence binding",
+      "outputs": "One canonical expected-evidence builder at query admission/revalidation; rehashed-field refusal",
+      "acceptance_evidence": "Eighteen independent-field mutants; positive source/cutoff invariants",
+      "scope_paths": [
+        "engine/fundamental_forensics/query.py",
+        "engine/fundamental_forensics/lineage_evidence.py",
+        "tests/test_fundamental_forensics_cross_filing_lineage.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A01",
+        "A11"
+      ]
+    },
+    {
+      "id": "T2",
+      "domain": "O6",
+      "requires_all": [
+        "T1"
+      ],
+      "legacy_wave": "FIF-1/2/3",
+      "title": "Seal existing kernel/service compatibility",
+      "outputs": "Versioned regression baseline, proof limits and corrected capability record",
+      "acceptance_evidence": "Focused existing ledger/query/packet/statement/API suite; no fixture hash rewrite",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A02"
+      ]
+    },
+    {
+      "id": "D0",
+      "domain": "O2",
+      "requires_all": [
+        "R0"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "Freeze five-issuer source and coverage contract",
+      "outputs": "Exact accessions/forms/periods, source rights, retained history vs reconstruction, field denominator",
+      "acceptance_evidence": "Source manifest and eligibility review before retrieval; no secrets or purchase",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A52"
+      ]
+    },
+    {
+      "id": "D1",
+      "domain": "O2",
+      "requires_all": [
+        "D0"
+      ],
+      "legacy_wave": "FIF-3/5",
+      "title": "Retain complete filing packages through incumbent acquisition",
+      "outputs": "Immutable admitted HTML/inline/taxonomy/role/linkbase and capture receipts",
+      "acceptance_evidence": "Digest, partial-source, limits, corrections and accepted/observed clocks",
+      "scope_paths": [
+        "collectors/sec_filing_parser.py",
+        "engine/fundamental_forensics/sec_document_spine.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A10",
+        "A11",
+        "A17",
+        "A18",
+        "A19",
+        "A20"
+      ]
+    },
+    {
+      "id": "D2",
+      "domain": "O2",
+      "requires_all": [
+        "D0"
+      ],
+      "legacy_wave": "Legacy-W0B/FIF-3",
+      "title": "Resolve production attestation and historical admission",
+      "outputs": "Accepted existing signed trust path or exact bounded unresolved gate; no fixture relabeling",
+      "acceptance_evidence": "Independent verification of actual retained package/history, key version and rights; no bypass",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A13",
+        "A52"
+      ]
+    },
+    {
+      "id": "D3",
+      "domain": "O2",
+      "requires_all": [
+        "D1",
+        "D2",
+        "T2"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "Serve real immutable production datasets",
+      "outputs": "Production provider implementing existing query/packet/statement protocols",
+      "acceptance_evidence": "Real AAPL dataset, golden path unchanged, manifest/read/cutoff consistency",
+      "scope_paths": [
+        "engine/fundamental_forensics/query_service.py",
+        "engine/fundamental_forensics/revision_service.py",
+        "engine/fundamental_forensics/statement_service.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A12",
+        "A13",
+        "A14",
+        "A17",
+        "A18"
+      ]
+    },
+    {
+      "id": "S0",
+      "domain": "O3",
+      "requires_all": [
+        "T2",
+        "D1"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "Generalize source-faithful statement reconstruction",
+      "outputs": "As-reported statement trees and occurrence-linked cells",
+      "acceptance_evidence": "Row/column/period/dimension reconstruction; independent validator comparison",
+      "scope_paths": [
+        "engine/fundamental_forensics/statement_graph.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A09",
+        "A10"
+      ]
+    },
+    {
+      "id": "S1",
+      "domain": "O3",
+      "requires_all": [
+        "S0",
+        "T2"
+      ],
+      "legacy_wave": "FIF-3/6",
+      "title": "Qualify normalized metrics and dimensional rules",
+      "outputs": "Versioned mapping/formula packs with explicit noncomparable outcomes",
+      "acceptance_evidence": "Basis/unit/currency/fiscal-period/denominator and rule-clock hostile cases",
+      "scope_paths": [
+        "engine/fundamental_forensics/metric_registry.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A06",
+        "A07",
+        "A08",
+        "A53"
+      ]
+    },
+    {
+      "id": "S2",
+      "domain": "O1",
+      "requires_all": [
+        "T1",
+        "D1"
+      ],
+      "legacy_wave": "FIF-3/6",
+      "title": "Version scalable comparative/revision lineage",
+      "outputs": "Accepted multi-filing semantics beyond v1 two-accession scope, or typed abstention",
+      "acceptance_evidence": "Repeated vs revised vs rounded-consistent; chain/conflict/clock regression",
+      "scope_paths": [
+        "engine/fundamental_forensics/query.py",
+        "engine/fundamental_forensics/lineage_evidence.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A03",
+        "A04",
+        "A05",
+        "A12",
+        "A53"
+      ]
+    },
+    {
+      "id": "E0",
+      "domain": "O5",
+      "requires_all": [
+        "S1",
+        "S2"
+      ],
+      "legacy_wave": "FIF-4/5",
+      "title": "Ground material change and detector findings",
+      "outputs": "Source/metric-backed changes with denominators, materiality rationale and caveats",
+      "acceptance_evidence": "No missing-as-zero; no unsupported fraud/return claim; false-positive controls",
+      "scope_paths": [
+        "engine/fundamental_forensics/detectors.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A26",
+        "A27"
+      ]
+    },
+    {
+      "id": "E1",
+      "domain": "O3",
+      "requires_all": [
+        "S0",
+        "D1"
+      ],
+      "legacy_wave": "FIF-4/8",
+      "title": "Preserve disclosure alignment and change evidence",
+      "outputs": "Stable blocks/spans, additions/deletions/moved-text/numeric change distinctions",
+      "acceptance_evidence": "Repeated boilerplate, table reflow, hidden text and genuinely absent-section controls",
+      "scope_paths": [
+        "engine/fundamental_forensics/disclosure_diff.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A25",
+        "A28"
+      ]
+    },
+    {
+      "id": "P0",
+      "domain": "O4",
+      "requires_all": [
+        "R0"
+      ],
+      "legacy_wave": "FIF-4",
+      "title": "Freeze existing-product analyst journeys",
+      "outputs": "Reviewed Filing Forensics reuse design and exact API/view contracts",
+      "acceptance_evidence": "Five user tasks; progressive disclosure; no rival stock workspace",
+      "scope_paths": [
+        "templates/fundamental_forensics.html.j2"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A42"
+      ]
+    },
+    {
+      "id": "P1",
+      "domain": "O4",
+      "requires_all": [
+        "D3",
+        "S1",
+        "S2"
+      ],
+      "legacy_wave": "FIF-2/4",
+      "title": "Bind accepted production providers to existing API",
+      "outputs": "Private authorized query/revision/packet/statement/source paths",
+      "acceptance_evidence": "Auth before data; no request-time SEC; exact kernel/API equality",
+      "scope_paths": [
+        "app/forensics.py"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A15",
+        "A16",
+        "A22",
+        "A23",
+        "A24",
+        "A38"
+      ]
+    },
+    {
+      "id": "P2",
+      "domain": "O4",
+      "requires_all": [
+        "P1",
+        "P0",
+        "E0",
+        "E1"
+      ],
+      "legacy_wave": "FIF-4",
+      "title": "Deliver the source-linked analyst product",
+      "outputs": "What Changed, statements, revisions, disclosures and source drawer in existing route",
+      "acceptance_evidence": "EN/ZH desktop/mobile; correct deep links and back state; API/browser agreement",
+      "scope_paths": [
+        "templates/fundamental_forensics.html.j2",
+        "templates/fundamental_forensics.js",
+        "templates/fundamental_forensics.css"
+      ],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A24",
+        "A38",
+        "A42",
+        "A43",
+        "A44"
+      ]
+    },
+    {
+      "id": "A0",
+      "domain": "O6",
+      "requires_all": [
+        "P2"
+      ],
+      "legacy_wave": "FIF-3/4",
+      "title": "Accept real AAPL vertical",
+      "outputs": "Installed source-to-reader-to-browser proof on real newly admitted package",
+      "acceptance_evidence": "Natural/source clock receipt; no synthetic fallback; required release gates",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A45"
+      ]
+    },
+    {
+      "id": "G1",
+      "domain": "O3",
+      "requires_all": [
+        "A0",
+        "S1",
+        "E1"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "SNOW accounting reference pack",
+      "outputs": "RPO/SBC/non-GAAP and changed KPI definitions through same production protocols",
+      "acceptance_evidence": "Source-backed latest annual/interim plus comparable periods, packet and browser evidence; no issuer-specific kernel branches",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A29",
+        "A33"
+      ]
+    },
+    {
+      "id": "G2",
+      "domain": "O3",
+      "requires_all": [
+        "A0",
+        "S1",
+        "E1"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "CAT accounting reference pack",
+      "outputs": "Industrial vs financing segments, inventory/backlog comparability through same production protocols",
+      "acceptance_evidence": "Source-backed latest annual/interim plus comparable periods, packet and browser evidence; no issuer-specific kernel branches",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A31",
+        "A33"
+      ]
+    },
+    {
+      "id": "G3",
+      "domain": "O3",
+      "requires_all": [
+        "A0",
+        "S1",
+        "E1"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "BAC accounting reference pack",
+      "outputs": "Bank-specific statements, credit/capital/liquidity; no industrial ratio leakage through same production protocols",
+      "acceptance_evidence": "Source-backed latest annual/interim plus comparable periods, packet and browser evidence; no issuer-specific kernel branches",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A30",
+        "A33"
+      ]
+    },
+    {
+      "id": "G4",
+      "domain": "O3",
+      "requires_all": [
+        "A0",
+        "S1",
+        "E1"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "GOOGL accounting reference pack",
+      "outputs": "Issuer vs multiple securities, segments/capex; no duplicate company evidence through same production protocols",
+      "acceptance_evidence": "Source-backed latest annual/interim plus comparable periods, packet and browser evidence; no issuer-specific kernel branches",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A14",
+        "A32",
+        "A33"
+      ]
+    },
+    {
+      "id": "A1",
+      "domain": "O6",
+      "requires_all": [
+        "A0",
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ],
+      "legacy_wave": "FIF-3",
+      "title": "Accept the five-issuer product and semantic vertical",
+      "outputs": "Five independently reviewed issuer journeys, coverage and refusal ledger",
+      "acceptance_evidence": "Actual production artifacts; source fidelity and no fixture substitution",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A33",
+        "A45"
+      ]
+    },
+    {
+      "id": "C0",
+      "domain": "O2",
+      "requires_all": [
+        "D3",
+        "E0"
+      ],
+      "legacy_wave": "FIF-5",
+      "title": "Scale incremental filing discovery and publication",
+      "outputs": "Coverage-aware batch ingestion and correction handling on existing source/scheduler",
+      "acceptance_evidence": "New filing/change flows automatically; stale/outage distinction; one SEC request budget",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A20",
+        "A21"
+      ]
+    },
+    {
+      "id": "C1",
+      "domain": "O5",
+      "requires_all": [
+        "A1",
+        "S1"
+      ],
+      "legacy_wave": "FIF-6",
+      "title": "Deliver Peer Lab comparability",
+      "outputs": "Metric/fiscal/basis-compatible cohorts, exact exclusions and sample denominators",
+      "acceptance_evidence": "Counterexamples for banks/industrial periods, ADR/classes, fiscal shifts and missing peers",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A35"
+      ]
+    },
+    {
+      "id": "C2",
+      "domain": "O2",
+      "requires_all": [
+        "C0",
+        "C1",
+        "A1"
+      ],
+      "legacy_wave": "FIF-6",
+      "title": "Accrue declared depth-tier coverage",
+      "outputs": "250-deep and 1000-core target manifests with issuer/period/field denominators",
+      "acceptance_evidence": "No universe-count substitution for actual depth; all unsupported cells explicit",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A36"
+      ]
+    },
+    {
+      "id": "E2",
+      "domain": "O3",
+      "requires_all": [
+        "A1"
+      ],
+      "legacy_wave": "FIF-7",
+      "title": "Converge release, earnings, non-GAAP, KPI and guidance",
+      "outputs": "Existing event owner links to financial packet and reconciliations",
+      "acceptance_evidence": "No rival event lifecycle; recognized vs target vs estimate fields; definition/correction history",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A25",
+        "A29"
+      ]
+    },
+    {
+      "id": "K1",
+      "domain": "O3",
+      "requires_all": [
+        "E1",
+        "S1",
+        "A1"
+      ],
+      "legacy_wave": "FIF-8",
+      "title": "Debt/SBC/segments specialist packs",
+      "outputs": "Separately reviewed packs 1,2,3; each has schema/gold/source/coverage/refusal contract",
+      "acceptance_evidence": "No group-level acceptance hides an unbuilt pack; no risk or clinical forecasting",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "specialist_pack_ids": [
+        "PK01",
+        "PK02",
+        "PK03"
+      ],
+      "acceptance_cases": [
+        "A25",
+        "A34"
+      ]
+    },
+    {
+      "id": "K2",
+      "domain": "O3",
+      "requires_all": [
+        "E1",
+        "S1",
+        "A1"
+      ],
+      "legacy_wave": "FIF-8",
+      "title": "Revenue/tax/leases specialist packs",
+      "outputs": "Separately reviewed packs 4,5,6; each has schema/gold/source/coverage/refusal contract",
+      "acceptance_evidence": "No group-level acceptance hides an unbuilt pack; no risk or clinical forecasting",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "specialist_pack_ids": [
+        "PK04",
+        "PK05",
+        "PK06"
+      ],
+      "acceptance_cases": [
+        "A25",
+        "A34"
+      ]
+    },
+    {
+      "id": "K3",
+      "domain": "O3",
+      "requires_all": [
+        "E1",
+        "S1",
+        "A1"
+      ],
+      "legacy_wave": "FIF-8",
+      "title": "M&A/contingencies/controls specialist packs",
+      "outputs": "Separately reviewed packs 7,8,9; each has schema/gold/source/coverage/refusal contract",
+      "acceptance_evidence": "No group-level acceptance hides an unbuilt pack; no risk or clinical forecasting",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "specialist_pack_ids": [
+        "PK07",
+        "PK08",
+        "PK09"
+      ],
+      "acceptance_cases": [
+        "A25",
+        "A34"
+      ]
+    },
+    {
+      "id": "K4",
+      "domain": "O3",
+      "requires_all": [
+        "E1",
+        "S1",
+        "A1",
+        "E2"
+      ],
+      "legacy_wave": "FIF-8",
+      "title": "Proxy/banking/biotech accounting specialist packs",
+      "outputs": "Separately reviewed packs 10,11,12; each has schema/gold/source/coverage/refusal contract",
+      "acceptance_evidence": "No group-level acceptance hides an unbuilt pack; no risk or clinical forecasting",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "specialist_pack_ids": [
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "acceptance_cases": [
+        "A25",
+        "A30",
+        "A34"
+      ]
+    },
+    {
+      "id": "X0",
+      "domain": "O4",
+      "requires_all": [
+        "P1",
+        "C1"
+      ],
+      "legacy_wave": "FIF-9",
+      "title": "Deliver query/export APIs and Python client",
+      "outputs": "Versioned bounded APIs; canonical CSV/Parquet/JSON; existing async export facilities",
+      "acceptance_evidence": "Decimal/null/time/basis parity, formula injection safety, tenant/cancel/resume rights",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A38",
+        "A40",
+        "A54"
+      ]
+    },
+    {
+      "id": "X1",
+      "domain": "O4",
+      "requires_all": [
+        "X0",
+        "P2"
+      ],
+      "legacy_wave": "FIF-9",
+      "title": "Prove source-linked Excel formulas and refresh",
+      "outputs": "Working formula/add-in/refresh path on explicitly supported Excel environments",
+      "acceptance_evidence": "Real workbook/API cell-source-vintage agreement; static workbook is insufficient; admin gates explicit",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A39",
+        "A40"
+      ]
+    },
+    {
+      "id": "X2",
+      "domain": "O4",
+      "requires_all": [
+        "P2",
+        "X0"
+      ],
+      "legacy_wave": "FIF-4/9",
+      "title": "Deliver saved research and notifications",
+      "outputs": "Saved query/peer/watchlist/template state and existing notification adapters",
+      "acceptance_evidence": "Restore exact filters/policies/cutoffs; no duplicate scheduler or user-data authority",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A23",
+        "A41"
+      ]
+    },
+    {
+      "id": "Q0",
+      "domain": "O5",
+      "requires_all": [
+        "R0"
+      ],
+      "legacy_wave": "FIF-8/10",
+      "title": "Freeze independent quality and sampling protocol",
+      "outputs": "Accounting relevance/extraction labels, held-out docs/issuers, trial/label budgets",
+      "acceptance_evidence": "Known AAPL golden is calibration, not held-out efficacy proof",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A37"
+      ]
+    },
+    {
+      "id": "Q1",
+      "domain": "O6",
+      "requires_all": [
+        "E0",
+        "E1",
+        "E2",
+        "K1",
+        "K2",
+        "K3",
+        "K4",
+        "Q0"
+      ],
+      "legacy_wave": "FIF-8/10",
+      "title": "Evaluate findings and specialist extraction",
+      "outputs": "Precision/recall/abstention/source-fidelity dispositions per pack and claim type",
+      "acceptance_evidence": "Untouched holdout, domain disagreement, negative cases and no redefinition after failure",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A27",
+        "A37"
+      ]
+    },
+    {
+      "id": "Q2",
+      "domain": "O5",
+      "requires_all": [
+        "Q1",
+        "S2"
+      ],
+      "legacy_wave": "FIF-10-included",
+      "title": "Expose accountable current/historical context",
+      "outputs": "Versioned financial evidence and finding outcomes through existing research/evaluation readers",
+      "acceptance_evidence": "Then-known replay, immutable original beliefs and corrections; no Prophet or risk consumer writes",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A48"
+      ]
+    },
+    {
+      "id": "V0",
+      "domain": "O6",
+      "requires_all": [
+        "A1",
+        "C0"
+      ],
+      "legacy_wave": "FIF-11",
+      "title": "Qualify production reliability and recovery",
+      "outputs": "Declared load/SLO instrumentation, backup/restore/correction drills",
+      "acceptance_evidence": "Natural run, failure injection in sandbox, exact restore and release identity",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A18",
+        "A46",
+        "A47",
+        "A54"
+      ]
+    },
+    {
+      "id": "V1",
+      "domain": "O6",
+      "requires_all": [
+        "C2",
+        "K1",
+        "K2",
+        "K3",
+        "K4",
+        "Q1",
+        "X1",
+        "X2",
+        "V0",
+        "Q2"
+      ],
+      "legacy_wave": "FIF-6/11",
+      "title": "Accept coverage economics and broad serviceability",
+      "outputs": "250/1000 coverage proof, cost per qualified filing/issuer/query and operator burden",
+      "acceptance_evidence": "Source/licence/storage/parse/inference/review cost; no hidden incomplete tiers",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A36",
+        "A46"
+      ]
+    },
+    {
+      "id": "Z0",
+      "domain": "O6",
+      "requires_all": [
+        "V1"
+      ],
+      "legacy_wave": "FIF-11",
+      "title": "Independent whole-product closure audit",
+      "outputs": "All included roadmap requirements mapped to artifacts/tests/live proof",
+      "acceptance_evidence": "No dangling mandatory pack, platform, Excel, temporal or research acceptance",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A43",
+        "A51"
+      ]
+    },
+    {
+      "id": "Z1",
+      "domain": "Fable",
+      "requires_all": [
+        "Z0"
+      ],
+      "legacy_wave": "FIF-11",
+      "title": "Final scope-specific acceptance and obligation reconciliation",
+      "outputs": "Accepted release and owner continuity; excluded legacy obligations recorded separately",
+      "acceptance_evidence": "All active children/effects/returns reconciled; no false original-scope closure",
+      "scope_paths": [],
+      "state": "planned_not_dispatched",
+      "acceptance_cases": [
+        "A49",
+        "A50",
+        "A51"
+      ]
+    }
+  ],
+  "global_conditions": [
+    "current assignment, custody and exact source pins",
+    "admitted shared budget/depth and review reserves",
+    "applicable source rights and release approvals",
+    "no unresolved modifying effects on the target"
+  ]
+}

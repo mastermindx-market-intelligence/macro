@@ -1,0 +1,65 @@
+{
+  "document_type": "executed_probe_summary",
+  "source_pin": "44a45369617dbbd0afdcf161682679640352a554",
+  "query_blob": "529d9e7df8e6183848fea0a37280e938c0bd9238",
+  "lineage_blob": "2aaac83a73121e55e38f07c1a7b8228691875149",
+  "python": "3.12",
+  "method": "Read-only isolated Git snapshot, real committed golden fixture parser and query service; one evidence field changed in memory per trial with recomputed receipt ID and digest.",
+  "raw_report_sha256": "7f8043dda147551e103ad87340ba08c7d2a389addd291728ce65169c4e066bb7",
+  "this_file_is": "Derived summary, not the byte-identical raw report",
+  "events": 1722,
+  "genuine_receipts": 130,
+  "baseline": {
+    "state": "value",
+    "value": "359241000000",
+    "response_sha256": "74e134907d44731555b9a2db07a2cab42998d63d4f5c6d4bfcd6c2b6efae84a5"
+  },
+  "pre_lineage": {
+    "state": "not_evaluable",
+    "value": null,
+    "reason": "unlinked source vintages require an explicit typed revision lineage",
+    "response_sha256": "aa6f82dc415e2d3449118c627deb339f98814f0a1be6dff61e88f8819495bb21"
+  },
+  "independent_mutations": 14,
+  "incorrectly_accepted_and_disclosed_fields": [
+    "parent_document_id",
+    "child_document_id",
+    "parent_source_occurrence_keys",
+    "child_source_occurrence_keys",
+    "dimensions_known",
+    "parent_accepted_at",
+    "child_accepted_at",
+    "parent_recorded_at",
+    "child_recorded_at"
+  ],
+  "refused_or_not_evaluable_controls": [
+    "concept_qname",
+    "parsed_value",
+    "decimals",
+    "parent_taxonomy_uri",
+    "parent_accession"
+  ],
+  "delivery": {
+    "kind": "committed_golden_fixture",
+    "attested": false,
+    "production_issuer_service": false
+  },
+  "full_pytest_suite_run": false,
+  "source_patch_applied": false,
+  "production_http_calls": false,
+  "live_exploit_claim": false,
+  "remaining_test_requirement": "Test all18 required evidence fields after repair; current14-trial experiment is not exhaustive.",
+  "repair_hypothesis": {
+    "type": "temporary process-local wrapper, not source patch",
+    "raw_report_sha256": "2ea142fdedb20e3cf39f57ccaa1315a6e746ecf6dc4ecd6c3cb00f7f91761305",
+    "all_14_mutations_refused": true,
+    "all_four_policy_results_byte_equal": true,
+    "source_files_changed": false,
+    "production_calls": false,
+    "full_suite_run": false,
+    "additional_policy_response_hashes": {
+      "as_reported": "2dbcc0d66b13ed0c8d7c54a00551ccb335086816859957d2ac3bde8e60870b5d",
+      "latest_restated": "a291e19152579d2daf2a64c5fab3c8c7b5880bd13a83bdbcbac031bd0d46883d"
+    }
+  }
+}
