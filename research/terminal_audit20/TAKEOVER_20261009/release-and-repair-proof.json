@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T0637",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T0919",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -9510,6 +9510,60 @@
     "owner_report_only": "Existing PR1337 commit91c06705 source attribution and unchanged Ubuntu capacity from owner receipt are not independently source/CI/live-capacity qualified here.",
     "no_effects": "Fresh installed policy and skill read; future instruction correction only. No worker submission, status/result query, capacity probe, installed product acceptance, or outgoing ACK.",
     "next_ready_phase": "Actual B diagnosis or qualified new source edge, other relevant original-owner event, or independently useful newly admitted mission work; no notice-only delegation or repeated polling.",
+    "whole_J1_accepted": false,
+    "whole_audit20_complete": false,
+    "cleanup_owed": false
+  },
+  "current_capability_frontier_20261012T0919": {
+    "observed_at": "2026-10-12T09:20:04.304817+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T0637",
+    "material": "Actual B PR967 failed-CI return consumed; exact tested merge isolated local chart reproduction passes. Paper owns overlapping chart repair and has a throttled failure under diagnosis. No accepted repair/CI/merge/install yet.",
+    "ci": {
+      "run": 38220576158,
+      "head": "c8f76529ec0df61a961263ab94716fd269d3d19a",
+      "checkout": "8a25329febb4acbc0c555096d99c3579b8a4c1fd",
+      "tree": "e8fc28d9c5624d98192bd630b3c5d0e3e6c69c0c",
+      "parents": [
+        "b4095c3debbd8395570c42bf492561472d262f4b",
+        "c8f76529ec0df61a961263ab94716fd269d3d19a"
+      ],
+      "mobile_job": 114716060416,
+      "desktop1_job": 114716060551,
+      "conclusion": "Both browser jobs reached 60-minute limits; Terminal aggregate failed. LargeTrades381/458/572 exhausted retries. Other listed missing-overlay/startup cases were flaky. No deterministic or inherited causal conclusion."
+    },
+    "retained_owner_diagnosis": {
+      "run": "b-j1-ci-failure-diagnosis-01a128b7-v1",
+      "result_bytes": 10672,
+      "sha256": "b39d0bfd1632c306ec0ebbfbcac30507deeb877c7cc90abce9e101f227eb01a2",
+      "qualification": "B partial-useful adjudication consumed; deterministic/inherited causal overclaims rejected; no root paid-operation probe or retry."
+    },
+    "parent_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-ci-chart-20261012/exact8a-parent-qualification.json",
+      "bytes": 5712,
+      "sha256": "5b279a711788bb4e583587f4f8727b695a230f39387cea1994a2a7d2322fdce0"
+    },
+    "local_result": {
+      "source": "8a25329febb4acbc0c555096d99c3579b8a4c1fd",
+      "passed": 6,
+      "skipped": 2,
+      "retries": 0,
+      "workers": 1,
+      "assertions": "unchanged",
+      "scope": "Desktop LT381/458/572 + VI17 and mobile LT381 + VI17 pass; original mobile skips458/572. Isolated local pass does not erase CI red.",
+      "cleanup": "Fixture3547 closed; own fresh diagnostic checkout clean, retained for recoverable evidence. No user browser or VPS work."
+    },
+    "writer": {
+      "thread": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+      "title": "Website Revamp",
+      "source": "PR804/b8a2955911b281ec20b8dfc7d2d2132510b43e60",
+      "scope": "Sole repair writer for overlapping tablet LT381/894; root shared chart/test edits unstarted.",
+      "owner_report": "CPU-throttled pair reproduces missing overlay after correct indicator hydration; shell default2 panes reported; cause remains under diagnosis.",
+      "active_diagnostic": "exec96615/PID78755 CPUrate2; do not restart/duplicate/adopt as parent execution"
+    },
+    "coordination": "B first-party return verifies parent receipt5712B/5b279a711788bb4e583587f4f8727b695a230f39387cea1994a2a7d2322fdce0, attempt/log hashes and five blob pairs; accepts local6pass/2skip scope only. Hosted failures/causality open. Only narrow chart/test repair with exact source/preimage/dependencies/discriminating proof may be integrated by B into existing967. No broader804 merge or unrelated API/SQL/rights inheritance. Boundary sent through first-party tool to sole writer01a1101f-2a37-7320-9a9b-5df3ce1b890d accepted/noerror; no Paper ACK claimed. Receipt /Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-ci-chart-20261012/B-consumption-narrow-integration.json SHA0929d7522d776f5d952eac5f9bd31187623c4fa00417eb880418d7fe765e2fd3.",
+    "next_ready_phase": "Consume actual Paper chart diagnosis/reviewed source return, then B existing PR967 integration/review/required CI/protected merge. Root exact release and existing archived-MU read-only fast-history proof only after qualified merged-source return. No blind CI rerun, timeout extension, duplicate writer/test, early deployment or effect replay.",
     "whole_J1_accepted": false,
     "whole_audit20_complete": false,
     "cleanup_owed": false
