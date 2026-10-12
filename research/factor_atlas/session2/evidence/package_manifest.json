@@ -5,12 +5,12 @@
   "external_ci_workflow_sha256": "deb915d3d3715c94ac39fa0e02e3c8f641c38f95a854d15fe11500188b99142f",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 140621,
-      "sha256": "1b4a19229c7cddcdac0fed9bc0be53b0c6b343dc79313676e7cd04e7d5a72972"
+      "bytes": 144205,
+      "sha256": "b99be23ff364ba37090cafa74a433ce326d8748ac660e271fca1a73882b4c615"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 69163,
-      "sha256": "9c405df202e007c6b9eb713dc97aacc664ef0cb5329241ee65603a158348d321"
+      "bytes": 73248,
+      "sha256": "6fca085f29464c7f68b2c54d0793c62c95dcb612d29e628ac361ef9dfa888637"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 5261,
@@ -57,8 +57,8 @@
       "sha256": "5aba494a72b253daf6617ac55fd1bbddbd1d213c70852ecc89688f36b822e16d"
     },
     "session2/TIINGO_SOURCE_FIT_CONTRACT.md": {
-      "bytes": 17778,
-      "sha256": "53315f473449391b4f8340815b8fafb3de5c43b49580f8c987a45cbbdf347a7a"
+      "bytes": 23138,
+      "sha256": "5dbe1a7f6ce0677a951dcf6da47177b0c967610446816cc256d20057d8dc4f6e"
     },
     "session2/contracts/capital_pressure_read_v1_candidate.schema.json": {
       "bytes": 19142,
@@ -129,8 +129,8 @@
       "sha256": "f2c3546f4d8a35a32109b99c1a6e0a30b0adc9a75c7934f8fe0271043576104b"
     },
     "session2/evidence/native_tiingo_source_fitness_tests.json": {
-      "bytes": 7356,
-      "sha256": "008ae05295d513a2bb0ac790a4f51d5312152782f99c4e5d93cb32bdba9e1820"
+      "bytes": 8966,
+      "sha256": "3025ccc73301744904e2a897e20a1c5a0b83cf05158a753d3ca953f2aab7e489"
     },
     "session2/evidence/native_window_cache_tests.json": {
       "bytes": 3004,
@@ -185,8 +185,8 @@
       "sha256": "d7b76906d94ee042bd08fe5d4edabf507e6322c671d54984898e70f90eac148a"
     },
     "session2/evidence/tiingo_source_fitness_synthetic.json": {
-      "bytes": 33765,
-      "sha256": "9f828093f12e4e2fd7254d7bab9f270cc89b8b5ebb9a1bd0a8dd798a3ebf5840"
+      "bytes": 45668,
+      "sha256": "db41a1107a751a9544700a2bc860f16414bc76229308b9805debc2394c385fef"
     },
     "session2/evidence/window_history_cache_performance.json": {
       "bytes": 2817,
@@ -289,8 +289,8 @@
       "sha256": "88c9933a61013e7255132b64d43c8e9e06a021d28ab36307ce3a61f729cc8d32"
     },
     "session2/prototype/test_tiingo_source_fitness.py": {
-      "bytes": 23933,
-      "sha256": "187af5a94466417b98206731d443db397bf2bd97bbefa952ba807910d362c5f0"
+      "bytes": 32663,
+      "sha256": "f8666b9dc8fca3fb6f3da58e713ab2d340f2b0c864bcc55975468c0d4ea263b1"
     },
     "session2/prototype/test_window_pipeline.py": {
       "bytes": 5835,
@@ -309,8 +309,8 @@
       "sha256": "1538142c00c82d1e9b9daf9ffac2685b22fafb778b719c511df76d32a5212a28"
     },
     "session2/prototype/tiingo_source_fitness.py": {
-      "bytes": 20161,
-      "sha256": "5492a7eaea3fcd9d20a126eb0d223e4cd0f24bdfb8872be7f998f5e87d9d7a6b"
+      "bytes": 26681,
+      "sha256": "0c080d894ad8644d97f1f6c534d9e74a3539c2e1d7bf2d3e846aaad2888ad46a"
     },
     "session2/prototype/window_pipeline_witness.py": {
       "bytes": 5391,
@@ -342,19 +342,19 @@
   "native_quote_study_receipt": "session2/evidence/native_quote_study_tests.json",
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_read_contract_test_receipt": "session2/evidence/native_read_contract_tests.json",
-  "native_scoped_tests_passed": 517,
+  "native_scoped_tests_passed": 536,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
   "native_tiingo_alias_admission_receipt": "session2/evidence/native_tiingo_pit_alias_tests.json",
   "native_tiingo_source_fitness_receipt": "session2/evidence/native_tiingo_source_fitness_tests.json",
   "native_window_cache_test_receipt": "session2/evidence/native_window_cache_tests.json",
   "original_source_effect_owner_PR": "macro#8698 comment 6115007538",
-  "predecessor_commit": "0d22918f5e6a0d49cd33fbf0ab0aa955b085a266",
-  "prepared_at_utc": "2026-10-11T23:48:04.902722+00:00",
+  "predecessor_commit": "1d08954bbdeb7f10262ae4fab175297d3ecca916",
+  "prepared_at_utc": "2026-10-11T23:59:40.030346+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 37
+    "numbered_sections": 38
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }

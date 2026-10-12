@@ -450,3 +450,153 @@ def aggregate_cohort_fitness(reviews: Iterable[TiingoSourceFitness], *,
        "factor_atlas.tiingo_cohort_fitness.v1",
        len(material),symbols,pilot,participating,missing,outside,
        True,complete,False,False,False,False,False,result_hash)
+
+
+# The original Tiingo Data OS security-search source is RAW_ONLY: there is no
+# admitted L1 identity projector. Accept ALREADY-VERIFIED in-memory source
+# values only; all selection and canonical alias authority stays with Data OS.
+@dataclass(frozen=True)
+class TiingoSecuritySearchFitness:
+    schema: str
+    status: str
+    source_type: str
+    requested_symbol: str
+    original_source_sha256: str
+    original_receipt_id: str
+    original_source_observed_at_utc: str
+    decision_at_utc: str
+    total_owner_search_rows: int
+    US_exact_matches: int
+    nonUS_exact_matches: int
+    foreign_country_collision_observed: bool
+    us_asset_type: str | None
+    candidate_us_vendor_permaticker: str | None
+    vendor_composite_figi_present: bool
+    source_known_before_decision: bool
+    canonical_dataos_ETF_security_id_selected: bool
+    us_exchange_mic_verified: bool
+    original_owner_pit_alias_binding_admitted: bool
+    pit_vendor_alias_admitted: bool
+    source_rights_or_trading_basis_admitted: bool
+    market_pilot_admitted: bool
+    may_rank_or_trade: bool
+    customer_publishable: bool
+    refusals: tuple[str,...]
+    input_digest: str
+    authority: tuple[tuple[str,bool],...]=m.AUTHORITY
+
+
+def inspect_tiingo_security_search(
+    owner_raw_receipt: Mapping[str,object],
+    owner_verified_search_results: Iterable[Mapping[str,object]], *,
+    expected_symbol: str,
+    decision_at_utc: str
+) -> TiingoSecuritySearchFitness:
+    """Negative admission for original RAW_ONLY Tiingo security-search input.
+
+    Does not fetch/retain source bytes, select a Data OS security/listing,
+    issue a vendor ID, or grant a PIT source/market trading license.
+    """
+    if not isinstance(owner_raw_receipt,Mapping):
+        raise ValueError("original_security_source_receipt_required")
+    source=owner_raw_receipt.get("source")
+    if source!="security-search":
+        raise ValueError("security_search_source_family_required")
+    if (type(expected_symbol) is not str or
+            not _SYMBOL.fullmatch(expected_symbol)):
+        raise ValueError("expected_vendor_symbol_invalid")
+    request=f"/tiingo/utilities/search?query={expected_symbol}"
+    if owner_raw_receipt.get("request_path")!=request:
+        raise ValueError("source_query_identity_mismatch")
+    ssha=owner_raw_receipt.get("raw_sha256")
+    receipt_id=owner_raw_receipt.get("receipt_id")
+    if (type(ssha) is not str or not _SHA.fullmatch(ssha) or
+        type(receipt_id) is not str or not _SHA.fullmatch(receipt_id)):
+        raise ValueError("source_receipt_digest_invalid")
+    observed=owner_raw_receipt.get("observed_at_utc")
+    observed_clock=_timestamp(observed,"search_clock")
+    # Original source-receipt known-at is conservatively CEILED when the
+    # vendor records fractional nanoseconds beyond Python microseconds.
+    # Decision cutoffs remain floored, so late source evidence cannot leak.
+    fraction=re.search(r"\.(\d+)(?:Z|[+-]\d{2}:\d{2})$",observed)
+    if fraction and any(c!="0" for c in fraction.group(1)[6:]):
+        observed_clock+=timedelta(microseconds=1)
+    cutoff=_timestamp(decision_at_utc,"search_clock")
+    known=observed_clock<=cutoff
+    results=tuple(owner_verified_search_results)
+    if len(results)>50 or any(not isinstance(x,Mapping) for x in results):
+        raise ValueError("bounded_search_rows_required")
+    candidates=[r for r in results if r.get("ticker")==expected_symbol]
+    us=[r for r in candidates if r.get("countryCode")=="US"]
+    foreign=[r for r in candidates if r.get("countryCode")!="US"]
+    match=us[0] if len(us)==1 else None
+    refusals={
+       "DATA_OS_PIT_ALIAS_NOT_SELECTED",
+       "VENDOR_SECURITY_ID_NOT_CANONICAL",
+       "DATASET_RIGHTS_OR_PRICE_VOLUME_BASIS_NOT_ATTESTED",
+    }
+    if foreign:
+        refusals.add("COUNTRY_DUPLICATE_TICKER")
+    if not known:
+        refusals.add("SOURCE_FIRST_OBSERVED_AFTER_DECISION")
+    expected_asset="ETF" if expected_symbol=="SPY" else "Stock"
+    candidate_ref=None
+    figi=False
+    asset_type=None
+    if not us:
+        status="NO_US_VENDOR_REFERENCE"
+        refusals.add("US_REFERENCE_MISSING")
+    elif len(us)!=1:
+        status="MULTIPLE_US_VENDOR_REFERENCES"
+        refusals.add("AMBIGUOUS_US_REFERENCE")
+    else:
+        asset_type=match.get("assetType")
+        if asset_type!=expected_asset:
+            status="EXPECTED_INSTRUMENT_CLASS_MISMATCH"
+            refusals.add("ASSET_CLASS_NOT_QUALIFIED")
+        elif match.get("isActive") is not True:
+            status="INACTIVE_US_VENDOR_REFERENCE"
+            refusals.add("REFERENCE_INACTIVE_AT_SOURCE_TIME")
+        else:
+            perma=match.get("permaTicker")
+            figi_string=match.get("openFIGIComposite")
+            if (type(perma) is not str or
+                not re.fullmatch(r"US[A-Z0-9]{10,20}",perma) or
+                type(figi_string) is not str or
+                not re.fullmatch(r"[A-Z0-9]{8,20}",figi_string)):
+                status="US_VENDOR_IDENTITY_INCOMPLETE"
+                refusals.add("US_REFERENCE_MISSING_VENDOR_IDENTITY")
+            else:
+                candidate_ref=perma
+                figi=True
+                if not known:
+                    status="RETROSPECTIVE_VENDOR_REFERENCE_NOT_PIT"
+                else:
+                    status="VENDOR_REFERENCE_CANDIDATE_NOT_CANONICAL"
+
+    source_digest=m.digest({
+        "source":"security-search","original_raw_sha256":ssha,
+        "original_receipt_id":receipt_id,
+        "original_request_path":request,
+        "source_observed_at":observed,
+        "decision_at_utc":cutoff.isoformat(),
+        "selected_source_rows":[
+           {"ticker":v.get("ticker"),
+            "countryCode":v.get("countryCode"),
+            "assetType":v.get("assetType"),
+            "isActive":v.get("isActive"),
+            "permaTicker":v.get("permaTicker"),
+            "openFIGIComposite":v.get("openFIGIComposite"),
+            "name":v.get("name")}
+            for v in sorted(results,key=lambda x:(
+                str(x.get("ticker")),str(x.get("countryCode")),
+                str(x.get("permaTicker")),str(x.get("openFIGIComposite"))))
+        ]
+    })
+    return TiingoSecuritySearchFitness(
+       "factor_atlas.tiingo_security_search_fitness.v1",
+       status,"security-search",expected_symbol,ssha,receipt_id,
+       observed,cutoff.isoformat(),len(results),len(us),len(foreign),
+       bool(foreign),asset_type,candidate_ref,figi,known,
+       False,False,False,False,False,False,False,False,
+       tuple(sorted(refusals)),source_digest)

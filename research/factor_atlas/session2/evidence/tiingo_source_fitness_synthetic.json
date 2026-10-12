@@ -1174,5 +1174,346 @@
     "venue_scope": "single_ats"
   },
   "schema": "factor_atlas.tiingo_source_fitness_synthetic_witness.v1",
+  "security_search_source_fitness_controls": {
+    "CA_only_cannot_be_US_alias": {
+      "US_exact_matches": 0,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "canonical_dataos_ETF_security_id_selected": false,
+      "customer_publishable": false,
+      "decision_at_utc": "2026-10-09T20:00:00+00:00",
+      "foreign_country_collision_observed": true,
+      "has_one_candidate_US_vendor_reference": false,
+      "input_digest": "7d6b9dffe12a07794aa98258e87842fd541e82b2cf5104113aa961f4f7e56bcb",
+      "market_pilot_admitted": false,
+      "may_rank_or_trade": false,
+      "nonUS_exact_matches": 1,
+      "original_owner_pit_alias_binding_admitted": false,
+      "original_receipt_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "original_source_observed_at_utc": "2026-10-11T23:51:34+00:00",
+      "original_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pit_vendor_alias_admitted": false,
+      "refusals": [
+        "COUNTRY_DUPLICATE_TICKER",
+        "DATASET_RIGHTS_OR_PRICE_VOLUME_BASIS_NOT_ATTESTED",
+        "DATA_OS_PIT_ALIAS_NOT_SELECTED",
+        "SOURCE_FIRST_OBSERVED_AFTER_DECISION",
+        "US_REFERENCE_MISSING",
+        "VENDOR_SECURITY_ID_NOT_CANONICAL"
+      ],
+      "requested_symbol": "AAPL",
+      "schema": "factor_atlas.tiingo_security_search_fitness.v1",
+      "source_known_before_decision": false,
+      "source_rights_or_trading_basis_admitted": false,
+      "source_type": "security-search",
+      "status": "NO_US_VENDOR_REFERENCE",
+      "total_owner_search_rows": 1,
+      "us_asset_type": null,
+      "us_exchange_mic_verified": false,
+      "vendor_composite_figi_present": false
+    },
+    "SPY_ETF_US_candidate_not_listing_identity": {
+      "US_exact_matches": 1,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "canonical_dataos_ETF_security_id_selected": false,
+      "customer_publishable": false,
+      "decision_at_utc": "2026-10-09T20:00:00+00:00",
+      "foreign_country_collision_observed": false,
+      "has_one_candidate_US_vendor_reference": true,
+      "input_digest": "ba351fb69975d7142b47332b002c9023f642336942194f9e33d37f037a5c36b1",
+      "market_pilot_admitted": false,
+      "may_rank_or_trade": false,
+      "nonUS_exact_matches": 0,
+      "original_owner_pit_alias_binding_admitted": false,
+      "original_receipt_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "original_source_observed_at_utc": "2026-10-11T23:51:34+00:00",
+      "original_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pit_vendor_alias_admitted": false,
+      "refusals": [
+        "DATASET_RIGHTS_OR_PRICE_VOLUME_BASIS_NOT_ATTESTED",
+        "DATA_OS_PIT_ALIAS_NOT_SELECTED",
+        "SOURCE_FIRST_OBSERVED_AFTER_DECISION",
+        "VENDOR_SECURITY_ID_NOT_CANONICAL"
+      ],
+      "requested_symbol": "SPY",
+      "schema": "factor_atlas.tiingo_security_search_fitness.v1",
+      "source_known_before_decision": false,
+      "source_rights_or_trading_basis_admitted": false,
+      "source_type": "security-search",
+      "status": "RETROSPECTIVE_VENDOR_REFERENCE_NOT_PIT",
+      "total_owner_search_rows": 1,
+      "us_asset_type": "ETF",
+      "us_exchange_mic_verified": false,
+      "vendor_composite_figi_present": true
+    },
+    "US_CA_ticker_collision": {
+      "US_exact_matches": 1,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "canonical_dataos_ETF_security_id_selected": false,
+      "customer_publishable": false,
+      "decision_at_utc": "2026-10-09T20:00:00+00:00",
+      "foreign_country_collision_observed": true,
+      "has_one_candidate_US_vendor_reference": true,
+      "input_digest": "3a78c5ad13e6e903d811c74742c0e95ffcce68180d9fc8aa5c451404a2cd48f1",
+      "market_pilot_admitted": false,
+      "may_rank_or_trade": false,
+      "nonUS_exact_matches": 1,
+      "original_owner_pit_alias_binding_admitted": false,
+      "original_receipt_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "original_source_observed_at_utc": "2026-10-11T23:51:34+00:00",
+      "original_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pit_vendor_alias_admitted": false,
+      "refusals": [
+        "COUNTRY_DUPLICATE_TICKER",
+        "DATASET_RIGHTS_OR_PRICE_VOLUME_BASIS_NOT_ATTESTED",
+        "DATA_OS_PIT_ALIAS_NOT_SELECTED",
+        "SOURCE_FIRST_OBSERVED_AFTER_DECISION",
+        "VENDOR_SECURITY_ID_NOT_CANONICAL"
+      ],
+      "requested_symbol": "AAPL",
+      "schema": "factor_atlas.tiingo_security_search_fitness.v1",
+      "source_known_before_decision": false,
+      "source_rights_or_trading_basis_admitted": false,
+      "source_type": "security-search",
+      "status": "RETROSPECTIVE_VENDOR_REFERENCE_NOT_PIT",
+      "total_owner_search_rows": 2,
+      "us_asset_type": "Stock",
+      "us_exchange_mic_verified": false,
+      "vendor_composite_figi_present": true
+    },
+    "actual_dataos_reference_Tiingo_PIT_aliases_admitted": false,
+    "ambiguous_second_US_candidate": {
+      "US_exact_matches": 2,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "canonical_dataos_ETF_security_id_selected": false,
+      "customer_publishable": false,
+      "decision_at_utc": "2026-10-09T20:00:00+00:00",
+      "foreign_country_collision_observed": false,
+      "has_one_candidate_US_vendor_reference": false,
+      "input_digest": "93387487d737e991792d63609d48fafd5c5656c96d338b870ac0b9389e304699",
+      "market_pilot_admitted": false,
+      "may_rank_or_trade": false,
+      "nonUS_exact_matches": 0,
+      "original_owner_pit_alias_binding_admitted": false,
+      "original_receipt_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "original_source_observed_at_utc": "2026-10-11T23:51:34+00:00",
+      "original_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pit_vendor_alias_admitted": false,
+      "refusals": [
+        "AMBIGUOUS_US_REFERENCE",
+        "DATASET_RIGHTS_OR_PRICE_VOLUME_BASIS_NOT_ATTESTED",
+        "DATA_OS_PIT_ALIAS_NOT_SELECTED",
+        "SOURCE_FIRST_OBSERVED_AFTER_DECISION",
+        "VENDOR_SECURITY_ID_NOT_CANONICAL"
+      ],
+      "requested_symbol": "AAPL",
+      "schema": "factor_atlas.tiingo_security_search_fitness.v1",
+      "source_known_before_decision": false,
+      "source_rights_or_trading_basis_admitted": false,
+      "source_type": "security-search",
+      "status": "MULTIPLE_US_VENDOR_REFERENCES",
+      "total_owner_search_rows": 2,
+      "us_asset_type": null,
+      "us_exchange_mic_verified": false,
+      "vendor_composite_figi_present": false
+    },
+    "customer_trading_or_redistribution_authority": false,
+    "evidence_source": "FABRICATED_RAW_ONLY_TIINGO_SEARCH_RESULT_MAPS",
+    "no_vendor_raw_search_rows_or_registered_permaTicker_mirrored": true,
+    "original_source_owner_receipt_comment": "macro#8698 comment 6115302530",
+    "prospective_timestamp_still_not_canonical_PIT": {
+      "US_exact_matches": 1,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "canonical_dataos_ETF_security_id_selected": false,
+      "customer_publishable": false,
+      "decision_at_utc": "2026-10-12T20:00:00+00:00",
+      "foreign_country_collision_observed": true,
+      "has_one_candidate_US_vendor_reference": true,
+      "input_digest": "9234e15960f708242f28ced54e8995ad7fcea66904c6e5e209371c7a02bda913",
+      "market_pilot_admitted": false,
+      "may_rank_or_trade": false,
+      "nonUS_exact_matches": 1,
+      "original_owner_pit_alias_binding_admitted": false,
+      "original_receipt_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "original_source_observed_at_utc": "2026-10-11T23:51:34+00:00",
+      "original_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pit_vendor_alias_admitted": false,
+      "refusals": [
+        "COUNTRY_DUPLICATE_TICKER",
+        "DATASET_RIGHTS_OR_PRICE_VOLUME_BASIS_NOT_ATTESTED",
+        "DATA_OS_PIT_ALIAS_NOT_SELECTED",
+        "VENDOR_SECURITY_ID_NOT_CANONICAL"
+      ],
+      "requested_symbol": "AAPL",
+      "schema": "factor_atlas.tiingo_security_search_fitness.v1",
+      "source_known_before_decision": true,
+      "source_rights_or_trading_basis_admitted": false,
+      "source_type": "security-search",
+      "status": "VENDOR_REFERENCE_CANDIDATE_NOT_CANONICAL",
+      "total_owner_search_rows": 2,
+      "us_asset_type": "Stock",
+      "us_exchange_mic_verified": false,
+      "vendor_composite_figi_present": true
+    },
+    "submicrosecond_source_receipt_cannot_backdate": {
+      "US_exact_matches": 1,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "canonical_dataos_ETF_security_id_selected": false,
+      "customer_publishable": false,
+      "decision_at_utc": "2026-10-09T19:59:59.999999+00:00",
+      "foreign_country_collision_observed": false,
+      "has_one_candidate_US_vendor_reference": true,
+      "input_digest": "876e0a9d08424cc526d5a14476a850778056f4eaa89917f6549e66f3236bca99",
+      "market_pilot_admitted": false,
+      "may_rank_or_trade": false,
+      "nonUS_exact_matches": 0,
+      "original_owner_pit_alias_binding_admitted": false,
+      "original_receipt_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "original_source_observed_at_utc": "2026-10-09T19:59:59.999999001+00:00",
+      "original_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pit_vendor_alias_admitted": false,
+      "refusals": [
+        "DATASET_RIGHTS_OR_PRICE_VOLUME_BASIS_NOT_ATTESTED",
+        "DATA_OS_PIT_ALIAS_NOT_SELECTED",
+        "SOURCE_FIRST_OBSERVED_AFTER_DECISION",
+        "VENDOR_SECURITY_ID_NOT_CANONICAL"
+      ],
+      "requested_symbol": "AAPL",
+      "schema": "factor_atlas.tiingo_security_search_fitness.v1",
+      "source_known_before_decision": false,
+      "source_rights_or_trading_basis_admitted": false,
+      "source_type": "security-search",
+      "status": "RETROSPECTIVE_VENDOR_REFERENCE_NOT_PIT",
+      "total_owner_search_rows": 1,
+      "us_asset_type": "Stock",
+      "us_exchange_mic_verified": false,
+      "vendor_composite_figi_present": true
+    }
+  },
   "source": "FABRICATED_TiingoView_CONTRACT_ONLY"
 }

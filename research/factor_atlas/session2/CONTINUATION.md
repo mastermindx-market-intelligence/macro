@@ -1280,3 +1280,112 @@ pilot. Source-only accepted PR remains
 Draft/HOLD. Next publish this bounded
 original-branch pure checker, remote
 readback and exact-head hosted checks.
+
+## Tiingo RAW_ONLY real security-search source, US/CA ticker collisions and ETF boundary
+
+**Accepted root/branch at phase entry:** Macro Factor Atlas S2
+PR #8677 `1d08954bbdeb7f10262ae4fab175297d3ecca916`, original
+`claude/factor-atlas-capital-pressure-20261008`
+branch Draft/HOLD. Protected Mastermind
+`1f5befa44487ffb7ac2a0ca44ccd85c7c9da1355`
+compatible Sol procedures at same commit,
+Skillpack 1.0.1/bootstrap1. Original Tiingo
+Data OS source is merged, and the original
+external archive retained actual 4-name
+consolidated 1m research and source receipts.
+
+**Direct original source reference effects:** original
+`scripts.tiingo_ingest.collect` executed a
+bounded SPY security-search request, then
+three bounded AAPL/MSFT/NVDA searches,
+all 4/4 succeeded with source outputs
+retained in the existing Tiingo archive.
+Original `scripts.tiingo_materialize.verified_raw`
+validated SHA/receipt for all four. Exact
+raw source/receipt identities, observed_at
+and source limitations were saved under
+ORIGINAL Tiingo owner PR #8698
+comment `6115302530` (no raw source rows
+or permaTicker identifiers copied into S2 Git).
+
+**Critical new source identity finding:** for
+AAPL, MSFT and NVDA original Tiingo
+`security-search` returns **TWO**
+ticker-exact entries: one `countryCode=CA`,
+one `countryCode=US` with different
+vendor permaTickers. First result/ticker-only
+mapping is UNSAFE. SPY yields exactly
+one active U.S. ETF matching
+SPDR S&P 500 ETF Trust, with a
+vendor permaTicker and composite FIGI
+present. This is vendor metadata first
+observed Oct 11, not canonical Data OS
+`SEC:` listing nor source known at
+the Oct9 original market decision. Original
+Data OS `vendor_aliases` still lacks
+selected Tiingo aliases and SPY's actual
+ETF listing source/rights remains missing.
+
+**New accepted independent consumer code:** extend
+existing `prototype/tiingo_source_fitness.py`
+with pure `inspect_tiingo_security_search`
+for RAW_ONLY existing producer outputs.
+Requires fixed original source/receipt SHA,
+exact source query, bounded rows, aware
+capture clock, U.S. exact vendor-match,
+correct Stock-vs-ETF type and active
+US permaTicker+composite FIGI.
+Rejects CA-only, multiple US candidates,
+missing IDs, inactive/incorrect class
+and source-first-known AFTER decision.
+Conservatively CEILS sub-microsecond
+source observation known-at while
+never rounding decision cutoff forward.
+Returns candidate vendor metadata only;
+all canonical Data OS PIT, MIC, rights,
+customer and market-trading flags FALSE.
+No new source/identity/auth service.
+
+**Test-first and evidence:** first missing
+function RED, 14 constructor-falsifier
+failures caught, future-source nanosecond
+PIT error reproduced RED, then
+62/62 focused Tiingo source-fitness cases
+and 536/536 full 16-suite local M2
+Python 3.12 tests PASSED. Native
+zero-unrun suite auditor passed.
+Existing synthetic witness refreshed with
+country collision, ETF, competing US and
+late-reference refusal, with actual
+vendor source rows/IDs omitted.
+Exact source/test/log fingerprints saved to
+`evidence/native_tiingo_source_fitness_tests.json`.
+
+**DO_NOT_REDO & source gates unchanged:**
+explicitly previously denied four source
+reads, benchmark interpreter repair,
+current-main source compare, S2-P4
+and S2-P6 calculation patch,
+the specific blocked BOATS source-read
+packaging and effect-unknown scientific
+review summon remain held. No
+surrogate model/code carrier or source
+admission minted. Actual Tiingo minute
+OHLCV first captured Oct11 (not known Oct9)
+requires canonical dated ETF SPY and
+other Tiingo vendor PIT identity,
+original response/read capture clocks,
+correct consolidated share volume /
+corporate-action basis, selected revision,
+dataset rights and independent quote/
+scientific acceptance before any S2
+capital-pressure market or customer
+product can be released.
+
+**Next:** commit/push this bounded original
+same-branch source/test/protocol/witness
+and receiver reconciliation, verify
+immutable GitHub head and hosted
+research CI, then proceed through
+original Data OS source/rights to
+valid alias/canonical monetary admission.

@@ -530,3 +530,205 @@ def test_retained_beta_source_may_exist_without_being_canonically_admitted():
     assert "BETA_INTRADAY_SOURCE_NOT_CANONICALLY_ADMITTED" in result.refusals
     assert "BETA_INTRADAY_SOURCE_NOT_INSTALLED_OR_ADMITTED" not in result.refusals
     assert result.source_admitted is False
+
+
+# Separate Tiingo security-search reference evidence is RAW_ONLY under original
+# Data OS; audit already-verified search result values without fetching raw bytes.
+from tiingo_source_fitness import inspect_tiingo_security_search
+
+
+def _search_rows(symbol="AAPL", *, with_foreign=True):
+    u=dict(ticker=symbol,countryCode="US",assetType="ETF" if symbol=="SPY" else "Stock",
+           isActive=True,
+           permaTicker="US000000000040" if symbol=="SPY" else "US000000000038",
+           openFIGIComposite="BBG000BDTBL9" if symbol=="SPY" else "BBG000B9XRY4",
+           name="SPDR S&P 500 ETF Trust" if symbol=="SPY" else "Apple Inc")
+    rows=[u]
+    if with_foreign:
+        rows.insert(0,dict(u,countryCode="CA",permaTicker="CA000000137372",
+                           openFIGIComposite=None))
+    return tuple(rows)
+
+
+def _search(symbol="AAPL", rows=None, observed_at="2026-10-11T23:51:34+00:00",
+            cutoff="2026-10-09T20:00:00+00:00", source="security-search"):
+    return inspect_tiingo_security_search(
+       dict(source=source,raw_sha256="a"*64,receipt_id="b"*64,
+            observed_at_utc=observed_at,
+            request_path=f"/tiingo/utilities/search?query={symbol}"),
+       _search_rows(symbol) if rows is None else rows,
+       expected_symbol=symbol,decision_at_utc=cutoff)
+
+
+def test_same_ticker_us_and_canadian_records_require_country_specific_reference():
+    r=_search()
+    assert r.schema=="factor_atlas.tiingo_security_search_fitness.v1"
+    assert r.source_type=="security-search"
+    assert r.US_exact_matches==1
+    assert r.nonUS_exact_matches==1
+    assert r.foreign_country_collision_observed is True
+    assert r.candidate_us_vendor_permaticker=="US000000000038"
+    assert r.status=="RETROSPECTIVE_VENDOR_REFERENCE_NOT_PIT"
+    assert r.original_source_observed_at_utc=="2026-10-11T23:51:34+00:00"
+    assert "COUNTRY_DUPLICATE_TICKER" in r.refusals
+    assert r.pit_vendor_alias_admitted is False
+    assert r.customer_publishable is False
+    assert r.authority==m.AUTHORITY
+
+
+def test_exact_spy_etf_us_metadata_stays_noncanonical():
+    r=_search("SPY",rows=_search_rows("SPY",with_foreign=False))
+    assert r.US_exact_matches==1
+    assert r.nonUS_exact_matches==0
+    assert r.us_asset_type=="ETF"
+    assert r.candidate_us_vendor_permaticker=="US000000000040"
+    assert r.vendor_composite_figi_present is True
+    assert r.canonical_dataos_ETF_security_id_selected is False
+    assert r.pit_vendor_alias_admitted is False
+    assert r.market_pilot_admitted is False
+
+
+def test_spy_asset_type_stock_mismatch_is_refused_without_minting_an_etf():
+    row=dict(_search_rows("SPY",with_foreign=False)[0],assetType="Stock")
+    r=_search("SPY",rows=(row,))
+    assert r.status=="EXPECTED_INSTRUMENT_CLASS_MISMATCH"
+    assert r.candidate_us_vendor_permaticker is None
+
+
+def test_more_than_one_distinct_us_candidate_is_ambiguous_not_first_selected():
+    first=_search_rows()[1]
+    changed=dict(first,permaTicker="US000000000099",
+                 openFIGIComposite="BBG000TEST99")
+    r=_search(rows=(first,changed))
+    assert r.status=="MULTIPLE_US_VENDOR_REFERENCES"
+    assert r.US_exact_matches==2
+    assert r.candidate_us_vendor_permaticker is None
+
+
+def test_missing_us_candidate_keeps_canadian_source_unselected():
+    r=_search(rows=(_search_rows()[0],))
+    assert r.status=="NO_US_VENDOR_REFERENCE"
+    assert r.US_exact_matches==0
+    assert r.nonUS_exact_matches==1
+    assert r.candidate_us_vendor_permaticker is None
+
+
+def test_inactive_us_search_record_is_not_selected_for_live_symbol():
+    rows=(dict(_search_rows()[1],isActive=False),)
+    r=_search(rows=rows)
+    assert r.status=="INACTIVE_US_VENDOR_REFERENCE"
+    assert r.candidate_us_vendor_permaticker is None
+
+
+def test_us_vendor_identity_requires_permaticker_and_composite_figi():
+    for key in ("permaTicker","openFIGIComposite"):
+        record=dict(_search_rows()[1])
+        record[key]=None
+        r=_search(rows=(record,))
+        assert r.status=="US_VENDOR_IDENTITY_INCOMPLETE"
+        assert r.pit_vendor_alias_admitted is False
+
+
+def test_receipt_from_after_historical_decision_is_not_a_point_in_time_alias():
+    r=_search(cutoff="2026-10-09T20:00:00+00:00")
+    assert r.source_known_before_decision is False
+    assert r.status=="RETROSPECTIVE_VENDOR_REFERENCE_NOT_PIT"
+    assert "SOURCE_FIRST_OBSERVED_AFTER_DECISION" in r.refusals
+
+
+def test_vendor_search_before_prospective_decision_still_does_not_admit_alias():
+    r=_search(cutoff="2026-10-12T20:00:00+00:00")
+    assert r.source_known_before_decision is True
+    assert r.status=="VENDOR_REFERENCE_CANDIDATE_NOT_CANONICAL"
+    assert r.pit_vendor_alias_admitted is False
+    assert r.customer_publishable is False
+
+
+def test_original_source_family_and_exact_query_path_are_mandatory():
+    with pytest.raises(ValueError,match="source_family"):
+        _search(source="iex-bars")
+    with pytest.raises(ValueError,match="source_query"):
+        inspect_tiingo_security_search(
+          dict(source="security-search",raw_sha256="a"*64,receipt_id="b"*64,
+               observed_at_utc="2026-10-11T23:51:34+00:00",
+               request_path="/tiingo/utilities/search?query=SPY"),
+          _search_rows(),expected_symbol="AAPL",
+          decision_at_utc="2026-10-12T20:00:00+00:00")
+
+
+def test_source_hash_and_original_receipt_id_are_bounded_exact_sha256():
+    for key,bad in (("raw_sha256","x"*64),("receipt_id",None)):
+        source=dict(source="security-search",raw_sha256="a"*64,receipt_id="b"*64,
+             observed_at_utc="2026-10-11T23:51:34+00:00",
+             request_path="/tiingo/utilities/search?query=AAPL")
+        source[key]=bad
+        with pytest.raises(ValueError,match="source_receipt_digest"):
+            inspect_tiingo_security_search(source,_search_rows(),
+              expected_symbol="AAPL",decision_at_utc="2026-10-12T20:00:00+00:00")
+
+
+def test_duplicate_same_us_source_row_is_not_considered_a_unique_candidate():
+    row=_search_rows()[1]
+    r=_search(rows=(row,row))
+    assert r.status=="MULTIPLE_US_VENDOR_REFERENCES"
+    assert r.candidate_us_vendor_permaticker is None
+
+
+def test_reference_fingerprint_stable_across_owner_row_order():
+    a=_search()
+    b=_search(rows=tuple(reversed(_search_rows())))
+    assert a==b and a.input_digest==b.input_digest
+
+
+def test_changed_us_vendor_permaticker_changes_source_fingerprint():
+    a=_search(rows=(_search_rows()[1],))
+    b=_search(rows=(dict(_search_rows()[1],permaTicker="US000000000099"),))
+    assert a.input_digest!=b.input_digest
+    assert a.market_pilot_admitted==b.market_pilot_admitted is False
+
+
+def test_search_does_not_forge_exchange_mic_or_national_trading_rights():
+    r=_search("SPY",rows=_search_rows("SPY",with_foreign=False))
+    assert r.us_exchange_mic_verified is False
+    assert r.original_owner_pit_alias_binding_admitted is False
+    assert r.source_rights_or_trading_basis_admitted is False
+    assert r.customer_publishable is False
+    assert r.may_rank_or_trade is False
+
+
+def test_bounded_search_result_count_and_aware_clock():
+    with pytest.raises(ValueError,match="bounded_search_rows"):
+        _search(rows=_search_rows()*26)
+    with pytest.raises(ValueError,match="search_clock"):
+        _search(observed_at="2026-10-11T23:51:34")
+
+
+def test_no_vendor_identity_crosses_from_canadian_result_to_spy():
+    x=_search_rows("SPY",with_foreign=False)[0]
+    foreign=dict(x,countryCode="CA",permaTicker="CA000000000040")
+    r=_search("SPY",rows=(foreign,))
+    assert r.status=="NO_US_VENDOR_REFERENCE"
+    assert r.canonical_dataos_ETF_security_id_selected is False
+
+
+def test_source_search_nanosecond_capture_clock_cannot_enter_prior_microsecond_decision():
+    # The search response cannot be known BEFORE its original later receipt.
+    source="2026-10-09T19:59:59.999999001+00:00"
+    cutoff="2026-10-09T19:59:59.999999+00:00"
+    result=_search(rows=(_search_rows()[1],),observed_at=source,cutoff=cutoff)
+    assert result.source_known_before_decision is False
+    assert result.status=="RETROSPECTIVE_VENDOR_REFERENCE_NOT_PIT"
+    assert not result.pit_vendor_alias_admitted
+
+
+def test_ten_original_search_results_only_use_exact_ticker_and_country():
+    unrelated=tuple(dict(ticker=f"TICK{i}",countryCode="US",assetType="Stock",
+          isActive=True,permaTicker=f"US{i:012d}",openFIGIComposite="BBG000B9XRY4")
+          for i in range(8))
+    result=_search(rows=(*unrelated,*_search_rows()))
+    assert result.total_owner_search_rows==10
+    assert result.US_exact_matches==1
+    assert result.nonUS_exact_matches==1
+    assert result.foreign_country_collision_observed is True
+    assert result.candidate_us_vendor_permaticker=="US000000000038"
+    assert not result.market_pilot_admitted
