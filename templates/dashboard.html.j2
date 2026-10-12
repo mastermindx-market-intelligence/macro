@@ -12843,11 +12843,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
   {# dlg-risk: Risk scare ladder + drawdown boxes + sentiment — S2 redesign #}
   {% if market_state %}
-  <div class="mx5-dlg" id="dlg-risk" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="mx5-dlg" id="dlg-risk" role="dialog" aria-modal="true" aria-labelledby="dlg-risk-ttl" tabindex="-1">
     <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
     <div class="mx5-dlg-panel">
       <div class="mx5-dlg-header">
-        <span class="mx5-dlg-title"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>
+        <span class="mx5-dlg-title" id="dlg-risk-ttl"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>
         {% set _rk_asof = (latest.date if (latest is defined and latest.date is defined and latest.date) else none) %}
         {% if _rk_asof %}<span class="riskdlg-asof">{{ _rk_asof }}</span>{% endif %}</span>
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>

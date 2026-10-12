@@ -86,6 +86,24 @@ def test_shared_pullback_css_is_present_in_the_real_us_page():
     assert ".rrp-metrics" in html
 
 
+
+@pytest.mark.parametrize("view", [None, "active"])
+def test_risk_dialog_is_named_by_its_own_title(view):
+    """The modal needs an accessible name; China's shell already has one."""
+    vm = _vm()
+    if view == "active":
+        vm["us_pullback_view"] = native_view("us")
+    page = BeautifulSoup(_render(vm=vm, mode="macro"), "html.parser")
+    dlg = page.select_one("#dlg-risk")
+    assert dlg is not None and dlg.get("role") == "dialog"
+    ids = (dlg.get("aria-labelledby") or "").split()
+    assert ids, "the risk dialog has no aria-labelledby"
+    for ref in ids:
+        named = page.find(id=ref)
+        assert named is not None, ref
+        assert dlg in named.parents, ref
+        assert "Risk Radar" in named.get_text(" ", strip=True)
+
 ILLUS_LINK = '<link rel="stylesheet" href="illus.css">'
 
 

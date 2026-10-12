@@ -8,6 +8,21 @@
   /* Only a stamp with an explicit offset is a deadline; a bare local time would
      move with the viewer's zone, so it counts as expired. */
   var ZONED = /(?:Z|[+-]\d\d:\d\d)$/;
+  /* Expiry hides the measured figures, which can hold the history summary. If
+     keyboard focus sits there it would leave the open modal with nothing to
+     bring it back, so hand it to that dialog's close button first. */
+  function keepFocus(root) {
+    var active = document.activeElement;
+    if (!active || typeof root.contains !== 'function' || !root.contains(active)) return;
+    var hidden = root.querySelectorAll('.pbx-current, .rrp-sub');
+    for (var i = 0; i < hidden.length; i += 1) {
+      if (!hidden[i].contains(active)) continue;
+      var dlg = typeof root.closest === 'function' ? root.closest('[role="dialog"]') : null;
+      var target = dlg && (dlg.querySelector('button[aria-label="Close"]') || dlg);
+      if (target && typeof target.focus === 'function') target.focus();
+      return;
+    }
+  }
   function expire() {
     window.clearTimeout(timer);
     var now = Date.now(), next = Infinity;
@@ -15,6 +30,7 @@
       var raw = root.getAttribute('data-pb-valid-until') || '';
       var end = ZONED.test(raw) ? Date.parse(raw) : NaN;
       if (!Number.isFinite(end) || now >= end) {
+        keepFocus(root);
         root.classList.add('pb-expired');
         root.setAttribute('data-pb-phase', 'unavailable');
         var heading = root.querySelector('.pbx-heading h2');

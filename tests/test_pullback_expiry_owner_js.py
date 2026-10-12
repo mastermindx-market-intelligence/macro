@@ -381,3 +381,99 @@ assert.ok(live[0].ms >= 1, 'delay ' + live[0].ms);
 assert.ok(live[0].ms <= MAX_DELAY, 'delay ' + live[0].ms);
 """
     )
+
+
+_FOCUS_FIXTURE = r"""
+function node(name, kids = []) {
+  return {
+    name, kids,
+    contains(other) {
+      if (other === this) return true;
+      return this.kids.some((kid) => kid.contains(other));
+    },
+  };
+}
+function dialogWith(stamp) {
+  const summary = node('history-summary');
+  const current = node('pbx-current', [summary]);
+  const sub = node('rrp-sub');
+  const why = node('why-summary');
+  const forecast = node('rrp-forecast', [why]);
+  const sec = section(stamp);
+  const inner = node('root-inner', [current, sub, forecast]);
+  const close = node('close');
+  const dlg = node('dlg', [close]);
+  let focused = null;
+  const focusable = (n) => { n.focus = () => { focused = n; }; return n; };
+  [close, dlg, summary, why].forEach(focusable);
+  sec.contains = (other) => inner.contains(other);
+  sec.closest = (sel) => (sel === '[role="dialog"]' ? dlg : null);
+  sec.querySelectorAll = (sel) => {
+    if (sel !== '.pbx-current, .rrp-sub') throw new Error('unexpected root query: ' + sel);
+    return [current, sub];
+  };
+  dlg.querySelector = (sel) => (sel === 'button[aria-label="Close"]' ? close : null);
+  return {sec, summary, why, close, dlg, focused: () => focused};
+}
+"""
+
+
+def test_x10_expiry_hands_focus_from_the_hidden_history_to_the_close_button():
+    """Focus on the history summary moves to the dialog's close button at expiry.
+
+    Expiry hides `.pbx-current`, which holds that summary. Without the hand-off
+    keyboard focus would fall to the page behind an aria-modal dialog.
+    """
+    _run(
+        _FOCUS_FIXTURE
+        + """
+now = at('2026-10-12T08:59:59Z');
+const f = dialogWith('2026-10-12T17:00:00+08:00');
+const ctx = boot([f.sec]);
+ctx.document.activeElement = f.summary;
+assertCurrent(f.sec, 'before');
+assert.equal(f.focused(), null, 'nothing moved while current');
+now = at('2026-10-12T09:00:00Z');
+ctx.window.mmPbExpire();
+assertExpired(f.sec, 'at deadline');
+assert.equal(f.focused(), f.close, 'focus went to the close button');
+"""
+    )
+
+
+def test_x11_expiry_leaves_focus_that_stays_visible_alone():
+    """Focus on a control expiry keeps visible, or outside the section, is not moved."""
+    _run(
+        _FOCUS_FIXTURE
+        + """
+now = at('2026-10-12T09:00:00Z');
+const kept = dialogWith('2026-10-12T17:00:00+08:00');
+const outside = dialogWith('2026-10-12T17:00:00+08:00');
+const ctx = boot([]);
+ctx.document.querySelectorAll = () => [kept.sec, outside.sec];
+ctx.document.activeElement = kept.why;
+ctx.window.mmPbExpire();
+assertExpired(kept.sec, 'kept');
+assertExpired(outside.sec, 'outside');
+assert.equal(kept.focused(), null, 'the forecast summary stays visible, so focus stays');
+assert.equal(outside.focused(), null, 'focus in another section is not taken');
+"""
+    )
+
+
+def test_x12_expiry_without_a_close_button_focuses_the_dialog():
+    """A dialog shell without a labelled close button still keeps focus inside it."""
+    _run(
+        _FOCUS_FIXTURE
+        + """
+now = at('2026-10-12T09:00:00Z');
+const f = dialogWith('2026-10-12T17:00:00+08:00');
+f.dlg.querySelector = () => null;
+const ctx = boot([]);
+ctx.document.querySelectorAll = () => [f.sec];
+ctx.document.activeElement = f.summary;
+ctx.window.mmPbExpire();
+assertExpired(f.sec, 'no close button');
+assert.equal(f.focused(), f.dlg, 'focus stays on the dialog itself');
+"""
+    )
