@@ -763,3 +763,146 @@ def test_compute_flow_returns_deep_copy(monkeypatch, tmp_path):
     assert second["provenance"]["sources_counted"] == ["benzinga"]
     assert shared["reports_24h"] == 7
     assert shared["provenance"]["sources_counted"] == ["benzinga"]
+
+
+def _negative_count_case(case_id):
+    """The canonical ok fixture with ONE rule broken: a negative count (R1 a-f).
+
+    Every other section-4 rule still holds, so the negative value is the only
+    reason the validator may reject the payload.
+    """
+    flow = flow_fixture("ok", now=FLOW_NOW)
+    if case_id == "daily_all_negative":
+        flow["daily_counts_28d"] = [-1] * 28
+    elif case_id == "counts_trio_negative":
+        flow.update(reports_24h=-2, reports_7d=-1, stories_24h=-3)
+        flow["provenance"]["time_basis_counts_24h"] = {
+            "published_at": -1,
+            "received_at": -1,
+        }
+    elif case_id == "reports_negative_sevenday_zero":
+        flow.update(reports_24h=-1, reports_7d=0, stories_24h=-1)
+        flow["provenance"]["time_basis_counts_24h"] = {
+            "published_at": -1,
+            "received_at": 0,
+        }
+    elif case_id == "basis_negative_sum_ok":
+        flow["provenance"]["time_basis_counts_24h"] = {
+            "published_at": 8,
+            "received_at": -1,
+        }
+    elif case_id == "stories_negative_only":
+        flow["stories_24h"] = -1
+    elif case_id == "one_daily_negative":
+        daily = list(flow["daily_counts_28d"])
+        daily[13] = -1
+        flow["daily_counts_28d"] = daily
+    else:
+        raise AssertionError(f"unknown negative case {case_id!r}")
+    return flow
+
+
+_NEGATIVE_COUNT_CASES = (
+    "daily_all_negative",
+    "counts_trio_negative",
+    "reports_negative_sevenday_zero",
+    "basis_negative_sum_ok",
+    "stories_negative_only",
+    "one_daily_negative",
+)
+
+
+@pytest.mark.parametrize("case_id", _NEGATIVE_COUNT_CASES, ids=_NEGATIVE_COUNT_CASES)
+def test_flow_validator_rejects_negative_counts(case_id):
+    """Contract section 4: every count is an int >= 0, not merely an int (R1)."""
+    from app import ticker_news
+
+    # Control row: the untouched canonical fixture validates, so the False
+    # below comes from this case's negative value, not a broken fixture.
+    assert ticker_news._flow_payload_valid(flow_fixture("ok", now=FLOW_NOW)) is True
+    assert ticker_news._flow_payload_valid(_negative_count_case(case_id)) is False
+
+
+def test_flow_negative_count_served_as_calculation_failed(monkeypatch, tmp_path, caplog):
+    """A negative count served by the store degrades the flow, not the rows (G3)."""
+    _ticker_news, app, _db = _app(monkeypatch, tmp_path)
+    ok_calls = install_fake_flow(monkeypatch, "ok")
+    client = TestClient(app)
+    ok_body = client.get("/api/ticker-news/NVDA").json()
+    assert len(ok_calls) == 1
+    assert "flow" in ok_body
+
+    def negative_news_flow(self, security_id, *, now, rights):
+        return _negative_count_case("stories_negative_only")
+
+    monkeypatch.setattr(
+        store_mod.NewsStore, "news_flow", negative_news_flow, raising=False
+    )
+    with caplog.at_level(logging.ERROR, logger="app.ticker_news"):
+        response = client.get("/api/ticker-news/NVDA")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["flow"] == flow_unavailable("calculation_failed")
+    assert json.dumps(body["rows"]) == json.dumps(ok_body["rows"])
+    assert {k: v for k, v in body.items() if k != "flow"} == {
+        k: v for k, v in ok_body.items() if k != "flow"
+    }
+    assert any(
+        record.getMessage() == "ticker_news flow payload failed validation"
+        for record in caplog.records
+    )
+
+
+@pytest.mark.parametrize("none_case", ["status_counted", "daily_28d_unit"])
+def test_flow_validator_rejects_none_in_provenance(none_case):
+    """Contract section 3: no None inside provenance when state is not unavailable (R2)."""
+    from app import ticker_news
+
+    flow = flow_fixture("ok", now=FLOW_NOW)
+    if none_case == "status_counted":
+        flow["provenance"]["status_counted"] = None
+    else:
+        flow["provenance"]["windows"]["daily_28d"]["unit"] = None
+
+    # Control: the unavailable flow's TOP-LEVEL provenance None follows a
+    # different rule, checked before no_empty_strings ever applies.
+    assert (
+        ticker_news._flow_payload_valid(flow_unavailable("calculation_failed")) is True
+    )
+    assert ticker_news._flow_payload_valid(flow) is False
+
+
+def test_compute_flow_never_raises_on_uncopyable_payload(monkeypatch, tmp_path, caplog):
+    """A payload that passes validation but cannot be deep-copied degrades (R3, G3)."""
+    ticker_news, app, _db = _app(monkeypatch, tmp_path)
+
+    def uncopyable_news_flow(self, security_id, *, now, rights):
+        bad = flow_fixture("ok", now=now, sources=rights.allowed_sources)
+        # An extra provenance key is contract-legal (section 4 subset check);
+        # the generator it holds is what copy.deepcopy cannot pickle.
+        bad["provenance"] = dict(bad["provenance"], engine_cursor=(x for x in ()))
+        return bad
+
+    precondition = uncopyable_news_flow(
+        None,
+        "SEC:US-XNAS-NVDA",
+        now=FLOW_NOW,
+        rights=store_mod.NewsReadRights.all_internal(),
+    )
+    assert ticker_news._flow_payload_valid(precondition) is True
+
+    monkeypatch.setattr(
+        store_mod.NewsStore, "news_flow", uncopyable_news_flow, raising=False
+    )
+    with caplog.at_level(logging.ERROR, logger="app.ticker_news"):
+        response = TestClient(app).get("/api/ticker-news/NVDA")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["rows"]
+    assert body["flow"] == flow_unavailable("calculation_failed")
+    assert any(
+        record.getMessage() == "ticker_news flow calculation failed"
+        for record in caplog.records
+    )
