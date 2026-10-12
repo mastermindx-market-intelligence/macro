@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-10-06",
-  "built_at": "2026-10-07T05:39:27.102399+00:00",
+  "asof": "2026-10-09",
+  "built_at": "2026-10-11T03:40:34.924072+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 122.132541,
-    "net_gex_pctile": 98.4,
-    "gamma_flip": 7682.580461,
-    "spot": 7818.9302,
-    "dist_to_flip_pct": 1.743841,
-    "days_in_regime": 4,
-    "days_in_regime_observed": 4,
+    "net_gex_bn": 99.882296,
+    "net_gex_pctile": 93.9,
+    "gamma_flip": 7719.338378,
+    "spot": 7811.54,
+    "dist_to_flip_pct": 1.180326,
+    "days_in_regime": 7,
+    "days_in_regime_observed": 7,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -455,11 +455,32 @@
         "regime": "long",
         "flip": 7682.580461,
         "spot": 7818.9302
+      },
+      {
+        "date": "2026-10-07",
+        "net_gex_bn": 91.989045,
+        "regime": "long",
+        "flip": 7708.15967,
+        "spot": 7801.77
+      },
+      {
+        "date": "2026-10-08",
+        "net_gex_bn": 51.679244,
+        "regime": "long",
+        "flip": 7715.054046,
+        "spot": 7765.3599
+      },
+      {
+        "date": "2026-10-09",
+        "net_gex_bn": 99.882296,
+        "regime": "long",
+        "flip": 7719.338378,
+        "spot": 7811.54
       }
     ],
     "coverage": {
-      "last_obs": "2026-10-06",
-      "expected_last_session": "2026-10-06",
+      "last_obs": "2026-10-09",
+      "expected_last_session": "2026-10-09",
       "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [
@@ -471,52 +492,28 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 272.245039,
-      "alloc_frac": 0.907483,
-      "flow_1d_bn": -0.643198,
-      "flow_5d_bn": -1.492982,
-      "state": "cutting",
+      "alloc_bn": 275.794548,
+      "alloc_frac": 0.919315,
+      "flow_1d_bn": 1.941737,
+      "flow_5d_bn": 2.311576,
+      "state": "adding",
       "flow_window_n": 5,
       "aum_bn": 300.0,
       "target_vol_pct": 10.0,
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 1.113857,
-      "z": 0.354683,
-      "flow_1d": 0.184188,
-      "flow_5d": 0.512145,
+      "score": 1.081837,
+      "z": 0.339931,
+      "flow_1d": -0.043981,
+      "flow_5d": 0.368205,
       "state": "adding",
       "flow_window_n": 5,
       "cta_near_flat": false
     },
-    "agreement": "split",
+    "agreement": "aligned_adding",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-10-08",
-        "vc_alloc_bn": 185.511174,
-        "vc_flow_bn": 0.14063,
-        "cta_score": 1.692251,
-        "cta_flow": 0.204896,
-        "spx_close": 5751.129883
-      },
-      {
-        "date": "2024-10-09",
-        "vc_alloc_bn": 186.113144,
-        "vc_flow_bn": 0.60197,
-        "cta_score": 1.742238,
-        "cta_flow": 0.049987,
-        "spx_close": 5792.040039
-      },
-      {
-        "date": "2024-10-10",
-        "vc_alloc_bn": 186.364225,
-        "vc_flow_bn": 0.251081,
-        "cta_score": 1.57273,
-        "cta_flow": -0.169509,
-        "spx_close": 5780.049805
-      },
       {
         "date": "2024-10-11",
         "vc_alloc_bn": 186.003113,
@@ -4492,67 +4489,83 @@
         "cta_score": 1.113857,
         "cta_flow": 0.184188,
         "spx_close": 7818.930176
+      },
+      {
+        "date": "2026-10-07",
+        "vc_alloc_bn": 274.435106,
+        "vc_flow_bn": 2.190066,
+        "cta_score": 1.06174,
+        "cta_flow": -0.052117,
+        "spx_close": 7801.77002
+      },
+      {
+        "date": "2026-10-08",
+        "vc_alloc_bn": 273.852811,
+        "vc_flow_bn": -0.582294,
+        "cta_score": 1.125818,
+        "cta_flow": 0.064078,
+        "spx_close": 7765.359863
+      },
+      {
+        "date": "2026-10-09",
+        "vc_alloc_bn": 275.794548,
+        "vc_flow_bn": 1.941737,
+        "cta_score": 1.081837,
+        "cta_flow": -0.043981,
+        "spx_close": 7811.540039
       }
     ]
   },
   "vol": {
-    "rv21": 0.101747,
-    "rv63": 0.110195,
+    "rv21": 0.098067,
+    "rv63": 0.108777,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
         "tenor": "M1",
-        "settle": 17.0818,
-        "dte": 15
+        "settle": 17.6239,
+        "dte": 13
       },
       {
         "tenor": "M2",
-        "settle": 17.6375,
-        "dte": 43
+        "settle": 18.0079,
+        "dte": 41
       },
       {
         "tenor": "M3",
-        "settle": 18.1615,
-        "dte": 71
+        "settle": 18.5248,
+        "dte": 69
       },
       {
         "tenor": "M4",
-        "settle": 19.025,
-        "dte": 106
+        "settle": 19.325,
+        "dte": 104
       },
       {
         "tenor": "M5",
-        "settle": 19.5821,
-        "dte": 134
+        "settle": 19.7985,
+        "dte": 132
       },
       {
         "tenor": "M6",
-        "settle": 19.7602,
-        "dte": 162
+        "settle": 19.9957,
+        "dte": 160
       }
     ],
-    "vix_curve_slope": 2.6784,
+    "vix_curve_slope": 2.3718,
     "series_start_curve": "2026-04-16"
   },
   "dispersion": {
-    "cor1m": 8.33,
+    "cor1m": 7.58,
     "cor1m_regime": "dispersion",
-    "cor1m_1y_delta": 0.9,
-    "cor1m_pctile_2y": 13.7,
+    "cor1m_1y_delta": -0.17,
+    "cor1m_pctile_2y": 7.9,
     "cor1m_pctile_lo": 20,
     "cor1m_pctile_hi": 80,
     "cor1m_available": true,
-    "cor3m": 11.49,
-    "dspx": 35.09,
+    "cor3m": 11.56,
+    "dspx": 36.57,
     "history": [
-      {
-        "date": "2024-10-08",
-        "cor1m": 18.61
-      },
-      {
-        "date": "2024-10-09",
-        "cor1m": 17.6
-      },
       {
         "date": "2024-10-10",
         "cor1m": 16.92
@@ -6544,50 +6557,58 @@
       {
         "date": "2026-10-06",
         "cor1m": 8.33
+      },
+      {
+        "date": "2026-10-07",
+        "cor1m": 8.01
+      },
+      {
+        "date": "2026-10-08",
+        "cor1m": 7.58
       }
     ]
   },
   "week_map": {
-    "week_start": "2026-10-05",
-    "week_end": "2026-10-09",
-    "locked_close": 7722.72,
-    "locked_at": "2026-10-02T00:00:00",
-    "band_1sigma_lo": 7587.25,
-    "band_1sigma_hi": 7858.19,
-    "band_2sigma_lo": 7451.78,
-    "band_2sigma_hi": 7993.66,
-    "gamma_flip": 7682.580461,
-    "implied_weekly_pct": 1.75,
+    "week_start": "2026-10-12",
+    "week_end": "2026-10-16",
+    "locked_close": 7811.54,
+    "locked_at": "2026-10-09T00:00:00",
+    "band_1sigma_lo": 7680.2,
+    "band_1sigma_hi": 7942.88,
+    "band_2sigma_lo": 7548.86,
+    "band_2sigma_hi": 8074.22,
+    "gamma_flip": 7719.338378,
+    "implied_weekly_pct": 1.68,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-10-05",
+    "vs_asof": "2026-10-08",
     "items": [
       {
         "key": "vc_state",
-        "from": "adding",
-        "to": "cutting",
-        "note_en": "Vol-control funds: adding → cutting",
-        "note_zh": "波动率控制基金：加仓 → 减仓",
+        "from": "pausing",
+        "to": "adding",
+        "note_en": "Vol-control funds: pausing → adding",
+        "note_zh": "波动率控制基金：暂停 → 加仓",
         "display_only": true
       },
       {
         "key": "agreement",
-        "from": "aligned_adding",
-        "to": "split",
-        "note_en": "Systematic agreement: Aligned adding → Split",
-        "note_zh": "系统化机构一致性：一致加仓 → 分歧",
+        "from": "split",
+        "to": "aligned_adding",
+        "note_en": "Systematic agreement: Split → Aligned adding",
+        "note_zh": "系统化机构一致性：分歧 → 一致加仓",
         "display_only": true
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-10-05",
+    "as_of": "2026-10-08",
     "state": {
       "gamma_regime": "long",
-      "vc_state": "adding",
+      "vc_state": "pausing",
       "cta_state": "adding",
-      "agreement": "aligned_adding",
+      "agreement": "split",
       "rv_cross_state": "calm",
       "cor1m_regime": "dispersion"
     }

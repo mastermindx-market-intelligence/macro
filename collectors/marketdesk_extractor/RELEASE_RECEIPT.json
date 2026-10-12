@@ -1,11 +1,11 @@
 {
   "schema": "mastermind.marketdesk_extractor.release.v1",
-  "release_id": "marketdesk-producer-auth-health-r2-20261005",
-  "capability": "typed MarketDesk producer authentication health on the incumbent runtime plane",
+  "release_id": "marketdesk-transient-pdf-requeue-20261011-c2",
+  "capability": "typed transient MarketDesk PDF failure recovery on original quota-guarded producer",
   "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "source_of_truth": "Git commit plus current release manifest",
   "manifest": "SHA256SUMS",
-  "manifest_sha256": "a9832d62274a67704ffb6175c66f24763ca178f7bc0cf7a78ef43e24e1218161",
+  "manifest_sha256": "ddef88c5843ace9d0da3b9b9fe3d5df0936164d3ff4db12fe0e37bd3272d0254",
   "payload_count": 58,
   "recovery_manifest": "RECOVERY_SHA256SUMS",
   "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
@@ -21,12 +21,18 @@
     "Preserve the original recovery manifest as immutable provenance.",
     "Persist producer authentication health in the existing MarketDesk SQLite meta table.",
     "Expose AUTHENTICATED, AUTH_REQUIRED, or UNKNOWN through marketdesk status and the existing read-only feed probe.",
-    "Make the existing research-feed watcher surface AUTH_REQUIRED without opening a second scheduler, health database, or automatic authentication path."
+    "Make the existing research-feed watcher surface AUTH_REQUIRED without opening a second scheduler, health database, or automatic authentication path.",
+    "Classify only proven pre-TLS Playwright disconnects as transient without replaying the failed request inline.",
+    "Requeue source-HTTP-5xx and typed pre-TLS failures as DISCOVERED, never permanently SKIPPED_UNSUPPORTED.",
+    "Apply a five-minute per-account retry delay, preserving token-bucket pace and 70-downloads-per-rolling-24h ledger.",
+    "Keep existing session-expired, cap-bounce, dead-driver recycling, permanent non-PDF and privacy boundaries unchanged."
   ],
   "non_goals": [
     "No MarketDesk re-authentication or browser-profile mutation.",
     "No LaunchAgent activation, restart, retirement, or replacement.",
     "No queue, database schema table, bucket, scheduler, workflow, or publication-authority change.",
-    "No automatic credential refresh; re-authentication remains an explicit human single-writer operation."
+    "No automatic credential refresh; re-authentication remains an explicit human single-writer operation.",
+    "No automatic immediate duplicate PDF request or download cap increase.",
+    "No new storage schema, durable retry scheduler, publisher, account credential or profile owner."
   ]
 }

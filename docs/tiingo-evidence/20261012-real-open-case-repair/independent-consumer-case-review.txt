@@ -1,0 +1,17 @@
+Independent reasoning reviewer tiingo_consumer_reasoning_review: actual source delta PASS.
+
+Reviewed committed base: 1cea273c72487f1fae77dc579b3e628ec435a55c.
+Producer SHA256: 25e2866a24562e50fe5ba3bf996e83c1c021b9bc9599e7cce98be6cd29877476.
+Test SHA256: 554564e21844e4fa8d3c3cd39d0a5fe5b8123ceba1d0e44dd08733b04a3129da.
+
+PASS — bounded review of the actual producer and regression delta. No actionable defect found in the display-only identity correction.
+
+At BoatsLastTrade.consume, the source now validates the original vendor value against the explicit ASCII syntax before uppercasing. It derives one local uppercase symbol, checks display coverage, and then uses that same key throughout the existing quote and watermark paths. This covers T admission, B invalidation, malformed covered-event removal and out-of-order rejection. Valid uncovered lowercase symbols return before altering covered state.
+
+The original message remains unchanged when passed to decode_boats; no raw/research identity conversion, trimming, Unicode normalization, alias substitution, clock relaxation or condition relaxation was introduced. The public uppercase coverage and envelope allowlists remain unchanged. The constructor's revised wording accurately distinguishes display keys from vendor representation.
+
+The twenty added regression cases meaningfully cover the agreed falsifiers: lowercase trade admission with unchanged decoded identity and uppercase public output; shared watermark across case variants; lowercase break invalidation/equal-time rejection/newer recovery; lowercase Q preserving the trade/watermark without extending lifetime; uncovered lowercase Q/T/B preserving covered state; and thirteen invalid identities refused before conversion.
+
+The new lowercase trade test uses a synthetic envelope matching the reported authentic format; it does not independently establish reception of licensed live data. The live capture counts and research audit remain root-supplied evidence, and I inspected no licensed rows.
+
+This PASS is bound to the two hashes above and covers source semantics and regression quality. I did not execute tests; the settling green run must complete successfully. The registry's LIVE producer pin needs an explicit qualification for this exact source change. Protected source acceptance and any subsequent runtime/publication approval remain separate gates.

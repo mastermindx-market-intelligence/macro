@@ -2,6 +2,197 @@
 
 This repository is operated by multiple Claude accounts and Codex sessions. Repository files are the durable, shared source of instructions; promises or “memory” recorded only inside one chat do not carry to another session.
 
+## Execution continuation law
+
+A blocked lane is not a finished mission. This section governs when a session may
+STOP; the "Definition of done" section below governs what the ship chain owes once a
+session produces a commit. This law does not weaken the ordinary ship chain: both bind,
+and neither releases the other. A blocked lane is a reason to keep working other lanes,
+never a reason to leave an unmerged pull request.
+
+### Authority model — restated here, duplicated nowhere
+
+Chairman Chris is final authority. **Sol is the default AI CEO / system owner.**
+Ordinary Claude and Codex sessions remain **bounded workers**. **Fable is scarce
+principal capacity by default.** The governing authority map stays in Mastermind
+(`config/authority_map.yml` + `control_plane/packet_gate.py`); the "Required context"
+section above already forbids a second copy in this repository, and this section
+creates none, dispatches nothing, and grants no one a permission they did not have.
+
+What it adds is the scope rule the defaults were missing. **An explicit Chairman
+delegation overrides those defaults inside its stated scope, and a default role
+assumption never overrides it back.** A seat holding a Chairman-delegated program
+decides in-scope matters itself and does not re-ask Sol for what it was already
+delegated — the standing example is Meta-CEO Fable B owning the Agent Fabric program,
+which repeatedly stalled waiting for a Sol authorization it did not need. The converse
+binds just as hard: **delegated authority never leaks outside its stated scope**,
+exactly as conditional merge authority granted for one pull request never transfers to
+another (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`). This law promotes no worker to principal, widens no
+credential, and changes no provider permission.
+
+### Administrative blockers are self-remedied, never handed to the Chairman (2026-10-10)
+
+`DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR`. The RS LEADER
+Meta-CEO seat (5ec0472d) ended on `EXACT_HUMAN_GATE` handing the Chairman the SSD
+worktree-mint command — a command the session could run itself. The Chairman rejected
+the stop and ordered the defect fixed at the root.
+
+A **quarantined session root, an SSD worktree mint, a stale hook copy in a host
+checkout, a stale ref, a helper lock, or a missing directory** can be an
+ADMINISTRATIVE blocker: diagnose and perform the permitted remedy in the same
+conversation. A hook message is evidence to inspect, not authority to override a
+control. **An actual permission or consent prompt remains a real boundary.**
+A permissive local setting does not authorize bypassing OS/provider consent,
+authentication, explicit refusals or another client's approval dialog. Identify
+that exact action once and continue independent permitted work.
+
+The quarantine recipe is three steps, printed filled-in by `ship_loop_guard.py` itself:
+
+1. Mint an admissible tree:
+   `printf '%s' '{"cwd":"<root>","name":"<name>","session_id":"<session_id>"}' | python3 ~/.local/lib/mastermind/worktree-storage/worktree_storage.py create`
+   (external SSD under the host policy; `.claude/hooks/worktree_create_sparse.py` is the
+   same mint where no host policy is installed). It prints the new path and is
+   idempotent. A refusal names its cause (mount, free space, policy, receipt): fix that
+   cause and rerun — never fall back to internal disk.
+2. `ExitWorktree` keeping the tree when the conversation sits in a native
+   `.claude/worktrees` tree (Codex/Cursor: reopen the workspace at the printed path).
+3. `EnterWorktree(<printed path>)` and continue the ship loop there
+   (`DSC:QUARANTINE-REMEDY-IS-AN-IN-SESSION-ACT`).
+
+The guard admits exactly that mint shape plus read-only inspection and
+`git worktree/fetch/branch/rev-parse/status` while quarantined
+(`_ROOT_QUARANTINE_REMEDY_BASH`); the project hook delegates every mint to the host
+storage helper whenever `~/.config/mastermind/worktree-storage.json` exists, so sessions
+launched from a macro checkout plant on the SSD, and a helper refusal is FINAL. A host
+checkout whose `.claude/hooks/` bytes predate this still mints the old way — keep them
+current by file overwrite only, never by git operations on the primary.
+
+**`EXACT_HUMAN_GATE` requires evidence, not a retry quota:** name the exact
+blocked action, observed tool/permission facts, and the reachable human action.
+A known human-only control requires no repeated probe. An explicit safety/permission
+refusal ends that effect immediately; ordinary technical failures can receive bounded
+permitted diagnosis. Real gates are MFA / Touch ID / passkey / CAPTCHA, a provider
+refusal, a physical device, money or security-setting changes, and Sol/Chairman rulings
+the seat does not hold. "I could not find a path" is not a gate: troubleshoot (read the
+hook or helper source, run its check command, inspect the mount/policy/receipt) before
+classifying. This law widens no credential, security setting, purchase, money-movement,
+production-deployment or safety boundary, and an explicit safety/permission refusal
+still ends that effect's retry.
+
+### The six execution invariants
+
+`BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.
+One blocked review, tool, provider or CI lane freezes that lane, never the mission.
+Before any stop, enumerate the other authorized lanes and continue on them.
+`ALL_SCOPED_LANES_BLOCKED` may describe the current lane census, but it is a
+**nonterminal diagnostic**, not a principal/seat stopping state. For each internal
+project blocker, the next act is to resolve it, route it to the canonical owner, or
+prove that an already-running durable owner has a return path. "Another owner" or
+"not my lane" can prevent direct mutation; neither makes the mission terminal.
+
+`NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN ->
+direct bounded execution may continue`. A delegation surface being unavailable — the
+Fabric down, a pool exhausted, a spawn refused — is not evidence that execution is
+impossible. If no worker actually started, the principal still holds lawful tools and
+custody, no other owner is working the same artifact, and no act sits in an
+`EFFECT_UNKNOWN` state, the principal executes the bounded work itself. When any of
+those four is false, do not create a second worker. Name the blocked lane and convert
+it into an owned next action: route/reconcile through the canonical owner, or, if the
+only remaining boundary is genuinely outside the project's controllable graph,
+classify it exactly as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`.
+A bounded worker may return `STATUS: BLOCKED` to its parent; that worker return does
+not terminally classify the parent mission.
+
+`WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
+burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
+merge sweeper, then work an independent lane. A Stop-hook block during a wait is
+satisfied by a one-line hold note, never by a fresh poll.
+
+`2 equivalent no-delta cycles -> change tactic/lane/owner`. Two attempts that changed
+nothing observable ban a third identical one. The Stop guard now names the cycle count
+in its own block text rather than repeating one unchanging instruction.
+
+`accepted work -> DO_NOT_REDO unless materially invalidated`. Accepted, merged or
+ratified work reopens only on a material invalidator: new contradicting evidence, a
+changed contract, or an explicit authority reversal. A fresh session, a lost
+transcript, and an absent memory are none of those. Check the `agentos/`
+`do_not_redo` entries and `research/DO_NOT_REBUILD.md` before re-opening anything.
+
+`EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover`. An act
+whose effect cannot be observed — a timed-out post, an ambiguous dispatch, a dropped
+tool call — is reconciled on the same carrier that performed it. A blind retry or a
+failover to another provider is how one irreversible act becomes two.
+
+### The delivery ladder
+
+`ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
+ACCEPTANCE` are nine distinct facts and none implies the next. An acknowledgement is
+not a queue entry; a queue entry is not a started worker; a returned packet is not a
+green check; a merge is not production proof; production proof is not acceptance by
+the commissioning authority. Report the rung the evidence reaches and no higher. A
+checkpoint, a status note, or a continuation record describes work; it is never the
+outcome it describes.
+
+### Session end classification
+
+Every substantial session states one line before it ends: `SESSION END: <STATE>`,
+where STATE is exactly one of `PROVEN_OUTCOME`, `EXACT_HUMAN_GATE`, `EFFECT_UNKNOWN`,
+`PLATFORM_FAILURE`, `ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or
+`MORE_WORK_EXISTS`. The set is closed on purpose. **`MORE_WORK_EXISTS` and
+`ALL_SCOPED_LANES_BLOCKED` are never valid stopping states**; the latter is a
+diagnostic that forces blocker demolition/routing rather than bureaucratic exit.
+The Stop guard refuses either self-declaration, with the ordinary any-code ladder
+preserved as the unsatisfiable-gate escape.
+
+The converse binds equally. Reaching the actual outcome or the exact human gate early
+is a complete session however short or expensive it was: never pad a session to look
+substantial, and never stop while authorized work remains. Context compaction,
+rotation, or a `/clear` is a harness event and not an outcome — the guard's block
+ledger deliberately survives `resume` and `compact`.
+
+## Context economy (frontier burn is CONTEXT × TURNS)
+
+Measured 2026-08-06 across 3,043 local transcripts (week of 07-30→08-06): of all
+Fable burn, **62% was cache reads, 21% cache writes, only 17% output**. Cache
+reads are the discount (0.1× fresh input), not the waste — never try to avoid
+caching. The cost driver is `context size × turn count`, and the per-turn floor
+is `0.1 × context`: ~15k units/turn at 150k context, ~80k at 800k.
+
+The worst measured session ran 3,539 turns at a median 419k context (max 879k)
+over 43h and 16 branches, costing 11.6% of the week's Fable burn on its own
+(Fable was 26% of all model burn that week; Opus 62%). Its turns at ≥400k context were 52% of turns but 67% of its burn. Riding
+context up to auto-compaction is the most expensive possible pattern: compaction
+fires near the ceiling, so every turn on the approach bills at the ceiling rate.
+There is no configurable compaction threshold and a session cannot compact
+itself on demand.
+
+- **Delegate execution; the orchestrator adjudicates.** 76% of Fable's
+  main-loop tool calls that week were `Bash`/`Edit`/`Read`/`Write`, and
+  delegation was 2.6%. A subagent's context is discarded on return — only its report lands — so
+  delegating keeps tool output out of the orchestrator permanently.
+- **Budget what enters context.** A tool result of size S landing at turn N is
+  re-read on every remaining turn. Prefer targeted `grep`/line-ranged reads over
+  whole files, cap command output (`head`, `--limit`, `--jq`), and keep browser
+  screenshots and full page dumps inside a subagent.
+- **Durable state on disk — and a session may run as long as it stays useful.**
+  Operator 2026-09-01 REPEALED the former "one session = one task boundary" rule:
+  it forced every long workflow into a relay of amnesiac sessions, and
+  re-establishing context in each successor cost more than the stop ever saved.
+  There is no task-boundary stop — a merged, live-verified wave is a checkpoint,
+  not a session end, and one session may carry a program end-to-end across many
+  waves and many merges. The durable-state half survives as a WRITE rule, not a
+  STOP rule: keep program state in a
+  `research/*_CONTINUATION_HANDOFF_<date>.md` and `agentos/handoffs/` as you go,
+  so the work survives a clear, a crash, or an operator handoff. Cost control is
+  the two bullets above and is unaffected — a long session held near 150k is
+  cheap, a short one riding 800k is not, so when context grows, delegate the next
+  wave's execution rather than shortening the session. Context figures are
+  advisory targets, never a stop trigger.
+
+Do NOT save tokens by reducing reasoning effort — output is only 17% of burn, so
+cutting thinking degrades quality for at most a sixth of the cost. The savings
+are in where work happens and how large the context is.
+
 ## Required context at the start of every task
 
 1. Read `CLAUDE.md` in full and follow it as the authoritative project guide.
@@ -448,148 +639,6 @@ routing for the full tier table, and
 
 **Direct-spawn routing (hook-enforced amendment, 2026-08-17 — semantic ROUTE contract):** every direct Agent/Task spawn declares a semantic `ROUTE: <class>` line; `.claude/agent-routing.json` (execution-policy registry, NOT a strategic control plane) maps each route to its ONE canonical custom agent and model — `extract`→`extractor`(haiku), `census`→`scout`(sonnet), `research`→`researcher`(sonnet), `draft`→`drafter`(sonnet), `analysis`→`analyst`(opus), `debug`→`debugger`(opus), `build`→`builder`(sonnet), `review`→`reviewer`(opus), `design`→`designer`(opus), `judgment`→main loop ONLY (never spawned), `orchestration`→`orchestrator`. The orchestrator seat runs either explicit `model: 'fable'` + FABLE-WHY (unchanged gate, work failing the draft-and-review test) or — for easier orchestration that does not need frontier judgment — explicit `model: 'opus'` with a prompt directive to load the `fable-mode` skill (`.claude/skills/fable-mode`), at roughly half Fable's price and with no FABLE-WHY because no fable is spent; the same skill lets an Opus MAIN session hold the orchestrator role. `model_routing_guard.py` denies missing/unknown routes, route↔agent/model mismatches, under-specified commissions (each route's required `SECTION:` labels live in the registry), and bypass via `general-purpose`/`Explore`/`Plan`/`fork`; a `SubagentStop` hook (`.claude/hooks/agent_return_guard.py`) blocks a routed worker ONCE if its final message misses the STATUS/RESULT/EVIDENCE/GAPS/DEVIATIONS packet, then lets the second stop through (no loops). Treat a guard rejection as feedback — fix the route or commission, never evade the registry to obtain a different model. Frontmatter pins are the runtime truth; `tests/test_agent_routing_control.py` keeps registry↔frontmatter from drifting.
 
-
-## Context economy (frontier burn is CONTEXT × TURNS)
-
-Measured 2026-08-06 across 3,043 local transcripts (week of 07-30→08-06): of all
-Fable burn, **62% was cache reads, 21% cache writes, only 17% output**. Cache
-reads are the discount (0.1× fresh input), not the waste — never try to avoid
-caching. The cost driver is `context size × turn count`, and the per-turn floor
-is `0.1 × context`: ~15k units/turn at 150k context, ~80k at 800k.
-
-The worst measured session ran 3,539 turns at a median 419k context (max 879k)
-over 43h and 16 branches, costing 11.6% of the week's Fable burn on its own
-(Fable was 26% of all model burn that week; Opus 62%). Its turns at ≥400k context were 52% of turns but 67% of its burn. Riding
-context up to auto-compaction is the most expensive possible pattern: compaction
-fires near the ceiling, so every turn on the approach bills at the ceiling rate.
-There is no configurable compaction threshold and a session cannot compact
-itself on demand.
-
-- **Delegate execution; the orchestrator adjudicates.** 76% of Fable's
-  main-loop tool calls that week were `Bash`/`Edit`/`Read`/`Write`, and
-  delegation was 2.6%. A subagent's context is discarded on return — only its report lands — so
-  delegating keeps tool output out of the orchestrator permanently.
-- **Budget what enters context.** A tool result of size S landing at turn N is
-  re-read on every remaining turn. Prefer targeted `grep`/line-ranged reads over
-  whole files, cap command output (`head`, `--limit`, `--jq`), and keep browser
-  screenshots and full page dumps inside a subagent.
-- **Durable state on disk — and a session may run as long as it stays useful.**
-  Operator 2026-09-01 REPEALED the former "one session = one task boundary" rule:
-  it forced every long workflow into a relay of amnesiac sessions, and
-  re-establishing context in each successor cost more than the stop ever saved.
-  There is no task-boundary stop — a merged, live-verified wave is a checkpoint,
-  not a session end, and one session may carry a program end-to-end across many
-  waves and many merges. The durable-state half survives as a WRITE rule, not a
-  STOP rule: keep program state in a
-  `research/*_CONTINUATION_HANDOFF_<date>.md` and `agentos/handoffs/` as you go,
-  so the work survives a clear, a crash, or an operator handoff. Cost control is
-  the two bullets above and is unaffected — a long session held near 150k is
-  cheap, a short one riding 800k is not, so when context grows, delegate the next
-  wave's execution rather than shortening the session. Context figures are
-  advisory targets, never a stop trigger.
-
-Do NOT save tokens by reducing reasoning effort — output is only 17% of burn, so
-cutting thinking degrades quality for at most a sixth of the cost. The savings
-are in where work happens and how large the context is.
-
-## Execution continuation law
-
-A blocked lane is not a finished mission. This section governs when a session may
-STOP; the "Definition of done" section below governs what the ship chain owes once a
-session produces a commit. This law does not weaken the ordinary ship chain: both bind,
-and neither releases the other. A blocked lane is a reason to keep working other lanes,
-never a reason to leave an unmerged pull request.
-
-### Authority model — restated here, duplicated nowhere
-
-Chairman Chris is final authority. **Sol is the default AI CEO / system owner.**
-Ordinary Claude and Codex sessions remain **bounded workers**. **Fable is scarce
-principal capacity by default.** The governing authority map stays in Mastermind
-(`config/authority_map.yml` + `control_plane/packet_gate.py`); the "Required context"
-section above already forbids a second copy in this repository, and this section
-creates none, dispatches nothing, and grants no one a permission they did not have.
-
-What it adds is the scope rule the defaults were missing. **An explicit Chairman
-delegation overrides those defaults inside its stated scope, and a default role
-assumption never overrides it back.** A seat holding a Chairman-delegated program
-decides in-scope matters itself and does not re-ask Sol for what it was already
-delegated — the standing example is Meta-CEO Fable B owning the Agent Fabric program,
-which repeatedly stalled waiting for a Sol authorization it did not need. The converse
-binds just as hard: **delegated authority never leaks outside its stated scope**,
-exactly as conditional merge authority granted for one pull request never transfers to
-another (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`). This law promotes no worker to principal, widens no
-credential, and changes no provider permission.
-
-### The six execution invariants
-
-`BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.
-One blocked review, tool, provider or CI lane freezes that lane, never the mission.
-Before any stop, enumerate the other authorized lanes and continue on them.
-`ALL_SCOPED_LANES_BLOCKED` may describe the current lane census, but it is a
-**nonterminal diagnostic**, not a principal/seat stopping state. For each internal
-project blocker, the next act is to resolve it, route it to the canonical owner, or
-prove that an already-running durable owner has a return path. "Another owner" or
-"not my lane" can prevent direct mutation; neither makes the mission terminal.
-
-`NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN ->
-direct bounded execution may continue`. A delegation surface being unavailable — the
-Fabric down, a pool exhausted, a spawn refused — is not evidence that execution is
-impossible. If no worker actually started, the principal still holds lawful tools and
-custody, no other owner is working the same artifact, and no act sits in an
-`EFFECT_UNKNOWN` state, the principal executes the bounded work itself. When any of
-those four is false, do not create a second worker. Name the blocked lane and convert
-it into an owned next action: route/reconcile through the canonical owner, or, if the
-only remaining boundary is genuinely outside the project's controllable graph,
-classify it exactly as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`.
-A bounded worker may return `STATUS: BLOCKED` to its parent; that worker return does
-not terminally classify the parent mission.
-
-`WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
-burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
-merge sweeper, then work an independent lane. A Stop-hook block during a wait is
-satisfied by a one-line hold note, never by a fresh poll.
-
-`2 equivalent no-delta cycles -> change tactic/lane/owner`. Two attempts that changed
-nothing observable ban a third identical one. The Stop guard now names the cycle count
-in its own block text rather than repeating one unchanging instruction.
-
-`accepted work -> DO_NOT_REDO unless materially invalidated`. Accepted, merged or
-ratified work reopens only on a material invalidator: new contradicting evidence, a
-changed contract, or an explicit authority reversal. A fresh session, a lost
-transcript, and an absent memory are none of those. Check the `agentos/`
-`do_not_redo` entries and `research/DO_NOT_REBUILD.md` before re-opening anything.
-
-`EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover`. An act
-whose effect cannot be observed — a timed-out post, an ambiguous dispatch, a dropped
-tool call — is reconciled on the same carrier that performed it. A blind retry or a
-failover to another provider is how one irreversible act becomes two.
-
-### The delivery ladder
-
-`ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
-ACCEPTANCE` are nine distinct facts and none implies the next. An acknowledgement is
-not a queue entry; a queue entry is not a started worker; a returned packet is not a
-green check; a merge is not production proof; production proof is not acceptance by
-the commissioning authority. Report the rung the evidence reaches and no higher. A
-checkpoint, a status note, or a continuation record describes work; it is never the
-outcome it describes.
-
-### Session end classification
-
-Every substantial session states one line before it ends: `SESSION END: <STATE>`,
-where STATE is exactly one of `PROVEN_OUTCOME`, `EXACT_HUMAN_GATE`, `EFFECT_UNKNOWN`,
-`PLATFORM_FAILURE`, `ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or
-`MORE_WORK_EXISTS`. The set is closed on purpose. **`MORE_WORK_EXISTS` and
-`ALL_SCOPED_LANES_BLOCKED` are never valid stopping states**; the latter is a
-diagnostic that forces blocker demolition/routing rather than bureaucratic exit.
-The Stop guard refuses either self-declaration, with the ordinary any-code ladder
-preserved as the unsatisfiable-gate escape.
-
-The converse binds equally. Reaching the actual outcome or the exact human gate early
-is a complete session however short or expensive it was: never pad a session to look
-substantial, and never stop while authorized work remains. Context compaction,
-rotation, or a `/clear` is a harness event and not an outcome — the guard's block
-ledger deliberately survives `resume` and `compact`.
 
 ## Definition of done
 

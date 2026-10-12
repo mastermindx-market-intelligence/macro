@@ -30,6 +30,7 @@ query is a hard conflict.
 from __future__ import annotations
 
 import copy
+import errno
 import fcntl
 import json
 import os
@@ -674,6 +675,13 @@ def _directory_fsync(path: Path) -> None:
         os.close(descriptor)
 
 
+def _is_foreign_owned_directory(path: Path) -> bool:
+    """Return whether ``path`` is a real directory owned by another effective uid."""
+
+    metadata = path.lstat()
+    return stat.S_ISDIR(metadata.st_mode) and metadata.st_uid != os.geteuid()
+
+
 def _validate_store_directory(path: Path, *, label: str) -> None:
     try:
         metadata = path.lstat()
@@ -728,9 +736,25 @@ def _ensure_store_directory_chain(root: Path, leaf: Path) -> None:
         raise MarketMemoryStoreError(
             "Market Memory store directory escaped its root"
         ) from exc
+    root_preexisted = os.path.lexists(root)
     _mkdir_durable(root)
     _validate_store_directory(root, label="Market Memory store root")
-    _directory_fsync(root.parent)
+    try:
+        _directory_fsync(root.parent)
+    except PermissionError as exc:
+        # A provisioner-owned parent (app/deploy/README.md: root-owned mode-0710)
+        # grants a non-owner writer search but not read, so the root's own link
+        # cannot be fsynced from here.  Only a root that already existed before
+        # this call qualifies (``_mkdir_durable`` fsyncs the parent of any root
+        # it creates and cannot create one under such a parent), so that link
+        # belongs to the parent's owner.  Every other denial -- an owned parent,
+        # any errno but EACCES -- still fails closed.
+        if (
+            exc.errno != errno.EACCES
+            or not root_preexisted
+            or not _is_foreign_owned_directory(root.parent)
+        ):
+            raise
     cursor = root
     for part in relative.parts:
         cursor = cursor / part

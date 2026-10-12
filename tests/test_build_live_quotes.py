@@ -423,7 +423,8 @@ def test_display_board_leg_is_capped_and_tiles_survive_the_cap(tmp_path):
     """The board's names are re-picked nightly, so the leg is unbounded by
     construction — cap it, and order the cap so the truncation can only ever eat
     board names, never a macro tile."""
-    page = "".join(f'<span data-sym="{i:06d}.SZ"></span>' for i in range(400))
+    page = "".join(f'<span data-sym="{i:06d}.SZ"></span>'
+                   for i in range(blq.DISPLAY_BOARD_CAP + 80))
     (tmp_path / "china_stocks.html").write_text(page)
     board = blq.board_display_symbols(tmp_path)
     assert len(board) == blq.DISPLAY_BOARD_CAP

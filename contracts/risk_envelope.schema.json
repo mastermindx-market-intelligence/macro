@@ -275,6 +275,13 @@
                     "null"
                   ]
                 },
+                "generated_utc": {"type": ["string", "null"]},
+                "stale_after": {"type": ["string", "null"]},
+                "freshness": {
+                  "type": ["object", "null"],
+                  "properties": {"stale": {"type": "boolean"}},
+                  "additionalProperties": false
+                },
                 "produced_at": {
                   "type": [
                     "string",
@@ -355,6 +362,29 @@
               "type": "null"
             }
           ]
+        },
+        "source_clock_receipt": {
+          "type": "object",
+          "properties": {
+            "generated_utc": {"type": ["string", "null"]},
+            "produced_at": {"type": ["string", "null"]},
+            "available_at": {"type": ["string", "null"]},
+            "stale_after": {"type": ["string", "null"]},
+            "availability": {
+              "type": ["object", "null"],
+              "properties": {
+                "status": {"type": ["string", "null"]},
+                "available_at": {"type": ["string", "null"]}
+              },
+              "additionalProperties": false
+            },
+            "freshness": {
+              "type": ["object", "null"],
+              "properties": {"stale": {"type": "boolean"}},
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
         },
         "confirmed_events": {
           "anyOf": [

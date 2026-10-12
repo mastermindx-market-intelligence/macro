@@ -260,7 +260,23 @@ def _read_live_leg_quality(root: Path) -> dict[str, Any]:
     claims_path = root / "data" / "qledger" / "claims.jsonl"
     evals_path = root / "data" / "qledger" / "falsifier_evaluations.jsonl"
 
-    if not claims_path.exists() or not evals_path.exists():
+    from engine.qledger_store import read_raw_lines, uses_native_claims
+
+    native_claims = uses_native_claims(claims_path)
+    claims_lines = None
+    if native_claims:
+        # Verify the complete claims snapshot even if the evaluation sidecar is absent.
+        try:
+            claims_lines = read_raw_lines(claims_path, missing_ok=False)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("til_fitness._read_live_leg_quality: %s", exc)
+            return {
+                "value": None, "n": 0, "maturity": "accruing",
+                "source": str(claims_path),
+                "note": f"read error: {exc}",
+            }
+
+    if (not native_claims and not claims_path.exists()) or not evals_path.exists():
         return {
             "value": None, "n": 0, "maturity": "accruing",
             "source": f"{claims_path}, {evals_path}",
@@ -286,7 +302,8 @@ def _read_live_leg_quality(root: Path) -> dict[str, Any]:
         # Count covered legs (claims with falsifier + check_by set)
         n_covered = 0
         n_quality = 0
-        for line in claims_path.read_text(encoding="utf-8").splitlines():
+        for line in (claims_lines if native_claims
+                     else read_raw_lines(claims_path, missing_ok=False)):
             line = line.strip()
             if not line:
                 continue

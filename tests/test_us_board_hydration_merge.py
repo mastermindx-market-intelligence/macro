@@ -116,16 +116,35 @@ def _grid_inner(html: str) -> str:
     than by a `.*?</div>` regex — the grid holds cards full of nested divs, so a
     lazy match stops inside the first card and hands the harness truncated
     markup that parses into phantom top-level nodes."""
-    open_tag = '<div class="nbgrid" data-showmore-rows="3">'
-    start = html.find(open_tag)
-    assert start >= 0, "shipped shell has no board grid"
-    i = start + len(open_tag)
+    # Candidate and Plan grids now share nbgrid; bind the native candidate id,
+    # allowing attribute order/additions without accidentally selecting Plans.
+    opening = re.search(r"""<div\b(?=[^>]*\sid=["']us-cand-grid["'])[^>]*>""", html)
+    assert opening is not None, "shipped shell has no board grid"
+    i = opening.end()
     depth, out_start = 1, i
     for m in re.finditer(r"<div\b|</div>", html[i:]):
         depth += 1 if m.group(0) != "</div>" else -1
         if depth == 0:
             return html[out_start:i + m.start()]
     raise AssertionError("unbalanced <div> in the board grid")
+
+
+
+@pytest.mark.parametrize("tag", [
+    '<div class="nbgrid" data-showmore-rows="3" id="us-cand-grid">',
+    "<div id='us-cand-grid' data-showmore-rows='3' class='nbgrid extra'>",
+])
+def test_grid_inner_selects_exact_candidate_grid_and_preserves_nested_cards(tag):
+    expected = '<div class="nb-stage-hd"><span>Stage</span></div><article><div>nested</div></article>'
+    decoy = '<div class="nbgrid" data-showmore-rows="3" id="us-life-grid"><div>Plan decoy</div></div>'
+    assert _grid_inner(decoy + tag + expected + '</div><div>after</div>') == expected
+
+
+def test_grid_inner_refuses_missing_or_incomplete_candidate_grid():
+    with pytest.raises(AssertionError, match="no board grid"):
+        _grid_inner('<div class="nbgrid" data-showmore-rows="3" id="us-life-grid"></div>')
+    with pytest.raises(AssertionError, match="unbalanced"):
+        _grid_inner('<div id="us-cand-grid" class="nbgrid"><div>unfinished</div>')
 
 
 def _hd(stage: str, count: int = 13) -> str:
@@ -303,3 +322,279 @@ def test_the_shipped_pair_merges_to_one_heading_per_stage(tmp_path, merge_js):
         f"{out['cards']} cards on the merged board, payload declares "
         f"{payload['total']} — hydration dropped or duplicated rows"
     )
+
+
+# Protected loader availability: execute the real promise chain.
+"""Execute the actual protected board loader: unavailable is not access denied.
+
+The Node stub models only DOM operations this loader uses. It runs the entire
+rendered hydration IIFE, including its real promise chain and payload validation;
+neither fetch classification nor hydrate() is replaced by a test implementation.
+"""
+
+import json
+import re
+import shutil
+import subprocess
+from html.parser import HTMLParser
+
+import pytest
+
+from tests.test_dashboard_template_render import _base_vm, _board_row, _env
+
+
+class _Tree(HTMLParser):
+    """Serialize real rendered markup for the small Node DOM (no HTML package)."""
+    def __init__(self, html):
+        super().__init__(convert_charrefs=False)
+        self.root = {"tag": "document", "attrs": {}, "children": []}
+        self.stack = [self.root]
+        self.feed(html)
+
+    def handle_starttag(self, tag, attrs):
+        node = {"tag": tag, "attrs": dict(attrs), "children": []}
+        self.stack[-1]["children"].append(node)
+        if tag not in {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}:
+            self.stack.append(node)
+
+    def handle_startendtag(self, tag, attrs):
+        self.stack[-1]["children"].append({"tag": tag, "attrs": dict(attrs), "children": []})
+
+    def handle_endtag(self, tag):
+        for i in range(len(self.stack) - 1, 0, -1):
+            if self.stack[i]["tag"] == tag:
+                del self.stack[i:]
+                break
+
+    def handle_data(self, data):
+        self.stack[-1]["children"].append(data)
+
+    def handle_entityref(self, name):
+        self.handle_data(f"&{name};")
+
+    def handle_charref(self, name):
+        self.handle_data(f"&#{name};")
+
+
+def _find(tree, identity):
+    if isinstance(tree, str):
+        return None
+    if tree["attrs"].get("id") == identity:
+        return tree
+    for child in tree["children"]:
+        found = _find(child, identity)
+        if found is not None:
+            return found
+    return None
+
+
+@pytest.fixture(scope="module")
+def loader_scene():
+    rows = [_board_row(ticker=ticker, featured=True, stage="live", signal_asof="2026-10-08",
+                       entry_signal={"status": status, "headline": status})
+            for ticker, status in (("MSCI", "buy_soon"), ("ADSK", "partial"), ("ABBV", "buy_now"))]
+    vm = _base_vm()
+    vm.update(us_standouts={"buy": rows[:2], "eligible": 3, "as_of": "2026-10-08",
+                            "ranking": {"featured_count": 3}},
+              gate={"payload": "/premiumdata/us_stocks.json", "tier": "essential",
+                    "preview": 2, "total": 3, "locked": 1,
+                    "stage_counts": {"live": 3}}, pgate=None, life_gate=None)
+    env = _env()
+    env.autoescape = True
+    page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", page, re.S)
+    loader = next(js for js in scripts if "var GATE =" in js and "whenAuthSettled()" in js)
+    assert "return fetch(SRC," in loader and ".then(hydrate)" in loader
+    board = _find(_Tree(re.sub(r"<script\b.*?</script>", "", page, flags=re.S)).root, "us-standouts")
+    assert board is not None and _find(board, "us-today") is not None
+    assert _find(board, "us-tier-wall") is not None
+    cards = env.get_template("_us_board_cards.html.j2").render(
+        items=rows, sg_any=True, bs_adj=False, xu_allfeat=False, trg_map={},
+        rw_en="", rw_zh="", setup_as_of="2026-10-08")
+    return {"loader": loader, "board": board, "fragment_html": cards,
+            "fragment": _Tree(cards).root["children"],
+            "payload": {"schema": "tier_payload.v1", "page": "us_stocks",
+                        "today_cards_html": cards, "today_preview": 3, "today_total": 3,
+                        "rows": rows[2:]}}
+
+
+_NODE = r"""
+'use strict';
+const fs = require('fs'), vm = require('vm');
+const scene = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+let requests = [], merges = [], sessionRefreshes = 0;
+function matches(n, selector) {
+  if (!n || typeof n === 'string') return false;
+  const not = [...selector.matchAll(/:not\(([^)]+)\)/g)].map(m => m[1]);
+  selector = selector.replace(/:not\([^)]+\)/g, '');
+  if (not.some(s => matches(n, s))) return false;
+  const tag = selector.match(/^[a-z][\w-]*/i);
+  if (tag && n.tag !== tag[0]) return false;
+  for (const m of selector.matchAll(/#([\w-]+)/g)) if (n.attrs.id !== m[1]) return false;
+  for (const m of selector.matchAll(/\.([\w-]+)/g))
+    if (!(n.attrs.class || '').split(/\s+/).includes(m[1])) return false;
+  for (const m of selector.matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g))
+    if (!(m[1] in n.attrs) || (m[2] !== undefined && n.attrs[m[1]] !== m[2])) return false;
+  return true;
+}
+function make(record) {
+  if (typeof record === 'string') return record;
+  const n = {tag: record.tag, attrs: {...record.attrs}, childNodes: [], parentNode: null};
+  n.dataset = new Proxy({}, {
+    get: (_, key) => n.attrs['data-' + String(key).replace(/[A-Z]/g, c => '-' + c.toLowerCase())],
+    set: (_, key, val) => { n.attrs['data-' + String(key).replace(/[A-Z]/g, c => '-' + c.toLowerCase())] = String(val); return true; }
+  });
+  n.setAttribute = (key, val) => { n.attrs[key] = String(val); };
+  n.getAttribute = key => key in n.attrs ? n.attrs[key] : null;
+  n.removeAttribute = key => { delete n.attrs[key]; };
+  n.appendChild = c => { if (typeof c !== 'string') { c.parentNode = n; } n.childNodes.push(c); return c; };
+  n.removeChild = c => { n.childNodes = n.childNodes.filter(x => x !== c); c.parentNode = null; };
+  n.remove = () => { if (n.parentNode) n.parentNode.removeChild(n); };
+  n.addEventListener = () => {};
+  n.querySelectorAll = selector => {
+    const out = [], selectors = selector.split(',').map(s => s.trim().split(/\s+/));
+    function walk(parent) {
+      for (const c of parent.childNodes) {
+        if (typeof c === 'string') continue;
+        if (selectors.some(parts => {
+          if (!matches(c, parts[parts.length - 1])) return false;
+          let a = c.parentNode;
+          for (let i = parts.length - 2; i >= 0; i--) {
+            while (a && !matches(a, parts[i])) a = a.parentNode;
+            if (!a) return false;
+            a = a.parentNode;
+          }
+          return true;
+        })) out.push(c);
+        walk(c);
+      }
+    }
+    walk(n); return out;
+  };
+  n.querySelector = s => n.querySelectorAll(s)[0] || null;
+  n.classList = {
+    contains: c => (n.attrs.class || '').split(/\s+/).includes(c),
+    remove: c => { n.attrs.class = (n.attrs.class || '').split(/\s+/).filter(x => x !== c).join(' '); }
+  };
+  Object.defineProperty(n, 'hidden', {get: () => 'hidden' in n.attrs,
+    set: on => { if (on) n.attrs.hidden = ''; else delete n.attrs.hidden; }});
+  Object.defineProperty(n, 'textContent', {get: () => n.childNodes.map(c => typeof c === 'string' ? c : c.textContent).join(''),
+    set: text => { n.childNodes = [String(text)]; }});
+  Object.defineProperty(n, 'innerHTML', {get: () => n.childNodes.map(c => typeof c === 'string' ? c : JSON.stringify(snapshot(c))).join(''),
+    set: html => {
+      n.childNodes = [];
+      if (html === scene.fragment_html) scene.fragment.forEach(c => n.appendChild(make(c)));
+      else n.appendChild(String(html));
+    }});
+  if (n.tag === 'template') n.content = n;
+  (record.children || []).forEach(c => n.appendChild(make(c)));
+  return n;
+}
+function snapshot(n) {
+  if (!n) return null;
+  if (typeof n === 'string') return n;
+  return {tag: n.tag, attrs: n.attrs, children: n.childNodes.map(snapshot)};
+}
+const board = make(scene.board);
+board.setAttribute('data-prophet-src', scene.mode);
+const document = {
+  getElementById: id => board.attrs.id === id ? board : board.querySelector('#' + id),
+  querySelector: s => board.querySelector(s), querySelectorAll: s => board.querySelectorAll(s),
+  createElement: tag => make({tag, attrs: {}, children: []})
+};
+const status = () => document.getElementById('us-board-load-status');
+const foreign = make({tag: 'p', attrs: {id: 'unrelated-status', role: 'status'}, children: ['Unrelated warning']});
+board.appendChild(foreign);
+if (scene.previous_error && status()) {
+  status().hidden = false; status().dataset.state = 'unavailable';
+}
+const before = {today: snapshot(document.getElementById('us-today')),
+  candidates: snapshot(document.getElementById('us-candidates')),
+  date: board.getAttribute('data-board-asof'), foreign: snapshot(foreign)};
+const window = {MDXAuth: {user: () => ({id: 'member'}), hasSession: () => true,
+  client: () => Promise.resolve({auth: {getSession: () => { sessionRefreshes++; return Promise.resolve({}); }}})},
+  USStockTable: {_mergeRows: rows => merges.push(rows)}};
+const fetch = (url, options) => {
+  requests.push({url, options});
+  if (scene.failure === 'network') return Promise.reject(new TypeError('offline'));
+  const code = scene.failure === 'http500' ? 500 : Number(scene.failure) || 200;
+  return Promise.resolve({ok: code >= 200 && code < 300, status: code,
+    json: () => scene.failure === 'bad_json' ? Promise.reject(new SyntaxError('bad JSON')) :
+      Promise.resolve(scene.failure === 'invalid_envelope' ? {schema: 'wrong', page: 'us_stocks'} : scene.payload)});
+};
+vm.runInNewContext(scene.loader, {window, document, fetch, Promise, console, Event: function(){},
+  setTimeout: fn => { fn(); return 1; }, location: {href: 'us_stocks.html'}});
+setImmediate(() => {
+  const s = status();
+  let visible = !!s && !s.hidden;
+  for (let n = s && s.parentNode; n; n = n.parentNode) {
+    if (n.hidden || (n.attrs.id === 'us-today' && scene.mode !== 'today') ||
+        (n.attrs.id === 'us-candidates' && scene.mode !== 'candidates') ||
+        (n.attrs.id === 'us-plan-block' && scene.mode !== 'plans')) visible = false;
+  }
+  console.log(JSON.stringify({requests, merges, sessionRefreshes, before,
+    after: {today: snapshot(document.getElementById('us-today')),
+      candidates: snapshot(document.getElementById('us-candidates')),
+      date: board.getAttribute('data-board-asof'), foreign: snapshot(foreign)},
+    status: snapshot(s), visible, en: s && (s.querySelector('.l-en') || {}).textContent,
+    zh: s && (s.querySelector('.l-zh') || {}).textContent,
+    wall: !!document.getElementById('us-tier-wall'),
+    todayTickers: document.getElementById('us-today').querySelectorAll('.pvcard[data-ticker]').map(n => n.dataset.ticker)}));
+});
+"""
+
+
+def _run(tmp_path, scene, **options):
+    node = shutil.which("node")
+    assert node, "these promise-chain regressions require Node, as do the existing hydration harnesses"
+    data = {**scene, **options}
+    (tmp_path / "scene.json").write_text(json.dumps(data), encoding="utf-8")
+    (tmp_path / "loader.js").write_text(_NODE, encoding="utf-8")
+    proc = subprocess.run([node, str(tmp_path / "loader.js"), str(tmp_path / "scene.json")],
+                          capture_output=True, text=True, timeout=30, check=False)
+    assert proc.returncode == 0, proc.stderr or proc.stdout
+    out = json.loads(proc.stdout)
+    assert len(out["requests"]) == 1 and out["sessionRefreshes"] == 1
+    assert out["requests"][0] == {"url": "/premiumdata/us_stocks.json",
+                                  "options": {"credentials": "same-origin", "cache": "no-store"}}
+    return out
+
+
+@pytest.mark.parametrize("mode", ["today", "candidates"])
+@pytest.mark.parametrize("failure", ["network", "http500", "bad_json", "invalid_envelope"])
+def test_signed_in_load_failure_discloses_unavailable_and_preserves_preview(tmp_path, loader_scene, mode, failure):
+    out = _run(tmp_path, loader_scene, mode=mode, failure=failure)
+    assert out["after"] == out["before"], "a failed load must preserve cards/counts/source date and other warnings"
+    assert out["wall"] and out["merges"] == []
+    assert out["status"] is not None, "the actual loader leaves signed-in failures undisclosed"
+    assert out["visible"], "board availability must be visible in Today and Screener"
+    assert out["status"]["attrs"].get("role") == "status"
+    assert out["status"]["attrs"].get("aria-live") == "polite"
+    assert out["status"]["attrs"].get("data-state") == "unavailable"
+    assert re.search(r"unavailable|could(?:n.t| not) load|unable to load", out["en"], re.I)
+    assert re.search(r"preview|dated", out["en"], re.I) and re.search(r"reload|try again", out["en"], re.I)
+    assert re.search(r"不可用|无法加载|未能加载|加载失败", out["zh"])
+    assert "预览" in out["zh"] and re.search(r"重试|重新加载|刷新", out["zh"])
+
+
+@pytest.mark.parametrize("mode", ["today", "candidates"])
+@pytest.mark.parametrize("failure", ["401", "403"])
+def test_access_denial_preserves_existing_wall_without_claiming_data_outage(tmp_path, loader_scene, mode, failure):
+    out = _run(tmp_path, loader_scene, mode=mode, failure=failure)
+    assert out["after"] == out["before"]
+    assert out["wall"] and out["merges"] == [] and not out["visible"]
+
+
+@pytest.mark.parametrize("mode", ["today", "candidates"])
+def test_success_hydrates_source_rows_and_clears_only_load_error(tmp_path, loader_scene, mode):
+    out = _run(tmp_path, loader_scene, mode=mode, failure="success", previous_error=True)
+    assert not out["wall"]
+    assert out["merges"] == [loader_scene["payload"]["rows"]]
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+    assert out["after"]["date"] == out["before"]["date"] == "2026-10-08"
+    assert out["after"]["foreign"] == out["before"]["foreign"]
+    today_attrs = out["after"]["today"]["attrs"]
+    assert today_attrs["data-today-visible"] == today_attrs["data-today-total"] == "3"
+    assert out["status"] is not None, "successful hydration must clear the actual load-status slot"
+    assert not out["visible"]
+    assert out["status"]["attrs"].get("data-state") != "unavailable"

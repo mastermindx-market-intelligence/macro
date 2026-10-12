@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UBER-BULL-20260623",
-  "asof": "2026-10-08",
+  "asof": "2026-10-09",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 21.6,
-  "raw_confidence": 20.0,
-  "delta_vs_base": -38.4,
+  "management_confidence": 24.1,
+  "raw_confidence": 27.2,
+  "delta_vs_base": -35.9,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 14.2,
+    "validity": 35.9,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.241,
+    "dist_to_stop_r": 0.468,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 206.7,
-    "p1": -0.5059,
-    "p2": -0.253,
+    "horizon_pct_used": 208.9,
+    "p1": -0.3545,
+    "p2": -0.1772,
     "p3": null,
-    "move_r": -0.759,
+    "move_r": -0.532,
     "mfe_r": 0.751,
     "mae_r": -1.077
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 93,
-  "tau": 2.0667
+  "days_elapsed": 94,
+  "tau": 2.0889
 }
