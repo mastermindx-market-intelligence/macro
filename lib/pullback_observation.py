@@ -156,6 +156,10 @@ def _replay(records: list[tuple[date, float]], is_session: Callable[[date], bool
         # shock/onset. The display's recent_63_drawdown uses the same basis.
         peak_i = _peak(records, max(reference_floor, i - RULES.reference_closes + 1), i + 1)
         if episode is None:
+            # A pending attempt keeps its high only while that high is inside
+            # today's exact window; an aged-out high cannot confirm an onset.
+            if pending and pending["peak_index"] < i - RULES.reference_closes + 1:
+                pending = None
             ref_i = pending["peak_index"] if pending else peak_i
             below = 1.0 - price / prices[ref_i]
             if below + 1e-12 >= RULES.onset_drawdown:

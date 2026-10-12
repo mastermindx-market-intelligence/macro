@@ -350,6 +350,34 @@ def test_reference_window_is_exactly_63_closes_not_64():
     assert read["onset_session"] is None
 
 
+def _dated(values):
+    day = date(2025, 1, 2)
+    rows = []
+    for value in values:
+        while not session(day):
+            day += timedelta(days=1)
+        rows.append((day.isoformat(), value))
+        day += timedelta(days=1)
+    return rows
+
+
+def test_a_pending_onset_cannot_confirm_after_its_high_ages_out():
+    # The first 107.8 is 2% below 110 while 110 is still in the window. On the
+    # second, 110 is the 64th close: the window's high is 107.8 and nothing is down.
+    read = result(_dated([110.0] + [100.0] * 61 + [107.8, 107.8]))
+    assert read["active"] is False
+    assert read["peak_close"] == 107.8
+    assert read["onset_session"] is None
+
+
+def test_an_aged_out_pending_high_cannot_become_a_shock():
+    # 104.5 is 5% below 110 but only 3.06% below the window's 107.8 high.
+    read = result(_dated([110.0] + [100.0] * 61 + [107.8, 104.5]))
+    assert read["phase"] == "developing" and read["active"] is False
+    assert read["peak_close"] == 107.8
+    assert read["drawdown_pct"] == read["recent_63_drawdown_pct"] == -3.0612
+
+
 def _long_decline(closes):
     """A high of 101 after the flat baseline, then `closes` steadily lower closes."""
     return rows_for([101.0] + [96.0 - 0.01 * i for i in range(closes)])
