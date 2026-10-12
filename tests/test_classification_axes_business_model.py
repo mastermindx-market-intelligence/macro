@@ -197,6 +197,20 @@ def test_default_file_resolution_under_root(tmp_path):
     ]
 
 
+def test_empty_root_falls_back_to_repo_root(monkeypatch, tmp_path):
+    """A falsy non-None ``root`` (``""``) must fall back to the repo root
+    (R-root ruling), never to the process cwd."""
+    repo = _write_membership(tmp_path / "repo", json.dumps(_membership_doc()))
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.setattr(bm, "_REPO_ROOT", repo)
+    monkeypatch.chdir(elsewhere)
+    expected = cell.to_json(_read("co:us:MSFT", root=repo))
+    got = _read("co:us:MSFT", root="")
+    assert got["status"] != "unavailable"
+    assert cell.to_json(got) == expected
+
+
 def test_degraded_documents(tmp_path):
     cases = [
         ("[]", "archetype_groups_missing"),
