@@ -7556,6 +7556,37 @@ jobs:
       - "tests/test_push_retry.py"
       - "tests/test_qledger_publication.py"
       - "tests/test_qledger_publish_binding.py"
+      # Read closure of tests/test_crypto_publication_contract.py.
+      # .github/workflows/** and scripts/ci/*.sh are already declared above.
+      - "app/__init__.py"
+      - "app/deploy/Caddyfile"
+      - "app/deploy/setup.sh"
+      - "app/mailer.py"
+      - "collectors/base.py"
+      - "collectors/coinbase.py"
+      - "collectors/coinmetrics.py"
+      - "collectors/crypto_misc.py"
+      - "collectors/farside.py"
+      - "engine/crypto_market_state.py"
+      - "engine/prophet_live/__init__.py"
+      - "engine/prophet_live/interval.py"
+      - "engine/prophet_live/live_states.py"
+      - "engine/prophet_live/r2io.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/freshness_sentinel.py"
+      - "templates/live.js"
+      - "tests/test_crypto_publication_contract.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -7598,7 +7629,7 @@ jobs:
       - name: push-retry policy tests (classification, budgets, jitter, real git races)
         run: python -m pytest tests/test_push_retry.py -q
       - name: QLedger explicit publication checks and publisher preservation boundaries
-        run: python -m pytest tests/test_qledger_publication.py tests/test_qledger_publish_binding.py -q
+        run: python -m pytest tests/test_qledger_publication.py tests/test_qledger_publish_binding.py tests/test_crypto_publication_contract.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
 
