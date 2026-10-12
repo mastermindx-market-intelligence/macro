@@ -1,8 +1,9 @@
 """Wave B2 API tests: rights-gated news flow on the first ticker-news page.
 
 The frozen fake below (contract section 6) replaces NewsStore.news_flow on the
-real store class; every other store path stays real.  Lane B1 implements the
-real method later; until it merges, the API maps its absence to a degrade.
+real store class; every other store path stays real.  Lane B1's real method has
+merged, and test_flow_counts_match_visible_rows_under_rights now runs it through
+a delegating spy; every other test keeps the fake.
 """
 from __future__ import annotations
 
@@ -664,7 +665,17 @@ def test_flow_counts_match_visible_rows_under_rights(monkeypatch, tmp_path):
         conn.close()
     assert restricted_rows == 1
 
-    calls = install_fake_flow(monkeypatch, "from_rows")  # B1-MERGED swap: delete this line; the real NewsStore.news_flow then runs the same assertions
+    # B1-MERGED swap: a delegating spy records each call, then runs the real
+    # NewsStore.news_flow unchanged against the same seed and rights.
+    assert "news_flow" in store_mod.NewsStore.__dict__
+    real_news_flow = store_mod.NewsStore.news_flow
+    calls = []
+
+    def spy(self, security_id, *, now, rights):
+        calls.append({"security_id": security_id, "now": now, "rights": rights})
+        return real_news_flow(self, security_id, now=now, rights=rights)
+
+    monkeypatch.setattr(store_mod.NewsStore, "news_flow", spy)
     response = TestClient(app).get("/api/ticker-news/NVDA")
 
     assert response.status_code == 200
