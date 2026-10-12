@@ -20,6 +20,15 @@
     priority: 'all',
     topic: 'all',
     tab: 'radar',
+    // §6 URL state: everything below is serialised into the query string, so a
+    // permalink is the whole desk — no localStorage, no sessionStorage.
+    asOfDate: '',
+    policy: 'latest_known_as_of',
+    cohortId: '',
+    peerMetric: '',
+    peerAlign: 'exclude',
+    peerN: 3,
+    peerTol: 45,
     currentPeriod: 0,
     priorPeriod: 1,
     disclosureSection: 'all',
@@ -814,6 +823,7 @@
           return;
         }
         selectInitialCompany();
+        applyUrlState(true);
         renderAll();
         loadHealth();
       })
@@ -827,6 +837,130 @@
   function requestedSymbol() {
     var params = new URLSearchParams(window.location.search);
     return String(params.get('symbol') || '').trim().toUpperCase();
+  }
+
+  // ── URL state schema (§6) ───────────────────────────────────────────────
+  // Unknown params are ignored and invalid enums fall back to their default;
+  // reading never throws. `symbol` keeps working exactly as before.
+  var URL_TABS = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace', 'peers'];
+  var URL_POLICIES = ['as_reported', 'latest_known_as_of', 'latest_restated'];
+
+  function urlInt(value, fallback) {
+    var parsed = parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+  }
+
+  function readUrlParams() {
+    var params = new URLSearchParams(window.location.search);
+    var tab = String(params.get('tab') || '');
+    var policy = String(params.get('policy') || '');
+    var align = String(params.get('align') || '');
+    var span = String(params.get('span') || '');
+    var src = String(params.get('src') || '');
+    return {
+      symbol: String(params.get('symbol') || '').trim().toUpperCase(),
+      tab: URL_TABS.indexOf(tab) >= 0 ? tab : 'radar',
+      asOfDate: /^\d{4}-\d{2}-\d{2}$/.test(String(params.get('as_of') || '')) ? String(params.get('as_of')) : '',
+      policy: URL_POLICIES.indexOf(policy) >= 0 ? policy : 'latest_known_as_of',
+      finding: String(params.get('finding') || ''),
+      disc: String(params.get('disc') || ''),
+      redline: String(params.get('redline') || ''),
+      drawer: String(params.get('drawer') || '') === '1',
+      occ: String(params.get('occ') || ''),
+      cell: String(params.get('cell') || ''),
+      snap: String(params.get('snap') || ''),
+      span: /^\d+-\d+$/.test(span) ? span : '',
+      src: src === 'receipt' ? 'receipt' : 'map',
+      cohort: String(params.get('cohort') || ''),
+      peerMetric: String(params.get('peer_metric') || ''),
+      align: align === 'shift_labeled' ? 'shift_labeled' : 'exclude',
+      peerN: urlInt(params.get('peer_n'), 3),
+      peerTol: urlInt(params.get('peer_tol'), 45),
+      peers: String(params.get('peers') || '') === '1'
+    };
+  }
+
+  // Serialises the desk state table (§6.1). Drawer keys ride only the frame a
+  // source control pushed, so an ordinary permalink never carries them.
+  function writeUrl(push, drawerExtra) {
+    var params = new URLSearchParams();
+    if (state.symbol) params.set('symbol', state.symbol);
+    if (state.tab && state.tab !== 'radar') params.set('tab', state.tab);
+    if (state.asOfDate) params.set('as_of', state.asOfDate);
+    if (state.policy && state.policy !== 'latest_known_as_of') params.set('policy', state.policy);
+    if (state.findingId) params.set('finding', state.findingId);
+    if (state.disclosureFindingId) params.set('disc', state.disclosureFindingId);
+    if (state.redlineId) params.set('redline', state.redlineId);
+    if (state.sourceMode === 'receipt') params.set('src', 'receipt');
+    if (state.cohortId) params.set('cohort', state.cohortId);
+    if (state.peerMetric) params.set('peer_metric', state.peerMetric);
+    if (state.peerAlign === 'shift_labeled') params.set('align', 'shift_labeled');
+    if (state.peerN !== 3) params.set('peer_n', String(state.peerN));
+    if (state.peerTol !== 45) params.set('peer_tol', String(state.peerTol));
+    if (drawerExtra && drawerExtra.drawer) {
+      params.set('drawer', '1');
+      if (drawerExtra.occ) params.set('occ', drawerExtra.occ);
+      if (drawerExtra.cell) params.set('cell', drawerExtra.cell);
+      if (drawerExtra.snap) params.set('snap', drawerExtra.snap);
+      if (drawerExtra.span) params.set('span', drawerExtra.span);
+    }
+    var search = params.toString();
+    var next = window.location.pathname + (search ? '?' + search : '') + window.location.hash;
+    if (push) window.history.pushState({ ffDesk: true }, '', next);
+    else window.history.replaceState({ ffDesk: true }, '', next);
+  }
+
+  // Applies a parsed URL frame to the desk. `first` normalises the landing URL
+  // with replaceState so it becomes shareable without an extra back stop.
+  function applyUrlState(first) {
+    var url = readUrlParams();
+    if (url.symbol) {
+      var resolved = resolveSymbol(url.symbol);
+      if (resolved && resolved !== state.symbol) setCompany(resolved, false);
+    }
+    state.asOfDate = url.asOfDate;
+    state.policy = url.policy;
+    state.sourceMode = url.src;
+    state.cohortId = url.cohort;
+    state.peerMetric = url.peerMetric;
+    state.peerAlign = url.align;
+    state.peerN = url.peerN;
+    state.peerTol = url.peerTol;
+    if (url.finding) state.findingId = url.finding;
+    if (url.disc) state.disclosureFindingId = url.disc;
+    if (url.redline) state.redlineId = url.redline;
+    setTab(url.peers ? 'peers' : url.tab, false);
+    if (first) writeUrl(false);
+    return url;
+  }
+
+  // A drawer frame on the URL re-opens the exact occurrence a permalink points
+  // at. Source controls (row 4) carry the data attributes this resolves
+  // against; with no match the drawer simply stays closed — never a throw.
+  function openDrawerFromUrl(url) {
+    if (!url || !url.drawer) return;
+    var control = null;
+    if (url.occ) control = document.querySelector('[data-occurrence-id="' + cssEscape(url.occ) + '"]');
+    if (!control && url.cell) control = document.querySelector('[data-root-cell-id="' + cssEscape(url.cell) + '"].ff-source-control');
+    if (control) activateSourceControl(control);
+  }
+
+  function cssEscape(value) {
+    return window.CSS && typeof window.CSS.escape === 'function'
+      ? window.CSS.escape(String(value))
+      : String(value).replace(/[^a-zA-Z0-9_-]/g, '');
+  }
+
+  // Closing the drawer (Escape, close button, scrim): back out of a pushed
+  // drawer frame, else rewrite the URL without drawer keys (§6.2).
+  function closeDrawerAndSync() {
+    if (readUrlParams().drawer) {
+      closeEvidence(true);
+      window.history.back();
+      return;
+    }
+    writeUrl(false);
+    closeEvidence(true);
   }
 
   function resolveSymbol(candidate) {
@@ -868,9 +1002,7 @@
     closeSearch();
     closeEvidence(false);
     if (updateUrl) {
-      var next = new URL(window.location.href);
-      next.searchParams.set('symbol', resolved);
-      window.history.pushState({ symbol: resolved }, '', next.pathname + next.search + next.hash);
+      writeUrl(true);
       state.unknownRequestedSymbol = '';
     }
     renderCompany();
@@ -3005,7 +3137,7 @@
     if (!ui.evidence.classList.contains('is-open')) return;
     if (event.key === 'Escape') {
       event.preventDefault();
-      closeEvidence(true);
+      closeDrawerAndSync();
       return;
     }
     if (event.key !== 'Tab') return;
@@ -3096,6 +3228,7 @@
       var destination = event.target.closest('[data-go-tab]');
       if (destination) {
         setTab(destination.getAttribute('data-go-tab'), false);
+        writeUrl(true);
         var activeTab = document.querySelector('.ff-tab.is-active');
         if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         return;
@@ -3119,7 +3252,10 @@
     });
 
     ui.tabs.forEach(function (button, index) {
-      button.addEventListener('click', function () { setTab(button.getAttribute('data-tab'), false); });
+      button.addEventListener('click', function () {
+        setTab(button.getAttribute('data-tab'), false);
+        writeUrl(true);
+      });
       button.addEventListener('keydown', function (event) {
         var next = index;
         if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % ui.tabs.length;
@@ -3130,6 +3266,7 @@
         event.preventDefault();
         ui.tabs[next].focus();
         setTab(ui.tabs[next].getAttribute('data-tab'), false);
+        writeUrl(true);
       });
     });
 
@@ -3137,6 +3274,7 @@
       button.addEventListener('click', function () {
         setSourceMode(button.getAttribute('data-source-mode'), false);
         updateViewStatus();
+        writeUrl(true);
       });
       button.addEventListener('keydown', function (event) {
         var next = index;
@@ -3149,6 +3287,7 @@
         ui.sourceTabs[next].focus();
         setSourceMode(ui.sourceTabs[next].getAttribute('data-source-mode'), false);
         updateViewStatus();
+        writeUrl(true);
       });
     });
 
@@ -3172,6 +3311,7 @@
       state.evidenceKind = 'finding';
       renderFindings();
       renderCurrentEvidence();
+      writeUrl(true);
       openEvidence();
     });
 
@@ -3189,6 +3329,7 @@
       state.evidenceKind = 'disclosure-finding';
       renderDisclosureFeed(company());
       renderCurrentEvidence();
+      writeUrl(true);
       openEvidence();
     });
 
@@ -3199,6 +3340,7 @@
       state.evidenceKind = 'redline';
       renderRedlines(company());
       renderCurrentEvidence();
+      writeUrl(true);
       openEvidence();
     });
 
@@ -3213,6 +3355,7 @@
       renderTopicOptions(orderedFindings(company()));
       renderFindings();
       renderCurrentEvidence();
+      writeUrl(true);
       if (desktopMedia.matches) {
         var target = selectedFindingButton();
         if (target) target.focus({ preventScroll: false });
@@ -3294,11 +3437,11 @@
     ui.notice.addEventListener('click', function (event) {
       if (event.target.closest('#ff-retry')) loadData();
     });
-    ui.evidenceClose.addEventListener('click', function () { closeEvidence(true); });
+    ui.evidenceClose.addEventListener('click', function () { closeDrawerAndSync(); });
     ui.receiptInspectorClose.addEventListener('click', function () { closeReceiptInspector(true); });
     ui.scrim.addEventListener('click', function () {
       if (ui.receiptInspector.classList.contains('is-open')) closeReceiptInspector(true);
-      else closeEvidence(true);
+      else closeDrawerAndSync();
     });
     ui.evidence.addEventListener('keydown', handleEvidenceKeydown);
     ui.receiptInspector.addEventListener('keydown', handleReceiptInspectorKeydown);
@@ -3306,10 +3449,32 @@
     if (desktopMedia.addEventListener) desktopMedia.addEventListener('change', handleViewportChange);
     else desktopMedia.addListener(handleViewportChange);
 
+    // Back/forward drives the whole desk: the URL frame is applied, a drawer
+    // frame closes the drawer WITHOUT another history.back (the pop itself is
+    // the back), and a drawer=1 frame re-opens the occurrence it names.
     window.addEventListener('popstate', function () {
       if (!state.payload) return;
-      var next = resolveSymbol(requestedSymbol());
-      if (next) setCompany(next, false);
+      var url = readUrlParams();
+      if (!url.drawer && ui.evidence.classList.contains('is-open')) {
+        closeEvidence(true);
+      }
+      if (url.symbol) {
+        var next = resolveSymbol(url.symbol);
+        if (next && next !== state.symbol) setCompany(next, false);
+      }
+      state.asOfDate = url.asOfDate;
+      state.policy = url.policy;
+      state.sourceMode = url.src;
+      state.cohortId = url.cohort;
+      state.peerMetric = url.peerMetric;
+      state.peerAlign = url.align;
+      state.peerN = url.peerN;
+      state.peerTol = url.peerTol;
+      if (url.finding) state.findingId = url.finding;
+      if (url.disc) state.disclosureFindingId = url.disc;
+      if (url.redline) state.redlineId = url.redline;
+      setTab(url.peers ? 'peers' : url.tab, false);
+      if (url.drawer) openDrawerFromUrl(url);
     });
   }
 
