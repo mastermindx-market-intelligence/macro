@@ -165,6 +165,39 @@ def test_near_miss_reason_covers_direction_and_mirrors_engine_order(tmp_path):
     assert reasons[("benzinga:3", "benzinga:4")] == "direction_mismatch"
 
 
+def test_near_miss_reasons_cover_the_remaining_engine_gates(tmp_path):
+    """A mirror reason the audit omits or reorders would read as a later gate.
+
+    Covers the five engine reject reasons no other audit test pins:
+    negation, action, analyst-actor, shared subject, and event family.
+    """
+    path = tmp_path / "gates.jsonl"
+    rows = [
+        _story("benzinga:1", "Apple is not in talks to buy Disney"),
+        _story("benzinga:2", "Apple is in talks to buy Disney", minute=1),
+        _story("benzinga:3", "Apple raises full-year guidance after strong demand", minute=2),
+        _story("benzinga:4", "Apple cuts full-year guidance after strong demand", minute=3),
+        _story("benzinga:5", "Goldman Sachs upgrades NVDA to Overweight on sustained AI demand", minute=4),
+        _story("benzinga:6", "Morgan Stanley upgrades NVDA to Overweight on sustained AI demand", minute=5),
+        _story("benzinga:7", "Nvidia update", minute=6, family="earnings"),
+        _story("benzinga:8", "Nvidia update", minute=7, subjects=["sec-AAPL"], family="earnings"),
+        _story("benzinga:9", "Nvidia update", minute=8, family="analyst"),
+    ]
+    _write_jsonl(path, rows)
+    report = audit.audit_jsonl(path)
+    _assert_report_shape(report)
+    assert report["clusters"] == 9
+    assert report["multi_member_clusters"] == 0
+    reasons = {
+        (row["a_story"], row["b_story"]): row["reason"] for row in report["near_misses"]
+    }
+    assert reasons[("benzinga:1", "benzinga:2")] == "negation_mismatch"
+    assert reasons[("benzinga:3", "benzinga:4")] == "action_mismatch"
+    assert reasons[("benzinga:5", "benzinga:6")] == "analyst_actor_mismatch"
+    assert reasons[("benzinga:7", "benzinga:8")] == "no_shared_subject"
+    assert reasons[("benzinga:7", "benzinga:9")] == "event_family_mismatch"
+
+
 def test_labeled_jsonl_keeps_a_stored_number_mismatch(tmp_path):
     """Reclustering the fixture instead of trusting cluster_id hides the mismatch."""
     path = tmp_path / "labeled.jsonl"
