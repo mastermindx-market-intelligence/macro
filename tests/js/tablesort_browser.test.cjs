@@ -829,9 +829,9 @@ test('S2-05: late disclosure enhances only the newly mounted table and stays ide
     assert.equal(await page.locator('#health .tbl-scroll').count(), 1);
     await page.locator('#health th').nth(1).click();
     assert.equal(await page.locator('#health th').nth(1).getAttribute('aria-sort'), 'descending');
-    assert.equal(await page.locator('#health tbody tr').first.locator('td').first.textContent(), 'name15');
+    assert.equal(await page.locator('#health tbody tr').first().locator('td').first().textContent(), 'name15');
     await page.locator('#health .tbl-filter input').fill('name14');
-    await settleCount(page, '1 / 15');
+    await page.waitForFunction(() => document.querySelector('#health .tbl-filter .cnt').textContent.trim() === '1 / 15');
     assert.equal(await page.locator('#health tbody tr:not([data-tablesort-hidden])').count(), 1);
   });
 });
