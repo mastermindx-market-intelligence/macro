@@ -1,7 +1,7 @@
 """US price-basis adapter contracts. Synthetic inputs, no network or source writes."""
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
@@ -225,6 +225,137 @@ def test_crash_sized_move_is_not_mistaken_for_a_split():
     got = licensed_spy_closes(EXPECTED, load=lambda t: store(closes=(90.0, 79.0, 70.0)),
                               session_closes=final_close(62.0), corp_actions=quiet)
     assert got.rows[-1] == ("2026-10-09", 62.0)
+
+
+def _landed(closes, stamps=("2026-10-07", "2026-10-08", "2026-10-09")):
+    """A store that already holds ``expected``, so no tip session is fetched."""
+    return lambda ticker: store(stamps=stamps, closes=closes)
+
+
+def _sessions_ending(n, end=EXPECTED):
+    found = []
+    day = end
+    while len(found) < n:
+        if nyse_calendar.is_session(day):
+            found.append(day.isoformat())
+        day -= timedelta(days=1)
+    return tuple(reversed(found))
+
+
+def _no_observation(*args, **kwargs):
+    raise AssertionError("no observation on an unverified price basis")
+
+
+@pytest.mark.parametrize("later", [
+    pytest.param(60.0, id="4:3"),
+    pytest.param(64.0, id="5:4"),
+])
+def test_stored_split_with_a_record_refuses_the_basis(later):
+    """4:3 (0.75) and 5:4 (0.80) sit inside the hard band; a recorded action refuses."""
+    calls = []
+
+    def actions(session):
+        calls.append(session)
+        return CorpActions(session=session, complete=True, tickers=frozenset({"SPY"}))
+
+    out = snapshot(now=FIXED_NOW,
+                   read=reader(load=_landed((80.0, later, later)), corp_actions=actions),
+                   observer=_no_observation)
+    assert calls == ["2026-10-08"]
+    assert out["available"] is False and out["quality"] == "price_basis_discontinuity"
+    assert out["drawdown_pct"] is None
+
+
+def test_stored_crash_without_a_benchmark_action_is_measured():
+    """A -20.5% close (ratio 0.795) with a complete record that omits SPY is real."""
+    calls = []
+
+    def actions(session):
+        calls.append(session)
+        return CorpActions(session=session, complete=True, tickers=frozenset({"QQQ"}))
+
+    def observe(rows, *, expected_session, is_session):
+        close = rows[-1][1]
+        peak = max(price for _, price in rows)
+        receipt = observer_receipt(rows, expected_session=expected_session,
+                                   is_session=is_session)
+        receipt["peak_close"] = peak
+        receipt["low_close"] = min(price for _, price in rows)
+        receipt["drawdown_pct"] = round(100.0 * (close / peak - 1.0), 4)
+        return receipt
+
+    out = snapshot(now=FIXED_NOW,
+                   read=reader(load=_landed((100.0, 100.0, 79.5)), corp_actions=actions),
+                   observer=observe)
+    assert calls == ["2026-10-09"]
+    assert out["available"] is True and out["quality"] == "current"
+    assert out["close"] == 79.5 and out["drawdown_pct"] == -20.5
+
+
+def test_incomplete_guard_on_a_stored_suspect_refuses():
+    calls = []
+
+    def actions(session):
+        calls.append(session)
+        return CorpActions(session=session, complete=False, reason="page cap")
+
+    out = snapshot(now=FIXED_NOW,
+                   read=reader(load=_landed((80.0, 64.0, 64.0)), corp_actions=actions),
+                   observer=_no_observation)
+    assert calls == ["2026-10-08"]
+    assert out["available"] is False and out["quality"] == "corporate_action_guard_down"
+    assert out["drawdown_pct"] is None
+
+
+def test_more_than_max_suspects_refuses_without_calling_the_guard():
+    calls = []
+
+    def actions(session):
+        calls.append(session)
+        return CorpActions(session=session, complete=True)
+
+    closes = [256.0]
+    for _ in range(pb.MAX_SUSPECTS + 1):
+        closes.append(closes[-1] * 0.875)
+    ratios = [closes[i + 1] / closes[i] for i in range(len(closes) - 1)]
+    assert len(ratios) == pb.MAX_SUSPECTS + 1
+    assert all(pb.SPLIT_LIKE_RATIO <= ratio <= 1 / pb.SPLIT_LIKE_RATIO for ratio in ratios)
+    assert all(ratio < pb.SUSPECT_LOW or ratio > 1 / pb.SUSPECT_LOW for ratio in ratios)
+    with pytest.raises(SourceRefused) as refused:
+        licensed_spy_closes(
+            EXPECTED, load=_landed(tuple(closes), stamps=_sessions_ending(len(closes))),
+            session_closes=final_close(), corp_actions=actions)
+    assert refused.value.quality == "price_basis_discontinuity"
+    assert calls == []
+
+
+def test_ordinary_three_percent_day_never_asks_the_guard():
+    calls = []
+
+    def actions(session):
+        calls.append(session)
+        return CorpActions(session=session, complete=True)
+
+    got = licensed_spy_closes(
+        EXPECTED, load=_landed((100.0, 100.0, 97.0)),
+        session_closes=final_close(), corp_actions=actions)
+    assert calls == []
+    assert got.hold is None and got.rows[-1] == ("2026-10-09", 97.0)
+
+
+def test_suspect_tip_session_is_not_checked_twice():
+    """The appended session already went through the tip guard."""
+    calls = []
+
+    def actions(session):
+        calls.append(session)
+        return CorpActions(session=session, complete=True)
+
+    got = licensed_spy_closes(
+        EXPECTED, load=lambda t: store(closes=(100.0, 100.0, 100.0)),
+        session_closes=final_close(85.0), corp_actions=actions)
+    assert calls == ["2026-10-09"]
+    assert got.hold is None and got.rows[-1] == ("2026-10-09", 85.0)
 
 
 @pytest.mark.parametrize("frame", [None, pd.DataFrame(), store(column="close_price"),

@@ -31,6 +31,38 @@ PRICE_BASIS = "split_adjusted_dividend_unadjusted_close"
 # The daily store lands T+1; a longer gap is a stalled store, not a tip to patch.
 MAX_SESSION_TIP = 3
 SPLIT_LIKE_RATIO = core.LEVEL_BREAK_RATIO
+# Adjacent closes beyond this ratio are corroborated; size alone does not refuse them.
+SUSPECT_LOW = 0.88
+# A longer run of those closes is refused without querying the action guard.
+MAX_SUSPECTS = 8
+
+
+def _suspect_stored_sessions(rows, stored_days: set[date]) -> list[str]:
+    """Later session of each stored adjacent pair outside the suspect band.
+
+    Adjacency matches ``level_break``: dated, positive closes, sorted by session.
+    Appended tip sessions are not in ``stored_days`` and are not returned.
+    """
+    dated = sorted(
+        (day, price)
+        for day, price in (
+            (core.session_day(label), core.positive(value)) for label, value in rows
+        )
+        if day is not None and price is not None and day in stored_days
+    )
+    suspects: list[str] = []
+    seen: set[str] = set()
+    ceiling = 1 / SUSPECT_LOW
+    for (_, earlier), (later_day, later) in zip(dated, dated[1:]):
+        ratio = later / earlier
+        if SUSPECT_LOW <= ratio <= ceiling:
+            continue
+        session = later_day.isoformat()
+        if session in seen:
+            continue
+        seen.add(session)
+        suspects.append(session)
+    return suspects
 
 
 def licensed_spy_closes(expected: date, *, load: Callable | None = None,
@@ -43,6 +75,11 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
     appended in order and never skipped. A tip that cannot be appended, including
     a not-yet-finalized snapshot close, is held, and the observer reports the
     series as delayed. Never falls back to another vendor.
+
+    A stored move past ``SUSPECT_LOW`` is corroborated against corporate actions.
+    A recorded action on the benchmark refuses the basis. A completed record that
+    does not name it leaves the move measurable, including a crash inside the
+    hard ratio band. Ratios outside that band still fail ``level_break``.
     """
     if load is None:
         from collectors.massive_stock_day import load_ticker as load
@@ -61,6 +98,7 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
     tip = nyse_calendar.sessions_between(max(stored) + timedelta(days=1), expected)
     appended: list[dict] = []
     hold = None
+    checked: set[str] = set()
     if len(tip) > MAX_SESSION_TIP:
         hold = "store_behind"
         tip = []
@@ -69,6 +107,7 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
         # Raw-on-raw is dividend-safe; a split is not. The shared guard cannot
         # say which action it saw, so any action on SPY holds the tip.
         actions = corp_actions(session)
+        checked.add(session)
         if not getattr(actions, "complete", False):
             hold = "corporate_action_guard_down"
             break
@@ -86,8 +125,22 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
             break
         rows.append((session, price))
         appended.append({"session": session, "settlement": "final"})
+    # Hard breaks stay a basis refusal. Inside that band, a 4:3 or 5:4 still
+    # passes level_break, so stored suspects are corroborated before use.
     if core.level_break(rows):
         raise SourceRefused("price_basis_discontinuity")
+    suspects = [
+        session for session in _suspect_stored_sessions(rows, set(stored))
+        if session not in checked
+    ]
+    if len(suspects) > MAX_SUSPECTS:
+        raise SourceRefused("price_basis_discontinuity")
+    for session in suspects:
+        actions = corp_actions(session)
+        if not getattr(actions, "complete", False):
+            raise SourceRefused("corporate_action_guard_down")
+        if BENCHMARK in getattr(actions, "tickers", ()):
+            raise SourceRefused("price_basis_discontinuity")
     return LicensedCloses(rows=rows, appended=tuple(appended), hold=hold)
 
 
