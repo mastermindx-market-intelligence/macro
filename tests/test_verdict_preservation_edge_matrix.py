@@ -365,18 +365,22 @@ def test_gap_ga_source_line_true_pins_line_one(pin_root):
 
 
 def test_gap_gb_empty_literal_pins_any_existing_line(pin_root):
+    # Pins CURRENT behaviour (empty literal is a substring of any line), not an
+    # endorsement of it.
     assert vp._pin_ok(pin_root, "research/pin.md", 2, "") is True
     assert vp._pin_ok(pin_root, "research/pin.md", 3, "") is True
 
 
 def test_gap_gc_dotdot_substring_refuses_legit_name(tmp_path: Path):
-    # Fail-closed: ".." is substring-matched, so a legitimate in-root filename
-    # containing a double dot is refused even though it resolves inside root.
+    # Pins CURRENT behaviour, not an endorsement. Fail-closed: ".." is
+    # substring-matched, so a legitimate in-root filename containing a double
+    # dot is refused even though it resolves inside root.
     (tmp_path / "notes..v2.md").write_text("legit literal\n", encoding="utf-8")
     assert vp._pin_ok(tmp_path, "notes..v2.md", 1, "legit literal") is False
 
 
 def test_gap_gf_splitlines_splits_on_form_feed(tmp_path: Path):
+    # Pins CURRENT behaviour (splitlines, not split("\n")), not an endorsement.
     target = tmp_path / "research" / "ff.md"
     target.parent.mkdir(parents=True)
     target.write_text("one\ntwo\nthree\x0cfour", encoding="utf-8")
@@ -387,6 +391,7 @@ def test_gap_gf_splitlines_splits_on_form_feed(tmp_path: Path):
 
 
 def test_gap_gf_splitlines_splits_on_unicode_separator(tmp_path: Path):
+    # Pins CURRENT behaviour (U+2028 is a splitlines separator), not an endorsement.
     target = tmp_path / "research" / "ls.md"
     target.parent.mkdir(parents=True)
     target.write_text("one\ntwo\u2028three", encoding="utf-8")
@@ -394,6 +399,8 @@ def test_gap_gf_splitlines_splits_on_unicode_separator(tmp_path: Path):
 
 
 def test_gap_gj_empty_strings_accepted_by_validate_row():
+    # Pins CURRENT behaviour (str-typed fields accept empty strings), not an
+    # endorsement of it.
     row = dict(VALID_ROW)
     row["verdict_key"] = ""
     row["program"] = ""
@@ -402,6 +409,8 @@ def test_gap_gj_empty_strings_accepted_by_validate_row():
 
 
 def test_gap_gi_unknown_row_keys_pass_through(tmp_path: Path):
+    # Pins CURRENT behaviour (unknown keys neither reject the row nor are
+    # dropped), not an endorsement of it.
     def add_extra_key(data):
         data["rows"][2]["future_field"] = 12345
 
@@ -419,9 +428,11 @@ def test_gap_gi_unknown_row_keys_pass_through(tmp_path: Path):
 
 @pytest.mark.xfail(
     strict=True,
-    reason="GAP: engine/verdict_preservation.py:144-146 _pin_ok catches only OSError; "
-    "UnicodeDecodeError (a ValueError) escapes, so one non-UTF-8 source file "
-    "raises out of build_verdict_preservation instead of yielding pin_ok False",
+    raises=UnicodeDecodeError,
+    reason="GAP(owner: engine/verdict_preservation.py — WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT, "
+    "V1 PR #8529/#8588): _pin_ok catches only OSError at its utf-8 read_text, so a non-UTF-8 "
+    "source file raises UnicodeDecodeError out of build_verdict_preservation instead of "
+    "yielding pin_ok False (engine/verdict_preservation.py:144-145)",
 )
 def test_gap_gd_non_utf8_source_should_pin_false(tmp_path: Path):
     data = _write_registry_fixture(tmp_path)
@@ -435,9 +446,11 @@ def test_gap_gd_non_utf8_source_should_pin_false(tmp_path: Path):
 
 @pytest.mark.xfail(
     strict=True,
-    reason="GAP: engine/verdict_preservation.py:159-161 build catches only OSError and "
-    "json.JSONDecodeError; a non-UTF-8 registry raises UnicodeDecodeError instead "
-    "of returning {'available': False}",
+    raises=UnicodeDecodeError,
+    reason="GAP(owner: engine/verdict_preservation.py — WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT, "
+    "V1 PR #8529/#8588): build catches only OSError and json.JSONDecodeError at its utf-8 "
+    "read_text, so a non-UTF-8 registry raises UnicodeDecodeError instead of returning "
+    "{'available': False} (engine/verdict_preservation.py:159-160)",
 )
 def test_gap_ge_non_utf8_registry_should_be_unavailable(tmp_path: Path):
     cfg = tmp_path / "config"
