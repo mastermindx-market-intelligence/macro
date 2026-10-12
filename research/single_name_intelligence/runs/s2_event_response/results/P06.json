@@ -18,7 +18,7 @@
   "splits": {
     "TRAIN": {
       "h5": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -102,7 +102,7 @@
         }
       },
       "h21": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -186,7 +186,7 @@
         }
       },
       "h63": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -272,7 +272,7 @@
     },
     "TUNE": {
       "h5": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -356,7 +356,7 @@
         }
       },
       "h21": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -440,7 +440,7 @@
         }
       },
       "h63": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -526,7 +526,7 @@
     },
     "QUARANTINE": {
       "h5": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -610,7 +610,7 @@
         }
       },
       "h21": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {
@@ -694,7 +694,7 @@
         }
       },
       "h63": {
-        "plain_word_null": "Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
+        "plain_word_null": "This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.",
         "analysis_set": {
           "PRIMARY": "all counted episodes, minus those flagged confounded (IL §4)",
           "SENS_A": {

@@ -28,7 +28,7 @@ Ledger family `sni.s2_event_response.P04` (budget 6, FLOOR); REG canonical famil
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -47,9 +47,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -57,7 +55,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -76,9 +74,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -86,7 +82,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -105,9 +101,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -115,7 +109,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: fewer than two independent clusters, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 1 / cluster-N 1; SENS-B honest-N 1 / cluster-N 1.
@@ -136,7 +130,6 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
 - baseline (iii) direction of the all-events pooled TRAIN prior: episode fa48d372d67f s_us 2026-05-13 excess -0.0763444217 direction ABSTAIN → —
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=1)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -146,7 +139,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: fewer than two independent clusters, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 1 / cluster-N 1; SENS-B honest-N 1 / cluster-N 1.
@@ -167,7 +160,6 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
 - baseline (iii) direction of the all-events pooled TRAIN prior: episode fa48d372d67f s_us 2026-05-13 excess -0.2183928942 direction ABSTAIN → —
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=1)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -177,7 +169,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: fewer than two independent clusters, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 1 / cluster-N 1; SENS-B honest-N 1 / cluster-N 1.
@@ -198,7 +190,6 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
 - baseline (iii) direction of the all-events pooled TRAIN prior: episode fa48d372d67f s_us 2026-05-13 excess -0.2051207405 direction ABSTAIN → —
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=1)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -208,7 +199,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -227,9 +218,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -237,7 +226,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -256,9 +245,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -266,7 +253,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -285,9 +272,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -299,7 +284,7 @@ Ledger family `sni.s2_event_response.P05` (budget 6, FLOOR); REG canonical famil
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -318,9 +303,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -328,7 +311,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -347,9 +330,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -357,7 +338,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -376,9 +357,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -386,7 +365,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -405,9 +384,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -415,7 +392,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -434,9 +411,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -444,7 +419,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -463,9 +438,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -473,7 +446,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -492,9 +465,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -502,7 +473,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -521,9 +492,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -531,7 +500,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -550,9 +519,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -564,7 +531,7 @@ Ledger family `sni.s2_event_response.P06` (budget 6, FLOOR); REG canonical famil
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -583,9 +550,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -593,7 +558,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -612,9 +577,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -622,7 +585,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -641,9 +604,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -651,7 +612,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -670,9 +631,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -680,7 +639,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -699,9 +658,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -709,7 +666,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -728,9 +685,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -738,7 +693,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -757,9 +712,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -767,7 +720,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -786,9 +739,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
@@ -796,7 +747,7 @@ Across the counted episodes the post-event directional agreement with each froze
 
 **Label.** HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution
 
-Across the counted episodes the post-event directional agreement with each frozen baseline cannot be distinguished from a coin flip at this sample size; the rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
+This family abstains: no episode was counted in this block, so no agreement rate, no interval and no test against the frozen baselines is estimable. The rows describe conditional post-event co-movement over fixed windows and are not forecasts, signals or attribution.
 
 1. **Null.** see the plain-word statement above.
 2. **Analysis set.** PRIMARY leads; SENS-A honest-N 0 / cluster-N 0; SENS-B honest-N 0 / cluster-N 0.
@@ -815,9 +766,7 @@ Across the counted episodes the post-event directional agreement with each froze
 - baseline (i) always-long (+1): no counted episodes in this block
 - baseline (ii) sign of the trailing-63-session excess at D(s): no counted episodes in this block
 - baseline (iii) direction of the all-events pooled TRAIN prior: NOT ESTIMABLE (TRAIN cluster-N < 2; TRAIN episodes=0)
-- baseline (iii) direction of the all-events pooled TRAIN prior: no counted episodes in this block
 - challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): NOT ESTIMABLE (hierarchy legs above own-name unregistered; own-name honest-N=0)
-- challenger: frozen hierarchy (broad event prior → neighborhood → issuer/instrument → bounded own-name): no counted episodes in this block
 
 **Proper score.** NOT SUPPORTED (REG P04: hit and excess are not a proper score)
 
