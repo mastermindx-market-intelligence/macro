@@ -4412,6 +4412,7 @@ jobs:
           tests/test_fundamental_forensics_financial_packet_service.py
           tests/test_fundamental_forensics_financial_packet_api.py
           tests/test_fundamental_forensics_financial_statement_service.py
+          tests/test_fundamental_forensics_specialist_pack_contract.py
           tests/test_fundamental_forensics_financial_statement_api.py
           tests/test_forensics_api.py
           tests/test_edgar_forensics_collector.py
