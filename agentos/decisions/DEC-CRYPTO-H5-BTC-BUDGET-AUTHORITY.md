@@ -41,8 +41,13 @@ evidence:
     defines btc.decision/v1 as the sole final exposure projection and fails closed
     on integrity errors.
   - >
-    scripts/build_crypto.py at main ce4a33aeeed779530942560c5b05f4df8ab0306c
-    has _allocation() derive H5 total exposure from latest["alloc_optimal"] directly.
+    Historical defect evidence: scripts/build_crypto.py at main
+    ce4a33aeeed779530942560c5b05f4df8ab0306c derived H5 total exposure directly
+    from latest["alloc_optimal"].
+  - >
+    Source implementation candidate fc93f8e7eeec8c70b285191aa2374e88f71332c3
+    on PR #8050 replaces that bypass with the existing btc.decision/v1 budget
+    projection; local Crypto owner tests are 34/34 and Vector owner tests 95/95.
   - >
     site/crypto.html at main ce4a33aeeed779530942560c5b05f4df8ab0306c says
     Bitcoin Vector sets total crypto exposure and the class overlay only splits it.
@@ -88,3 +93,174 @@ file or parallel allocation truth store merely to bridge the two pages.
 Only a separately commissioned architecture decision that changes the program-level
 owner of total crypto exposure, with point-in-time replay and forward promotion
 proof, may replace Bitcoin DecisionState as H5 budget authority.
+
+## 2026-09-27 implementation checkpoint — canonical budget seam closed in source
+
+This decision is now implemented in source commit `fc93f8e7eeec8c70b285191aa2374e88f71332c3` on Draft PR #8050.
+
+Current protected Mastermind law for the modifying continuation is `c01d890f6536539496f2d6744f3143ff49da296d`, INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1. The Chairman's live continuation supplied current intent. The older P0B narrative requiring a redundant Personal-Pro Executive request before routine source modification is superseded by this current protected law only for this already-assigned, custody-clear source execution. It does **not** waive collision, effect, CI, release, transport or production-proof gates.
+
+### What changed
+
+- `engine/btc_decision.py` now exposes `project_budget()`, a minimal fail-closed projection of the existing `btc.decision/v1` authority. Integrity-invalid decisions may retain diagnostic final fields inside the full DecisionState, but the projected downstream budget is unavailable and carries no exposure.
+- `scripts/build_vector.py` now writes that canonical budget projection into the existing `crypto.cockpit/v1` receipt. Its hero exposure and `authority.sizing_source` now come from `btc.decision/v1.final.exposure_pct`, not a direct raw signal read. H5 is named as a consumer of the existing cockpit contract.
+- `scripts/build_crypto.py` no longer derives H5 total exposure from `signals.alloc_optimal`. It builds the canonical DecisionState through the existing `engine.btc_decision` owner, projects the canonical budget, and passes that budget into the pre-existing BTC/ETH/alt class split. The class grid can split an available total budget but cannot originate or rescue it.
+- valid 0% remains a real 0% crypto budget with 100% cash; unavailable or integrity-invalid DecisionState yields no BTC/ETH/alt/cash values.
+- if canonical budget or class-split inputs are unavailable, `build_crypto` fails explicitly with `Crypto H5 budget unavailable` before rendering `crypto.html`. It does not silently publish 0% or 100% cash.
+
+No new DecisionState file, optimizer, allocation model, alert owner, or durable truth store was created.
+
+### TDD / verification receipts
+
+RED first:
+- old `_allocation(signals, market)` rejected the canonical budget argument;
+- missing cockpit state defaulted hero exposure to 0%;
+- no explicit H5 fail-closed build guard existed.
+
+GREEN on final source bytes:
+- focused H5/cockpit cases: **5 passed**;
+- full existing Crypto CI owner command (`test_crypto_cockpit_contract.py`, `test_crypto_wave2.py`, `test_crypto_wave3.py`, `test_crypto_house_style.py`): **34 passed, 0 failed**;
+- exact existing Vector CI owner command including `test_btc_decision.py` and R2 suites: **95 passed, 0 failed**;
+- Python compile and `git diff --check`: PASS.
+
+The first broader Crypto run in the intentionally sparse worktree had four environment-only failures because `site/`, `content/`, and `data/` were not checked out. Those exact dependencies were added without a full checkout; the unchanged suites then passed. Existing temporary Chromium cleanup warnings remain and are not asserted resolved.
+
+### Remaining P0B acceptance boundary
+
+Open PR #7645 still owns `templates/crypto.html.j2` / `site/crypto.html`. This source carrier deliberately did **not** touch those paths. The current H5 template cannot truthfully render the new unavailable allocation object because it assumes numeric percentages. Therefore P0B is **BUILT_NOT_PROVEN**, not complete.
+
+Exact next integration action after #7645 is reconciled: add one explicit H5 unavailable state to the accepted Crypto template, consuming `allocation.available` / canonical decision metadata without changing the class split or total-budget authority; then prove valid 0%, integrity-invalid/unavailable, and happy-path allocations on the real generated route in EN/ZH and both themes. Only after exact-head CI/fences and real H5 browser proof may P0B be accepted.
+
+
+## Exact-receipt refinement — supersedes fc93 as current P0B source head
+
+Commit `26fd88c7dad5448f69e6096037cf099d96d0c01e` supersedes `fc93f8e7eeec8c70b285191aa2374e88f71332c3` as the current P0B source candidate. The earlier commit established the correct owner and fail-closed split; this refinement removes the final recomputation seam.
+
+The production pipeline already guarantees Vector before Crypto in daily/render/engine-render. Therefore `build_crypto` now consumes the exact `crypto.cockpit/v1.decision` receipt emitted by the preceding Vector build. It no longer imports or invokes `btc_decision.build_decision`. The class split also requires `decision.as_of` to equal the Vector signals date; a stale otherwise-valid receipt returns `CANONICAL_DECISION_AS_OF_MISMATCH` and the build fails closed.
+
+Test fixtures that directly build Crypto now stage a minimal valid cockpit DecisionState receipt, matching the real pipeline dependency rather than relying on hidden recomputation.
+
+Fresh current-source verification:
+- focused exact-receipt cases: **3 passed**;
+- full Crypto CI-owner pack: **36 passed, 0 failed**;
+- Python compile and diff checks: PASS.
+
+This is still BUILT_NOT_PROVEN because #7645 owns the H5 template and the real unavailable-state rendering/browser proof remains pending.
+
+
+### 2026-09-27 Extra High verification refinement
+
+Current protected Mastermind law for this continuation is `90402d76494707ca4d385076a007b2de78d23a20`; INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1 / bootstrap major 1. The Chairman's live `Continue` instruction supplies present intent for the already-assigned Crypto production-readiness mission. Current law supersedes the older redundant Executive-request prerequisite for routine, custody-clear source work; it does not waive source collision, CI, effect or release gates.
+
+The current P0B source candidate remains `26fd88c7dad5448f69e6096037cf099d96d0c01e`. Additional adversarial coverage added on top of that candidate proves:
+
+- the class overlay cannot raise or lower the canonical total budget: for canonical 0/17/40/73/100% exposures, BTC+ETH+alts equals exactly the canonical exposure and cash is the residual;
+- a named override may legitimately make raw model exposure differ from final exposure, and H5 consumes the final canonical 40% rather than the raw 80%;
+- a canonical decision with a stale `as_of` is rejected with `CANONICAL_DECISION_AS_OF_MISMATCH`;
+- `project_budget()` preserves a valid 0% target, suppresses diagnostic final exposure when DecisionState integrity fails, and rejects missing/noncanonical decision objects.
+
+Fresh combined local regression receipt after de-duplicating tests already present in `26fd88c7`: **147 passed, 0 failed** across the exact Vector authority/R2 pack plus every `tests/test_crypto_*.py` suite. Existing Pandas deprecation and temporary Chromium cleanup warnings remain and are not asserted resolved. Standalone `test_crypto_build_is_lightweight_and_live_wired` also passed independently.
+
+Bypass census on current bytes:
+- `scripts/build_crypto.py` contains zero `alloc_optimal` references;
+- `crypto.cockpit/v1.authority.sizing_source` is `btc.decision/v1.final.exposure_pct`;
+- `build_crypto` consumes `e0["decision"]` and does not import/call `btc_decision.build_decision`;
+- `build_vector` names `crypto.html:H5` as a cockpit consumer.
+
+Open PR #7645 remains open at `74298e32bbbbc7f00884ece259455b9bbe46fd6f` and still owns `templates/crypto.html.j2` / `site/crypto.html`. This carrier does not edit those paths. P0B therefore remains `BUILT_NOT_PROVEN`: source authority is closed locally, but live H5 unavailable-state presentation and browser proof remain blocked on template custody reconciliation.
+
+
+## H5 fail-closed presentation + generated-route proof — 2026-09-27
+
+Presentation/evidence commit: `138483448904dfdd6d77674bb28085c8be627e82`, on top of canonical source candidate `26fd88c7dad5448f69e6096037cf099d96d0c01e`.
+
+The prior source-only fail-close raised before rendering Crypto. That protected authority but could leave a stale prior `crypto.html` publication visible if the publication workflow retained the old file. The accepted H5 presentation now fails closed **inside the current page** instead:
+
+- `build_crypto` logs `Crypto H5 budget unavailable (...); rendering a non-actionable H5 state` and continues rendering unrelated qualified Crypto evidence;
+- H5 branches on `allocation.available`;
+- canonical available state retains the existing four-way class split and adds the `btc.decision/v1` authority/date receipt;
+- canonical unavailable state displays **Allocation unavailable / 配置暂不可用**, total crypto `—`, no allocation bar, no allocation legend and no class split;
+- unavailable copy explicitly says Mastermind will not infer a crypto budget or treat missing data as 0%;
+- a real canonical 0% target still renders **0% total crypto / 100% cash** with the allocation bar and legend, visibly distinct from unavailable;
+- H6–H8 and other qualified Crypto evidence remain usable when H5 is unavailable.
+
+No new allocation model, score, fallback, optimizer or secondary DecisionState was added.
+
+### Generated-route proof
+
+A controlled generated-route harness invoked the actual current `scripts.build_crypto.build()` three times from the same latest Vector signal date (2026-09-26), varying only the existing cockpit DecisionState projection:
+
+1. happy canonical target: 60%;
+2. valid canonical zero: 0%;
+3. integrity-invalid/unavailable canonical target: no exposure.
+
+All three builds emitted `crypto.html`; unavailable emitted the expected warning rather than aborting publication.
+
+Browser matrix: 3 states × desktop/mobile × dark/light × EN/ZH = **24/24** successful semantic cells:
+- HTTP 200;
+- no page-wide overflow;
+- exactly one H5 and one H6;
+- no page JavaScript errors;
+- no raw `alloc_optimal` text exposed;
+- happy: 60%, allocation bar/legend, canonical receipt;
+- zero: 0%, 100% cash, allocation bar/legend, not marked unavailable;
+- unavailable: `—` total crypto, explicit unavailable state, no allocation bar/legend, canonical receipt, Inspect Bitcoin Vector link, H6 preserved.
+
+Canonical visual evidence owner:
+`mockups/evidence/crypto-h5-authority-20260927/EVIDENCE.yml`
+with 3 routes and 24/24 required REST states in its manifest. Representative desktop EN dark and mobile ZH light captures for happy/zero/unavailable were visually reviewed. The three states are visibly distinct. Fixture-only failures for fonts/terminal overlay remain non-production-shell limitations.
+
+Fresh final local gate on the presentation/evidence bytes:
+- combined Vector + all Crypto-specific regression pack: **148 passed, 0 failed**;
+- design-system forward ratchet: **0 blocking findings**;
+- canonical visual-evidence guard: PASS;
+- Python compile, JS syntax, Vector+Crypto Jinja parse and `git diff --check`: PASS.
+Existing deprecation/temp-browser cleanup warnings remain and are not asserted resolved.
+
+### #7645 exact collision reconciliation
+
+Open #7645 remains at `74298e32bbbbc7f00884ece259455b9bbe46fd6f`. Its template patch modifies shared/mobile Market Board CSS and H1/H2 only. Exact three-way simulation using common base `2b62f49603e731daf68877516d3f6f748497b160` shows:
+
+- `templates/crypto.html.j2`: changed in both but **auto-merges with zero conflict markers**; #7645 H2/mobile changes and H5 canonical presentation coexist.
+- `site/crypto.html`: conflicts, but the same generated artifact already conflicts between current `main` and #7645 **without H5**. H5 did not introduce this publication-artifact conflict.
+
+Therefore #7645 is no longer a source-design blocker for H5. Release ordering still must merge/reconcile source first and regenerate `site/crypto.html`; generated bytes are not a second source of truth.
+
+Current P0B classification remains `BUILT_NOT_PROVEN` until exact-head #8050 CI/fences accept this head and the combined source is proven on the production/deployed route after merge-order reconciliation. No production deployment is claimed.
+
+## 2026-09-28 Pro continuation — preserve knowledge, distinguish failures
+
+Current protected Mastermind pin: `dcc4829a811d3f6e4fe8c16a103f813c3501f48e`; INDEX `94d1af402598894372858793a5b1931019c5fa77`; compatible Skillpack 1.0.1 / bootstrap 1. Same Chairman-continued operation `crypto-vector-r2-20260926-sol-001`, same M2 Studio Direct carrier and owned PR #8050 branch. Direct handling is PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD: the coupled source, presentation and failure semantics require one coherent repair, not a second implementation owner. No worker, new runtime, alert or trade was started.
+
+Recovery found `e6cb197c087e9783ddbefbabf51ff2bb88125acf` clean on both host and PR, including the already-completed H5 unavailable presentation. It was not rebuilt. Exact-head fences `36358298342` passed; CI `36358298580` failed only in validated-claims-source because the new Chinese recovery sentence said `已验证` without a validation receipt. The English/Chinese recovery copy now says other available research remains below. An existing-suite regression calls the exact source-claim scanner on the H5 fragment; its failing result was observed before the copy repair. No allowlist or validator was weakened.
+
+### Material capability delta
+
+Source `2bfa46242f782c11376733d8795fd90b16bc84ca` separates total-budget availability from asset-breakdown availability. `available` still describes the complete allocation; additive `budget_available` and `split_context_available` describe which independent information remains known.
+
+- An invalid, missing, malformed or wrong-date canonical budget remains unavailable. No total or cash allocation is inferred.
+- A valid matching total, with missing current class inputs or invalid split weights, stays visible with its cash residual. BTC/ETH/alt destinations remain unknown and no allocation bar is drawn. The heading is **Breakdown unavailable**, not a false statement that the decision itself is invalid.
+- A valid 0% total with a matching snapshot needs no class model. It renders **Model holds cash / 模型保持现金仓位**, 0% crypto and 100% cash even when class-price inputs are unavailable. No synthetic cycle/alt-season context is added.
+- Snapshot mismatch gives a specific bilingual date explanation and does not present the old target as current.
+- The canonical display percentage accepts only the producer's numeric whole-percent representation. Booleans, numeric strings, fractions, nonfinite/out-of-range and extremely large values do not become a model budget through coercion or rounding.
+- Existing class arithmetic is preserved. Invalid/missing/nonfinite/negative or zero-sum weights produce an unavailable breakdown instead of raising into page publication, changing the total, or inventing an optimizer.
+
+The template now distinguishes `data-allocation-state=available`, `breakdown-unavailable`, and `unavailable`, and keeps the rest of the Crypto page usable. Model-versus-account language and explicit source/date remain visible in both languages.
+
+### Readability and source coexistence
+
+The first 112-cell generated-route pass caught two genuine inner-card failures at 320px EN: zero page-wide scrolling did not mean the H5 grid fitted inside its card. `f9e5506a8aef5fdf3fe14bcb404d20cd77a09ebb` adds H5-only stacked compact hierarchy, nonshrinking label layout, minimum 14px explanatory text and a 44px inspection-link target. No shared typography tokens or Market Board selectors were changed.
+
+A subsequent exact three-way source check caught one insertion-point conflict with #7645's otherwise-disjoint Market Board CSS. `d079adb6d532b7af20a487bd0ebdeddc3a414ee0` moves the H5 overrides beside existing allocation styles instead of occupying the Market Board-owned insertion after the shared include. The same three-way check now auto-merges with zero markers, retains the H5 state projection and retains #7645's accessible H2 heading. Common base `2b62f49603e731daf68877516d3f6f748497b160`; #7645 head `74298e32bbbbc7f00884ece259455b9bbe46fd6f`. Generated-site regeneration/release ordering remains separate.
+
+Current source unit/source-gate proof: 167 tests passed in the combined existing Vector and Crypto suites; source validation-claim gate passes; Python/Jinja/diff checks pass. Existing 25 deprecation/temp-browser warnings remain. The forward-only design ratchet has zero blocking findings; the existing visual-evidence gate passes.
+
+### Completed same-source evidence and acceptance limit
+
+On source `d079adb6d532b7af20a487bd0ebdeddc3a414ee0`, the actual Crypto builder produced seven controlled scenarios and the browser completed **112/112** semantic/geometry cells: happy, zero, unavailable, stale, missing breakdown, zero with missing class inputs, and malformed target × 320/390/768/1440 × EN/ZH × dark/light. Every cell had HTTP 200, one H5 and H6, no page JavaScript error, no document or H5 inner-card overflow, and at least 14px explanatory text. All state-specific exposure/bar/legend assertions passed. This follows the preserved initial 110/112 result rather than suppressing its two compact-layout failures.
+
+The existing canonical capture tool then produced **40/40** REST states for the five distinct visual routes. All forty PNG digests were verified. Representative final desktop and Chinese-mobile pages, and 320px state crops, were visually reviewed. Canonical receipt remains `mockups/evidence/crypto-h5-authority-20260927/EVIDENCE.yml`. The same owner now includes `proof_summary.json`, `browser_matrix.json`, `scenario_receipts.json`, `before_mobile_fix.json`, `source_merge_review.json`, and the exact two fixture scripts. Superseded content-addressed screenshots were removed only inside that owner; prior immutable commits preserve them.
+
+These are generated controlled-fixture results, not production or font-parity acceptance. The snapshots use explicit example budgets with existing local research data. Missing font/icon/account/Terminal overlay resources remain listed in the network evidence. The shared floating Crypto Brain control, broader Market Board presentation/ranking issues, and participant comprehension testing are not claimed repaired by this H5 slice. No Paper write, native-board application, live save/alert/trade or deployment occurred.
+
+P0B remains BUILT_NOT_PROVEN pending exact-current-head CI/fences, source/release-order reconciliation with #7645, regeneration of the combined published site and proof on the deployed route. Green local tests and a coherent H5 design do not close the broader Crypto/Vector redesign mission.
