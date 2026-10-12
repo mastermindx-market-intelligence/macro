@@ -71,6 +71,8 @@ jobs:
           ref: main
       - run: git pull origin main
       - name: gate — retry only when today's memo is degraded/skipped/absent
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         id: gate
         # stdlib-only (runs before the venv/pip steps so a healthy night costs
         # nothing).  Writes retry=yes|no to GITHUB_OUTPUT; never fails the job.

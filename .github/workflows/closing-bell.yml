@@ -463,6 +463,8 @@ jobs:
       # ── (h) PROVISIONAL STAMP ARTIFACT ──────────────────────────────────────────────
       # Write site/live/closingbell_stamp.json: {as_of, provisional: true, lane: "closingbell"}.
       - name: write provisional closingbell stamp (site/live/closingbell_stamp.json)
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
         run: |
           python3 - <<'PYEOF'
