@@ -174,7 +174,10 @@
         '.mmto-stage{clip-path:none!important;transform:none!important;transition:none!important}',
         '#mm-terminal-overlay.is-open .mmto-stage{clip-path:none!important;transform:none!important;opacity:1!important}',
         '#mm-terminal-overlay.is-closing .mmto-stage{clip-path:none!important;transform:none!important;opacity:0!important}',
-        '.mmto-frame{transform:none!important;transition:none!important}',
+        /* WebKit may grow a width:100% iframe to its horizontally scrollable chart contents,
+           giving the embedded Terminal a wider viewport than the phone. Constrain the
+           iframe with min/max width while keeping its own scrolling functional. */
+        '.mmto-frame{width:1px;min-width:100%;max-width:100%;transform:none!important;transition:none!important}',
         '#mm-terminal-overlay.is-open .mmto-frame{opacity:1!important}',
         '.mmto-toast{top:max(8px,env(safe-area-inset-top));font-size:11.5px;padding-right:10px}',
         '.mmto-loader-title{font-size:13px}.mmto-loader-sub{max-width:290px;line-height:1.45}',
