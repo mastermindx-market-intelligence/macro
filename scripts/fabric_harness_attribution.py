@@ -48,14 +48,21 @@ def parse_ps(text: str) -> dict[int, Process]:
 
 
 def _harness(command: str) -> str | None:
-    # The CLI/host executable is evidence; arbitrary packet/branch names are not.
-    if "/.claude/remote/ccd-cli/" in command or re.search(
-        r"(?:^|/)(?:claude|claude-code)\s+--(?:output-format|input-format)", command
-    ):
+    # Only the FIRST executable token is harness evidence. Grepping the whole
+    # ps command misclassified shell wrappers and Python invocations whose
+    # packet, cwd, flags, or diagnostic message mentioned "codex" or "claude".
+    # Fail closed to UNKNOWN for wrappers: the actual CLI must appear as an
+    # ancestor executable, not just as text in an ancestor's argv.
+    fields = command.split(None, 1)
+    if not fields:
+        return None
+    executable = fields[0]
+    basename = executable.rsplit("/", 1)[-1]
+    if "/.claude/remote/ccd-cli/" in executable or basename in {
+        "claude", "claude-code"
+    }:
         return "CLAUDE"
-    if re.search(r"(?:^|/)(?:codex|CodexCLI)(?:\s|$)", command) or (
-        "codex app-server" in command
-    ):
+    if basename in {"codex", "CodexCLI"}:
         return "CODEX"
     return None
 
