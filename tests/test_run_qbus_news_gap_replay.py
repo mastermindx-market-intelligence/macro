@@ -8,9 +8,9 @@ credential is read from the environment.
 Five tests pin overlap exactly-once delivery, a page-budget gap that holds an
 existing cursor, a failed catch-up that does not open a hole, backoff treated
 as a failed catch-up, and health-file projection through
-``load_health_receipt``. A sixth test is a strict xfail: with no stored
-cursor, ``catch_up_once`` drops the lookback base, and that hold belongs in
-``collectors/benzinga_news.py``.
+``load_health_receipt``. A sixth test pins the null-cursor case: a first
+gapped catch-up holds the lookback base so a later catch-up still requests
+the original window.
 """
 from __future__ import annotations
 
@@ -474,15 +474,13 @@ def test_page_budget_gap_holds_cursor_until_later_catchup(tmp_path):
     assert result.catchups_ok == 1
 
 
-@pytest.mark.xfail(strict=True, reason="GAP: collectors/benzinga_news.py")
 def test_null_cursor_gap_keeps_lookback_base_across_a_later_catchup(tmp_path):
     """A first catch-up with no stored cursor must keep the lookback base.
 
-    ``catch_up_once`` returns on ``gap_unresolved`` without writing
-    ``next_cursor_epoch``. The next catch-up then recomputes base from the
-    new observed time, so items in the original window (including page 3,
-    which the budget never fetched) are no longer requested. The hold
-    belongs in ``collectors/benzinga_news.py``; this lane must not edit it.
+    ``catch_up_once`` holds the client's ``next_cursor_epoch`` (the lookback
+    base) as a cursor-only compare-and-set before returning on
+    ``gap_unresolved``, so the next catch-up still requests the original
+    window, including page 3, which the budget never fetched.
     """
     tmp_path.mkdir(parents=True, exist_ok=True)
     clock = Clock(T0)
