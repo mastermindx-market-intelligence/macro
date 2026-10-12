@@ -215,3 +215,25 @@ def test_china_dialog_rechecks_expiry_and_cancels_a_pending_close_on_open():
 def _between_text(page: str, start: str, end: str) -> str:
     a = page.index(start)
     return page[a:page.index(end, a)]
+
+
+def test_china_tab_stop_defers_to_checkvisibility_and_keeps_the_box_rules_without_it():
+    """Same stop rule as the Macro page's `_tabStop`: an engine-reported hidden
+    control is not a keyboard stop, and engines without checkVisibility keep the
+    box + closed-disclosure rules alone."""
+    from tests.test_us_pullback_modal_integration import _between, _node
+
+    src = _between("templates/china.html.j2", "function _riskTabStop(el){", "function cnxOpenDlg(")
+    _node(r"""
+const stop = new Function(require('node:fs').readFileSync(0, 'utf8') + '; return _riskTabStop;')();
+const shown = el('button', {name: 'shown', checkVisibility: () => true});
+assert.equal(stop(shown), true);
+const hidden = el('button', {name: 'css hidden', checkVisibility: () => false});
+assert.equal(stop(hidden), false);
+// Engines without checkVisibility keep the old box + closed-disclosure behaviour.
+const plain = el('button', {name: 'plain'});
+assert.equal(stop(plain), true);
+const closed = add(el('div'), el('details'));
+add(closed, plain);
+assert.equal(stop(plain), false);
+""", src)

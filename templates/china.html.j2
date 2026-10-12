@@ -4645,6 +4645,8 @@ window.__CHART_SWAP__ = {
      rather than the box; only its own <summary> stays reachable. */
   function _riskTabStop(el){
     if(el.tabIndex<0||el.closest('[inert]')||el.getClientRects().length===0)return false;
+    /* Chrome also paints boxes for content its CSS hides, so defer to checkVisibility too. */
+    if(typeof el.checkVisibility==='function'&&!el.checkVisibility({checkVisibilityCSS:true}))return false;
     for(var d=el.closest('details:not([open])');d;d=d.parentElement&&d.parentElement.closest('details:not([open])')){
       var s=d.querySelector(':scope > summary');
       if(!s||!s.contains(el))return false;

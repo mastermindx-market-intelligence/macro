@@ -144,13 +144,16 @@ def test_illustration_stylesheet_is_published_beside_the_macro_page():
 # A popup-shaped tree in the order the shipped dialog renders it. `shown` is what
 # getClientRects reports: Chrome still reports boxes for a closed <details>' content
 # (it is content-visibility skipped, not display:none), which defeated a box-only
-# filter in the served-page keyboard check.
+# filter in the served-page keyboard check. `checkVisibility`, when provided, is
+# what the element's checkVisibility() answers — undefined, like Chrome, on the
+# many elements where the engine offers it.
 FAKE_DIALOG_JS = r"""
 const assert = require('node:assert/strict');
 const doc = {activeElement: null};
 function el(tag, opts = {}) {
   return {tag, open: !!opts.open, shown: opts.shown !== false, tabIndex: opts.tabIndex ?? 0,
           name: opts.name || tag, children: [], parentElement: null,
+          checkVisibility: opts.checkVisibility,
           getClientRects() { return this.shown ? [{}] : []; },
           focus() { doc.activeElement = this; },
           contains(o) { for (let n = o; n; n = n.parentElement) if (n === this) return true; return false; },
@@ -251,4 +254,82 @@ doc.activeElement = legacySummary;
 const esc = {key: 'Escape', shiftKey: false, prevented: false, preventDefault() { this.prevented = true; }};
 trap(dlg, esc);
 assert.equal(esc.prevented, false);
+""", src)
+
+
+def test_focus_first_skips_unreachable_stops_and_still_lands_somewhere():
+    """Run the shipped `_focusFirst`: the first DOM-order focusable may sit inside
+    a closed <details>, so take the first stop `_trapTab` would count — and when
+    nothing is reachable, still focus something rather than leave focus nowhere."""
+    src = _between("templates/dashboard.html.j2", "function _focusFirst(dlg){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const focusFirst = new Function('document', src + '; return _focusFirst;')(doc);
+// The first DOM-order focusable sits in a closed disclosure: skip to the next stop.
+const buried = el('div');
+const dd = add(buried, el('details'));
+add(dd, el('button', {name: 'buried first'}));
+const next = add(buried, el('button', {name: 'next reachable'}));
+focusFirst(buried);
+assert.equal(doc.activeElement, next);
+// Nothing reachable: the old DOM-order probe still focuses the first candidate.
+const nowhere = el('div');
+const only = add(nowhere, el('button', {name: 'unrendered only', shown: false}));
+focusFirst(nowhere);
+assert.equal(doc.activeElement, only);
+""", src)
+
+
+def test_tab_trap_pulls_stray_focus_back_into_the_dialog():
+    """China's rule, ported: the trap sees Tabs whose focus is outside the dialog
+    and pulls it back to the near end. That only works because the shipped trap
+    listens on the document while the dialog is open — focus outside the dialog
+    never routes a keydown through the dialog itself."""
+    src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const trap = new Function('document', src + '; return _trapTab;')(doc);
+const outside = el('button', {name: 'backdrop'});
+function tab(from, shift = false) {
+  doc.activeElement = from;
+  const e = {key: 'Tab', shiftKey: shift, prevented: false, preventDefault() { this.prevented = true; }};
+  trap(dlg, e);
+  return e;
+}
+// Tab from outside returns to the first stop; Shift+Tab to the last.
+let e = tab(outside);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+e = tab(outside, true);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, legacySummary);
+""", src)
+    from pathlib import Path
+    page = (Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2").read_text()
+    # One listener per open dialog: installed on the document at open, removed at
+    # both teardown paths (immediate `_dlgTeardown` and the animated close).
+    assert "document.addEventListener('keydown', dlg._trapHandler);" in page
+    assert "dlg.addEventListener('keydown', dlg._trapHandler);" not in page
+    assert page.count("document.removeEventListener('keydown', dlg._trapHandler)") == 2
+    assert "dlg.removeEventListener('keydown', dlg._trapHandler)" not in page
+
+
+def test_tab_stop_defers_to_checkvisibility_and_keeps_the_box_rules_without_it():
+    """Chrome paints boxes for CSS-hidden content too; when the engine exposes
+    checkVisibility, a control it reports hidden is not a keyboard stop, and an
+    engine without checkVisibility keeps the box + closed-disclosure rules alone."""
+    src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const stop = new Function('document', src + '; return _tabStop;')(doc);
+const shown = el('button', {name: 'shown', checkVisibility: () => true});
+assert.equal(stop(shown), true);
+const hidden = el('button', {name: 'css hidden', checkVisibility: () => false});
+assert.equal(stop(hidden), false);
+// Engines without checkVisibility keep the old box + closed-disclosure behaviour.
+const plain = el('button', {name: 'plain'});
+assert.equal(stop(plain), true);
+const closed = add(el('div'), el('details'));
+add(closed, plain);
+assert.equal(stop(plain), false);
 """, src)

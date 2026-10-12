@@ -15204,7 +15204,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       window.scrollTo(0, _dlgScrollY);
     }
 
+    /* Focus the first stop the keyboard can reach: the same list _trapTab counts,
+       filtered through _tabStop. Falls back to DOM order so a dialog with no
+       reachable stop still takes focus somewhere. */
     function _focusFirst(dlg){
+      var reachable = Array.prototype.filter.call(
+        dlg.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])'),
+        _tabStop);
+      if(reachable.length){ reachable[0].focus(); return; }
       var focusable = dlg.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])');
       if(focusable.length) focusable[0].focus();
     }
@@ -15214,6 +15221,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
        rather than the box; only its own <summary> stays reachable. */
     function _tabStop(el){
       if(el.tabIndex < 0 || el.closest('[inert]') || el.getClientRects().length === 0) return false;
+      /* Chrome also paints boxes for content its CSS hides, so defer to
+         checkVisibility when the engine offers it. */
+      if(typeof el.checkVisibility === 'function' && !el.checkVisibility({checkVisibilityCSS:true})) return false;
       for(var d = el.closest('details:not([open])'); d;
           d = d.parentElement && d.parentElement.closest('details:not([open])')){
         var s = d.querySelector(':scope > summary');
@@ -15231,8 +15241,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         _tabStop);
       if(!focusable.length) return;
       var first = focusable[0], last = focusable[focusable.length-1];
-      if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
-      else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
+      /* The trap listens on the document while the dialog is open, so it also sees
+         Tabs whose focus has strayed outside the dialog (backdrop click target, a
+         stray programmatic focus) and pulls it back to the near end. */
+      var act = document.activeElement;
+      if(e.shiftKey){ if(act===first || !dlg.contains(act)){ e.preventDefault(); last.focus(); } }
+      else { if(act===last || !dlg.contains(act)){ e.preventDefault(); first.focus(); } }
     }
 
     function _prefReduced(){
@@ -15242,7 +15256,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     function _dlgTeardown(dlg, restoreFocus){
       dlg.classList.remove('open','mx5-dlg-in','mx5-dlg-closing');
       dlg.removeAttribute('aria-modal');
-      if(dlg._trapHandler){ dlg.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
+      if(dlg._trapHandler){ document.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd && bd._clickH){ bd.removeEventListener('click', bd._clickH); delete bd._clickH; }
       if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
@@ -15313,8 +15327,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          check is about to withdraw. */
       if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();
       _focusFirst(dlg);
+      /* Document level: a keydown whose focus is outside the dialog never bubbles
+         through the dialog, so a dialog-attached trap could not pull stray focus
+         back in. One listener per open dialog, removed at both teardown paths. */
       dlg._trapHandler = function(e){ _trapTab(dlg, e); };
-      dlg.addEventListener('keydown', dlg._trapHandler);
+      document.addEventListener('keydown', dlg._trapHandler);
       /* backdrop click */
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd){ bd._clickH = function(){ window.mx5CloseDlg(); }; bd.addEventListener('click', bd._clickH); }
@@ -15327,7 +15344,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       document.body.classList.remove('mx5-dlg-open');
       _dlgReleaseScroll();
       dlg.removeAttribute('aria-modal');
-      if(dlg._trapHandler){ dlg.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
+      if(dlg._trapHandler){ document.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd && bd._clickH){ bd.removeEventListener('click', bd._clickH); delete bd._clickH; }
       var trig = _dlgTrigger; _dlgTrigger = null;
