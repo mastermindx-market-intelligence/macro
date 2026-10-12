@@ -22634,6 +22634,7 @@ jobs:
       - "tests/test_qbus_news_universe.py"
       - "tests/test_qbus_news_universe_snapshot.py"
       - "tests/test_run_qbus_news.py"
+      - "tests/test_run_qbus_news_gap_replay.py"
       - "tests/test_run_qbus_news_health.py"
       - "tests/test_run_qbus_news_provider.py"
       - "tests/test_ticker_news_api.py"
@@ -22672,6 +22673,7 @@ jobs:
           tests/test_qbus_news_universe.py
           tests/test_qbus_news_universe_snapshot.py
           tests/test_run_qbus_news.py
+          tests/test_run_qbus_news_gap_replay.py
           tests/test_run_qbus_news_health.py
           tests/test_run_qbus_news_provider.py
           tests/test_ticker_news_api.py
