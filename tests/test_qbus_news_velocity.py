@@ -39,6 +39,7 @@ _OUTPUT_KEYS = {
     "count_24h",
     "count_7d",
     "stories_24h",
+    "cluster_policy_versions_24h",
     "daily_counts_28d",
     "median_daily_28d",
     "history_days_observed",

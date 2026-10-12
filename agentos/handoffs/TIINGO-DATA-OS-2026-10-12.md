@@ -417,3 +417,53 @@ original prepared wave11 method was unchanged during this review; no replacement
 operation, request selection, scheduler or retry was started. Preserve all held
 provider and Terminal approval effects. This is a saved delta in the active
 programme, with the next safe capture and canonical source delivery continuing.
+
+
+### Canonical pacing source landed; original history capture continues
+
+PR #9018 actually merged at 16:19:13 UTC as
+`f5d1cec6e56b4f8e07e4ea9038293a3072f4b1dd`, after original CI 38272400147 passed
+all twelve packs, contract delta and final gate at
+`85914b39d9e9b0c40554f226080390ab934ade6f`. Active authority and protected fences
+passed. Canonical module/test bytes match independent review; the full owned
+Tiingo CI job is unchanged while three unrelated peer CI additions are preserved.
+The original local promisor/DNS failure, owned read interruption, full-file CI
+hash mismatch and subsequent local source binding are retained. The normal
+canonical checkout and `--no-lazy-fetch` verification changed no security settings
+and touched no raw capture workers. Safe proof lives in
+`docs/tiingo-evidence/20261012-canonical-capture-admission/`.
+
+Original wave10 settled at 15:58:22 UTC: 5000 successes, zero failures,
+12699484 bars / 3036446789 bytes. All six qualification snapshots were accepted;
+full finite closure proves 4970 nonempty histories and 30 empty responses. Closure
+SHA256: `b45dc56fc477f552f44a49110cbca8f1cd37e0635810bb6acea02bfc5e628fbf`.
+The actual census after closure has 23216 histories, 51173037 bars, 68 empty responses and 24405
+uncaptured desired windows; complete vendor history and PIT remain unestablished.
+
+Wave11 started at 16:00:35.796631 UTC on unchanged original method
+`ce8d4524bc937598474a8824c5ac71b22428b0b432c08fa1eddb05dd33e83529`, original
+session 42903, actual scope
+`4d6ca7b1e17bff503784ff35d21287102a8fc954f84b0fac3bc84a88b88a0158`.
+At 17:00:04 UTC, 1720 requests had succeeded with zero failures. Accepted
+prefix03 covers 788 additional responses, bringing the cumulative qualified
+wave11 prefix to 1240 responses and the census to 24451 nonempty histories,
+54595389 bars, 73 empty responses and 23165 uncaptured windows. Coverage SHA256:
+`bb8bad82955b11b7588d1cd0b768df23727faebdd1a52149bfbab18eff94c921`. Its raw writer remains unchanged and final qualification
+continues. The wave11 rolling candidate was never launched. Disjoint wave12 plan
+`867586f3689d51d0cd39edd278ef3ddbea49c3880a3abbeb38554d27ae3eef80` and reviewed-
+architecture candidate `18ea2c8062c2185536810f10d0dc649dcc3c993e30b1a8727fed79194206d270`
+remain unlaunched. Its read-only preflight verified 5000 unreserved selections,
+16 held exclusions, source pins and zero EOD collisions without credentials/API.
+Actual launch still requires successful prior settlement and fresh quota/source/
+resource/collision checks. The installed consumer remains 0b204cde, with no
+unrelated runtime reinstall. Terminal/provider approval refusals remain held.
+The full programme continues; this checkpoint is not completion.
+
+At 17:02 UTC, a fresh read of Terminal #955 found head
+`1a74e3cf93368a5c5381f0110b80601dff0ae3e3`, OPEN/BLOCKED and unmerged. Its
+original dispatched run 38272365047 completed all twelve jobs successfully at
+16:12:38 UTC. Original PR run 38272372019 remains `action_required`; the required
+Terminal aggregate is absent from the PR rollup. The incumbent auto-merge request
+remains enabled. The original approval refusal is preserved without retry,
+replacement workflow or protection change. This blocks protected consumer
+landing, not the independent history capture and qualification lane.
