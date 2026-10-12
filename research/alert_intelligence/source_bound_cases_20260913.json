@@ -1,0 +1,219 @@
+{
+  "artifact_kind": "research_source_case_manifest",
+  "runtime_contract": false,
+  "product_acceptance": false,
+  "status": "OBSERVED_SOURCES_WITH_PROPOSED_ACCEPTANCE_CASES",
+  "program_reference": "MMX-ALERT-CENTER-V2-ASTRA-20260908",
+  "research_pr": 7135,
+  "source_pins": {
+    "macro": "ed691eb2e9927b9705abf65273bd4439c54a9ef2",
+    "mastermind_terminal": "3db34e7a8e8eca4bef1ca12eba90daab6cc0c10c",
+    "skillpack_mastermind": "91dbdf876f1f1ea10d24342b9d4ea49ba081bfcc",
+    "alert_ui_candidate": "c83a5771b54e6e487cdb2d06be45ccbf480e560d"
+  },
+  "verification_scope": {
+    "repo_source_reads": true,
+    "selected_input_byte_hashes_recomputed": true,
+    "full_candidate_generation_validator_executed": false,
+    "product_tests_executed_this_pass": false,
+    "production_browser_checked_this_pass": false,
+    "private_user_records_read": false,
+    "emails_sent": 0,
+    "figma_files_modified": 0,
+    "method": "Native GitHub reads; exact pinned public raw files read into memory on the verified authorized Studio when byte hashing or a large-file census was needed. No project module was executed, no source workspace edited, and no runtime sender invoked. Hashes bind retained input bytes, not market accuracy, licensing, or production adoption."
+  },
+  "sources": {
+    "A_EPISODE_HEAD": {
+      "repo": "macro",
+      "path": "data/us_prophet_rank/episodes/HEAD.json",
+      "git_blob_sha1": "4ae37d7e8adbdc1239fd88934f976e5720705d3b",
+      "generation_id": "peg:18dfbb8a9d7152382ca6da8a2ac4177d6ea617dddc7cad082b3645c100fb53a7",
+      "manifest_sha256_from_pointer": "5feb743c2bb661599a98785c458d2d489f183def3aecaa698c62bcaba3a1def2",
+      "classification": "committed_pointer_read_not_full_generation_acceptance"
+    },
+    "A_EPISODE_EVENTS": {
+      "repo": "macro",
+      "path": "data/us_prophet_rank/episodes/generations/peg:18dfbb8a9d7152382ca6da8a2ac4177d6ea617dddc7cad082b3645c100fb53a7/events/2026-09.jsonl",
+      "git_blob_sha1": "913c6bc699948be1817ee62bf4401e96c98bd197",
+      "git_blob_matches_native_tree": true,
+      "sha256": "f8dc81d3b7178c1029eebb994e8b7b10597a0372970c6f31bfb5dd4db8f321f9",
+      "bytes": 2516652,
+      "rows": 2475,
+      "event_type_counts": {"OBSERVED": 2076, "OPENED": 399},
+      "classification": "retained_committed_input_not_current_buyable_population",
+      "samples": [
+        {
+          "jsonl_line_1based": 1,
+          "event_id": "pee:0c4b940e5e143b9230cea87cc863f362902391f9c1f63e269c41b1666bd4a6d0",
+          "event_type": "OBSERVED",
+          "episode_id": "pe:SEC:US-XNYS-CTRA:epoch_0:sa:84d5e5a2ab277ff0f8049e9f:1",
+          "source_system": "turn_watch",
+          "source_known_at": "2026-05-07T20:00:00Z",
+          "source_occurred_at": "2026-05-07T20:00:00Z",
+          "recorded_at": "2026-09-13T16:41:24Z",
+          "proposed_decision": "Historical observation; not a new September opportunity merely because it was recorded in September. Source-known-at is preserved as supplied, not independently authenticated here."
+        },
+        {
+          "jsonl_line_1based": 2475,
+          "event_id": "pee:a6bdfdce22f4eb5cebc8460b3033da11a25bc778e015a8f149ef89c3f8f699b5",
+          "event_type": "OPENED",
+          "episode_id": "pe:SEC:US-XNAS-ADBE:epoch_0:sa:6a617e05148441ce5db6aec5:1",
+          "source_system": "turn_watch",
+          "source_known_at": "2026-09-11T20:00:00Z",
+          "source_occurred_at": "2026-09-11T20:00:00Z",
+          "recorded_at": "2026-09-13T16:41:24Z",
+          "identity_epoch_state": "provisional",
+          "proposed_decision": "Candidate episode opened; do not relabel as ENTRY_OPEN, a buyable plan, or a new expert fire."
+        }
+      ]
+    },
+    "A_EPISODE_RECEIPT": {
+      "repo": "macro",
+      "path": "data/us_prophet_rank/episodes/generations/peg:18dfbb8a9d7152382ca6da8a2ac4177d6ea617dddc7cad082b3645c100fb53a7/latest_receipt.json",
+      "git_blob_sha1": "707c62803ffd4c5c79684db0ccd6b537a6e43d12",
+      "recorded_at": "2026-09-13T16:41:24Z",
+      "entry_radar_source_status": "degraded",
+      "entry_radar_source_reason": "MISSING_SOURCE_FILE",
+      "classification": "source_specific_degradation_not_proof_that_all_prophet_is_broken"
+    },
+    "B_TRIPWIRE_STATE": {
+      "repo": "macro",
+      "path": "data/cycle_ontology/tripwire_state.json",
+      "git_blob_sha1": "9b12da12ab5ec84e34291e7bd8c51bbfdc491cf9",
+      "sha256": "d6872736137ca9c640095dcebfc7143590f880bdfb3ca23e07bc9c7b4611ca6f",
+      "bytes": 5162,
+      "top_level_state_bearing_entries": 27,
+      "state_bearing_entry_counts": {"ARMED": 13, "MANUAL": 5, "DATA_MISSING": 4, "FIRED": 5},
+      "excluded_noncondition_top_level_keys": ["archetype_checks"],
+      "count_caveat": "This is a census of state-bearing artifact entries, including versioned and historical rows; not the number of current unique conditions or any user's active monitors.",
+      "samples": {
+        "semis.top_2026.v1": {"state": "ARMED", "as_of": "2026-09-13"},
+        "memory.dram_cycle.v1": {"state": "MANUAL", "as_of": "2026-09-13"},
+        "housing.bubble_peak.v1": {"state": "DATA_MISSING", "as_of": "2026-09-13"},
+        "pgms.platinum_premium.v1": {"state": "FIRED", "fired_on": "2026-07-02", "as_of": "2026-08-09"}
+      }
+    },
+    "C_COMPANY_METADATA": {
+      "repo": "macro",
+      "path": "tests/fixtures/company_intelligence/aapl_fy2026_q3_filing.json",
+      "git_blob_sha1": "05269eb036b2ff31381cbd4f4139d197e04cacc1",
+      "canonical_event_id": "evt_cik0000320193_2026q3_results",
+      "narrative_alias": "AAPL/2026Q3",
+      "classification": "retained_development_fixture_not_fresh_official_or_production_verification"
+    },
+    "C_COMPANY_EXHIBIT": {
+      "repo": "macro",
+      "path": "tests/fixtures/company_intelligence/aapl_fy2026_q3_ex99_1.htm",
+      "git_blob_sha1": "b0a6f96ac106c8e8398dc5e2a7011e7a42718ab2",
+      "sha256": "070abd6a9cdb7070e546d24ffcbc41c65450d939c6f88f189cb18ec711cf5fdb",
+      "bytes": 173484,
+      "historical_e3_reference_hash_matches": true,
+      "source_content_observation": "The retained exhibit contains a results announcement and explicitly attributes part of reported gross margin and EPS to tariff refunds. It does not establish the previously hypothetical guidance-cut scenario.",
+      "proposed_intelligence_case": "Explain reported performance with the separately identified tariff-refund contribution visible; do not invent organic improvement, a guidance cut, an estimate beat, or a trade. Whether the refund contribution recurs is not established by this passage."
+    },
+    "C_TRANSCRIPT": {
+      "repo": "macro",
+      "path": "tests/fixtures/company_intelligence/aapl_fy2026_q3.json.gz",
+      "git_blob_sha1": "927b8cafcae4bf80c09ffd5e8d0a1dc4f02ce58b",
+      "compressed_bytes": 17187,
+      "sha256_uncompressed": "a8ff5d03e875fef5604791edbf625186c447af049e6e02f55bb89c68c7cc9f9f",
+      "historical_e3_reference_hash_matches": true,
+      "classification": "hash_only_recheck_no_transcript_republication_or_new_extraction_acceptance"
+    },
+    "D_CALENDAR": {
+      "repo": "macro",
+      "path": "engine/event_calendar.py",
+      "git_blob_sha1": "163b4c03a5652ffb63d458281c3b4095ae901af4",
+      "classification": "source_code_for_upcoming_schedule_not_release_occurrence_or_revision_receipt"
+    },
+    "E_NEWS_INPUT": {
+      "repo": "macro",
+      "path": "site/news/financial.json",
+      "git_blob_sha1": "6c19e13c0843ecbe845fac8349dec7e79c672d0d",
+      "sha256": "9f0f7fede8bfad76aca2d4b4f946bc0d86482da008f29ed043bbef1fa1bc49e2",
+      "bytes": 961031,
+      "asof": "2026-09-13",
+      "fetched_at": "2026-09-13T07:13:50.256765+00:00",
+      "classification": "committed_news_snapshot_not_independently_verified_news",
+      "row_hash_method": "SHA-256 of UTF-8 json.dumps(row, sort_keys=True, separators=(',', ':'), ensure_ascii=False)",
+      "samples": [
+        {
+          "json_pointer": "/market/0",
+          "row_sha256": "f1e8cfa483591635ed5447697a4d5b62a74eb1edadfe90c82db13713356622f0",
+          "observation": "Headline about a ferry casualty refers to a PM's office; emitted tickers contains PM, event is null, centrality incidental, summary empty.",
+          "proposed_decision": "No company-specific PM alert without a disambiguated issuer link."
+        },
+        {
+          "json_pointer": "/market/7",
+          "row_sha256": "efb1f84bb7126a7e64c142def93bb514b1f79b9cf5c65f2f65549e7886129482",
+          "observation": "Political headline uses PM as a prime-minister title; emitted tickers contains PM, event is null, summary empty.",
+          "proposed_decision": "Preserve source item; reject unsupported security-relevance claim."
+        },
+        {
+          "json_pointer": "/market/13",
+          "row_sha256": "650678fe1065f28445858f30de47dfead75c21cb4c9aa161b1fcda435d391f6c",
+          "observation": "Another political headline refers to the UK PM's office; emitted tickers contains PM, event is null, summary empty.",
+          "proposed_decision": "An uppercase token alone is not a security join."
+        },
+        {
+          "json_pointer": "/market/1",
+          "row_sha256": "0fc3f20f4d1d0750f984da92ad4cb35a63bbb5898510bd9cd8755a27b63b9d13",
+          "observation": "Headline anticipates a Fed rate hike; event classifier emits macro_release and high confidence from a rate-hike/cut/pause/skip/hold pattern. Summary is empty.",
+          "proposed_decision": "Treat as expectation/commentary unless event occurrence is separately evidenced. Classifier confidence is not confirmation that a policy action occurred."
+        }
+      ]
+    },
+    "E_QBUS_CONTROLS": {
+      "repo": "macro",
+      "path": "tests/test_qbus.py",
+      "git_blob_sha1": "9160cedd780b4f0e53f88dee8e81afec5f92fc88",
+      "classification": "existing_synthetic_test_definitions_read_not_executed",
+      "named_cases": ["test_event_key_clusters_paraphrases_sharing_subject", "test_event_key_requires_shared_subject", "test_event_key_deterministic_regardless_of_order", "test_append_keep_first_on_item_id"],
+      "limit": "Similar-story grouping tests do not establish independent underlying reporting or stable cluster identity when membership changes."
+    },
+    "FG_UI_CONTROLS": {
+      "repo": "macro",
+      "ref_override": "c83a5771b54e6e487cdb2d06be45ccbf480e560d",
+      "path": "mockups/evidence/alert-center-v2/trust-browser-proof.json",
+      "git_blob_sha1": "dd19cddedbd4f607c0f6b172ab37c1b0a4c7bfec",
+      "classification": "retained_synthetic_adversarial_browser_receipt_not_new_run",
+      "production_acceptance_in_receipt": false,
+      "covers": ["selected_history_clocks", "negative_validation", "missing_or_future_snapshot_day", "broken_payload_source_fallback", "synthetic_partial_source_outage"],
+      "does_not_cover": ["actual_post_email_correction", "customer_delivery", "fully_personalized_monitors"]
+    },
+    "H_ALERT_API": {
+      "repo": "mastermind_terminal",
+      "path": "terminal/app/api/alerts/route.ts",
+      "git_blob_sha1": "b5c7be3a640f922a7f11c66821591b26cb7256af",
+      "classification": "current_owner_code_read_not_live_api_call",
+      "supported_type_families": ["signal", "regime", "price", "rsi", "named_options_types", "suite_event", "suite_sequence"],
+      "existing_cap": 50,
+      "rearm": "explicit_user_action",
+      "new_general_natural_language_monitor_claim": false
+    },
+    "H_DELIVERY_POLICY": {
+      "repo": "macro",
+      "path": "engine/alert_delivery_drain.py",
+      "git_blob_sha1": "ae8aa4b6ff2bde0867ad24793cd731e207903a06",
+      "classification": "code_path_observation_not_production_incident",
+      "findings": ["Missing payload category does not enter category-subset rejection", "Readable queued mail state is not proof of no prior SMTP effect", "Duplicate-resolution delivered_at is reconciliation time, not a measured recipient delivery time"]
+    },
+    "H_MAILER": {
+      "repo": "macro",
+      "path": "app/mailer.py",
+      "git_blob_sha1": "83e8971a0ff9dc75bfb323f33bcc1b771f18a9b0",
+      "classification": "code_path_observation_not_production_incident",
+      "findings": ["Non-duplicate ledger insertion error can proceed to SMTP without idempotency", "Ledger completion is best effort after SMTP", "One-click unsubscribe header branch is class-specific, currently marketing"]
+    }
+  },
+  "journeys": [
+    {"id": "A", "source_refs": ["A_EPISODE_HEAD", "A_EPISODE_EVENTS", "A_EPISODE_RECEIPT"], "bound_scope": "Actual candidate events and historical-materialization counterexample", "remaining": "Exact current actionable-plan/availability producer must be bound before an opportunity-now notification; B1 OPENED is insufficient."},
+    {"id": "B", "source_refs": ["B_TRIPWIRE_STATE", "H_ALERT_API"], "bound_scope": "Actual manual/missing/armed/historical latch states; existing finite condition API", "remaining": "Private consented thesis and exact predicate binding are not read or tested in this pass."},
+    {"id": "C", "source_refs": ["C_COMPANY_METADATA", "C_COMPANY_EXHIBIT", "C_TRANSCRIPT"], "bound_scope": "Retained results event with a separately stated tariff-refund contribution, whose recurrence is not established here", "remaining": "Financial/graph owner join, contrary-context packet, rights-safe serving and a current-source proof remain integration requirements; hypothetical guidance cut is not claimed."},
+    {"id": "D", "source_refs": ["D_CALENDAR", "E_NEWS_INPUT"], "bound_scope": "Schedule-versus-occurrence and expected-rate-change counterexamples", "remaining": "Official released-number and revision receipt not bound here; changes/rescheduling are proposed synthetic controls, not observed events."},
+    {"id": "E", "source_refs": ["E_NEWS_INPUT", "E_QBUS_CONTROLS"], "bound_scope": "Real ambiguous news mappings and existing synthetic grouping controls", "remaining": "Syndication-family independence, late-member cluster change and cross-language duplicate controls need explicit evaluation."},
+    {"id": "F", "source_refs": ["A_EPISODE_EVENTS", "FG_UI_CONTROLS", "H_MAILER"], "bound_scope": "Historical reference anatomy and preserved-history receipt", "remaining": "A post-delivery correction/withdrawal case is specified but not executed or asserted present in the sampled episode file."},
+    {"id": "G", "source_refs": ["A_EPISODE_RECEIPT", "B_TRIPWIRE_STATE", "FG_UI_CONTROLS"], "bound_scope": "Real partial/missing source states and retained synthetic UI degradation cases", "remaining": "Latest-attempt versus last-success user monitoring and end-to-end source recovery remain proof obligations."},
+    {"id": "H", "source_refs": ["H_ALERT_API", "H_DELIVERY_POLICY", "H_MAILER"], "bound_scope": "Actual user-rule and send-policy code paths", "remaining": "Two-user isolation, opt-out races, DST deferral, unknown send outcome and real received-email proof need controlled noncustomer fixtures followed by an authorized pilot."}
+  ]
+}
