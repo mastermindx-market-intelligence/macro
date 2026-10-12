@@ -55,10 +55,13 @@ __all__ = [
     "LINEAGE_EVIDENCE_SCHEMA",
     "LineageEvidenceError",
     "LineageEvidenceReceipt",
+    "REFUSAL_RECEIPT_RULE_MISMATCH",
+    "REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED",
     "XBRL_CONFIRMATION_RELATION",
     "confirmation_refusal",
     "derive_confirmation_receipts",
     "evaluate_confirmation",
+    "receipt_envelope_refusal",
 ]
 
 
@@ -121,6 +124,12 @@ REFUSAL_TAXONOMY_NAMESPACE_VERSION_MISMATCH = "source_taxonomy_namespace_version
 REFUSAL_UNIT_CONTEXT_CONCEPT_MISMATCH = "unit_context_concept_mismatch"
 REFUSAL_MISSING_OCCURRENCE = "missing_occurrence"
 REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE = "evidence_does_not_match_source"
+# FIF T1b receipt-envelope refusals: a receipt whose envelope is not the one
+# this rule mints — a different rule id/version, a system availability below
+# the lawful floor, or a source-known clock the groups do not derive — is not
+# evidence the current rule produced, whatever its internally valid digest.
+REFUSAL_RECEIPT_RULE_MISMATCH = "receipt_rule_mismatch"
+REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED = "receipt_system_availability_backdated"
 
 
 def _taxonomy_prefix(concept_qname: str) -> str:
@@ -528,6 +537,48 @@ def _system_available_floor(
     for item in (*parent_group, *child_group):
         clocks.append(item.clocks.recorded_at)
     return max(clocks)
+
+
+def receipt_envelope_refusal(
+    receipt: LineageEvidenceReceipt,
+    parent_group: Sequence[RawFactOccurrence],
+    child_group: Sequence[RawFactOccurrence],
+) -> str | None:
+    """FIF T1b: whether the receipt's ENVELOPE is the one this rule mints.
+
+    The payload bind (T1) proves the eighteen evidence fields still describe
+    the current eligible ledger, but the envelope around them — rule identity,
+    system availability, source-known clock — is a mint-time attestation the
+    payload never covers.  A hand-built receipt whose digest was correctly
+    recomputed over genuine evidence could therefore backdate
+    ``system_available_at`` below the floor the mint path enforces, or claim a
+    rule/version that is not the one which produced it, and flip a
+    ``not_evaluable`` lineage answer into a value under a policy where the
+    honest receipt is not yet visible.
+
+    Both engine gates (admission and per-query revalidation) call this with
+    the SAME full per-accession groups the mint path groups by, so the floor
+    and the source-known derivation below are the mint's own, never a fork.
+    ``type(...) is int`` is deliberate: a boolean ``True`` is not a version.
+
+    Returns ``None`` while the envelope is lawful, else the refusal reason.
+    """
+    if receipt.evidence_rule_id != CONFIRMATION_RULE_ID:
+        return REFUSAL_RECEIPT_RULE_MISMATCH
+    if type(receipt.evidence_rule_version) is not int or (
+        receipt.evidence_rule_version != CONFIRMATION_RULE_VERSION
+    ):
+        return REFUSAL_RECEIPT_RULE_MISMATCH
+    if receipt.system_available_at < CONFIRMATION_RULE_AVAILABLE_AT:
+        return REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED
+    if receipt.system_available_at < _system_available_floor(parent_group, child_group):
+        return REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED
+    if receipt.source_known_at != max(
+        _canonical_duplicate_representative(parent_group).accepted_at,
+        _canonical_duplicate_representative(child_group).accepted_at,
+    ):
+        return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+    return None
 
 
 def derive_confirmation_receipts(
