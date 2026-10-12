@@ -22,6 +22,41 @@ router = APIRouter()
 log = logging.getLogger("fundamental_forensics.api")
 REPO = Path(os.environ.get("MACRO_REPO", "/opt/macro"))
 
+# ---------------------------------------------------------------------------
+# FIF D3 dataset-mode selection: explicit, documented, deny-by-default.
+#
+# FIF_FINANCIAL_DATASET_MODE is unset or "golden" (the default) = exactly the
+# pre-D3 wiring, byte for byte. "production" = the production providers over
+# the immutable dataset store, with NO fallback to the golden corpus. Any
+# other value is a configuration error: names-only log, typed refusal, and
+# the private 503 — an invalid mode must never degrade into an undocumented
+# selection. Documented in
+# research/financial_intelligence_fabric/FIF_3A3_REUSE_MAP.md (D3 section).
+# ---------------------------------------------------------------------------
+
+FIF_FINANCIAL_DATASET_MODE_ENV = "FIF_FINANCIAL_DATASET_MODE"
+_LAWFUL_FINANCIAL_DATASET_MODES = ("golden", "production")
+
+
+def _financial_dataset_mode() -> str:
+    raw = os.environ.get(FIF_FINANCIAL_DATASET_MODE_ENV)
+    if raw is None or raw == "":
+        return "golden"
+    if raw in _LAWFUL_FINANCIAL_DATASET_MODES:
+        return raw
+    # NAMES ONLY — never the value it rejected.
+    log.warning(
+        "%s holds an unsupported mode; refusing to select any dataset corpus",
+        FIF_FINANCIAL_DATASET_MODE_ENV,
+    )
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        ProductionDatasetModeError,
+    )
+
+    raise ProductionDatasetModeError(
+        f"{FIF_FINANCIAL_DATASET_MODE_ENV} is not a supported dataset mode"
+    )
+
 # The receipt API is an authenticated, private research surface even when it is
 # mounted by itself in a narrow test app (and therefore outside app.main's
 # no-store middleware).  Keep the policy on both successful responses and the
@@ -146,9 +181,34 @@ def forensics_state(_user: dict = Depends(require_site_full_user)) -> Response:
 
 @router.get("/api/forensics/health")
 def forensics_health(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
-    """Return operational/source freshness, never private rows or storage keys."""
+    """Return operational/source freshness, never private rows or storage keys.
+
+    FIF D3 adds names/ids-only dataset-mode reporting on the response HEADERS
+    (the schema'd payload contract is frozen with ``additionalProperties:
+    false``): ``X-FIF-Financial-Dataset-Mode`` always, plus
+    ``X-FIF-Dataset-Generation-Id`` and ``X-FIF-Dataset-Admitted-At`` when a
+    production generation exists. No object keys, no payloads, no values
+    beyond the mode name and the generation id.
+    """
+    headers = dict(_PRIVATE_HEADERS)
+    headers["X-FIF-Financial-Dataset-Mode"] = _financial_dataset_mode()
+    if headers["X-FIF-Financial-Dataset-Mode"] == "production":
+        from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+            build_production_dataset_store,
+            latest_generation_summary,
+        )
+
+        try:
+            store = build_production_dataset_store()
+            summary = latest_generation_summary(store, "ISS:US-XNAS-AAPL") if store is not None else None
+        except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
+            log.warning("production dataset health summary unavailable (%s)", type(exc).__name__)
+            summary = None
+        if summary is not None:
+            headers["X-FIF-Dataset-Generation-Id"] = summary["dataset_generation_id"]
+            headers["X-FIF-Dataset-Admitted-At"] = summary["admitted_at"]
     payload = evaluate_health(REPO, now=datetime.now(timezone.utc))
-    return JSONResponse(payload, headers=dict(_PRIVATE_HEADERS))
+    return JSONResponse(payload, headers=headers)
 
 
 # ---------------------------------------------------------------------------
@@ -727,14 +787,89 @@ def attested_history_private_not_found(
 # FIF-2A / FIF-2B / FIF-2C shared JSON admission
 # ---------------------------------------------------------------------------
 
+_PRODUCTION_PROVIDER_LOCK = threading.Lock()
+_PRODUCTION_QUERY_PROVIDER_CACHE: Any | None = None
+_PRODUCTION_PACKET_PROVIDER_CACHE: Any | None = None
+_PRODUCTION_STATEMENT_PROVIDER_CACHE: Any | None = None
+
+
+def _reset_production_provider_cache() -> None:
+    """Test/operator hook: drop the singleton production providers + store."""
+    global _PRODUCTION_QUERY_PROVIDER_CACHE
+    global _PRODUCTION_PACKET_PROVIDER_CACHE
+    global _PRODUCTION_STATEMENT_PROVIDER_CACHE
+    with _PRODUCTION_PROVIDER_LOCK:
+        _PRODUCTION_QUERY_PROVIDER_CACHE = None
+        _PRODUCTION_PACKET_PROVIDER_CACHE = None
+        _PRODUCTION_STATEMENT_PROVIDER_CACHE = None
+
+
+def _production_query_provider():
+    """Singleton production query provider (per-process store + dataset cache)."""
+    global _PRODUCTION_QUERY_PROVIDER_CACHE
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        build_production_dataset_store,
+    )
+    from engine.fundamental_forensics.production_provider import (  # noqa: PLC0415
+        ProductionFinancialQueryProvider,
+    )
+
+    with _PRODUCTION_PROVIDER_LOCK:
+        if _PRODUCTION_QUERY_PROVIDER_CACHE is None:
+            _PRODUCTION_QUERY_PROVIDER_CACHE = ProductionFinancialQueryProvider(
+                build_production_dataset_store()
+            )
+        return _PRODUCTION_QUERY_PROVIDER_CACHE
+
+
+def _production_packet_provider():
+    """Singleton production packet provider (revisions + packet share one)."""
+    global _PRODUCTION_PACKET_PROVIDER_CACHE
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        build_production_dataset_store,
+    )
+    from engine.fundamental_forensics.production_provider import (  # noqa: PLC0415
+        ProductionFinancialPacketProvider,
+    )
+
+    with _PRODUCTION_PROVIDER_LOCK:
+        if _PRODUCTION_PACKET_PROVIDER_CACHE is None:
+            _PRODUCTION_PACKET_PROVIDER_CACHE = ProductionFinancialPacketProvider(
+                build_production_dataset_store(),
+                repo_root=REPO,
+            )
+        return _PRODUCTION_PACKET_PROVIDER_CACHE
+
+
+def _production_statement_provider():
+    """Singleton production statement provider."""
+    global _PRODUCTION_STATEMENT_PROVIDER_CACHE
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        build_production_dataset_store,
+    )
+    from engine.fundamental_forensics.production_provider import (  # noqa: PLC0415
+        ProductionFinancialStatementProvider,
+    )
+
+    with _PRODUCTION_PROVIDER_LOCK:
+        if _PRODUCTION_STATEMENT_PROVIDER_CACHE is None:
+            _PRODUCTION_STATEMENT_PROVIDER_CACHE = ProductionFinancialStatementProvider(
+                build_production_dataset_store()
+            )
+        return _PRODUCTION_STATEMENT_PROVIDER_CACHE
+
 
 def _financial_query_provider():
-    """Golden AAPL query provider. Production attested issuer service stays unbuilt.
+    """Query provider under the explicit dataset-mode selection.
 
-    FIF-3A4 attaches cutoff-visible cross-filing lineage evidence. This does not
-    change delivery: ``attested`` and ``production_issuer_service`` remain false,
-    and the served corpus is still exactly the two committed golden accessions.
+    ``golden`` (default) is exactly the pre-D3 wiring: the golden AAPL
+    provider over the two committed accessions. ``production`` constructs the
+    production provider over the immutable dataset store and NEVER falls back
+    to the golden corpus — a missing store or damaged generation is the
+    private 503.
     """
+    if _financial_dataset_mode() == "production":
+        return _production_query_provider()
     from engine.fundamental_forensics.ixbrl_raw_ledger import (  # noqa: PLC0415
         FIF3A4_LINEAGE_AVAILABLE_AT,
         GoldenAaplFinancialQueryProvider,
@@ -747,7 +882,9 @@ def _financial_query_provider():
 
 
 def _financial_revision_provider():
-    """Test seam: monkeypatch this to inject a packet fixture provider in tests."""
+    """Revision provider under the dataset-mode selection (no golden fallback)."""
+    if _financial_dataset_mode() == "production":
+        return _production_packet_provider()
     from engine.fundamental_forensics.revision_service import (  # noqa: PLC0415
         UnavailableFinancialPacketProvider,
     )
@@ -756,7 +893,9 @@ def _financial_revision_provider():
 
 
 def _financial_packet_provider():
-    """Test seam: monkeypatch this to inject a packet fixture provider in tests."""
+    """Packet provider under the dataset-mode selection (no golden fallback)."""
+    if _financial_dataset_mode() == "production":
+        return _production_packet_provider()
     from engine.fundamental_forensics.revision_service import (  # noqa: PLC0415
         UnavailableFinancialPacketProvider,
     )
@@ -765,7 +904,9 @@ def _financial_packet_provider():
 
 
 def _financial_statement_provider():
-    """Golden AAPL 10-K fixture only. Production attested issuer service stays unbuilt."""
+    """Statement provider under the dataset-mode selection (no golden fallback)."""
+    if _financial_dataset_mode() == "production":
+        return _production_statement_provider()
     from engine.fundamental_forensics.statement_service import (  # noqa: PLC0415
         GoldenAaplStatementProvider,
     )
@@ -851,9 +992,11 @@ async def financial_query(
     )
 
     body = await _admit_json_post_body(request)
-    provider = _financial_query_provider()
 
     try:
+        # Provider construction sits inside the boundary so a refused dataset
+        # mode (typed error) is the same private 503 as any other unavailability.
+        provider = _financial_query_provider()
         result = execute_financial_query(body=body, provider=provider)
     except FinancialQueryAdmissionError as exc:
         raise _private_error(exc.status_code, exc.detail) from None
