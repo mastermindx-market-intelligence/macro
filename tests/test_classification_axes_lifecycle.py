@@ -215,6 +215,48 @@ def test_birth_date_after_as_of_is_history_not_supported():
     assert got["reason_code"] == "history_not_supported"
 
 
+def test_blank_or_null_birth_date_is_null_birth_not_degraded():
+    # A blank/NaN birth is a null birth, never a refusal and never an "" that
+    # leaks into value/effective_at (R-birth).
+    nodes, life = _frames(
+        _node("co:us:BLANK", birth_date=""),
+        _node("co:us:NAN", birth_date=float("nan")),
+        lifecycle=(),
+    )
+    got = _read("co:us:BLANK", nodes=nodes, lifecycle=life)
+    assert got["status"] == "available"
+    assert got["value"]["birth_date"] is None
+    assert got["effective_at"] is None
+    got_nan = _read("co:us:NAN", nodes=nodes, lifecycle=life)
+    assert got_nan["status"] == "available"
+    assert got_nan["value"]["birth_date"] is None
+    assert got_nan["effective_at"] is None
+
+
+def test_impossible_birth_date_is_owner_degraded_with_provenance():
+    nodes, life = _frames(_node("co:us:BAD", birth_date="2026-01-45"), lifecycle=())
+    got = _read("co:us:BAD", nodes=nodes, lifecycle=life)
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_degraded"
+    assert got["provenance"] == ["birth_date_unparseable"]
+    assert got["value"] is None
+
+
+def test_datetime_birth_date_normalises_to_calendar_day():
+    nodes, life = _frames(
+        _node("co:us:TS", birth_date="2026-06-27T00:00:00"),
+        _node("co:us:TSOBJ", birth_date=pd.Timestamp("2024-02-02T09:30:00")),
+        lifecycle=(),
+    )
+    got = _read("co:us:TS", as_of="2026-10-12", nodes=nodes, lifecycle=life)
+    assert got["status"] == "available"
+    assert got["value"]["birth_date"] == "2026-06-27"
+    assert got["effective_at"] == "2026-06-27"
+    got_obj = _read("co:us:TSOBJ", as_of="2026-10-12", nodes=nodes, lifecycle=life)
+    assert got_obj["status"] == "available"
+    assert got_obj["value"]["birth_date"] == "2024-02-02"
+
+
 @pytest.mark.parametrize(
     "subject_id,kind",
     [
@@ -286,6 +328,67 @@ def test_lifecycle_frame_missing_a_column_is_owner_degraded():
     assert got["provenance"] == ["missing_column:retire_date"]
 
 
+# --- default-path reads are strict (R-strict): a corrupt artifact is
+# --- owner_degraded, never laundered through the non-strict empty-frame
+# --- fallback into owner_missing. The store's PATH functions are monkeypatched
+# --- so no test ever touches the real data/ tree.
+
+
+def test_strict_default_read_garbage_nodes_is_owner_degraded(tmp_path, monkeypatch):
+    p = tmp_path / "nodes.parquet"
+    p.write_bytes(b"not parquet")
+    monkeypatch.setattr(store, "nodes_path", lambda: p)
+    monkeypatch.setattr(
+        store, "node_lifecycle_path", lambda: tmp_path / "absent_lifecycle.parquet"
+    )
+    got = _read("co:us:AAPL")
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_degraded"
+    assert got["provenance"] == ["read_error:ValueError"]
+    assert got["value"] is None
+
+
+def test_strict_default_read_missing_nodes_table_is_owner_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(store, "nodes_path", lambda: tmp_path / "absent_nodes.parquet")
+    monkeypatch.setattr(
+        store, "node_lifecycle_path", lambda: tmp_path / "absent_lifecycle.parquet"
+    )
+    got = _read("co:us:AAPL")
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_missing"
+    assert got["value"] is None
+
+
+def test_strict_default_read_absent_lifecycle_keeps_node_row_answer(
+    tmp_path, monkeypatch
+):
+    p = tmp_path / "nodes.parquet"
+    nodes_frame, _ = _frames(_node("co:us:STRICT", birth_date="2015-01-01"))
+    nodes_frame.to_parquet(p)
+    monkeypatch.setattr(store, "nodes_path", lambda: p)
+    monkeypatch.setattr(
+        store, "node_lifecycle_path", lambda: tmp_path / "absent_lifecycle.parquet"
+    )
+    got = _read("co:us:STRICT")
+    assert got["status"] == "available"
+    assert got["value"]["node_status"] == "canonical"
+    assert got["provenance"] == ["status_source:node_row"]
+
+
+def test_strict_default_read_garbage_lifecycle_is_owner_degraded(tmp_path, monkeypatch):
+    p = tmp_path / "nodes.parquet"
+    nodes_frame, _ = _frames(_node("co:us:STRICT", birth_date="2015-01-01"))
+    nodes_frame.to_parquet(p)
+    q = tmp_path / "lifecycle.parquet"
+    q.write_bytes(b"not parquet")
+    monkeypatch.setattr(store, "nodes_path", lambda: p)
+    monkeypatch.setattr(store, "node_lifecycle_path", lambda: q)
+    got = _read("co:us:STRICT")
+    assert got["status"] == "unavailable"
+    assert got["reason_code"] == "owner_degraded"
+    assert got["provenance"] == ["read_error:ValueError"]
+
+
 def test_empty_lifecycle_frame_is_normal_not_degraded():
     nodes, life = _frames(_node("co:us:AAPL", birth_date="2015-01-01"), lifecycle=())
     got = _read("co:us:AAPL", nodes=nodes, lifecycle=life)
@@ -342,6 +445,8 @@ def test_reader_is_deterministic_via_to_json():
     )
     first = read_lifecycle("co:us:AAPL", as_of=AS_OF, nodes=nodes, lifecycle=life)
     second = read_lifecycle("co:us:AAPL", as_of=AS_OF, nodes=nodes, lifecycle=life)
+    assert cell.validate_cell(first) == []
+    assert cell.validate_cell(second) == []
     assert cell.to_json(first) == cell.to_json(second)
 
 
@@ -350,6 +455,6 @@ def test_source_text_guard():
     source = source_path.read_text(encoding="utf-8")
     for banned in BANNED_SOURCE_TEXT:
         assert banned not in source, banned
-    assert "read_nodes(current=False)" in source
-    assert "read_node_lifecycle(latest=False)" in source
+    assert "read_nodes(current=False, strict=True)" in source
+    assert "read_node_lifecycle(latest=False, strict=True)" in source
     assert "RETIRED_LIKE_STATUSES" in source
