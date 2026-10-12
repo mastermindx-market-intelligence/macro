@@ -6565,6 +6565,7 @@ jobs:
     scope: exclusive
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -11117,6 +11118,7 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -22122,6 +22124,7 @@ jobs:
     scope: exclusive
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -22993,6 +22996,7 @@ jobs:
       - collectors/fundamental_forensics_acquisition.py
       - collectors/fundamental_forensics_companyfacts.py
       - collectors/sec_document_spine.py
+      - collectors/sec_request_pacer.py
       - contracts/fundamental_forensics_broad_sec_issuer_manifest.schema.json
       - engine/fundamental_forensics/broad_sec_store.py
       - engine/fundamental_forensics/models.py
@@ -24192,6 +24196,7 @@ jobs:
       - collectors/fundamental_forensics_companyfacts.py
       - collectors/sec_document_spine.py
       - collectors/sec_filing_parser.py
+      - collectors/sec_request_pacer.py
       - config/dataset_registry.yml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - engine/__init__.py
