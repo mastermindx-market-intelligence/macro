@@ -412,3 +412,618 @@ def test_episode_address_is_stable_across_passes():
     assert rec.episode_address(ev) == rec.episode_address(dict(ev))
     no_id = {k: v for k, v in ev.items() if k != "event_id"}
     assert rec.episode_address(no_id) == "AAA|C2_1D_TURN@1|2026-08-14"
+
+# =========================================================================== #
+# Phase22 DFII10 prospective PIT receipt — Rates owner -> existing W5 consumer
+# =========================================================================== #
+import copy
+import json
+from pathlib import Path
+
+import pandas as pd
+import pytest
+
+from engine.rate_inflation_receipt import (
+    DFII10_BUNDLE_SCHEMA,
+    DFII10_CONTEXT_SCHEMA,
+    DFII10_RECEIPT_SCHEMA,
+    MEASUREMENT_ONLY_AUTHORITY,
+    bind_dfii10_context,
+    build_dfii10_five_session_receipt,
+    build_dfii10_owner_bundle,
+    build_dfii10_receipt_bundle,
+    capture_dfii10_receipt,
+    flatten_dfii10_context,
+    load_dfii10_bundle,
+    select_dfii10_series,
+)
+
+
+def sessions(*days: str):
+    return [pd.Timestamp(day).date() for day in days]
+
+
+LABOR_DAY_WINDOW = sessions(
+    "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04",
+    "2026-09-08",  # 09-07 Labor Day is not a completed NYSE session.
+)
+
+
+def series(values: dict[str, float]) -> pd.Series:
+    return pd.Series(values, dtype=float).rename_axis("date")
+
+
+def qualified_receipt(*, captured="2026-09-08T22:00:00Z", sha="a" * 64,
+                      previous=None):
+    return build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90,
+            "2026-09-01": 1.89,
+            "2026-09-02": 1.88,
+            "2026-09-03": 1.87,
+            "2026-09-04": 1.86,
+            "2026-09-08": 1.84,
+        }),
+        completed_sessions=LABOR_DAY_WINDOW,
+        captured_at=captured,
+        source_content_sha256=sha,
+        source_column="DFII10",
+        previous_receipt=previous,
+    )
+
+
+def test_exact_five_completed_sessions_skip_holiday_and_have_zero_authority():
+    receipt = qualified_receipt()
+    assert receipt["schema"] == DFII10_RECEIPT_SCHEMA
+    assert receipt["status"] == "QUALIFIED"
+    assert receipt["latest"] == {"observation_date": "2026-09-08", "value_pct": 1.84}
+    assert receipt["prior_five_sessions"] == {
+        "observation_date": "2026-08-31", "value_pct": 1.90}
+    assert receipt["bound_session_window"] == [day.isoformat() for day in LABOR_DAY_WINDOW]
+    assert receipt["delta_bp"] == -6.0
+    assert receipt["stale_state"] == "CURRENT_AT_CAPTURE"
+    assert receipt["measurement_only"] is True
+    assert receipt["authority"] == MEASUREMENT_ONLY_AUTHORITY
+    assert not any(receipt["authority"].values())
+
+
+def test_exact_prior_endpoint_is_never_filled_or_inferred():
+    receipt = build_dfii10_five_session_receipt(
+        series({
+            "2026-09-01": 1.89,
+            "2026-09-02": 1.88,
+            "2026-09-03": 1.87,
+            "2026-09-04": 1.86,
+            "2026-09-08": 1.84,
+        }),
+        completed_sessions=LABOR_DAY_WINDOW,
+        captured_at="2026-09-08T22:00:00Z",
+        source_content_sha256="b" * 64,
+    )
+    assert receipt["status"] == "MISSING"
+    assert receipt["missing_state"] == "EXACT_PRIOR_ENDPOINT_MISSING"
+    assert receipt["prior_five_sessions"] is None
+    assert receipt["delta_bp"] is None
+
+
+def test_stale_source_is_explicit_and_not_promoted_to_qualified():
+    completed = sessions("2026-08-28") + LABOR_DAY_WINDOW
+    receipt = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-28": 1.91,
+            "2026-08-31": 1.90,
+            "2026-09-01": 1.89,
+            "2026-09-02": 1.88,
+            "2026-09-03": 1.87,
+            "2026-09-04": 1.86,
+        }),
+        completed_sessions=completed,
+        captured_at="2026-09-08T22:00:00Z",
+        source_content_sha256="c" * 64,
+    )
+    assert receipt["status"] == "STALE"
+    assert receipt["completed_session_lag"] == 1
+    assert receipt["stale_state"] == "STALE_AT_CAPTURE"
+
+
+def test_exact_retry_preserves_earliest_conservative_first_known_time():
+    first = qualified_receipt(captured="2026-09-08T22:00:00Z")
+    replay = qualified_receipt(
+        captured="2026-09-09T01:00:00Z", previous=first)
+    assert replay["source_snapshot_hash"] == first["source_snapshot_hash"]
+    assert replay["capture"]["captured_at"] == "2026-09-09T01:00:00Z"
+    assert replay["capture"]["first_known_at"] == "2026-09-08T22:00:00Z"
+
+
+def test_endpoint_revision_is_bound_as_a_correction_not_hidden():
+    first = qualified_receipt()
+    corrected = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.91,
+            "2026-09-01": 1.89,
+            "2026-09-02": 1.88,
+            "2026-09-03": 1.87,
+            "2026-09-04": 1.86,
+            "2026-09-08": 1.84,
+        }),
+        completed_sessions=LABOR_DAY_WINDOW,
+        captured_at="2026-09-09T02:00:00Z",
+        source_content_sha256="d" * 64,
+        previous_receipt=first,
+    )
+    assert corrected["correction"]["state"] == "BOUND_ENDPOINT_CORRECTION_DETECTED"
+    assert corrected["correction"]["corrected_endpoints"] == [{
+        "endpoint": "prior_five_sessions",
+        "observation_date": "2026-08-31",
+        "previous_value_pct": 1.9,
+        "current_value_pct": 1.91,
+    }]
+    assert corrected["delta_bp"] == -7.0
+
+
+def test_bundle_keeps_current_plus_exactly_one_prior_qualified_receipt():
+    old = qualified_receipt(captured="2026-09-08T22:00:00Z", sha="a" * 64)
+    old_bundle = build_dfii10_receipt_bundle(old)
+    through_sep9 = LABOR_DAY_WINDOW + sessions("2026-09-09")
+    new = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90, "2026-09-01": 1.89, "2026-09-02": 1.88,
+            "2026-09-03": 1.87, "2026-09-04": 1.86, "2026-09-08": 1.84,
+            "2026-09-09": 1.82,
+        }),
+        completed_sessions=through_sep9,
+        captured_at="2026-09-09T22:00:00Z",
+        source_content_sha256="e" * 64,
+    )
+    bundle = build_dfii10_receipt_bundle(new, old_bundle)
+    assert bundle["schema"] == DFII10_BUNDLE_SCHEMA
+    assert bundle["current"]["source_snapshot_hash"] == new["source_snapshot_hash"]
+    assert bundle["previous_qualified"]["source_snapshot_hash"] == \
+        old["source_snapshot_hash"]
+    assert bundle["history_policy"] == "current_plus_one_prior_qualified_no_backfill"
+    assert not any(bundle["authority"].values())
+
+
+def test_consumer_uses_prior_receipt_known_at_intraday_decision_cut():
+    prior = qualified_receipt(captured="2026-09-08T22:00:00Z")
+    through_sep9 = LABOR_DAY_WINDOW + sessions("2026-09-09")
+    current = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90,
+            "2026-09-01": 1.89,
+            "2026-09-02": 1.88,
+            "2026-09-03": 1.87,
+            "2026-09-04": 1.86,
+            "2026-09-08": 1.84,
+            "2026-09-09": 1.82,
+        }),
+        completed_sessions=through_sep9,
+        captured_at="2026-09-09T22:00:00Z",
+        source_content_sha256="e" * 64,
+        source_column="DFII10",
+        previous_receipt=prior,
+    )
+    bundle = build_dfii10_receipt_bundle(
+        current, build_dfii10_receipt_bundle(prior)
+    )
+    context = bind_dfii10_context(
+        bundle,
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["schema"] == DFII10_CONTEXT_SCHEMA
+    assert context["status"] == "QUALIFIED"
+    assert context["source_snapshot_hash"] == prior["source_snapshot_hash"]
+    assert context["receipt_age_completed_sessions"] == 1
+    assert context["delta_bp"] == -6.0
+    assert not any(context["authority"].values())
+
+
+def test_consumer_refuses_not_yet_known_and_too_stale_receipts():
+    current = qualified_receipt(captured="2026-09-09T22:00:00Z")
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(current),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert context["reason"] == "NO_QUALIFIED_RECEIPT_AT_DECISION"
+    assert "NOT_KNOWN_AT_DECISION" in context["load_state"]
+
+    prior = qualified_receipt(captured="2026-09-08T22:00:00Z")
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(prior),
+        decision_known_at="2026-09-10T19:30:00Z",
+        decision_session="2026-09-10",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09", "2026-09-10"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert "STALE_AT_DECISION_2" in context["load_state"]
+
+
+def test_consumer_recomputes_hash_delta_and_canonical_window_fail_closed():
+    receipt = qualified_receipt()
+
+    tampered = copy.deepcopy(receipt)
+    tampered["delta_bp"] = 999.0
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(tampered),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert "SOURCE_SNAPSHOT_HASH_MISMATCH" in context["load_state"]
+
+    tampered = copy.deepcopy(receipt)
+    tampered["bound_session_window"] = tampered["bound_session_window"][:-1]
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(tampered),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert "SOURCE_SNAPSHOT_HASH_MISMATCH" in context["load_state"]
+
+
+def test_flatten_persists_both_endpoints_and_full_context_without_authority():
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(qualified_receipt()),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    row = flatten_dfii10_context(context)
+    assert row["dfii10_latest_observation_date"] == "2026-09-08"
+    assert row["dfii10_prior_observation_date"] == "2026-08-31"
+    assert row["dfii10_delta_bp"] == -6.0
+    persisted = json.loads(row["dfii10_context_json"])
+    assert persisted["status"] == "QUALIFIED"
+    assert not any(persisted["authority"].values())
+
+
+def test_load_bundle_is_explicit_and_fail_closed(tmp_path: Path):
+    bundle, state = load_dfii10_bundle(tmp_path)
+    assert bundle is None and state == "TRANSMISSION_CONTRACT_MISSING"
+    path = tmp_path / "data" / "transmission" / "latest.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"real_yield_5session": {"schema": "wrong"}}))
+    bundle, state = load_dfii10_bundle(tmp_path)
+    assert bundle is None and state == "DFII10_BUNDLE_SCHEMA_MISMATCH"
+
+
+def test_capture_hashes_exact_bytes_and_selects_the_only_numeric_column(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    path = tmp_path / "DFII10.parquet"
+    raw = b"exact-parquet-byte-fixture"
+    path.write_bytes(raw)
+    frame = pd.DataFrame(
+        {"DFII10": [1.90, 1.89, 1.88, 1.87, 1.86, 1.84]},
+        index=pd.to_datetime([day.isoformat() for day in LABOR_DAY_WINDOW]),
+    )
+
+    def fake_read_parquet(handle):
+        assert handle.read() == raw
+        return frame
+
+    monkeypatch.setattr(pd, "read_parquet", fake_read_parquet)
+    receipt = capture_dfii10_receipt(
+        path,
+        captured_at="2026-09-08T22:00:00Z",
+        completed_sessions=LABOR_DAY_WINDOW,
+    )
+    import hashlib
+
+    assert receipt["status"] == "QUALIFIED"
+    assert receipt["source"]["content_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert receipt["source"]["column"] == "DFII10"
+
+    with pytest.raises(ValueError, match="ambiguous numeric columns"):
+        select_dfii10_series(pd.DataFrame({"a": [1.0], "b": [2.0]}))
+
+
+def test_capture_failure_emits_explicit_missing_receipt(tmp_path: Path):
+    receipt = capture_dfii10_receipt(
+        tmp_path / "missing.parquet",
+        captured_at="2026-09-08T22:00:00Z",
+        completed_sessions=LABOR_DAY_WINDOW,
+    )
+    assert receipt["status"] == "MISSING"
+    assert receipt["missing_state"] == "SOURCE_FILE_MISSING"
+    assert receipt["source_snapshot_hash"]
+    assert not any(receipt["authority"].values())
+
+
+def test_consumer_refuses_malformed_or_fabricated_authority_and_clocks():
+    receipt = qualified_receipt()
+
+    malformed_bundle = build_dfii10_receipt_bundle(receipt)
+    malformed_bundle["authority"] = "all-false"
+    context = bind_dfii10_context(
+        malformed_bundle,
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert context["reason"] == "DFII10_BUNDLE_AUTHORITY_INVALID"
+
+    fabricated = copy.deepcopy(receipt)
+    fabricated["capture"]["provider_release_time_inferred"] = True
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(fabricated),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert "CAPTURE_BASIS_INVALID" in context["load_state"]
+
+    wrong_path = copy.deepcopy(receipt)
+    wrong_path["source"]["path"] = "data/other/DFII10.parquet"
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(wrong_path),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert "SOURCE_IDENTITY_INVALID" in context["load_state"]
+
+
+def test_owner_bundle_uses_existing_transmission_contract_and_no_new_store(tmp_path: Path):
+    prior = qualified_receipt()
+    previous_bundle = build_dfii10_receipt_bundle(prior)
+    bundle = build_dfii10_owner_bundle(
+        tmp_path / "data",
+        captured_at="2026-09-09T22:00:00Z",
+        previous_bundle=previous_bundle,
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert bundle["schema"] == DFII10_BUNDLE_SCHEMA
+    assert bundle["current"]["status"] == "MISSING"
+    assert bundle["current"]["missing_state"] == "SOURCE_FILE_MISSING"
+    assert bundle["previous_qualified"]["source_snapshot_hash"] == \
+        prior["source_snapshot_hash"]
+    assert list(tmp_path.rglob("*")) == [], "owner helper must not create a second store"
+
+
+def test_reconciler_binds_measurement_context_without_changing_event_identity():
+    from scripts import reconcile_entry_radar as rec
+
+    prior = qualified_receipt(captured="2026-09-08T22:00:00Z")
+    bundle = build_dfii10_receipt_bundle(prior)
+    record = {
+        "event_id": "AAA-C2-2026-09-09",
+        "ticker": "AAA",
+        "detector_id": "C2_1D_TURN@1",
+        "family": "radar_turn",
+        "subtype": "c2_turn",
+        "context": {"market_session": "2026-09-09"},
+        "signal_ts": "2026-09-09T19:25:00Z",
+        "signal_known_ts": "2026-09-09T19:30:00Z",
+        "observed_at": "2026-09-09T19:31:00Z",
+        "bar_state": "confirmed",
+        "final": True,
+        "source_identity": {"detector_spec_hash": "detector-hash"},
+    }
+    row = rec._event_row(
+        record,
+        session="2026-09-09",
+        state=rec.STATE_WAITING,
+        dfii10_bundle=bundle,
+        dfii10_load_state="LOADED",
+    )
+    assert row["episode_address"] == "AAA-C2-2026-09-09"
+    assert row["detector_id"] == "C2_1D_TURN@1"
+    assert row["state"] == rec.STATE_WAITING
+    assert row["dfii10_context_status"] == "QUALIFIED"
+    assert row["dfii10_latest_observation_date"] == "2026-09-08"
+    assert row["dfii10_prior_observation_date"] == "2026-08-31"
+    assert row["dfii10_delta_bp"] == -6.0
+    assert not any(json.loads(row["dfii10_context_json"])["authority"].values())
+
+
+def test_reconciler_persists_unavailable_context_instead_of_defaulting_to_zero():
+    from scripts import reconcile_entry_radar as rec
+
+    record = {
+        "event_id": "AAA-C2-2026-09-09",
+        "ticker": "AAA",
+        "detector_id": "C2_1D_TURN@1",
+        "context": {"market_session": "2026-09-09"},
+        "signal_known_ts": "2026-09-09T19:30:00Z",
+        "observed_at": "2026-09-09T19:31:00Z",
+    }
+    row = rec._event_row(
+        record,
+        session="2026-09-09",
+        state=rec.STATE_WAITING,
+        dfii10_bundle=None,
+        dfii10_load_state="TRANSMISSION_CONTRACT_MISSING",
+    )
+    assert row["dfii10_context_status"] == "UNAVAILABLE"
+    assert row["dfii10_delta_bp"] is None
+    assert row["dfii10_context_load_state"] == "TRANSMISSION_CONTRACT_MISSING"
+
+
+def test_builder_wires_receipt_before_the_incumbent_contract_write():
+    source = (Path(__file__).resolve().parents[1] / "scripts" /
+              "build_transmission.py").read_text(encoding="utf-8")
+    owner_call = source.index('contract["real_yield_5session"]')
+    contract_write = source.index('(outdir / "latest.json").write_text')
+    assert "build_dfii10_owner_bundle" in source
+    assert owner_call < contract_write
+    assert 'data/transmission/dfii10' not in source
+
+
+def test_bundle_preserves_pre_session_receipt_across_multiple_same_night_source_changes():
+    sep8 = qualified_receipt(captured="2026-09-08T22:00:00Z", sha="a" * 64)
+    bundle = build_dfii10_receipt_bundle(sep8)
+
+    through_sep9 = LABOR_DAY_WINDOW + sessions("2026-09-09")
+    sep9_first = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90, "2026-09-01": 1.89, "2026-09-02": 1.88,
+            "2026-09-03": 1.87, "2026-09-04": 1.86, "2026-09-08": 1.84,
+            "2026-09-09": 1.82,
+        }),
+        completed_sessions=through_sep9,
+        captured_at="2026-09-09T21:00:00Z",
+        source_content_sha256="b" * 64,
+    )
+    bundle = build_dfii10_receipt_bundle(sep9_first, bundle)
+    assert bundle["previous_qualified"]["source_snapshot_hash"] == \
+        sep8["source_snapshot_hash"]
+
+    sep9_corrected = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90, "2026-09-01": 1.89, "2026-09-02": 1.88,
+            "2026-09-03": 1.87, "2026-09-04": 1.86, "2026-09-08": 1.84,
+            "2026-09-09": 1.81,
+        }),
+        completed_sessions=through_sep9,
+        captured_at="2026-09-09T22:00:00Z",
+        source_content_sha256="c" * 64,
+        previous_receipt=sep9_first,
+    )
+    bundle = build_dfii10_receipt_bundle(sep9_corrected, bundle)
+    assert bundle["previous_qualified"]["source_snapshot_hash"] == \
+        sep8["source_snapshot_hash"], "same-night rebuild must not evict the pre-session receipt"
+
+    through_sep10 = through_sep9 + sessions("2026-09-10")
+    sep10 = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90, "2026-09-01": 1.89, "2026-09-02": 1.88,
+            "2026-09-03": 1.87, "2026-09-04": 1.86, "2026-09-08": 1.84,
+            "2026-09-09": 1.81, "2026-09-10": 1.80,
+        }),
+        completed_sessions=through_sep10,
+        captured_at="2026-09-10T22:00:00Z",
+        source_content_sha256="d" * 64,
+        previous_receipt=sep9_corrected,
+    )
+    rolled = build_dfii10_receipt_bundle(sep10, bundle)
+    assert rolled["previous_qualified"]["source_snapshot_hash"] == \
+        sep9_corrected["source_snapshot_hash"], "next session should roll to latest prior receipt"
+
+
+def test_nonfinite_source_values_are_not_bound_as_measurements():
+    receipt = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90, "2026-09-01": 1.89, "2026-09-02": 1.88,
+            "2026-09-03": 1.87, "2026-09-04": 1.86, "2026-09-08": float("inf"),
+        }),
+        completed_sessions=LABOR_DAY_WINDOW,
+        captured_at="2026-09-08T22:00:00Z",
+        source_content_sha256="f" * 64,
+    )
+    assert receipt["status"] != "QUALIFIED"
+    assert receipt["latest"]["observation_date"] == "2026-09-04"
+    assert receipt["stale_state"] == "STALE_AT_CAPTURE"
+
+
+def test_consumer_rejects_nonfinite_or_incomplete_source_identity_without_throwing():
+    receipt = qualified_receipt()
+    nonfinite = copy.deepcopy(receipt)
+    nonfinite["latest"]["value_pct"] = float("nan")
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(nonfinite),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert "RECEIPT_NUMERIC_INVALID" in context["load_state"] or \
+        "SOURCE_SNAPSHOT_HASH_INVALID" in context["load_state"]
+
+    no_column = copy.deepcopy(receipt)
+    no_column["source"]["column"] = None
+    context = bind_dfii10_context(
+        build_dfii10_receipt_bundle(no_column),
+        decision_known_at="2026-09-09T19:30:00Z",
+        decision_session="2026-09-09",
+        completed_sessions=LABOR_DAY_WINDOW + sessions("2026-09-09"),
+    )
+    assert context["status"] == "UNAVAILABLE"
+    assert "SOURCE_IDENTITY_INVALID" in context["load_state"]
+
+
+def test_unqualified_current_preserves_last_valid_same_session_receipt():
+    through_sep9 = LABOR_DAY_WINDOW + sessions("2026-09-09")
+    sep9_valid = build_dfii10_five_session_receipt(
+        series({
+            "2026-08-31": 1.90, "2026-09-01": 1.89, "2026-09-02": 1.88,
+            "2026-09-03": 1.87, "2026-09-04": 1.86, "2026-09-08": 1.84,
+            "2026-09-09": 1.82,
+        }),
+        completed_sessions=through_sep9,
+        captured_at="2026-09-09T21:00:00Z",
+        source_content_sha256="1" * 64,
+        source_column="DFII10",
+    )
+    previous = build_dfii10_receipt_bundle(sep9_valid)
+    missing = build_dfii10_five_session_receipt(
+        None,
+        completed_sessions=through_sep9,
+        captured_at="2026-09-09T22:00:00Z",
+        source_content_sha256=None,
+        source_column=None,
+        previous_receipt=sep9_valid,
+    )
+    bundle = build_dfii10_receipt_bundle(missing, previous)
+    assert bundle["current"]["status"] == "MISSING"
+    assert bundle["previous_qualified"]["source_snapshot_hash"] == \
+        sep9_valid["source_snapshot_hash"]
+
+
+def test_numeric_source_index_is_refused_instead_of_becoming_epoch_dates():
+    receipt = build_dfii10_five_session_receipt(
+        pd.Series([1.90, 1.89, 1.88, 1.87, 1.86, 1.84]),
+        completed_sessions=LABOR_DAY_WINDOW,
+        captured_at="2026-09-08T22:00:00Z",
+        source_content_sha256="2" * 64,
+        source_column="DFII10",
+    )
+    assert receipt["status"] == "MISSING"
+    assert receipt["missing_state"] == "SOURCE_INDEX_INVALID"
+    assert receipt["latest"] is None
+
+
+def test_owner_calendar_waits_for_settle_before_admitting_same_session_source(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    path = tmp_path / "DFII10.parquet"
+    raw = b"calendar-settle-fixture"
+    path.write_bytes(raw)
+    dates = [
+        "2026-08-28", "2026-08-31", "2026-09-01", "2026-09-02",
+        "2026-09-03", "2026-09-04", "2026-09-08",
+    ]
+    frame = pd.DataFrame(
+        {"DFII10": [1.91, 1.90, 1.89, 1.88, 1.87, 1.86, 1.84]},
+        index=pd.to_datetime(dates),
+    )
+
+    def fake_read_parquet(handle):
+        assert handle.read() == raw
+        return frame
+
+    monkeypatch.setattr(pd, "read_parquet", fake_read_parquet)
+    before_settle = capture_dfii10_receipt(
+        path,
+        captured_at="2026-09-08T20:30:00Z",  # 16:30 ET, before 17:00 settle.
+    )
+    assert before_settle["eligible_session"] == "2026-09-04"
+    assert before_settle["latest"]["observation_date"] == "2026-09-04"
+    assert before_settle["prior_five_sessions"]["observation_date"] == "2026-08-28"
+
+    after_settle = capture_dfii10_receipt(
+        path,
+        captured_at="2026-09-08T22:00:00Z",  # 18:00 ET, after settle.
+    )
+    assert after_settle["eligible_session"] == "2026-09-08"
+    assert after_settle["latest"]["observation_date"] == "2026-09-08"
+    assert after_settle["prior_five_sessions"]["observation_date"] == "2026-08-31"
