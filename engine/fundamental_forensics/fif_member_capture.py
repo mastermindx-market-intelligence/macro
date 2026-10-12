@@ -56,9 +56,11 @@ from .sec_document_spine import (
 )
 
 FIF_MEMBER_CAPTURE_PACKAGE_SCHEMA = "fundamental_forensics.fif_member_capture_package/v1"
-# The committed golden fixture manifest schemas are a different corpus. A
-# package claiming one of them is refused with a typed error: production
-# generations are built from lane-retained bytes, never fixture trees.
+# The committed golden fixture manifest schemas are a different corpus. Since
+# D9 the schema check is an ALLOW-list on FIF_MEMBER_CAPTURE_PACKAGE_SCHEMA
+# above, so this set is documentation of that foreign corpus (kept for the
+# docstring's vocabulary), not the enforcement: production generations are
+# built from lane-retained bytes, never fixture trees.
 GOLDEN_PACKAGE_SCHEMAS = frozenset(
     {
         "fundamental_forensics.golden_filing_package/v1",
@@ -534,9 +536,15 @@ def _verify_retained_package(package_dir: Path) -> RetainedFifPackage:
             f"retained package manifest is not an object: {package_dir}",
             code="package_manifest_malformed",
         )
-    if manifest.get("schema") in GOLDEN_PACKAGE_SCHEMAS:
+    # D9: ALLOW-list, not a one-schema deny-list — a manifest with no schema
+    # or any schema other than FIF_MEMBER_CAPTURE_PACKAGE_SCHEMA is refused
+    # with the same typed golden-refusal code (a foreign corpus is never read
+    # back as a lane package, whatever its schema claims to be).
+    if manifest.get("schema") != FIF_MEMBER_CAPTURE_PACKAGE_SCHEMA:
         raise FifMemberCaptureError(
-            f"retained package claims a golden fixture schema: {package_dir}",
+            f"retained package manifest schema is not the member-capture "
+            f"schema ({FIF_MEMBER_CAPTURE_PACKAGE_SCHEMA}): {package_dir} "
+            f"(found {manifest.get('schema')!r})",
             code="golden_input_refused",
         )
     try:

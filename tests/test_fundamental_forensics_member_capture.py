@@ -851,6 +851,52 @@ def test_golden_schema_manifest_is_refused(tmp_path) -> None:
     assert caught.value.code == "golden_input_refused"
 
 
+def test_d9_unknown_package_schema_is_refused(tmp_path) -> None:
+    """D9: the schema check is an ALLOW-list on FIF_MEMBER_CAPTURE_PACKAGE_SCHEMA.
+    A manifest claiming an unknown schema string (or no schema at all) used to
+    pass the one-entry deny-list and be read back as a package."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    manifest_path = (
+        package_dir_for(lane["archive_root"], identity["cik"], identity["accessions"][0])
+        / "package_manifest.json"
+    )
+    original = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    def _rewrite(schema_value):
+        manifest = dict(original)
+        if schema_value is _MISSING:
+            manifest.pop("schema", None)
+        else:
+            manifest["schema"] = schema_value
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    for bogus in ("fundamental_forensics.golden_filing_package/v2", "", _MISSING):
+        _rewrite(bogus)
+        with pytest.raises(FifMemberCaptureError) as caught:
+            read_retained_fif_packages(
+                lane["archive_root"],
+                cik=identity["cik"],
+                accessions=identity["accessions"],
+            )
+        assert caught.value.code == "golden_input_refused", bogus
+
+
+class _Missing:
+    """Sentinel: drop the schema key entirely."""
+
+
+_MISSING = _Missing()
+
+
 def test_no_ticker_or_cik_literal_in_member_capture_module() -> None:
     source = (
         ROOT / "engine" / "fundamental_forensics" / "fif_member_capture.py"
