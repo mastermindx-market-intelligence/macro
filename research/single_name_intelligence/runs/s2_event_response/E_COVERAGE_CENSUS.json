@@ -1,0 +1,920 @@
+{
+  "label": "HISTORICAL-DESCRIPTIVE (non-confirmatory); REG §2 not met; vintage-unpinned, non-evidential / BLOCKED-AS-EVIDENCE (M0 gap 1); identity = RETROSPECTIVE_JOIN (A07), identity_resolved_as_of = security_master ingested_at; conditional post-event co-movement description, not an attribution",
+  "cells": [
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "adr_h_basis.adr_baba",
+      "family": "adr_h_basis",
+      "counter": "adr_baba",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "adr_h_basis.hkd_9988",
+      "family": "adr_h_basis",
+      "counter": "hkd_9988",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "adr_h_basis.rmb_89988",
+      "family": "adr_h_basis",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "behavioral_pilot.adr_baba",
+      "family": "behavioral_pilot",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 2993,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "behavioral_pilot.hkd_9988",
+      "family": "behavioral_pilot",
+      "counter": "hkd_9988",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "behavioral_pilot.rmb_89988",
+      "family": "behavioral_pilot",
+      "counter": "rmb_89988",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "company_events_earnings_calendar.adr_baba",
+      "family": "company_events_earnings_calendar",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "company_events_earnings_calendar.hkd_9988",
+      "family": "company_events_earnings_calendar",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "company_events_earnings_calendar.rmb_89988",
+      "family": "company_events_earnings_calendar",
+      "counter": "rmb_89988",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "corporate_actions_adjustment.adr_baba",
+      "family": "corporate_actions_adjustment",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 3032,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "corporate_actions_adjustment.hkd_9988",
+      "family": "corporate_actions_adjustment",
+      "counter": "hkd_9988",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "corporate_actions_adjustment.rmb_89988",
+      "family": "corporate_actions_adjustment",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "evaluation_qledger.adr_baba",
+      "family": "evaluation_qledger",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 159,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "evaluation_qledger.hkd_9988",
+      "family": "evaluation_qledger",
+      "counter": "hkd_9988",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "evaluation_qledger.rmb_89988",
+      "family": "evaluation_qledger",
+      "counter": "rmb_89988",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "filings_announcements.adr_baba",
+      "family": "filings_announcements",
+      "counter": "adr_baba",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "filings_announcements.hkd_9988",
+      "family": "filings_announcements",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 4,
+      "disposition": "event source used (data/hk_filings/events.parquet, exact local_code token match)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "filings_announcements.rmb_89988",
+      "family": "filings_announcements",
+      "counter": "rmb_89988",
+      "state": "PARTIAL",
+      "evidence_rows": 4,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "financials.adr_baba",
+      "family": "financials",
+      "counter": "adr_baba",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "financials.hkd_9988",
+      "family": "financials",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 7,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "financials.rmb_89988",
+      "family": "financials",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "fx.adr_baba",
+      "family": "fx",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 6419,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "fx.hkd_9988",
+      "family": "fx",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 6419,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "fx.rmb_89988",
+      "family": "fx",
+      "counter": "rmb_89988",
+      "state": "PARTIAL",
+      "evidence_rows": 3369,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "identity_listing.adr_baba",
+      "family": "identity_listing",
+      "counter": "adr_baba",
+      "state": "OWNER_NATIVE",
+      "evidence_rows": 7,
+      "disposition": "not an S2 event source (state OWNER_NATIVE)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "identity_listing.hkd_9988",
+      "family": "identity_listing",
+      "counter": "hkd_9988",
+      "state": "REFUSED",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state REFUSED)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "identity_listing.rmb_89988",
+      "family": "identity_listing",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "market_data_daily.adr_baba",
+      "family": "market_data_daily",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 3032,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "market_data_daily.hkd_9988",
+      "family": "market_data_daily",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 1681,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "market_data_daily.rmb_89988",
+      "family": "market_data_daily",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "market_data_intraday.adr_baba",
+      "family": "market_data_intraday",
+      "counter": "adr_baba",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "market_data_intraday.hkd_9988",
+      "family": "market_data_intraday",
+      "counter": "hkd_9988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "market_data_intraday.rmb_89988",
+      "family": "market_data_intraday",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "news.adr_baba",
+      "family": "news",
+      "counter": "adr_baba",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "news.hkd_9988",
+      "family": "news",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 77,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "news.rmb_89988",
+      "family": "news",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "options.adr_baba",
+      "family": "options",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 44,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "options.hkd_9988",
+      "family": "options",
+      "counter": "hkd_9988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "options.rmb_89988",
+      "family": "options",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "research_vault.adr_baba",
+      "family": "research_vault",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 24,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "research_vault.hkd_9988",
+      "family": "research_vault",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 24,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "research_vault.rmb_89988",
+      "family": "research_vault",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "sessions_calendar.adr_baba",
+      "family": "sessions_calendar",
+      "counter": "adr_baba",
+      "state": "PARTIAL",
+      "evidence_rows": 3,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "sessions_calendar.hkd_9988",
+      "family": "sessions_calendar",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 3,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "sessions_calendar.rmb_89988",
+      "family": "sessions_calendar",
+      "counter": "rmb_89988",
+      "state": "PARTIAL",
+      "evidence_rows": 3,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "short_positions.adr_baba",
+      "family": "short_positions",
+      "counter": "adr_baba",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "short_positions.hkd_9988",
+      "family": "short_positions",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 357,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "short_positions.rmb_89988",
+      "family": "short_positions",
+      "counter": "rmb_89988",
+      "state": "PARTIAL",
+      "evidence_rows": 172,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "southbound_holdings.adr_baba",
+      "family": "southbound_holdings",
+      "counter": "adr_baba",
+      "state": "REFUSED",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state REFUSED)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "southbound_holdings.hkd_9988",
+      "family": "southbound_holdings",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 290,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "southbound_holdings.rmb_89988",
+      "family": "southbound_holdings",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "themes.adr_baba",
+      "family": "themes",
+      "counter": "adr_baba",
+      "state": "OWNER_NATIVE",
+      "evidence_rows": 61,
+      "disposition": "not an S2 event source (state OWNER_NATIVE)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "themes.hkd_9988",
+      "family": "themes",
+      "counter": "hkd_9988",
+      "state": "PARTIAL",
+      "evidence_rows": 61,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "alibaba",
+      "report": "E1",
+      "cell": "themes.rmb_89988",
+      "family": "themes",
+      "counter": "rmb_89988",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "adr_h_basis.hkd_0700",
+      "family": "adr_h_basis",
+      "counter": "hkd_0700",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "adr_h_basis.rmb_80700",
+      "family": "adr_h_basis",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "behavioral_pilot.hkd_0700",
+      "family": "behavioral_pilot",
+      "counter": "hkd_0700",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "behavioral_pilot.rmb_80700",
+      "family": "behavioral_pilot",
+      "counter": "rmb_80700",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "company_events_earnings_calendar.hkd_0700",
+      "family": "company_events_earnings_calendar",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "company_events_earnings_calendar.rmb_80700",
+      "family": "company_events_earnings_calendar",
+      "counter": "rmb_80700",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "corporate_actions_adjustment.hkd_0700",
+      "family": "corporate_actions_adjustment",
+      "counter": "hkd_0700",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "corporate_actions_adjustment.rmb_80700",
+      "family": "corporate_actions_adjustment",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "evaluation_qledger.hkd_0700",
+      "family": "evaluation_qledger",
+      "counter": "hkd_0700",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "evaluation_qledger.rmb_80700",
+      "family": "evaluation_qledger",
+      "counter": "rmb_80700",
+      "state": "ABSENT",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state ABSENT)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "filings_announcements.hkd_0700",
+      "family": "filings_announcements",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "event source used (data/hk_filings/events.parquet, exact local_code token match)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "filings_announcements.rmb_80700",
+      "family": "filings_announcements",
+      "counter": "rmb_80700",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "financials.hkd_0700",
+      "family": "financials",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 7,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "financials.rmb_80700",
+      "family": "financials",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "fx.hkd_0700",
+      "family": "fx",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 2,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "fx.rmb_80700",
+      "family": "fx",
+      "counter": "rmb_80700",
+      "state": "PARTIAL",
+      "evidence_rows": 2,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "identity_listing.hkd_0700",
+      "family": "identity_listing",
+      "counter": "hkd_0700",
+      "state": "REFUSED",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state REFUSED)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "identity_listing.rmb_80700",
+      "family": "identity_listing",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "market_data_daily.hkd_0700",
+      "family": "market_data_daily",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 4,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "market_data_daily.rmb_80700",
+      "family": "market_data_daily",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "market_data_intraday.hkd_0700",
+      "family": "market_data_intraday",
+      "counter": "hkd_0700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "market_data_intraday.rmb_80700",
+      "family": "market_data_intraday",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "news.hkd_0700",
+      "family": "news",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 4,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "news.rmb_80700",
+      "family": "news",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "options.hkd_0700",
+      "family": "options",
+      "counter": "hkd_0700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "options.rmb_80700",
+      "family": "options",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "research_vault.hkd_0700",
+      "family": "research_vault",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "research_vault.rmb_80700",
+      "family": "research_vault",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "sessions_calendar.hkd_0700",
+      "family": "sessions_calendar",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 2,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "sessions_calendar.rmb_80700",
+      "family": "sessions_calendar",
+      "counter": "rmb_80700",
+      "state": "PARTIAL",
+      "evidence_rows": 2,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "short_positions.hkd_0700",
+      "family": "short_positions",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 2,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "short_positions.rmb_80700",
+      "family": "short_positions",
+      "counter": "rmb_80700",
+      "state": "PARTIAL",
+      "evidence_rows": 2,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "southbound_holdings.hkd_0700",
+      "family": "southbound_holdings",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 2,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "southbound_holdings.rmb_80700",
+      "family": "southbound_holdings",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "themes.hkd_0700",
+      "family": "themes",
+      "counter": "hkd_0700",
+      "state": "PARTIAL",
+      "evidence_rows": 1,
+      "disposition": "not an S2 event source (state PARTIAL)"
+    },
+    {
+      "issuer_key": "tencent",
+      "report": "E2",
+      "cell": "themes.rmb_80700",
+      "family": "themes",
+      "counter": "rmb_80700",
+      "state": "NO_OWNER",
+      "evidence_rows": 0,
+      "disposition": "not an S2 event source (state NO_OWNER)"
+    }
+  ],
+  "counts": {
+    "alibaba": {
+      "ABSENT": 12,
+      "NO_OWNER": 13,
+      "OWNER_NATIVE": 2,
+      "PARTIAL": 25,
+      "REFUSED": 2
+    },
+    "tencent": {
+      "ABSENT": 6,
+      "NO_OWNER": 13,
+      "PARTIAL": 16,
+      "REFUSED": 1
+    }
+  }
+}
