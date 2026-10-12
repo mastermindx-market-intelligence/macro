@@ -3150,6 +3150,70 @@ jobs:
 
       - name: Prophet Q06 SEC comparable-revenue Gate-S source contract
         run: python -m pytest tests/test_q06_sec_comparable_revenue_source_contract.py -q
+  gmi-classification-axes:
+    if: ${{ false }}
+    gate: code
+    # Taxonomy V2 L00. AxisCell v1 plus the seven reserved reader suites.
+    # CURATED SCOPE (2026-10-12, Taxonomy V2 reader lanes L05-L11).
+    # `scope: exclusive` makes the paths below REPLACE inference. Two opaque
+    # constructs reach this job's closure once the readers land. geography.py
+    # names its owner scripts/build_security_master.py by path, which pulls
+    # that script's subprocess call and parquet traversal into the closure.
+    # registry.py loads each axis module by importlib.import_module of a
+    # computed name. Either one widened the fallback tier to whole scan roots,
+    # so the job selected on scripts/build_free_content.py and
+    # engine/prophet/plan_book.py and breached those PACKING_PROBES ceilings in
+    # tests/test_ci_pack.py. The exact files below are the union static
+    # closure of the eight suites with every lane reader overlaid, measured
+    # with run_ci_pack.inferred_as_if_not_exclusive. The program globs keep new
+    # axis modules, contracts and fixtures selecting the job. lib/dataos/** is
+    # wider than the measured closure because importing lib.dataos.identity
+    # runs the package __init__. A reader that imports a new tree must widen
+    # this list; test_curated_exclusive_scopes_cover_their_own_import_closure
+    # fails until it does.
+    scope: exclusive
+    paths:
+      - "engine/classification_axes/**"
+      - "contracts/classification_axes/**"
+      - "tests/fixtures/classification_axes/**/*.json"
+      - "tests/test_classification_axes_cell.py"
+      - "tests/test_classification_axes_sic_industry.py"
+      - "tests/test_classification_axes_geography.py"
+      - "tests/test_classification_axes_macro_sensitivity.py"
+      - "tests/test_classification_axes_business_model.py"
+      - "tests/test_classification_axes_lifecycle.py"
+      - "tests/test_classification_axes_value_chain.py"
+      - "tests/test_classification_axes_registry.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/store.py"
+      - "engine/stock_macro_sensitivity.py"
+      - "collectors/equity_profile.py"
+      - "scripts/build_security_master.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/**"
+      - "lib/delisted_symbols.py"
+      - "lib/ticker_aliases.py"
+      - "config/delisted_symbols.yml"
+      - "config/issuer_group_allowlist.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "contracts/theme_graph/edges.v1.schema.json"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: AxisCell v1 contract
+        run: TZ=UTC python -m pytest tests/test_classification_axes_cell.py tests/test_classification_axes_sic_industry.py tests/test_classification_axes_geography.py tests/test_classification_axes_macro_sensitivity.py tests/test_classification_axes_business_model.py tests/test_classification_axes_lifecycle.py tests/test_classification_axes_value_chain.py tests/test_classification_axes_registry.py -q
+
   chronicle-suite:
     if: ${{ false }}
     gate: data
@@ -3470,6 +3534,15 @@ jobs:
       - "tests/fixtures/options_matrix_retention/**"
       - "tests/test_options_matrix.py"
       - "tests/test_options_matrix_retention.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/ledger_lane.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3626,6 +3699,7 @@ jobs:
       - "engine/name_resolver.py"
       - "engine/name_score_grader.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -3664,6 +3738,7 @@ jobs:
       - "engine/prophet_stage_inputs.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -4416,54 +4491,76 @@ jobs:
           tests/test_fundamental_forensics_page.py
           tests/test_fundamental_forensics_private_state.py
           tests/test_fundamental_forensics_health.py
+          tests/test_fundamental_forensics_coverage_contract.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_acquisition.py
           tests/test_fundamental_forensics_disclosure_diff.py
+          tests/test_fundamental_forensics_detector_applicability.py
           tests/test_fundamental_forensics_disclosure_projection.py
           tests/test_fundamental_forensics_source_sync.py
           tests/test_fundamental_forensics_attestation.py
           tests/test_fundamental_forensics_wave2_operator.py
           tests/test_fundamental_forensics_companyfacts.py
+          tests/test_fundamental_forensics_t1_compatibility_seal.py
           tests/test_fundamental_forensics_companyfacts_ledger.py
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_raw_ledger.py
           tests/test_fundamental_forensics_periods.py
+          tests/test_fundamental_forensics_excel_export.py
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_financial_intelligence_packet.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r2.py
+          tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r3.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
+          tests/test_fundamental_forensics_admitted_filing_package.py
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_sec_document_spine.py
           tests/test_fundamental_forensics_filing_package.py
+          tests/test_fundamental_forensics_production_dataset_store.py
+          tests/test_fundamental_forensics_production_provider.py
           tests/test_fundamental_forensics_financial_query_service.py
           tests/test_fundamental_forensics_financial_query_api.py
           tests/test_fundamental_forensics_ixbrl_raw_ledger.py
+          tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_cross_filing_lineage.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_financial_revision_api.py
+          tests/test_fundamental_forensics_statement_grid.py
           tests/test_fundamental_forensics_financial_packet_service.py
           tests/test_fundamental_forensics_financial_packet_api.py
           tests/test_fundamental_forensics_financial_statement_service.py
+          tests/test_fundamental_forensics_specialist_pack_contract.py
           tests/test_fundamental_forensics_financial_statement_api.py
           tests/test_forensics_api.py
           tests/test_edgar_forensics_collector.py
+          tests/test_fundamental_forensics_attestation_admission.py
           tests/test_fundamental_forensics_broad_sec.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_fundamental_forensics_edgar_index.py
           tests/test_context_api.py
           tests/test_finra_knowable.py
           tests/test_t0_indicator.py
+          tests/test_fundamental_forensics_disclosure_alignment_e1.py
           tests/test_intraday_flow.py
           tests/test_intraday_flow_stance.py
           tests/test_intraday_flow_w11_r1.py
+          tests/test_fundamental_forensics_p0_view_contract.py
+          tests/test_fundamental_forensics_multi_filing_lineage.py
           tests/test_intraday_flow_w11_r2.py
           tests/test_intraday_flow_w11_r3.py
           tests/test_intraday_flow_w11_r4.py
+          tests/test_fundamental_forensics_held_out_isolation.py
+          tests/test_fundamental_forensics_q0_quality_protocol.py
           tests/test_intraday_flow_w11_r5.py
+          tests/test_fundamental_forensics_sec_request_pacer.py
+          tests/test_fundamental_forensics_filing_observation_state.py
+          tests/test_fundamental_forensics_public_summary_freshness.py
           tests/test_intraday_flow_ncp_js.py
           tests/test_standout_audit.py
+          tests/test_fundamental_forensics_query_exports.py
+          tests/test_fundamental_forensics_api_client.py
           tests/test_track_record_page.py
           tests/test_altdata_hygiene.py
           tests/test_china_news_engine.py
@@ -6522,6 +6619,7 @@ jobs:
     scope: exclusive
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -6763,6 +6861,10 @@ jobs:
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/marketdata/subsector_rotation.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11070,6 +11172,7 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -11942,6 +12045,7 @@ jobs:
       - "engine/theme_graph/theme_state_use_reader.py"
       - "tests/test_theme_state_generation_use_reader.py"
       - "tests/test_company_theme_exposure_production_bridge.py"
+      - "tests/test_company_theme_exposure_staleness_matrix.py"
       - config/synapse.yml
       - contracts/theme_graph/capability.v1.schema.json
       - contracts/theme_graph/evidence.v1.schema.json
@@ -12003,6 +12107,14 @@ jobs:
       - lib/dataos/temporal.py
       - tests/test_theme_graph_structural_owner_binding.py
       - tests/test_theme_graph_relation_action_resolver.py
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12023,7 +12135,7 @@ jobs:
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
         run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
-        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py -k 'not live_theme_inputs' -q
+        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py tests/test_company_theme_exposure_staleness_matrix.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
         # Wired 2026-10-06 (#8519): engine/leadership_receipt.py reads
         # site/neuralwebdata/theme_state.json with a 5-day ceiling; this job owns
@@ -13418,6 +13530,7 @@ jobs:
       - "engine/provider_health.py"
       - "engine/pullback_zone.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -13672,6 +13785,10 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
     # BioCatalyst's authenticated workbench and deployment-isolation boundary.
     # This is an intentionally bounded command, not part of a single aggregate
     # B1/B1b/B2 command: the legacy pack runner applies timeout-minutes per
@@ -13907,6 +14024,7 @@ jobs:
       - "engine/master_brain.py"
       - "engine/name_resolver.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -13919,6 +14037,7 @@ jobs:
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -14181,6 +14300,10 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
     # B1b/B2 Record History retrieval, exact-diff replay and public-safe model
     # projection.  This is deliberately independently bounded because its
     # repeated source-evidence verification is the heaviest validation family.
@@ -16572,6 +16695,7 @@ jobs:
       - "engine/master_brain.py"
       - "engine/name_resolver.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -16584,6 +16708,7 @@ jobs:
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -16861,6 +16986,10 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 15
@@ -16968,7 +17097,7 @@ jobs:
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
       # generated-page and hostile-null pins never sit outside CI.
       - name: factor registry + measurement evidence and research implications
-        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py tests/test_measurement_verdict_preservation.py -q
+        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py tests/test_measurement_verdict_preservation.py tests/test_verdict_preservation_edge_matrix.py -q
       - name: look-ahead tripwire over engine/ + collectors/ (feature-leak guard)
         run: python -m pytest tests/test_no_lookahead.py -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
@@ -18832,6 +18961,11 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
     # 2026-08-15 pack-9 / run 31881072256 on PR #5750: the first semantic step
     # (1253 tests) took 223.76s; the fusion step was SIGKILL'd when this
     # 5-minute logical-job deadline expired at 300s, and the post-kill
@@ -20622,6 +20756,7 @@ jobs:
       - "engine/master_brain.py"
       - "engine/name_resolver.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/opex.py"
@@ -20634,6 +20769,7 @@ jobs:
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -20909,6 +21045,10 @@ jobs:
       - "site/basketdata/radar_enriched.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
     timeout-minutes: 15
@@ -21859,6 +21999,8 @@ jobs:
       - tests/test_dataos_web_lab_worker.py
       - tests/test_dataos_web_readers.py
       - tests/test_dataos_web_workspace.py
+      - tests/test_tiingo_produced_contracts.py
+      - docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21873,7 +22015,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
-          tests/test_dataos_web_workspace.py -q -rs
+          tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
 
   dataos-foundation:
     scope: exclusive
@@ -22038,6 +22180,7 @@ jobs:
     scope: exclusive
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -22355,6 +22498,7 @@ jobs:
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
@@ -22367,7 +22511,10 @@ jobs:
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/production_datasets.py"
+      - "engine/fundamental_forensics/production_provider.py"
       - "engine/fundamental_forensics/query.py"
+      - "engine/fundamental_forensics/query_exports.py"
       - "engine/fundamental_forensics/query_service.py"
       - "engine/fundamental_forensics/query_snapshots.py"
       - "engine/fundamental_forensics/raw_ledger.py"
@@ -22497,6 +22644,7 @@ jobs:
       - "engine/neuralweb/theme_state_generation.py"
       - "engine/neuralweb/theme_state_generation_reader.py"
       - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_translate.py"
       - "engine/ollama_provider.py"
       - "engine/ontology_explorer.py"
@@ -22543,6 +22691,7 @@ jobs:
       - "engine/provider_health.py"
       - "engine/pullback_zone.py"
       - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
       - "engine/qbus_news_cluster.py"
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
@@ -22550,6 +22699,7 @@ jobs:
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_universe_snapshot.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
       - "engine/qledger_store.py"
@@ -22703,12 +22853,14 @@ jobs:
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/migrate_qbus_news.py"
+      - "scripts/qbus_news_cluster_audit.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_qbus_news.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
       - "scripts/sparse_guard.py"
       - "scripts/thematic_rotation_phase0.py"
+      - "scripts/ticker_news_inventory.py"
       - "scripts/verify_ticker_news.py"
       - "scripts/worktree_sparse.py"
       - "site/basketdata/baskets.json"
@@ -22752,7 +22904,10 @@ jobs:
       - "tests/test_benzinga_news.py"
       - "tests/test_build_qbus_news_universe.py"
       - "tests/test_massive_benzinga_news.py"
+      - "tests/test_qbus_news_annotate.py"
       - "tests/test_qbus_news_cluster.py"
+      - "tests/test_qbus_news_cluster_adversarial.py"
+      - "tests/test_qbus_news_cluster_audit.py"
       - "tests/test_qbus_news_contract.py"
       - "tests/test_qbus_news_migration.py"
       - "tests/test_qbus_news_receipts.py"
@@ -22760,18 +22915,32 @@ jobs:
       - "tests/test_qbus_news_store.py"
       - "tests/test_qbus_news_store_api_reads.py"
       - "tests/test_qbus_news_store_clusters.py"
+      - "tests/test_qbus_news_store_lifecycle.py"
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
+      - "tests/test_qbus_news_universe_diagnose.py"
       - "tests/test_qbus_news_universe_snapshot.py"
+      - "tests/test_qbus_news_velocity.py"
       - "tests/test_run_qbus_news.py"
+      - "tests/test_run_qbus_news_gap_replay.py"
       - "tests/test_run_qbus_news_health.py"
       - "tests/test_run_qbus_news_provider.py"
+      - "tests/test_ticker_news_annotation_api.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
+      - "tests/test_ticker_news_inventory.py"
+      - "tests/test_ticker_news_package_n_matrix.py"
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
       - "tests/test_verify_ticker_news.py"
+      # Options-structure block screening (#8922) reaches the flow detector's
+      # measured-block contract and its episode/stage imports.
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "lib/live_flow_event_stage.py"
       - engine/company_intelligence/issuer_disclosure_owner.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - scripts/publish_company_disclosure.py
@@ -22794,7 +22963,10 @@ jobs:
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
           tests/test_massive_benzinga_news.py
+          tests/test_qbus_news_annotate.py
           tests/test_qbus_news_cluster.py
+          tests/test_qbus_news_cluster_adversarial.py
+          tests/test_qbus_news_cluster_audit.py
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
@@ -22802,14 +22974,21 @@ jobs:
           tests/test_qbus_news_store.py
           tests/test_qbus_news_store_api_reads.py
           tests/test_qbus_news_store_clusters.py
+          tests/test_qbus_news_store_lifecycle.py
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
+          tests/test_qbus_news_universe_diagnose.py
           tests/test_qbus_news_universe_snapshot.py
+          tests/test_qbus_news_velocity.py
           tests/test_run_qbus_news.py
+          tests/test_run_qbus_news_gap_replay.py
           tests/test_run_qbus_news_health.py
           tests/test_run_qbus_news_provider.py
+          tests/test_ticker_news_annotation_api.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
+          tests/test_ticker_news_inventory.py
+          tests/test_ticker_news_package_n_matrix.py
           tests/test_ticker_news_receipt_binding.py
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_systemd.py
@@ -22876,6 +23055,7 @@ jobs:
       - collectors/fundamental_forensics_acquisition.py
       - collectors/fundamental_forensics_companyfacts.py
       - collectors/sec_document_spine.py
+      - collectors/sec_request_pacer.py
       - contracts/fundamental_forensics_broad_sec_issuer_manifest.schema.json
       - engine/fundamental_forensics/broad_sec_store.py
       - engine/fundamental_forensics/models.py
@@ -23157,6 +23337,9 @@ jobs:
       # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
       - "templates/_curve_panel.html.j2"
       - "tests/test_macro_rates_curves_route.py"
+      # Preservation renders use the original paired input generation rather
+      # than the independently refreshed nightly macrodata publication.
+      - "tests/fixtures/macro_suite_t11/**"
       # T11 reads these fourteen committed pages (thirteen siblings + the hub).
       # Listed literally: they are computed from SUITE_PAGES at runtime and
       # would otherwise be invisible to the trigger-closure checker. T10 no
@@ -24075,6 +24258,7 @@ jobs:
       - collectors/fundamental_forensics_companyfacts.py
       - collectors/sec_document_spine.py
       - collectors/sec_filing_parser.py
+      - collectors/sec_request_pacer.py
       - config/dataset_registry.yml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - engine/__init__.py

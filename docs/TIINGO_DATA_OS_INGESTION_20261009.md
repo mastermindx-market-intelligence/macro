@@ -13,7 +13,41 @@ Actual endpoint activation and data receipt now have bounded proof below. Full
 fundamentals scope, complete backfill, canonical admission and production consumer
 acceptance remain open, distinct from the Chairman's purchase/rights attestation.
 
-## Current truthful states — source checkpoint 2026-10-11 22:49 UTC
+## Current research registration — 2026-10-12
+
+The producer repair landed through Macro #8875 at
+2c90e1c01d53516c6920e8cb1edd835f82354e28 with accepted exact-head hosted CI.
+The completed prefix through 09:36 UTC qualifies 11,690 nonempty EOD histories,
+24,600,974 distinct bars and 21 empty catalogue responses. Capture continues;
+35,978 catalogue windows lack an accepted capture, which does not imply they
+have never been attempted. Two new fundamentals cohorts qualify 75 requests,
+146,717 projected rows and 1,598 original/revised differences across 25,342
+unambiguous fiscal metric keys. They serve 2023-10-12 through 2026-10-09 despite
+1990 requested starts. New SHW and PFE originally reported requests returned
+HTTP 400 and remain held without retry.
+
+Exactly four existing EOD/fundamentals L0/L1 contracts now describe their actual
+authenticated completed research corpus as PRODUCED. Their corrected storage
+and partition-dependent grains preserve request context and original lineage.
+The other twenty contracts retain PROPOSED, including BOATS and standalone actions.
+This changes descriptive existence; it grants no canonical/PIT/publication authority.
+The immutable installed Data & Lab release at 2c90 reads EBAY/DWCH and all three
+JPM/AXP modes, but still carries its earlier registry until a newly landed release
+is selected and verified. Root bindings and adapter qualifications are unchanged.
+
+Bounded evidence and its original document digests are in
+`tiingo-evidence/20261012-research-contracts/accepted-corpus.json`.
+The contract change passed 100 affected registry/additional-history/workspace tests
+and independent architecture/integration review. Hosted acceptance, landing and
+new installed-registry consumption remain separate delivery facts.
+
+Terminal #955's last verified head de8aca83 passed all twelve dispatched jobs;
+its original PR run 38214248199 remains held for maintainer approval. Full history,
+deep/all-symbol fundamentals account scope, dated identity, historical upstream
+availability and real BOATS runtime/Terminal acceptance remain open. Earlier
+dated PROPOSED and source/CI snapshots below are retained as historical evidence.
+
+## Earlier source checkpoint — 2026-10-11 22:49 UTC
 
 The accepted producer integrity logic remains bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb
 with successful exact-head hosted CI 38137444247. The active original source carrier
