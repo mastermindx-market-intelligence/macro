@@ -3389,7 +3389,11 @@ def main(alpha: dict | None = None) -> dict | None:
     try:
         _t0_intel = time.time()
         _intel_by_ticker = china_intel_interest.build_interest_map(
-            str(r.get("ticker") or "") for r in _candidate_rows
+            (str(r.get("ticker") or "") for r in _candidate_rows),
+            # Raw producer series, not ranked rows; breadth-only names are absent
+            # from the Intelligence reader's search/deep price universe.
+            raw_closes_by={t: close for t, close, _high, _name, _sector in uni},
+            as_of=_board_asof,
         )
         _intel_coverage = china_intel_interest.coverage(_intel_by_ticker)
         log.info(
