@@ -3,6 +3,21 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Current protected release constraint — October12 09:31 UTC
+
+Original PR8786 remains OPEN atde63b3a93eb3715cc9f84a86d1ae034b822b9fd5,
+armed with merge-on-green. CI38223150169 passed that exact head, but controller
+38229687409 now classifies its landing proof stale because main74031a83236f
+changed CI definitions. The admitted refresh was deferred at09:26:45Z:
+12indexed PR CI runs, global cap8, zero available slots. Main's breaker is
+green;8960still had one running check. No duplicate repair or manual refresh
+was launched. The controller owns the next refresh and fresh proof. Exact
+raw decision and structured evidence are pr8786_de63_refresh_admission.txt
+and pr8786_de63_refresh_admission.json. No merge/install/browser/publication
+acceptance exists. After admitted refresh, review source/page changes before
+rebinding the portable bundle to the actual protected merge. The separate
+aggregate-feed implementation and186-test result remain unchanged.
+
 ## Current active release
 
 Original PR8786 is OPEN and re-armed atde63b3a93eb3715cc9f84a86d1ae034b822b9fd5.

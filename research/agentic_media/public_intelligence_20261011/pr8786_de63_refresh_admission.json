@@ -1,0 +1,23 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "pr": 8786,
+  "head": "de63b3a93eb3715cc9f84a86d1ae034b822b9fd5",
+  "exact_head_ci": {
+    "run": 38223150169,
+    "conclusion": "success"
+  },
+  "controller_run": 38229687409,
+  "controller_observed_at": "2026-10-12T09:26:45Z",
+  "decision": "PROOF_STALE_REFRESH_DEFERRED",
+  "definition_change_commit": "74031a83236f",
+  "active_pr_ci_runs": 12,
+  "global_cap": 8,
+  "available_slots": 0,
+  "pr_state_at_0931_read": "OPEN",
+  "merge_commit": null,
+  "next_action": "Existing controller admits refresh and fresh exact-head CI; then protected landing and installed/browser checks before aggregate-feed PR",
+  "source_mutated": false,
+  "release_gate_changed": false,
+  "publication_approved": false,
+  "verification_command": "gh run view 38229687409 --repo mastermindx-market-intelligence/macro --log"
+}

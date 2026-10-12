@@ -585,3 +585,16 @@ Protected landing, installation and actual browser acceptance remain outstanding
 followed by the separately tested aggregate-feed release. No source or release
 gate changed. Native continuation first actually woke at08:31:49.007Z; its
 registration receipt now distinguishes observed execution from initial setup.
+
+## October12 protected refresh admission
+
+The09:31PRread remained OPEN atde63, merge-on-green, no merge commit.
+Controller38229687409 classified this passed head as PROOF_STALE after
+main74031a83236f changed CI definitions. At09:26:45Z it deferred refresh:
+12indexed PR CI runs versus cap8, zero slots. Main breaker was green;
+8960still had one running check. Verified by gh run view38229687409 --log;
+full exact command and bounded raw decision are pr8786_de63_refresh_admission.json
+and.txt. Preserve the existing controller; do not manually refresh around
+admission. Next is admitted refresh, new exact-head CI, protected landing,
+then source/page review and installed/browser checks. No application source,
+release gate, staging, provider or publication effect changed.
