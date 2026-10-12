@@ -460,6 +460,7 @@ _FOLD_MEASURE_SCRIPT = """
       bottom: null,
       height: null,
       viewport_height: viewportHeight,
+      rendered: false,
       within_first_viewport: false
     };
     try {
@@ -470,7 +471,10 @@ _FOLD_MEASURE_SCRIPT = """
         entry.top = rect.top + scrollY;
         entry.bottom = rect.bottom + scrollY;
         entry.height = rect.height;
-        entry.within_first_viewport = entry.bottom <= viewportHeight;
+        // A display:none element is found but has no box: its zero rect sits
+        // at y=0, which must not read as "above the fold".
+        entry.rendered = el.getClientRects().length > 0;
+        entry.within_first_viewport = entry.rendered && entry.bottom <= viewportHeight;
       }
     } catch (e) {}
     measurements.push(entry);
@@ -505,6 +509,7 @@ def measure_fold(
                 "bottom": None,
                 "height": None,
                 "viewport_height": None,
+                "rendered": False,
                 "within_first_viewport": False,
             }
             for name, selector in selectors

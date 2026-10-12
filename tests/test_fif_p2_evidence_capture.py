@@ -749,6 +749,15 @@ def test_measure_fold_evaluate_failure_still_records() -> None:
     row = rows[0]
     assert row["measure_error"].startswith("RuntimeError: page gone")
     assert row["measurements"][0]["found"] is False
+    assert row["measurements"][0]["rendered"] is False
+    assert row["measurements"][0]["within_first_viewport"] is False
+
+
+def test_fold_script_never_counts_an_unrendered_element_as_above_the_fold() -> None:
+    # display:none yields a zero rect at y=0; the fold verdict must require a box.
+    script = tool._FOLD_MEASURE_SCRIPT
+    assert "entry.rendered = el.getClientRects().length > 0;" in script
+    assert "entry.within_first_viewport = entry.rendered && entry.bottom <= viewportHeight;" in script
 
 
 def test_route_handler_binds_cell_id() -> None:
