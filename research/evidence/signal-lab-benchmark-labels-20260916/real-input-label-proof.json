@@ -1,0 +1,58 @@
+{
+  "source_input_commit": "3daf739affa12a43a6b3a0feb3b4c57154587756",
+  "input_sha256": {
+    "data/yahoo/QQQ.parquet": "415dc4b620c03a6752887acf9097a734fc01d71ab8e1dec48176389f94401c6e",
+    "data/yahoo/SPY.parquet": "55c796806dd37f79a0f1786132c010bce9cce33faf6dc7357dbf069d86095776"
+  },
+  "declared_column": "close_price",
+  "observed_input_end": "2026-09-15 00:00:00",
+  "label_checks": [
+    {
+      "horizon_bars": 5,
+      "label_count": 6917,
+      "max_abs_scalar_parity_error": 0.0,
+      "last_label_start": "2026-09-08 00:00:00"
+    },
+    {
+      "horizon_bars": 10,
+      "label_count": 6912,
+      "max_abs_scalar_parity_error": 0.0,
+      "last_label_start": "2026-08-31 00:00:00"
+    },
+    {
+      "horizon_bars": 21,
+      "label_count": 6901,
+      "max_abs_scalar_parity_error": 0.0,
+      "last_label_start": "2026-08-14 00:00:00"
+    },
+    {
+      "horizon_bars": 63,
+      "label_count": 6859,
+      "max_abs_scalar_parity_error": 0.0,
+      "last_label_start": "2026-06-15 00:00:00"
+    },
+    {
+      "horizon_bars": 126,
+      "label_count": 6796,
+      "max_abs_scalar_parity_error": 5.551115123125783e-17,
+      "last_label_start": "2026-03-16 00:00:00"
+    }
+  ],
+  "legacy_ambiguities": [
+    {
+      "id": "SF-0003",
+      "refused": true,
+      "reason": "excess_return requires explicit target.benchmark {path, column}; no baseline inference"
+    },
+    {
+      "id": "SF-0011",
+      "refused": true,
+      "reason": "excess_return requires explicit target.benchmark {path, column}; no baseline inference"
+    }
+  ],
+  "inputs_unchanged": true,
+  "market_signal_evaluated": false,
+  "trial_ledger_written": false,
+  "qualification": "Stored price-return arithmetic, not total-return/PIT certification, alpha or production acceptance.",
+  "reproduction": "python3.12 research/evidence/signal-lab-benchmark-labels-20260916/recheck_labels.py --output .pytest_cache/<new-private-directory>"
+}
