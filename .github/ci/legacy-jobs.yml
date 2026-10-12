@@ -4524,6 +4524,8 @@ jobs:
           tests/test_intraday_flow_w11_r5.py
           tests/test_intraday_flow_ncp_js.py
           tests/test_standout_audit.py
+          tests/test_fundamental_forensics_query_exports.py
+          tests/test_fundamental_forensics_api_client.py
           tests/test_track_record_page.py
           tests/test_altdata_hygiene.py
           tests/test_china_news_engine.py
@@ -22452,6 +22454,7 @@ jobs:
       - "engine/fundamental_forensics/production_datasets.py"
       - "engine/fundamental_forensics/production_provider.py"
       - "engine/fundamental_forensics/query.py"
+      - "engine/fundamental_forensics/query_exports.py"
       - "engine/fundamental_forensics/query_service.py"
       - "engine/fundamental_forensics/query_snapshots.py"
       - "engine/fundamental_forensics/raw_ledger.py"
