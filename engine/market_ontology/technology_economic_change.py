@@ -54,6 +54,7 @@ from __future__ import annotations
 import dataclasses
 import datetime
 import hashlib
+import importlib
 import json
 import re
 from collections.abc import Iterable, Mapping
@@ -347,8 +348,21 @@ def _load_shared_curation_contract() -> Any | None:
     ``curation_revision``) — either way the composer must refuse the
     assertion-dependent sections rather than guess at payloads.
     """
+    # A string import, not a static ``from engine.theme_graph import ...``: the
+    # shared module is absent on main until macro#7870 lands, and
+    # tests/test_first_party_import_names.py (a static AST check that every
+    # first-party ``from X import Y`` resolves on the tree; it does not inspect
+    # ``importlib.import_module``) fails on a static import of an absent name.
+    # Same shape as main's Mining consumer (mining_dependency_binding.py,
+    # R-MIN-26), except that the argument is a string LITERAL equal to
+    # SHARED_CONTRACT_MODULE rather than the constant: scripts/ci_scope_dependencies.py
+    # resolves a literal import_module target but records a Name argument as an
+    # opaque "dynamic import" that smears CI scope. Keep it a literal. Semantics
+    # are unchanged: ``import_module`` raises ImportError both for the absent
+    # module and for one that resolves and then fails to import, and both still
+    # return None here (typed shared_contract_unavailable by the caller).
     try:
-        from engine.theme_graph import curation_assertion as shared
+        shared = importlib.import_module("engine.theme_graph.curation_assertion")
     except ImportError:
         return None
     if not callable(getattr(shared, "validate_assertion", None)) \

@@ -5960,6 +5960,41 @@ jobs:
   technology-ex-semis-boundary:
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    paths:
+      # The four suites and their measured import closure (inference's owned tier).
+      - "tests/test_company_management_outlook_contract.py"
+      - "tests/test_company_management_outlook.py"
+      - "tests/test_market_ontology_technology_economic_change.py"
+      - "tests/test_market_ontology_technology_research_registration.py"
+      - "contracts/company_intelligence/management_outlook_comparison.v1.schema.json"
+      - "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/management_outlook.py"
+      - "engine/company_intelligence/management_outlook_contract.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/theme_graph/__init__.py"
+      # engine/market_ontology/__init__.py runs on every import of the two subjects
+      # and loads exposure_map; inference does not follow implicit parent-package
+      # imports, so that chain (measured closure of exposure_map.py) is named here.
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "lib/config.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      # The #7870-owned modules the two strict xfails pin, absent on main. Named so
+      # the job re-runs the day they land and a strict xfail turns XPASS.
+      - "engine/theme_graph/curation_assertion.py"
+      - "engine/market_ontology/theme_research_registry.py"
+      - "engine/market_ontology/semiconductor_theme_research.py"
     # TECHNOLOGY EX-SEMIS FIRST VERTICAL, ON THE MERGE GATE (2026-09-24, #7891).
     #
     # The three Technology ex-Semis suites were named only in `gate: data` jobs
@@ -5974,11 +6009,16 @@ jobs:
     # nightly ledger. The nightly steps stay where they are; this job adds the
     # merge-gate verdict.
     #
-    # Scope is inferred: the suites import their subjects directly
-    # (engine/company_intelligence/management_outlook{,_contract}.py,
-    # engine/market_ontology/technology_economic_change.py, the two frozen
-    # contracts) and pull no app or builder closure, so inference owns the
-    # re-run set without a curated declaration.
+    # Scope is curated `scope: exclusive` (2026-10-12, #7891 CI repair). Left
+    # to inference, the `importlib.import_module(name)` shell loader in
+    # technology_research_registration.py is an opaque dynamic import, which
+    # gave this job whole-tree fallback claims (engine/**, scripts/**, ...).
+    # It then selected on engine/prophet/plan_book.py and
+    # scripts/build_free_content.py, files no suite here reads, and put both
+    # code packing probes in tests/test_ci_pack.py one job over their ceilings
+    # (128 > 127, 133 > 132 at base 6e7ef32c). The paths above keep the
+    # measured closure, the package-init chain and the pending #7870 modules,
+    # and drop only the fallback tier.
     #
     # Deps: jsonschema for the frozen contracts; pandas/numpy/pyarrow/requests
     # because engine/company_intelligence imports them at package load.

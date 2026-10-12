@@ -4329,6 +4329,11 @@ CURATED_EXCLUSIVE = {
     # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
     # so the job's paths must cover its own import closure.
     "consumer-cyclical-economic-change",
+    # 2026-10-12 #7891 Technology ex-Semis: the registration shell loader's
+    # import_module(name) is an opaque dynamic import, so inferred scope rode the
+    # whole-tree fallback tier onto both code probes (+1 job each, fallback tier
+    # only). Curated to the measured closure plus the pending #7870 modules.
+    "technology-ex-semis-boundary",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
