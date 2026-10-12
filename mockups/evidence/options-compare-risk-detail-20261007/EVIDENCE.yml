@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_risk_envelope_band.css.j2
+  - templates/risk_envelope_live.js
+  - site/risk_envelope_live.js
+  - site/macro.html
+  - site/assets/css/6f2cdcc1.css
+manifest: mockups/evidence/options-compare-risk-detail-20261007/manifest.json

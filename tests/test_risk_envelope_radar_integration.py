@@ -456,3 +456,53 @@ def test_duration_context_does_not_mutate_envelope_or_replace_odds_evidence():
     assert "Risk pressure" in html and "5 issued sessions" in html
     assert "Odds evidence" in html and "n=300" in html
     assert e == before
+
+
+def test_options_compare_extends_existing_risk_detail_without_a_second_poller():
+    template_js = (ROOT / "templates" / "risk_envelope_live.js").read_text()
+    site_js = (ROOT / "site" / "risk_envelope_live.js").read_text()
+    css = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text()
+
+    assert template_js == site_js
+    assert 'var COMPARE_URL = "options_compare.json";' in template_js
+    assert "renderOptionsCompare" in template_js
+    assert 'link.href = "options.html#scanner"' in template_js
+    assert "Fast means one of the biggest five-session moves in this map" in template_js
+    assert "It is not bullish, bearish, or a trade signal." in template_js
+    assert template_js.count("setInterval(") == 1
+    assert "innerHTML" not in template_js
+
+    assert "#dlg-risk .riskdlg-options-compare" in css
+    assert "#dlg-risk .ocmp-chart" in css
+    assert "#dlg-risk .ocmp-metrics" in css
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node required for shipped JS")
+def test_options_compare_shipped_js_is_syntax_valid():
+    proc = subprocess.run(
+        ["node", "--check", str(ROOT / "templates" / "risk_envelope_live.js")],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr
+
+
+def test_options_compare_generated_macro_assets_match_source_bytes():
+    import hashlib
+
+    template_js = (ROOT / "templates" / "risk_envelope_live.js").read_bytes()
+    site_js = (ROOT / "site" / "risk_envelope_live.js").read_bytes()
+    macro = (ROOT / "site" / "macro.html").read_text()
+    css_source = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text()
+
+    assert template_js == site_js
+    js_key = hashlib.sha256(site_js).hexdigest()[:8]
+    assert f'risk_envelope_live.js?v={js_key}' in macro
+
+    # build_site's style extractor preserves the Jinja include's leading newline.
+    expected_asset = ("\n" + css_source).encode()
+    css_key = hashlib.sha256(expected_asset).hexdigest()[:8]
+    css_asset = ROOT / "site" / "assets" / "css" / f"{css_key}.css"
+    assert css_asset.exists()
+    assert css_asset.read_bytes() == expected_asset
+    assert f'assets/css/{css_key}.css?v={css_key}' in macro
+
