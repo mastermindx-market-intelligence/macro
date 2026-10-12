@@ -4696,6 +4696,19 @@ CURATED_EXCLUSIVE = {
     # reads only its own config/contracts trees; its 3-path owner is the whole
     # closure (closure findings 0, gated-unrun 0), so no inference fallback.
     "single-name-coverage-profiles",
+    # 2026-10-12 Crypto Intelligence R2 (#8901, T23 pre-review BLOCKER B1): the
+    # nine vector/BTC behavior suites leave `unrun-vector-dsr`, whose `gate: data`
+    # made them DARK on every pull request (ci.yml plans `--gate code`;
+    # DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST), and whose inferred
+    # weight 35 -> 54 pushed the packing probes over their ceilings on #8901's
+    # merge ref (index.html 5,801 > 5,800; build_free_content 5,602 > 5,600).
+    # paths: = the measured 360-path import/read closure of the nine suites
+    # (collectors, config, engine incl. btc_*, lib, scripts incl. build_vector /
+    # backfill_crypto / check_crypto_shelves, templates/crypto.html.j2, the three
+    # site/ literals check_contract_delta surfaced). Measured on the merge ref:
+    # probes return to base exactly (index.html 5,782, build_free_content 5,585,
+    # plan_book 5,545); closure findings (); ceilings stay fixed — the #8805 shape.
+    "crypto-vector-r2-organs",
 }
 
 

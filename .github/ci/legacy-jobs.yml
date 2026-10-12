@@ -15635,7 +15635,7 @@ jobs:
       # pyyaml — PIL is imported transitively but blocking it leaves them 6-passed and
       # 1-passed, so it is optional, and it is not on this install line.
       - name: vector page organs — decision authority, catalyst, forward-risk, Kelly, gated timeline
-        run: python -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_crypto_collectors.py tests/test_btc_intraday_cvd.py -q
+        run: python -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py -q
       - name: DSR / override-registry trial budget (dof charged must equal dof declared)
         run: python -m pytest tests/test_btc_vector_w1.py tests/test_deflated_sharpe.py -q
       - name: settled-close tape — the basket pulse the closing-bell lane publishes
@@ -15646,6 +15646,399 @@ jobs:
       # lane owns the vector estate the cockpit ships on.
       - name: crypto cockpit — contract, market-state waves, house style
         run: python -m pytest tests/test_crypto_cockpit_contract.py tests/test_crypto_wave2.py tests/test_crypto_wave3.py tests/test_crypto_house_style.py -q
+
+  crypto-vector-r2-organs:
+    # Governed Crypto Intelligence + Bitcoin Vector R2 organs (#8901): the vector
+    # wave-1 / R2 data-boundary / R2 front-door contracts, the BTC signal,
+    # impulse, alert and intraday-CVD organs, and the crypto collectors. Their
+    # candidate wired all nine into unrun-vector-dsr, whose whole-closure
+    # inference puts that job's weight on every ordinary code change: hosted
+    # contract-delta run 38207224287 / job 114673430805 measured
+    # scripts/build_free_content.py 5,583 -> 5,602 against its 5,600 ceiling
+    # (sole delta unrun-vector-dsr 35 -> 54), and on fresh main
+    # templates/index.html read 5,782 -> 5,801 against 5,800. Following #8805,
+    # the nine live here under scope: exclusive with the measured closure below,
+    # so the family still runs for every path it actually reads and the probes
+    # return to their base readings. No suite, assertion or selector removed.
+    # gate: code, not data: ci.yml plans `--gate code`, so a gate: data job is
+    # dark on every pull request (DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST;
+    # T23 pre-review of #8901, BLOCKER B1 / REPAIR R1) — these behavior suites
+    # must be able to fail a PR.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - collectors/__init__.py
+      - collectors/_crypto_observations.py
+      - collectors/_drip.py
+      - collectors/_first_seen_store.py
+      - collectors/base.py
+      - collectors/bgeo.py
+      - collectors/breadth.py
+      - collectors/china_analyst.py
+      - collectors/china_credit.py
+      - collectors/china_filings.py
+      - collectors/china_news.py
+      - collectors/china_visits.py
+      - collectors/coinbase.py
+      - collectors/deribit.py
+      - collectors/edgar.py
+      - collectors/edgar_13f.py
+      - collectors/edgar_deadname_prices.py
+      - collectors/edgar_deadnames.py
+      - collectors/edgar_delisting.py
+      - collectors/edgar_eps.py
+      - collectors/edgar_flow_quality.py
+      - collectors/edgar_share_quality.py
+      - collectors/edgar_stock_quality.py
+      - collectors/fred.py
+      - collectors/holdings.py
+      - collectors/ipo_calendar.py
+      - collectors/ipo_prospectus.py
+      - collectors/okx.py
+      - collectors/openfigi.py
+      - config/ai_pricing.yml
+      - config/capability_manifest.yml
+      - config/delisted_symbols.yml
+      - config/metabolism_budget.yml
+      - contracts/theme_graph/membership_collection.v2.schema.json
+      - engine/__init__.py
+      - engine/active_alloc.py
+      - engine/active_commodity.py
+      - engine/ai_desk.py
+      - engine/ai_desk_scorer.py
+      - engine/alert_time.py
+      - engine/alert_triage.py
+      - engine/alerts.py
+      - engine/alt_cycle.py
+      - engine/altdata_ledger.py
+      - engine/altdata_models.py
+      - engine/altdata_picks.py
+      - engine/altdata_signals.py
+      - engine/anticipation.py
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/basket_breadth_divergence.py
+      - engine/basket_freeze.py
+      - engine/basket_history.py
+      - engine/basket_index.py
+      - engine/basket_levels_persist.py
+      - engine/basket_membership_pit.py
+      - engine/basket_mtf.py
+      - engine/basket_score.py
+      - engine/basket_tape.py
+      - engine/baskets.py
+      - engine/baskets_canada.py
+      - engine/baskets_china.py
+      - engine/baskets_hk.py
+      - engine/baskets_intl.py
+      - engine/baskets_region.py
+      - engine/board_ledger.py
+      - engine/board_shadow.py
+      - engine/btc_alerts.py
+      - engine/btc_correlation_regime.py
+      - engine/btc_cycle_thesis.py
+      - engine/btc_dat.py
+      - engine/btc_decision.py
+      - engine/btc_impulse_ledger.py
+      - engine/btc_impulse_radar.py
+      - engine/btc_impulse_radar_backtest.py
+      - engine/btc_inputs.py
+      - engine/btc_intraday_cvd.py
+      - engine/btc_leverage_cascade.py
+      - engine/btc_master.py
+      - engine/btc_mtf.py
+      - engine/btc_options.py
+      - engine/btc_override_ledger.py
+      - engine/btc_overrides.py
+      - engine/btc_recommend.py
+      - engine/btc_regime.py
+      - engine/btc_regime_flags.py
+      - engine/btc_regime_ledger.py
+      - engine/btc_signals.py
+      - engine/canada_axes.py
+      - engine/canada_conditions.py
+      - engine/canada_factor_beta.py
+      - engine/canada_fundamentals.py
+      - engine/canada_inputs.py
+      - engine/canada_insider.py
+      - engine/canada_overlay.py
+      - engine/canada_regime.py
+      - engine/canada_run.py
+      - engine/canon.py
+      - engine/catalyst_tone.py
+      - engine/china_allocation.py
+      - engine/china_altdata.py
+      - engine/china_basket_spine.py
+      - engine/china_basket_turn.py
+      - engine/china_conviction.py
+      - engine/china_crowding.py
+      - engine/china_discovery.py
+      - engine/china_event_calendar.py
+      - engine/china_extras.py
+      - engine/china_intel_bus.py
+      - engine/china_masterminds.py
+      - engine/china_news.py
+      - engine/china_news_intel.py
+      - engine/china_pboc_stance.py
+      - engine/china_radar.py
+      - engine/china_radar_ledger.py
+      - engine/china_signal_lab.py
+      - engine/china_strategies.py
+      - engine/china_validation.py
+      - engine/cn_ai_semis_confirmer.py
+      - engine/cn_newswires.py
+      - engine/codex_lane/runner.py
+      - engine/codex_provider.py
+      - engine/commodity_alerts.py
+      - engine/commodity_inputs.py
+      - engine/commodity_signals.py
+      - engine/commodity_strategies.py
+      - engine/conditions.py
+      - engine/confluence_tiers.py
+      - engine/conviction_accrual.py
+      - engine/credit_window.py
+      - engine/cross_asset.py
+      - engine/cross_asset_trend.py
+      - engine/cycle_ontology.py
+      - engine/cycles.py
+      - engine/dannytrades.py
+      - engine/dannytrades_chip.py
+      - engine/desk_ledger.py
+      - engine/desk_scorer.py
+      - engine/dislocation.py
+      - engine/dispersion.py
+      - engine/election_cycle.py
+      - engine/emergence_alerts.py
+      - engine/entity_resolver.py
+      - engine/entry_signal.py
+      - engine/equity_alloc.py
+      - engine/equity_factors.py
+      - engine/etf_board.py
+      - engine/etf_pulse.py
+      - engine/event_calendar.py
+      - engine/extension.py
+      - engine/falsifier_tripwires.py
+      - engine/forward_calendar_context.py
+      - engine/forward_dist.py
+      - engine/gdelt_client.py
+      - engine/global_liquidity.py
+      - engine/grading.py
+      - engine/group_flow.py
+      - engine/hazard_score.py
+      - engine/hold.py
+      - engine/holdings_signals.py
+      - engine/hysteresis.py
+      - engine/i18n.py
+      - engine/ignition_audit.py
+      - engine/ignition_radar.py
+      - engine/index_direction.py
+      - engine/indicators.py
+      - engine/inputs.py
+      - engine/ipo_hk.py
+      - engine/ipo_lockup.py
+      - engine/ipo_radar.py
+      - engine/leadership_receipt.py
+      - engine/ledger_lane.py
+      - engine/llm_auth.py
+      - engine/macro_surprise.py
+      - engine/manager_lag.py
+      - engine/manager_quality.py
+      - engine/manager_trades.py
+      - engine/market_state.py
+      - engine/market_state_ca.py
+      - engine/master_brain.py
+      - engine/masterminds.py
+      - engine/metabolism/__init__.py
+      - engine/metabolism/budget_gate.py
+      - engine/mtf_monitor.py
+      - engine/name_direction.py
+      - engine/name_resolver.py
+      - engine/name_score.py
+      - engine/name_score_grader.py
+      - engine/narrative_crossmarket.py
+      - engine/narrative_emergence.py
+      - engine/narrative_rotation.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brief_context.py
+      - engine/neuralweb/capability_broker.py
+      - engine/neuralweb/constitution.py
+      - engine/neuralweb/envelope.py
+      - engine/neuralweb/governance.py
+      - engine/neuralweb/key_pool.py
+      - engine/neuralweb/read.py
+      - engine/neuralweb/synapse.py
+      - engine/news_common.py
+      - engine/news_translate.py
+      - engine/ohlc_reconstruct.py
+      - engine/ollama_provider.py
+      - engine/opex.py
+      - engine/oracle/__init__.py
+      - engine/oracle/washout_counterread.py
+      - engine/passport.py
+      - engine/pit.py
+      - engine/pit_lag_recorder.py
+      - engine/playbook.py
+      - engine/pooling.py
+      - engine/prophet_board_since.py
+      - engine/provider_health.py
+      - engine/pullback_zone.py
+      - engine/qbus.py
+      - engine/qkernel.py
+      - engine/qledger.py
+      - engine/qledger_store.py
+      - engine/qledger_store_native.py
+      - engine/qledger_store_protocol.py
+      - engine/qledger_store_sources.py
+      - engine/qledger_validity.py
+      - engine/rate_inflation_transmission.py
+      - engine/rebalance_calendar.py
+      - engine/regime.py
+      - engine/regime_label.py
+      - engine/regime_one.py
+      - engine/regime_vector.py
+      - engine/residual_alpha.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/risk_radar_scorecard.py
+      - engine/risk_sizing.py
+      - engine/risk_state.py
+      - engine/sector_cycles.py
+      - engine/sector_ignition.py
+      - engine/sector_pulse.py
+      - engine/sector_rate_inflation.py
+      - engine/session_anchor.py
+      - engine/setups.py
+      - engine/signal_archive.py
+      - engine/signal_foundry/results.py
+      - engine/signal_foundry/spec.py
+      - engine/signal_foundry/transforms.py
+      - engine/signal_frontier_docket.py
+      - engine/signal_gate.py
+      - engine/signal_lab.py
+      - engine/signal_quality.py
+      - engine/smart_money.py
+      - engine/spine.py
+      - engine/spvector_overlay.py
+      - engine/stock_score.py
+      - engine/stock_technicals.py
+      - engine/stock_view.py
+      - engine/store_guard.py
+      - engine/strategies.py
+      - engine/sue.py
+      - engine/technicals.py
+      - engine/theme_alerts.py
+      - engine/theme_context.py
+      - engine/theme_crowding.py
+      - engine/theme_discovery.py
+      - engine/theme_scoring.py
+      - engine/theme_validation.py
+      - engine/ticker_shape.py
+      - engine/total_return.py
+      - engine/track_era.py
+      - engine/track_ledger.py
+      - engine/trial_ledger.py
+      - engine/tushare_freshness.py
+      - engine/universe_history.py
+      - engine/validation.py
+      - engine/valuation.py
+      - engine/velocity.py
+      - engine/vol_forecast.py
+      - engine/vol_regime.py
+      - engine/vol_squeeze.py
+      - engine/yield_momentum.py
+      - lib/__init__.py
+      - lib/ai_costs.py
+      - lib/closes_panel.py
+      - lib/cn_calendar.py
+      - lib/config.py
+      - lib/dataos/identity.py
+      - lib/delisted_symbols.py
+      - lib/exchange_holidays.py
+      - lib/filing_value_units.py
+      - lib/forex_link.py
+      - lib/hk_calendar.py
+      - lib/illus.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/nyse_calendar.py
+      - lib/pages.py
+      - lib/site_assets.py
+      - lib/store.py
+      - lib/ticker_aliases.py
+      - lib/ticker_popularity.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
+      - research/US_BOARD_MEASUREMENT.md
+      - research/crypto_science/r10_source_qualification.py
+      - research/crypto_science/r12/reference_cvd_before_price_guard.py.txt
+      - research/crypto_science/r3_cohort_study.py
+      - research/crypto_science/r4_sequence_study.py
+      - research/crypto_science/r5_participation_study.py
+      - research/crypto_science/r6_probability_study.py
+      - research/crypto_science/r7_calibration_study.py
+      - research/crypto_science/r8_action_value_study.py
+      - research/crypto_science/r9_prebreak_study.py
+      - scripts/__init__.py
+      - scripts/_active_render.py
+      - scripts/backfill_crypto.py
+      - scripts/backtest_ladder_history.py
+      - scripts/build_baskets_canada.py
+      - scripts/build_baskets_china.py
+      - scripts/build_baskets_china_ths.py
+      - scripts/build_baskets_hk.py
+      - scripts/build_baskets_intl.py
+      - scripts/build_btc_strategy.py
+      - scripts/build_canada.py
+      - scripts/build_canada_library.py
+      - scripts/build_chart_data.py
+      - scripts/build_china_masterminds.py
+      - scripts/build_china_strategies.py
+      - scripts/build_commodity_strategies.py
+      - scripts/build_crossmarket.py
+      - scripts/build_ipo.py
+      - scripts/build_masterminds.py
+      - scripts/build_override_shadow.py
+      - scripts/build_reports.py
+      - scripts/build_spvector.py
+      - scripts/build_strategies.py
+      - scripts/build_theme_detail.py
+      - scripts/build_vector.py
+      - scripts/check_crypto_shelves.py
+      - scripts/notify.py
+      - scripts/thematic_rotation_phase0.py
+      - scripts/validate_regime_fwd.py
+      - site/btc_strategy.html
+      - site/factordata/basket_washout_state.json
+      - site/vector_chart.js
+      - templates/crypto.html.j2
+      - templates/vector.html.j2
+      - tests/test_btc_impulse_alerts.py
+      - tests/test_btc_impulse_falsifier.py
+      - tests/test_btc_impulse_radar.py
+      - tests/test_btc_intraday_cvd.py
+      - tests/test_btc_signals.py
+      - tests/test_crypto_collectors.py
+      - tests/test_vector_r2_data_boundary.py
+      - tests/test_vector_r2_frontdoor.py
+      - tests/test_vector_wave1.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 markupsafe plotly requests scipy beautifulsoup4 lxml openpyxl scikit-learn fastapi httpx jsonschema
+      - name: R2 organs — vector wave-1 / data boundary / front door, BTC signals / impulse / intraday CVD, crypto collectors
+        run: python -m pytest tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_btc_intraday_cvd.py tests/test_crypto_collectors.py -q
 
   unrun-oracle-desk:
     # oracle nightly + its gauntlet promotion gates.

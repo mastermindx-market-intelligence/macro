@@ -45,13 +45,19 @@ def test_r2_frontdoor_removes_decorative_shelf_rail() -> None:
     assert ".shelf-kicker{display:none}" in source
 
 
-def test_r2_suites_are_invoked_by_the_existing_vector_ci_owner() -> None:
-    """Files on disk are not a gate: require the packed Vector pytest command."""
+def test_r2_suites_are_invoked_by_a_code_gate_ci_owner() -> None:
+    """Files on disk are not a gate: require the packed R2 pytest command.
+
+    The owner must be a ``gate: code`` job — ci.yml plans ``--gate code``, so a
+    ``gate: data`` job never runs on a pull request
+    (DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST; T23 pre-review B1).
+    """
     import shlex
     import yaml
 
     manifest = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text(encoding="utf-8"))
-    job = manifest["jobs"]["unrun-vector-dsr"]
+    job = manifest["jobs"]["crypto-vector-r2-organs"]
+    assert job.get("gate") == "code", "R2 regressions must run on the pull-request (code) gate"
     required = {
         "tests/test_vector_wave1.py",
         "tests/test_vector_r2_data_boundary.py",
@@ -60,6 +66,8 @@ def test_r2_suites_are_invoked_by_the_existing_vector_ci_owner() -> None:
         "tests/test_btc_impulse_falsifier.py",
         "tests/test_btc_impulse_radar.py",
         "tests/test_btc_impulse_alerts.py",
+        "tests/test_btc_intraday_cvd.py",
+        "tests/test_crypto_collectors.py",
     }
     for step in job["steps"]:
         command = shlex.split(step.get("run", ""))
@@ -68,7 +76,7 @@ def test_r2_suites_are_invoked_by_the_existing_vector_ci_owner() -> None:
             assert not step.get("continue-on-error", False), "Regressions must fail the step"
             break
     else:
-        raise AssertionError("R2 regressions are not invoked by the existing Vector CI owner")
+        raise AssertionError("R2 regressions are not invoked by the code-gate CI owner")
 
 
 def test_vector_uses_in_page_brain_entry_and_suppresses_floating_launcher() -> None:
