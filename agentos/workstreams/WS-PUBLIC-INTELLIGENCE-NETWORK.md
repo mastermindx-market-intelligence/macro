@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume protected landing for original PR8786 after exact-head CI38191946377 succeeded atcc5d31160dd3584b067453bc3b11d78440133000, then verify installed hashes and public browser routes and dispatch the prepared nonpromoting earnings audit once. Terminal956 is already merged8520e5d7, installed and real-browser accepted; do not repeat it. This recovery branch contains retention, external planning, adjusted baseline qualification and the accepted event-clock correction44866cbe79ec, now integrating the original refreshed base. Open its follow-on from fresh main after8786 lands. No Press publication or qualified current story is admitted.
+next_action: Consume original PR8786 exact-head CI38195654198 atfa3a62630be70c96c008f7bb4ebcb447a5db0e36 and protected landing; then verify installed source/site hashes, read-only staging and public browser routes and run the prepared nonpromoting earnings audit once. Terminal956 is already installed and browser accepted. Follow-on source integrates this controller refresh asd9bbdccc0f8a with reviewed runtime hashes unchanged; open it from fresh main after8786 lands. No Press publication or current qualified story is admitted.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956

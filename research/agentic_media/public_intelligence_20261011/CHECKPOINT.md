@@ -6,12 +6,14 @@ Mission complete: **false**. Publication approved: **false**.
 ## Current delivery frontier — October 12
 
 **Original Macro carrier:** [PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786),
-head `cc5d31160dd3584b067453bc3b11d78440133000`, with protected landing armed.
-[CI 38191946377](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38191946377)
-completed SUCCESS; the retained observation at 02:03:26 UTC has all 21 binding
-checks passing. Exact raw evidence is pr8786_cc5d_ci_green.json. The inactive merge-queue-pilot context is nonbinding.
-Do not infer a merge or installation from this dated snapshot. The one retained
-observer has a live return path to this attended parent, not a future idle wake.
+head `fa3a62630be70c96c008f7bb4ebcb447a5db0e36`. The existing protected controller
+refreshed cc5d against main `611f88003639aea7272ec30b1b4e7120020e23ea` after its
+normal lease/capacity admission. [CI 38195654198](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38195654198)
+is running on that exact head. The earlier cc5d CI completed SUCCESS with all 21
+binding checks passing, but main f65b8376 changed the definitions and required
+fresh proof. The inactive merge-queue-pilot context is nonbinding. No merge or
+Macro installation has been observed. All 13 installation-source hashes and all
+three acceptance-page hashes remain unchanged after the actual refresh.
 
 The preceding d425 head passed all 21 binding checks. Controller 38189419480
 required fresh proof after changed main CI definitions and deferred refresh at
@@ -36,7 +38,8 @@ installation or sign-in merely to recreate evidence.
 
 **Working source, not installed:** recovery branch
 `claude/ssd-mmx-press-single-attempt-20261011-565fd14116bdcee2` is pushed through
-`bf425eab705c`, with source integration `4f99f76d2f8f3f9198c4c79e9028d91a9d6b8c31`.
+`880ca1c5b70f`, now integrating refreshed original head fa3a6263 as
+`d9bbdccc0f8a334490b2beed77cbee25beeb42d6`.
 It retains the existing White House sentinel's source bytes, adds opt-in source
 planning and a fixed manual adjusted-NVDA analytical qualifier, and consumes the
 original cc5d refresh. Integrated suites passed 338 tests; differential contract
@@ -57,7 +60,7 @@ must retain their real dates and scope; see SOURCE_RETENTION.md. It has not been
 ingested or admitted. Existing five-receipt, value-density, rights, editorial,
 ten-consecutive-article and release controls remain unchanged.
 
-**Exact next action:** consume the protected landing after cc5d's terminal CI success; verify
+**Exact next action:** consume fa3a6263's terminal CI and protected landing; verify
 merged ancestry plus stable installed source/site/served hashes; execute the
 prepared read-only installed staging inspector and public browser paths. Then
 run the existing earnings workflow once with `promote=false`, `full_audit=true`,
@@ -84,7 +87,7 @@ Commission 19 and Catalyst 8678 remain unchanged. No live worker remains here.
 - Delivery carrier: [Macro PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786).
   Binding CI and protected landing are pending at this checkpoint; no merged or
   installed claim follows from the pushed branch.
-- Original PR refresh worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-single-attempt-20261011-565fd14116bdcee2`, local branch `claude/mmx-8786-conflict-refresh-20261012`, head cc5d3116.
+- Original PR refresh worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-single-attempt-20261011-565fd14116bdcee2`, local branch `claude/mmx-8786-conflict-refresh-20261012`, head fa3a6263.
 - Follow-on worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-attempt-recovery-20261011-a46f27ad11045cb8`, recovery branch named above. Preserve both owned trees.
 - Shared primary `/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main` remains at its older local head with dirty provider accounting; do not mutate it.
 - Governing Mastermind protected master refreshed for the replacement assigned-principal instructions:

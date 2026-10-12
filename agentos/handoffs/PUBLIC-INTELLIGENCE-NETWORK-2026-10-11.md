@@ -351,3 +351,29 @@ This is CI acceptance only. Main f65b8376 has subsequently changed the legacy
 CI manifest, so consume the protected controller's actual decision before
 claiming freshness, landing or installation. The prepared installed-source and
 staging inspectors require the verified merged SHA and have not been executed.
+
+
+## Controller refresh and follow-on integration
+
+The original protected controller refreshed PR8786 as
+fa3a62630be70c96c008f7bb4ebcb447a5db0e36 against main611f88003639aea7272ec30b1b4e7120020e23ea.
+CI38195654198 is its exact-head proof; fences38195654030 and authority38195651418
+already succeeded. The previous controller claim failure and capacity deferral
+are historical, not current admission blockers. The existing observer32336
+positively timed out at02:33:42UTC; one replacement79643 with the same cursor
+returned a fresh event at02:34:13UTC. No parallel observer/controller was started.
+
+The owned follow-on cleanly merges that refresh asd9bbdccc0f8a334490b2beed77cbee25beeb42d6.
+All13installation-source hashes and3acceptance-page hashes are unchanged on the
+original refreshed head. The two independently reviewed follow-on runtime
+hashes are unchanged too. Verification: run_ci_pack.py --validate-only accepts
+282jobs; check_ci_trigger_closure.py reports0gaps; agentos.py validate reports
+1676records/0errors/141advisories. check_contract_delta.py --base fa3a62630be70c96c008f7bb4ebcb447a5db0e36
+passes with0introduced/0inherited findings in519.5seconds. Application suites
+were not rerun because their reviewed source/tests did not change.
+
+Independent source progress: a pure replay of the existing AAPL/MU SEC cash
+engines recovered complete retained FY2025 capital-need records; source hashes,
+exact fiscal periods and limits are saved in retained_aapl_mu_capital_screen.json
+and SOURCE_RETENTION.md. These are historical consolidated facts, not current
+U.S. commitment execution, a rights receipt or an admitted Press story.

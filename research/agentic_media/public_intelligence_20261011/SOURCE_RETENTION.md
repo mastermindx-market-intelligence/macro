@@ -197,3 +197,36 @@ Same-ID status reports `TERMINAL_FAILURE`, rc75, signal `prelaunch_failure`,
 and no alternate host/carrier retry occurred. This root screen used the already
 permitted public web read path; it did not retry the refused support-publication
 effect. Original Press delivery continues independently.
+
+
+## Existing dossier capital evidence — offline replay, October12
+
+To test a more relevant input for the October10 manufacturing-report premise,
+root consumed the existing debt-maturity cache and pure cash-runway/capital-need
+engines at protected main611f88003639aea7272ec30b1b4e7120020e23ea. The ticker/CIK
+ledger, both source objects and all three engine modules are hash-bound in
+retained_aapl_mu_capital_screen.json. No collector, credentials, staging provider
+or publication was invoked, and no raw companyfacts cache was copied into this
+record. Existing source ownership and interfaces are unchanged.
+
+Reproduction: read the named revision's data/edgar/ticker_cik_ledger.json with
+`git show`, select AAPL and MU, then read each exact source_path recorded in the
+JSON. Verify all source_sha256 and engine_sha256 values before invoking
+`engine.debt_maturity.extract_maturity_ladder(facts, cik=cik, as_of=date(2026,10,12))`,
+`engine.cash_runway.extract_cash_runway(facts, cik=cik, as_of=date(2026,10,12), ladder=ladder)`
+and `engine.capital_need.assemble_capital_need(ladder, cash, as_of=date(2026,10,12))`.
+Propagate the retained facts.fetched_at to both engine blocks, as the existing
+stock-library producer does. The engine bytes used matched protected source.
+
+Actual results: both capital-need states complete; AAPL FY2025 accession
+0000320193-25-000079 has OCF111.482B minus equipment spending12.715B = FCF98.767B.
+MU FY2025 accession0000723125-25-000028 has OCF17.525B minus equipment spending
+15.857B = FCF1.668B. Values are USD and retain their separate fiscal periods and
+cache acquisition dates. The canonical stock-page disclosure agrees.
+
+These retained annual, consolidated issuer figures are useful historical context,
+not proof of current U.S. project execution, fulfillment of multiyear pledges,
+or the latest available filing. The engine's stale=false uses its 550-day rule;
+it does not establish those stronger claims. Two FCF calculations do not supply
+five independent relevant Press receipts. No public-article rights receipt,
+fact-pool admission, new candidate draft or freshness upgrade is inferred.
