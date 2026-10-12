@@ -100,6 +100,8 @@ class VerifiedDocumentObservation:
     checked_at_utc: datetime
     # Common retained source-reader snapshot/version for packet→window join.
     source_snapshot_version: str = ""
+    filing_form: str = ""
+    amends_filing_key: str = ""
     status: str = "verified"
     official_published_at_utc: datetime | None = None
     official_publication_ref: str = ""
@@ -308,6 +310,15 @@ def observation_from_pinned_sec_archive(
         )
         if sha256(verified_bytes.content).hexdigest() != selected["content_sha256"]:
             return None
+        lineage = manifest["lineage"]
+        parent = ""
+        if (manifest["filing"]["form"] == "8-K/A"
+                and lineage["relationship"] == "observed_accession"):
+            accession = lineage["amends_accession"]
+            if (isinstance(accession, str)
+                    and accession.startswith(f"{cik:010d}-")
+                    and accession != filing_key.split(":", 1)[1]):
+                parent = f"{cik:010d}:{accession}"
         return VerifiedDocumentObservation(
             source_id="sec:" + filing_key,
             document_url=expected_url,
@@ -317,6 +328,8 @@ def observation_from_pinned_sec_archive(
             first_verified_at_utc=original_at,
             checked_at_utc=now,
             source_snapshot_version=authority.snapshot_id,
+            filing_form=manifest["filing"]["form"] or "",
+            amends_filing_key=parent,
             official_published_at_utc=None,
         )
     except Exception:
@@ -521,6 +534,25 @@ def build_event_packet(
     if (generation and revision_state == "active") or (not generation and revision_state != "active"):
         out["missing_data"].append("revision_without_correction_state")
         return out
+    if observation is not None and earnings:
+        amendment = (observation.filing_form == "8-K/A"
+                     or source_event.get("form") == "8-K/A")
+        if amendment or revision_state == "corrected":
+            root = observation.amends_filing_key
+            if (observation.filing_form != "8-K/A"
+                    or source_event.get("form") not in (None, "", "8-K/A")
+                    or not isinstance(root, str) or not _ACCESSION.fullmatch(root)
+                    or root == filing_key or not root.startswith(f"{cik:010d}:")
+                    or generation != 1 or revision_state != "corrected"
+                    or source_event.get("correction_reason") != "official_amendment"):
+                out["missing_data"].append("amendment_lineage_not_attested")
+                return out
+            event_id = "sec-earnings-" + _fingerprint(root)
+            out["event_id"] = event_id
+            out["amends_filing_key"] = root
+        elif observation.amends_filing_key:
+            out["missing_data"].append("unexpected_amendment_parent")
+            return out
     out["correction"] = {"generation": generation, "status": revision_state}
     out["generation"] = generation
     out["correction_state"] = {"active": "CURRENT", "corrected": "CORRECTED", "retracted": "RETRACTED"}[revision_state]

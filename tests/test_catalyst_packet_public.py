@@ -523,7 +523,7 @@ def test_stage_a_packet_is_explicitly_v2_and_legacy_fixture_remains_v1():
     assert legacy["publication_time_utc"] is not None
 
 
-def test_stage_a_document_digest_correction_requires_renewed_version_rights():
+def test_stage_a_document_version_without_source_lineage_is_not_a_correction():
     from dataclasses import replace
     raw = {**event(), "correction_generation": 1, "revision_status": "corrected",
            "supersedes_generation": 0, "correction_reason": "official_amendment"}
@@ -531,15 +531,15 @@ def test_stage_a_document_digest_correction_requires_renewed_version_rights():
     fresh_version = stage_a_receipt(digest="b" * 64)
     denied = build(raw, document_observation=fresh_version,
                    rights_resolver=versioned_rights)
-    assert denied["public_disposition"] == "BLOCKED_PUBLIC"
+    assert denied["public_disposition"] == "UNAVAILABLE"
+    assert "amendment_lineage_not_attested" in denied["missing_data"]
     assert denied["what_changed"] == []
     def renewed(sid, at):
         return replace(versioned_rights(sid, at), document_sha256="b" * 64)
-    approved = build(raw, document_observation=fresh_version,
-                     rights_resolver=renewed)
-    assert approved["public_disposition"] == "PUBLIC_READY"
-    assert approved["correction_state"] == "CORRECTED"
-    assert approved["sources"][0]["document_sha256"] == "b" * 64
+    also_denied = build(raw, document_observation=fresh_version,
+                        rights_resolver=renewed)
+    assert also_denied["public_disposition"] == "UNAVAILABLE"
+    assert not also_denied["sources"] and not also_denied["what_changed"]
 
 
 def test_withdrawn_or_naive_verified_document_read_is_not_source_attestation():
@@ -733,7 +733,8 @@ def test_stage_a_first_appearance_before_acceptance_is_not_attested():
 
 
 def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
-                        document_name="test8k.htm"):
+                        document_name="test8k.htm",
+                        amendment=False, linked=True):
     """Real private SEC archive contracts, synthetic bytes and clocks."""
     from collectors.sec_document_spine import persist_archive_document, retain_filing_manifest
     from engine.fundamental_forensics.sec_document_spine import (
@@ -746,15 +747,21 @@ def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
     raw, archive = tmp_path / "raw", tmp_path / "archive"
     raw.mkdir()
     archive.mkdir()
-    accession = "0000078003-26-000094"
+    accession = "0000078003-26-000095" if amendment else "0000078003-26-000094"
+    accepted = "2026-08-04T11:30:00Z" if amendment else "2026-08-04T11:02:43Z"
+    retrieved = "2026-08-04T11:31:00Z" if amendment else "2026-08-04T11:03:10Z"
+    recorded = "2026-08-04T11:31:20Z" if amendment else "2026-08-04T11:03:20Z"
     source = {"cik": 78003, "name": "Synthetic test issuer",
               "filings": {"recent": {
-                  "accessionNumber": [accession], "form": ["8-K"],
+                  "accessionNumber": [accession],
+                  "form": ["8-K/A" if amendment else "8-K"],
                   "filingDate": ["2026-08-04"], "reportDate": ["2026-06-28"],
-                  "acceptanceDateTime": ["2026-08-04T11:02:43Z"],
+                  "acceptanceDateTime": [accepted],
+                  "amendsAccessionNumber": [
+                      "0000078003-26-000094" if amendment and linked else None],
                   "items": [items], "primaryDocument": ["test8k.htm"]}}}
     manifest = build_filing_manifests(
-        source, ticker="PFE", recorded_at="2026-08-04T11:03:20Z")[0]
+        source, ticker="PFE", recorded_at=recorded)[0]
     if document_name == "ex99-1.htm":
         inventory = documents_from_archive_index(
             manifest, {"directory": {"item": [{"name": "ex99-1.htm"}]}})
@@ -763,7 +770,7 @@ def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
                if row["document_name"] == document_name)
     receipt = persist_archive_document(
         archive, doc, b"synthetic test document",
-        retrieved_at="2026-08-04T11:03:10Z")
+        retrieved_at=retrieved)
     stored = with_document_retrievals(
         manifest, {doc["document_id"]: receipt.to_dict()})
     key, _, created = retain_filing_manifest(archive, stored)
@@ -773,7 +780,15 @@ def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
         raw_root=raw, archive_root=archive, store=local,
         snapshot_at="2026-08-05T11:59:00Z", publish_latest=False)
     authority = PinnedSourceAuthority(store=local, snapshot_id=snap.snapshot_id)
-    raw_event = {**event(), "source_url": doc["archive_url"]}
+    raw_event = {**event(), "source_url": doc["archive_url"],
+                 "filing_key": f"0000078003:{accession}",
+                 "form": "8-K/A" if amendment else "8-K",
+                 "acceptance_datetime": accepted,
+                 "when": "2026-08-04T11:31:00" if amendment else "2026-08-04T11:03:10"}
+    if amendment:
+        raw_event.update(correction_generation=1, revision_status="corrected",
+                         supersedes_generation=0,
+                         correction_reason="official_amendment")
     raw_event.pop("publication_time_utc")
     return raw_event, authority, key, receipt
 
@@ -978,3 +993,255 @@ def test_exact_selected_ex99_archive_member_requires_separate_rights(tmp_path):
         {**raw, "source_url": cover}, authority=pinned,
         manifest_key=manifest_key,
         first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW) is None
+
+
+def _synthetic_amended_sec_packet(*, lineage=False):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import build_event_packet
+    accession = "0000078003:0000078003-26-000095"
+    sid = "sec:" + accession
+    document = ("https://www.sec.gov/Archives/edgar/data/78003/"
+                "000007800326000095/amended-ex99.htm")
+    raw = {**event(), "filing_key": accession,
+           "form": "8-K/A", "source_url": document,
+           "acceptance_datetime": "2026-08-04T11:30:00Z",
+           "when": "2026-08-04T11:31:00",
+           "correction_generation": 1, "revision_status": "corrected",
+           "supersedes_generation": 0,
+           "correction_reason": "official_amendment"}
+    raw.pop("publication_time_utc")
+    pinned = replace(
+        stage_a_receipt(), source_id=sid, document_url=document,
+        document_sha256="b" * 64,
+        first_verified_at_utc="2026-08-04T11:31:00Z")
+    if lineage:
+        pinned = replace(pinned, filing_form="8-K/A",
+                         amends_filing_key=event()["filing_key"])
+    def grant(source_id, now):
+        return replace(grants()(source_id, now), document_url=document,
+                       document_sha256="b" * 64)
+    return build_event_packet(raw, issuers=universe(),
+                              rights_resolver=grant, as_of=NOW,
+                              document_observation=pinned)
+
+
+def test_v2_amended_accession_must_not_claim_correction_without_attested_parent():
+    original = build()
+    attempted = _synthetic_amended_sec_packet()
+    assert attempted["public_safe"] is False
+    assert attempted["public_disposition"] == "UNAVAILABLE"
+    assert not attempted["what_changed"] and not attempted["sources"]
+    assert attempted["event_id"] != original["event_id"]
+
+
+def test_verified_sec_8k_amendment_reuses_original_public_event_identity(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    from engine.marketing.catalyst_scan import _current_packets
+
+    raw, authority, key, receipt = _pinned_sec_fixture(
+        tmp_path, amendment=True, linked=True)
+    observed = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observed is not None
+    assert observed.filing_form == "8-K/A"
+    assert observed.amends_filing_key == event()["filing_key"]
+    def approved(sid, at):
+        return replace(grants()(sid, at), document_url=raw["source_url"],
+                       document_sha256=receipt.content_sha256)
+    amended = build(raw, document_observation=observed, rights_resolver=approved)
+    assert amended["public_disposition"] == "PUBLIC_READY"
+    assert amended["correction_state"] == "CORRECTED"
+    assert amended["generation"] == 1
+    assert amended["event_id"] == build()["event_id"]
+    assert amended["amends_filing_key"] == event()["filing_key"]
+    latest, conflicts = _current_packets([build(), amended])
+    assert not conflicts
+    assert len(latest) == 1
+    assert latest[amended["event_id"]]["generation"] == 1
+    assert latest[amended["event_id"]]["correction_state"] == "CORRECTED"
+
+
+def test_inferred_or_missing_amendment_parent_never_certifies_v2_correction(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(
+        tmp_path, amendment=True, linked=False)
+    observed = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observed is not None
+    assert observed.filing_form == "8-K/A"
+    assert observed.amends_filing_key == ""
+    def approved(sid, at):
+        return replace(grants()(sid, at), document_url=raw["source_url"],
+                       document_sha256=receipt.content_sha256)
+    refused = build(raw, document_observation=observed, rights_resolver=approved)
+    assert refused["public_disposition"] == "UNAVAILABLE"
+    assert "amendment_lineage_not_attested" in refused["missing_data"]
+    assert not refused["what_changed"]
+
+
+def _retained_8k_amendment_chain(tmp_path, *, explicit_parent=True):
+    """Two distinct SEC filings, one pinned source snapshot, no network."""
+    from collectors.sec_document_spine import persist_archive_document, retain_filing_manifest
+    from engine.fundamental_forensics.sec_document_spine import (
+        build_filing_manifests, with_document_retrievals)
+    from engine.fundamental_forensics.source_sync import sync_source_roots
+    from engine.fundamental_forensics.filing_attestation import PinnedSourceAuthority
+    from engine.research_vault.r2_store import LocalStore
+
+    raw_dir, archive = tmp_path / "raw", tmp_path / "archive"
+    raw_dir.mkdir()
+    archive.mkdir()
+    first = "0000078003-26-000094"
+    amended = "0000078003-26-000095"
+    sec = {"cik": 78003, "name": "Synthetic test issuer",
+           "filings": {"recent": {
+               "accessionNumber": [first, amended],
+               "form": ["8-K", "8-K/A"],
+               "filingDate": ["2026-08-04"] * 2,
+               "reportDate": ["2026-06-28"] * 2,
+               "acceptanceDateTime": [
+                   "2026-08-04T11:02:43Z", "2026-08-04T11:30:00Z"],
+               "primaryDocument": ["test8k.htm", "amended8k.htm"],
+               "amendsAccessionNumber": [
+                   None, first if explicit_parent else None],
+               "items": ["2.02,9.01"] * 2,
+           }}}
+    manifests = build_filing_manifests(
+        sec, ticker="PFE", recorded_at="2026-08-04T11:32:00Z")
+    result = []
+    for manifest, fetched, eps in zip(manifests, (
+        "2026-08-04T11:03:10Z", "2026-08-04T11:31:00Z"), (-0.04, -0.03)):
+        doc = manifest["documents"][0]
+        receipt = persist_archive_document(
+            archive, doc, f"synthetic SEC filing {eps}".encode(),
+            retrieved_at=fetched)
+        version = with_document_retrievals(
+            manifest, {doc["document_id"]: receipt.to_dict()})
+        key, _, created = retain_filing_manifest(archive, version)
+        assert created
+        result.append((manifest, doc, receipt, key, eps))
+    saved = sync_source_roots(
+        raw_root=raw_dir, archive_root=archive,
+        store=LocalStore(tmp_path / "r2"),
+        snapshot_at="2026-08-05T11:59:00Z", publish_latest=False)
+    authority = PinnedSourceAuthority(
+        store=LocalStore(tmp_path / "r2"), snapshot_id=saved.snapshot_id)
+    return authority, result
+
+
+def test_canonical_amendment_chain_selects_corrected_v2_scan_without_identity_split(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import (
+        build_event_packet, observation_from_pinned_sec_archive)
+    from engine.marketing.catalyst_scan import SourceCoverageReceipt, compose_scan
+
+    owner, filings = _retained_8k_amendment_chain(tmp_path)
+    current = []
+    allowed = {}
+    for manifest, doc, receipt, manifest_key, eps in filings:
+        # The filing identity comes from the validated SEC manifest.
+        key = f"0000078003:{manifest['filing']['accession']}"
+        corrected = eps == -0.03
+        raw = {**event(), "filing_key": key,
+               "source_url": doc["archive_url"],
+               "form": "8-K/A" if corrected else "8-K",
+               "acceptance_datetime": (
+                   "2026-08-04T11:30:00Z" if corrected else "2026-08-04T11:02:43Z"),
+               "when": ("2026-08-04T11:31:00" if corrected
+                        else "2026-08-04T11:03:10"),
+               "eps_actual": eps}
+        if corrected:
+            raw.update(correction_generation=1, revision_status="corrected",
+                       supersedes_generation=0,
+                       correction_reason="official_amendment")
+        raw.pop("publication_time_utc", None)
+        obs = observation_from_pinned_sec_archive(
+            raw, authority=owner, manifest_key=manifest_key,
+            first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+        assert obs is not None
+        allowed["sec:" + key] = (doc["archive_url"], obs.document_sha256)
+        current.append((raw, obs))
+
+    def trusted_source_grant(sid, clock):
+        url, digest = allowed[sid]
+        return replace(grants()(sid, clock), document_url=url,
+                       document_sha256=digest)
+    packets = [build_event_packet(
+        raw, issuers=universe(), rights_resolver=trusted_source_grant,
+        as_of=NOW, document_observation=obs) for raw, obs in current]
+    assert [p["public_disposition"] for p in packets] == [
+        "PUBLIC_READY", "PUBLIC_READY"]
+    assert packets[0]["event_id"] == packets[1]["event_id"]
+    assert [p["generation"] for p in packets] == [0, 1]
+    coverage = SourceCoverageReceipt(
+        source="edgar_8k_202", receipt_id="fixture-complete-two-filings",
+        owner_ref="synthetic-complete-source-owner",
+        snapshot_version=owner.snapshot_id,
+        issuer_tickers=frozenset({"PFE"}),
+        window_start_utc=NOW - timedelta(days=7), window_end_utc=NOW,
+        checked_at_utc=NOW, outcome="COMPLETE",
+        pagination_exhausted=True, truncated=False,
+        returned_events=2, event_limit=20,
+    )
+    scan = compose_scan(["PFE", "OUT"], packets=packets,
+                        issuers=universe(), as_of=NOW, coverage=coverage)
+    assert scan["schema"] == "catalyst.scan/v2"
+    assert scan["generation"] == 1
+    assert [row["status"] for row in scan["results"]] == [
+        "SUPPORTED", "NOT_COVERED"]
+    assert scan["results"][0]["correction_state"] == "CORRECTED"
+    assert scan["results"][0]["sources"][0]["url"].endswith("/amended8k.htm")
+    assert "-0.03" in str(scan["results"][0]["what_changed"])
+
+
+def test_same_period_inferred_8ka_predecessor_is_not_an_official_link(tmp_path):
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    authority, rows = _retained_8k_amendment_chain(
+        tmp_path, explicit_parent=False)
+    manifest, doc, receipt, key, _ = rows[1]
+    assert manifest["lineage"]["relationship"] == "inferred_same_form_report_period"
+    amended = {**event(), "source_url": doc["archive_url"],
+               "filing_key": "0000078003:" + manifest["filing"]["accession"],
+               "form": "8-K/A",
+               "acceptance_datetime": "2026-08-04T11:30:00Z",
+               "when": "2026-08-04T11:31:00",
+               "correction_generation": 1, "revision_status": "corrected",
+               "supersedes_generation": 0,
+               "correction_reason": "official_amendment"}
+    amended.pop("publication_time_utc")
+    observed = observation_from_pinned_sec_archive(
+        amended, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id,
+        checked_at_utc=NOW)
+    assert observed is not None
+    assert observed.amends_filing_key == ""
+    denied = build(amended, document_observation=observed)
+    assert denied["public_disposition"] == "UNAVAILABLE"
+    assert "amendment_lineage_not_attested" in denied["missing_data"]
+    assert not denied["what_changed"]
+
+
+def test_multi_amendment_generation_requires_separate_root_chain_evidence(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(
+        tmp_path, amendment=True, linked=True)
+    raw["correction_generation"] = 2
+    raw["supersedes_generation"] = 1
+    observed = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observed is not None and observed.amends_filing_key
+    def rights(sid, when):
+        return replace(grants()(sid, when),
+                       document_url=raw["source_url"],
+                       document_sha256=observed.document_sha256)
+    denied = build(raw, rights_resolver=rights,
+                   document_observation=observed)
+    assert denied["public_disposition"] == "UNAVAILABLE"
+    assert "amendment_lineage_not_attested" in denied["missing_data"]
+    assert not denied["what_changed"]
