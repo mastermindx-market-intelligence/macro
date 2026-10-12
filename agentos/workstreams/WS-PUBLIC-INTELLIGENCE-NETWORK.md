@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete protected delivery of original PR8786 at9019a29c2e35da499fb5c822e515be9ce9c21027 through CI38202742004, installed parity and browser proof; then dispatch the existing nonpromoting earnings audit and fixed analytical qualifier. Separate aggregate-feed repair is locally accepted after186 passing tests and zero contract findings, awaiting fresh-main integration after8786 lands. Publication remains unapproved.
+next_action: Original PR8786 has terminal green CI at9019a29c but protected controller38206255344 requires fresh proof after main33f96b9 changed CI definitions; refresh is capacity-deferred at18 active CI runs versus cap8. Preserve that controller and consume its admitted head before fresh CI, installation and browser proof. Separate accepted aggregate-feed repair is pushed at79c62ed8 with186 passing tests; authenticated existing NVDA membership survives reload. No article or new follow write is approved.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956

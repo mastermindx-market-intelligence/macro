@@ -3,6 +3,41 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Current release gate and live continuation proof
+
+Exact-head CI38202742004 completed SUCCESS at9019a29c, with21binding checks
+passing. Protected controller38205397750 then refused stale proof because
+main33f96b9d95b7 changed CI definitions and deferred its own refresh:19indexed
+CIruns exceeded the shared cap8, leaving zero available refresh slots. The
+head, label and controller custody were unchanged. A second completed sweep,
+38206255344, repeated the same stale-proof gate at05:03:43Z with18active CI
+runs versus cap8 and zero available slots. The exact8786notices are
+retained in pr8786_9019_landing_deferral.txt. This is neither a CI-test failure
+nor authority for a manual refresh, cap override or merge. Source installation
+and the postlanding workflows remain unexecuted.
+
+Separate follow-on implementation79c62ed8577688f0dcb450b9dd3fb9f5d2710de8 and
+CI-evidence commitcbeddba83cf3 are pushed on the owned aggregate-feed branch.
+An evidence-only push briefly failed to connect togithub.com; a read preflight
+also timed out. A later same-origin HTTPS200 established recovery, and one
+same-carrier normal push succeeded. No credential, remote or protocol changed.
+
+Real Chrome independently verified the existing live NVDA dossier continuation.
+The authenticated Terminal retained NVDA and company-dossier attribution.
+NVDA was already in the active list. After a full reload and account-state
+hydration, the same selected list and exactly one NVDA row returned. The
+immediate default-list transient is recorded; it is not cloud-proof. No list,
+follow or account was written, and no private list name is retained. The
+body-free receipt is terminal_existing_follow_readback.json. This extends the
+live956sign-in proof; it is not a new-follow-write or new-signup claim.
+
+Next action remains the admitted original-carrier refresh, fresh exact-head
+CI and protected landing, then the prepared21source/3page installation checks,
+installed staging replay and public browser routes. The existing nonpromoting
+earnings full audit and fixed baseline qualifier run only after source lands.
+Preserve the original12:07EFFECT_UNKNOWN provider attempt and all rights/D14
+publication gates. There is no autonomous wake implied by this checkpoint.
+
 ## October12 aggregate-feed follow-on save
 
 PR8786 remains armed at9019a29c2e35da499fb5c822e515be9ce9c21027. Its
