@@ -325,8 +325,8 @@ def adapt_workspace_bea_history(
             or not re.fullmatch(r"statv1:[0-9a-f]{64}", version)):
         raise BEAContextRefused("workspace binding or version not recognized")
     relative = ref.split(":", 1)[1]
-    expected_name = "industry_" + industry_code + ".jsonl"
-    if (relative.rsplit("/", 1)[-1] != expected_name
+    expected_relative = f"{RESEARCH_VIEW_SUBDIR}/industry_{industry_code}.jsonl"
+    if (relative != expected_relative
             or source.get("root_alias") != "free_source_research"
             or source.get("relative_path") != relative
             or source.get("evidence_kind") not in {"research_capture", "research_sample"}

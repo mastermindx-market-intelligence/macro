@@ -23,6 +23,12 @@ from engine.market_ontology.bea_industry_context import (
     read_private_bea_accounting_brief,
 )
 
+_EXPECTED_SOURCE_RELATIVE = (
+    "bea_2024_public_itable_research/"
+    "bea_2017_2022_may2026_remaining_six_regions/"
+    "data_workspace_views_20261011/industry_3341.jsonl"
+)
+
 _KEYS = (
     "canada", "china", "europe", "japan", "mexico",
     "rest_of_asia_and_pacific", "rest_of_world",
@@ -277,7 +283,7 @@ class BEAIndustryContextTests(unittest.TestCase):
 
 def _synthetic_workspace_response():
     """DataWorkspace.read envelope *shape*, never a real filesystem observation."""
-    ref = "free_source_research:data_workspace_views_20261011/industry_3341.jsonl"
+    ref = "free_source_research:" + _EXPECTED_SOURCE_RELATIVE
     version = "statv1:" + "a" * 64
     query = {
         "ref": ref,
@@ -302,7 +308,7 @@ def _synthetic_workspace_response():
         "source": {
             "ref": ref,
             "root_alias": "free_source_research",
-            "relative_path": "data_workspace_views_20261011/industry_3341.jsonl",
+            "relative_path": _EXPECTED_SOURCE_RELATIVE,
             "evidence_kind": "research_capture",
             "registry_admission": "NOT_INFERRED_FROM_FILE_PRESENCE",
             "file_bytes": 2_000_000,
@@ -350,13 +356,30 @@ class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
         self.assertFalse(proof["native_dataset_admission"])
         self.assertFalse(proof["public_or_historical_pit_serving"])
 
+    def test_replayed_lookalike_file_outside_exact_source_subtree_refused(self):
+        response = _synthetic_workspace_response()
+        fake_relative = "unrelated_research/industry_3341.jsonl"
+        fake_ref = "free_source_research:" + fake_relative
+        response["source"]["ref"] = fake_ref
+        response["source"]["relative_path"] = fake_relative
+        response["query"]["ref"] = fake_ref
+        response["query_receipt_sha256"] = hashlib.sha256(json.dumps(
+            response["query"], sort_keys=True, separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")).hexdigest()
+        with self.assertRaisesRegex(BEAContextRefused, "research file"):
+            adapt_workspace_bea_history(
+                response, industry_code="3341", commodity_code="3344",
+            )
+
     def test_real_incumbent_data_workspace_reads_synthetic_eight_year_file(self):
         """Real Data OS reader and query receipt; fake data in a disposable folder."""
         from lib.dataos.web_workspace import DataWorkspace, RootBinding
 
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            source = root / "industry_3341.jsonl"
+            source = root / _EXPECTED_SOURCE_RELATIVE
+            source.parent.mkdir(parents=True)
             raw_rows = [synthetic_row(year) for year in range(2017, 2025)]
             source.write_text(
                 "".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows),
@@ -368,7 +391,7 @@ class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
                 Path(__file__).resolve().parents[1] / "config" / "dataset_registry.yml",
                 source_revision="synthetic-data-workspace-integration",
             )
-            ref = "free_source_research:industry_3341.jsonl"
+            ref = "free_source_research:" + _EXPECTED_SOURCE_RELATIVE
             description = workspace.describe(ref)
             version = description["source"]["file_version"]
             response = workspace.read(
