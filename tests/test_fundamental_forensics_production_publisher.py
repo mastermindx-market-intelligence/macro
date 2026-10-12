@@ -1,11 +1,13 @@
 """FIF C0-b: the production dataset publisher CLI — end-to-end over a TEMP store.
 
 Drives ``scripts.publish_fif_production_datasets`` through its real ``main()``
-with a fake SEC collector (offline), a fake S2-p lineage seam installed in
-``sys.modules``, a synthetic coverage contract under ``tmp_path``, and the
-repository's ``LocalStore`` adapter. No network, no R2, no env file. Every
-issuer identity is derived at runtime from the committed fixture bytes, so no
-ticker or CIK literal appears here.
+with a fake SEC collector (offline), the REAL S2-p lineage seam
+(``engine.fundamental_forensics.production_lineage``, imported directly by the
+producer since Phase B — no ``sys.modules`` fake anywhere), a synthetic
+coverage contract under ``tmp_path``, and the repository's ``LocalStore``
+adapter. No network, no R2, no env file. Every issuer identity is derived at
+runtime from the committed fixture bytes, so no ticker or CIK literal appears
+here.
 """
 from __future__ import annotations
 
@@ -15,7 +17,6 @@ import hashlib
 import json
 import subprocess
 import sys
-import types
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -27,13 +28,17 @@ from collectors.sec_document_spine import (
     with_document_retrievals,
 )
 from collectors.sec_request_pacer import SecRequestPacer
-from engine.fundamental_forensics.lineage_evidence import (
-    LineageEvidenceError,
-    LineageEvidenceReceipt,
+from engine.fundamental_forensics.admitted_filing_package import (
+    admit_retained_filing_package,
 )
+from engine.fundamental_forensics.fif_member_capture import read_retained_fif_packages
+from engine.fundamental_forensics.lineage_evidence import LineageEvidenceError
 from engine.fundamental_forensics.production_datasets import (
     load_generation,
     lineage_from_role_payload,
+)
+from engine.fundamental_forensics.production_lineage import (
+    mint_production_lineage_evidence,
 )
 from engine.fundamental_forensics.sec_document_spine import build_filing_manifests
 from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES
@@ -333,39 +338,31 @@ def _publish_cli(lane: dict, contract: Path, store: Path, report: Path, clock: s
     )
 
 
-def _receipt(system_available_at: datetime) -> LineageEvidenceReceipt:
-    return LineageEvidenceReceipt(
-        parent_occurrence_id="occ-parent-1",
-        child_occurrence_id="occ-child-1",
-        logical_key="synthetic:test:key",
-        source_known_at=system_available_at,
-        system_available_at=system_available_at,
-        positive_evidence=None,
-        refusal_reason="source_family_mismatch",
-        relation_type="no_relation",
-    )
+def _spy_on_mint(monkeypatch) -> list[dict]:
+    """Observe the producer's DIRECT seam import — the real mint still runs.
 
-
-def _install_fake_lineage(monkeypatch, receipts_factory=_receipt):
+    Phase B: the producer imports ``mint_production_lineage_evidence`` at
+    module level, so the observation point is the NAME it imported on the
+    producer module (never a ``sys.modules`` fake — the guard's tripwire and
+    the spec's import-graph law both forbid that shape).
+    """
+    real_mint = producer.mint_production_lineage_evidence
     calls: list[dict] = []
-    module = types.ModuleType("engine.fundamental_forensics.production_lineage")
 
-    def mint_production_lineage_evidence(ledger, packages, *, system_available_at):
+    def _spy(ledger, packages, *, system_available_at):
+        result = real_mint(ledger, packages, system_available_at=system_available_at)
         calls.append(
             {
                 "ledger": ledger,
                 "packages": tuple(packages),
                 "system_available_at": system_available_at,
+                "result": tuple(result),
             }
         )
-        return (receipts_factory(system_available_at),)
+        return result
 
-    module.mint_production_lineage_evidence = mint_production_lineage_evidence
-    module.mint_calls = calls
-    monkeypatch.setitem(
-        sys.modules, "engine.fundamental_forensics.production_lineage", module
-    )
-    return module
+    monkeypatch.setattr(producer, "mint_production_lineage_evidence", _spy)
+    return calls
 
 
 def _latest_json_path(store: Path, issuer_id: str) -> Path:
@@ -385,7 +382,7 @@ def test_publishes_names_generation_and_reuses_capture_clocks(
     contract = _write_contract(tmp_path, identity, None)
     store = tmp_path / "store"
     report_path = tmp_path / "publish_report.json"
-    seam = _install_fake_lineage(monkeypatch)
+    mint_calls = _spy_on_mint(monkeypatch)
 
     assert _capture_cli(lane, contract) == 0
     assert len(offline_collector["collectors"]) == 1  # ONE collector...
@@ -412,11 +409,13 @@ def test_publishes_names_generation_and_reuses_capture_clocks(
     pointer = json.loads(latest_path.read_text(encoding="utf-8"))
     assert pointer["generation_id"] == row["generation_id"]
 
-    # S2-p seam: called exactly once per published issuer with the admitted
-    # ledger/packages and system_available_at == material.admitted_at.
-    assert len(seam.mint_calls) == 1
-    call = seam.mint_calls[0]
+    # S2-p seam (Phase B, real): called exactly once per published issuer with
+    # the admitted ledger/packages and system_available_at == the material's
+    # admitted_at, and its return lands UNCHANGED in the published generation.
+    assert len(mint_calls) == 1
+    call = mint_calls[0]
     assert len(call["packages"]) == 2
+    assert call["ledger"] is not None
     assert call["system_available_at"] == datetime(
         2026, 10, 13, 2, 31, tzinfo=timezone.utc
     )
@@ -427,9 +426,9 @@ def test_publishes_names_generation_and_reuses_capture_clocks(
         generation.role_payloads["lineage_evidence_json"]
     )
     assert [item.to_dict() for item in round_tripped] == [
-        _receipt(call["system_available_at"]).to_dict()
+        item.to_dict() for item in call["result"]
     ]
-    assert row["lineage_receipt_count"] == 1
+    assert row["lineage_receipt_count"] == len(call["result"])
 
     # verify subcommand over the same report + store.
     assert (
@@ -455,14 +454,13 @@ def test_publishes_names_generation_and_reuses_capture_clocks(
     assert report2["published"][0]["generation_id"] == row["generation_id"]
     assert report2["published"][0]["admitted_at"] == row["admitted_at"]
     assert latest_path.read_bytes() == latest_before
-    assert len(seam.mint_calls) == 2  # once per publish run, still one issuer
+    assert len(mint_calls) == 2  # once per publish run, still one issuer
 
 
 def test_future_clock_refusal_writes_nothing(tmp_path, monkeypatch, offline_collector, capsys) -> None:
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     store = tmp_path / "store"
     report_path = tmp_path / "publish_report.json"
@@ -497,7 +495,6 @@ def test_rule_clock_alone_can_force_the_future_clock_refusal(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract, clock=MID_RULES_CAPTURE) == 0
     rc = _publish_cli(
         lane, contract, tmp_path / "store", tmp_path / "report.json", clock=MID_RULES_RUN
@@ -507,6 +504,70 @@ def test_rule_clock_alone_can_force_the_future_clock_refusal(
     assert any(
         line.startswith("::error") and "admitted_at_after_recorded_at" in line
         for line in out.splitlines()
+    )
+
+
+def test_published_lineage_round_trips_and_equals_a_direct_mint(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """Phase B REAL round-trip: no fakes for the seam anywhere.
+
+    Synthetic admitted packages under ``tmp_path`` -> publish into a TEMP local
+    store through the producer's direct seam import -> read the published
+    generation's ``lineage_evidence`` back -> it round-trips through
+    ``lineage_from_role_payload`` AND equals ``mint_production_lineage_evidence``
+    called DIRECTLY on the same ledger + same admitted packages with the
+    published ``admitted_at`` as the clock.
+    """
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    row = report["published"][0]
+    published_admitted_at = datetime.fromisoformat(
+        row["admitted_at"].replace("Z", "+00:00")
+    )
+
+    # Rebuild the SAME admitted set + ledger the producer published from (same
+    # retained order, same admission call, same converter composition).
+    retained = read_retained_fif_packages(lane["archive_root"], cik=identity["cik"])
+    admitted = tuple(
+        admit_retained_filing_package(
+            index_bytes=package.index_bytes,
+            manifest=dict(package.manifest),
+            members=dict(package.members),
+            witness_bytes=package.witness_bytes,
+            capture_recorded_at=package.capture_recorded_at,
+        )
+        for package in retained
+    )
+    ledger, _filing_metadata, _convert_report = producer._convert_admitted_packages(
+        admitted
+    )
+
+    expected = mint_production_lineage_evidence(
+        ledger, admitted, system_available_at=published_admitted_at
+    )
+    assert row["lineage_receipt_count"] == len(expected)
+
+    generation = load_generation(
+        producer.build_production_dataset_store(store),
+        identity["entity_id"],
+        row["generation_id"],
+    )
+    round_tripped = lineage_from_role_payload(
+        generation.role_payloads["lineage_evidence_json"]
+    )
+    assert [item.to_dict() for item in round_tripped] == [
+        item.to_dict() for item in expected
+    ]
+    print(
+        f"ROUND-TRIP receipts published={len(round_tripped)} direct_mint={len(expected)}",
+        flush=True,
     )
 
 
@@ -522,7 +583,6 @@ def test_two_issuer_contract_publishes_and_excludes_exactly_once(
     identity = lane["identity"]
     second = _derived_second_issuer(identity, binding=False)
     contract = _write_contract(tmp_path, identity, second)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     store = tmp_path / "store"
     report_path = tmp_path / "publish_report.json"
@@ -545,7 +605,6 @@ def test_exclusion_no_retained_package(tmp_path, monkeypatch, offline_collector)
     document = json.loads(contract.read_text(encoding="utf-8"))
     document["issuers"][0]["accessions"] = [{"accession": invented}]
     contract.write_text(json.dumps(document), encoding="utf-8")
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     report_path = tmp_path / "publish_report.json"
     assert (
@@ -563,7 +622,6 @@ def test_exclusion_identity_not_frozen(tmp_path, monkeypatch, offline_collector)
     document = json.loads(contract.read_text(encoding="utf-8"))
     document["issuers"][0].pop("security_master_binding")
     contract.write_text(json.dumps(document), encoding="utf-8")
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     report_path = tmp_path / "publish_report.json"
     assert _publish_cli(lane, contract, tmp_path / "store", report_path) == 0
@@ -577,7 +635,6 @@ def test_exclusion_admission_refused_is_typed(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     # Tamper every package's manifest form: reads stay digest-clean, but the
     # witness bind refuses admission with a typed D1 code.
@@ -608,7 +665,6 @@ def test_tampered_package_refuses_the_whole_publish_run(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     for accession in identity["accessions"]:
         members_dir = (
@@ -653,7 +709,6 @@ def test_publish_never_emits_an_integrity_member_capture_exclusion(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     members_dir = (
         lane["archive_root"]
@@ -682,7 +737,6 @@ def test_untyped_admission_error_hard_fails(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
 
     def _explode(**_kwargs):
@@ -702,17 +756,13 @@ def test_lineage_mint_error_hard_fails(
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
 
-    module = types.ModuleType("engine.fundamental_forensics.production_lineage")
-
-    def mint_production_lineage_evidence(_ledger, _packages, *, system_available_at):
+    def _explode(_ledger, _packages, *, system_available_at):
         raise LineageEvidenceError(
             f"synthetic mint refusal below the floor: {system_available_at}"
         )
 
-    module.mint_production_lineage_evidence = mint_production_lineage_evidence
-    monkeypatch.setitem(
-        sys.modules, "engine.fundamental_forensics.production_lineage", module
-    )
+    # Phase B: the seam is the NAME the producer imported — raise through it.
+    monkeypatch.setattr(producer, "mint_production_lineage_evidence", _explode)
     assert _capture_cli(lane, contract) == 0
     rc = _publish_cli(lane, contract, tmp_path / "store", tmp_path / "report.json")
     assert rc == 1
@@ -733,7 +783,6 @@ def test_verify_refuses_a_report_that_drops_an_issuer(
     identity = lane["identity"]
     second = _derived_second_issuer(identity, binding=False)
     contract = _write_contract(tmp_path, identity, second)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     store = tmp_path / "store"
     report_path = tmp_path / "publish_report.json"
@@ -790,7 +839,6 @@ def test_golden_schema_manifest_is_refused_at_publish(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     # Replace one retained package manifest with a golden-schema manifest.
     accession = identity["accessions"][0]
@@ -927,29 +975,46 @@ def test_producer_direct_imports_are_off_the_golden_and_mint_layers() -> None:
     }
     assert names.isdisjoint(forbidden), sorted(names & forbidden)
     assert not any("GOLDEN_AAPL" in name for name in names)
-    # The S2-p seam is present, lazy, and named: the module is imported at
-    # call time (importlib) with the frozen mint signature, never at module
-    # import time (the module does not exist at this lane's base).
-    assert "engine.fundamental_forensics.production_lineage" in source
-    assert "mint_production_lineage_evidence" in source
-    assert "importlib" in source
+    # The S2-p seam is imported DIRECTLY by name at module level (spec §3,
+    # Phase B): exactly one ImportFrom of the seam module binding exactly the
+    # frozen mint symbol, and no lazy importlib fallback anywhere.
+    seam_froms = [
+        node
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "engine.fundamental_forensics.production_lineage"
+    ]
+    assert len(seam_froms) == 1
+    assert [alias.name for alias in seam_froms[0].names] == [
+        "mint_production_lineage_evidence"
+    ]
+    assert "mint_production_lineage_evidence" in names
+    assert "importlib" not in source
 
 
-# The import-graph probe runs in a SUBPROCESS on purpose: importing the
-# producer here after popping it from sys.modules rebinds the name to a
-# different module object, which MM_MODULE_GUARD fails the whole pytest
-# process for (rc=1 with every test green). A fresh interpreter observes
-# the producer's import graph without ever touching this process's
-# sys.modules. No ``-I``: the repo root must stay importable via cwd.
+# The import-graph probe runs in a SUBPROCESS on purpose: a fresh interpreter
+# observes the producer's import graph without ever touching this process's
+# sys.modules (the guard's tripwire), and no ``-I`` so the repo root stays
+# importable via cwd. Phase B truth: importing the producer DOES bring the
+# S2-p seam module in, and never a golden provider or a direct mint layer.
 _PRODUCER_IMPORT_PROBE = """
+import ast
 import json
 import sys
+from pathlib import Path
 
 import scripts.publish_fif_production_datasets as producer
 
 findings = []
-if "engine.fundamental_forensics.production_lineage" in sys.modules:
-    findings.append("sys.modules: engine.fundamental_forensics.production_lineage")
+# The DIRECT seam import: present after importing the producer.
+if "engine.fundamental_forensics.production_lineage" not in sys.modules:
+    findings.append(
+        "sys.modules missing: engine.fundamental_forensics.production_lineage"
+    )
+# No golden provider module ever loads for the producer's import graph.
+findings.extend(
+    "sys.modules: " + name for name in sys.modules if "golden_aapl" in name.lower()
+)
 findings.extend(
     "producer attr: " + name
     for name in dir(producer)
@@ -965,6 +1030,32 @@ findings.extend(
     )
     if hasattr(producer, name)
 )
+# AST scan: the producer and fif_member_capture.py directly import neither
+# mint layer nor golden provider (transitive reach through the seam module is
+# the lawful S2-p path).
+FORBIDDEN = {
+    "derive_confirmation_receipts",
+    "derive_chain_confirmation_receipts",
+    "GoldenAaplFinancialQueryProvider",
+    "parse_and_convert_golden_packages",
+    "load_golden_aapl_package",
+}
+root = Path.cwd()
+for relative in (
+    "scripts/publish_fif_production_datasets.py",
+    "engine/fundamental_forensics/fif_member_capture.py",
+):
+    tree = ast.parse((root / relative).read_text(encoding="utf-8"))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported = [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom):
+            imported = [alias.asname or alias.name for alias in node.names]
+        else:
+            continue
+        for name in imported:
+            if name in FORBIDDEN or "GOLDEN_AAPL" in name:
+                findings.append("direct import " + relative + ": " + name)
 print(json.dumps(sorted(findings)))
 """
 
@@ -1027,7 +1118,6 @@ def test_capture_members_exits_nonzero_on_tampered_retained_member(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     package_dir = (
         lane["archive_root"] / "fif-packages" / identity["cik"] / identity["accessions"][0]
@@ -1065,7 +1155,6 @@ def test_capture_members_exits_nonzero_on_manifest_less_package_dir(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     package_dir = (
         lane["archive_root"] / "fif-packages" / identity["cik"] / identity["accessions"][0]
@@ -1117,7 +1206,6 @@ def test_publish_over_one_tampered_package_moves_no_latest_json(
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
-    _install_fake_lineage(monkeypatch)
     assert _capture_cli(lane, contract) == 0
     store = tmp_path / "store"
     report_path = tmp_path / "publish_report.json"

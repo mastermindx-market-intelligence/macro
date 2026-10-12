@@ -41,7 +41,6 @@ publication gate, not the ``build_fundamental_forensics`` swallow-all shape.
 from __future__ import annotations
 
 import argparse
-import importlib
 import json
 import sys
 import traceback
@@ -73,6 +72,9 @@ from engine.fundamental_forensics.lineage_evidence import (  # noqa: E402
     CONFIRMATION_RULE_AVAILABLE_AT,
 )
 from engine.fundamental_forensics.models import parse_utc, utc_text  # noqa: E402
+from engine.fundamental_forensics.production_lineage import (  # noqa: E402
+    mint_production_lineage_evidence,
+)
 from engine.fundamental_forensics.production_datasets import (  # noqa: E402
     ProductionDatasetMaterial,
     build_production_dataset_store,
@@ -86,12 +88,6 @@ from collectors.sec_filing_parser import (  # noqa: E402
     SecFilingParseError,
     parse_sec_filing_document,
 )
-
-# The S2-p seam module (engine/fundamental_forensics/production_lineage.py)
-# does not exist at this lane's base; it is imported lazily INSIDE the publish
-# call path so the base stays importable, and tests install a fake via
-# sys.modules. Phase B (after S2-p merges) removes the fake.
-_LINEAGE_SEAM_MODULE = "engine.fundamental_forensics.production_lineage"
 
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
@@ -338,24 +334,6 @@ def _require_clock(value: str, field: str) -> datetime:
 # ---------------------------------------------------------------------------
 
 
-def _mint_lineage_evidence(ledger: Any, packages: Sequence[Any], *, system_available_at: datetime):
-    """Lazy S2-p seam: mint lineage evidence through the frozen signature.
-
-    The module is imported at call time because it does not exist at this
-    lane's base; a module-level import would break the base. The mint runs
-    exactly once per published issuer and its return value lands UNCHANGED in
-    ``ProductionDatasetMaterial.lineage_evidence``.
-    """
-    module = importlib.import_module(_LINEAGE_SEAM_MODULE)
-    mint = getattr(module, "mint_production_lineage_evidence", None)
-    if not callable(mint):
-        _fail(
-            f"{_LINEAGE_SEAM_MODULE} does not expose mint_production_lineage_evidence",
-            code="lineage_mint_failed",
-        )
-    return mint(ledger, packages, system_available_at=system_available_at)
-
-
 def _convert_admitted_packages(packages: Sequence[Any]):
     """Ledger + filing metadata over admitted packages, duck-typed.
 
@@ -415,7 +393,11 @@ def _publish_one_issuer(
         ]
     )
     floor = min(capture_clocks)
-    lineage_evidence = _mint_lineage_evidence(
+    # The S2-p seam, DIRECT (spec §3): the module-level import above names
+    # ``mint_production_lineage_evidence`` and nothing else — never a mint
+    # layer or golden provider. One call per published issuer, clock-equal to
+    # the material's admission clock, return landing UNCHANGED.
+    lineage_evidence = mint_production_lineage_evidence(
         ledger, admitted_packages, system_available_at=admitted_at
     )
     material_binding = binding
