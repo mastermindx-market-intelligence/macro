@@ -436,10 +436,10 @@ def test_no_admitted_row_names_a_ticker_outside_the_declared_universe(
     document: dict, universe: tuple[str, ...]
 ) -> None:
     # Admission widens what the map answers; it may never widen WHAT IT MAY
-    # NAME.  The four parents Ruling 3 admitted are inside the declared 70 —
+    # NAME.  The four parents Ruling 3 admitted are inside the declared 71 —
     # checked against the basket file, not against a list written here.
     universe_set = set(universe)
-    assert len(universe_set) == 70
+    assert len(universe_set) == 71
     for row in document["rows"]:
         if row["review_state"] != "reviewed_admitted":
             continue
@@ -509,7 +509,7 @@ def test_universe_is_derived_from_the_basket_file_at_read_time(universe: tuple[s
         }
     )
     assert list(universe) == expected
-    assert len(universe) == 70
+    assert len(universe) == 71
 
 
 def test_map_source_carries_no_hardcoded_ticker_roster() -> None:
