@@ -1,15 +1,12 @@
 diff --git a/templates/vector.html.j2 b/templates/vector.html.j2
 --- a/templates/vector.html.j2
 +++ b/templates/vector.html.j2
-@@ -334,7 +334,14 @@
- <main class="vector-wrap">
+@@ -335,6 +335,12 @@
    {# Overview is a read-only projection of the same canonical decision. Keep the
       detailed decision fragment independently renderable below, without hero data. #}
--  {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final else none %}
+   {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final and (decision_page_as_of is not defined or decision.as_of == decision_page_as_of) else none %}
 +  {% set overview_as_of = decision.as_of if decision and decision.as_of else '' %}
-+  {% set overview_signal_as_of = signal_as_of if signal_as_of is defined and signal_as_of else '' %}
-+  {% set overview_date_mismatch = overview_as_of and overview_signal_as_of and overview_as_of != overview_signal_as_of %}
-+  {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final and not overview_date_mismatch else none %}
++  {% set overview_date_mismatch = (decision_page_as_of is defined) and decision and (overview_as_of != decision_page_as_of) %}
 +  {% set overview_decision_state = 'available' if overview_decision else ('date-mismatch' if overview_date_mismatch else 'unavailable') %}
 +  {% set overview_decision_reason = 'CANONICAL_DECISION_AS_OF_MISMATCH' if overview_date_mismatch else ((decision.integrity.errors[0] if decision and decision.integrity and decision.integrity.errors else ('' if overview_decision else 'CANONICAL_DECISION_UNAVAILABLE'))) %}
 +  {% set overview_decision_errors = decision.integrity.errors|join(' ') if decision and decision.integrity and decision.integrity.errors else '' %}
@@ -17,7 +14,7 @@ diff --git a/templates/vector.html.j2 b/templates/vector.html.j2
  
    <div class="vector-sectionbar">
      <nav class="vector-tabs" aria-label="Bitcoin research sections / 比特币研究分区">
-@@ -389,8 +396,9 @@
+@@ -389,8 +395,9 @@
              {% if overview_decision %}{{ t(overview_decision.final.action_en, overview_decision.final.action_zh) }}
              {% else %}{{ t('Decision unavailable','决策暂不可用') }}{% endif %}
            </div>
@@ -28,7 +25,7 @@ diff --git a/templates/vector.html.j2 b/templates/vector.html.j2
            </div>
            <div class="hero-position-rail">{% if overview_decision %}<i style="width:{{ overview_decision.final.exposure_pct }}%"></i>{% endif %}</div>
            <div class="hero-position-note">
-@@ -432,7 +440,7 @@
+@@ -432,7 +439,7 @@
            </div>
            <div class="overview-evidence">
              <div class="k">{{ t('Model allocation','模型仓位') }}</div>
@@ -37,15 +34,12 @@ diff --git a/templates/vector.html.j2 b/templates/vector.html.j2
              <div class="sub">{% if overview_decision %}{{ t(overview_decision.final.action_en, overview_decision.final.action_zh) }}{% else %}{{ t('Decision unavailable until integrity checks pass.','完整性检查通过前，决策暂不可用。') }}{% endif %}</div>
            </div>
            <details class="overview-source">
-@@ -467,12 +475,19 @@
- 
+@@ -468,11 +475,17 @@
    {# This decision fragment needs only the canonical decision and risk context;
       it must not depend on the Overview's market, chart or quote variables. #}
--  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final %}
+   {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final and (decision_page_as_of is not defined or decision.as_of == decision_page_as_of) %}
 +  {% set decision_as_of = decision.as_of if decision and decision.as_of else '' %}
-+  {% set decision_signal_as_of = signal_as_of if signal_as_of is defined and signal_as_of else '' %}
-+  {% set decision_date_mismatch = decision_as_of and decision_signal_as_of and decision_as_of != decision_signal_as_of %}
-+  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final and not decision_date_mismatch %}
++  {% set decision_date_mismatch = (decision_page_as_of is defined) and decision and (decision_as_of != decision_page_as_of) %}
 +  {% set decision_state = 'available' if decision_ok else ('date-mismatch' if decision_date_mismatch else 'unavailable') %}
 +  {% set decision_reason = 'CANONICAL_DECISION_AS_OF_MISMATCH' if decision_date_mismatch else ((decision.integrity.errors[0] if decision and decision.integrity and decision.integrity.errors else ('' if decision_ok else 'CANONICAL_DECISION_UNAVAILABLE'))) %}
 +  {% set decision_errors = decision.integrity.errors|join(' ') if decision and decision.integrity and decision.integrity.errors else '' %}
@@ -59,7 +53,7 @@ diff --git a/templates/vector.html.j2 b/templates/vector.html.j2
      <div class="shelf-inner">
        <div class="shelf-head"><span class="shelf-kicker">S2</span><h2 class="shelf-title">{{ t('Decision & levels','决策与关键价位') }}</h2><span class="shelf-sub">{{ t('one final target · explicit review levels','一个最终目标 · 明确复核价位') }}</span></div>
      </div>
-@@ -490,7 +505,7 @@
+@@ -490,7 +503,7 @@
        </div>
        <div class="decision-detail">
          <div class="exposure-top">

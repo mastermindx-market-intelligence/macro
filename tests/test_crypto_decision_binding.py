@@ -199,10 +199,10 @@ def _options() -> dict:
     }
 
 
-def _vector_vm(decision: dict, *, signal_as_of: str, page_as_of: str) -> dict:
+def _vector_vm(decision: dict, *, decision_page_as_of: str, page_as_of: str) -> dict:
     return {
         "as_of": page_as_of,
-        "signal_as_of": signal_as_of,
+        "decision_page_as_of": decision_page_as_of,
         "built": "2026-08-22 00:00 UTC",
         "price": 64000.0,
         "chg24": 1.2,
@@ -459,10 +459,10 @@ def test_crypto_page_renders_each_decision_state(monkeypatch: pytest.MonkeyPatch
 def test_vector_page_renders_each_decision_state() -> None:
     _require_hook("vector.html.j2")
 
-    def draw(decision: dict, signal_as_of: str) -> str:
+    def draw(decision: dict, decision_page_as_of: str) -> str:
         return _render(
             "vector.html.j2",
-            _vector_vm(decision, signal_as_of=signal_as_of, page_as_of="Aug 21, 2026"),
+            _vector_vm(decision, decision_page_as_of=decision_page_as_of, page_as_of="Aug 21, 2026"),
         )
 
     def hero(html: str) -> str:
