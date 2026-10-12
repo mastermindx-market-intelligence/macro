@@ -3,6 +3,79 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Current corrective integration — October12 21:07 UTC continuation
+
+The admitted refresh advanced8786to1be6efa3a504960ec26b0049e5a2b7e37e401459.
+CI38250975435 then failed contract-delta andpack0 on two packing weights
+(5802>5800 and5605>5600), plus three T11 macro-page assertions inpack10.
+These are retained in pr8786_1be6_red_summary.txt; the earlierde63green
+is historical only. Root disarmed the original PR with merge-blocked,
+read back exact1be6andauto-merge null, and confirmed no open refresh lease.
+
+The same owned source tree fast-forwarded to1be6then integrated protected
+maine901b0fabe37b5834fefe6a865e114cd6d239186 without conflicts, producing
+11bd476b178e2cc90b2c46071e7d2ad29e17dde8. It consumes existing T11 repair
+PR9028/b958b35d2c6e rather than copying or weakening assertions. Local T11
+55tests pass in7.37s; the packing regression passes in97.85s;69generated
+pages are byte-identical. All290main jobs and their existing paths survive.
+All21Press acceptance source hashes and all3acceptance pages are unchanged.
+Full validation is green:166manifest tests pass with2existing mockups skips
+in328.96s; differential contract0introduced/0inherited in272.5s. The
+three packing weights are5790/5593/5553, all below unchanged ceilings. Results are recorded in
+pr8786_1be6_corrective_integration.json. The current workload census is2
+active PR CI runs against cap8; no open refresh lease was observed. This
+is corrective integration of real failures, not an empty stale-proof refresh.
+
+No follow-on application code was added to8786. The aggregate-feed branch
+remains separate. Local validation is complete. Submit this repaired original carrier, read back its
+exact remote head and fresh CI, then re-arm protected landing. Installation
+and browser acceptance still require the actual protected merge commit.
+Publication and cutover remain false; the12:07provider attempt remains
+EFFECT_UNKNOWN without replay.
+
+## Historical protected release constraint — October12 09:31 UTC
+
+Original PR8786 remains OPEN atde63b3a93eb3715cc9f84a86d1ae034b822b9fd5,
+armed with merge-on-green. CI38223150169 passed that exact head, but controller
+38229687409 now classifies its landing proof stale because main74031a83236f
+changed CI definitions. The admitted refresh was deferred at09:26:45Z:
+12indexed PR CI runs, global cap8, zero available slots. Main's breaker is
+green;8960still had one running check. No duplicate repair or manual refresh
+was launched. The controller owns the next refresh and fresh proof. Exact
+raw decision and structured evidence are pr8786_de63_refresh_admission.txt
+and pr8786_de63_refresh_admission.json. No merge/install/browser/publication
+acceptance exists. After admitted refresh, review source/page changes before
+rebinding the portable bundle to the actual protected merge. The separate
+aggregate-feed implementation and186-test result remain unchanged.
+
+## Current active release
+
+Original PR8786 is OPEN and re-armed atde63b3a93eb3715cc9f84a86d1ae034b822b9fd5.
+Fresh exact-head CI38223150169 completed SUCCESS at09:06:28Z. All12packs,
+contract-delta andci-gate passed; binding fences/authority passed. Exact proof
+is pr8786_de63_exact_head_ci.json. The09:11read still found the PR OPEN
+with no merge commit. Protected landing is still required.
+This follow-on branch now integrates that repaired carrier; its only merge
+conflicts were these three root-owned continuity records. The separate
+aggregate-feed application source is preserved. Continue exact-head CI,
+protected landing, installation and browser verification before shipping
+this follow-on. The same-chat continuation remains ACTIVE and quiet on
+unchanged state. Its first scheduled execution was observed at08:31:49.007Z;
+this is an actual same-thread wake, not merely registration.
+The integrated follow-on's four affected suites pass186tests; raw proof is
+aggregate_feed_de63_green.txt. Both implementation/test hashes match the
+accepted aggregate-feed repair. No second source review is inferred or needed
+for unchanged bytes; protected CI and installed consumption remain outstanding.
+
+The portable postlanding bundle is now under
+/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding/de63b3a93eb3715cc9f84a86d1ae034b822b9fd5/.
+It binds21source hashes and3page hashes tode63, with reviewed theme.js stamps,
+and all three scripts compile. Expected files and outputs are relative to the
+bundle instead of/tmp. Execution remains unperformed. Pass the actual protected
+merge SHA, notde63, after verifying landing; fresh source/page differences must
+be reviewed before rebinding. pr8786_de63_acceptance_preparation.json records
+the preparation hashes. This is continuity repair, not production acceptance.
+
 ## October12 original-carrier conflict repair
 
 The final pre-continuation read found PR8786OPEN at9019with mergeStateStatus
@@ -28,9 +101,11 @@ and pr8786_current_main_pages_check.txt. The differential contract check against
 and0inherited findings in252.1seconds, exit0; its raw result is retained
 in pr8786_current_main_contract_delta.txt.
 
-The source remains disarmed until the tested repair is pushed and its exact
-remote head is read back. Re-arm last, then consume fresh hosted CI and the
-protected main-baseline decision. Source repair does not waive8960or its
+The tested repair is pushed to original8786asde63b3a93eb3715cc9f84a86d1ae034b822b9fd5.
+Exact remote readback succeeded and merge-on-green was restored last. Fresh
+CI38223150169 started at08:22:15Z. Pre-push integration with newer main
+2dbdc9b9455818955bf75e25d61deafad1f49ddb was conflict-free; hosted proof and
+the protected main-baseline decision remain required. Source repair does not waive8960or its
 controller capacity gate. No merge/install/browser acceptance is claimed.
 
 The separately tested aggregate-feed follow-on and its page-proof evidence
@@ -43,7 +118,149 @@ thread; its first scheduled execution is unobserved. Foreground observer
 GitHub retains protected release authority. It must finish8786installation
 and real browser verification, then ship the tested follow-on.
 
-## Current delivery frontier — October12 import-path repair
+## Active delivery continuation
+
+App automation complete-press-delivery is ACTIVE, registered and read back for
+this exact native thread01a12a2a-d7e1-77b1-9262-ab593179dd13 at a20-minute
+cadence. It continues the authorized original8786release through installed and
+browser acceptance, then ships the tested aggregate-feed follow-on. It is quiet
+on unchanged/non-actionable state and stops after that bounded delivery or a
+real human-only gate. Its first scheduled execution has not yet been observed;
+registration is not an execution or publication claim. Body-free registration
+proof is continuation_registration.json. The foreground observer PID13739 /
+exec83265 was stopped with SIGINT and confirmed exit130, so do not reuse it or
+mint a second observer. The protected release controller is unchanged.
+
+The actual implementation/page-proof frontier is6199fbe048891b45aab417a4af57395206951e3c,
+pushed successfully on the owned aggregate-feed branch. The files below remain
+the exact recovery source. No8786merge, installation or live-page acceptance is
+claimed at this registration boundary.
+
+## Active October12 continuation — current-main integration
+
+The Chairman explicitly continued the complete release and follow-on chain.
+Original PR8786 remains OPEN at9019a29c2e35da499fb5c822e515be9ce9c21027;
+its previous exact-head CI is accepted historical proof, not current landing.
+Controller38219404229 at07:44Z now reports the source-main baseline red.
+Integration-baseline38217383023 at67bb1d66a3bb failed the curated import-closure
+assertion across nine existing jobs. Existing repair carrier8960 is preserved;
+no second fleet repair, label bypass or replacement CI controller was created.
+Subsequent bounded review found8960already designated main-red-repair by its
+existing delivery path. All12packs and ci-gate were green atf1152e29; its
+posted independent review matches the exact nine missing-path sets. Root
+made no change to that repair or its labels. The controller still owns landing.
+The bounded controller evidence is pr8786_9019_main_red_gate.txt.
+
+The separate aggregate-feed branch cleanly integrated protected mainc40e39c7
+asfbc73b7792869af73d3f26e71082bb168a2b64d7. Press source and affected tests
+are byte-unchanged by that merge. The four affected suites pass186tests in6.62s
+at this integrated revision; aggregate_feed_current_main_integration.json and
+aggregate_feed_current_main_green.txt retain the command and raw result.
+The current-main contract check completed with0introduced and31inherited
+findings in298.8seconds, exit0. Those inherited closure findings are not
+waived or represented as clean main; the original repair carrier remains
+required. Raw evidence is aggregate_feed_current_main_contract_delta.txt.
+This branch has not entered protected CI or installed.
+The integrated generated estate also passes:69free-content pages byte-identical,
+zero orphans,3hand-authored exemptions; both Press properties show no drift.
+The three prepared acceptance pages differ from9019only in their theme.js
+asset stamp (f29b7083to17255989), recorded in the bounded page diff. Rebind
+exact page hashes to the actual admitted release; do not call old page hashes
+proof of the later merge. Of21source checks only the intentional separate
+aggregate-feed implementation differs in this follow-on tree.
+
+Later controller38220382241 at07:55Z accepted8960as its one repair candidate
+but deferred that repair's own stale-proof refresh at16active CIruns against
+cap8. It kept8786behind the main-red breaker. Neither existing carrier changed.
+The exact new notices are appended to pr8786_9019_main_red_gate.txt.
+The browser connection was recovered: Chrome/Chris now has browser ID1,
+public Blog verification tab1925917959. This is browser readiness and a
+current pre-release page observation, not8786installation acceptance.
+
+The expired earlier PR observer was proven absent before one same-cursor
+replacement started (exec83265, output/tmp/mmx-8786-watch-20261012-0748.log).
+It observed original9019at07:46:11Z. The inactive merge-queue pilot remains
+nonbinding; no duplicate observer or unattended native wake is claimed.
+
+Next: consume the incumbent main repair and admitted8786refresh, then fresh
+binding CI, protected merge, installed21source/3page verification and real
+browser checks. Only afterward ship the tested aggregate-feed follow-on.
+Do not replay the original uncertain12:07provider attempt or promote any
+reference-only source to article rights.
+
+## Prior release gate and live continuation proof
+
+Exact-head CI38202742004 completed SUCCESS at9019a29c, with21binding checks
+passing. Protected controller38205397750 then refused stale proof because
+main33f96b9d95b7 changed CI definitions and deferred its own refresh:19indexed
+CIruns exceeded the shared cap8, leaving zero available refresh slots. The
+head, label and controller custody were unchanged. A second completed sweep,
+38206255344, repeated the same stale-proof gate at05:03:43Z with18active CI
+runs versus cap8 and zero available slots. The exact8786notices are
+retained in pr8786_9019_landing_deferral.txt. This is neither a CI-test failure
+nor authority for a manual refresh, cap override or merge. Source installation
+and the postlanding workflows remain unexecuted.
+
+Separate follow-on implementation79c62ed8577688f0dcb450b9dd3fb9f5d2710de8 and
+CI-evidence commitcbeddba83cf3 are pushed on the owned aggregate-feed branch.
+An evidence-only push briefly failed to connect togithub.com; a read preflight
+also timed out. A later same-origin HTTPS200 established recovery, and one
+same-carrier normal push succeeded. No credential, remote or protocol changed.
+
+Real Chrome independently verified the existing live NVDA dossier continuation.
+The authenticated Terminal retained NVDA and company-dossier attribution.
+NVDA was already in the active list. After a full reload and account-state
+hydration, the same selected list and exactly one NVDA row returned. The
+immediate default-list transient is recorded; it is not cloud-proof. No list,
+follow or account was written, and no private list name is retained. The
+body-free receipt is terminal_existing_follow_readback.json. This extends the
+live956sign-in proof; it is not a new-follow-write or new-signup claim.
+
+Next action remains the admitted original-carrier refresh, fresh exact-head
+CI and protected landing, then the prepared21source/3page installation checks,
+installed staging replay and public browser routes. The existing nonpromoting
+earnings full audit and fixed baseline qualifier run only after source lands.
+Preserve the original12:07EFFECT_UNKNOWN provider attempt and all rights/D14
+publication gates. There is no autonomous wake implied by this checkpoint.
+
+## October12 aggregate-feed follow-on save
+
+PR8786 remains armed at9019a29c2e35da499fb5c822e515be9ce9c21027. Its
+CI38202742004 completed SUCCESS with all12packs, contract-delta and ci-gate
+passed. The04:53:39Z observer result binds all21passing checks to9019a29c;
+the inactive merge-queue pilot is nonbinding. Raw run/check receipts are
+pr8786_9019_ci_success.json and pr8786_9019_binding_checks.json.
+No merged/installed Macro claim follows. Observer PID17880 subsequently exited after the tool-session interruption.
+An exact process census proved it absent before same-cursor replacement
+exec55989 started with file-backed output; do not duplicate that observer.
+
+A separate owned SSD worktree at
+`/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-aggregate-feed-20261012-a9aa65ed7b847bd2`
+contains the next bounded source phase. Base209f77267304 integrates fresh
+protected main4bb93ef35d45 with the fixed8786 release. It has no separate PR
+yet and must not be pushed onto8786. The exact Fabric aggregate-feed patch
+was consumed and reviewed; parent closed a URL-normalization hole. The actual
+four affected suites pass186tests in9.50seconds after materializing tracked
+data; contract-delta has zero introduced/inherited findings in514.2seconds.
+Source, returned-artifact hashes and red/green evidence are in
+research/agentic_media/public_intelligence_20261011/AGGREGATE_FEED_QUALIFICATION.md
+and aggregate_feed_review.json. These are local source results, not live proof.
+
+Root independently qualified the October10 CEA release only as a government
+source reference. The actual reader refuses it before candidate admission;
+its RSS body has no ticker associations. The October8 science item differs in
+body bytes between aggregate and section feeds and remains expired. Neither
+qualification enables a writer, stage, emit or publication. The original12:07
+provider attempt remains EFFECT_UNKNOWN and is not replayed.
+
+Next: consume the original exact-head CI and protected merge, verify21source
+and3page installed bindings plus installed staging and real browser routes.
+Run the existing promote=false full earnings audit and fixed baseline workflow
+once only after protected-main source qualification. Integrate that merged
+main into this follow-on branch and ship only its bounded new diff through
+normal protected checks. Terminal956 remains live and accepted.
+
+## Historical delivery frontier — October12 import-path repair
 
 CI38199822739 on66541c0866a83bf6280cac5e9b6277ac56368407 exposed a real
 `ci-pack-7` failure in `unrun-import-hygiene`: the new fixed baseline CLI had

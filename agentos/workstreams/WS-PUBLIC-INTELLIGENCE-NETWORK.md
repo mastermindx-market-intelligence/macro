@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Finish the original PR8786 conflict repair0dde7248 against protected main2853362, with0introduced/0inherited contract findings, push and read back the exact head, and re-arm last. Full CI-manifest tests166passed with2mockupskips and69generated pages match. Then fresh hosted CI, protected landing, installation and browser proof; ship the separately tested aggregate follow-on afterward. Same-thread app continuation complete-press-delivery is registered ACTIVE; no publication approval.
+next_action: Original8786 refreshed to1be6efa3 andCI38250975435 failed packing weights plus T11 page pairing. Corrective integration11bd476b consumes protected maine901b0fa andexisting9028; local T11 andpacking regression pass,21Press hashes and3pages unchanged. Full manifest166passed/2existing skips andcontract0introduced/0inherited. Push repaired original carrier and re-arm protected delivery; then installation/browser acceptance before the separate aggregate-feed PR. Publication remains unapproved.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
