@@ -102,7 +102,8 @@ def merge(held: pd.DataFrame | None, fetched: pd.DataFrame, *, first_seen: str) 
     known = {} if held is None else dict(zip(held["trade_date"], held["close"]))
     fresh = []
     for day, price in zip(fetched["trade_date"], fetched["close"]):
-        if day in known:
+        # The replay is anchored; a vendor row dated before the anchor is not held.
+        if day in known or day < ANCHOR.isoformat():
             continue
         fresh.append({"ticker": TICKER, "trade_date": day, "close": price,
                       "first_seen": first_seen})
