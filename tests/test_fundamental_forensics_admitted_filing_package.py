@@ -54,9 +54,11 @@ T_FLOOR = datetime(2026, 8, 1, 0, 0, tzinfo=timezone.utc)
 # stay identical after the additive D3 field list change.
 _FIP1_GENERATION_ID = "ffprods_181f4473001fd3d8d8090551bee67fc7a688834f92cc5d4057c968f166eeed8f"
 _FIP1_INDEX_SHA = "22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f4d7"
-_AAPL_GOLDEN_GENERATION_ID = "ffprods_2680a7cd47e7d3e1df2f7399d73f12ad707311f76aff15630e257be2a1b5b169"
+# re-pinned 2026-10-12 by seat ruling: P1 #8992 R2 added the optional
+# statement_trees_json role (packages-bearing generations only)
+_AAPL_GOLDEN_GENERATION_ID = "ffprods_0b5def029e7088a915d96db8a4261f9294350beb426e17600ac050943a0a0932"
 _AAPL_GOLDEN_INDEX_SHA = "74c2975c1903ae026e2971490571463551ce33bf18cd9e40593e75b1e213bb3f"
-_AAPL_GOLDEN_MANIFEST_SHA = "74ff70d31e5792fe4eaa1f5d6030ac7f85cda0c08a6718774186dc40b965e8d1"
+_AAPL_GOLDEN_MANIFEST_SHA = "f1e378e876001f09ea9c2355aedb8cacd6aa0b06f57de54aa184cb0d33e0d3fe"
 _FIP1_QUERY_SHA = {
     "as_reported": "c7c7c6b285f697597d50139e5991277bdac57e1c325d63424f35b12cf0201ba1",
     "latest_known_as_of": "086a59ef400af43103d4e13572e384e6b7766b58a9179eabbb709265ad0aa019",
@@ -718,6 +720,15 @@ def test_golden_generation_bytes_unchanged() -> None:
     assert hashlib.sha256(store2.get_bytes(publication2.manifest_key)).hexdigest() == (
         _AAPL_GOLDEN_MANIFEST_SHA
     )
+    assert [role["role"] for role in json.loads(store2.get_bytes(publication2.manifest_key))["roles"]] == [
+        "ledger_json",
+        "filing_metadata_json",
+        "registry_json",
+        "entity_json",
+        "statement_packages_index_json",
+        "lineage_evidence_json",
+        "statement_trees_json",
+    ]
     index = json.loads(index_payload)
     for item in index["accessions"]:
         assert "capture_basis" not in item["manifest"]

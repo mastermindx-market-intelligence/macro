@@ -467,3 +467,51 @@ Terminal aggregate is absent from the PR rollup. The incumbent auto-merge reques
 remains enabled. The original approval refusal is preserved without retry,
 replacement workflow or protection change. This blocks protected consumer
 landing, not the independent history capture and qualification lane.
+
+
+### Wave11 closed; reviewed rolling source in real use
+
+Original wave11 settled at 18:27:54 UTC with all 5000 requests successful, zero
+failures, 10531732 row hints and 2558966794 raw bytes. All eighteen qualification
+snapshots were accepted. Its finite closure proves 4968 nonempty histories,
+32 empty responses and 10531732 distinct bars. Closure SHA256:
+`222790d101450e63407f8ebaaedc0ae529102e5974bdf9eaf37b97009722b293`.
+The closed census has 28184 histories, 61704769 bars, 100 empty responses and
+19405 uncaptured windows; actual coverage SHA256:
+`901aae3d0d477bd76e4edbb3d36657480e1c77c9108de1e636bece44cf21e6a1`.
+No accepted history was re-downloaded or rebuilt for closure.
+
+PR #9020 merged at 17:28:19 UTC as
+`b169a57fffe07ecff91fca0b830870e8b6318a96` after all twelve original CI packs,
+contract delta, final gate and active protections passed on run 38281575777 at
+`8578aaeba46e6dac8a85d37a1ed849259197a3d1`. The inactive advisory failure was
+retained; no admin bypass was used. The root moved to a clean fresh current-main
+carrier, `claude/tiingo-catalogue-closure-20261012-01a12ab6`, for continued delivery.
+
+Wave12 actually started at 18:29:54.081664 UTC on original session 7500, through
+unchanged method `18ea2c8062c2185536810f10d0dc649dcc3c993e30b1a8727fed79194206d270`
+and reviewed canonical module `3d204f2e7a6ebc5d3693606a7b59b665be8f53546314c0b8053bee2be4154926`.
+Actual scope SHA256: `baf73cb8682b735f2aa371b4c5d524fda436341959b155aeebd5580929df4a10`.
+The fresh original browser-2 company quota and 198.118 GiB archive free space
+passed; actual prior settlement, source pins, all sixteen held exclusions and
+zero EOD collisions were rechecked before effect. Its first 232 responses were
+materialized and qualified: census 28416 histories, 61901655 bars, 100 empty and
+19173 uncaptured windows. Full settlement/admission timing proof remains pending.
+The unexecuted coverage helper's base-path template mistake was preserved and
+corrected before use; no running capture changed. Safe proof is in
+`docs/tiingo-evidence/20261012-wave11-rolling-continuation/`.
+
+Future wave13 plan `cfff5523c630fad205112d255fbd4e46cf0765e16179cfa41993e2c1aac8c9ce`
+selects 5000 from 14392 unreserved candidates and reserves every wave12 selection.
+Its source-bound derivative `f535d930cf085e8137dac946326a68905c6d85d877b2071f87077daf3c3fd5c0`
+passed read-only preflight with no provider/credential access, but remains
+unlaunched. Require actual successful prior settlement and a fresh quota/source/
+resource/collision pass before launch. No scheduler, queue or service was added.
+
+Fresh #955 carrier/read at this frontier still found OPEN/BLOCKED/unmerged at
+`1a74e3cf93368a5c5381f0110b80601dff0ae3e3`, incumbent auto-merge enabled and the
+required aggregate absent. Its original PR run 38272372019 remains
+`action_required`; original dispatched all-twelve success 38272365047 remains
+accepted. The original approval refusal, all provider holds, unchanged installed
+0b204cde consumer and incomplete programme acceptance remain binding. Continue
+wave12 and the next lawful phases in the same healthy turn.
