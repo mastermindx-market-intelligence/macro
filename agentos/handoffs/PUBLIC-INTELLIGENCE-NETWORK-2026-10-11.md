@@ -544,3 +544,13 @@ The original Press source/test blobs did not change during this merge.
 The current-main contract check completed with0introduced and31inherited
 findings in298.8seconds, exit0. The inherited main failure remains held.
 See the cumulative CHECKPOINT.md and body-free integration receipt.
+
+## Registered same-chat delivery continuation
+
+App automation complete-press-delivery was created ACTIVE and its installed
+record read back at20-minute cadence for this exact native thread. It owns
+attention and continuation only; GitHub retains protected release authority.
+The temporary foreground observer13739/exec83265 stopped with exit130.
+First scheduled execution is not yet observed. continuation_registration.json
+retains body-free proof; current implementation/page-proof frontier6199fbe0
+is pushed and clean. Original8786and follow-on installation remain unproven.

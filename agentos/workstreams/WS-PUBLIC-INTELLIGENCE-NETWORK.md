@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Continue original PR8786 from9019 through its protected controller; the current gate is red main integration-baseline38217383023, with existing repair carrier8960. Consume the admitted refresh and fresh CI before merge, installation and browser proof. Separate aggregate-feed follow-on integrates protected mainc40e39c7 asfbc73b77 and passes186 affected tests; ship it after8786. Publication remains unapproved.
+next_action: Same-thread app continuation complete-press-delivery is registered ACTIVE every20minutes to consume the existing main-red repair8960 and admitted8786refresh, complete fresh CI/protected merge/installation/browser acceptance, then ship tested follow-on6199fbe0. Foreground observer83265 stopped with exit130. Registration is verified; first scheduled execution and both Macro releases remain unproven. Publication remains unapproved.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956

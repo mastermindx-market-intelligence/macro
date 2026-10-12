@@ -1,0 +1,21 @@
+{
+  "schema": "mastermind.press.continuation_registration.v1",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "observed_at": "2026-10-12T08:05:24.225027+00:00",
+  "automation_id": "complete-press-delivery",
+  "kind": "heartbeat",
+  "status": "ACTIVE",
+  "target_thread_id": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "interval_minutes": 20,
+  "prompt_sha256": "7cfd90c3a660d388ff4cdf7b7fd4504ab96859c9721c8a1d305448433c7db9ee",
+  "scope": "Complete original PR8786 release and browser verification, then ship tested aggregate-feed follow-on",
+  "first_scheduled_execution_observed": false,
+  "foreground_observer": {
+    "pid": 13739,
+    "exec_session": 83265,
+    "stop_signal": "SIGINT",
+    "exit_code": 130
+  },
+  "release_authority": "Existing GitHub protected controller only; no gate changed",
+  "publication_approved": false
+}

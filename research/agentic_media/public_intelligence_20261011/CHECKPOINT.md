@@ -3,6 +3,24 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Active delivery continuation
+
+App automation complete-press-delivery is ACTIVE, registered and read back for
+this exact native thread01a12a2a-d7e1-77b1-9262-ab593179dd13 at a20-minute
+cadence. It continues the authorized original8786release through installed and
+browser acceptance, then ships the tested aggregate-feed follow-on. It is quiet
+on unchanged/non-actionable state and stops after that bounded delivery or a
+real human-only gate. Its first scheduled execution has not yet been observed;
+registration is not an execution or publication claim. Body-free registration
+proof is continuation_registration.json. The foreground observer PID13739 /
+exec83265 was stopped with SIGINT and confirmed exit130, so do not reuse it or
+mint a second observer. The protected release controller is unchanged.
+
+The actual implementation/page-proof frontier is6199fbe048891b45aab417a4af57395206951e3c,
+pushed successfully on the owned aggregate-feed branch. The files below remain
+the exact recovery source. No8786merge, installation or live-page acceptance is
+claimed at this registration boundary.
+
 ## Active October12 continuation — current-main integration
 
 The Chairman explicitly continued the complete release and follow-on chain.
