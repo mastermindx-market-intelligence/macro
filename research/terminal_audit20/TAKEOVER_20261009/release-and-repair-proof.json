@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T1337",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T1357",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -9686,6 +9686,405 @@
     },
     "next_ready_phase": "Consume SAME exec94403 actual settled return, qualify exact installed source/fulltree/runtime/guard/health then authenticated existing archived MU A3/B2 ENZH three sizes and fast A/Back/Forward/B with actual timing and restoration. Never restart this attempt or deploy unmerged source.",
     "whole_J1_accepted": false,
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261012T1357": {
+    "observed_at": "2026-10-12T13:57:42.024236+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T1337",
+    "material": "PR967 exact merged source installed through same single settled guarded release. Authenticated readonly 12 opening/reload cells, six settled history phases and two actual fast history sequences pass; original preferences restored and own tab closed.",
+    "release": {
+      "operation": "canonical-volume-release-0deb7fb-20261012-v1",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "target": "0deb7fb798b897a1cc53e269256099f34db3fa61",
+      "phase": "guarded_canonical_release_settled",
+      "started_at": "2026-10-12T13:35:27.331654+00:00",
+      "controller_pid": 11818,
+      "wrapper_sha256": "bd22d2fed7e558d02a4252c0abfa00beb59a37f0bf96e1a33187229c7e673a84",
+      "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-volume-release-0deb7fb-20261012-v1.log",
+      "whole_Audit20_accepted": false,
+      "child_pid": 11822,
+      "exit_code": 0,
+      "settled_at": "2026-10-12T13:45:47.042100+00:00"
+    },
+    "install_receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/0deb7fb-installed-source-guards-health-parent-qualification.json",
+      "bytes": 6495,
+      "sha256": "a10809bdbe6375f4dab8ccc04e5993f88ce92a51e7336cbfcf339a73bfafa080"
+    },
+    "live_observations": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/live-observations.json",
+      "bytes": 110563,
+      "sha256": "c2a056883e2bbd522af66ff18600550cb7f2a41037a375efdff3ee5f46e88417"
+    },
+    "final_receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/final-parent-qualification.json",
+      "bytes": 20855,
+      "sha256": "805f380ded76f3f132f3c1debecbb10346a10befdcf87d56423efd2733d2d19c"
+    },
+    "live_cells": [
+      {
+        "language": "en",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        },
+        "record": "A",
+        "open_phase": "en-1440-A-open",
+        "reload_phase": "en-1440-A-reload",
+        "passed": true
+      },
+      {
+        "language": "en",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        },
+        "record": "B",
+        "open_phase": "en-1440-B-open",
+        "reload_phase": "en-1440-B-reload",
+        "passed": true
+      },
+      {
+        "language": "en",
+        "viewport": {
+          "height": 1180,
+          "width": 820
+        },
+        "record": "A",
+        "open_phase": "en-820-A-open",
+        "reload_phase": "en-820-A-reload",
+        "passed": true
+      },
+      {
+        "language": "en",
+        "viewport": {
+          "height": 1180,
+          "width": 820
+        },
+        "record": "B",
+        "open_phase": "en-820-fast-B-settled",
+        "reload_phase": "en-820-B-reload",
+        "passed": true
+      },
+      {
+        "language": "en",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        },
+        "record": "A",
+        "open_phase": "en-390-A-open",
+        "reload_phase": "en-390-A-reload",
+        "passed": true
+      },
+      {
+        "language": "en",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        },
+        "record": "B",
+        "open_phase": "en-390-B-open",
+        "reload_phase": "en-390-B-reload",
+        "passed": true
+      },
+      {
+        "language": "zh",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        },
+        "record": "A",
+        "open_phase": "zh-1440-A-open",
+        "reload_phase": "zh-1440-A-reload",
+        "passed": true
+      },
+      {
+        "language": "zh",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        },
+        "record": "B",
+        "open_phase": "zh-1440-B-open",
+        "reload_phase": "zh-1440-B-reload",
+        "passed": true
+      },
+      {
+        "language": "zh",
+        "viewport": {
+          "height": 1180,
+          "width": 820
+        },
+        "record": "A",
+        "open_phase": "zh-820-A-open",
+        "reload_phase": "zh-820-A-reload",
+        "passed": true
+      },
+      {
+        "language": "zh",
+        "viewport": {
+          "height": 1180,
+          "width": 820
+        },
+        "record": "B",
+        "open_phase": "zh-820-fast-B-settled",
+        "reload_phase": "zh-820-B-reload",
+        "passed": true
+      },
+      {
+        "language": "zh",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        },
+        "record": "A",
+        "open_phase": "zh-390-A-open",
+        "reload_phase": "zh-390-A-reload",
+        "passed": true
+      },
+      {
+        "language": "zh",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        },
+        "record": "B",
+        "open_phase": "zh-390-B-open",
+        "reload_phase": "zh-390-B-reload",
+        "passed": true
+      }
+    ],
+    "settled_history_phases": [
+      "en-820-settled-back-composer",
+      "en-820-ordinary-back-A",
+      "en-820-ordinary-forward-B",
+      "zh-820-settled-back-composer",
+      "zh-820-ordinary-back-A",
+      "zh-820-ordinary-forward-B"
+    ],
+    "fast_history_summary": "EN/ZH820: A detail loading at B click request; B canonical2/MU/all actual mo_* context/return retained and reload passes. Actual dispatch versus A response/settlement ordering unobserved. Source controlled tests separately scoped; no live injection.",
+    "return": {
+      "anchorPresent": true,
+      "url": "https://www.mastermind-x.com/transmission.html#tx-chain-dollar_spike_em_multinational",
+      "at": "2026-10-12T13:54:42.625Z"
+    },
+    "captures": [
+      {
+        "phase": "en-1440-A",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/en-1440-A.jpg",
+        "clip": {
+          "x": 60,
+          "y": 54,
+          "width": 1380,
+          "height": 620
+        },
+        "bytes": 50541,
+        "sha256": "5fcb86faad5e60536f8443678c75ccdbf03d7c7cb637eb6802c6b5ccc8e4cca8",
+        "visually_inspected": true
+      },
+      {
+        "phase": "en-1440-B",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/en-1440-B.jpg",
+        "clip": {
+          "x": 60,
+          "y": 54,
+          "width": 1380,
+          "height": 620
+        },
+        "bytes": 50459,
+        "sha256": "63736a6c0a5ff8d54e9511466cc72f05bee9e83d4b7e4407893d61f46e317192",
+        "visually_inspected": true
+      },
+      {
+        "phase": "en-820-A",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/en-820-A.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 811,
+          "height": 620
+        },
+        "bytes": 43794,
+        "sha256": "cee3e81e2e8116c219ecff4af19820b17f8174c114c17bde88ddb058611170c5",
+        "visually_inspected": true
+      },
+      {
+        "phase": "en-820-fast-B",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/en-820-fast-B.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 811,
+          "height": 620
+        },
+        "bytes": 43816,
+        "sha256": "7354e7fd375d856680e94856572d9871f4658cced71365304704efa0d99c9807",
+        "visually_inspected": true
+      },
+      {
+        "phase": "en-390-A",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/en-390-A.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 381,
+          "height": 620
+        },
+        "bytes": 29014,
+        "sha256": "8b3947d4eba0dd0c1caf88b9892a4d812b34b6ae49dcbf55c5947f0da888a89f",
+        "visually_inspected": true
+      },
+      {
+        "phase": "en-390-B",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/en-390-B.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 381,
+          "height": 620
+        },
+        "bytes": 29058,
+        "sha256": "4ed284c3db780301cb35a1edda0f10ce100ad5b1fd6141066313f241f5b3a89f",
+        "visually_inspected": true
+      },
+      {
+        "phase": "zh-1440-A",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/zh-1440-A.jpg",
+        "clip": {
+          "x": 60,
+          "y": 54,
+          "width": 1380,
+          "height": 620
+        },
+        "bytes": 45914,
+        "sha256": "0d4624a6b64df285acf750d24746f82b65124b38834fe0216c5dbc371cbcb9da",
+        "visually_inspected": true
+      },
+      {
+        "phase": "zh-1440-B",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/zh-1440-B.jpg",
+        "clip": {
+          "x": 60,
+          "y": 54,
+          "width": 1380,
+          "height": 620
+        },
+        "bytes": 45912,
+        "sha256": "48efc8ec8c3a2365b9b0609f976dd28c531771757184721c94db77bb07888c5e",
+        "visually_inspected": true
+      },
+      {
+        "phase": "zh-820-A",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/zh-820-A.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 811,
+          "height": 620
+        },
+        "bytes": 38746,
+        "sha256": "00cdd59755fe3130b71868fb1f5d5676f7205b1a111fd920a8673be9a0eb7abe",
+        "visually_inspected": true
+      },
+      {
+        "phase": "zh-820-fast-B",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/zh-820-fast-B.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 811,
+          "height": 620
+        },
+        "bytes": 38780,
+        "sha256": "70ee3497c3d97cac4081fed4faf1b3cea7c16d1098a38e08c4c8acdfdb10c741",
+        "visually_inspected": true
+      },
+      {
+        "phase": "zh-390-A",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/zh-390-A.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 381,
+          "height": 620
+        },
+        "bytes": 23817,
+        "sha256": "d7133d52e1bf0531f037e9fd1ebd06e9353775ec0c7f76f186ce6e539fa856b5",
+        "visually_inspected": true
+      },
+      {
+        "phase": "zh-390-B",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/zh-390-B.jpg",
+        "clip": {
+          "x": 0,
+          "y": 52,
+          "width": 381,
+          "height": 620
+        },
+        "bytes": 23819,
+        "sha256": "86371adf0817fdde1e8d258846e81242db36b8cb7244237d2e844d81c66418d1",
+        "visually_inspected": true
+      }
+    ],
+    "cleanup": {
+      "color": "west",
+      "dialogVisible": true,
+      "language": "en",
+      "theme": "dark",
+      "url": "https://app.mastermind-x.com/terminal?symbol=MU",
+      "viewport": {
+        "height": 694,
+        "width": 1728
+      },
+      "at": "2026-10-12T13:55:12.689Z",
+      "dialogs": [
+        {
+          "display": "flex",
+          "hidden": false,
+          "opacity": "0",
+          "rect": {
+            "height": 0,
+            "width": 0
+          },
+          "text": "What the Brain used×Context is resolved by fixed rules, not by the AI.No trading authority",
+          "visibility": "hidden"
+        },
+        {
+          "display": "block",
+          "hidden": false,
+          "opacity": "0.4",
+          "rect": {
+            "height": 644.18994140625,
+            "width": 1122.89990234375
+          },
+          "text": "CChrisSynced across devicesAccountTeamAccuracyBillingUsagePreferencesAlert deliveryTermina",
+          "visibility": "hidden"
+        }
+      ],
+      "settingsLocatorVisible": false,
+      "tabClosedAt": "2026-10-12T13:55:23.346Z",
+      "tabId": "1925918025"
+    },
+    "scope": {
+      "accepted": "PR967 installed exact merged source, authenticated readonly existing archived MU A3/B2 12 opening/reload cells, six settled history phases including two composers, actual fast EN/ZH tablet sequences and exact return destination. No workspace horizontal overflow.",
+      "causal_limit": "A detail visibly loading at B click request in both fast sequences. Actual DOM event dispatch versus A response/canonical settlement ordering was not instrumented. No live controlled race/error/cross-company injection; source-test proof remains separately scoped. Old e0 fast-failure evidence is preserved, not erased.",
+      "effects": "No New click, typing, Save, revision, proposal, Accept/Reject, archive, lifecycle Reopen, SQL, record creation, request replay or interception. Temporary language restored EN; west/dark preserved; tab emulation cleared, original 1728x694 restored, settings visibility hidden, own tab closed. Other tabs untouched. No VPS restoration owed.",
+      "dialog_rect_note": "Initial cleanup.dialogVisible is a width-only heuristic; fresh computed visibility and locator show both dialogs hidden before own tab close.",
+      "review": "B owns overall J1 adjudication; no further root execution owed absent an actual material owner event.",
+      "whole_audit20_complete": false,
+      "independent_holds": "All original independent review, rights, safety, unknown-effect and producer gates unchanged."
+    },
+    "B_return": {
+      "sent_at": "2026-10-12T13:57Z",
+      "first_party_tool_accepted_no_error": true,
+      "recipient_ack_observed": false,
+      "repeat_send_owed": false
+    },
+    "next_ready_phase": "Consume actual B overall J1 adjudication or relevant original-owner review/platform/rights/reconciliation/producer event, or independently useful admitted new work. Root PR967 install and bounded live proof complete; no source/CI/release/browser rerun or cleanup owed.",
     "whole_audit20_complete": false
   }
 }

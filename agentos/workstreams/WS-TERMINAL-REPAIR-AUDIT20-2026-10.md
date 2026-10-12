@@ -25,7 +25,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: "PR967 protected merge0deb7fb/source/all23blobs/exactCI38250821317 qualified. ONE guarded canonical release exec94403/controller11818 is running; consume its actual settlement, never restart. Then qualify installation and read-only existing archived MU A3/B2 ENZH three sizes/fast history with cleanup. No SQL/records effects; original independent holds and whole Audit20 incomplete remain."
+next_action: "PR967 exact merged0deb7fb installed; root readonly12cells/six settled history/two fast ENZH sequences and cleanup complete. Consume actual B J1 adjudication or relevant original-owner review/platform/rights/reconciliation/producer event; no duplicate source/CI/release/browser action. Whole Audit20 remains incomplete with original independent holds."
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -1172,3 +1172,13 @@ Paper explicitly completes its narrow repair writer reservation and reports no a
 ### 2026-10-12 T1337 — PR967 qualified; guarded release launched
 
 Actual B PR967 protected-merged source/required CI independently qualified. One new guarded canonical release launched; authenticated J1 read-only proof follows same attempt settlement. Source receipt: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/967-merged-source-required-ci-parent-qualification.json`. Same original root and release owner; source/CI proof does not establish installation or live acceptance. All independent holds retained.
+
+### 2026-10-12 T1357 — PR967 installed and bounded live history acceptance complete
+
+Same guarded canonical-volume-release-0deb7fb-20261012-v1 exec94403/controller11818/child11822 settled13:45:47.042100Z/rc0 with builder0/postguard0; never restart. Parent13:45:53 qualification binds exact merged0deb7fb head/marker/fulltree/ten runtime bytes, expected ext4 UUID/base+live bind, guard0/stagesempty/root13563858944 and volume33617063936 bytes, active services and public200 target asset. Quote service unchanged; no VPS pause or restoration owed. Source/review/exact required CI remain the closed T1337 proof.
+
+Authenticated Chris owned tab1925918025 followed the actual rendered Transmission MU link unchanged. Existing archived A3/B2 only: all12 EN/ZH x1440x900/820x1180/390x844 opening and reload cells pass with symbolMU/all actual mo_* values, canonical versions and context/return intact, no workspace horizontal overflow. Six explicitly settled history phases pass. Fast EN820 and ZH820 A/back-to-settled-composer/Forward/prompt B row selections both settle B2 and retain context/return. In both, A detail was visibly loading when B click was requested; actual event-dispatch versus A response/canonical-settlement ordering was not instrumented. This accepts the actual fast workflows only, not a fabricated adversarial live race; controlled source tests remain separate. Original e0 fast context-loss evidence remains historical. Actual return-link click reaches the original Macro dollar_spike_em_multinational anchor.
+
+Twelve actual JPEG workspace crops were saved, decoded, hash-bound and visually inspected. No New, typing, Save, revision, proposal, Accept/Reject, lifecycle Reopen, archive, SQL, record creation, request replay, interception or live fault. EN/west/dark and original1728x694 restored, own emulation cleared, Settings explicitly visibility:hidden before task tab CLOSED13:55:23.346Z. Width-only preclose dialog heuristic is qualified by computed visibility/locator; other tabs untouched. No browser input or cleanup owed. Final20855B/SHA805f380ded76f3f132f3c1debecbb10346a10befdcf87d56423efd2733d2d19c at `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-release-967-20261012/final-parent-qualification.json` binds source/install/live/timing/captures/cleanup/limits.
+
+Meaningful final return to B accepted by first-party tool without error; recipient ACK not observed, no repeat send owed. Root install/read-only verification obligation complete; B retains overall J1 adjudication. All original independent review, safety, rights, unknown-effect and producer holds stay unchanged; whole Audit20 incomplete. Current frontier current_capability_frontier_20261012T1357 inheritsT1337; all128priorJSONobjects preserved except pointer, only next_action frontmatter changed. SAME8545twofiles only.
