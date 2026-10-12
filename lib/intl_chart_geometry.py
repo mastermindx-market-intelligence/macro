@@ -73,6 +73,7 @@ def _line_geometry(line: dict, *, begin: int, finish: int,
                       "first_timestamp": block[0]["timestamp"],
                       "last_timestamp": block[-1]["timestamp"],
                       "first_x": block[0]["x"], "last_x": block[-1]["x"],
+                      "first_y": block[0]["y"], "last_y": block[-1]["y"],
                       "count": len(block)})
     return {"slot": line["slot"], "market_id": line["market_id"],
             "status": line["status"], "gaps": gap_count,
