@@ -106,6 +106,45 @@ def _validate_sealed_at_utc(value) -> str:
     return value
 
 
+def _authority_key_path(path: str, key) -> str:
+    if path:
+        return f"{path}.{key}"
+    return str(key)
+
+
+def _is_forbidden_authority_key(key) -> bool:
+    return isinstance(key, str) and (key in AUTHORITY_FLAG_KEYS or key == "authority_flags")
+
+
+def _refuse_nested_authority(obj, path: str) -> None:
+    """Raise if any authority flag key or 'authority_flags' appears in obj."""
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            here = _authority_key_path(path, key)
+            if _is_forbidden_authority_key(key):
+                raise ValueError(
+                    "must not contain authority_flags or any authority flag key; "
+                    f"refused: {here}"
+                )
+            _refuse_nested_authority(value, here)
+    elif isinstance(obj, (list, tuple)):
+        for index, value in enumerate(obj):
+            _refuse_nested_authority(value, f"{path}[{index}]")
+
+
+def _collect_nested_authority(obj, path: str, violations: list[str]) -> None:
+    """Append a violation for every smuggled authority key under obj."""
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            here = _authority_key_path(path, key)
+            if _is_forbidden_authority_key(key):
+                violations.append(f"authority key {here} is not allowed")
+            _collect_nested_authority(value, here, violations)
+    elif isinstance(obj, (list, tuple)):
+        for index, value in enumerate(obj):
+            _collect_nested_authority(value, f"{path}[{index}]", violations)
+
+
 def _check_identity_id_values(obj, path: str = "identity_facts") -> None:
     """Owner-supplied *_id values must be str or None; this library never constructs them."""
     if isinstance(obj, dict):
@@ -153,9 +192,11 @@ def _normalize_cells(cells) -> list[dict]:
     ]
 
 
-def _normalize_budgets(budgets) -> dict:
+def _normalize_budgets(budgets, protocol_ids) -> dict:
     if not isinstance(budgets, dict):
         raise ValueError("budgets must be a dict")
+    if not budgets:
+        raise ValueError("budgets must be a non-empty dict")
     out = {}
     for family, n in budgets.items():
         if not isinstance(family, str):
@@ -163,6 +204,10 @@ def _normalize_budgets(budgets) -> dict:
         if type(n) is not int or n <= 0:
             raise ValueError(f"budget for {family} must be a positive int")
         out[family] = n
+    for protocol_id in protocol_ids:
+        n = out.get(protocol_id)
+        if type(n) is not int or n <= 0:
+            raise ValueError(f"protocol_id {protocol_id} lacks a positive-int budget")
     return out
 
 
@@ -194,12 +239,7 @@ def _normalize_string_list(name: str, values) -> list[str]:
 
 
 def _authority_flags_hard_false(extra: dict) -> dict:
-    overlap = _FORBIDDEN_EXTRA.intersection(extra)
-    if overlap:
-        raise ValueError(
-            "extra must not contain authority_flags or any authority flag key; "
-            f"refused: {sorted(overlap)}"
-        )
+    _refuse_nested_authority(extra, "extra")
     return {key: False for key in AUTHORITY_FLAG_KEYS}
 
 
@@ -232,15 +272,17 @@ def build_seal(
         raise ValueError("identity_facts must be a dict")
     identity_out = dict(identity_facts)
     _check_identity_id_values(identity_out)
+    _refuse_nested_authority(identity_out, "identity_facts")
     _require_hex64("prereg_digest", prereg_digest)
     _validate_sealed_at_utc(sealed_at_utc)
 
+    protocol_ids_out = _normalize_string_list("protocol_ids", protocol_ids)
     seal = {
         "schema_version": SCHEMA_VERSION,
         "lane": lane,
-        "protocol_ids": _normalize_string_list("protocol_ids", protocol_ids),
+        "protocol_ids": protocol_ids_out,
         "cells": _normalize_cells(cells),
-        "budgets": _normalize_budgets(budgets),
+        "budgets": _normalize_budgets(budgets, protocol_ids_out),
         "input_manifest": _normalize_manifest(input_manifest),
         "prereg_digest": prereg_digest,
         "identity_facts": identity_out,
@@ -300,10 +342,29 @@ def verify_seal(seal: dict, *, file_bytes: dict[str, bytes] | None = None) -> li
                 violations.append("cells not sorted")
 
     budgets = seal.get("budgets")
-    if isinstance(budgets, dict):
+    if not isinstance(budgets, dict) or not budgets:
+        violations.append("budgets missing, not a dict, or empty")
+    else:
         for family, n in budgets.items():
             if type(n) is not int or n <= 0:
                 violations.append(f"non-positive budget for {family}")
+        protocol_ids = seal.get("protocol_ids")
+        if isinstance(protocol_ids, (list, tuple)):
+            for protocol_id in protocol_ids:
+                n = budgets.get(protocol_id)
+                if type(n) is not int or n <= 0:
+                    violations.append(
+                        f"protocol_id {protocol_id} lacks a positive-int budget"
+                    )
+
+    if isinstance(seal, dict):
+        for key, value in seal.items():
+            if key == "authority_flags":
+                continue
+            here = str(key)
+            if _is_forbidden_authority_key(key):
+                violations.append(f"authority key {here} is not allowed")
+            _collect_nested_authority(value, here, violations)
 
     body = {key: value for key, value in seal.items() if key != "content_digest"}
     try:
@@ -326,7 +387,11 @@ def verify_seal(seal: dict, *, file_bytes: dict[str, bytes] | None = None) -> li
                 if not isinstance(path, str):
                     continue
                 manifest_paths.add(path)
-                if path in file_bytes:
+                if path not in file_bytes:
+                    violations.append(
+                        f"manifest path {path} missing from file_bytes"
+                    )
+                else:
                     actual = sha256_bytes(file_bytes[path])
                     if actual != digest:
                         violations.append(

@@ -45,6 +45,7 @@
     },
     "budgets": {
       "type": "object",
+      "minProperties": 1,
       "additionalProperties": {"type": "integer", "minimum": 1}
     },
     "input_manifest": {
