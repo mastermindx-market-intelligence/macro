@@ -1474,3 +1474,52 @@ customer release also HELD. Next original branch
 publish this distinct metadata bridge with
 exact head readback and hosted CI; do not
 insert real vendor prices or invent cash/trades.
+
+
+## Session 2 recoverable handoff checkpoint — 2026-10-12 UTC
+
+Chairman requested **checkpoint and written handoff**; mission source parent
+`7c1c71cbdb0c5feffd90f0fdf121684fe0ea8dbc` on original Macro PR #8677 DRAFT/HOLD, UNMERGED.
+Protected Mastermind `85807cf48e29e2fe5df19534d6b181fc25b9746f`,
+compatible pinned same-SHA Skillpack 1.0.1/bootstrap1.
+**Single current frontier:** `session2/EXECUTION_HANDOFF_2026-10-12.md`.
+Its SHA-256 is `ca544010d15b663756cde02fa822fc5cdafeb3298e8f84d86dc050cd2c5d1a54` and it is included in
+the accepted research package manifest. This is a handoff/checkpoint
+ONLY: no new estimator, source model, rights/identity writer,
+vendor request, scheduled worker, consumer publication,
+merger or deployment.
+
+Latest confirmed accepted native evidence at handoff:
+**557/557 local tests / 17 suites**, exact-head focused
+GitHub Actions run `38188746012` SUCCESS, source fences
+`38188746143` SUCCESS, full Macro CI run `38188746281`
+IN_PROGRESS at latest verified read. Original research
+source/CLI worktree remained tracked clean at checkpoint entry;
+the S2-P4 WIP and S2-P6 denied forecast-decision red proof
+remain local/ignored and excluded. Retained genuine four-name
+Tiingo consolidated October 9 1m archives plus SPY/US/CA
+vendor security-reference results, first observed October 11,
+are already durably indexed on original Tiingo owner PR #8698.
+The current native `TiingoView -> source_preflight` reports
+1,560/1,560 nominal RTH source timestamps, **1,560 UNKNOWN
+market-pressure cells** and **1,560 SOURCE_AFTER_CUTOFF**
+for an October 9 PIT cutoff. No admitted real 1m
+BVC source, alias/ETF listing, volume basis, rights or
+customer/trading authority.
+
+**DO_NOT_REDO / effects:** exact previously denied source
+reads, benchmark repair, fresh-main comparison, S2-P4
+read-model integrity patch, S2-P6 future-decision corrective
+patch and denied earlier BOATS derived packaging. The
+independent scientific-review `session_summon` operation
+`factor-atlas-s2-independent-science-audit-20261011-sol-001`
+remains **EFFECT_UNKNOWN** and must not be replayed or
+duplicated. No writer custody moved. See handoff for named
+producer paths, exact source/evidence URLs, acceptance
+conditions and immediate lawful next owner-grade phase.
+
+**State:** HANDOFF_SAVED / MORE_PRODUCT_WORK_EXISTS /
+S2_SOURCE_NOT_ADMITTED / DRAFT_HOLD. This checkpoint
+is a save and explicit user-requested handoff, not product
+completion, autonomous background work or an authorization
+to merge, deploy, publish rankings/alerts, size or trade.
