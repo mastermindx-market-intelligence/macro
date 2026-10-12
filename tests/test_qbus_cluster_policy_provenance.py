@@ -272,6 +272,59 @@ def test_velocity_versions_key_is_sorted_list(tmp_path):
     }
 
 
+def test_velocity_versions_key_is_sorted_on_every_hash_seed(tmp_path):
+    """The sorted-list contract fails deterministically, not by set-order luck.
+
+    A two-element set iterates in the sorted order on some PYTHONHASHSEED
+    values, so asserting sortedness over a fixed stamp pair can pass even
+    when the code emits the raw set order. This test picks, at run time, a
+    stamp pair whose set iteration is NOT sorted in either insertion order,
+    so emitting the set order unsorted fails on every seed.
+    """
+    db = tmp_path / "sorted.sqlite3"
+    with NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit(
+            [_routed(1, TITLE_A, minute=0), _routed(2, UNRELATED_TITLE, minute=1)],
+            expected_cursor=None,
+            next_cursor="c1",
+        )
+    conn = sqlite3.connect(db)
+    try:
+        cluster_ids = [
+            str(row[0])
+            for row in conn.execute(
+                "SELECT cluster_id FROM news_clusters ORDER BY cluster_id"
+            )
+        ]
+        assert len(cluster_ids) == 2
+        pair = None
+        for i in range(64):
+            for j in range(i + 1, 64):
+                x, y = f"stamp-{i:02d}", f"stamp-{j:02d}"
+                if x > y:
+                    x, y = y, x
+                if list({x, y}) != [x, y] and list({y, x}) != [x, y]:
+                    pair = (x, y)
+                    break
+            if pair is not None:
+                break
+        assert pair is not None, "no unsorted-iteration stamp pair available"
+        x, y = pair
+        for cluster_id, stamp in zip(cluster_ids, (x, y)):
+            conn.execute(
+                "UPDATE news_clusters SET cluster_policy_version=? WHERE cluster_id=?",
+                (stamp, cluster_id),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+    versions = _versions_24h(db)
+    assert versions == [x, y]
+    assert versions == sorted(set(versions))
+    assert _flow(db)["provenance"]["cluster_policy_version"] == f"{x} + {y}"
+
+
 def test_schema_row_unchanged_after_migration(tmp_path):
     db = _legacy_db(tmp_path)
     with NewsStore(db, source_key="benzinga-rest"):
