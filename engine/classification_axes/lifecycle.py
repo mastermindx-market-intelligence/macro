@@ -1,12 +1,15 @@
 """Lifecycle classification axis — a node's status as known on date D.
 
 A pure, read-only display-tier reader over the theme-graph store. It wraps
-``engine.theme_graph.store.read_nodes(current=False)`` (the write-once node
-rows, never the latest-as-of-now overlay, which cannot answer a historical
-date) and ``store.read_node_lifecycle(latest=False)`` (the append-only
-lineage), then applies its own ``as_of`` overlay: the last lineage row whose
-``computed_at`` day is on or before ``as_of`` wins, else the node row itself.
-Retired/merged detection reuses ``store.RETIRED_LIKE_STATUSES``.
+``engine.theme_graph.store.read_nodes(current=False, strict=True)`` (the
+write-once node rows, never the latest-as-of-now overlay, which cannot answer
+a historical date) and ``store.read_node_lifecycle(latest=False,
+strict=True)`` (the append-only lineage), then applies its own ``as_of``
+overlay: the last lineage row whose ``computed_at`` day is on or before
+``as_of`` wins, else the node row itself. Strict reads surface a corrupt or
+wrong-shape artifact as an exception, which this reader maps to the typed
+``unavailable/owner_degraded`` status instead of laundering it into an empty
+frame. Retired/merged detection reuses ``store.RETIRED_LIKE_STATUSES``.
 
 The subject id IS the graph node id. ``root`` is accepted for registry
 uniformity only — the store owns its table paths, so this reader never
@@ -16,6 +19,9 @@ resolves a path and never writes. No network, no wall-clock, no cache;
 ``cell.validate_cell``.
 """
 from __future__ import annotations
+
+import datetime
+import re
 
 import pandas as pd
 
@@ -58,12 +64,54 @@ def _day(value: object) -> str | None:
     return None if plain is None else str(plain)[:10]
 
 
+def _birth_day(value: object) -> tuple[bool, str | None]:
+    """Normalise a node row's ``birth_date`` once, before any comparison.
+
+    ``(True, None)`` for a null/blank birth (the cell proceeds with
+    ``birth_date: None``), ``(True, "YYYY-MM-DD")`` for a clean calendar day,
+    ``(False, None)`` when unparseable — a typed refusal, never a raise.
+    Mirrors ``cell._read_temporal``, the rule ``make_cell`` enforces on
+    ``effective_at``, so a malformed birth cannot escape the reader as an
+    ``AxisCellError``.
+    """
+    plain = _plain(value)
+    if plain is None:
+        return True, None
+    if isinstance(plain, datetime.date):  # date, datetime and pd.Timestamp
+        text = plain.isoformat()
+    else:
+        text = str(plain).strip()
+        if not text:
+            return True, None
+    if (
+        re.fullmatch(r"\d{4}-\d{2}-\d{2}", text[:10]) is None
+        or not (len(text) == 10 or text[10] in "T ")
+    ):
+        return False, None
+    try:
+        datetime.date.fromisoformat(text[:10])
+    except ValueError:
+        return False, None
+    return True, text[:10]
+
+
 def _first_missing_column(columns: object, required: tuple[str, ...]) -> str | None:
     present = set(columns)
     for name in required:
         if name not in present:
             return name
     return None
+
+
+def _owner_missing(subject_id: str, as_of: str) -> dict:
+    return cell.missing(
+        axis=AXIS,
+        subject_id=subject_id,
+        status="unavailable",
+        reason_code="owner_missing",
+        as_of=as_of,
+        source=dict(_SOURCE),
+    )
 
 
 def _degraded(subject_id: str, as_of: str, note: str) -> dict:
@@ -118,25 +166,23 @@ def read_lifecycle(
 
     if nodes is None:
         try:
-            nodes = store.read_nodes(current=False)
-        except Exception as exc:  # noqa: BLE001 — corrupt store is a typed status, not a raise
+            nodes = store.read_nodes(current=False, strict=True)
+        except FileNotFoundError:
+            return _owner_missing(subject_id, as_of)
+        except Exception as exc:  # noqa: BLE001 — strict read: unreadable or wrong-shape artifact
             return _degraded(subject_id, as_of, f"read_error:{type(exc).__name__}")
     if nodes.empty:
-        return cell.missing(
-            axis=AXIS,
-            subject_id=subject_id,
-            status="unavailable",
-            reason_code="owner_missing",
-            as_of=as_of,
-            source=dict(_SOURCE),
-        )
+        return _owner_missing(subject_id, as_of)
     missing_column = _first_missing_column(nodes.columns, _NODE_REQUIRED)
     if missing_column is not None:
         return _degraded(subject_id, as_of, f"missing_column:{missing_column}")
 
     if lifecycle is None:
         try:
-            lifecycle = store.read_node_lifecycle(latest=False)
+            lifecycle = store.read_node_lifecycle(latest=False, strict=True)
+        except FileNotFoundError:
+            # An absent lifecycle table is normal, not a degradation.
+            lifecycle = pd.DataFrame(columns=list(store.NODE_LIFECYCLE_COLUMNS))
         except Exception as exc:  # noqa: BLE001 — same typed refusal as above
             return _degraded(subject_id, as_of, f"read_error:{type(exc).__name__}")
     if not lifecycle.empty:
@@ -157,7 +203,9 @@ def read_lifecycle(
     # Keep-first on computed_at, matching the store's write-once NODE_KEY.
     node_row = rows.sort_values("computed_at", kind="stable", na_position="last").iloc[0]
 
-    birth = _day(node_row["birth_date"])
+    birth_ok, birth = _birth_day(node_row["birth_date"])
+    if not birth_ok:
+        return _degraded(subject_id, as_of, "birth_date_unparseable")
     if birth is not None and birth > as_of:
         return _history(subject_id, as_of)
 
@@ -217,10 +265,10 @@ def read_lifecycle(
             "node_status": status,
             "tier": _plain(node_row["tier"]) or None,
             "kind": kind,
-            "birth_date": birth,
+            "birth_date": birth or None,
         },
         as_of=as_of,
         source=dict(_SOURCE),
-        effective_at=birth,
+        effective_at=birth or None,
         provenance=provenance,
     )
