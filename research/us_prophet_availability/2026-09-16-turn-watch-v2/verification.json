@@ -1,0 +1,66 @@
+{
+  "semantic_head": "ea961c7998687952ec5539e4909df4236e7b081e",
+  "procedure_pin": "5ee11ab1e993616f3568cfca4069cb21fa61fd8f",
+  "proof_class": "staged_protocol_exact_source_verification",
+  "production": false,
+  "source_hashes": {
+    ".github/ci/legacy-jobs.yml": "28b0dad5a69362f3107eedf5bc113ebf48fc51f16cfaa018649c43f43f2c510e",
+    "docs/superpowers/plans/2026-09-16-turn-watch-row-evidence-v2.md": "c1005c0e90c3054aa542314e3e70d13d559fd0f59dcb48a08b3180e318e764b8",
+    "docs/superpowers/specs/2026-09-16-turn-watch-row-evidence-v2.md": "c8986165d0f565a8e0be7f4ea4ea3a23853735e40e10223cb01b478b31cd0604",
+    "engine/us_candidate_episode_intake.py": "4ab2cabbdf90712f55a2357da7a95b7507bd770c887ecd989eab4ad34b981200",
+    "scripts/build_turn_watch.py": "dfa1634e474f4a773f3c901aa556ccc98e186bab108e88a94b2de3b2eebfe339",
+    "tests/test_us_candidate_episode_intake.py": "d95872f2758f18b90554f233d35c3a51a99af36670419da7ecd4b5cc9359c2a4"
+  },
+  "checks": {
+    "tests-result.json": {
+      "source_commit": "ea961c7998687952ec5539e4909df4236e7b081e",
+      "returncode": 0,
+      "elapsed_seconds": 32.8,
+      "source_file_changes": [],
+      "summary": "........................................................................ [ 35%]\n........................................................................ [ 71%]\n.........................................................                [100%]\n201 passed in 29.01s\n",
+      "production": false
+    },
+    "legacy-compatibility-result.json": {
+      "head": "ea961c7998687952ec5539e4909df4236e7b081e",
+      "returncode": 0,
+      "seconds": 42.62,
+      "full_real_reconciler": true,
+      "durable_write": false,
+      "appended_events": 0,
+      "same_ledger_hash": true,
+      "same_projection_hashes": true,
+      "same_source_hashes": true,
+      "data_file_changes": [],
+      "production": false
+    },
+    "mutation-result.json": {
+      "source_head": "ea961c7998687952ec5539e4909df4236e7b081e",
+      "runtime_mutations_only": true,
+      "source_files_edited": 0,
+      "production": false,
+      "results": [
+        {
+          "mutation": "container_hash_as_row_evidence",
+          "returncode": 1,
+          "killed": true,
+          "summary": "E         \nE         ...Full output truncated (2 lines hidden), use '-vv' to show\n\ntests/test_us_candidate_episode_intake.py:413: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_us_candidate_episode_intake.py::test_v2_receipts_ignore_build_runtime_but_keep_exact_file_provenance\nFAILED tests/test_us_candidate_episode_intake.py::test_v2_sibling_changes_do_not_rewrite_an_unchanged_rows_receipt\n2 failed, 35 deselected in 0.66s"
+        },
+        {
+          "mutation": "definitions_not_bound",
+          "returncode": 1,
+          "killed": true,
+          "summary": "\ntests/test_us_candidate_episode_intake.py:517: Failed\n=========================== short test summary info ============================\nFAILED tests/test_us_candidate_episode_intake.py::test_v2_semantic_definition_drift_is_still_a_conflicting_retry[selection_era-different-selection]\nFAILED tests/test_us_candidate_episode_intake.py::test_v2_semantic_definition_drift_is_still_a_conflicting_retry[anchor_era-different-anchor]\nFAILED tests/test_us_candidate_episode_intake.py::test_v2_semantic_definition_drift_is_still_a_conflicting_retry[triggers-value2]\nFAILED tests/test_us_candidate_episode_intake.py::test_v2_full_generation_rejects_definition_drift_without_changing_head\n4 failed, 33 deselected in 0.51s"
+        }
+      ]
+    },
+    "integration-result.json": {
+      "head": "ea961c7998687952ec5539e4909df4236e7b081e",
+      "main": "44e1292182e65da921e4f19efb254ba0e27d2815",
+      "returncode": 0,
+      "output": "3eb20fb02976787c9bba6f0f78a4f9879585de8b\n",
+      "source_branch_changes": 0,
+      "production": false
+    }
+  },
+  "claim_boundary": "Prospective opt-in v2 preparation only; deployed default and dataset-registry value stay v1. No workflow dispatch, production write, or historical migration."
+}

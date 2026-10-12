@@ -19,6 +19,7 @@ from engine.us_candidate_episode_intake import (
     radar_observations,
     turn_watch_observations,
 )
+from engine.us_candidate_episode import EpisodeContractError
 from scripts.build_turn_watch import write_candidate_episode_input
 
 
@@ -368,3 +369,310 @@ def test_parquet_numpy_dressed_rows_intake_cleanly(tmp_path: Path):
 
     batch = candidate_observations(data, spine)
     assert len(batch.observations) + len(batch.suppressions) >= 1
+
+
+# Private, explicit future-schema prototype. V1 remains the deployed default.
+_V2 = "prophet.candidate_episode_input.turn_watch/v2"
+
+
+def _v2_roundtrip(root, artifact, rows):
+    path = write_candidate_episode_input(artifact, rows, root, input_schema=_V2)
+    return path, turn_watch_observations(path, load_identity_spine(root))
+
+
+def _reconcile_fixture(events, observations, clock="2026-11-27T18:02:00Z"):
+    return reconcile_observations(events, observations, recorded_at=clock,
+                                  definition_era="candidate-episode-v1-2026-08-25")
+
+
+@pytest.mark.parametrize("blocked_session", ("2026-11-26", "2026-11-28"))
+def test_v2_non_session_transition_keeps_public_and_private_artifacts_unchanged(
+        tmp_path, monkeypatch, blocked_session):
+    from scripts import build_turn_watch as builder
+
+    data, site = tmp_path / "data", tmp_path / "site"
+    _identity_spine(data)
+    artifact = {**_turn_artifact(), "data_session": "2026-11-25", "runtime_seconds": 10.0,
+                "coverage": {"graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
+                             "deck_by_trigger": {"dot_1d": 1}, "source_contract": {"pass": True}}}
+    monkeypatch.setattr(builder.config, "data_dir", lambda: data)
+    monkeypatch.setattr(builder.config, "site_dir", lambda: site)
+    monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
+                        lambda *a, **k: (dict(artifact), [_turn_row()]))
+
+    assert builder.build([]) == 0
+    public = site / "turn_watch/turn_watch.json"
+    sidecar_root = data / "us_prophet_rank/episode_inputs/turn_watch"
+    public_before = public.read_bytes()
+    private_before = {path.name: path.read_bytes() for path in sidecar_root.glob("*.json")}
+
+    artifact["data_session"] = blocked_session
+    assert builder.build(["--episode-input-schema", "v2"]) == 1
+    assert public.read_bytes() == public_before
+    assert {path.name: path.read_bytes() for path in sidecar_root.glob("*.json")} == private_before
+
+
+@pytest.mark.parametrize("blocked_session", ("2026-11-26", "2026-11-28"))
+def test_v2_intake_rejects_non_session_even_with_matching_document_hash(tmp_path, blocked_session):
+    _identity_spine(tmp_path)
+    path, _ = _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    document = json.loads(path.read_bytes())
+    document["data_session"] = blocked_session
+    document["known_at"] = blocked_session + "T21:00:00Z"
+    document["content_sha256"] = sha256(canonical_json({
+        key: value for key, value in document.items() if key != "content_sha256"
+    }).encode("utf-8")).hexdigest()
+    malformed = path.with_name(blocked_session + ".json")
+    malformed.write_text(canonical_json(document) + "\n")
+
+    batch = turn_watch_observations(malformed, load_identity_spine(tmp_path))
+    assert not batch.observations
+    assert not batch.suppressions
+    assert batch.source_receipts[0]["status"] == "degraded"
+    assert batch.source_receipts[0]["reason"] == "MALFORMED_SOURCE"
+
+
+def test_v2_real_early_close_session_remains_accepted(tmp_path):
+    _identity_spine(tmp_path)
+    path, batch = _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    document = json.loads(path.read_bytes())
+    assert document["known_at"] == "2026-11-27T18:00:00Z"
+    assert len(batch.observations) == 1
+
+
+def test_v2_receipts_ignore_build_runtime_but_keep_exact_file_provenance(tmp_path):
+    _identity_spine(tmp_path)
+    artifact = {**_turn_artifact(), "runtime_seconds": 10.0}
+    path, initial = _v2_roundtrip(tmp_path, artifact, [_turn_row()])
+    before = path.read_bytes()
+    accepted = _reconcile_fixture([], initial.observations)
+    artifact["runtime_seconds"] = 11.0
+    path, retry = _v2_roundtrip(tmp_path, artifact, [_turn_row()])
+    assert before != path.read_bytes()
+    assert initial.observations == retry.observations
+    assert initial.source_receipts != retry.source_receipts
+    repeated = _reconcile_fixture(accepted.events, retry.observations)
+    assert repeated.events == accepted.events
+    assert len(repeated.episodes) == 1
+    assert retry.source_receipts[0]["files"][0]["sha256"] == "sha256:" + sha256(path.read_bytes()).hexdigest()
+
+
+def test_v2_sibling_changes_do_not_rewrite_an_unchanged_rows_receipt(tmp_path):
+    _identity_spine(tmp_path)
+    artifact = _turn_artifact()
+    _, first = _v2_roundtrip(tmp_path, artifact, [_turn_row()])
+    accepted = _reconcile_fixture([], first.observations)
+    unknown = _turn_row(ticker="OTHER")
+    _, second = _v2_roundtrip(tmp_path, artifact, [unknown, _turn_row()])
+    assert len(second.observations) == 1 and len(second.suppressions) == 1
+    assert first.observations == second.observations
+    assert _reconcile_fixture(accepted.events, second.observations).events == accepted.events
+
+
+@pytest.mark.parametrize("field, value", (
+    ("selection_era", "different-selection"),
+    ("anchor_era", "different-anchor"),
+    ("triggers", {"dot_1d": {"en": "Different semantics"}}),
+))
+def test_v2_semantic_definition_drift_is_still_a_conflicting_retry(tmp_path, field, value):
+    _identity_spine(tmp_path)
+    artifact = _turn_artifact()
+    _, first = _v2_roundtrip(tmp_path, artifact, [_turn_row()])
+    accepted = _reconcile_fixture([], first.observations)
+    artifact[field] = value
+    _, second = _v2_roundtrip(tmp_path, artifact, [_turn_row()])
+    assert first.observations[0]["source_event_id"] == second.observations[0]["source_event_id"]
+    with pytest.raises(EpisodeContractError, match="different committed bytes"):
+        _reconcile_fixture(accepted.events, second.observations)
+
+
+def test_v2_transition_requires_a_new_session_and_preserves_prior_input(tmp_path):
+    _identity_spine(tmp_path)
+    old_path = write_candidate_episode_input(_turn_artifact(), [_turn_row()], tmp_path)
+    old_bytes = old_path.read_bytes()
+    with pytest.raises(ValueError, match="new session"):
+        _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    assert old_path.read_bytes() == old_bytes
+
+
+def test_v2_new_session_attaches_without_rewriting_the_legacy_episode(tmp_path):
+    _identity_spine(tmp_path)
+    old_path = write_candidate_episode_input(_turn_artifact(), [_turn_row()], tmp_path)
+    old_bytes = old_path.read_bytes()
+    first = turn_watch_observations(old_path, load_identity_spine(tmp_path))
+    accepted = _reconcile_fixture([], first.observations)
+    artifact = {**_turn_artifact(), "data_session": "2026-11-30", "runtime_seconds": 10.0}
+    row = _turn_row(asof="2026-11-30", triggers={"dot_1d": {
+        "fired": True, "evaluated": True, "last_date": "2026-11-30"}})
+    _, batch = _v2_roundtrip(tmp_path, artifact, [row])
+    new = _reconcile_fixture(accepted.events, batch.observations, "2026-11-30T21:01:00Z")
+    assert len(new.episodes) == 1
+    assert new.episodes[0]["episode_id"] == accepted.episodes[0]["episode_id"]
+    assert new.events[0] == accepted.events[0]
+    assert len(new.events) == len(accepted.events) + 1
+    assert new.events[-1]["event_type"] == "OBSERVED"
+    assert old_path.read_bytes() == old_bytes
+    artifact["runtime_seconds"] = 12.0
+    _, same = _v2_roundtrip(tmp_path, artifact, [row])
+    assert _reconcile_fixture(new.events, same.observations, "2026-11-30T21:02:00Z").events == new.events
+
+
+def test_v2_tampered_document_is_not_trusted_just_because_row_receipts_are_stable(tmp_path):
+    _identity_spine(tmp_path)
+    path, _ = _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    document = json.loads(path.read_text())
+    document["rows"][0]["reset"]["reset_low"] = 999.0
+    path.write_text(json.dumps(document))
+    batch = turn_watch_observations(path, load_identity_spine(tmp_path))
+    assert not batch.observations
+    assert len(batch.suppressions) == 1
+    assert batch.suppressions[0]["reason"] == "MALFORMED_RECEIPT"
+
+
+def test_v2_full_generation_preserves_event_history_on_a_harmless_rebuild(tmp_path, monkeypatch):
+    from scripts import reconcile_us_candidate_episodes as writer
+    data = tmp_path / "data"
+    _identity_spine(data)
+    artifact = {**_turn_artifact(), "runtime_seconds": 10.0}
+    _v2_roundtrip(data, artifact, [_turn_row()])
+    # Only this temporary fixture is admitted; no live lane or environment is changed.
+    monkeypatch.setattr(writer, "nightly_advance_enabled", lambda: True)
+    first = writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                             recorded_at="2026-11-27T18:01:00Z", correction_path=None)
+    head_path = data / "us_prophet_rank/episodes/HEAD.json"
+    head1 = json.loads(head_path.read_text())
+    generation = head_path.parent / "generations" / head1["generation_id"]
+    frozen = {str(p.relative_to(generation)): p.read_bytes() for p in generation.rglob("*") if p.is_file()}
+    artifact["runtime_seconds"] = 11.0
+    _v2_roundtrip(data, artifact, [_turn_row()])
+    second = writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                              recorded_at="2026-11-27T18:02:00Z", correction_path=None)
+    assert first["counts"]["appended_events"] == 1
+    assert second["counts"]["appended_events"] == 0
+    assert first["ledger_sha256"] == second["ledger_sha256"]
+    assert first["projection_hashes"] == second["projection_hashes"]
+    assert first["source_hashes"] != second["source_hashes"]
+    assert {str(p.relative_to(generation)): p.read_bytes() for p in generation.rglob("*") if p.is_file()} == frozen
+    assert json.loads(head_path.read_text())["generation_id"] != head1["generation_id"]
+
+
+def test_v2_full_generation_rejects_definition_drift_without_changing_head(tmp_path, monkeypatch):
+    from scripts import reconcile_us_candidate_episodes as writer
+    data = tmp_path / "data"
+    _identity_spine(data)
+    artifact = _turn_artifact()
+    _v2_roundtrip(data, artifact, [_turn_row()])
+    monkeypatch.setattr(writer, "nightly_advance_enabled", lambda: True)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:01:00Z", correction_path=None)
+    root = data / "us_prophet_rank/episodes"
+    frozen = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    artifact["selection_era"] = "not-the-accepted-definition"
+    _v2_roundtrip(data, artifact, [_turn_row()])
+    with pytest.raises(EpisodeContractError, match="different committed bytes"):
+        writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                         recorded_at="2026-11-27T18:02:00Z", correction_path=None)
+    assert {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()} == frozen
+
+
+def test_v2_cannot_be_downgraded_in_place_by_a_legacy_same_session_writer(tmp_path):
+    _identity_spine(tmp_path)
+    path, _ = _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match="new session"):
+        write_candidate_episode_input(_turn_artifact(), [_turn_row()], tmp_path)
+    assert path.read_bytes() == before
+
+
+def test_v2_rejected_row_receipt_is_stable_when_only_build_runtime_changes(tmp_path):
+    _identity_spine(tmp_path)
+    artifact = {**_turn_artifact(), "runtime_seconds": 1.0}
+    _, first = _v2_roundtrip(tmp_path, artifact, [_turn_row(triggers={})])
+    artifact["runtime_seconds"] = 2.0
+    _, second = _v2_roundtrip(tmp_path, artifact, [_turn_row(triggers={})])
+    assert not first.observations and not second.observations
+    assert first.suppressions == second.suppressions
+    assert first.source_receipts != second.source_receipts
+
+
+def test_v2_real_builder_cli_requires_an_explicit_schema_choice(tmp_path, monkeypatch):
+    from scripts import build_turn_watch as builder
+    data, site = tmp_path / "data", tmp_path / "site"
+    _identity_spine(data)
+    artifact = {**_turn_artifact(), "runtime_seconds": 1.0, "coverage": {
+        "graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
+        "deck_by_trigger": {"dot_1d": 1}, "source_contract": {"pass": True}}}
+    monkeypatch.setattr(builder.config, "data_dir", lambda: data)
+    monkeypatch.setattr(builder.config, "site_dir", lambda: site)
+    monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
+                        lambda *a, **k: (artifact, [_turn_row()]))
+    assert builder.build(["--episode-input-schema", "v2"]) == 0
+    sidecar = data / "us_prophet_rank/episode_inputs/turn_watch/2026-11-27.json"
+    assert json.loads(sidecar.read_text())["schema"] == _V2
+    assert len(turn_watch_observations(sidecar, load_identity_spine(data)).observations) == 1
+    frozen = sidecar.read_bytes()
+    # A default legacy invocation must not overwrite the selected v2 session.
+    assert builder.build([]) == 1
+    assert sidecar.read_bytes() == frozen
+
+
+def test_v2_new_schema_cannot_be_backdated_into_the_legacy_timeline(tmp_path):
+    _identity_spine(tmp_path)
+    later = {**_turn_artifact(), "data_session": "2026-11-30"}
+    old = write_candidate_episode_input(later, [_turn_row()], tmp_path)
+    old_bytes = old.read_bytes()
+    with pytest.raises(ValueError, match="new session"):
+        _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    assert old.read_bytes() == old_bytes
+    assert not (old.parent / "2026-11-27.json").exists()
+
+
+@pytest.mark.parametrize("defect", ("missing_selection_era", "empty_anchor_era", "false_known_at", "unknown_field"))
+def test_v2_semantic_envelope_is_closed_even_with_a_recomputed_document_hash(tmp_path, defect):
+    from engine.us_candidate_episode import canonical_json
+    _identity_spine(tmp_path)
+    path, _ = _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    doc = json.loads(path.read_bytes())
+    if defect == "missing_selection_era":
+        doc.pop("selection_era")
+    elif defect == "empty_anchor_era":
+        doc["anchor_era"] = ""
+    elif defect == "false_known_at":
+        doc["known_at"] = "2026-11-27T12:00:00Z"
+    else:
+        doc["unregistered_semantic_fact"] = "cannot-be-silently-ignored"
+    doc["content_sha256"] = sha256(canonical_json({k: v for k, v in doc.items()
+                                                  if k != "content_sha256"}).encode()).hexdigest()
+    path.write_text(canonical_json(doc) + "\n")
+    batch = turn_watch_observations(path, load_identity_spine(tmp_path))
+    assert not batch.observations
+    assert batch.source_receipts[0]["status"] == "degraded"
+    assert batch.source_receipts[0]["reason"] == "MALFORMED_SOURCE"
+
+
+@pytest.mark.parametrize("case", ("upgrade", "downgrade", "backdate"))
+def test_rejected_schema_change_keeps_public_deck_unchanged(tmp_path, monkeypatch, case):
+    from scripts import build_turn_watch as builder
+
+    data, site = tmp_path / "data", tmp_path / "site"
+    _identity_spine(data)
+    artifact = {**_turn_artifact(), "runtime_seconds": 10.0, "coverage": {
+        "graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
+        "deck_by_trigger": {"dot_1d": 1}, "source_contract": {"pass": True}}}
+    monkeypatch.setattr(builder.config, "data_dir", lambda: data)
+    monkeypatch.setattr(builder.config, "site_dir", lambda: site)
+    monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
+                        lambda *a, **k: (dict(artifact), [_turn_row()]))
+    first_args = ["--episode-input-schema", "v2"] if case == "downgrade" else []
+    assert builder.build(first_args) == 0
+    public = site / "turn_watch/turn_watch.json"
+    sidecar_root = data / "us_prophet_rank/episode_inputs/turn_watch"
+    public_before = public.read_bytes()
+    inputs_before = {p.name: p.read_bytes() for p in sidecar_root.glob("*.json")}
+    artifact["runtime_seconds"] = 11.0
+    if case == "backdate":
+        artifact["data_session"] = "2026-11-25"
+    blocked_args = [] if case == "downgrade" else ["--episode-input-schema", "v2"]
+    assert builder.build(blocked_args) == 1
+    assert public.read_bytes() == public_before, "a refused transition must not replace the public deck"
+    assert {p.name: p.read_bytes() for p in sidecar_root.glob("*.json")} == inputs_before
