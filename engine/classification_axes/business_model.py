@@ -146,7 +146,7 @@ def read_business_model(
 
     doc: object = membership
     if doc is None:
-        base = Path(root) if root is not None else _REPO_ROOT
+        base = Path(root or _REPO_ROOT)
         path = base / SOURCE_ARTIFACT
         if not path.is_file():
             return _refuse(
