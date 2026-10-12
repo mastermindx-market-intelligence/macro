@@ -171,3 +171,697 @@ def render_markdown(result):
     lines += ["", "Industry: OWNER_NOT_BOUND. Subindustry: OWNER_NOT_BOUND.",
         "Exact neighborhood queries and original membership evidence are retained in JSON.", "", *LIMITATIONS, ""]
     return "\n".join(lines)
+
+
+# Versioned owner read. The v1 contract and default CLI remain above, unchanged.
+# This observes a current Stage fact; it is not a per-use rights grant.
+from datetime import date, datetime, timezone
+import json
+
+V2_SCHEMA = "gmi.theme_structural_context/v2"
+_OWNER_INPUTS = (
+    "data/theme_graph/nodes.parquet",
+    "data/theme_graph/identity_resolution.parquet",
+    "data/reference/security_master.parquet",
+    "data/reference/vendor_aliases.parquet",
+    "data/reference/_receipt.json",
+    "data/stage_analysis/screener.json",
+    "data/stage_analysis/industry_ranks.json",
+)
+
+
+class _OwnerUnavailable(ValueError):
+    def __init__(self, code):
+        super().__init__(code)
+        self.code = code
+
+
+def _repo_root():
+    return Path(__file__).resolve().parents[2]
+
+
+def _utc_now():
+    return datetime.now(timezone.utc)
+
+
+def _stamp(value):
+    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _precise_clock(value, now):
+    # A date-only emission cannot establish availability within the current day.
+    if not isinstance(value, str) or "T" not in value:
+        raise _OwnerUnavailable("OWNER_EMISSION_CLOCK_UNPROVEN")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise _OwnerUnavailable("OWNER_EMISSION_CLOCK_INVALID") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise _OwnerUnavailable("OWNER_EMISSION_CLOCK_INVALID")
+    if parsed > now:
+        raise _OwnerUnavailable("OWNER_NOT_YET_EMITTED")
+    return parsed.astimezone(timezone.utc)
+
+
+def _source_clock(value, now):
+    if not isinstance(value, str):
+        raise _OwnerUnavailable("OWNER_SOURCE_CLOCK_UNAVAILABLE")
+    if "T" in value:
+        return _precise_clock(value, now)
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise _OwnerUnavailable("OWNER_SOURCE_CLOCK_INVALID") from exc
+    if parsed > now.date():
+        raise _OwnerUnavailable("OWNER_SOURCE_CLOCK_FUTURE")
+    return parsed
+
+
+def _observe_inputs(root):
+    observations = {}
+    for relative in _OWNER_INPUTS:
+        path = root / relative
+        try:
+            raw = path.read_bytes()
+        except FileNotFoundError:
+            observations[relative] = {"state": "MISSING", "sha256": None, "bytes": None}
+        else:
+            observations[relative] = {
+                "state": "OBSERVED", "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+            }
+    return observations
+
+
+def _owner_document(root, relative):
+    try:
+        value = json.loads((root / relative).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise _OwnerUnavailable("OWNER_ARTIFACT_UNAVAILABLE") from exc
+    if not isinstance(value, dict):
+        raise _OwnerUnavailable("OWNER_ARTIFACT_INVALID")
+    return value
+
+
+def _identity_receipt(node_id, root, now):
+    from engine.theme_graph import identity_resolution as identity_owner, store as graph_owner
+    from lib import config
+
+    # The graph bridge and fixed Data OS runtime must address the same estate.
+    if Path(config.data_dir()).resolve() != (root / "data").resolve():
+        raise _OwnerUnavailable("OWNER_SOURCE_ESTATE_MISMATCH")
+    identity = identity_owner.resolve_graph_node_identity(node_id, asof=None)
+    if isinstance(identity, dict):
+        identity = dict(identity)
+        # Nullable owner axes survive pandas parquet null representation.
+        # This cannot repair a missing security/listing or invent an issuer.
+        for field in ("issuer_id", "refusal_reason"):
+            value = identity.get(field)
+            if isinstance(value, float) and value != value:
+                identity[field] = None
+    if not isinstance(identity, dict) or (
+        identity.get("schema") != identity_owner.SCHEMA_ID
+        or identity.get("node_id") != node_id
+        or identity.get("graph_kind") != "company"
+        or identity.get("market_scope") != "us"
+        or identity.get("resolution_state") != "RESOLVED"
+        or not isinstance(identity.get("security_id"), str)
+        or not isinstance(identity.get("listing_key"), str)
+    ):
+        raise _OwnerUnavailable("GRAPH_IDENTITY_UNAVAILABLE")
+    if identity.get("resolution_asof") != now.date().isoformat():
+        raise _OwnerUnavailable("GRAPH_IDENTITY_NOT_CURRENT")
+    computed = _precise_clock(identity.get("computed_at"), now)
+    master_emitted = _precise_clock(identity.get("master_generated_at"), now)
+    if computed.date() != now.date() or master_emitted > computed:
+        raise _OwnerUnavailable("GRAPH_IDENTITY_CLOCK_ORDER_UNPROVEN")
+    if identity.get("refusal_reason") is not None:
+        raise _OwnerUnavailable("GRAPH_IDENTITY_CONTRADICTORY_DISPOSITION")
+    receipt = _owner_document(root, "data/reference/_receipt.json")
+    _precise_clock(receipt.get("generated_at"), now)
+    _source_clock(receipt.get("symbol_directory_snapshot"), now)
+    if (
+        identity.get("master_generated_at") != receipt.get("generated_at")
+        or identity.get("master_symbol_directory_snapshot") != receipt.get("symbol_directory_snapshot")
+        or identity.get("master_code_version") != receipt.get("code_version")
+    ):
+        raise _OwnerUnavailable("GRAPH_IDENTITY_SOURCE_RECEIPT_MISMATCH")
+
+    # Recheck through the incumbent owner's public current derivation, not a
+    # second allocator or a downstream symbol join. A stale/corrupt sidecar may
+    # name a different valid SEC; normalizing that SEC alone would not detect it.
+    nodes = graph_owner.read_nodes().to_dict("records")
+    selected = [row for row in nodes if row.get("node_id") == node_id]
+    if len(selected) != 1:
+        raise _OwnerUnavailable("GRAPH_SUBJECT_AMBIGUOUS")
+    owner_nodes = selected + [row for row in nodes if row.get("kind") == "etf"]
+    current_rows = identity_owner.derive_rows(
+        owner_nodes, resolution_asof=now.date().isoformat(), computed_at=_stamp(now),
+        engine_version=graph_owner.ENGINE_VERSION, data_dir=root / "data",
+    )
+    if len(current_rows) != 1:
+        raise _OwnerUnavailable("GRAPH_IDENTITY_OWNER_RECHECK_UNAVAILABLE")
+    current = current_rows[0]
+    keys = tuple(key for key in graph_owner.IDENTITY_RESOLUTION_COLUMNS
+                 if key not in {"computed_at", "engine_version"})
+    if set(identity) != set(graph_owner.IDENTITY_RESOLUTION_COLUMNS):
+        raise _OwnerUnavailable("GRAPH_IDENTITY_WIRE_INVALID")
+    if any(identity.get(key) != current.get(key) for key in keys):
+        raise _OwnerUnavailable("GRAPH_IDENTITY_OWNER_RECHECK_MISMATCH")
+    # JSON-compatible owner row only; pandas scalar nulls are not identities.
+    from engine.intelligence_workspace.contracts import canonical_json_bytes
+    canonical_json_bytes(identity)
+    return identity
+
+
+def _industry_receipt(identity, root, now):
+    from engine.intelligence_workspace.contracts import EntityRequest, canonical_json_sha256
+    from engine.intelligence_workspace.runtime import build_runtime
+
+    runtime = build_runtime(repo_root=root)
+    from engine.intelligence_workspace.adapters.stage import StageAdapter
+    from engine.intelligence_workspace.entity import DataOSIdentityNormalizer
+    stage = runtime.adapters.get("stage")
+    if (not isinstance(stage, StageAdapter) or stage.path != root / "data/stage_analysis/screener.json"
+            or stage.vendor != "store" or stage._injected_symbol_map_loader is not None
+            or not isinstance(runtime.identity_normalizer, DataOSIdentityNormalizer)
+            or runtime.identity_normalizer.root != root):
+        raise _OwnerUnavailable("FIXED_OWNER_COMPOSITION_MISMATCH")
+    normalized = runtime.identity_normalizer.normalize_many(
+        (EntityRequest(type="security", id=identity["security_id"]),)
+    )
+    if len(normalized) != 1 or (
+        normalized[0].type != "security" or normalized[0].id != identity["security_id"]
+        or normalized[0].universe != "us_equity" or normalized[0].state != "active"
+    ):
+        raise _OwnerUnavailable("DATAOS_SECURITY_NOT_ACTIVE")
+    relationship = runtime.resolve_current_industry_relationship(normalized[0])
+    expected = {"schema", "registry_digest", "relationship", "from", "to", "status", "reason_code",
+                "observed_at", "effective_at", "as_of", "generated_at", "freshness", "quality",
+                "source", "provenance", "audience", "consumer_use", "relationship_fingerprint"}
+    if not isinstance(relationship, dict) or set(relationship) != expected:
+        raise _OwnerUnavailable("INDUSTRY_OWNER_WIRE_INVALID")
+    if relationship["audience"] != "subscriber" or relationship["consumer_use"] != "ai_fact":
+        raise _OwnerUnavailable("INDUSTRY_OWNER_PROJECTION_MISMATCH")
+    nested_keys = {
+        "source": {"source_id", "owner", "license_class", "dataset_id"},
+        "provenance": {"kind", "owner_field_key", "relationship", "basis"},
+        "freshness": {"state", "policy"}, "quality": {"state", "issues"},
+    }
+    if any(not isinstance(relationship.get(key), dict)
+           or set(relationship[key]) != keys for key, keys in nested_keys.items()):
+        raise _OwnerUnavailable("INDUSTRY_OWNER_WIRE_INVALID")
+    source = relationship["source"]
+    provenance = relationship["provenance"]
+    if (
+        relationship.get("schema") != "intelligence_workspace.current_industry_relationship.v1"
+        or relationship.get("registry_digest") != runtime.registry.digest
+        or relationship.get("relationship") != "security.current_industry"
+        or relationship.get("from") != {"type": "security", "id": identity["security_id"]}
+        or source.get("source_id") != "stage_analysis.screener"
+        or source.get("owner") != "stage_analysis"
+        or provenance.get("kind") != "owner_relationship"
+        or provenance.get("relationship") != "security.current_industry"
+        or provenance.get("owner_field_key") != "current_industry"
+        or provenance.get("basis") != "owner_published_current_relationship"
+    ):
+        raise _OwnerUnavailable("INDUSTRY_OWNER_BINDING_MISMATCH")
+    basis = {key: value for key, value in relationship.items()
+             if key not in {"generated_at", "relationship_fingerprint"}}
+    if relationship.get("relationship_fingerprint") != canonical_json_sha256(basis):
+        raise _OwnerUnavailable("INDUSTRY_OWNER_FINGERPRINT_MISMATCH")
+    # The owner's subscriber projection removes artifact_id and owner_artifact.
+    # Their binding is the fixed Stage reader, not this projected receipt.
+    _precise_clock(relationship.get("generated_at"), _utc_now())
+    if relationship.get("status") != "available":
+        raise _OwnerUnavailable("INDUSTRY_OWNER_" + str(relationship.get("reason_code") or "UNAVAILABLE").upper())
+    if (
+        relationship.get("reason_code") is not None
+        or (relationship.get("freshness") or {}).get("state") != "fresh"
+        or (relationship.get("freshness") or {}).get("policy") != "owner_native"
+        or (relationship.get("quality") or {}).get("state") != "ok"
+        or (relationship.get("quality") or {}).get("issues") != []
+    ):
+        raise _OwnerUnavailable("INDUSTRY_OWNER_NOT_CURRENT")
+    target = relationship.get("to")
+    if not isinstance(target, dict) or set(target) != {"type", "id", "universe"} or (
+        target.get("type") != "industry" or target.get("universe") != "us_industry"
+        or not isinstance(target.get("id"), str) or not target["id"]
+        or target["id"] != target["id"].strip()
+    ):
+        raise _OwnerUnavailable("INDUSTRY_TARGET_INVALID")
+    # Validate this fixed target registry before the incumbent normalizer reads
+    # its containers. Malformed owner JSON is a typed refusal, not an attribute
+    # error or a substitute identity source.
+    target_document = _owner_document(root, "data/stage_analysis/industry_ranks.json")
+    regions = target_document.get("regions")
+    if not isinstance(regions, dict) or not isinstance(regions.get("USA"), list):
+        raise _OwnerUnavailable("INDUSTRY_TARGET_REGISTRY_SHAPE_INVALID")
+    normalized_target = runtime.identity_normalizer.normalize_many(
+        (EntityRequest(type="industry", id=target["id"]),)
+    )
+    if len(normalized_target) != 1 or (
+        normalized_target[0].type != "industry" or normalized_target[0].id != target["id"]
+        or normalized_target[0].universe != "us_industry" or normalized_target[0].state != "active"
+    ):
+        raise _OwnerUnavailable("INDUSTRY_TARGET_NOT_REGISTERED")
+    for relative, schema in (
+        ("data/stage_analysis/screener.json", "stage_screener.v1"),
+        ("data/stage_analysis/industry_ranks.json", "stage_industry_ranks.v1"),
+    ):
+        document = _owner_document(root, relative)
+        if document.get("schema") != schema:
+            raise _OwnerUnavailable("INDUSTRY_ARTIFACT_SCHEMA_INVALID")
+        if document.get("asof") != now.date().isoformat():
+            raise _OwnerUnavailable("INDUSTRY_ARTIFACT_NOT_CURRENT")
+        _precise_clock(document.get("built"), _utc_now())
+        if relative.endswith("screener.json"):
+            _source_clock(document.get("stage_week_end"), now)
+    if relationship.get("as_of") != now.date().isoformat():
+        raise _OwnerUnavailable("INDUSTRY_RELATIONSHIP_NOT_CURRENT")
+    for field in ("observed_at", "effective_at"):
+        _source_clock(relationship.get(field), now)
+    return relationship
+
+
+def compose_structure_v2(store_view, *, node_id, asof, knowledge_cutoff=None,
+                         owner_document=None, owner_sha256=None, rights_resolver=None):
+    """Read current US industry through the existing identity/Stage owners.
+
+    Availability is an observed source fact, not an entitlement, historical
+    classification, raw-byte authentication, issuer-wide taxonomy, or graph edge.
+    There is no injected relationship/identity/rights qualification callback.
+    """
+    from engine.theme_graph.ontology import RepositoryStore
+
+    legacy = compose_structure(
+        store_view, node_id=node_id, asof=asof, knowledge_cutoff=knowledge_cutoff,
+        owner_document=owner_document, owner_sha256=owner_sha256, rights_resolver=rights_resolver,
+    )
+    started = _utc_now()
+    _precise_clock(_stamp(started), started)
+    fact = dict(
+        availability=dict(state="UNAVAILABLE", reason_codes=["OWNER_NOT_READ"]),
+        identity=None, industry_reference=None, input_observation=None,
+    )
+    result = dict(
+        schema=V2_SCHEMA, context_v1=legacy, owner_structure=fact,
+        query=dict(node_id=node_id, effective_at=legacy["neighborhood"]["asof"],
+                   known_at=legacy["neighborhood"]["knowledge_cutoff"], clock_precision="date"),
+        read_clock=dict(started_at=_stamp(started), finished_at=None),
+        subindustry=dict(state="OWNER_NOT_BOUND", reason_codes=["NO_STABLE_SUBINDUSTRY_OWNER_CONTRACT"]),
+        use_qualification=dict(
+            status="NOT_QUALIFIED", rights_state="OWNER_NOT_BOUND",
+            reason_codes=["STAGE_RELATIONSHIP_PER_USE_RIGHTS_UNSUPPORTED"],
+            authorized_uses=[], public_display=False, machine_qualified=False, predictive_use=False,
+        ),
+        authority_flags=dict(rank=False, gate=False, size=False, insertion=False,
+                             origination=False, escalation=False, predictive_use=False),
+        limitations=[
+            "The current security relationship does not classify every business of its nullable issuer.",
+            "Read time and separately observed bytes are not classification first-known evidence.",
+            "Date-only owner clocks retain their precision; no historical classification claim.",
+            "The existing ThemeRightsProjector accepts graph-node rights only; it does not grant Stage relationship use.",
+            "Subindustry owner binding, historical/rights/coverage qualification and natural reader consumption remain unavailable.",
+        ],
+    )
+    subject = legacy["neighborhood"]["subject"]
+    try:
+        if subject is None:
+            raise _OwnerUnavailable("SUBJECT_UNAVAILABLE")
+        if subject.get("kind") != "company" or subject.get("market_scope") != "us":
+            fact["availability"] = dict(state="UNSUPPORTED_SUBJECT", reason_codes=["SINGLE_US_SECURITY_OWNER_REQUIRED"])
+            return result
+        current_day = started.date().isoformat()
+        if result["query"]["effective_at"] != current_day or result["query"]["known_at"] != current_day:
+            raise _OwnerUnavailable("CURRENT_ONLY_QUERY_REQUIRED")
+        if not isinstance(store_view, RepositoryStore):
+            raise _OwnerUnavailable("INCUMBENT_REPOSITORY_STORE_REQUIRED")
+        root = _repo_root()
+        before = _observe_inputs(root)
+        fact["input_observation"] = dict(
+            basis="SEPARATELY_OBSERVED_BEFORE_AFTER_OWNER_READ", consumed_bytes_proven=False,
+            artifacts=before, unchanged_during_read=False,
+        )
+        identity = _identity_receipt(node_id, root, started)
+        fact["identity"] = identity
+        relationship = _industry_receipt(identity, root, started)
+        after = _observe_inputs(root)
+        if after != before:
+            fact["identity"] = None
+            raise _OwnerUnavailable("OWNER_INPUT_CHANGED_DURING_READ")
+        fact["input_observation"]["unchanged_during_read"] = True
+        fact["identity"] = identity
+        fact["industry_reference"] = dict(
+            target=relationship["to"], security_id=identity["security_id"],
+            owner_relationship=relationship, historical_classification_claim=False,
+            classification_first_known_at=None,
+            owner_binding=dict(
+                graph_reader="engine.theme_graph.identity_resolution.resolve_graph_node_identity",
+                identity_reader="engine.intelligence_workspace.entity.DataOSIdentityNormalizer.normalize_many",
+                relationship_reader="engine.intelligence_workspace.resolver.DatapointResolver.resolve_current_industry_relationship",
+                artifact_id="data/stage_analysis/screener.json",
+                target_identity_artifact_id="data/stage_analysis/industry_ranks.json",
+                supported_scope="CURRENT_US_SECURITY_INDUSTRY",
+            ),
+        )
+        fact["availability"] = dict(state="AVAILABLE", reason_codes=[])
+    except _OwnerUnavailable as exc:
+        fact["availability"] = dict(state="UNAVAILABLE", reason_codes=[exc.code])
+    except (OSError, ValueError, TypeError, RuntimeError, KeyError):
+        # Missing/unrecognized owner results are explicit refusals, never "none".
+        fact["availability"] = dict(state="UNAVAILABLE", reason_codes=["OWNER_READ_UNAVAILABLE"])
+    finally:
+        finished = _utc_now()
+        result["read_clock"]["finished_at"] = _stamp(finished)
+        if finished < started:
+            fact["availability"] = dict(state="UNAVAILABLE", reason_codes=["READER_CLOCK_REGRESSED"])
+            fact["identity"] = None
+            fact["industry_reference"] = None
+    return result
+
+
+def render_markdown_v2(result):
+    fact = result["owner_structure"]
+    lines = [render_markdown(result["context_v1"]).rstrip(), "",
+             "## Current security industry owner observation",
+             "Availability: " + fact["availability"]["state"] + "."]
+    if fact["industry_reference"]:
+        ref = fact["industry_reference"]
+        lines.append(_display(ref["security_id"]) + " → " + _display(ref["target"]["id"]))
+        lines.append("Owner source clock: " + _display(ref["owner_relationship"]["observed_at"]))
+    else:
+        lines.append("Reasons: " + ", ".join(fact["availability"]["reason_codes"]))
+    lines += ["Use: NOT_QUALIFIED; rights: OWNER_NOT_BOUND. Public, machine-qualified and predictive use: false.",
+              "Subindustry: OWNER_NOT_BOUND.", *result["limitations"], ""]
+    return "\n".join(lines)
+
+
+def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_resolver=None):
+    """Read-time hierarchy paths (display-tier only).
+
+    Composes macro_category → theme → micro_theme chains at query time from PARENT_OF
+    edges and basket/theme membership; paths are never stored per ticker. PARENT_OF
+    liveness is the incumbent ``_collapse_relevant_edges`` over PARENT_OF rows only.
+    Vendor and internal-only basket hops are never followed (Gate #2). Any live
+    PARENT_OF edge that violates the house hierarchy contract raises ValueError (fail closed).
+    Hierarchy-tier theme nodes remain visible to this reader despite the reader tier guard.
+    """
+    from engine.theme_graph import rights
+    from engine.theme_graph.ontology import (
+        _collapse_relevant_edges,
+        _is_null,
+        _nodes_as_known,
+        _parse_date,
+        _records,
+    )
+
+    _CROSSWALK_PROVENANCE = "crosswalk:config/theme_crosswalk.yml"
+    _VALID_ADJACENCY = {("macro_category", "theme"), ("theme", "micro_theme")}
+
+    def _theme_rights():
+        family = rights.family_for_source_ref("config/theme_crosswalk.yml")
+        return {
+            "family": family,
+            "rights_class": rights.rights_class(family),
+            "public_display_allowed": bool(rights.emission_allowed(family)),
+        }
+
+    def _element(node_row, rights_payload):
+        if rights_payload is None:
+            return None
+        tier = node_row.get("tier")
+        return {
+            "node_id": str(node_row["node_id"]),
+            "kind": str(node_row.get("kind") or ""),
+            "tier": tier if not _is_null(tier) else None,
+            "name_en": node_row.get("name_en"),
+            "name_zh": node_row.get("name_zh"),
+            "rights": {
+                "family": rights_payload["family"],
+                "rights_class": rights_payload["rights_class"],
+                "public_display_allowed": rights_payload["public_display_allowed"],
+            },
+        }
+
+    def _theme_element(node_row):
+        if str(node_row.get("kind") or "") != "theme":
+            return None
+        if str(node_row.get("provenance") or "") != _CROSSWALK_PROVENANCE:
+            return None
+        payload = _theme_rights()
+        if not payload["public_display_allowed"]:
+            return None
+        return _element(node_row, payload)
+
+    def _basket_element(node_row, resolver):
+        if str(node_row.get("kind") or "") != "basket":
+            return None
+        receipt = resolver(str(node_row["node_id"]))
+        if receipt is None or not receipt.get("public_display_allowed"):
+            return None
+        return _element(node_row, receipt)
+
+    exact_id = str(node_id or "").strip()
+    asof_date = _parse_date(asof, "asof")
+    cutoff_date = (
+        _parse_date(knowledge_cutoff, "knowledge_cutoff")
+        if knowledge_cutoff is not None
+        else asof_date
+    )
+    resolver = rights_resolver if rights_resolver is not None else _default_rights_resolver
+
+    nodes = _records(store_view.read_nodes())
+    lifecycle_reader = getattr(store_view, "read_node_lifecycle", None)
+    lifecycle = _records(lifecycle_reader()) if callable(lifecycle_reader) else []
+    # Readers ignore non-`theme`-tier theme nodes (W-C3 reader tier guard). This is the
+    # one reader whose subject IS those tiers, so _nodes_as_known is asked for
+    # VISIBILITY only (computed_at / birth_date / lifecycle): tier is set aside before
+    # the call and restored after. Validation below re-checks kind, tier and provenance.
+    _tier_key = "__hierarchy_paths_tier"
+    masked_nodes = []
+    for row in nodes:
+        masked = dict(row)
+        masked[_tier_key] = masked.get("tier")
+        masked["tier"] = None
+        masked_nodes.append(masked)
+    node_map = _nodes_as_known(
+        masked_nodes, lifecycle, asof=asof_date, knowledge_cutoff=cutoff_date
+    )
+    for row in node_map.values():
+        row["tier"] = row.pop(_tier_key, None)
+
+    raw_edges = _records(store_view.read_edges())
+    parent_rows = [row for row in raw_edges if str(row.get("type") or "") == "PARENT_OF"]
+    endpoint_ids = sorted(
+        {str(r.get(k) or "") for r in parent_rows for k in ("src", "dst")} - {""}
+    )
+    live_by_id: dict[str, dict] = {}
+    for endpoint in endpoint_ids:
+        live, _future = _collapse_relevant_edges(
+            parent_rows, node_id=endpoint, asof=asof_date, knowledge_cutoff=cutoff_date
+        )
+        for row in live:
+            live_by_id[str(row["edge_id"])] = row
+    parent_edges = [live_by_id[eid] for eid in sorted(live_by_id)]
+
+    theme_rights_payload = _theme_rights()
+    for row in parent_edges:
+        edge_id = str(row.get("edge_id") or "")
+        src_id = str(row.get("src") or "")
+        dst_id = str(row.get("dst") or "")
+        src_row = node_map.get(src_id)
+        dst_row = node_map.get(dst_id)
+        if src_row is None or dst_row is None:
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: endpoint not as-known"
+            )
+        if str(src_row.get("kind") or "") != "theme" or str(dst_row.get("kind") or "") != "theme":
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: endpoint kind must be theme"
+            )
+        src_tier = str(src_row.get("tier") or "")
+        dst_tier = str(dst_row.get("tier") or "")
+        if (src_tier, dst_tier) not in _VALID_ADJACENCY:
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: invalid tier adjacency"
+            )
+        if (
+            str(src_row.get("provenance") or "") != _CROSSWALK_PROVENANCE
+            or str(dst_row.get("provenance") or "") != _CROSSWALK_PROVENANCE
+        ):
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: provenance must be crosswalk"
+            )
+        if not theme_rights_payload["public_display_allowed"]:
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: hierarchy family not emission-allowed"
+            )
+
+    parent_map: dict[str, list[tuple[str, str]]] = {}
+    child_map: dict[str, list[tuple[str, str]]] = {}
+    for row in parent_edges:
+        src_id = str(row["src"])
+        dst_id = str(row["dst"])
+        eid = str(row["edge_id"])
+        parent_map.setdefault(dst_id, []).append((src_id, eid))
+        child_map.setdefault(src_id, []).append((dst_id, eid))
+    for key in parent_map:
+        parent_map[key].sort()
+    for key in child_map:
+        child_map[key].sort()
+
+    def _paths_to_root(node):
+        parents = parent_map.get(node, [])
+        if not parents:
+            return [([node], [])]
+        combined: list[tuple[list[str], list[str]]] = []
+        for parent_id, edge_id in parents:
+            for prefix_nodes, prefix_edges in _paths_to_root(parent_id):
+                combined.append((prefix_nodes + [node], prefix_edges + [edge_id]))
+        return combined
+
+    def _paths_from(node):
+        children = child_map.get(node, [])
+        if not children:
+            return [([node], [])]
+        combined: list[tuple[list[str], list[str]]] = []
+        for child_id, edge_id in children:
+            for suffix_nodes, suffix_edges in _paths_from(child_id):
+                combined.append(([node] + suffix_nodes, [edge_id] + suffix_edges))
+        return combined
+
+    subject_row = node_map.get(exact_id)
+    if subject_row is None:
+        return []
+
+    subject_kind = str(subject_row.get("kind") or "")
+    anchors: list[tuple[str, list[dict]]] = []
+
+    if subject_kind == "theme":
+        anchors.append((exact_id, []))
+    elif subject_kind == "basket":
+        live_rows, _ = _collapse_relevant_edges(
+            raw_edges,
+            node_id=exact_id,
+            asof=asof_date,
+            knowledge_cutoff=cutoff_date,
+        )
+        receipt = resolver(exact_id)
+        if receipt is None or not receipt.get("public_display_allowed"):
+            return []
+        for row in live_rows:
+            if str(row.get("type") or "") != "EXPRESSES" or str(row.get("src") or "") != exact_id:
+                continue
+            dst_id = str(row.get("dst") or "")
+            dst_row = node_map.get(dst_id)
+            if dst_row is None or str(dst_row.get("kind") or "") != "theme":
+                continue
+            theme_el = _theme_element(dst_row)
+            if theme_el is None:
+                continue
+            hop = {"type": "EXPRESSES", "edge_id": str(row["edge_id"]), "node": theme_el}
+            anchors.append((dst_id, [hop]))
+    elif subject_kind == "company":
+        live_rows, _ = _collapse_relevant_edges(
+            raw_edges,
+            node_id=exact_id,
+            asof=asof_date,
+            knowledge_cutoff=cutoff_date,
+        )
+        member_edges = [
+            row
+            for row in live_rows
+            if str(row.get("type") or "") == "MEMBER_OF" and str(row.get("src") or "") == exact_id
+        ]
+        for mem in member_edges:
+            basket_id = str(mem.get("dst") or "")
+            basket_row = node_map.get(basket_id)
+            if basket_row is None or str(basket_row.get("kind") or "") != "basket":
+                continue
+            basket_el = _basket_element(basket_row, resolver)
+            if basket_el is None:
+                continue
+            basket_live, _ = _collapse_relevant_edges(
+                raw_edges,
+                node_id=basket_id,
+                asof=asof_date,
+                knowledge_cutoff=cutoff_date,
+            )
+            for ex in basket_live:
+                if str(ex.get("type") or "") != "EXPRESSES" or str(ex.get("src") or "") != basket_id:
+                    continue
+                theme_id = str(ex.get("dst") or "")
+                theme_row = node_map.get(theme_id)
+                if theme_row is None or str(theme_row.get("kind") or "") != "theme":
+                    continue
+                theme_el = _theme_element(theme_row)
+                if theme_el is None:
+                    continue
+                via = [
+                    {"type": "MEMBER_OF", "edge_id": str(mem["edge_id"]), "node": basket_el},
+                    {"type": "EXPRESSES", "edge_id": str(ex["edge_id"]), "node": theme_el},
+                ]
+                anchors.append((theme_id, via))
+    else:
+        return []
+
+    records: list[dict] = []
+    include_downward = subject_kind == "theme"
+
+    for anchor_id, via_hops in anchors:
+        up_paths = _paths_to_root(anchor_id)
+        if include_downward:
+            down_paths = _paths_from(anchor_id)
+        else:
+            down_paths = [([anchor_id], [])]
+
+        for up_nodes, up_edges in up_paths:
+            for down_nodes, down_edges in down_paths:
+                node_ids = up_nodes + down_nodes[1:]
+                edge_ids = up_edges + down_edges
+                if len(edge_ids) < 1:
+                    continue
+                path_elements: list[dict] = []
+                ok = True
+                for nid in node_ids:
+                    nrow = node_map.get(nid)
+                    if nrow is None:
+                        ok = False
+                        break
+                    el = _theme_element(nrow)
+                    if el is None:
+                        ok = False
+                        break
+                    path_elements.append(el)
+                if not ok or len(path_elements) != len(node_ids):
+                    continue
+                records.append(
+                    {
+                        "path": path_elements,
+                        "parent_of_edge_ids": edge_ids,
+                        "anchor_node_id": anchor_id,
+                        "via": via_hops,
+                    }
+                )
+
+    seen: set[tuple] = set()
+    unique: list[dict] = []
+    for rec in records:
+        key = (
+            rec["anchor_node_id"],
+            tuple(el["node_id"] for el in rec["path"]),
+            tuple(hop.get("edge_id", "") for hop in rec["via"]),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(rec)
+
+    unique.sort(
+        key=lambda rec: (
+            rec["anchor_node_id"],
+            tuple(el["node_id"] for el in rec["path"]),
+            tuple(hop.get("edge_id", "") for hop in rec["via"]),
+        )
+    )
+    return unique

@@ -6,7 +6,7 @@ objective: >
   what was learned, and what is next — without building a third control plane. Done =
   workstreams, decisions, discoveries, and handoffs are written by live sessions, and
   the CEO reads one generated page instead of reconstructing state by hand.
-status: active
+status: done
 program: project-active-build-control
 p0: EXECUTIVE_OS
 repos: [macro]
@@ -47,9 +47,13 @@ waves:
     depends_on: [W0]
   - id: W4
     title: "Phase 4 — hook auto-capture at ship-loop boundaries (report-only)"
-    status: awaiting_ci
+    status: done
     pr: 8411
     depends_on: [W1, W2, W2B]
+    next_action: >
+      Accepted via PR 8411 at reviewed head 714c6f5b49337bbab9770c9c7ad454b277797c1e,
+      hosted CI 37181494645, and merge 7329199684df69a862ed6492ce07c65f7dbf71ec. Exact capture,
+      committed-handoff report and independent cold recovery passed. Remain report-only.
   - id: MAS28-W0
     title: "MAS-28 — canonical PR-linkage validator V1 records freeze"
     status: done
@@ -124,15 +128,12 @@ artifacts:
   - research/MASTERMIND_AGENT_OS_V1_CALIBRATION_2026-10-04.md
   - research/MASTERMIND_AGENT_OS_W4_DELIVERY_2026-10-04.md
 next_action: >
-  MAS-28 calibration is accepted via merged PR 8407. W4 PR 8411 is captured on this
-  existing wave; finish its exact-head review and hosted checks, final published-record
-  cold recovery, merge and acceptance before recording V1 closure. The
-  current Chairman operation agent-os-v1-closure-20261003-astra-001 remains assigned;
-  the canceled MAS-129 carrier is not revived. Agent OS remains the knowledge plane.
-claim:
-  by: claude/ssd-agent-os-v1-closure-20261003-4d1db059fe48c49e
-  at: '2026-10-04T04:27:09Z'
-  expires: '2026-10-04T16:27:09Z'
+  V1 is complete and in maintenance mode; all declared waves are done. Preserve the
+  accepted report-only calibration and exact ship-boundary capture. Respond only to
+  a concrete defect or separately commissioned change. MAS-64/MAS-66 projection,
+  native fleet installation qualification and broader context-compiler completeness
+  remain separate scopes and do not reopen this V1 program. Agent OS remains the
+  knowledge plane; Executive OS and the existing fleet guards retain execution authority.
 ---
 
 ## Context
@@ -197,3 +198,20 @@ preserved agenda rank bytes. The authoritative agenda write persisted 27 existin
 their original order: zero authored Agent OS references and 27 structured N/A annotations.
 Its JSON, Markdown, internal API, and tunneled UI all agreed; the UI rendered 27 readiness
 rows and no browser errors. That is the cross-repo evidence required to mark W2B done.
+
+
+## V1 acceptance and maintenance boundary — 2026-10-04
+
+Before closure, the established knowledge plane was live but representative MAS-28
+calibration and W4 capture were unfinished. Both declared obligations are now accepted;
+all eleven declared waves are done. PR8407 protects the frozen calibration/ruling;
+PR8411 protects report-only capture and handoff assistance, exercised by this session's
+actual PR8411 capture and recovered by an independent reader and the existing compiler.
+
+The W4 delivery record preserves exact head/merge/check/review/recovery receipts.
+No lifecycle, dispatch, queue, lease, watcher, daemon, Linear writer or memory plane was
+introduced. The source hook remains separate from enforcement and does not self-arm.
+
+The compiler's broader selection/budget limitations and universal native fleet adoption
+are explicit separate maintenance/qualification scopes. MAS-64/MAS-66 remain their
+existing projection/integration program; V1 closure does not accept those capabilities.

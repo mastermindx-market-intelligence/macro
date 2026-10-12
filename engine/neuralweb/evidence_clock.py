@@ -355,7 +355,9 @@ def _adapt_qledger(root: Path, cfg: dict, today: date) -> tuple[list[dict], list
     rows: list[dict] = []
 
     try:
-        with open(path, encoding="utf-8") as f:
+        from engine.qledger_store import open_raw_lines
+
+        with open_raw_lines(path) as f:
             claims = [json.loads(l) for l in f if l.strip()]
     except Exception as exc:
         gaps.append(f"qledger: could not load {path.relative_to(root)}: {exc}")

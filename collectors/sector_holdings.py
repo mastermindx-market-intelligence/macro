@@ -299,6 +299,11 @@ class StockPriceAdapter(Adapter):
     group = "stocks"
     overwrite_overlap = True  # yfinance auto_adjust=True → seam-free re-adjust of the refresh window
 
+    def session_calendar_for_series(self, name: str) -> str | None:
+        # Holdings may include foreign shares; use the same cash routing as Yahoo.
+        from lib.market_session import cash_market_for_symbol
+        return cash_market_for_symbol(name)
+
     def __init__(self) -> None:
         self.ycfg = config.load()["yahoo"]
 

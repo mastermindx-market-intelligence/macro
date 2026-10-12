@@ -12402,7 +12402,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <tr>
             <td style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))"><span class="l-en">{{ r.label_en }}</span><span class="l-zh">{{ r.label_zh or r.label_en }}</span></td>
             {% for tf in ['D','3D','W','M'] %}{% set cell = r.cells[tf] %}
-            <td>{% if cell %}<span class="ms-cell2 {{ cell.tone }}"><span class="ar">{{ cell.arrow }}</span><span class="rsi">{{ cell.rsi|round|int if cell.rsi is not none else '·' }}</span></span>{% else %}<span class="ms-cell2 flat"><span class="ar">·</span></span>{% endif %}</td>
+            <td{% if cell and cell.rsi is not none %} data-sort="{{ cell.rsi|round|int }}"{% else %} data-sort=""{% endif %}>{% if cell %}<span class="ms-cell2 {{ cell.tone }}"><span class="ar">{{ cell.arrow }}</span><span class="rsi">{{ cell.rsi|round|int if cell.rsi is not none else '·' }}</span></span>{% else %}<span class="ms-cell2 flat"><span class="ar">·</span></span>{% endif %}</td>
             {% endfor %}
             <td style="text-align:right"><span class="mx5-dlg-mtf-conf {{ r.tone }}"><span class="l-en">{{ r.confluence_en }}</span><span class="l-zh">{{ r.confluence_zh or r.confluence_en }}</span></span></td>
           </tr>
@@ -15999,8 +15999,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <div class="grid" style="margin-top:14px">
       {% if chart_curve %}
       <div class="span6">
-        <h3>{{ t('Yield curve — recession lead', '收益率曲线 — 衰退先行指标') }}
-          {{ help("The 2-year/10-year slope, raw vs term-premium-adjusted. Below zero (inversion) is the classic recession lead. The TP-adjusted line strips the term premium so a low-term-premium flattening (e.g. 2022-24) isn't misread as a recession signal. NBER recessions shaded.", "2年／10年期利差，原始值对比剥离期限溢价后。低于零（倒挂）是经典的衰退先行信号。剥离期限溢价的线条避免把低期限溢价导致的平坦化（如 2022–24）误读为衰退信号。阴影为 NBER 衰退期。") }}
+        <h3>{{ t('Yield curve — recession context', '收益率曲线 — 衰退背景') }}
+          {{ help("The 2-year/10-year slope, raw vs the legacy TP10 heuristic (2s10s plus the 10-year term-premium model estimate). A raw value below zero is an inversion. The heuristic is context only: it is not a matched-maturity expectations-only decomposition and does not identify why the curve flattened or inverted. NBER recessions shaded.", "2年／10年期利差：原始值与旧版TP10启发式（2年/10年利差加10年期限溢价模型估计）并列展示。原始值低于零表示倒挂。该启发式仅作背景，并非期限匹配的纯预期分解，也不能识别曲线平坦化或倒挂的原因。阴影为NBER衰退期。") }}
         </h3>
         <div>{{ chart_curve | safe }}</div>
       </div>
@@ -16533,6 +16533,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if not _su %}<span class="muted" style="font-size:11.5px">{{ t("Up to 10 names per sector · grouped by setup, strongest names first.", "每个板块最多 10 只 · 按形态分组，较强者优先。") }}
           {{ help("Shows up to ten holdings from each sector when their price action reaches a clear buy, turning or topping point. Cards are grouped by setup stage; stronger names within the sector appear first. A cap keeps one sector from taking over. Click any card for the full breakdown.", "当价格走势出现明确的买入、转向或见顶时，每个板块最多展示十只股票。卡片按形态阶段分组，同板块中较强者优先。数量上限可避免单一板块占满页面。点击卡片查看完整拆解。") }}</span>{% endif %}
       </div>
+      {% if gate or pgate or life_gate %}
+      <p id="us-board-load-status" class="muted" role="status" aria-live="polite" hidden>{{ t('Full board data could not load. The dated preview remains available. Reload to try again.', '完整榜单数据无法加载，带日期的预览仍可查看。请刷新页面重试。') }}</p>
+      {% endif %}
       {#- ── W-L1 SLOT B — the board-state note (spec §2 B, §5.1, §5.2) ────────────────
           ONE line, FOUR mutually exclusive contents, never two at once. Every variant is
           SSR-baked with its l-en/l-zh pair and its own Tier-2 `?` receipt, so the live
@@ -16616,6 +16619,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </section>
       {% endif %}
       {% include "_us_candidate_pool.html.j2" %}
+      {% include "_us_early_observations.html.j2" %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -16768,10 +16772,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          used to be filed under Blocked beside the falling knives and so was invisible
          (missed-ignitions audit D18). Watch words only: this shelf never says buy. #}
       {%- set _stage_order = ['live','setting_up','ran','basing','blocked'] -%}
-      {%- set _stage_en  = {'live':'Live now','setting_up':'Setting up','ran':'Ran — don’t chase','basing':'Basing','blocked':'Blocked'} -%}
-      {%- set _stage_zh  = {'live':'现在可操作','setting_up':'形成中','ran':'已启动 — 勿追','basing':'筑底中','blocked':'受阻'} -%}
-      {%- set _stage_sub_en = {'live':'entry window is open','setting_up':'not there yet — get ready','ran':'the move already started','basing':'no entry signal yet — watch, don’t chase','blocked':'stand aside for now'} -%}
-      {%- set _stage_sub_zh = {'live':'入场窗口已打开','setting_up':'尚未触发 — 做好准备','ran':'行情已经启动','basing':'尚无入场信号 — 观察，勿追高','blocked':'暂时观望'} -%}
+      {%- set _stage_en  = {'live':'Active setups','setting_up':'Setting up','ran':'Ran — don’t chase','basing':'Basing','blocked':'Blocked'} -%}
+      {%- set _stage_zh  = {'live':'活跃形态','setting_up':'形成中','ran':'已启动 — 勿追','basing':'筑底中','blocked':'受阻'} -%}
+      {%- set _stage_sub_en = {'live':'Check each card’s dated entry read','setting_up':'not there yet — get ready','ran':'the move already started','basing':'no entry signal yet — watch, don’t chase','blocked':'stand aside for now'} -%}
+      {%- set _stage_sub_zh = {'live':'请查看每张卡片的入场判读及日期','setting_up':'尚未触发 — 做好准备','ran':'行情已经启动','basing':'尚无入场信号 — 观察，勿追高','blocked':'暂时观望'} -%}
       {# Tier-2 receipts. One shared sentence carries the honest framing on every bucket:
          the ordering is a readiness rank, NOT a return forecast (§G0.7). #}
       {%- set _pri_en = ' Higher Priority means the setup is more ready today, not more likely to win.' -%}
@@ -16798,13 +16802,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _rw_zh = ('今晚无法检查' ~ (('全部 ' ~ _rw_n ~ ' 只股票') if _rw_n else '这些股票')
             ~ '的上行空间，因此这一项不加分。') if _rw_dead else '' -%}
       {%- set _stage_tip_en = {
-           'live':'The entry window is open now.' ~ _pri_en,
+           'live':'This group includes Buy and Near. Near requires confirmation; check each card’s dated entry read.' ~ _pri_en,
            'setting_up':'The setup is taking shape, but the signals do not agree yet. Get ready; there is nothing to do now.' ~ _pri_en,
            'ran':'The move has already started and the original entry has passed. Wait for a new setup.' ~ _pri_en,
            'basing':'These stocks may be building a low, but no entry has fired. Watch them; do not chase.' ~ _pri_en,
            'blocked':'The trend or entry is not healthy enough. Stand aside for now.' ~ _pri_en } -%}
       {%- set _stage_tip_zh = {
-           'live':'入场窗口现在已经打开。' ~ _pri_zh,
+           'live':'本组包含买入与临近；临近仍需确认。请查看每张卡片的入场判读及日期。' ~ _pri_zh,
            'setting_up':'形态正在形成，但信号尚未一致。做好准备，现在无需操作。' ~ _pri_zh,
            'ran':'行情已经启动，原有入场窗口已过。等待下一次机会。' ~ _pri_zh,
            'basing':'这些股票可能正在筑底，但尚无入场信号。观察，勿追高。' ~ _pri_zh,
@@ -17613,6 +17617,18 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       var clearBtn = document.getElementById('us-life-clear');
       if (clearBtn) clearBtn.addEventListener('click', function () { setLife(null); });
+      /* Detail links select an already-loaded model record by its native id.
+         This owner keeps the ladder, zero state and URL aligned before focus. */
+      window.USProphetLife = { selectPlan: function (card) {
+        if (!card || !card.classList.contains('pvcard') ||
+            card.getAttribute('data-record-only') !== '1' ||
+            !card.closest('#us-life-grid') ||
+            card.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return false;
+        var life = card.getAttribute('data-life');
+        if (!life || VALID_LIFE.indexOf(life) === -1) return false;
+        setLife(life);
+        return true;
+      } };
       /* A historical record can link to a newer episode in another lifecycle
          cell. Delegate from the stable panel rather than the replaceable grid,
          so entitled hydration and show-more do not strand the link. Select the
@@ -20365,7 +20381,10 @@ function initStockTableView(){
     applyView(currentView);
   }
 
-  window.USStockTable = { _setView: applyView, _mergeRows: mergeRows };
+  /* _getView is the read half of the existing view owner: the candidate→Plan return
+     restores the view the reader was actually in (table rows are never re-rendered by
+     applyView), so no second table owner, store or localStorage key is introduced. */
+  window.USStockTable = { _setView: applyView, _getView: function(){ return currentView; }, _mergeRows: mergeRows };
 
   StockTable.init(STINIT);
 
@@ -20402,6 +20421,13 @@ if (document.readyState === 'loading') {
   function setSrc(mode){
     if (mode !== 'today' && mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
     if (mode === 'today' && !document.getElementById('us-today')) mode = 'candidates';
+    /* The transient candidate→Plan journey (theme.js owns the one context) survives
+       only its own two hops: the Plans hop taken from inside a candidate detail and
+       the return hop that brings that same candidate back. Every other mode change —
+       the toggle, a Today shortcut, a provisional-board paint — is an explicit
+       unrelated navigation, and the pending return goes with it. */
+    var journey = window.PVSetupReturn;
+    if (journey && !journey.claim(mode)) journey.clear();
     /* the table renders CANDIDATE rows only, so Today/Plans must leave table view */
     if (mode !== 'candidates' && panel.classList.contains('st-table-mode') &&
         window.USStockTable && window.USStockTable._setView){
@@ -20418,20 +20444,33 @@ if (document.readyState === 'loading') {
     var b = ev.target && ev.target.closest ? ev.target.closest('button[data-src]') : null;
     if (b) setSrc(b.getAttribute('data-src'));
   });
-  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); } };
+  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); },
+    /* PR 8801 follow-up — the header row this owner already wires is where the journey's
+       single explicit action renders. It is not a fourth source option: it restores the
+       exact originating row, so no generic navigation is duplicated. */
+    returnHost: function(){ return tog.parentNode; } };
 
   document.addEventListener('click', function(event){
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
     if (!button) return;
     var target = button.getAttribute('data-pvs-plan-target');
     var dialog = document.getElementById('pv-setup-dialog');
+    /* Snapshot BEFORE the existing .pvs-close releases the live candidate source;
+       nothing is claimed until the exact target is confirmed further down. */
+    var pending = window.PVSetupReturn ? window.PVSetupReturn.snapshot({
+      mode: window.USProphetSource ? window.USProphetSource.get() : null,
+      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null}) : null;
     if (dialog && dialog.open) {
       var close = dialog.querySelector('.pvs-close');
       if (close) close.click();
     }
     if (window.USProphetSource) window.USProphetSource.set('plans');
     var card = document.getElementById(target);
-    if (!card) {
+    if (!card || !target || target.indexOf('pv-') !== 0 ||
+        !window.USProphetLife || !window.USProphetLife.selectPlan(card)) {
+      /* No confirmed target, so no journey — a hop into Plans must never inherit a
+         stale return from an earlier candidate. */
+      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
       document.body.dataset.pvsPlanLinkResult='missing';
       return;
     }
@@ -20441,6 +20480,8 @@ if (document.readyState === 'loading') {
     card.scrollIntoView({block:'center'});
     card.focus({preventScroll:true});
     document.body.dataset.pvsPlanLinkResult='ok';
+    /* Confirmed: same candidate, same Plan, one transient return. */
+    if (window.PVSetupReturn) window.PVSetupReturn.establish(pending, target, card);
   });
 })();
 </script>
@@ -20467,6 +20508,14 @@ if (document.readyState === 'loading') {
   var LIFE_GATE = {{ life_gate | tojson }};
   var SRC = (GATE && GATE.payload) || (PGATE && PGATE.payload) || (LIFE_GATE && LIFE_GATE.payload);
   if (!SRC) return;
+
+  function setLoadUnavailable(unavailable){
+    var status = document.getElementById('us-board-load-status');
+    if (!status) return;
+    status.hidden = !unavailable;
+    if (unavailable) status.setAttribute('data-state', 'unavailable');
+    else status.removeAttribute('data-state');
+  }
 
   /* Session trampoline: the shared cookie carries a ~1h access token, so a
      long-idle member can be signed in with a token the server will reject.
@@ -20901,10 +20950,21 @@ if (document.readyState === 'loading') {
     .then(function(){
       return fetch(SRC, { credentials: 'same-origin', cache: 'no-store' });
     })
-    .then(function(r){ if (!r || !r.ok) throw new Error('locked'); return r.json(); })
+    .then(function(r){
+      if (!r || !r.ok){
+        var error = new Error('board payload unavailable');
+        error.status = r && r.status;
+        throw error;
+      }
+      return r.json();
+    })
     .then(hydrate)
-    .catch(function(){
-      /* Locked (or offline): the wall stays exactly as rendered. Offer
+    .then(function(){ setLoadUnavailable(false); })
+    .catch(function(error){
+      /* Access denial retains the existing wall. Transport, server and invalid
+         payload failures keep the dated preview and disclose missing full data. */
+      if (!error || (error.status !== 401 && error.status !== 403)) setLoadUnavailable(true);
+      /* The wall stays exactly as rendered. Offer
          sign-in when there is no session at all — a member on a fresh
          browser would otherwise only see an upgrade CTA. */
       var si = document.getElementById('us-tw-signin');

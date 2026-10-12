@@ -1,0 +1,516 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-12T03:42:51.733313+00:00",
+  "outcome": "captured",
+  "tool": {
+    "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
+    "module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+  },
+  "axes": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "access": [
+      "anonymous"
+    ],
+    "force_states": []
+  },
+  "pages": [
+    {
+      "page_id": "hk-prophet-coverage-watch-only-fixture",
+      "route": "/hk_stocks.html",
+      "proof_class": "browser_fixture_proof_reproducible",
+      "states": [
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+          "width": 390,
+          "height": 5340,
+          "sha256": "5842b33f1954946b2d1b8bf06861bab42573071120672eac944346d00d4319b7",
+          "byte_length": 470156,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+          "width": 1440,
+          "height": 3489,
+          "sha256": "4623d8463744758ee2c45cf69c39d400cd8e4095b7c03347b0e7f4741f15bd57",
+          "byte_length": 515279,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+          "width": 390,
+          "height": 5338,
+          "sha256": "5c8be8fdafed96b4a13dbcea52766125500e32e66344d3436fab1b4dae94ee33",
+          "byte_length": 479930,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+          "width": 1440,
+          "height": 3487,
+          "sha256": "fd3e8723f57d8333c80c4a2f74eee693d93cad6475a911671cd65dada7e00ef0",
+          "byte_length": 524110,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+          "width": 390,
+          "height": 4553,
+          "sha256": "5d3d41ab6d0bb3305bcbd8fb3cad0a19428ff511cf760f5a87790fe3ad72fbf3",
+          "byte_length": 487803,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+          "width": 1440,
+          "height": 3475,
+          "sha256": "f85cbe6c8e17018213861b782573a71f536f0ed858eba5335fa5b7907fb3b4aa",
+          "byte_length": 548310,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+          "width": 390,
+          "height": 4551,
+          "sha256": "e288cb3c3408b19a6bd0fb7cbd7eaed35b355c477da04545ed561f646a014777",
+          "byte_length": 497413,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+          "width": 1440,
+          "height": 3473,
+          "sha256": "cd6b428f7e6831e9d430f1707083185cd2286089cc24e8861b06d7bd3122e5b1",
+          "byte_length": 560565,
+          "source_html": {
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "8d3c52c3cdaae1ab08b4c844df3be8759fe4b1f48ad14684afb13c8a04ea1ec4"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        }
+      ]
+    },
+    {
+      "page_id": "ca-prophet-coverage-watch-only-fixture",
+      "route": "/canada_stocks.html",
+      "proof_class": "browser_fixture_proof_reproducible",
+      "states": [
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+          "width": 390,
+          "height": 2748,
+          "sha256": "f5fdf4f99de7578a8906c17de116d07a25c77b5e5e5005925a7bc2fc01faf5f1",
+          "byte_length": 258434,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+          "width": 1440,
+          "height": 1724,
+          "sha256": "6fabdabc3e17fb91e4860a15713ac1ae7ca2fa1acec47d8bf5ee71b049400c03",
+          "byte_length": 305462,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+          "width": 390,
+          "height": 2746,
+          "sha256": "3d9e866eb1bf2a285f549d6587846085416eba6f76a82ec11d02ceb2aa30c7dd",
+          "byte_length": 257041,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+          "width": 1440,
+          "height": 1722,
+          "sha256": "67ce6f8cb76432bf64f295ed9efab89e43a1d5844ff3209dc5f4c98df70d49b9",
+          "byte_length": 303359,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+          "width": 390,
+          "height": 2506,
+          "sha256": "5730ce1150138dc0e9c1ed336f0c50d34a0fbf0c50df6770d90ee8a48f619209",
+          "byte_length": 254190,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+          "width": 1440,
+          "height": 1727,
+          "sha256": "3a4ce485dd113c42754bfa6e8f9d6fa63ce5da740708d0d144e69a32d6de4a7b",
+          "byte_length": 303802,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+          "width": 390,
+          "height": 2504,
+          "sha256": "54178e92af2b63b268b9306245ee42f0a7089af33ba456b7c2e560a09c13344a",
+          "byte_length": 254364,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "../prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+          "width": 1440,
+          "height": 1725,
+          "sha256": "f7ca652cfaf83e24fe492562e12534afa9f35c170aa884b74431e7c436cbe343",
+          "byte_length": 302116,
+          "source_html": {
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "6f731dc2e4f9545d50062a310c5ae6ff048496efb74e638e9662eb5bae3b3e84"
+          },
+          "owner_case": "watch-only",
+          "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
+          "raw_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+          },
+          "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+        }
+      ]
+    }
+  ],
+  "honesty": {
+    "source": "Mechanical projection of the two actual browser receipts listed below; no new browser run is claimed by this manifest transformation. Each PNG and observed theme/locale comes from those successful capture runs.",
+    "fixture": "Frozen real-owner fixture data, with an explicit watch-only transformation. Production and canonical full-config evidence unavailable.",
+    "authority": "Captured pixels and observed state only. Visual judgment and source release are separate."
+  },
+  "source_receipts": [
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "sha256": "7ee3dd4f43006b66f91e613a664b10ba1034c86e5f4ec590a2ba2a8715467ea4"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "sha256": "54460d7f42694e18e57e9523ef96eada37a6ba384a958f9c0b30d7aba1e132ed"
+    }
+  ],
+  "source_bindings": {
+    "templates/_prophet_coverage.html.j2": "392f1331c7a6fbd71a0101dfc6b5df9ad732a5fab0063bebd41e1678516c0e60",
+    "fixture_receipt": "5cdc8b230379a42a1e2d2e618ce949cd3e19a36db62970ddb3d0a0d7fd69631f"
+  }
+}

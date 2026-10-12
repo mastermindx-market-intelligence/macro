@@ -7,7 +7,7 @@ objective: >
   return or forward drawdown beyond momentum, volatility and beta, and build an advisory
   profile only if it does. Done = the pre-registered value test read once and its decision
   rule applied.
-status: active
+status: done
 program: research-factory
 repos: [mastermind, macro]
 owner: coo-fable
@@ -29,19 +29,23 @@ waves:
   - {id: B2, title: "Walk-forward comparison against a volatility-aware model, run once: no model value", status: done, depends_on: [B]}
   - {id: C-0, title: "Point-in-time sector substrate for the 1,083 S&P 1500 leavers (macro collector, as-of-now labels, CIK bridge only)", status: done, pr: 8403, depends_on: [B2]}
   - {id: C-1, title: "Wave C pre-registration MERGED in Mastermind (PR 1226, master 521720b09be2, freeze date 2026-10-04 UTC): research/TREND_PERSISTENCE_PREREG_C1.md, development pass C1 on the already-scored dates plus a frozen confirmation C2 on formation dates after the freeze commit", status: done, depends_on: [C-0]}
-  - {id: C-2, title: "Instrument research/trend_persistence_group.py and its tests in Mastermind (PR 1230) against the C1 document section 11 pins, then ONE C1 development run (a claim about nothing)", status: in_progress, depends_on: [C-1]}
-  - {id: C-3, title: "Frozen C2 confirmation: one gating read on formation dates after the freeze once n_read is reached, fixed sequence h20 then h60 then incremental; no re-read", status: todo, depends_on: [C-2]}
+  - {id: C-2, title: "Instrument research/trend_persistence_group.py and its 18 tests in Mastermind (PR 1230, master 1644ace945a8) against the C1 document section 11 pins, then ONE C1 development run 2026-10-05T00:06Z from the committed clean tree: C1-NULL, three cells scored, none carried (Mastermind PR 1252, master 7eac3ec252475600147ec9a376b8ca16403ac4c5)", status: done, depends_on: [C-1]}
+  - {id: C-3, title: "Frozen C2 confirmation: one gating read on formation dates after the freeze once n_read is reached, fixed sequence h20 then h60 then incremental; no re-read - DROPPED: C1-NULL (C1 document section 8) carries no cell, so n_read is null, no constants block exists and no C2 read is ever made", status: dropped, depends_on: [C-2]}
   - {id: D-F, title: "Calibrated profile, shadow snapshot, advisory field", status: dropped, depends_on: [B2]}
 decisions:
   - DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-B
+  - DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-C
 discoveries:
   - DSC:IC-GATES-AFTER-RANK-LINEAR-CONTROLS-DO-NOT-SEPARATE-PATH-FEATURES-FROM-VOLATILITY
 artifacts:
   - research/TREND_PERSISTENCE_READOUT.md
   - research/data/trend_persistence_b2_result.json
   - research/TREND_PERSISTENCE_PREREG_C1.md
+  - research/trend_persistence_group.py
+  - research/data/trend_persistence_c1_attempt.json
+  - research/data/trend_persistence_c1_result.json
 landmines:
-  - "Formation dates 2022-07-06 to 2026-06-02 have been scored twice (V2 holdout, B2). No third claim may rest on them."
+  - "Formation dates 2022-07-06 to 2026-06-02 have been scored three times (V2 holdout, B2, C1 development). No further claim may rest on them."
   - "The B2 one-run guard in the code depends on a local file; the public attempt record on Mastermind PR 1155 is what makes the run single."
   - "Rebuilding the B2 simulated reference over the committed file replaces it with the one-line form, which no longer matches its pin and fails the repository identity check (Mastermind issue 1188). Rebuild to a scratch path."
   - "Every C1 development label exits on or before 2026-06-02 (embargo). Formation dates after the freeze commit belong to the C2 confirmation read alone; the bridge 2026-06-03 to the freeze is printed, never gated (research/TREND_PERSISTENCE_PREREG_C1.md sections 8 and 10)."
@@ -50,7 +54,9 @@ do_not_redo:
   - "Do not run the V2 holdout or the B2 walk-forward comparison again on real data; both were run exactly once on 2026-10-03 and their results are committed."
   - "Do not edit the V2 or B2 pre-registrations, the four pinned modules, or the committed result and attempt files, and do not change any value in the reference file; a test fails if any pin drifts from the committed result. The reference was re-serialized once after the run, values unchanged (readout section 7)."
   - "Do not build a calibrated profile, shadow snapshot or advisory field from these 29 tests (DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-B, DNR:KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE)."
-next_action: Wave C-2 — land the instrument research/trend_persistence_group.py plus tests/test_trend_persistence_group.py in Mastermind (PR 1230), then run the C1 development pass exactly once from a committed clean tree against the pinned inputs and commit research/data/trend_persistence_c1_attempt.json and _c1_result.json (plus _c2_constants.json on C1-CARRY) with the public attempt record; the C2 freeze date is 2026-10-04 (Mastermind master 521720b09be2).
+  - "Do not run the C1 development pass again (one-run guard; the public attempt record research/data/trend_persistence_c1_attempt.json pins the single run at master 1644ace945a8) and do not make any C2 read: under C1-NULL no cell carried, n_read is null and no constants block exists (DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-C)."
+  - "Do not reopen group persistence by editing research/TREND_PERSISTENCE_PREREG_C1.md; industry-group or industry, basket and dynamic-theme constructions are untested and need a NEW pre-registration document with formation dates after it."
+next_action: None pending; the workstream is closed at Wave C under C1-NULL (DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-C). A successor who wants industry-group or industry, basket or dynamic-theme group persistence writes a new pre-registration document in Mastermind first (never an edit of research/TREND_PERSISTENCE_PREREG_C1.md), gated on formation dates after that document merges.
 ---
 
 ## Context

@@ -427,6 +427,104 @@ def test_ungated_shell_shows_the_same_true_total_the_gated_shell_does():
 
 # ── controls stay inert while gated ─────────────────────────────────────────
 
+@pytest.mark.parametrize("preview_rows", [0, 1, 2])
+def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(preview_rows):
+    """A live bucket includes buy_soon; its heading cannot clear every entry."""
+    from copy import deepcopy
+    from scripts.build_site import _split_us_board, _us_board_group_items
+
+    rows = [
+        _board_row(ticker="MSCI", stage="live", signal_asof="2026-10-08",
+                   entry_signal={"status": "buy_soon", "headline": "Buy soon — on confirmation"}),
+        _board_row(ticker="ADSK", stage="live", signal_asof="2026-10-08",
+                   entry_signal={"status": "partial", "headline": "Partial entry — half size now"}),
+        _board_row(ticker="ABBV", stage="live", signal_asof="2026-10-08",
+                   entry_signal={"status": "buy_now", "headline": "Buy zone — entry open now"}),
+    ]
+    source = {"buy": rows, "eligible": 3, "as_of": "2026-10-08"}
+    before = deepcopy(source)
+    env = _env()
+    env.autoescape = True  # actual production Environment, not the helper default
+
+    def render_shell(board, gate):
+        vm = _base_vm()
+        vm.update(us_standouts=board, gate=gate)
+        return env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
+
+    def card_bodies(html):
+        # Setup cards are articles containing links. The older CARD_ROW regex
+        # ends at the first nested </a>, so use real complete card bodies here.
+        class Cards(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.depth, self.parts, self.cards = 0, [], []
+
+            def handle_starttag(self, tag, attrs):
+                if tag == "article" and (self.depth or "pvcard" in dict(attrs).get("class", "").split()):
+                    self.depth += 1
+                if self.depth:
+                    self.parts.append(self.get_starttag_text())
+
+            def handle_endtag(self, tag):
+                if self.depth:
+                    self.parts.append(f"</{tag}>")
+                    if tag == "article":
+                        self.depth -= 1
+                        if not self.depth:
+                            self.cards.append(" ".join("".join(self.parts).split()))
+                            self.parts = []
+
+            def handle_data(self, data):
+                if self.depth:
+                    self.parts.append(data)
+
+        parser = Cards()
+        parser.feed(_candidate_card_surface(html))
+        return parser.cards
+
+    whole = render_shell(source, None)
+    shell, gate, locked = _split_us_board(source, preview_rows, gated=True)
+    public = render_shell(shell, gate)
+    tail = env.get_template("_us_board_cards.html.j2").render(
+        items=_us_board_group_items(locked, True, gate["stage_counts"]), sg_any=True,
+        bs_adj=False, xu_allfeat=False, trg_map={}, rw_en="", rw_zh="",
+        setup_as_of=source["as_of"])
+
+    # The same native rows/card bodies reconstruct in source order, including
+    # Near in the protected tail when preview_rows=0. No count/status mutation.
+    whole_cards = card_bodies(whole)
+    public_cards = card_bodies(public)
+    assert whole_cards == public_cards + card_bodies(tail)
+    assert [TICKER_ATTR.search(card).group(1) for card in whole_cards] == ["MSCI", "ADSK", "ABBV"]
+    assert [re.search(r'class="pv-chip"[^>]*>\s*<span class="l-en">([^<]+)', card).group(1)
+            for card in whole_cards] == ["Near", "Buy", "Buy"]
+    assert gate["stage_counts"]["live"] == 3
+    assert len(public_cards) == preview_rows
+    assert source == before
+
+    # With zero preview cards the existing shell has no stage shelf; the
+    # protected tail still carries the full count and the truthful heading.
+    for html in ((whole, public) if preview_rows else (whole,)):
+        assert '<b class="fig">3</b><span><span class="l-en">Active setups</span>' in html
+        assert '<span class="l-zh">活跃形态</span>' in html
+
+    for surface, html in (("whole", whole), ("public", public), ("tail", tail)):
+        headings = re.findall(r'<div class="nb-stage-hd sg-live".*?</div>', html, re.S)
+        for heading in headings:
+            assert '<span class="sh-n">3</span>' in heading
+            assert '<span class="l-en">Active setups</span>' in heading
+            assert '<span class="l-zh">活跃形态</span>' in heading
+            assert "Check each card’s dated entry read" in heading
+            assert "请查看每张卡片的入场判读及日期" in heading
+            assert "Buy and Near" in heading and "Near requires confirmation" in heading
+            assert "买入与临近" in heading and "临近仍需确认" in heading
+            assert "not more likely to win" in heading and "并不代表更容易获胜" in heading
+            assert "entry window is open" not in heading
+            assert "入场窗口" not in heading and "现在可操作" not in heading
+        if surface != "public" or preview_rows:
+            assert len(headings) == 1
+
+
 def test_candidate_stage_shelves_report_full_counts_while_gated():
     """Retired stage buttons became non-interactive aggregate shelves; retain all counts."""
     rows = _rows_with_stage(7)
@@ -437,7 +535,7 @@ def test_candidate_stage_shelves_report_full_counts_while_gated():
     gated_html = _render_shell(shell_su, gate)
     ungated_html = _render_shell({"buy": rows, "eligible": 7}, None)
     pattern = r'<span class="cand-shelf"><b class="fig">(\d+)</b><span><span class="l-en">([^<]+)</span>'
-    expected = [("2", "Live now"), ("2", "Setting up"), ("1", "Ran — don’t chase"),
+    expected = [("2", "Active setups"), ("2", "Setting up"), ("1", "Ran — don’t chase"),
                 ("1", "Basing"), ("1", "Blocked")]
     assert re.findall(pattern, gated_html) == re.findall(pattern, ungated_html) == expected
     assert sum(int(n) for n, _ in expected) == gate["total"]
@@ -944,8 +1042,10 @@ def test_tier_preview_leaves_a_server_collapsed_tape_list_alone():
 
 
 # Lossless candidate visibility must use the existing protected payload boundary.
-def test_candidate_coverage_renders_without_a_dashboard_translation_scope():
+@pytest.mark.parametrize("autoescape", [False, True])
+def test_candidate_coverage_renders_without_a_dashboard_translation_scope(autoescape):
     env = _env()
+    env.autoescape = autoescape
     html = env.from_string(
         "{% import '_prophet_coverage.html.j2' as pvc %}{{ pvc.coverage(c) }}"
     ).render(c={"producer_total": 2, "entitled_total": None,
@@ -957,6 +1057,13 @@ def test_candidate_coverage_renders_without_a_dashboard_translation_scope():
     assert "缺失字段" in html
     assert "<script>private</script>" not in html
     assert "&lt;script&gt;private&lt;/script&gt;" in html
+    from bs4 import BeautifulSoup
+    note = BeautifulSoup(html, "html.parser").select_one("[data-pv-coverage-missing-owner]")
+    assert [node.get_text() for node in note.select(".l-en")] == [
+        "Unavailable owner fields", "<script>private</script>"]
+    assert [node.get_text() for node in note.select(".l-zh")] == [
+        "所有者字段暂缺", "缺失字段"]
+    assert "<span" not in note.get_text()
 
 
 def _candidate_visibility_vm():
@@ -1010,11 +1117,12 @@ def test_fast_preview_preserves_stock_entitlement_boundary(tmp_path, monkeypatch
     from jinja2 import ChoiceLoader, DictLoader, FileSystemLoader
     from scripts import render_macro_fast as fast
     from tests.test_dashboard_template_render import _prophet_book
+    from tests.test_prophet_leader_observation_shelf import _projection
 
     pytest.importorskip("pandas")
     pytest.importorskip("plotly")
 
-    def row_tickers(html):
+    def row_tickers(html, row_class="ucp-row"):
         class Rows(HTMLParser):
             def __init__(self):
                 super().__init__()
@@ -1022,7 +1130,7 @@ def test_fast_preview_preserves_stock_entitlement_boundary(tmp_path, monkeypatch
 
             def handle_starttag(self, tag, attrs):
                 attrs = dict(attrs)
-                if tag == "div" and "ucp-row" in attrs.get("class", "").split():
+                if tag == "div" and row_class in attrs.get("class", "").split():
                     self.tickers.append(attrs["data-ticker"])
 
         rows = Rows()
@@ -1035,9 +1143,17 @@ def test_fast_preview_preserves_stock_entitlement_boundary(tmp_path, monkeypatch
     vm["us_prophet_book"] = _prophet_book([])
     vm["us_standouts"] = {"buy": [_board_row(ticker="PUBLIC"),
                                      _board_row(ticker="PAID")], "eligible": 2}
+    for lane, names in (("watch", ["WATCH"]),
+                        ("leaders", ["LEAD1", "LEAD2", "LEAD3", "LEAD4"]),
+                        ("laggards", ["LAG"])):
+        vm["us_standouts"][lane] = [
+            {**_board_row(ticker=tk), "name": tk + " company"} for tk in names]
     pool = vm["us_candidate_visibility"]
     pool["rows"][0].update(ticker="PAID", name="Withheld company")
     pool["rows"][1].update(ticker="PUBLIC", name="Public company")
+    observations = vm["us_leader_observations"] = _projection()
+    observations["rows"][0]["ticker"] = "PAID"
+    observation_tickers = [row["ticker"] for row in observations["rows"]]
     before = deepcopy(vm)
     cache = tmp_path / "_dev_macro_vm.pkl"
     cache.write_bytes(pickle.dumps({"vm": vm, "generated": "synthetic-retained"}))
@@ -1060,6 +1176,21 @@ def test_fast_preview_preserves_stock_entitlement_boundary(tmp_path, monkeypatch
     payload = json.loads((site / "premiumdata" / "us_stocks.json").read_text())
     protected_tickers = row_tickers(payload.get("candidate_pool_html", ""))
     assert public_tickers + protected_tickers == ["PAID", "PUBLIC"]
+    public_observations = row_tickers(html, "plo-row")
+    assert public_observations == ([] if board_gated else observation_tickers)
+    protected_observations = row_tickers(payload.get("leader_observations_html", ""), "plo-row")
+    assert public_observations + protected_observations == observation_tickers
+    # Identity-only pgate also narrows the existing label island. Its protected
+    # tail must restore every original label even when the panel cap is off.
+    label_island = re.search(
+        r'<script type="application/json" id="plv-names">(.*?)</script>', html, re.S)
+    assert label_island is not None
+    public_names = json.loads(label_island.group(1))
+    restored_names = {**public_names, **payload.get("plv_names", {})}
+    expected_names = {row["ticker"]: row["name"]
+                      for lane in ("watch", "leaders", "laggards")
+                      for row in before["us_standouts"][lane]}
+    assert {key: restored_names.get(key) for key in expected_names} == expected_names
     assert payload["schema"] == "tier_payload.v1"
     assert payload["built"] == "synthetic-retained"
     assert pickle.loads(cache.read_bytes())["vm"] == before
@@ -1153,6 +1284,60 @@ def test_candidate_pool_render_paths_respect_actual_board_boundary(
     assert shell["rows"] + locked["candidate_pool"] == pool["rows"]
     assert shell["counts"] == pool["counts"]
     assert shell["source_digest"] == pool["source_digest"]
+    assert vm == before
+
+
+@pytest.mark.parametrize("render_pass", ["", "2"])
+@pytest.mark.parametrize("panels_gated", [False, True])
+@pytest.mark.parametrize("withheld_index", [0, 1, None])
+def test_leader_observation_preview_respects_actual_board_boundary(
+    render_pass, panels_gated, withheld_index
+):
+    """An independent observation preview cannot reveal a withheld board name."""
+    import ast
+    from copy import deepcopy
+    from scripts import build_site as bs
+    from tests.test_prophet_leader_observation_shelf import _projection
+
+    projection = _projection()
+    withheld = (projection["rows"][withheld_index]["ticker"]
+                if withheld_index is not None else "UNRELATED")
+    vm = {"us_leader_observations": projection,
+          "us_standouts": {"buy": [{"ticker": "PUBLIC"}, {"ticker": withheld}]}}
+    before = deepcopy(vm)
+    module = ast.parse(Path(bs.__file__).read_text())
+    scope = {"vm": vm, "_us_gate_cfg": {
+        "preview_rows": 1, "gated": True, "panel_preview_rows": 3,
+        "panels": panels_gated,
+    }, "_split_us_board": bs._split_us_board, "_split_us_panels": bs._split_us_panels}
+    for variable in ("_us_shell_su" + render_pass, "_us_pov" + render_pass):
+        matches = [node for node in ast.walk(module)
+                   if isinstance(node, ast.Assign)
+                   and isinstance(node.targets[0], ast.Tuple)
+                   and isinstance(node.targets[0].elts[0], ast.Name)
+                   and node.targets[0].elts[0].id == variable]
+        assert len(matches) == 1
+        exec(compile(ast.Module(body=matches, type_ignores=[]), bs.__file__, "exec"), scope)
+    overrides = scope["_us_pov" + render_pass]
+    gate = scope["_us_pgate" + render_pass]
+    locked = scope["_us_plocked" + render_pass]
+    shell = overrides.get("us_leader_observations", projection)
+    expected = withheld_index if withheld_index is not None else (
+        3 if panels_gated else len(projection["rows"]))
+    assert shell["rows"] == projection["rows"][:expected]
+    assert shell["rows"] + locked.get("leader_observations", []) == projection["rows"]
+    assert {key: value for key, value in shell.items() if key != "rows"} == {
+        key: value for key, value in projection.items() if key != "rows"}
+    env = _env()
+    rows_template = env.get_template("_us_leader_observation_rows.html.j2")
+    html = rows_template.render(rows=shell["rows"])
+    if withheld_index is not None:
+        assert f'data-ticker="{withheld}"' not in html
+        assert gate["leader_observations"] == {
+            "preview": expected, "locked": len(projection["rows"]) - expected,
+            "total": len(projection["rows"])}
+        tail = bs._render_us_panel_payload(env, gate, locked, vm)
+        assert f'data-ticker="{withheld}"' in tail["leader_observations_html"]
     assert vm == before
 
 
@@ -1337,6 +1522,9 @@ def _actual_fresh_board_condition(prior, fresh, *, prior_view=None, fresh_view=N
         "_fresh_su": fresh,
         "_prior_as_of": prior.get("as_of"),
         "_prior_stale": prior.get("staleness") or {},
+        # This candidate-pool fixture holds the independent W3C inputs fixed.
+        # The real predicate now compares them even when the pool is unchanged.
+        "_fresh_w3c_binding": None, "_us_w3c_binding": None, "_fresh_w3c": None,
         "_fresh_candidate_visibility": fresh_view if fresh_view is not None else project_candidate_visibility(fresh),
         "vm": {"us_standouts": prior,
                "us_candidate_visibility": prior_view if prior_view is not None else project_candidate_visibility(prior)},

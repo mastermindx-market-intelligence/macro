@@ -165,8 +165,10 @@ from datetime import datetime, time, timedelta, timezone
 from typing import Any
 
 from engine.prophet_live.interval import (
+    ADJUSTED,
     DEFAULT_PACK_ADJUSTMENT,
     LIVE_QUOTE_ADJUSTMENT,
+    UNADJUSTED,
     basis_audit,
     in_probed_band,
     interval_contains,
@@ -469,6 +471,92 @@ def _basis_receipt(
         material, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
     ).encode("utf-8")
     return "sha256:" + sha256(blob).hexdigest()
+
+
+_CANONICAL_ADJUSTMENTS = frozenset({ADJUSTED, UNADJUSTED})
+_BASIS_COUNT_KEYS = _CANONICAL_ADJUSTMENTS | {"unknown"}
+
+
+def _basis_provenance_counts(
+    pack: dict[str, Any], *, names: dict[str, Any]
+) -> dict[str, int] | None:
+    """Return the closed producer basis census, or None when it is not trustworthy."""
+    meta = pack.get("meta")
+    counts = meta.get("price_adjustment_counts") if isinstance(meta, dict) else None
+    if not isinstance(counts, dict) or not counts:
+        return None
+    if set(counts) - _BASIS_COUNT_KEYS:
+        return None
+    if any(
+        isinstance(value, bool) or not isinstance(value, int) or value < 0
+        for value in counts.values()
+    ):
+        return None
+    if sum(counts.values()) != len(names):
+        return None
+    return dict(counts)
+
+
+def _implicit_pack_basis_is_reconciled(
+    pack: dict[str, Any], *, names: dict[str, Any], counts: dict[str, int]
+) -> bool:
+    """Prove that every compact/default row is accounted for by the census.
+
+    A mixed census is only useful when every non-default basis is attached to an
+    explicit row.  Otherwise the pack tells us that an exception exists but not
+    which ticker owns it, so no implicit row may inherit the pack default.
+    """
+    pack_adjustment = pack.get("price_adjustment")
+    if pack_adjustment not in _CANONICAL_ADJUSTMENTS:
+        return False
+
+    declared = {basis: 0 for basis in _BASIS_COUNT_KEYS}
+    for row in names.values():
+        if not isinstance(row, dict):
+            return False
+        if "price_adjustment" not in row:
+            declared[pack_adjustment] += 1
+            continue
+        explicit = row.get("price_adjustment")
+        if explicit not in _CANONICAL_ADJUSTMENTS:
+            return False
+        declared[explicit] += 1
+
+    return all(counts.get(key, 0) == declared[key] for key in _BASIS_COUNT_KEYS)
+
+
+def _resolved_levels_adjustment(
+    pack: dict[str, Any], *, entry: dict[str, Any], names: dict[str, Any]
+) -> str | None:
+    """Return a positively proven per-name levels basis, otherwise None.
+
+    Row-level exceptions are explicit producer provenance. Compact default rows may
+    inherit the pack's basis only when the complete producer census contains no
+    unknown names. Missing, partial, malformed, or unregistered provenance cannot
+    become a positive owner fact merely because two numeric closes happen to agree.
+    """
+    counts = _basis_provenance_counts(pack, names=names)
+    if counts is None:
+        return None
+
+    if "price_adjustment" in entry:
+        explicit = entry.get("price_adjustment")
+        if (
+            isinstance(explicit, str)
+            and explicit in _CANONICAL_ADJUSTMENTS
+            and counts.get(explicit, 0) > 0
+        ):
+            return explicit
+        return None
+
+    pack_adjustment = pack.get("price_adjustment")
+    if (
+        isinstance(pack_adjustment, str)
+        and pack_adjustment in _CANONICAL_ADJUSTMENTS
+        and _implicit_pack_basis_is_reconciled(pack, names=names, counts=counts)
+    ):
+        return pack_adjustment
+    return None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -948,10 +1036,12 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
         # actually measured this name and the live state did not fail dark.  Missing
         # prev_close therefore remains absence of evidence, never an inferred pass.
         ent_adj = entry.get("price_adjustment")
-        levels_adjustment = (
-            ent_adj if isinstance(ent_adj, str) and ent_adj else pack_adjustment
+        levels_adjustment = _resolved_levels_adjustment(
+            pack,
+            entry=entry,
+            names=pack.get("names") or {},
         )
-        if st.get("state") != "dark" and gap is not None:
+        if levels_adjustment is not None and st.get("state") != "dark" and gap is not None:
             tol = abs(float(audit["tol_pct"]))
             if tol > 0.0 and abs(float(gap)) <= tol:
                 st["basis_status"] = "RESOLVED"

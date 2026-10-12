@@ -34,18 +34,170 @@ Run: python -m scripts.build_theme_graph [--backfill] [--force-backfill]
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
+import os
+import re
+import shutil
+import subprocess
 import sys
+import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import basket_membership_pit  # noqa: E402
-from engine.theme_graph import materialize, store  # noqa: E402
+from engine.theme_graph import materialize, probation, store  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_theme_graph")
+
+_WITNESS_MARKER = "theme_graph_meta_written "
+_WITNESS_SOURCES = (
+    "scripts/build_theme_graph.py", "scripts/check_theme_graph_contracts.py",
+    "scripts/ci/daily_engine_regional_desk_builders.sh", ".github/workflows/daily.yml",
+)
+_WITNESS_OUTPUTS = (
+    "nodes.parquet", "node_lifecycle.parquet", "edges.parquet", "evidence.parquet",
+    "capability.parquet", "identity_resolution.parquet", "probation/proposals.jsonl",
+)
+
+
+def _witness_hash(path: Path) -> dict:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {"sha256": digest.hexdigest(), "bytes": path.stat().st_size}
+
+
+def _emit_meta_write_receipt(meta: dict, materialization_computed_at: str) -> None:
+    """A post-write diagnostic, never a replacement for either generation clock."""
+    try:
+        receipt = {
+            "witness_id": os.environ.get("THEME_GRAPH_WITNESS_ID"),
+            "meta_computed_at": meta["computed_at"],
+            "materialization_computed_at": materialization_computed_at,
+            "meta_sha256": _witness_hash(store.meta_path())["sha256"],
+            **{key: meta[key] for key in ("lane", "mode", "era", "belief_time")},
+        }
+        print(_WITNESS_MARKER + json.dumps(receipt, sort_keys=True), flush=True)
+    except Exception:  # diagnostics cannot change a completed graph write
+        log.exception("theme graph metadata receipt unavailable")
+
+
+def start_nightly_witness() -> str:
+    """Called by the existing builder band; stdout is only its fresh scratch path."""
+    try:
+        identity = {key: os.environ.get(key) for key in (
+            "GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
+            "GITHUB_EVENT_NAME", "GITHUB_JOB", "GITHUB_SHA", "GITHUB_WORKFLOW_REF",
+        )}
+        run_id, attempt, job = (identity[key] or "" for key in (
+            "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB"))
+        if not (run_id.isdigit() and attempt.isdigit()
+                and re.fullmatch(r"[A-Za-z0-9_-]+", job)):
+            raise ValueError("missing or invalid run/attempt/job identity")
+        directory = Path(tempfile.mkdtemp(
+            prefix=f"theme-graph-witness-{run_id}-{attempt}-{job}-",
+            dir=os.environ["RUNNER_TEMP"]))
+        root = Path(__file__).resolve().parents[1]
+        errors = [f"missing_identity:{key}" for key, value in identity.items() if not value]
+        try:
+            head = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True,
+                stderr=subprocess.DEVNULL).strip()
+        except (OSError, subprocess.CalledProcessError):
+            head = None
+            errors.append("actual_head_unavailable")
+        sources = {}
+        for name in _WITNESS_SOURCES:
+            try:
+                sources[name] = _witness_hash(root / name)
+            except OSError:
+                errors.append(f"source_unavailable:{name}")
+        manifest = {
+            "schema": "theme_graph_nightly_witness/v1",
+            "capture_status": "incomplete", "acceptance": "not_evaluated",
+            "witness_id": directory.name, "started_at": datetime.now(timezone.utc).isoformat(),
+            "run_identity": identity, "actual_head_sha": head,
+            "source_files": sources, "errors": errors,
+        }
+        (directory / "manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        # Only this freshly created directory can become the workflow's upload input.
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+            output.write(f"theme_graph_witness={directory}\n")
+        return str(directory)
+    except Exception:  # retention is advisory, just like the existing band
+        log.exception("theme graph witness start unavailable")
+        return ""
+
+
+def finish_nightly_witness(directory: str, band_dir: str) -> None:
+    """Retain only this owner's receipts before the unrelated parallel barrier."""
+    if not directory:
+        return
+    try:
+        target, band = Path(directory), Path(band_dir)
+        manifest = json.loads((target / "manifest.json").read_text(encoding="utf-8"))
+        errors = manifest["errors"]
+        files = {}
+        for slug in ("theme_graph", "theme_graph_guard"):
+            for suffix in ("log", "rc", "sec"):
+                name = f"{slug}.{suffix}"
+                try:
+                    shutil.copyfile(band / name, target / name)
+                    files[name] = _witness_hash(target / name)
+                    if suffix == "rc" and (target / name).read_text().strip() != "0":
+                        errors.append(f"nonzero_or_invalid_rc:{slug}")
+                    if suffix == "sec" and not (target / name).read_text().strip().isdigit():
+                        errors.append(f"invalid_seconds:{slug}")
+                except OSError:
+                    errors.append(f"receipt_unavailable:{name}")
+        meta_path = store.meta_path()
+        try:
+            shutil.copyfile(meta_path, target / "_meta.json")
+            files["_meta.json"] = _witness_hash(target / "_meta.json")
+            meta = json.loads((target / "_meta.json").read_text(encoding="utf-8"))
+            lines = (target / "theme_graph.log").read_text(encoding="utf-8").splitlines()
+            markers = [json.loads(line[len(_WITNESS_MARKER):]) for line in lines
+                       if line.startswith(_WITNESS_MARKER)]
+            if len(markers) != 1:
+                errors.append("post_write_marker_missing_or_ambiguous")
+            else:
+                marker = markers[0]
+                manifest["post_write_receipt"] = marker
+                if (marker.get("witness_id") != manifest["witness_id"]
+                        or marker.get("meta_sha256") != files["_meta.json"]["sha256"]
+                        or marker.get("meta_computed_at") != meta.get("computed_at")
+                        or any(marker.get(key) != meta.get(key)
+                               for key in ("lane", "mode", "era", "belief_time"))):
+                    errors.append("post_write_marker_metadata_mismatch")
+        except (OSError, ValueError, TypeError):
+            errors.append("metadata_or_post_write_marker_unreadable")
+        # The native guard is advisory: rc=0 alone does not mean no contract breach.
+        guard = target / "theme_graph_guard.log"
+        if guard.exists() and re.search(r"::(?:warning|error)\b", guard.read_text()):
+            errors.append("guard_warning_or_error")
+        outputs = {}
+        for name in _WITNESS_OUTPUTS:
+            try:
+                outputs[name] = _witness_hash(meta_path.parent / name)
+            except OSError:
+                errors.append(f"graph_output_unavailable:{name}")
+        manifest.update(
+            files=files, graph_output_files=outputs,
+            finished_at=datetime.now(timezone.utc).isoformat(),
+            capture_status="incomplete" if errors else "complete")
+        pending = target / "manifest.pending.json"
+        pending.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+                           encoding="utf-8")
+        pending.replace(target / "manifest.json")
+    except Exception:  # initial manifest stays incomplete if final capture fails
+        log.exception("theme graph witness finish unavailable")
 
 
 def _newest_raw_snapshot() -> tuple[str, dict] | None:
@@ -101,6 +253,17 @@ def _retired_node_ids() -> frozenset[str]:
     return frozenset(str(n) for n in retired["node_id"])
 
 
+def _relation_event_sources() -> tuple[Path, Path]:
+    """Separate versioned owner input; the v1 proposal queue stays unchanged."""
+    return (store.probation_path().parent / "relation_events.v2.jsonl",
+            Path(__file__).resolve().parent.parent / "config/theme_crosswalk.yml")
+
+
+def _relation_action_owner_reader():
+    """Chairman gate #5 (2026-10-06): the probation owner's own ledger is the sole action authority; read-only resolver, fails closed."""
+    return probation.RelationActionOwnerReader(_relation_event_sources()[0])
+
+
 def run(*, backfill: bool, force_backfill: bool,
         allow_source_shrink: tuple[str, ...] = ()) -> int:
     lane = store.collect_lane()
@@ -121,7 +284,7 @@ def run(*, backfill: bool, force_backfill: bool,
 
     try:
         ths_history = basket_membership_pit.read_history(
-            basket_membership_pit.SUITE_THS, strict=True)
+            basket_membership_pit.SUITE_THS, strict=True, include_collection_records=True)
     except Exception as exc:  # noqa: BLE001 — corrupt owner state must fail closed
         log.error("theme graph: THS PIT history is present but unreadable (%s) — "
                   "refusing to publish an empty-history interpretation", exc)
@@ -146,7 +309,6 @@ def run(*, backfill: bool, force_backfill: bool,
                   "build (a swallowed exception here must not look like a "
                   "legitimate zero-membership night)")
         return 1
-    pit_member_edges = int(ths_per_suite.get("member_edges") or 0)
 
     # B1: retract the superseded membership_doc.v1 THS MEMBER_OF generation so the
     # PIT re-key cannot leave both generations live. Retraction reuses the stored
@@ -181,7 +343,19 @@ def run(*, backfill: bool, force_backfill: bool,
     if expression_closings:
         log.info("THS canonical expression refresh: closing %d superseded live edge(s)",
                  len(expression_closings))
-    closings = membership_closings + expression_closings
+    try:
+        event_path, curation_path = _relation_event_sources()
+        relation_events = probation.read_relation_events(
+            event_path, source_path=curation_path, emitted_at=run_computed_at,
+            owner_action_reader=_relation_action_owner_reader())
+        event_closings, event_evidence = materialize.apply_relation_events(
+            stored, view.edges, relation_events, belief_time=belief_time,
+            era=era, computed_at=run_computed_at)
+    except (ValueError, OSError) as exc:
+        log.error("theme graph: owner relation event refused (%s)", exc)
+        return 1
+    view.evidence.extend(event_evidence)
+    closings = membership_closings + expression_closings + event_closings
     computed = list(view.edges) + closings
     edges = computed if backfill else materialize.changed_edges(computed, stored)
 
@@ -189,14 +363,13 @@ def run(*, backfill: bool, force_backfill: bool,
     # this one guards the path every WRITE takes, so a hand-edited or truncated input
     # that never went through a refresh still cannot mass-close a source family. Refusing
     # here is cheap; un-closing 2,000 permanent rows in an append-only store is not.
-    # The membership_doc→pit generation cutover IS a deliberate full-family close of the
-    # superseded edge_ids — auto-waive ths_concepts ONLY when the PIT plane actually
-    # produced replacement edges THIS run (BLOCKER 3): a swallowed-exception night with
-    # zero PIT edges must hit the wall like any other mass-closure, not sail through it.
+    # Only exact validated owner closures and superseded legacy rows are explained
+    # changes. Uncovered pairs and collateral loss still enter the shrink numerator.
     allow = set(allow_source_shrink)
-    if membership_closings and pit_member_edges > 0:
-        allow.add(materialize.THS_FAMILY)
-    refusals = materialize.source_shrink_refusals(edges, stored, allow=allow)
+    # The guard derives exact explained legacy/PIT closures from this same
+    # validated owner input. A THS cutover never waives collateral loss.
+    refusals = materialize.source_shrink_refusals(
+        edges, stored, allow=allow, owner_membership_history=ths_history)
     if refusals:
         for r in refusals:
             log.error("theme graph shrink wall: %s", r)
@@ -283,6 +456,7 @@ def run(*, backfill: bool, force_backfill: bool,
     if store.write_meta(meta, lane=lane, allow_backfill=allow):
         log.info("wrote %s — appended %d nodes / %d edges / %d evidence rows",
                  store.meta_path(), added_nodes, added_edges, added_ev)
+        _emit_meta_write_receipt(meta, run_computed_at)
     else:
         log.info("off-lane: computed %d nodes / %d edges / %d evidence rows and wrote "
                  "nothing (COLLECT_LANE=%r)", len(view.nodes), len(edges),

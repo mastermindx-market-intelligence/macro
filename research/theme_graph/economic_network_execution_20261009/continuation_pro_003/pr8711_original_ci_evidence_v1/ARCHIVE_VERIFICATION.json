@@ -1,0 +1,58 @@
+{
+  "actual_artifact_json_member_count": 13,
+  "actual_artifact_zip_count": 13,
+  "all_manifest_entries_extracted_and_verified": true,
+  "all_preserved_extracted_files_unchanged_after_verifier": true,
+  "archive": {
+    "bytes": 1858043,
+    "name": "PR8711_ORIGINAL_CANDIDATE_FAILED_PENDING_EVIDENCE.tar.gz",
+    "sha256": "e8f6e688d6805daea04a827dd02ffe1eb6add5d57a7385ee02fac0fa99209db8"
+  },
+  "authority": {
+    "application_imports_or_tests": false,
+    "ci_rerun": false,
+    "git_mutation": false,
+    "merge_authorized": false,
+    "native_mutation": false
+  },
+  "contract_delta_conclusion": "failure",
+  "expected_complete_artifact_count": 15,
+  "extra_extracted_output_accounted_for": "pr8711_ci_release_evidence_v1/ARCHIVE_REPLAY_AVAILABLE_ARTIFACT_VERIFICATION.json",
+  "final_aggregate_observed": false,
+  "manifest": {
+    "bytes": 16593,
+    "name": "ARCHIVE_MANIFEST.json",
+    "sha256": "0fc883c4ecc4338c3f6132129f21e6dd88631267218ccb13cae93d01a4f39c86"
+  },
+  "missing_pack": 0,
+  "normalized_metadata_verified": true,
+  "original_files_unchanged_after_packaging": true,
+  "regular_file_count": 57,
+  "replay_verifier": {
+    "assertions_passed": 2672,
+    "exit_code": 0,
+    "matches_original_except_created_at_utc": true,
+    "output": {
+      "bytes": 749372,
+      "path": "pr8711_ci_release_evidence_v1/ARCHIVE_REPLAY_AVAILABLE_ARTIFACT_VERIFICATION.json",
+      "sha256": "2eb61ce165f9ca6f82916c90457d0230f0fea671cb5b72a479f4683869a51b02"
+    },
+    "relative_command": [
+      "python",
+      "-B",
+      "pr8711_ci_release_evidence_v1/verify_available_artifacts.py",
+      "--snapshot",
+      "native_snapshot_003.json",
+      "--output",
+      "ARCHIVE_REPLAY_AVAILABLE_ARTIFACT_VERIFICATION.json"
+    ],
+    "stderr_bytes": 0,
+    "stdout_sha256": "06df5aa76c626cd5a7f9d20e95127a6bb3d09d25c678b4a209dd5d39f51663a6"
+  },
+  "schema": "gmi.pr8711.deterministic_evidence_archive_verification/v1",
+  "status": "VERIFIED_FROZEN_FAILED_PENDING_PACKET",
+  "uncompressed_file_bytes": 5216732,
+  "unique_regular_files_only": true,
+  "verified_at_utc": "2026-10-09T12:26:23.705863+00:00",
+  "workflow_conclusion_observed": false
+}

@@ -1,0 +1,30 @@
+{
+  "state": "RECOVERED_ADMISSION_NOT_CAPACITY_INCREASE",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "facts": [
+    "Three completed Finviz source archive directories were conservatively counted as legacy active lanes; terminal rc0, source custody and residual0 verified before relocation outside active marker directory.",
+    "Full source copies archived to external SSD with all49060file/symlink identities verified; remote copies reverified before reclaim.",
+    "Exact parent-owned orphan synthetic Node browser test from Oct6 and its Chrome descendants were terminated afterPID/start/cwd checks; its1996file scratch archive was independently verified before reclaim.",
+    "Mini2 recovered above existing50GiBfloor; fullGLMprojector build actually launched. Later bounded GLMFlashlineage and Grokreview ran with originalroot."
+  ],
+  "unchanged": [
+    "provider and physical host caps",
+    "economic escalation policy",
+    "credentials and native-agent settings",
+    "shared git worktrees",
+    "other workers/controllers/leases"
+  ],
+  "artifacts": {
+    "IM06_FABRIC_RECOVERY.json": "af0f1ed6aec38e67194467793f889242e533a6ad659c20a504eb299052242d66",
+    "MINI2_FINVIZ_ARTIFACT_RELOCATION.json": "bebd49e140baffeb6fd6e5c17f5dce8aceeb390922781807151395df50997ddf",
+    "retained-mini2/ARCHIVE_VERIFICATION.json": "8a7444f9a81286a04090cf6dadb02819b7b5723a1a9c29ec2e2b1a5761a1cf1a",
+    "retained-mini2/SCRATCH_ARCHIVE_RECLAIM_RECEIPT.json": "4d2a963097a8f085dd84d98399a8fb7665000e19b7ede888b878e5ab26c34637",
+    "retained-mini2/ORPHAN_SYNTHETIC_TEST_CLEANUP.json": "6926baf47441d025322143c45ad1579cbd45327d41a023af52f62a2486745b91",
+    "retained-mini2/PAGE_ARCHIVE_MANIFEST.json": "fe141d9a1839407a7834c91ad9d97d8170364761bcde3471b1d374f37171f370"
+  },
+  "limitations": [
+    "Headroom remains narrow; no permanent availability or fleet-concurrency claim.",
+    "Executive read surface responded as1.4.0 readonly; existing-carrier/originalroot submission remains absent from visible schema. Attended manualadapter retained.",
+    "GLMprojector return was rejected on parent counterexamples; dispatch and success claims are not acceptance."
+  ]
+}

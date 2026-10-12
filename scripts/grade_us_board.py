@@ -686,7 +686,7 @@ def _dig(d: dict, *paths, default=None):
     return default
 
 
-def _row_features(r: dict) -> dict:
+def _row_features(r: dict, *, earnings_semantics: str = "legacy") -> dict:
     """Extract grading-relevant fields, tolerant to schema drift across revisions.
 
     Fields moved over time: score/band/composite_z/verdict/validation_status started
@@ -695,6 +695,12 @@ def _row_features(r: dict) -> dict:
     conviction.*/entry_signal.*. `signal` (with .last.quality) only appears in the
     latest schema. `align_tier` is None in the earliest revision. Every getter below
     tries the modern nested path first, then a flat fallback."""
+    revised = None
+    if earnings_semantics != "legacy":
+        from engine.us_prophet_fusion import EARNINGS_EVIDENCE_VERSION, earnings_evidence_v2
+        if earnings_semantics != EARNINGS_EVIDENCE_VERSION:
+            raise ValueError("unknown earnings semantics; no silent fallback")
+        revised = earnings_evidence_v2(r)
     conv = r.get("conviction") or {}
     sig = r.get("signal") or {}
     es = r.get("entry_signal") or {}
@@ -709,6 +715,8 @@ def _row_features(r: dict) -> dict:
     # a recomputed label; entry_status itself is NEVER backfilled.
     _estat = _dig(r, ("entry_signal", "status"), default=es.get("status"))
     return {
+        **({"earnings_evidence_v2": revised, "earnings_semantics": earnings_semantics}
+           if revised is not None else {}),
         "ticker": r.get("ticker"),
         "sector": r.get("sector"),
         "alpha": _num(r.get("alpha")),
@@ -774,7 +782,8 @@ def _row_features(r: dict) -> dict:
         "insider_cluster":      bool((r.get("insider_buyers") or 0) >= 2),
         "gex_confirm_verdict":  _dig(r, ("gex_confirm", "verdict"), default=None),
         "altdata_conv_gte2":    bool((_dig(r, ("altdata", "convergence_score"), default=0) or 0) >= 2),
-        "sue_fresh":            bool(r.get("sue_z") and (r.get("sue_fresh_days") or 999) <= 60),
+        "sue_fresh":            (bool(r.get("sue_z") and (r.get("sue_fresh_days") or 999) <= 60)
+                                 if revised is None else (revised["fresh_positive_relative"] is True)),
         "news_burst":           bool((_dig(r, ("news_burst", "n_recent"), default=0) or 0) >= 3),
         "smartmoney_add":       bool(r.get("smartmoney_chip")),
         "has_stop_guidance":    bool(r.get("stop_guidance")),

@@ -1,0 +1,43 @@
+{
+  "bars": [
+    {
+      "bars": 687,
+      "distinct_vendor_bar_clocks": 687,
+      "et_date_counts": {
+        "2026-10-08": 456,
+        "2026-10-09": 231
+      },
+      "first_bar_et": "2026-10-08T00:00:00-04:00",
+      "full_session_coverage_proven": false,
+      "last_bar_et": "2026-10-09T03:59:00-04:00",
+      "native_qtb_history_proven": false,
+      "outside_20_to_04_et": 0,
+      "raw_and_adjusted_eod_not_substituted": true,
+      "raw_sha256": "e279bcc1ffe5230a5d1bdb40d6ec1e5ac3e0302f8997a2def0848db7d4a7ed85",
+      "receipt_id": "94ddd8b9b82c5c55c8aa372b3a14b4db10550e5656bf2ad6cf5218bd8a9ca073",
+      "request_path": "/boats/AAPL/prices?columns=open,high,low,close,volume&endDate=2026-10-09&resampleFreq=1min&startDate=2026-10-08",
+      "symbol": "AAPL",
+      "volume_present_rows": 687
+    },
+    {
+      "bars": 720,
+      "distinct_vendor_bar_clocks": 720,
+      "et_date_counts": {
+        "2026-10-08": 480,
+        "2026-10-09": 240
+      },
+      "first_bar_et": "2026-10-08T00:00:00-04:00",
+      "full_session_coverage_proven": false,
+      "last_bar_et": "2026-10-09T03:59:00-04:00",
+      "native_qtb_history_proven": false,
+      "outside_20_to_04_et": 0,
+      "raw_and_adjusted_eod_not_substituted": true,
+      "raw_sha256": "ae742fbb3d8427d25c200104070c17d7b332c8be6d6250306b31560383389d03",
+      "receipt_id": "7e6758ed42cfad5800046a6dbee467465eaa526d82b91c425062083d87de7cee",
+      "request_path": "/boats/AMD/prices?columns=open,high,low,close,volume&endDate=2026-10-09&resampleFreq=1min&startDate=2026-10-08",
+      "symbol": "AMD",
+      "volume_present_rows": 720
+    }
+  ],
+  "schema": "tiingo_boats_historical_bar_qualification.v1"
+}

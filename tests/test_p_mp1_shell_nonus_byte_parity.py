@@ -198,7 +198,8 @@ _EXPECTED_TEMPLATE_SHA256: dict[str, str] = {
     # P1a deliberately adds shared coverage + typed plan-unavailable anatomy to Canada.
     # HK/China/Intl remain byte-pinned to their prior source.
     "templates/canada.html.j2": "b108676dbf008cb4e7bcdf8d476d2a21f46d829f193f0639033ea441460817fa",
-    "templates/intl.html.j2": "fba1ce6480a4854e864479fa4faf3f45acdedd3da4662f8a95f897f7326c2353",
+    # Current-main integration preserves upstream Intl bytes exactly.
+    "templates/intl.html.j2": "6a847cf08c409f6fa4966489bc265a8cefa3e3df342a23e9f900c7a641c5b932",
 }
 
 

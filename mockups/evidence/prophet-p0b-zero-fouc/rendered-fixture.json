@@ -117,7 +117,7 @@
         {
           "path": "templates/_prophet_coverage.html.j2",
           "role": "jinja_template",
-          "sha256": "ff90dc243b598708a7e5f898b24dd1ba47501df6d9d12c90fa32af9ad2bac70c"
+          "sha256": "392f1331c7a6fbd71a0101dfc6b5df9ad732a5fab0063bebd41e1678516c0e60"
         },
         {
           "path": "templates/_risk_radar_card.css.j2",

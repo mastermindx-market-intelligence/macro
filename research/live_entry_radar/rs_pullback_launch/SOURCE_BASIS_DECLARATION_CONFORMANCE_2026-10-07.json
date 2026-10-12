@@ -1,0 +1,104 @@
+{
+  "authority": {
+    "can_escalate": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_rank": false,
+    "can_size": false
+  },
+  "basis_admission": "UNAVAILABLE_EXISTING_OWNER_FACTOR_EVIDENCE_ABSENT",
+  "checks": {
+    "a_b_a_revision_sequence": true,
+    "credentials_excluded_from_store": true,
+    "earlier_unavailable_frame_byte_invariance": true,
+    "fractional_volume_preserved": true,
+    "future_intact_payload_versions_isolated_before_enrollment_and_cutoff": true,
+    "future_invalid_semantics_refused_when_visible": true,
+    "future_semantic_mutation_isolated": true,
+    "late_first_read_conflict_preserved": true,
+    "latest_15m_remains_unavailable": true,
+    "partial_failure_not_promoted": true,
+    "partial_failure_preserves_chart_projection": true,
+    "phase1_admission_file_unchanged": true,
+    "producer_atomic_store_reader_selector": true,
+    "raw_first_seen_and_revision_identity_preserved": true,
+    "scalar_basis_inheritance_removed": true,
+    "source_rows_remain_basis_unproven": true,
+    "suppressed_capture_does_not_reexpand": true,
+    "untrusted_binding_claims_cannot_relabel": true,
+    "visible_unsupported_and_downgraded_payload_versions_refused": true
+  },
+  "clock_basis": "injected source and reader clocks; no market availability claim",
+  "complete_captures": 3,
+  "declaration_episode_control": {
+    "basis_available": false,
+    "retained_counts": [
+      30,
+      30,
+      30,
+      0
+    ],
+    "states": [
+      "FALSE",
+      "TRUE",
+      "FALSE",
+      "FALSE"
+    ]
+  },
+  "historical_conformance_sha256": "2b5b86eeba28d0a0ae7064e3cf680be7fe62bb61730fbee3aaa870db160fe27c",
+  "input_kind": "SYNTHETIC_CONFORMANCE",
+  "legacy_prefix_control": {
+    "basis_available": false,
+    "original_read_receipt_replays": true,
+    "original_record_unchanged": true,
+    "unrecorded_to_recorded_retained_counts": [
+      30,
+      30
+    ]
+  },
+  "operation": "rs-pullback-launch-basis-binding-20261007-sol-005",
+  "parent": "WS:LIVE-ENTRY-RADAR",
+  "phase1_admission": "NOT_ADMITTED",
+  "phase1_admission_sha256": "a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f",
+  "producer_exit_codes": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0
+  ],
+  "raw_episode_last_closes": [
+    100.39,
+    100.44,
+    100.39
+  ],
+  "raw_initial_volume_sum": 517.5,
+  "result": "PASS",
+  "retained_complete_observation_episodes": 32,
+  "schema": "mastermind.rs_pullback_launch.source_basis_declaration_conformance.v1",
+  "scientific_claims": {
+    "H1": "NOT_TESTED",
+    "H2": "NOT_TESTED",
+    "H3": "NOT_TESTED"
+  },
+  "source_sha256": {
+    "macro:engine/entry_radar/replay/rs_pullback_launch_data.py": "c7b3ea3fada013364c40c1cd041194ef30ff3f97f098b5bbadda9dc246dd1820",
+    "macro:engine/entry_radar/replay/terminal_minute_observations.py": "941f5412e81402f772c9c8d546228e1ee03c8a34322091de638344b5a7df023b",
+    "macro:scripts/entry_radar_rs_pullback_source_retention_check.py": "86badb07b209c574508ec4e3fed225da5007dd4c27f0cee9d1723dce2354cc03",
+    "macro:tests/test_entry_radar_rs_pullback_phase1.py": "25a01209db7ccb95036976722017b96c7d1df7629f8eaad9cfaf2ed4a56caf6c",
+    "macro:tests/test_entry_radar_terminal_minute_observations.py": "7d924fe83b4182f8b160304757a26f670dc4f7ee10eb22039aff0de656ae36e6",
+    "terminal:ingest/backfill_intraday.py": "fbfc6fa224453b677a124757856b0053ab98446ba683b1d83316a9dc1c347f66",
+    "terminal:ingest/intraday_capture.py": "57708686d607e2a16ab3f374081f2810778d9d38a6ddaba2b735b3f044fc7969"
+  },
+  "synthetic_selector_control": {
+    "availability": "available",
+    "does_not_admit_source_basis": true,
+    "input_kind": "SYNTHETIC_CONFORMANCE",
+    "source": "independent existing direct-input fixture; no Terminal rows"
+  },
+  "transport": "injected urllib; no provider request"
+}

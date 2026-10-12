@@ -1,0 +1,260 @@
+{
+  "schema": "research.composition_witness/v0",
+  "status": "RESEARCH_FIXTURE_ONLY",
+  "empirical_market_validation": false,
+  "production_changes": false,
+  "source_sha256": "d9e7a9ca02826567f4987aabe937aa38212540b3e566a5f13183e5da060dfb66",
+  "assumptions": [
+    "All values synthetic; no issuer capacity, elasticity or revenue allocation estimated",
+    "Capacities preconverted into feasible complete systems per identical period",
+    "Minimum-input technology is an illustrative assumption, not an estimated model",
+    "Derivative composition is a local algebraic witness, not a causal identification procedure",
+    "Allocation dedup example assumes exact duplicate views; distinct flows cannot be deduped by origin alone"
+  ],
+  "passed": 18,
+  "failed": 0,
+  "cases": [
+    {
+      "name": "compatible_conditional_derivatives",
+      "actual": [
+        1.0,
+        "SCENARIO_ONLY"
+      ],
+      "expected": [
+        1.0,
+        "SCENARIO_ONLY"
+      ],
+      "passed": true,
+      "establishes": "Unit-linked algebra under declared assumptions"
+    },
+    {
+      "name": "observed_sales_share_not_a_derivative",
+      "actual": [
+        null,
+        "OBSERVED_SHARE_IS_NOT_DERIVATIVE"
+      ],
+      "expected": [
+        null,
+        "OBSERVED_SHARE_IS_NOT_DERIVATIVE"
+      ],
+      "passed": true,
+      "establishes": "True shares need not compose"
+    },
+    {
+      "name": "ownership_share_not_a_derivative",
+      "actual": [
+        null,
+        "OBSERVED_SHARE_IS_NOT_DERIVATIVE"
+      ],
+      "expected": [
+        null,
+        "OBSERVED_SHARE_IS_NOT_DERIVATIVE"
+      ],
+      "passed": true,
+      "establishes": "Equity interest is not revenue sensitivity"
+    },
+    {
+      "name": "wrong_intermediate_variable",
+      "actual": [
+        null,
+        "INTERMEDIATE_VARIABLE_MISMATCH"
+      ],
+      "expected": [
+        null,
+        "INTERMEDIATE_VARIABLE_MISMATCH"
+      ],
+      "passed": true,
+      "establishes": "Same company is not same variable"
+    },
+    {
+      "name": "wrong_intermediate_unit",
+      "actual": [
+        null,
+        "INTERMEDIATE_UNIT_MISMATCH"
+      ],
+      "expected": [
+        null,
+        "INTERMEDIATE_UNIT_MISMATCH"
+      ],
+      "passed": true,
+      "establishes": "Unprovided physical-to-currency conversion blocks"
+    },
+    {
+      "name": "mismatched_period",
+      "actual": [
+        null,
+        "INCOMPATIBLE_PERIOD"
+      ],
+      "expected": [
+        null,
+        "INCOMPATIBLE_PERIOD"
+      ],
+      "passed": true,
+      "establishes": "Context is part of the parameter"
+    },
+    {
+      "name": "mismatched_state",
+      "actual": [
+        null,
+        "INCOMPATIBLE_STATE"
+      ],
+      "expected": [
+        null,
+        "INCOMPATIBLE_STATE"
+      ],
+      "passed": true,
+      "establishes": "Context is part of the parameter"
+    },
+    {
+      "name": "mismatched_scope",
+      "actual": [
+        null,
+        "INCOMPATIBLE_SCOPE"
+      ],
+      "expected": [
+        null,
+        "INCOMPATIBLE_SCOPE"
+      ],
+      "passed": true,
+      "establishes": "Context is part of the parameter"
+    },
+    {
+      "name": "unknown_parameter",
+      "actual": [
+        null,
+        "PARAMETER_UNKNOWN"
+      ],
+      "expected": [
+        null,
+        "PARAMETER_UNKNOWN"
+      ],
+      "passed": true,
+      "establishes": "Unknown is never zero or one"
+    },
+    {
+      "name": "baseline_memory_constraint",
+      "actual": [
+        80,
+        [
+          "memory"
+        ]
+      ],
+      "expected": [
+        80,
+        [
+          "memory"
+        ]
+      ],
+      "passed": true,
+      "establishes": "Assumed minimum technology"
+    },
+    {
+      "name": "nonlimiting_gpu_expansion",
+      "actual": [
+        80,
+        [
+          "memory"
+        ]
+      ],
+      "expected": [
+        80,
+        [
+          "memory"
+        ]
+      ],
+      "passed": true,
+      "establishes": "More input may have zero marginal output"
+    },
+    {
+      "name": "bottleneck_migrates_to_gpu",
+      "actual": [
+        100,
+        [
+          "gpu"
+        ]
+      ],
+      "expected": [
+        100,
+        [
+          "gpu"
+        ]
+      ],
+      "passed": true,
+      "establishes": "Constraint depends on state"
+    },
+    {
+      "name": "bottleneck_migrates_to_power",
+      "actual": [
+        110,
+        [
+          "power"
+        ]
+      ],
+      "expected": [
+        110,
+        [
+          "power"
+        ]
+      ],
+      "passed": true,
+      "establishes": "Joint expansion changes limiting input"
+    },
+    {
+      "name": "positive_complement_interaction",
+      "actual": 10,
+      "expected": 10,
+      "passed": true,
+      "establishes": "Nonadditivity of this synthetic production function"
+    },
+    {
+      "name": "unknown_capacity_abstains",
+      "actual": [
+        null,
+        [
+          "CAPACITY_UNKNOWN"
+        ]
+      ],
+      "expected": [
+        null,
+        [
+          "CAPACITY_UNKNOWN"
+        ]
+      ],
+      "passed": true,
+      "establishes": "No guessed capacity"
+    },
+    {
+      "name": "substitution_depends_on_qualification",
+      "actual": [
+        70,
+        100
+      ],
+      "expected": [
+        70,
+        100
+      ],
+      "passed": true,
+      "establishes": "Same nominal spare input differs if qualification is unavailable within horizon"
+    },
+    {
+      "name": "inventory_can_buffer_transmission",
+      "actual": 0,
+      "expected": 0,
+      "passed": true,
+      "establishes": "Supply loss need not equal current output loss"
+    },
+    {
+      "name": "same_allocation_seen_twice",
+      "actual": [
+        240,
+        120
+      ],
+      "expected": [
+        240,
+        120
+      ],
+      "passed": true,
+      "establishes": "Path sum double-counts; real allocations require explicit reconciliation"
+    }
+  ]
+}

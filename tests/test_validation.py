@@ -7,16 +7,22 @@ signal recompute is network-bound, so we exercise the math on synthetic prices.
 """
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import pandas as pd
+import pytest
 
 from engine.validation import (
+    _maxdd,
     _norm_cdf,
     _norm_ppf,
     backtest_core,
     deflated_sharpe,
+    design_rank,
     dsr_verdict,
     ret_moments,
+    vif,
 )
 from scripts.calibrate_commodities import backtest as commodity_backtest
 from scripts.calibrate_forex import backtest_conviction, conviction_series
@@ -180,3 +186,88 @@ def test_backtest_conviction_empty_when_flat():
     close = pd.Series(np.linspace(1.0, 1.1, 100), index=idx)
     assert backtest_conviction(close, None) == {}
     assert backtest_conviction(close, pd.Series(0.0, index=idx)) == {}  # managed peg => no trades
+
+
+# --------------------------------------------------------------------------- #
+# validation primitives: _maxdd initial loss + vif rank abstention
+# --------------------------------------------------------------------------- #
+def test_maxdd_counts_initial_loss_from_starting_capital():
+    assert _maxdd(np.array([-0.10, 0.05])) == pytest.approx(-0.10)
+    assert _maxdd([-0.2, 0.1, 0.1]) == pytest.approx(-0.2)
+
+
+def test_maxdd_unchanged_when_first_return_is_gain():
+    rng = np.random.default_rng(2)
+    r = rng.normal(0, 0.01, 500)
+    r[0] = abs(r[0]) + 1e-3
+    eq = np.cumprod(1 + r)
+    peak = np.maximum.accumulate(eq)
+    old = float(np.min(eq / peak - 1))
+    assert _maxdd(r) == pytest.approx(old)
+
+
+def test_maxdd_zero_for_monotone_gains_and_empty():
+    assert _maxdd([0.01] * 10) == 0.0
+    assert _maxdd([]) == 0.0
+
+
+def test_vif_singular_design_returns_empty():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    df = pd.DataFrame({"x1": x1, "x2": x2, "x3": x1 + x2})
+    assert vif(df) == {}
+
+
+def test_vif_zero_variance_column_is_dropped_not_reported():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    df = pd.DataFrame({"x1": x1, "x2": x2, "c": 1.0})
+    out = vif(df)
+    assert set(out) == {"x1", "x2"}
+    assert all(math.isfinite(v) for v in out.values())
+    assert "c" not in out
+    assert design_rank(df)["dropped_zero_variance"] == ["c"]
+
+
+def test_vif_full_rank_design_still_reports_values():
+    rng = np.random.default_rng(3)
+    df = pd.DataFrame({"x1": rng.normal(size=300), "x2": rng.normal(size=300),
+                       "x3": rng.normal(size=300)})
+    out = vif(df)
+    assert set(out) == {"x1", "x2", "x3"}
+    assert all(math.isfinite(v) and v < 1.5 for v in out.values())
+    near = df.copy()
+    near["x3"] = df["x1"] + 0.01 * rng.normal(size=300)
+    out_near = vif(near)
+    assert all(math.isfinite(v) for v in out_near.values())
+    assert out_near["x3"] > 50
+
+
+def test_design_rank_reports_deficiency():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    dr = design_rank(pd.DataFrame({"x1": x1, "x2": x2, "x3": x1 + x2}))
+    assert dr["rank"] == 2
+    assert dr["n_cols"] == 3
+    assert dr["rank_deficient"] is True
+    assert dr["condition_number"] is None
+    full = pd.DataFrame({"x1": x1, "x2": x2, "x3": rng.normal(size=200)})
+    drf = design_rank(full)
+    assert drf["rank"] == 3
+    assert drf["rank_deficient"] is False
+    assert math.isfinite(drf["condition_number"]) and drf["condition_number"] >= 1.0
+    assert design_rank(full.iloc[:10])["thin"] is True
+
+
+def test_vif_never_returns_non_finite_values():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    singular = pd.DataFrame({"x1": x1, "x2": x2, "x3": x1 + x2})
+    zero_var = pd.DataFrame({"x1": x1, "x2": x2, "c": 1.0})
+    full = pd.DataFrame({"x1": x1, "x2": x2, "x3": rng.normal(size=200)})
+    for frame in (singular, zero_var, full):
+        assert all(math.isfinite(v) for v in vif(frame).values())

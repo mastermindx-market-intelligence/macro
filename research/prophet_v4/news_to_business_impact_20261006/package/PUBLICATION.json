@@ -1,0 +1,10 @@
+{
+  "status": "RESEARCH_BRIEF_SAVED_AND_READ_BACK",
+  "repository": "mastermindx-market-intelligence/macro",
+  "existing_issue": 6805,
+  "comment_id": 6012751552,
+  "comment_url": "https://github.com/mastermindx-market-intelligence/macro/issues/6805#issuecomment-6012751552",
+  "masterplan_sha256": "ef7099eddeec708c1b5a339718c725215fa477b4a2b209ed7f7f9b9416d3941a",
+  "scope": "The research decision brief and source navigation were saved in the existing Prophet issue. Full package files remain conversation artifacts, not committed repository source files.",
+  "not_claimed": ["worker dispatch", "funding approval", "contract adoption", "production change", "empirical model quality", "predictive advantage"]
+}

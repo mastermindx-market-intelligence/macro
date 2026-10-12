@@ -1,0 +1,26 @@
+{
+  "MASTERPLAN.md": {
+    "bytes": 43060,
+    "sha256": "ef7099eddeec708c1b5a339718c725215fa477b4a2b209ed7f7f9b9416d3941a"
+  },
+  "PUBLICATION.json": {
+    "bytes": 714,
+    "sha256": "aa7839431dd09c76a35edc14b2b2560f8a659e6936b862bef3f886ad4ac3098a"
+  },
+  "VERIFICATION.json": {
+    "bytes": 1898,
+    "sha256": "a91d51f5fa0f2cb1cfdc141a44d10d1510b6396fd64780b6eb9df5485647144e"
+  },
+  "budget.py": {
+    "bytes": 3834,
+    "sha256": "30b77116986bb3fb3280aad137130fcbe71f5580b50f94e304e91fe43dea822e"
+  },
+  "budget_scenario.json": {
+    "bytes": 2201,
+    "sha256": "f280b204b391d085036e76ca122265c7646094a9bf438901793a2d64119af422"
+  },
+  "verify_packet.py": {
+    "bytes": 3678,
+    "sha256": "ea67da7a6d6bd032b9d333d29ed6f8b9c2ff8bdd16bbcbb888cf0cf33b7e7868"
+  }
+}

@@ -33,8 +33,8 @@ macro firms use — without touching the validated quad. See
 - **Macro nowcast · conditions · risk-appetite panel** (`engine/conditions.py`,
   on macro.html): a Chicago-Fed **NFCI** financial-conditions read; a 0–100
   **recession-risk** score (Sahm rule + smoothed probability + the Fed Board
-  **Excess Bond Premium** + a **term-premium-adjusted curve** that strips the
-  2022–24 false inversion); real-time **growth** (Weekly Economic Index, GDPNow)
+  **Excess Bond Premium** + a **legacy TP10 curve heuristic** (2s10s plus
+  the 10y term-premium model estimate; context, not an expectations-only curve)); real-time **growth** (Weekly Economic Index, GDPNow)
   and **inflation** (Atlanta sticky-vs-flexible CPI) nowcasts; and an
   option-implied **risk-appetite** read — equity volatility-risk-premium, VIX
   term structure, CBOE **SKEW**, the **stock-bond correlation** regime, and a

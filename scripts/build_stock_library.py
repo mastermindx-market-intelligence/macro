@@ -926,6 +926,66 @@ def _apply_delisting(rec: dict, disclosure: dict) -> None:
 # module. This monolith consumes that seam through its private module namespace
 # and intentionally re-exports none of its helpers.
 
+def _bind_price_clock(tech: dict, close: pd.Series) -> dict:
+    """Bind only tech.price to its actual source bar; never borrow analysis asof.
+
+    The rich snapshot coerces numeric closes and drops NaNs before choosing its
+    last price. Require the same rounded value and an unambiguous calendar index.
+    Invalid metadata is omitted, preserving the existing price and rounding.
+    This establishes no native currency or cross-field snapshot authority.
+    """
+    import math
+    from numbers import Real
+
+    result = dict(tech)
+    result.pop("price_asof", None)
+    try:
+        price = result.get("price")
+        if isinstance(price, bool) or not isinstance(price, Real):
+            return result
+        if not math.isfinite(price) or price <= 0:
+            return result
+        observed = pd.to_numeric(close, errors="coerce").astype(float).dropna()
+        if (observed.empty or not isinstance(observed.index, pd.DatetimeIndex)
+                or not observed.index.is_monotonic_increasing or not observed.index.is_unique):
+            return result
+        last = float(observed.iloc[-1])
+        day = observed.index[-1]
+        if not math.isfinite(last) or pd.isna(day) or round(last, 2) != price:
+            return result
+        result["price_asof"] = day.date().isoformat()
+    except (TypeError, ValueError, OverflowError):
+        pass  # A missing price clock is honest; no default/current/build date.
+    return result
+
+
+def _enrich_stock_technicals(rec: dict, close: pd.Series,
+                            ohlcv: pd.DataFrame | None, bench: pd.Series | None) -> None:
+    """Commit the richer price and its clock together after both reads succeed.
+
+    A snapshot/squeeze failure leaves the prior thin pair untouched. The record's
+    analysis/valuation date is independent and remains on its original universe.
+    """
+    if ohlcv is not None and {"high", "low", "volume"} <= set(ohlcv.columns):
+        source_close = ohlcv["close"]
+        rich = stock_technicals.snapshot(source_close, ohlcv["high"],
+                                        ohlcv["low"], ohlcv["volume"], bench=bench)
+        sq = vol_squeeze.assess(source_close, ohlcv["high"], ohlcv["low"], ohlcv["volume"])
+    else:
+        source_close = close
+        rich = stock_technicals.snapshot(close, bench=bench)
+        sq = vol_squeeze.assess(close)
+    prior = dict(rec.get("tech") or {})
+    # If the new price has no valid date it cannot inherit the previous price's date.
+    prior.pop("price_asof", None)
+    # The thin price's native unit cannot qualify a price from another observation.
+    # Only a unit actually returned by the richer source could survive this merge.
+    prior.pop("currency", None)
+    rec["tech"] = _bind_price_clock({**prior, **rich}, source_close)
+    if sq:
+        rec["vol_squeeze"] = sq
+
+
 def _one(ticker: str, close: pd.Series, high: pd.Series | None,
          name: str, sector: str, liquidity: str | None = None,
          macro_drag: float | None = None, macro_beta: float = 0.0,
@@ -966,7 +1026,7 @@ def _one(ticker: str, close: pd.Series, high: pd.Series | None,
         "ticker": ticker, "name": name, "sector": sector,
         "asof": asof,
         "history_days": int(len(c)),
-        "tech": snapshot(c),
+        "tech": _bind_price_clock(snapshot(c), c),
         "season_this": season_line(seas, month),
         "season_next": season_line(seas, month % 12 + 1),
         "season_this_zh": season_line(seas, month, zh=True),
@@ -3829,17 +3889,7 @@ def main(now: datetime | None = None) -> int:
                 if ticker in _continuous_tickers
                 else _clip_daily_to_completed_session(_raw_ohlcv, _completed_session)
             )
-            if _ohlcv is not None and {"high", "low", "volume"} <= set(_ohlcv.columns):
-                rich = stock_technicals.snapshot(_ohlcv["close"], _ohlcv["high"],
-                                                 _ohlcv["low"], _ohlcv["volume"], bench=bench)
-                sq = vol_squeeze.assess(_ohlcv["close"], _ohlcv["high"],
-                                        _ohlcv["low"], _ohlcv["volume"])
-            else:
-                rich = stock_technicals.snapshot(close, bench=bench)
-                sq = vol_squeeze.assess(close)
-            rec["tech"] = {**(rec.get("tech") or {}), **rich}
-            if sq:
-                rec["vol_squeeze"] = sq
+            _enrich_stock_technicals(rec, close, _ohlcv, bench)
         except Exception as e:  # noqa: BLE001 — additive; the thin snapshot is already on rec
             log.warning("tech/squeeze enrich for %s failed (%s)", ticker, e)
         # valuation_scenario_controls.v1 -- FROZEN SPEC B-F07-2. Reads back the
@@ -6612,8 +6662,32 @@ def main(now: datetime | None = None) -> int:
         # Same lineage stamp the gate write carries: one pair_id per writer process, so a
         # skew between the two files is readable off the artifacts themselves.
         wide["emit"] = _PAIR_EMIT_STAMP
-        (site / "factordata" / "us_standouts.json").write_text(
-            json.dumps(_json_safe(wide), separators=(",", ":"), default=str, allow_nan=False))
+        # Stable source-availability handoff, not a selection cutoff or new identity.
+        # Its native generation is the incumbent pair_id. Retry/render keeps bytes.
+        try:
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_PAIR_EMIT_STAMP["pair_id"], availability="VALID",
+                available_at=datetime.now(timezone.utc).isoformat())
+        except Exception as _us_source_e:  # noqa: BLE001 — original board publication survives
+            log.warning("W3C US source provenance unavailable (%s)", _us_source_e)
+        _us_final_payload = json.dumps(
+            _json_safe(wide), separators=(",", ":"), default=str, allow_nan=False)
+        (site / "factordata" / "us_standouts.json").write_text(_us_final_payload)
+        # W3C freezes the exact complete serialized Featured shelf, before any
+        # display/preview split. The import pair stamp is lineage, not this event.
+        # Missing per-use capture capability refuses without a mixed-vendor archive.
+        try:
+            from engine.theme_graph.selection_cohort_publication import (
+                default_capture_capability, publish_us_source)
+            _us_w3c = publish_us_source(
+                _us_final_payload.encode(), data_dir=config.data_dir(),
+                finalized_at=datetime.now(timezone.utc).isoformat(),
+                authorize_capture=default_capture_capability())
+            if _us_w3c["status"] != "AVAILABLE":
+                log.info("W3C source unavailable: %s", _us_w3c["reason_codes"])
+        except Exception as _us_w3c_e:  # noqa: BLE001 — provenance cannot alter board publication
+            log.warning("W3C finalization unavailable (%s)", _us_w3c_e)
         log.info("wrote us_standouts.json (%d buy · rank_by=%s · %d eligible / %d universe)",
                  len(wide["buy"]), wide["rank_by"], eligible, len(cand))
         # Render-lane self-check: the board-invariants CI job only fires on PRs that

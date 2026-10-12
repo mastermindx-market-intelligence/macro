@@ -1,0 +1,45 @@
+{
+  "schema": "prophet.earnings_timing_review_counterexamples/v1",
+  "source_formula_ref": "arxiv:2606.29734v1:Appendix_C.2",
+  "formula_scope": "Literal equation in manuscript only; repository currently has no implementation to inspect.",
+  "neutrality_counterexample": {
+    "percentiles": [
+      0.95,
+      0.92,
+      0.02
+    ],
+    "G": 2,
+    "N": 3,
+    "weights": [
+      0.6,
+      0.56,
+      -0.64
+    ],
+    "net_exposure": 0.52,
+    "gross_exposure": 1.8,
+    "uniform_1pct_market_move_pnl": 0.0052
+  },
+  "future_count_sensitivity": {
+    "first_percentile": 0.95,
+    "first_weight_if_eventual_N2": 0.9,
+    "first_weight_if_eventual_N10": 0.18,
+    "interpretation": "A causal implementation needs an ex-ante allocation denominator or a declared sequential policy; not proof the unpublished code uses future counts."
+  },
+  "entry_time_counterexample": {
+    "prices": [
+      100,
+      110,
+      112
+    ],
+    "before_entry_fraction": 0.1,
+    "post_entry_fraction": 0.01818181818181818,
+    "whole_window_fraction": 0.12,
+    "multiplicative_identity_verified": true,
+    "interpretation": "12% event-window appreciation is not 12% earned by a buyer at110; later costs would reduce the remaining1.818%."
+  },
+  "limits": [
+    "No real stock outcomes or model inference.",
+    "No claim that the papers reported precisely these synthetic rows.",
+    "No source-data license or live strategy authority."
+  ]
+}

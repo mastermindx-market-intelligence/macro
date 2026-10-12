@@ -388,3 +388,10 @@ across the 8-file W3A set + 69 annotation/synapse/dag; `--strict` rc 0; selftest
 14. **Addendum completeness (F24):** the sweep addendum lists every directive-§19-named organ
     with either its drift entry or an explicit "no commits since 2026-08-11, wiring/synapse
     verified" line.
+
+## §10 Supersession note (2026-10-07)
+
+The clauses above that say "W4 owns hierarchy" are superseded by `DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK`:
+house hierarchy (curated `PARENT_OF`, tiered theme nodes) is GMI-owned on the incumbent producer, per
+`research/theme_graph/THEME_HIERARCHY_SPEC_V1_2026-10-07.md`. Everything else here stands — in particular,
+Finviz/THS source parents still ride `source_meta` and are never resurrected as house hierarchy (Gate #2).

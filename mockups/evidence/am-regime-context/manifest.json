@@ -1,0 +1,344 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-11T07:58:48.386Z",
+  "tool": {
+    "module_ref": "mockups/evidence/am-regime-context/capture.cjs",
+    "module_sha256": "2fa32d9a7c5963093792319c4b45d8ef007b12a17d8123980410109c7b2ed117"
+  },
+  "head": "3ab976f5e6ca63c2a6438e01d2d9e69b71c811ab",
+  "target": "am_edition.html",
+  "outcome": "captured",
+  "totals": {
+    "rest_cells": 16,
+    "rest_required": 16,
+    "pages": 2
+  },
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "market_state",
+      "regime"
+    ]
+  },
+  "source": {
+    "template_sha256": "22429057d0554968a09718f64e8bec0f7d8f79c4b02d86137d9f535478b35055",
+    "payload_sha256": "51cd78c34a9fa491bb2b002c48f436631c2399d5c6c68a1a6ec3aecf86fb0cc8"
+  },
+  "honesty": {
+    "source_pin": "head is the base commit; candidate template was uncommitted and is hash-pinned here.",
+    "page": "Local render of the saved Oct9 payload; last-known source date Oct8. No source refresh, served or signed-in acceptance.",
+    "capture": "Actual theme/locale selected; panels scrolled into view before screenshot. Shared chat launcher unchanged."
+  },
+  "pages": [
+    {
+      "page_id": "macro:am_edition:market_state",
+      "route": "/am_edition.html",
+      "route_kind": "am_edition",
+      "subject": "market_state",
+      "selector": ".panel: market_state",
+      "states": [
+        {
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-dark-en-desktop.png",
+          "sha256": "e1e645959ccf663ca0c70521743669872e1edb2a78993ee7ae7a67a2f527c2c6",
+          "bytes": 23747,
+          "width": 1100,
+          "height": 171
+        },
+        {
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-dark-zh-desktop.png",
+          "sha256": "e02187044d7c074177512649a8c07f2f155fbe1a75c1b869113534cb325d4057",
+          "bytes": 27431,
+          "width": 1100,
+          "height": 171
+        },
+        {
+          "theme": "light",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-light-en-desktop.png",
+          "sha256": "1d708e1999c72756c148f5c9796e5cd5fada11b94d8df5cc63e1a25834bf62ee",
+          "bytes": 23936,
+          "width": 1100,
+          "height": 171
+        },
+        {
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-light-zh-desktop.png",
+          "sha256": "1d47855e60b9d5c3cf4c1526ba51cfcbd96691b93d68304e5f7129dfbbe3b097",
+          "bytes": 27718,
+          "width": 1100,
+          "height": 171
+        },
+        {
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-dark-en-mobile.png",
+          "sha256": "05754457d925c9dd66459f8ff6ad91dda6438c553348c7e11a21b19c26e9c34a",
+          "bytes": 23838,
+          "width": 354,
+          "height": 275
+        },
+        {
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-dark-zh-mobile.png",
+          "sha256": "44c0e1da3deb6708c3467494bd6b339f281890be63656fc87fe93a344af7b49f",
+          "bytes": 26696,
+          "width": 354,
+          "height": 256
+        },
+        {
+          "theme": "light",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-light-en-mobile.png",
+          "sha256": "5c86083a43d77a9e19127df8626102c616dea0294649fbb1a96d07eea5821dd6",
+          "bytes": 24075,
+          "width": 354,
+          "height": 275
+        },
+        {
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "market_state",
+          "file": "market_state-light-zh-mobile.png",
+          "sha256": "0d20c1d0e5cb890e46669e8843b261c1d54fb34573f00fd4f8579ca28c750eed",
+          "bytes": 26898,
+          "width": 354,
+          "height": 256
+        }
+      ]
+    },
+    {
+      "page_id": "macro:am_edition:regime",
+      "route": "/am_edition.html",
+      "route_kind": "am_edition",
+      "subject": "regime",
+      "selector": ".panel: regime",
+      "states": [
+        {
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-dark-en-desktop.png",
+          "sha256": "8d6313fba4bf411b5497326cf2373f048958eec1c5d32d09336459e81ff957b3",
+          "bytes": 14529,
+          "width": 1100,
+          "height": 126
+        },
+        {
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-dark-zh-desktop.png",
+          "sha256": "bbae586126ddc68c148a53a56b21b2cad0cadba7f86475b62b523469d4a865b3",
+          "bytes": 16707,
+          "width": 1100,
+          "height": 126
+        },
+        {
+          "theme": "light",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-light-en-desktop.png",
+          "sha256": "58d710b26d08689893ec3d631ad829360f3eb8c43db6351d6a3b165f234206f9",
+          "bytes": 14560,
+          "width": 1100,
+          "height": 126
+        },
+        {
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "viewport_height": 900,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-light-zh-desktop.png",
+          "sha256": "d51d3ff2dd7e8d3eb47e437004eafb1e590c083441773a0308039755e7682241",
+          "bytes": 16847,
+          "width": 1100,
+          "height": 126
+        },
+        {
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-dark-en-mobile.png",
+          "sha256": "9c3f089d106e360c9841ee3263b8e732322c797f83cc25d01f138b3cd265d145",
+          "bytes": 14069,
+          "width": 354,
+          "height": 191
+        },
+        {
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-dark-zh-mobile.png",
+          "sha256": "3cb64827e2bba46524f81d9560bc69d217110b0fc8df595979a5f3c0249fb658",
+          "bytes": 16127,
+          "width": 354,
+          "height": 191
+        },
+        {
+          "theme": "light",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-light-en-mobile.png",
+          "sha256": "f890d16fd132556485602714d35f5597621d36363832e65f4a0084ea0c5c78ee",
+          "bytes": 14172,
+          "width": 354,
+          "height": 191
+        },
+        {
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "viewport_height": 844,
+          "access": "anonymous",
+          "subject": "regime",
+          "file": "regime-light-zh-mobile.png",
+          "sha256": "d62fe0945a02a074d529d57de6806de517139f11acc0c0a846ef7e9d6b0d25c8",
+          "bytes": 16173,
+          "width": 354,
+          "height": 191
+        }
+      ]
+    }
+  ]
+}

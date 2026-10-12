@@ -4592,11 +4592,10 @@ def chart_risk_model(cf: pd.DataFrame) -> str:
 
 
 def chart_curve(cf: pd.DataFrame) -> str:
-    """Yield curve: the 2s10s slope RAW vs TERM-PREMIUM-ADJUSTED, ~25y, NBER-shaded.
-    Inversion (below 0) is the classic recession lead; the TP-adjusted line strips
-    the term premium so a low-TP flattening isn't misread as a recession signal
-    (it's why 2022-24's raw inversion didn't fire the composite). Colours sit
-    outside the zh swap map (a curve isn't a price-direction read)."""
+    """Yield curve: raw 2s10s vs the legacy TP10 compatibility heuristic.
+    The heuristic is 2s10s plus the 10y term-premium model estimate. It is context,
+    not a matched-maturity expectations-only decomposition and does not identify why
+    an inversion occurred. Colours sit outside the zh swap map."""
     start = cf.index.max() - pd.Timedelta(days=365 * 25)
     raw = cf.loc[start:, "curve_raw"].dropna().resample("W-FRI").last().dropna().round(2)
     adj = cf.loc[start:, "curve_tp_adj"].dropna().resample("W-FRI").last().dropna().round(2)
@@ -4612,7 +4611,7 @@ def chart_curve(cf: pd.DataFrame) -> str:
                               fillcolor="#8b93a1", opacity=0.16, line_width=0)
     fig.add_trace(go.Scatter(x=raw.index, y=raw, name="2s10s (raw)",
                              line={"color": "#7aa7e0", "width": 1.3}))
-    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s (term-premium adj.)",
+    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s + TP10 heuristic",
                              line={"color": "#c08af0", "width": 1.3}))
     fig.add_hline(y=0, line={"color": "#9aa4b2", "width": 0.8, "dash": "dot"})
     fig.update_layout(**PLOT_LAYOUT)
@@ -5711,41 +5710,57 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True,
     locked: dict = {}
     overrides: dict = {}
 
-    # The complete eligible pool uses the SAME protected row split and payload.
-    # No withheld ticker is copied into the anonymous shell, search index or JS.
-    # Its ordering differs from the board, so its independent preview must stop
-    # before the first board-withheld name, even with panel gating disabled.
-    # Keep a PREFIX: hydration appends the tail and must reconstruct source order.
-    pool_rows = (vm.get("us_candidate_visibility") or {}).get("rows") or []
-    pool_preview = preview if gated else len(pool_rows)
-    for index, row in enumerate(pool_rows[:pool_preview]):
-        ticker = row.get("ticker")
-        if isinstance(ticker, str) and ticker.strip().upper() in board_locked_tickers:
-            pool_preview = index
-            break
-    pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
-        vm.get("us_candidate_visibility"), pool_preview, gated=True
-    )
-    if pool_gate:
-        overrides["us_candidate_visibility"] = pool_shell
-        pgate["candidate_pool"] = {key: pool_gate[key] for key in ("preview", "locked", "total")}
-        locked["candidate_pool"] = pool_locked
+    # Candidates and leader observations remain separate source populations.
+    # Both use the SAME protected row split and payload. Their ordering differs
+    # from the board, so each public preview must stop before its first
+    # board-withheld name, even with panel gating disabled. Keep a PREFIX:
+    # hydration appends the tail and must reconstruct each source's exact order.
+    for projection_key, panel_key in (
+        ("us_candidate_visibility", "candidate_pool"),
+        ("us_leader_observations", "leader_observations"),
+    ):
+        projection = vm.get(projection_key)
+        rows = (projection or {}).get("rows") or []
+        public_n = preview if gated else len(rows)
+        for index, row in enumerate(rows[:public_n]):
+            ticker = row.get("ticker")
+            if isinstance(ticker, str) and ticker.strip().upper() in board_locked_tickers:
+                public_n = index
+                break
+        shell, gate, withheld = _split_us_leader_observations(
+            projection, public_n, gated=True
+        )
+        if gate:
+            overrides[projection_key] = shell
+            pgate[panel_key] = {key: gate[key] for key in ("preview", "locked", "total")}
+            locked[panel_key] = withheld
+
+    if not gated and len(pgate) <= 3:
+        return {}, None, {}
+
+    # Any active pgate narrows the template's label island, including an
+    # identity-only boundary with the panel cap disabled. Preserve its full
+    # protected label tail before that early return.
+    # ── #plv-names — the prophet-live strip's ticker -> COMPANY NAME island. Not a
+    # panel: a label lookup. But it is built from watch u buy u leaders u laggards,
+    # so on a gated build it re-published by name every leader the strip above had
+    # just withheld (77 entries, measured anonymously on the live page 2026-08-17)
+    # and the two populations that have no panel here at all. The shell now emits
+    # only the tickers it renders; the remainder ships here and the hydration script
+    # merges it into the live lookup.
+    plv: dict = {}
+    shell_names = {r.get("ticker") for r in (su.get("leaders") or [])[:preview]}
+    for key in ("watch", "leaders", "laggards"):
+        for r in su.get(key) or []:
+            tk, nm = r.get("ticker"), r.get("name")
+            if tk and nm and tk not in shell_names:
+                plv[tk] = nm
+    if plv:
+        pgate["plv_names"] = {"locked": len(plv)}
+        locked["plv_names"] = plv
 
     if not gated:
-        return (overrides, pgate, locked) if pool_gate else ({}, None, {})
-
-    # ── Leader observations — a separate display population, never Candidates/Plans.
-    leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
-        vm.get("us_leader_observations"), preview, gated=True
-    )
-    if leader_gate:
-        overrides["us_leader_observations"] = leader_shell
-        pgate["leader_observations"] = {
-            "preview": leader_gate["preview"],
-            "locked": leader_gate["locked"],
-            "total": leader_gate["total"],
-        }
-        locked["leader_observations"] = leader_locked
+        return overrides, pgate, locked
 
     # ── .topsetups — the residual fresh-trigger table. The template filters
     # top_setups.buy against the carded board and caps at 10; that filter is
@@ -5807,24 +5822,6 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True,
     if tape_n:
         pgate["tape"] = {"locked": tape_n}
         locked["tape"] = True
-
-    # ── #plv-names — the prophet-live strip's ticker -> COMPANY NAME island. Not a
-    # panel: a label lookup. But it is built from watch u buy u leaders u laggards,
-    # so on a gated build it re-published by name every leader the strip above had
-    # just withheld (77 entries, measured anonymously on the live page 2026-08-17)
-    # and the two populations that have no panel here at all. The shell now emits
-    # only the tickers it renders; the remainder ships here and the hydration script
-    # merges it into the live lookup.
-    plv: dict = {}
-    shell_names = {r.get("ticker") for r in (su.get("leaders") or [])[:preview]}
-    for key in ("watch", "leaders", "laggards"):
-        for r in su.get(key) or []:
-            tk, nm = r.get("ticker"), r.get("name")
-            if tk and nm and tk not in shell_names:
-                plv[tk] = nm
-    if plv:
-        pgate["plv_names"] = {"locked": len(plv)}
-        locked["plv_names"] = plv
 
     if len(pgate) <= 3:                       # tier/payload/preview only
         return {}, None, {}
@@ -6151,10 +6148,40 @@ def main() -> int:
     # surfaced via the card's as_of). Absent (first run) => the strip degrades to the
     # action_board notable cards below.
     us_standouts = None
+    _us_w3c = None
+    _us_w3c_refusal = None
+    _us_w3c_binding = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
-            us_standouts = json.loads(_us.read_text())
+            _us_source_bytes = _us.read_bytes()
+            us_standouts = json.loads(_us_source_bytes)
+            # Freeze raw owner binding before display attachments and tier splitting.
+            # An optional provenance import/read failure cannot hide the board.
+            try:
+                from hashlib import sha256 as _w3c_sha256
+                _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
+                from engine.theme_graph.selection_cohort_publication import (
+                    consume_us_source, default_capture_capability)
+                try:
+                    from functools import partial as _w3c_partial
+                    from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                    _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                    log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                    _w3c_attempts = (None,)
+                for _w3c_qr in _w3c_attempts:
+                    _us_w3c_read = consume_us_source(
+                        _us_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                    if _us_w3c_read["status"] == "AVAILABLE":
+                        _us_w3c = _us_w3c_read
+                        break
+                    _us_w3c_refusal = _us_w3c_read
+                    if _w3c_qr is not None:
+                        log.warning("W3C US qualified reads refused (%s); receipt-only", _us_w3c_read["reason_codes"])
+            except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
+                log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_standouts.json unreadable (%s)", e)
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
@@ -7061,6 +7088,8 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        # Internal machine binding only; no template/public-rights/tier expansion.
+        us_selection_cohort_internal=_us_w3c,
         us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
@@ -7103,7 +7132,7 @@ def main() -> int:
         alloc_card=alloc_card_state(),           # macro-page allocation CTA card
         risk_model=risk_model_view(f, hist, _cf),  # de-risk score + leg breakdown
         chart_risk_model=chart_risk_model(_cf),    # drawdown/recession risk-model chart
-        chart_curve=chart_curve(_cf),              # 2s10s raw vs term-premium-adjusted
+        chart_curve=chart_curve(_cf),              # raw 2s10s vs legacy TP10 heuristic
         chart_vix_term=chart_vix_term(f, _cf),     # VIX level + term-structure ratio
         cross_asset=cross_asset_snap,
         fear_euphoria=fear_euphoria_synthesis(latest, f),
@@ -7745,8 +7774,37 @@ def main() -> int:
         # error leaves the first-pass pages in place.
         try:
             _us_path = site / "factordata" / "us_standouts.json"
+            _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            _fresh_w3c = None
+            _fresh_w3c_refusal = None
+            _fresh_w3c_binding = None
+            if _fresh_source_bytes is not None:
+                try:
+                    from hashlib import sha256 as _w3c_sha256
+                    _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
+                    from engine.theme_graph.selection_cohort_publication import (
+                        consume_us_source, default_capture_capability)
+                    try:
+                        from functools import partial as _w3c_partial
+                        from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                        _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                    except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                        log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                        _w3c_attempts = (None,)
+                    for _w3c_qr in _w3c_attempts:
+                        _fresh_w3c_read = consume_us_source(
+                            _fresh_source_bytes, data_dir=config.data_dir(),
+                            authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                        if _fresh_w3c_read["status"] == "AVAILABLE":
+                            _fresh_w3c = _fresh_w3c_read
+                            break
+                        _fresh_w3c_refusal = _fresh_w3c_read
+                        if _w3c_qr is not None:
+                            log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
+                except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
+                    log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
             _fresh_su = _attach_board_display_chips(
-                site, json.loads(_us_path.read_text())) if _us_path.exists() else None
+                site, json.loads(_fresh_source_bytes)) if _fresh_source_bytes is not None else None
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
             _fresh_candidate_visibility = project_candidate_visibility(
@@ -7757,7 +7815,14 @@ def main() -> int:
                     # A same-session correction can change names, exclusion reasons,
                     # or availability without advancing the date/freshness clock.
                     # Compare the existing allowlisted view, not unrelated raw fields.
-                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")):
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")
+                    # Same-session source/reason/explanation corrections cannot pair
+                    # the fresh board with an older first-pass internal context.
+                    or _fresh_w3c_binding != _us_w3c_binding
+                    or _fresh_w3c != vm.get("us_selection_cohort_internal")):
+                vm["us_selection_cohort_internal"] = _fresh_w3c
+                _us_w3c_binding = _fresh_w3c_binding
+                _us_w3c_refusal = _fresh_w3c_refusal
                 vm["us_standouts"] = _fresh_su
                 vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
@@ -7867,6 +7932,12 @@ def main() -> int:
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "us", vm.get("us_selection_cohort_internal") or _us_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
 
         # Bespoke single-stock chart data: a compact per-ticker OHLC JSON
         # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of

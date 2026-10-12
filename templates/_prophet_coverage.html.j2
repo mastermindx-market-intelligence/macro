@@ -20,7 +20,7 @@
   <span class="pv-cov-cell"><span class="pv-cov-k">{{ t('Current filter','当前筛选') }}</span><strong class="pv-cov-v" data-pv-coverage-filter>{{ _value(c.get('filter_total')) }}</strong></span>
   <span class="pv-cov-cell"><span class="pv-cov-k">{{ t('Displayed','已显示') }}</span><strong class="pv-cov-v" data-pv-coverage-displayed>{{ _value(c.get('displayed_total')) }}</strong></span>
   {%- if c.get('missing_owner_en') or c.get('missing_owner_zh') %}
-  <span class="pv-cov-note" data-pv-coverage-missing-owner>{{ t('Unavailable owner fields','所有者字段暂缺') }}: {{ t(c.get('missing_owner_en') or 'Unavailable', c.get('missing_owner_zh') or c.get('missing_owner_en') or '暂缺')|e }}</span>
+  <span class="pv-cov-note" data-pv-coverage-missing-owner>{{ t('Unavailable owner fields','所有者字段暂缺') }}: {{ t((c.get('missing_owner_en') or 'Unavailable')|e, (c.get('missing_owner_zh') or c.get('missing_owner_en') or '暂缺')|e) }}</span>
   {%- endif %}
 </div>
 {%- endmacro %}

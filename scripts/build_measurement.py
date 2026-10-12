@@ -33,6 +33,7 @@ from jinja2 import Environment, FileSystemLoader
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from engine.cycle_pattern.truths import active_truths  # noqa: E402
 from engine.research_implication_card import build_research_implication_cards  # noqa: E402
+from engine.verdict_preservation import build_verdict_preservation  # noqa: E402
 from engine.seasonality.program_watch import read_ledger_counts  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -48,6 +49,7 @@ RESEARCH = ROOT / "research" / "cycle_masterplan"
 OUT_DIR = SITE / "measurementdata"
 OUT_JS = OUT_DIR / "measurement_data.js"
 OUT_RESEARCH_IMPLICATIONS = OUT_DIR / "research_implication_cards.json"
+OUT_VERDICT_PRESERVATION = OUT_DIR / "verdict_preservation.json"
 OUT_HTML = SITE / "measurement.html"
 
 # Source data paths
@@ -1893,6 +1895,7 @@ def run() -> None:
     # F10-X1 — deterministic read-only owner-artifact projection.  Build once;
     # the same validated object feeds HTML, JS, and the standalone JSON contract.
     research_implications = build_research_implication_cards(ROOT)
+    verdict_preservation = build_verdict_preservation(ROOT)
     log.info(
         "Research implication cards: %d owner projections",
         len(research_implications["cards"]),
@@ -1957,6 +1960,7 @@ def run() -> None:
         "rule_experiments": rule_experiments,
         "qledger_reliability": qledger_reliability,
         "research_implications": research_implications,
+        "verdict_preservation": verdict_preservation,
         # ETF masterplan §3 W3 — forward windows, display tier, no authority
         "etf_board_windows": etf_board_windows,
         # IMCE A5B — registered prospective forward-capture accrual/status.
@@ -1986,6 +1990,7 @@ def run() -> None:
     log.info("Wrote %s (%d bytes)", OUT_JS.relative_to(ROOT), len(js_text))
     write_research_implication_projection(research_implications, OUT_RESEARCH_IMPLICATIONS)
     log.info("Wrote %s", OUT_RESEARCH_IMPLICATIONS.relative_to(ROOT))
+    write_research_implication_projection(verdict_preservation, OUT_VERDICT_PRESERVATION)
 
     # 11. Render HTML via Jinja2
     env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=False)
@@ -2019,6 +2024,7 @@ def run() -> None:
         rule_experiments=rule_experiments,
         qledger_reliability=qledger_reliability,
         research_implications=research_implications,
+        verdict_preservation=verdict_preservation,
         # ETF board forward windows (ETF masterplan §3 W3)
         etf_board_windows=etf_board_windows,
         # IMCE A5B — registered prospective forward-capture accrual/status

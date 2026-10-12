@@ -11,23 +11,26 @@
 # READ, through a reader that never mkdirs; the pack lands in the state dir and the
 # proof receipt beside it.
 #
-# RESOURCE CAPS ARE INHERITED FROM THE PROPHET LANE'S MEASURED ENVELOPE, NOT
-# MEASURED HERE — same reasoning as macro-live-entry-radar.service, and the same
-# honesty: this unit ships DORMANT behind ENTRY_RADAR_LIVE_ENABLE=1 (design §3b),
-# so there has been no armed production build to measure, and macro-live-prophet's
-# header is the only measurement on this box for a same-shaped job (a capped
-# oneshot publishing to R2 + the live dir on 2 vCPUs with thin burst headroom).
-# Sharing ONE cap set with the evaluator is deliberate: two units of the same
-# program that drift apart on limits are two different failure envelopes to reason
-# about, and the arm gate means both go live in the same operator act.
+# RESOURCE CAPS ARE MEASURED (2026-10-04 production dry run), NOT INHERITED.
+# A full dry run of scripts.entry_radar_live_pack --stream-substrate on the
+# production VPS (2 vCPU / 3.9 GB box, temporary envelope CPUQuota=100%,
+# MemoryHigh=1200M, MemoryMax=1500M) built the pack for 3,076 names in 1,291.5 s
+# wall (slice_lanes 152.5 s at 928 MB RSS; build_pack 504 s; proof 579 s;
+# ledger 41 s); systemd accounted 12 min 29.655 s CPU, memory peak 1.1 G (cgroup
+# MemoryPeak 1,258,815,488 B), swap peak 864.9 M. CPUQuota=100% because the
+# build is single-threaded — above 100% buys nothing. MemoryHigh=1400M /
+# MemoryMax=1600M sit above the 1.26 G peak with headroom so MemoryHigh does not
+# throttle the build into the timeout; MemoryMax is the runaway stop. The
+# evaluator keeps its own inherited envelope: the pack is the memory-hungriest
+# thing this program does and the evaluator is a 5-minute tick.
 #
 # WHERE THIS LANE HONESTLY DIFFERS FROM THE EVALUATOR, and what that costs:
 #   * it reads a per-name daily parquet substrate across the whole probe set, so it
-#     is the memory-hungriest thing this program does. MemoryHigh 256M is a SOFT
+#     is the memory-hungriest thing this program does. MemoryHigh 1400M is a SOFT
 #     throttle — a build that wants more gets reclaim pressure and takes longer,
-#     which the generous timeout below is sized for; MemoryMax 512M is the hard
+#     which the generous timeout below is sized for; MemoryMax 1600M is the hard
 #     stop that bounds a runaway. If an armed session shows the build genuinely
-#     needs more than 512M, that is a MEASUREMENT that moves this number, not a
+#     needs more than 1600M, that is a MEASUREMENT that moves this number, not a
 #     reason to have shipped it looser unmeasured.
 #   * TimeoutStartSec is 1800, not 120: this is a bounded batch build, not a
 #     5-minute tick. 1800 s is half the hourly retry period below, so two pack
@@ -49,9 +52,9 @@ ExecStart=/opt/macro/.venv/bin/python -m scripts.entry_radar_live_pack --stream-
 TimeoutStartSec=1800
 Nice=10
 CPUWeight=20
-CPUQuota=60%
-MemoryHigh=256M
-MemoryMax=512M
+CPUQuota=100%
+MemoryHigh=1400M
+MemoryMax=1600M
 IOWeight=20
 NoNewPrivileges=true
 PrivateTmp=true

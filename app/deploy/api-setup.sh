@@ -128,6 +128,9 @@ log "[3/5] systemd units + private Market Memory state"
 # The unit's Market Memory bind is deliberately non-optional and read-only.
 # Provision it before installation so a fresh host fails closed without making
 # the first service start impossible.
+# Ticker News reader state exists even while its operator-armed writer is absent.
+# This lets macro-api bind the path read-only from its very first start.
+install -d -m 0700 /var/lib/macro-ticker-news
 install -d -m 0700 /var/lib/macro-market-memory
 install -d -m 0700 /var/lib/macro-market-memory/public
 install -d -m 0700 /var/lib/macro-market-memory/public/trusted-v1

@@ -155,3 +155,33 @@ def test_the_unmapped_concepts_are_not_enumerated_in_this_file():
     assert "ths_unmapped_concept_count" in block["unmapped_note"]
     assert not any(isinstance(v, list) for v in block.values()), (
         "the policy block must stay prose + pointers — no enumerated concept list")
+
+
+# ---------------------------------------------------------------------------
+# The hierarchy block
+# ---------------------------------------------------------------------------
+
+
+def test_production_crosswalk_hierarchy_is_the_frozen_r_c3_table():
+    from engine.theme_graph.materialize import HIERARCHY_EPOCH, validate_theme_hierarchy
+
+    assert DOC["version"] == 3
+    assert DOC["date"] == "2026-07-09"
+    assert HIERARCHY_EPOCH == "2026-10-07"
+    validated = validate_theme_hierarchy(DOC)
+    assert {k: len(v) for k, v in validated.items()} == {
+        "categories": 10, "micro_themes": 68, "parents": 93}
+    hierarchy = DOC["hierarchy"]
+    asserted_dates = set()
+    for section in ("categories", "micro_themes"):
+        for row in hierarchy[section]:
+            asserted_dates.add(row["asserted_on"])
+    for row in hierarchy["parents"]:
+        asserted_dates.add(row["asserted_on"])
+    assert len(asserted_dates) == 1
+    asserted_on = asserted_dates.pop()
+    assert asserted_on >= HIERARCHY_EPOCH
+    category_ids = {row["id"] for row in hierarchy["categories"]}
+    cat_to_theme = sum(1 for row in hierarchy["parents"] if row["parent"] in category_ids)
+    assert cat_to_theme == 21
+    assert len(hierarchy["parents"]) - cat_to_theme == 72

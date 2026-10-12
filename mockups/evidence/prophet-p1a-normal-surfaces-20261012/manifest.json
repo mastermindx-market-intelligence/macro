@@ -1,0 +1,1914 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-12T04:03:54.497Z",
+  "outcome": "captured",
+  "tool": {
+    "path": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/p1a-normal-surface-capture-20261012.cjs",
+    "module_sha256": "8957257d193714a9e1d3a84abf6aaacfef7ddc92772d8d5b625de6e226844bea",
+    "retained_recipe_copy": "mockups/evidence/prophet-p1a-normal-surfaces-20261012/capture.cjs"
+  },
+  "claims": {
+    "production": "none",
+    "native_data": "US retained actual native generation; Canada frozen owner fixture",
+    "scope": "Viewport crops after native scrolling. Local anonymous presentation with all /api/ and /premiumdata/ responses explicitly unavailable (403); not a deployed authorization test. Other external origins unavailable. US native HTML and Canada fixture data."
+  },
+  "axes": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "access": [
+      "anonymous"
+    ],
+    "force_states": []
+  },
+  "pages": [
+    {
+      "page_id": "us-p1a-normal-surfaces",
+      "route": "/us_stocks.html",
+      "states": [
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "us-candidate-cards-en-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "61a1e9372686e88837448c0c5bc5077f6eaf245ef9ee8cc4b8129d9c9131fa71",
+          "byte_length": 99132,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 2754,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "us-coverage-en-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "7e8f5fa7a8cc83399776c9e322fe62faffc0a38d5922895682c73f37a6f31202",
+          "byte_length": 94707,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 2578,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [],
+            "coverage": [
+              "PRODUCER TOTAL\n230\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n0\nDISPLAYED\n0\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "us-candidate-cards-en-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "42e292ffb6d4024c4062a714c10d9438524f619a9cac408f1813f14ce966c691",
+          "byte_length": 108867,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 2754,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "us-coverage-en-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "eb7651f7e58a78839543d8119acd7b0c614534b16cbecebfc7f6424938494187",
+          "byte_length": 95405,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 2578,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [],
+            "coverage": [
+              "PRODUCER TOTAL\n230\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n0\nDISPLAYED\n0\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "us-candidate-cards-zh-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "ebb093d37bb92d72936233385d70dd16d508986e72f8bbda3d8343a89f2a0306",
+          "byte_length": 124805,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 2483,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "us-coverage-zh-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "278d4f3ee0d9c186ac394acd453b557cc1dda732a9ed8f52d009aebb5d5c4fd1",
+          "byte_length": 110947,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 2330,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "us-candidate-cards-zh-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "c5bf12dfcf3e0cfa29681fddd941945177fc9378a00506b254c47fb56273b9d8",
+          "byte_length": 129201,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 2483,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "us-coverage-zh-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "df4dc3b5f2c40eb0ae280b54ddbe35a574d1a31405182a4df5ac155a30d0fc62",
+          "byte_length": 112275,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 2330,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "us-candidate-cards-en-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "9646f6c757af2df3e329d038318089ec6d69ecdd9f17526754f299870575176e",
+          "byte_length": 202507,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 1499,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "us-coverage-en-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "9531153db0deffd42a4b18707640d34f5d5a4b210d9740caa4befd715c0473af",
+          "byte_length": 194361,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 1358,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [],
+            "coverage": [
+              "PRODUCER TOTAL\n230\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n0\nDISPLAYED\n0\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "us-candidate-cards-en-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "acb165227da791506f90309bf908865aff9a8313c25d1051e7218aeff1c3d053",
+          "byte_length": 207776,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 1499,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              },
+              {
+                "state": "NONE",
+                "text": "PLAN RELATION\nNo related plan"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "us-coverage-en-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "8bfa45b22377166c91b5045df3171b4977f07a75e09172bc38a00d0b8da787e0",
+          "byte_length": 199752,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 1358,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [],
+            "coverage": [
+              "PRODUCER TOTAL\n230\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n0\nDISPLAYED\n0\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "us-candidate-cards-zh-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "689cb49f8735ad924458c828ff3a49243bfb31a0068874aff608abde30e35a3d",
+          "byte_length": 210842,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 1500,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "us-coverage-zh-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "84c3a4c958e917cd4bfddc5f0c490990b8ba53e715374b9ce49269d7b673728e",
+          "byte_length": 202670,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 1359,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "candidate-cards",
+          "selector": "#us-candidates",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "us-candidate-cards-zh-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "937fd249ab2b6e2561295082bdc03f1b63955e5ff91bd9362517b07b5a474c41",
+          "byte_length": 215765,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 1500,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              },
+              {
+                "state": "NONE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "us",
+          "view": "coverage",
+          "selector": "#us-candidate-pool",
+          "proof_class": "native_cached_render",
+          "route": "/us_stocks.html",
+          "source_html_sha256": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "candidate-pool-open",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "us-coverage-zh-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "18ef61afb541157708cc8052e22ac42ab599eb83dcb935d6879abbb2c18bb981",
+          "byte_length": 209326,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 1359,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        }
+      ]
+    },
+    {
+      "page_id": "ca-p1a-normal-surfaces",
+      "route": "/canada_stocks.html",
+      "states": [
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "ca-coverage-en-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "0a3d679417b62bab253969a164bcfc5ee518858dd9ae699cd88b0339c987cdf2",
+          "byte_length": 89509,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 724,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "PRODUCER TOTAL\n17\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n5\nDISPLAYED\n5\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "ca-candidate-cards-en-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "1590a22b7822cfee641f3c7ee3e41b3189565660c4a0d00bc72f123f5f9fdf14",
+          "byte_length": 93352,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 1079,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "ca-coverage-en-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "947eb98ae659fd19b488cc75cd7bcf25d6d7dae647ad8f7a402864c9b710310d",
+          "byte_length": 90230,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 722,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "PRODUCER TOTAL\n17\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n5\nDISPLAYED\n5\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "ca-candidate-cards-en-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "0cf9e687cab0671c6eda3119a42230109ea49acf787a090088c676f068f0548d",
+          "byte_length": 92779,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 1077,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "ca-coverage-zh-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "1a0a58750c9c005d4523e1b60f9c9c3aa26f30e247359259288bf3ccf3d9e531",
+          "byte_length": 97873,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 658,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "ca-candidate-cards-zh-dark-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "002aad454ca0508accfa9e3df40ff3a32ab41347dc201bb6961f6d8d89161127",
+          "byte_length": 99203,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 961,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "ca-coverage-zh-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "2231bb270c10f6d5282b0d599399831182eeffde8ec2f779f137923e3e77af98",
+          "byte_length": 98103,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 656,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "ca-candidate-cards-zh-light-390.png",
+          "width": 390,
+          "height": 844,
+          "sha256": "c2abc82a07464b8de1a0b5e1ed8cc4bb051436a7190a4fc075f4571f1eec76b3",
+          "byte_length": 98629,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 959,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "scrollWidth": 390,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "ca-coverage-en-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "6e1446518181bcd5ef6ade0f7761da7b08df711649ecea3c4afc4b56b8add2f0",
+          "byte_length": 125573,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 499,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "PRODUCER TOTAL\n17\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n5\nDISPLAYED\n5\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "file": "ca-candidate-cards-en-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "92983bfdae21d739c12e6c885b57c33beced4cceda1a1623582a298e738174c6",
+          "byte_length": 116813,
+          "actual": {
+            "theme": "dark",
+            "locale": "en",
+            "scrollY": 654,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "ca-coverage-en-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "fc8ea30b550c6679e35c153205aa02abc622a7b4bce5dcab4c62433e98ef0a11",
+          "byte_length": 128035,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 497,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "PRODUCER TOTAL\n17\nENTITLED TOTAL\nUnavailable\nCURRENT FILTER\n5\nDISPLAYED\n5\nUnavailable owner fields: Entitled total"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "file": "ca-candidate-cards-en-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "25abc69b7cdd4dd56a277eaf93877cf3cadb2b8e6f0a03eab1cbe2c07e860cb1",
+          "byte_length": 117939,
+          "actual": {
+            "theme": "light",
+            "locale": "en",
+            "scrollY": 652,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "PLAN RELATION\nPlan owner not available for this market"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "ca-coverage-zh-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "f2f49f1a3f08eb4fe28ee8a1c4f46fe40f57e9abaa180c4a4963ca6e523e11c5",
+          "byte_length": 126840,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 502,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "file": "ca-candidate-cards-zh-dark-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "4c99b5aecfb826c434d625cad34a3e56422b72ff14e66f8019adb014ebe44097",
+          "byte_length": 117856,
+          "actual": {
+            "theme": "dark",
+            "locale": "zh",
+            "scrollY": 657,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "coverage",
+          "selector": "#ca-v36-prophet",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "ca-coverage-zh-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "9db3044d1684a4bed9a836669880dd9d01c541a8311c77710076a6c25ada103a",
+          "byte_length": 129051,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 500,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": [
+              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+            ]
+          },
+          "console_exceptions": []
+        },
+        {
+          "market": "ca",
+          "view": "candidate-cards",
+          "selector": "#standouts",
+          "proof_class": "browser_fixture",
+          "route": "/canada_stocks.html",
+          "source_html_sha256": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "page_state": "rest",
+          "captured": true,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "file": "ca-candidate-cards-zh-light-1440.png",
+          "width": 1440,
+          "height": 900,
+          "sha256": "c77be13de5461d42ac4c7f97196e181c00cb4bac8a8506d137f1a43623ec815c",
+          "byte_length": 118086,
+          "actual": {
+            "theme": "light",
+            "locale": "zh",
+            "scrollY": 655,
+            "viewportWidth": 1440,
+            "viewportHeight": 900,
+            "scrollWidth": 1440,
+            "relationStates": [
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              },
+              {
+                "state": "UNAVAILABLE",
+                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+              }
+            ],
+            "coverage": []
+          },
+          "console_exceptions": []
+        }
+      ]
+    }
+  ],
+  "loaded_assets": {
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/us_stocks.html": "02b71383933d722ea5cb1e7881fa9aeec09fdc63faa9a769c6eecba213b89b28",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/theme.css": "d6d5207461084867fa835042037b0393deccb193498e946b2c5eef414d0c4f0e",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/tier_preview.css": "d390f5999f642821569c8ddd0a14516d699e01b589365692faf40cb32f0aa592",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/dashboard-icons.css": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live.js": "2464239d98feaff4d073210275694cc4c0cbcd654a836188bd85d2d1c635db17",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/theme.js": "f29b7083bf4388a3888459ac5da184e5f33c90776fe9d4fbb527b6e8800e68ed",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/tier_preview.js": "d80100db5f8212a2260ef3493872ed58aeac1a6a35df2f177a323f75540edd7e",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/chart_i18n.js": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/timemachine.js": "92798ed78db8b33f238975e693b481137e33d4095aa3aa6bc81a45c9cf8bab9f",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/tablesort.js": "995ddaf84cf481b2fc94a160fc755f9c9c6f3bd1b838dc7872f22c0e5a321b57",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/risk_state_live.js": "2b9d32d5ca0be24808c7fd9691c1224575cf2904d0fa8c582c5ed4466bca96dd",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/release_publications_live.js": "d9a19340843ef489606a3cd19f24a16e68ef33ff9966f71a814c6e4871646767",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/dashboard-icons.js": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live/basket_pulse.json": "9ffbe879ca70f5b5de304a0dc36978cb17b55291b4642b9782ff2c22d044a314",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/basketdata/baskets.json": "0a352d344265e86b353c88c36c8b400f58e4c7e393e3b10251b10b5fe4ff1150",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live/breadth.json": "5c195802e6e24c484da11a8391ba908794c84b851d4a313ede8c8011c41faea7",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live/risk_state.json": "039e8e87a5a8a01641efc1e5ea65e9de10875f0100f60c017e31c38c676a35f3",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+    "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/p1a-composed-coverage-fixture-20261012/canada_stocks.html": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/illus.css": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/mtf.js": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/illus.js": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/canada-stock-v36.js": "f2349979a2720316743613ad19d4afd62100d3bbee7d5a4be5cd4be10f6cca29",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+  }
+}

@@ -68,14 +68,20 @@ CLAIMS_REL = ("data", "qledger", "claims.jsonl")
 GRADES_REL = ("data", "qledger", "grades.jsonl")
 
 
-def _read_jsonl(path: Path) -> list[dict]:
+def _read_jsonl(path: Path, *, qledger_claims: bool = False) -> list[dict]:
     """Read a qledger JSONL store, skipping '#' schema-comment lines.
 
     Several ledger stores in this repo lead with '#' comment lines documenting
     the row schema, so a naive json.loads-per-line raises on line 1.
     """
     rows: list[dict] = []
-    with path.open("r", encoding="utf-8") as handle:
+    if qledger_claims:
+        from engine.qledger_store import open_raw_lines
+
+        source = open_raw_lines(path)
+    else:
+        source = path.open("r", encoding="utf-8")
+    with source as handle:
         for line in handle:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -215,7 +221,33 @@ def main() -> int:
 
     claims_path = args.root.joinpath(*CLAIMS_REL)
     grades_path = args.root.joinpath(*GRADES_REL)
-    missing = [p for p in (claims_path, grades_path) if not p.exists()]
+    from engine.qledger_store import uses_native_claims
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
+    native_claims = uses_native_claims(claims_path)
+    claims = None
+    if native_claims:
+        # A missing grade sidecar must not hide an incomplete claims snapshot.
+        try:
+            claims = _read_jsonl(claims_path, qledger_claims=True)
+        except SnapshotIntegrityError as exc:
+            if args.json:
+                payload = json.loads(_json_payload(None, store_absent=False))
+                payload["storage_error"] = str(exc)
+                payload["storage_error_code"] = exc.code
+                print(json.dumps(payload, indent=2), flush=True)
+            else:
+                print(
+                    "::error title=qledger-metric-validity::"
+                    f"claims storage integrity failure, not audited: {exc}",
+                    flush=True,
+                )
+            return 2
+
+    missing = [
+        p for p in (claims_path, grades_path)
+        if not (p == claims_path and native_claims) and not p.exists()
+    ]
     if missing:
         # Absent store: say so out loud, exit 0. Never render as "clean".
         if args.json:
@@ -228,7 +260,8 @@ def main() -> int:
                 print(f"::notice title=qledger-metric-validity::store absent, not audited: {path}", flush=True)
         return 0
 
-    claims = _read_jsonl(claims_path)
+    if not native_claims:
+        claims = _read_jsonl(claims_path, qledger_claims=True)
     grades = _read_jsonl(grades_path)
     findings = audit(claims, grades)
 

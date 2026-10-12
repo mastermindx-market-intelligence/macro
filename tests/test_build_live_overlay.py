@@ -7,6 +7,7 @@ market-context + per-region session blocks. Also pins the Mastermind emit v2
 """
 from __future__ import annotations
 
+from datetime import datetime
 import json
 
 from scripts import build_live_overlay as blo
@@ -20,7 +21,13 @@ def test_universe_includes_gtaa_assets():
     assert len(uni) <= int((blo.config.load().get("live") or {}).get("max_universe", 150))
 
 
-def test_offline_build_emits_valid_v2_overlay(tmp_path):
+def test_offline_build_emits_valid_v2_overlay(tmp_path, monkeypatch):
+    # Pin the input universe/baseline so this schema contract does not require
+    # production data to be materialized in a sparse checkout.
+    monkeypatch.setattr(blo, "build_universe", lambda: ["SPY", "GC=F"])
+    monkeypatch.setattr(blo, "_load_baseline", lambda ticker, close: {
+        "ticker": ticker, "asof": "2026-09-30", "tech": {"close": 100.0},
+    })
     # site_dir=tmp_path: output never lands in the repo's real site/ tree
     res = blo.build(offline=True, limit=8, site_dir=tmp_path)
     assert res["status"] == "ok"
@@ -32,8 +39,10 @@ def test_offline_build_emits_valid_v2_overlay(tmp_path):
     assert out["n_quotes"] == 0 and out["n"] >= 1
     for rec in out["tickers"].values():
         assert rec["stale"] is True and "tech" in rec and "region" in rec
-    # new blocks present — all 9 globe regions (W2b: jp/kr/tw/gb/eu added)
-    assert set(out["sessions"]) == {"us", "cn", "hk", "ca", "jp", "kr", "tw", "gb", "eu"}
+    # Existing globe regions plus independently eligible Stock Connect.
+    assert set(out["sessions"]) == {
+        "us", "cn", "hk", "ca", "connect", "jp", "kr", "tw", "gb", "eu",
+    }
     assert "VIX" in out["market"] and "band" in out["market"]["VIX"]
     assert (site / "live_config.js").exists()
 
@@ -51,7 +60,22 @@ def test_market_session_block_shape(tmp_path):
     blo.build(offline=True, limit=2, site_dir=tmp_path)
     out = json.loads((tmp_path / "live" / "overlay.json").read_text())
     us = out["sessions"]["us"]
-    assert set(us) == {"region", "open", "local_time"} and isinstance(us["open"], bool)
+    assert {"region", "open", "local_time", "state", "timezone",
+            "calendar_verified", "checked_at", "valid_until", "expected_session",
+            "next_open", "data_frozen", "source_urls"} <= set(us)
+    assert us["region"] == "us" and us["timezone"] == "America/New_York"
+    assert isinstance(us["local_time"], str) and isinstance(us["data_frozen"], bool)
+    if us["calendar_verified"]:
+        assert isinstance(us["open"], bool) and us["source_urls"]
+    else:
+        assert us["open"] is None and us["state"] == "unverified"
+    checked = datetime.fromisoformat(us["checked_at"])
+    expires = datetime.fromisoformat(us["valid_until"])
+    assert checked.tzinfo is not None and expires > checked
+    assert datetime.fromisoformat(us["next_open"]).tzinfo is not None
+    assert datetime.fromisoformat(us["expected_session"]).date().isoformat() == us["expected_session"]
+    # The other five venue clocks retain their incumbent shape.
+    assert set(out["sessions"]["jp"]) == {"region", "open", "local_time"}
 
 
 def test_live_config_js_carries_worker_url(tmp_path):
