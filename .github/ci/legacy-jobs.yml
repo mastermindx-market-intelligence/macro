@@ -27,6 +27,27 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  company-intelligence-private-runtime:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "app/deploy/company-intelligence-private-roots.py"
+      - "app/deploy/macro-api.service"
+      - "app/deploy/update.sh"
+      - "app/deploy/api-setup.sh"
+      - "tests/test_company_intelligence_private_roots.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install private directory boundary test dependency
+        run: pip install pytest
+      - name: Private directory boundary and deployment refusal contracts
+        run: python -m pytest tests/test_company_intelligence_private_roots.py -q
+
   microstructure-pressure-response-r0:
     if: ${{ false }}
     gate: code
@@ -5260,6 +5281,8 @@ jobs:
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
       - "tests/fixtures/us_candidate_episode/**"
+      - "engine/prophet_object_change.py"
+      - "tests/test_prophet_object_change.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5296,6 +5319,8 @@ jobs:
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
         run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py -q
+      - name: Prophet per-object change — native identity, separate clocks and unavailable comparisons
+        run: python -m pytest tests/test_prophet_object_change.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
