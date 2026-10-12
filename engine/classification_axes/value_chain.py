@@ -10,8 +10,10 @@ table. Most nodes have no position yet (a later lane populates it), so
 Pure reader, Gate #8: it writes nothing, persists nothing, calls nothing on
 the network, and resolves no rights. The sibling axis readers are never
 imported — this lane applies its own ``as_of`` overlay per the L10 ruling,
-reading the store's raw tables (``read_nodes(current=False)`` and
-``read_node_lifecycle(latest=False)``) rather than the current-view collapse.
+reading the store's raw tables (``read_nodes(current=False, strict=True)`` and
+``read_node_lifecycle(latest=False, strict=True)``) rather than the
+current-view collapse, so a corrupt default artifact answers
+``unavailable/owner_degraded`` instead of collapsing to an empty frame.
 
 Diagnostics that distinguish one absent/degraded answer from another travel
 in ``provenance``; the ``reason_code`` stays inside the AxisCell v1
@@ -19,11 +21,14 @@ vocabulary.
 """
 from __future__ import annotations
 
+import datetime
 import json
+import re
 
 import pandas as pd
 
 from engine.classification_axes import cell
+from engine.theme_graph import store
 from engine.theme_graph.store import RETIRED_LIKE_STATUSES, read_node_lifecycle, read_nodes
 
 AXIS = "value_chain"
@@ -62,6 +67,34 @@ def _day(value: object) -> str | None:
     if _blank(value):
         return None
     return str(value)[:10]
+
+
+_BIRTH_HEAD_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def _clean_birth(value: object) -> str | None:
+    """A birth date as ``YYYY-MM-DD``, or ``None`` when blank.
+
+    A birth date is either a clean calendar day or a typed refusal: present
+    but unparseable raises :class:`ValueError` so the caller answers
+    ``unavailable/owner_degraded`` (``birth_date_unparseable``) instead of
+    letting a malformed date reach ``cell.make_cell``. Mirrors the temporal
+    rule ``cell.make_cell`` enforces on ``effective_at``.
+    """
+    if _blank(value):
+        return None
+    if isinstance(value, (datetime.date, pd.Timestamp)):  # datetime/Timestamp subclass date
+        text = value.isoformat()
+    else:
+        text = str(value).strip()
+    head = text[:10]
+    if _BIRTH_HEAD_RE.fullmatch(head) is None or (len(text) != 10 and text[10] not in "T "):
+        raise ValueError(f"unparseable birth_date: {value!r}")
+    try:
+        datetime.date.fromisoformat(head)
+    except ValueError as exc:
+        raise ValueError(f"unparseable birth_date: {value!r}") from exc
+    return head
 
 
 def _refusal(
@@ -106,7 +139,10 @@ def read_value_chain(
     paths and this reader never resolves one. Injected ``nodes`` /
     ``lifecycle`` DataFrames (``store.NODE_COLUMNS`` /
     ``store.NODE_LIFECYCLE_COLUMNS`` shape) replace the store calls; without
-    them the store's raw tables are read on every call. ``as_of`` is the only
+    them the store's raw tables are read strictly on every call — an absent
+    nodes table answers ``owner_missing``, an unreadable one
+    ``owner_degraded`` (``store_read_failed``), and an absent lifecycle table
+    falls back to the node row. ``as_of`` is the only
     clock: no wall-clock, no cache, stable ordering throughout.
     """
     kind, _ = cell.parse_subject(subject_id)
@@ -114,11 +150,28 @@ def read_value_chain(
         return _refusal(subject_id, as_of, "not_applicable", "not_applicable",
                         (f"subject_kind:{kind}",))
 
-    try:
-        nodes_frame = read_nodes(current=False) if nodes is None else nodes
-        lifecycle_frame = read_node_lifecycle(latest=False) if lifecycle is None else lifecycle
-    except Exception:  # noqa: BLE001 — a degraded store is a typed answer, never a raise
-        return _refusal(subject_id, as_of, "unavailable", "owner_degraded", ("store_read_failed",))
+    if nodes is None:
+        # Strict default reads: a corrupt default artifact must surface as
+        # owner_degraded, never collapse to an empty frame (owner_missing).
+        try:
+            nodes_frame = read_nodes(current=False, strict=True)
+        except FileNotFoundError:
+            return _refusal(subject_id, as_of, "unavailable", "owner_missing", ())
+        except Exception:  # noqa: BLE001 — strict read: unreadable or wrong-shape artifact
+            return _refusal(subject_id, as_of, "unavailable", "owner_degraded", ("store_read_failed",))
+    else:
+        nodes_frame = nodes
+
+    if lifecycle is None:
+        try:
+            lifecycle_frame = read_node_lifecycle(latest=False, strict=True)
+        except FileNotFoundError:
+            # An absent lifecycle table is normal: the node row then decides.
+            lifecycle_frame = pd.DataFrame(columns=list(store.NODE_LIFECYCLE_COLUMNS))
+        except Exception:  # noqa: BLE001 — strict read: unreadable or wrong-shape artifact
+            return _refusal(subject_id, as_of, "unavailable", "owner_degraded", ("store_read_failed",))
+    else:
+        lifecycle_frame = lifecycle
 
     if not isinstance(nodes_frame, pd.DataFrame) or not set(_REQUIRED_NODE_COLUMNS) <= set(nodes_frame.columns):
         return _refusal(subject_id, as_of, "unavailable", "owner_degraded", ("nodes_frame_unusable",))
@@ -130,7 +183,10 @@ def read_value_chain(
         return _refusal(subject_id, as_of, "unknown", "value_missing", ())
     node = rows.sort_values("computed_at", kind="stable").iloc[0]
 
-    birth = _day(node.get("birth_date"))
+    try:
+        birth = _clean_birth(node.get("birth_date"))
+    except ValueError:
+        return _refusal(subject_id, as_of, "unavailable", "owner_degraded", ("birth_date_unparseable",))
     if birth is not None and birth > as_of:
         return _refusal(subject_id, as_of, "unknown", "history_not_supported", ("birth_after_as_of",))
 
