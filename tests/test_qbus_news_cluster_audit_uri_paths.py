@@ -102,9 +102,30 @@ def test_audit_store_creates_no_stray_file(tmp_path, dir_name):
     assert names_after - names_before <= {"news.db-wal", "news.db-shm"}
 
 
+def test_audit_open_ro_connection_is_read_only_on_special_paths(tmp_path):
+    db = _seeded_db(tmp_path, "q?mark")
+    connection = audit._open_ro(db)
+    insert = "INSERT INTO news_clusters (cluster_id) VALUES ('pin-uri')"
+    try:
+        # The right file was addressed: an unquoted URI would land on an
+        # empty wrong database where this SELECT raises "no such table".
+        assert connection.execute("SELECT COUNT(*) FROM news_clusters").fetchone()[0] == 2
+        with pytest.raises(sqlite3.OperationalError):
+            connection.execute(insert)
+        # query_only=ON refuses writes on its own; clear it so the refusal
+        # below proves the file itself was opened mode=ro, not merely guarded.
+        connection.execute("PRAGMA query_only=OFF")
+        with pytest.raises(sqlite3.OperationalError, match="readonly"):
+            connection.execute(insert)
+    finally:
+        connection.close()
+
+
 @pytest.mark.parametrize("dir_name", DIR_NAMES)
 def test_audit_cli_store_mode_on_special_paths(tmp_path, dir_name, capsys):
     db = _seeded_db(tmp_path, dir_name)
     assert audit.main(["--store", str(db)]) == 0
     report = json.loads(capsys.readouterr().out)
     assert report["clusters"] == 2
+    assert report["multi_member_clusters"] == 1
+    assert report["size_histogram"] == {"1": 1, "2": 1}
