@@ -32,7 +32,12 @@ class _PublicationAuthority:
         self.source, self.state, self.snapshot, self.manifest, self.prior = source, state, snapshot, manifest, prior
 
     def resolve(self, request):
-        native._require(self.source.snapshot().bindings == self.snapshot.bindings,
+        # Both the protected decisions and the full current identity qualification
+        # must stay stable for the whole operation; a provenance-only refresh of
+        # either MU or NVDA mid-operation changes identity_binding and refuses.
+        fresh = self.source.snapshot()
+        native._require(fresh.bindings == self.snapshot.bindings
+                        and fresh.identity_binding == self.snapshot.identity_binding,
                         'PUBLICATION_AUTHORITY_CHANGED')
         native._require(self.state.get_bytes_strict_bounded_versioned(
             owner.CURRENT_KEY, native.MAX_OBJECT_BYTES) == self.prior, 'PUBLICATION_PREDECESSOR_CHANGED')
@@ -118,6 +123,7 @@ def publish_generation(source, state, artifacts, source_reader_factory, *, inten
     receipt = {'schema': 'company_intelligence.native_publication_receipt/v1',
         'generation': reference['sha256'], 'intent': intent,
         'source_code_version': snapshot.code_version, 'decisions': snapshot.bindings,
+        'identity_binding': snapshot.identity_binding,
         'native_result': result, 'manifest_written': manifest_written,
         'automatic_retry_permitted': False, 'production_accepted': False}
     if intent['mode'] == 'STAGE_MEMBERS':
@@ -128,9 +134,21 @@ def publish_generation(source, state, artifacts, source_reader_factory, *, inten
     pointer_written = _put_observed(state, owner.CURRENT_KEY, pointer, prior.version)
     # A concurrent revocation after the commit leaves an unservable pointer;
     # never certify it as currently adopted just because CAS succeeded.
-    current = owner.CurrentDisclosureOwner(source, state)
-    final = native.read_disclosure(artifacts, current, request)
-    native._require(final == observed, 'PUBLICATION_FINAL_READBACK_MISMATCH')
+    try:
+        current = owner.CurrentDisclosureOwner(source, state)
+        final = native.read_disclosure(artifacts, current, request)
+        native._require(final == observed, 'PUBLICATION_FINAL_READBACK_MISMATCH')
+        # A fresh observation may requalify a later request, but this operation
+        # must finish under the exact identity binding that admitted its writes.
+        native._require(source.snapshot().identity_binding == snapshot.identity_binding,
+                        'PUBLICATION_IDENTITY_CONTINUITY_BROKEN')
+    except native.DisclosureError as exc:
+        # The pointer CAS has already succeeded. Every subsequent refusal needs
+        # same-operation reconciliation, even when its own read failed closed.
+        raise native.DisclosureError(exc.code, effect_unknown=True) from None
+    except Exception:
+        raise native.DisclosureError('PUBLICATION_FINAL_OBSERVATION_FAILED',
+                                     effect_unknown=True) from None
     return {**receipt, 'status': 'COMMITTED_OBSERVED',
             'pointer_written': pointer_written, 'private_response_sha256': owner.digest(native._canonical(final)),
             'automatic_retry_permitted': False, 'production_accepted': False}
