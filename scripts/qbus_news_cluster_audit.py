@@ -21,6 +21,7 @@ import argparse
 import json
 import sqlite3
 import sys
+import urllib.parse
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -204,7 +205,7 @@ def _report(stories: list[_Story], sizes: dict[str, int], policy: ClusterPolicy)
 def _open_ro(path: Path) -> sqlite3.Connection:
     if not path.is_file():
         raise AuditError("qbus_news_cluster_audit:not_a_file")
-    uri = f"file:{path.resolve()}?mode=ro"
+    uri = f"file:{urllib.parse.quote(str(path.resolve()))}?mode=ro"
     try:
         connection = sqlite3.connect(uri, uri=True)
     except sqlite3.Error as exc:
