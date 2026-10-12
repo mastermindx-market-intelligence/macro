@@ -22,7 +22,7 @@ from engine.classification_axes import cell
 AXIS = "sic_industry"
 SOURCE_OWNER = "collectors/equity_profile.py"
 SOURCE_ARTIFACT = "data/profile/profiles.parquet"
-SOURCE_FIELD = "sic_description"
+_SOURCE_FIELD = "sic_description"
 MAX_AGE_DAYS = 365
 SUBJECT_KINDS = ("co",)
 RIGHTS_CONTEXT = {
@@ -38,7 +38,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _source() -> dict:
-    return {"owner": SOURCE_OWNER, "artifact": SOURCE_ARTIFACT, "field": SOURCE_FIELD}
+    return {"owner": SOURCE_OWNER, "artifact": SOURCE_ARTIFACT, "field": _SOURCE_FIELD}
 
 
 def _cell_missing(
@@ -102,7 +102,7 @@ def _observed_text(row: pd.Series) -> str | None:
 def _sic_text(row: pd.Series) -> str | None:
     """The stripped ``sic_description``, or None when null/NaN/blank."""
     raw = row.get("sic_description")
-    if raw is None or (isinstance(raw, float) and raw != raw):
+    if raw is None or (pd.api.types.is_scalar(raw) and pd.isna(raw)):
         return None
     text = str(raw).strip()
     return text or None
@@ -137,7 +137,7 @@ def read_sic_industry(
     as_of_date = datetime.date.fromisoformat(as_of)
 
     if profiles is None:
-        path = (Path(root) if root is not None else _REPO_ROOT) / SOURCE_ARTIFACT
+        path = Path(root or _REPO_ROOT) / SOURCE_ARTIFACT
         if not path.exists():
             return _cell_missing(subject_id, as_of, "unavailable", "owner_missing", [])
         try:
@@ -154,7 +154,7 @@ def read_sic_industry(
         frame = profiles
 
     missing_columns = [
-        name for name in (SOURCE_FIELD, "as_of") if name not in getattr(frame, "columns", [])
+        name for name in (_SOURCE_FIELD, "as_of") if name not in getattr(frame, "columns", [])
     ]
     if missing_columns:
         return _cell_missing(
