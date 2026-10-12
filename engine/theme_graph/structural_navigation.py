@@ -559,10 +559,11 @@ def render_markdown_v2(result):
 def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_resolver=None):
     """Read-time hierarchy paths (display-tier only).
 
-    Composes macro_category → theme → micro_theme chains at query time from PARENT_OF
-    edges and basket/theme membership; paths are never stored per ticker. PARENT_OF
-    liveness is the incumbent ``_collapse_relevant_edges`` over PARENT_OF rows only.
-    Vendor and internal-only basket hops are never followed (Gate #2). Any live
+    Composes macro_category → theme → sub_theme → micro_theme chains at query time from
+    PARENT_OF edges and basket/theme membership. sub_theme is optional: a theme →
+    micro_theme chain without a sub_theme stays valid. Paths are never stored per ticker.
+    PARENT_OF liveness is the incumbent ``_collapse_relevant_edges`` over PARENT_OF rows
+    only. Vendor and internal-only basket hops are never followed (Gate #2). Any live
     PARENT_OF edge that violates the house hierarchy contract raises ValueError (fail closed).
     Hierarchy-tier theme nodes remain visible to this reader despite the reader tier guard.
     """
@@ -576,7 +577,12 @@ def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_
     )
 
     _CROSSWALK_PROVENANCE = "crosswalk:config/theme_crosswalk.yml"
-    _VALID_ADJACENCY = {("macro_category", "theme"), ("theme", "micro_theme")}
+    _VALID_ADJACENCY = {
+        ("macro_category", "theme"),
+        ("theme", "sub_theme"),
+        ("sub_theme", "micro_theme"),
+        ("theme", "micro_theme"),
+    }
 
     def _theme_rights():
         family = rights.family_for_source_ref("config/theme_crosswalk.yml")
