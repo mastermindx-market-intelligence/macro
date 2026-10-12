@@ -60,6 +60,7 @@ from engine.fundamental_forensics.admitted_filing_package import (  # noqa: E402
     admit_retained_filing_package,
 )
 from engine.fundamental_forensics.fif_member_capture import (  # noqa: E402
+    DEFAULT_RUN_BUDGET_BYTES,
     RETAINED_PACKAGE_INTEGRITY_CODES,
     FifMemberCaptureError,
     capture_fif_filing_packages,
@@ -745,7 +746,9 @@ def build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
     capture.add_argument("--min-interval-seconds", type=float, default=0.12)
     capture.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
-    capture.add_argument("--run-budget-bytes", type=int, default=256 * 1024 * 1024)
+    # D12: the run budget's single source is the capture module's constant —
+    # the publisher carries no second 256 MiB literal.
+    capture.add_argument("--run-budget-bytes", type=int, default=DEFAULT_RUN_BUDGET_BYTES)
 
     publish = subparsers.add_parser("publish", help="Publish production generations (hard gate)")
     publish.add_argument("--coverage-file", type=Path, required=True)

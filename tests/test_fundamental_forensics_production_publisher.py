@@ -31,7 +31,10 @@ from collectors.sec_request_pacer import SecRequestPacer
 from engine.fundamental_forensics.admitted_filing_package import (
     admit_retained_filing_package,
 )
-from engine.fundamental_forensics.fif_member_capture import read_retained_fif_packages
+from engine.fundamental_forensics.fif_member_capture import (
+    DEFAULT_RUN_BUDGET_BYTES,
+    read_retained_fif_packages,
+)
 from engine.fundamental_forensics.lineage_evidence import LineageEvidenceError
 from engine.fundamental_forensics.production_datasets import (
     load_generation,
@@ -1303,6 +1306,26 @@ def test_d10_unparseable_registry_available_at_fails_closed() -> None:
     assert producer._registry_available_clocks(
         {"available_at": "2026-08-02T00:00:00Z"}
     ) == [datetime(2026, 8, 2, tzinfo=timezone.utc)]
+
+
+def test_d12_run_budget_default_single_sourced() -> None:
+    """D12: the publisher carries no second 256 MiB literal — the capture
+    subcommand's --run-budget-bytes default IS the capture module's
+    DEFAULT_RUN_BUDGET_BYTES (one source)."""
+    args = producer.build_parser().parse_args(
+        [
+            "capture-members",
+            "--coverage-file", "c.json",
+            "--raw-root", "r",
+            "--archive-root", "a",
+            "--recorded-at", RUN_CLOCK,
+        ]
+    )
+    assert args.run_budget_bytes == DEFAULT_RUN_BUDGET_BYTES
+    source = (ROOT / "scripts" / "publish_fif_production_datasets.py").read_text(
+        encoding="utf-8"
+    )
+    assert "256 * 1024 * 1024" not in source
 
 
 def test_d8_targets_error_annotation_goes_to_stderr(tmp_path, capsys) -> None:

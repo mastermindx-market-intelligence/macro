@@ -579,6 +579,72 @@ def test_run_byte_budget_enforced(tmp_path) -> None:
     assert all(item == "member_capture_failed:run_budget_exceeded" for item in outcomes)
 
 
+def test_d12_index_member_count_refused_before_member_fetch(tmp_path, monkeypatch) -> None:
+    """D12: the member-count ceiling fires on the INDEX listing, before any
+    member fetch — the index itself is the only fetch the accession makes."""
+    lane = _materialized_lane(tmp_path)
+    monkeypatch.setattr(CAP, "MAX_INDEX_MEMBERS", 1)
+    report = _capture_report(lane)
+    outcomes = [row["outcome"] for row in report["issuers"][0]["accessions"]]
+    assert all(item == "member_capture_failed:member_count_exceeded" for item in outcomes)
+    assert lane["collector"].fetched == ["index.json", "index.json"]
+
+
+def test_d12_index_listed_member_size_refused_before_fetch(tmp_path, monkeypatch) -> None:
+    """D12: a role member whose INDEX-LISTED size exceeds MAX_MEMBER_BYTES is
+    refused before that member (or any sibling member) is fetched. The
+    ceiling sits strictly above every index payload (the index rides the same
+    _fetch_member_bytes ceiling) and strictly below every role member."""
+    lane = _materialized_lane(tmp_path)
+    index_limit = max(
+        len(members["index.json"]) for members in lane["served"].values()
+    )
+    member_sizes = [
+        len(payload)
+        for members in lane["served"].values()
+        for name, payload in members.items()
+        if name != "index.json"
+    ]
+    limit = index_limit + 1
+    assert min(member_sizes) > limit  # the ceiling bites members only
+    monkeypatch.setattr(CAP, "MAX_MEMBER_BYTES", limit)
+    report = _capture_report(lane)
+    outcomes = [row["outcome"] for row in report["issuers"][0]["accessions"]]
+    assert all(item == "member_capture_failed:member_oversize" for item in outcomes)
+    assert lane["collector"].fetched == ["index.json", "index.json"]
+
+
+def test_d12_planned_budget_refused_before_member_fetch(tmp_path) -> None:
+    """D12: when the index states sizes, the planned five-member sum is
+    checked against the remaining run budget before ANY member fetch — a
+    spent budget never still downloads members one at a time."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    first_accession = identity["accessions"][0].replace("-", "")
+    served = lane["served"][first_accession]
+    index_len = len(served["index.json"])
+    stem = next(
+        name for name in sorted(served) if name.endswith(".xsd")
+    ).rsplit(".", 1)[0]
+    first_member_len = len(served[f"{stem}.xsd"])
+    # Enough budget for the index and ONE member (the pre-rev1 code fetched
+    # that member before refusing the second), never for the planned five.
+    budget = index_len + first_member_len + 1
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+        run_budget_bytes=budget,
+    )
+    outcomes = [row["outcome"] for row in report["issuers"][0]["accessions"]]
+    assert all(item == "member_capture_failed:run_budget_exceeded" for item in outcomes)
+    # ZERO member fetches anywhere in the run — only the two indexes.
+    assert lane["collector"].fetched == ["index.json", "index.json"]
+
+
 def test_submissions_identity_mismatch_is_typed(tmp_path) -> None:
     lane = _materialized_lane(tmp_path)
     identity = lane["identity"]

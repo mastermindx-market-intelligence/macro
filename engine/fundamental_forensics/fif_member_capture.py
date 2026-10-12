@@ -746,6 +746,69 @@ def _parse_archive_index(index_bytes: bytes) -> list[dict[str, Any]]:
     return items
 
 
+def _index_member_sizes(items: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    """Index-listed byte sizes by member name, where the index states one.
+
+    The SEC index carries ``size`` as a string (sometimes blank); a member
+    with no usable listed size is simply absent here — its ceilings stay with
+    the post-fetch checks in ``_fetch_member_bytes``.
+    """
+    sizes: dict[str, int] = {}
+    for item in items:
+        name = item.get("name")
+        size = item.get("size")
+        if not isinstance(name, str):
+            continue
+        if isinstance(size, bool):
+            continue
+        if isinstance(size, int):
+            sizes[name] = int(size)
+        elif isinstance(size, str) and size.strip().isdigit():
+            sizes[name] = int(size.strip())
+    return sizes
+
+
+def _prefetch_member_ceilings(
+    items: Sequence[Mapping[str, Any]], *, stem: str, budget_remaining: int
+) -> None:
+    """D12: refuse on the INDEX listing, before any member fetch.
+
+    The member-count ceiling, a planned member whose index-listed size breaks
+    the per-member ceiling, a planned member absent from the index, and a
+    planned five-member sum above the remaining run budget are all knowable
+    up front — a budget already spent must not still download one member at a
+    time to discover it. Members whose index row lists no usable size keep
+    the post-fetch ceilings.
+    """
+    if len(items) > MAX_INDEX_MEMBERS:
+        raise FifMemberCaptureError(
+            "archive index exceeds the member-count ceiling", code="member_count_exceeded"
+        )
+    sizes = _index_member_sizes(items)
+    planned = 0
+    for suffix, _role in MEMBER_SUFFIX_ROLES:
+        name = f"{stem}{suffix}"
+        if name not in sizes:
+            raise FifMemberCaptureError(
+                f"planned member is absent from the archive index: {name}",
+                code="member_missing_from_index",
+            )
+        listed = sizes[name]
+        if listed > MAX_MEMBER_BYTES:
+            raise FifMemberCaptureError(
+                "member's index-listed size exceeds the per-member byte "
+                f"ceiling: {name} ({listed} bytes)",
+                code="member_oversize",
+            )
+        planned += listed
+    if planned > budget_remaining:
+        raise FifMemberCaptureError(
+            "planned member fetches exceed the remaining run byte budget "
+            f"({planned} > {budget_remaining})",
+            code="run_budget_exceeded",
+        )
+
+
 def _write_package(
     package_dir: Path,
     *,
@@ -997,6 +1060,14 @@ def capture_fif_filing_packages(
                 )
                 budget -= len(index_bytes)
                 stem = primary_name.rsplit(".", 1)[0]
+                # D12: every ceiling knowable from the index listing fires
+                # here, BEFORE any member fetch (the index is the only fetch
+                # a refused accession makes).
+                _prefetch_member_ceilings(
+                    _parse_archive_index(index_bytes),
+                    stem=stem,
+                    budget_remaining=budget,
+                )
                 stored: dict[str, bytes] = {}
                 for suffix, _role in MEMBER_SUFFIX_ROLES:
                     name = f"{stem}{suffix}"
