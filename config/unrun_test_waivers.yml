@@ -265,13 +265,3 @@ research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/code/test
   research PR. Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this
   row when the lane artifacts are published to R2 and a research-resident CI step adopts
   the suite, or when the results directory is archived.
-
-tests/test_fif_p2_evidence_capture.py: >-
-  FIF P2 browser-evidence capture suite (tests/tools/fif_p2_evidence_capture.py:
-  fixture-backed capture plan, fold measurement, loopback-only origin fence; no
-  network). Measured 43 passed on the lane host, 2026-10-12. Wiring it into
-  .github/ci/legacy-jobs.yml inside the P2 PR is a ci-authority hit and would
-  collide with the in-flight fif-kernel-guards move PR (seat ruling 2026-10-12),
-  which regenerates legacy-jobs.yml at fresh main and classifies every FIF suite
-  newer than 254f1ed9, this one by name. Owner: WS:FINANCIAL-INTELLIGENCE-FABRIC.
-  Delete this row in the PR that names the suite in fif-kernel-guards.

@@ -215,6 +215,7 @@ def test_populated_get_state_forwards_200_gzip(monkeypatch) -> None:
     assert entry["request_body_json"] is None
 
 
+@pytest.mark.data_gate
 def test_populated_post_financial_query_golden_200(golden_reference_rows, monkeypatch) -> None:
     monkeypatch.setattr(forensics_api, "REPO", ROOT)
     with _populated_client() as client:
@@ -512,6 +513,7 @@ def test_evidence_yml_exactly_three_keys(tmp_path: Path) -> None:
     path = tmp_path / "EVIDENCE.yml"
     tool.write_evidence_yml(
         path,
+        # ci-trigger-closure: data — receipt entries are file NAMES, never opened
         changed_paths=["site/fundamental_forensics.js", "site/fundamental_forensics.css"],
         manifest_relative="out/manifest.json",
     )
@@ -519,6 +521,7 @@ def test_evidence_yml_exactly_three_keys(tmp_path: Path) -> None:
     assert set(loaded) == {"schema", "changed_paths", "manifest"}
     assert loaded["schema"] == "mastermind.page_evidence_receipt.v1"
     assert loaded["changed_paths"] == [
+        # ci-trigger-closure: data — the same file NAMES read back from the receipt
         "site/fundamental_forensics.js",
         "site/fundamental_forensics.css",
     ]
@@ -545,6 +548,7 @@ def test_prepare_kernel_temp_root_symlinks_exactly_five_inputs(tmp_path: Path) -
     )
 
 
+@pytest.mark.data_gate
 def test_kernel_build_never_writes_through_to_tracked_files(tmp_path: Path) -> None:
     tracked_summary = ROOT / "data" / "fundamental_forensics" / "public_summary.json"
     inputs_before = {
@@ -1824,6 +1828,7 @@ def test_verify_real_degraded_health_reads_the_real_routes(
         tool.verify_real_degraded_health(client, expected_sha256="0" * 64)
 
 
+@pytest.mark.data_gate
 def test_kernel_build_without_install_leaves_the_tree_untouched() -> None:
     local = ROOT / tool.LOCAL_STATE_RELATIVE
     before = local.read_bytes() if local.exists() else None
