@@ -4,9 +4,10 @@ Preregistration: ``research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md``
 (blob ``49a68b5e9c6543d662044b0aa391c4b6e6e6052e``). §12 requires the dedicated
 test file to prove, on synthetic data only: the purge, the fold calendar, the
 comparison-set intersection, the reuse of one index draw across configurations
-and the crossing-then-clip order. This file carries the part-1 subset (tests
-1, 2, 5, 6, 7 of the lane packet plus the recommended logistic gradient check);
-tests 3 and 4 land with GD-W3-BUILD part 2.
+and the crossing-then-clip order. Complete set: tests 1, 2, 3, 4, 5, 6, 7 of
+the lane packet plus the recommended checks (logistic gradient, the
+negative-control half-length roll, and an undefined-statistic draw taking the
+failing extreme).
 
 Synthetic only: fixed-seed geometric random walks and hand-built arrays. No
 ``data/`` read or write, no network, no Massive store, no trial-ledger write,
@@ -20,6 +21,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import sys
 import types
 from pathlib import Path
@@ -234,6 +236,189 @@ def test_dry_run_reads_no_data(tmp_path, monkeypatch, capsys):
     blocked = json.loads((tmp_path / "PULLBACK_STAGE1_RESULTS_2026-10-11.json").read_text())
     assert blocked["blocked"][0]["type"] == "SOURCE_UNREADABLE"
     assert blocked["run"]["commit_sha"] == "canned"
+
+
+# ── test 3: comparison set = intersection of issued origins ──────────────────
+
+
+def test_comparison_set_is_the_intersection_of_issued_origins():
+    origin_idx = np.arange(100, 110)
+    masks = {
+        "A": np.array([1, 1, 1, 0, 1, 1, 1, 1, 1, 1], dtype=bool),
+        "B": np.array([1, 1, 0, 1, 1, 1, 0, 1, 1, 1], dtype=bool),
+    }
+    reasons = {
+        "A": np.array([None] * 3 + ["FIT_NONCONVERGENCE"] + [None] * 6, dtype=object),
+        "B": np.array(
+            [None, None, "QUANTILE_CROSSING", None, None, None, "QUANTILE_CROSSING", None, None, None],
+            dtype=object,
+        ),
+    }
+    common = stage1.intersection_of_issued(masks)
+    expected = masks["A"] & masks["B"]
+    assert common.tolist() == expected.tolist()
+
+    report = stage1.comparison_set_report(origin_idx, masks, reasons)
+    # Two configs with different abstention masks compare on the common origins
+    # only, and N_common is reported.
+    assert report["n_configs"] == 2
+    assert report["N_common"] == int(expected.sum()) == 7
+    assert report["common_origins"] == origin_idx[expected].tolist()
+    # Each configuration's issued / abstained counts by type.
+    assert report["configs"]["A"] == {"issued": 9, "abstained": 1, "by_type": {"FIT_NONCONVERGENCE": 1}}
+    assert report["configs"]["B"] == {
+        "issued": 8,
+        "abstained": 2,
+        "by_type": {"QUANTILE_CROSSING": 2},
+    }
+    # A third config shrinks the set further: the set is the intersection over
+    # EVERY compared configuration (prereg §7), not a pairwise statistic.
+    masks_c = dict(masks, C=np.array([1, 0, 1, 1, 1, 1, 1, 1, 1, 0], dtype=bool))
+    common3 = stage1.intersection_of_issued(masks_c)
+    assert stage1.comparison_set_report(origin_idx, masks_c, {**reasons, "C": np.full(10, None, dtype=object)})["N_common"] == int(
+        (masks["A"] & masks["B"] & masks_c["C"]).sum()
+    )
+    assert common3.sum() == report["N_common"] - 2
+
+
+# ── test 4: one bootstrap index draw shared across configurations ────────────
+
+
+def test_bootstrap_shares_one_index_draw_across_configurations():
+    N, n_draws = 40, 25
+    matrix = stage1.bootstrap_index_matrix(N, h=5, pop=0, fam=0, variant=0, n_draws=n_draws)
+    assert matrix.shape == (n_draws, N)  # n_draws rows of length N
+    assert matrix.min() >= 0 and matrix.max() < N  # every index in [0, N)
+
+    # Reproducible from SeedSequence([221011, h, pop, fam, var]) and a different
+    # var (the L = h sensitivity rerun) changes it.
+    np.testing.assert_array_equal(
+        matrix, stage1.bootstrap_index_matrix(N, 5, 0, 0, 0, n_draws=n_draws)
+    )
+    assert not np.array_equal(matrix, stage1.bootstrap_index_matrix(N, 5, 0, 0, 1, n_draws=n_draws))
+
+    # The frozen algorithm, row by row: starts then (start + arange(L)) % N.
+    L = stage1.block_length(5, 0)
+    assert L == max(21, 2 * 5) == 21
+    rng = np.random.default_rng(np.random.SeedSequence([stage1.SEED_ROOT, 5, 0, 0, 0]))
+    starts = rng.integers(0, N, size=math.ceil(N / L))
+    want = ((starts[:, None] + np.arange(L)[None, :]) % N).reshape(-1)[:N]
+    np.testing.assert_array_equal(matrix[0], want)
+
+    # ONE matrix serves every configuration: the paired draw statistics read
+    # every config's forecasts off the same rows.
+    gen = np.random.default_rng(7)
+    y = gen.random(N) < 0.3
+    p = {
+        "B0": np.full(N, 0.1),
+        "M3-ALL": gen.random(N),
+        "B1-20": gen.random(N),
+    }
+    stats = stage1.binary_draw_statistics(matrix, y, p, stage1.alpha_grid(5))
+    row0 = matrix[0]
+    assert stats["brier"]["M3-ALL"][0] == pytest.approx(float(np.mean((p["M3-ALL"][row0] - y[row0].astype(float)) ** 2)))
+    assert stats["brier"]["B1-20"][0] == pytest.approx(float(np.mean((p["B1-20"][row0] - y[row0].astype(float)) ** 2)))
+    # BSS is paired on the same row: 1 - Brier/Brier(B0) with B0 from row0.
+    assert stats["bss"]["M3-ALL"][0] == pytest.approx(
+        1.0 - stats["brier"]["M3-ALL"][0] / stats["brier"]["B0"][0]
+    )
+
+
+# ── recommended: negative-control shift is the half-length roll ───────────────
+
+
+def test_negative_control_rolls_training_labels_by_half_length(monkeypatch):
+    y = np.arange(10.0)
+    np.testing.assert_allclose(stage1.negative_control_shift(y), np.roll(y, len(y) // 2))
+    odd = np.arange(9.0)
+    np.testing.assert_allclose(stage1.negative_control_shift(odd), np.roll(odd, 4))  # len // 2 floors
+    # Deterministic, no seed: two calls are identical and it is a permutation.
+    np.testing.assert_array_equal(stage1.negative_control_shift(y), stage1.negative_control_shift(y))
+    assert sorted(stage1.negative_control_shift(y).tolist()) == y.tolist()
+
+    # The negative-control refit path fits on the ROLLED labels/targets.
+    captured = {}
+    real = stage1.fit_logistic
+
+    def spy(X, y_fit, C):
+        captured["y"] = np.asarray(y_fit, copy=True)
+        return real(X, y_fit, C)
+
+    monkeypatch.setattr(stage1, "fit_logistic", spy)
+    rng = np.random.default_rng(4)
+    X_tr, X_te = rng.normal(size=(10, 3)), rng.normal(size=(4, 3))
+    y_tr = (rng.random(10) < 0.4).astype(float)
+    stage1.fit_shifted_binary_block(X_tr, y_tr, X_te)
+    np.testing.assert_array_equal(captured["y"], stage1.negative_control_shift(y_tr))
+
+    captured_q = {}
+    real_q = stage1.fit_quantile_lp
+
+    def spy_q(X, a_fit, tau):
+        captured_q.setdefault("a", []).append(np.asarray(a_fit, copy=True))
+        return real_q(X, a_fit, tau)
+
+    monkeypatch.setattr(stage1, "fit_quantile_lp", spy_q)
+    a_tr = np.abs(rng.normal(size=10)) * 0.05
+    stage1.fit_shifted_quantile_block(X_tr, a_tr, X_te)
+    rolled = stage1.negative_control_shift(a_tr)
+    for seen in captured_q["a"]:
+        np.testing.assert_array_equal(seen, rolled)
+
+
+# ── recommended: an undefined draw takes the failing extreme ─────────────────
+
+
+def test_undefined_statistic_draw_takes_failing_extreme():
+    # One event origin (index 9); draw 0 repeats a non-event origin ten times,
+    # draw 1 takes each origin once.
+    y = np.zeros(10, dtype=bool)
+    y[9] = True
+    idx_matrix = np.vstack([np.zeros(10, dtype=int), np.arange(10)])
+    p = {
+        "B0": np.full(10, 0.1),
+        "M3-ALL": np.linspace(0.05, 0.5, 10),
+        "B1-20": np.full(10, 0.2),
+    }
+    stats = stage1.binary_draw_statistics(idx_matrix, y, p, stage1.alpha_grid(5))
+    # Zero events on a draw: V and ΔV undefined -> -inf where the gate needs
+    # them large... (BSS stays defined: its denominator Brier(B0) is nonzero
+    # with zero events - only a zero denominator makes BSS undefined.)
+    assert np.isneginf(stats["v"]["M3-ALL"]["b"][0])
+    assert np.isneginf(stats["v"]["B1-20"]["b"][0])
+    assert np.isneginf(stats["delta_v"][0])
+    assert np.isfinite(stats["bss"]["M3-ALL"][0])
+    # ...and WACE (no bin reaches n_b >= 100) undefined -> +inf where the gate
+    # needs it small.
+    assert np.isposinf(stats["wace"][0])
+    assert np.isposinf(stats["wace"][1])  # N = 10 < 100 on every draw here
+    # Draw 1 has one event: V and CITL are finite there.
+    assert np.isfinite(stats["v"]["M3-ALL"]["b"][1])
+    assert np.isfinite(stats["citl"][1])
+    # Bounds come from np.quantile over the raw draws (never nanquantile); the
+    # -inf draw drives the 0.05/12 lower bound to -inf.
+    assert np.isneginf(stage1.gate_lower_bound(stats["delta_v"]))
+
+    # BSS's own undefined case: a ZERO DENOMINATOR (Brier(B0) == 0 when the
+    # constant B0 probability equals every draw label) -> -inf.
+    y_all = np.ones(10, dtype=bool)
+    p_perfect = {"B0": np.ones(10), "M3-ALL": np.linspace(0.1, 0.6, 10), "B1-20": np.full(10, 0.4)}
+    stats_perfect = stage1.binary_draw_statistics(
+        np.arange(10).reshape(1, 10), y_all, p_perfect, stage1.alpha_grid(5)
+    )
+    assert stats_perfect["brier"]["B0"][0] == pytest.approx(0.0)
+    assert np.isneginf(stats_perfect["bss"]["M3-ALL"][0])
+    assert np.isneginf(stats_perfect["v"]["M3-ALL"]["b"][0])  # s = 1 -> V undefined too
+
+    # Quantile side: a zero reference pinball loss makes the skill undefined
+    # -> -inf for its gate.
+    a = np.linspace(0.0, 0.1, 10)
+    q_exact = {"0.5": a.copy(), "0.8": a.copy(), "0.9": a.copy()}  # zero loss at every tau
+    q_flat = {k: np.full(10, v) for k, v in (("0.5", 0.02), ("0.8", 0.04), ("0.9", 0.06))}
+    q_configs = {"Q0": q_exact, "Q1": q_flat, "Q3-ALL": q_flat}
+    qstats = stage1.quantile_draw_statistics(np.arange(10).reshape(1, 10), a, q_configs)
+    assert qstats["pl_sum"]["Q0"][0] == pytest.approx(0.0)  # exact predictions -> zero loss
+    assert np.isneginf(qstats["skill"][0])
 
 
 # ── recommended: logistic objective/gradient consistency ─────────────────────

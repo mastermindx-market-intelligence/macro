@@ -23247,3 +23247,27 @@ jobs:
         run: pip install pytest pandas numpy
       - name: observed-move labels, features and price-basis refusal
         run: python -m pytest tests/test_observed_moves.py -q
+
+  grey-deer-pullback-stage1:
+    if: ${{ false }}
+    gate: code
+    # Grey Deer W3 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback stage-1 executing
+    # script frozen by research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
+    # (blob 49a68b5e9c6543d662044b0aa391c4b6e6e6052e). Hermetic: synthetic series only.
+    timeout-minutes: 10
+    paths:
+      - "scripts/research/grey_deer_pullback_stage1.py"
+      - "tests/test_grey_deer_pullback_stage1.py"
+      - "lib/observed_moves.py"
+      - "engine/vol_forecast.py"
+      - "lib/nyse_calendar.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy scipy pyarrow
+      - name: pullback stage-1 synthetic tests
+        run: python -m pytest tests/test_grey_deer_pullback_stage1.py -q
