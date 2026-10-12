@@ -34,7 +34,7 @@ landmines:
   - "tests/test_research_priority_ordering.py is RED on origin/main (30 TemplateNotFound: _finance_sector_deep_dive.html.j2 missing from _SUPPORT_PARTIALS) and is not this carrier's defect; it is packet P-FIN-1."
   - "An xfail with raises=ValueError absorbs every refusal that subclasses ValueError; a hold that must discriminate causes needs an exact-string assertion (DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE)."
   - "Never bare git stash in the shared store; never mutate git in the main checkout; the worktree lives on the external SSD."
-  - "#7870 writes nothing in engine/earnings_narrative/private_publication.py (its four curation_assertion paths only); the generic private projection role Energy asked for in R-ENE-07 is authored once by #8245 (CDV-1 Task 4, head b019f975, draft, open at 2026-10-11T19:24:48Z) and consumed by Energy and B; B registers no second role (#7870 comment 6112888232)."
+  - "#7870 writes nothing in engine/earnings_narrative/private_publication.py (its four curation-assertion program paths only); the generic private projection role Energy asked for in R-ENE-07 is to be authored by #8245 (CDV-1 Task 4, head b019f975, draft, under a REQUEST_CHANGES read, not landed) and consumed by Energy and B; B registers no second role (#7870 comment 6112888232)."
 do_not_redo:
   - "H1 is ruled (B) and implemented at acc72f3f; do not re-open the registry identity grammar on #7870. Option A is a separate carrier."
   - "C1 (SBD-41..48) is DEFERRED by ruling; V1.1 (object.subject_role optional) is PROPOSED_NOT_BUILT; rights qualification is QUEUED_NOT_STARTED and blocked on the Robotics R1 corpus."
@@ -91,10 +91,10 @@ waves:
       1db9cad1 tests/test_ci_pack.py also auto-merges with 0 markers; it is a main-side change
       between 363b4e62 and f191b7f1 that 1db9cad1 inherits, not an #8250-owned path).
       Per-tree evidence, each for its own tree only: acc72f3f hosted green (check-runs read
-      19:13:04Z: 21 success, 4 skipped, 1 failure which is the non-gating
+      19:13:04Z, the seat's own log timestamp, not reproducible from the carrier: 21 success, 4 skipped, 1 failure which is the non-gating
       ci-authority/codex/merge-queue-pilot check run 114379982885; command in the 2026-10-11
       base-sync-delta-review handoff's verified block) and delta review ACCEPT_DELTA
-      (6105402719); 36e2064d hosted green (check-runs read 19:13:06Z: 21 success, 4 skipped, 1
+      (6105402719); 36e2064d hosted green (check-runs read 19:13:06Z, the seat's own log timestamp, not reproducible from the carrier: 21 success, 4 skipped, 1
       failure, the same non-gating pilot, check run 114439966726), the docfix that repaired in
       full the REQUEST_REPAIR read of 2b770ade; 1eb871d6 hosted RED (run 38158831326) with the
       delta read ACCEPT (6111839715); 839bd6a1 delta read ACCEPT, delta only (6112221196);
@@ -276,7 +276,7 @@ next_action: >
   CEILING_RAISE RECORDED_NOT_ACCEPTED; SOURCE_CONTINUITY SUBSTITUTE_SUPERSEDED_NEEDS_NEW_AT_839bd6a1;
   CI RED_AT_1eb871d6 (run 38158831326), GREEN_AT_839bd6a1 (gating checks; check-runs read
   19:24:07Z; #7870 comment 6112888232); RELEASE BLOCKED_PENDING_NON_SEAT_RULING
-  (#8250 lands first); FABRIC UNAVAILABLE; READY/MERGE NOT_YET.
+  (#8250 lands first); FABRIC RESPONSIVE at 2026-10-12T00:24:51Z (pool status, lease-broker layer: bailian cap 21 active 0; minimax cap 7 active 2; grok 17/0; cursor 11/0; glm 24/0; Executive OS connector OAuth-gated in this session); READY/MERGE NOT_YET.
 - Builder is not reviewer: the H1-B change was audited by an independent read-only
   Opus auditor at b76551be before the repairs were applied, and the repairs themselves
   (b76551be..acc72f3f) received a second independent read-only Opus review (#7870 comment

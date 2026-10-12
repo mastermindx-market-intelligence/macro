@@ -4658,6 +4658,11 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # WP02 source-diagnostic research kernel: exact inputs and shared pytest imports.
+    # Preserve closure audits, packing limits and incumbent owner declarations.
+    "gmi-source-diagnostic-kernel",
+    # Reviewed template-root curation; preserve other opaque domains and ceilings.
+    "integrated-answer-v0",
     # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
     # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
     "dataos-web-workspace",
