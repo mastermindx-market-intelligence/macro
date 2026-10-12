@@ -387,12 +387,16 @@
             693
           ],
           "zh": [
-            506,
-            682
+            500,
+            675
           ]
         },
+        "launcher_clearance_px": {
+          "en": 28,
+          "zh": 28
+        },
         "meets_contract": true,
-        "note": "The lead brief #ff-quick-signal ends at 693px (EN) / 682px (ZH), inside the 844px fold, with the attention/coverage stats; the desk header fills 130-343px (EN) / 130-349px (ZH) at 390. Next steps and the tab rail start below the fold."
+        "note": "The lead brief #ff-quick-signal ends at 693px (EN) / 675px (ZH), inside the 844px fold, with the attention/coverage stats; the desk header fills 130-343px in both locales at 390 (the ZH Latest button stays one line). The copilot launcher box (x 318-374, y 772-828) clears the coverage stat box (right edge 290) by 28px. Next steps and the tab rail start below the fold."
       }
     }
   },

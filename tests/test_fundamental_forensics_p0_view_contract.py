@@ -298,6 +298,75 @@ def test_first_viewport_measured_matches_the_committed_receipt():
             assert tabs["within_first_viewport"] is False, cell["cell_id"]
 
 
+def _rest_cells(measured: dict) -> list[dict]:
+    cells = json.loads((ROOT / measured["receipt"]).read_text(encoding="utf-8"))
+    rest = [c for c in cells if c["force_state"] is None and c["mode"] == "populated"]
+    assert len(rest) == 8
+    return rest
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_launcher_box_clears_every_first_viewport_module_and_the_coverage_stat():
+    """P2 r3 item c: the fab rect inflated by 8px touches no module nor covstat."""
+    measured = _contract()["first_viewport"]["measured"]
+    probes = set(measured["probes"])
+    for cell in _rest_cells(measured):
+        want = measured["desktop_1440" if cell["viewport"] == "desktop" else "mobile_390"]
+        assert set(want["within_first_viewport"]).isdisjoint(probes)
+        found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
+        fab = found["fab"]
+        assert fab["found"] is True and fab["rendered"] is True, cell["cell_id"]
+        inflated = (fab["left"] - 8, fab["top"] - 8, fab["right"] + 8, fab["bottom"] + 8)
+        for name in [*want["within_first_viewport"], "covstat"]:
+            other = found[name]
+            overlaps = not (
+                other["right"] <= inflated[0]
+                or other["left"] >= inflated[2]
+                or other["bottom"] <= inflated[1]
+                or other["top"] >= inflated[3]
+            )
+            assert not overlaps, (cell["cell_id"], name)
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mobile_latest_button_is_one_line_in_both_locales():
+    """P2 r3 item b: ZH 最新 keeps the EN height (no wrap) in both themes."""
+    measured = _contract()["first_viewport"]["measured"]
+    heights: dict[tuple[str, str], float] = {}
+    for cell in _rest_cells(measured):
+        if cell["viewport"] != "mobile":
+            continue
+        latest = next(m for m in cell["measurements"] if m["name"] == "latest")
+        assert latest["found"] is True and latest["rendered"] is True, cell["cell_id"]
+        heights[(cell["locale"], cell["theme"])] = latest["height"]
+    assert set(heights) == {("en", "dark"), ("en", "light"), ("zh", "dark"), ("zh", "light")}
+    for theme in ("dark", "light"):
+        assert abs(heights[("en", theme)] - heights[("zh", theme)]) <= 0.5, theme
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_launcher_clearance_px_equals_the_receipt():
+    """P2 r3 item c: the contract clearance is the measured fab/covstat gap."""
+    measured = _contract()["first_viewport"]["measured"]
+    clearance = measured["mobile_390"]["launcher_clearance_px"]
+    assert set(clearance) == {"en", "zh"}
+    for cell in _rest_cells(measured):
+        if cell["viewport"] != "mobile":
+            continue
+        found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
+        fab, covstat = found["fab"], found["covstat"]
+        overlaps_vertically = not (
+            fab["bottom"] <= covstat["top"] or covstat["bottom"] <= fab["top"]
+        )
+        if overlaps_vertically:
+            gap = round(fab["left"] - covstat["right"])
+        elif fab["top"] >= covstat["bottom"]:
+            gap = round(fab["top"] - covstat["bottom"])
+        else:
+            gap = round(covstat["top"] - fab["bottom"])
+        assert clearance[cell["locale"]] == gap, cell["cell_id"]
+
+
 def test_doc_mentions_journeys_and_every_dom_id():
     assert DOC.is_file()
     text = DOC.read_text(encoding="utf-8")
