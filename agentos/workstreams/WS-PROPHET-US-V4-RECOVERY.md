@@ -675,13 +675,18 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  Complete original P1a fourth composition with pinned main7e809516 after the actual
-  31-selector closure repair and receipt checks passed6/6; HK/Canada each96browsercases and43affected
-  access/asset tests pass. Current48-image evidence preserves the historical bundle.
-  Both bounded new technical reviews are accepted; human visual judgment remains
-  pending. Publish the integrated original carrier, then consume only new exact-head
-  semantic CI/gates before normal source release and dependent live journeys. Old
-  CI38205318192 and closed DailyBrief/object/B03 evidence remain consumed.
+  Finish the bounded CI history-consumer contract repair on original P1a8444 after
+  CI38218464277 failed its registry assertion for stock-dashboard-first-frame.
+  Canonical final semantic/plan evidence and actual tested-merge parents are consumed;
+  both dashboard proof steps passed, but whole CI remains failed. Parent reproduction
+  is red and the narrow test repair passes19affected cases; the scoped independent technical review is accepted.
+  Preserve the reviewed pinned-base setup and all existing parity assertions. The human
+  rejected the previous gallery and requested a flagship card redesign, superseding its
+  brief approval. Eight new editable Paper R6 boards and a working local prototype are
+  ready for critique; no new visual acceptance, production implementation or merge.
+  Publish the reviewed CI repair normally, then use the sole observer for new exact-head
+  gates. Closed DailyBrief/object/B03 evidence remains consumed.
+
 ---
 
 ## Context

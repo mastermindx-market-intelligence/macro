@@ -11,6 +11,10 @@ state_before: The human explicitly reopened original P1a current-main integratio
   contained accepted candidate-pool and cached-render repairs, but committed public bytes were stale and
   integration had not occurred.
 changed:
+- path: tests/test_run_ci_pack_fetch_fallback.py
+  what: Register the reviewed exact-base dashboard history consumer and constrain it to
+    one pinned legacy alias without network fetch or other remote namespace. Preserve
+    the six existing consumer contracts and add five planted-dependency rejection cases.
 - path: scripts/build_site.py
   what: Compose the existing board boundary with both candidate-pool and leader-observation previews.
     Each public projection remains a source-ordered prefix; protected hydration retains every withheld
@@ -161,6 +165,25 @@ verified:
     slices only; no independent device, pixel, full pytest or whole-file hash-recomputation claim. Parent43actual
     asset/access tests and exact structural comparisons remain separate. Review prose/count imprecision
     is recorded in parent adjudications.
+- claim: The new history-consumer failure is reproduced and repaired without changing the runner or parity assertions.
+  command: python3 -m pytest tests/test_run_ci_pack_fetch_fallback.py::test_fetch_depth_zero_consumers_own_the_narrow_history_contract -q; python3 -m pytest tests/test_run_ci_pack_fetch_fallback.py tests/test_ci_pack.py -k 'fetch or stock_dashboard_parity_baseline_in_shallow_pack' -q
+  result: The original assertion failed because stock-dashboard-first-frame was absent from
+    the expected consumer registry. After the narrow contract extension, 19 cases passed,
+    168 were intentionally deselected, in 21.00 seconds. This includes five planted unsafe
+    dependencies and the six existing real-Git baseline cases. Canonical hosted evidence
+    separately reports both stock-dashboard proof steps passed; whole CI remained failed.
+- claim: The fourth CI final plan and semantic evidence bind the actual tested merge.
+  command: load_semantic_evidence with exact run/head/base/merge/role/workflow/event; load_authoritative_plan gate=code with actual tested-merge manifest and changed-files artifact; git show -s --format=%H:%T:%P 3fb1a6e3e39370f167433aa66d548bddd9efa4ef
+  result: Canonical loaders passed. Actual merge parents are 67bb1d66a3bb1f6ad7f432a546b5936a8940c6fb
+    and 5e97a1304fb7e73a8a27bfc8e2482d966ea7783d; tree3bd0a7539f077c9c18c00d483b11576e4329c68a.
+    116 logical jobs, 355 passing proof steps, zero inherited, 15 blocking including14not-run
+    downstream steps, no infrastructure block. Canonical failure classification stays unknown.
+- claim: The history-consumer repair has one independent scoped technical review.
+  command: fabric_task.py result/accept/status prophet-p1a-fetch-consumer-review-01a11e89
+  result: MiniMax on admitted mb returned a3175-byte APPROVE; original root and parent
+    acceptance confirmed. Static supplied-file review only, hashes are parent bindings,
+    no independent pytest. The literal guard is not a general shell parser; the review's
+    broader whitespace-obfuscation claim is not accepted. Parent19-case execution is separate.
 unverified:
 - claim: Qualified visual adjudication, hosted exact-head CI, source release and authenticated four-market
     production acceptance.
@@ -183,13 +206,14 @@ unresolved:
 - HK/China adoption depends on actual accepted shared P1a release; Canada native Plan remains unavailable
   until its real owner exists.
 next_actions:
-- Finish fourth current-main integration with pinned7e809516, actual browser evidence and corrected31-path
-  closure proof, then publish original PR8444 and consume new exact-head semantic CI. Oldrun38205318192
-  remains closed.
-- Obtain qualified visual judgment over the concrete published screenshots; retain the completed scoped
-  source acceptance, current planner checks and exact parent test evidence.
-- Finish original current-main integration and normal exact-head source release, then continue dependent
-  owner-native integration and authenticated journeys.
+- The original retained prophet-p1a-fetch-consumer-review-01a11e89 result is accepted for
+  its exact one-file static scope. Commit and publish the verified repair on the original
+  branch. No worker replay. Old CI38218464277 and every prior artifact/gate remain consumed.
+- The human rejected the prior gallery after its brief approval. Use the new eight-board
+  Paper page p-9-0 in Prophet01M3NT5Y3G5HTJHVR0K5W2MDJM and local R6 prototype for critique;
+  do not infer visual acceptance or merge from the superseded answer. Page redesign is later scope.
+- Continue new exact-head CI and normal release only after all applicable source and visual
+  gates, then actual owner-native integration and authenticated journeys.
 do_not_redo:
 - Do not duplicate P1a or Daily Brief carriers; human approvals already received and must not be requested
   again.
