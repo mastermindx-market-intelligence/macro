@@ -424,6 +424,16 @@ def compose_bea_industry_accounting_change(
         "measurement_class": "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION",
         "source_methodology": latest["source_methodology"],
         "source": latest["source"],
+        "source_capture_window_utc": {
+            "earliest": min(
+                utc(row["source"]["research_capture_at"])
+                for row in history["observations"]
+            ).isoformat(),
+            "latest": max(
+                utc(row["source"]["research_capture_at"])
+                for row in history["observations"]
+            ).isoformat(),
+        },
         "reader_provenance": history["reader_provenance"],
         "using_industry": latest["using_industry"],
         "input_commodity": latest["input_commodity"],
@@ -435,8 +445,18 @@ def compose_bea_industry_accounting_change(
         "annual_observations": [
             {
                 "accounting_year": row["accounting_year"],
+                "period_end_not_known_at": row["period_end_not_known_at"],
+                "publisher_edition_date": row["source"]["edition_date"],
+                "publisher_edition_precision": row["source"]["edition_precision"],
+                "research_capture_at": row["source"]["research_capture_at"],
+                "original_historical_known_at": row["source"]["original_historical_known_at"],
+                "using_industry": row["using_industry"],
+                "input_commodity": row["input_commodity"],
                 "total_use_million_USD": row["total_use_million_USD"],
                 "world_import_million_USD": row["world_import_million_USD"],
+                "source_rounding_difference_million_USD": row[
+                    "source_rounding_difference_million_USD"
+                ],
                 "regional_import_million_USD": row["regional_import_million_USD"],
                 "regional_origin_fraction_of_world": row[
                     "regional_origin_fraction_of_world"

@@ -536,6 +536,44 @@ class BEAAccountingChangeBriefTests(unittest.TestCase):
         self.assertTrue(brief["estimated_allocation_not_observed_purchase"])
         self.assertTrue(brief["publisher_day_precision_only"])
 
+    def test_preserves_annual_capture_clocks_names_and_accounting_labels(self):
+        response = _synthetic_workspace_response()
+        rows = response["result"]["rows"]
+        rows[0]["research_source_capture_completed_at"] = "2026-10-08T03:01:00+00:00"
+        rows[7]["research_source_capture_completed_at"] = "2026-10-10T05:02:00+00:00"
+        rows[0]["industry_name"] = "2017 issuer-unmapped industry display label"
+        rows[7]["industry_name"] = "2024 issuer-unmapped industry display label"
+        rows[0]["commodity_name"] = "2017 source commodity display label"
+        rows[7]["commodity_name"] = "2024 source commodity display label"
+        report = compose_bea_industry_accounting_change(
+            response, industry_code="3341", commodity_code="3344",
+        )
+        self.assertEqual(report["source_capture_window_utc"], {
+            "earliest": "2026-10-08T03:01:00+00:00",
+            "latest": "2026-10-10T05:02:00+00:00",
+        })
+        earlier, latest = report["annual_observations"][0], report["annual_observations"][-1]
+        self.assertEqual(earlier["research_capture_at"], "2026-10-08T03:01:00+00:00")
+        self.assertEqual(latest["research_capture_at"], "2026-10-10T05:02:00+00:00")
+        self.assertEqual(earlier["using_industry"]["name"],
+                         "2017 issuer-unmapped industry display label")
+        self.assertEqual(latest["using_industry"]["name"],
+                         "2024 issuer-unmapped industry display label")
+        self.assertEqual(earlier["input_commodity"]["name"],
+                         "2017 source commodity display label")
+        self.assertEqual(latest["input_commodity"]["name"],
+                         "2024 source commodity display label")
+        self.assertEqual(earlier["period_end_not_known_at"], "2017-12-31")
+        self.assertEqual(latest["period_end_not_known_at"], "2024-12-31")
+        self.assertEqual(earlier["publisher_edition_date"], "2026-05-21")
+        self.assertEqual(latest["publisher_edition_precision"], "DAY")
+        self.assertEqual(earlier["source_rounding_difference_million_USD"], 1)
+        self.assertIsNone(earlier["original_historical_known_at"])
+        self.assertIsNone(latest["original_historical_known_at"])
+        self.assertFalse(report["historical_pit_eligible"])
+        self.assertFalse(report["may_publish"])
+        self.assertFalse(report["named_company_relationship"])
+
     def test_negative_accounting_changes_survive_brief(self):
         response = _synthetic_workspace_response()
         adjustments = dict(zip(_KEYS, (-8, 0, -60, 0, 0, -1, -1)))
