@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Original8786 is pushed and re-armed atba599a70; fresh exact-head CI38310079309 started21:21:04Z after the tested corrective integration. Consume protected CI andlanding, use the ba599portable bundle for installed andbrowser acceptance, then ship the separate aggregate-feed follow-on. Its accepted source hashes are unchanged and186tests pass after integration. Publication remains unapproved.
+next_action: Consume controller-admitted PR8786 head ff37582d and fresh CI38313710071 after ba599 passed all binding CI. All21 source and3 page hashes are unchanged; use the ff375 portable bundle only after actual protected landing, then installed staging and browser acceptance. Ship the separate tested aggregate-feed follow-on afterward; publication remains unapproved.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956

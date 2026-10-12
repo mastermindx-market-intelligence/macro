@@ -18,11 +18,11 @@
   },
   "release_authority": "Existing GitHub protected controller only; no gate changed",
   "publication_approved": false,
-  "current_prompt_sha256": "bf4099ee60e88a677a8b55d1c8637b04d734d7735587df157969c62cbfd3c2d5",
-  "current_prompt_readback_at": "2026-10-12T21:24:09.483119+00:00",
-  "current_original_pr_head": "ba599a70fb747290f54abdbd4f1e6acaed9b9d2e",
+  "current_prompt_sha256": "5d6af8cf1a5b297cc1c160d30781cac0bf65981b1d19978f022e87aaa6b3da05",
+  "current_prompt_readback_at": "2026-10-12T22:04:35.723167+00:00",
+  "current_original_pr_head": "ff37582d18cb6b4ac27ae760da76963f1962e287",
   "current_follow_on_head": "0b5bacd5b36d40a9796388aaf2c6e8ab2d16622f",
-  "current_ci_run": 38310079309,
+  "current_ci_run": 38313710071,
   "first_scheduled_execution_at": "2026-10-12T08:31:49.007Z",
   "execution_evidence": "Native same-thread user heartbeat carrying automation_id complete-press-delivery"
 }

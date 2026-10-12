@@ -3,7 +3,34 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Current armed carrier — October12 21:21 UTC
+## Current controller-admitted carrier — October 12 22:01 UTC
+
+PR #8786 is OPEN and armed at `ff37582d18cb6b4ac27ae760da76963f1962e287`.
+CI `38310079309` passed the previous `ba599a70` head: all 12 packs,
+contract-delta and ci-gate succeeded, terminal at 21:55:40Z. Controller
+`38313651542` admitted a main refresh at 21:56:12Z because protected main
+`3ca6eb200da3` changed check definitions. The admitted merge has parents
+`ba599a70fb747290f54abdbd4f1e6acaed9b9d2e` and
+`37ccd914a3694e8fb5e2bdb92fcf32df110f2105`. Admission load was 5 active
+PR proofs against cap 8. New CI `38313710071` is running on `ff37582d`.
+The prior green remains valid historical evidence, not current landing proof.
+
+Read-only `git show` verification confirms all 21 accepted Press source hashes
+and all 3 reviewed page hashes are unchanged. The CI-manifest refresh adds only
+the existing main qbus URI-path regression to its existing job. The portable
+bundle is now `/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding/ff37582d18cb6b4ac27ae760da76963f1962e287/`.
+All three scripts compile; expected hash values are unchanged. It remains
+unexecuted and requires the actual protected merge SHA after landing.
+
+The separate aggregate-feed implementation remains at `0b5bacd5` plus continuity
+receipts, with the accepted two-file repair and 186 tests passing in 7.05s.
+No application change or duplicate CI was launched. No follow-on PR exists.
+Next: consume exact-head protected CI and landing, verify installed ancestry,
+source/site/site.served and read-only staging, then real browser paths. After
+that acceptance, merge landed main into the same follow-on and ship its own PR.
+Press publication/cutover remain false; preserve the original EFFECT_UNKNOWN.
+
+## Historical repaired carrier — October12 21:21 UTC
 
 Original PR8786 is pushed and re-armed atba599a70fb747290f54abdbd4f1e6acaed9b9d2e.
 Fresh CI38310079309 started21:21:04Z on that exact head. Remote SHA, OPEN,
