@@ -27,6 +27,27 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  company-intelligence-private-runtime:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "app/deploy/company-intelligence-private-roots.py"
+      - "app/deploy/macro-api.service"
+      - "app/deploy/update.sh"
+      - "app/deploy/api-setup.sh"
+      - "tests/test_company_intelligence_private_roots.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install private directory boundary test dependency
+        run: pip install pytest
+      - name: Private directory boundary and deployment refusal contracts
+        run: python -m pytest tests/test_company_intelligence_private_roots.py -q
+
   microstructure-pressure-response-r0:
     if: ${{ false }}
     gate: code
