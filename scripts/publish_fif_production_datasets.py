@@ -35,8 +35,9 @@ write with the typed code ``admitted_at_after_recorded_at``, never clamping
 either clock.
 
 Hard-fail shape: every failure exits non-zero and prints one line-start
-``::error`` (``print(..., flush=True)``, never through a logger) — this is a
-publication gate, not the ``build_fundamental_forensics`` swallow-all shape.
+``::error`` on STDERR (``print(..., file=sys.stderr, flush=True)``, never
+through a logger) — this is a publication gate, not the
+``build_fundamental_forensics`` swallow-all shape.
 """
 from __future__ import annotations
 
@@ -126,7 +127,12 @@ def _fail(message: str, *, code: str) -> None:
 
 
 def _error_annotation(title: str, message: str) -> None:
-    print(f"::error title={title}::{message}", flush=True)
+    # D8: stderr, never stdout — the workflow captures this script's stdout via
+    # ``$(...)`` for the ``targets`` subcommand, so a stdout annotation is
+    # swallowed there. GitHub parses workflow commands from both streams, and
+    # stderr is the one every caller leaves visible. Still a bare print with a
+    # line-start ``::error``, never a logger.
+    print(f"::error title={title}::{message}", file=sys.stderr, flush=True)
 
 
 # ---------------------------------------------------------------------------

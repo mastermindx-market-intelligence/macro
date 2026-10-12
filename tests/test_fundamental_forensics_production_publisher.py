@@ -369,6 +369,13 @@ def _latest_json_path(store: Path, issuer_id: str) -> Path:
     return store / LATEST_KEY_TEMPLATE.format(issuer_id=issuer_id)
 
 
+def _stderr_error_lines(capsys) -> list[str]:
+    """D8: every ::error annotation rides stderr (stdout may be $(...)-captured)."""
+    return [
+        line for line in capsys.readouterr().err.splitlines() if line.startswith("::error")
+    ]
+
+
 # ---------------------------------------------------------------------------
 # A3: publish, pointer read-back, idempotency, REAL-SHAPED clocks
 # ---------------------------------------------------------------------------
@@ -468,9 +475,8 @@ def test_future_clock_refusal_writes_nothing(tmp_path, monkeypatch, offline_coll
     # A3b: --recorded-at earlier than the CLOCK RULE value refuses the run.
     rc = _publish_cli(lane, contract, store, report_path, clock=EARLY_RUN_CLOCK)
     assert rc == 1
-    out = capsys.readouterr().out
-    error_lines = [line for line in out.splitlines() if line.startswith("::error")]
-    assert error_lines, out
+    error_lines = _stderr_error_lines(capsys)
+    assert error_lines
     joined = " ".join(error_lines)
     assert "admitted_at_after_recorded_at" in joined
     assert "2026-10-13T02:31:00" in joined    # the computed admitted_at
@@ -500,10 +506,8 @@ def test_rule_clock_alone_can_force_the_future_clock_refusal(
         lane, contract, tmp_path / "store", tmp_path / "report.json", clock=MID_RULES_RUN
     )
     assert rc == 1
-    out = capsys.readouterr().out
     assert any(
-        line.startswith("::error") and "admitted_at_after_recorded_at" in line
-        for line in out.splitlines()
+        "admitted_at_after_recorded_at" in line for line in _stderr_error_lines(capsys)
     )
 
 
@@ -676,10 +680,8 @@ def test_tampered_package_refuses_the_whole_publish_run(
     report_path = tmp_path / "publish_report.json"
     rc = _publish_cli(lane, contract, store, report_path)
     assert rc == 1
-    out = capsys.readouterr().out
     assert any(
-        line.startswith("::error") and "retained_package_integrity" in line
-        for line in out.splitlines()
+        "retained_package_integrity" in line for line in _stderr_error_lines(capsys)
     )
     # NOTHING was published that night: no report, no store, no pointer.
     assert not report_path.exists()
@@ -745,8 +747,7 @@ def test_untyped_admission_error_hard_fails(
     monkeypatch.setattr(producer, "admit_retained_filing_package", _explode)
     rc = _publish_cli(lane, contract, tmp_path / "store", tmp_path / "report.json")
     assert rc == 1
-    out = capsys.readouterr().out
-    assert any(line.startswith("::error") for line in out.splitlines())
+    assert _stderr_error_lines(capsys)
 
 
 def test_lineage_mint_error_hard_fails(
@@ -766,8 +767,7 @@ def test_lineage_mint_error_hard_fails(
     assert _capture_cli(lane, contract) == 0
     rc = _publish_cli(lane, contract, tmp_path / "store", tmp_path / "report.json")
     assert rc == 1
-    out = capsys.readouterr().out
-    lines = [line for line in out.splitlines() if line.startswith("::error")]
+    lines = _stderr_error_lines(capsys)
     assert lines
     assert "synthetic mint refusal" in " ".join(lines)
     # Nothing was published: no store content at all.
@@ -799,8 +799,7 @@ def test_verify_refuses_a_report_that_drops_an_issuer(
         ]
     )
     assert rc == 1
-    out = capsys.readouterr().out
-    assert any(line.startswith("::error") for line in out.splitlines())
+    assert _stderr_error_lines(capsys)
 
 
 # ---------------------------------------------------------------------------
@@ -826,10 +825,8 @@ def test_fixture_tree_inputs_are_refused(tmp_path, monkeypatch, offline_collecto
             argv += ["--store-dir", str(tmp_path / "store"), "--repo-root", str(ROOT)]
         rc = producer.main(argv)
         assert rc == 1
-        out = capsys.readouterr().out
         assert any(
-            line.startswith("::error") and "golden_input_refused" in line
-            for line in out.splitlines()
+            "golden_input_refused" in line for line in _stderr_error_lines(capsys)
         )
 
 
@@ -853,10 +850,8 @@ def test_golden_schema_manifest_is_refused_at_publish(
     manifest_path.write_text(json.dumps(golden), encoding="utf-8")
     rc = _publish_cli(lane, contract, tmp_path / "store", tmp_path / "report.json")
     assert rc == 1
-    out = capsys.readouterr().out
     assert any(
-        line.startswith("::error") and "golden_input_refused" in line
-        for line in out.splitlines()
+        "golden_input_refused" in line for line in _stderr_error_lines(capsys)
     )
 
 
@@ -903,10 +898,7 @@ def test_targets_derives_contract_extras_and_refuses_overflow(tmp_path, capsys) 
         ]
     )
     assert rc == 1
-    out = capsys.readouterr().out
-    assert any(
-        line.startswith("::error") for line in out.splitlines()
-    )
+    assert _stderr_error_lines(capsys)
 
 
 def test_targets_over_the_real_contract_within_the_cap(capsys) -> None:
@@ -1126,15 +1118,16 @@ def test_capture_members_exits_nonzero_on_tampered_retained_member(
     member = sorted((package_dir / "members").iterdir())[0]
     member.write_bytes(member.read_bytes()[:-1])
 
-    capsys.readouterr()  # drop the first run's stdout before the refusing run
+    capsys.readouterr()  # drop the first run's output before the refusing run
     rc = _capture_cli(lane, contract, clock=NEXT_NIGHT_CAPTURE)
     assert rc == 1
-    out = capsys.readouterr().out
+    captured = capsys.readouterr()
     assert any(
-        line.startswith("::error") and "retained_package_integrity" in line
-        for line in out.splitlines()
+        "retained_package_integrity" in line
+        for line in captured.err.splitlines()
+        if line.startswith("::error")
     )
-    report = _stdout_json(out)
+    report = _stdout_json(captured.out)
     rows = report["issuers"][0]["accessions"]
     assert rows[0]["outcome"] == "member_capture_failed:package_bytes_mismatch"
     assert rows[1]["outcome"] == "retained_reused"
@@ -1164,15 +1157,16 @@ def test_capture_members_exits_nonzero_on_manifest_less_package_dir(
     }
     (package_dir / "package_manifest.json").unlink()
 
-    capsys.readouterr()  # drop the first run's stdout before the refusing run
+    capsys.readouterr()  # drop the first run's output before the refusing run
     rc = _capture_cli(lane, contract, clock=NEXT_NIGHT_CAPTURE)
     assert rc == 1
-    out = capsys.readouterr().out
+    captured = capsys.readouterr()
     assert any(
-        line.startswith("::error") and "retained_package_integrity" in line
-        for line in out.splitlines()
+        "retained_package_integrity" in line
+        for line in captured.err.splitlines()
+        if line.startswith("::error")
     )
-    report = _stdout_json(out)
+    report = _stdout_json(captured.out)
     rows = report["issuers"][0]["accessions"]
     assert rows[0]["outcome"] == "member_capture_failed:package_manifest_malformed"
     assert rows[1]["outcome"] == "retained_reused"
@@ -1228,13 +1222,11 @@ def test_publish_over_one_tampered_package_moves_no_latest_json(
     victim = sorted(members_dir.iterdir())[0]
     victim.write_bytes(victim.read_bytes()[:-1])
 
-    capsys.readouterr()  # drop the lawful publish's stdout
+    capsys.readouterr()  # drop the lawful publish's output
     rc = _publish_cli(lane, contract, store, report_path)
     assert rc == 1
-    out = capsys.readouterr().out
     assert any(
-        line.startswith("::error") and "retained_package_integrity" in line
-        for line in out.splitlines()
+        "retained_package_integrity" in line for line in _stderr_error_lines(capsys)
     )
     # ZERO generations written; no latest.json for ANY issuer moved.
     assert _store_files(store) == files_before
@@ -1267,6 +1259,33 @@ def test_targets_requires_max_tickers() -> None:
             ["targets", "--coverage-file", "c.json", "--targets-file", "t.json"]
         )
     assert caught.value.code == 2
+
+
+def test_d8_targets_error_annotation_goes_to_stderr(tmp_path, capsys) -> None:
+    """D8: the ``targets`` ::error must reach the Actions log even though the
+    workflow captures this subcommand's stdout via ``$(...)`` — the annotation
+    rides stderr (line-start, bare print); stdout carries no annotation."""
+    identity = _fixture_identity()
+    contract = _write_contract(tmp_path, identity, None)
+    targets_file = _write_targets_file(tmp_path, 2)
+    rc = producer.main(
+        [
+            "targets",
+            "--coverage-file", str(contract),
+            "--targets-file", str(targets_file),
+            "--max-tickers", "1",
+        ]
+    )
+    assert rc == 1
+    captured = capsys.readouterr()
+    assert not any(
+        line.startswith("::error") for line in captured.out.splitlines()
+    ), captured.out
+    error_lines = [
+        line for line in captured.err.splitlines() if line.startswith("::error")
+    ]
+    assert error_lines, captured.err
+    assert "targets_overflow" in " ".join(error_lines)
 
 
 def test_targets_cap_boundary_fifteen_passes_sixteen_refuses(tmp_path, capsys) -> None:
@@ -1310,8 +1329,6 @@ def test_targets_cap_boundary_fifteen_passes_sixteen_refuses(tmp_path, capsys) -
         ]
     )
     assert rc == 1
-    out = capsys.readouterr().out
     assert any(
-        line.startswith("::error") and "targets_overflow" in line
-        for line in out.splitlines()
+        "targets_overflow" in line for line in _stderr_error_lines(capsys)
     )
