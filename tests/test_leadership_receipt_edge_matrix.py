@@ -1,40 +1,49 @@
 """Leadership receipt (mi.leadership_receipt.v1) — edge-behavior matrix.
 
-Characterization pins for engine/leadership_receipt.py as observed on the
-base commit (accepted work, PR #8519). This lane edits NO engine code:
-every test here pins behavior the module exhibits today, and where the
-observed behavior looks wrong the pin is accompanied by a strict-xfail
-assertion of the believed-correct behavior plus a GAP entry — never by an
-engine change.
+Characterization pins for engine/leadership_receipt.py, carried forward by
+the B4-macro lane: the two defects the base matrix pinned as strict xfails
+(a datetime OBJECT as_of silently losing its date; a future-dated
+theme_state reading fresh) are FIXED in the engine, the stale prose now
+derives from _THEME_STATE_MAX_AGE_DAYS, and breadth carries a label_zh
+sibling. Every test here pins behavior the module exhibits today.
 
 Facts pinned by this matrix:
 
 * _state_from_rel: the ±0.01 dead-band edges are INCLUSIVE toward the
   directional state (rel == +0.01 -> "leading", rel == -0.01 -> "lagging").
-* Theme-state freshness: stale requires (theme_intel.as_of - theme_state
-  .as_of).days > 5, so exactly 5 days old is fresh, 6 is stale, and a
-  theme-state as_of in the FUTURE yields negative days and also reads
-  fresh (strict xfail + GAP).
-* _parse_date: None -> None; a date that is not a datetime -> itself; a
-  str -> date.fromisoformat(value[:10]) or None on ValueError; anything
-  else — int, float, a datetime OBJECT — -> None. A datetime STRING
-  parses; a datetime OBJECT does not (strict xfail + GAP).
+* Theme-state freshness, checked in order: either date unparsable ->
+  "missing"; a theme_state as_of at least one calendar day AFTER the
+  theme_intel as_of -> "invalid" (there is no "future" status); age in
+  days strictly greater than _THEME_STATE_MAX_AGE_DAYS -> "stale" (exactly
+  5 days old is fresh, 6 is stale); else "fresh". The stale prose names
+  the constant's value, so copy and gate cannot drift apart.
+* _parse_date: None -> None; a datetime OBJECT -> its LOCAL date (equal to
+  parsing dt.isoformat(), whose first 10 chars carry the local date — no
+  UTC normalization); a date that is not a datetime -> itself; a str ->
+  date.fromisoformat(value[:10]) or None on ValueError; anything else —
+  int, float — -> None.
 * _roster_changed: True only when a member's curated_added (else added)
   date is STRICTLY after the basket created date; equal does not count.
 * build_receipt is fail-soft: malformed inputs never raise; clearly
   malformed ones return the unavailable receipt (reason "receipt_error"
   or an observation reason).
+* breadth: label / label_zh pair — every producer value (broad, narrow;
+  engine/group_flow.py _leadership emits nothing else) maps to plain-word
+  ZH, None and unknown labels give label_zh None (no English slug is
+  echoed into the ZH field), and available and unavailable receipts share
+  the same breadth key set.
 """
 from __future__ import annotations
 
 import copy
 import json
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
 
+import engine.leadership_receipt as lr_mod
 from engine.leadership_receipt import (
     _DEAD_BAND,
     _THEME_STATE_MAX_AGE_DAYS,
@@ -73,6 +82,9 @@ ROW_KEYS = ["interval", "benchmark", "measure", "sample", "freshness", "authorit
 # Banned vocabulary for any string the receipt returns (lane constraint 3).
 _BANNED_EN = re.compile(r"\b(score|confidence|validated|buy|sell)\b", re.I)
 _BANNED_ZH = ("评分", "置信", "买入", "卖出")
+
+# One CJK ideograph is enough to call a string Chinese.
+_CJK = re.compile(r"[一-鿿]")
 
 
 # ---------------------------------------------------------------------------
@@ -268,33 +280,71 @@ class TestThemeStateFreshness:
         r = self._receipt(tmp_path, "2026-10-01")
         assert r["theme_state"]["status"] == "stale"
 
-    def test_stale_prose_hardcodes_five_days(self, tmp_path: Path):
-        """The stale freshness row hardcodes "5" in prose while the gate uses
-        _THEME_STATE_MAX_AGE_DAYS (GAP: the two can drift apart)."""
-        r = self._receipt(tmp_path, "2026-10-01")
+    def test_stale_copy_follows_max_age_constant(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        """The stale freshness row names _THEME_STATE_MAX_AGE_DAYS, so the
+        copy tracks the gate: at 7 an 8-day-old state is stale and the prose
+        says 7 days; at the production value 5 the rendered text is
+        byte-identical to the base commit's hardcoded copy."""
+        monkeypatch.setattr(lr_mod, "_THEME_STATE_MAX_AGE_DAYS", 7)
+        assert (date(2026, 10, 7) - date(2026, 9, 29)).days == 8
+        r = self._receipt(tmp_path, "2026-09-29")
+        assert r["theme_state"]["status"] == "stale"
         row = next(row for row in r["rows"] if row["key"] == "freshness")
-        assert "more than 5 days old" in row["text_en"]
-        assert "超过5天" in row["text_zh"]
+        assert "more than 7 days old" in row["text_en"]
+        assert "超过7天" in row["text_zh"]
 
-    def test_future_theme_state_as_of_reads_fresh(self, tmp_path: Path):
-        """Observed: a theme-state as_of AFTER the theme-intel as_of gives
-        negative (ti - ts).days, so a future-dated state is fresh. Pinned as
-        observed; the strict xfail below records the suspected defect."""
+        monkeypatch.setattr(lr_mod, "_THEME_STATE_MAX_AGE_DAYS", _THEME_STATE_MAX_AGE_DAYS)
+        assert (date(2026, 10, 7) - date(2026, 10, 1)).days == 6
+        r5 = self._receipt(tmp_path, "2026-10-01")
+        assert r5["theme_state"]["status"] == "stale"
+        row5 = next(row for row in r5["rows"] if row["key"] == "freshness")
+        assert row5["text_en"] == (
+            "Theme state as of 2026-10-01 — more than 5 days old; read with care."
+        )
+        assert row5["text_zh"] == "主题状态截至2026-10-01——超过5天；请谨慎阅读。"
+
+    def test_future_theme_state_as_of_is_invalid(self, tmp_path: Path):
+        """A theme-state as_of AFTER the theme-intel as_of gives negative
+        (ti - ts).days and now reads "invalid" — never "fresh"."""
         assert (date(2026, 10, 7) - date(2026, 10, 12)).days == -5
         r = self._receipt(tmp_path, "2026-10-12")
-        assert r["theme_state"]["status"] == "fresh"
+        assert r["theme_state"]["status"] == "invalid"
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason=(
-            "GAP: engine/leadership_receipt.py:150 — a future-dated theme_state as_of "
-            "yields negative (ti_as_of - ts_as_of).days and is classified fresh; no "
-            "future-date guard exists"
-        ),
-    )
     def test_future_theme_state_as_of_should_not_read_fresh(self, tmp_path: Path):
+        """The #8967 strict xfail, flipped: a future-dated theme_state
+        must not read fresh (it reads invalid)."""
         r = self._receipt(tmp_path, "2026-10-12")
         assert r["theme_state"]["status"] != "fresh"
+        assert r["theme_state"]["status"] == "invalid"
+
+    def test_future_dated_theme_state_is_invalid(self, tmp_path: Path):
+        """A theme_state as_of at least one calendar day after the read is
+        "invalid" (1 day and 5 days ahead alike), and the freshness row
+        carries plain-word invalid copy in EN and ZH naming the date."""
+        r1 = self._receipt(tmp_path, "2026-10-08")  # 1 day ahead of TI
+        assert r1["theme_state"]["status"] == "invalid"
+        r5 = self._receipt(tmp_path, "2026-10-12")  # 5 days ahead of TI
+        assert r5["theme_state"]["status"] == "invalid"
+        row = next(row for row in r5["rows"] if row["key"] == "freshness")
+        assert "2026-10-12" in row["text_en"]
+        assert "after this read" in row["text_en"]
+        assert "unreliable" in row["text_en"]
+        assert "2026-10-12" in row["text_zh"]
+        assert "晚于本次判读" in row["text_zh"]
+        assert "谨慎看待" in row["text_zh"]
+
+    def test_same_day_theme_state_is_fresh(self, tmp_path: Path):
+        """The invalid branch needs at least one full calendar day: a
+        same-day theme_state is fresh. The pre-existing stale boundary is
+        unchanged — 5 days old is fresh, 6 is stale."""
+        r0 = self._receipt(tmp_path, "2026-10-07")  # same day as TI
+        assert r0["theme_state"]["status"] == "fresh"
+        r5 = self._receipt(tmp_path, "2026-10-02")  # exactly 5 days old
+        assert r5["theme_state"]["status"] == "fresh"
+        r6 = self._receipt(tmp_path, "2026-10-01")  # 6 days old
+        assert r6["theme_state"]["status"] == "stale"
 
     def test_missing_when_theme_state_as_of_unparseable(self, tmp_path: Path):
         site = tmp_path / "site"
@@ -338,28 +388,63 @@ class TestParseDate:
             ),
             pytest.param(date(2026, 10, 12), date(2026, 10, 12), id="date-object"),
             pytest.param(
-                datetime(2026, 10, 12, 7, 30), None, id="datetime-object-dropped"
+                datetime(2026, 10, 12, 7, 30),
+                date(2026, 10, 12),
+                id="datetime-object-date-taken",
             ),
         ],
     )
     def test_parse_date_matrix(self, value, expected):
         """A datetime STRING parses (only value[:10] is handed to
-        date.fromisoformat); a datetime OBJECT returns None because the
-        isinstance(value, date) branch explicitly excludes datetime — pinned
-        as observed, with the suspected defect xfailed below."""
+        date.fromisoformat); a datetime OBJECT parses to its local date via
+        the datetime-first isinstance branch."""
         assert _parse_date(value) == expected
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason=(
-            "GAP: engine/leadership_receipt.py:43 — `not isinstance(value, datetime)` "
-            "excludes datetime objects, so _parse_date(datetime(...)) is None while a "
-            "datetime STRING parses; a datetime object silently loses its date. Inert "
-            "for JSON-derived inputs; owner to adjudicate"
-        ),
-    )
-    def test_parse_date_datetime_object_should_parse(self):
+    def test_parse_date_datetime_object_parses(self):
+        """The #8967 strict xfail, flipped: a datetime object no longer
+        silently loses its date."""
         assert _parse_date(datetime(2026, 10, 12, 7, 30)) == date(2026, 10, 12)
+
+    @pytest.mark.parametrize(
+        "dt",
+        [
+            pytest.param(datetime(2026, 10, 12, 7, 30), id="naive"),
+            pytest.param(
+                datetime(2026, 10, 12, 7, 30, tzinfo=timezone.utc), id="utc-aware"
+            ),
+            pytest.param(
+                datetime(2026, 10, 12, 23, 30, tzinfo=timezone(timedelta(hours=8))),
+                id="utc-plus-8-at-2330",
+            ),
+            pytest.param(
+                datetime(2026, 10, 12, 3, 0, tzinfo=timezone(timedelta(hours=8))),
+                id="utc-plus-8-at-0300-local-and-utc-dates-differ",
+            ),
+        ],
+    )
+    def test_datetime_object_as_of_parses(self, tmp_path: Path, dt):
+        """_parse_date(dt) == _parse_date(dt.isoformat()) for naive and
+        tz-aware datetimes: the LOCAL date wins (no UTC normalization). The
+        03:00 UTC+08:00 case is the one a UTC-normalizing implementation
+        gets wrong (its UTC date is 2026-10-11); 23:30 UTC+08:00 is the
+        same-date control. build_receipt reads the same theme_state status
+        for a datetime-object theme_intel as_of as for the isoformat string."""
+        assert _parse_date(dt) == _parse_date(dt.isoformat())
+        assert _parse_date(dt) == dt.date()
+        site = tmp_path / "site"
+        _theme_state_file(site, as_of="2026-10-05")
+        r_obj = build_receipt(
+            _base_basket(), _theme(), _theme_intel(as_of=dt), "us", site
+        )
+        r_str = build_receipt(
+            _base_basket(),
+            _theme(),
+            _theme_intel(as_of=dt.isoformat()),
+            "us",
+            site,
+        )
+        assert r_obj["theme_state"]["status"] == r_str["theme_state"]["status"]
+        assert r_obj["theme_state"]["status"] == "stale"
 
 
 # ---------------------------------------------------------------------------
@@ -753,3 +838,55 @@ class TestBannedWords:
         assert _BANNED_EN.search("sell signal")
         assert not _BANNED_EN.search("rebalanced monthly")
         assert "置信" in "置信度"
+
+
+# ---------------------------------------------------------------------------
+# 11. Breadth label ZH.
+# ---------------------------------------------------------------------------
+
+
+class TestBreadthZh:
+    @pytest.mark.parametrize(
+        ("label", "expect"),
+        [
+            pytest.param("broad", "广泛", id="producer-broad"),
+            pytest.param("narrow", "狭窄", id="producer-narrow"),
+            pytest.param(None, None, id="producer-none"),
+            pytest.param("mystery", None, id="unknown-not-echoed"),
+        ],
+    )
+    def test_breadth_has_zh(self, tmp_path: Path, label, expect):
+        """breadth.label_zh carries plain-word ZH for every producer value
+        (engine/group_flow.py _leadership emits only broad / narrow / None):
+        non-empty, contains CJK, contains no ASCII letters. None and any
+        unknown value give label_zh None — a raw English slug is never
+        echoed into the ZH field."""
+        theme = _theme()
+        theme["leadership"]["breadth"] = label
+        r = build_receipt(_base_basket(), theme, _theme_intel(), "us", tmp_path / "site")
+        assert r["state"] == "leading"
+        assert r["breadth"]["label"] == label
+        assert r["breadth"]["label_zh"] == expect
+        if expect is not None:
+            assert expect.strip()
+            assert _CJK.search(expect)
+            assert not re.search(r"[A-Za-z]", expect)
+
+    def test_breadth_key_set_available_and_unavailable(self, tmp_path: Path):
+        """Available and unavailable receipts carry the same breadth key
+        set (label_zh included); the unavailable one is all-None."""
+        site = tmp_path / "site"
+        r_ok = build_receipt(_base_basket(), _theme(), _theme_intel(), "us", site)
+        b = _base_basket()
+        b["perf"]["20d"] = {"rel": None}
+        r_bad = build_receipt(b, _theme(), _theme_intel(), "us", site)
+        assert r_ok["state"] == "leading"
+        assert r_bad["state"] == "unavailable"
+        assert set(r_ok["breadth"]) == set(r_bad["breadth"])
+        assert r_bad["breadth"] == {
+            "pct50": None,
+            "pct200": None,
+            "n": None,
+            "label": None,
+            "label_zh": None,
+        }
