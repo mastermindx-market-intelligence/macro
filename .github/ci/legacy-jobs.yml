@@ -5210,6 +5210,20 @@ jobs:
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png"
       - "tests/test_stock_dashboard_first_frame.py"
+      # Digest-only tier: the receipt-closure gate the suite imports (with its
+      # sparse-tree refusal), the scripts its inertness probe executes or reads,
+      # and the committed digest sidecars it re-derives.
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "site/charts.js"
+      - "site/chart_i18n.js"
+      - "site/tablesort.js"
+      - "site/mtf.js"
+      - "site/illus.js"
+      - "site/stocktable.js"
+      - "site/theme.js"
+      - "mockups/evidence/prophet-p0b-zero-fouc/digest-refresh/**"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7010,6 +7024,12 @@ jobs:
       - "site/stock-dashboard.css"
       - "site/factordata/canada_standouts.json"
       - "site/factordata/hk_standouts.json"
+      # the gate hashes its digest-only tier (REFRESHABLE_LOADED_ASSETS)
+      - "site/charts.js"
+      - "site/chart_i18n.js"
+      - "site/tablesort.js"
+      - "site/mtf.js"
+      - "site/illus.js"
       - "engine/__init__.py"
       - "engine/i18n.py"
       # Parsed or existence-checked subjects, never imported. Each is marked
@@ -9469,6 +9489,10 @@ jobs:
     # rendered-fixture.json's recipe inputs) must re-mint those receipts in
     # the same diff, or tests/test_stock_dashboard_first_frame.py reds on pure
     # main and every fresh merge-ref inherits it (#7500, #7603, #6872).
+    # A loaded script in the gate's digest-only tier (REFRESHABLE_LOADED_ASSETS,
+    # proved inert on the measured fixture by that suite) closes instead with a
+    # browser-free `--refresh-digests` sidecar under digest-refresh/; the
+    # receipts and their layout numbers stay as the browser measured them.
     #
     # OWN JOB, deliberately (2026-09-24, #6872 postmortem). The gate first
     # shipped as trailing steps on design-governance (#7613). Two defects:
