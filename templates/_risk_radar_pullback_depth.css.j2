@@ -49,7 +49,7 @@ html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:
  .rrp .rrp-metrics{grid-template-columns:minmax(0,1fr);gap:var(--sp-4,16px);padding:var(--sp-5,20px)}
  .rrp .rrp-metrics>div+div{border-left:0;border-top:1px solid var(--line);padding:var(--sp-4,16px) 0 0}
  .rrp .rrp-study{grid-template-columns:minmax(0,1fr);padding:var(--sp-4,16px);gap:var(--sp-4,16px)}
- .rrp .rrp-age,.rrp .rrp-limit,.rrp .pbx-expiry{padding-left:var(--sp-5,20px);padding-right:var(--sp-5,20px)}
+ .rrp .rrp-age,.rrp .rrp-limit,.rrp .pbx-expiry,.rrp .rrp-signals{padding-left:var(--sp-5,20px);padding-right:var(--sp-5,20px)}
 }
 
 .rrp .rrp-chart-caption{font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
@@ -71,3 +71,16 @@ html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:
 .riskdlg-legacy-details>summary::after{content:"+";font-size:var(--fs-h2);color:var(--muted)}
 .riskdlg-legacy-details[open]>summary::after{content:"−"}
 .riskdlg-legacy-details>summary:focus-visible{outline:2px solid var(--ink-info,var(--info));outline-offset:3px}
+
+/* Owner deterioration / repair evidence. Two columns of label | value; one column under 420px. */
+.rrp .rrp-signals{display:flex;flex-direction:column;gap:var(--sp-3,12px);padding:var(--sp-4,16px) var(--sp-6,24px);border-top:1px solid var(--line)}
+.rrp .rrp-signals dl{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);column-gap:var(--sp-4,16px);row-gap:var(--sp-2,8px);margin:0}
+.rrp .rrp-signals dt{font:400 var(--fs-sm)/1.5 var(--font-ui);color:var(--muted)}
+.rrp .rrp-signals dd{margin:0;font:600 var(--fs-body)/1.5 var(--font-mono);color:var(--text)}
+.rrp .rrp-verdict{font-size:var(--fs-sm);line-height:1.6;color:var(--text)}
+.rrp .rrp-gaps{font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-phase-trail{margin:0;padding:0;list-style:none;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-phase-trail li{display:inline;margin-right:var(--sp-3,12px)}
+@media(max-width:420px){
+ .rrp .rrp-signals dl{grid-template-columns:minmax(0,1fr)}
+}

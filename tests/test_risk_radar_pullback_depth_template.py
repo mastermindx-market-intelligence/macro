@@ -53,7 +53,10 @@ def test_no_forecast_or_reentry_authority_is_inferred(market):
     v.update(probability=0.97, score=99, forecast={"q25": 0.024, "q75": 0.056})
     html = render(v, market)
     assert 'data-forecast-status="unavailable"' in html
-    assert "Further downside" in html and "后续下跌空间" in html
+    assert "FURTHER DOWNSIDE" in html and "进一步跌幅" in html
+    assert "Estimate unavailable" in html and "估计暂不可用" in html
+    for shaped in ("后续下跌空间", "预估", "Estimated total", "from today"):
+        assert shaped not in html
     assert "97%" not in html and "2.4" not in html and "5.6" not in html
     assert "not a new-entry signal" in html
     assert "Confidence: 100" not in html
@@ -88,20 +91,20 @@ def test_presenter_phase_must_match_the_observation():
     v["phase"] = "repaired"
     html = render(v)
     assert 'data-pb-phase="unavailable"' in html
-    assert "Trend repaired" not in html
+    assert "Pullback repaired" not in html
 
 
-@pytest.mark.parametrize("phase,title", [
-    ("underway", "Pullback underway"), ("stabilizing", "Stabilization watch"),
-    ("recovering", "Price repair building"), ("repaired", "Trend repaired"),
-    ("developing", "Pullback developing"), ("monitoring", "Pullback monitor"),
+@pytest.mark.parametrize("phase,title,title_zh", [
+    ("underway", "Pullback underway", "回撤进行中"), ("stabilizing", "Stabilization watch", "止跌观察"),
+    ("recovering", "Watching price repair", "价格修复观察"), ("repaired", "Pullback repaired", "本轮回撤已修复"),
+    ("developing", "Pullback developing", "回撤初现"), ("monitoring", "Pullback monitor", "回撤观察"),
 ])
-def test_existing_phase_is_rendered_without_reclassification(phase, title):
+def test_existing_phase_is_rendered_without_reclassification(phase, title, title_zh):
     v = native_view()
     v["phase"] = v["observation"]["phase"] = phase
     v["observation"]["active"] = phase in ("underway", "stabilizing", "recovering")
     html = render(v)
-    assert title in html and f'data-pb-phase="{phase}"' in html
+    assert title in html and title_zh in html and f'data-pb-phase="{phase}"' in html
     assert 'data-forecast-status="unavailable"' in html
 
 
@@ -348,3 +351,336 @@ def test_both_risk_dialogs_recheck_expiry_as_they_open():
     cn_check = "if(id==='cnx-dlg-risk'&&window.mmPbExpire)window.mmPbExpire();"
     assert cn_check in cn_open
     assert cn_open.index(cn_check) < cn_open.index("first.focus({preventScroll:true})")
+
+
+FULL_EVIDENCE = {
+    "onset_session": "2026-09-16",
+    "low_session": "2026-09-21",
+    "no_new_low_closes": 4,
+    "loss_recovered_pct": 8.11,
+    "below_20_close_average": True,
+    "price_transitions": [
+        {"date": "2026-09-16", "phase": "underway"},
+        {"date": "2026-09-24", "phase": "stabilizing"},
+        {"date": "2026-09-29", "phase": "recovering"},
+    ],
+    "history_gap_count": 2,
+}
+_MISSING = object()
+
+
+def evidence_view(phase="underway", **fields):
+    v = native_view()
+    v["phase"] = phase
+    v["observation"]["phase"] = phase
+    v["observation"]["active"] = phase in ("underway", "stabilizing", "recovering")
+    if phase in ("monitoring", "developing"):
+        v["observation"]["low_close"] = None
+    v["observation"].update(fields)
+    return v
+
+
+def _signal(soup, name):
+    return soup.select_one(f'.rrp-signals [data-signal="{name}"]')
+
+
+@pytest.mark.parametrize("phase,en,zh", [
+    ("underway", "Deterioration: no repair evidence yet", "仍在恶化：尚无修复证据"),
+    ("stabilizing", "Early repair evidence: the low is holding", "初步修复证据：低点暂守住"),
+    ("recovering", "Repair evidence building; not a confirmed recovery", "修复证据增加中，尚未确认修复"),
+])
+def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en, zh):
+    soup = BeautifulSoup(render(evidence_view(phase, **FULL_EVIDENCE)), "html.parser")
+    block = soup.select_one(".rrp-signals[data-evidence]")
+    assert block is not None
+    onset = _signal(soup, "onset")
+    assert onset.select_one(".l-en").get_text() == "Episode confirmed"
+    assert onset.select_one(".l-zh").get_text() == "回撤确认"
+    assert onset.find_next_sibling("dd").get_text(strip=True) == "2026-09-16"
+    low = _signal(soup, "low")
+    assert low.select_one(".l-en").get_text() == "Lowest close"
+    assert low.select_one(".l-zh").get_text() == "最低收盘"
+    assert low.find_next_sibling("dd").get_text(strip=True) == "2026-09-21"
+    streak = _signal(soup, "no-new-low")
+    assert streak.select_one(".l-en").get_text() == "Closes without a new low"
+    assert streak.select_one(".l-zh").get_text() == "未创新低的收盘数"
+    assert streak.find_next_sibling("dd").get_text(strip=True) == "4"
+    recovered = _signal(soup, "recovered")
+    assert recovered.select_one(".l-en").get_text() == "Share of the loss retraced"
+    assert recovered.select_one(".l-zh").get_text() == "已收复跌幅比例"
+    assert recovered.find_next_sibling("dd").get_text(strip=True) == "8%"
+    side = _signal(soup, "ma20")
+    assert side.select_one(".l-en").get_text() == "Against the 20-close average"
+    assert side.select_one(".l-zh").get_text() == "相对20日收盘均价"
+    value = side.find_next_sibling("dd")
+    assert value.select_one(".l-en").get_text() == "Below"
+    assert value.select_one(".l-zh").get_text() == "低于"
+    verdict = _signal(soup, "verdict")
+    assert verdict.select_one(".l-en").get_text() == en
+    assert verdict.select_one(".l-zh").get_text() == zh
+    for other in (
+        "Deterioration: no repair evidence yet",
+        "Early repair evidence: the low is holding",
+        "Repair evidence building; not a confirmed recovery",
+    ):
+        if other != en:
+            assert other not in block.get_text()
+    items = block.select("ol.rrp-phase-trail li")
+    assert [li.select_one(".l-en").get_text() for li in items] == [
+        "Pullback underway", "Stabilization watch", "Watching price repair",
+    ]
+    assert [li.select_one(".l-zh").get_text() for li in items] == [
+        "回撤进行中", "止跌观察", "价格修复观察",
+    ]
+    assert [li.get_text(" ", strip=True).split("·")[0].strip() for li in items] == [
+        "2026-09-16", "2026-09-24", "2026-09-29",
+    ]
+    gaps = _signal(soup, "gaps")
+    assert gaps.select_one(".l-en").get_text() == "2 session(s) missing from the price history"
+    assert gaps.select_one(".l-zh").get_text() == "价格历史缺少2个交易日"
+
+
+def test_average_at_or_above_uses_the_other_label():
+    soup = BeautifulSoup(render(evidence_view(below_20_close_average=False)), "html.parser")
+    value = _signal(soup, "ma20").find_next_sibling("dd")
+    assert value.select_one(".l-en").get_text() == "Above or at"
+    assert value.select_one(".l-zh").get_text() == "不低于"
+
+
+def test_zero_counts_print_only_when_the_owner_sent_zero():
+    soup = BeautifulSoup(render(evidence_view(
+        no_new_low_closes=0, loss_recovered_pct=0, history_gap_count=0,
+    )), "html.parser")
+    assert _signal(soup, "no-new-low").find_next_sibling("dd").get_text(strip=True) == "0"
+    assert _signal(soup, "recovered").find_next_sibling("dd").get_text(strip=True) == "0%"
+    assert _signal(soup, "gaps") is None
+
+
+def test_recovered_share_prints_a_whole_percent_inside_the_closed_range():
+    for value, shown in ((8, "8%"), (100, "100%"), (0.4, "0%"), (99.6, "100%")):
+        soup = BeautifulSoup(render(evidence_view(loss_recovered_pct=value)), "html.parser")
+        assert _signal(soup, "recovered").find_next_sibling("dd").get_text(strip=True) == shown
+
+
+@pytest.mark.parametrize("field,value,signal", [
+    ("onset_session", _MISSING, "onset"),
+    ("onset_session", None, "onset"),
+    ("onset_session", "3", "onset"),
+    ("onset_session", 20260916, "onset"),
+    ("low_session", _MISSING, "low"),
+    ("low_session", None, "low"),
+    ("low_session", "3", "low"),
+    ("no_new_low_closes", _MISSING, "no-new-low"),
+    ("no_new_low_closes", None, "no-new-low"),
+    ("no_new_low_closes", "3", "no-new-low"),
+    ("no_new_low_closes", -1, "no-new-low"),
+    ("no_new_low_closes", 1.5, "no-new-low"),
+    ("no_new_low_closes", True, "no-new-low"),
+    ("loss_recovered_pct", _MISSING, "recovered"),
+    ("loss_recovered_pct", None, "recovered"),
+    ("loss_recovered_pct", "3", "recovered"),
+    ("loss_recovered_pct", -1, "recovered"),
+    ("loss_recovered_pct", 101.0, "recovered"),
+    ("loss_recovered_pct", float("nan"), "recovered"),
+    ("loss_recovered_pct", float("inf"), "recovered"),
+    ("below_20_close_average", _MISSING, "ma20"),
+    ("below_20_close_average", None, "ma20"),
+    ("below_20_close_average", "3", "ma20"),
+    ("below_20_close_average", 0, "ma20"),
+    ("below_20_close_average", 1, "ma20"),
+    ("history_gap_count", _MISSING, "gaps"),
+    ("history_gap_count", None, "gaps"),
+    ("history_gap_count", "3", "gaps"),
+    ("history_gap_count", -1, "gaps"),
+    ("history_gap_count", 0, "gaps"),
+    ("history_gap_count", 1.0, "gaps"),
+    ("price_transitions", _MISSING, "trail"),
+    ("price_transitions", None, "trail"),
+    ("price_transitions", "3", "trail"),
+    ("price_transitions", [], "trail"),
+    ("price_transitions", {"date": "2026-09-16", "phase": "underway"}, "trail"),
+    ("price_transitions", [{"date": "3", "phase": "underway"}], "trail"),
+    ("price_transitions", [{"date": None, "phase": "underway"}], "trail"),
+    ("price_transitions", [{"date": "2026-09-16", "phase": "shock"}], "trail"),
+    ("price_transitions", [
+        {"date": "2026-09-16", "phase": "underway"},
+        {"date": "2026-09-20", "phase": "not-a-phase"},
+    ], "trail"),
+])
+def test_missing_or_mistyped_evidence_field_omits_that_row(field, value, signal):
+    kept = {k: v for k, v in FULL_EVIDENCE.items() if k != field}
+    v = evidence_view(**kept)
+    v["observation"].pop(field, None)
+    if value is not _MISSING:
+        v["observation"][field] = value
+    soup = BeautifulSoup(render(v), "html.parser")
+    if signal == "trail":
+        assert soup.select_one("ol.rrp-phase-trail") is None
+    else:
+        assert _signal(soup, signal) is None
+    assert _signal(soup, "verdict") is not None
+
+
+def test_phase_alone_still_states_deterioration_without_inventing_counts():
+    v = native_view()
+    v["observation"].pop("loss_recovered_pct")
+    soup = BeautifulSoup(render(v), "html.parser")
+    block = soup.select_one(".rrp-signals")
+    assert block is not None and block.select("dt") == []
+    assert _signal(soup, "verdict").select_one(".l-en").get_text() == "Deterioration: no repair evidence yet"
+    assert "8%" not in block.get_text()
+
+
+@pytest.mark.parametrize("phase", ["monitoring", "developing", "repaired"])
+def test_phases_outside_the_repair_watch_do_not_invent_a_verdict(phase):
+    soup = BeautifulSoup(render(evidence_view(phase, **FULL_EVIDENCE)), "html.parser")
+    text = soup.select_one(".rrp-signals").get_text()
+    assert _signal(soup, "verdict") is None
+    for claim in (
+        "Deterioration: no repair evidence yet",
+        "Early repair evidence: the low is holding",
+        "Repair evidence building; not a confirmed recovery",
+    ):
+        assert claim not in text
+
+
+def test_unavailable_view_renders_no_evidence_block():
+    assert 'class="rrp-signals"' not in render(None)
+    assert "data-evidence" not in render({})
+    v = native_view()
+    v["observation"]["quality"] = "delayed"
+    html = render(v)
+    assert 'data-pb-phase="unavailable"' in html
+    assert 'class="rrp-signals"' not in html
+
+
+def test_view_lacking_new_fields_omits_the_signals_block():
+    """No new owner fields and no repair-phase verdict: the block is absent."""
+    v = native_view()
+    v["phase"] = v["observation"]["phase"] = "monitoring"
+    v["observation"]["active"] = False
+    v["observation"]["low_close"] = None
+    v["observation"].pop("loss_recovered_pct")
+    v["observation"]["valid_until"] = "2026-10-01T09:00:00"
+    html = render(v)
+    assert 'class="rrp-signals"' not in html and "data-evidence" not in html
+    assert "Current until" not in html and "有效至" not in html
+    assert 'data-metric="current"' in html
+    assert 'data-pb-phase="monitoring"' in html
+    assert 'data-pb-valid-until="2026-10-01T09:00:00"' in html
+
+
+@pytest.mark.parametrize("stamp", [
+    "2026-10-01T09:00:00",
+    "2026-10-01T09:00",
+    "2026-10-01",
+    "",
+    None,
+    "2026-10-01T09:00:00+0000",
+    "2026-10-01 09:00:00Z",
+    "2026-10-01T09:00:00z",
+])
+def test_valid_until_without_offset_renders_no_current_until(stamp):
+    v = native_view()
+    v["observation"]["valid_until"] = stamp
+    html = render(v)
+    assert "Current until" not in html and "有效至" not in html
+    if stamp:
+        assert f'data-pb-valid-until="{stamp}"' in html
+
+
+@pytest.mark.parametrize("stamp,display", [
+    ("2026-10-01T09:00:00+00:00", "2026-10-01 09:00 UTC+00:00"),
+    ("2026-10-01T09:00:00Z", "2026-10-01 09:00 UTC"),
+    ("2026-10-01T09:00Z", "2026-10-01 09:00 UTC"),
+    ("2026-10-01T09:00-05:00", "2026-10-01 09:00 UTC-05:00"),
+    ("2026-10-01T09:30:45+08:00", "2026-10-01 09:30 UTC+08:00"),
+])
+def test_zoned_valid_until_is_readable_without_js(stamp, display):
+    v = native_view()
+    v["observation"]["valid_until"] = stamp
+    soup = BeautifulSoup(render(v), "html.parser")
+    section = soup.select_one("section.rrp")
+    assert section.get("data-pb-valid-until") == stamp
+    assert section.get("data-pb-asof") == "2026-09-30"
+    assert section.get("data-pb-digest") == "a" * 64
+    times = soup.select(".rrp-stamp time")
+    assert times[0].get("datetime") == "2026-09-30"
+    assert times[1].get("datetime") == stamp
+    assert times[1].get_text(strip=True) == display
+    stamp_node = soup.select_one(".rrp-stamp")
+    assert stamp_node.select_one(".l-en") and "Current until" in stamp_node.get_text()
+    assert "有效至" in stamp_node.get_text()
+
+
+def test_rules_are_not_copied_in_as_cutoffs():
+    v = evidence_view(**FULL_EVIDENCE)
+    v["observation"]["rules"] = {
+        "stabilization_closes": 3,
+        "recovery_above_ma_closes": 5,
+        "recovery_no_low_closes": 10,
+        "trend_repair_no_low_closes": 21,
+    }
+    html = render(v)
+    assert "stabilization_closes" not in html
+    assert "recovery_no_low_closes" not in html
+    assert "trend_repair_no_low_closes" not in html
+    soup = BeautifulSoup(html, "html.parser")
+    block = soup.select_one(".rrp-signals")
+    assert _signal(soup, "no-new-low").find_next_sibling("dd").get_text(strip=True) == "4"
+    assert "of 10" not in block.get_text() and "of 21" not in block.get_text()
+
+
+def test_forecast_stays_free_of_digits():
+    v = evidence_view(**FULL_EVIDENCE)
+    v["observation"]["loss_recovered_pct"] = 100
+    v["observation"]["no_new_low_closes"] = 21
+    v["observation"]["history_gap_count"] = 12
+    forecast = BeautifulSoup(render(v), "html.parser").select_one(".rrp-forecast")
+    assert forecast.get("data-forecast-status") == "unavailable"
+    assert not any(ch.isdigit() for ch in forecast.get_text())
+    assert "Estimate unavailable" in forecast.get_text()
+
+
+def test_phase_trail_remains_markup_when_autoescape_is_on():
+    v = evidence_view(price_transitions=[{"date": "2026-09-16", "phase": "underway"}])
+    env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=True)
+    html = env.from_string(
+        '{% import "_risk_radar_pullback_depth.html.j2" as p %}{{ p.detail(market, v) }}'
+    ).render(market="cn", v=v)
+    assert '<ol class="rrp-phase-trail">' in html
+    assert "&lt;ol" not in html
+    assert "2026-09-16" in html and "Pullback underway" in html
+
+
+def test_signals_css_reuses_the_existing_palette_and_collapses():
+    css = (ROOT / "templates/_risk_radar_pullback_depth.css.j2").read_text()
+    assert ".rrp .rrp-signals" in css and ".rrp-phase-trail" in css
+    assert "max-width:420px" in css.replace(" ", "")
+    rules = css.split("Owner deterioration", 1)[1]
+    assert "animation" not in rules
+    assert "#" not in rules
+
+
+def test_copy_names_measurements_not_forecasts():
+    """G8: labels describe what was observed; nothing reads as an estimate."""
+    v = native_view()
+    v['observation']['price_path'] = {'dates': ['2026-09-14', '2026-09-30'], 'vals': [0.0, -6.8]}
+    v['detail_path'] = {'dates': ['2026-09-14', '2026-09-30'], 'vals': [0.0, -6.8]}
+    html = render(v)
+    for phrase in (
+        "Below the reference high", "距参考高点",
+        "Measured at the lowest close so far", "按本轮最低收盘价计算",
+        "observed closes since the pullback was confirmed", "次已观测收盘（自回撤确认起）",
+        "View price history", "查看历史价格",
+        "Further decline from the latest close", "自最新收盘价起的进一步跌幅",
+        "Total pullback depth", "本轮回撤总深度",
+        "This is not a new-entry signal.", "这不是新的入场信号。",
+    ):
+        assert phrase in html, phrase
+    for retired in (
+        "retained reference high", "保留参考高点", "The previous low is retained",
+        "Trend repaired", "趋势修复", "Price repair building",
+        "已观察价格", "价格历程",
+    ):
+        assert retired not in html, retired
