@@ -338,9 +338,13 @@ def _flow_payload_valid(flow: object) -> bool:
     """Wave B contract section 4; total — any failure is simply False."""
 
     def count(value: object) -> bool:
-        return isinstance(value, int) and not isinstance(value, bool)
+        return (
+            isinstance(value, int) and not isinstance(value, bool) and value >= 0
+        )
 
     def no_empty_strings(value: object) -> bool:
+        if value is None:
+            return False
         if isinstance(value, str):
             return value != ""
         if isinstance(value, dict):
@@ -473,7 +477,11 @@ def _compute_flow(store, security_id: str, *, rights: NewsReadRights) -> dict:
     if not _flow_payload_valid(result):
         logger.error("ticker_news flow payload failed validation")
         return _flow_unavailable("calculation_failed")
-    return copy.deepcopy(result)
+    try:
+        return copy.deepcopy(result)
+    except Exception:
+        logger.exception("ticker_news flow calculation failed")
+        return _flow_unavailable("calculation_failed")
 
 
 def _apply_flow_coverage(flow: dict, *, snapshot_state: str) -> dict:
