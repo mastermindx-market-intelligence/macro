@@ -23717,6 +23717,7 @@ jobs:
       - "tests/test_qbus_news_cluster.py"
       - "tests/test_qbus_news_cluster_adversarial.py"
       - "tests/test_qbus_news_cluster_audit.py"
+      - "tests/test_qbus_news_cluster_audit_uri_paths.py"
       - "tests/test_qbus_news_contract.py"
       - "tests/test_qbus_news_flow_store.py"
       - "tests/test_qbus_news_migration.py"
@@ -23782,6 +23783,7 @@ jobs:
           tests/test_qbus_news_cluster.py
           tests/test_qbus_news_cluster_adversarial.py
           tests/test_qbus_news_cluster_audit.py
+          tests/test_qbus_news_cluster_audit_uri_paths.py
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
