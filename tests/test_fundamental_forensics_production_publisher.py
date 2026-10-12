@@ -1478,6 +1478,72 @@ def test_d6_capture_report_files_member_capture_failure_not_no_retained_package(
     ]
 
 
+def test_q2_malformed_incumbent_targets_extra_key_is_typed(tmp_path, capsys) -> None:
+    """Q2: a malformed incumbent targets file (extra top-level key) makes
+    `targets` exit rc != 0 with typed contract_malformed and a line-start
+    ::error. Call path: scripts/publish_fif_production_datasets.py
+    `_run_targets` -> `from scripts.run_fundamental_forensics_wave2 import
+    load_targets_file` -> `load_targets_file(Path(args.targets_file))`
+    (scripts/run_fundamental_forensics_wave2.py:102-136: strict
+    set(value) == {'schema','targets'} and set(entry) == {'ticker','cik'}
+    shape, raising OperatorFlowError, which _run_targets wraps as
+    PublisherError contract_malformed)."""
+    identity = _fixture_identity()
+    contract = _write_contract(tmp_path, identity, None)
+    targets_file = tmp_path / "targets.json"
+    targets_file.write_text(
+        json.dumps(
+            {
+                "schema": "fundamental_forensics.wave2_targets/v1",
+                "targets": [{"ticker": "T001", "cik": "0000000001"}],
+                "extra": True,
+            }
+        ),
+        encoding="utf-8",
+    )
+    rc = producer.main(
+        [
+            "targets",
+            "--coverage-file", str(contract),
+            "--targets-file", str(targets_file),
+            "--max-tickers", "5",
+        ]
+    )
+    assert rc == 1
+    assert any(
+        "contract_malformed" in line for line in _stderr_error_lines(capsys)
+    )
+
+
+def test_q2_incumbent_targets_entry_missing_cik_refuses(tmp_path, capsys) -> None:
+    """Q2: an incumbent targets entry missing its cik is the same typed
+    refusal (load_targets_file's strict entry shape)."""
+    identity = _fixture_identity()
+    contract = _write_contract(tmp_path, identity, None)
+    targets_file = tmp_path / "targets.json"
+    targets_file.write_text(
+        json.dumps(
+            {
+                "schema": "fundamental_forensics.wave2_targets/v1",
+                "targets": [{"ticker": "T001"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    rc = producer.main(
+        [
+            "targets",
+            "--coverage-file", str(contract),
+            "--targets-file", str(targets_file),
+            "--max-tickers", "5",
+        ]
+    )
+    assert rc == 1
+    assert any(
+        "contract_malformed" in line for line in _stderr_error_lines(capsys)
+    )
+
+
 def _empty_mint(_ledger, _packages, *, system_available_at):
     """A changed S2-p mint output (an empty receipt tuple is lawful): moves the
     generation id WITHOUT moving any content clock — exactly the ERRATA-3
