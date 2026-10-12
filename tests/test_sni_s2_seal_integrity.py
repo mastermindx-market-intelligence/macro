@@ -27,18 +27,16 @@ COMMITTED_SEAL = (ROOT / "research" / "single_name_intelligence" / "runs"
 
 
 def _ensure_input_ref() -> None:
-    """Depth-1 CI checkouts lack BASE: one bounded fetch, else skip (never ERROR)."""
-    def present() -> bool:
-        return subprocess.run(["git", "cat-file", "-e", f"{INPUT_REF}^{{commit}}"],
-                              cwd=ROOT, capture_output=True).returncode == 0
-    if present():
-        return
-    try:
-        subprocess.run(["git", "fetch", "--no-tags", "--depth=1", "origin", INPUT_REF],
-                       cwd=ROOT, capture_output=True, timeout=90)
-    except Exception:
-        pass
-    if not present():
+    """Depth-1 CI checkouts lack BASE: skip (never ERROR, never fetch).
+
+    A test must not fetch into the shared checkout: a timed-out fetch is
+    SIGKILLed and leaves .git/shallow.lock behind, and even a clean depth-1
+    fetch rewrites .git/shallow for every later job in the same CI pack
+    (PR #8893: ruling-graph's ancestry fetch failed on the stale lock).
+    """
+    present = subprocess.run(["git", "cat-file", "-e", f"{INPUT_REF}^{{commit}}"],
+                             cwd=ROOT, capture_output=True).returncode == 0
+    if not present:
         pytest.skip("input ref 5ef7a7f39f99 not present in this checkout (depth-1 CI)")
 
 
