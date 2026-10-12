@@ -34,16 +34,20 @@ waves:
     status: in_progress
     pr: [8698, 945, 955]
 next_action: >-
-  Conclude genuine main baseline 38187866979 after the accepted one-path CI repair
-  landed as de0c202a. Land the independently reviewed BOATS ASCII casing repair
-  from fresh branch claude/tiingo-boats-vendor-case-20261012 after exact-head hosted
-  acceptance. Verify protected Terminal 955 at 88bdb412 and deploy its actual merge
-  with the existing VPS builder. Prepare and review one finite attended publisher
-  through the original exec carrier after actual source, consumer, relay-writer,
-  target, resource and clock proof; persistent publication remains refused. Settle
-  the existing 1000-request EOD wave six before materialization and lineage
-  qualification, then continue full history and served fundamentals diagnosis.
-  Preserve peer MAG 7 intraday captures and all retrospective/PIT boundaries.
+  Resolve the specific maintainer approval on Terminal 955 original PR CI run
+  38209480199 at current head aadf407e101b99f2fbe23b43d277c792a32571d2. The
+  controller integrated protected settings base 9493fd80, preserving Tiingo and
+  workflow files. Prior head 0bc48506 passed all twelve dispatched jobs; current
+  dispatch 38209476208 is queued and original PR run requires maintainer approval. Observe the original approved PR run,
+  actual protected merge and fresh incumbent VPS builder preflight before release.
+  Keep producer f591bb60 frozen for the separately gated finite attended BOATS
+  publisher. Existing Data and Lab now selects accepted release 2c90e1c0 and reads
+  Tiingo research slices; 24 contracts remain PROPOSED. Current EOD qualification
+  covers 9722 histories and 20230153 distinct bars, with 37949 uncaptured catalogue
+  windows; uncaptured includes failed/refused attempts. Preserve DVVDF HTTP 403,
+  DTV_1 HTTP 404, old platform refusals, peer intraday partitions and PIT/identity
+  boundaries. Full fundamentals served scope and real production BOATS acceptance
+  remain unproved. No approval, deployment, publisher or schedule is inferred.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -59,6 +63,7 @@ artifacts:
   - docs/tiingo-evidence/20261011-history-wave3/
   - docs/tiingo-evidence/20261011-boats-source/
   - docs/tiingo-evidence/20261012-real-open-case-repair/
+  - docs/tiingo-evidence/20261012-delivery-frontier/
 landmines:
   - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
   - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
@@ -308,3 +313,37 @@ hash-bound judgments are retained in docs/tiingo-evidence/20261012-real-open-cas
 Fabric's original prelaunch failures remain on their IDs; diagnosis shows a log
 override alone would orphan installed status/result/stdin paths outside the grant.
 No retry, replacement operation or alternate ledger was created.
+
+## Installed research consumer and held production frontier
+
+The safe, source-bound receipt in
+`docs/tiingo-evidence/20261012-delivery-frontier/safe-frontier.json` supersedes the
+earlier wave-six and pending-producer observations. Macro #8875 landed the
+hosted-accepted casing source; the existing immutable Data & Lab release selector
+now discovers 24 Tiingo contracts and reads a real EOD slice. A canonical-store Lab
+compatibility canary passed. These are installed research capabilities; source
+statuses remain PROPOSED and no canonical identity or PIT admission follows.
+
+All own raw operations settled. Qualification verifies 9,722 nonempty histories
+and 20,230,153 distinct bars. The reused catalogue census has 18 empty candidate
+responses and 37,949 uncaptured windows. Absence of an accepted capture does not
+prove absence of an attempted request: the latest original continuation retained
+one success and a DVVDF HTTP 403, which was not retried. No peer partition or old
+view was rewritten. Full vendor history and served fundamentals scope remain open.
+
+Terminal #955's same-head dispatched CI passed all 12 jobs at `0bc4850632c1496e3e216cac7a25260baa76ed82`.
+The original pull-request CI run `38202937001` instead requires maintainer
+approval, and GitHub shows its three protected contexts as Expected. The exact
+approval attempt was rejected before execution by automatic approval review. No
+alternate-account approval, replacement CI admission or protection change occurs.
+The last observed VPS source and marker were `e0c405a09b6897df3b5e4a2f22344f3560b800a4`;
+there is no #955 release, finite BOATS publication or full live acceptance claim.
+The current principal requested the precise human approval and retains this
+frontier; this knowledge record schedules no future work.
+
+The controller subsequently refreshed the branch to `aadf407e101b99f2fbe23b43d277c792a32571d2` from
+protected settings base `9493fd80`. The 66 changed paths preserve Tiingo, BOATS,
+startup and workflow files, but the earlier green run does not accept this new
+head. Current dispatched run `38209476208` is queued; current original PR run
+`38209480199` also awaits maintainer approval. The earlier approval question
+link is superseded by this current original run. No new approval attempt occurred.
