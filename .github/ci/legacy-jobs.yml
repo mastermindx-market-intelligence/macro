@@ -3530,10 +3530,14 @@ jobs:
       - "lib/nyse_calendar.py"
       - "scripts/__init__.py"
       - "scripts/build_options_matrix.py"
+      - "scripts/observe_options_matrix_publication.py"
+      - "scripts/qualify_options_matrix_older_snapshot.py"
       - "site/options_structure/examples/matrix.json"
       - "tests/fixtures/options_matrix_retention/**"
       - "tests/test_options_matrix.py"
       - "tests/test_options_matrix_retention.py"
+      - "tests/test_observe_options_matrix_publication.py"
+      - "tests/test_qualify_options_matrix_older_snapshot.py"
       # Options-structure block screening (#8922) reaches the flow detector's
       # measured-block contract and its episode/stage imports.
       - "collectors/flow_signals.py"
@@ -3552,7 +3556,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -4490,6 +4494,7 @@ jobs:
           tests/test_rlt_sector_stance_enrich.py
           tests/test_stock_personality_w4_surfaces.py
           tests/test_fundamental_forensics_page.py
+          tests/test_fundamental_forensics_state_peer_cohort.py
           tests/test_fundamental_forensics_private_state.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_coverage_contract.py
@@ -4514,6 +4519,7 @@ jobs:
           tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r3.py
           tests/test_fundamental_forensics_query_snapshots.py
+          tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
           tests/test_fundamental_forensics_admitted_filing_package.py
           tests/test_fundamental_forensics_attested_history_reader.py
@@ -4549,6 +4555,7 @@ jobs:
           tests/test_intraday_flow_w11_r1.py
           tests/test_fundamental_forensics_p0_view_contract.py
           tests/test_fundamental_forensics_multi_filing_lineage.py
+          tests/test_fundamental_forensics_production_lineage.py
           tests/test_intraday_flow_w11_r2.py
           tests/test_intraday_flow_w11_r3.py
           tests/test_intraday_flow_w11_r4.py
@@ -4642,6 +4649,26 @@ jobs:
       # as the step above.
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
+
+  c19-wp13-debt-maturity-as-of:
+    if: ${{ false }}
+    gate: code
+    # C19 WP13: point-in-time (as_of) debt-maturity ladder — later filings never visible (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp13_debt_maturity_as_of.py"
+      - "engine/debt_maturity.py"
+      - "tests/fixtures/debt_maturity/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: c19-wp13-debt-maturity-as-of
+        run: python -m pytest tests/test_c19_wp13_debt_maturity_as_of.py -q -p no:cacheprovider
 
   international-workspace-pure-js:
     if: ${{ false }}
@@ -6641,6 +6668,7 @@ jobs:
       - "contracts/capital_structure_source_manifest.schema.json"
       - "scripts/compile_capital_structure_events.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/financial_intelligence_packet.schema.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
@@ -6684,6 +6712,7 @@ jobs:
       - "collectors/edgar_eps.py"
       - "collectors/edgar_facts.py"
       - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_forensics.py"
       - "collectors/edgar_headcount.py"
       - "collectors/edgar_rpo.py"
       - "collectors/edgar_share_quality.py"
@@ -6693,10 +6722,13 @@ jobs:
       - "collectors/fda_shortages.py"
       - "collectors/finra.py"
       - "collectors/fred.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
       - "collectors/holdings.py"
       - "collectors/openfigi.py"
       - "collectors/polygon_options.py"
       - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
       - "collectors/sec_insider.py"
       - "collectors/sector_holdings.py"
       - "collectors/sponsors.py"
@@ -11302,6 +11334,7 @@ jobs:
       - collectors/edgar_eps.py
       - collectors/edgar_facts.py
       - collectors/edgar_flow_quality.py
+      - collectors/edgar_forensics.py
       - collectors/edgar_headcount.py
       - collectors/edgar_rpo.py
       - collectors/edgar_share_quality.py
@@ -11311,12 +11344,15 @@ jobs:
       - collectors/fda_shortages.py
       - collectors/finra.py
       - collectors/fred.py
+      - collectors/fundamental_forensics_acquisition.py
+      - collectors/fundamental_forensics_companyfacts.py
       - collectors/holdings.py
       - collectors/ipo_calendar.py
       - collectors/ipo_prospectus.py
       - collectors/openfigi.py
       - collectors/polygon_options.py
       - collectors/sec_document_spine.py
+      - collectors/sec_filing_parser.py
       - collectors/sec_insider.py
       - collectors/sector_holdings.py
       - collectors/sponsors.py
@@ -11326,6 +11362,7 @@ jobs:
       - config/delisted_symbols.yml
       - config/earnings_story_promotion.yml
       - config/flow_score.yml
+      - config/fundamental_forensics/coverage/five_issuer_v1.json
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/metabolism_budget.yml
       - config/sector_legs.json
@@ -11338,6 +11375,7 @@ jobs:
       - contracts/evidence_foundation/recipe.v1.schema.json
       - contracts/evidence_foundation/reference.v1.schema.json
       - contracts/evidence_foundation/vocabulary.v1.json
+      - contracts/financial_intelligence_packet.schema.json
       - contracts/market_os/macro_workspace_snapshot.v1.schema.json
       - contracts/market_os/security_state.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
@@ -11580,11 +11618,27 @@ jobs:
       - engine/forward_dist.py
       - engine/froth_fragility.py
       - engine/fundamental_forensics/context_projection.py
+      - engine/fundamental_forensics/detectors.py
       - engine/fundamental_forensics/disclosure_diff.py
       - engine/fundamental_forensics/disclosure_projection.py
+      - engine/fundamental_forensics/filing_attestation.py
+      - engine/fundamental_forensics/filing_package.py
+      - engine/fundamental_forensics/financial_intelligence_packet.py
+      - engine/fundamental_forensics/ixbrl_extraction.py
+      - engine/fundamental_forensics/lineage_evidence.py
+      - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
+      - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/peer_cohort.py
+      - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
+      - engine/fundamental_forensics/production_datasets.py
+      - engine/fundamental_forensics/query.py
+      - engine/fundamental_forensics/query_service.py
+      - engine/fundamental_forensics/raw_ledger.py
       - engine/fundamental_forensics/sec_document_spine.py
+      - engine/fundamental_forensics/source_sync.py
+      - engine/fundamental_forensics/statement_graph.py
       - engine/gdelt_client.py
       - engine/gex_confirm.py
       - engine/gex_engine.py
@@ -21914,6 +21968,7 @@ jobs:
       - scripts/tiingo_corpus_audit.py
       - tests/test_tiingo_corpus_audit.py
       - tests/test_tiingo_additional_history.py
+      - tests/test_tiingo_capture_admission.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21933,7 +21988,8 @@ jobs:
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
-          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q
+          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
+          tests/test_tiingo_capture_admission.py -q
 
 
   dataos-web-workspace:
@@ -22485,6 +22541,7 @@ jobs:
       - "engine/fundamental_forensics/attested_query_snapshots.py"
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
+      - "engine/fundamental_forensics/detectors.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
       - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/fif_member_capture.py"
@@ -22497,6 +22554,7 @@ jobs:
       - "engine/fundamental_forensics/lineage_evidence.py"
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/normalize.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -22894,6 +22952,7 @@ jobs:
       - "tests/test_benzinga_news.py"
       - "tests/test_build_qbus_news_universe.py"
       - "tests/test_massive_benzinga_news.py"
+      - "tests/test_qbus_cluster_policy_provenance.py"
       - "tests/test_qbus_news_annotate.py"
       - "tests/test_qbus_news_cluster.py"
       - "tests/test_qbus_news_cluster_adversarial.py"
@@ -22907,6 +22966,7 @@ jobs:
       - "tests/test_qbus_news_store_api_reads.py"
       - "tests/test_qbus_news_store_clusters.py"
       - "tests/test_qbus_news_store_lifecycle.py"
+      - "tests/test_qbus_news_store_uri_paths.py"
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
       - "tests/test_qbus_news_universe_diagnose.py"
@@ -22919,6 +22979,7 @@ jobs:
       - "tests/test_ticker_news_annotation_api.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
+      - "tests/test_ticker_news_flow_api.py"
       - "tests/test_ticker_news_inventory.py"
       - "tests/test_ticker_news_package_n_matrix.py"
       - "tests/test_ticker_news_receipt_binding.py"
@@ -22954,6 +23015,7 @@ jobs:
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
           tests/test_massive_benzinga_news.py
+          tests/test_qbus_cluster_policy_provenance.py
           tests/test_qbus_news_annotate.py
           tests/test_qbus_news_cluster.py
           tests/test_qbus_news_cluster_adversarial.py
@@ -22967,6 +23029,7 @@ jobs:
           tests/test_qbus_news_store_api_reads.py
           tests/test_qbus_news_store_clusters.py
           tests/test_qbus_news_store_lifecycle.py
+          tests/test_qbus_news_store_uri_paths.py
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
           tests/test_qbus_news_universe_diagnose.py
@@ -22979,6 +23042,7 @@ jobs:
           tests/test_ticker_news_annotation_api.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
+          tests/test_ticker_news_flow_api.py
           tests/test_ticker_news_inventory.py
           tests/test_ticker_news_package_n_matrix.py
           tests/test_ticker_news_receipt_binding.py
@@ -23630,6 +23694,7 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       # Contracts and research inputs the closure loads at import time.
       - "contracts/evidence_foundation/**"
+      - "contracts/financial_intelligence_packet.schema.json"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "contracts/market_os/security_state.v1.schema.json"
       - "research/DO_NOT_REBUILD.md"
@@ -24317,6 +24382,7 @@ jobs:
       - tests/__init__.py
       - tests/conftest.py
       - tests/test_company_disclosure_owner.py
+      - tests/test_company_disclosure_identity_continuity.py
       - tests/test_company_disclosure_preflight.py
       - tests/test_company_issuer_disclosures.py
       - tests/test_company_pinned_relationship_candidates.py
@@ -24348,7 +24414,7 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File, pinned-source, observation and native disclosure contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_preflight.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.

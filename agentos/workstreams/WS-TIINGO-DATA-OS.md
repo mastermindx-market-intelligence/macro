@@ -32,30 +32,36 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955]
+    pr: [8698, 945, 955, 8986, 9004, 9018]
 next_action: >-
-  Continue original finite EOD operation eod-wave8-fixed-unattempted-20261012-01a12ab6
-  and qualify only its completed immutable responses, excluding twelve held requests.
-  Latest accepted snapshot covers 11690 nonempty histories and 24600974 distinct bars;
-  capture is running and whole-batch completion is not claimed. The temporary harness
-  credential/counter collision was reproduced offline, corrected without changing
-  the collector or credential, independently reviewed at SHA 9c471937, and verified
-  by consecutive real successful captures. Exact failed requests remain held. Existing
-  Data and Lab consumed new EBAY/DWCH histories and three modes each for JPM and AXP.
-  Land and install the independently reviewed four-contract descriptive PRODUCED
-  change; it corrects bounded research discovery without granting PIT, canonical
-  identity, availability or publication. The other twenty contracts remain PROPOSED.
-  Current Terminal 955 head de8aca83cd6a3072eba861ce494d9e644baca75f passed all twelve
-  dispatched jobs on 38214240947. Original PR run 38214248199 remains action_required
-  and requires actual maintainer approval before protected landing and fresh VPS
-  builder preflight. Preserve the prior automatic approval refusal. Standalone AAPL
-  split history returned HTTP 403 and its cohort stopped; do not retry it. Thirty
-  plus forty-five new fundamentals requests passed across two cohorts but serve
-  roughly three years, with 1598 changed original/revised fiscal metric values.
-  SHW and PFE exact originally reported requests returned 400 and are not retried.
-  Full history, dated identity, PIT admission
-  and real BOATS production/consumer acceptance remain open. Save material deltas
-  and continue ready work; a checkpoint is not a mission stop.
+  Original EOD wave10 is fully settled and qualified: 5000 successful requests,
+  zero failures, 4970 nonempty histories, 30 empty responses and 12699484 bars.
+  Continue original disjoint wave11, started 2026-10-12 16:00:35 UTC after real
+  prior settlement and fresh quota/source/storage checks. Its accepted prefix03
+  brings the archive to 24451 nonempty histories and 54595389 distinct bars,
+  with 73 empty and 23165 uncaptured desired catalogue windows. Qualify only new
+  completed responses; preserve the unchanged original collector/current writer.
+  PR 9018 merged f5d1cec6e56b4f8e07e4ea9038293a3072f4b1dd after all twelve original
+  CI packs/final gate, active authority/fences and independent architecture review.
+  Canonical module/test bytes and unchanged owned Tiingo CI job were verified;
+  unrelated peer CI additions were preserved. Its reviewed rolling callback helper
+  is available only for future unlaunched wave12. Require actual successful prior
+  settlement, fresh quota/source/storage/collision checks, exact module/plan/method
+  binding, four in flight and unchanged byte/resource bounds before launch. All
+  sixteen held symbols and prior reservations remain excluded. Macro 8986's real
+  installed release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; its accepted
+  actual canonical Lab trial and installed reads remain valid. Evidence 9004
+  merged dad025903cd621b994ee9a18bcaba18138518b10 without a runtime reinstall.
+  Exactly four contracts are PRODUCED and twenty remain PROPOSED. Terminal 955
+  head 1a74e3cf93368a5c5381f0110b80601dff0ae3e3 passed all twelve original dispatched
+  jobs on 38272365047; original PR run 38272372019 remains action_required and
+  the required aggregate is absent from the PR rollup. Preserve
+  the original approval refusal before protected landing and fresh VPS builder
+  preflight. The next published BOATS opening is 2026-10-13 00:00 UTC; no future
+  subscriber or scheduler is launched. Standalone split and SHW/PFE failures remain
+  held; the 75 accepted fundamental captures across 25 companies serve roughly three years.
+  Deep/all-symbol serving, dated identity, PIT and responsive live BOATS acceptance
+  remain open. Save material deltas and continue ready work.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -73,13 +79,16 @@ artifacts:
   - docs/tiingo-evidence/20261012-real-open-case-repair/
   - docs/tiingo-evidence/20261012-delivery-frontier/
   - docs/tiingo-evidence/20261012-research-contracts/
+  - docs/tiingo-evidence/20261012-installed-research/
+  - docs/tiingo-evidence/20261012-eod-finite-scopes/
+  - docs/tiingo-evidence/20261012-canonical-capture-admission/
 landmines:
   - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
   - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
   - Full fundamentals activation is Chairman-attested but AMD current-key responses still expose evaluation restrictions; do not infer absent purchase or purchase again.
   - Authentic BOATS controls and historical bars do not prove actual Q/T/B or session coverage.
   - Reviewed source admits a complete BOATS-only public projection; installation and old object/cache replacement still need proof. Never inject BOATS under a legacy provider label.
-  - Exactly four EOD/fundamentals contracts describe completed authenticated research existence; all other twenty stay PROPOSED. Dated identity, PIT, availability, live publication and new installed release remain separate gates.
+  - Exactly four EOD/fundamentals contracts and their selected immutable research release are verified; all other twenty stay PROPOSED. Dated identity, PIT, availability and live publication remain separate gates.
 do_not_redo:
   - Do not publish the previously blocked untracked CEO handoff by another route.
   - Do not reacquire the accepted ticker ZIP or re-download already verified histories merely to obtain another checkpoint.
