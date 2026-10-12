@@ -35,6 +35,7 @@ from engine.qbus_news_cluster import (  # noqa: E402
     _RATING_VERB_RE,
     _actions,
     _analyst_actor,
+    _move_polarity,
     _negated,
     _numbers,
     _outcome_polarity,
@@ -110,6 +111,9 @@ def _title_reject_reason(left: str, right: str) -> str | None:
         and actor_left != actor_right
     ):
         return "analyst_actor_mismatch"
+    direction_left, direction_right = _move_polarity(left), _move_polarity(right)
+    if direction_left and direction_right and not (direction_left & direction_right):
+        return "direction_mismatch"
     outcome_left, outcome_right = _outcome_polarity(left), _outcome_polarity(right)
     if outcome_left and outcome_right and not (outcome_left & outcome_right):
         return "outcome_polarity_mismatch"

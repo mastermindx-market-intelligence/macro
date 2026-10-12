@@ -11,8 +11,9 @@ quarter), and contraction negation (isn't, cannot).
 
 Under the same v2 id (seat ruling 2026-10-12) it also stops merging opposite
 earnings outcomes (beats versus misses), rating moves to opposite target
-classes (to Buy versus to Sell), and terminated versus ongoing actions (ends
-talks versus in talks).
+classes (to Buy versus to Sell), terminated versus ongoing actions (ends
+talks versus in talks), and opposite move directions (raises versus cuts,
+lifts versus lowers, including past forms).
 """
 from __future__ import annotations
 
@@ -167,6 +168,19 @@ _TERMINATED_RE = re.compile(
     r"breaks\s+off|broke\s+off|halts|halted|collapses|collapsed)\b",
     re.I,
 )
+# Move directions compare like outcome polarity: an up-move headline never
+# merges with a down-move one, whatever surface verb (or past form) carries
+# the direction. Bare "ups" stays off the list ("UPS" the ticker).
+_MOVE_UP_RE = re.compile(
+    r"\b(?:raise[sd]?|hike[sd]?|lift(?:s|ed)?|boost(?:s|ed)?|"
+    r"increase[sd]?|upgrade[sd]?)\b",
+    re.I,
+)
+_MOVE_DOWN_RE = re.compile(
+    r"\b(?:cuts?|lower(?:s|ed)?|trim(?:s|med)?|slash(?:es|ed)?|"
+    r"decrease[sd]?|reduce[sd]?|downgrade[sd]?)\b",
+    re.I,
+)
 
 
 def new_cluster_id(item: ClusterItem) -> str:
@@ -238,6 +252,16 @@ def _terminated(title: str) -> bool:
     return bool(_TERMINATED_RE.search(title))
 
 
+def _move_polarity(title: str) -> frozenset[str]:
+    """Move directions found in the title ("up", "down", both, or none)."""
+    found: set[str] = set()
+    if _MOVE_UP_RE.search(title):
+        found.add("up")
+    if _MOVE_DOWN_RE.search(title):
+        found.add("down")
+    return frozenset(found)
+
+
 def _analyst_actor(title: str) -> str | None:
     match = _RATING_VERB_RE.search(title)
     if not match:
@@ -264,6 +288,9 @@ def _compatible(a: str, b: str) -> bool:
     rating_a = bool(_RATING_VERB_RE.search(a))
     rating_b = bool(_RATING_VERB_RE.search(b))
     if rating_a and rating_b and actor_a and actor_b and actor_a != actor_b:
+        return False
+    da, db = _move_polarity(a), _move_polarity(b)
+    if da and db and not (da & db):
         return False
     oa, ob = _outcome_polarity(a), _outcome_polarity(b)
     if oa and ob and not (oa & ob):

@@ -387,3 +387,59 @@ def test_two_ongoing_talks_reports_still_join():
         "Apple in talks to acquire Disney this week",
         "Apple is in talks to acquire Disney this week",
     )
+
+
+def test_lifts_outlook_does_not_join_lowers_outlook():
+    """Dropping the move-direction check in _compatible joins these titles."""
+    _blocked(
+        "Nvidia lifts full-year outlook on strong demand",
+        "Nvidia lowers full-year outlook on strong demand",
+    )
+
+
+def test_hikes_outlook_does_not_join_lowers_outlook():
+    """Dropping the move-direction check in _compatible joins these titles."""
+    _blocked(
+        "Nvidia hikes full-year outlook on strong demand",
+        "Nvidia lowers full-year outlook on strong demand",
+    )
+
+
+def test_raised_outlook_does_not_join_lowered_outlook():
+    """Dropping the move-direction check in _compatible joins these titles."""
+    _blocked(
+        "Citi raised its full-year outlook on demand",
+        "Citi lowered its full-year outlook on demand",
+    )
+
+
+def test_lifts_price_target_does_not_join_trims_price_target():
+    """Dropping the move-direction check in _compatible joins these titles."""
+    _blocked(
+        "Citi lifts NVDA price target to $150",
+        "Citi trims NVDA price target to $150",
+    )
+
+
+def test_increased_does_not_join_decreased():
+    """Dropping the move-direction check in _compatible joins these titles."""
+    _blocked(
+        "Retail sales increased in September",
+        "Retail sales decreased in September",
+    )
+
+
+def test_lifts_outlook_still_joins_raises_outlook():
+    """Splitting up-moves by surface verb splits this same-direction pair."""
+    _joined(
+        "Nvidia lifts full-year outlook on strong demand",
+        "Nvidia raises full-year outlook on strong demand",
+    )
+
+
+def test_slashes_jobs_still_joins_cuts_jobs():
+    """Splitting down-moves by surface verb splits this same-direction pair."""
+    _joined(
+        "Company slashes 500 jobs in restructuring",
+        "Company cuts 500 jobs in restructuring",
+    )

@@ -140,6 +140,31 @@ def test_near_miss_reasons_cover_polarity_target_and_termination(tmp_path):
     assert reasons[("benzinga:5", "benzinga:6")] == "termination_mismatch"
 
 
+def test_near_miss_reason_covers_direction_and_mirrors_engine_order(tmp_path):
+    """A gate the engine rejects but the audit mirror omits reads passed_gates_unjoined.
+
+    The second pair is rejected by both the direction and the outcome gates, so
+    it also pins the mirror order: the audit must report the engine's first
+    reject reason, direction_mismatch, not outcome_polarity_mismatch.
+    """
+    path = tmp_path / "direction.jsonl"
+    rows = [
+        _story("benzinga:1", "Nvidia lifts full-year outlook on strong demand"),
+        _story("benzinga:2", "Nvidia lowers full-year outlook on strong demand", minute=1),
+        _story("benzinga:3", "Nvidia lifts guidance as retail sales increased", minute=2),
+        _story("benzinga:4", "Nvidia cuts guidance as retail sales decreased", minute=3),
+    ]
+    _write_jsonl(path, rows)
+    report = audit.audit_jsonl(path)
+    _assert_report_shape(report)
+    assert report["clusters"] == 4
+    reasons = {
+        (row["a_story"], row["b_story"]): row["reason"] for row in report["near_misses"]
+    }
+    assert reasons[("benzinga:1", "benzinga:2")] == "direction_mismatch"
+    assert reasons[("benzinga:3", "benzinga:4")] == "direction_mismatch"
+
+
 def test_labeled_jsonl_keeps_a_stored_number_mismatch(tmp_path):
     """Reclustering the fixture instead of trusting cluster_id hides the mismatch."""
     path = tmp_path / "labeled.jsonl"
