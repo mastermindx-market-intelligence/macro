@@ -146,11 +146,15 @@ _MISS_RE = re.compile(
     re.I,
 )
 # Rating moves are compared by the class of the target they name, not by the
-# surface verb, so "upgraded to Buy" still merges with "raised to Buy".
+# surface verb, so "upgraded to Buy" still merges with "raised to Buy". The
+# neutral spellings accept hyphen, space and the Mkt abbreviation, so
+# "Equal Weight", "Equal-Weight", "In Line", "Mkt Perform" and "Market
+# Perform" all land in the same class.
 _RATING_TARGET_RE = re.compile(
     r"\bto\s+(strong\s+buy|outperform|overweight|accumulate|buy|add|"
     r"strong\s+sell|underperform|underweight|sell|reduce|hold|neutral|"
-    r"equal-weight|market\s+perform|sector\s+perform|in-line|peer\s+perform)\b",
+    r"equal[-\s]+weight|(?:market|mkt)\s+perform|sector\s+perform|"
+    r"in[-\s]+line|peer\s+perform)\b",
     re.I,
 )
 _BULLISH_TARGETS = frozenset(

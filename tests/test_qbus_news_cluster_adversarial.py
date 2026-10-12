@@ -467,3 +467,51 @@ def test_resumes_talks_still_joins_ongoing_talks():
         "Apple resumes talks to acquire Disney this week",
         "Apple is in talks to acquire Disney this week",
     )
+
+
+def test_equal_weight_spaced_does_not_join_sell():
+    """Dropping the rating-target check in _compatible joins these titles."""
+    _blocked(
+        "Morgan Stanley upgrades Delta Air Line to Equal Weight",
+        "Morgan Stanley upgrades Delta Air Line to Sell",
+    )
+
+
+def test_in_line_spaced_does_not_join_underweight():
+    """Dropping the rating-target check in _compatible joins these titles."""
+    _blocked(
+        "Barclays upgrades Coca-Cola to In Line from Overweight",
+        "Barclays upgrades Coca-Cola to Underweight from Overweight",
+    )
+
+
+def test_mkt_perform_does_not_join_underperform():
+    """Dropping the rating-target check in _compatible joins these titles."""
+    _blocked(
+        "Wells Fargo upgrades Chevron to Mkt Perform",
+        "Wells Fargo upgrades Chevron to Underperform",
+    )
+
+
+def test_equal_weight_spaced_still_joins_hyphenated():
+    """Failing to normalize the spaced spelling onto Equal-Weight splits this pair."""
+    _joined(
+        "Morgan Stanley upgrades Delta Air Line to Equal Weight",
+        "Morgan Stanley upgrades Delta Air Line to Equal-Weight",
+    )
+
+
+def test_in_line_spaced_still_joins_hyphenated():
+    """Failing to normalize the spaced spelling onto In-Line splits this pair."""
+    _joined(
+        "Barclays upgrades Coca-Cola to In Line from Overweight",
+        "Barclays upgrades Coca-Cola to In-Line from Overweight",
+    )
+
+
+def test_mkt_perform_still_joins_market_perform():
+    """Failing to normalize the Mkt abbreviation onto Market Perform splits this pair."""
+    _joined(
+        "Wells Fargo upgrades Chevron to Mkt Perform",
+        "Wells Fargo upgrades Chevron to Market Perform",
+    )
