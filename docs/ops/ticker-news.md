@@ -257,3 +257,78 @@ WS frame — raised as `alpaca_news:<code>` when the failing page or frame is
 replayed, with the health file and the journal's exit receipts showing the
 stall as rising `catchups_failed` / `stream_errors` counts. A persistent one
 stalls the cursor and needs an engineering fix, never a provider switch.
+
+## Inventory / 库存
+
+Operators can answer whether REST catch-up has delivered, which transports
+have delivered, and how fresh each one is, with one read-only command. The
+command does not open a network connection, does not read credentials, and
+does not write the store.
+
+运营者可以用一条只读命令查看 REST 补齐是否已经送达、各传输分别送达了多少、
+以及每条传输有多新。该命令不访问网络、不读取凭证、不写入数据库。
+
+From a checkout of this repo:
+
+    python scripts/ticker_news_inventory.py \
+      --database /var/lib/macro-ticker-news/qbus.sqlite3 \
+      --health /var/lib/macro-ticker-news/health.json
+
+`--json` is the default and prints schema `ticker_news.inventory.v1`.
+`--text` prints a short English and Chinese summary. `--now <iso>` fixes the
+clock used for `generated_at` and for the health projection. A missing
+database exits 2 and prints `{"error":"database_missing"}`. The path is not
+created.
+
+`--json` 为默认输出，模式为 `ticker_news.inventory.v1`。`--text` 打印简短的
+中英摘要。`--now <iso>` 固定 `generated_at` 与健康投影所用的时钟。数据库
+不存在时退出码为 2，并打印 `{"error":"database_missing"}`，且不会创建该文件。
+
+The database is opened with SQLite `mode=ro` and `query_only`. A run leaves
+the database file's bytes and mtime unchanged. While the writer is running,
+the report reads the existing WAL, so uncheckpointed deliveries are included,
+and it does not rewrite the `-wal` or `-shm` siblings. If those siblings are
+already absent, SQLite may create empty ones beside the database; the
+database file itself is still not modified.
+
+数据库以 SQLite `mode=ro` 与 `query_only` 打开。运行后数据库文件的字节与
+修改时间保持不变。写入进程仍在运行时，报告读取已有的 WAL，因此未 checkpoint
+的送达也会计入，且不会改写 `-wal` 或 `-shm`。若这两个伴随文件已经不存在，
+SQLite 可能会在数据库旁创建空的伴随文件；数据库文件本身仍然不会被修改。
+
+Fields / 字段:
+
+- `schema` — `ticker_news.inventory.v1`. 报告模式。
+- `generated_at` — UTC timestamp of this report. 本报告的 UTC 时间。
+- `database.path` — file basename only. 仅文件名，不含目录。
+- `database.bytes` — size of that file in bytes. 该文件的字节大小。
+- `transports` — one row per stored transport string, not a normalized name.
+  `deliveries` is the number of `news_deliveries` rows. `first_received_at`
+  and `last_received_at` are the earliest and latest stored receipt times.
+  每个按原样存储的传输名一行，不做名称归一。`deliveries` 是送达行数。
+  `first_received_at` 与 `last_received_at` 是最早和最近的送达时间。
+- `totals.revisions`, `totals.states`, `totals.clusters`, `totals.changes` —
+  row counts of those tables. 对应表的行数。
+- `totals.open_states` — `news_states` rows with status `active`.
+  状态为 `active` 的行数。
+- `totals.withdrawn_states` — `news_states` rows with status `withdrawn`.
+  状态为 `withdrawn` 的行数。
+- `cursors` — every `news_cursors` row (`source_key`, `cursor`).
+  全部游标行。
+- `health` — when `--health` is set, the projection from `load_health_receipt`
+  (default observation and catch-up age budgets are 120 seconds). When
+  `--health` is omitted, exactly
+  `{"state":"unavailable","reason":"health_path_unset"}`.
+  提供 `--health` 时，为 `load_health_receipt` 的投影（默认观测与补齐年龄
+  上限均为 120 秒）。省略 `--health` 时，固定为
+  `{"state":"unavailable","reason":"health_path_unset"}`。
+- `rest_catchup_proven` — true only when some stored transport name contains
+  the substring `rest` and that transport has at least one delivery. Names are
+  compared as stored, including case. WebSocket-only deliveries leave this
+  false. 仅当某个按原样存储的传输名包含子串 `rest`（区分大小写）且该传输至少
+  有一条送达时为 true。仅有 WebSocket 送达时为 false。
+
+The report never includes titles, teasers, URLs, message bodies, or
+`delivery_json`.
+
+报告不包含标题、摘要、URL、消息正文或 `delivery_json`。
