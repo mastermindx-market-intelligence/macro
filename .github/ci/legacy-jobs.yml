@@ -3132,7 +3132,24 @@ jobs:
     if: ${{ false }}
     gate: code
     # Taxonomy V2 L00. AxisCell v1 plus the seven reserved reader suites.
-    # Unscoped, matching chronicle-suite and cycle-forward-log beside this anchor.
+    # Scoped, not exclusive. The theme_graph modules the axis readers wrap are
+    # named so their edits select this job. Unrelated PRs (the PACKING_PROBES
+    # shapes in tests/test_ci_pack.py) no longer pay for it.
+    paths:
+      - "engine/classification_axes/**"
+      - "contracts/classification_axes/**"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/store.py"
+      - "tests/fixtures/classification_axes/**/*.json"
+      - "tests/test_classification_axes_cell.py"
+      - "tests/test_classification_axes_sic_industry.py"
+      - "tests/test_classification_axes_geography.py"
+      - "tests/test_classification_axes_macro_sensitivity.py"
+      - "tests/test_classification_axes_business_model.py"
+      - "tests/test_classification_axes_lifecycle.py"
+      - "tests/test_classification_axes_value_chain.py"
+      - "tests/test_classification_axes_registry.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
