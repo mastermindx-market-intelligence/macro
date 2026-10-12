@@ -11,6 +11,7 @@ import datetime
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from engine.classification_axes import cell, sic_industry
 
@@ -185,7 +186,7 @@ def test_default_path_missing_corrupt_and_valid(tmp_path):
     assert corrupt["reason_code"] == "owner_degraded"
     assert corrupt["provenance"][0].startswith("read_error:")
 
-    _profiles().to_parquet(parquet_path)
+    _profiles().astype({"as_of": str}).to_parquet(parquet_path)
     good = sic_industry.read_sic_industry("co:us:AAPL", as_of=AS_OF, root=root)
     assert cell.validate_cell(good) == []
     assert good["status"] == "available"
