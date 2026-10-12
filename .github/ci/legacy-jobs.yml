@@ -11868,6 +11868,7 @@ jobs:
       - "engine/theme_graph/theme_state_use_reader.py"
       - "tests/test_theme_state_generation_use_reader.py"
       - "tests/test_company_theme_exposure_production_bridge.py"
+      - "tests/test_company_theme_exposure_staleness_matrix.py"
       - config/synapse.yml
       - contracts/theme_graph/capability.v1.schema.json
       - contracts/theme_graph/evidence.v1.schema.json
@@ -11949,7 +11950,7 @@ jobs:
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
         run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
-        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py -k 'not live_theme_inputs' -q
+        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py tests/test_company_theme_exposure_staleness_matrix.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
         # Wired 2026-10-06 (#8519): engine/leadership_receipt.py reads
         # site/neuralwebdata/theme_state.json with a 5-day ceiling; this job owns
