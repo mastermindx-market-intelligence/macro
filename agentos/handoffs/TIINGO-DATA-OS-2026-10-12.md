@@ -254,3 +254,216 @@ or subscriber launch receipt for that future opening. Preserve authentic venue
 semantics and the original human CI gate, frozen provider/permission effects,
 incumbent writers, current consumer ceilings and original retained evidence while
 continuing independent capture and qualification.
+
+## Four-contract consumer landed, selected and exercised
+
+This section supersedes the earlier pending registry installation and current
+corpus/Terminal observations. The programme remains active; this is a durable
+delivery delta, not a mission-completion claim.
+
+Macro [PR #8986](https://github.com/mastermindx-market-intelligence/macro/pull/8986)
+merged at 2026-10-12T12:16:48Z as
+`0b204cde017b88a9fec03ddb583f6b5e02ea4886`. Original hosted run **38242194489**
+completed SUCCESS on exact head `9255dba36c9b8e62852582da2368134426d994c4`, with
+all twelve packs, contract-delta and ci-gate successful. Current trusted authority
+and fences passed. The two preservation-test failures were repaired with actual
+paired publication inputs, without restamping, production-page changes, altered
+failure signatures or a CI waiver. Independent architecture review and the 175
+affected checks remain accepted; do not redo them without a material invalidator.
+
+The existing Data & Lab launcher now selects the actual merged immutable release:
+1883 files, 55910163 source bytes, manifest SHA
+`089c50c8ec82c49e581ab3369e75fa37359b5dd710d7fb3e90516fded09e2eb0`,
+release SHA `184af64b74acfcf61d452f9979402eb21598e80eaa65a3a8b42804e9f089aa2f`
+and launcher SHA `381f3b12c4d80313acd518ac2d5571fe09bf3286009645a00dd15af64e5a809c`.
+Complete export/mount verification, candidate canary and fresh installed
+capabilities/search/EOD read passed. Only the four existing launcher pin literals
+changed; the previous selector and immutable release remain retained. Exactly
+four research contracts are PRODUCED and twenty stay PROPOSED. Source bindings
+remain read-only, without inferred availability or production qualification.
+
+Real candidate Lab run **run-20261012T121811Z-10dbb9c34b3a** completed SUCCEEDED
+with exit code zero and a canonical Trial from 4050 original CHFN bars dated
+2002-08-02 through 2018-08-31. Actual host request/status/result joined the returned
+run, and the original Parquet checksum was reverified. It used one configuration,
+the existing 60-second bound and only the temporary declared-budget ledger. Fresh
+selected-source reads also preserved the accepted AXP originally reported,
+revised and daily fundamental modes. No new provider request, source rebuilding,
+metric-value publication, trade-sizing or production-ledger effect follows.
+
+Verified-by: original exact-head hosted run, actual selected launcher calls,
+source/query version checks and host artifact joins recorded in
+[`installed research proof`](../../docs/tiingo-evidence/20261012-installed-research/README.md)
+and its aggregate hash-bound JSON. The private originals remain under the same
+task and effect identities. The protected close-out pin is
+`b49c3e7254ccd0dfde8cad69b8e71382dc4391a7`, compatible Skillpack 1.0.1 / bootstrap
+major 1; unchanged procedure bytes reused their accepted full reads.
+
+Original raw operation **eod-wave9-new-unreserved-20261012-01a12ab6** remains
+running. Prefix09 has verified raw and reader lineage for a global bounded
+snapshot of **17103 nonempty histories / 36073078 distinct bars**, with 33 empty
+and 30553 uncaptured windows in the reused 47689-candidate catalogue. It does not
+prove the original finite capture settled or full vendor/PIT/delisting coverage.
+The following disjoint 5000-request selection is prepared only, plan SHA
+`49e1ec5d0b3508706009998b257a408b7794d878a3e7dfa0986c6535b4bcd83e`.
+It reserves the entire running scope and excludes sixteen held symbols and
+existing/prior captures. Require actual original settlement plus fresh account
+quota, source and storage checks before launch. Preserve the four-in-flight,
+five-second minimum batch pacing, 24 GiB raw budget and 40 GiB free-space floor.
+
+Terminal #955 still has head `0e63c97ddb5d60a19c4c6ade1487f1a662b73199` and its
+incumbent native squash auto-merge request. Original dispatched run **38237161644**
+passed all twelve actual jobs. Original pull-request run **38237168665** still
+requires actual maintainer approval; the prior automatic approval rejection is
+preserved, with no new approval attempt, alternate route or replacement dispatch.
+Fresh production builder/source/writer preflight and release remain downstream.
+The current BOATS venue is closed; the next published opening is **2026-10-13
+00:00 UTC**. No future subscriber, schedule or wake has a launch receipt.
+
+Next useful acts are qualification/settlement of the existing capture, then the
+disjoint next capture when admitted; actual Terminal release when its original
+gate clears; and authentic BOATS consumer acceptance in an open venue session.
+Full fundamentals serving remains unproven despite purchase/activation attestation;
+the accepted 75 captures across 25 companies and their roughly three-year served
+window are not deep/all-symbol entitlement. Preserve SHW/PFE, standalone splits,
+original platform/Fabric refusals and incumbent writers. Canonical dated identity,
+PIT eligibility and responsive live BOATS production acceptance remain open.
+
+## Original finite scope closed; next capture and verification continuing
+
+This section supersedes the preceding running-wave9 and older Terminal bindings.
+It records a material delivery delta while the same programme continues.
+
+Original raw operation `eod-wave9-new-unreserved-20261012-01a12ab6` settled at
+2026-10-12T12:57:13.256734Z with all 5000 requests successful and zero failures.
+All twelve completed-response qualification snapshots are accepted: 4988
+nonempty histories, twelve empty responses and 10152447 distinct bars. The actual
+finite closure joins the exact original plan, scope and settlement to all 5000
+qualified request/receipt pairs, reusing accepted raw/projection/reader evidence.
+No failed symbol was retried and closure rebuilt no raw or projection. Aggregate
+proof is in [`finite EOD scopes`](../../docs/tiingo-evidence/20261012-eod-finite-scopes/README.md).
+
+Disjoint `eod-wave10-new-unreserved-20261012-01a12ab6` started at
+2026-10-12T13:05:56.167616Z through the unchanged original collector after actual
+prior settlement, source pins, existing-symbol collision scan, fresh company
+browser quota and archive reserve checks. It remains the sole owned raw writer.
+Its accepted prefix02 has 3115 newly qualified receipts and advances the bounded
+global archive to 21347 nonempty histories / 45375550 distinct bars, with 52 empty
+and 26290 uncaptured desired catalogue windows. Partial accepted responses do not
+prove full capture settlement, full vendor/delisting history or PIT admission.
+The following 5000-request wave11 plan has SHA
+`c25ef445a8f30a596a9eb1870a5d9fc4ceb60f6f1ca56ff65700307e466271ef` and an actual
+preflight with zero existing-symbol collisions and zero provider calls. It is
+unlaunched; require actual wave10 settlement and fresh quota/source/storage checks.
+All sixteen held symbols and prior selections remain excluded, with the original
+four-in-flight/pacing/budget/reserve bounds preserved.
+
+Installed-research evidence
+[PR #9004](https://github.com/mastermindx-market-intelligence/macro/pull/9004)
+merged at 2026-10-12T14:47:40Z as
+`dad025903cd621b994ee9a18bcaba18138518b10`, tested head
+`2bb32a2061a735745635bbeaa449f0b785cb7192`. Original product run **38250197664**
+passed all twelve packs, contract-delta and ci-gate. Original trusted-authority
+run **38250197546** first settled with `controller_error`: the inactive context
+was posted and the active main check was absent on two canonical reads. The exact
+trusted controller/workflow bytes were verified, then only its failed job was
+repaired on that same run. Attempt 2 and the active `ci-authority/main` check
+passed; original red evidence and inactive-context failure remain retained.
+No authority/permission configuration or Terminal approval was changed. Ordinary
+exact-head merge succeeded without admin bypass. Documentation landing leaves
+the actually selected immutable Data & Lab release at `0b204cde`; accepted
+installation and real consumer proof are not replayed.
+
+Canonical Terminal #955 is OPEN/BLOCKED at
+`341d64d858b6d3205f028b3072f075834ef52801`. Original dispatched run
+**38255644320** passed all twelve actual jobs. The shared shell quote-state delta
+was inspected against the immutable Git blob: both polling lanes publish through
+one state-write path, with an actual regression test for pending/interleaved
+responses. This is not a claim that the shared shell source stayed unchanged or
+that the entire peer UI was reviewed here. Original pull-request run
+**38255655771** is `action_required`, attempt 1. Incumbent release custody and the
+original automatic approval refusal remain intact; no approval, replacement
+dispatch, production builder or BOATS publisher was executed.
+
+Continue capture and incremental qualification, close each original finite scope
+only after actual settlement, then start the next disjoint scope when admitted.
+Terminal production/browser acceptance still requires its lawful protected
+landing and fresh release checks. Authentic BOATS acceptance requires an open
+venue session and the original production gates. Deep fundamentals serving and
+canonical dated identity remain unproven. This save does not end the mission.
+
+
+### Finite pacing source review and continued qualification
+
+Accepted wave10 prefix04 now brings the reused catalogue census to 22,630
+nonempty histories and 49,208,738 distinct bars, with 65 retained empty responses
+and 24,994 uncaptured desired windows. The original raw capture remains unchanged.
+Coverage proof SHA256: `fb0a1e1f9f7609ee662b146468eb7e25f720982bdb1e00aa371b038fa7b810c1`.
+
+The pure finite callback admission helper passed independent architecture review
+at source SHA256 `3d204f2e7a6ebc5d3693606a7b59b665be8f53546314c0b8053bee2be4154926`.
+It removes the batch slowest-request barrier only for a future unlaunched scope,
+while retaining at most four unsettled futures, actual rolling admissions no
+faster than four per five seconds, first-error gate closure and settlement of
+already admitted work. Its caller must retain the original source, stable key,
+disjoint plan, prior successful settlement, fresh quota and 40 GiB floor/5 GiB
+headroom. The unchanged 24 GiB byte threshold has an explicit at-most-2-GiB
+already-admitted overshoot bound. No collector, provider or credential code is
+part of this helper. The 22 new offline tests and 511 affected checks passed;
+CI import-closure ownership and Agent OS validation passed (zero errors).
+
+Source CI and the unlaunched helper integration remain separate gates. The
+original prepared wave11 method was unchanged during this review; no replacement
+operation, request selection, scheduler or retry was started. Preserve all held
+provider and Terminal approval effects. This is a saved delta in the active
+programme, with the next safe capture and canonical source delivery continuing.
+
+
+### Canonical pacing source landed; original history capture continues
+
+PR #9018 actually merged at 16:19:13 UTC as
+`f5d1cec6e56b4f8e07e4ea9038293a3072f4b1dd`, after original CI 38272400147 passed
+all twelve packs, contract delta and final gate at
+`85914b39d9e9b0c40554f226080390ab934ade6f`. Active authority and protected fences
+passed. Canonical module/test bytes match independent review; the full owned
+Tiingo CI job is unchanged while three unrelated peer CI additions are preserved.
+The original local promisor/DNS failure, owned read interruption, full-file CI
+hash mismatch and subsequent local source binding are retained. The normal
+canonical checkout and `--no-lazy-fetch` verification changed no security settings
+and touched no raw capture workers. Safe proof lives in
+`docs/tiingo-evidence/20261012-canonical-capture-admission/`.
+
+Original wave10 settled at 15:58:22 UTC: 5000 successes, zero failures,
+12699484 bars / 3036446789 bytes. All six qualification snapshots were accepted;
+full finite closure proves 4970 nonempty histories and 30 empty responses. Closure
+SHA256: `b45dc56fc477f552f44a49110cbca8f1cd37e0635810bb6acea02bfc5e628fbf`.
+The actual census after closure has 23216 histories, 51173037 bars, 68 empty responses and 24405
+uncaptured desired windows; complete vendor history and PIT remain unestablished.
+
+Wave11 started at 16:00:35.796631 UTC on unchanged original method
+`ce8d4524bc937598474a8824c5ac71b22428b0b432c08fa1eddb05dd33e83529`, original
+session 42903, actual scope
+`4d6ca7b1e17bff503784ff35d21287102a8fc954f84b0fac3bc84a88b88a0158`.
+At 17:00:04 UTC, 1720 requests had succeeded with zero failures. Accepted
+prefix03 covers 788 additional responses, bringing the cumulative qualified
+wave11 prefix to 1240 responses and the census to 24451 nonempty histories,
+54595389 bars, 73 empty responses and 23165 uncaptured windows. Coverage SHA256:
+`bb8bad82955b11b7588d1cd0b768df23727faebdd1a52149bfbab18eff94c921`. Its raw writer remains unchanged and final qualification
+continues. The wave11 rolling candidate was never launched. Disjoint wave12 plan
+`867586f3689d51d0cd39edd278ef3ddbea49c3880a3abbeb38554d27ae3eef80` and reviewed-
+architecture candidate `18ea2c8062c2185536810f10d0dc649dcc3c993e30b1a8727fed79194206d270`
+remain unlaunched. Its read-only preflight verified 5000 unreserved selections,
+16 held exclusions, source pins and zero EOD collisions without credentials/API.
+Actual launch still requires successful prior settlement and fresh quota/source/
+resource/collision checks. The installed consumer remains 0b204cde, with no
+unrelated runtime reinstall. Terminal/provider approval refusals remain held.
+The full programme continues; this checkpoint is not completion.
+
+At 17:02 UTC, a fresh read of Terminal #955 found head
+`1a74e3cf93368a5c5381f0110b80601dff0ae3e3`, OPEN/BLOCKED and unmerged. Its
+original dispatched run 38272365047 completed all twelve jobs successfully at
+16:12:38 UTC. Original PR run 38272372019 remains `action_required`; the required
+Terminal aggregate is absent from the PR rollup. The incumbent auto-merge request
+remains enabled. The original approval refusal is preserved without retry,
+replacement workflow or protection change. This blocks protected consumer
+landing, not the independent history capture and qualification lane.
