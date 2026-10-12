@@ -22642,6 +22642,7 @@ jobs:
       - "tests/test_run_qbus_news_provider.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
+      - "tests/test_ticker_news_package_n_matrix.py"
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
@@ -22680,6 +22681,7 @@ jobs:
           tests/test_run_qbus_news_provider.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
+          tests/test_ticker_news_package_n_matrix.py
           tests/test_ticker_news_receipt_binding.py
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_systemd.py
