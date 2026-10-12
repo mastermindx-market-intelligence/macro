@@ -313,6 +313,46 @@ class TestBuild:
         assert len(tmp_files) == 0, f"Temp files left behind: {tmp_files}"
 
 
+
+def test_build_fetches_cap_for_active_house_member_without_gics(monkeypatch, tmp_path):
+    """Theme-only house members need cap lookup without inventing a GICS label."""
+    cache_path = tmp_path / "reference.parquet"
+    data_root = tmp_path / "data"
+    basket_dir = data_root / "baskets"
+    basket_dir.mkdir(parents=True)
+    (basket_dir / "membership.json").write_text(json.dumps({
+        "baskets": {
+            "us_sector_tech": {"members": [{"ticker": "AAPL", "removed": None}]},
+            "space_economy": {"members": [
+                {"ticker": "RKLB", "removed": None},
+                {"ticker": "OLD", "removed": "2026-01-01"},
+            ]},
+        }
+    }))
+
+    fetched: list[str] = []
+
+    def fake_fetch(tickers, checkpoint, dry_run=False):
+        fetched.extend(tickers)
+        return {"AAPL": 4e12, "RKLB": 20e9}
+
+    monkeypatch.setattr(m.config, "data_dir", lambda: data_root)
+    monkeypatch.setattr(m, "_cache_path", lambda: cache_path)
+    monkeypatch.setattr(m, "_checkpoint_path", lambda: tmp_path / "ckpt.json")
+    monkeypatch.setattr(m, "build_gics_map",
+                        lambda: {"AAPL": "Information Technology"})
+    monkeypatch.setattr(m, "fetch_mcaps", fake_fetch)
+    monkeypatch.setattr(m, "_load_checkpoint", lambda: {})
+    monkeypatch.setattr(m, "_save_checkpoint", lambda cp: None)
+
+    result = m.build(force=True)
+
+    assert set(fetched) == {"AAPL", "RKLB"}
+    assert "RKLB" in result.index
+    assert pd.isna(result.loc["RKLB", "gics_sector"])
+    assert result.loc["RKLB", "market_cap_usd"] == pytest.approx(20e9)
+    assert "OLD" not in fetched
+
 # ---------------------------------------------------------------------------
 # Regex / us_like filter — hyphen-form tickers must not be dropped
 # ---------------------------------------------------------------------------
