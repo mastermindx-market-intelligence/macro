@@ -328,3 +328,92 @@ the accepted 75 captures across 25 companies and their roughly three-year served
 window are not deep/all-symbol entitlement. Preserve SHW/PFE, standalone splits,
 original platform/Fabric refusals and incumbent writers. Canonical dated identity,
 PIT eligibility and responsive live BOATS production acceptance remain open.
+
+## Original finite scope closed; next capture and verification continuing
+
+This section supersedes the preceding running-wave9 and older Terminal bindings.
+It records a material delivery delta while the same programme continues.
+
+Original raw operation `eod-wave9-new-unreserved-20261012-01a12ab6` settled at
+2026-10-12T12:57:13.256734Z with all 5000 requests successful and zero failures.
+All twelve completed-response qualification snapshots are accepted: 4988
+nonempty histories, twelve empty responses and 10152447 distinct bars. The actual
+finite closure joins the exact original plan, scope and settlement to all 5000
+qualified request/receipt pairs, reusing accepted raw/projection/reader evidence.
+No failed symbol was retried and closure rebuilt no raw or projection. Aggregate
+proof is in [`finite EOD scopes`](../../docs/tiingo-evidence/20261012-eod-finite-scopes/README.md).
+
+Disjoint `eod-wave10-new-unreserved-20261012-01a12ab6` started at
+2026-10-12T13:05:56.167616Z through the unchanged original collector after actual
+prior settlement, source pins, existing-symbol collision scan, fresh company
+browser quota and archive reserve checks. It remains the sole owned raw writer.
+Its accepted prefix02 has 3115 newly qualified receipts and advances the bounded
+global archive to 21347 nonempty histories / 45375550 distinct bars, with 52 empty
+and 26290 uncaptured desired catalogue windows. Partial accepted responses do not
+prove full capture settlement, full vendor/delisting history or PIT admission.
+The following 5000-request wave11 plan has SHA
+`c25ef445a8f30a596a9eb1870a5d9fc4ceb60f6f1ca56ff65700307e466271ef` and an actual
+preflight with zero existing-symbol collisions and zero provider calls. It is
+unlaunched; require actual wave10 settlement and fresh quota/source/storage checks.
+All sixteen held symbols and prior selections remain excluded, with the original
+four-in-flight/pacing/budget/reserve bounds preserved.
+
+Installed-research evidence
+[PR #9004](https://github.com/mastermindx-market-intelligence/macro/pull/9004)
+merged at 2026-10-12T14:47:40Z as
+`dad025903cd621b994ee9a18bcaba18138518b10`, tested head
+`2bb32a2061a735745635bbeaa449f0b785cb7192`. Original product run **38250197664**
+passed all twelve packs, contract-delta and ci-gate. Original trusted-authority
+run **38250197546** first settled with `controller_error`: the inactive context
+was posted and the active main check was absent on two canonical reads. The exact
+trusted controller/workflow bytes were verified, then only its failed job was
+repaired on that same run. Attempt 2 and the active `ci-authority/main` check
+passed; original red evidence and inactive-context failure remain retained.
+No authority/permission configuration or Terminal approval was changed. Ordinary
+exact-head merge succeeded without admin bypass. Documentation landing leaves
+the actually selected immutable Data & Lab release at `0b204cde`; accepted
+installation and real consumer proof are not replayed.
+
+Canonical Terminal #955 is OPEN/BLOCKED at
+`341d64d858b6d3205f028b3072f075834ef52801`. Original dispatched run
+**38255644320** passed all twelve actual jobs. The shared shell quote-state delta
+was inspected against the immutable Git blob: both polling lanes publish through
+one state-write path, with an actual regression test for pending/interleaved
+responses. This is not a claim that the shared shell source stayed unchanged or
+that the entire peer UI was reviewed here. Original pull-request run
+**38255655771** is `action_required`, attempt 1. Incumbent release custody and the
+original automatic approval refusal remain intact; no approval, replacement
+dispatch, production builder or BOATS publisher was executed.
+
+Continue capture and incremental qualification, close each original finite scope
+only after actual settlement, then start the next disjoint scope when admitted.
+Terminal production/browser acceptance still requires its lawful protected
+landing and fresh release checks. Authentic BOATS acceptance requires an open
+venue session and the original production gates. Deep fundamentals serving and
+canonical dated identity remain unproven. This save does not end the mission.
+
+
+### Finite pacing source review and continued qualification
+
+Accepted wave10 prefix04 now brings the reused catalogue census to 22,630
+nonempty histories and 49,208,738 distinct bars, with 65 retained empty responses
+and 24,994 uncaptured desired windows. The original raw capture remains unchanged.
+Coverage proof SHA256: `fb0a1e1f9f7609ee662b146468eb7e25f720982bdb1e00aa371b038fa7b810c1`.
+
+The pure finite callback admission helper passed independent architecture review
+at source SHA256 `3d204f2e7a6ebc5d3693606a7b59b665be8f53546314c0b8053bee2be4154926`.
+It removes the batch slowest-request barrier only for a future unlaunched scope,
+while retaining at most four unsettled futures, actual rolling admissions no
+faster than four per five seconds, first-error gate closure and settlement of
+already admitted work. Its caller must retain the original source, stable key,
+disjoint plan, prior successful settlement, fresh quota and 40 GiB floor/5 GiB
+headroom. The unchanged 24 GiB byte threshold has an explicit at-most-2-GiB
+already-admitted overshoot bound. No collector, provider or credential code is
+part of this helper. The 22 new offline tests and 511 affected checks passed;
+CI import-closure ownership and Agent OS validation passed (zero errors).
+
+Source CI and the unlaunched helper integration remain separate gates. The
+original prepared wave11 method was unchanged during this review; no replacement
+operation, request selection, scheduler or retry was started. Preserve all held
+provider and Terminal approval effects. This is a saved delta in the active
+programme, with the next safe capture and canonical source delivery continuing.

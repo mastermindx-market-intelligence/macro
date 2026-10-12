@@ -32,31 +32,36 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955, 8986]
+    pr: [8698, 945, 955, 8986, 9004]
 next_action: >-
-  Continue original finite EOD operation eod-wave9-new-unreserved-20261012-01a12ab6
-  and qualify only new completed immutable responses. Prefix09 accepts 17103
-  nonempty histories and 36073078 distinct bars; the capture is running and whole
-  finite-scope completion is not claimed. The disjoint following 5000-request plan
-  is prepared only, excluding all sixteen known held symbols, prior selections and
-  existing captures; require actual prior settlement and fresh quota/source/storage
-  checks before launch. Macro 8986 merged as 0b204cde017b88a9fec03ddb583f6b5e02ea4886
-  after all twelve original CI packs, contract-delta, ci-gate, trusted authority and
-  fences passed on 9255dba36c9b8e62852582da2368134426d994c4. The existing Data and Lab
-  launcher now selects its verified immutable 1883-file release. Its real canonical
-  CHFN Lab trial and fresh installed EOD/fundamental reads passed. Exactly four
-  contracts are PRODUCED; the other twenty remain PROPOSED, with read-only bindings
-  and availability/production qualifiers preserved. Current Terminal 955 head
-  0e63c97ddb5d60a19c4c6ade1487f1a662b73199 passed all twelve original dispatched jobs
-  on 38237161644. Original PR run 38237168665 requires actual maintainer approval
-  before protected landing and fresh VPS builder preflight. Preserve the original
-  automatic approval refusal. The next published BOATS opening is 2026-10-13
-  00:00 UTC; no future subscriber or scheduler is launched. Standalone AAPL split
-  HTTP 403 and SHW/PFE statement HTTP 400 effects remain held. The 75 successful
-  fundamental captures across 25 companies serve roughly three years, with 1598
-  changed original/revised fiscal metric values; broader serving is unproven.
-  Full history, dated identity, PIT and responsive live BOATS consumer acceptance
-  remain open. Save material deltas and continue ready work in the same mission.
+  Original EOD wave9 is fully settled and qualified: 5000 successful requests,
+  zero failures, 4988 nonempty histories, twelve empty responses and 10152447 bars.
+  Continue original disjoint wave10, started after real prior settlement and fresh
+  quota/source/storage checks; qualify only new completed immutable responses.
+  Its accepted prefix04 brings the archive to 22630 nonempty histories and 49208738
+  distinct bars, with 65 empty and 24994 uncaptured desired catalogue windows.
+  The following disjoint 5000-request wave11 is prepared and preflighted only;
+  require actual prior settlement and fresh quota/source/storage checks before
+  launch. Preserve all sixteen held symbols, prior reservations, existing captures
+  and the unchanged collector/resource bounds. The pure finite-admission callback
+  helper passed independent architecture review and 22 offline tests; require
+  canonical CI and reviewed integration before using its rolling four-per-five-
+  second pacing on a future unlaunched scope. Macro 8986's immutable installed
+  release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886, with its accepted real
+  canonical CHFN Lab trial and fresh installed EOD/fundamental reads. Evidence
+  PR 9004 merged as dad025903cd621b994ee9a18bcaba18138518b10 after its original
+  twelve CI packs/final gate and same-run trusted-controller repair passed;
+  documentation landing does not reinstall the runtime. Exactly four contracts
+  are PRODUCED and twenty remain PROPOSED. Current Terminal 955 head
+  341d64d858b6d3205f028b3072f075834ef52801 passed all twelve original dispatched
+  jobs on 38255644320; original PR run 38255655771 remains action_required,
+  attempt 1, and the PR is OPEN/BLOCKED. Preserve the original approval refusal
+  before protected landing and fresh VPS builder preflight. The next published
+  BOATS opening is 2026-10-13 00:00 UTC; no future subscriber or scheduler is
+  launched. Standalone splits and SHW/PFE statement failures remain held. The 75
+  accepted fundamental captures across 25 companies serve roughly three years;
+  deep/all-symbol serving, dated identity, PIT and responsive live BOATS consumer
+  acceptance remain open. Save material deltas and continue ready work.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -75,6 +80,7 @@ artifacts:
   - docs/tiingo-evidence/20261012-delivery-frontier/
   - docs/tiingo-evidence/20261012-research-contracts/
   - docs/tiingo-evidence/20261012-installed-research/
+  - docs/tiingo-evidence/20261012-eod-finite-scopes/
 landmines:
   - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
   - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
