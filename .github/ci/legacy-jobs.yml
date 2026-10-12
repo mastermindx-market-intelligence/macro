@@ -4475,6 +4475,9 @@ jobs:
           tests/test_intraday_flow_w11_r3.py
           tests/test_intraday_flow_w11_r4.py
           tests/test_intraday_flow_w11_r5.py
+          tests/test_fundamental_forensics_sec_request_pacer.py
+          tests/test_fundamental_forensics_filing_observation_state.py
+          tests/test_fundamental_forensics_public_summary_freshness.py
           tests/test_intraday_flow_ncp_js.py
           tests/test_standout_audit.py
           tests/test_track_record_page.py
