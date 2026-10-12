@@ -111,6 +111,11 @@ class BEAIndustryContextTests(unittest.TestCase):
         self.assertIsNone(result["source"]["original_historical_known_at"])
         self.assertEqual(result["period_end_not_known_at"], "2017-12-31")
         self.assertFalse(result["named_supplier_customer_evidence"])
+        self.assertEqual(result["measurement_class"], "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION")
+        self.assertTrue(result["source_methodology"]["industry_input_allocation_is_estimate"])
+        self.assertFalse(result["source_methodology"]["industry_specific_import_transaction_observed"])
+        self.assertFalse(result["source_methodology"]["named_supplier_customer_pair_observed"])
+        self.assertEqual(result["source_methodology"]["source_url"], "https://www.bea.gov/help/faq/453")
         self.assertIsNone(result["graph_edge"])
         self.assertFalse(result["publishable"])
         self.assertFalse(result["rank_size_or_trade_authority"])
@@ -238,6 +243,8 @@ class BEAIndustryContextTests(unittest.TestCase):
         )
         self.assertEqual(len(report["observations"]), 8)
         self.assertFalse(report["public_or_predictive_use"])
+        self.assertEqual(report["measurement_class"], "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION")
+        self.assertFalse(report["industry_specific_transactions_observed"])
         self.assertTrue(report["no_named_company_relationships"])
         for modified in (rows[:-1], list(reversed(rows)), rows[:7] + rows[6:7]):
             with self.assertRaises(BEAContextRefused):

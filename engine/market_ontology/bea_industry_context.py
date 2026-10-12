@@ -205,6 +205,14 @@ def adapt_industry_commodity_input(
         "schema": "market_ontology.bea_industry_commodity_context_research/v1",
         "authority": "PRIVATE_RESEARCH_ONLY",
         "source_kind": SOURCE_KIND,
+        "measurement_class": "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION",
+        "source_methodology": {
+            "source_url": "https://www.bea.gov/help/faq/453",
+            "method": "commodity_import_share_of_domestic_supply_imputation",
+            "industry_specific_import_transaction_observed": False,
+            "named_supplier_customer_pair_observed": False,
+            "industry_input_allocation_is_estimate": True,
+        },
         "source": {
             "publisher": "U.S. Bureau of Economic Analysis",
             "edition_date": PUBLISHER_EDITION_DATE,
@@ -262,6 +270,8 @@ def adapt_eight_year_input_history(
     return {
         "schema": "market_ontology.bea_industry_input_history_research/v1",
         "authority": "PRIVATE_RESEARCH_ONLY",
+        "measurement_class": "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION",
+        "industry_specific_transactions_observed": False,
         "using_industry_code_exact": industry_code,
         "commodity_code_exact": commodity_code,
         "observations": observations,
