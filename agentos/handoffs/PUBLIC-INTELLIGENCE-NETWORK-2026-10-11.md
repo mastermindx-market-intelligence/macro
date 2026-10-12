@@ -409,3 +409,48 @@ at4/4active lanes; result228bytes, no review/acceptance, no retry.
 mmx-press-hovr-dossier-path-20261012-001 onUbuntu0 was admitted and remains on its
 original retained-result path. Consume/inspect/accept only that same result.
 The historical current-report review's support refusal remains frozen too.
+
+## Current delivery frontier — October12 import-path repair
+
+CI38199822739 on66541c0866a83bf6280cac5e9b6277ac56368407 exposed a real
+`ci-pack-7` failure in `unrun-import-hygiene`: the new fixed baseline CLI had
+no repository-root pin. The exact job114650740776 failure excerpt is retained
+in pr8786_66541_import_pin_failure.txt. Root visibly disarmed the original
+PR8786 with merge-blocked and read back the same OPEN head with native
+auto-merge null. This failure is not waived or called inherited.
+
+Commitd3c29264609e adds the standard own-repository pin before application
+imports. The import guard, baseline and Press workflow suites pass82tests
+in81.53seconds (pr8786_import_pin_green.txt). A real bare-file `--help` run
+from a hostile temporary cwd with foreign engine/lib packages on PYTHONPATH
+also succeeds; qualifier_file_invocation.json binds script SHA256
+b6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05.
+No provider or market-data fetch occurs in that probe. Analytical engine and
+transport behavior are unchanged. No baseline/waiver registry was expanded.
+
+Fresh protected main5267c66846e7733bc1eb30edc1524daff51598ca merged cleanly
+asb7f4710ae24abf89a1f52c6a7b59e9cc71e32a73. It includes PR8803's CI-definition
+addition. All21 installation-source bindings differ from66541c only in the
+repaired CLI; all three acceptance pages still match. The82-test affected
+implementation/test paths did not change in that main merge. The differential contract check against5267c66846e7 completed with zero
+introduced/inherited findings in567.0seconds; its raw result is retained in
+pr8786_import_pin_contract_delta.txt. Agent OS validation reports1680records,
+zero errors and141existing advisories. Git diff whitespace checks pass.
+
+The HOVR Fabric leaf settled rc76 with REMOTE_CLEANUP_UNPROVEN
+ProcessCensusError/native_capture_truncated; the43-byte retained result is
+saved here. There is no usable analysis or acceptance, and cleanup remains
+unproven. No retry, alternate carrier or manual process cleanup was attempted.
+The interrupted Press provider response cannot be recovered from its retained
+accounting: the exact28c91fe provider source used an ephemeral CLI and captured
+its output only in process memory. Accounting hashes still match; the attempt
+remains EFFECT_UNKNOWN and is not replayed.
+
+Next: push the validated authored repair normally to the same disarmed original
+carrier; the66541c failed-job evidence is retained,
+read back the exact head and re-arm last. Then exact-head CI/protected landing,
+21source/3page installed parity, installed staging replay with the existing
+VPS virtualenv, and the real browser path. Continue into the existing
+nonpromoting earnings audit and fixed baseline workflow only from qualified
+protected main. Terminal956 remains installed and browser accepted; Press
+publication, rights-qualified story and D14 acceptance remain unproven.

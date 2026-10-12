@@ -96,3 +96,15 @@ revision was a4d48836a69eedd8572a63bd926cd99d036c65cc and source access was read
 The Tiingo dataset registry still describes a proposed source; its incumbent
 research view keeps redistribution_admitted=false. No Tiingo data rows, collector,
 network fetch or publication admission were obtained by that investigation.
+
+
+## CLI import repair after hosted CI
+
+CI38199822739 found that this new entry script lacked the repository import pin.
+Repaird3c29264609e adds the established pin before engine/lib imports, without
+changing fixed inputs, transport, analytical checks, output containment or rights.
+The import guard, baseline and workflow suites pass82tests in81.53seconds. Actual
+bare-file help from a hostile cwd/PYTHONPATH resolves only this repository; the
+bound CLI SHA256 isb6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05.
+This narrow parent-reviewed repair does not claim a new independent full review,
+market-data fetch, installed workflow or Press admission.

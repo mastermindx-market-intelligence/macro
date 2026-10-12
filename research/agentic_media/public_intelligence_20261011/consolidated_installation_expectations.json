@@ -1,8 +1,6 @@
 {
-  "source_revision": "47069bb68a23218217b356f87175fc2c9ce2ed9d",
-  "source_files": 21,
-  "expected_sha256": "d6f1eb32a9a46c9f0754cfeb1db97daf6d2090a0881e9f285dec5221f444d7af",
-  "source": {
+  "source_revision": "b7f4710ae24abf89a1f52c6a7b59e9cc71e32a73",
+  "source_sha256": {
     "scripts/inspect_press_staging.py": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
     "scripts/run_press.py": "7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6",
     "engine/press/validators.py": "33d293ae15910607785cd2340ae04e012b32cfee084d5b636e175b8e3d944ffe",
@@ -21,7 +19,7 @@
     "engine/whitehouse_feed.py": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e",
     "engine/close_pass/massive_close.py": "63b137a6c35a8346e0ed6adfbfd80c17ec3fc0e1e08fcf828c6dcfe1670d209b",
     "scripts/build_whitehouse.py": "56a4b5f535fafb7ffee0d0df873674e7f0677708d47d6ad968f0af99b31dc534",
-    "scripts/qualify_press_nvda_baseline.py": "db32f50eda2bd4b6a78ecf4e957ad1cdbf67d056e09d684983d0f8a363917203",
+    "scripts/qualify_press_nvda_baseline.py": "b6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05",
     ".github/workflows/press-source-qualification.yml": "9fbb03ece7326998995a0444b05246c6bfef43d5b3a00999ce399b22d8981e79",
     "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891"
   },
@@ -51,5 +49,6 @@
       "morning_edition": 1
     }
   },
-  "installed_verified": false
+  "installed_verified": false,
+  "change_from_66541c": "Qualifier repository import pin only; analytical engine and transport bytes unchanged."
 }

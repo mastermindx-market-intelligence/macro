@@ -230,3 +230,30 @@ or the latest available filing. The engine's stale=false uses its 550-day rule;
 it does not establish those stronger claims. Two FCF calculations do not supply
 five independent relevant Press receipts. No public-article rights receipt,
 fact-pool admission, new candidate draft or freshness upgrade is inferred.
+
+
+## Current aggregate-feed capture — October12 04:07UTC
+
+One read through the existing White House `_fetch`/`_parse` functions recovered
+30 aggregate-feed entries. The newest is the October10 manufacturing report,
+published20:46:32UTC. Its normalized RSS body is2056characters, content_encoded,
+untruncated, bodySHA11843079da9dff9879f8e8fc366c196a5b1d7289765f6bf860d2cb7a6cbacc2b.
+`retain_source_document` stored it outside Git through its existing exclusive
+content-addressed mechanism; directory0700/document0600 are verified. The raw
+feed and normalized body remain in the private operation evidence folder;
+manufacturing_report_capture.json keeps the safe identity and recovery receipt.
+No second network call, model, processed-state change, alert, Chronicle event,
+Press staging or publication was performed by retention.
+
+This establishes a current item on an existing acquisition interface, rather
+than the older fact-sheet candidate. The RSS body has no Apple, Micron or NVIDIA
+mention; those company claims remain PDF-only evidence. It also contains site
+navigation furniture, so untruncated means the full normalized RSS body, not a
+clean/full publisher report. The aggregate feed's section isnews while the
+canonical path isresearch. The current closed external planner expects its
+section path to match and is not an admission route for this item. Do not alter
+source identity or splice PDF claims into the RSS body to force passage.
+Government-authored text can be scoped under the freshly read official copyright
+policy; report-specific third-party material and first-party analytical value
+still need their own qualification. No rights or public-article approval is
+inferred from this capture.
