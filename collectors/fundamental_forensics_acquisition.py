@@ -33,7 +33,7 @@ import re
 import time
 from typing import Any, Callable, Iterable, Mapping
 
-from collectors.edgar_forensics import SecForensicsCollector
+from collectors.edgar_forensics import SecForensicsCollector, SecRequestPacer
 from collectors.sec_document_spine import (
     ArchiveResponseTooLarge,
     SecFilingArchiveCollector,
@@ -545,6 +545,7 @@ def acquire_bounded_filings(
     max_total_bytes: int = DEFAULT_MAX_TOTAL_BYTES,
     min_interval_seconds: float = 0.12,
     reuse_local_archive: bool = False,
+    pacer: SecRequestPacer | None = None,
     submissions_collector_factory: Callable[..., Any] = SecForensicsCollector,
     archive_collector_factory: Callable[..., Any] = SecFilingArchiveCollector,
 ) -> dict[str, Any]:
@@ -638,17 +639,27 @@ def acquire_bounded_filings(
         if observation_path == restorable or observation_path.is_relative_to(restorable):
             raise AcquisitionError(f"observation_root must be outside {name}")
 
+    # ONE incumbent SEC request pacer for the whole acquire (A20): a single
+    # budget object is handed to both collectors so a run can never double the
+    # SEC request rate by each collector pacing privately.
+    shared_pacer = (
+        pacer
+        if pacer is not None
+        else SecRequestPacer(min_interval_seconds=min_interval_seconds)
+    )
     submissions_collector = submissions_collector_factory(
         raw_path,
         user_agent=user_agent,
         min_interval_seconds=min_interval_seconds,
         max_response_bytes=limits["max_submissions_bytes"],
+        pacer=shared_pacer,
     )
     archive_collector = archive_collector_factory(
         archive_path,
         user_agent=user_agent,
         min_interval_seconds=min_interval_seconds,
         max_document_bytes=limits["max_document_bytes"],
+        pacer=shared_pacer,
     )
     run_id = _run_id(
         targets=normalized_targets,
