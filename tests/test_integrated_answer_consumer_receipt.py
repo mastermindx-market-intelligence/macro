@@ -56,7 +56,9 @@ def test_reread_hash_substitution_is_detected(monkeypatch, tmp_path) -> None:
     assert current == bytes_b
 
 
-def test_missing_receipt_is_not_reported_as_unused(monkeypatch) -> None:
+def test_missing_receipt_is_not_reported_as_unused(monkeypatch, tmp_path) -> None:
+    # Pin the CTE root to an absent dir so the NO_REF leg never depends on ambient host data.
+    monkeypatch.setenv("MACRO_CTE_DIR", str(tmp_path / "absent"))
     _patch_all_seams(monkeypatch)
     page, entries = integrated_answer._compose_page_with_receipts("AAPL")
     by_leg = {entry["leg"]: entry for entry in entries}
