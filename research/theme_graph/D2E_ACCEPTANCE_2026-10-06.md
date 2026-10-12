@@ -1268,3 +1268,57 @@ until principal Phase-2 PASS**; release is not automated by an artifact, test or
 merged implementation. This amendment does not create another state producer, store,
 queue, service, workflow or carrier, and authorizes no E1 outcome look, performance
 experiment or downstream scoring/trading capability.
+
+## Principal Phase-2 ruling — selected original generation PASS (incorporated 2026-10-12)
+
+This is a records-only incorporation of the explicit principal Phase-2 ruling that "Composition and retained holds" above requires. Every byte above this heading is the exact frozen record at head `03462ef689a5bbb4c4254c48db34713efd731876`. That head carries the prospective rule adopted by `ceo-sol` in comment 6071188794 at 2026-10-08T23:38:32Z. The adopted rule, its gates and the verdicts above are unchanged; they remain historical and are never replacement observations.
+
+- **Ruling:** Astra principal Phase-2 ruling, #8540 comment **6103645886**, 2026-10-11T00:13:51Z. It was issued under the Chairman's October 10 Astra CEO takeover commission, with protected procedure Mastermind `326c8469a21d7f50fc9ecb1848196bf1c6e66685`, Skillpack 1.0.1/bootstrap1.
+- **Writer:** the GMI Meta-CEO seat (Claude session `6f14c2da`), under the Chairman's `WS:GMI-THEME-GRAPH` handoff. Custody marker: #8540 comment 6120046052.
+
+### Selected generation (bound before reader composition, comment 6089094401)
+
+| Field | Value |
+|---|---|
+| Run / attempt / engine job | 37874656026 / 1 / 113682968602 (`schedule`, `.github/workflows/daily.yml`) |
+| Original run start | 2026-10-09T02:27:24Z, strictly after the adoption at 2026-10-08T23:38:32Z |
+| Event/definition commit; definition blob | `cdbcd143dcfa419ab0637bc11dd4c80368143e2e`; `26731b7c6bf05a18f818e16e8139c51418d0f0ce` |
+| Effective producer checkout | `c4cd21d597521603fb75fe7a4602424e088c6bfa` |
+| Canonical graph publication | `48cf3140e2ff153769044fe0b621f4719d3bace8` |
+| Materialization / final metadata clock | 2026-10-09T14:11:26Z / 2026-10-09T14:11:34Z; metadata SHA256 `7280eee1138654749d6a12cee66e65026fab5e24700b676e8e76057fc7e587aa` |
+| Original artifact / witness | 11621847056 / `theme-graph-witness-37874656026-1-engine-105zwb4s`; ZIP SHA256 `2a363f791e1e928ce544f90af90bcab3e08086734b5eaea638b998b2861b316e` |
+| Ordered candidate census | SHA256 `be04dbe8f289d2fb4f44054341ee41a19fbd04d740e813d5f5ca28fcfbadd52e` (complete original four-run census, reverified by the principal) |
+| Binding-freeze receipt | `wc7-recovery-20261009T2031Z/d2e-original-binding-freeze.json`, SHA256 `83e47f290579b96e5abb430f38f5f8a0f78c3ebe04a103afcd7e77f4a94de5c9` |
+
+**Earlier candidates.** Both earlier schedule originals started before the adoption cutoff, so neither is eligible. 37874656026, attempt 1, is the first eligible original attempt, and it was fixed before reader composition. The later gated-off run 37877249459 never replaces it. There was no later run, rerun, manual rebuild, changed cutoff or favorable-outcome selection.
+
+### Reviews and principal audit
+
+- **Independent P3 technical review** (#8540 comment 6091601499): worker `gmi-d2e-native-evidence-p3-20261009-sol-001`. Return SHA256 `df392b972f87acd4f931b427f9231c8e3bd3128c91e0fce316626b0a1daaad2c`. Verdict PASS with 0 blockers and four retained evidence-class qualifications. Scope: static review of supplied evidence, not independent native test execution.
+- **Independent source-publication review:** worker `gmi-d2e-publication-review-20261009-sol-001`, finished 2026-10-10T00:32:57Z. Verdict PASS_WITH_LIMITATION with no blockers. Return SHA256 `1b0aa7b4db334abdfe05536c4fcf1dc08c1b1a638ecbf7ee297cd276179167f7`.
+- **Principal audit:** 79 passing checks. Receipt `astra-takeover-20261010/d2e-principal-audit.json`, SHA256 `a9469afe768dc8a04969c423637fb7376979150564cc4d6fe39edafbc356c2bf`.
+
+### Gate dispositions (principal)
+
+| Gates | Disposition |
+|---|---|
+| N1–N3 | **PASS.** The census digest was directly reverified. The first eligible original attempt was fixed before reader composition. Prerequisite ancestry, source parity and immutable-definition wiring are retained. |
+| N4 | **PASS for the eight graph paths.** The unique same-run post-write witness matches the exact canonical publication bytes, the metadata clock, the source ancestry and the commit timing inside the original core-checkpoint step. No assertion is made about which process performed the Git push. |
+| N5–N6 | **PASS.** Native build and guard rc0, at **9s / 4s**. The review prose's 47s/46s is incorrect; the original sidecars govern. |
+| N7 | **PASS.** Zero historical rows removed or rewritten. Exactly 93 accepted C4 PARENT_OF additions dated October 8. The only other P1 difference is the VMRK annulment, which was already present at PIN3. |
+| Q1–Q4 | **PASS.** 3960 nodes, 3 lifecycle rows, 25194 edge rows and 236 proposals. The four identity outcomes and all five frozen dated tuples pass. |
+| R0–R3, C1–C7, V1–V7 | **Accepted** at original scope and classification. The R1 population is **1152 passed** (121+57+143+655+1+144+31), not 1252. Companies: 2807 physical, 2806 canonical. |
+
+### Governing D2E state after this ruling
+
+- **D2E: ACCEPTED.** Phase 1 PASS at PIN3 `ebe35dc916de5aae556371a5aa963c6692175c9c`, and Phase 2 PASS for the selected original generation (this ruling).
+- **W3B: still HELD.** The later same-generation off-render shadow `4e1473def2f20470eac9516dd839e2ea235ee81a` (job 113894478202) has all 662 subjects UNAVAILABLE/NOT_QUALIFIED, with every action capability false. W3B is held on clock/qualification grounds and is not released by implication. `release_automatic=false` is unchanged.
+
+**Retained boundaries:**
+- The whole engine conclusion remains FAILURE at the later OIP PIT step; collect_tail was cancelled and capital_structure failed.
+- Historical GEN3 N4/N5 remain UNPROVEN.
+- W3C capture/rights, micro memberships, economic-edge admission, F04/Prophet/Terminal delivery and browser acceptance remain separate, unfinished gates.
+- No E1 outcome look, scoring, trading or rights authority is added.
+- `MISSION_COMPLETE=false`.
+
+**Machine record:** JSON key `principal_phase2_ruling_record`. It binds the frozen `prospective_evidence_window_candidate.selection` and `.composition` null slots by reference and leaves them byte-unchanged.

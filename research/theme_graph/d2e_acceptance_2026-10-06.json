@@ -2436,5 +2436,167 @@
       },
       "final_review_binding": "External independent review must bind the frozen R6 artifact hashes and complete source/rules before formal adoption. A later control-only delta records that actual review and designated adoption comment; no self-referential hash is fabricated."
     }
+  },
+  "principal_phase2_ruling_record": {
+    "record_kind": "principal_phase2_ruling_incorporation",
+    "incorporated_at_utc": "2026-10-12T07:59:09Z",
+    "writer": {
+      "seat": "GMI Meta-CEO",
+      "session": "6f14c2da-02a9-467e-9f37-7c2ebaccfe09",
+      "authority": "Chairman WS:GMI-THEME-GRAPH program handoff",
+      "custody_marker_comment": 6120046052
+    },
+    "governing_rule_head": "03462ef689a5bbb4c4254c48db34713efd731876",
+    "governing_rule_adoption": {
+      "adjudicator": "ceo-sol",
+      "comment": 6071188794,
+      "created_at_utc": "2026-10-08T23:38:32Z"
+    },
+    "preservation": "Append-only records incorporation. Every pre-existing key of this document, including prospective_evidence_window_candidate and its null selection/composition slots, is byte-unchanged; the slots are bound here by dotted reference and never rewritten. The adopted rule, its gates and every historical verdict are unchanged.",
+    "ruling": {
+      "source": "PR #8540 comment 6103645886",
+      "author_login": "mastermindxryan",
+      "created_at_utc": "2026-10-11T00:13:51Z",
+      "principal": "Astra",
+      "commission": "Chairman October 10 Astra CEO takeover commission",
+      "continuation_of": "theme-fabric-e2e-20261008-sol-001",
+      "procedure": {
+        "mastermind_commit": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+        "skillpack": "1.0.1/bootstrap1"
+      },
+      "phase2_verdict": "PASS",
+      "scope": "selected original natural Theme Graph generation 37874656026 attempt 1"
+    },
+    "binds": {
+      "prospective_evidence_window_candidate.selection.workflow_definition_proof": {
+        "event_sha": "cdbcd143dcfa419ab0637bc11dd4c80368143e2e",
+        "definition_commit": "cdbcd143dcfa419ab0637bc11dd4c80368143e2e",
+        "definition_path": ".github/workflows/daily.yml",
+        "definition_git_blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+        "proof_reference": "PR #8540 comment 6089094401; source/ancestry proof sha256 7184c07cd2ae2ecf1fc5c206a47c03ad3670350effddc21f68fa16a518af1c27",
+        "reviewed_witness_upload_wiring": "PRESENT (principal N1-N3 PASS, ruling 6103645886)"
+      },
+      "prospective_evidence_window_candidate.selection.selected_generation": {
+        "run_id": 37874656026,
+        "run_attempt": 1,
+        "engine_job_id": 113682968602,
+        "event": "schedule",
+        "event_sha": "cdbcd143dcfa419ab0637bc11dd4c80368143e2e",
+        "workflow_definition_commit": "cdbcd143dcfa419ab0637bc11dd4c80368143e2e",
+        "workflow_definition_path": ".github/workflows/daily.yml",
+        "workflow_definition_git_blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+        "actual_effective_checkout": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+        "canonical_data_commit": "48cf3140e2ff153769044fe0b621f4719d3bace8",
+        "final_metadata_sha256": "7280eee1138654749d6a12cee66e65026fab5e24700b676e8e76057fc7e587aa",
+        "seven_output_hashes": {
+          "data/theme_graph/nodes.parquet": "8edbd36ee252ccf9f556685aa3b16d41546d4f4330c006eac2551ef561eb5f38",
+          "data/theme_graph/node_lifecycle.parquet": "f3fac439eff060608650567ce6db9600a68d5fb309b6f9a4a7d07e5001f71421",
+          "data/theme_graph/edges.parquet": "cdf71b502844c4bcf076ef9fc9fc29032e755ab6ac24514f331e844f9953dd26",
+          "data/theme_graph/evidence.parquet": "b4ab6480dd2f625983c260667f2d6c7f5823278db156430ee5114b10b9f7bd5a",
+          "data/theme_graph/capability.parquet": "978c14bcf78cca37427c8d42c84cc0d30751e50a4b90f6dd0435de9890002001",
+          "data/theme_graph/identity_resolution.parquet": "053e9fa6d2c167c8fa7964237384930bd47dd47f41c9360b094a1bf76756d630",
+          "data/theme_graph/probation/proposals.jsonl": "fb7a55fb7abb27261e8541742d9e79c143a7d52d21bb26962ca1150e77e59c7e"
+        },
+        "run_started_at_utc": "2026-10-09T02:27:24Z",
+        "adoption_cutoff_utc": "2026-10-08T23:38:32Z",
+        "materialized_at_utc": "2026-10-09T14:11:26Z",
+        "final_metadata_at_utc": "2026-10-09T14:11:34Z",
+        "canonical_data_commit_timing": "author 2026-10-09T14:20:13Z, committer 2026-10-09T14:20:55Z, inside original core-checkpoint step 47 (14:18:41Z-14:22:24Z)",
+        "witness_artifact": {
+          "id": 11621847056,
+          "name": "theme-graph-witness-37874656026-1-engine",
+          "zip_bytes": 5417,
+          "zip_sha256": "2a363f791e1e928ce544f90af90bcab3e08086734b5eaea638b998b2861b316e",
+          "witness": "theme-graph-witness-37874656026-1-engine-105zwb4s"
+        },
+        "binding_freeze": {
+          "comment": 6089094401,
+          "receipt": "wc7-recovery-20261009T2031Z/d2e-original-binding-freeze.json",
+          "receipt_sha256": "83e47f290579b96e5abb430f38f5f8a0f78c3ebe04a103afcd7e77f4a94de5c9",
+          "source_ancestry_proof_sha256": "7184c07cd2ae2ecf1fc5c206a47c03ad3670350effddc21f68fa16a518af1c27"
+        },
+        "independent_native_rehash": {
+          "receipt": "wc7-recovery-20261009T2031Z/publication-independent-native-hash.json",
+          "receipt_sha256": "09567855462024d147d47fa2d00a661072c99063612734230f3522ad3987edfe",
+          "files": 8,
+          "bytes": 929939
+        }
+      },
+      "prospective_evidence_window_candidate.selection.earlier_candidate_dispositions": {
+        "ordered_candidate_census_sha256": "be04dbe8f289d2fb4f44054341ee41a19fbd04d740e813d5f5ca28fcfbadd52e",
+        "census_scope": "complete original four-run census, directly reverified by the principal",
+        "earlier_schedule_originals": "both started before the adoption cutoff: INELIGIBLE (pre-adoption generation); run ids bound inside the census digest",
+        "selected": "37874656026 attempt 1 is the first eligible original attempt, fixed before reader composition",
+        "later": "gated-off run 37877249459 never replaces the selection; no later run, rerun, manual rebuild, changed cutoff or favorable-outcome selection"
+      },
+      "prospective_evidence_window_candidate.composition": {
+        "replacement_phase2_verdict": "PASS",
+        "d2e": "ACCEPTED",
+        "gating_fail_blocks": true,
+        "missing_gating_proof_holds": true,
+        "independent_P3_required": true,
+        "independent_P3_receipt": {
+          "comment": 6091601499,
+          "worker": "gmi-d2e-native-evidence-p3-20261009-sol-001",
+          "output_sha256": "df392b972f87acd4f931b427f9231c8e3bd3128c91e0fce316626b0a1daaad2c",
+          "packet_manifest_sha256": "a70bd415eea98209178aae1f3bbec26e1b399e40f9ac40ec5bb7c25477514032",
+          "native_receipt_sha256": "fc112c7db7c80d7581a7344cb40624ebbf6cf6369d8df8aa07364353d8cd89a7",
+          "verdict": "PASS",
+          "blockers": 0,
+          "qualifications": 4,
+          "scope": "static supplied-evidence review, not independent native test execution"
+        },
+        "principal_phase2_ruling": "PASS",
+        "principal_phase2_ruling_at_utc": "2026-10-11T00:13:51Z",
+        "W3B": "HELD on clock/qualification grounds; not released by implication",
+        "release_automatic": false
+      }
+    },
+    "reviews": {
+      "independent_publication": {
+        "worker": "gmi-d2e-publication-review-20261009-sol-001",
+        "finished_at_utc": "2026-10-10T00:32:57Z",
+        "verdict": "PASS_WITH_LIMITATION",
+        "blockers": 0,
+        "return_bytes": 7514,
+        "return_sha256": "1b0aa7b4db334abdfe05536c4fcf1dc08c1b1a638ecbf7ee297cd276179167f7"
+      },
+      "principal_audit": {
+        "checks_passed": 79,
+        "receipt": "astra-takeover-20261010/d2e-principal-audit.json",
+        "receipt_sha256": "a9469afe768dc8a04969c423637fb7376979150564cc4d6fe39edafbc356c2bf",
+        "reproduction": "python3 astra-takeover-20261010/audit_d2e.py"
+      }
+    },
+    "gate_dispositions": {
+      "N1-N3": "PASS",
+      "N4": "PASS for the eight graph paths; no assertion identifying the process that performed the Git push",
+      "N5-N6": "PASS; native build/guard rc0 at 9s/4s (review prose 47s/46s incorrect; original sidecars govern)",
+      "N7": "PASS; zero removed/rewritten historical rows; exactly 93 accepted C4 PARENT_OF additions dated 2026-10-08; VMRK annulment pre-existing at PIN3",
+      "Q1-Q4": "PASS; 3960 nodes, 3 lifecycle rows, 25194 edge rows, 236 proposals; four identity outcomes and five frozen dated tuples pass",
+      "R0-R3,C1-C7,V1-V7": "ACCEPTED at original scope/classification; R1 population 1152 passed (121+57+143+655+1+144+31), not 1252; companies 2807 physical / 2806 canonical"
+    },
+    "governing_state": {
+      "D2E": "ACCEPTED",
+      "phase1": "PASS at PIN3 ebe35dc916de5aae556371a5aa963c6692175c9c",
+      "phase2": "PASS (selected original generation; ruling 6103645886)",
+      "W3B": "HELD; later same-generation shadow 4e1473def2f20470eac9516dd839e2ea235ee81a (job 113894478202): all 662 subjects UNAVAILABLE/NOT_QUALIFIED",
+      "release_automatic": false,
+      "MISSION_COMPLETE": false
+    },
+    "retained_boundaries": [
+      "Whole engine conclusion remains FAILURE at later OIP PIT; collect_tail cancelled; capital_structure failed",
+      "Historical GEN3 N4/N5 remain UNPROVEN",
+      "W3C capture/rights, micro memberships, economic-edge admission, F04/Prophet/Terminal delivery and browser acceptance remain separate unfinished gates",
+      "No E1 outcome look, scoring, trading or rights authority is added"
+    ],
+    "non_goals": [
+      "No production or natural-workflow dispatch/rerun",
+      "No graph regeneration to create proof",
+      "No new state producer/store/queue/service/workflow/carrier",
+      "No historical ledger mutation",
+      "No E1 outcome look or performance experiment",
+      "No downstream scoring/trading/capability grant"
+    ]
   }
 }
