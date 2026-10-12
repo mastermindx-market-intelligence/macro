@@ -776,3 +776,34 @@ def test_empty_consolidated_partition_keeps_documented_endpoint_basis_and_missin
     assert "NO_RETAINED_MINUTE_ROWS_IN_PARTITION" in result.refusals
     assert result.audited_rows == 0
     assert not result.source_admitted
+
+
+def test_submicrosecond_vendor_bar_time_cannot_be_silently_truncated_into_minute_grid():
+    # Python datetime.fromisoformat accepts nanoseconds but truncates them to
+    # microseconds. One late nanosecond is still NOT a full-minute bar clock.
+    for at in (
+        "2026-10-08T20:00:00.000000001-04:00",
+        "2026-10-08T20:00:00.0000000001-04:00",
+        "2026-10-08T20:00:00.000000000000000001-04:00",
+    ):
+        with pytest.raises(ValueError,match="invalid_vendor_minute_clock"):
+            assess(view(rows=(row(at=at),)))
+
+
+def test_exact_nine_digit_zero_fraction_is_valid_minute_without_pit_admission():
+    minute="2026-10-08T20:00:00.000000000-04:00"
+    result=assess(view(rows=(row(at=minute),)))
+    assert result.audited_rows==1
+    assert result.overnight_sessions[0].observed_unique_minutes==1
+    assert not result.source_admitted
+    assert not result.customer_publishable
+
+
+def test_consolidated_reference_bar_with_one_nanosecond_offset_not_counted_as_rth_slot():
+    # The live source-fitness use case is consolidated one-minute Tiingo L1.
+    complete=_synthetic_rth()
+    first=dict(complete.rows[0])
+    first["bar_at_vendor"]="2026-10-09T09:30:00.000000001-04:00"
+    mutated=replace(complete,rows=(first,*complete.rows[1:]))
+    with pytest.raises(ValueError,match="invalid_vendor_minute_clock"):
+        assess(mutated)

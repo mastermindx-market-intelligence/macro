@@ -115,3 +115,11 @@ The [public individual-plan license description](https://www.tiingo.com/pricing)
 Thirteen additional synthetic cases cover endpoint scope, missing/zero volume, empty input, full 1,560-cell coverage, a later research cutoff, off-calendar source warnings, lossless refusal propagation and fingerprint changes when source-assessment semantics change without changing source bytes. The fail-first run produced **9 expected failures / 87 passes**; targeted green was **96/96**, and the existing **17-suite** registered research command passed **570/570** on local Python 3.12. Current exact source/evidence hashes and synthetic witness are in `evidence/native_tiingo_reference_basis_tests.json` and `evidence/tiingo_reference_basis_synthetic.json`.
 
 No vendor request, archive rewrite, canonical alias, market BVC calculation, S6 empirical acceptance, independent review acceptance, merge or deployment occurred. The four-name historical capture remains retrospective; October 11 knowledge is not October 9 knowledge.
+
+### Exact vendor minute-clock precision (2026-10-12)
+
+Original source fitness used Python datetime.fromisoformat, which silently truncates fractional digits beyond six. A fabricated vendor timestamp at 20:00:00.000000001-04:00 was wrongly counted as an exact minute. This is NOT evidence that the actual archived four-stock source contains a corrupt timestamp. The downstream preflight already rejects off-minute nanoseconds; the earlier source-quality assessor must agree.
+
+The source-fitness layer now checks the original ISO vendor bar clock text BEFORE datetime conversion. It allows an exact :00 second with an optional one-to-nine-digit all-zero fraction and an explicit timezone. Nonzero nanosecond remainders, more-than-nine fractional digits and off-minute bars are refused, not rounded or zero-filled. Source receipt decision clocks, original Data OS and S2 preflight stay unchanged.
+
+A new test failed first as expected. After repair: 99/99 targeted and 573/573 in the full existing 17-suite Factor Atlas research command, M2 Python 3.12. Evidence: session2/evidence/native_tiingo_minute_clock_tests.json; synthetic only, no licensed price rows, no fresh collector run. The old real Tiingo 1,560/1,560 represented but 1,560 UNKNOWN source/basis/rights result remains unadmitted. No release authority was elevated.

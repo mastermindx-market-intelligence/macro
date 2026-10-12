@@ -22,6 +22,11 @@ from zoneinfo import ZoneInfo
 import pressure as m
 
 _SHA=re.compile(r"^[0-9a-f]{64}$")
+# datetime.fromisoformat truncates fractional digits beyond microseconds.
+# Preserve exact minute membership even for vendor nanosecond timestamp text.
+_MINUTE_INSTANT=re.compile(
+    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00"
+    r"(?:\.0{1,9})?(?:Z|[+-][0-9]{2}:[0-9]{2})$")
 _SYMBOL=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,35}$")
 _PILOT=("AAPL","MSFT","NVDA","SPY")
 _ET=ZoneInfo("America/New_York")
@@ -281,7 +286,10 @@ def assess_tiingo_view(view: object, *,
         if source=="eod-bars":
             # A daily history can be useful to S1, but it is not 1m S2.
             continue
-        stamp=_timestamp(raw.get("bar_at_vendor"),"invalid_vendor_minute_clock")
+        original_clock=raw.get("bar_at_vendor")
+        if not isinstance(original_clock,str) or not _MINUTE_INSTANT.fullmatch(original_clock):
+            raise ValueError("invalid_vendor_minute_clock_unaligned")
+        stamp=_timestamp(original_clock,"invalid_vendor_minute_clock")
         if stamp.second or stamp.microsecond:
             raise ValueError("invalid_vendor_minute_clock_unaligned")
         # A retained 2026 snapshot cannot become an actual 2024 observation.

@@ -1532,3 +1532,9 @@ Current source parent `d7e8b9560bb2cb47dbbaaf894bf60f729939a6ab`; same original 
 13 new synthetic tests: RED 9 failures/87 passes; targeted GREEN 96/96; original unchanged 17-suite registered command 570/570. Original log/source hashes and fabricated outputs: `evidence/native_tiingo_reference_basis_tests.json` and `evidence/tiingo_reference_basis_synthetic.json`. All market/PIT/rights/trading/customer flags remain false. No new vendor collection.
 
 Single current frontier remains `EXECUTION_HANDOFF_2026-10-12.md`; its current content is manifest-bound, superseding the earlier handoff-only hash above. It preserves the new exact pre-dispatch identity inspection denial, original P4/P6/BOATS/source-read denials, and unresolved original independent-review summon. Executive V3 01:18:23 UTC read failed before dispatch. Predecessor focused/fences passed; full Macro CI remains pending. No merge/deploy.
+
+## 2026-10-12 — original Tiingo minute-clock nanosecond safety
+
+Same original #8677 worktree; accepted parent 6857e56c708cbd40e6287334447d3a4d05df6160. The source-fitness assessor falsely treated fabricated nanosecond-offset vendor bar clocks as exact-minute observations because datetime.fromisoformat truncates at microseconds. The original assessor now rejects nonzero fractional minute offsets and overprecision source text. Existing downstream nanosecond preflight, S2 research algorithms and Data OS ownership are unchanged.
+
+Fail-first observed, then 99/99 targeted and 573/573 all 17 registered research suites. Source/test and logs bound by session2/evidence/native_tiingo_minute_clock_tests.json. No original market source reread, capital pressure result, rights, identity, PIT or consumer/trading authority. All historic data-source, identity inspection, P4/P6, BOATS and independent-review effect holds remain. PR stays Draft/HOLD, no merge/deploy.

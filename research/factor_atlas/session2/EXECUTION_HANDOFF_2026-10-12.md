@@ -63,3 +63,11 @@
 5. Consume actual concluded hosted checks on the candidate's exact head and classify any failing job by its original owner; preserve all branch/release guards. Save final source publication/readback on original PR #8677 and notify the original Tiingo #8698 source carrier of the basis finding. No merge, deploy, customer publication, trading/ranking/alerts or S6 acceptance.
 
 **Closeout classification for this handoff:** `CHECKPOINT_UPDATED / MISSION_INCOMPLETE / TRADE_PRICE_BASIS_NOT_ADMITTED / DRAFT_HOLD`. No pending local modifying process or unverified source write is asserted by this document. This handoff is a compact recoverable frontier, not a substitute runtime, second lifecycle, memory store, provider queue or customer source of truth.
+
+### New original-branch continuation — nanosecond source-minute integrity
+
+After accepted remote head 6857e56c708cbd40e6287334447d3a4d05df6160, we reproduced a separate fail-open minute-alignment issue in the research-only Tiingo source assessor: fabricated 20:00:00.000000001 was accepted by Python microsecond truncation. The assessor now validates the original ISO clock before conversion, rejecting any nonzero subminute component and unsupported precision. It is consistent with the existing downstream source-preflight nanosecond check.
+
+Test first failed (DID NOT RAISE ValueError). Added three synthetic test functions and ran 99/99 targeted plus 573/573 all 17 registered research suites on M2 Python 3.12; exact source and ignored local log hashes recorded in session2/evidence/native_tiingo_minute_clock_tests.json. No real licensed Tiingo source was reread, no original producer/identity source was modified, and no historic real intraday capital pressure was calculated.
+
+Remaining actual gates: Tiingo consolidated OHLC is not attested pure traded-price reference, genuine PIT/ETF alias and reader-selection provenance are absent, source and corporate-action volume basis and dataset rights are unqualified, original Oct 9 data was first captured Oct 11, and S6 scientific acceptance/private Terminal consumer cannot be released. Preserve earlier explicit denials, original P4/P6 holds, and the original Executive science-review operation EFFECT_UNKNOWN. Do not replay, merge, deploy, publish customer outputs, rank or trade.
