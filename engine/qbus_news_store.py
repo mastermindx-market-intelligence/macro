@@ -1360,20 +1360,47 @@ class NewsStore:
             return NewsSnapshot(SCHEMA, security_id, (), cursor, False)
 
         placeholders = ",".join("?" for _ in rights.allowed_sources)
-        params: list[object] = [security_id, *sorted(rights.allowed_sources)]
+        params: list[object] = [
+            security_id,
+            *sorted(rights.allowed_sources),
+            security_id,
+            *sorted(rights.allowed_sources),
+        ]
         having_cursor = ""
         if cursor is not None:
-            having_cursor = " HAVING MAX(s.last_sequence) < ?"
+            having_cursor = " HAVING cluster_sequence < ?"
             params.append(cursor)
         params.append(limit + 1)
+        # The cluster watermark is the latest change sequence addressed to THIS
+        # security for that cluster, not MAX over the surviving members.  A
+        # partial withdrawal deletes the withdrawn member's index rows, so a
+        # member-only aggregate would fall back to the survivors and move the
+        # watermark DOWN, re-feeding an already-paged cluster and reporting a
+        # row sequence below the withdrawal upsert the security just received.
+        # The change log is append-only, so the feed watermark can only move
+        # forward, exactly like a correction.  Visibility stays member-based:
+        # the FROM/WHERE still requires at least one active member indexed to
+        # this security, so a fully withdrawn cluster stays invisible.  The
+        # COALESCE fallback to the member aggregate keeps a hand-migrated
+        # store readable if a visible cluster predates its change targets.
         clusters = self._conn.execute(
             f"""
-            SELECT m.cluster_id, MAX(s.last_sequence) AS cluster_sequence
+            SELECT m.cluster_id,
+                   COALESCE(MAX(w.change_sequence), MAX(s.last_sequence))
+                       AS cluster_sequence
             FROM news_security_index i
             JOIN news_states s
               ON s.source=i.source AND s.source_item_id=i.source_item_id
             JOIN news_cluster_members m
               ON m.source=s.source AND m.source_item_id=s.source_item_id
+            LEFT JOIN (
+                SELECT c.cluster_id, MAX(c.sequence) AS change_sequence
+                FROM news_change_targets t
+                JOIN news_changes c ON c.sequence=t.sequence
+                WHERE t.security_id=?
+                  AND c.source IN ({placeholders})
+                GROUP BY c.cluster_id
+            ) w ON w.cluster_id=m.cluster_id
             WHERE i.security_id=?
               AND s.status='active'
               AND s.source IN ({placeholders})
