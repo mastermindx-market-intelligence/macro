@@ -229,3 +229,5 @@ See `DEC:AGENTOS-W4-CAPTURE-BOUNDARY` and the handoff protocol for boundaries an
 | Account-local Claude memory | how *you* work | stays local; cross-session facts graduate to `DSC-*` |
 | Mastermind `brain/improvement_agenda.py` | **the** ranked "what should we do next?" queue | **canonical for priority** — Agent OS feeds it the non-ranked `agentos.readiness.v1` envelope; the human brief renders no competing list (`DEC:AGENTOS-READINESS-FEEDS-THE-AGENDA`) |
 | Mastermind `control_plane/` | live worker/job state, leases, heartbeats | **canonical for liveness** — display it, never re-derive it (`DEC:AGENTOS-CLAIMS-ARE-NOT-LIVE-ACTIVITY`) |
+
+<!-- ProofFreshness live fixture only: this branch is intentionally never merged. -->
