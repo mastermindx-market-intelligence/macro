@@ -22934,6 +22934,30 @@ jobs:
       - name: File and pinned-source replay, manual boundary and temporal refusals
         run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
 
+  # Guards the news-impact Phase 0 freeze contract (closed templates, evidence
+  # binding, F3 basis consts) and its owner-payload conformance (documents.py /
+  # events.py minted spans, absences and fiscal periods).
+  news-impact-contracts:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/news_impact/**"
+      - "tests/test_news_impact_contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/events.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install news impact contract test dependencies
+        run: pip install pytest jsonschema
+      - name: news impact contract freeze and owner payload conformance
+        run: python -m pytest tests/test_news_impact_contracts.py -q
+
   site20-s4-chart-brief-js:
     if: ${{ false }}
     gate: code

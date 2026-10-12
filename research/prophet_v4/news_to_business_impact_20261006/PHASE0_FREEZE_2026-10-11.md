@@ -15,6 +15,8 @@ Not frozen unless every item holds:
    with ≤12 critical fields, each critical numeric field bound to a `source_span.v1`
    reference, and a typed-absence alternative for every optional critical field.
 2. Shared `$defs` (`quantity`, `source_span_ref`, `typed_absence`, `baseline`,
+   — amended 2026-10-12: implemented as `source_span_v1` inside `evidence_span` and
+   `field_absence.v1` / `owner_typed_absence_v1` (`absence_union`), renames D13/D14 in §3 —
    `novelty`, `issuer_role`, `commitment_status`, `fiscal_period`) defined once and
    referenced by all three templates.
 3. `additionalProperties: false` on every object; `maxLength` on every string; no
@@ -25,14 +27,18 @@ Not frozen unless every item holds:
    material-event routing definitions the §11 thresholds are measured against.
 5. ≥2 worked cases per template, including one misleading near-duplicate that the
    validator must reject, with the pasted validator outcome.
-6. An adversarial review (native opus `reviewer`, read-only) concluded against the
+6. An adversarial review (amended 2026-10-12: fabric review lane `R_D1r_remote_r1`,
+   glm-5.3, read-only, in place of the native opus `reviewer`) concluded against the
    frozen schemas with every ACCEPT-blocking finding resolved by name.
+
+Outcome (seat, 2026-10-12): all six gates hold — evidence in §2 and §3; the two amended
+gate wordings are renames, not relaxations.
 
 ## 1. Phase 0 exit evidence (masterplan §12, row 0)
 
 | §12 exit item | where it lands | state |
 |---|---|---|
-| One reuse matrix | §9 below (from the C3_owners census, seat-corrected) | pending C3 |
+| One reuse matrix | §9 below (from the C3_owners census, seat-corrected) | DONE (V_C3_remote_r1 PASS; §9) |
 | #6514 hold/disposition understood | §1.1 | DONE (seat) |
 | Benchmark sampling plan | §6 | DRAFT (seat design; counts filled from C1_tape, 2026-10-11 — §6, §8) |
 | No rival schema/store | §1.2 | DONE (seat) |
@@ -75,13 +81,66 @@ point is seat fork F1 in §4); they never replace it.
   calibration and burst/defer behaviour of approved inexpensive models with a small
   stronger-model audit? Local executable evaluation only.
 
-## 2. Candidate verdicts (filled from the synthesis, corrected by the seat)
+## 2. Judge panel verdicts (seat ruling 2026-10-12)
 
-_pending ORCH-W1_
+| Artifact | Lane | Rung | Candidate verdict | Basis |
+|---|---|---|---|---|
+| D1 fact-integrity design | grok local (sentinel lost) | DELIVERED, accepted by artifact (W1 record) | ACCEPT, superseded as base by D1r | schema check OK, 6/6 worked cases, forbidden grep empty |
+| D1r repair (D1 + R1-R6 grafts) | ubuntu2 glm-5.3 C2 | DELIVERED | PASS-equivalent -> FREEZE BASE | suite 19/19 expected-matched, proofs P1-P5 OK, 20/20 objects closed, field tables 27/27/27/29 |
+| D2 labeler-first design | ubuntu2 glm-5.3 C2 | DELIVERED | PASS (diversity lane; adjudication form F graduates into gate 4) | V_D2D3_remote_r1: PASS 57f3041e22 (D2 object_nodes=76, closed=15) |
+| D3 consumer-first design | ubuntu2 glm-5.3 C2 | DELIVERED | PASS (diversity lane; worked-case ids reused as benchmark seeds) | V_D2D3_remote_r1: PASS 57f3041e22 (D3 object_nodes=47, closed=31) |
+| C3 owner census | ubuntu2 glm-5.3-flash | DELIVERED | PARTIAL -> section 9 matrix (seat-corrected) | V_C3_remote_r1: PASS 57f3041e22; four citations drifted by line number only; propagation contract absent (#6514) |
+| R_D1r adversarial review | ubuntu2 glm-5.3 C2 review | DELIVERED | PASS; grafts accepted (R copy 3b7346f6) | sentinel R_D1r_remote_r1: PASS 57f3041e22; 8/8 owner payloads accept; 4 conflict probes -> seat rulings R1-R4 (DEC:NEWS-IMPACT-PHASE0-FREEZE); attack battery 443 rows: base admits 356, R copy admits 0; benign 154 rows: 0 false rejects; replaces the native opus reviewer named in gate 6 |
+| B1 contract build (schema + 5 case files + contract test + CI entry) | ubuntu2 glm-5.3 C2 build (ORCH-W1d) | DELIVERED; integrated into the freeze worktree by the seat | PASS | schema sha256 prefix 3edc7139; 46/46 in the freeze worktree; adversarial 0/443 admitted; benign 0/154 rejected; owner integer-table case ACCEPT; semantic diff vs D1r = T2 allOf 3 -> 8 (F3) + table index integer-or-string (G-OC1) |
+Ruling (seat, 2026-10-12): D1r + the accepted R_D1r grafts (R copy 3b7346f6) + G-OC1 + F3 is the frozen base, byte-frozen as `contracts/news_impact/news_impact_event.v1.schema.json` (sha256 prefix 3edc7139) and guarded by `tests/test_news_impact_contracts.py`; D2 section F is the gate-4 label set; D3 cases join the worked-case set. D1 ACCEPT stands as lineage only.
 
 ## 3. Frozen templates
 
-_pending adjudication — field tables per template, shared $defs_
+Base: D1r + accepted grafts, frozen as `contracts/news_impact/news_impact_event.v1.schema.json` (sha256 prefix 3edc7139; cases under `contracts/news_impact/cases/`; guard `tests/test_news_impact_contracts.py`, 46 cases). Critical fields marked *, counted per gate 1 (<= 12 each; envelope fields are machine-set and not counted).
+Shared envelope on every template: schema (const), authority (const context_only), prophet_flags (all const false), unsolicited_instruction_detected, fact_id, document_id, observed_at, source_available_at, supersedes_fact_id (novelty corrected_fact => non-null).
+### T1 capital_allocation_event.v1 — 27 props / 21 required / closed
+Critical (12): company_id*, issuer_role*, novelty*, action_type* (share_repurchase | dividend | special_dividend | equity_issuance | debt_issuance | other_allocation), commitment_status*, primary_amount_role*, incremental_amount* (basis const incremental), remaining_authorization* (basis const total), executed_amount* (basis const total; present when executed/completed), horizon_period*, negated*, action_span*.
+Optional: baseline, channel_hint, cluster_grain, conditions_quote, consideration_quote, news_event_class.
+Coherence (allOf): slot basis consts; executed/completed => executed_amount present; corrected_fact => supersedes_fact_id non-null.
+### T2 demand_guidance_contract_event.v1 — 27 / 21 / closed
+Critical (12): company_id*, issuer_role* (supplier/customer => counterparty is a real id, never an absence), demand_stage*, metric*, commitment_status* (executed/completed => stated_amount present), stated_amount* (F3: basis const keyed by metric via allOf if/then: revenue, backlog, units -> total; eps -> per_share; bookings -> incremental; metric=other unconstrained), fiscal_period*, revision_direction*, negated*, novelty*, counterparty_company_id* (id | array 1-8 | absence), baseline* (REQUIRED on T2 only).
+Optional: channel_hint, cluster_grain, conditions_quote, news_event_class, option_ceiling (V_NO_SUM_T2), prior_amount.
+### T3 strategic_product_partnership_event.v1 — 29 / 21 / closed
+Critical (12): company_id*, issuer_role* (supplier => action_span span-backed), event_kind*, object_name*, commitment_status* (executed/completed => stated_quantity present), novelty*, counterparty_company_id*, counterparty_role* (supplier => span-backed), stated_quantity*, economic_claim_class*, negated*, action_span*.
+Optional: adoption_proxy_quote (V_NO_ATTENTION_AS_DEMAND), baseline, channel_hint, cluster_grain, contrary_mechanism_quote, horizon_period, license_quote, news_event_class.
+Every critical numeric is a quantity (oneOf quantity_point / quantity_range / quantity_absent); point and range carry an evidence_span (source_span_v1) and absent carries absence_union — gate 1 satisfied by construction.
+### Shared $defs (defined once, referenced by all three) — 32 in D1r
+Gate-2 names reconciled: source_span_ref -> source_span_v1 (owner 12-key payload) wrapped by evidence_span; typed_absence -> field_absence.v1 (closed reason enum 5 + optional owner_reason enum 16) and owner_typed_absence_v1, unioned as absence_union; quantity (oneOf quantity_point / quantity_range / quantity_absent); baseline (type enum 6; each field or absence); novelty (5); issuer_role (6); commitment_status (7); fiscal_period (year, quarter | null, period_kind enum 5, calendar_end, optional end_year).
+Also shared: envelope, evidence, evidence_absence, receipt (7 keys), three locators (text_span, table_cell, slide_region), company_id (cik: + ten numerals, zero floor), prophet_flags, quantity_basis, news_event_class (24), channel_hint (7), cluster_grain (3), text_safe (string with injection not-patterns), quarantine_note.v1 (OUTSIDE the templates).
+### Named validators after schema acceptance
+V_RANGE, V_SPAN_REPLAY (documents.verify_span), V_SHA_TIE (+ numeral-in-quote), V_NO_SUM_T1, V_NO_SUM_T2, V_DIRECTION, V_PERIOD_BASIS_MATCH, self-counterparty, V_NEGATION, V_COMMITMENT, V_BASIS, V_STAGE / V_METRIC_STAGE, V_TRANSFER, V_NO_ATTENTION_AS_DEMAND, V_NO_OPTION_MOAT_DOUBLE, unit/currency agreement, top-level vs slot negation.
+### Suite evidence (gate 5; pasted from D1r_suite_output.txt; ubuntu2 clone HEAD 57f3041e22)
+check_schema: OK (jsonschema 4.10.3, draft 2020-12). 19 cases: A1-A7 REJECT (first error paths $.action_span.span.document_id, $.remaining_authorization.evidence.span.receipt, $.incremental_amount.evidence, $.incremental_amount.basis, $.executed_amount.form, $.company_id, $.action_span); R1-R6 ACCEPT; W1-W6 ACCEPT. SUITE: 19/19 EXPECTED-MATCHED.
+Proofs: P1 corrected_fact_without_supersedes -> REJECT at $.supersedes_fact_id; P2 unknown_field_confidence -> REJECT at $; P3 absence_reason_outside_closed_vocab -> REJECT; P4 envelope contract on all W/R cases OK; P5 owner re-mint equality OK (receipt_state byte_replayed). SUITE-PROOFS: ALL OK; suite_exit_code=0.
+Forbidden grep (confidence | price_target | score | contagion | probability) exit 1 (empty). additionalProperties walk object_nodes=20 additionalProperties_false=20 open=0. Field-table coverage T1 27/27, T2 27/27, T3 29/29.
+Near-duplicate cases in the worked set: D2 T1-W2 (execution under the same program), D2 T2-W2 (same number affirmed, not raised), D3 T1-B_execution_near_dup, D3 T2-B_negated_withdrawal, D3 T3-B_supplier_commentary; the A-series rows are the schema-level rejections.
+
+Final-contract evidence (B1, freeze worktree): `python -m pytest tests/test_news_impact_contracts.py -q` -> 46 passed; attack battery 443 rows, 0 admitted; benign 154 rows, 0 rejected; owner payload conformance 5/5 (documents.py / events.py minted spans, absences, fiscal periods, integer table index).
+
+### Changes vs D1 (recorded)
+- D13 `source_span_ref` -> `source_span_v1` (owner 12-key payload) wrapped by `evidence_span`.
+- D14 `typed_absence` -> `field_absence.v1` (reason enum 5 + optional owner_reason enum 16) and `owner_typed_absence_v1`, unioned as `absence_union`.
+- G-OC1 locator `table` index: integer >= 0 or text-safe string (owner shape `tests/test_company_intelligence_spine.py:414`).
+- F3 metric-keyed basis const on T2 `stated_amount` (above); closes D1r-A4 (W4 bookings basis=total now REJECT).
+- G5 injection not-patterns on every free string; `quarantine_reason` outside the templates.
+- R1-R4 (DEC:NEWS-IMPACT-PHASE0-FREEZE) are projector rules: no schema change; the Phase 1 projector nulls `display_excerpt` on URL or > 500 chars and rejects unknown locator keys as `locator_key_not_in_contract`.
+
+### Gate reconciliation (seat ruling 2026-10-12)Gate 2 names: the committed gate text names source_span_ref and typed_absence; D1r implements them as source_span_v1 (inside evidence_span) and field_absence.v1 / owner_typed_absence_v1 (absence_union). Ruling: gate 2 is read with the D1r names (renames D13/D14 above); the frozen $defs set is the 32 named in this section.
+Gate 6 wording: "native opus reviewer" -> "adversarial review (fabric review lane R_D1r_remote_r1, glm-5.3, read-only, commissioned by the Opus orchestrator ORCH-W1c)"; every ACCEPT-blocking finding resolved by name: G-OC1 grafted, F3 grafted, G5 grafted, R1-R4 ruled as projector rules.
+Gate 5 near-duplicate: ruled. The worked cases and pasted outcomes hold (>= 2 per template, 19/19 suite, 443/0 attacks, 154/0 benign). The misleading near-duplicates (D2 T1-W2, T2-W2; D3 T1-B_execution_near_dup, T2-B_negated_withdrawal, T3-B_supplier_commentary) are ACCEPT at the schema by design; the rejecting rule is named — V_SHA_TIE numeral-in-quote for a new_magnitude claim whose quote carries no new numeral, and the ledger novelty rule for a same-number re-statement — and both live in the Phase 1 validator `engine/news_impact/validate.py`, not in the schema. The executable rejection is carried to Phase 1 and listed in section 10.
+
+### Gate 4 — acceptance labels for commission D graders (one set per template; D2 section F form + D1 (e) sections + freeze section 7 grading)
+Per critical field (12 rows): correct | wrong_value | wrong_absence | unevidenced (D2 form) — collapsing to correct | incorrect | absence_correct for the section-11 numeric-correctness count (correct = value, unit, basis, period and negation all equal after normalisation; absence_correct = typed absence where the source states nothing).
+Case-level (one each): routing_label in material / immaterial / defer / reject (material = would change an issuer thesis, baseline or open commitment; immaterial = routine / repeat / no economic content; defer = source, rights or parse insufficient; reject = not an event for this issuer); issuer_role (6); novelty (5); unsupported_transfer yes / no (a supplier, customer or counterparty relationship asserted without a cited span naming both parties — the section-11 zero endpoint).
+Template specifics: T1 — incremental, total and executed amount slots marked separately; T2 — a guidance range is correct only if both bounds match, and a TAM row routed material as earnings demand is a routing miss; T3 — a first product announce may be material for research with unquantified earnings; a supplier role without a supply span is unsupported_transfer yes even when otherwise well typed.
+Decidable from the source text alone: yes for every row (no external lookups; baseline rows arrive pre-assembled in the context header). Budget 5:00 per case hard; a case needing more is a defect report against the template, not a slower labeler.
+Section-11 measurement: critical numeric correctness = share of present critical numerics marked correct (target >= 98%); routing recall = labeled material events reaching the correct template (>= 95%); unsupported transfer assertions = count of unsupported_transfer yes (target zero).
+No confidence, score, expected move or consensus-database check is asked for (DNR:KILL-LLM-CONFIDENCE).
 
 ## 4. Seat forks
 
@@ -131,7 +190,10 @@ Recorded from the seat ledger (D6–D12) so the synthesis in §5 starts from clo
 
 ## 5. Parsimony demotions (fields proposed and dropped, with the reason)
 
-_pending_
+Retained optional (display-tier, never critical): news_event_class (24-enum routing prior from news_events.classify_event), channel_hint (7), cluster_grain (3), the per-template quote strings (conditions / consideration / adoption_proxy / contrary_mechanism / license), T1 and T3 baseline (critical only on T2 per D1 open fork 4).
+Demoted from D1 (recorded in D1r changes-vs-D1): span_typed_absence, source_span_ref, char-offset locators, quoted_text, the fiscal_period quarter/year fork, the typed_absence name collision.
+Kept out of the extractor by law: routing_label and the other case-level marks are adjudicator-only (D1 open fork 8); quarantine_note.v1 lives outside the templates; no confidence, probability, score, target or rating field anywhere (forbidden grep empty).
+Open forks carried into Phase 1 (falsifier on the 200-label sets): three T1 amount slots vs one amount + role (fork 1); horizon_period on T1 amounts left absent (fork 9).
 
 ## 6. Benchmark sampling plan (seat design; counts filled from C1_tape)
 
@@ -206,8 +268,32 @@ Source: seat census C1_tape (run under the continuation law at head `cf4ca641fb9
 
 ## 9. Reuse matrix
 
-_pending C3_owners_
+Verdict: V_C3_remote_r1: PASS 57f3041e22 — matrix rows verified against the owners; four citations drifted by line number only between 57f3041e22 and HEAD 81f1d5f0 and point at the same statements (section 10).
+
+| Owner | Consumable as-is | LEAF adapter | Forbidden |
+|---|---|---|---|
+| engine/news_common | YES (is_low_value) | - | may not become a scored input |
+| engine/news_events | YES (classify_event -> news_event_class) | - | nothing in the scoring path imports it; fail-open |
+| engine/news_event_ledger | YES read | - | LEAF never appends to event_log |
+| engine/qbus (data/qbus/items.parquet) | YES read, PIT keep-FIRST | - | append_items |
+| engine/qledger | YES read | - | register() / grade writes; D4 claim law |
+| engine/news_llm | annotate() when enabled | - | DNR:KILL-LLM-ORIGINATION; default OFF |
+| engine/intel_hub, alert_triage, master_brain | Partial (typed read-only artifact readers) | optional | build() composite authority; DNR:KILL-ONE-TICK-ESCALATION; import-for-data |
+| engine/company_intelligence | YES (documents, events, resolution, economic_observations, contracts) | reuse the intelligence_workspace adapter | - |
+| k3e, engine/contracts* | TYPED ABSENCE | LEAF mirrors the shape: engine/news_impact/contracts.py + contracts/news_impact/ | no store, score or LLM origination |
+| economic_propagation (K3-D PR #6514) | NO / BLOCKED | - | until #6514 lands and Sol accepts; Commission C reads its diff as inputs only |
+| data/revisions (collectors/equity_revisions.py) | TYPED ABSENCE on host | K=1 MANDATORY read-only expectation-baseline adapter | - |
+| neuralweb importers | n/a | - | News -> NW only via the governed channel |
 
 ## 10. Not verified in Phase 0
 
-_pending_
+- data/ absent on ubuntu2 and in the sparse worktree: no real benchmark draw; the sampler is unit-tested on synthetic rows only; the seat runs any real draw locally against the C1 tape path.
+- Article bodies are not on the qbus tape (section 8): span replay against bodies waits for the Phase 1 document fetch through the existing owner.
+- No labeled seed set exists; the section-11 thresholds are unmeasured until commission D.
+- Propagation contract absent (economic_propagation blocked on #6514).
+- text_safe injection not-pattern is a syntactic guard only: the R_D1r grafts close the 443-row attack battery (0 admitted), but a semantic quarantine rule is projector-side Phase 1 work.
+- ubuntu2 host porcelain non-empty is pre-existing host state (empty working tree), not a lane mutation.
+- Four C3 citations marked DRIFT (line numbers moved between 57f3041e22 and HEAD 81f1d5f0) were not re-verified against HEAD; their statements were unchanged at 57f3041e22.
+- The named validators (V_RANGE through V_NO_OPTION_MOAT_DOUBLE) and the R1-R4 projection rules are specified, not executed: `engine/news_impact/validate.py` is Phase 1 wave w1.
+- RS11 (low <= high on bounded quantities) is a runtime check, not a schema constraint; unverified for any producer.
+- The gate-5 near-duplicate rejection is named (V_SHA_TIE numeral-in-quote; ledger novelty rule) but not executable until the Phase 1 validator exists.
