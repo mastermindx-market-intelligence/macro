@@ -3008,6 +3008,38 @@ jobs:
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
+      # Crypto/vector behavior on the merge gate. Exclusive scope skips
+      # inference, so each concrete file those suites read is named here.
+      # The vector-store and site-chart suites stay on the data gate.
+      - "collectors/_crypto_observations.py"
+      - "collectors/_first_seen_store.py"
+      - "collectors/bgeo.py"
+      - "collectors/coinbase.py"
+      - "collectors/deribit.py"
+      - "collectors/okx.py"
+      - "contracts/btc_decision.schema.json"
+      - "research/crypto_science/r10_source_qualification.py"
+      - "research/crypto_science/r12/reference_cvd_before_price_guard.py.txt"
+      - "research/crypto_science/r3_cohort_study.py"
+      - "research/crypto_science/r4_sequence_study.py"
+      - "research/crypto_science/r5_participation_study.py"
+      - "research/crypto_science/r6_probability_study.py"
+      - "research/crypto_science/r7_calibration_study.py"
+      - "research/crypto_science/r8_action_value_study.py"
+      - "research/crypto_science/r9_prebreak_study.py"
+      - "scripts/backfill_crypto.py"
+      - "scripts/check_crypto_shelves.py"
+      - "templates/crypto.html.j2"
+      - "templates/vector.html.j2"
+      - "tests/test_btc_decision.py"
+      - "tests/test_btc_impulse_falsifier.py"
+      - "tests/test_btc_impulse_radar.py"
+      - "tests/test_btc_intraday_cvd.py"
+      - "tests/test_btc_signals.py"
+      - "tests/test_crypto_cockpit_contract.py"
+      - "tests/test_crypto_collectors.py"
+      - "tests/test_vector_r2_frontdoor.py"
+      - "tests/test_vector_wave1.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3026,9 +3058,13 @@ jobs:
         #     COLLECTION error (pytest exit 2), which fails the whole step rather than one
         #     test — measured on this PR's first run (ci-pack-11, job 96210580631).
         # B-F07-3 round 7 widening 2026-09-19 (contract-delta): event_versions_io
-        # reads committed parquet; pandas needs pyarrow. Do not add requests —
-        # the valuation producer must stay collector-free in this venv.
-        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow
+        # reads committed parquet; pandas needs pyarrow. Do not add requests
+        # for the valuation producer — it must stay collector-free in this venv.
+        # requests, plotly, and scipy are for the crypto/vector behavior step:
+        # collectors.base and scripts.backfill_crypto import requests,
+        # scripts.build_vector imports plotly, and the impulse falsifier imports
+        # scipy.optimize, scipy.special, and scipy.stats.
+        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow requests plotly scipy
       - name: conviction profile honesty invariants + dossier reason codes
         run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
@@ -3129,6 +3165,13 @@ jobs:
 
       - name: Prophet Q06 SEC comparable-revenue Gate-S source contract
         run: python -m pytest tests/test_q06_sec_comparable_revenue_source_contract.py -q
+      # Hermetic crypto/vector behavior. These suites pass with no data/ tree
+      # and no site/ tree, so they belong on this gate: code job, which already
+      # owns the btc_* modules and scripts/build_vector.py. A step is the
+      # masking unit; this one is last so a dossier or valuation failure is
+      # the first red a reader sees.
+      - name: crypto vector behavior — decision, impulse, CVD, collectors, front door
+        run: python -m pytest tests/test_btc_decision.py tests/test_vector_wave1.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_crypto_collectors.py tests/test_btc_intraday_cvd.py tests/test_crypto_cockpit_contract.py -q
   chronicle-suite:
     if: ${{ false }}
     gate: data
@@ -11239,6 +11282,7 @@ jobs:
       - engine/btc_impulse_radar.py
       - engine/btc_impulse_radar_backtest.py
       - engine/btc_inputs.py
+      - engine/btc_intraday_cvd.py
       - engine/btc_leverage_cascade.py
       - engine/btc_master.py
       - engine/btc_mtf.py
@@ -15632,7 +15676,7 @@ jobs:
       # pyyaml — PIL is imported transitively but blocking it leaves them 6-passed and
       # 1-passed, so it is optional, and it is not on this install line.
       - name: vector page organs — decision authority, catalyst, forward-risk, Kelly, gated timeline
-        run: python -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_crypto_collectors.py tests/test_btc_intraday_cvd.py -q
+        run: python -m pytest tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py -q
       - name: DSR / override-registry trial budget (dof charged must equal dof declared)
         run: python -m pytest tests/test_btc_vector_w1.py tests/test_deflated_sharpe.py -q
       - name: settled-close tape — the basket pulse the closing-bell lane publishes
@@ -15642,7 +15686,7 @@ jobs:
       # BTC/ETH desks feeding master brain, and the house-style partial. This
       # lane owns the vector estate the cockpit ships on.
       - name: crypto cockpit — contract, market-state waves, house style
-        run: python -m pytest tests/test_crypto_cockpit_contract.py tests/test_crypto_wave2.py tests/test_crypto_wave3.py tests/test_crypto_house_style.py -q
+        run: python -m pytest tests/test_crypto_wave2.py tests/test_crypto_wave3.py tests/test_crypto_house_style.py -q
 
   unrun-oracle-desk:
     # oracle nightly + its gauntlet promotion gates.
