@@ -44,3 +44,22 @@ next_action: >
   `861d4049ae4c`, Draft/HOLD, unmoved since 2026-10-01.
 - Record created at consolidation (2026-10-11); no prior WS record existed for this
   vertical.
+- 2026-10-12: the CI-red repair lane is delegated to an Opus suborchestrator under the seat,
+  a session-native background child of the seat session launched about 2026-10-12T00:24Z
+  (not an Executive lease; it ends with that session; if the session ends with no report,
+  the worktree's git status and git log are read and reconciled before reuse) (ROUTE:
+  ORCHESTRATION; local mutation only, on the SSD worktree
+  `pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e`, lane branch `lane/pr-7891-ci-red`
+  created at `861d4049` at 00:17:24Z; at 00:24Z the worktree HEAD was detached at the throwaway
+  merge `c871e194` of origin/main `6e7ef32c` into `861d4049`, which no branch points at and which
+  is never to be pushed; the worktree reflogs re-read 01:29Z (`git reflog --date=iso-strict`)
+  show the branch moved to the lane's merge commit `64bbbfa8` at 00:34:55Z, unpushed, remote tip
+  still `861d4049` at 01:29:41Z). Binding reds at 861d4049 in run 36806663101: contract-delta 110192417496,
+  ci-pack-0 110193113692, ci-pack-11 110193113734 (ci-pack-7 110193113644 cancelled); the
+  merge-queue pilot red is by design. Sol's CONTINUE ruling 5825752169 binds the lane: no local
+  `curation_assertion.v1` mirror, T8A stays fixture-only, the ~54 v1 fixture errors are not
+  hand-patched, strict xfails stay until their dependency lands, and the return names the
+  exact head, the owner-contract dependency state and any xfail state change. The original
+  worktree `technology-ex-semis-impl-c887181119dd2aaf` holds two uncommitted prior-seat T5
+  test files from 2026-09-25; they are uncommitted prior-seat files of unknown liveness,
+  preserved untouched, neither discarded nor copied. Nothing pushed; head unmoved.

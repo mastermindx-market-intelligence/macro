@@ -3424,6 +3424,13 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/ledger_lane.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
       - "config.yml"
       - "engine/__init__.py"
       - "engine/gex_engine.py"
@@ -5260,6 +5267,7 @@ jobs:
       # load-bearing for the Prophet Lab adapter, so its PR owner must be this
       # gate:code job rather than only neural-web-core's nightly data lane.
       - "tests/test_company_intelligence_workspace_chain.py"
+      - "tests/test_company_intelligence_event_evolution.py"
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
@@ -5311,6 +5319,7 @@ jobs:
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
           tests/test_company_intelligence_workspace_chain.py
+          tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
@@ -6470,6 +6479,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -8686,6 +8697,15 @@ jobs:
       # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
       - name: stockdata.js cache resilience — index validation, dedupe, transient TTL (site20 S3)
         run: node --test tests/js/stockdata_cache_resilience.test.mjs
+      # S3-01 consumer half: a consumer whose first index read landed inside a
+      # transient failure re-asks ONCE after the failure window (Retry-After honoured),
+      # then only on visibilitychange->visible / online — never a polling loop. The
+      # mjs suite pins the loader-side recovery API; the pytest drives the REAL
+      # portfolio.js under fake timers (503 once -> names fill after the window).
+      - name: stockdata.js consumer recovery — one re-ask after the failure window (S3-01)
+        run: node --test tests/js/stockdata_consumer_recovery.test.mjs
+      - name: portfolio consumer recovery — names fill after a transient index failure (S3-01)
+        run: python -m pytest tests/test_stockdata_consumer_recovery_js.py -q
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
@@ -11007,6 +11027,12 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -13030,6 +13056,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -13729,6 +13757,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -16388,6 +16418,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -17492,6 +17524,10 @@ jobs:
       # code gate so a session-policy edit and the registration can red each other.
       - name: MI-S2 theme-relative intraday registration (prospective; session-policy binding, one-trial ledger)
         run: python -m pytest tests/test_mi_s2_theme_relative_intraday_registration.py -q
+      # Daily Brief is a zero-I/O read model over owner receipts, not B4 policy.
+      # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
+      - name: prophet Daily Brief compositor (owner receipts + fail-closed presentation)
+        run: python -m pytest tests/test_prophet_daily_brief.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
@@ -17825,6 +17861,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
       - "engine/intl_performance_records.py"
       - "engine/intl_workspace_overview.py"
       # MO-PAID-006 closure widening 2026-10-02 (#8276): engine/international_macro_dashboard.py
@@ -20431,6 +20470,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -21952,6 +21993,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/flow_signals.py"
+      - "config/flow_detector.yml"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "lib/live_flow_event_stage.py"
       - "config/issuer_group_allowlist.yml"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
