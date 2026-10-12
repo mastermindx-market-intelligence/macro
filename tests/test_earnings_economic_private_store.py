@@ -21,6 +21,8 @@ from engine.earnings_narrative.context_packets import canonical_json_bytes
 from tests.earnings_economic_private_fixtures import (
     ConditionalCountingStore,
     NoConditionalStore,
+    Q3_EVENT_ID,
+    Q3_SLUG,
     fail_manifest_readback,
     fail_source_readback,
     published_v1_case,
@@ -1751,3 +1753,219 @@ def test_rights_seam_failure_modes(tmp_path, monkeypatch):
     missing = tmp_path / "missing.yml"
     monkeypatch.setattr(pp, "NATIVE_RIGHTS_REGISTRY_PATH", missing)
     expect_closure("rights_refused", pp.assert_native_rights)
+
+
+# === Orch8245-E2: RED discriminator tests for the scoped-reader defect ===
+PRIMARY_SLUG = "pg-synthetic-economic-dossier"
+Q4_EVENT_ID = "evt_cik0000080424_2026q4_results"
+
+
+def _two_event_object_keys(manifest: dict, payloads) -> dict[str, set[str]]:
+    """Per slug, return the object keys needed for an in-memory scoped read."""
+    native = manifest["native"]
+    keys_by_slug: dict[str, set[str]] = {}
+    for slug, selection in native["selections"].items():
+        keys = {manifest["records"][slug]["object_key"]}
+        for entry in selection["chain"]:
+            workspace_receipt = native["workspaces"][entry["workspace"]]
+            document_receipt = native["documents"][entry["document"]]
+            document_body = payloads[document_receipt["object_key"]]
+            source_digest = json.loads(document_body)["content_sha256"]
+            text_receipt = native["source_bodies"][source_digest]["text"]
+            keys.update((
+                workspace_receipt["object_key"],
+                document_receipt["object_key"],
+                text_receipt["object_key"],
+            ))
+        keys_by_slug[slug] = keys
+    return keys_by_slug
+
+
+def test_scoped_closure_accepts_wire_record_beside_native_selection(tmp_path: Path) -> None:
+    store, _baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    manifest = json.loads(prepared.manifest_bytes)
+    payloads = dict(prepared.payloads)
+    wire_slug = next(slug for slug in manifest["records"] if slug not in manifest["native"]["selections"])
+    wire_key = manifest["records"][wire_slug]["object_key"]
+
+    result = pp.validate_native_closure(
+        manifest, {wire_key: payloads[wire_key]}, slugs=(wire_slug,)
+    )
+    assert set(result) == {wire_slug}
+    assert result[wire_slug]["selection"] is None
+    assert result[wire_slug]["interpretation"] is None
+    assert result[wire_slug]["chain"] == []
+    assert result[wire_slug]["record"] == json.loads(payloads[wire_key])
+
+    both = pp.validate_native_closure(
+        manifest, payloads, slugs=(wire_slug, PRIMARY_SLUG)
+    )
+    assert set(both) == {wire_slug, PRIMARY_SLUG}
+    assert both[PRIMARY_SLUG]["chain"]
+
+
+def test_two_event_generation_validates_and_reads_each_native_slug(tmp_path: Path) -> None:
+    store, _baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "two_events"))
+    pp.publish_private_publication(store, prepared)
+    manifest = pp.load_private_manifest(store)
+
+    native = json.loads(prepared.manifest_bytes)["native"]
+    assert set(native["selections"]) == {PRIMARY_SLUG, Q3_SLUG}
+    assert native["selections"][PRIMARY_SLUG]["event_id"] == Q4_EVENT_ID
+    assert native["selections"][Q3_SLUG]["event_id"] == Q3_EVENT_ID
+    assert native["economic_slots"] == {
+        "cik:0000080424": {"slug": PRIMARY_SLUG, "event_id": Q4_EVENT_ID}
+    }
+    assert len(native["workspaces"]) == 2
+    assert len(native["documents"]) == 2
+    assert len(native["source_bodies"]) == 2
+    assert len(native["selections"][PRIMARY_SLUG]["chain"]) == 1
+    assert len(native["selections"][Q3_SLUG]["chain"]) == 1
+    p_workspace = native["selections"][PRIMARY_SLUG]["chain"][0]["workspace"]
+    q_workspace = native["selections"][Q3_SLUG]["chain"][0]["workspace"]
+    p_document = native["selections"][PRIMARY_SLUG]["chain"][0]["document"]
+    q_document = native["selections"][Q3_SLUG]["chain"][0]["document"]
+    assert p_workspace != q_workspace
+    assert p_document != q_document
+
+    full = pp.validate_native_closure(json.loads(prepared.manifest_bytes), prepared.payloads)
+    for slug, event in ((PRIMARY_SLUG, Q4_EVENT_ID), (Q3_SLUG, Q3_EVENT_ID)):
+        assert full[slug]["record"]["locked_facts"] == 20
+        assert full[slug]["chain"][-1]["workspace"]["event_id"] == event
+        assert full[slug]["interpretation"]["event_id"] == event
+
+    view = pp.load_current_economic_view(store, "PG", manifest=manifest)
+    for slug, event in ((PRIMARY_SLUG, Q4_EVENT_ID), (Q3_SLUG, Q3_EVENT_ID)):
+        verify = pp.load_economic_closure(store, manifest=manifest, slug=slug)
+        assert verify["selection"]["event_id"] == event
+        assert verify["chain"][-1]["workspace"]["event_id"] == event
+
+        stale = pp.load_economic_closure(
+            store, manifest=manifest, slug=slug, interpretation="stale_ok"
+        )
+        assert stale["interpretation_state"] == "current"
+        assert stale["selection"]["event_id"] == event
+
+        fact = next(
+            obs for obs in verify["interpretation"]["observations"]
+            if obs.get("source_excerpt")
+        )
+        evidence = pp.load_economic_evidence(
+            store,
+            generation_id=manifest["generation_id"],
+            manifest_digest=view["manifest_sha256"],
+            record_digest=manifest["records"][slug]["sha256"],
+            slug=slug,
+            fact_id=fact["fact_id"],
+        )
+        assert evidence["slug"] == slug
+        assert evidence["source_sha256"] == verify["chain"][-1]["document"]["content_sha256"]
+
+    assert view["slug"] == PRIMARY_SLUG
+    assert view["record_sha256"] == manifest["records"][PRIMARY_SLUG]["sha256"]
+
+
+def test_scoped_economic_read_fetches_only_its_event(tmp_path: Path) -> None:
+    store, _baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "two_events"))
+    pp.publish_private_publication(store, prepared)
+    manifest = pp.load_private_manifest(store)
+
+    keys = _two_event_object_keys(manifest, prepared.payloads)
+    assert keys[PRIMARY_SLUG] & keys[Q3_SLUG] == set()
+    assert len(keys[PRIMARY_SLUG]) == 4
+    assert len(keys[Q3_SLUG]) == 4
+
+    for slug, other in ((PRIMARY_SLUG, Q3_SLUG), (Q3_SLUG, PRIMARY_SLUG)):
+        scoped = {key: prepared.payloads[key] for key in keys[slug]}
+        scoped_result = pp.validate_native_closure(manifest, scoped, slugs=(slug,))
+        assert set(scoped_result) == {slug}
+        assert len(scoped_result[slug]["chain"]) == 1
+
+        for mode in ("verify", "stale_ok"):
+            reader = ReadCountingLocalStore(store.root)
+            pp.load_economic_closure(
+                reader, manifest=manifest, slug=slug, interpretation=mode
+            )
+            read = set(reader.read_calls)
+            assert keys[slug] <= read
+            assert not (read & keys[other])
+
+
+def test_full_scope_selection_refusals_survive_scoped_reader_fix(tmp_path: Path) -> None:
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "two_events"))
+    base = json.loads(prepared.manifest_bytes)
+    payloads = dict(prepared.payloads)
+    q3_key = base["records"][Q3_SLUG]["object_key"]
+    primary_key = base["records"][PRIMARY_SLUG]["object_key"]
+
+    # (a) selection without record -- refuses at full scope and when scoped
+    m_a = json.loads(prepared.manifest_bytes)
+    m_a["records"].pop(Q3_SLUG)
+    m_a["record_count"] = len(m_a["records"])
+    objs_a = {key: value for key, value in payloads.items() if key != q3_key}
+    m_a = reseal_manifest(m_a, pp)
+    expect_closure(
+        "malformed_native_section", pp.validate_native_closure, m_a, objs_a
+    )
+    expect_closure(
+        "malformed_native_section",
+        pp.validate_native_closure, m_a, objs_a, slugs=(PRIMARY_SLUG,),
+    )
+
+    # (b) missing record payload -- refuses at full scope
+    m_b = json.loads(prepared.manifest_bytes)
+    m_b["record_count"] = len(m_b["records"])
+    objs_b = {key: value for key, value in payloads.items() if key != q3_key}
+    m_b = reseal_manifest(m_b, pp)
+    expect_closure("missing_artifact", pp.validate_native_closure, m_b, objs_b)
+
+    # (c) orphaned native workspace/document -- refuses at full scope
+    m_c = json.loads(prepared.manifest_bytes)
+    m_c["records"].pop(Q3_SLUG)
+    m_c["native"]["selections"].pop(Q3_SLUG)
+    m_c["record_count"] = len(m_c["records"])
+    objs_c = {key: value for key, value in payloads.items() if key != q3_key}
+    m_c = reseal_manifest(m_c, pp)
+    expect_closure("unexpected_artifact", pp.validate_native_closure, m_c, objs_c)
+
+    # (d) duplicate event -- refuses at full scope
+    dup_slug = "pg-synthetic-economic-dossier-dup"
+    primary_record = json.loads(payloads[primary_key])
+    dup_record = dict(primary_record, slug=dup_slug)
+    dup_body = canonical_json_bytes(dup_record)
+    dup_digest = sha256(dup_body).hexdigest()
+    dup_key = object_key(dup_digest)
+    m_d = json.loads(prepared.manifest_bytes)
+    m_d["native"]["selections"][dup_slug] = json.loads(
+        json.dumps(m_d["native"]["selections"][PRIMARY_SLUG])
+    )
+    m_d["records"][dup_slug] = {
+        "object_key": dup_key, "sha256": dup_digest, "bytes": len(dup_body)
+    }
+    m_d["record_count"] = len(m_d["records"])
+    objs_d = {**payloads, dup_key: dup_body}
+    m_d = reseal_manifest(m_d, pp)
+    expect_closure(
+        "malformed_native_section", pp.validate_native_closure, m_d, objs_d
+    )
+
+    # (d-TWIN) replace the primary with the dup -> succeeds (no duplicate)
+    m_t = json.loads(prepared.manifest_bytes)
+    m_t["native"]["selections"][dup_slug] = json.loads(
+        json.dumps(m_t["native"]["selections"][PRIMARY_SLUG])
+    )
+    m_t["records"].pop(PRIMARY_SLUG)
+    m_t["native"]["selections"].pop(PRIMARY_SLUG)
+    m_t["records"][dup_slug] = {
+        "object_key": dup_key, "sha256": dup_digest, "bytes": len(dup_body)
+    }
+    m_t["native"]["economic_slots"]["cik:0000080424"]["slug"] = dup_slug
+    m_t["record_count"] = len(m_t["records"])
+    objs_t = {key: value for key, value in payloads.items() if key != primary_key}
+    objs_t[dup_key] = dup_body
+    m_t = reseal_manifest(m_t, pp)
+    twin_result = pp.validate_native_closure(m_t, objs_t)
+    assert {dup_slug, Q3_SLUG} <= set(twin_result)

@@ -6,6 +6,7 @@ Task 2 fixture. The module caches deterministic native evidence per process.
 from __future__ import annotations
 
 from copy import deepcopy
+from datetime import date
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -15,13 +16,16 @@ from engine.earnings_narrative import economic_interpretation
 from engine.earnings_narrative import private_publication as private_module
 from engine.earnings_narrative.context_packets import canonical_json_bytes
 from engine.company_intelligence import event_workspace, pg_profile
+from engine.company_intelligence.events import FiscalPeriod
 from engine.research_vault.r2_store import LocalStore
 from scripts import refresh_event_workspaces
-from tests.earnings_economic_fixtures import fixture_http_get
+from tests.earnings_economic_fixtures import fixture_http_get, pg_bound_case, _sgml
 from tests.test_earnings_private_store import CountingLocalStore, _staged_publication
 
 CUTOFF = "2026-07-31T00:00:00Z"
 _CACHE: dict[str, dict[str, object]] = {}
+Q3_SLUG = "pg-synthetic-economic-dossier-q3"
+Q3_EVENT_ID = "evt_cik0000080424_2026q3_results"
 
 _PERMITTING_RIGHTS = """families:
   sec_edgar:
@@ -83,6 +87,70 @@ def _build_cache() -> dict[str, object]:
         _CACHE[f"{letter}_interpretation"] = interpretation
     return _CACHE
 
+def _q3_cache() -> dict[str, object]:
+    _build_cache()
+    if "q3" in _CACHE:
+        return _CACHE
+    q3_period = FiscalPeriod(year=2026, quarter=3, calendar_end=date(2026, 3, 31))
+    body = pg_bound_case("annual_first", fiscal_period=q3_period).source.encode("utf-8")
+    acc = "0000080424-26-000021"
+    archive = f"https://www.sec.gov/Archives/edgar/data/80424/{acc.replace('-', '')}"
+    row = {
+        "accessionNumber": acc,
+        "form": "8-K",
+        "filingDate": "2026-04-24",
+        "acceptanceDateTime": "2026-04-24T17:00:00Z",
+        "reportDate": "2026-03-31",
+        "items": "2.02",
+        "primaryDocument": "q3.htm",
+    }
+    subs = {"filings": {"recent": {column: [row[column]] for column in (
+        "accessionNumber", "form", "filingDate", "acceptanceDateTime",
+        "reportDate", "items", "primaryDocument",
+    )}}}
+    responses = {
+        "https://data.sec.gov/submissions/CIK0000080424.json": (200, json.dumps(subs).encode("utf-8")),
+        f"{archive}/{acc}-index-headers.html": (200, _sgml("synthetic-exhibit-991.htm")),
+        f"{archive}/synthetic-exhibit-991.htm": (200, body),
+    }
+
+    def http_get(url: str):
+        try:
+            return responses[url]
+        except KeyError as exc:
+            raise AssertionError(f"unexpected synthetic SEC URL: {url}") from exc
+
+    original_pace = refresh_event_workspaces._PACE_S
+    refresh_event_workspaces._PACE_S = 0
+    try:
+        acquisition = refresh_event_workspaces.acquire_results_filing(
+            cik="0000080424",
+            http_get=http_get,
+            trace=[].append,
+        )
+    finally:
+        refresh_event_workspaces._PACE_S = original_pace
+    acquisition["currentness"] = {
+        "state": "up_to_date",
+        "checked_at": "2026-04-24T20:00:00Z",
+    }
+    result = pg_profile.prepare_pg_workspace(
+        acquisition, prior=None, observed_at="2026-04-24T17:10:00Z"
+    )
+    document = result["document_metadata"]
+    texts = {document["document_id"]: result["decoded_source"]}
+    interpretation = economic_interpretation.build_economic_interpretation(
+        result["workspace"],
+        source_texts=texts,
+        fiscal_scope=tuple(result["currentness_context"]["fiscal_scope"]),
+        selection={"facts": None, "currentness": result["currentness_context"]["currentness"]},
+        semantic_revision=economic_interpretation.SEMANTIC_REVISION,
+        code_revision=economic_interpretation.CODE_REVISION,
+    )
+    _CACHE["q3"] = result
+    _CACHE["q3_interpretation"] = interpretation
+    return _CACHE
+
 def _copy(value: object) -> object:
     return deepcopy(value)
 
@@ -122,6 +190,60 @@ def economic_stage_parts(case: str) -> dict:
     elif case == "empty_native":
         chain = []
         interpretation = {"state": "unavailable", "reason": "no_native_selection"}
+    elif case == "two_events":
+        q3_cache = _q3_cache()
+        v1 = cache["v1"]
+        v1_interpretation = cache["v1_interpretation"]
+        q3 = q3_cache["q3"]
+        q3_interpretation = q3_cache["q3_interpretation"]
+        selection = _selection_for(v1, v1_interpretation)
+        q3_selection = _selection_for(q3, q3_interpretation)
+        dossier = {
+            "schema": "earnings.tier_payload/v2",
+            "page": "earnings_economic_dossier",
+            "slug": "pg-synthetic-economic-dossier",
+            "required_tier": "essential",
+            "public_facts": 0,
+            "locked_facts": len(v1_interpretation.get("observations", ())),
+            "facts_html": "",
+            "receipt_rows_html": "",
+            "economic_interpretation": _copy(v1_interpretation),
+        }
+        q3_dossier = {
+            "schema": "earnings.tier_payload/v2",
+            "page": "earnings_economic_dossier",
+            "slug": Q3_SLUG,
+            "required_tier": "essential",
+            "public_facts": 0,
+            "locked_facts": len(q3_interpretation.get("observations", ())),
+            "facts_html": "",
+            "receipt_rows_html": "",
+            "economic_interpretation": _copy(q3_interpretation),
+        }
+        return {
+            "chains": [[{"version": v1}], [{"version": q3}]],
+            "selection": selection,
+            "selections": {
+                "pg-synthetic-economic-dossier": selection,
+                Q3_SLUG: q3_selection,
+            },
+            "slots": {
+                "cik:0000080424": {
+                    "slug": "pg-synthetic-economic-dossier",
+                    "event_id": selection["event_id"],
+                },
+            },
+            "received": {
+                v1["document_metadata"]["content_sha256"]: v1["received_byte_receipt"],
+                q3["document_metadata"]["content_sha256"]: q3["received_byte_receipt"],
+            },
+            "cutoff": CUTOFF,
+            "previous_manifest": None,
+            "wire_v2": False,
+            "wire_interpretation": {"state": "unavailable", "reason": "no_native_selection"},
+            "dossier": dossier,
+            "extra_dossiers": [q3_dossier],
+        }
     else:
         raise ValueError("unknown synthetic private economic stage case")
 
@@ -223,8 +345,15 @@ def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
             (bodies / f"{result['document_metadata']['content_sha256']}.txt").write_bytes(text_body)
             entries.append({"workspace": result["workspace"]["generation_id"], "document": document_digest})
         chain_catalogs.append(entries)
+    by_event: dict[str, list] = {}
+    for chain, entries in zip(parts["chains"], chain_catalogs):
+        if chain:
+            by_event[chain[-1]["version"]["workspace"]["event_id"]] = entries
     for slug, slug_selection in parts["selections"].items():
-        slug_selection["chain"] = chain_catalogs[-1] if slug_selection["event_id"] else []
+        slug_selection["chain"] = (
+            by_event.get(slug_selection["event_id"], chain_catalogs[-1])
+            if slug_selection["event_id"] else []
+        )
     if "interpretation_id" in parts["wire_interpretation"]:
         old_slug = dossier["slug"]
         dossier["slug"] = wire_slug
@@ -232,6 +361,8 @@ def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
         parts["slots"]["cik:0000080424"]["slug"] = wire_slug
     elif dossier:
         (records_dir / f"{dossier['slug']}.json").write_bytes(canonical_json_bytes(dossier))
+    for extra in parts.get("extra_dossiers", ()):
+        (records_dir / f"{extra['slug']}.json").write_bytes(canonical_json_bytes(extra))
     stage_manifest = {
         "schema": "earnings.private_native_stage/v1",
         "native_source_cutoff": parts["cutoff"],
