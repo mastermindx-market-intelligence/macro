@@ -1,6 +1,7 @@
 """Authenticated serving route for the private Filing Forensics state."""
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -191,8 +192,18 @@ def forensics_health(_user: dict = Depends(require_site_full_user)) -> JSONRespo
     beyond the mode name and the generation id.
     """
     headers = dict(_PRIVATE_HEADERS)
-    headers["X-FIF-Financial-Dataset-Mode"] = _financial_dataset_mode()
-    if headers["X-FIF-Financial-Dataset-Mode"] == "production":
+    # A15: an invalid dataset mode refuses health with the same private 503
+    # the financial POSTs use — never a 500 and never a silent golden report.
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        ProductionDatasetModeError,
+    )
+
+    try:
+        mode = _financial_dataset_mode()
+    except ProductionDatasetModeError:
+        raise _private_error(503, "forensics health temporarily unavailable") from None
+    headers["X-FIF-Financial-Dataset-Mode"] = mode
+    if mode == "production":
         from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
             build_production_dataset_store,
             latest_generation_summary,
@@ -968,7 +979,7 @@ async def _admit_json_post_body(request: Request) -> bytes:
 
 @router.api_route(
     "/api/forensics/v1/financial/query",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_query_method_not_allowed(
     response: Response,
@@ -1016,8 +1027,65 @@ async def financial_query(
 
 
 @router.api_route(
-    "/api/forensics/v1/financial/revisions",
+    "/api/forensics/v1/financial/query.xlsx",
     methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+)
+def financial_query_xlsx_method_not_allowed(
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> None:
+    """Auth first, then a private 405. Starlette's default 405 has no no-store policy."""
+    del response
+    raise _private_error(405, "method not allowed")
+
+
+@router.post("/api/forensics/v1/financial/query.xlsx")
+async def financial_query_xlsx(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Same admission as the JSON query; return a deterministic .xlsx attachment."""
+    from engine.fundamental_forensics.excel_export import (  # noqa: PLC0415
+        XLSX_MEDIA_TYPE,
+        response_query_id,
+        to_xlsx_bytes,
+    )
+    from engine.fundamental_forensics.query_service import (  # noqa: PLC0415
+        FinancialQueryAdmissionError,
+        FinancialQueryUnavailableError,
+        execute_financial_query,
+    )
+
+    body = await _admit_json_post_body(request)
+    provider = _financial_query_provider()
+
+    try:
+        result = execute_financial_query(body=body, provider=provider)
+    except FinancialQueryAdmissionError as exc:
+        raise _private_error(exc.status_code, exc.detail) from None
+    except FinancialQueryUnavailableError:
+        raise _private_error(503, "financial query temporarily unavailable") from None
+    except Exception:  # noqa: BLE001
+        raise _private_error(503, "financial query temporarily unavailable") from None
+
+    envelope = dict(result.envelope)
+    envelope["sha256"] = result.sha256
+    payload = to_xlsx_bytes(envelope)
+    filename = f"{response_query_id(envelope)}.xlsx"
+    return Response(
+        content=payload,
+        media_type=XLSX_MEDIA_TYPE,
+        headers={
+            **_PRIVATE_HEADERS,
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-FIF-Response-SHA256": hashlib.sha256(payload).hexdigest(),
+        },
+    )
+
+
+@router.api_route(
+    "/api/forensics/v1/financial/revisions",
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_revisions_method_not_allowed(
     response: Response,
@@ -1068,7 +1136,7 @@ async def financial_revisions(
 
 @router.api_route(
     "/api/forensics/v1/financial/packet",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_packet_method_not_allowed(
     response: Response,
@@ -1119,7 +1187,7 @@ async def financial_packet(
 
 @router.api_route(
     "/api/forensics/v1/financial/statements",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_statements_method_not_allowed(
     response: Response,
