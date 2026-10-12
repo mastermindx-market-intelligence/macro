@@ -171,6 +171,27 @@ def test_no_committed_report_title_is_filename_shaped():
         f"`python -m scripts.repair_research_titles`: {bad[:5]}")
 
 
+def test_trailing_calendar_date_cleanup_keeps_display_title_complete():
+    from engine.research_vault.sidecar import display_title
+    from engine.research_vault.slugs import _title
+
+    original = "The Point for Europe: Thursday, October 1, 2026"
+    assert display_title(original) == "The Point for Europe: Thursday"
+    assert display_title(display_title(original)) == display_title(original)
+    assert _title({"title": original}) == original  # indexed slugs unchanged
+
+
+def test_non_calendar_headlines_and_names_are_not_rewritten():
+    from engine.research_vault.sidecar import display_title
+    for title in (
+        "India October 2026 Outlook",
+        "Company growth, Q3 2026",
+        "Research notes on Thursday,",
+        "Rearming Britain's Supply Side",
+    ):
+        assert display_title(title) == title
+
+
 def test_no_rendered_page_title_is_filename_shaped():
     """The same guard one layer out: what actually reaches <title>/<h1>/JSON-LD.
 

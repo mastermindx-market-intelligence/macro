@@ -290,6 +290,32 @@ def test_interactive_first_paint_masks_the_baked_snapshot(page_seeded):
     assert 'class="rv-status-loading">正在刷新实时研报' in page_seeded
 
 
+
+def test_loading_figures_mask_cached_numbers_until_source_is_chosen(page_seeded):
+    """The saved HTML numbers are provenance-labelled only AFTER live settles.
+    A slow API must not make yesterday's snapshot resemble current figures."""
+    assert ".rv-fig-loading{ display:none; }" in page_seeded
+    assert "html.rv-awaiting-live .rv-fig-snapshot{ display:none; }" in page_seeded
+    assert "html.rv-awaiting-live .rv-fig-loading{ display:inline; }" in page_seeded
+    for figure in ("fig-new", "fig-desks", "fig-theme", "fig-total"):
+        assert re.search(
+            r'<span class="rv-fig-snapshot" id="' + figure
+            + r'">[^<]*</span><span class="rv-fig-loading" '
+            + r'aria-hidden="true">—</span>',
+            page_seeded,
+        ), figure
+    assert "classList.remove('rv-awaiting-live')" in page_seeded
+
+
+def test_loading_mask_does_not_hide_saved_figures_without_javascript(page_seeded):
+    """No JS means no loading class: the SSR values are still visible/crawlable."""
+    assert 'id="fig-total">2</span>' in page_seeded
+    assert re.search(r'id="fig-new">\d+</span>', page_seeded)
+    assert "class=\"rv-status-snapshot\">Saved research snapshot" in page_seeded
+    assert '.rv-fig-snapshot{ display:none; }' not in page_seeded.replace(
+        'html.rv-awaiting-live .rv-fig-snapshot{ display:none; }', ''
+    )
+
 def test_no_js_default_is_an_honest_saved_snapshot(page_seeded):
     """With scripts disabled the SSR cards stay usable and never claim to be live."""
     assert 'class="rv-status-snapshot">Saved research snapshot' in page_seeded
