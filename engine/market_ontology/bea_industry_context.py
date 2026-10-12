@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from decimal import Decimal, ROUND_HALF_EVEN
+import hashlib
 import json
 import re
 from typing import Any
@@ -279,3 +280,111 @@ def adapt_eight_year_input_history(
         "source_adopted": False,
         "public_or_predictive_use": False,
     }
+
+def adapt_workspace_bea_history(
+    response: Mapping[str, Any], *, industry_code: str, commodity_code: str,
+    purpose: str = "private_research", as_of: object = None,
+) -> dict[str, Any]:
+    """Consume one *already completed* canonical DataWorkspace research read.
+
+    This function never opens a source file, creates a root binding, selects
+    credentials, admits rights, or turns a stat-based file version into a
+    cryptographic source attestation. The host-owned DataWorkspace must have
+    already performed its own read. Call with a 9-row limit so a complete scan
+    distinguishes exactly eight annual observations from an extra ninth row.
+    """
+    if purpose != "private_research" or as_of is not None:
+        raise BEAContextRefused("workspace evidence has no public or PIT authority")
+    if (not isinstance(industry_code, str) or not _CODE.fullmatch(industry_code)
+            or not isinstance(commodity_code, str) or not _CODE.fullmatch(commodity_code)):
+        raise BEAContextRefused("exact BEA code required")
+    if (not isinstance(response, Mapping)
+            or response.get("schema_version") != "mastermind.data_workspace/v1"
+            or response.get("action") != "read"
+            or response.get("source_access") != "read_only"
+            or response.get("production_qualification") != "NOT_ESTABLISHED_BY_THIS_ADAPTER"
+            or response.get("temporal_caution") !=
+            "Filtering stored rows does not reconstruct point-in-time availability."):
+        raise BEAContextRefused("not a qualified read-only workspace envelope")
+
+    source, query, result = (
+        response.get("source"), response.get("query"), response.get("result")
+    )
+    if not all(isinstance(item, Mapping) for item in (source, query, result)):
+        raise BEAContextRefused("workspace source/query/result envelope missing")
+
+    ref = source.get("ref")
+    version = source.get("file_version")
+    if (not isinstance(ref, str) or not ref.startswith("free_source_research:")
+            or not isinstance(version, str)
+            or not re.fullmatch(r"statv1:[0-9a-f]{64}", version)):
+        raise BEAContextRefused("workspace binding or version not recognized")
+    relative = ref.split(":", 1)[1]
+    expected_name = "industry_" + industry_code + ".jsonl"
+    if (relative.rsplit("/", 1)[-1] != expected_name
+            or source.get("root_alias") != "free_source_research"
+            or source.get("relative_path") != relative
+            or source.get("evidence_kind") not in {"research_capture", "research_sample"}
+            or source.get("registry_admission") != "NOT_INFERRED_FROM_FILE_PRESENCE"
+            or source.get("content_sha256") is not None
+            or source.get("file_version_basis") !=
+            "device_inode_size_mtime_ctime_not_content_hash"
+            or type(source.get("file_bytes")) is not int
+            or source["file_bytes"] <= 0):
+        raise BEAContextRefused("research file is not an admitted source proof")
+
+    if (set(query) != {"ref", "file_version", "columns", "time_column", "start",
+                       "end", "equals", "offset", "limit"}
+            or query.get("ref") != ref
+            or query.get("file_version") != version
+            or query.get("columns") is not None
+            or any(query.get(k) is not None for k in ("time_column", "start", "end"))
+            or query.get("equals") != {"commodity_code_exact": commodity_code}
+            or type(query.get("offset")) is not int or query["offset"] != 0
+            or type(query.get("limit")) is not int or query["limit"] != 9):
+        raise BEAContextRefused("workspace query must scan exact full-source commodity history")
+    try:
+        receipt = hashlib.sha256(json.dumps(
+            dict(query), sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")).hexdigest()
+    except (TypeError, ValueError) as exc:
+        raise BEAContextRefused("unverifiable workspace query") from exc
+    if response.get("query_receipt_sha256") != receipt:
+        raise BEAContextRefused("workspace query receipt mismatch")
+
+    rows = result.get("rows")
+    positions = result.get("row_positions")
+    scanned = result.get("scanned_rows")
+    if (result.get("scan_complete") is not True
+            or result.get("next_offset") is not None
+            or type(scanned) is not int or scanned < 8
+            or not isinstance(rows, list) or len(rows) != 8
+            or not isinstance(positions, list) or len(positions) != 8
+            or any(type(n) is not int or n < 0 for n in positions)
+            or positions != sorted(set(positions))
+            or positions[-1] >= scanned):
+        raise BEAContextRefused("workspace scan incomplete, partial or ambiguous")
+    try:
+        observed_at = utc(response.get("observed_at"))
+    except (TemporalError, TypeError, ValueError) as exc:
+        raise BEAContextRefused("workspace read observation instant unavailable") from exc
+    history = adapt_eight_year_input_history(
+        rows, industry_code=industry_code, commodity_code=commodity_code,
+        purpose=purpose, as_of=as_of,
+    )
+    if observed_at < max(utc(item["source"]["research_capture_at"])
+                         for item in history["observations"]):
+        raise BEAContextRefused("workspace read cannot precede underlying capture")
+    history["reader_provenance"] = {
+        "canonical_reader": "lib.dataos.web_workspace.DataWorkspace.read",
+        "root_alias": "free_source_research",
+        "read_observed_at": observed_at.isoformat(),
+        "stat_file_version": version,
+        "query_receipt_sha256": receipt,
+        "original_file_content_sha256_verified": False,
+        "native_dataset_admission": False,
+        "public_or_historical_pit_serving": False,
+        "source_row_count": len(rows),
+        "scan_complete": True,
+    }
+    return history

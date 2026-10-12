@@ -6,6 +6,7 @@ There is deliberately no collector, disk fixture, network or live dataset write.
 from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_EVEN
+import hashlib
 import json
 import unittest
 
@@ -14,6 +15,7 @@ from engine.market_ontology.bea_industry_context import (
     LINEAGE_SHA256,
     adapt_eight_year_input_history,
     adapt_industry_commodity_input,
+    adapt_workspace_bea_history,
 )
 
 _KEYS = (
@@ -266,6 +268,164 @@ class BEAIndustryContextTests(unittest.TestCase):
                 surplus(), industry_code="3341", commodity_code="3344"
             )
         self.assertEqual(observed, list(range(2017, 2026)))
+
+
+def _synthetic_workspace_response():
+    """DataWorkspace.read envelope *shape*, never a real filesystem observation."""
+    ref = "free_source_research:data_workspace_views_20261011/industry_3341.jsonl"
+    version = "statv1:" + "a" * 64
+    query = {
+        "ref": ref,
+        "file_version": version,
+        "columns": None,
+        "time_column": None,
+        "start": None,
+        "end": None,
+        "equals": {"commodity_code_exact": "3344"},
+        "offset": 0,
+        "limit": 9,
+    }
+    digest = hashlib.sha256(json.dumps(
+        query, sort_keys=True, separators=(",", ":"), allow_nan=False,
+    ).encode("utf-8")).hexdigest()
+    return {
+        "schema_version": "mastermind.data_workspace/v1",
+        "action": "read",
+        "source_access": "read_only",
+        "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+        "observed_at": "2026-10-11T16:00:00+00:00",
+        "source": {
+            "ref": ref,
+            "root_alias": "free_source_research",
+            "relative_path": "data_workspace_views_20261011/industry_3341.jsonl",
+            "evidence_kind": "research_capture",
+            "registry_admission": "NOT_INFERRED_FROM_FILE_PRESENCE",
+            "file_bytes": 2_000_000,
+            "file_version": version,
+            "file_version_basis": "device_inode_size_mtime_ctime_not_content_hash",
+            "content_sha256": None,
+        },
+        "query": query,
+        "query_receipt_sha256": digest,
+        "result": {
+            "rows": [synthetic_row(year=y) for y in range(2017, 2025)],
+            "row_positions": [139 * i for i in range(8)],
+            "scanned_rows": 1112,
+            "next_offset": None,
+            "scan_complete": True,
+            "missingness_notes": {},
+        },
+        "temporal_caution": (
+            "Filtering stored rows does not reconstruct point-in-time availability."
+        ),
+    }
+
+
+class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
+    def test_complete_existing_dataos_read_envelope_projects_private_history(self):
+        result = adapt_workspace_bea_history(
+            _synthetic_workspace_response(),
+            industry_code="3341",
+            commodity_code="3344",
+        )
+        self.assertEqual(len(result["observations"]), 8)
+        self.assertEqual([row["accounting_year"] for row in result["observations"]],
+                         list(range(2017, 2025)))
+        self.assertEqual(result["observations"][0]["world_import_million_USD"], 212)
+        self.assertEqual(result["measurement_class"], "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION")
+        self.assertFalse(result["source_adopted"])
+        self.assertFalse(result["public_or_predictive_use"])
+        self.assertTrue(result["no_named_company_relationships"])
+        proof = result["reader_provenance"]
+        self.assertEqual(proof["root_alias"], "free_source_research")
+        self.assertEqual(proof["source_row_count"], 8)
+        self.assertEqual(proof["canonical_reader"],
+                         "lib.dataos.web_workspace.DataWorkspace.read")
+        self.assertFalse(proof["original_file_content_sha256_verified"])
+        self.assertFalse(proof["native_dataset_admission"])
+        self.assertFalse(proof["public_or_historical_pit_serving"])
+
+    def test_signed_negative_allocation_survives_real_reader_envelope_shape(self):
+        response = _synthetic_workspace_response()
+        neg = dict(zip(_KEYS, (-8, 0, -60, 0, 0, -1, -1)))
+        response["result"]["rows"][3] = synthetic_row(
+            year=2020, use=-2, world=-69, regions=neg,
+        )
+        report = adapt_workspace_bea_history(
+            response, industry_code="3341", commodity_code="3344",
+        )
+        row = report["observations"][3]
+        self.assertEqual(row["total_use_million_USD"], -2)
+        self.assertEqual(row["world_import_million_USD"], -69)
+        self.assertIsNone(row["regional_origin_fraction_of_world"])
+        self.assertIn("SOURCE_NEGATIVE_REGION_ADJUSTMENT", row["ratio_null_reasons"])
+        self.assertFalse(row["named_supplier_customer_evidence"])
+
+    def test_never_promotes_reader_evidence_to_public_or_historical_asof(self):
+        for choice in (
+            {"purpose": "public_display"},
+            {"purpose": "train"},
+            {"purpose": "trade"},
+            {"as_of": "2020-01-01T00:00:00+00:00"},
+        ):
+            with self.subTest(choice=choice), self.assertRaises(BEAContextRefused):
+                adapt_workspace_bea_history(
+                    _synthetic_workspace_response(), industry_code="3341",
+                    commodity_code="3344", **choice,
+                )
+
+    def test_bad_reader_origin_receipt_or_claimed_source_authentication_refused(self):
+        cases = (
+            ("source", "evidence_kind", "unqualified_snapshot"),
+            ("source", "registry_admission", "ADMITTED"),
+            ("source", "content_sha256", "b" * 64),
+            ("source", "root_alias", "production_qualified"),
+            ("source", "relative_path", "industry_XXXX.jsonl"),
+            ("source", "file_bytes", False),
+            ("query", "limit", 8),
+            ("query", "offset", 10),
+            ("query", "equals", {"industry_code_exact": "3341"}),
+            ("query", "columns", ["accounting_year"]),
+        )
+        for section, field, value in cases:
+            response = _synthetic_workspace_response()
+            response[section][field] = value
+            with self.subTest(section=section, field=field), self.assertRaises(BEAContextRefused):
+                adapt_workspace_bea_history(
+                    response, industry_code="3341", commodity_code="3344",
+                )
+        for key, bad in (
+            ("action", "describe_file"),
+            ("source_access", "write"),
+            ("production_qualification", "ADMITTED"),
+            ("query_receipt_sha256", "0" * 64),
+            ("observed_at", "2026-10-11"),
+            ("observed_at", "2026-10-09T00:00:00+00:00"),
+        ):
+            response = _synthetic_workspace_response()
+            response[key] = bad
+            with self.subTest(field=key, value=bad), self.assertRaises(BEAContextRefused):
+                adapt_workspace_bea_history(
+                    response, industry_code="3341", commodity_code="3344",
+                )
+
+    def test_partial_duplicate_or_surplus_rows_fail_closed(self):
+        variations = (
+            ("scan_complete", False),
+            ("next_offset", 1112),
+            ("row_positions", [0] * 8),
+            ("scanned_rows", 7),
+            ("rows", [synthetic_row(y) for y in range(2017, 2024)]),
+            ("rows", [synthetic_row(y) for y in range(2017, 2025)] + [synthetic_row(2024)]),
+            ("rows", [synthetic_row(y) for y in range(2017, 2024)] + [synthetic_row(2023)]),
+        )
+        for field, value in variations:
+            response = _synthetic_workspace_response()
+            response["result"][field] = value
+            with self.subTest(field=field), self.assertRaises(BEAContextRefused):
+                adapt_workspace_bea_history(
+                    response, industry_code="3341", commodity_code="3344",
+                )
 
 
 if __name__ == "__main__":
