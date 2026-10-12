@@ -732,11 +732,13 @@ def test_stage_a_first_appearance_before_acceptance_is_not_attested():
     assert "unqualified_verified_document_observation" in packet["missing_data"]
 
 
-def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01"):
+def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01",
+                        document_name="test8k.htm"):
     """Real private SEC archive contracts, synthetic bytes and clocks."""
     from collectors.sec_document_spine import persist_archive_document, retain_filing_manifest
     from engine.fundamental_forensics.sec_document_spine import (
-        build_filing_manifests, with_document_retrievals)
+        build_filing_manifests, with_document_retrievals,
+        documents_from_archive_index, with_archive_documents)
     from engine.fundamental_forensics.source_sync import sync_source_roots
     from engine.fundamental_forensics.filing_attestation import PinnedSourceAuthority
     from engine.research_vault.r2_store import LocalStore
@@ -753,7 +755,12 @@ def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01"):
                   "items": [items], "primaryDocument": ["test8k.htm"]}}}
     manifest = build_filing_manifests(
         source, ticker="PFE", recorded_at="2026-08-04T11:03:20Z")[0]
-    doc = manifest["documents"][0]
+    if document_name == "ex99-1.htm":
+        inventory = documents_from_archive_index(
+            manifest, {"directory": {"item": [{"name": "ex99-1.htm"}]}})
+        manifest = with_archive_documents(manifest, inventory)
+    doc = next(row for row in manifest["documents"]
+               if row["document_name"] == document_name)
     receipt = persist_archive_document(
         archive, doc, b"synthetic test document",
         retrieved_at="2026-08-04T11:03:10Z")
@@ -943,3 +950,31 @@ def test_corrupt_pinned_sec_receipt_sidecar_denies_document_observation(tmp_path
         raw, authority=authority, manifest_key=manifest_key,
         first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
     assert refused is None
+
+
+def test_exact_selected_ex99_archive_member_requires_separate_rights(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, pinned, manifest_key, receipt = _pinned_sec_fixture(
+        tmp_path, document_name="ex99-1.htm")
+    assert raw["source_url"].endswith("/ex99-1.htm")
+    observation = observation_from_pinned_sec_archive(
+        raw, authority=pinned, manifest_key=manifest_key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observation is not None
+    assert observation.document_sha256 == receipt.content_sha256
+    assert build(raw, document_observation=observation)["public_safe"] is False
+    def grant_selected(sid, at):
+        return replace(grants()(sid, at),
+                       document_url=raw["source_url"],
+                       document_sha256=receipt.content_sha256)
+    admitted = build(raw, document_observation=observation,
+                     rights_resolver=grant_selected)
+    assert admitted["public_disposition"] == "PUBLIC_READY"
+    assert admitted["sources"][0]["url"] == raw["source_url"]
+    # One filing-level source ID does not imply a grant for its 8-K cover.
+    cover = raw["source_url"].replace("ex99-1.htm", "test8k.htm")
+    assert observation_from_pinned_sec_archive(
+        {**raw, "source_url": cover}, authority=pinned,
+        manifest_key=manifest_key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW) is None
