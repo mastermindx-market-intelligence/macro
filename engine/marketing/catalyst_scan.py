@@ -14,7 +14,9 @@ from typing import Mapping, Sequence
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
 from engine.marketing.catalyst_packets import (
-    SCHEMA_VERSION as PACKET_SCHEMA, STAGE_A_PACKET_SCHEMA, _utc, _stamp,
+    SCHEMA_VERSION as PACKET_SCHEMA, STAGE_A_PACKET_SCHEMA,
+    _SOURCE_ID, _TRIGGER_COPY, _INVALIDATOR_COPY, _RELATION_COPY,
+    _URL_EMAIL, _safe_url, _utc, _stamp,
 )
 
 SCAN_SCHEMA = "catalyst.scan/v1"
@@ -91,7 +93,8 @@ def _revision_identity(packet: Mapping) -> tuple[str, int] | None:
         return None
     eid = packet.get("event_id")
     generation = packet.get("generation")
-    if (not isinstance(eid, str) or not eid or type(generation) is not int
+    if (not isinstance(eid, str) or not _SOURCE_ID.fullmatch(eid)
+            or type(generation) is not int
             or generation < 0):
         return None
     return eid, generation
@@ -140,6 +143,15 @@ def _base(ticker: str, universe: Mapping, now: datetime) -> dict:
             "correction_state": None, "public_safe": False, "coverage_note": ""}
 
 
+def _safe_ids(raw: object) -> tuple[str, ...]:
+    if not isinstance(raw, (list, tuple)) or len(raw) > 12:
+        return ()
+    if any(not isinstance(value, str) or not _SOURCE_ID.fullmatch(value)
+           for value in raw):
+        return ()
+    return tuple(raw)
+
+
 def _public_result(ticker: str, packet: Mapping, relation: Mapping,
                    base: dict, now: datetime) -> dict:
     """Allowlist every byte and evidence link before Session 00 sanitizes again."""
@@ -159,44 +171,96 @@ def _public_result(ticker: str, packet: Mapping, relation: Mapping,
         base["status"] = "NOT_COVERED"
         return base
     sources_raw = packet.get("sources")
-    if (not isinstance(sources_raw, list) or not sources_raw or
-            any(not isinstance(s, Mapping) or s.get("display_rights") != "ALLOWED"
-                or not s.get("rights_receipt_id")
-                or not (s.get("published_at_utc") or s.get("first_verified_at_utc"))
-                for s in sources_raw)):
+    if not isinstance(sources_raw, list) or not 1 <= len(sources_raw) <= 12:
         base["status"] = "RIGHTS_BLOCKED"
         return base
-    sources = [{"source_id": s["source_id"], "url": s["url"], "title": s["title"],
-                "published_at_utc": s["published_at_utc"],
-                "first_verified_at_utc": s.get("first_verified_at_utc"),
-                "display_rights": "ALLOWED",
-                "rights_receipt_id": s["rights_receipt_id"]} for s in sources_raw]
-    srcids = {s["source_id"] for s in sources}
-    evidence_lookup = {e["evidence_id"]: e["source_id"] for e in packet.get("evidence", [])
-                       if isinstance(e, Mapping) and isinstance(e.get("evidence_id"), str)
-                       and e.get("source_id") in srcids}
+    # Defensive scan-level validation: a partner/card consumer may call
+    # compose_scan without passing through Session00's stricter HTTP bridge.
+    # No source URL, PII-bearing query, unbound title or ambiguous ID escapes.
+    sources = []
+    srcids: set[str] = set()
+    for i, raw_source in enumerate(sources_raw):
+        if not isinstance(raw_source, Mapping):
+            base["status"] = "RIGHTS_BLOCKED"
+            return base
+        sid, title = raw_source.get("source_id"), raw_source.get("title")
+        url, receipt = raw_source.get("url"), raw_source.get("rights_receipt_id")
+        publication = raw_source.get("published_at_utc")
+        verified = raw_source.get("first_verified_at_utc")
+        published_time = _utc(publication)
+        verified_time = _utc(verified)
+        if (not isinstance(sid, str) or not _SOURCE_ID.fullmatch(sid)
+                or sid in srcids
+                or not isinstance(title, str) or not 0 < len(title.strip()) <= 150
+                or any(ord(c) < 32 or ord(c) == 127 for c in title)
+                or not isinstance(receipt, str) or not 0 < len(receipt.strip()) <= 128
+                or raw_source.get("display_rights") != "ALLOWED"
+                or not isinstance(url, str)
+                or _safe_url(url, sec_only=(packet.get("event_kind") == "earnings"
+                                           and i == 0)) != url
+                or (publication is not None and published_time is None)
+                or (verified is not None and verified_time is None)
+                or (published_time is None and verified_time is None)
+                or (packet.get("schema") == PACKET_SCHEMA
+                    and published_time is None)
+                or (published_time is not None and published_time > now)
+                or (verified_time is not None and verified_time > now)):
+            base["status"] = "RIGHTS_BLOCKED"
+            return base
+        srcids.add(sid)
+        sources.append({"source_id": sid, "url": url, "title": title.strip(),
+                        "published_at_utc": _stamp(published_time),
+                        "first_verified_at_utc": _stamp(verified_time),
+                        "display_rights": "ALLOWED",
+                        "rights_receipt_id": receipt})
+    raw_evidence = packet.get("evidence")
+    if not isinstance(raw_evidence, list) or len(raw_evidence) > 256:
+        base["status"] = "TEMPORARILY_UNAVAILABLE"
+        return base
+    evidence_lookup: dict[str, str] = {}
+    for row in raw_evidence:
+        eid, sid = (row.get("evidence_id"), row.get("source_id")) if isinstance(row, Mapping) else (None, None)
+        if (not isinstance(eid, str) or not _SOURCE_ID.fullmatch(eid)
+                or sid not in srcids or eid in evidence_lookup):
+            base["status"] = "TEMPORARILY_UNAVAILABLE"
+            return base
+        evidence_lookup[eid] = sid
     primary = packet.get("primary_subject")
     if not isinstance(primary, Mapping) or not primary.get("ticker"):
         base["status"] = "TEMPORARILY_UNAVAILABLE"
         return base
+    claims = packet.get("what_changed")
+    scenario_rows = packet.get("scenarios")
+    if (not isinstance(claims, list) or len(claims) > 10
+            or not isinstance(scenario_rows, list) or len(scenario_rows) > 10):
+        base["status"] = "TEMPORARILY_UNAVAILABLE"
+        return base
     primary_id = sources[0]["source_id"]
-    relationship_sources = {evidence_lookup.get(e) for e in relation.get("relation_evidence_ids", [])}
+    relationship_sources = {evidence_lookup.get(e)
+                            for e in _safe_ids(relation.get("relation_evidence_ids"))}
     relationship_sources.discard(None)
     if kind == "EVIDENCED_INDIRECT" and not relationship_sources:
         base["status"] = "NOT_COVERED"
         return base
     changed = []
-    for claim in packet.get("what_changed", []):
+    for claim in claims:
         if not isinstance(claim, Mapping) or not isinstance(claim.get("text"), str):
             continue
-        refs = {evidence_lookup.get(k) for k in claim.get("evidence_ids", [])}
-        refs.update(s for s in claim.get("source_ids", []) if s in srcids)
+        copy = claim["text"]
+        if (not 0 < len(copy.strip()) <= 300 or _URL_EMAIL.search(copy)
+                or any(ord(ch) < 32 or ord(ch) == 127 for ch in copy)):
+            continue
+        refs = {evidence_lookup.get(k)
+                for k in _safe_ids(claim.get("evidence_ids"))}
+        refs.update(s for s in _safe_ids(claim.get("source_ids")) if s in srcids)
         refs.discard(None)
         if refs:
             changed.append({"text": claim["text"], "evidence_ids": sorted(refs)})
     if kind == "EVIDENCED_INDIRECT":
         link = relation.get("summary")
-        if not isinstance(link, str):
+        relkind = relation.get("relation_type")
+        if (not isinstance(relkind, str) or relkind not in _RELATION_COPY
+                or link != _RELATION_COPY[relkind]):
             base["status"] = "NOT_COVERED"
             return base
         changed.insert(0, {"text": f"{link}; any financial effect on {ticker} is unverified.",
@@ -206,12 +270,15 @@ def _public_result(ticker: str, packet: Mapping, relation: Mapping,
         return base
     scenarios = []
     invalidators = []
-    for row in packet.get("scenarios", []):
+    for row in scenario_rows:
         if not isinstance(row, Mapping):
             continue
-        refs = {evidence_lookup.get(k) for k in row.get("evidence_ids", [])}
+        refs = {evidence_lookup.get(k)
+                for k in _safe_ids(row.get("evidence_ids"))}
         refs.discard(None)
-        if refs and row.get("case") in ("bull", "base", "bear"):
+        if (refs and row.get("case") in ("bull", "base", "bear")
+                and row.get("trigger") in _TRIGGER_COPY.values()
+                and row.get("invalidator") in _INVALIDATOR_COPY.values()):
             scenarios.append({"case": row["case"].upper(), "trigger": row["trigger"],
                               "evidence_ids": sorted(refs)})
             if isinstance(row.get("invalidator"), str):
@@ -286,6 +353,7 @@ def _complete_current_coverage(receipt: SourceCoverageReceipt | None,
             return False
         primary = packet.get("primary_subject")
         if (not isinstance(primary, Mapping)
+                or not isinstance(primary.get("ticker"), str)
                 or primary.get("ticker") not in receipt.issuer_tickers
                 or packet.get("source_snapshot_version") != receipt.snapshot_version):
             return False
@@ -325,7 +393,8 @@ def compose_scan(tickers: Sequence[str], *, packets: Sequence[Mapping],
     if now is None:
         raise ValueError("as_of must be timezone-aware")
     names = normalize_tickers(tickers)
-    if event_id is not None and (not isinstance(event_id, str) or len(event_id) > 128):
+    if event_id is not None and (not isinstance(event_id, str)
+                                 or not _SOURCE_ID.fullmatch(event_id)):
         raise ValueError("invalid event reference")
     # Do not launder a v2 first-availability event through the v1 read-model
     # path. v2 requires the incumbent's complete-current snapshot, even when

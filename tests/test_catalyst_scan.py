@@ -480,3 +480,108 @@ def test_event_accepted_after_checked_window_cannot_be_certified():
                           as_of=NOW, coverage=window)
     assert result["publication_state"] == "UNAVAILABLE"
     assert result["results"][0]["sources"] == []
+
+
+def test_direct_public_scan_does_not_emit_tokenized_url_even_if_packet_marks_safe():
+    malicious = deepcopy(packet())
+    private_url = malicious["sources"][0]["url"] + "?ref=ok%26token%3Dsynthetic_private"
+    malicious["sources"][0]["url"] = private_url
+    result = compose_scan(["PFE"], packets=[malicious],
+                          issuers=UNIVERSE, as_of=NOW)
+    assert result["results"][0]["status"] == "RIGHTS_BLOCKED"
+    assert result["results"][0]["sources"] == []
+    assert "synthetic_private" not in str(result)
+
+
+def test_direct_scan_missing_required_source_url_fails_closed_not_keyerror():
+    malicious = deepcopy(packet())
+    del malicious["sources"][0]["url"]
+    result = compose_scan(["PFE"],packets=[malicious],
+                          issuers=UNIVERSE,as_of=NOW)
+    assert result["results"][0]["status"] == "RIGHTS_BLOCKED"
+    assert result["results"][0]["what_changed"] == []
+
+
+def test_direct_scan_rejects_scenario_text_not_in_producer_templates():
+    malicious = deepcopy(packet())
+    evidence = malicious["evidence"][0]["evidence_id"]
+    malicious["scenarios"].append({
+        "case": "bull", "trigger": "UNAPPROVED PRIVATE PREDICTION",
+        "invalidator": "UNAPPROVED INTERNAL INTEL",
+        "evidence_ids": [evidence],
+    })
+    result = compose_scan(["PFE"],packets=[malicious],
+                          issuers=UNIVERSE,as_of=NOW)
+    assert result["results"][0]["status"] == "SUPPORTED"
+    assert result["results"][0]["scenarios"] == []
+    assert "UNAPPROVED" not in str(result)
+
+
+def test_direct_scan_duplicate_evidence_ids_cannot_reassign_financial_claims():
+    malicious = deepcopy(packet())
+    target_id = malicious["evidence"][0]["evidence_id"]
+    malicious["sources"].append({
+        "source_id": "second_rights_source", "url": "https://example.com/secondary",
+        "title": "Synthetic secondary source",
+        "display_rights": "ALLOWED", "rights_receipt_id": "test-secondary-approval",
+        "published_at_utc": "2026-08-04T13:58:00Z",
+    })
+    malicious["evidence"].append({
+        "evidence_id": target_id, "source_id": "second_rights_source",
+        "kind": "relationship",
+    })
+    result = compose_scan(["PFE"],packets=[malicious],
+                          issuers=UNIVERSE,as_of=NOW)
+    assert result["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    assert result["results"][0]["sources"] == []
+    assert result["results"][0]["what_changed"] == []
+
+
+@pytest.mark.parametrize("field", ["what_changed", "scenarios"])
+@pytest.mark.parametrize("bad", [None, 7, True])
+def test_noncollection_claims_and_scenarios_fail_closed(field, bad):
+    malformed = deepcopy(packet())
+    malformed[field] = bad
+    result = compose_scan(["PFE"], packets=[malformed],
+                          issuers=UNIVERSE, as_of=NOW)
+    assert result["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    assert not result["results"][0]["sources"]
+
+
+@pytest.mark.parametrize("bad", [None, 7, {}, ["ordinary", {}]])
+@pytest.mark.parametrize("kind", ["claim_evidence", "claim_source",
+                                  "scenario_evidence", "relation_evidence"])
+def test_malformed_nested_source_ids_do_not_raise_or_expose_unverified_copy(kind, bad):
+    malformed = deepcopy(packet())
+    if kind == "claim_evidence":
+        malformed["what_changed"][0].update(
+            text="UNVERIFIED CLAIM", evidence_ids=bad)
+    elif kind == "claim_source":
+        malformed["what_changed"][0].update(
+            text="UNVERIFIED CLAIM", evidence_ids=[], source_ids=bad)
+    elif kind == "scenario_evidence":
+        malformed["scenarios"].append({
+            "case": "bull",
+            "trigger": "A subsequent issuer filing raises guidance",
+            "invalidator": "The supporting source is withdrawn",
+            "evidence_ids": bad,
+        })
+    else:
+        malformed["affected_tickers"][0]["relation_evidence_ids"] = bad
+    result = compose_scan(["PFE"], packets=[malformed],
+                          issuers=UNIVERSE, as_of=NOW)
+    assert "UNVERIFIED CLAIM" not in str(result)
+    assert result["results"][0]["scenarios"] == []
+
+
+def test_packet_event_reference_and_claim_text_cannot_carry_contact_data():
+    malformed = deepcopy(packet())
+    malformed["what_changed"][0]["text"] = "Contact investor@example.org directly"
+    result = compose_scan(["PFE"], packets=[malformed],
+                          issuers=UNIVERSE, as_of=NOW)
+    assert "investor@example.org" not in str(result)
+    malformed["event_id"] = "invalid/path"
+    result = compose_scan(["PFE"], packets=[malformed],
+                          issuers=UNIVERSE, as_of=NOW)
+    assert result["publication_state"] == "UNAVAILABLE"
+    assert result["event_id"] is None
