@@ -1,0 +1,24 @@
+[build] preflight bundle selected: script_sha256=a8d1db606afed780cf43b5471ef27d127621eb5de843d36d8d310ba62a8a0b23 policy_digest=1f2e1bdcc9b72561afe15a5cd79ed6550162498a43f3b2427da5e0e64d6123d5 runtime_sha256=accd6734be898f9d0393be5772853e6d7bf19aa659a7c47be7116b2bd284b7a7
+[build] source preflight CLEAN: accepted=857a5076fda7984df0c169635b2a399c046c0a9d receipt=/var/lib/mastermind-terminal/release-preflight/20261012T004236Z-857a5076fda7984df0c169635b2a399c046c0a9d-e1d70bc723db239c65433ee6feb3d17bd67b2acaa0c8496f79f4431c140caddd.json policy_digest=1f2e1bdcc9b72561afe15a5cd79ed6550162498a43f3b2427da5e0e64d6123d5
+[build] fetching accepted ref origin/master for exact target admission ...
+[build] accepted ref observed: before=857a5076fda7984df0c169635b2a399c046c0a9d after=8520e5d77e9f0b83973a988cf4f4adff300994cf
+[build] node v20.20.2
+[build] GIT-GATED: deploying accepted target 8520e5d77e9f0b83973a988cf4f4adff300994cf from origin/master (working-tree edits in /opt/terminal/terminal are IGNORED)
+[build] deps unchanged — skipping npm ci
+[build] staging origin/master:terminal in /opt/terminal/.stage.8NKhOx/terminal (+ gated ingest/hub/signal_layer/config/contracts beside it)
+[build] next build (staging) ...
+[build] new build OK: BUILD_ID=build-TfctsWXpff2fKS sha=8520e5d77e9f0b83973a988cf4f4adff300994cf
+[build] swapped .next (previous build kept as .next.bak)
+[build] localhost:3000 -> 307
+[build] health OK
+[build] identity verified: intended=8520e5d77e9f0b83973a988cf4f4adff300994cf marker=8520e5d77e9f0b83973a988cf4f4adff300994cf BUILD_ID=build-TfctsWXpff2fKS
+[build] runtime sync <- origin/master: ingest scripts config contracts hub signal_layer
+[build] hub/ unchanged — quote-hub not restarted
+[build] installed ops/terminal-data -> /usr/local/bin/terminal-data
+[build] installed ops/terminal-build.sh -> /opt/terminal/terminal-build.sh (effective next run)
+[build] syncing /opt/terminal/terminal source <- origin/master:terminal
+[build] bundling ingest/suite_alerts.ts -> ingest/dist/suite_alerts.mjs
+[build] installed ingest/dist/suite_alerts.mjs (suite_event alerts cron)
+[build] bundling terminal/scripts/score_personal_accuracy_entry.ts -> terminal/scripts/dist/score_personal_accuracy.mjs
+[build] installed terminal/scripts/dist/score_personal_accuracy.mjs (personal accuracy nightly)
+[build] DONE — live = origin/master @ 8520e5d77e9f (app + runtime code, git-gated, healthy)

@@ -1,0 +1,607 @@
+{
+  "schema": "press.retained_capital_screen/v1",
+  "operation": "offline_source_qualification_only",
+  "source_revision": "611f88003639aea7272ec30b1b4e7120020e23ea",
+  "observed_at": "2026-10-12T02:40:27.353837+00:00",
+  "ledger_sha256": "6fe2459b360e16f5da1ac7f659feafb0eee3d11bb6c6477ff4fc05d4bf74621e",
+  "engine_sha256": {
+    "engine/cash_runway.py": "c7132eb5be32bf7332394734651749f248fa9977f098f21d85b34590db66ba93",
+    "engine/debt_maturity.py": "b65b53c2e7cb3cac6229b1d5ad48d16825478d757e091b4b2a55797a1e67dd81",
+    "engine/capital_need.py": "f578b44a51b7293884686f89cf39dcff465f207b41ad6ed412c6f6c3166337d7"
+  },
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false,
+  "issuers": {
+    "AAPL": {
+      "cik": "0000320193",
+      "source_path": "data/debt_maturity/cache/CIK0000320193.json",
+      "source_sha256": "0a5acc20e1f8ff47d5debbd4e572f1af777404463deb6e40fb208f4fe4f30b6d",
+      "source_bytes": 92449,
+      "cash_runway": {
+        "schema": "cash_runway.v1",
+        "status": "reported",
+        "cik": "0000320193",
+        "unit": "USD",
+        "currency": "USD",
+        "scope": "issuer_reported",
+        "cash_usd": 35934000000.0,
+        "cash_display": "$35.9B",
+        "ocf_usd": 111482000000.0,
+        "capex_usd": 12715000000.0,
+        "free_cash_flow_usd": 98767000000.0,
+        "monthly_burn_usd": null,
+        "monthly_burn_display": null,
+        "annual_burn_usd": null,
+        "annual_burn_display": null,
+        "runway_months": null,
+        "runway_display": "self_funding",
+        "near_term_cover_pct": 290,
+        "period": {
+          "form": "10-K",
+          "fy": 2025,
+          "fp": "FY",
+          "start": "2024-09-29",
+          "end": "2025-09-27",
+          "filed": "2025-10-31",
+          "accn": "0000320193-25-000079",
+          "label": "FY2025",
+          "stale": false
+        },
+        "as_of": "2026-10-12",
+        "fetched_at": "2026-09-20T09:35:07.756441+00:00"
+      },
+      "capital_need": {
+        "schema": "capital_need.v1",
+        "version": 1,
+        "status": "complete",
+        "issuer": {
+          "issuer_id": null,
+          "security_id": null,
+          "cik": "0000320193",
+          "scope": "issuer"
+        },
+        "as_of": "2026-10-12",
+        "coverage": {
+          "state": "complete",
+          "reasons": []
+        },
+        "reported": {
+          "debt_due": {
+            "state": "observed",
+            "unit": "USD",
+            "currency": "USD",
+            "period": {
+              "accn": "0000320193-25-000079",
+              "end": "2025-09-27",
+              "filed": "2025-10-31",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false
+            },
+            "scope": "issuer_reported",
+            "issuer_debt_outstanding_only": true,
+            "buckets": [
+              {
+                "key": "y1",
+                "value": 12393000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths"
+              },
+              {
+                "key": "y2",
+                "value": 10078000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo"
+              },
+              {
+                "key": "y3",
+                "value": 9300000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree"
+              },
+              {
+                "key": "y4",
+                "value": 5235000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour"
+              },
+              {
+                "key": "y5",
+                "value": 4972000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive"
+              },
+              {
+                "key": "after5",
+                "value": 49303000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalAfterYearFive"
+              }
+            ],
+            "total_reported_usd": 91281000000,
+            "buckets_reported": 6,
+            "ladder_complete": true,
+            "source_schema": "debt_maturity.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-20T09:35:07.756441+00:00"
+            }
+          },
+          "cash": {
+            "state": "observed",
+            "value": 35934000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "basis": "instant",
+            "period": {
+              "accn": "0000320193-25-000079",
+              "end": "2025-09-27",
+              "filed": "2025-10-31",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false
+            },
+            "scope": "issuer_reported",
+            "source_schema": "cash_runway.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-20T09:35:07.756441+00:00"
+            }
+          },
+          "operating_cash_flow": {
+            "state": "observed",
+            "value": 111482000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "basis": "duration",
+            "period": {
+              "accn": "0000320193-25-000079",
+              "end": "2025-09-27",
+              "filed": "2025-10-31",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-09-29"
+            },
+            "scope": "issuer_reported",
+            "source_schema": "cash_runway.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-20T09:35:07.756441+00:00"
+            }
+          },
+          "capex": {
+            "state": "observed",
+            "value": 12715000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "basis": "duration",
+            "period": {
+              "accn": "0000320193-25-000079",
+              "end": "2025-09-27",
+              "filed": "2025-10-31",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-09-29"
+            },
+            "scope": "issuer_reported",
+            "source_schema": "cash_runway.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-20T09:35:07.756441+00:00"
+            }
+          }
+        },
+        "derived": {
+          "free_cash_flow": {
+            "state": "derived",
+            "value": 98767000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "formula": "operating_cash_flow - capex_outflow",
+            "period": {
+              "accn": "0000320193-25-000079",
+              "end": "2025-09-27",
+              "filed": "2025-10-31",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-09-29"
+            }
+          },
+          "scenario_runway": {
+            "state": "scenario",
+            "value_months": null,
+            "unit": null,
+            "display": "self_funding",
+            "annual_burn_usd": 0,
+            "monthly_burn_usd": 0.0,
+            "period": {
+              "accn": "0000320193-25-000079",
+              "end": "2025-09-27",
+              "filed": "2025-10-31",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-09-29"
+            },
+            "assumptions": {
+              "annual_filing_only": true,
+              "no_refinancing_forecast": true,
+              "issuer_debt_payments_included": false
+            },
+            "excludes": [
+              "financing_access",
+              "restricted_cash",
+              "investor_held_par",
+              "valuation",
+              "covenant",
+              "trade_recommendation"
+            ]
+          },
+          "near_term_cash_cover": {
+            "state": "derived",
+            "value_pct": 290,
+            "formula": "cash / y1_debt_due * 100",
+            "period": {
+              "accn": "0000320193-25-000079",
+              "end": "2025-09-27",
+              "filed": "2025-10-31",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-09-29"
+            }
+          },
+          "near_term_cash_gap_usd": 0
+        },
+        "authority": {
+          "class": "context_only",
+          "display_only": true
+        },
+        "source_clock": {
+          "evaluation_as_of": "2026-10-12",
+          "debt_evaluation_as_of": "2026-10-12",
+          "debt_acquisition": {
+            "state": "observed",
+            "fetched_at": "2026-09-20T09:35:07.756441+00:00"
+          },
+          "debt_filed": "2025-10-31",
+          "cash_evaluation_as_of": "2026-10-12",
+          "cash_acquisition": {
+            "state": "observed",
+            "fetched_at": "2026-09-20T09:35:07.756441+00:00"
+          },
+          "cash_filed": "2025-10-31"
+        }
+      },
+      "scope": "retained annual consolidated issuer facts; not current US project execution"
+    },
+    "MU": {
+      "cik": "0000723125",
+      "source_path": "data/debt_maturity/cache/CIK0000723125.json",
+      "source_sha256": "3488789e074a2862f280fd8736c53546c70a664c56fa538a57a6d04e272bd273",
+      "source_bytes": 84683,
+      "cash_runway": {
+        "schema": "cash_runway.v1",
+        "status": "reported",
+        "cik": "0000723125",
+        "unit": "USD",
+        "currency": "USD",
+        "scope": "issuer_reported",
+        "cash_usd": 9642000000.0,
+        "cash_display": "$9.6B",
+        "ocf_usd": 17525000000.0,
+        "capex_usd": 15857000000.0,
+        "free_cash_flow_usd": 1668000000.0,
+        "monthly_burn_usd": null,
+        "monthly_burn_display": null,
+        "annual_burn_usd": null,
+        "annual_burn_display": null,
+        "runway_months": null,
+        "runway_display": "self_funding",
+        "near_term_cover_pct": null,
+        "period": {
+          "form": "10-K",
+          "fy": 2025,
+          "fp": "FY",
+          "start": "2024-08-30",
+          "end": "2025-08-28",
+          "filed": "2025-10-03",
+          "accn": "0000723125-25-000028",
+          "label": "FY2025",
+          "stale": false
+        },
+        "as_of": "2026-10-12",
+        "fetched_at": "2026-09-29T09:08:17.950099+00:00"
+      },
+      "capital_need": {
+        "schema": "capital_need.v1",
+        "version": 1,
+        "status": "complete",
+        "issuer": {
+          "issuer_id": null,
+          "security_id": null,
+          "cik": "0000723125",
+          "scope": "issuer"
+        },
+        "as_of": "2026-10-12",
+        "coverage": {
+          "state": "complete",
+          "reasons": []
+        },
+        "reported": {
+          "debt_due": {
+            "state": "observed",
+            "unit": "USD",
+            "currency": "USD",
+            "period": {
+              "accn": "0000723125-25-000028",
+              "end": "2025-08-28",
+              "filed": "2025-10-03",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false
+            },
+            "scope": "issuer_reported",
+            "issuer_debt_outstanding_only": true,
+            "buckets": [
+              {
+                "key": "y1",
+                "value": 0,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths"
+              },
+              {
+                "key": "y2",
+                "value": 0,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo"
+              },
+              {
+                "key": "y3",
+                "value": 542000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree"
+              },
+              {
+                "key": "y4",
+                "value": 1684000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour"
+              },
+              {
+                "key": "y5",
+                "value": 1955000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive"
+              },
+              {
+                "key": "after5",
+                "value": 7400000000,
+                "unit": "USD",
+                "currency": "USD",
+                "state": "observed",
+                "drop_reason": null,
+                "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalAfterYearFive"
+              }
+            ],
+            "total_reported_usd": 11581000000,
+            "buckets_reported": 6,
+            "ladder_complete": true,
+            "source_schema": "debt_maturity.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-29T09:08:17.950099+00:00"
+            }
+          },
+          "cash": {
+            "state": "observed",
+            "value": 9642000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "basis": "instant",
+            "period": {
+              "accn": "0000723125-25-000028",
+              "end": "2025-08-28",
+              "filed": "2025-10-03",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false
+            },
+            "scope": "issuer_reported",
+            "source_schema": "cash_runway.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-29T09:08:17.950099+00:00"
+            }
+          },
+          "operating_cash_flow": {
+            "state": "observed",
+            "value": 17525000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "basis": "duration",
+            "period": {
+              "accn": "0000723125-25-000028",
+              "end": "2025-08-28",
+              "filed": "2025-10-03",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-08-30"
+            },
+            "scope": "issuer_reported",
+            "source_schema": "cash_runway.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-29T09:08:17.950099+00:00"
+            }
+          },
+          "capex": {
+            "state": "observed",
+            "value": 15857000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "basis": "duration",
+            "period": {
+              "accn": "0000723125-25-000028",
+              "end": "2025-08-28",
+              "filed": "2025-10-03",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-08-30"
+            },
+            "scope": "issuer_reported",
+            "source_schema": "cash_runway.v1",
+            "evaluation_as_of": "2026-10-12",
+            "acquisition": {
+              "state": "observed",
+              "fetched_at": "2026-09-29T09:08:17.950099+00:00"
+            }
+          }
+        },
+        "derived": {
+          "free_cash_flow": {
+            "state": "derived",
+            "value": 1668000000.0,
+            "unit": "USD",
+            "currency": "USD",
+            "formula": "operating_cash_flow - capex_outflow",
+            "period": {
+              "accn": "0000723125-25-000028",
+              "end": "2025-08-28",
+              "filed": "2025-10-03",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-08-30"
+            }
+          },
+          "scenario_runway": {
+            "state": "scenario",
+            "value_months": null,
+            "unit": null,
+            "display": "self_funding",
+            "annual_burn_usd": 0,
+            "monthly_burn_usd": 0.0,
+            "period": {
+              "accn": "0000723125-25-000028",
+              "end": "2025-08-28",
+              "filed": "2025-10-03",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-08-30"
+            },
+            "assumptions": {
+              "annual_filing_only": true,
+              "no_refinancing_forecast": true,
+              "issuer_debt_payments_included": false
+            },
+            "excludes": [
+              "financing_access",
+              "restricted_cash",
+              "investor_held_par",
+              "valuation",
+              "covenant",
+              "trade_recommendation"
+            ]
+          },
+          "near_term_cash_cover": {
+            "state": "not_applicable",
+            "reason": "reported_zero_y1_principal",
+            "value_pct": null,
+            "period": {
+              "accn": "0000723125-25-000028",
+              "end": "2025-08-28",
+              "filed": "2025-10-03",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2025,
+              "stale": false,
+              "start": "2024-08-30"
+            }
+          },
+          "near_term_cash_gap_usd": 0
+        },
+        "authority": {
+          "class": "context_only",
+          "display_only": true
+        },
+        "source_clock": {
+          "evaluation_as_of": "2026-10-12",
+          "debt_evaluation_as_of": "2026-10-12",
+          "debt_acquisition": {
+            "state": "observed",
+            "fetched_at": "2026-09-29T09:08:17.950099+00:00"
+          },
+          "debt_filed": "2025-10-03",
+          "cash_evaluation_as_of": "2026-10-12",
+          "cash_acquisition": {
+            "state": "observed",
+            "fetched_at": "2026-09-29T09:08:17.950099+00:00"
+          },
+          "cash_filed": "2025-10-03"
+        }
+      },
+      "scope": "retained annual consolidated issuer facts; not current US project execution"
+    }
+  }
+}

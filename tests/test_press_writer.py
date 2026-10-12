@@ -451,8 +451,9 @@ def test_a_successful_call_returns_a_draft_and_charges_the_budget(monkeypatch):
     assert st.tokens_used > 0 and st.consecutive_failures == 0
 
 
-def test_default_writer_keeps_the_provider_waterfall(monkeypatch):
-    """The admission cap must not silently degrade the ordinary Press lane."""
+@pytest.mark.parametrize("single_attempt", [False, True])
+def test_writer_selects_default_waterfall_or_single_attempt(monkeypatch, single_attempt):
+    """Opt-in qualification stops after a failed provider; default keeps fallback."""
     import engine.llm_auth as llm_auth
 
     calls = {"first": 0, "second": 0}
@@ -488,11 +489,17 @@ def test_default_writer_keeps_the_provider_waterfall(monkeypatch):
     monkeypatch.setattr(llm_auth, "build_providers", _build)
     monkeypatch.setattr(W, "_model_id", lambda _key: "fake-model")
 
-    result = W.write(F.slot(), F.config(), state=W.RunState(token_budget=10**6))
+    result = W.write(F.slot(), F.config(), state=W.RunState(token_budget=10**6),
+                     single_provider_attempt=single_attempt)
 
-    assert result["ok"] is True
-    assert calls == {"first": 1, "second": 1}
-    assert "client_max_retries" not in provider_cfg
+    if single_attempt:
+        assert result["ok"] is False
+        assert calls == {"first": 1, "second": 0}
+        assert provider_cfg["client_max_retries"] == 0
+    else:
+        assert result["ok"] is True
+        assert calls == {"first": 1, "second": 1}
+        assert "client_max_retries" not in provider_cfg
 
 
 def test_an_unparsable_response_is_a_failure_that_feeds_the_breaker(monkeypatch):

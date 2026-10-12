@@ -1,0 +1,33 @@
+ACCEPT for hash `f109055b0638d34193a50fe296bb2e545ee073184329e793dc1a5d98b1266675`.
+
+## What I verified
+
+**Clock comparison change is minimal and correct.** The only behavioral delta in `plan_whitehouse_candidate` is the inverted equality check on `event_date` vs. `published.date()` (now `event_date > published.date()` instead of `!=`). This:
+
+- Permits `event_date < published.date()` (delayed publication) while still rejecting `event_date > published.date()` (postpublication event).
+- Preserves `published <= now`, `observed <= now`, `observed >= published` ordering unchanged.
+- The window check `(now.date() - event_date).days > desk["window_days"]` is still anchored to `event_date`, so a delayed publication cannot refresh an expired event into a newer window — the comment in the source matches the invariant.
+
+**Source-bound facts unchanged.** Every fact (claims + derived share) is dated with `qualification["event_date"]`, not `published`. The new test's `{fact['dated'] for fact in ...} == {'2026-10-08'}` holds because none of the new tests mutate `event_date`; the date is fixed at the qualification layer.
+
+**JSON output preserved.** `source_clocks.event_date` returns the raw `event_text` string from the qualification; `published_at` is `published.isoformat()` (UTC), so `'2026-10-09T15:05:06+00:00'` round-trips. `allow_stage`, `allow_emit`, and `publication_approved` remain `False` in the returned dict.
+
+**Fail-closed gates preserved.** `_read_bound` hash checks on document, qualification, policy, and body still gate everything before any clock arithmetic. Rights qualification, source identity, URL canonicality, feed match, schema, normalization, body_origin, and `body_truncated is False` are all still checked before the new clock branch.
+
+**New tests are correct.**
+
+- `test_later_publication_retains_reviewed_event_clock`: `event_date=Oct 8`, `published=Oct 9 15:05Z`, default `as_of`. `(Oct 11 - Oct 8).days == 3`, not `> 3`, so it passes. ✓
+- `test_later_publication_cannot_refresh_expired_event`: same as above but `as_of=Oct 12`. `(Oct 12 - Oct 8).days == 4 > 3`, raises with `match='event.*window'`. ✓
+- `test_invalid_or_postpublication_event_date_rejected`: `Oct 9` fails `event_date > published.date()` (original fixture's published is Oct 8); `2026-13-08` passes the `\d{4}-\d{2}-\d{2}` regex but `date.fromisoformat` raises; `20261008`, `None`, and the int all fail the `isinstance(..., str)` gate. All five parametrized cases raise `ValueError`. ✓
+
+**Backward compatibility.** The old equality case `event_date == published.date()` still satisfies `<=`, and the window check on `event_date` is identical to the old window check on `published.date()` in that case. Existing 33 passing tests should remain green.
+
+## Explicit limits
+
+- Read-only review of the supplied source bytes for the stated SHA256; no remote clone, credentials, source writes, model/provider calls, publication, staging, or GitHub changes.
+- No claim of live source admission, production acceptance, or rights clearance — the qualification remains an explicit reviewed, hash-bound input.
+- I did not run the test suite. Test execution and integration are the root's responsibility.
+- Other authors' work is preserved; I touched nothing.
+- No new owner, registry, or authorization architecture demanded.
+
+No blocking findings.
