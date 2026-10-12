@@ -242,12 +242,57 @@ def test_ungated_path_writes_empty_payload_and_leaves_the_board_whole():
         assert payload["gated"] is False
         assert payload["rows"] == []
         assert payload["cards_html"] == ""
+        assert payload["today_cards_html"] == ""
+        assert payload["today_preview"] == 0
+        assert payload["today_total"] == 0
         assert payload["schema"] == "tier_payload.v1"
         assert payload["page"] == "us_stocks"
 
     # and the shell itself renders the whole board when there is no gate
     html = _render_shell(original, None)
     assert _tickers_in(html) == {f"TIC{i}" for i in range(7)}
+
+
+def test_paid_today_shelf_rides_protected_payload_without_widening_shell():
+    """Full-access Today gets six owner-Featured cards, but anonymous bytes stay at 3."""
+    pytest.importorskip("pandas")
+    pytest.importorskip("plotly")
+    from scripts.build_site import (
+        _split_us_board, _us_today_featured_preview, _write_us_payload,
+    )
+
+    rows = _rows_with_stage(9)
+    for row in rows:
+        row["featured"] = True
+    original = {
+        "buy": rows,
+        "eligible": 9,
+        "ranking": {"featured_count": 9},
+        "as_of": "2026-09-30",
+    }
+    shell_su, gate, locked = _split_us_board(original, 3, gated=True)
+    paid_today = _us_today_featured_preview(original, 6)
+    assert [r["ticker"] for r in paid_today] == [f"TIC{i}" for i in range(6)]
+
+    shell_html = _render_shell(shell_su, gate)
+    for tk in ("TIC3", "TIC4", "TIC5"):
+        assert tk not in shell_html, f"{tk} must stay out of anonymous HTML"
+
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        site = Path(td)
+        _write_us_payload(
+            _env(), site, gate, locked_rows=locked,
+            us_standouts=original, top_setups=None, built="2026-10-01 00:00",
+            today_rows=paid_today,
+        )
+        payload = json.loads((site / "premiumdata" / "us_stocks.json").read_text())
+
+    assert payload["today_preview"] == 6
+    assert payload["today_total"] == 9
+    assert _tickers_in(payload["today_cards_html"]) == {f"TIC{i}" for i in range(6)}
+    assert payload["preview"] == 3
+    assert payload["locked"] == 6
 
 
 def test_board_smaller_than_the_preview_cap_ships_whole():
@@ -273,10 +318,10 @@ def test_us_board_gate_cfg_reads_config_yml_and_is_fail_soft():
     import scripts.build_site as bs
 
     cfg = _us_board_gate_cfg()
-    assert cfg == {"gated": True, "preview_rows": 3,
+    assert cfg == {"gated": True, "preview_rows": 3, "today_preview_rows": 6,
                    "panels": True, "panel_preview_rows": 3}, (
         "config.yml us_board_gate must be {gated: true, preview_rows: 3, "
-        "panels: true, panel_preview_rows: 3} — update this test deliberately "
+        "today_preview_rows: 6, panels: true, panel_preview_rows: 3} — update this test deliberately "
         "if that switch changes")
 
     real_config = bs.config
@@ -289,6 +334,7 @@ def test_us_board_gate_cfg_reads_config_yml_and_is_fail_soft():
     try:
         bs.config = _Boom()
         assert _us_board_gate_cfg() == {"gated": False, "preview_rows": 3,
+                                        "today_preview_rows": 6,
                                         "panels": False,
                                         "panel_preview_rows": 3}, (
             "a config read must NEVER fail the render")
@@ -381,6 +427,104 @@ def test_ungated_shell_shows_the_same_true_total_the_gated_shell_does():
 
 # ── controls stay inert while gated ─────────────────────────────────────────
 
+@pytest.mark.parametrize("preview_rows", [0, 1, 2])
+def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(preview_rows):
+    """A live bucket includes buy_soon; its heading cannot clear every entry."""
+    from copy import deepcopy
+    from scripts.build_site import _split_us_board, _us_board_group_items
+
+    rows = [
+        _board_row(ticker="MSCI", stage="live", signal_asof="2026-10-08",
+                   entry_signal={"status": "buy_soon", "headline": "Buy soon — on confirmation"}),
+        _board_row(ticker="ADSK", stage="live", signal_asof="2026-10-08",
+                   entry_signal={"status": "partial", "headline": "Partial entry — half size now"}),
+        _board_row(ticker="ABBV", stage="live", signal_asof="2026-10-08",
+                   entry_signal={"status": "buy_now", "headline": "Buy zone — entry open now"}),
+    ]
+    source = {"buy": rows, "eligible": 3, "as_of": "2026-10-08"}
+    before = deepcopy(source)
+    env = _env()
+    env.autoescape = True  # actual production Environment, not the helper default
+
+    def render_shell(board, gate):
+        vm = _base_vm()
+        vm.update(us_standouts=board, gate=gate)
+        return env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
+
+    def card_bodies(html):
+        # Setup cards are articles containing links. The older CARD_ROW regex
+        # ends at the first nested </a>, so use real complete card bodies here.
+        class Cards(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.depth, self.parts, self.cards = 0, [], []
+
+            def handle_starttag(self, tag, attrs):
+                if tag == "article" and (self.depth or "pvcard" in dict(attrs).get("class", "").split()):
+                    self.depth += 1
+                if self.depth:
+                    self.parts.append(self.get_starttag_text())
+
+            def handle_endtag(self, tag):
+                if self.depth:
+                    self.parts.append(f"</{tag}>")
+                    if tag == "article":
+                        self.depth -= 1
+                        if not self.depth:
+                            self.cards.append(" ".join("".join(self.parts).split()))
+                            self.parts = []
+
+            def handle_data(self, data):
+                if self.depth:
+                    self.parts.append(data)
+
+        parser = Cards()
+        parser.feed(_candidate_card_surface(html))
+        return parser.cards
+
+    whole = render_shell(source, None)
+    shell, gate, locked = _split_us_board(source, preview_rows, gated=True)
+    public = render_shell(shell, gate)
+    tail = env.get_template("_us_board_cards.html.j2").render(
+        items=_us_board_group_items(locked, True, gate["stage_counts"]), sg_any=True,
+        bs_adj=False, xu_allfeat=False, trg_map={}, rw_en="", rw_zh="",
+        setup_as_of=source["as_of"])
+
+    # The same native rows/card bodies reconstruct in source order, including
+    # Near in the protected tail when preview_rows=0. No count/status mutation.
+    whole_cards = card_bodies(whole)
+    public_cards = card_bodies(public)
+    assert whole_cards == public_cards + card_bodies(tail)
+    assert [TICKER_ATTR.search(card).group(1) for card in whole_cards] == ["MSCI", "ADSK", "ABBV"]
+    assert [re.search(r'class="pv-chip"[^>]*>\s*<span class="l-en">([^<]+)', card).group(1)
+            for card in whole_cards] == ["Near", "Buy", "Buy"]
+    assert gate["stage_counts"]["live"] == 3
+    assert len(public_cards) == preview_rows
+    assert source == before
+
+    # With zero preview cards the existing shell has no stage shelf; the
+    # protected tail still carries the full count and the truthful heading.
+    for html in ((whole, public) if preview_rows else (whole,)):
+        assert '<b class="fig">3</b><span><span class="l-en">Active setups</span>' in html
+        assert '<span class="l-zh">活跃形态</span>' in html
+
+    for surface, html in (("whole", whole), ("public", public), ("tail", tail)):
+        headings = re.findall(r'<div class="nb-stage-hd sg-live".*?</div>', html, re.S)
+        for heading in headings:
+            assert '<span class="sh-n">3</span>' in heading
+            assert '<span class="l-en">Active setups</span>' in heading
+            assert '<span class="l-zh">活跃形态</span>' in heading
+            assert "Check each card’s dated entry read" in heading
+            assert "请查看每张卡片的入场判读及日期" in heading
+            assert "Buy and Near" in heading and "Near requires confirmation" in heading
+            assert "买入与临近" in heading and "临近仍需确认" in heading
+            assert "not more likely to win" in heading and "并不代表更容易获胜" in heading
+            assert "entry window is open" not in heading
+            assert "入场窗口" not in heading and "现在可操作" not in heading
+        if surface != "public" or preview_rows:
+            assert len(headings) == 1
+
+
 def test_candidate_stage_shelves_report_full_counts_while_gated():
     """Retired stage buttons became non-interactive aggregate shelves; retain all counts."""
     rows = _rows_with_stage(7)
@@ -391,7 +535,7 @@ def test_candidate_stage_shelves_report_full_counts_while_gated():
     gated_html = _render_shell(shell_su, gate)
     ungated_html = _render_shell({"buy": rows, "eligible": 7}, None)
     pattern = r'<span class="cand-shelf"><b class="fig">(\d+)</b><span><span class="l-en">([^<]+)</span>'
-    expected = [("2", "Live now"), ("2", "Setting up"), ("1", "Ran — don’t chase"),
+    expected = [("2", "Active setups"), ("2", "Setting up"), ("1", "Ran — don’t chase"),
                 ("1", "Basing"), ("1", "Blocked")]
     assert re.findall(pattern, gated_html) == re.findall(pattern, ungated_html) == expected
     assert sum(int(n) for n, _ in expected) == gate["total"]
@@ -837,6 +981,8 @@ def test_fold_controls_are_suppressed_while_gated_and_rebuilt_on_hydrate():
     assert '<button class="lst-more act-more"' not in gated
     assert "function restoreFold(" in gated
     assert "hydratePanels(payload)" in gated
+    assert "function hydrateToday(" in gated
+    assert "hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total)" in gated
 
 
 def test_hydration_targets_every_panel_it_withholds():
@@ -1115,6 +1261,9 @@ def _actual_fresh_board_condition(prior, fresh, *, prior_view=None, fresh_view=N
         "_fresh_su": fresh,
         "_prior_as_of": prior.get("as_of"),
         "_prior_stale": prior.get("staleness") or {},
+        # This candidate-pool fixture holds the independent W3C inputs fixed.
+        # The real predicate now compares them even when the pool is unchanged.
+        "_fresh_w3c_binding": None, "_us_w3c_binding": None, "_fresh_w3c": None,
         "_fresh_candidate_visibility": fresh_view if fresh_view is not None else project_candidate_visibility(fresh),
         "vm": {"us_standouts": prior,
                "us_candidate_visibility": prior_view if prior_view is not None else project_candidate_visibility(prior)},

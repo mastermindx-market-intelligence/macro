@@ -155,6 +155,10 @@ class TestParseQuestionRow:
         assert row["source"] == "4"
         assert row["qa_status"] == "0"
         assert row["fetched_at"] == _TS
+        assert row["answer_sha256"] == ""
+        assert row["answer_first_observed_at"] == ""
+        assert row["answer_clock_quality"] == "not_answered"
+        assert row["answer_change_state"] == "unanswered"
 
     def test_answered_row_keeps_the_company_reply(self):
         row = ci.parse_question_row(_QUESTION_PAGE["rows"][2], _TS)
@@ -164,6 +168,11 @@ class TestParseQuestionRow:
         assert row["q_ts"] == "2026-06-11T14:56:19+08:00"
         # The vendor leaves attachedPubDate null even on answered rows — '' not a guess.
         assert row["a_ts"] == ""
+        assert len(row["answer_sha256"]) == 64
+        assert row["answer_first_observed_at"] == _TS
+        assert row["answer_last_changed_at"] == _TS
+        assert row["answer_clock_quality"] == "observed_exact"
+        assert row["answer_change_state"] == "first_answer"
 
     def test_qa_status_zero_survives_as_text(self):
         # `raw.get(...) or ''` would blank an integer 0; the vendor mixes "0" and 2.
@@ -296,6 +305,98 @@ class TestQaStore:
         assert len(stored) == 1
         assert stored.iloc[0]["fetched_at"] == later      # last observed
         assert stored.iloc[0]["first_seen"] == _TS        # first observed, preserved
+
+    def test_first_answer_gets_exact_observation_clock(self, store):
+        first = ci.parse_question_row(_QUESTION_PAGE["rows"][0], _TS)
+        ci.write_qa([first])
+
+        answered = dict(_QUESTION_PAGE["rows"][0])
+        answered["attachedContent"] = "首次回复。"
+        later = "2026-07-26T12:00:00+00:00"
+        ci.write_qa([ci.parse_question_row(answered, later)])
+
+        row = ci.load_qa().iloc[0]
+        assert row["answer_change_state"] == "first_answer"
+        assert row["answer_first_observed_at"] == later
+        assert row["answer_last_changed_at"] == later
+        assert row["answer_clock_quality"] == "observed_exact"
+        assert row["prior_answer_sha256"] == ""
+        assert row["answer_sha256"] == ci._answer_digest("首次回复。")
+
+    def test_unchanged_answer_does_not_move_answer_clocks(self, store):
+        raw = dict(_QUESTION_PAGE["rows"][2])
+        first_at = "2026-07-25T01:00:00+00:00"
+        second_at = "2026-07-26T01:00:00+00:00"
+        ci.write_qa([ci.parse_question_row(raw, first_at)])
+        ci.write_qa([ci.parse_question_row(raw, second_at)])
+
+        row = ci.load_qa().iloc[0]
+        assert row["fetched_at"] == second_at
+        assert row["answer_change_state"] == "unchanged"
+        assert row["answer_first_observed_at"] == first_at
+        assert row["answer_last_changed_at"] == first_at
+        assert row["prior_answer_sha256"] == ""
+
+    def test_revised_answer_preserves_first_clock_and_links_prior_hash(self, store):
+        raw = dict(_QUESTION_PAGE["rows"][2])
+        first_at = "2026-07-25T01:00:00+00:00"
+        revised_at = "2026-07-27T01:00:00+00:00"
+        ci.write_qa([ci.parse_question_row(raw, first_at)])
+        first_hash = ci._answer_digest(raw["attachedContent"])
+
+        revised = dict(raw)
+        revised["attachedContent"] = raw["attachedContent"] + " 补充说明。"
+        ci.write_qa([ci.parse_question_row(revised, revised_at)])
+
+        row = ci.load_qa().iloc[0]
+        assert row["answer_change_state"] == "revised"
+        assert row["answer_first_observed_at"] == first_at
+        assert row["answer_last_changed_at"] == revised_at
+        assert row["prior_answer_sha256"] == first_hash
+        assert row["answer_sha256"] == ci._answer_digest(revised["attachedContent"])
+
+    def test_answer_disappearing_is_not_relabelled_unanswered_silence(self, store):
+        raw = dict(_QUESTION_PAGE["rows"][2])
+        first_at = "2026-07-25T01:00:00+00:00"
+        missing_at = "2026-07-28T01:00:00+00:00"
+        ci.write_qa([ci.parse_question_row(raw, first_at)])
+        old_hash = ci._answer_digest(raw["attachedContent"])
+
+        missing = dict(raw)
+        missing["attachedContent"] = None
+        missing["attachedPubDate"] = None
+        ci.write_qa([ci.parse_question_row(missing, missing_at)])
+
+        row = ci.load_qa().iloc[0]
+        assert not bool(row["answered"])
+        assert row["answer_change_state"] == "removed_or_unavailable"
+        assert row["answer_first_observed_at"] == first_at
+        assert row["answer_last_changed_at"] == missing_at
+        assert row["prior_answer_sha256"] == old_hash
+        assert row["answer_sha256"] == ""
+        # No "silence" enum is minted from source absence.
+        assert "silence" not in row["answer_change_state"]
+
+    def test_legacy_answer_clock_is_typed_as_upper_bound(self, store):
+        # Simulate a pre-CIE-08 row missing the additive answer metadata columns.
+        base = ci.parse_question_row(_QUESTION_PAGE["rows"][2], _TS)
+        for col in (
+            "answer_sha256", "prior_answer_sha256", "answer_first_observed_at",
+            "answer_last_changed_at", "answer_clock_quality", "answer_change_state",
+        ):
+            base.pop(col, None)
+        legacy_cols = [c for c in ci._QA_COLUMNS if c not in {
+            "answer_sha256", "prior_answer_sha256", "answer_first_observed_at",
+            "answer_last_changed_at", "answer_clock_quality", "answer_change_state",
+        }]
+        pd.DataFrame([base]).reindex(columns=legacy_cols).to_parquet(ci._qa_path(), index=False)
+
+        row = ci.load_qa().iloc[0]
+        assert len(row["answer_sha256"]) == 64
+        assert row["answer_first_observed_at"] == _TS
+        assert row["answer_last_changed_at"] == _TS
+        assert row["answer_clock_quality"] == "legacy_upper_bound"
+        assert row["answer_change_state"] == "legacy_answer"
 
     def test_fixture_pages_are_newest_first(self):
         # S7: the single-page pageNum=1 pull relies on the venue serving newest-

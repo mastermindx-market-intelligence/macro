@@ -115,6 +115,14 @@ class CandidateEpisodeStoreSnapshot:
     generation: ValidatedCandidateEpisodeGeneration
 
 
+@dataclass(frozen=True)
+class CandidateEpisodeByteToken:
+    """Exact current storage identity; byte integrity alone is not semantic proof."""
+    generation_id: str
+    manifest_sha256: str
+    head_sha256: str
+
+
 def canonical_json(value: object) -> str:
     """Return canonical UTF-8 JSON text, refusing non-finite values."""
     try:
@@ -361,10 +369,10 @@ def validate_events(events: Sequence[Mapping[str, object]]) -> list[dict[str, ob
             correction_of=event["correction_of"],  # type: ignore[arg-type]
             payload=event["payload"],  # type: ignore[arg-type]
         )
-        if canonical_json(event) != canonical_json(rebuilt):
+        encoded = canonical_json(rebuilt)
+        if canonical_json(event) != encoded:
             raise EpisodeContractError("event content address or bytes are invalid")
         prior = seen.get(rebuilt["event_id"])
-        encoded = canonical_json(rebuilt)
         if prior is not None:
             if prior != encoded:
                 raise EpisodeContractError("semantic event identity collision")
@@ -522,7 +530,12 @@ def _validate_correction_patch(row: Mapping[str, object], patch: Mapping[str, ob
 
 def project_events(events: Sequence[Mapping[str, object]]) -> list[dict[str, object]]:
     """Replay immutable events into the canonical current episode projection."""
-    ordered = sorted(validate_events(events), key=_event_order)
+    return _project_validated_events(validate_events(events))
+
+
+def _project_validated_events(events: Sequence[dict[str, object]]) -> list[dict[str, object]]:
+    """Replay envelopes validated in this call; retain every causal/state check."""
+    ordered = sorted(events, key=_event_order)
     rows: dict[str, dict[str, object]] = {}
     relations: dict[str, Mapping[str, object]] = {}
     retracted: set[str] = set()
@@ -614,11 +627,14 @@ def project_events(events: Sequence[Mapping[str, object]]) -> list[dict[str, obj
         relation = relations[target]
         if relation["event_type"] == "OPENED":
             rows.pop(str(relation["episode_id"]), None)
+    # Build after all causal replay/retractions. Dict insertion order preserves
+    # the old per-row relation order, including equal-clock observation ties.
+    by_episode: dict[str, list[Mapping[str, object]]] = {}
+    for event_id, event in relations.items():
+        if event_id not in retracted:
+            by_episode.setdefault(str(event["episode_id"]), []).append(event)
     for row in rows.values():
-        related = [
-            event for event_id, event in relations.items()
-            if event_id not in retracted and str(event["episode_id"]) == row["episode_id"]
-        ]
+        related = by_episode.get(str(row["episode_id"]), ())
         observed = [event for event in related if event["event_type"] == "OBSERVED"]
         experts = [event for event in related if event["event_type"] == "EXPERT_EVENT_ATTACHED"]
         row["observation_count"] = len(observed)
@@ -690,14 +706,23 @@ def validate_ordinary_source_ownership(
     """Require one immutable event-or-suppression owner per source key."""
     validated_events = validate_events(events)
     validated_suppressions = validate_suppressions(suppressions)
+    _assert_validated_source_ownership(validated_events, validated_suppressions)
+    return validated_events, validated_suppressions
+
+
+def _assert_validated_source_ownership(
+    events: Sequence[Mapping[str, object]],
+    suppressions: Sequence[Mapping[str, object]],
+) -> None:
+    """Check ownership only after this call has validated both ledger envelopes."""
     event_keys: set[tuple[str, str, str]] = set()
-    for event in validated_events:
+    for event in events:
         source_key = _ordinary_source_key(event)
         if source_key in event_keys:
             raise EpisodeContractError("duplicate immutable source key in event ledger")
         event_keys.add(source_key)
     suppression_keys: set[tuple[str, str, str]] = set()
-    for suppression in validated_suppressions:
+    for suppression in suppressions:
         source_key = _ordinary_source_key(suppression)
         if source_key in suppression_keys:
             raise EpisodeContractError("duplicate immutable suppression source key")
@@ -706,7 +731,6 @@ def validate_ordinary_source_ownership(
                 "immutable source key has both event and suppression owners"
             )
         suppression_keys.add(source_key)
-    return validated_events, validated_suppressions
 
 
 def _merge_events(existing: Sequence[Mapping[str, object]], additions: Sequence[Mapping[str, object]]) -> tuple[tuple[dict[str, object], ...], tuple[dict[str, object], ...]]:
@@ -1188,7 +1212,18 @@ def _load_partitioned_events(directory: Path) -> list[dict[str, object]]:
         if any(str(row["recorded_at"])[:7] != path.stem for row in validated):
             raise EpisodeContractError("event partition filename month disagrees with recorded_at")
         rows.extend(validated)
-    validate_events(rows)
+    # Each partition's envelopes were checked above. Only identity uniqueness
+    # remains to be checked across partitions; recorded_at may change month
+    # without changing a semantic event address.
+    seen: dict[str, dict[str, object]] = {}
+    for row in rows:
+        event_id = str(row["event_id"])
+        prior = seen.get(event_id)
+        if prior is not None:
+            if canonical_json(prior) != canonical_json(row):
+                raise EpisodeContractError("semantic event identity collision")
+            raise EpisodeContractError("duplicate immutable event")
+        seen[event_id] = row
     return sorted(rows, key=_event_order)
 
 
@@ -1209,7 +1244,12 @@ def _load_partitioned_suppressions(directory: Path) -> list[dict[str, object]]:
         if any(str(row["recorded_at"])[:7] != path.stem for row in validated):
             raise EpisodeContractError("suppression partition filename month disagrees with recorded_at")
         rows.extend(validated)
-    validate_suppressions(rows)
+    seen: set[str] = set()
+    for row in rows:
+        suppression_id = str(row["suppression_id"])
+        if suppression_id in seen:
+            raise EpisodeContractError("duplicate immutable suppression")
+        seen.add(suppression_id)
     return sorted(rows, key=lambda row: str(row["suppression_id"]))
 
 
@@ -1409,7 +1449,10 @@ def validate_candidate_episode_generation_payload(directory: Path) -> ValidatedC
     _validate_generation_file_set(generation, relative_files)
     events = _load_partitioned_events(generation / "events")
     suppressions = _load_partitioned_suppressions(generation / "suppressions")
-    validate_ordinary_source_ownership(events, suppressions)
+    # The private loaders fully validate every envelope on every read. Reuse
+    # only those request-local values for ownership and replay; public entry
+    # points continue to validate untrusted callers in full.
+    _assert_validated_source_ownership(events, suppressions)
 
     all_path = generation / "all_candidates.json"
     try:
@@ -1424,7 +1467,7 @@ def validate_candidate_episode_generation_payload(directory: Path) -> ValidatedC
     if set(projection) != {"schema", "definition_era", "generated_from", "coverage", "episodes"}:
         raise EpisodeContractError("All Candidates envelope is invalid")
     rows = load_all_candidates(all_path, payload=all_bytes)
-    if canonical_json(project_events(events)) != canonical_json(rows):
+    if canonical_json(_project_validated_events(events)) != canonical_json(rows):
         raise EpisodeContractError("All Candidates rows differ from immutable event ledger projection")
     ledger_hash = _sha_receipt(canonical_json(tuple(events)).encode("utf-8"))
     if projection.get("generated_from") != {
@@ -1471,11 +1514,11 @@ def validate_candidate_episode_generation_payload(directory: Path) -> ValidatedC
     )
 
 
-def validate_candidate_episode_generation(
+def _attest_candidate_episode_generation_files(
     directory: Path, *, expected_generation_id: str | None = None,
     expected_manifest_sha256: str | None = None,
-) -> ValidatedCandidateEpisodeGeneration:
-    """Validate one complete manifest-addressed generation through the shared canonical path."""
+) -> tuple[str, str]:
+    """Re-read and hash every actual file through the canonical B1 integrity owner."""
     generation = Path(directory)
     manifest_path = generation / "manifest.json"
     try:
@@ -1528,11 +1571,23 @@ def validate_candidate_episode_generation(
         payload = actual_files[relative].read_bytes()
         if descriptor["sha256"] != _sha_receipt(payload) or descriptor["bytes"] != len(payload):
             raise EpisodeContractError("generation manifest file hash is invalid")
-    return validate_candidate_episode_generation_payload(generation)
+    return generation_id, _sha_receipt(manifest_bytes)
 
 
-def load_candidate_episode_store_snapshot(root: Path) -> CandidateEpisodeStoreSnapshot:
-    """Resolve one HEAD byte snapshot and fully validate exactly its named generation."""
+def validate_candidate_episode_generation(
+    directory: Path, *, expected_generation_id: str | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> ValidatedCandidateEpisodeGeneration:
+    """Validate byte integrity and all semantics on every ordinary B1 read."""
+    _attest_candidate_episode_generation_files(
+        directory, expected_generation_id=expected_generation_id,
+        expected_manifest_sha256=expected_manifest_sha256,
+    )
+    return validate_candidate_episode_generation_payload(Path(directory))
+
+
+def _resolve_candidate_episode_head(root: Path) -> tuple[Path, CandidateEpisodeByteToken]:
+    """Resolve and validate the current canonical HEAD without accepting its payload."""
     store = Path(root)
     head_path = store / "HEAD.json"
     head = _canonical_file(head_path)
@@ -1551,12 +1606,35 @@ def load_candidate_episode_store_snapshot(root: Path) -> CandidateEpisodeStoreSn
     generation = store / "generations" / generation_id
     if not generation.is_dir():
         raise EpisodeContractError("HEAD references a missing generation")
+    return generation, CandidateEpisodeByteToken(
+        generation_id, manifest_sha256, str(head["content_sha256"]),
+    )
+
+
+def attest_candidate_episode_store_bytes(root: Path) -> CandidateEpisodeByteToken:
+    """Reattest HEAD, manifest and every actual file, without semantic replay.
+
+    This token can only identify bytes. A consumer may reuse a compact derivation
+    only after those exact bytes have separately passed the full snapshot reader.
+    No HEAD/mtime/size-only shortcut, retained file buffer or process cache exists here.
+    """
+    generation, token = _resolve_candidate_episode_head(root)
+    _attest_candidate_episode_generation_files(
+        generation, expected_generation_id=token.generation_id,
+        expected_manifest_sha256=token.manifest_sha256,
+    )
+    return token
+
+
+def load_candidate_episode_store_snapshot(root: Path) -> CandidateEpisodeStoreSnapshot:
+    """Resolve one HEAD byte snapshot and fully validate exactly its named generation."""
+    generation, token = _resolve_candidate_episode_head(root)
     validated = validate_candidate_episode_generation(
         generation,
-        expected_generation_id=generation_id,
-        expected_manifest_sha256=manifest_sha256,
+        expected_generation_id=token.generation_id,
+        expected_manifest_sha256=token.manifest_sha256,
     )
-    return CandidateEpisodeStoreSnapshot(generation_id=generation_id, generation=validated)
+    return CandidateEpisodeStoreSnapshot(generation_id=token.generation_id, generation=validated)
 
 
 def load_candidate_episode_store(root: Path) -> list[dict[str, object]]:

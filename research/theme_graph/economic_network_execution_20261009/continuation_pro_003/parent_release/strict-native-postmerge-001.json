@@ -1,0 +1,140 @@
+{
+  "blocked_import_attempts": [],
+  "blocked_side_effect_attempts": [],
+  "evidence_class": "LOCAL_NATIVE_REPLAY",
+  "filesystem_mutations_blocked_after_existing_LocalStore_constructor": true,
+  "five_complete_outputs_equal": true,
+  "forbidden_acquisition_imports": [
+    "collectors.sec_document_spine",
+    "requests",
+    "urllib3"
+  ],
+  "historical_capture_provenance": {
+    "capture_code_head": "037a23cf0fb232012bcb1a85f9cb714973782194",
+    "capture_code_sha256": {
+      "collectors/edgar_forensics.py": "8e153f35b1d9f243790c2df16749207243168c42676802f1f0e5a886537a9a29",
+      "collectors/sec_document_spine.py": "50f5e14533069fa061bcc2c721e461633acf7bacc7510ce987bbb296e27b0b35",
+      "engine/company_intelligence/pinned_relationship_candidates.py": "1000497dcfef316f1ad0726c08bcba7ba12dbe305175887e191d6f96512649bd",
+      "engine/fundamental_forensics/filing_attestation.py": "5feb4f77614c4b90df31c65527f866caea3e6598be006574498d8551c8dd5645",
+      "engine/fundamental_forensics/sec_document_spine.py": "7a329e58bc975205d2b55f7ffb2c13a59298636bc1592aa25253d4becd1a1795",
+      "engine/fundamental_forensics/source_sync.py": "73ddb5ac6ed910b1f4d9a7d76a944063f3251011e7b2af96d7fbb8306f46776a",
+      "engine/research_vault/r2_store.py": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+    },
+    "capture_sha256": "3671954fc8d02dc2b58e68e705e249c6919ddaacfd8fad1a5e5af7a6620901b1",
+    "historical_code_hashes_reclassified_as_current": false,
+    "saved_witness_sha256": "bd3edbbe0c4fef9b85657b8aaf07b3f65cf271828ec8982eb8393ed29dc3a5cd",
+    "witness_candidate_module_sha256": "27543f4a37202820f34071607b5cbdb1e48a04c30577a876ba1f803e1c41891d",
+    "witness_code_head": "037a23cf0fb232012bcb1a85f9cb714973782194",
+    "witness_pinned_adapter_sha256": "1000497dcfef316f1ad0726c08bcba7ba12dbe305175887e191d6f96512649bd"
+  },
+  "historical_system_replay": false,
+  "latest_pointer_absent": true,
+  "native_fact_admission": false,
+  "network_and_process_creation_blocked": true,
+  "observed_at": "2026-10-09T10:55:02.931499+00:00",
+  "outcomes": {
+    "candidate_metadata_mismatch": {
+      "complete_output_sha256": "6e92bb9c1cbc3e7481e35717ecff297aa6808d741db04b2f07a88ef8d5b84282",
+      "inspection_status": "REFUSED",
+      "preserved_boundary_leaf_counts": {
+        "false": 5,
+        "null": 3
+      },
+      "refusal_code": "CANDIDATE_SOURCE_METADATA_MISMATCH"
+    },
+    "current": {
+      "complete_output_sha256": "32181f6337bad4bd8c192af77f5a7ae9c9365950a1ff426715f3b46c89323878",
+      "inspection_status": "INSPECTABLE",
+      "preserved_boundary_leaf_counts": {
+        "false": 13,
+        "null": 19
+      },
+      "refusal_code": null
+    },
+    "historical": {
+      "complete_output_sha256": "f6258f158845cab2db7a0ab52da71582fdcc8c14872a9f7a2a5f3331e783df9b",
+      "inspection_status": "REFUSED",
+      "preserved_boundary_leaf_counts": {
+        "false": 11,
+        "null": 6
+      },
+      "refusal_code": "AS_OF_REGISTRY_REQUIRED"
+    },
+    "missing_document_selector": {
+      "complete_output_sha256": "dc1f96e3495c82525c07783e9a6bfbdb7cd58a8616b3b7dfcba73ff7f6192bed",
+      "inspection_status": "REFUSED",
+      "preserved_boundary_leaf_counts": {
+        "false": 5,
+        "null": 3
+      },
+      "refusal_code": "DOCUMENT_NOT_UNIQUELY_SELECTED"
+    },
+    "unsupported_source_labels": {
+      "complete_output_sha256": "fb4ed650132012348ffaccf43ccd843d864775306e083f184fca667f10b23baa",
+      "inspection_status": "REFUSED",
+      "preserved_boundary_leaf_counts": {
+        "false": 11,
+        "null": 6
+      },
+      "refusal_code": "SOURCE_LOCAL_LABEL_UNSUPPORTED"
+    }
+  },
+  "predictive_authority": false,
+  "prior_strict_failure_reclassified": false,
+  "production_owner_custody": false,
+  "replay_code_binding": {
+    "accepted_merge_sha_from_principal_receipt": "c63a92576a43247bb8c43dc275f827b8871fda3b",
+    "code_root": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-network-native-reader-20261009-pro-002",
+    "current_code_sha256_manifest_digest": "db32819f0436c8bd1cec92b9f74a660a9ce6613b215a86f90e6756f60d19bc9a",
+    "first_party_bytecode_cache_used": false,
+    "first_party_sources_compiled_from_verified_bytes": [
+      "engine/__init__.py",
+      "engine/company_intelligence/__init__.py",
+      "engine/company_intelligence/contracts.py",
+      "engine/company_intelligence/health.py",
+      "engine/company_intelligence/pinned_relationship_candidates.py",
+      "engine/company_intelligence/relationship_candidates.py",
+      "engine/company_intelligence/views.py",
+      "engine/earnings_release/__init__.py",
+      "engine/earnings_release/receipts.py",
+      "engine/fundamental_forensics/__init__.py",
+      "engine/fundamental_forensics/detectors.py",
+      "engine/fundamental_forensics/disclosure_diff.py",
+      "engine/fundamental_forensics/filing_attestation.py",
+      "engine/fundamental_forensics/filing_package.py",
+      "engine/fundamental_forensics/ixbrl_extraction.py",
+      "engine/fundamental_forensics/models.py",
+      "engine/fundamental_forensics/normalize.py",
+      "engine/fundamental_forensics/pipeline.py",
+      "engine/fundamental_forensics/sec_companyfacts.py",
+      "engine/fundamental_forensics/sec_document_spine.py",
+      "engine/fundamental_forensics/source_sync.py",
+      "engine/research_vault/__init__.py",
+      "engine/research_vault/r2_store.py",
+      "lib/__init__.py",
+      "lib/dataos/__init__.py",
+      "lib/dataos/identity.py",
+      "lib/dataos/nulls.py",
+      "lib/dataos/price.py",
+      "lib/dataos/quality.py",
+      "lib/dataos/registry.py",
+      "lib/dataos/temporal.py"
+    ],
+    "fresh_upstream_sha_from_principal_receipt": "c63a92576a43247bb8c43dc275f827b8871fda3b",
+    "github_merge_independently_verified_by_this_harness": false,
+    "locally_verified_code_paths": 93,
+    "principal_receipt_schema": "economic_network.accepted_source_delivery.v1",
+    "principal_verification_receipt_sha256": "9cd19b0ba187a7785c5bd2b793c6b3d5ad597fe3c5d7074caf5bb5d9a1d447cb",
+    "reviewed_head_from_principal_receipt": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+    "third_party_runtime_fully_pinned": false,
+    "verified_at_from_principal_receipt": "2026-10-09T10:53:10.705469+00:00"
+  },
+  "rights_admission": false,
+  "schema": "economic_network.repaired_reader_local_native_replay.v1",
+  "served_product_proof": false,
+  "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+  "source_phase": "POSTMERGE_ACCEPTED_SOURCE",
+  "status": "PASS",
+  "task_store_directories_unchanged": true,
+  "tracked_files_unchanged": 104
+}

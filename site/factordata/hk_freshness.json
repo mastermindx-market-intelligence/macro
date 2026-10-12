@@ -1,44 +1,62 @@
 {
-  "checked_at": "2026-09-30T20:10:55+00:00",
-  "expected_session": "2026-09-30",
+  "checked_at": "2026-10-11T23:03:28+00:00",
+  "expected_session": "2026-10-09",
   "stores": {
     "cache": {
-      "asof": "2026-09-30",
+      "asof": "2026-10-09",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "bellwether": {
-      "asof": "2026-09-30",
+      "asof": "2026-10-09",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "standouts": {
-      "asof": "2026-09-30",
+      "asof": "2026-10-09",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "regime": {
-      "asof": "2026-09-30",
+      "asof": "2026-10-09",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "southbound": {
-      "asof": "2026-09-29",
-      "lag_days": 1,
-      "state": "fresh"
+      "asof": "2026-10-09",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true,
+      "expected_session": "2026-10-09"
     }
   },
   "coherence": {
     "ok": true,
-    "standouts_asof": "2026-09-30",
-    "regime_date": "2026-09-30",
+    "standouts_asof": "2026-10-09",
+    "regime_date": "2026-10-09",
     "gap_sessions": 0,
+    "calendar_verified": true,
+    "data_state": "current",
     "note": null
   },
   "regression": {
     "ok": true,
-    "prev_cache_max": "2026-09-30",
-    "curr_cache_max": "2026-09-30",
+    "prev_cache_max": "2026-10-09",
+    "curr_cache_max": "2026-10-09",
     "note": null
   },
   "verdict": "ok",

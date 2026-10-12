@@ -1,0 +1,1634 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority_ceiling",
+    "can_rank",
+    "can_size",
+    "can_gate",
+    "can_originate_signal",
+    "can_add_candidates",
+    "can_escalate",
+    "source_selection",
+    "selection_sha256",
+    "selected",
+    "concepts",
+    "coverage",
+    "availability",
+    "version",
+    "consequence_link",
+    "limitations",
+    "explanation_id"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mastermind.selection_cohort_read.v1"
+    },
+    "authority_ceiling": {
+      "const": "research_internal_only"
+    },
+    "can_rank": {
+      "const": false
+    },
+    "can_size": {
+      "const": false
+    },
+    "can_gate": {
+      "const": false
+    },
+    "can_originate_signal": {
+      "const": false
+    },
+    "can_add_candidates": {
+      "const": false
+    },
+    "can_escalate": {
+      "const": false
+    },
+    "source_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "source_schema",
+        "source_ref",
+        "generation_id",
+        "cohort_scope",
+        "source_sha256",
+        "effective_at",
+        "selected_at",
+        "known_at",
+        "n_selected",
+        "rows",
+        "rows_sha256",
+        "ordered_identity_sha256",
+        "ordered_reasons_sha256"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_schema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cohort_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "effective_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "selected_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "known_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "n_selected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "selection_id",
+              "original_identity",
+              "original_reasons",
+              "source_row"
+            ],
+            "properties": {
+              "selection_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "original_identity": {},
+              "original_reasons": {},
+              "source_row": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "rows_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "ordered_identity_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "ordered_reasons_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "selection_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "selected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source",
+          "security_id",
+          "identity_receipt",
+          "membership_receipt",
+          "concept_node_ids",
+          "reason_codes",
+          "membership_summary"
+        ],
+        "properties": {
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "selection_id",
+              "original_identity",
+              "original_reasons",
+              "source_row"
+            ],
+            "properties": {
+              "selection_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "original_identity": {},
+              "original_reasons": {},
+              "source_row": {
+                "type": "object"
+              }
+            }
+          },
+          "security_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^SEC:.+"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "identity_receipt": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "status",
+                  "qualification",
+                  "owner_schema",
+                  "receipt_ref",
+                  "generation_id",
+                  "selection_id",
+                  "receipt_sha256",
+                  "original_identity_sha256",
+                  "selection_sha256",
+                  "effective_at",
+                  "known_at",
+                  "available_at",
+                  "valid_until",
+                  "security_id",
+                  "graph_node_ids",
+                  "historical_identity_claim"
+                ],
+                "properties": {
+                  "status": {
+                    "const": "OK"
+                  },
+                  "qualification": {
+                    "const": "EXACT_PIT_QUERY"
+                  },
+                  "owner_schema": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "receipt_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "generation_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selection_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "receipt_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "original_identity_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "selection_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "effective_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                  },
+                  "known_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                  },
+                  "available_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                  },
+                  "valid_until": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "security_id": {
+                    "type": "string",
+                    "pattern": "^SEC:[^\\s]+$"
+                  },
+                  "graph_node_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^co:[^\\s]+$"
+                    },
+                    "uniqueItems": true,
+                    "minItems": 1
+                  },
+                  "historical_identity_claim": {
+                    "const": true
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "membership_receipt": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "status",
+                  "qualification",
+                  "owner_schema",
+                  "receipt_ref",
+                  "generation_id",
+                  "selection_id",
+                  "receipt_sha256",
+                  "original_identity_sha256",
+                  "selection_sha256",
+                  "effective_at",
+                  "known_at",
+                  "available_at",
+                  "valid_until",
+                  "security_id",
+                  "complete",
+                  "identity_receipt_ref",
+                  "identity_receipt_sha256",
+                  "observed_count"
+                ],
+                "properties": {
+                  "status": {
+                    "const": "OK"
+                  },
+                  "qualification": {
+                    "const": "EXACT_PIT_QUERY"
+                  },
+                  "owner_schema": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "receipt_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "generation_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selection_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "receipt_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "original_identity_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "selection_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "effective_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                  },
+                  "known_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                  },
+                  "available_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                  },
+                  "valid_until": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "security_id": {
+                    "type": "string",
+                    "pattern": "^SEC:[^\\s]+$"
+                  },
+                  "complete": {
+                    "const": true
+                  },
+                  "identity_receipt_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "identity_receipt_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "observed_count": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "concept_node_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "reason_codes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "membership_summary": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "duplicate_evidence_count",
+              "rejected_membership_reasons",
+              "rejected_rights_reasons"
+            ],
+            "properties": {
+              "duplicate_evidence_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "rejected_membership_reasons": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "MEMBERSHIP_IDENTITY_MISMATCH",
+                    "INVALID_CONCEPT_IDENTITY_OR_CANONICAL_REFERENCES",
+                    "FUTURE_MEMBERSHIP",
+                    "STALE_MEMBERSHIP",
+                    "LATE_KNOWN_MEMBERSHIP",
+                    "IMPRECISE_OR_MISSING_MEMBERSHIP_PROVENANCE"
+                  ]
+                }
+              },
+              "rejected_rights_reasons": {
+                "type": "array",
+                "items": {
+                  "const": "RIGHTS_UNAVAILABLE"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "concepts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "node_id",
+          "kind",
+          "source_family",
+          "canonical_node_ids",
+          "selected_ids",
+          "security_ids",
+          "evidence",
+          "n_selected_in_concept",
+          "fraction_of_selected",
+          "state",
+          "state_reason",
+          "node_kind",
+          "native_id",
+          "canonical_nodes"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "pattern": "^(?:ltheme:(?:ths|finviz):[A-Za-z0-9_.#-]+|theme:[^\\s:]+)$"
+          },
+          "kind": {
+            "enum": [
+              "local_theme",
+              "canonical_theme"
+            ]
+          },
+          "source_family": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ths",
+                  "finviz"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "canonical_node_ids": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^theme:[^\\s:]+$"
+                },
+                "uniqueItems": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "selected_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "security_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "selection_id",
+                "security_id",
+                "member_node_id",
+                "evidence_ref",
+                "evidence_sha256",
+                "rights_receipt_ref"
+              ],
+              "properties": {
+                "selection_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "security_id": {
+                  "type": "string",
+                  "pattern": "^SEC:[^\\s]+$"
+                },
+                "member_node_id": {
+                  "type": "string",
+                  "pattern": "^co:[^\\s]+$"
+                },
+                "evidence_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "evidence_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "rights_receipt_ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "minItems": 1
+          },
+          "n_selected_in_concept": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "fraction_of_selected": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "state": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/owner_state_read_contract"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state_reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "node_kind": {
+            "enum": [
+              "local_theme",
+              "theme"
+            ]
+          },
+          "native_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "canonical_nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "node_id",
+                "kind",
+                "receipt_ref",
+                "receipt_sha256"
+              ],
+              "properties": {
+                "node_id": {
+                  "type": "string",
+                  "pattern": "^theme:[^\\s:]+$"
+                },
+                "kind": {
+                  "const": "theme"
+                },
+                "receipt_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "receipt_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n_selected",
+        "n_identity_qualified",
+        "n_concepts",
+        "n_shared_concepts",
+        "missing_identity",
+        "missing_membership",
+        "missing_rights",
+        "missing_state",
+        "no_recorded_membership",
+        "multi_theme",
+        "unmapped_local"
+      ],
+      "properties": {
+        "n_selected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_identity_qualified": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_concepts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_shared_concepts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_identity": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "missing_membership": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "missing_rights": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "missing_state": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "no_recorded_membership": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "multi_theme": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "unmapped_local": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "overlap"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "EMPTY_SELECTION",
+            "PARTIAL",
+            "OK"
+          ]
+        },
+        "overlap": {
+          "enum": [
+            "EMPTY_SELECTION",
+            "OBSERVED_SHARED_CONCEPTS",
+            "UNDETERMINED",
+            "NO_MEANINGFUL_OVERLAP"
+          ]
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "corrects",
+        "basis"
+      ],
+      "properties": {
+        "number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "corrects": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis": {
+          "const": "AS_KNOWN_AT_SELECTION"
+        }
+      }
+    },
+    "consequence_link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "status",
+        "episode_ref"
+      ],
+      "properties": {
+        "owner": {
+          "const": "Evaluation OS/QLedger"
+        },
+        "status": {
+          "enum": [
+            "UNREGISTERED",
+            "OWNER_REFERENCE_SUPPLIED"
+          ]
+        },
+        "episode_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "explanation_id": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://macro.local/contracts/theme_graph/selection_cohort_read.v1.schema.json",
+  "title": "Immutable owner selection cohort explanation (W3C)",
+  "description": "Pure internal-only compiler output. Original owner rows are opaque and preserved verbatim, including incumbent owner fields. Closed W3C fields confer no selection or trading authority. Inputs require precise source-owner cutoff and qualified PIT identity, membership, rights and state receipts. Natural events and consumer/consequence wiring are separate acceptance obligations.",
+  "$defs": {
+    "owner_state_read_contract": {
+      "$id": "https://mastermind-x.com/contracts/theme_graph/theme_state.v1.schema.json?read-receipt-schema=a792ce31c36bc6df",
+      "$defs": {
+        "observation": {
+          "additionalProperties": false,
+          "properties": {
+            "conflicts": {
+              "items": {},
+              "type": "array"
+            },
+            "coverage": {
+              "additionalProperties": false,
+              "properties": {
+                "basis": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "declared": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "observed": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "declared",
+                "observed",
+                "basis"
+              ],
+              "type": "object"
+            },
+            "freshness": {
+              "enum": [
+                "FRESH",
+                "STALE",
+                "FUTURE",
+                "UNKNOWN"
+              ]
+            },
+            "freshness_policy": {
+              "additionalProperties": false,
+              "properties": {
+                "max_age_hours": {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                "owner_policy_revision": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "max_age_hours",
+                "owner_policy_revision"
+              ],
+              "type": "object"
+            },
+            "null_reason": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              ]
+            },
+            "owner": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "presence": {
+              "enum": [
+                "POSITIVE",
+                "VALID_EMPTY",
+                "UNAVAILABLE",
+                "INVALID"
+              ]
+            },
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_receipts": {
+              "items": {
+                "$ref": "#/$defs/receipt"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "units": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              ]
+            },
+            "value": {},
+            "window": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "required": [
+            "owner",
+            "schema",
+            "presence",
+            "freshness",
+            "value",
+            "null_reason",
+            "units",
+            "window",
+            "coverage",
+            "conflicts",
+            "source_receipts",
+            "freshness_policy"
+          ],
+          "type": "object"
+        },
+        "read_receipt": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "properties": {
+                  "reason_codes": {
+                    "maxItems": 0
+                  },
+                  "subject": {
+                    "$ref": "#/$defs/subject"
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "UNAVAILABLE"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "reason_codes": {
+                    "minItems": 1
+                  },
+                  "subject": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "QUALIFIED"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "subject": {
+                    "properties": {
+                      "availability": {
+                        "const": "AVAILABLE"
+                      },
+                      "eligibility": {
+                        "properties": {
+                          "status": {
+                            "const": "QUALIFIED"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "DESCRIPTIVE"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "subject": {
+                    "properties": {
+                      "availability": {
+                        "const": "AVAILABLE"
+                      },
+                      "eligibility": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "NOT_QUALIFIED",
+                              "INELIGIBLE"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "QUALIFIED",
+                      "DESCRIPTIVE"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "state_generated_at": {
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})$",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "state_generated_at": {
+                    "type": "null"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "reason_codes": {
+                    "contains": {
+                      "enum": [
+                        "STATE_GENERATION_CLOCK_UNAVAILABLE",
+                        "STATE_GENERATION_CLOCK_INVALID"
+                      ]
+                    }
+                  },
+                  "status": {
+                    "const": "UNAVAILABLE"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "effective_at": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+              "type": "string"
+            },
+            "generation_id": {
+              "pattern": "^[a-f0-9]{32}$",
+              "type": "string"
+            },
+            "known_at": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+              "type": "string"
+            },
+            "reason_codes": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "schema": {
+              "const": "gmi.theme_state_read/v1"
+            },
+            "state_generated_at": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state_sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "DESCRIPTIVE",
+                "QUALIFIED",
+                "UNAVAILABLE"
+              ]
+            },
+            "subject": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/subject"
+                }
+              ]
+            },
+            "subject_id": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "status",
+            "reason_codes",
+            "subject_id",
+            "generation_id",
+            "state_sha256",
+            "effective_at",
+            "known_at",
+            "subject",
+            "state_generated_at"
+          ],
+          "type": "object"
+        },
+        "receipt": {
+          "additionalProperties": false,
+          "properties": {
+            "availability": {
+              "enum": [
+                "AVAILABLE",
+                "VALID_EMPTY",
+                "UNAVAILABLE"
+              ]
+            },
+            "available_at": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+              "type": "string"
+            },
+            "effective_at": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+              "type": "string"
+            },
+            "generation_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            "graph_generation_id": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            "known_at": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+              "type": "string"
+            },
+            "owner": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "payload": {},
+            "query": {
+              "additionalProperties": false,
+              "properties": {
+                "effective_at": {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+                  "type": "string"
+                },
+                "known_at": {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "effective_at",
+                "known_at"
+              ],
+              "type": "object"
+            },
+            "recorded_at": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2}))?$",
+              "type": "string"
+            },
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "subject_id": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "owner",
+            "schema",
+            "generation_id",
+            "graph_generation_id",
+            "subject_id",
+            "query",
+            "effective_at",
+            "known_at",
+            "available_at",
+            "recorded_at",
+            "availability",
+            "payload",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "canonical_theme"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mapping": {
+                    "properties": {
+                      "state": {
+                        "const": "SUBJECT_IS_CANONICAL"
+                      }
+                    }
+                  },
+                  "native_id": {
+                    "type": "null"
+                  },
+                  "node_id": {
+                    "pattern": "^theme:.+"
+                  },
+                  "source_family": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "local_theme"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mapping": {
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "MAPPED",
+                          "UNMAPPED"
+                        ]
+                      }
+                    }
+                  },
+                  "native_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "node_id": {
+                    "pattern": "^ltheme:(finviz|ths):[A-Za-z0-9_.\\-]+$"
+                  },
+                  "source_family": {
+                    "enum": [
+                      "finviz",
+                      "ths"
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "aggregation": {
+              "additionalProperties": false,
+              "properties": {
+                "reason_codes": {
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "receipt": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/$defs/receipt"
+                    }
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "SUPPLIED",
+                    "UNAVAILABLE",
+                    "NOT_APPLICABLE"
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "receipt",
+                "reason_codes"
+              ],
+              "type": "object"
+            },
+            "availability": {
+              "enum": [
+                "AVAILABLE",
+                "UNAVAILABLE"
+              ]
+            },
+            "eligibility": {
+              "additionalProperties": false,
+              "properties": {
+                "policy_revision": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  ]
+                },
+                "reason_codes": {
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "status": {
+                  "enum": [
+                    "QUALIFIED",
+                    "NOT_QUALIFIED",
+                    "INELIGIBLE"
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "policy_revision",
+                "reason_codes"
+              ],
+              "type": "object"
+            },
+            "kind": {
+              "enum": [
+                "local_theme",
+                "canonical_theme"
+              ]
+            },
+            "mapping": {
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "const": "MAPPED"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "theme_node_ids": {
+                        "minItems": 1
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "UNMAPPED",
+                          "SUBJECT_IS_CANONICAL"
+                        ]
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "theme_node_ids": {
+                        "maxItems": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "properties": {
+                "state": {
+                  "enum": [
+                    "MAPPED",
+                    "UNMAPPED",
+                    "SUBJECT_IS_CANONICAL"
+                  ]
+                },
+                "theme_node_ids": {
+                  "items": {
+                    "pattern": "^theme:.+",
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "state",
+                "theme_node_ids"
+              ],
+              "type": "object"
+            },
+            "name_en": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "name_zh": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "native_id": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              ]
+            },
+            "node_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "observations": {
+              "additionalProperties": {
+                "$ref": "#/$defs/observation"
+              },
+              "propertyNames": {
+                "pattern": "^[a-z][a-z0-9_]{0,95}$"
+              },
+              "type": "object"
+            },
+            "owner_receipts": {
+              "additionalProperties": false,
+              "properties": {
+                "eligibility": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/$defs/receipt"
+                    }
+                  ]
+                },
+                "identity": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/$defs/receipt"
+                    }
+                  ]
+                },
+                "membership": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/$defs/receipt"
+                    }
+                  ]
+                },
+                "ontology": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/$defs/receipt"
+                    }
+                  ]
+                },
+                "rights": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/$defs/receipt"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "ontology",
+                "identity",
+                "membership",
+                "rights",
+                "eligibility"
+              ],
+              "type": "object"
+            },
+            "reason_codes": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "source_family": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "required": [
+            "node_id",
+            "kind",
+            "name_en",
+            "name_zh",
+            "source_family",
+            "native_id",
+            "mapping",
+            "availability",
+            "reason_codes",
+            "eligibility",
+            "owner_receipts",
+            "observations",
+            "aggregation"
+          ],
+          "type": "object"
+        }
+      },
+      "$ref": "#/$defs/read_receipt",
+      "description": "Frozen exported owner read receipt/subject/receipt/observation definitions consumed verbatim. Source schema SHA256 a792ce31c36bc6df24449ff3e1b60fda4d73eb064bebc84c5dce2179d30f4632. No W3C state qualification policy."
+    }
+  },
+  "$comment": "Wire shape is necessary but not sufficient: validate_selection_cohort checks exact node/kind/source_family/native_id self-consistency using incumbent identity helpers and equality between each usable state subject and its represented concept. Schema validation and content hashes do not authenticate source receipts."
+}

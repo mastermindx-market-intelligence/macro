@@ -1,0 +1,114 @@
+{
+ "stage": "compare",
+ "label": "PROXY \u2014 not admitted surface",
+ "measure": "Q",
+ "measure_label": "risk-neutral (pricing-measure) probability; not a physical probability, not crash odds, not a forecast",
+ "verdict": "INSUFFICIENT_DATA",
+ "verdict_basis": "PREREG section 0: missing M1-M4; the proxy result cannot change the verdict",
+ "missing_inputs": [
+  "M1: per-strike executable quotes (bid/ask or NBBO) on a full chain snapshot",
+  "M2: qualified forward/discount basis including dividends (Q12 basis)",
+  "M3: European exercise or Q02-qualified American-exercise adjustment",
+  "M4: Q01-qualified arbitrage-checked surface"
+ ],
+ "selected_config": {
+  "lam": 0.1,
+  "m": 12,
+  "selected_on": "TRAIN only (W25-W29)"
+ },
+ "honest_n": {
+  "test_blocks": 4,
+  "test_dates": 13,
+  "supported_test_dates": 13,
+  "supported_test_blocks": 4,
+  "distinct_test_expiries_all": [
+   "2026-08-21",
+   "2026-08-28",
+   "2026-08-31",
+   "2026-09-04",
+   "2026-09-11"
+  ],
+  "distinct_test_expiries_supported": [
+   "2026-08-21",
+   "2026-08-28",
+   "2026-08-31",
+   "2026-09-04",
+   "2026-09-11"
+  ],
+  "train_scoring_dates": 15
+ },
+ "primary": {
+  "hypothesis": "H1: C extrapolates the RN left tail at K*=0.90F closer to [L,U] than incumbent skew B1",
+  "delta_mean_dist_C_minus_B1": 0.0,
+  "mean_dist_C": 0.0,
+  "mean_dist_B1": 0.0,
+  "bootstrap": {
+   "B": 4000,
+   "seed": 13013,
+   "n_valid_draws": 4000,
+   "n_dropped_empty": 0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  },
+  "block_sign_counts": {
+   "below_0": 0,
+   "at_0": 4,
+   "above_0": 0,
+   "empty": 0
+  },
+  "effect_bar": {
+   "ci_upper_below_0": false,
+   "mean_C_le_0p75_mean_B1": true,
+   "abs_improvement_ge_0p002": false
+  },
+  "h1_supported_on_proxy": false
+ },
+ "descriptive_C_vs_B0": {
+  "delta_mean_dist_C_minus_B0": -0.0011210492559554299,
+  "mean_dist_B0": 0.0011210492559554299,
+  "bootstrap": {
+   "B": 4000,
+   "seed": 13013,
+   "n_valid_draws": 4000,
+   "n_dropped_empty": 0,
+   "ci95": [
+    -0.00218033889292224,
+    -0.00034425204445480173
+   ]
+  },
+  "block_sign_counts": {
+   "below_0": 3,
+   "at_0": 1,
+   "above_0": 0,
+   "empty": 0
+  }
+ },
+ "falsifier": {
+  "coverage_C": 1.0,
+  "coverage_below_80pct": false,
+  "median_relative_width": 1.588096245075889,
+  "median_relative_width_above_0p5": true,
+  "attrition_fraction": 0.0,
+  "attrition_above_50pct": false,
+  "fires": true
+ },
+ "output_restriction": "PRICE_BOUNDS_ONLY (falsifier fired)",
+ "attrition": {
+  "TRAIN": {
+   "n_dates": 15,
+   "n_supported": 15,
+   "primary_reason_counts": {},
+   "any_reason_counts": {}
+  },
+  "TEST": {
+   "n_dates": 13,
+   "n_supported": 13,
+   "primary_reason_counts": {},
+   "any_reason_counts": {}
+  }
+ },
+ "coverage_B1": 1.0,
+ "coverage_B0": 0.5384615384615384
+}

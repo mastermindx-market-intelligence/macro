@@ -1,0 +1,303 @@
+{
+  "as_of": "2026-10-09",
+  "coverage": {
+    "end": "2026-10-08",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-25 to 2026-10-08; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-25"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-08",
+      "events": []
+    },
+    {
+      "date": "2026-10-07",
+      "events": []
+    },
+    {
+      "date": "2026-10-06",
+      "events": []
+    },
+    {
+      "date": "2026-10-05",
+      "events": []
+    },
+    {
+      "date": "2026-10-02",
+      "events": []
+    },
+    {
+      "date": "2026-10-01",
+      "events": []
+    },
+    {
+      "date": "2026-09-30",
+      "events": [
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-f94c359669f5",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:YRD:2026Q2",
+          "tickers": [
+            "YRD"
+          ],
+          "title": "Earnings call: YRD Q2 FY2026 — cautious",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-fa500cf75cdf",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:JBL:2026Q4",
+          "tickers": [
+            "JBL"
+          ],
+          "title": "Earnings call: JBL Q4 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-prophet_ledger-1d32f1398cb6",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "ITW-BULL-20260918",
+          "tickers": [
+            "ITW"
+          ],
+          "title": "Prophet close: ITW BULL → INVALIDATED (-4.5% in 12d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-prophet_ledger-3a3d19727e01",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "ATR-BULL-20260918",
+          "tickers": [
+            "ATR"
+          ],
+          "title": "Prophet close: ATR BULL → INVALIDATED (-2.6% in 12d)",
+          "weight_hint": 2
+        }
+      ]
+    },
+    {
+      "date": "2026-09-29",
+      "events": [
+        {
+          "date": "2026-09-29",
+          "id": "cev-earnings_call-306f9b94400f",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:CNXC:2026Q3",
+          "tickers": [
+            "CNXC"
+          ],
+          "title": "Earnings call: CNXC Q3 FY2026 — cautious",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-29",
+          "id": "cev-earnings_call-31258557722f",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:KMX:2027Q2",
+          "tickers": [
+            "KMX"
+          ],
+          "title": "Earnings call: KMX Q2 FY2027 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-29",
+          "id": "cev-earnings_call-3d959c99cf54",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:CCL:2026Q3",
+          "tickers": [
+            "CCL"
+          ],
+          "title": "Earnings call: CCL Q3 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-29",
+          "id": "cev-earnings_call-4a4ceca1603e",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:UEC:2026Q4",
+          "tickers": [
+            "UEC"
+          ],
+          "title": "Earnings call: UEC Q4 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-29",
+          "id": "cev-earnings_call-c2708836c2d0",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:AIR:2027Q1",
+          "tickers": [
+            "AIR"
+          ],
+          "title": "Earnings call: AIR Q1 FY2027 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-29",
+          "id": "cev-prophet_ledger-3c0ae8faf6b7",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "GPI-BULL-20260903",
+          "tickers": [
+            "GPI"
+          ],
+          "title": "Prophet close: GPI BULL → INVALIDATED (-13.4% in 18d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-29",
+          "id": "cev-prophet_ledger-ae2eee9e1a4c",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "PIPR-BULL-20260826",
+          "tickers": [
+            "PIPR"
+          ],
+          "title": "Prophet close: PIPR BULL → INVALIDATED (-14.4% in 32d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-29",
+          "id": "cev-prophet_ledger-d506976b91dc",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "TNDM-BULL-20260925",
+          "tickers": [
+            "TNDM"
+          ],
+          "title": "Prophet close: TNDM BULL → T1_HIT (+5.4% in 4d)",
+          "weight_hint": 2
+        }
+      ]
+    },
+    {
+      "date": "2026-09-28",
+      "events": [
+        {
+          "date": "2026-09-28",
+          "id": "cev-regime_flip-94eb72732cfd",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-28#regime_china",
+          "tickers": [],
+          "title": "CHINA regime: Q4 Growth-scare → Q3 Stagflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-28",
+          "id": "cev-earnings_call-3cc4c24201c1",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:MTN:2026Q4",
+          "tickers": [
+            "MTN"
+          ],
+          "title": "Earnings call: MTN Q4 FY2026 — cautious",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-28",
+          "id": "cev-earnings_call-466568b70396",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:IDT:2026Q4",
+          "tickers": [
+            "IDT"
+          ],
+          "title": "Earnings call: IDT Q4 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-28",
+          "id": "cev-earnings_call-7a22c545cd27",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:KNDI:2026Q2",
+          "tickers": [
+            "KNDI"
+          ],
+          "title": "Earnings call: KNDI Q2 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-28",
+          "id": "cev-earnings_call-944e2b9efbbc",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:IVA:2026Q2",
+          "tickers": [
+            "IVA"
+          ],
+          "title": "Earnings call: IVA Q2 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-28",
+          "id": "cev-earnings_call-c059abca3f20",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:ADXN:2026Q2",
+          "tickers": [
+            "ADXN"
+          ],
+          "title": "Earnings call: ADXN Q2 FY2026 — cautious",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-28",
+          "id": "cev-earnings_call-f66fceebd37f",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:PTN:2026Q4",
+          "tickers": [
+            "PTN"
+          ],
+          "title": "Earnings call: PTN Q4 FY2026 — cautious",
+          "weight_hint": 2
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-25",
+          "id": "cev-earnings_call-a69b10cedcdf",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:TBN:2026Q4",
+          "tickers": [
+            "TBN"
+          ],
+          "title": "Earnings call: TBN Q4 FY2026 — confident",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

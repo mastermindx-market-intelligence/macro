@@ -446,6 +446,23 @@ options_fail_closed_on_exit() {
 }
 trap options_fail_closed_on_exit EXIT
 # END W1B5_TIMER_EXIT_GUARD
+# A W2C owner-replay or attestation refusal freezes ONLY the W2C lane.  Each
+# refusal keeps its exact stderr line and still fails the run with status 1,
+# but the lane-independent steps after W1B5_TIMER_FINALIZATION (live-plane
+# timers, press feeds, ticker news, BioCatalyst, unit reconcile, daemon
+# restarts) still run: CHANGED is per-run, so a step skipped here is lost.
+# BEGIN W2C_LANE_FREEZE
+W2C_LANE_FROZEN=0
+W2C_LANE_FROZEN_REASON=
+DEPLOY_EXIT_STATUS=0
+freeze_w2c_lane() {
+	W2C_LANE_FROZEN=1
+	DEPLOY_EXIT_STATUS=1
+	if [ -z "$W2C_LANE_FROZEN_REASON" ]; then
+		W2C_LANE_FROZEN_REASON=$1
+	fi
+}
+# END W2C_LANE_FREEZE
 
 # W1A has no scheduled context writer, so directory provisioning alone cannot
 # create its manifest/genesis/HEAD. Reconcile and authenticate that metadata on
@@ -468,6 +485,14 @@ fi
 OPTIONS_CREDENTIAL_READY=0
 API_UNIT_UPDATED=0
 API_UNIT_READY=0
+
+# macro-api binds ticker-news state read-only. Provision only the private state
+# root here; this does NOT install, enable, or start the writer service.
+if [ -L /var/lib/macro-ticker-news ]; then
+	echo "macro-update: refusing symlinked ticker-news state root" >&2
+	exit 1
+fi
+install -d -m 0700 /var/lib/macro-ticker-news
 
 if ! mm_reviewed_unit_file_ready \
 	"$APP_DIR/app/deploy/macro-api.service" \
@@ -1139,6 +1164,10 @@ fi
 # CI if it drifts out of this regex.
 #
 # Why each group is here:
+#   Prophet observations   the entitled request lazily imports the lossless
+#                          reader, B1 snapshot and intake/identity helpers. Their
+#                          named module closure is cached after the first read;
+#                          source JSON/parquet bytes are still read per request.
 #   app/.*\.py             every router is import-cached (the old list omitted
 #                          regwall.py/paywall.py: code could deploy while the
 #                          running API kept the previous access policy)
@@ -1188,6 +1217,11 @@ fi
 #                          contracts, health, and views; all are pinned in the
 #                          API process for the lifetime of the public ticker
 #                          context route.
+#   integrated answer      app/integrated_answer.py (Package I v0, default-off) reads
+#                          company_theme_exposure/{__init__,contracts}, expectation_state,
+#                          k3e_expectation_surface, theme_context and the frozen-source
+#                          loader scripts/query_k3e_expectation_surface.py at request
+#                          time; each stays cached in macro-api after the first read.
 #   seasonality/           app/seasonality.py's single `from engine.seasonality
 #                          import screener` executes the package __init__, which
 #                          eagerly re-exports contracts, event_clock, model,
@@ -1234,6 +1268,8 @@ fi
 #                          unrelated collectors.
 #   lib/*                  ai_costs + mastermind_response_log log every chat call;
 #                          config.py is a module-level dep of live_quotes;
+#                          us_cash_calendar imports the exchange_holidays annual
+#                          slate for live_quotes; both remain cached until restart;
 #                          commercial_path.py is the GATE-4 emit module reached
 #                          from billing / require_user / brain_gateway (function-
 #                          level, cached after the first money-path event)
@@ -1251,7 +1287,7 @@ fi
 API_RESTART_CONFIRMED=0
 API_RESTART_NEEDED=0
 # BEGIN MACRO_API_RESTART_TRIGGER
-if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/earnings_catalyst\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|economic_interpretation|private_publication|promotion|public_wire|story|story_packets)\.py|engine/earnings_release/(__init__|binding|figures|filing_key|receipts)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
+if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources|plans)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|economic_interpretation|private_publication|promotion|public_wire|story|story_packets)\.py|engine/earnings_release/(__init__|binding|figures|filing_key|receipts)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|risk_envelope|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/(canon|confluence_tiers|entry_primitives|hysteresis|indicators|path_personality|path_risk_signals|prophet_early_observations|session_anchor|session_digest|stock_technicals|technicals|us_candidate_episode|us_candidate_episode_intake)\.py|engine/stock_identity/(__init__|authority|fingerprint|plane)\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
    [ "$API_DEPS_UPDATED" -eq 1 ]; then
 	API_RESTART_NEEDED=1
 
@@ -1312,6 +1348,150 @@ if [ "$API_RESTART_CONFIRMED" -eq 1 ] && [ "$API_UNIT_READY" -eq 1 ] && \
 fi
 # END MACRO_API_RESTART_TRANSACTION
 
+# Admin serving, like the API, deploys independently of W2C attestation.
+# Keep the reviewed unit and cached catalog current even when the separate
+# Market Memory lane refuses activation; its exits and timer guards remain below.
+# admin console: restart ONLY when its own code changed, so the deployed panel at
+# admin.mastermind-x.com tracks main automatically (config/secrets live in the
+# untouched /etc/macro-admin.env, so a restart never loses them). "Its own code"
+# includes the engine/lib modules the panels lazily import — cached in sys.modules
+# after the first request, so without a restart an engine-side fix (e.g. a
+# key_pool.py change to the Raw Key Usage join) never reaches the running panel;
+# data files are read from disk per request and need no restart.
+#
+# INCLUSION RULE — the same one the macro-api list above uses. admin/ is ALL panel
+# code, so a function-level import there is import-cached exactly like a
+# module-level one, just from the first request that reaches it; both kinds seed
+# this list. Each seed is then expanded through MODULE-LEVEL imports only, because
+# those are what actually execute on load. A nightly-only tail hanging off a DEEP
+# function-level import is not cached and stays out (see the exclusions below).
+# Three seed forms count, and grepping for `from engine`/`from lib` finds only the
+# first: static imports, `importlib.import_module("engine...")` string literals
+# (ai_cost, orchestrator_chat, neural_web all use this form), and the PACKAGE
+# __init__ that Python executes before any submodule. Keep this list in sync when
+# adding any of them — tests/test_deploy_update_self_heal.py recomputes the closure
+# and fails CI if it drifts.
+#
+# Why each group is here:
+#   admin/*                every panel module is import-cached by the process
+#   lib/*                  ai_cost + orchestrator_chat → ai_costs;
+#                          mastermind_logs → mastermind_response_log
+#   neuralweb/*            metabolism_panel + orchestrator_chat → key_pool;
+#                          orchestrator_chat → ask_brain; neural_web →
+#                          support_map, orchestrator_log
+#   metabolism/*           metabolism_panel → throttle; server manual-run gate →
+#                          budget_gate
+#   engine/{codex_provider,llm_auth,prophet_integrity}.py + engine/codex_lane/runner.py
+#                          orchestrator_chat Codex fallback + prophet.py
+#                          deliberation-spend panel; marketing.py → copywriter imports
+#                          the canonical Prophet correction projection at load time
+#   marketing/             marketing.py's outbox approve/reject/decide endpoints →
+#                          outbox + rejections. marketing.py's Ad Central panel →
+#                          ad_central → ad_allocator, ad_arena, ad_stats. The other
+#                          twelve ride the package __init__ (→ state → authority,
+#                          charter, claims, cmo, departments, economics, events,
+#                          ledgers, opportunity_bus, publication) — confirmed
+#                          against a live interpreter's sys.modules. Named, not
+#                          globbed: 30 of the 53 marketing modules are nightly-only.
+#                          (ad_creative/ad_matrix are NOT here: the panel reads the
+#                          creatives ledger, it does not build creatives.)
+#   marketing/sentinel     marketing.py's ramp resolver (resolve_ramp) + the
+#                          /api/marketing/sentinel panel endpoints — the ramp
+#                          caps would deploy dead to the running panel without
+#                          a restart (2026-07-28, same class as the outbox gap).
+#   scripts/               marketing.py's publish dry-run → marketing_publisher
+#                          → copywriter (top-level import: the post-time language
+#                          gate banned_language() must fail loudly, so the publisher
+#                          imports it at module scope — which puts copywriter in
+#                          the panel's load-time closure too).
+#   marketing/social_publisher
+#                          Same edge, one module further (2026-08-08): the
+#                          publisher imports subscription_locked/lock_expires_at
+#                          at module scope for the same "must fail loudly" reason
+#                          — a lazily-imported lock predicate that failed to
+#                          import would read as "no lock", i.e. silently restore
+#                          the requeue loop it exists to stop. That top-level
+#                          import is what puts social_publisher in the panel's
+#                          closure, so it belongs here rather than in the
+#                          nightly-only list below.
+#   sentinel               marketing.py's caps_by_account (#3884) → resolve_ramp:
+#                          the per-account D08 ramp caps shown in the outbox +
+#                          publisher payloads import sentinel into the panel.
+#
+# Deliberately NOT here (they would blip the panel for nothing):
+#   - site/ and data/ artifacts, read from disk per request.
+#   - engine/neuralweb/cortex.py and the nightly lane behind it. The panel's only
+#     entry into ask_brain is _post_filter_advice() (the advice guard); the
+#     tool-schema/dispatch paths that lazily import cortex are never called from
+#     admin, so cortex is absent from the panel's sys.modules. admin ships its own
+#     tool dispatcher.
+#   - The rest of engine/marketing (breaking_feed, seo_director, …) —
+#     nightly-only, never imported by a panel. social_publisher WAS listed here
+#     and no longer is: see its entry above. A name in this list is a claim about
+#     the closure, so it has to be deleted the moment the closure disagrees.
+# Admin systemd sandbox: reconcile the reviewed unit before deciding whether to
+# restart, so a unit-only hardening/provider change cannot land dead on disk.
+ADMIN_UNIT_UPDATED=0
+if ! cmp -s "$APP_DIR/admin/deploy/admin.service" /etc/systemd/system/admin.service; then
+	if systemd-analyze verify "$APP_DIR/admin/deploy/admin.service"; then
+		install -m 0644 "$APP_DIR/admin/deploy/admin.service" /etc/systemd/system/admin.service
+		systemctl daemon-reload
+		ADMIN_UNIT_UPDATED=1
+		RECONCILED=1
+		echo "macro-update: admin systemd sandbox updated"
+	else
+		echo "macro-update: refusing admin unit update — systemd-analyze verify failed" >&2
+	fi
+fi
+
+# XG-W6 added four that ARE panel imports: labels + learned_rules (the Learning
+# panel), health_monitor + blind_identity (the Desk Health panel). Without them
+# here, a deploy that changed a halt threshold would leave the admin serving the
+# old module out of sys.modules — and the panel that reports whether a desk is
+# halted is the last one that should be stale.
+#
+# XG-W8 adds engine/press/{__init__,desk_planner}.py. The Press panel's cadence
+# block now reports the RESOLVED cap (0 while the W2R desk-note lane is dark),
+# and it gets that number by calling the planner's own `_triage_cap` rather than
+# re-deriving the stricter-of rule — a panel that computes its own answer is a
+# panel that can disagree with the engine. That call puts both modules in the
+# admin's load-time closure, so without them here a deploy that changed the cap
+# resolver would leave the panel serving the old rule out of sys.modules: the
+# exact class the outbox gap (2026-07-26) and the four XG-W6 panel modules fixed.
+# Only these two — research_triage/research_veto/research_lane are reached solely
+# through desk_planner's function-level imports on the PLANNING path, which the
+# panel never calls.
+#
+# The Intelligence Desk approve endpoint adds engine/marketing/{story_lock,
+# wire_routing}.py. That endpoint is the ONE admin path that emits a post, and
+# both modules are gates on it: wire_routing decides which desk owns the emission
+# and story_lock enforces one-owner-per-conversation across desks. Left out here,
+# a deploy that retuned the routing table or widened the lock window would leave
+# the panel queueing against the OLD rule out of sys.modules — the outbox gap
+# (2026-07-26) again, but on the path where being stale means a wrong-desk or
+# double-owner post rather than a stale reading.
+#
+# A-F05-1 (PR #6896) adds engine/chronicle/impact.py. The Chronicle panel
+# (admin/chronicle.py) imports it inside the request handler, which is
+# import-cached after the first hit exactly like a module-level import, so a
+# deploy that changed the impact scoring would leave the panel serving the old
+# module out of sys.modules. governor.py stays out: the panel never imports it.
+# F05-017 (PR #8265) makes impact.py import engine/chronicle/schema.py at module
+# level (the schema.SOURCES tie-break for the family-fair glance), so schema.py
+# rides into the same import cache through impact: a deploy that changed the
+# sources, families or row contract would otherwise leave the panel scoring
+# against the old schema. The closure test
+# (tests/test_deploy_update_self_heal.py) derives this; keep the two in step.
+# The entitlement console lazily imports app.billing, whose plan/features
+# catalog is cached for the process lifetime. Catalog and billing-writer changes
+# must reload this separate issuer process as well as macro-api. The admin unit
+# generation forces the initial adoption even when the installed updater began
+# this cycle with the previous trigger. No entitlement rows are changed here.
+if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|app/billing\.py|config/plans\.yml|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|quality|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/codex_lane/runner\.py|engine/chronicle/(impact|schema)\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
+	systemctl is-enabled admin >/dev/null 2>&1 && systemctl restart admin || true
+fi
+
+
 # BEGIN W2C_RUNTIME_ATTESTATION
 MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=0
 MARKET_MEMORY_EXPERIENCE_INSTALLATION_REQUIRED=0
@@ -1330,32 +1510,38 @@ w2c_terminal_ledger_state || MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE=$?
 if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 0 ]; then
 	if ! w2c_verify_installation; then
 		echo "macro-update: terminal W2C ledger has no authentic installation receipt" >&2
-		exit 1
+		freeze_w2c_lane "terminal W2C ledger has no authentic installation receipt"
 	fi
-	MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=0
-	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ] && ! w2c_reconcile_timer; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=0
+	fi
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+	   [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ] && ! w2c_reconcile_timer; then
 		echo "macro-update: authenticated terminal W2C timer disarm failed" >&2
-		exit 1
+		freeze_w2c_lane "authenticated terminal W2C timer disarm failed"
 	fi
-	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ]; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+	   [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ]; then
 		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
 	fi
 elif [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -ne 3 ]; then
 	echo "macro-update: W2C terminal ledger is invalid" >&2
-	exit 1
+	freeze_w2c_lane "W2C terminal ledger is invalid"
 fi
-if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ] && \
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+   [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ] && \
    [ "$MARKET_MEMORY_EXPERIENCE_INSTALLATION_REQUIRED" -eq 0 ] && \
    ! w2c_verify_installation; then
 	echo "macro-update: existing W2C installation receipt failed authentication" >&2
-	exit 1
+	freeze_w2c_lane "existing W2C installation receipt failed authentication"
 fi
-if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+   [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 1 ]; then
 		echo "macro-update: deferring W2C replay and attestation until reciprocal boundary closure" >&2
 	elif [ "$API_DEPS_OK" -ne 1 ]; then
 		echo "macro-update: W2C attestation unavailable — shared runtime dependencies are not current" >&2
-		exit 1
+		freeze_w2c_lane "W2C attestation unavailable — shared runtime dependencies are not current"
 	else
 		W2C_OWNER_REPLAY_READY=0
 		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] || \
@@ -1363,27 +1549,35 @@ if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 		   ! systemctl is-active macro-market-memory-experience.timer >/dev/null 2>&1; then
 			if ! w2c_start_owner_chain; then
 				echo "macro-update: refusing W2C activation before owner replay completion" >&2
-				exit 1
+				freeze_w2c_lane "refusing W2C activation before owner replay completion"
+			else
+				W2C_OWNER_REPLAY_READY=1
 			fi
-			W2C_OWNER_REPLAY_READY=1
 		fi
-		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+		   [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
 		   ! systemctl start macro-market-memory-experience.service; then
 			echo "macro-update: W2C accrual failed before deployment attestation" >&2
-			exit 1
+			freeze_w2c_lane "W2C accrual failed before deployment attestation"
 		fi
-		if ! w2c_verify_installation; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_verify_installation; then
 			echo "macro-update: W2C installation attestation failed after replay" >&2
-			exit 1
+			freeze_w2c_lane "W2C installation attestation failed after replay"
 		fi
-		if ! w2c_reconcile_timer; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_reconcile_timer; then
 			echo "macro-update: W2C timer reconciliation failed" >&2
-			exit 1
+			freeze_w2c_lane "W2C timer reconciliation failed"
 		fi
-		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+			MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		fi
 	fi
 fi
 # END W2C_RUNTIME_ATTESTATION
+# Everything from here through W1B5_TIMER_FINALIZATION depends on an
+# authenticated W2C state (the API-fence note below: a W2C refusal must not
+# reach it), so a frozen W2C lane skips it exactly as the old `exit 1` did.
+if [ "$W2C_LANE_FROZEN" -eq 0 ]; then
 
 # First admitted production-record writer: network-dark, credential-free, and
 # confined to one private store. It can read only the committed owner ledger;
@@ -1632,56 +1826,83 @@ if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 1 ] && \
 	if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 		if [ "$API_DEPS_OK" -ne 1 ]; then
 			echo "macro-update: refusing deferred W2C attestation with stale dependencies" >&2
-			exit 1
+			freeze_w2c_lane "refusing deferred W2C attestation with stale dependencies"
 		fi
-		if ! w2c_start_owner_chain; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_start_owner_chain; then
 			echo "macro-update: refusing deferred W2C activation before owner replay completion" >&2
-			exit 1
+			freeze_w2c_lane "refusing deferred W2C activation before owner replay completion"
 		fi
-		W2C_OWNER_REPLAY_READY=1
-		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+			W2C_OWNER_REPLAY_READY=1
+		fi
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+		   [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
 		   ! systemctl start macro-market-memory-experience.service; then
 			echo "macro-update: deferred W2C accrual failed before attestation" >&2
-			exit 1
+			freeze_w2c_lane "deferred W2C accrual failed before attestation"
 		fi
 	fi
-	if ! w2c_verify_installation; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_verify_installation; then
 		echo "macro-update: deferred W2C installation attestation failed" >&2
-		exit 1
+		freeze_w2c_lane "deferred W2C installation attestation failed"
 	fi
 	# END W2C_DEFERRED_REPLAY
-	for RECIPROCAL_PROFILE in source source-spy-rest context identity breadth technicals technicals-v2 experience-v2 production-records options-context-audit; do
-		if [ -e "/etc/systemd/system/macro-market-memory-$RECIPROCAL_PROFILE.timer" ]; then
-			if [ "$RECIPROCAL_PROFILE" = production-records ] || [ "$RECIPROCAL_PROFILE" = options-context-audit ]; then
-				systemctl enable --now "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
-			else
-				systemctl start "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		for RECIPROCAL_PROFILE in source source-spy-rest context identity breadth technicals technicals-v2 experience-v2 production-records options-context-audit; do
+			if [ -e "/etc/systemd/system/macro-market-memory-$RECIPROCAL_PROFILE.timer" ]; then
+				if [ "$RECIPROCAL_PROFILE" = production-records ] || [ "$RECIPROCAL_PROFILE" = options-context-audit ]; then
+					systemctl enable --now "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+				else
+					systemctl start "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+				fi
 			fi
+		done
+		if ! w2c_reconcile_timer; then
+			echo "macro-update: W2C timer reconciliation failed" >&2
+			freeze_w2c_lane "W2C timer reconciliation failed"
 		fi
-	done
-	if ! w2c_reconcile_timer; then
-		echo "macro-update: W2C timer reconciliation failed" >&2
-		exit 1
 	fi
-	MARKET_MEMORY_EXPERIENCE_ATTESTED=1
-	# The production-record first run was intentionally deferred while the
-	# reciprocal namespace was stopped. Capture immediately after the reviewed
-	# units are re-armed; do not wait for the next nightly calendar edge.
-	if [ "$MARKET_MEMORY_PRODUCTION_RECORDS_RUN_NEEDED" -eq 1 ]; then
-		if [ "$API_DEPS_OK" -ne 1 ]; then
-			echo "macro-update: deferring Market Memory production-record capture — shared runtime dependencies are not current" >&2
-		elif ! systemctl start macro-market-memory-production-records.service; then
-			echo "macro-update: Market Memory production-record capture failed closed; nightly timer will retry" >&2
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		# The production-record first run was intentionally deferred while the
+		# reciprocal namespace was stopped. Capture immediately after the reviewed
+		# units are re-armed; do not wait for the next nightly calendar edge.
+		if [ "$MARKET_MEMORY_PRODUCTION_RECORDS_RUN_NEEDED" -eq 1 ]; then
+			if [ "$API_DEPS_OK" -ne 1 ]; then
+				echo "macro-update: deferring Market Memory production-record capture — shared runtime dependencies are not current" >&2
+			elif ! systemctl start macro-market-memory-production-records.service; then
+				echo "macro-update: Market Memory production-record capture failed closed; nightly timer will retry" >&2
+			fi
 		fi
 	fi
 fi
 if [ "${MARKET_MEMORY_EXPERIENCE_ATTESTED:-1}" -ne 1 ]; then
-	echo "macro-update: W2C installation and terminal state were not authenticated" >&2
-	exit 1
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		echo "macro-update: W2C installation and terminal state were not authenticated" >&2
+		freeze_w2c_lane "W2C installation and terminal state were not authenticated"
+	fi
 fi
-OPTIONS_RECONCILIATION_COMPLETE=1
-trap - EXIT
+# A frozen W2C lane leaves OPTIONS_RECONCILIATION_COMPLETE=0, so the EXIT trap
+# stays armed: any later failure still fails closed with the option-OI timer
+# disarmed, and the final exit re-runs a latched (no-op) disarm.
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+	OPTIONS_RECONCILIATION_COMPLETE=1
+	trap - EXIT
+fi
 # END W1B5_TIMER_FINALIZATION
+fi
+# BEGIN W2C_LANE_FROZEN_CONTINUE
+# The old `exit 1` disarmed the option-OI timer through the EXIT trap at the
+# moment W2C refused.  Do the same disarm now, before any lane-independent step
+# runs; if it fails, keep the old abort (the trap retries the disarm).
+if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
+	if ! disarm_options_timer; then
+		echo "macro-update: W2C lane frozen but option-OI disarm failed; aborting deploy" >&2
+		exit 1
+	fi
+	echo "macro-update: W2C lane frozen — $W2C_LANE_FROZEN_REASON; continuing lane-independent deploy steps" >&2
+fi
+# END W2C_LANE_FROZEN_CONTINUE
 
 # Live-plane systemd definitions are installed by live-setup.sh. Once that setup
 # has happened, keep unit/resource/timer changes tracking main automatically.
@@ -2146,6 +2367,42 @@ if [ -f /etc/systemd/system/marketing-press-feeds.service ] && \
 	fi
 fi
 
+# TICKER NEWS is a long-running, operator-armed source service. Routine deploys
+# never install, enable, or start an absent/inactive unit. If an operator has
+# already installed it, keep the reviewed unit current and restart only an
+# already-active writer when import-cached code or canonical universe inputs move.
+TICKER_NEWS_RUNTIME_REGEX='^(app/requirements\.txt|scripts/run_qbus_news\.py|scripts/build_qbus_news_universe\.py|collectors/benzinga_news\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|lib/dataos/identity\.py|data/breadth/(constituents|sp1500_pit_membership)\.parquet|data/reference/(security_master|vendor_aliases)\.parquet)$'
+TICKER_NEWS_UNIT_UPDATED=0
+if [ -f /etc/systemd/system/macro-ticker-news.service ]; then
+	if ! cmp -s "$APP_DIR/app/deploy/macro-ticker-news.service" /etc/systemd/system/macro-ticker-news.service; then
+		if systemd-analyze verify "$APP_DIR/app/deploy/macro-ticker-news.service"; then
+			install -m 0644 "$APP_DIR/app/deploy/macro-ticker-news.service" /etc/systemd/system/macro-ticker-news.service
+			systemctl daemon-reload
+			TICKER_NEWS_UNIT_UPDATED=1
+			RECONCILED=1
+			echo "macro-update: macro-ticker-news reviewed unit reconciled"
+		else
+			echo "macro-update: refusing macro-ticker-news unit update — systemd-analyze verify failed" >&2
+			if systemctl is-active --quiet macro-ticker-news.service; then
+				exit 1
+			fi
+		fi
+	fi
+	if [ "$TICKER_NEWS_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE "$TICKER_NEWS_RUNTIME_REGEX"; then
+		if systemctl is-active --quiet macro-ticker-news.service; then
+			systemctl restart macro-ticker-news.service
+			systemctl is-active --quiet macro-ticker-news.service || {
+				echo "macro-update: macro-ticker-news restart failed" >&2
+				exit 1
+			}
+			RECONCILED=1
+			echo "macro-update: active macro-ticker-news restarted on reviewed source"
+		else
+			echo "macro-update: macro-ticker-news installed but inactive; preserving operator-controlled arming"
+		fi
+	fi
+fi
+
 # BioCatalyst B1 is a separate source-canonical lane.  A routine production
 # pull must never install, enable, or start it: doing so could turn a partially
 # configured evidence collector live.  Reconcile only a fully operator-installed
@@ -2273,135 +2530,13 @@ if [ "$PRESS_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(app/deploy/m
 	fi
 fi
 
-# admin console: restart ONLY when its own code changed, so the deployed panel at
-# admin.mastermind-x.com tracks main automatically (config/secrets live in the
-# untouched /etc/macro-admin.env, so a restart never loses them). "Its own code"
-# includes the engine/lib modules the panels lazily import — cached in sys.modules
-# after the first request, so without a restart an engine-side fix (e.g. a
-# key_pool.py change to the Raw Key Usage join) never reaches the running panel;
-# data files are read from disk per request and need no restart.
-#
-# INCLUSION RULE — the same one the macro-api list above uses. admin/ is ALL panel
-# code, so a function-level import there is import-cached exactly like a
-# module-level one, just from the first request that reaches it; both kinds seed
-# this list. Each seed is then expanded through MODULE-LEVEL imports only, because
-# those are what actually execute on load. A nightly-only tail hanging off a DEEP
-# function-level import is not cached and stays out (see the exclusions below).
-# Three seed forms count, and grepping for `from engine`/`from lib` finds only the
-# first: static imports, `importlib.import_module("engine...")` string literals
-# (ai_cost, orchestrator_chat, neural_web all use this form), and the PACKAGE
-# __init__ that Python executes before any submodule. Keep this list in sync when
-# adding any of them — tests/test_deploy_update_self_heal.py recomputes the closure
-# and fails CI if it drifts.
-#
-# Why each group is here:
-#   admin/*                every panel module is import-cached by the process
-#   lib/*                  ai_cost + orchestrator_chat → ai_costs;
-#                          mastermind_logs → mastermind_response_log
-#   neuralweb/*            metabolism_panel + orchestrator_chat → key_pool;
-#                          orchestrator_chat → ask_brain; neural_web →
-#                          support_map, orchestrator_log
-#   metabolism/*           metabolism_panel → throttle; server manual-run gate →
-#                          budget_gate
-#   engine/{codex_provider,llm_auth,prophet_integrity}.py + engine/codex_lane/runner.py
-#                          orchestrator_chat Codex fallback + prophet.py
-#                          deliberation-spend panel; marketing.py → copywriter imports
-#                          the canonical Prophet correction projection at load time
-#   marketing/             marketing.py's outbox approve/reject/decide endpoints →
-#                          outbox + rejections. marketing.py's Ad Central panel →
-#                          ad_central → ad_allocator, ad_arena, ad_stats. The other
-#                          twelve ride the package __init__ (→ state → authority,
-#                          charter, claims, cmo, departments, economics, events,
-#                          ledgers, opportunity_bus, publication) — confirmed
-#                          against a live interpreter's sys.modules. Named, not
-#                          globbed: 30 of the 53 marketing modules are nightly-only.
-#                          (ad_creative/ad_matrix are NOT here: the panel reads the
-#                          creatives ledger, it does not build creatives.)
-#   marketing/sentinel     marketing.py's ramp resolver (resolve_ramp) + the
-#                          /api/marketing/sentinel panel endpoints — the ramp
-#                          caps would deploy dead to the running panel without
-#                          a restart (2026-07-28, same class as the outbox gap).
-#   scripts/               marketing.py's publish dry-run → marketing_publisher
-#                          → copywriter (top-level import: the post-time language
-#                          gate banned_language() must fail loudly, so the publisher
-#                          imports it at module scope — which puts copywriter in
-#                          the panel's load-time closure too).
-#   marketing/social_publisher
-#                          Same edge, one module further (2026-08-08): the
-#                          publisher imports subscription_locked/lock_expires_at
-#                          at module scope for the same "must fail loudly" reason
-#                          — a lazily-imported lock predicate that failed to
-#                          import would read as "no lock", i.e. silently restore
-#                          the requeue loop it exists to stop. That top-level
-#                          import is what puts social_publisher in the panel's
-#                          closure, so it belongs here rather than in the
-#                          nightly-only list below.
-#   sentinel               marketing.py's caps_by_account (#3884) → resolve_ramp:
-#                          the per-account D08 ramp caps shown in the outbox +
-#                          publisher payloads import sentinel into the panel.
-#
-# Deliberately NOT here (they would blip the panel for nothing):
-#   - site/ and data/ artifacts, read from disk per request.
-#   - engine/neuralweb/cortex.py and the nightly lane behind it. The panel's only
-#     entry into ask_brain is _post_filter_advice() (the advice guard); the
-#     tool-schema/dispatch paths that lazily import cortex are never called from
-#     admin, so cortex is absent from the panel's sys.modules. admin ships its own
-#     tool dispatcher.
-#   - The rest of engine/marketing (breaking_feed, seo_director, …) —
-#     nightly-only, never imported by a panel. social_publisher WAS listed here
-#     and no longer is: see its entry above. A name in this list is a claim about
-#     the closure, so it has to be deleted the moment the closure disagrees.
-# Admin systemd sandbox: reconcile the reviewed unit before deciding whether to
-# restart, so a unit-only hardening/provider change cannot land dead on disk.
-ADMIN_UNIT_UPDATED=0
-if ! cmp -s "$APP_DIR/admin/deploy/admin.service" /etc/systemd/system/admin.service; then
-	if systemd-analyze verify "$APP_DIR/admin/deploy/admin.service"; then
-		install -m 0644 "$APP_DIR/admin/deploy/admin.service" /etc/systemd/system/admin.service
-		systemctl daemon-reload
-		ADMIN_UNIT_UPDATED=1
-		RECONCILED=1
-		echo "macro-update: admin systemd sandbox updated"
-	else
-		echo "macro-update: refusing admin unit update — systemd-analyze verify failed" >&2
-	fi
-fi
-
-# XG-W6 added four that ARE panel imports: labels + learned_rules (the Learning
-# panel), health_monitor + blind_identity (the Desk Health panel). Without them
-# here, a deploy that changed a halt threshold would leave the admin serving the
-# old module out of sys.modules — and the panel that reports whether a desk is
-# halted is the last one that should be stale.
-#
-# XG-W8 adds engine/press/{__init__,desk_planner}.py. The Press panel's cadence
-# block now reports the RESOLVED cap (0 while the W2R desk-note lane is dark),
-# and it gets that number by calling the planner's own `_triage_cap` rather than
-# re-deriving the stricter-of rule — a panel that computes its own answer is a
-# panel that can disagree with the engine. That call puts both modules in the
-# admin's load-time closure, so without them here a deploy that changed the cap
-# resolver would leave the panel serving the old rule out of sys.modules: the
-# exact class the outbox gap (2026-07-26) and the four XG-W6 panel modules fixed.
-# Only these two — research_triage/research_veto/research_lane are reached solely
-# through desk_planner's function-level imports on the PLANNING path, which the
-# panel never calls.
-#
-# The Intelligence Desk approve endpoint adds engine/marketing/{story_lock,
-# wire_routing}.py. That endpoint is the ONE admin path that emits a post, and
-# both modules are gates on it: wire_routing decides which desk owns the emission
-# and story_lock enforces one-owner-per-conversation across desks. Left out here,
-# a deploy that retuned the routing table or widened the lock window would leave
-# the panel queueing against the OLD rule out of sys.modules — the outbox gap
-# (2026-07-26) again, but on the path where being stale means a wrong-desk or
-# double-owner post rather than a stale reading.
-#
-# A-F05-1 (PR #6896) adds engine/chronicle/impact.py. The Chronicle panel
-# (admin/chronicle.py) imports it inside the request handler, which is
-# import-cached after the first hit exactly like a module-level import, so a
-# deploy that changed the impact scoring would leave the panel serving the old
-# module out of sys.modules. governor.py stays out: the panel never imports it.
-if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|quality|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/codex_lane/runner\.py|engine/chronicle/impact\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
-	systemctl is-enabled admin >/dev/null 2>&1 && systemctl restart admin || true
-fi
 
 if [ "$REPO_UPDATED" -eq 1 ] || [ "$RECONCILED" -eq 1 ]; then
 	echo "macro-update $(date -u +%FT%TZ) ${OLD:0:8}..$(git -C "$APP_DIR" rev-parse --short HEAD)"
 fi
+# BEGIN DEPLOY_EXIT_STATUS
+if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
+	echo "macro-update: deploy finished with status ${DEPLOY_EXIT_STATUS:-1} (frozen lanes: w2c)" >&2
+fi
+exit "${DEPLOY_EXIT_STATUS:-0}"
+# END DEPLOY_EXIT_STATUS

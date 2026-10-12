@@ -10,7 +10,7 @@ Prophet.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
 import re
@@ -42,6 +42,7 @@ WORKSPACE_SCHEMA = "event_workspace.v1"
 # discoverable predecessor pointer once a newer generation supersedes it.
 MANIFEST_SCHEMA_V1 = "event_workspace_manifest.v1"
 MANIFEST_SCHEMA_V2 = "event_workspace_manifest.v2"
+MANIFEST_SCHEMA_V3 = "event_workspace_manifest.v3"
 # Legacy alias -- historically "the" manifest schema constant.  Nothing
 # outside this module keys off its current value (grep-verified); kept
 # pointing at v1 so a caller that only ever compared against the OLD
@@ -95,6 +96,7 @@ MANIFEST_KEYS = (
 # v2 = v1's exact key set PLUS the two chain-link keys (A1).  Both are
 # REQUIRED in a v2 manifest -- never optional-and-silently-absent (A3).
 MANIFEST_KEYS_V2 = MANIFEST_KEYS + ("previous_generation_id", "previous_manifest_sha256")
+MANIFEST_KEYS_V3 = MANIFEST_KEYS_V2 + ("source_clock",)
 
 WORKSPACE_WARNINGS = frozenset({
     "wire_record_not_found",
@@ -124,6 +126,7 @@ class WorkspaceError(ContractError):
 
 
 def _utc(value: object, *, field_name: str) -> datetime:
+    # Naive ISO timestamps (no timezone) are interpreted as UTC by convention.
     if isinstance(value, datetime):
         parsed = value
     elif isinstance(value, date):
@@ -140,6 +143,51 @@ def _utc(value: object, *, field_name: str) -> datetime:
 
 def _iso(value: datetime) -> str:
     return value.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _ceil_second(value: datetime) -> datetime:
+    """The first whole second at or after *value*.
+
+    A generation clock is published in whole seconds.  Cutting a sub-second observation
+    down would publish a clock earlier than the observation it was derived from.
+    """
+    if value.microsecond == 0:
+        return value
+    return value.replace(microsecond=0) + timedelta(seconds=1)
+
+
+_LIFECYCLE_CLOCKS = ("observed_at", "source_available_at")
+
+
+def _explicit_utc_lifecycle(row: dict[str, Any]) -> dict[str, Any]:
+    """Publish a zone-less lifecycle clock with the UTC designator it was read under.
+
+    ``_utc`` reads a zone-less clock as UTC and the generation clocks are derived from
+    that reading.  Left zone-less, a reader that requires an explicit zone accepts the
+    manifest and loses the clock of the very row the manifest was built from.  A clock
+    that already names its zone is published exactly as given.
+    """
+    lifecycle = row.get("lifecycle")
+    if not isinstance(lifecycle, Mapping):
+        return row
+    changed: dict[str, str] = {}
+    for field in _LIFECYCLE_CLOCKS:
+        value = lifecycle.get(field)
+        if not isinstance(value, str):
+            continue
+        try:
+            parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None:
+            changed[field] = (
+                parsed.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+            )
+    if not changed:
+        return row
+    out = dict(row)
+    out["lifecycle"] = {**lifecycle, **changed}
+    return out
 
 
 def _require_mapping(value: object, *, name: str) -> dict[str, Any]:
@@ -347,7 +395,9 @@ def validate_event_workspace(payload: object) -> None:
 def validate_workspace_manifest(payload: object) -> None:
     item = _require_mapping(payload, name="event_workspace_manifest")
     schema = item.get("schema")
-    if schema == MANIFEST_SCHEMA_V2:
+    if schema == MANIFEST_SCHEMA_V3:
+        _require_exact_keys(item, MANIFEST_KEYS_V3, name="event_workspace_manifest")
+    elif schema == MANIFEST_SCHEMA_V2:
         _require_exact_keys(item, MANIFEST_KEYS_V2, name="event_workspace_manifest")
     elif schema == MANIFEST_SCHEMA_V1:
         _require_exact_keys(item, MANIFEST_KEYS, name="event_workspace_manifest")
@@ -357,6 +407,14 @@ def validate_workspace_manifest(payload: object) -> None:
         raise WorkspaceError("invalid manifest generation_id")
     if iso_timestamp(item.get("generated_at")) is None:
         raise WorkspaceError("manifest generated_at missing")
+    if schema == MANIFEST_SCHEMA_V3:
+        source_clock = item.get("source_clock")
+        if iso_timestamp(source_clock) is None:
+            raise WorkspaceError("manifest source_clock missing")
+        generated_dt = _utc(item.get("generated_at"), field_name="generated_at")
+        source_dt = _utc(source_clock, field_name="source_clock")
+        if source_dt > generated_dt:
+            raise WorkspaceError("manifest source_clock is later than generated_at")
     if item.get("authority") != AUTHORITY:
         raise WorkspaceError("workspace manifest authority must be context_only")
     if item.get("status") not in {"ready", "degraded", "partial", "empty"}:
@@ -396,7 +454,7 @@ def validate_workspace_manifest(payload: object) -> None:
     warnings = item.get("warnings")
     if not isinstance(warnings, list) or warnings != sorted(set(warnings)):
         raise WorkspaceError("manifest warnings invalid")
-    if schema == MANIFEST_SCHEMA_V2:
+    if schema in {MANIFEST_SCHEMA_V2, MANIFEST_SCHEMA_V3}:
         previous_id = item.get("previous_generation_id")
         previous_sha = item.get("previous_manifest_sha256")
         # A2: previous_generation_id may be null ONLY for a genuine
@@ -447,6 +505,36 @@ def _register_alias(alias_map: dict[str, str], alias: object, event_id: str) -> 
         )
 
 
+def _lifecycle_clock(
+    row: Mapping[str, Any],
+    event_id: str,
+    field: str,
+) -> datetime:
+    lifecycle = row.get("lifecycle")
+    value = lifecycle.get(field) if isinstance(lifecycle, Mapping) else None
+    if not isinstance(lifecycle, Mapping):
+        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable (got {repr(value)[:80]})")
+    try:
+        return _utc(value, field_name=field)
+    except (WorkspaceError, ValueError, TypeError, OverflowError):
+        raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable (got {repr(value)[:80]})") from None
+
+
+def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, str]:
+    latest_observed: datetime | None = None
+    latest_source: datetime | None = None
+    for event_id, row in cleaned.items():
+        observed_dt = _lifecycle_clock(row, event_id, "observed_at")
+        source_dt = _lifecycle_clock(row, event_id, "source_available_at")
+        if observed_dt < source_dt:
+            raise WorkspaceError(f"{event_id}: observed_at precedes source_available_at")
+        latest_observed = observed_dt if latest_observed is None else max(latest_observed, observed_dt)
+        latest_source = source_dt if latest_source is None else max(latest_source, source_dt)
+    if latest_observed is None or latest_source is None:
+        raise WorkspaceError("write_workspace_generation requires at least one workspace")
+    return _iso(_ceil_second(latest_observed)), _iso(_ceil_second(latest_source))
+
+
 def _generation_identity(
     workspaces: Mapping[str, Mapping[str, Any]],
     generated_at: str,
@@ -472,6 +560,65 @@ def _generation_identity(
         "previous_generation_id": previous_generation_id,
         "workspaces": pre_id,
     })).hexdigest()[:24]
+
+
+def _generation_identity_v3(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    generated_at: str,
+    source_clock: str,
+    *,
+    previous_generation_id: str | None = None,
+) -> str:
+    pre_id = {
+        event_id: {
+            key: payload[key]
+            for key in WORKSPACE_KEYS
+            if key not in ("generation_id", "generated_at")
+        }
+        for event_id, payload in sorted(workspaces.items())
+    }
+    return sha256(canonical_json_bytes({
+        "generated_at": generated_at,
+        "previous_generation_id": previous_generation_id,
+        "source_clock": source_clock,
+        "workspaces": pre_id,
+    })).hexdigest()[:24]
+
+
+def preview_generation_identity_v3(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    *,
+    previous_generation_id: str | None = None,
+) -> str:
+    cleaned = {
+        event_id: _explicit_utc_lifecycle(_strip_private(payload))
+        for event_id, payload in workspaces.items()
+    }
+    generated_at, source_clock = _generation_clocks(cleaned)
+    return _generation_identity_v3(
+        cleaned,
+        generated_at,
+        source_clock,
+        previous_generation_id=previous_generation_id,
+    )
+
+
+def validate_generation_clocks(manifest: Mapping[str, Any], rows: Mapping[str, Mapping[str, Any]]) -> None:
+    if manifest.get("schema") != MANIFEST_SCHEMA_V3:
+        return
+    manifest_generated = str(manifest.get("generated_at") or "")
+    generated_dt = _utc(manifest_generated, field_name="generated_at")
+    for event_id, row in rows.items():
+        if str(row.get("generated_at") or "") != manifest_generated:
+            raise WorkspaceError(
+                f"{event_id}: row generated_at must match manifest generated_at"
+            )
+        observed_dt = _lifecycle_clock(row, event_id, "observed_at")
+        source_dt = _lifecycle_clock(row, event_id, "source_available_at")
+        if generated_dt < observed_dt or observed_dt < source_dt:
+            raise WorkspaceError(
+                f"{event_id}: generated_at must be >= observed_at >= source_available_at"
+            )
 
 
 def preview_generation_identity(
@@ -522,20 +669,25 @@ def write_workspace_generation(
     """
     if not workspaces:
         raise WorkspaceError("write_workspace_generation requires at least one workspace")
+    if generated_at is not None:
+        raise WorkspaceError(
+            "generated_at is derived from the rows' observation clocks and can no longer be supplied"
+        )
     if previous_generation_id is not None and not previous_manifest_sha256:
         raise WorkspaceError(
             "previous_manifest_sha256 is required whenever previous_generation_id is set"
         )
     stamped: dict[str, dict[str, Any]] = {}
-    generated = generated_at or next(iter(workspaces.values())).get("generated_at")
-    if not generated:
-        generated = _iso(datetime.now(timezone.utc))
     cleaned = {
-        event_id: _strip_private(payload)
+        event_id: _explicit_utc_lifecycle(_strip_private(payload))
         for event_id, payload in workspaces.items()
     }
-    generation_id = _generation_identity(
-        cleaned, str(generated), previous_generation_id=previous_generation_id,
+    generated, source_clock = _generation_clocks(cleaned)
+    generation_id = _generation_identity_v3(
+        cleaned,
+        generated,
+        source_clock,
+        previous_generation_id=previous_generation_id,
     )
     alias_map: dict[str, str] = {}
     for event_id, payload in cleaned.items():
@@ -584,14 +736,16 @@ def write_workspace_generation(
         "files": dict(sorted(file_blocks.items())),
         "generated_at": str(generated),
         "generation_id": generation_id,
-        "schema": MANIFEST_SCHEMA_V2,
+        "schema": MANIFEST_SCHEMA_V3,
+        "source_clock": source_clock,
         "status": status,
         "warnings": [],
         "previous_generation_id": previous_generation_id,
         "previous_manifest_sha256": previous_manifest_sha256,
     }
-    # Re-order to MANIFEST_KEYS_V2.
-    manifest = {key: manifest[key] for key in MANIFEST_KEYS_V2}
+    validate_generation_clocks(manifest, stamped)
+    # Re-order to MANIFEST_KEYS_V3.
+    manifest = {key: manifest[key] for key in MANIFEST_KEYS_V3}
     validate_workspace_manifest(manifest)
     manifest_body = canonical_json_bytes(manifest)
     immutable_manifest_path = generation_dir / "manifest.json"

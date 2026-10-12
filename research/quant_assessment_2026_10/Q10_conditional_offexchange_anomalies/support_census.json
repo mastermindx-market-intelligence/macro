@@ -1,0 +1,135 @@
+{
+ "n_universe": 374,
+ "with_yahoo": 374,
+ "rows_joined": 282826,
+ "rows_invalid_ratio_gt1": 1320,
+ "rows_zero_denominator": 1,
+ "rows_p_eq_0": 0,
+ "rows_p_eq_1": 0,
+ "issuers_with_break": [
+  [
+   "ANET",
+   "2025-01-17"
+  ],
+  [
+   "AVGO",
+   "2024-08-23"
+  ],
+  [
+   "AZN",
+   "2026-03-09"
+  ],
+  [
+   "AZO",
+   "2026-08-12"
+  ],
+  [
+   "BKNG",
+   "2026-05-15"
+  ],
+  [
+   "CRWD",
+   "2026-08-12"
+  ],
+  [
+   "FAST",
+   "2025-07-07"
+  ],
+  [
+   "KEY",
+   "2025-11-17"
+  ],
+  [
+   "KLAC",
+   "2026-07-28"
+  ],
+  [
+   "LRCX",
+   "2024-11-13"
+  ],
+  [
+   "MSTR",
+   "2024-09-19"
+  ],
+  [
+   "MTH",
+   "2025-02-14"
+  ],
+  [
+   "NOW",
+   "2026-02-02"
+  ],
+  [
+   "NVDA",
+   "2024-07-23"
+  ],
+  [
+   "NVO",
+   "2023-10-30"
+  ],
+  [
+   "ORLY",
+   "2025-07-23"
+  ],
+  [
+   "PANW",
+   "2025-01-30"
+  ],
+  [
+   "POWL",
+   "2026-05-14"
+  ],
+  [
+   "RF",
+   "2025-08-22"
+  ],
+  [
+   "SMCI",
+   "2024-11-11"
+  ],
+  [
+   "SOXX",
+   "2024-04-18"
+  ],
+  [
+   "TSCO",
+   "2025-02-05"
+  ],
+  [
+   "WMT",
+   "2024-04-05"
+  ],
+  [
+   "XLB",
+   "2026-01-16"
+  ],
+  [
+   "XLE",
+   "2026-01-16"
+  ],
+  [
+   "XLI",
+   "2025-06-30"
+  ],
+  [
+   "XLK",
+   "2026-01-14"
+  ],
+  [
+   "XLU",
+   "2026-01-16"
+  ],
+  [
+   "XLY",
+   "2026-01-13"
+  ]
+ ],
+ "dates_min": "2023-08-01",
+ "dates_max": "2026-10-08",
+ "n_dates": 801,
+ "inputs": {
+  "/Users/chriswong/Documents/Cluade/macro-main/data/finra_short_volume/panel_deep.parquet": "12cc30a28547c30d7effd0991c6dab773b419f36b2fc4cc2133069fc444d5d9f",
+  "/Users/chriswong/Documents/Cluade/macro-main/data/finra_short_volume/panel.parquet": "63c69080d88baf4bbc039d1906995e37fa7c5078f6370cac46d1a03a7df4f6f4"
+ },
+ "n_issuers_with_break": 29
+}

@@ -1,12 +1,12 @@
 {
-  "as_of": "2026-09-28",
+  "as_of": "2026-10-02",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
-  "n_due": 2,
+  "n_due": 1,
   "results": [
     {
-      "id": "cortex-2026-08-31-in-low-volatility-regimes-negative-10-d-3ac05c",
-      "claim_shape": "conditional_regime",
+      "id": "cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc",
+      "claim_shape": "lead_lag",
       "verdict": "insufficient-n",
       "n": 0,
       "metric_value": null,
@@ -24,38 +24,16 @@
       },
       "gate": {
         "metric": "hit_rate",
-        "threshold": 0.55,
-        "min_n": 35,
-        "horizon_d": 21,
-        "direction_expected": 1
-      },
-      "note": null
-    },
-    {
-      "id": "cortex-2026-08-31-in-high-volatility-regimes-extended-dwe-235ca3",
-      "claim_shape": "entry_quality",
-      "verdict": "insufficient-n",
-      "n": 0,
-      "metric_value": null,
-      "detail": {
-        "metric_space": "absolute",
-        "total_spine_rows": 0,
-        "pre_reg_dropped": 0,
-        "post_reg_n": 0,
-        "note": "insufficient post-registration signals (0 < 25)",
-        "evaluator_version": "W7b-PR3"
-      },
-      "gate": {
-        "metric": "hit_rate",
-        "threshold": 0.55,
+        "threshold": 0.6,
         "min_n": 25,
-        "horizon_d": 21,
-        "direction_expected": -1
+        "horizon_d": 7,
+        "direction_expected": 1,
+        "clamped_from": 20
       },
       "note": null
     }
   ],
   "n_passed": 0,
   "n_failed": 0,
-  "n_insufficient": 2
+  "n_insufficient": 1
 }

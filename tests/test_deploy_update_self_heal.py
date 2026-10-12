@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import ast
+import os
+import shlex
 import subprocess
 import urllib.parse
 from collections import deque
@@ -115,7 +117,7 @@ def test_admin_import_closure_generation_forces_same_cycle_restart():
     )
     assert (
         "Environment=MMX_ADMIN_IMPORT_CLOSURE_GENERATION="
-        "2026-08-09-prophet-integrity-v1"
+        "2026-10-11-billing-catalog-v1"
     ) in unit
 
     reconcile = SCRIPT.index('cmp -s "$APP_DIR/admin/deploy/admin.service"')
@@ -171,6 +173,85 @@ def test_api_restart_transaction_precedes_w2c_runtime_attestation():
     assert "API_RESTART_CONFIRMED=1" in transaction
     assert "mm_write_api_fence_marker" in transaction
     assert "w2c_start_owner_chain" not in transaction
+
+
+@pytest.mark.parametrize(
+    ("unit_differs", "changed", "unit_valid", "expected_restart"),
+    [
+        (True, "", True, True),
+        (False, "config/plans.yml", True, True),
+        (False, "app/billing.py", True, True),
+        (False, "site/news.html", True, False),
+        (True, "", False, False),
+    ],
+)
+def test_admin_adopts_before_unrelated_w2c_failure(
+    tmp_path: Path, unit_differs, changed, unit_valid, expected_restart
+):
+    """Run the actual admin transaction and W2C exit in their source order.
+
+    The old updater exits before installing the admin unit, even on a later
+    empty-CHANGED tick. Keep that W2C refusal while allowing admin to adopt.
+    Only systemd is simulated; comparison and unit installation use real files.
+    """
+    app = tmp_path / "app"
+    source = app / "admin/deploy/admin.service"
+    source.parent.mkdir(parents=True)
+    source.write_text("reviewed admin generation\n")
+    installed = tmp_path / "installed-admin.service"
+    installed.write_text("old generation\n" if unit_differs else source.read_text())
+    events = tmp_path / "events"
+    start = SCRIPT.index("ADMIN_UNIT_UPDATED=0")
+    restart = SCRIPT.index("\tsystemctl is-enabled admin ", start)
+    end = SCRIPT.index("\nfi", restart) + len("\nfi")
+    admin = SCRIPT[start:end].replace(
+        "/etc/systemd/system/admin.service", shlex.quote(str(installed))
+    )
+    failure_start = SCRIPT.index('if [ "${MARKET_MEMORY_EXPERIENCE_ATTESTED:-1}" -ne 1 ]; then')
+    failure_end = SCRIPT.index("# END W1B5_TIMER_FINALIZATION", failure_start)
+    refusal = SCRIPT[failure_start:failure_end]
+    freeze_start = SCRIPT.index("# BEGIN W2C_LANE_FREEZE\n")
+    freeze = SCRIPT[freeze_start : SCRIPT.index("# END W2C_LANE_FREEZE", freeze_start)]
+    exit_start = SCRIPT.index("# BEGIN DEPLOY_EXIT_STATUS\n")
+    exit_status = SCRIPT[exit_start : SCRIPT.index("# END DEPLOY_EXIT_STATUS", exit_start)]
+    ordered = "\n".join(
+        block
+        for _, block in sorted(
+            [
+                (start, admin),
+                (freeze_start, freeze),
+                (failure_start, refusal),
+                (exit_start, exit_status),
+            ]
+        )
+    )
+    harness = f"""
+set -eu
+APP_DIR={shlex.quote(str(app))}
+RECONCILED=0
+MARKET_MEMORY_EXPERIENCE_ATTESTED=0
+OPTIONS_RECONCILIATION_COMPLETE=0
+trap 'echo "exit-options-complete=$OPTIONS_RECONCILIATION_COMPLETE" >> "$EVENTS"' EXIT
+systemctl() {{ echo "$*" >> "$EVENTS"; }}
+systemd-analyze() {{ [ "$UNIT_VALID" = 1 ]; }}
+{ordered}
+"""
+    result = subprocess.run(
+        ["bash", "-c", harness], text=True, capture_output=True,
+        env={**os.environ, "EVENTS": str(events), "CHANGED": changed,
+             "UNIT_VALID": "1" if unit_valid else "0"},
+    )
+    assert result.returncode == 1
+    assert "W2C installation and terminal state were not authenticated" in result.stderr
+    observed = events.read_text().splitlines()
+    assert observed[-1] == "exit-options-complete=0"
+    assert ("restart admin" in observed) is expected_restart
+    assert not any("market-memory" in event or "timer" in event for event in observed)
+    assert installed.read_text() == (
+        source.read_text() if unit_valid or not unit_differs else "old generation\n"
+    )
+    if unit_differs and unit_valid:
+        assert observed.index("daemon-reload") < observed.index("restart admin")
 
 
 # --------------------------------------------------------------------------
@@ -256,6 +337,8 @@ MUST_RESTART = [
     "app/requirements.txt",
     "app/deploy/macro-api.service",
     "config/site_access.yml",
+    # app.billing holds the issuer's plan/features catalog for the process life.
+    "config/plans.yml",
     "engine/neuralweb/market_memory_playback.py",
     # Private Issue Desk router import-caches both its engine and strict schemas.
     "engine/options_issue_desk.py",
@@ -264,6 +347,7 @@ MUST_RESTART = [
     "contracts/options/options.issue_desk_decision.v1.schema.json",
     "contracts/options/options.issue_receipt.v1.schema.json",
     "lib/nyse_calendar.py",
+    "lib/us_cash_calendar.py",  # Request-time US settle-window import in live_quotes.
     # research vault serving layer — imported at MODULE level by app/research.py.
     # These were the 2026-07-26 gap: download caps / anti-scrape limits / watermark
     # policy deployed to the VPS and stayed dead until an unrelated app/ change.
@@ -314,6 +398,8 @@ MUST_RESTART = [
     "engine/neuralweb/ask_brain.py",
     "engine/neuralweb/chat_plain_words.py",
     "engine/neuralweb/brain_gateway.py",
+    "engine/risk_envelope.py",
+    "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
     # W1-B imports this typed-fact package on the first native request.  From
     # then on its modules and lru-cached registry/schema validators are pinned.
@@ -493,6 +579,10 @@ ADMIN_MUST_RESTART = [
     "admin/mastermind_logs.py",
     "admin/prophet.py",
     "admin/trade_memory.py",
+    # The authenticated entitlement panel lazily imports the existing billing
+    # writer, including its process-cached catalog; an API restart is separate.
+    "app/billing.py",
+    "config/plans.yml",
     # outbox approve / reject / decide endpoints (admin/marketing.py).  This was
     # the 2026-07-26 gap: an outbox.py fix deployed to the VPS and the running
     # panel kept serving the previous module, with no signal.

@@ -30,6 +30,8 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
+from lib.market_observations import provider_date_matches, snapshot_rejection_reason
+
 from lib import config
 from collectors import tushare_client as tc
 from collectors import _first_seen_store as fss
@@ -93,15 +95,20 @@ def refresh() -> int:
     if not tc.enabled():
         return 0
     today = pd.Timestamp.utcnow().strftime("%Y-%m-%d")
+    previous = None
     if OUT.exists():
         try:
-            if str(pd.read_parquet(OUT, columns=["asof"])["asof"].max()) >= today:
+            previous = pd.read_parquet(OUT)
+            if "asof" in previous and str(previous["asof"].max()) >= today:
                 return 0
         except Exception:  # noqa: BLE001
             pass
     df, trade_date = tc.snapshot_by_date("margin_detail", fields=_FIELDS)
     if df is None or df.empty:
         log.warning("tushare margin: no margin_detail snapshot")
+        return 0
+    if not provider_date_matches(df, trade_date):
+        log.warning("%s: provider trade_date disagrees with query date; last-good snapshot retained", OUT.name)
         return 0
     df = df.rename(columns={"ts_code": "ticker", "rzye": "fin_balance", "rqye": "short_balance",
                             "rzmre": "fin_buy", "rzrqye": "total_balance"})
@@ -114,6 +121,10 @@ def refresh() -> int:
     keep = ["ticker", "fin_balance", "short_balance", "fin_buy", "total_balance",
             "fin_pctile", "trade_date", "asof"]
     out = df[[c for c in keep if c in df.columns]].dropna(subset=["ticker"])
+    reason = snapshot_rejection_reason(out, previous, "CN", value_cols=('fin_balance', 'short_balance', 'total_balance'))
+    if reason:
+        log.warning("%s: %s; last-good snapshot retained", OUT.name, reason)
+        return 0
     fetched_at = datetime.now(timezone.utc).isoformat()
     n_hist = accrue_margin_hist(hist_rows_from_snapshot(
         out, trade_date=str(trade_date), fetched_at=fetched_at, asof=today))

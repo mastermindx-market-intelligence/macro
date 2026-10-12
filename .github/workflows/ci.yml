@@ -571,9 +571,12 @@ on:
       - "contracts/options/options.signal_campaign.v2.schema.json"
       - "contracts/options/options.signal_campaign_outcome.v1.schema.json"
       - "contracts/options/options.signal_campaign_checkpoint.v1.schema.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v2.schema.json"
+      - "contracts/options/options.signal_campaign_correction_activation_receipt.v1.schema.json"
       - "data/options_signal_campaign/**"
       - "research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG.md"
       - "tests/test_options_signal_campaign.py"
+      - "tests/test_options_signal_campaign_effective_view.py"
       # R6.2 private operator-reviewed Options Issue Desk. engine/** and
       # scripts/*.py cover the engine/builder halves; these exact entries close
       # the API, contract, and test-only trigger seams without widening app/**.
@@ -1673,6 +1676,10 @@ on:
       - "tests/test_render_builder_ownership.py"
       - "tests/test_render_dead_asset_gate.py"
       - "tests/test_render_canada_scope.py"
+      # asia-close.yml Asia ownership fence (job: workflow-yaml). .github/workflows/**
+      # already reaches asia-close.yml itself; this entry is so a test-only edit
+      # still starts CI, per the two-halves law.
+      - "tests/test_china_heatmap_freshness.py"
       # OIP E8 options integrity suites (job: workflow-yaml). engine/**, scripts/** and
       # .github/workflows/** already reach their subjects; these entries are so a
       # TEST-ONLY edit still starts CI, per the two-halves law.
@@ -2174,10 +2181,12 @@ on:
       # FS-4 flow-score trainer + nightly scorer + gate v2:
       # lib module, trainer ops script, config, scorer tests, and trainer tests.
       - "lib/flow_score.py"
+      - "lib/flow_score_geometry.py"
       - "config/flow_score.yml"
       - "scripts/ops_train_flow_score.py"
       - "tests/test_fs4_flow_scorer.py"
       - "tests/test_fs4_flow_trainer.py"
+      - "tests/test_fs5_flow_geometry.py"
       # FL-A EOD flow backfill (FC-R4/R11): backfill script, build_options_flow staleness
       # warning, and the test suite that pins idempotence + schema-variant handling.
       - "scripts/backfill_options_flow.py"
@@ -2188,6 +2197,9 @@ on:
       - "scripts/build_leader_radar.py"
       - "tests/test_leader_lifecycle.py"
       - "tests/test_build_leader_radar.py"
+      # Leader lineage descriptor (read-only, additive; research/leader_lineage/SPEC_V1.md)
+      - "engine/leader_lineage.py"
+      - "tests/test_leader_lineage.py"
       # OEU M-PRO display-tier options context: the shared loader/vocabulary, the two
       # Prophet-side consumers, and the fence suite. A change to any of them must
       # retrigger the fence tests even when nothing else in this filter moved.
@@ -2449,6 +2461,11 @@ on:
       # but no trigger matched it, so a receipt-only PR never started the run that
       # grades those receipts (the pack suite's startability audit, red since #7971).
       - "mockups/evidence/prophet-p0b-zero-fouc/**"
+      # The committed TP-0 evidence corpus (2026-10-02, #8278 → heal #8285): the
+      # design-governance job declares these two trees as its scope floor, and a
+      # declared scope must be startable here (test_derived_scopes_are_startable…).
+      - "mockups/evidence/**"
+      - "mockups/refs/**"
       - "tests/test_marketing_ad_plane_o.py"
       - "tests/test_marketing_persona_model.py"
       - "tests/test_marketing_reply_arming.py"
@@ -3442,6 +3459,8 @@ on:
       # listing only the suite leaves a unit/script-only edit unable to start
       # the job that owns it. update.sh already appears above.
       - "tests/test_backup_user_tables.py"
+      - "tests/test_backup_iw2_snapshot.py"
+      - "tests/fixtures/user_table_backup_v1.tar.gz"
       - "scripts/backup_user_tables.py"
       - "app/deploy/macro-user-backup.service"
       - "app/deploy/macro-user-backup.timer"
@@ -3936,6 +3955,7 @@ on:
       - "tests/test_forex.py"
       - "tests/test_forex_context_bus.py"
       - "tests/test_news_event_ledger.py"
+      - "tests/test_build_news.py"
       - "tests/test_phase_buildout.py"
       - "tests/test_policy_lever.py"
       - "tests/test_rates_command.py"
@@ -4005,6 +4025,8 @@ on:
       - "tests/test_prophet_stage_shadow.py"
       - "tests/test_prophet_stage_tilt.py"
       - "tests/test_prophet_w1_intake_repair.py"
+      - "tests/test_prophet_plan_chronology_audit.py"
+      - "tests/test_prophet_integrity.py"
       - "tests/test_tape_flow.py"
       - "tests/test_tape_flow_stamp.py"
       - "tests/test_tech_events_export.py"
@@ -4352,6 +4374,31 @@ on:
       - "tests/test_dataos_nulls.py"
       - "tests/test_dataos_registry.py"
       - "tests/test_dataos_quality.py"
+      # Data OS source-vintage/Parquet lane owns the complete Tiingo suite.
+      - "collectors/__init__.py"
+      - "collectors/tiingo_archive.py"
+      - "scripts/tiingo_ingest.py"
+      - "scripts/tiingo_materialize.py"
+      - "scripts/tiingo_vendor_cohort.py"
+      - "requirements/tiingo.txt"
+      - "tests/test_tiingo_archive.py"
+      - "tests/test_tiingo_views.py"
+      - "tests/test_tiingo_reader.py"
+      - "tests/test_tiingo_history.py"
+      - "tests/test_tiingo_research_query.py"
+      - "tests/test_tiingo_boats_tape.py"
+      - "tests/test_tiingo_boats_stream_chain.py"
+      - "tests/test_tiingo_boats_display.py"
+      - "lib/dataos/tiingo_boats_tape.py"
+      - "scripts/tiingo_research_query.py"
+      - "tests/test_tiingo_vendor_cohort.py"
+      - "tests/test_tiingo_ingestion_integrity.py"
+      - "scripts/tiingo_reference_audit.py"
+      - "tests/test_tiingo_reference_audit.py"
+      - "tests/test_tiingo_planning.py"
+      - "scripts/tiingo_corpus_audit.py"
+      - "tests/test_tiingo_corpus_audit.py"
+      - "tests/test_tiingo_additional_history.py"
       # Job: dataos-identity-seams (.github/ci/legacy-jobs.yml). DOS-1.2. Both halves
       # again: the suite AND the surfaces it measures. config/** and lib/** catch-alls
       # would cover most of these, but a catch-all is provenance by accident — an edit
