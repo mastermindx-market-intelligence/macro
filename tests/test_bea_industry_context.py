@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from engine.market_ontology.bea_industry_context import (
     BEAContextRefused,
@@ -19,6 +20,7 @@ from engine.market_ontology.bea_industry_context import (
     adapt_industry_commodity_input,
     adapt_workspace_bea_history,
     compose_bea_industry_accounting_change,
+    read_private_bea_accounting_brief,
 )
 
 _KEYS = (
@@ -556,6 +558,121 @@ class BEAAccountingChangeBriefTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(BEAContextRefused):
                 compose_bea_industry_accounting_change(
                     response, industry_code="3341", commodity_code="3344",
+                )
+
+
+class BEAHostBoundQueryTests(unittest.TestCase):
+    """The actual preinstalled DataWorkspace, never an alternate file reader."""
+
+    def _research_workspace(self, root: Path):
+        from lib.dataos.web_workspace import DataWorkspace, RootBinding
+
+        return DataWorkspace(
+            (RootBinding(
+                alias="free_source_research",
+                path=root,
+                evidence_kind="research_capture",
+            ),),
+            Path(__file__).resolve().parents[1] / "config" / "dataset_registry.yml",
+            source_revision="synthetic-pre-admission",
+        )
+
+    def _fixture(self, root: Path, *, extra_year: bool = False) -> Path:
+        location = root / "data_workspace_views_20261011"
+        location.mkdir()
+        path = location / "industry_3341.jsonl"
+        rows = [synthetic_row(year=y) for y in range(2017, 2025)]
+        if extra_year:
+            rows.append(synthetic_row(year=2024))
+        path.write_text(
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+            encoding="utf-8",
+        )
+        return path
+
+    def test_end_to_end_host_bound_reader_returns_exact_accounting_brief(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self._fixture(root)
+            workspace = self._research_workspace(root)
+            report = read_private_bea_accounting_brief(
+                workspace, industry_code="3341", commodity_code="3344",
+            )
+            self.assertEqual(report["authority"], "PRIVATE_RESEARCH_ONLY")
+            self.assertEqual(report["periods"]["latest_year"], 2024)
+            self.assertEqual(len(report["annual_observations"]), 8)
+            self.assertEqual(report["reader_provenance"]["source_row_count"], 8)
+            self.assertTrue(report["reader_provenance"]["scan_complete"])
+            self.assertFalse(report["dataos_native_admitted"])
+            self.assertFalse(report["may_publish"])
+            self.assertFalse(report["named_company_relationship"])
+            self.assertEqual(report["source"]["publisher"],
+                             "U.S. Bureau of Economic Analysis")
+
+    def test_query_refuses_extra_ninth_matching_row(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self._fixture(root, extra_year=True)
+            with self.assertRaises(BEAContextRefused):
+                read_private_bea_accounting_brief(
+                    self._research_workspace(root),
+                    industry_code="3341", commodity_code="3344",
+                )
+
+    def test_query_refuses_source_changed_between_describe_and_read(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            path = self._fixture(root)
+            workspace = self._research_workspace(root)
+            original_read = workspace.read
+
+            def changed_file(*args, **kwargs):
+                with path.open("a", encoding="utf-8") as stream:
+                    stream.write("\n")
+                return original_read(*args, **kwargs)
+
+            with patch.object(workspace, "read", side_effect=changed_file):
+                with self.assertRaisesRegex(BEAContextRefused, "SOURCE_VERSION_MISMATCH"):
+                    read_private_bea_accounting_brief(
+                        workspace, industry_code="3341", commodity_code="3344",
+                    )
+
+    def test_unbound_root_refuses_and_never_discovers_arbitrary_directories(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self._fixture(root)
+            from lib.dataos.web_workspace import DataWorkspace, RootBinding
+
+            wrong = DataWorkspace(
+                (RootBinding(
+                    alias="other_research",
+                    path=root,
+                    evidence_kind="research_capture",
+                ),),
+                Path(__file__).resolve().parents[1] / "config" / "dataset_registry.yml",
+            )
+            with self.assertRaisesRegex(BEAContextRefused, "ROOT_NOT_BOUND"):
+                read_private_bea_accounting_brief(
+                    wrong, industry_code="3341", commodity_code="3344",
+                )
+            for code in ("../3341", "3341/../", "", "3341.jsonl", "3341 "):
+                with self.subTest(code=code), self.assertRaises(BEAContextRefused):
+                    read_private_bea_accounting_brief(
+                        self._research_workspace(root),
+                        industry_code=code, commodity_code="3344",
+                    )
+
+    def test_public_or_asof_call_refuses_before_any_file_access(self):
+        for forbidden in (
+            {"purpose": "public_display"},
+            {"purpose": "trade"},
+            {"purpose": "train"},
+            {"as_of": "2020-01-01T00:00:00+00:00"},
+        ):
+            with self.subTest(forbidden=forbidden), self.assertRaises(BEAContextRefused):
+                read_private_bea_accounting_brief(
+                    object(), industry_code="3341",
+                    commodity_code="3344", **forbidden,
                 )
 
 

@@ -457,3 +457,65 @@ def compose_bea_industry_accounting_change(
         "may_train": False,
         "may_trade": False,
     }
+
+
+def read_private_bea_accounting_brief(
+    workspace: Any, *, industry_code: str, commodity_code: str,
+    purpose: str = "private_research", as_of: object = None,
+) -> dict[str, Any]:
+    """Query the incumbent owner-bound DataWorkspace for research, never for release.
+
+    The caller supplies an already-authorized DataWorkspace with its host-owned
+    research root. We do not create a root, grant entitlement, guess a source
+    clock, or substitute a new file opener. Version fencing is delegated to
+    DataWorkspace.describe/read and evidence shape to the existing projection.
+    """
+    if purpose != "private_research" or as_of is not None:
+        raise BEAContextRefused("workspace query is research-only and not PIT-readable")
+    if (not isinstance(industry_code, str) or not _CODE.fullmatch(industry_code)
+            or not isinstance(commodity_code, str) or not _CODE.fullmatch(commodity_code)):
+        raise BEAContextRefused("exact BEA industry and commodity codes required")
+
+    from lib.dataos.web_workspace import DataWorkspace, WorkspaceError
+
+    if type(workspace) is not DataWorkspace:
+        raise BEAContextRefused("host-bound DataWorkspace required")
+
+    ref = (
+        "free_source_research:data_workspace_views_20261011/"
+        f"industry_{industry_code}.jsonl"
+    )
+    try:
+        description = workspace.describe(ref)
+        if (description.get("schema_version") != "mastermind.data_workspace/v1"
+                or description.get("action") != "describe_file"
+                or description.get("production_qualification") !=
+                "NOT_ESTABLISHED_BY_THIS_ADAPTER"):
+            raise BEAContextRefused("DataWorkspace file description refused")
+        source = description.get("source")
+        details = description.get("details")
+        if (not isinstance(source, Mapping) or source.get("ref") != ref
+                or not isinstance(details, Mapping)
+                or details.get("format") != "jsonl"
+                or details.get("schema_complete") is not True
+                or details.get("scan_complete") is not True
+                or type(details.get("row_count")) is not int
+                or details["row_count"] < 8):
+            raise BEAContextRefused("expected read-only research JSONL source")
+        version = source.get("file_version")
+        if not isinstance(version, str):
+            raise BEAContextRefused("missing original file version")
+        result = workspace.read(
+            ref,
+            columns=None,
+            equals={"commodity_code_exact": commodity_code},
+            offset=0, limit=9,
+            expected_version=version,
+        )
+    except WorkspaceError as exc:
+        # WorkspaceError has closed error codes, never native paths/secrets.
+        raise BEAContextRefused(f"canonical DataWorkspace source refused: {exc.code}") from None
+    return compose_bea_industry_accounting_change(
+        result, industry_code=industry_code, commodity_code=commodity_code,
+        purpose=purpose, as_of=as_of,
+    )
