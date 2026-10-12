@@ -44,3 +44,31 @@ def test_conflicting_ancestry_is_not_misattributed():
 def test_circular_or_missing_parent_does_not_hang_or_invent_origin():
     rows = parse_ps("11 12 1m /bin/zsh\n12 11 1m bash ext/remote_sub.sh ubuntu3 qwen /tmp/x\n")
     assert census(rows)["by_parent_harness"] == {"UNKNOWN": 1}
+
+
+def test_argv_spoofed_parent_does_not_count_as_real_codex_or_claude():
+    rows = parse_ps("""
+ 10 1 30m /bin/zsh -c echo codex app-server
+ 11 10 10m bash ext/remote_sub.sh ubuntu0 glm /tmp/work
+ 20 1 20m python3 /tmp/utility.py --description /Users/u/.claude/remote/ccd-cli/2
+ 21 20 8m bash ext/remote_sub.sh ubuntu1 grok /tmp/work
+ 30 1 1h /usr/bin/env print claude --output-format json
+ 31 30 1m bash ext/remote_sub.sh ubuntu2 minimax /tmp/work
+ """)
+    report = census(rows)
+    assert report["controller_processes"] == 3
+    assert report["by_parent_harness"] == {"UNKNOWN": 3}
+    assert report["by_target_host"] == {
+        "ubuntu0": 1, "ubuntu1": 1, "ubuntu2": 1,
+    }
+
+
+def test_parent_executable_must_be_real_not_path_argument():
+    rows = parse_ps("""
+ 100 1 6m /Users/u/.claude/remote/ccd-cli/2 --output-format stream-json
+ 101 100 4m bash ext/remote_sub.sh ubuntu0 glm /tmp/real
+ 200 1 6m /Applications/CodexCLI.app/Contents/MacOS/codex app-server
+ 201 200 3m bash ext/remote_sub.sh ubuntu1 grok /tmp/real
+ """)
+    report = census(rows)
+    assert report["by_parent_harness"] == {"CLAUDE": 1, "CODEX": 1}
