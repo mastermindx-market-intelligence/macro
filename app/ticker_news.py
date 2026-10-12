@@ -26,6 +26,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
+from engine.qbus_news_annotate import (
+    ANNOTATOR_VERSION,
+    annotate_row,
+    derivative_permitted,
+)
 from engine.qbus_news_receipts import load_health_receipt, load_rights_receipt
 from engine.qbus_news_store import (
     ChangePage,
@@ -277,8 +282,40 @@ def _security_or_404(ticker: str, *, now: datetime) -> tuple[str, str]:
     return normalized, security_id
 
 
-def _story_row(row) -> dict[str, Any]:
-    return jsonable_encoder(asdict(row))
+def _derivative_permitted_after_rights() -> bool:
+    """Derivative flag for this request. Caller already holds qualified rights."""
+    path = _rights_receipt_path()
+    if path is None:
+        return False
+    return derivative_permitted(path)
+
+
+def _annotations_payload(permitted: bool) -> dict[str, str]:
+    return {
+        "state": "on" if permitted else "not_permitted",
+        "annotator_version": ANNOTATOR_VERSION,
+    }
+
+
+def _attach_annotation(
+    payload: dict[str, Any],
+    *,
+    title: str | None,
+    teaser: str | None,
+    permitted: bool,
+) -> dict[str, Any]:
+    payload["annotation"] = annotate_row(title, teaser) if permitted else None
+    return payload
+
+
+def _story_row(row, *, permitted: bool) -> dict[str, Any]:
+    payload = jsonable_encoder(asdict(row))
+    return _attach_annotation(
+        payload,
+        title=row.title,
+        teaser=row.teaser,
+        permitted=permitted,
+    )
 
 
 def _snapshot_payload(
@@ -287,16 +324,18 @@ def _snapshot_payload(
     security_id: str,
     snapshot: NewsSnapshot,
     health: Mapping[str, Any],
+    permitted: bool,
 ) -> dict[str, Any]:
     return {
         "schema": "ticker_news.snapshot.v1",
         "ticker": ticker,
         "security_id": security_id,
         "state": _state_from_health(health, row_count=len(snapshot.rows)),
-        "rows": [_story_row(row) for row in snapshot.rows],
+        "rows": [_story_row(row, permitted=permitted) for row in snapshot.rows],
         "next_cursor": snapshot.next_cursor,
         "has_more": snapshot.has_more,
         "source_health": dict(health),
+        "annotations": _annotations_payload(permitted),
     }
 
 
@@ -305,14 +344,25 @@ def _changes_payload(
     ticker: str,
     security_id: str,
     page: ChangePage,
+    permitted: bool,
 ) -> dict[str, Any]:
+    rows = [
+        _attach_annotation(
+            jsonable_encoder(asdict(row)),
+            title=row.title,
+            teaser=row.teaser,
+            permitted=permitted,
+        )
+        for row in page.rows
+    ]
     return {
         "schema": "ticker_news.changes.v1",
         "ticker": ticker,
         "security_id": security_id,
-        "rows": [jsonable_encoder(asdict(row)) for row in page.rows],
+        "rows": rows,
         "next_sequence": page.next_sequence,
         "has_more": page.has_more,
+        "annotations": _annotations_payload(permitted),
     }
 
 
@@ -332,8 +382,17 @@ def ticker_news_story(
         raise _private_error(503, "ticker news temporarily unavailable") from None
     if detail is None:
         raise _private_error(404, "ticker news story not found")
+    permitted = _derivative_permitted_after_rights()
     payload = jsonable_encoder(asdict(detail))
     payload["schema"] = "ticker_news.story.v1"
+    for encoded, member in zip(payload["members"], detail.members, strict=True):
+        _attach_annotation(
+            encoded,
+            title=member.title,
+            teaser=member.teaser,
+            permitted=permitted,
+        )
+    payload["annotations"] = _annotations_payload(permitted)
     return JSONResponse(
         payload,
         headers=dict(_PRIVATE_HEADERS),
@@ -370,6 +429,7 @@ def ticker_news_changes(
             ticker=normalized,
             security_id=security_id,
             page=page,
+            permitted=_derivative_permitted_after_rights(),
         ),
         headers=dict(_PRIVATE_HEADERS),
     )
@@ -406,6 +466,7 @@ def ticker_news_snapshot(
             security_id=security_id,
             snapshot=snapshot,
             health=_source_health(),
+            permitted=_derivative_permitted_after_rights(),
         ),
         headers=dict(_PRIVATE_HEADERS),
     )
@@ -434,6 +495,8 @@ async def _sse_events(
     )
     sequence = int(after_sequence)
     cycles = 0
+    permitted = False
+    derivative_checked = False
     while max_cycles is None or cycles < max_cycles:
         cycles += 1
         rights = _rights_for_user(user)
@@ -465,10 +528,19 @@ async def _sse_events(
                 },
             )
             return
+        if not derivative_checked:
+            permitted = _derivative_permitted_after_rights()
+            derivative_checked = True
 
         for row in page.rows:
             sequence = max(sequence, row.sequence)
-            yield _sse_encode(row.kind, jsonable_encoder(asdict(row)))
+            payload = _attach_annotation(
+                jsonable_encoder(asdict(row)),
+                title=row.title,
+                teaser=row.teaser,
+                permitted=permitted,
+            )
+            yield _sse_encode(row.kind, payload)
         if not page.rows:
             yield ": heartbeat\n\n"
         if poll_seconds > 0:
