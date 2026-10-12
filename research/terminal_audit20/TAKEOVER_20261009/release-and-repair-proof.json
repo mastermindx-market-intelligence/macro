@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T0341",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T0415",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -9162,5 +9162,315 @@
     "retained_holds": "All original independent781reservednumeric/IW2cyberHUMAN/separateSQLaccessrightsrelease/887ALLOW/MoneySCP+OAuthUNKNOWN/A19intake/same873terminalpublication/other outcomes unchanged. A/E20 custody preserved.",
     "next_ready_phase": "Consume SAME exec17717/operation canonical-volume-release-e0c405a-20261012-v1 actual settled return ONLY; no second observer/runtime poll/restart. Then owning install/live proof without stopping at install.",
     "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261012T0415": {
+    "observed_at": "2026-10-12T04:15:22.650622+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T0341",
+    "material": "ONE guarded e0c405a release settled successfully and exact installed source/runtime bytes/guards/services/public asset qualified. All12 ordinary existing-thesis opening/reload cells and6 settled history phases passed. A naturally encountered fast history/selection sequence settled A3 without symbol/mo_* context or return; causal attribution remains unobserved. B owns follow-up diagnosis/source. Own tasktab closed/preferences and viewport restored; no cleanup or mutation owed. Whole J1/Audit20 remain incomplete.",
+    "source_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-thesis-reopen-20261012/962-merged-source-required-ci-parent-qualification.json",
+      "bytes": 4970,
+      "sha256": "c55ab02afb145757cd8e71cd546c059d27860589ebc26a64b11758b5a69270fc"
+    },
+    "install_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-thesis-reopen-20261012/e0c405a-installed-source-guards-health-parent-qualification.json",
+      "bytes": 6495,
+      "sha256": "6dc0038e256f590e02f3dff78175ea5aa820d9be4329afadadbc62ad9a7da71b"
+    },
+    "live_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-thesis-reopen-20261012/live-e0c405a-parent-qualification-final.json",
+      "bytes": 18338,
+      "sha256": "5dd356579cd150c765b73cdf6f8da1f1471608be572e6935cb6502f03820da34"
+    },
+    "source": {
+      "PR": 962,
+      "head": "6ae6660852c03f3d7c204d41b6e7c5e39d2dff67",
+      "merge": "e0c405a09b6897df3b5e4a2f22344f3560b800a4",
+      "tree": "b44b15171d8e6946cfaaa78db11410de1a77eb01",
+      "CI_run": 38196300045,
+      "CI_suite": 103483413110,
+      "required3_all10_jobs_and5_browser_shards": "SUCCESS at the exact qualified head; no requery"
+    },
+    "completed_release": {
+      "operation": "canonical-volume-release-e0c405a-20261012-v1",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "target": "e0c405a09b6897df3b5e4a2f22344f3560b800a4",
+      "phase": "guarded_canonical_release_settled",
+      "started_at": "2026-10-12T03:39:06.486124+00:00",
+      "controller_pid": 91691,
+      "wrapper_sha256": "bd22d2fed7e558d02a4252c0abfa00beb59a37f0bf96e1a33187229c7e673a84",
+      "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-volume-release-e0c405a-20261012-v1.log",
+      "whole_Audit20_accepted": false,
+      "child_pid": 91725,
+      "exit_code": 0,
+      "settled_at": "2026-10-12T03:46:40.946422+00:00",
+      "builder_rc": 0,
+      "post_guard_rc": 0
+    },
+    "installed_readback": {
+      "observed_at": "2026-10-12T03:46:51.087374+00:00",
+      "head": "e0c405a09b6897df3b5e4a2f22344f3560b800a4",
+      "tree": "b44b15171d8e6946cfaaa78db11410de1a77eb01",
+      "status": "",
+      "marker": "e0c405a09b6897df3b5e4a2f22344f3560b800a4",
+      "guard_rc": 0,
+      "stages": [],
+      "base_mount": {
+        "uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+        "fstype": "ext4",
+        "fsroot": "/"
+      },
+      "live_bind": {
+        "uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+        "fstype": "ext4",
+        "fsroot": "/live-terminal"
+      },
+      "root_available_bytes": 14456725504,
+      "volume_available_bytes": 33765842944,
+      "services": {
+        "terminal.service": [
+          "3432852",
+          "active",
+          "running"
+        ],
+        "quote-hub.service": [
+          "2756258",
+          "active",
+          "running"
+        ],
+        "macro-api.service": [
+          "3395996",
+          "active",
+          "running"
+        ],
+        "rsyslog.service": [
+          "491178",
+          "active",
+          "running"
+        ]
+      },
+      "public_html": {
+        "status": 200,
+        "bytes": 96290,
+        "sha256": "9e309fadcd6fc411d102b8a4e02d360b7b8d1b3e73bdbde01fba69cbe18340c1",
+        "contains_target_asset": true
+      }
+    },
+    "all10_selected_runtime_bytes_equal_qualified_source": true,
+    "ordinary_readonly_acceptance": {
+      "natural_entry": [
+        {
+          "chain": "tx-chain-dollar_spike_em_multinational",
+          "href": "https://app.mastermind-x.com/analysis?symbol=MU&page=intelligence&mo_from=transmission&mo_chain=dollar_spike_em_multinational&mo_channel=em_revenue_exposure&mo_asof=2026-10-08&mo_security=SEC%3AUS-XNAS-MU",
+          "section": "Affected companies — EM revenue exposure · 101 with company research · not ranked受影响公司——新兴市场营收敞口·101 家可打开公司研究·非排名",
+          "text": "MU"
+        }
+      ],
+      "matrix": [
+        {
+          "phase": "en-1440-A",
+          "identity": "988274e8-b335-4887-89bf-556564c16f3c",
+          "version": 3,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "en-1440-B",
+          "identity": "899ce795-0af0-4af5-9085-a246d6aad8fd",
+          "version": 2,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "en-820-A",
+          "identity": "988274e8-b335-4887-89bf-556564c16f3c",
+          "version": 3,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "en-820-B",
+          "identity": "899ce795-0af0-4af5-9085-a246d6aad8fd",
+          "version": 2,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "en-390-A",
+          "identity": "988274e8-b335-4887-89bf-556564c16f3c",
+          "version": 3,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "en-390-B",
+          "identity": "899ce795-0af0-4af5-9085-a246d6aad8fd",
+          "version": 2,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "zh-1440-A",
+          "identity": "988274e8-b335-4887-89bf-556564c16f3c",
+          "version": 3,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "zh-1440-B",
+          "identity": "899ce795-0af0-4af5-9085-a246d6aad8fd",
+          "version": 2,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "zh-820-A",
+          "identity": "988274e8-b335-4887-89bf-556564c16f3c",
+          "version": 3,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "zh-820-B",
+          "identity": "899ce795-0af0-4af5-9085-a246d6aad8fd",
+          "version": 2,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "zh-390-A",
+          "identity": "988274e8-b335-4887-89bf-556564c16f3c",
+          "version": 3,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        },
+        {
+          "phase": "zh-390-B",
+          "identity": "899ce795-0af0-4af5-9085-a246d6aad8fd",
+          "version": 2,
+          "opening_context_and_return": true,
+          "reload": true,
+          "no_horizontal_workspace_overflow": true
+        }
+      ],
+      "settled_history_phases": [
+        "en-1440-forward-A",
+        "en-820-settled-forward-B",
+        "en-390-forward-A",
+        "zh-1440-forward-A",
+        "zh-820-settled-forward-B",
+        "zh-390-forward-A"
+      ],
+      "return": {
+        "anchorPresent": true,
+        "anchorViewport": {
+          "bottom": 384.59375,
+          "height": 385.125,
+          "top": -0.53125,
+          "width": 283
+        },
+        "url": "https://www.mastermind-x.com/transmission.html#tx-chain-dollar_spike_em_multinational"
+      },
+      "visual_review": "All12 ordinary A/B EN/ZH desktop/tablet/phone captures inspected through two labeled contact sheets; context strip, exact return control, MU listing-scoped identity and archivedA3/B2 version visible. Separate tablet failure capture inspected: A3/MU and absentcontext/return, no spinner or failed screenshot accepted.",
+      "capture_format": "All13 native captures are JPEG. Original .png names retained; .jpg copies byte-identical, no recapture or alteration."
+    },
+    "fast_history_falsifier": {
+      "phase": "zh-820-interleaved-history-context-loss",
+      "sequence": "ZH820 A select -> reload -> Back to settled company composer -> Forward -> return-link wait matched still-visible arrival strip before detail settled -> normal B row click -> return-link timeout -> fresh settled A3 with symbol/mo_* absent; no interception/fault/replay/mutation.",
+      "actual": {
+        "assets": [
+          "e0c405a09b6897df3b5e4a2f22344f3560b800a4"
+        ],
+        "color": "west",
+        "contextText": null,
+        "contextVisible": false,
+        "detailLabels": [
+          "已归档",
+          "版本 3 · 当前",
+          "已接受",
+          "已归档"
+        ],
+        "language": "zh",
+        "rect": {
+          "height": 2024.03125,
+          "width": 811,
+          "x": 0,
+          "y": 52
+        },
+        "returnHref": null,
+        "subject": "MU · 上市代码范围身份",
+        "theme": "dark",
+        "title": "MU",
+        "url": "https://app.mastermind-x.com/analysis?view=theses&thesis=988274e8-b335-4887-89bf-556564c16f3c",
+        "version": "版本 3 · 当前",
+        "viewport": {
+          "height": 1180,
+          "width": 820
+        },
+        "workspaceWidth": {
+          "client": 811,
+          "scroll": 811
+        },
+        "phase": "zh-820-interleaved-history-context-loss",
+        "at": "2026-10-12T04:00:23.203Z"
+      },
+      "not_replayed": true,
+      "acceptance": "Fast history/selection NOT ACCEPTED; B owns follow-up source diagnosis/repair.",
+      "causal_limits": "Requested B semantic click returned without click error, but actual click-dispatch target and server-response ordering were not independently observed. Forward was sampled before canonical detail settled. Actual subsequent A3/context loss is retained; source-causal attribution versus automation interleaving requires B diagnosis. Settled-only cell passes do not erase this observation."
+    },
+    "cleanup": {
+      "chartLabels": [
+        "Micron Technology · 3D · NASDAQ"
+      ],
+      "color": "west",
+      "fullscreen": false,
+      "language": "en",
+      "replayButtons": [
+        {
+          "pressed": null
+        },
+        {
+          "pressed": null
+        }
+      ],
+      "theme": "dark",
+      "url": "https://app.mastermind-x.com/terminal?symbol=MU",
+      "viewport": {
+        "height": 694,
+        "width": 1728
+      },
+      "visibleDialogs": [
+        "Preferences"
+      ],
+      "at": "2026-10-12T04:04:14.383Z",
+      "tabId": "1925917867",
+      "closedAt": "2026-10-12T04:04:14.458Z",
+      "closed": true,
+      "cleanupOwed": false
+    },
+    "cleanup_qualification": "Close Settings clicked; immediate pre-close read still observed Preferences during transition. Own task tab successfully closed, removing its document/modal. EN/west/dark and original1728x694 viewport restored. No other tab claimed or cleanup owed. Replay/fullscreen controls not used; 3D chart label observed.",
+    "effects": "No New/typing/Save/revision/propose/AcceptReject/lifecycleReopen/archive/SQL/producer/newrecord/requestreplay/interception. Ordinary untouched composer is not a created record.",
+    "limitations": "Only two admitted existing MU identities. Cross-company/unknown/malformed/error/delayed cases retain owner source-test scope unless naturally triggered. No native/math/rights/freshness/#761/full-lifecycle or whole Audit20 acceptance.",
+    "owning_return": "Sealed final source/install/live/falsifier/cleanup result sent through first-party tool to B01a128b7-bd2b-7a91-891d-39d38f74ad55; send accepted/noerror, recipient ACK unobserved. No repeat send/status ping owed.",
+    "no_replay": "Closed962 source/CI/merge and completed e0 release/tab never reused or polled. No fast failure replay, duplicate reviewer/sourcewriter/worker/observer, new record or old946 effect.",
+    "retained_holds": "All original independent781reservednumeric/IW2cyberHUMAN/separateSQLaccessrightsrelease/887ALLOW/MoneySCP+OAuthUNKNOWN/A19intake/same873terminalpublication/other outcomes unchanged. A/E20 custody preserved.",
+    "next_ready_phase": "Actual B owning history diagnosis/new reviewed and merged source return, relevant A source/release resolution or original-owner reviewer/platform/rights/reconciliation/producer terminal event; no unchanged polling or notice-only delegation.",
+    "whole_J1_accepted": false,
+    "whole_audit20_complete": false,
+    "cleanup_owed": false
   }
 }
