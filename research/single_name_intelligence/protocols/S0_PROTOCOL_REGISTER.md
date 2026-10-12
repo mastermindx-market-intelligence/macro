@@ -189,6 +189,8 @@ S1 appends one row per `(protocol_id, version, split)` **before any outcome of t
 
 S1 v1 (P01–P03) sealed at the finer grain `(protocol_id, version, split, subject, h)`: 86 cells in `research/single_name_intelligence/runs/s1_residual/SEAL_AND_BUDGET.json`, committed in 52b4ed44de35 (2026-10-11T23:22:47Z) before any outcome of v1 was computed. The rows below are those cells verbatim, so the `subject` and `h` columns were added to this table for them; a `(protocol_id, version, split)` row without a finer grain leaves both as `—`. A §7 retirement row cites the split-level digest that `residual/run_s1.py::retirement_membership` assembles from that split's cells, so it does not equal any single cell digest. Non-TRAIN/TUNE splits (PURGED_*, QUARANTINE, ABSTAIN_RESOLVER_NONE) are sealed under the same rule.
 
+S2 v1 (P04–P06) sealed at the grain `(protocol_id, version, split, h)`: 27 cells in `research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json`, committed in da02d9b2dfb2 (2026-10-11T23:10:33Z) before any outcome of v1 was computed. S2 cells carry no subject: every S2 cell is over the single graded leg adr_baba (SEC:US-XNYS-BABA, MARKET_US) (seal `graded_cohort`), so the `subject` column reads `—` for them; the Tencent issuer group and both HK legs are census-only in S2 and never graded. The S2 QUARANTINE cells are sealed under the same rule as the S1 non-TRAIN/TUNE splits.
+
 | protocol_id | version | split | subject | h | manifest_sha256 (or TEST-rule prereg digest) | sealed_at | sealing commit |
 |---|---|---|---|---|---|---|---|
 | P01 | v1 | PURGED_TRAIN | adr_baba (SEC:US-XNYS-BABA) | 21 | 52467034b45b2c3943e38e976f1f3b9d28e9e2f5749fe0c27c00ac6cb134d46c | 2026-10-11T23:22:47Z | 52b4ed44de35 |
@@ -280,6 +282,36 @@ S1 v1 (P01–P03) sealed at the finer grain `(protocol_id, version, split, subje
 | P01 | v1 | TEST | — | — | c26b09b68737ab86fa076b4a64c7e2d92459d4e8fd140e1e1b2f2e0c3439f7ab (prereg digest = the TEST rule) | 2026-10-11T23:22:47Z | 52b4ed44de35 |
 | P02 | v1 | TEST | — | — | c26b09b68737ab86fa076b4a64c7e2d92459d4e8fd140e1e1b2f2e0c3439f7ab (prereg digest = the TEST rule) | 2026-10-11T23:22:47Z | 52b4ed44de35 |
 | P03 | v1 | TEST | — | — | c26b09b68737ab86fa076b4a64c7e2d92459d4e8fd140e1e1b2f2e0c3439f7ab (prereg digest = the TEST rule) | 2026-10-11T23:22:47Z | 52b4ed44de35 |
+| P04 | v1 | TRAIN | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TUNE | — | 5 | 3987f51b24bc47ce9961206ffef580f810ea634964864f2f9659f5705dd24a0b | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | QUARANTINE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TRAIN | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TUNE | — | 21 | f392d0c6efe30cc44af8406d72542a70ac4a559fc989ccdf287cbd71cdfbf298 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | QUARANTINE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TRAIN | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TUNE | — | 63 | 7fbe134bb1e72f6a5635a547cb6d562b1b5364f59168e67b12321ee64bf805c7 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | QUARANTINE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TRAIN | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TUNE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | QUARANTINE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TRAIN | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TUNE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | QUARANTINE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TRAIN | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TUNE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | QUARANTINE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TRAIN | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TUNE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | QUARANTINE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TRAIN | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TUNE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | QUARANTINE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TRAIN | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TUNE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | QUARANTINE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TEST | — | — | 38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943 (prereg digest = the TEST rule) | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TEST | — | — | 38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943 (prereg digest = the TEST rule) | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TEST | — | — | 38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943 (prereg digest = the TEST rule) | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
 
 ## 7. Retirement Log table (typed; empty at S0)
 
@@ -289,6 +321,7 @@ A row is appended in the same PR that reports a contamination (SL §8 step 2). N
 |---|---|---|---|---|---|---|---|---|---|
 | P01 | v1 | TUNE | dee29fd5e37fc743e4bfa37ccce4d381d7073929aa82d00f587c1098461fa1d4 | information_leak | 2026-10-11T16:59:47-05:00 | research/single_name_intelligence/runs/s1_residual/trial_ledger.jsonl row 1 | sni.s1_residual.P01 | 070a95a529ced2ad | — (none declared) |
 | P03 | v1 | TUNE | 5a890ce0d930127eeeaa79919b52db2bb933fe508bff6b8241f60d998d1bfa14 | information_leak | 2026-10-11T16:59:47-05:00 | research/single_name_intelligence/runs/s1_residual/trial_ledger.jsonl row 22 | sni.s1_residual.P03 | bcdca367a7f723f7 | — (none declared) |
+| P04 | v1 | TUNE | a3b15693e32d9d2f44e5e4a78f90bdfb3ac2afece84b5691be12e03685804ed6 | information_leak | 2026-10-11T21:59:47+00:00 | research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl row 2 | sni.s2_event_response.P04 | a9c6e1dd48b31f34 | — (none declared) |
 
 ## 8. Trial budgets (declared at S0)
 
