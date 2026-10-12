@@ -1263,6 +1263,29 @@ def test_targets_requires_max_tickers() -> None:
     assert caught.value.code == 2
 
 
+def test_d11_lineage_mint_error_maps_to_lineage_mint_failed(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """D11: a LineageEvidenceError from the S2-p seam is the typed
+    lineage_mint_failed refusal — the code sat in the closed vocabulary but
+    was unreachable, surfacing as generic publish_failed."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+
+    def _explode(_ledger, _packages, *, system_available_at):
+        raise LineageEvidenceError("synthetic mint refusal")
+
+    # The seam is the NAME the producer imported (Phase B shape).
+    monkeypatch.setattr(producer, "mint_production_lineage_evidence", _explode)
+    assert _capture_cli(lane, contract) == 0
+    rc = _publish_cli(lane, contract, tmp_path / "store", tmp_path / "report.json")
+    assert rc == 1
+    assert any(
+        "lineage_mint_failed" in line for line in _stderr_error_lines(capsys)
+    )
+
+
 def test_d10_unparseable_registry_available_at_fails_closed() -> None:
     """D10: a registry ``available_at`` that exists but cannot be parsed is a
     typed contract_malformed refusal — it used to be silently dropped from the

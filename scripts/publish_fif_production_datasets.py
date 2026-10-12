@@ -71,6 +71,7 @@ from engine.fundamental_forensics.ixbrl_raw_ledger import convert_parsed_filings
 from engine.fundamental_forensics.lineage_evidence import (  # noqa: E402
     CONFIRMATION_CHAIN_RULE_AVAILABLE_AT,
     CONFIRMATION_RULE_AVAILABLE_AT,
+    LineageEvidenceError,
 )
 from engine.fundamental_forensics.models import parse_utc, utc_text  # noqa: E402
 from engine.fundamental_forensics.production_lineage import (  # noqa: E402
@@ -382,6 +383,21 @@ def _convert_admitted_packages(packages: Sequence[Any]):
     return convert_parsed_filings(pairs)
 
 
+def _mint_lineage_evidence(ledger: Any, packages: Sequence[Any], *, system_available_at):
+    """The ONE S2-p seam call, wrapped (D11): a ``LineageEvidenceError`` is the
+    typed ``lineage_mint_failed`` refusal (rc != 0, line-start ``::error``),
+    never a silent empty bundle and never the generic ``publish_failed`` code.
+    Only ``LineageEvidenceError`` maps; any other exception propagates."""
+    try:
+        return mint_production_lineage_evidence(
+            ledger, packages, system_available_at=system_available_at
+        )
+    except LineageEvidenceError as exc:
+        raise PublisherError(
+            f"lineage mint refused: {exc}", code="lineage_mint_failed"
+        ) from exc
+
+
 def _issuer_binding(issuer: Mapping[str, Any]) -> CanonicalEntityBinding | None:
     binding = issuer.get("security_master_binding")
     if not isinstance(binding, Mapping):
@@ -421,8 +437,10 @@ def _publish_one_issuer(
     # The S2-p seam, DIRECT (spec §3): the module-level import above names
     # ``mint_production_lineage_evidence`` and nothing else — never a mint
     # layer or golden provider. One call per published issuer, clock-equal to
-    # the material's admission clock, return landing UNCHANGED.
-    lineage_evidence = mint_production_lineage_evidence(
+    # the material's admission clock, return landing UNCHANGED. D11: the seam
+    # call rides the wrapper so a LineageEvidenceError is typed
+    # lineage_mint_failed instead of generic publish_failed.
+    lineage_evidence = _mint_lineage_evidence(
         ledger, admitted_packages, system_available_at=admitted_at
     )
     material_binding = binding
