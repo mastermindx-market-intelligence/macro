@@ -458,10 +458,13 @@ publication, rights-qualified story and D14 acceptance remain unproven.
 ## October12 aggregate-feed follow-on save
 
 PR8786 remains armed at9019a29c2e35da499fb5c822e515be9ce9c21027. Its
-CI38202742004 has19passing checks and ci-pack-11 pending in the retained
-observer result at04:42:20Z; the inactive merge-queue pilot is nonbinding.
-No merged/installed Macro claim follows. Existing observer PID17880 survived
-the local tool-session interruption; do not duplicate it.
+CI38202742004 completed SUCCESS with all12packs, contract-delta and ci-gate
+passed. The04:53:39Z observer result binds all21passing checks to9019a29c;
+the inactive merge-queue pilot is nonbinding. Raw run/check receipts are
+pr8786_9019_ci_success.json and pr8786_9019_binding_checks.json.
+No merged/installed Macro claim follows. Observer PID17880 subsequently exited after the tool-session interruption.
+An exact process census proved it absent before same-cursor replacement
+exec55989 started with file-backed output; do not duplicate that observer.
 
 A separate owned SSD worktree at
 `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-aggregate-feed-20261012-a9aa65ed7b847bd2`
