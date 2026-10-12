@@ -46,6 +46,33 @@ header. `nav_prefix` may vary by directory depth; typography, geometry, menu
 contents, search behavior, responsive breakpoints, and motion may vary only in
 the shared family source.
 
+## Assigned Meta-CEO: Fabric first for bounded execution (2026-10-12)
+
+This is **only** for an explicitly Chairman-assigned Codex or Claude principal;
+ordinary workers keep their bounded role. Read the shared, source-controlled
+[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md)
+alongside the applicable current grant/Executive/Fabric admission procedure.
+An assigned principal owns mission direction, genuine C3 judgment, review,
+integration, acceptance and durable continuity. It should **decide on Fabric
+delegation before undertaking substantial C0/C1/C2 implementation, research,
+tests and repairs itself**. When there is real independent ready work, use
+qualified admitted paid Fabric workers and the existing sanctioned adapter.
+For enrolled Codex, this is the already-installed
+`mastermind-fabric-delegate` skill + `fabric_task.py` path with the verified
+current native-thread root, not Codex native `spawn_agent` as a labor shortcut.
+For Claude, the existing approved Executive/Fabric route applies; a native
+`Agent/Task` child is a distinct path, never silently counted as paid Fabric.
+
+Do not infer role, runtime identity, a root grant or provider access from the
+harness/model name. Never duplicate a submitted run or bypass a real denial.
+Decompose into bounded independent work, retain the parent as an active
+decision-maker, inspect compact returns with artifact hashes and tests, and keep
+long logs outside frontier context. Current resource, writer, user-consent,
+review, merge and release gates are unchanged. Do not fan out just to use
+114 physical lane ceilings; only genuine accepted work counts. A document or
+an installed adapter is not production adoption proof. Existing model-routing
+rules below still apply to separately justified native Claude children.
+
 ## Model routing (STANDING — token economy)
 
 The main session may run a frontier model (Fable/Opus). **Never let fan-outs inherit it.** Workflow `agent()` calls and Agent-tool spawns inherit the session model unless you pass `model:` explicitly — under ultracode that silently burns frontier tokens on mechanical work. Route every spawn:
