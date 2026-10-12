@@ -58,3 +58,15 @@ Before the edit, a cap rise with a falling share produced "Capital is expanding 
 - `research/crypto_science/patches/cx-t08-20261012__build_crypto.py.patch` — aria EN+ZH, `_state_zh` for the three relative-trend states, and additive `cap_move`, `cap_splices`, `flow_kinds` on `crypto.class_state/v1`. The existing `flows` map stays a state word.
 
 SEO has no ZH slot. Gloss only: `每日加密市场状态：头部资产、已测量申购、稳定币供应、现货参与度、杠杆、波动、配置、比特币、以太坊与上市加密股票。`
+
+## Repair r2
+
+Display tier unchanged. No score, size, or authority.
+
+NYSE full-closure dates are `lib.nyse_calendar.holidays` (`lib/nyse_calendar.py:85`), read through `is_session` (`:121`) by `_expected_us_session` (`engine/crypto_market_state.py:281`). A full-day closure, and the weekend after it when the prior session print is on file, is `pending`. The 5-day direction word stays (`Rising` / `Falling` / `Steady`). A missed session weekday stays `stale`, and that state word becomes `Unavailable`. The calendar is rule arithmetic for any year (MLK from 1998, Juneteenth from 2022, plus `ONE_OFF_CLOSURES`). It has no year table. A date it cannot resolve is not marked `stale`. This replaces the weekends-only claim in the `flows.etf.observation` row above.
+
+An issuance or valuation sentence is emitted only when that bitcoin leg and `total_30d_pct` share a sign. An opposed leg sets `cap_attribution.kind` to `unattributed`. The hero then uses the existing direction headline (`Market cap is higher` / `Market cap is lower` / `Market cap is little changed`) and does not attach the issuance note or the price-change summary. `note_en` and `note_zh` are empty for that kind. No new user-facing sentence. Same-sign issuance and valuation still use the sentences already in `_hero`.
+
+`cap_attribution.material_pct` is `1.0` and `cap_attribution.hero_band_pct` is `3.0`. Notes are not rewritten to name those numbers.
+
+The altseason rail `else 0` at `templates/crypto.html.j2:404` is already omitted when the value is null by `origin/claude/cx-t19p-20261012` patch `research/crypto_science/patches/cx-t19p-20261012__crypto.html.j2.patch` (`141eb25c`). No r2 template patch.

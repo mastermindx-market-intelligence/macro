@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 
 from lib import store
+from lib.nyse_calendar import is_session, last_session_on_or_before
 
 Reader = Callable[[str, str], pd.DataFrame | None]
 
@@ -59,6 +60,8 @@ _OBS_LABEL = {
 }
 # Percentage points. Below this, a leg is not treated as the cause of a cap move.
 _MATERIAL_PCT = 1.0
+# Same cut `_direction` uses for total_state. Outside this band the hero names a direction.
+_HERO_BAND_PCT = 3.0
 
 
 def _derived_cap(btc_cap: pd.Series, dominance: pd.Series) -> pd.Series:
@@ -275,12 +278,25 @@ def _clock(today: pd.Timestamp | str | None) -> pd.Timestamp:
     return stamp.tz_convert("UTC").tz_localize(None).normalize()
 
 
-def _business_day_on_or_before(day: pd.Timestamp) -> pd.Timestamp:
-    """Weekends only. Exchange holidays are not in this cadence."""
-    cursor = day
-    while cursor.weekday() >= 5:
-        cursor -= pd.Timedelta(days=1)
-    return cursor
+def _expected_us_session(day: pd.Timestamp) -> pd.Timestamp | None:
+    """Most recent NYSE session on or before `day`.
+
+    Full-day closures come from `lib.nyse_calendar.holidays` (rule arithmetic
+    plus `ONE_OFF_CLOSURES`), read through `last_session_on_or_before`.
+    None means that calendar could not name a session. The caller must not
+    mark that gap stale.
+    """
+    try:
+        found = last_session_on_or_before(day.date())
+    except ValueError:
+        return None
+    return pd.Timestamp(found)
+
+
+def _shares_sign(leg: float | None, total: float | None) -> bool:
+    if leg is None or total is None or leg == 0.0 or total == 0.0:
+        return False
+    return (leg > 0.0) == (total > 0.0)
 
 
 def observation_status(
@@ -293,9 +309,12 @@ def observation_status(
 ) -> str:
     """pending | stale | zero | current | unavailable.
 
-    `us_business_day` (ETF creations): a print is expected Mon–Fri. Saturday and
-    Sunday, with that Friday on file, are pending — expected nonpublication, not
-    a zero and not a stale feed. A missed weekday is stale.
+    `us_business_day` (ETF creations): a print is expected on an NYSE session
+    (`lib.nyse_calendar.is_session`). A weekend or a full-day closure, with the
+    prior session's print on file, is pending — expected nonpublication, not a
+    zero and not a stale feed. That includes the weekend after a closure. A
+    missed session weekday is stale. A date the calendar cannot resolve is not
+    marked stale.
     `calendar_day` (stablecoin supply): a print is expected every calendar date.
     Any gap before `today` is stale. The same calendar lag is therefore pending
     for the ETF and stale for stablecoins.
@@ -308,10 +327,14 @@ def observation_status(
     today_ts = _clock(today)
     measured_zero = latest_value is not None and float(latest_value) == 0.0
     if cadence == "us_business_day":
-        expected = _business_day_on_or_before(today_ts)
+        expected = _expected_us_session(today_ts)
+        if expected is None:
+            if last == today_ts and measured_zero:
+                return "zero"
+            return "pending" if last < today_ts else "current"
         if last < expected:
             return "stale"
-        if today_ts.weekday() >= 5 and last == expected:
+        if not is_session(today_ts.date()) and last == expected:
             return "pending"
         if last == expected and measured_zero:
             return "zero"
@@ -334,11 +357,16 @@ def _observation_fields(status: str) -> dict:
     }
 
 
-def _cap_attribution(btc_price: pd.Series, btc_cap: pd.Series) -> dict:
-    """Separate a capitalization move into price, token supply, or neither.
+def _cap_attribution(
+    btc_price: pd.Series, btc_cap: pd.Series, total_30d: float | None = None
+) -> dict:
+    """Separate a bitcoin capitalization move into price, token supply, or neither.
 
     Supply is coinmetrics BTC cap divided by the coinbase BTC close. It is not
-    a subscription tape.
+    a subscription tape. An issuance or valuation label is kept only when that
+    leg and the class total share a sign. An opposed leg is `unattributed`:
+    the class move is not narrated as that bitcoin leg. No new sentence is
+    stored for that case.
     """
     supply = pd.Series(dtype=float)
     if not btc_price.empty and not btc_cap.empty:
@@ -362,6 +390,14 @@ def _cap_attribution(btc_price: pd.Series, btc_cap: pd.Series) -> dict:
             kind = "mixed"
         else:
             kind = "share_or_flat"
+    if kind == "issuance" and not _shares_sign(supply_30d, total_30d):
+        kind = "unattributed"
+    elif kind == "valuation" and not _shares_sign(price_30d, total_30d):
+        kind = "unattributed"
+    elif kind == "mixed" and not (
+        _shares_sign(price_30d, total_30d) and _shares_sign(supply_30d, total_30d)
+    ):
+        kind = "unattributed"
     notes = {
         "issuance": (
             "The 30-day capitalization change tracks token supply, not a measured subscription.",
@@ -383,16 +419,56 @@ def _cap_attribution(btc_price: pd.Series, btc_cap: pd.Series) -> dict:
             "Token supply could not be separated from price. This is not a measured subscription.",
             "无法把代币供应量与价格分开。这不是已测量的申购。",
         ),
+        # Existing direction headlines cover the class total. No sentence on file
+        # states that the bitcoin leg does not explain it.
+        "unattributed": ("", ""),
     }
     note_en, note_zh = notes[kind]
     return {
         "kind": kind,
         "price_30d_pct": price_30d,
         "supply_30d_pct": supply_30d,
+        "material_pct": _MATERIAL_PCT,
+        "hero_band_pct": _HERO_BAND_PCT,
         "supply_basis": "coinmetrics.mcap_usd / coinbase.btc_daily.close",
         "note_en": note_en,
         "note_zh": note_zh,
     }
+
+
+def _plain_total(total_30d: float, *, attribute_price: bool) -> tuple[str, str, str, str, str]:
+    """Direction headlines already in this module. The price clause is the valuation sentence."""
+    if total_30d > _HERO_BAND_PCT:
+        summary = (
+            "Total market cap is higher over 30 days. That is a price change in capitalization, not a measured subscription."
+            if attribute_price
+            else ""
+        )
+        summary_zh = (
+            "30日总市值较高。这是市值中的价格变化，不是已测量的申购。"
+            if attribute_price
+            else ""
+        )
+        return ("Market cap is higher", summary, "总市值较高", summary_zh, "bull")
+    if total_30d < -_HERO_BAND_PCT:
+        summary = (
+            "Total market cap is lower over 30 days. That is a price change in capitalization, not a measured redemption."
+            if attribute_price
+            else ""
+        )
+        summary_zh = (
+            "30日总市值较低。这是市值中的价格变化，不是已测量的赎回。"
+            if attribute_price
+            else ""
+        )
+        return ("Market cap is lower", summary, "总市值较低", summary_zh, "bear")
+    return (
+        "Market cap is little changed",
+        "No decisive 30-day capitalization move.",
+        "总市值变化不大",
+        "30日市值没有明确方向。",
+        "neutral",
+    )
 
 
 def _hero(total_30d: float | None, attribution: dict) -> tuple[str, str, str, str, str]:
@@ -415,7 +491,10 @@ def _hero(total_30d: float | None, attribution: dict) -> tuple[str, str, str, st
             "neutral",
         )
     if kind == "mixed":
-        tone = "bull" if total_30d > 3 else ("bear" if total_30d < -3 else "neutral")
+        tone = (
+            "bull" if total_30d > _HERO_BAND_PCT
+            else ("bear" if total_30d < -_HERO_BAND_PCT else "neutral")
+        )
         return (
             "Market cap moved with price and issuance",
             attribution["note_en"],
@@ -423,8 +502,8 @@ def _hero(total_30d: float | None, attribution: dict) -> tuple[str, str, str, st
             attribution["note_zh"],
             tone,
         )
-    if kind == "share_or_flat" and abs(total_30d) > 3:
-        tone = "bull" if total_30d > 3 else "bear"
+    if kind == "share_or_flat" and abs(total_30d) > _HERO_BAND_PCT:
+        tone = "bull" if total_30d > _HERO_BAND_PCT else "bear"
         return (
             "Market cap moved apart from bitcoin price",
             attribution["note_en"],
@@ -432,29 +511,12 @@ def _hero(total_30d: float | None, attribution: dict) -> tuple[str, str, str, st
             attribution["note_zh"],
             tone,
         )
-    if total_30d > 3:
-        summary = attribution["note_en"] if kind == "unavailable" else (
-            "Total market cap is higher over 30 days. That is a price change in capitalization, not a measured subscription."
+    if kind == "unavailable" and abs(total_30d) > _HERO_BAND_PCT:
+        stance, _summary, stance_zh, _summary_zh, tone = _plain_total(
+            total_30d, attribute_price=False
         )
-        summary_zh = attribution["note_zh"] if kind == "unavailable" else (
-            "30日总市值较高。这是市值中的价格变化，不是已测量的申购。"
-        )
-        return ("Market cap is higher", summary, "总市值较高", summary_zh, "bull")
-    if total_30d < -3:
-        summary = attribution["note_en"] if kind == "unavailable" else (
-            "Total market cap is lower over 30 days. That is a price change in capitalization, not a measured redemption."
-        )
-        summary_zh = attribution["note_zh"] if kind == "unavailable" else (
-            "30日总市值较低。这是市值中的价格变化，不是已测量的赎回。"
-        )
-        return ("Market cap is lower", summary, "总市值较低", summary_zh, "bear")
-    return (
-        "Market cap is little changed",
-        "No decisive 30-day capitalization move.",
-        "总市值变化不大",
-        "30日市值没有明确方向。",
-        "neutral",
-    )
+        return (stance, attribution["note_en"], stance_zh, attribution["note_zh"], tone)
+    return _plain_total(total_30d, attribute_price=(kind == "valuation"))
 
 
 def _dated_totals(frame: pd.DataFrame | None) -> pd.Series:
@@ -488,12 +550,12 @@ def build_market_state(
 
     total_30d = _delta(total, 30, pct=True)
     dom_30d = _delta(dominance, 30)
-    total_state, total_tone = _direction(total_30d, 3, -3)
+    total_state, total_tone = _direction(total_30d, _HERO_BAND_PCT, -_HERO_BAND_PCT)
     dom_state, dom_tone = _direction(dom_30d, 1, -1)
     fear_value = _value(fear.iloc[-1]) if not fear.empty else None
     fear_state, fear_tone = _fear_state(fear_value)
     btc_cap = _series(reader, "coinmetrics", "mcap_usd", ("mcap_usd",))
-    attribution = _cap_attribution(btc, btc_cap)
+    attribution = _cap_attribution(btc, btc_cap, total_30d)
     stance, summary, stance_zh, summary_zh, hero_tone = _hero(total_30d, attribution)
 
     stable_30d_pct = _delta(stable, 30, pct=True)

@@ -11,6 +11,7 @@ import pandas as pd
 from engine.crypto_market_state import (
     build_market_state,
     class_regimes,
+    observation_status,
     total_market_cap_history,
 )
 
@@ -257,3 +258,128 @@ def test_missing_family_keeps_other_measurements() -> None:
     assert quiet["flows"]["volume"]["state"] == "Unavailable"
     assert quiet["flows"]["volume"]["value"] is None
     assert quiet["flows"]["etf"]["value"] == 200.0
+
+
+_LEG_NARRATION = (
+    "issuance",
+    "发行",
+    "token supply",
+    "代币供应",
+    "tracks price",
+    "price change",
+    "价格变化",
+    "Market cap moved with token issuance",
+    "市值变化来自代币发行",
+    "Market cap moved with price and issuance",
+    "市值变化同时来自价格与发行",
+)
+
+
+def _assert_no_leg_narration(state: dict) -> None:
+    text = "\n".join(
+        [
+            state["stance"],
+            state["summary"],
+            state["stance_zh"],
+            state["summary_zh"],
+            state["cap_attribution"]["note_en"],
+            state["cap_attribution"]["note_zh"],
+        ]
+    )
+    for phrase in _LEG_NARRATION:
+        assert phrase not in text, phrase
+
+
+def _attributed(price_pct: float, supply_pct: float, dom0: float, dom1: float) -> dict:
+    dates = pd.date_range("2025-10-01", periods=80, freq="D")
+    price = _window(100_000.0, 100_000.0 * (1 + price_pct))
+    supply = _window(19_500_000.0, 19_500_000.0 * (1 + supply_pct))
+    mcap = [px * units for px, units in zip(price, supply)]
+    frames = {
+        ("coinmetrics", "mcap_usd"): pd.DataFrame({"mcap_usd": mcap}, index=dates),
+        ("bgeo", "btc_dominance"): pd.DataFrame(
+            {"btc_dominance": _window(dom0, dom1)}, index=dates
+        ),
+        ("coinbase", "btc_daily"): pd.DataFrame({"close": price}, index=dates),
+    }
+    return build_market_state(_read(frames), today=dates[-1])
+
+
+def _etf_on(last: str, today: str) -> dict:
+    published = pd.bdate_range(end=last, periods=8)
+    assert str(published[-1].date()) == last
+    frames = {
+        ("farside", "etf_flows"): pd.DataFrame(
+            {"total": [40.0] * len(published)}, index=published
+        ),
+    }
+    return build_market_state(_read(frames), today=today)["flows"]["etf"]
+
+
+def test_nyse_full_closure_is_pending_and_keeps_direction() -> None:
+    """A full NYSE closure is expected nonpublication, including the next weekend.
+
+    An ordinary missed weekday stays stale and drops the direction word.
+    """
+    closures = (
+        ("2026-01-16", "2026-01-19"),  # MLK Day
+        ("2026-12-24", "2026-12-25"),  # Christmas
+        ("2026-12-24", "2026-12-26"),  # Saturday after Christmas
+        ("2026-04-02", "2026-04-03"),  # Good Friday
+    )
+    for last, today in closures:
+        assert observation_status(
+            last, today, cadence="us_business_day", latest_value=40.0, has_observation=True
+        ) == "pending"
+        etf = _etf_on(last, today)
+        assert etf["observation"] == "pending"
+        assert etf["value"] == 200.0
+        assert etf["state"] == "Rising"
+        assert etf["state"] != "Unavailable"
+
+    assert observation_status(
+        "2026-01-14", "2026-01-15", cadence="us_business_day",
+        latest_value=40.0, has_observation=True,
+    ) == "stale"
+    missed = _etf_on("2026-01-14", "2026-01-15")
+    assert missed["observation"] == "stale"
+    assert missed["state"] == "Unavailable"
+    assert missed["value"] == 200.0
+
+
+def test_opposed_bitcoin_leg_does_not_narrate_the_class_total() -> None:
+    """Issuance or valuation copy only when that leg and the class total share a sign."""
+    supply_up_total_down = _attributed(0.0, 0.02, 50.0, 70.0)
+    assert abs(supply_up_total_down["total_30d_pct"] - (-27.143)) < 0.05
+    assert supply_up_total_down["cap_attribution"]["kind"] == "unattributed"
+    assert supply_up_total_down["stance"] == "Market cap is lower"
+    _assert_no_leg_narration(supply_up_total_down)
+
+    price_up_total_down = _attributed(0.10, 0.0, 50.0, 75.0)
+    assert abs(price_up_total_down["total_30d_pct"] - (-26.667)) < 0.05
+    assert price_up_total_down["cap_attribution"]["kind"] == "unattributed"
+    assert price_up_total_down["stance"] == "Market cap is lower"
+    _assert_no_leg_narration(price_up_total_down)
+
+    same_supply = _attributed(0.0, 0.05, 55.0, 55.0)
+    assert same_supply["total_30d_pct"] > 3
+    assert same_supply["cap_attribution"]["kind"] == "issuance"
+    assert "issuance" in same_supply["stance"].lower()
+    assert "发行" in same_supply["stance_zh"]
+
+    same_price = _attributed(0.10, 0.0, 60.0, 50.0)
+    assert same_price["total_30d_pct"] > 3
+    assert same_price["cap_attribution"]["kind"] == "valuation"
+    assert "price change" in same_price["summary"]
+
+
+def test_cap_attribution_publishes_threshold_numbers() -> None:
+    """Thresholds ride on the payload as numbers. Notes stay the existing sentences."""
+    state = _attributed(0.0, 0.05, 55.0, 55.0)
+    attribution = state["cap_attribution"]
+    assert attribution["material_pct"] == 1.0
+    assert attribution["hero_band_pct"] == 3.0
+    assert "1.0" not in attribution["note_en"]
+    assert "3.0" not in attribution["note_en"]
+    assert "1.0" not in attribution["note_zh"]
+    assert "3.0" not in attribution["note_zh"]
