@@ -27,6 +27,9 @@ from engine import qkernel
 # Discriminator behavior changed in v2 (word/stuck amount scales, compact and
 # spelled fiscal periods, contraction negation). new_cluster_id is unchanged.
 CLUSTER_POLICY_VERSION = "qbus_news_cluster.v2"
+# Label for a cluster row minted before the column existed (NULL), or a
+# member whose cluster row is missing.
+UNKNOWN_CLUSTER_POLICY_VERSION = "unknown (pre-column)"
 
 
 @dataclass(frozen=True, slots=True)
