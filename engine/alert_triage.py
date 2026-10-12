@@ -368,20 +368,73 @@ def priority(tier: str, band: str, age_days: float | None, ca_tag: str) -> tuple
 
 
 def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
-                reg: dict, rule_sc: dict | None = None, detail: str = "") -> dict:
-    """Honest edge block. Precedence: (1) the rule's OWN event-study backtest
-    (rule_scorecard.json) — most direct; (2) a Signal-Lab row backing the family;
-    (3) the engine's calibrated edge note; (4) documented-only.
+                reg: dict, rule_sc: dict | None = None, detail: str = "", *,
+                passport: dict | None = None,
+                validation_evidence: dict | None = None) -> dict:
+    """Honest evidence block.
 
-    Always returns the SAME key set (None / [] / {} where absent) so the template
-    can read v.hit / v.dsr / v.horizons without tripping Jinja's missing-key
-    Undefined (which is-not-none → True → format crash)."""
+    Precedence: (1) a current exact BTC impulse passport; (2) the alert rule's
+    own event study; (3) a Signal-Lab row backing the family; (4) a typed,
+    artifact-qualified Vector calibration receipt; (5) documented prose only.
+    Arbitrary Vector prose is never calibration evidence.
+    """
     base = {"backtested": False, "verdict": "documented", "scorecard_name": None,
             "hit": None, "dsr": None, "ic": None, "n": None, "horizon": None,
             "extra": [], "report": None, "link": "signal_lab.html",
-            "horizons": {}, "note": "", "note_zh": ""}
+            "horizons": {}, "note": "", "note_zh": "",
+            "current_permitted": None, "evidence_anchor": None,
+            "passport": None, "direction": None,
+            "historical_measurement": False}
 
-    # (1) the alert rule's own forward-SPY event study (scripts/alert_rules_phase0)
+    if passport is not None:
+        anchor = passport.get("anchor") or "signal-lab-btc-impulse"
+        stats = passport.get("stats") or []
+        extra = []
+        for row in stats:
+            leg = row.get("leg") or "leg"
+            extra.extend([
+                (f"{leg} holdout n", row.get("n_fires_holdout")),
+                (f"{leg} holdout lift", row.get("lift_holdout")),
+                (f"{leg} permutation p", row.get("perm_p")),
+            ])
+        extra = [(k, v) for k, v in extra if v is not None]
+        eligible = passport.get("claim_eligible") is True
+        current_status = passport.get("status") or "evidence_unavailable"
+        # Keep the page on its existing closed chip vocabulary while retaining
+        # the exact current state in machine data.  A demoted measured leg is a
+        # tested/no-current-edge read, an underpowered leg is explicitly
+        # underpowered, and expiry/unavailable states are display-only rather
+        # than falling through to the misleading "not backtested" default.
+        verdict = {
+            "eligible": "backtested",
+            "demoted": "no_edge",
+            "insufficient_n": "underpowered",
+        }.get(current_status, "display")
+        note = passport.get("status_text") or "Current evidence unavailable."
+        note_zh = passport.get("status_zh") or "当前证据不可用。"
+        if passport.get("event_state") == "expired" and passport.get("event_expires_on"):
+            expiry = passport["event_expires_on"]
+            if current_status == "expired":
+                note = f"{note.rstrip('.')} Window closed on {expiry}."
+                note_zh = f"{note_zh.rstrip('。')}；窗口于 {expiry} 关闭。"
+            else:
+                note = f"{note.rstrip('.')} This event's three-day window closed on {expiry}."
+                note_zh = f"{note_zh.rstrip('。')}；该事件的三日窗口于 {expiry} 关闭。"
+        return {**base,
+                "backtested": True if eligible else False,
+                "historical_measurement": bool(passport.get("validation_asof")),
+                "verdict": verdict, "current_status": current_status,
+                "scorecard_name": passport.get("name"),
+                "n": min((r.get("n_fires_holdout") for r in stats
+                          if r.get("n_fires_holdout") is not None), default=None),
+                "horizon": "3 daily BTC bars", "extra": extra,
+                "report": "data/vector/impulse_legs_gate.json",
+                "link": f"signal_lab.html#{anchor}",
+                "note": note, "note_zh": note_zh,
+                "current_permitted": eligible, "evidence_anchor": anchor,
+                "passport": passport, "direction": passport.get("direction")}
+
+    # The alert rule's own forward-SPY event study.
     rk = _rule_key(source, type_, detail)
     rule = (rule_sc or {}).get(rk) if rk else None
     if rule:
@@ -390,24 +443,24 @@ def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
             hh = rule["headline_horizon"]
             hd = rule["horizons"][hh]
             hits = {h: rule["horizons"][h]["hit"] for h in rule.get("earned_horizons", [])}
-            return {**base, "backtested": True, "verdict": "backtested",
-                    "scorecard_name": rule["label"], "hit": hd["hit"],
-                    "horizon": f"{hh}d", "n": rule["n_events"], "horizons": hits,
-                    "report": "alert-rules-phase0",
+            return {**base, "backtested": True, "historical_measurement": True,
+                    "verdict": "backtested", "scorecard_name": rule["label"],
+                    "hit": hd["hit"], "horizon": f"{hh}d", "n": rule["n_events"],
+                    "horizons": hits, "report": "alert-rules-phase0",
                     "note": f"Event study on 33y SPY: {hh}d hit {hd['hit']:.0%} vs "
                             f"{hd['base_hit']:.0%} base — survives FDR.",
                     "note_zh": f"33 年标普事件研究：{hh} 日命中 {hd['hit']:.0%}"
                                f"（基准 {hd['base_hit']:.0%}）— 通过 FDR。"}
         if v == "no_edge":
             return {**base, "verdict": "no_edge", "scorecard_name": rule["label"],
-                    "report": "alert-rules-phase0",
+                    "historical_measurement": True, "report": "alert-rules-phase0",
                     "note": "Event-tested on 33y SPY — NO forward edge (FDR q>0.10). "
                             "Shown as risk context, not a timing signal.",
                     "note_zh": "33 年标普事件检验 — 无前瞻边际（FDR q>0.10）。"
                                "作为风险背景，而非择时信号。"}
         if v == "underpowered":
             return {**base, "verdict": "underpowered", "scorecard_name": rule["label"],
-                    "report": "alert-rules-phase0",
+                    "historical_measurement": True, "report": "alert-rules-phase0",
                     "note": f"Too few historical firings ({rule['n_events']}) to "
                             "backtest — documented conviction only.",
                     "note_zh": f"历史触发次数过少（{rule['n_events']}），无法回测 — 仅有据可查。"}
@@ -415,22 +468,30 @@ def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
     name = _VALIDATION_MAP.get((source, type_))
     row = reg.get(name) if name else None
     if row:
-        return {**base, "backtested": True,
-                "verdict": row["tier"],          # scored / confirmer / display / killed
-                "scorecard_name": row["name"],
+        return {**base, "backtested": True, "historical_measurement": True,
+                "verdict": row["tier"], "scorecard_name": row["name"],
                 "hit": row.get("hit"), "dsr": row.get("dsr"),
                 "ic": row.get("ic"), "n": row.get("n"),
                 "horizon": row.get("horizon"), "extra": row.get("extra") or [],
                 "report": row.get("source"),
                 "note": engine_edge or "", "note_zh": engine_edge_zh or ""}
+
+    # A Vector edge string is only a display note.  Calibration authority must
+    # travel as a typed receipt naming the exact committed artifact and signal key.
+    ev = validation_evidence if isinstance(validation_evidence, dict) else {}
+    if (source == "vector" and ev.get("kind") == "calibration"
+            and ev.get("artifact") == "data/vector/calibration.json"
+            and isinstance(ev.get("signal_key"), str) and ev.get("signal_key")
+            and isinstance(ev.get("asof"), str) and alert_time.parse_date(ev.get("asof"))
+            and isinstance(ev.get("verdict"), str) and ev.get("verdict")):
+        return {**base, "backtested": "engine", "historical_measurement": True,
+                "verdict": "calibrated", "scorecard_name": ev["signal_key"],
+                "report": ev["artifact"], "horizon": None,
+                "note": engine_edge or "Calibrator-backed Vector evidence.",
+                "note_zh": engine_edge_zh or "由校准器支持的比特币向量证据。"}
+
     if engine_edge:
-        # BTC's edge note is derived from a real backtest (data/vector/calibration.json);
-        # the macro ALERT_CONVICTION notes are documented conviction, not calibration —
-        # label each honestly so the page never overstates what was measured.
-        is_cal = source == "vector"
-        return {**base, "backtested": "engine" if is_cal else False,
-                "verdict": "calibrated" if is_cal else "documented",
-                "note": engine_edge, "note_zh": engine_edge_zh or engine_edge}
+        return {**base, "note": engine_edge, "note_zh": engine_edge_zh or engine_edge}
     return {**base, "note": "Conviction is documented, not separately backtested "
             "as a timing signal.",
             "note_zh": "信念有据可查，但未作为择时信号单独回测。"}
@@ -661,6 +722,30 @@ def _jsonl_raw(source: str, today: date, cutoff: date,
                 "detail_zh": e.get("detail_zh") or e.get("detail", ""),
                 "anchor": e.get("anchor") or "#timeline",
                 "edge": e.get("edge", ""), "edge_zh": e.get("edge_zh", ""),
+                "event_id": e.get("id"),
+                "context": dict(e.get("context") or {}),
+                "evidence": e.get("evidence"),
+                "validation_evidence": e.get("validation_evidence"),
+                "original_claim": (e.get("original_claim") or ({
+                    "event_id": e.get("id"), "ts": e.get("ts"),
+                    "headline": e.get("headline", ""),
+                    "headline_zh": e.get("headline_zh") or e.get("headline", ""),
+                    "detail": e.get("detail", ""),
+                    "detail_zh": e.get("detail_zh") or e.get("detail", ""),
+                    "tier": e.get("tier"), "severity": e.get("severity"),
+                    "edge": e.get("edge", ""),
+                    "edge_zh": e.get("edge_zh", ""),
+                    "forward": e.get("forward", ""),
+                    "forward_zh": e.get("forward_zh", ""),
+                } if source == "vector" and type_ in {
+                    "impulse_warn_down", "impulse_trigger_down", "impulse_warn_up"
+                } else None)),
+                "observed_tier": e.get("observed_tier") or tier,
+                "signal_id": e.get("signal_id"),
+                "direction": e.get("direction"),
+                "claim_eligible": e.get("claim_eligible"),
+                "validation_asof": e.get("validation_asof"),
+                "event_expires_on": e.get("event_expires_on"),
             })
     except Exception as ex:  # noqa: BLE001
         log.warning("triage: %s feed unavailable (%s)", source, ex)
@@ -776,6 +861,51 @@ _TS_EN = {"STABLE": "steady", "WEAKENING": "weakening",
           "TRANSITIONING": "shifting", "NEW_REGIME": "new regime forming"}
 _TS_ZH = {"STABLE": "稳定", "WEAKENING": "走弱",
           "TRANSITIONING": "转换中", "NEW_REGIME": "新周期"}
+
+
+
+def pressure_effect(alert: dict) -> str:
+    """Typed whole-tape effect; unknown evidence contributes no directional score."""
+    explicit = alert.get("pressure_effect")
+    if explicit in {"risk_off", "relief", "risk_on", "nondirectional", "unknown"}:
+        return explicit
+    source, type_ = alert.get("source"), alert.get("type")
+    event_id = str(alert.get("event_id") or alert.get("id") or "")
+    context = alert.get("context") or {}
+    state = str(context.get("state") or event_id.rsplit(":", 1)[-1]).lower().replace(" ", "_")
+
+    if source == "vector" and type_ in {
+        "impulse_warn_down", "impulse_trigger_down", "impulse_warn_up"
+    }:
+        if alert.get("claim_eligible") is not True:
+            return "unknown"
+        direction = alert.get("direction") or context.get("direction")
+        # Alert type is an observation identity, not a substitute for typed
+        # direction evidence.  Missing/unknown direction stays unknown even when
+        # the current passport is otherwise claim-eligible.
+        return "risk_off" if direction == "down" else ("risk_on" if direction == "up" else "unknown")
+
+    if type_ == "risk_regime" and source in {"commodity", "vector"}:
+        if state in {"high_risk", "elevated", "extreme"}:
+            return "risk_off"
+        if state in {"low_risk", "calm", "normal"}:
+            return "relief"
+        return "unknown"
+    if type_ == "flash_crash":
+        if state in {"flash_crash", "tail_risk_event"}:
+            return "risk_off"
+        if state in {"stabilizing_price", "normal"}:
+            return "relief"
+        return "unknown"
+    if source == "macro" and type_ in {"transition_state_change", "gex_flip_cross"}:
+        return "nondirectional"
+    if type_ in {"hy_oas_widening", "ebp_widening", "nfci_tightening",
+                 "drawdown_risk_high", "sahm_trigger", "repo_stress"}:
+        return "risk_off"
+    # Net-liquidity prose is not typed direction. A producer may supply the
+    # explicit ``pressure_effect`` field handled above; otherwise ambiguity
+    # remains unknown rather than being guessed from translated display text.
+    return "unknown"
 
 
 def enum_zh(kind: str, value):
@@ -976,28 +1106,23 @@ def coverage_report(reads: list[dict], context_state: str) -> dict:
 
 
 def _board_read(kept: list[dict], ctx: dict, coverage: dict | None = None) -> dict:
-    """A one-line synthesis of what the whole board is saying — a DESCRIPTIVE read
-    of the current alert mix plus the documented backdrop, explicitly NOT a forecast
-    and never a P(risk-off).  Transparent: the driver counts are shown.
+    """Descriptive whole-tape read from typed risk-off evidence only.
 
-    PARTIAL COVERAGE (2026-08-20).  The pressure score is computed from what survived
-    the read, so a dead feed used to be indistinguishable from a quiet one — and if the
-    dead feed held stress events, losing it LOWERED the score and produced a more
-    constructive headline.  An outage could make the product look safer.  So when a
-    consequential family or the cross-asset backdrop is unavailable we do not publish a
-    whole-tape verdict at all: stance becomes ``partial``, the score becomes None, and the
-    line says which evidence is missing.  We do NOT substitute a conservative fake score
-    either — unknown stays unknown.  The ranked feed below it is unaffected and still
-    usable; only the claim to read the WHOLE tape is withdrawn.
+    Relief, bullish, nondirectional, and unknown alerts remain visible but can
+    never inflate the bearish pressure score.  Partial consequential coverage
+    still withdraws the overall stance instead of manufacturing a safe score.
     """
-    stress = [a for a in kept if a.get("cluster") == "stress"]
-    stress_confirm = sum(1 for a in stress if a.get("cross_asset_tag") == "confirm")
-    act = [a for a in kept if a.get("tier") == "act"]
-    crit = [a for a in kept if a.get("severity") == "critical"]
+    risk_off = [a for a in kept if pressure_effect(a) == "risk_off"]
+    relief = [a for a in kept if pressure_effect(a) == "relief"]
+    risk_on = [a for a in kept if pressure_effect(a) == "risk_on"]
+    nondirectional = [a for a in kept if pressure_effect(a) == "nondirectional"]
+    unknown = [a for a in kept if pressure_effect(a) == "unknown"]
+    confirmed = sum(1 for a in risk_off if a.get("cross_asset_tag") == "confirm")
+    act = [a for a in risk_off if a.get("tier") == "act"]
+    crit = [a for a in risk_off if a.get("severity") == "critical"]
     ca = (ctx.get("cross_asset") or {}).get("verdict")
     rb = ctx.get("risk_backdrop") or {}
-    # transparent, bounded pressure gauge (display only; not a probability)
-    score = min(100, len(stress) * 8 + stress_confirm * 6 + len(act) * 10 + len(crit) * 6)
+    score = min(100, len(risk_off) * 8 + confirmed * 6 + len(act) * 10 + len(crit) * 6)
     if ca == "concentrated":
         score = min(100, score + 8)
     if score >= 45:
@@ -1006,30 +1131,41 @@ def _board_read(kept: list[dict], ctx: dict, coverage: dict | None = None) -> di
         stance, stance_zh = "mixed", "喜忧参半"
     else:
         stance, stance_zh = "constructive", "偏进攻"
+
     drivers, drivers_zh = [], []
     if act:
-        drivers.append(f"{len(act)} act-tier call{'s' if len(act) != 1 else ''}")
-        drivers_zh.append(f"{len(act)} 条执行级信号")
-    if stress:
-        d = f"{len(stress)} risk-off stress alert{'s' if len(stress) != 1 else ''}"
-        if stress_confirm:
-            d += f" ({stress_confirm} cross-asset-confirmed)"
+        drivers.append(f"{len(act)} current risk-off action call{'s' if len(act) != 1 else ''}")
+        drivers_zh.append(f"{len(act)} 条当前风险规避行动信号")
+    if risk_off:
+        d = f"{len(risk_off)} typed risk-off alert{'s' if len(risk_off) != 1 else ''}"
+        if confirmed:
+            d += f" ({confirmed} cross-asset-confirmed)"
         drivers.append(d)
-        drivers_zh.append(f"{len(stress)} 条风险规避压力警报" +
-                          (f"（{stress_confirm} 条获跨资产佐证）" if stress_confirm else ""))
+        drivers_zh.append(f"{len(risk_off)} 条明确风险规避警报" +
+                          (f"（{confirmed} 条获跨资产佐证）" if confirmed else ""))
+    if relief or risk_on:
+        n = len(relief) + len(risk_on)
+        drivers.append(f"{n} relief/risk-on read{'s' if n != 1 else ''}")
+        drivers_zh.append(f"{n} 条缓和或风险偏好读数")
+    if nondirectional:
+        drivers.append(
+            f"{len(nondirectional)} nondirectional alert"
+            f"{'s' if len(nondirectional) != 1 else ''}"
+        )
+        drivers_zh.append(f"{len(nondirectional)} 条无方向警报")
+    if unknown:
+        drivers.append(f"{len(unknown)} direction-unknown alert{'s' if len(unknown) != 1 else ''}")
+        drivers_zh.append(f"{len(unknown)} 条方向未知警报")
     if ca:
-        # full-domain map — the verdict can be concentrated / diversified / converging /
-        # unknown (engine.cross_asset); a binary 'concentrated vs 分散' mislabels the last two.
         article = "an" if ca == "unknown" else "a"
         drivers.append(f"{article} {ca} tape")
         drivers_zh.append(f"盘面{_CA_ZH.get(ca, ca)}")
     if rb.get("recession_band"):
         drivers.append(f"recession risk {rb['recession_band']}")
         drivers_zh.append(f"衰退风险 {_BAND_ZH.get(rb['recession_band'], rb['recession_band'])}")
+
     cov = coverage or {"state": "complete"}
     if cov.get("state") == "partial":
-        # WITHDRAW the whole-tape verdict. Not a downgrade of it, not a pessimistic
-        # substitute for it — there is no honest verdict to publish from a partial read.
         missing = list(cov.get("blocking") or cov.get("unavailable") or [])
         missing_zh = list(cov.get("blocking_zh") or cov.get("unavailable_zh") or [])
         if cov.get("backdrop_missing"):
@@ -1043,25 +1179,42 @@ def _board_read(kept: list[dict], ctx: dict, coverage: dict | None = None) -> di
         tail = (" The alerts below are what we CAN see; this is not a complete read of "
                 "the tape, so no overall stance is shown.")
         tail_zh = "以下警报仅为我们能够读到的部分；这不是对整体盘面的完整解读，因此不给出总体立场。"
-        seen = (" Of the evidence we do have: " + ", ".join(drivers) + "."
-                if drivers else "")
+        seen = (" Of the evidence we do have: " + ", ".join(drivers) + "." if drivers else "")
         seen_zh = ("已读到的部分：" + "、".join(drivers_zh) + "。" if drivers_zh else "")
         return {"stance": "partial", "stance_zh": "证据不完整", "score": None,
                 "coverage": "partial", "missing": missing, "missing_zh": missing_zh,
                 "subset_drivers": drivers,
                 "one_liner": lead + "." + seen + tail,
                 "one_liner_zh": lead_zh + "。" + seen_zh + tail_zh}
-    lead = {"risk-off": "The tape is leaning risk-off",
-            "mixed": "The tape is mixed",
+
+    # A populated board with no typed directional evidence is not a constructive
+    # tape. Unknown and nondirectional observations remain visible, but the board
+    # withholds its stance and score rather than converting absence into safety.
+    if kept and not (risk_off or relief or risk_on):
+        detail = ", ".join(drivers) if drivers else "direction is not established"
+        detail_zh = "、".join(drivers_zh) if drivers_zh else "方向尚未确定"
+        return {
+            "stance": "uncertain", "stance_zh": "方向不明", "score": None,
+            "coverage": "complete", "missing": [], "missing_zh": [],
+            "drivers": drivers,
+            "one_liner": f"The tape has no typed directional conclusion — {detail}.",
+            "one_liner_zh": f"盘面没有可确认的方向性结论：{detail_zh}。",
+            "risk_off_count": 0, "relief_count": 0, "risk_on_count": 0,
+            "nondirectional_count": len(nondirectional),
+            "unknown_direction_count": len(unknown),
+        }
+
+    lead = {"risk-off": "The tape is leaning risk-off", "mixed": "The tape is mixed",
             "constructive": "The tape is broadly constructive"}[stance]
-    lead_zh = {"risk-off": "整体盘面偏防御",
-               "mixed": "整体盘面喜忧参半",
+    lead_zh = {"risk-off": "整体盘面偏防御", "mixed": "整体盘面喜忧参半",
                "constructive": "整体盘面偏进攻"}[stance]
     one = lead + (" — " + ", ".join(drivers) + "." if drivers else ".")
     one_zh = lead_zh + ("：" + "、".join(drivers_zh) + "。" if drivers_zh else "。")
     return {"stance": stance, "stance_zh": stance_zh, "score": score,
             "coverage": "complete", "missing": [], "missing_zh": [],
-            "drivers": drivers, "one_liner": one, "one_liner_zh": one_zh}
+            "drivers": drivers, "one_liner": one, "one_liner_zh": one_zh,
+            "risk_off_count": len(risk_off), "relief_count": len(relief),
+            "risk_on_count": len(risk_on), "unknown_direction_count": len(unknown)}
 
 
 def _volume_context(raw: list[dict], today: date, days: int) -> dict:
@@ -1127,6 +1280,12 @@ def _storylines(kept: list[dict]) -> list[dict]:
     return out
 
 
+def _load_impulse_gate_receipt() -> dict:
+    """One typed gate snapshot for the entire triage build."""
+    from engine import signal_evidence
+    return signal_evidence.load_btc_gate()
+
+
 def build_triage(days: int = 30, today: date | None = None,
                  per_source_context_cap: int = 6, max_items: int = 60,
                  now: datetime | None = None) -> dict:
@@ -1149,6 +1308,7 @@ def build_triage(days: int = 30, today: date | None = None,
     cutoff = today - timedelta(days=days)
     reg = _registry_index()
     rule_sc = _rule_scorecard()
+    impulse_gate = _load_impulse_gate_receipt()
     ctx = _load_context()
     ca_verdict = (ctx.get("cross_asset") or {}).get("verdict")
 
@@ -1207,15 +1367,39 @@ def build_triage(days: int = 30, today: date | None = None,
     enriched: list[dict] = []
     for key, instances in groups.items():
         rec = _recurrence(instances)
-        rep = max(instances, key=_fire_sort_key)                    # newest fire
+        rep = dict(max(instances, key=_fire_sort_key))              # newest fire
+        passport = None
+        if rep["source"] == "vector" and rep["type"] in {
+                "impulse_warn_down", "impulse_trigger_down", "impulse_warn_up"}:
+            from engine import btc_alerts, signal_evidence
+            identity = btc_alerts.impulse_identity(rep)
+            passport = signal_evidence.impulse_passport(
+                identity or "unknown",
+                event_at=rep.get("event_ts") or rep.get("event_date") or rep.get("ts"),
+                event_precision=rep.get("date_precision"),
+                board_date=today, source_asof=rep.get("source_asof"),
+                gate=impulse_gate,
+            )
+            rep.update({
+                "tier": "act" if passport["claim_eligible"] else "context",
+                "claim_eligible": passport["claim_eligible"],
+                "evidence": passport, "signal_id": passport.get("signal_id"),
+                "direction": passport.get("direction"),
+                "validation_asof": passport.get("validation_asof"),
+                "event_expires_on": passport.get("event_expires_on"),
+            })
+            rep.update(signal_evidence.current_projection(passport))
         tier = rep["tier"]
         band = severity_band(tier, rep["raw_sev"])
         # #42: measured-IC severity — the hardcoded band is a prior; a spine-measured null /
         # wrong-sign emitter is capped so it can't outrank validated risk-off signals.
         band, ic_note = ic_severity_cap(rep["source"], rep["type"], band)
         ca_tag = cross_asset_tag(rep["type"], ca_verdict)
-        validation = _validation(rep["source"], rep["type"], rep.get("edge", ""),
-                                 rep.get("edge_zh", ""), reg, rule_sc, rep.get("detail", ""))
+        validation = _validation(
+            rep["source"], rep["type"], rep.get("edge", ""), rep.get("edge_zh", ""),
+            reg, rule_sc, rep.get("detail", ""), passport=passport,
+            validation_evidence=rep.get("validation_evidence"),
+        )
         # v2: DEMOTE-ONLY corroboration cap — an isolated, unvalidated one-off can't
         # sit at the same volume as a confirmed / backtested signal.  Bare recurrence is
         # NOT a corroborator (2026-08-20): a transition log cannot show a state held.
@@ -1238,8 +1422,10 @@ def build_triage(days: int = 30, today: date | None = None,
         _id_key = (f"{rep['source']}|{rep['type']}|{rep.get('asset', '')}|"
                    f"{rep_board or str(rep.get('ts') or '')[:10]}")
         alert_id = hashlib.sha256(_id_key.encode()).hexdigest()[:12]
+        effect = pressure_effect(rep)
         enriched.append({
             **rep,
+            "pressure_effect": effect,
             "headline": _scrub(rep.get("headline", "")),
             "headline_zh": _scrub(rep.get("headline_zh", "")),
             "detail": _scrub(rep.get("detail", "")),
@@ -1456,6 +1642,17 @@ _PUSH_SUPPRESS = frozenset({
 })
 
 
+def _push_candidate(alert: dict, threshold: int) -> bool:
+    if alert.get("priority", 0) < threshold:
+        return False
+    if (alert.get("source", ""), alert.get("type", "")) in _PUSH_SUPPRESS:
+        return False
+    if (alert.get("source") == "vector" and alert.get("type") in {
+            "impulse_warn_down", "impulse_trigger_down", "impulse_warn_up"}):
+        return (alert.get("validation") or {}).get("current_permitted") is True
+    return True
+
+
 def push_priority_alerts(
     threshold: int = 60,
     window_hours: int = 6,
@@ -1515,11 +1712,7 @@ def push_priority_alerts(
         return []
 
     # --- FILTER: priority floor + explicit suppress list --------------------
-    candidates = [
-        a for a in alerts
-        if a.get("priority", 0) >= threshold
-        and (a.get("source", ""), a.get("type", "")) not in _PUSH_SUPPRESS
-    ]
+    candidates = [a for a in alerts if _push_candidate(a, threshold)]
     if not candidates:
         log.debug("push_priority_alerts: no alerts above threshold=%d", threshold)
         return []

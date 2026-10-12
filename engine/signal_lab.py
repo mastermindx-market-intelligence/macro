@@ -33,7 +33,7 @@ import json
 import logging
 import re
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -1593,12 +1593,17 @@ def _resolve_vector_live_stats(registry: list[dict], warnings: list[str] | None 
             from datetime import date
             exp = _BTC_VECTOR_FROZEN.get("expiry")
             expired = bool(exp and date.today().isoformat() > exp)
+            frozen_label = (
+                "EXPIRED frozen quote (past " + str(exp)
+                + " — REFRESH IT from the artifact; the published DSR is no longer "
+                  "the computed one)"
+                if expired else "frozen quote"
+            )
             warnings.append(
-                f"BTC Vector card: data/vector/calibration.json+trial_log.json unreadable or "
-                f"incomplete — rendering the "
-                f"{'EXPIRED frozen quote (past ' + exp + ' — REFRESH IT from the artifact; the '
-                   'published DSR is no longer the computed one)' if expired else 'frozen quote'} "
-                f"stamped {_BTC_VECTOR_FROZEN['quoted_on']} (data asof {_BTC_VECTOR_FROZEN['asof']})"
+                "BTC Vector card: data/vector/calibration.json+trial_log.json unreadable or "
+                "incomplete — rendering the " + frozen_label + " "
+                f"stamped {_BTC_VECTOR_FROZEN['quoted_on']} "
+                f"(data asof {_BTC_VECTOR_FROZEN['asof']})"
             )
         return
     row.update(_btc_vector_copy(fig))
@@ -1846,12 +1851,119 @@ def _build_foundry_block(repo_root: Path | None = None) -> dict:
     }
 
 
-def build_scorecard() -> dict:
+
+_ALERT_TRUST_COPY = {
+    "d2": {
+        "name": "DVOL range jolt", "name_zh": "DVOL 振幅跳升",
+        "purpose": "Observes unusually wide options-volatility ranges before a possible BTC drawdown.",
+        "purpose_zh": "观察期权波动率振幅异常放大，作为 BTC 潜在下跌前的提示。",
+        "limits": "Blind to quiet-option selloffs. Action support requires its own current gate and a fresh matching event inside the three-day window.",
+        "limits_zh": "无法覆盖期权平静式下跌。行动支持必须同时具备该信号自身的当前门槛，以及处于三日窗口内的新鲜匹配事件。",
+    },
+    "d3": {
+        "name": "SOPR profit-take spike", "name_zh": "SOPR 获利了结跳升",
+        "purpose": "Observes unusually strong profit-taking while BTC price is already rising.",
+        "purpose_zh": "观察 BTC 已上涨时出现的异常获利了结。",
+        "limits": "Requires this exact profit-taking condition; sibling legs cannot lend authority, and any permission ends with the three-day event window.",
+        "limits_zh": "必须满足该精确的获利了结条件；其他组成项不能借出权限，且任何权限都随三日事件窗口结束。",
+    },
+    "u1": {
+        "name": "SOPR wash-out", "name_zh": "SOPR 投降式洗盘",
+        "purpose": "Observes capitulation after a deep BTC drop; it is a reactive bounce setup, not an early bottom call.",
+        "purpose_zh": "观察 BTC 深跌后的投降式抛售；这是反应式反弹提示，并非提前抄底。",
+        "limits": "Reactive after a deep drop, not a pre-emptive bottom call. Its own current sample gate and an open three-day event window are both required.",
+        "limits_zh": "这是深跌后的反应式观察，并非提前抄底。必须同时具备该信号自身的当前样本门槛和开放中的三日事件窗口。",
+    },
+    "d2+d3": {
+        "name": "DVOL + SOPR joint fire", "name_zh": "DVOL + SOPR 联合触发",
+        "purpose": "Requires both down-side observations on the same BTC day.",
+        "purpose_zh": "要求两个下行观察在同一 BTC 日共同出现。",
+        "limits": "The composite earns authority only when each exact component independently has current permission.",
+        "limits_zh": "只有两个精确组成项各自都具当前权限时，联合信号才可获得权限。",
+    },
+}
+_ALERT_TRUST_STATUS = {
+    "eligible": ("Current evidence permits a fresh matching event", "当前证据允许新鲜匹配事件"),
+    "demoted": ("Demoted by current evidence", "已被当前证据降级"),
+    "insufficient_n": ("Current sample is too small", "当前样本过小"),
+    "no_data": ("No current validation row", "无当前验证记录"),
+    "gate_missing": ("Validation artifact missing", "验证文件缺失"),
+    "gate_corrupt": ("Validation artifact unreadable", "验证文件无法读取"),
+    "gate_unavailable": ("Validation unavailable", "验证不可用"),
+    "target_mismatch": ("Validation target mismatch", "验证目标不一致"),
+    "validation_time_invalid": ("Validation date invalid", "验证日期无效"),
+    "future_validation": ("Validation is future-dated", "验证日期位于未来"),
+    "stale_validation": ("Validation is stale", "验证已过期"),
+    "evaluation_time_invalid": ("Evaluation date invalid", "评估日期无效"),
+    "unknown_identity": ("Signal identity unknown", "信号身份未知"),
+    "leg_malformed": ("Validation row malformed", "验证记录格式错误"),
+    "leg_evidence_malformed": ("Measured validation evidence missing or malformed", "验证测量证据缺失或格式错误"),
+    "leg_contract_mismatch": ("Validation row contract mismatch", "验证记录契约不一致"),
+    "legs_contract_mismatch": ("Validation set contract mismatch", "验证集合契约不一致"),
+    "inconsistent_verdict": ("Validation verdict is internally inconsistent", "验证结论内部矛盾"),
+    "unknown_status": ("Validation status unknown", "验证状态未知"),
+    "leg_missing": ("Validation row missing", "验证记录缺失"),
+}
+
+
+def _build_alert_trust(gate=None, evaluation_date=None) -> dict:
+    """Current model evidence rows for the exact BTC impulse identities."""
+    from engine import btc_impulse_radar as radar
+    from engine import signal_evidence
+    snapshot = signal_evidence.load_btc_gate() if gate is None else gate
+    evaluated = (evaluation_date if evaluation_date is not None
+                 else datetime.now(timezone.utc).date())
+    rows = []
+    for identity in ("d2", "d3", "u1", "d2+d3"):
+        permission = radar.resolve_leg_permission(snapshot, identity, evaluated)
+        copy_row = _ALERT_TRUST_COPY[identity]
+        status_en, status_zh = _ALERT_TRUST_STATUS.get(
+            permission["reason"],
+            ("Current evidence does not permit use", "当前证据不允许使用"),
+        )
+        rows.append({
+            "identity": identity,
+            "anchor": {
+                "d2": "signal-lab-btc-impulse-d2",
+                "d3": "signal-lab-btc-impulse-d3",
+                "u1": "signal-lab-btc-impulse-u1",
+                "d2+d3": "signal-lab-btc-impulse-d2-d3",
+            }[identity],
+            "name": copy_row["name"], "name_zh": copy_row["name_zh"],
+            "purpose": copy_row["purpose"], "purpose_zh": copy_row["purpose_zh"],
+            "limits": copy_row["limits"], "limits_zh": copy_row["limits_zh"],
+            "direction": permission.get("direction"),
+            "status": permission["reason"],
+            "status_text": status_en, "status_zh": status_zh,
+            "current_permitted": permission["permitted"],
+            "permitted_use": "action_support" if permission["permitted"] else "observation_only",
+            "permitted_use_zh": "可支持新鲜匹配事件" if permission["permitted"] else "仅作观察",
+            "validation_asof": permission.get("validation_asof"),
+            "validation_state": permission.get("validation_state"),
+            "gate_read_state": permission.get("gate_read_state"),
+            "target": permission.get("target") or {},
+            "stats": permission.get("stats") or [],
+            "model_version": permission.get("model_version"),
+            "version_state": permission.get("version_state", "absent"),
+            "evidence_path": permission.get("gate_path") or "data/vector/impulse_legs_gate.json",
+        })
+    return {
+        "present": True,
+        "generated_for": str(evaluated),
+        "source": "data/vector/impulse_legs_gate.json",
+        "rows": rows,
+        "permitted": sum(1 for row in rows if row["current_permitted"]),
+        "total": len(rows),
+    }
+
+
+def build_scorecard(*, gate=None, evaluation_date=None) -> dict:
     """Assemble the full Signal Lab payload for the template. Pure assembler:
     the live-stats / provenance / source-ref passes stamp a per-call deep copy
     of ``REGISTRY``, never the module list itself, so a second caller in the
     same process sees the registry exactly as authored."""
     warnings: list[str] = []  # A9: collect build warnings
+    alert_trust = _build_alert_trust(gate=gate, evaluation_date=evaluation_date)
 
     ft = _load_factor_table()
     factor_rows: list[dict] = []
@@ -1966,6 +2078,7 @@ def build_scorecard() -> dict:
         "waves_adjudication": waves_adjudication,          # back-compat
         "warnings": warnings,                              # A9
         "foundry": foundry,                                # D1: Signal Foundry panel
+        "alert_trust": alert_trust,                        # current alert-evidence passports
     }
 
 

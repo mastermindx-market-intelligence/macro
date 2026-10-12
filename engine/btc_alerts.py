@@ -144,14 +144,32 @@ def _conviction(type_: str) -> dict:
     cal = _calib()
     edge, forward = "", ""
     edge_zh, forward_zh = "", ""
+    validation_evidence = None
     sig = c["signal"]
     if sig:
         verdict = (cal.get("signals", {}).get(sig, {}) or {}).get("verdict", "")
         edge = _edge_from_verdict(verdict)
         edge_zh = _edge_zh_from_verdict(verdict)
+        if verdict:
+            span = str((cal.get("meta") or {}).get("span") or "")
+            validation_evidence = {
+                "kind": "calibration",
+                "artifact": "data/vector/calibration.json",
+                "signal_key": sig,
+                "asof": span.split("..")[-1] if ".." in span else None,
+                "verdict": verdict,
+            }
     elif type_ == "allocation_change":
         opt = (cal.get("allocation", {}) or {}).get("optimal", {})
         if opt:
+            span = str((cal.get("meta") or {}).get("span") or "")
+            validation_evidence = {
+                "kind": "calibration",
+                "artifact": "data/vector/calibration.json",
+                "signal_key": "allocation.optimal",
+                "asof": span.split("..")[-1] if ".." in span else None,
+                "verdict": "strategy_backtest",
+            }
             edge = "Strategy output — beat buy-and-hold in backtest."
             edge_zh = "策略输出 — 在回测中跑赢买入并持有。"
             forward = (f"Backtest: {opt.get('cagr')}% CAGR vs {opt.get('hodl_cagr')}% "
@@ -175,18 +193,17 @@ def _conviction(type_: str) -> dict:
         edge_zh = ("预先承诺的结构性解除规则——事先登记、机械触发；"
                    "仓位交还给引擎经验证的策略输出。")
     elif type_ in ("impulse_warn_down", "impulse_trigger_down"):
-        edge = ("Forward de-risk window from a verified LEADING precursor cross "
-                "(impulse radar). Holdout-validated, leak-free; act early — the "
-                "edge decays in ~2-4 days. BLIND to slow/options-calm flushes "
-                "(e.g. it did NOT lead the 2026-06-24 cascade).")
-        edge_zh = ("来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。"
-                   "已通过留出样本、无前视；应尽早行动 — 优势在约 2-4 天内衰减。"
-                   "对缓慢/期权平静式下跌无效（例如未能领先 2026-06-24 的下跌）。")
+        edge = ("Observed BTC impulse precursor fire. Predictive and action use "
+                "requires its current Signal Lab evidence passport. BLIND to "
+                "slow/options-calm flushes (e.g. it did NOT lead the 2026-06-24 cascade).")
+        edge_zh = ("已观察到 BTC 脉冲前兆触发。能否用于预测或行动，"
+                   "取决于当前信号实验室证据凭证。对缓慢/期权平静式下跌无效"
+                   "（例如未能领先 2026-06-24 的下跌）。")
     elif type_ == "impulse_warn_up":
-        edge = ("Capitulation wash-out (SOPR). REACTIVE — fires AFTER a deep drop "
-                "and leads the BOUNCE by ~2d; it is NOT a pre-emptive bottom call.")
-        edge_zh = ("投降式洗盘（SOPR）。反应式 — 在大幅下跌之后触发，"
-                   "领先反弹约 2 天；并非提前抄底信号。")
+        edge = ("Observed reactive SOPR capitulation fire after a drawdown. "
+                "It is not a pre-emptive bottom call; current use requires its evidence passport.")
+        edge_zh = ("已观察到回撤后的反应式 SOPR 投降触发。它不是提前抄底信号；"
+                   "当前用途取决于证据凭证。")
     elif type_ == "oi_crowding_derisk":
         edge = ("OI-crowding de-risk nudge — funding-INDEPENDENT (breaks the "
                 "cascade AND-gate). LOW-CONVICTION: open interest is anti-predictive "
@@ -204,7 +221,8 @@ def _conviction(type_: str) -> dict:
             note_zh = f"历史上约 {w['pct']:.0f}% 的时间会反转（来回波动率）。"
             forward_zh = f"{forward_zh} {note_zh}".strip()
     return {"tier": c["tier"], "edge": edge.strip(), "forward": forward.strip(),
-            "edge_zh": edge_zh.strip(), "forward_zh": forward_zh.strip()}
+            "edge_zh": edge_zh.strip(), "forward_zh": forward_zh.strip(),
+            "validation_evidence": validation_evidence}
 
 
 def _ev(type_, ts, severity, headline, detail, context, to_state,
@@ -218,7 +236,8 @@ def _ev(type_, ts, severity, headline, detail, context, to_state,
             "headline_zh": headline_zh or headline, "detail_zh": detail_zh or detail,
             "anchor": ANCHOR.get(type_, ""),
             "tier": conv["tier"], "edge": conv["edge"], "forward": conv["forward"],
-            "edge_zh": conv["edge_zh"], "forward_zh": conv["forward_zh"]}
+            "edge_zh": conv["edge_zh"], "forward_zh": conv["forward_zh"],
+            "validation_evidence": conv.get("validation_evidence")}
 
 
 # --------------------------------------------------------------------------- #
@@ -412,7 +431,73 @@ def _onsets(s: pd.Series):
     return b.index[b & ~b.shift(1, fill_value=False)]
 
 
-def impulse_radar_events(sig: pd.DataFrame) -> list[dict]:
+_IMPULSE_TYPES = {"impulse_warn_down", "impulse_trigger_down", "impulse_warn_up"}
+_IMPULSE_IDENTITIES = {"d2", "d3", "u1", "d2+d3"}
+
+
+def impulse_identity(event: dict) -> str | None:
+    """Exact typed identity for a persisted impulse event, never headline-derived."""
+    context = event.get("context") or {}
+    identity = context.get("evidence_key") or context.get("leg")
+    if identity == "d2d3":
+        identity = "d2+d3"
+    if identity in _IMPULSE_IDENTITIES:
+        return identity
+    type_ = event.get("type")
+    if type_ == "impulse_trigger_down":
+        return "d2+d3"
+    if type_ == "impulse_warn_up":
+        return "u1"
+    return None
+
+
+def _issue_time_claim(event: dict) -> dict:
+    """Immutable projection of what the event record asserted when issued."""
+    return {
+        "event_id": event.get("id"),
+        "ts": event.get("ts"),
+        "headline": event.get("headline", ""),
+        "headline_zh": event.get("headline_zh", ""),
+        "detail": event.get("detail", ""),
+        "detail_zh": event.get("detail_zh", ""),
+        "tier": event.get("tier"),
+        "severity": event.get("severity"),
+        "edge": event.get("edge", ""),
+        "edge_zh": event.get("edge_zh", ""),
+        "forward": event.get("forward", ""),
+        "forward_zh": event.get("forward_zh", ""),
+    }
+
+
+def _attach_impulse_evidence(event: dict, identity: str, *, board_date,
+                             source_asof: str | None, gate: dict) -> dict:
+    """Project current permission without rewriting the historical occurrence."""
+    from engine import signal_evidence
+
+    if not isinstance(event.get("original_claim"), dict):
+        event["original_claim"] = _issue_time_claim(event)
+    passport = signal_evidence.impulse_passport(
+        identity, event_at=event.get("ts"), event_precision="date",
+        board_date=board_date, source_asof=source_asof, gate=gate,
+    )
+    event["observed_tier"] = event["original_claim"].get("tier") or event.get("tier", "act")
+    event["tier"] = "act" if passport["claim_eligible"] else "context"
+    event["signal_id"] = passport["signal_id"]
+    event["direction"] = passport["direction"]
+    event["source_asof"] = source_asof
+    event["validation_asof"] = passport["validation_asof"]
+    event["event_expires_on"] = passport["event_expires_on"]
+    event["claim_eligible"] = passport["claim_eligible"]
+    event["evidence"] = passport
+    context = dict(event.get("context") or {})
+    context.update({"evidence_key": identity, "direction": passport["direction"]})
+    event["context"] = context
+    event.update(signal_evidence.current_projection(passport))
+    return event
+
+
+def impulse_radar_events(sig: pd.DataFrame, *, gate: dict | None = None,
+                         board_date=None) -> list[dict]:
     """One act-tier event per fresh act-leg cross from engine/btc_impulse_radar.
     D2 (DVOL jolt) / D3 (SOPR spike) -> down warning; both co-firing -> down
     trigger; U1 (SOPR capitulation) -> reactive up/bounce. Idempotent (recomputed
@@ -424,6 +509,11 @@ def impulse_radar_events(sig: pd.DataFrame) -> list[dict]:
         return []
     if fires is None or fires.empty:
         return []
+    latest_asof = (pd.Timestamp(sig.index[-1]).date().isoformat()
+                   if len(sig.index) else None)
+    passport_date = board_date if board_date is not None else latest_asof
+    from engine import signal_evidence
+    gate_receipt = signal_evidence.load_btc_gate() if gate is None else gate
     close = sig["close"]
     out: list[dict] = []
     META = {
@@ -444,21 +534,32 @@ def impulse_radar_events(sig: pd.DataFrame) -> list[dict]:
         for ts in _onsets(fires[leg]):
             px = _f(close.get(ts, float("nan")))
             pxs = f" BTC ${px:,.0f}." if px is not None else ""
-            out.append(_ev(type_, ts, sev, head, f"{det}{pxs}",
-                           {"leg": leg, "price": round(px) if px is not None else None}, leg,
-                           headline_zh=head_zh, detail_zh=f"{det_zh}{pxs}"))
+            event = _ev(type_, ts, sev, head, f"{det}{pxs}",
+                        {"leg": leg, "price": round(px) if px is not None else None}, leg,
+                        headline_zh=head_zh, detail_zh=f"{det_zh}{pxs}")
+            event_source_asof = pd.Timestamp(ts).date().isoformat()
+            out.append(_attach_impulse_evidence(
+                event, leg, board_date=passport_date,
+                source_asof=event_source_asof, gate=gate_receipt,
+            ))
     # trigger: D2 AND D3 co-fire the same day (the loud one)
     if "d2" in fires.columns and "d3" in fires.columns:
         both = fires["d2"].fillna(False) & fires["d3"].fillna(False)
         for ts in _onsets(both):
             px = _f(close.get(ts, float("nan")))
             pxs = f" BTC ${px:,.0f}." if px is not None else ""
-            out.append(_ev("impulse_trigger_down", ts, "high",
-                           "Down-impulse TRIGGER: vol-jolt + SOPR spike",
-                           f"Two independent leading precursors crossed together.{pxs}",
-                           {"price": round(px) if px is not None else None}, "d2d3",
-                           headline_zh="下行脉冲触发：波动跳升 + SOPR 骤升",
-                           detail_zh=f"两个独立的领先前兆同时突破。{pxs}"))
+            event = _ev("impulse_trigger_down", ts, "high",
+                        "Down-impulse TRIGGER: vol-jolt + SOPR spike",
+                        f"Two independent precursor conditions crossed together.{pxs}",
+                        {"legs": ["d2", "d3"],
+                         "price": round(px) if px is not None else None}, "d2d3",
+                        headline_zh="下行脉冲触发：波动跳升 + SOPR 骤升",
+                        detail_zh=f"两个独立的前兆条件同时突破。{pxs}")
+            event_source_asof = pd.Timestamp(ts).date().isoformat()
+            out.append(_attach_impulse_evidence(
+                event, "d2+d3", board_date=passport_date,
+                source_asof=event_source_asof, gate=gate_receipt,
+            ))
     return out
 
 
@@ -592,26 +693,54 @@ def _path() -> "object":
     return config.data_dir() / "vector" / "alerts.jsonl"
 
 
-def compute_all_events(sig: pd.DataFrame | None = None) -> list[dict]:
+def compute_all_events(sig: pd.DataFrame | None = None, *, gate: dict | None = None,
+                       board_date=None) -> list[dict]:
     cfg = config.load()["vector"]["alerts"]
     if sig is None:
         sig = store.read("vector", "signals")
         sig.index = pd.to_datetime(sig.index)
+    source_asof = (pd.Timestamp(sig.index[-1]).date().isoformat()
+                   if len(sig.index) else None)
+    projection_date = board_date if board_date is not None else source_asof
+    from engine import signal_evidence
+    gate_receipt = signal_evidence.load_btc_gate() if gate is None else gate
+
     events = daily_state_events(sig) + risk_extreme_events(sig, cfg)
-    events += impulse_radar_events(sig) + leverage_derisk_events(sig)
+    events += impulse_radar_events(
+        sig, gate=gate_receipt, board_date=projection_date,
+    ) + leverage_derisk_events(sig)
     events += flash_events(store.read("coinbase", "btc_hourly"), cfg)
-    # Merge persisted events the daily rebuild can't reproduce: genuine sentinel alerts
-    # NEWER than the last daily bar (intraday), plus flash-crash history (derived from the
-    # hourly tape, not from `sig`). Everything else is fully recomputed above, so STALE
-    # sig-derived events — e.g. allocation changes left behind by a since-revised rule —
-    # are dropped instead of lingering forever. (recompute wins on id collision.)
+
+    # Recompute current state, but never delete a historical impulse occurrence.
+    # Other stale sig-derived state transitions remain replaceable by recomputation;
+    # impulse rows are immutable observations whose present authority is overlaid
+    # from this build's one frozen gate receipt.
     existing = load_events()
-    by_id = {e["id"]: e for e in events}
+    by_id = {e["id"]: e for e in events if e.get("id")}
+    for prior in existing:
+        event_id = prior.get("id")
+        if not event_id or prior.get("type") not in _IMPULSE_TYPES:
+            continue
+        if event_id in by_id:
+            by_id[event_id]["original_claim"] = (
+                prior.get("original_claim") or _issue_time_claim(prior)
+            )
+            continue
+        preserved = _attach_impulse_evidence(
+            dict(prior), impulse_identity(prior) or "unknown",
+            board_date=projection_date, source_asof=prior.get("source_asof"),
+            gate=gate_receipt,
+        )
+        by_id[event_id] = preserved
+
     last_ts = sig.index[-1].isoformat() if len(sig.index) else ""
-    for e in existing:
-        if e.get("ts", "") > last_ts or e.get("type") == "flash_crash":
-            by_id.setdefault(e["id"], e)
-    merged = sorted(by_id.values(), key=lambda e: e["ts"], reverse=True)
+    for event in existing:
+        if event.get("type") in _IMPULSE_TYPES:
+            continue
+        if event.get("ts", "") > last_ts or event.get("type") == "flash_crash":
+            if event.get("id"):
+                by_id.setdefault(event["id"], event)
+    merged = sorted(by_id.values(), key=lambda e: e.get("ts", ""), reverse=True)
     for e in merged:  # backfill conviction + zh on older/sentinel events so the log is uniform
         if "tier" not in e or "edge_zh" not in e:
             conv = _conviction(e.get("type", ""))
