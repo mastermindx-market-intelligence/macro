@@ -22579,6 +22579,7 @@ jobs:
       - "scripts/snapshot_shadow_book.py"
       - "scripts/sparse_guard.py"
       - "scripts/thematic_rotation_phase0.py"
+      - "scripts/ticker_news_inventory.py"
       - "scripts/verify_ticker_news.py"
       - "scripts/worktree_sparse.py"
       - "site/basketdata/baskets.json"
@@ -22638,6 +22639,7 @@ jobs:
       - "tests/test_run_qbus_news_provider.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
+      - "tests/test_ticker_news_inventory.py"
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
@@ -22676,6 +22678,7 @@ jobs:
           tests/test_run_qbus_news_provider.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
+          tests/test_ticker_news_inventory.py
           tests/test_ticker_news_receipt_binding.py
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_systemd.py
