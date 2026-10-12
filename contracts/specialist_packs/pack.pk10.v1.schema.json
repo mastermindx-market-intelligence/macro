@@ -2,8 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk10.v1.schema.json",
   "title": "Specialist pack PK10 v1 catalogue",
-  "description": "Proxy compensation and governance. Result instances validate against specialist_pack_result.v1. Field catalogue is empty because FIF_K1K2_PACKS.md and FIF_K3K4_PACKS.md were not present on disk; no field_id is invented.",
+  "description": "Proxy compensation and governance. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
   "pack_schema_id": "pack.pk10/v1",
+  "pack_id": "PK10",
   "name": "Proxy compensation and governance",
   "boundary": "Compensation/performance periods and definitions, source-backed proxy observations; no voting procedures.",
   "requires": [
@@ -17,6 +18,7 @@
   ],
   "catalogue_state": "unspecified",
   "fields": [],
+  "checks": [],
   "type": "object",
   "additionalProperties": false
 }

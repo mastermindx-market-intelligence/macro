@@ -2,8 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk09.v1.schema.json",
   "title": "Specialist pack PK09 v1 catalogue",
-  "description": "Controls, auditor and going concern. Result instances validate against specialist_pack_result.v1. Field catalogue is empty because FIF_K1K2_PACKS.md and FIF_K3K4_PACKS.md were not present on disk; no field_id is invented.",
+  "description": "Controls, auditor and going concern. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
   "pack_schema_id": "pack.pk09/v1",
+  "pack_id": "PK09",
   "name": "Controls, auditor and going concern",
   "boundary": "Explicit issuer/auditor wording, remediation and period; no fabricated fraud verdict.",
   "requires": [
@@ -16,6 +17,7 @@
   ],
   "catalogue_state": "unspecified",
   "fields": [],
+  "checks": [],
   "type": "object",
   "additionalProperties": false
 }
