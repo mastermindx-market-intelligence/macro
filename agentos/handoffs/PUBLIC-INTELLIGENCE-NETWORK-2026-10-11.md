@@ -337,3 +337,17 @@ is a proven prelaunch TERMINAL_FAILURE (rc75, stale active support policy on
 Ubuntu0), without a returned result or alternate-host retry. Root's public-source
 screen is separate from that refused support-publication operation. Original
 cc5d3116 CI38191946377 continues; all installed Terminal proof remains accepted.
+
+
+## Exact-head CI accepted, protected landing still pending
+
+The retained observer delivered the 2026-10-12T02:03:26.750665Z observation for
+cc5d31160dd3584b067453bc3b11d78440133000: all 21 binding checks passed and
+CI38191946377 completed SUCCESS. PR8786 remained OPEN. The raw body is
+research/agentic_media/public_intelligence_20261011/pr8786_cc5d_ci_green.json.
+Verification: the existing retained_pr_watch.py observer's sole attended session
+32336 delivered the event; no replacement watcher or controller was launched.
+This is CI acceptance only. Main f65b8376 has subsequently changed the legacy
+CI manifest, so consume the protected controller's actual decision before
+claiming freshness, landing or installation. The prepared installed-source and
+staging inspectors require the verified merged SHA and have not been executed.

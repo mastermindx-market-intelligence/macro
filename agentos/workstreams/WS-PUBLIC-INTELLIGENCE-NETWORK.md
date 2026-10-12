@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete original PR8786 exact-head CI38191946377 atcc5d31160dd3584b067453bc3b11d78440133000, then verify protected landing, installed hashes and public browser routes and dispatch the prepared nonpromoting earnings audit once. Terminal956 is already merged8520e5d7, installed and real-browser accepted; do not repeat it. This recovery branch contains retention, external planning, adjusted baseline qualification and the accepted event-clock correction44866cbe79ec, now integrating the original refreshed base. Open its follow-on from fresh main after8786 lands. No Press publication or qualified current story is admitted.
+next_action: Consume protected landing for original PR8786 after exact-head CI38191946377 succeeded atcc5d31160dd3584b067453bc3b11d78440133000, then verify installed hashes and public browser routes and dispatch the prepared nonpromoting earnings audit once. Terminal956 is already merged8520e5d7, installed and real-browser accepted; do not repeat it. This recovery branch contains retention, external planning, adjusted baseline qualification and the accepted event-clock correction44866cbe79ec, now integrating the original refreshed base. Open its follow-on from fresh main after8786 lands. No Press publication or qualified current story is admitted.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
@@ -69,8 +69,8 @@ Evidence and exact commands are in SOURCE_RETENTION.md and event_clock_review.tx
 No new Press writer or staging-provider attempt, source admission, staging or publication occurred.
 Original PR8786 is nowcc5d31160dd3584b067453bc3b11d78440133000 after main7cb33d3a
 and Tiingo-record conflict resolution;29local refresh checks passed, all13source
-and3page hashes remain unchanged. CI38191946377 is running with protected landing
-armed; fences and authority passed. Terminal956 remains installed/browser accepted.
+and3page hashes remain unchanged. CI38191946377 completed SUCCESS with all21binding checks passed; protected landing
+remains armed and is not yet observed. Terminal956 remains installed/browser accepted.
 
 
 Integration of original cc5d3116 into accepted follow-on44866cbe79ec preserves

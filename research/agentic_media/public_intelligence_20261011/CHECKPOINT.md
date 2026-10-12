@@ -8,8 +8,8 @@ Mission complete: **false**. Publication approved: **false**.
 **Original Macro carrier:** [PR 8786](https://github.com/mastermindx-market-intelligence/macro/pull/8786),
 head `cc5d31160dd3584b067453bc3b11d78440133000`, with protected landing armed.
 [CI 38191946377](https://github.com/mastermindx-market-intelligence/macro/actions/runs/38191946377)
-is running; the latest retained observation at 01:49 UTC had 15 passing checks
-and five test packs pending. The inactive merge-queue-pilot context is nonbinding.
+completed SUCCESS; the retained observation at 02:03:26 UTC has all 21 binding
+checks passing. Exact raw evidence is pr8786_cc5d_ci_green.json. The inactive merge-queue-pilot context is nonbinding.
 Do not infer a merge or installation from this dated snapshot. The one retained
 observer has a live return path to this attended parent, not a future idle wake.
 
@@ -57,7 +57,7 @@ must retain their real dates and scope; see SOURCE_RETENTION.md. It has not been
 ingested or admitted. Existing five-receipt, value-density, rights, editorial,
 ten-consecutive-article and release controls remain unchanged.
 
-**Exact next action:** consume cc5d's terminal CI and protected landing; verify
+**Exact next action:** consume the protected landing after cc5d's terminal CI success; verify
 merged ancestry plus stable installed source/site/served hashes; execute the
 prepared read-only installed staging inspector and public browser paths. Then
 run the existing earnings workflow once with `promote=false`, `full_audit=true`,
