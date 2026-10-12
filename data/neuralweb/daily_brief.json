@@ -1,17 +1,24 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-11T05:15:53.138659+00:00",
+  "produced_at": "2026-10-11T23:07:51.749771+00:00",
   "as_of": "2026-10-09",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "fresh",
-    "tool_call_batches": 5,
-    "individual_tool_calls": 11,
+    "cortex_status": "degraded",
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "context_stale": false,
-    "summary": "cortex ran (11 tool calls); memo as_of 2026-10-10T11:24:52+00:00"
+    "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [
+    {
+      "kind": "cortex_status_changed",
+      "id": "cortex",
+      "summary": "cortex status changed: fresh → degraded",
+      "severity": "warn",
+      "evidence_path": "data/neuralweb/health.json"
+    },
     {
       "kind": "lobe_row_count_changed",
       "id": "spine-index",
@@ -458,6 +465,12 @@
   },
   "operator_attention": [
     {
+      "priority": 1,
+      "area": "cortex",
+      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
+      "action_type": "ops_fix"
+    },
+    {
       "priority": 2,
       "area": "government-revenue-latest",
       "summary": "lobe government-revenue-latest is warn — age 965.26h vs SLA 36h",
@@ -775,7 +788,7 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-10-10",
+    "as_of": "2026-10-11",
     "counts": {
       "overdue": 123,
       "due": 23,
@@ -796,7 +809,7 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-10-10",
+    "as_of": "2026-10-11",
     "phase": "GRINDING_BEAR",
     "phase_confidence": 0.8,
     "who_controls": "mixed",
@@ -822,7 +835,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-10-10T11:58:08Z",
+    "asof": "2026-10-11T06:04:41Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,

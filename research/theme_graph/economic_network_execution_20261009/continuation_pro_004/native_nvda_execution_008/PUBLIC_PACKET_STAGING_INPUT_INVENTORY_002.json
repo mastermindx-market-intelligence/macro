@@ -1,0 +1,162 @@
+{
+  "all_unchanged": true,
+  "files": [
+    {
+      "identity": {
+        "byte_length": 19659,
+        "device": 16777234,
+        "inode": 1722334350,
+        "mode": 384,
+        "mtime_ns": "1791562611101320257"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-capture-runner-001.py",
+      "sha256": "264535ec562043a18e4bc75c92fbbe9b5cba12428422b2a9677e89c0f769f699"
+    },
+    {
+      "identity": {
+        "byte_length": 4261,
+        "device": 16777234,
+        "inode": 1722334457,
+        "mode": 384,
+        "mtime_ns": "1791562621153880226"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-owner-bootstrap-001.json",
+      "sha256": "6ea1031084e6948ee284222201158227ec5cc111874e08ebcd9d6a2b00d56040"
+    },
+    {
+      "identity": {
+        "byte_length": 29119,
+        "device": 16777234,
+        "inode": 1722334327,
+        "mode": 384,
+        "mtime_ns": "1791562609480252970"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-owner-bootstrap-runner-001.py",
+      "sha256": "92298f53a839bea81b16556ff71277f461d44f732df88a044a990785c620f0a3"
+    },
+    {
+      "identity": {
+        "byte_length": 15017,
+        "device": 16777234,
+        "inode": 1722388902,
+        "mode": 384,
+        "mtime_ns": "1791563541800513860"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/INPUT_INVENTORY.json",
+      "sha256": "1fea60e47bdae5de6e279880840e61213d5502226a1c8fecd2fc384d7a04b05f"
+    },
+    {
+      "identity": {
+        "byte_length": 1799,
+        "device": 16777234,
+        "inode": 1722388905,
+        "mode": 384,
+        "mtime_ns": "1791563541802219754"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/MANIFEST.json",
+      "sha256": "63647a1c79b940945450ea4a44cc322a4b102cda8346f57bcecca694270c39a4"
+    },
+    {
+      "identity": {
+        "byte_length": 2100,
+        "device": 16777234,
+        "inode": 1722388901,
+        "mode": 384,
+        "mtime_ns": "1791563541800033782"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/PRIOR_EVIDENCE_AND_CARRIER_CHANGE.json",
+      "sha256": "33c576cd0ae1b16a477f3834f52f4dc327285da738a986993543ee4f6c0f70a8"
+    },
+    {
+      "identity": {
+        "byte_length": 9031,
+        "device": 16777234,
+        "inode": 1722388904,
+        "mode": 384,
+        "mtime_ns": "1791563541801615970"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/REVIEW.md",
+      "sha256": "870cc8bda77203937519e6fb0a213edad7e15814101a77021a13e63a0558c443"
+    },
+    {
+      "identity": {
+        "byte_length": 83817,
+        "device": 16777234,
+        "inode": 1722388903,
+        "mode": 384,
+        "mtime_ns": "1791563541801347182"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/VERIFICATION_RESULT.json",
+      "sha256": "54a550dae367444c77a6ad8793c4d8dca36da567cbd18bb6ca75cc13c5fdc6b5"
+    },
+    {
+      "identity": {
+        "byte_length": 19659,
+        "device": 16777234,
+        "inode": 1722388899,
+        "mode": 384,
+        "mtime_ns": "1791563541799433707"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/inputs/ACTION.py.txt",
+      "sha256": "264535ec562043a18e4bc75c92fbbe9b5cba12428422b2a9677e89c0f769f699"
+    },
+    {
+      "identity": {
+        "byte_length": 29119,
+        "device": 16777234,
+        "inode": 1722388900,
+        "mode": 384,
+        "mtime_ns": "1791563541799707037"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/inputs/BOOTSTRAP.py.txt",
+      "sha256": "92298f53a839bea81b16556ff71277f461d44f732df88a044a990785c620f0a3"
+    },
+    {
+      "identity": {
+        "byte_length": 4261,
+        "device": 16777234,
+        "inode": 1722388898,
+        "mode": 384,
+        "mtime_ns": "1791563541799248293"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/inputs/OUTER_RESULT.json",
+      "sha256": "6ea1031084e6948ee284222201158227ec5cc111874e08ebcd9d6a2b00d56040"
+    },
+    {
+      "identity": {
+        "byte_length": 26399,
+        "device": 16777234,
+        "inode": 1722388897,
+        "mode": 384,
+        "mtime_ns": "1791563541799018879"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/inputs/PUBLIC_RESULT.json",
+      "sha256": "3fe5f660d92703e370c716135bd078d57fd281b8f30da611c65b5a6d8346414d"
+    },
+    {
+      "identity": {
+        "byte_length": 47121,
+        "device": 16777234,
+        "inode": 1722388892,
+        "mode": 384,
+        "mtime_ns": "1791563541737626678"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-public-independent-review-001/verify_public_result.py",
+      "sha256": "246ab0e0f5a74c92dfbe467cad4380c1d40edcafdd509d9d0edbef40b3b5bf09"
+    },
+    {
+      "identity": {
+        "byte_length": 26399,
+        "device": 16777234,
+        "inode": 1722334452,
+        "mode": 384,
+        "mtime_ns": "1791562620887480877"
+      },
+      "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-split-pro-004-001/PUBLIC_RESULT.json",
+      "sha256": "3fe5f660d92703e370c716135bd078d57fd281b8f30da611c65b5a6d8346414d"
+    }
+  ],
+  "original_file_count": 14,
+  "original_total_bytes": 317761,
+  "schema": "economic_network.public_staging_inputs/v1"
+}

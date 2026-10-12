@@ -285,8 +285,23 @@ class MarketDeskClient:
     def download_blob(self, blob_id: str) -> bytes:
         """GET the authenticated blob URL, follow redirects, return PDF bytes."""
         url = self.cfg.blob_url(blob_id)
-        resp = self.req.get(url, headers={"Referer": self._headers["Referer"]},
-                            timeout=120_000)
+        try:
+            resp = self.req.get(url, headers={"Referer": self._headers["Referer"]},
+                                timeout=120_000)
+        except Exception as error:
+            # A Playwright HTTP request that never established TLS could not
+            # have delivered PDF bytes. This is an infrastructure failure, NOT
+            # evidence that the paper is unsupported or has consumed a PDF.
+            # Only this exact observed pre-handshake failure is reclassified;
+            # post-handshake/ambiguous provider effects stay fail-closed.
+            if (
+                "client network socket disconnected before secure tls "
+                "connection was established"
+            ) in str(error).lower():
+                raise TransientHTTPError(
+                    f"blob {blob_id}: connection lost before TLS establishment"
+                ) from error
+            raise
         if resp.status >= 500:
             raise TransientHTTPError(f"blob {blob_id} -> {resp.status}")
         if not resp.ok:

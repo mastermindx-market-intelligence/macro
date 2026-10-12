@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/tiingo-live-wave4-proof-01a12ab6.py", line 68, in <module>
+    view = read_research_view(source, day, selector, root=root, max_rows=1000000)
+  File "/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009/lib/dataos/tiingo_reader.py", line 143, in read_research_view
+    context = _unique_raw_context(base, source, day, lookup_digest, receipt_id=selected_receipt)
+  File "/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009/lib/dataos/tiingo_reader.py", line 108, in _unique_raw_context
+    raise TiingoViewRefusal("ambiguous raw contexts; upstream archive repair required")
+lib.dataos.tiingo_reader.TiingoViewRefusal: ambiguous raw contexts; upstream archive repair required
