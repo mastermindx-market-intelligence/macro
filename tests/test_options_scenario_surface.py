@@ -830,3 +830,247 @@ def test_all_known_past_bounds_remain_exact(iv_source, field):
         result = _review_build(ordered, iv_source)
         assert result["source_clocks"][field + "_first"] == REV_PAST
         assert result["source_clocks"][field + "_last"] == REV_LATER_PAST
+
+
+# M02 pin #8684 — A02–A05. Appended only; existing tests and helpers stay as they are.
+_M02_AT = "2026-10-08T14:00:00Z"
+
+
+def _m02_leg(contract_id, expiry, right, strike, fixing_at, iv=0.20):
+    return {
+        "contract_id": contract_id, "option_root": "SPXW", "expiry": expiry,
+        "right": right, "strike": float(strike), "multiplier": 100.0, "iv": iv,
+        "settlement": "PM", "fixing_at": fixing_at,
+    }
+
+
+def _m02_hedge(contracts, starting, ending, *, spot, target_spot, target_at,
+               observed_at=_M02_AT, as_of=_M02_AT, iv_shift=0.0,
+               target_iv_by_contract=None, expected_contract_ids=None, r=None, q=None):
+    from engine.options_scenario_surface import build_hedge_target_change
+    payload = {
+        "contracts": contracts,
+        "observed_at": observed_at, "as_of": as_of, "spot": spot,
+        "target_spot": target_spot, "target_at": target_at, "iv_shift": iv_shift,
+        "expected_contract_ids": list(expected_contract_ids or [row["contract_id"] for row in contracts]),
+        "universe_ref": "fixture:m02-pin",
+        "source_receipt": {
+            "source_ref": "fixture:m02-pin", "source_observed_at": observed_at,
+            "received_at": observed_at, "consumer_available_at": observed_at,
+        },
+        "inventory": {
+            "scenario_id": "fixture:m02-pin", "evidence_class": "SCENARIO",
+            "starting": starting, "ending": ending,
+        },
+    }
+    if target_iv_by_contract is not None:
+        payload["target_iv_by_contract"] = target_iv_by_contract
+    if r is not None:
+        payload["r"] = r
+    if q is not None:
+        payload["q"] = q
+    return build_hedge_target_change(**payload)
+
+
+def _m02_a02_legs(iv=0.20, negate=False, flat_start=False):
+    spec = [
+        ("SPXW:2026-10-15:C:5950", "2026-10-15", "C", 5950.0, "2026-10-15T20:00:00Z", -100.0, -110.0),
+        ("SPXW:2026-10-15:C:6050", "2026-10-15", "C", 6050.0, "2026-10-15T20:00:00Z", 50.0, 40.0),
+        ("SPXW:2026-10-15:P:5950", "2026-10-15", "P", 5950.0, "2026-10-15T20:00:00Z", -30.0, -10.0),
+        ("SPXW:2026-10-15:P:6050", "2026-10-15", "P", 6050.0, "2026-10-15T20:00:00Z", 80.0, 95.0),
+        ("SPXW:2026-10-09:C:6000", "2026-10-09", "C", 6000.0, "2026-10-09T20:00:00Z", -20.0, -25.0),
+    ]
+    sign = -1.0 if negate else 1.0
+    contracts, starting, ending = [], {}, {}
+    for contract_id, expiry, right, strike, fixing_at, n0, n1 in spec:
+        contracts.append(_m02_leg(contract_id, expiry, right, strike, fixing_at, iv=iv))
+        starting[contract_id] = sign * n0
+        ending[contract_id] = sign * (n0 if flat_start else n1)
+    return contracts, starting, ending
+
+
+def test_endpoint_reversed_inventory_negates_target_change():
+    contracts, starting, ending = _m02_a02_legs()
+    positive = _m02_hedge(contracts, starting, ending, spot=6000.0, target_spot=5980.0,
+                          target_at="2026-10-08T14:20:00Z", iv_shift=0.01)
+    neg_contracts, neg_starting, neg_ending = _m02_a02_legs(negate=True)
+    negative = _m02_hedge(neg_contracts, neg_starting, neg_ending, spot=6000.0, target_spot=5980.0,
+                          target_at="2026-10-08T14:20:00Z", iv_shift=0.01)
+    assert positive["status"] == "complete_for_supplied_universe"
+    assert negative["status"] == "complete_for_supplied_universe"
+    for field in ("target_change", "reference_notional_usd", "anchor_target", "endpoint_target"):
+        assert negative["hedge"][field] == pytest.approx(-positive["hedge"][field], abs=1e-9)
+    pos_expiry = {(row["option_root"], row["expiry"]): row for row in positive["by_expiry"]}
+    neg_expiry = {(row["option_root"], row["expiry"]): row for row in negative["by_expiry"]}
+    assert set(pos_expiry) == set(neg_expiry)
+    for key, row in pos_expiry.items():
+        assert neg_expiry[key]["target_change"] == pytest.approx(-row["target_change"], abs=1e-9)
+    pos_cohort = {row["cohort"]: row for row in positive["by_cohort"]}
+    neg_cohort = {row["cohort"]: row for row in negative["by_cohort"]}
+    assert set(pos_cohort) == set(neg_cohort)
+    for key, row in pos_cohort.items():
+        for field in ("anchor_target", "endpoint_target", "target_change"):
+            assert neg_cohort[key][field] == pytest.approx(-row[field], abs=1e-9)
+    for field in ("repricing", "inventory"):
+        assert negative["attribution"][field] == pytest.approx(-positive["attribution"][field], abs=1e-9)
+
+    # Time cannot be swapped: target < observed is refused. Swap the spot and the
+    # per-contract IV endpoints instead, with inventory held flat at the start.
+    flat_contracts, flat_start, flat_end = _m02_a02_legs(iv=0.20, flat_start=True)
+    ids = [row["contract_id"] for row in flat_contracts]
+    down = _m02_hedge(
+        flat_contracts, flat_start, flat_end, spot=6000.0, target_spot=5980.0,
+        target_at=_M02_AT, iv_shift=0.0, target_iv_by_contract={key: 0.21 for key in ids},
+    )
+    up_contracts, up_start, up_end = _m02_a02_legs(iv=0.21, flat_start=True)
+    up = _m02_hedge(
+        up_contracts, up_start, up_end, spot=5980.0, target_spot=6000.0,
+        target_at=_M02_AT, iv_shift=0.0, target_iv_by_contract={key: 0.20 for key in ids},
+    )
+    assert down["hedge"]["target_change"] == pytest.approx(-up["hedge"]["target_change"], abs=1e-9)
+
+
+def test_endpoint_tiny_shock_converges_to_same_kernel_local_derivative():
+    key = "SPXW:2026-10-15:C:6000"
+    fixing = datetime(2026, 10, 15, 20, tzinfo=timezone.utc)
+    observed = datetime(2026, 10, 8, 14, tzinfo=timezone.utc)
+    t0 = (fixing - observed).total_seconds() / (365 * 86400)
+    delta, gamma, vanna, charm = bs_greeks_vec(
+        6000.0, np.array([6000.0]), np.array([t0]), np.array([0.2]), np.array([True]), r=0.0, q=0.0,
+    )
+    delta, gamma, vanna, charm = (float(x[0]) for x in (delta, gamma, vanna, charm))
+    n0 = -100.0
+    year = 365 * 86400
+
+    def run(h, n1, target_spot=None, iv_shift=None, target_at=None):
+        contract = _m02_leg(key, "2026-10-15", "C", 6000.0, "2026-10-15T20:00:00Z", iv=0.20)
+        if target_at is None:
+            target_at = (observed + timedelta(seconds=600 * h)).isoformat()
+        out = _m02_hedge(
+            [contract], {key: n0}, {key: n1}, spot=6000.0,
+            target_spot=6000.0 + 10 * h if target_spot is None else target_spot,
+            target_at=target_at, iv_shift=0.01 * h if iv_shift is None else iv_shift, r=0.0, q=0.0,
+        )
+        assert out["status"] == "complete_for_supplied_universe", out["unavailable_reasons"]
+        return out
+
+    def assert_ratio(residuals):
+        for h in (1e-1, 1e-2, 1e-3):
+            assert abs(residuals[h / 10]) <= 0.05 * abs(residuals[h])
+
+    def assert_linear(h, n1, out):
+        dS = 10 * h
+        d_sigma = 0.01 * h
+        dt_years = 600 * h / year
+        expected = -100 * n0 * (gamma * dS + vanna * d_sigma + charm * dt_years) - 100 * (n1 - n0) * delta
+        assert out["attribution"]["linear_approximation"] == pytest.approx(expected, rel=1e-9)
+
+    flat = {}
+    for h in (1e-1, 1e-2, 1e-3, 1e-4):
+        out = run(h, n0)
+        flat[h] = out["attribution"]["linear_residual"]
+        assert_linear(h, n0, out)
+    assert_ratio(flat)
+
+    dS = 0.01
+    plus = run(0.0, n0, target_spot=6000.0 + dS, iv_shift=0.0, target_at=_M02_AT)
+    minus = run(0.0, n0, target_spot=6000.0 - dS, iv_shift=0.0, target_at=_M02_AT)
+    slope = (plus["hedge"]["target_change"] - minus["hedge"]["target_change"]) / (2 * dS)
+    assert slope == pytest.approx(-100 * n0 * gamma, rel=1e-3)
+
+    bumped = {}
+    for h in (1e-1, 1e-2, 1e-3, 1e-4):
+        n1 = n0 + 10 * h
+        out = run(h, n1)
+        bumped[h] = out["attribution"]["linear_residual"]
+        assert_linear(h, n1, out)
+    assert_ratio(bumped)
+
+
+def _m02_erf_delta(spot, strike, t_years, sigma, right):
+    d1 = (math.log(spot / strike) + 0.5 * sigma ** 2 * t_years) / (sigma * math.sqrt(t_years))
+    return 0.5 * (1.0 + math.erf(d1 / math.sqrt(2.0))) - (right == "P")
+
+
+def test_endpoint_every_leg_both_sides_of_spot_contributes_exactly_once():
+    spec = [
+        ("C", 5900.0, -100.0, -110.0),
+        ("C", 6000.0, 50.0, 40.0),
+        ("C", 6100.0, -30.0, -10.0),
+        ("P", 5900.0, 80.0, 95.0),
+        ("P", 6000.0, -20.0, -25.0),
+        ("P", 6100.0, 60.0, 45.0),
+    ]
+    observed = datetime(2026, 10, 8, 14, tzinfo=timezone.utc)
+    target = datetime(2026, 10, 8, 14, 20, tzinfo=timezone.utc)
+    fixing = datetime(2026, 10, 15, 20, tzinfo=timezone.utc)
+    year = 365 * 86400
+    t0 = (fixing - observed).total_seconds() / year
+    t1 = (fixing - target).total_seconds() / year
+    contracts, starting, ending, terms = [], {}, {}, {}
+    for right, strike, n0, n1 in spec:
+        contract_id = f"SPXW:2026-10-15:{right}:{int(strike)}"
+        contracts.append(_m02_leg(contract_id, "2026-10-15", right, strike, "2026-10-15T20:00:00Z"))
+        starting[contract_id] = n0
+        ending[contract_id] = n1
+        anchor = _m02_erf_delta(6000.0, strike, t0, 0.20, right)
+        endpoint = _m02_erf_delta(6015.0, strike, t1, 0.20, right)
+        terms[contract_id] = -100.0 * (n1 * endpoint - n0 * anchor)
+    ids = [row["contract_id"] for row in contracts]
+    full = _m02_hedge(contracts, starting, ending, spot=6000.0, target_spot=6015.0,
+                      target_at="2026-10-08T14:20:00Z", iv_shift=0.0, r=0.0, q=0.0)
+    assert full["status"] == "complete_for_supplied_universe", full["unavailable_reasons"]
+    assert full["hedge"]["target_change"] == pytest.approx(math.fsum(terms.values()), abs=1e-6)
+    for contract_id, term in terms.items():
+        zeroed_start = dict(starting, **{contract_id: 0.0})
+        zeroed_end = dict(ending, **{contract_id: 0.0})
+        zeroed = _m02_hedge(contracts, zeroed_start, zeroed_end, spot=6000.0, target_spot=6015.0,
+                            target_at="2026-10-08T14:20:00Z", iv_shift=0.0, r=0.0, q=0.0)
+        assert full["hedge"]["target_change"] - zeroed["hedge"]["target_change"] == pytest.approx(term, abs=1e-6)
+        kept = [row for row in contracts if row["contract_id"] != contract_id]
+        missing = _m02_hedge(
+            kept, starting, ending, spot=6000.0, target_spot=6015.0,
+            target_at="2026-10-08T14:20:00Z", iv_shift=0.0, r=0.0, q=0.0,
+            expected_contract_ids=ids,
+        )
+        assert missing["status"] == "unavailable"
+        assert "missing_contracts" in missing["unavailable_reasons"]
+        assert missing["hedge"] is None
+
+
+def test_endpoint_output_key_set_is_closed_and_authority_cannot_be_injected(tmp_path):
+    args = _endpoint_inputs()
+    args["contracts"][0]["probability"] = 0.9
+    args["source_receipt"]["can_publish"] = True
+    args["inventory"]["authority"] = {"trading": True}
+    out = _endpoint(**args)
+    assert out["status"] == "complete_for_supplied_universe"
+    assert set(out) == {
+        "schema", "evidence_class", "root", "observed_at", "as_of", "target_at", "spot",
+        "target_spot", "source_receipt", "source_age_seconds", "inventory_scenario_id",
+        "inventory_assumptions", "contracts", "coverage", "assumptions", "units", "authority",
+        "warnings", "hedge", "attribution", "by_expiry", "by_cohort", "cohort_migrations",
+        "unavailable_reasons", "status", "content_id",
+    }
+    assert set(out["source_receipt"]) == {
+        "source_ref", "source_revision", "contract_reference_revision",
+        "source_observed_at", "received_at", "consumer_available_at",
+    }
+    assert set(out["authority"]) == {
+        "calibrated_probability", "actual_dealer_inventory", "executed_flow", "trading",
+        "can_publish", "ranking", "portfolio", "sizing", "auto_exit",
+    }
+    assert all(value is False for value in out["authority"].values())
+    assert all("probability" not in row for row in out["contracts"])
+
+    payload = _endpoint_inputs()
+    payload["probability"] = 0.9
+    src = tmp_path / "book.json"
+    src.write_text(json.dumps(payload))
+    proc = subprocess.run(
+        [sys.executable, "scripts/build_options_scenario_surface.py",
+         "--mode", "hedge-target", "--input", str(src)],
+        capture_output=True, text=True,
+    )
+    assert proc.returncode != 0
+    assert "complete_for_supplied_universe" not in proc.stdout
