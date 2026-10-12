@@ -24181,3 +24181,22 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: sni s1 residual baseline tests
         run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py -q -p no:cacheprovider
+  c19-short-pressure-availability:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24-G: the short-pressure availability leg never prints absent or censored borrow supply as an exact count.
+    timeout-minutes: 10
+    paths:
+      - "engine/short_pressure.py"
+      - "collectors/ibkr_borrow.py"
+      - "tests/test_c19_wp24_short_pressure_availability.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: short-pressure availability guard
+        run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
