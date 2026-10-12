@@ -3225,7 +3225,11 @@ checks:
       site/navigation-refresh.css (healed by #7597). The class reddens
       test_stock_dashboard_first_frame.py on every fresh merge-ref until the
       closure is a GATE. The pin set is derived FROM the receipts at runtime
-      and is never hardcoded.
+      and is never hardcoded. Exception (digest-only tier): a loaded script
+      named in the gate's REFRESHABLE_LOADED_ASSETS closes with a browser-free
+      `--refresh-digests` sidecar under digest-refresh/ instead of a remint,
+      because tests/test_stock_dashboard_first_frame.py executes its bytes
+      against every measured page and reds if it reaches the first frame.
     source_ref:
       - scripts/check_p0b_receipt_closure.py
       - tests/test_check_p0b_receipt_closure.py
@@ -3256,6 +3260,11 @@ checks:
       - >-
         REFUSES on a sparse checkout that omits mockups/ rather than reporting
         a vacuous pass over receipts it cannot see.
+      - >-
+        Digest-only inertness is a fixture-scope claim: the probe proves a
+        tier script leaves the RENDERED FIXTURE's first frame alone (e.g. the
+        fixture's HK sector table is empty, so tablesort enhances nothing
+        there); it says nothing about production pages with fuller data.
     owner_program: prophet-us-eyes-open
     notes: >
       Its own legacy job, p0b-receipt-closure (gate: code, scope: exclusive,
