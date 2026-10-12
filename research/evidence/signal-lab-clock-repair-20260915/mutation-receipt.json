@@ -1,0 +1,63 @@
+{
+  "source_sha256": "75e527b078aaacd2eb9798a30163c7cb9aedd980a632152f5315a70955ca175c",
+  "method": "in-memory mutant in one private Python subprocess per case; repository source never changed",
+  "mutations": [
+    {
+      "mutant": "native_row_stride",
+      "test": "tests/test_sf_clock_repair.py::test_monthly_observations_do_not_turn_63_bars_into_63_months",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "20e3616264641afa5862aa46406712464e7d85e9b2407ec1e4a3a3c911018727"
+    },
+    {
+      "mutant": "compress_price_grid",
+      "test": "tests/test_sf_clock_repair.py::test_monthly_backtest_keeps_target_price_bars",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "f82a96efae0c686750cbde5f474c6842dd0071893c96c9936b264ab00796ed86"
+    },
+    {
+      "mutant": "monthly_daily_cagr",
+      "test": "tests/test_sf_clock_repair.py::test_monthly_backtest_cagr_uses_elapsed_years",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "0bc713c7f78155b9d5cdfb0780282d46264b2bdc12d75b1c414772c01b7ca55a"
+    },
+    {
+      "mutant": "circular_short_reverse_lag",
+      "test": "tests/test_sf_clock_repair.py::test_circular_placebo_has_no_legal_shift_when_both_edges_overlap",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "ec9ba46ce406e114a87dcd15032169dfbc120aca647b2021d35bdade6a742469"
+    },
+    {
+      "mutant": "nan_evidence_accepted",
+      "test": "tests/test_sf_clock_repair.py::test_unavailable_or_nonfinite_evidence_never_passes[nan_t]",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "cccfebc96ead57b7fe486fda38a60fe69b1efef8970162942516ce9f31587a8a"
+    },
+    {
+      "mutant": "missing_return_stream_accepted",
+      "test": "tests/test_sf_clock_repair.py::test_return_candidate_cannot_pass_after_cost_aware_backtest_failure",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "3b7721384a2087574264d8f64164bb15a6b742b9485fecbe3f2d72729b475e02"
+    },
+    {
+      "mutant": "double_return_computation",
+      "test": "tests/test_sf_clock_repair.py::test_summary_and_dsr_use_one_identical_return_stream",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "724e81244cf2677628f41836cff9120ac27cf1786e03da084fa88673efbd1e98"
+    },
+    {
+      "mutant": "underpowered_nonoverlap_accepted",
+      "test": "tests/test_sf_clock_repair.py::test_power_floor_uses_nonoverlap_count_without_calling_it_independence",
+      "return_code": 1,
+      "killed": true,
+      "log_sha256": "2edee1504e25aeccb45af8bd2e4ecc4921a39e6fe6d75f105c1d956e911c93a4"
+    }
+  ],
+  "all_killed": true
+}

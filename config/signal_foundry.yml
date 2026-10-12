@@ -42,4 +42,4 @@ default_gates:
   dsr: 0.90         # minimum Deflated Sharpe Ratio (Bailey-López de Prado)
 
 # Battery version (frozen; changes to harness require human-authored PR — SF-R2)
-battery_version: sf-battery-1
+battery_version: sf-battery-2-clock
