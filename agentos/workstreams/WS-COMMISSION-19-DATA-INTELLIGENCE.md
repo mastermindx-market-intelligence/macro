@@ -57,20 +57,26 @@ waves:
     status: in_progress
     depends_on: [W3]
     pr: [8943, 8954, 8957, 8958]
-    next_action: "Merge #8943 (WP08), #8954 (WP09), #8957 (hygiene) and #8958 (WP24-G short-pressure availability guard) on concluded checks and blob-verify each on origin/main; all four are armed merge-on-green, and the only failing context is the standing inactive ci-authority/codex/merge-queue-pilot. ORCH-I lane verdicts: WP29 READY_TO_FREEZE (build relaunched under an escalation reason, review lane follows); WP17, WP22, WP28 and WP31 BLOCKED on named upstreams; WP18, WP19, WP20, WP27 and WP32 NEEDS_DESIGN; WP13/WP14 returned DQ1 design inputs; WP23/WP25 relaunched after an economic refusal. Seat rulings owed: WP17 issuer contract, WP13/14 DQ1, WP20, WP19, WP18; WP27 is deferred."
+    next_action: "#8957 (hygiene) merged as eb03b95e and is blob-verified on origin/main. #8943 (WP08), #8954 (WP09) and #8958 (WP24-G) stay armed merge-on-green; their only reds (ci-pack-0, ci-gate) are inherited from main's ci-control-plane-contracts red, which the main-red-repair PR #8960 heals. After #8960 merges the sweeper refreshes the inherited reds; land each on concluded checks and blob-verify it. ORCH-I lane verdicts are judged and the seat rulings (R-WP13/14/17/18/19/20/23/25) are recorded in the Mastermind ledger r6."
   - id: W5
     title: "Wave 5 — ORCH-J WP15/WP24 census and post-merge acceptance audits (lanes J1-J10)"
-    status: in_progress
+    status: done
     depends_on: [W3]
-    next_action: "Judge the J1-J10 returns (run ids c19-w5-j<n>-<slug>-20261012) by artifact; freeze WP15/WP24 build packets only on files no open PR or live lane owns (#8958 owns engine/short_pressure.py; #8125 leases scripts/build_commodities.py)."
-next_action: "Land the four armed wave-4 PRs (#8943, #8954, #8957, #8958) on concluded checks and blob-verify them on origin/main; judge the ORCH-I and ORCH-J returns by artifact; open and land the WP29 build; issue the seat design rulings (WP17 issuer contract, WP13/14 DQ1, WP20, WP19, WP18; WP27 deferred) and freeze the next build packets against them; record each result in the Mastermind ledger (r5) on origin/master."
+    next_action: "Closed: J1-J10 judged by artifact and ORCH-J completed; build follow-ups continue in W6."
+  - id: W6
+    title: "Wave 6 — seat pin-build lanes on pool-pick routing (WP11, WP13, WP14, WP19, WP20, WP29) and the ledger r6"
+    status: in_progress
+    depends_on: [W4, W5]
+    pr: [8966, 8970, 8971, 8972, 8977]
+    next_action: "#8972 (WP11 pins, 2dbdc9b9), #8971 (WP19, 3cda7853) and #8977 (WP20, b9dff0c0) are merged and landed. Carry #8970 (WP13 debt-maturity as-of) and #8966 (WP29) to merged on concluded checks; judge the WP14 capital-observation pin lane (run c19-w5s-wp14-pin-bailian-20261012-r2, test-only) by artifact, then open, arm last and land its PR; land Mastermind #1372 (ledger r6)."
+next_action: "Land #8960 (main-red-repair, sweeper-owned) and let the sweeper refresh the inherited reds on #8943, #8954, #8958 and #8966; carry #8970 and the WP14 pin PR to merged and blob-verified; issue the open seat rulings (WP15 DQ1-5, WP24 DQ1-3, WP11 N4, WP07 N1) and freeze the next pin-build packets against them; route owner-held items (N5, power_scarcity N1, WP25 DQ2, WP20 no-resend, WP14 split basis, WP06/WP16, WP12 N5) to their owners; record each result in the Mastermind ledger (r6, Mastermind #1372)."
 landmines:
   - "C19 is sticky: the original effects (native parent 01a108b6-7f12-76a2-9123-2b49492f654c, ops c19-program-recovery-20261004-01a108b6 and c19-mas269-exposure-custody-20261004-01a108b6, request req-4a8daf76317cfe92f436991444c58281) are frozen. Never retry with a fresh key, invent an intent ID, submit an equivalent new root, switch account/carrier, or transfer them before original-target reconciliation."
   - "MAS-282 owns recovery of the missing original full C19 package and C6 (surprise/residual methods) remains NOT_LOCATED_IN_BOUNDED_SEARCH. The 2026-10-11 packet is a successor masterplan, not that recovery; a bounded search that finds nothing is an absence claim with search bounds, never a verdict that C6 does not exist."
   - "The I1 spec's H06 label 'MAS-273 FIF publication' conflates two seams. H06a is the FIF private-default publication seam (query_snapshots.py, Mastermind #673, WS:FUNDAMENTAL-FORENSICS). H06b is MAS-273 proper, the typed macro release/expectations bundle (C17) whose MRI seam is BROKEN. Acceptance namespace is MAS issue + owner, never the Hxx label."
   - "The composer route (Macro #8596, app/integrated_answer.py) is flag-ON in production: app/deploy/macro-api.service sets MACRO_INTEGRATED_ANSWER_ENABLED=1 since #8811 (commit 70f42ccb, 2026-10-11T14:19Z, seat ruling I-R12 by owner seat fd47d431), and an anonymous GET answers 401, so the route is live and auth-gated. No DEC record supersedes DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS; reconciling that record belongs to WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT, not C19. C19 never sets or unsets the flag; it qualifies legs against the live route and proves entitled-user behaviour, never an anonymous read."
-  - "Native Claude children are not labor lanes on this program: census, build and review go to external Grok lanes (`pool remote <host> grok <packet> '~/lanes/repos/macro' grok-4.6`, never `pool remote auto`) or the Fabric. Hosts as of 2026-10-12: ubuntu1 (cap 5) and ubuntu2 (cap 8) carry the lanes; ubuntu0 (cap 3) only when `pool placement` reports it ELIGIBLE; ubuntu3 sits under a reconciliation hold this seat never clears; mb takes at most one read-only canary; m1 has no Grok. Outside the provider-screenshot window the economic guard refuses leaf labor unless POOL_ESCALATION_REASON (12+ chars) names the authority; never edit pools.yaml or mint a window. Fabric admission needs the authenticated Executive connector (human OAuth) and QUEUED is not STARTED."
-  - "The kit's `pool` launcher deadlocks under the host's bash 5.3 and refuses an unclassified packet (ECONOMIC_POLICY_REFUSED unknown_task_class): launch with a bash shim first on PATH, REMOTE_SUB_PYTHON set to the Homebrew python3, and POOL_TASK_CLASS set to one of census/build/review/extract/mechanical. grok-4.6 refuses the draft, research, analysis, implementation and code task classes. Never `pool remote auto`, never reuse a burned run id, and key every wait on the lane's final `<LANE>: PASS|PARTIAL|FAIL <sha>` sentinel or the kit log's `DONE rc=` line, never on the nohup pid."
+  - "Native Claude children are not labor lanes on this program: census, build and review go to external pool lanes or the Fabric. Since 2026-10-12 (Chairman: the Grok usage pool refreshed) new lanes route by `pool pick <class>` (build -> bailian qwen3.8-flash, census/review -> minimax MiniMax-M3) and launch through the kit's `ext/remote_sub.sh <host> <mode> <packet> '~/lanes/repos/macro' <model>` on ubuntu1/ubuntu2; running Grok lanes are never killed, and no new Grok lanes start. ubuntu3 sits under a reconciliation hold this seat never clears; m1 is excluded. Never `pool remote auto`, never edit pools.yaml or mint a window, and never route around a pool refusal."
+  - "remote_sub refuses an unclassified launch: POOL_TASK_CLASS (build, census or review) is REQUIRED, and a launch refused for lacking it (rc78) BURNS its run id. The bailian pool's mode is `qwen` (`bailian` returns ARGERR). Never reuse a burned run id; key every wait on the lane's final `<LANE>: PASS|PARTIAL|FAIL <sha>` sentinel or the remote_sub rc file, never on the nohup pid."
   - "Earnings story/press publication dependencies — the a0e1546f generation bound in site/stocks/earnings/route-catalog.json, engine/press/earnings_adapter.py allowed_links, storypacket/storyrev admission in the R2 journal — are owned by WS:EARNINGS-INTELLIGENCE-OS (coo-fable, DEC:EARNINGS-INTELLIGENCE-PROGRAM-OWNERSHIP), not by C19. The ONE C19 reply on #1243 comment 6107955309 is comment 6108389713 (2026-10-11T11:09:05Z); do not post on that dependency again, never synthesize a story-packet or revision id (they are content hashes), and route any further ask to the owner carrier."
   - "The writer-lease read is a title/body search heuristic (`gh pr list --search '<term> in:title,body'`), not a file-path search. Only Macro #8630 (draft) touched expectation_state as of 2026-10-11; re-read before any lane that writes near integrated_answer.py, query_snapshots.py or the macro release seam."
 do_not_redo:
@@ -108,13 +114,13 @@ verification, and truthful acceptance. It is published verbatim (33 hash-verifie
 ## Topology
 
 Fable principal (this seat) -> native Opus suborchestrators only for bounded decomposition judgment
-(ROUTE: ORCHESTRATION) -> external pool lanes (`pool remote <host> grok <packet> <cwd> grok-4.6`
-on ubuntu1/ubuntu2, ubuntu0 when eligible; never `pool remote auto`) or Fabric
+(ROUTE: ORCHESTRATION) -> external pool lanes (`pool pick <class>` then `ext/remote_sub.sh <host> <mode> <packet> <cwd> <model>`
+on ubuntu1/ubuntu2 with POOL_TASK_CLASS set; never `pool remote auto`) or Fabric
 operators for all census/build/review labor -> workers. Seat map from the packet: O1 -> WP03/04/05,
 O2 -> WP12/15/22, O3 -> WP09/10/11/30, O4 -> WP13/14/28, O5 -> WP23/24/25, O6 -> WP26/27/29,
 O7 -> WP06/07/31, O8 -> WP08/16-20/32. Fable retains WP00/WP01/WP02/WP21/WP33. Only the useful
 ready subset is admitted under actually observed capacity.
-Orchestrators so far: O1/O8 (W2), ORCH-G/ORCH-H (W3), ORCH-I (W4), ORCH-J (W5); each is
+Orchestrators so far: O1/O8 (W2), ORCH-G/ORCH-H (W3), ORCH-I (W4), ORCH-J (W5), all completed; W6 lanes are seat-launched; each is
 messaged, never re-spawned.
 
 ## Open items carried in the ledger
