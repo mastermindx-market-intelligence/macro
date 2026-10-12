@@ -675,14 +675,17 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  2026-10-11 authenticated paging continuation: use
-  PROPHET-US-V4-RECOVERY-2026-10-11-b03-attested-relations.md and programme6107291350.
-  PR8832 and8845 are merged and closed. Live browse/filter succeeded but offset8
-  still aborted at15s. Return to candidate is verified live in grid and filtered
-  table. The new bounded one-entry relation cache reattests all actual B1 bytes
-  on every read through the B1 owner; cold construction retains full semantics
-  and post-attestation. Parent213 tests and complete371-row byte comparison pass.
-  Finish normal exact-head CI/release, ordinary API adoption and live paging/sign-out.
+  2026-10-11 four-market continuation: use programme6107291350 and the new
+  PROPHET-US-V4-RECOVERY-2026-10-11-object-change.md handoff. PR8857 merged
+  normally to31afbfe1237e; B03 paging/filter/exact relation/sign-out and candidate
+  Return in EN grid/table/Today and settled ZH are accepted live in the retained
+  b03-and-return-live-acceptance-20261011.json receipt. All corresponding source,
+  review, CI, adoption and live checks are closed; do not repeat them.
+  Complete the independent pure per-object change projection and its code-gated
+  proof. It compares supplied native-owner reads only; route integration remains
+  behind DailyBrief8249. Preserve P1a8444 integration refusal and DailyBrief8249
+  source-edit refusal. HK/China shared adoption waits for actual P1a release;
+  owner-issued selection/review/history are not manufactured here.
   Earlier progression below is historical and does not reopen closed evidence.
   2026-10-11 B1 validation continuation: use
   PROPHET-US-V4-RECOVERY-2026-10-11-b1-validation-performance.md and programme
