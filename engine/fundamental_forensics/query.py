@@ -65,6 +65,7 @@ from .lineage_evidence import (
     _freeze_evidence,
     _positive_evidence_payload,
     evaluate_confirmation,
+    receipt_envelope_refusal,
 )
 from .raw_ledger import (
     FactEventType,
@@ -5078,6 +5079,25 @@ class BitemporalMetricQueryEngine:
                 raise LineageEvidenceError("lineage evidence references an unknown occurrence")
             if parent.logical_key != receipt.logical_key or child.logical_key != receipt.logical_key:
                 raise LineageEvidenceError("lineage evidence logical_key does not bind its facts")
+            # The full per-accession groups the mint path groups by — the
+            # same groups the envelope pin and the payload bind re-derive
+            # from below, never a cutoff-filtered subset.
+            parent_group = self._accession_group(parent)
+            child_group = self._accession_group(child)
+            # FIF T1b: pin the receipt ENVELOPE before any payload work.  A
+            # correctly recomputed digest over genuine evidence still says
+            # nothing about the envelope around it: a backdated
+            # ``system_available_at`` (below the mint floor) or a foreign
+            # rule id/version would make the receipt visible under policies
+            # where the honest mint is not, flipping lineage answers.  The
+            # named refusal is an engine-level diagnostic, never a response
+            # body, and admission fail-closes the whole provider bundle.
+            envelope_refusal = receipt_envelope_refusal(receipt, parent_group, child_group)
+            if envelope_refusal is not None:
+                raise LineageEvidenceError(
+                    "lineage evidence envelope is not the one the current rule "
+                    f"mints ({envelope_refusal})"
+                )
             evidence = receipt.positive_evidence or {}
             # FIF T1: bind the WHOLE payload, not just the edge.  A receipt
             # digest only proves internal self-consistency, so a forged
@@ -5091,8 +5111,8 @@ class BitemporalMetricQueryEngine:
             # ledger cannot re-derive, reconstructed in its canonical equal
             # form so a one-sided URI edit is an evidence mismatch too.
             expected = self._expected_positive_evidence(
-                self._accession_group(parent),
-                self._accession_group(child),
+                parent_group,
+                child_group,
                 common_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
             )
             if _freeze_evidence(expected) != receipt.positive_evidence:
@@ -5104,8 +5124,8 @@ class BitemporalMetricQueryEngine:
             # bundle assembled without ``derive_confirmation_receipts`` cannot
             # smuggle in an edge the v1 rule would never have minted.
             if evaluate_confirmation(
-                self._accession_group(parent),
-                self._accession_group(child),
+                parent_group,
+                child_group,
                 parent_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
                 child_taxonomy_uri=evidence.get("child_taxonomy_uri"),
                 require_taxonomy_uri=True,
@@ -5237,7 +5257,10 @@ class BitemporalMetricQueryEngine:
         current eligible ledger — accessions, document ids, source occurrence
         keys, parsed value, accuracy tokens, dimensional scope, nil state,
         clocks, concept, or the attested namespace pair — is classified
-        ``evidence_does_not_match_source``.
+        ``evidence_does_not_match_source``.  A receipt whose envelope is not
+        the one the current rule mints — foreign rule id/version, or a system
+        availability backdated below the mint floor — is classified
+        ``receipt_rule_mismatch`` / ``receipt_system_availability_backdated``.
         """
         if receipt.source_known_at > policy.source_snapshot_at:
             return REFUSAL_RECEIPT_NOT_YET_SOURCE_VISIBLE
@@ -5255,6 +5278,20 @@ class BitemporalMetricQueryEngine:
         evidence = receipt.positive_evidence or {}
         parent_group = self._visible_accession_group(parent, policy)
         child_group = self._visible_accession_group(child, policy)
+        # FIF T1b: pin the envelope against the SAME full groups the mint
+        # path groups by — never the cutoff-filtered subsets above, whose
+        # floor can only be weaker than the one the receipt was minted
+        # under.  Passing the policy cutoffs merely means the receipt is not
+        # claiming to be newer than the policy; it must additionally not be
+        # OLDER than the lawful floor, or the relation would be visible
+        # under policies the honest mint cannot serve.
+        envelope_refusal = receipt_envelope_refusal(
+            receipt,
+            self._accession_group(parent),
+            self._accession_group(child),
+        )
+        if envelope_refusal is not None:
+            return envelope_refusal
         refusal = evaluate_confirmation(
             parent_group,
             child_group,
