@@ -17,5 +17,10 @@
     "exit_code": 130
   },
   "release_authority": "Existing GitHub protected controller only; no gate changed",
-  "publication_approved": false
+  "publication_approved": false,
+  "current_prompt_sha256": "9a6ab62524b10fd9cc51c88e234e5b01fbd22a6dcb182a23f90ba45f99704ae8",
+  "current_prompt_readback_at": "2026-10-12T08:28:40.349219+00:00",
+  "current_original_pr_head": "de63b3a93eb3715cc9f84a86d1ae034b822b9fd5",
+  "current_follow_on_head": "8f392a4022b234a65fbf30cfb0bc018fd0bfcf30",
+  "current_ci_run": 38223150169
 }
