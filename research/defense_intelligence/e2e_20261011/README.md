@@ -1,21 +1,19 @@
-# Defense Industrial-Base & Catalyst Intelligence — recovery masterplan
+# Defense Industrial-Base & Catalyst Intelligence — Fable package
 
-Authoring operation: `defense-e2e-masterplan-20261011`. Current Chairman request: select the next hardest eligible existing project after FIF and SNI and create its recovery masterplan. Exclude Grey Deer Risk, Market/Mastermind OS, Options Intelligence, Prophet, Market Ontology, GMI, Executive OS and Subagent Fabric buildout. Use the previously requested Fable -> native Opus -> existing Fabric task operators -> optional admitted workers hierarchy.
+This is the next-project assessment and recovery plan for the **existing** Defense Procurement V3 / Government Revenue program. It is not a new OS, replacement #7175 source carrier, runtime queue or dispatched fleet.
 
-**Selected:** the existing `WS:DEFENSE-PROCUREMENT-V3` / Government Revenue product, not a new OS or strategic program. This documentation companion does not replace original source PR #7175, transfer a live writer, start a fleet, approve a merge, change a schedule or purchase data. Packet status: IN_PREPARATION; product incomplete.
+Start with [FABLE_HANDOFF.md](FABLE_HANDOFF.md), then [MASTERPLAN.md](MASTERPLAN.md) and [CENSUS_AND_FIRST_REPAIR.md](CENSUS_AND_FIRST_REPAIR.md).
 
-## Source-qualified frontier
+The package contains **30 documentary** tasks, **45 acceptance** cases and an explicit map of all **21 original** roadmap waves in [DELIVERY_CONTRACTS.json](DELIVERY_CONTRACTS.json). [SOURCE_INDEX.json](SOURCE_INDEX.json) records **28 source**/evidence references with immutable repository pins and public primary references. [EVIDENCE.json](EVIDENCE.json) distinguishes fresh isolated probes, current run observations and committed artifact counts from unperformed production tests.
 
-- Protected Mastermind procedure: `25c4b7923734392b1013afae179966985819d847`; compatible Skillpack 1.0.1/bootstrap-major1; required companions unchanged from prior verified pin and re-read/compared at this pin.
-- Macro census: `5267c66846e7733bc1eb30edc1524daff51598ca`.
-- Terminal census: `e0c405a09b6897df3b5e4a2f22344f3560b800a4`.
-- Existing reactivation #7175: OPEN at `d2281b340e1ebe9e83f9b76a86a1e1cd98259afa`, branch `sol/defense-intelligence-ceo-reactivation-20260915`. Its current discussion includes a later publication failure, not proof of a current executing writer. Preserve its four-axis investor thesis and existing custody; reconcile before source work.
-- D6-C0 #6590 is already merged at `24ccea3fe482ab97c415db387f272b34c4852ed3`; the old parked-at-D6-B prose is not a complete current-state account.
-- Scheduled FMS acquisition exists in current source, contrary to #7175's older dispatch-only description. Run38155385453 acquired and committed source successfully, then failed downstream candidate proof in job114518399318; publication and final convergence verification were skipped. Logs show 2failed/101passed/1skipped but not failed test names. The actual checkout is b8568e3f33 (short log identity), not inferred from the triggering workflow SHA.
-- Government Revenue run38192933592 is green but skipped build/proof/commit. It is not a publication recovery receipt.
-- Committed candidate generation remains September1: 173candidates,235ledger lines,21mapping entries, content_id grcq1-06a7c020729b3b207d0322b2. Current FMS projection has68cases and94observations/receipts as of October11. These are repository artifacts, not a fresh production browser observation.
-- Fresh isolated shell probes at workflow blob33e09e0a5ad62d5b2ff3316e36992d20059b9681 showed two separate fail-open branches despite fatal=1: missing pytest exits0 with UNPROVEN warning; a mutated proof input tree with status0 exits0 and prints PASSED. Exact extracted source branches were executed with local stubs only; no workflow, publisher, source product, network or production write ran. These do not diagnose the two observed pytest failures.
+[probe_publication_gate.py](probe_publication_gate.py) reproduces two exact-source fail-open shell branches against the pinned repository. A successful diagnostic means unsafe behavior reproduced; it is **not** a fixed implementation or product acceptance. It executes no full workflow, source fetch, package installation or publication.
 
-## Next authoring actions
+Run [validate_packet.py](validate_packet.py) to verify internal document links, source IDs, task/acceptance assignments, dependency acyclicity, original-wave scope mapping, source-bound evidence checks and Python syntax. The generated [PACKET_VALIDATION.json](PACKET_VALIDATION.json) reports those checks only. They are not independent model review or product CI.
 
-Finish the owner-preserving masterplan, explicit original D0R-D20 scope mapping, research/production release gates, source census, repeatable gate probes, and Fable handoff. Verify all task/evidence links and artifact bytes before final publication. Do not weaken the current proof gate or modify the existing product during this planning assignment.
+**Hierarchy:** Fable principal → native Opus suborchestrators → existing Subagent Fabric task operators → direct operator execution or admitted workers. Actual admission/model/custody/return evidence is required at execution; no fleet ran during authoring.
+
+**Exclusions:** FIF, SNI, Grey Deer Risk, Market OS/Mastermind OS, Options Intelligence, Prophet, Market Ontology, GMI, Executive OS and Subagent Fabric buildout. Original D19 remains excluded and incomplete, not silently accepted. Sources from existing systems may be consumed only within their actual contracts and rights.
+
+**Source anchors:** Macro `5267c66846e7733bc1eb30edc1524daff51598ca`; protected Mastermind `25c4b7923734392b1013afae179966985819d847`; Terminal `e0c405a09b6897df3b5e4a2f22344f3560b800a4`. Refresh action-relevant facts before implementation, not every unrelated repo movement.
+
+**Authoring boundary:** no product code, workflow, schedule, protected setting, data source or deployment changed; no purchase, external outreach or worker dispatch. Publishing a plan is neither pickup nor START. The product remains unfinished.
