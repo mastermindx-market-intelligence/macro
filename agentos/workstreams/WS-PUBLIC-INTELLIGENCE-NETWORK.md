@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Original PR8786 head d425cc87f5da4214f53fa1fbc0ee72f0284870f5 passed CI38186335600 and all21 binding checks, but controller38189419480 requires fresh proof after de0c202a0165 changed canonical check definitions and deferred refresh at10indexed runs/cap8. Retain the original carrier and wait for admitted refresh, then merge/install/browser/audit. Terminal956 merged as8520e5d77e9f0b83973a988cf4f4adff300994cf, is installed with CLEAN post-install audit and real one-submit automatic sign-in completion plus reload proof. Integrate the tested Press follow-on from fresh main after8786 lands; the older October8 candidate is no longer a current Brief slot onOctober12.
+next_action: Complete original PR8786 exact-head CI38191946377 atcc5d31160dd3584b067453bc3b11d78440133000, then verify protected landing, installed hashes and public browser routes and dispatch the prepared nonpromoting earnings audit once. Terminal956 is already merged8520e5d7, installed and real-browser accepted; do not repeat it. This recovery branch contains retention, external planning, adjusted baseline qualification and the accepted event-clock correction44866cbe79ec, now integrating the original refreshed base. Open its follow-on from fresh main after8786 lands. No Press publication or qualified current story is admitted.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
@@ -66,8 +66,18 @@ Fabric review `mmx-press-event-clock-review-20261012-001` accepted source SHA256
 f109055b0638d34193a50fe296bb2e545ee073184329e793dc1a5d98b1266675 with no blocker;
 root consumed the same result and accepted it after source/test adjudication.
 Evidence and exact commands are in SOURCE_RETENTION.md and event_clock_review.txt.
-No new writer, provider attempt, source admission, staging or publication occurred.
+No new Press writer or staging-provider attempt, source admission, staging or publication occurred.
 Original PR8786 is nowcc5d31160dd3584b067453bc3b11d78440133000 after main7cb33d3a
 and Tiingo-record conflict resolution;29local refresh checks passed, all13source
 and3page hashes remain unchanged. CI38191946377 is running with protected landing
 armed; fences and authority passed. Terminal956 remains installed/browser accepted.
+
+
+Integration of original cc5d3116 into accepted follow-on44866cbe79ec preserves
+all sibling main changes, including the exact landed Tiingo workstream. Only the
+two root-owned Agent OS continuity records conflicted; root kept the fuller
+follow-on evidence and updated the current action. Runtime source had no conflict.
+Use this recovery branch in the existing SSD attempt-recovery worktree; the
+single-attempt worktree currently carries the original PR refresh branch. Both
+remain owned, preserved and separately recoverable; do not mutate the shared
+primary's dirty accounting. The live Terminal screenshot remains bound to8520e5d7.
