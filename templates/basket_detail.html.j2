@@ -656,7 +656,8 @@ function leadershipReceiptHtml(lr){
     fresh:L('Theme state current','主题状态当前'),
     stale:L('Theme state stale','主题状态陈旧'),
     missing:L('Theme state missing','主题状态缺失'),
-    not_published:L('Theme state not published','主题状态未发布')
+    not_published:L('Theme state not published','主题状态未发布'),
+    invalid:L('Theme state dated after this read','主题状态日期晚于本次判读')
   }[tsStat]||L('Theme state missing','主题状态缺失');
   const tsChipCls=tsStat==='fresh'?'state-fresh':'state-stale';
   const reason=lr.reason_en?`<span class="lrc-chip">${L(esc(lr.reason_en),esc(lr.reason_zh||lr.reason_en))}</span>`:'';

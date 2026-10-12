@@ -570,6 +570,83 @@ hierarchy:
       name_zh: "加密与数字资产"
       asserted_on: "2026-10-08"
       note: "basket categories: Crypto & Digital Assets."
+  sub_themes:
+    - id: "theme:wfe_process_tools"
+      name_en: "Wafer Process Tools"
+      name_zh: "晶圆工艺设备"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C1_CATEGORIES_AND_COMPUTE_ENERGY.md"
+      note: "Fab process tool classes - lithography, etch/deposition and metrology - named as one tool family, distinct from wafer-fab subsystems."
+    - id: "theme:ai_compute_silicon"
+      name_en: "AI Compute Silicon"
+      name_zh: "AI算力芯片"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C1_CATEGORIES_AND_COMPUTE_ENERGY.md"
+      note: "Merchant GPU and custom-ASIC compute silicon, the compute half of the basket's compute-vs-networking silicon split."
+    - id: "theme:missile_munition_chain"
+      name_en: "Missiles and Munitions Chain"
+      name_zh: "导弹与弹药供应链"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C2_SECURITY_INDUSTRIAL_HEALTH.md"
+      note: "Guided-munition product segment with its propulsion supply bottleneck."
+    - id: "theme:satellite_connectivity_services"
+      name_en: "Satellite Connectivity Services"
+      name_zh: "卫星连接服务"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C2_SECURITY_INDUSTRIAL_HEALTH.md"
+      note: "Subscriber connectivity services riding constellation capacity."
+      value_chain_position: "downstream"
+    - id: "theme:robot_arm_systems"
+      name_en: "Robot Arm Systems"
+      name_zh: "机械臂系统"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C2_SECURITY_INDUSTRIAL_HEALTH.md"
+      note: "Finished robot-arm form factors, collaborative and fixed industrial, as the machines of the automation chain."
+      value_chain_position: "midstream"
+    - id: "theme:glp1_therapy_products"
+      name_en: "GLP-1 Therapy Products"
+      name_zh: "GLP-1药物疗法"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C2_SECURITY_INDUSTRIAL_HEALTH.md"
+      note: "Incretin drug products by delivery modality, injectable class and oral formulations."
+      value_chain_position: "midstream"
+    - id: "theme:glp1_supply_chain"
+      name_en: "GLP-1 Supply Chain"
+      name_zh: "GLP-1供应链"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C2_SECURITY_INDUSTRIAL_HEALTH.md"
+      note: "Drug-substance and fill-finish manufacturing capacity behind therapy supply."
+    - id: "theme:rare_earth_processing_magnets"
+      name_en: "Rare-Earth Processing to Magnets"
+      name_zh: "稀土加工与磁材"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C3_MATERIALS_HEALTH_SOLAR.md"
+      note: "Midstream separation and refining through downstream magnet fabrication along the rare-earth chain."
+    - id: "theme:copper_supply_chain"
+      name_en: "Copper Supply Chain"
+      name_zh: "铜供应链"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C3_MATERIALS_HEALTH_SOLAR.md"
+      note: "One metal's stages: mine concentrate, cathode refining and wire/cable fabrication."
+    - id: "theme:multi_omics_platforms"
+      name_en: "Multi-Omics Platforms"
+      name_zh: "多组学平台"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C3_MATERIALS_HEALTH_SOLAR.md"
+      note: "Sequencing, liquid biopsy and proteomics as the multi-omics detection pillar."
+    - id: "theme:pv_manufacturing_chain"
+      name_en: "PV Manufacturing Chain"
+      name_zh: "光伏制造链"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C3_MATERIALS_HEALTH_SOLAR.md"
+      note: "Upstream polysilicon feedstock through domestic cell and module manufacturing."
+    - id: "theme:ai_clinical_data_devices"
+      name_en: "AI Clinical Data Devices"
+      name_zh: "AI临床数据设备"
+      asserted_on: "2026-10-13"
+      nominated_from: "research:research/theme_graph/hierarchy_content/C3_MATERIALS_HEALTH_SOLAR.md"
+      note: "AI-enabled devices whose imaging and monitoring data streams improve with use."
+      value_chain_position: "midstream"
   micro_themes:
     - id: "theme:hbm_packaging"
       name_en: "HBM & advanced packaging"
@@ -1073,3 +1150,42 @@ hierarchy:
     - {parent: "theme:solar", child: "theme:polysilicon_solar_feedstock", asserted_on: "2026-10-08"}
     - {parent: "theme:solar", child: "theme:solar_inverters", asserted_on: "2026-10-08"}
     - {parent: "theme:solar", child: "theme:solar_trackers_bos", asserted_on: "2026-10-08"}
+    - {parent: "theme:semicap_equipment", child: "theme:wfe_process_tools", asserted_on: "2026-10-13"}
+    - {parent: "theme:ai_semiconductors", child: "theme:ai_compute_silicon", asserted_on: "2026-10-13"}
+    - {parent: "theme:defense_aerospace", child: "theme:missile_munition_chain", asserted_on: "2026-10-13"}
+    - {parent: "theme:space_satellite", child: "theme:satellite_connectivity_services", asserted_on: "2026-10-13"}
+    - {parent: "theme:robotics_automation", child: "theme:robot_arm_systems", asserted_on: "2026-10-13"}
+    - {parent: "theme:glp1_obesity", child: "theme:glp1_therapy_products", asserted_on: "2026-10-13"}
+    - {parent: "theme:glp1_obesity", child: "theme:glp1_supply_chain", asserted_on: "2026-10-13"}
+    - {parent: "theme:rare_earth_critical_min", child: "theme:rare_earth_processing_magnets", asserted_on: "2026-10-13"}
+    - {parent: "theme:copper_steel_electrify", child: "theme:copper_supply_chain", asserted_on: "2026-10-13"}
+    - {parent: "theme:diagnostics_lifesci", child: "theme:multi_omics_platforms", asserted_on: "2026-10-13"}
+    - {parent: "theme:solar", child: "theme:pv_manufacturing_chain", asserted_on: "2026-10-13"}
+    - {parent: "theme:medical_devices", child: "theme:ai_clinical_data_devices", asserted_on: "2026-10-13"}
+    - {parent: "theme:wfe_process_tools", child: "theme:lithography_tools", asserted_on: "2026-10-13"}
+    - {parent: "theme:wfe_process_tools", child: "theme:etch_deposition_equipment", asserted_on: "2026-10-13"}
+    - {parent: "theme:wfe_process_tools", child: "theme:process_metrology_inspection", asserted_on: "2026-10-13"}
+    - {parent: "theme:ai_compute_silicon", child: "theme:gpu_merchant_accelerators", asserted_on: "2026-10-13"}
+    - {parent: "theme:ai_compute_silicon", child: "theme:custom_asic_silicon", asserted_on: "2026-10-13"}
+    - {parent: "theme:missile_munition_chain", child: "theme:missiles_munitions_effects", asserted_on: "2026-10-13"}
+    - {parent: "theme:missile_munition_chain", child: "theme:missile_propulsion_supply", asserted_on: "2026-10-13"}
+    - {parent: "theme:satellite_connectivity_services", child: "theme:satellite_broadband_services", asserted_on: "2026-10-13"}
+    - {parent: "theme:satellite_connectivity_services", child: "theme:direct_to_device_connectivity", asserted_on: "2026-10-13"}
+    - {parent: "theme:robot_arm_systems", child: "theme:collaborative_robot_arms", asserted_on: "2026-10-13"}
+    - {parent: "theme:robot_arm_systems", child: "theme:industrial_robot_arms", asserted_on: "2026-10-13"}
+    - {parent: "theme:glp1_therapy_products", child: "theme:glp1_incretin_therapies", asserted_on: "2026-10-13"}
+    - {parent: "theme:glp1_therapy_products", child: "theme:oral_glp1_formulations", asserted_on: "2026-10-13"}
+    - {parent: "theme:glp1_supply_chain", child: "theme:glp1_api_manufacturing", asserted_on: "2026-10-13"}
+    - {parent: "theme:glp1_supply_chain", child: "theme:fill_finish_delivery_devices", asserted_on: "2026-10-13"}
+    - {parent: "theme:rare_earth_processing_magnets", child: "theme:rare_earth_separation_refining", asserted_on: "2026-10-13"}
+    - {parent: "theme:rare_earth_processing_magnets", child: "theme:ndfeb_permanent_magnets", asserted_on: "2026-10-13"}
+    - {parent: "theme:copper_supply_chain", child: "theme:copper_mining", asserted_on: "2026-10-13"}
+    - {parent: "theme:copper_supply_chain", child: "theme:refined_copper", asserted_on: "2026-10-13"}
+    - {parent: "theme:copper_supply_chain", child: "theme:copper_wire_cable", asserted_on: "2026-10-13"}
+    - {parent: "theme:multi_omics_platforms", child: "theme:liquid_biopsy_assays", asserted_on: "2026-10-13"}
+    - {parent: "theme:multi_omics_platforms", child: "theme:genomic_sequencing", asserted_on: "2026-10-13"}
+    - {parent: "theme:multi_omics_platforms", child: "theme:proteomics_discovery_platforms", asserted_on: "2026-10-13"}
+    - {parent: "theme:pv_manufacturing_chain", child: "theme:polysilicon_solar_feedstock", asserted_on: "2026-10-13"}
+    - {parent: "theme:pv_manufacturing_chain", child: "theme:pv_cell_module_manufacturing", asserted_on: "2026-10-13"}
+    - {parent: "theme:ai_clinical_data_devices", child: "theme:medical_imaging", asserted_on: "2026-10-13"}
+    - {parent: "theme:ai_clinical_data_devices", child: "theme:remote_patient_monitoring", asserted_on: "2026-10-13"}

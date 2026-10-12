@@ -43,7 +43,11 @@ from engine.fundamental_forensics.query_service import (
     execute_financial_query,
     fip1_fixture_dataset,
 )
-from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES, load_golden_aapl_package
+from engine.fundamental_forensics.statement_graph import (
+    GOLDEN_AAPL_FIXTURES,
+    load_golden_aapl_package,
+    reconstruct_primary_statements,
+)
 from lib.dataos.identity import IssuerMaster
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -162,6 +166,143 @@ def _aapl_statement_provider() -> ProductionFinancialStatementProvider:
     store = PDS.InMemoryStrictConditionalStore()
     PDS.publish_production_dataset(store, material)
     return ProductionFinancialStatementProvider(store)
+
+
+# ---------------------------------------------------------------------------
+# FIF P1: manifest-only issuer binding (F5) and precomputed statement trees
+# ---------------------------------------------------------------------------
+
+
+def test_production_statement_binding_never_touches_live_master_or_parquet(monkeypatch) -> None:
+    """Hard rule (b): identity comes from the manifest + entity role only."""
+    import engine.fundamental_forensics.statement_service as statement_service_module
+
+    provider = _aapl_statement_provider()
+
+    def _forbidden(*_args, **_kwargs):
+        raise AssertionError("production binding must not consult the live identity owner")
+
+    monkeypatch.setattr(IssuerMaster, "from_records", _forbidden)
+    monkeypatch.setattr(IssuerMaster, "cik_of_issuer", _forbidden)
+    monkeypatch.setattr(IssuerMaster, "securities_of_issuer", _forbidden)
+    monkeypatch.setattr(statement_service_module, "_load_security_records", _forbidden)
+    monkeypatch.setattr(statement_service_module, "_load_issuer_metadata", _forbidden)
+    import pandas
+
+    monkeypatch.setattr(pandas, "read_parquet", _forbidden)
+
+    binding = provider.bind_issuer(ROOT, "ISS:US-XNAS-AAPL")
+    assert binding == {
+        "entity_id": "ISS:US-XNAS-AAPL",
+        "cik": "0000320193",
+        "ticker": "AAPL",
+        "source_entity_id": "0000320193",
+        "security_id": "SEC:US-XNAS-AAPL",
+        "listing_key": "US-XNAS-AAPL",
+        "legal_name": "Apple Inc.",
+    }
+
+    # End to end: the envelope binds from the same admission-time block.
+    from engine.fundamental_forensics.statement_service import execute_financial_statements
+
+    body = json.dumps(
+        {
+            "schema": "fundamental_forensics.financial_statement_request/v1",
+            "entity_id": "ISS:US-XNAS-AAPL",
+            "accession": "0000320193-25-000079",
+        },
+        separators=(",", ":"),
+    ).encode("utf-8")
+    result = execute_financial_statements(body=body, repo_root=ROOT, provider=provider)
+    entity = result.envelope["entity"]
+    assert entity["entity_id"] == "ISS:US-XNAS-AAPL"
+    assert entity["cik"] == "0000320193"
+    assert entity["source_entity_id"] == "0000320193"
+    assert entity["security_id"] == "SEC:US-XNAS-AAPL"
+    assert entity["listing_key"] == "US-XNAS-AAPL"
+    assert entity["legal_name"] == "Apple Inc."
+
+
+def test_resolve_serves_precomputed_trees_without_parsing(monkeypatch) -> None:
+    provider = _aapl_statement_provider()
+    package = provider.resolve("ISS:US-XNAS-AAPL", "0000320193-25-000079")
+    assert package.statement_trees is not None
+    # The precomputed trees equal what a direct reconstruction over the same
+    # package and pinned registry produces — publication precomputes exactly
+    # the demonstration-path artifact.
+    direct = reconstruct_primary_statements(package=package, registry=load_core_registry(ROOT))
+    assert package.statement_trees == direct
+
+    # resolve never parses: poison every parse surface and resolve again.
+    def _forbidden(*_args, **_kwargs):
+        raise AssertionError("the production request path must not parse iXBRL")
+
+    import collectors.sec_filing_parser as parser_module
+    import engine.fundamental_forensics.statement_graph as statement_graph_module
+
+    monkeypatch.setattr(parser_module, "parse_sec_filing_document", _forbidden)
+    monkeypatch.setattr(statement_graph_module, "parse_sec_filing_document", _forbidden)
+    again = provider.resolve("ISS:US-XNAS-AAPL", "0000320193-25-000079")
+    assert again.statement_trees == direct
+
+
+def test_trees_role_is_additive_and_digest_bound() -> None:
+    # A package-less publication keeps the exact D3 six-role core (and its
+    # generation id): the optional role never appears.
+    store1 = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store1, _fip1_material())
+    generation1 = PDS.load_latest_generation(store1, _FIP1_ENTITY_ID)
+    assert generation1 is not None
+    assert [row["role"] for row in generation1.manifest["objects"]] == list(
+        PDS.PRODUCTION_DATASET_ROLES
+    )
+    with pytest.raises(PDS.ProductionDatasetError):
+        generation1.statement_trees("0000320193-25-000079")
+
+    # A package-carrying publication admits the optional role, content-
+    # addressed and digest-bound exactly like the core roles.
+    packages = [load_golden_aapl_package(ROOT, accession=a) for a in GOLDEN_AAPL_QUERY_ACCESSIONS]
+    ledger, filing_metadata, _report = parse_and_convert_golden_packages(packages)
+    store2 = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(
+        store2,
+        PDS.ProductionDatasetMaterial(
+            binding=base_aapl_binding(),
+            entity=EntityInput(
+                entity_id="ISS:US-XNAS-AAPL",
+                cik="0000320193",
+                ticker="AAPL",
+                name="Apple Inc.",
+                identity_basis="sec-cik",
+                source_entity_id="0000320193",
+            ),
+            ledger=ledger,
+            filing_metadata=filing_metadata,
+            registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+            admitted_at=T_ADMITTED,
+            packages=tuple(packages),
+            security_id="SEC:US-XNAS-AAPL",
+            listing_key="US-XNAS-AAPL",
+        ),
+    )
+    generation2 = PDS.load_latest_generation(store2, "ISS:US-XNAS-AAPL")
+    assert generation2 is not None
+    assert [row["role"] for row in generation2.manifest["objects"]] == [
+        *PDS.PRODUCTION_DATASET_ROLES,
+        *PDS.OPTIONAL_PRODUCTION_DATASET_ROLES,
+    ]
+    row = next(
+        r for r in generation2.manifest["objects"] if r["role"] == "statement_trees_json"
+    )
+    payload = store2.get_bytes(row["object_key"])
+    assert payload is not None
+    assert len(payload) == row["byte_length"]
+    assert hashlib.sha256(payload).hexdigest() == row["sha256"]
+    assert row["object_key"] == PDS.production_object_key(row["sha256"])
+    trees = generation2.statement_trees("0000320193-25-000079")
+    assert len(trees["statements"]) == 3
+    with pytest.raises(PDS.ProductionDatasetError):
+        generation2.statement_trees("0000320193-99-999999")
 
 
 def base_aapl_binding():
