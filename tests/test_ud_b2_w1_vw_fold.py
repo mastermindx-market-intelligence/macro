@@ -453,3 +453,18 @@ class TestUDB2W1VwFold:
                 f"Extreme-band row chip={k!r} must show 'storm' / '风暴' tier word; "
                 f"got tier body: {tier_body!r}"
             )
+
+# Keep the Macro mobile card breakpoint under the existing CI-wired dashboard
+# contract. The sibling optional Chromium test provides real pixel geometry.
+def test_macro_mobile_brief_and_alerts_inherit_full_width() -> None:
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    match = re.search(r'<style id="mx4-css">(.*?)</style>', template, re.S)
+    assert match, "Macro mobile grid stylesheet must remain available"
+    css = match.group(1)
+    tablet = re.search(r"@media\(max-width:1099px\)\{(.*?)\n\}", css, re.S)
+    mobile = re.search(r"@media\(max-width:700px\)\{(.*?)\n\}", css, re.S)
+    assert tablet is not None and mobile is not None
+    for card in ("sx-aibrief-v2", "sx-news-v2"):
+        assert f"#{card}{{grid-column:span 6;}}" not in tablet.group(1), card
+    assert "body.page-macro.mx4-grid .sx," in mobile.group(1)
+    assert "grid-column:span 12;" in mobile.group(1)
