@@ -22,10 +22,13 @@ from collectors.sec_filing_parser import (
 )
 
 from .filing_attestation import TAXONOMY_NAMESPACE_POLICY, _qname_to_taxonomy
+from .filing_package import _MEMBER_STATES
 from .production_datasets import LAWFUL_CAPTURE_BASES
 from .sec_document_spine import (
     HARD_MAX_ARCHIVE_DOCUMENT_BYTES,
     HARD_MAX_ARCHIVE_INDEX_MEMBERS,
+    archive_document_url,
+    archive_index_url,
     canonical_cik,
 )
 
@@ -204,6 +207,51 @@ def _unadmitted_namespaces(
     return [{"uri": uri, "fact_count": counts[uri]} for uri in sorted(counts)]
 
 
+_DEI_BASE = "http://xbrl.sec.gov/dei"
+
+
+def _dei_local_name(qname: Any) -> str | None:
+    """Local name of a dei-taxonomy qname (any dei year), else None."""
+    if not isinstance(qname, str) or not qname.startswith("{") or "}" not in qname:
+        return None
+    namespace, _, local = qname[1:].partition("}")
+    if namespace != _DEI_BASE and not namespace.startswith(_DEI_BASE + "/"):
+        return None
+    return local or None
+
+
+def _dei_identity(parsed: Mapping[str, Any]) -> dict[str, Any]:
+    """As-filed issuer identity from the parsed primary document alone.
+
+    Pure lookup over parser facts: every available dei EntityCentralIndexKey
+    value and the first available dei EntityRegistrantName value. Never
+    consults a current issuer, security, or statement master (D3-F5): the
+    name recorded here is the one the filing itself carried, not a
+    today-label.
+    """
+    cik_values: list[str] = []
+    registrant_name: str | None = None
+    for fact in parsed.get("facts") or []:
+        if not isinstance(fact, Mapping):
+            continue
+        local = _dei_local_name(fact.get("concept_qname"))
+        if local is None or fact.get("status") != "available":
+            continue
+        value = fact.get("transformed_value")
+        if not isinstance(value, str):
+            value = fact.get("raw_value")
+        if not isinstance(value, str) or not value:
+            continue
+        if local == "EntityCentralIndexKey":
+            cik_values.append(value)
+        elif local == "EntityRegistrantName" and registrant_name is None:
+            registrant_name = value
+    return {
+        "entity_cik_values": tuple(cik_values),
+        "registrant_name_as_filed": registrant_name,
+    }
+
+
 def _parse_evidence(parsed: Mapping[str, Any], unadmitted: list[dict[str, Any]]) -> dict[str, Any]:
     parser_meta = parsed.get("parser") if isinstance(parsed.get("parser"), Mapping) else {}
     coverage = parsed.get("coverage") if isinstance(parsed.get("coverage"), Mapping) else {}
@@ -333,8 +381,24 @@ def admit_retained_filing_package(
     accession = manifest.get("accession")
     if not isinstance(accession, str) or not _ACCESSION_RE.fullmatch(accession):
         _refuse("package accession is not a canonical identity", code="identity_mismatch")
-    if accession[:10] != cik10:
-        _refuse("package CIK is not bound to the accession", code="identity_mismatch")
+    # The accession prefix names the TRANSMITTING filer/agent CIK (Donnelley
+    # 0000950170, Workiva 0001628280), not the issuer — incumbent law in
+    # broad_sec_store edgar-index rows and companyfacts accessions. Bind the
+    # issuer through the archive URLs, the witness, and the filing's own dei
+    # facts instead, so an agent-filed issuer admits while a mis-claimed
+    # package still refuses.
+    try:
+        expected_index_url = archive_index_url(cik10, accession)
+    except Exception as exc:
+        raise AdmittedFilingPackageError(
+            "package archive_index_url is not canonical",
+            code="identity_mismatch",
+        ) from exc
+    if manifest.get("archive_index_url") != expected_index_url:
+        _refuse(
+            "package archive_index_url is not bound to the package identity",
+            code="identity_mismatch",
+        )
     source_url = witness.get("source_url")
     if isinstance(source_url, str):
         found = _CIK_IN_URL_RE.search(source_url)
@@ -357,13 +421,37 @@ def admit_retained_filing_package(
         if not isinstance(item, dict):
             _refuse("stored member is malformed", code="inventory_mismatch")
         name = item.get("name")
-        if item.get("state") != "stored":
+        if not isinstance(name, str):
+            _refuse("stored member is malformed", code="inventory_mismatch")
+        # A10/A17: the incumbent closed member-state vocabulary. A junk,
+        # missing, or non-string state refuses here — it must never hide a
+        # member from the inventory accounting.
+        state = item.get("state")
+        if not isinstance(state, str) or state not in _MEMBER_STATES:
+            _refuse(
+                f"member state is not in the incumbent vocabulary: {name}",
+                code="inventory_mismatch",
+            )
+        # Issuer identity bind: a member that carries archive_url must point
+        # inside this issuer's archive directory for this accession.
+        if "archive_url" in item:
+            try:
+                expected_url = archive_document_url(cik10, accession, name)
+            except Exception as exc:
+                raise AdmittedFilingPackageError(
+                    f"member archive_url is not canonical: {name}",
+                    code="identity_mismatch",
+                ) from exc
+            if item.get("archive_url") != expected_url:
+                _refuse(
+                    f"member archive_url is not bound to the package identity: {name}",
+                    code="identity_mismatch",
+                )
+        if state != "stored":
             continue
         stored_count += 1
         if name not in index_name_set:
             _refuse(f"stored member is not in the archive index: {name}", code="inventory_mismatch")
-        if not isinstance(name, str):
-            _refuse("stored member is malformed", code="inventory_mismatch")
         payload = members.get(name)
         if type(payload) is not bytes:
             _refuse(f"stored member is missing: {name}", code="member_digest_mismatch")
@@ -401,6 +489,21 @@ def admit_retained_filing_package(
     except SecFilingParseError as exc:
         raise AdmittedFilingPackageError(str(exc), code="primary_unparseable") from exc
 
+    dei = _dei_identity(parsed)
+    for filed_cik_value in dei["entity_cik_values"]:
+        try:
+            filed_cik = canonical_cik(filed_cik_value)
+        except Exception as exc:
+            raise AdmittedFilingPackageError(
+                "dei EntityCentralIndexKey is not a canonical identity",
+                code="identity_mismatch",
+            ) from exc
+        if filed_cik != cik10:
+            _refuse(
+                "dei EntityCentralIndexKey is not bound to the package CIK",
+                code="identity_mismatch",
+            )
+
     unadmitted = _unadmitted_namespaces(parsed, extension_namespace=extension_ns)
     evidence = _parse_evidence(parsed, unadmitted)
 
@@ -413,6 +516,18 @@ def admit_retained_filing_package(
     admitted_manifest["fixture_recorded_at"] = capture_recorded_at
     admitted_manifest["attested"] = False
     admitted_manifest["source_accepted_at"] = manifest["source_accepted_at"]
+    # D3-F5: as-filed identity, from the primary document's own dei facts on
+    # the source_accepted_at clock. Never the caller's legal_name (a
+    # current-master label that stays a separate passthrough) and never a
+    # current issuer, security, or statement master.
+    registrant_name = dei["registrant_name_as_filed"]
+    admitted_manifest["issuer_identity_as_of"] = {
+        "cik": cik10,
+        "registrant_name_as_filed": registrant_name,
+        "name_basis": "primary_document_dei" if registrant_name is not None else "absent_in_filing",
+        "as_of_clock": "source_accepted_at",
+        "as_of": manifest["source_accepted_at"],
+    }
 
     return AdmittedFilingPackage(
         manifest=admitted_manifest,

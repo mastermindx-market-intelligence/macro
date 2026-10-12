@@ -22,6 +22,7 @@ from engine.fundamental_forensics.admitted_filing_package import (
     admit_retained_filing_package,
 )
 from engine.fundamental_forensics.financial_intelligence_packet import EntityInput
+from engine.fundamental_forensics.filing_package import _MEMBER_STATES
 from engine.fundamental_forensics.ixbrl_raw_ledger import (
     GOLDEN_AAPL_QUERY_ACCESSIONS,
     parse_and_convert_golden_packages,
@@ -34,6 +35,8 @@ from engine.fundamental_forensics.query_service import (
 from engine.fundamental_forensics.sec_document_spine import (
     HARD_MAX_ARCHIVE_DOCUMENT_BYTES,
     HARD_MAX_ARCHIVE_INDEX_MEMBERS,
+    archive_document_url,
+    archive_index_url,
 )
 from engine.fundamental_forensics.statement_graph import (
     GOLDEN_AAPL_FIXTURES,
@@ -719,3 +722,287 @@ def test_golden_generation_bytes_unchanged() -> None:
     for item in index["accessions"]:
         assert "capture_basis" not in item["manifest"]
         assert "capture_recorded_at" not in item["manifest"]
+
+
+# --- D1 amendment r2: agent-filed issuers, as-filed identity, closed states ---
+
+
+def test_agent_filed_accession_prefix_is_admitted() -> None:
+    # The accession prefix names the transmitting filing agent (Donnelley
+    # 0000950170), never the issuer. Identity binds through the archive URLs,
+    # the witness, and the filing's dei facts instead.
+    accession = GOLDEN_AAPL_QUERY_ACCESSIONS[0]
+    manifest, index_bytes, members, witness_bytes = _load_capture(accession)
+    manifest = copy.deepcopy(manifest)
+    cik = manifest["cik"]
+    agent_accession = "0000950170-25-000079"
+    assert agent_accession[:10] != cik
+
+    witness = json.loads(witness_bytes.decode("utf-8"))
+    witness["accessionNumber"] = agent_accession
+    hostile_witness = json.dumps(witness, separators=(",", ":")).encode("utf-8")
+    _rebind_witness(manifest, hostile_witness)
+
+    index_payload = json.loads(index_bytes.decode("utf-8"))
+    for entry in index_payload["directory"]["item"]:
+        entry["name"] = entry["name"].replace(accession, agent_accession)
+    hostile_index = json.dumps(index_payload).encode("utf-8")
+    _rebind_index(manifest, hostile_index)
+
+    renamed_members: dict[str, bytes] = {}
+    for item in manifest["members"]:
+        old_name = item["name"]
+        new_name = old_name.replace(accession, agent_accession)
+        item["name"] = new_name
+        if "archive_url" in item:
+            item["archive_url"] = archive_document_url(cik, agent_accession, new_name)
+        if item.get("state") == "stored":
+            renamed_members[new_name] = members[old_name]
+
+    manifest["accession"] = agent_accession
+    manifest["archive_index_url"] = archive_index_url(cik, agent_accession)
+    admitted = admit_retained_filing_package(
+        index_bytes=hostile_index,
+        manifest=manifest,
+        members=renamed_members,
+        witness_bytes=hostile_witness,
+        capture_recorded_at=CAPTURE_RECORDED_AT,
+    )
+    assert admitted.manifest["cik"] == "0000320193"
+    assert admitted.manifest["accession"] == agent_accession
+    assert admitted.manifest["issuer_identity_as_of"]["registrant_name_as_filed"] == "Apple Inc."
+    assert admitted.manifest["issuer_identity_as_of"]["cik"] == "0000320193"
+
+
+def test_member_archive_url_for_other_cik_is_identity_mismatch() -> None:
+    manifest, index_bytes, members, witness_bytes = _load_capture(GOLDEN_AAPL_QUERY_ACCESSIONS[0])
+    manifest = copy.deepcopy(manifest)
+    victim = next(
+        item
+        for item in manifest["members"]
+        if item.get("role") == "primary" and item.get("state") == "stored"
+    )
+    victim["archive_url"] = victim["archive_url"].replace("/320193/", "/999999/")
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        admit_retained_filing_package(
+            index_bytes=index_bytes,
+            manifest=manifest,
+            members=members,
+            witness_bytes=witness_bytes,
+            capture_recorded_at=CAPTURE_RECORDED_AT,
+        )
+    assert caught.value.code == "identity_mismatch"
+
+
+def test_archive_index_url_for_other_cik_is_identity_mismatch() -> None:
+    manifest, index_bytes, members, witness_bytes = _load_capture(GOLDEN_AAPL_QUERY_ACCESSIONS[0])
+    manifest = copy.deepcopy(manifest)
+    manifest["archive_index_url"] = manifest["archive_index_url"].replace("/320193/", "/999999/")
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        admit_retained_filing_package(
+            index_bytes=index_bytes,
+            manifest=manifest,
+            members=members,
+            witness_bytes=witness_bytes,
+            capture_recorded_at=CAPTURE_RECORDED_AT,
+        )
+    assert caught.value.code == "identity_mismatch"
+
+
+def test_witness_source_url_cik_mismatch_is_identity_mismatch() -> None:
+    manifest, index_bytes, members, witness_bytes = _load_capture(GOLDEN_AAPL_QUERY_ACCESSIONS[0])
+    witness = json.loads(witness_bytes.decode("utf-8"))
+    witness["source_url"] = "https://data.sec.gov/submissions/CIK0000999999.json"
+    hostile = json.dumps(witness, separators=(",", ":")).encode("utf-8")
+    manifest = copy.deepcopy(manifest)
+    _rebind_witness(manifest, hostile)
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        admit_retained_filing_package(
+            index_bytes=index_bytes,
+            manifest=manifest,
+            members=members,
+            witness_bytes=hostile,
+            capture_recorded_at=CAPTURE_RECORDED_AT,
+        )
+    assert caught.value.code == "identity_mismatch"
+
+
+def test_dei_central_index_key_mismatch_is_identity_mismatch() -> None:
+    manifest, index_bytes, members, witness_bytes = _load_capture(GOLDEN_AAPL_QUERY_ACCESSIONS[0])
+    manifest = copy.deepcopy(manifest)
+    members = dict(members)
+    primary = manifest["primary_document"]
+    original = members[primary]
+    marker = b'name="dei:EntityCentralIndexKey"'
+    marker_at = original.find(marker)
+    assert marker_at != -1
+    value_start = original.find(b">", marker_at) + 1
+    value_end = original.find(b"<", value_start)
+    assert original[value_start:value_end] == b"0000320193"
+    hostile = original[:value_start] + b"0000999999" + original[value_end:]
+    members[primary] = hostile
+    _retarget_member(manifest, primary, hostile)
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        admit_retained_filing_package(
+            index_bytes=index_bytes,
+            manifest=manifest,
+            members=members,
+            witness_bytes=witness_bytes,
+            capture_recorded_at=CAPTURE_RECORDED_AT,
+        )
+    assert caught.value.code == "identity_mismatch"
+
+
+def test_issuer_identity_as_of_comes_from_the_filing_not_the_caller() -> None:
+    for accession in GOLDEN_AAPL_QUERY_ACCESSIONS:
+        manifest, index_bytes, members, witness_bytes = _load_capture(accession)
+        manifest = copy.deepcopy(manifest)
+        later_name = "Apple Corporation (renamed 2026)"
+        manifest["legal_name"] = later_name
+        admitted = admit_retained_filing_package(
+            index_bytes=index_bytes,
+            manifest=manifest,
+            members=members,
+            witness_bytes=witness_bytes,
+            capture_recorded_at=CAPTURE_RECORDED_AT,
+        )
+        identity = admitted.manifest["issuer_identity_as_of"]
+        assert identity["cik"] == "0000320193"
+        assert identity["registrant_name_as_filed"] == "Apple Inc."
+        assert identity["registrant_name_as_filed"] != later_name
+        assert identity["name_basis"] == "primary_document_dei"
+        assert identity["as_of_clock"] == "source_accepted_at"
+        assert identity["as_of"] == manifest["source_accepted_at"]
+        # The caller's current-master label stays a separate passthrough.
+        assert admitted.manifest["legal_name"] == later_name
+
+
+def test_issuer_identity_absent_in_filing_when_primary_carries_no_dei_name() -> None:
+    manifest, index_bytes, members, witness_bytes = _load_capture(GOLDEN_AAPL_QUERY_ACCESSIONS[0])
+    manifest = copy.deepcopy(manifest)
+    members = dict(members)
+    primary = manifest["primary_document"]
+    original = members[primary]
+    marker = b'name="dei:EntityRegistrantName"'
+    marker_at = original.find(marker)
+    assert marker_at != -1
+    start = original.rfind(b"<ix:nonNumeric", 0, marker_at)
+    end = original.find(b"</ix:nonNumeric>", marker_at) + len(b"</ix:nonNumeric>")
+    assert original[start:end].endswith(b"Apple Inc.</ix:nonNumeric>")
+    stripped = original[:start] + original[end:]
+    members[primary] = stripped
+    _retarget_member(manifest, primary, stripped)
+    admitted = admit_retained_filing_package(
+        index_bytes=index_bytes,
+        manifest=manifest,
+        members=members,
+        witness_bytes=witness_bytes,
+        capture_recorded_at=CAPTURE_RECORDED_AT,
+    )
+    identity = admitted.manifest["issuer_identity_as_of"]
+    assert identity["registrant_name_as_filed"] is None
+    assert identity["name_basis"] == "absent_in_filing"
+    assert identity["cik"] == "0000320193"
+    assert identity["as_of"] == manifest["source_accepted_at"]
+
+
+def test_dei_identity_helper_reads_parsed_facts_alone() -> None:
+    parsed = {
+        "facts": [
+            {
+                "concept_qname": "{http://xbrl.sec.gov/dei/2024}EntityCentralIndexKey",
+                "status": "available",
+                "transformed_value": "320193",
+                "raw_value": "320193",
+            },
+            {
+                "concept_qname": "{http://xbrl.sec.gov/dei/2024}EntityRegistrantName",
+                "status": "available",
+                "transformed_value": "Acme, Inc.",
+                "raw_value": "Acme, Inc.",
+            },
+            {
+                "concept_qname": "{http://xbrl.sec.gov/dei/2024}DocumentType",
+                "status": "available",
+                "transformed_value": "10-K",
+                "raw_value": "10-K",
+            },
+            {
+                "concept_qname": "{http://example.invalid/x}EntityRegistrantName",
+                "status": "available",
+                "transformed_value": "IMPOSTOR",
+                "raw_value": "IMPOSTOR",
+            },
+            {
+                "concept_qname": "{http://xbrl.sec.gov/dei/2024}EntityCentralIndexKey",
+                "status": "invalid_value",
+                "transformed_value": None,
+                "raw_value": "garbage",
+            },
+        ]
+    }
+    dei = AFP._dei_identity(parsed)
+    assert dei["entity_cik_values"] == ("320193",)
+    assert dei["registrant_name_as_filed"] == "Acme, Inc."
+    empty = AFP._dei_identity({"facts": []})
+    assert empty["entity_cik_values"] == ()
+    assert empty["registrant_name_as_filed"] is None
+
+
+def test_module_never_binds_through_current_issuer_master() -> None:
+    source = (
+        ROOT / "engine" / "fundamental_forensics" / "admitted_filing_package.py"
+    ).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    forbidden_modules = {"lib", "lib.dataos", "dataos"}
+    imported: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                imported.add(alias.name)
+                imported.add(alias.name.split(".", 1)[0])
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imported.add(node.module)
+            imported.add(node.module.split(".", 1)[0])
+    assert imported.isdisjoint(forbidden_modules)
+    referenced: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name):
+            referenced.add(node.id)
+        elif isinstance(node, ast.Attribute):
+            referenced.add(node.attr)
+    assert referenced.isdisjoint(
+        {"IssuerMaster", "security_master", "statement_service", "IssuerIdentity"}
+    )
+
+
+def test_unknown_member_state_is_inventory_mismatch() -> None:
+    for junk in ("garbage", "stored ", None):
+        manifest, index_bytes, members, witness_bytes = _load_capture(
+            GOLDEN_AAPL_QUERY_ACCESSIONS[0]
+        )
+        manifest = copy.deepcopy(manifest)
+        victim = next(
+            item for item in manifest["members"] if item.get("state") == "not_requested"
+        )
+        if junk is None:
+            victim.pop("state", None)
+        else:
+            victim["state"] = junk
+        with pytest.raises(AdmittedFilingPackageError) as caught:
+            admit_retained_filing_package(
+                index_bytes=index_bytes,
+                manifest=manifest,
+                members=members,
+                witness_bytes=witness_bytes,
+                capture_recorded_at=CAPTURE_RECORDED_AT,
+            )
+        assert caught.value.code == "inventory_mismatch"
+
+
+def test_member_states_reuse_the_incumbent_vocabulary() -> None:
+    assert AFP._MEMBER_STATES is _MEMBER_STATES
+    assert "stored" in AFP._MEMBER_STATES
+    assert AFP._MEMBER_STATES == frozenset(
+        {"stored", "missing", "not_requested", "rejected_by_policy"}
+    )
