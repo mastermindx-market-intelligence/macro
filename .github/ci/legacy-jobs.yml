@@ -1582,6 +1582,9 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_narrative/economic_interpretation.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
@@ -7484,7 +7487,35 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
       - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_narrative/economic_interpretation.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/theme_graph/rights.py"
       - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
       - "tests/test_finance_intelligence_contract.py"
       - "engine/sector_intelligence/finance_overlap.py"
@@ -7577,7 +7608,36 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
       - "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_narrative/economic_interpretation.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights.py"
       - "data/sector_intelligence/fixtures/consumer_cyclical_intelligence_read_model.v1.valid.json"
       - "tests/test_consumer_cyclical_intelligence_read_model_contract.py"
       - "engine/sector_intelligence/consumer_cyclical_projection.py"
@@ -10585,6 +10645,7 @@ jobs:
       - engine/commodity_strategies.py
       - engine/company_intelligence/__init__.py
       - engine/company_intelligence/documents.py
+      - engine/company_intelligence/economic_observations.py
       - engine/company_intelligence/event_id_adapter.py
       - engine/company_intelligence/event_workspace.py
       - engine/company_intelligence/event_workspace_build.py
@@ -10618,9 +10679,11 @@ jobs:
       - engine/donor.py
       - engine/earnings_blackout.py
       - engine/earnings_catalyst.py
+      - engine/earnings_narrative/__init__.py
       - engine/earnings_narrative/context_packets.py
       - engine/earnings_narrative/contracts.py
       - engine/earnings_narrative/digest.py
+      - engine/earnings_narrative/economic_interpretation.py
       - engine/earnings_narrative/private_publication.py
       - engine/earnings_narrative/promotion.py
       - engine/earnings_narrative/public_wire.py
@@ -12916,6 +12979,30 @@ jobs:
     scope: exclusive
     paths:
       - "collectors/biocatalyst/**"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights.py"
       - "config/**"
       - "contracts/**"
       - "data/**"
@@ -17044,6 +17131,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/company_intelligence/economic_observations.py"
       - "engine/intl_performance_records.py"
       - "engine/intl_workspace_overview.py"
       # MO-PAID-006 closure widening 2026-10-02 (#8276): engine/international_macro_dashboard.py
@@ -18274,6 +18362,88 @@ jobs:
       - name: PG private acquisition source selection
         run: python -m pytest tests/test_pg_economic_source_selection.py -q
 
+  earnings-economic-private-publication:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    timeout-minutes: 20
+    paths:
+      - config/earnings_story_promotion.yml
+      - config/fundamental_forensics_disclosure_diff.v1.json
+      - config/site_access.yml
+      - config/theme_crosswalk.yml
+      - config/theme_sources.yml
+      - engine/company_intelligence/__init__.py
+      - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/documents.py
+      - engine/company_intelligence/economic_observations.py
+      - engine/company_intelligence/event_id_adapter.py
+      - engine/company_intelligence/event_workspace.py
+      - engine/company_intelligence/event_workspace_build.py
+      - engine/company_intelligence/events.py
+      - engine/company_intelligence/health.py
+      - engine/company_intelligence/identity.py
+      - engine/company_intelligence/issuer_profiles.py
+      - engine/company_intelligence/pg_envelope.py
+      - engine/company_intelligence/pg_profile.py
+      - engine/company_intelligence/qa_exchange.py
+      - engine/company_intelligence/qa_reconstruction.py
+      - engine/company_intelligence/views.py
+      - engine/earnings_narrative/__init__.py
+      - engine/earnings_narrative/context_packets.py
+      - engine/earnings_narrative/contracts.py
+      - engine/earnings_narrative/digest.py
+      - engine/earnings_narrative/economic_interpretation.py
+      - engine/earnings_narrative/extract.py
+      - engine/earnings_narrative/generation.py
+      - engine/earnings_narrative/private_publication.py
+      - engine/earnings_narrative/promotion.py
+      - engine/earnings_narrative/public_wire.py
+      - engine/earnings_narrative/story.py
+      - engine/earnings_narrative/story_packets.py
+      - engine/earnings_narrative/story_store.py
+      - engine/earnings_release/__init__.py
+      - engine/earnings_release/binding.py
+      - engine/earnings_release/figures.py
+      - engine/earnings_release/filing_key.py
+      - engine/earnings_release/receipts.py
+      - engine/earnings_transcript_intake.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/company_intelligence_reader.py
+      - engine/neuralweb/earnings_context_reader.py
+      - engine/press/earnings_adapter.py
+      - engine/fundamental_forensics/disclosure_diff.py
+      - engine/fundamental_forensics/models.py
+      - engine/research_vault/__init__.py
+      - engine/research_vault/r2_store.py
+      - engine/theme_graph/__init__.py
+      - engine/theme_graph/rights.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/pages.py
+      - lib/seo.py
+      - scripts/__init__.py
+      - scripts/build_earnings_public_wire.py
+      - scripts/publish_company_intelligence_r2.py
+      - scripts/refresh_event_workspaces.py
+      - templates/_public_chrome_css.html.j2
+      - templates/_public_nav.html.j2
+      - templates/seo_base.html.j2
+      - tests/earnings_economic_fixtures.py
+      - tests/earnings_economic_private_fixtures.py
+      - tests/test_earnings_economic_private_store.py
+      - tests/test_earnings_private_store.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the private publication suites
+        # requests and jinja2: the legacy suite's _staged_publication imports scripts.build_earnings_public_wire
+        run: pip install pytest pyyaml requests jinja2
+      - name: Private generation publication
+        run: python -m pytest tests/test_earnings_private_store.py tests/test_earnings_economic_private_store.py -q
   earnings-economic-dossier:
     # CDV-1 Task 1: private PG issuer-profile economics at source scope. The fifteen
     # frozen suites use only original synthetic HTML. The F1-Q envelope suites read
@@ -21398,6 +21568,7 @@ jobs:
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
       - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/economic_observations.py"
       - "engine/company_intelligence/event_id_adapter.py"
       - "engine/company_intelligence/event_workspace.py"
       - "engine/company_intelligence/event_workspace_build.py"
@@ -21436,10 +21607,12 @@ jobs:
       - "engine/donor.py"
       - "engine/earnings_blackout.py"
       - "engine/earnings_catalyst.py"
+      - "engine/earnings_narrative/__init__.py"
       - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
       - "engine/earnings_narrative/context_packets.py"
       - "engine/earnings_narrative/contracts.py"
       - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/economic_interpretation.py"
       - "engine/earnings_narrative/private_publication.py"
       - "engine/earnings_narrative/promotion.py"
       - "engine/earnings_narrative/public_wire.py"
@@ -22973,6 +23146,13 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_narrative/economic_interpretation.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights.py"
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"

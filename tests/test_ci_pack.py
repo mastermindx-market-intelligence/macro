@@ -4346,6 +4346,8 @@ CURATED_EXCLUSIVE = {
     "earnings-economic-dossier",
     # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
     "earnings-economic-source-selection",
+    # 2026-09-30: CDV-1 Task 4 owns the v2 private generation.
+    "earnings-economic-private-publication",
     # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
