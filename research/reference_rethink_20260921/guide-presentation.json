@@ -1,0 +1,37 @@
+{
+  "schema": "mastermind.market_guide_presentation/v1",
+  "entries": {
+    "market-state-score": {
+      "kind": "composite",
+      "readings": [
+        {"field":"interpretation_down","label_en":"Lower","label_zh":"较低"},
+        {"field":"interpretation_neutral","label_en":"Mixed","label_zh":"分化"},
+        {"field":"interpretation_up","label_en":"Higher","label_zh":"较高"}
+      ]
+    },
+    "risk-radar": {
+      "kind":"risk",
+      "readings":[
+        {"field":"interpretation_down","label_en":"Calm / watch","label_zh":"平静 / 观察"},
+        {"field":"interpretation_neutral","label_en":"Caution","label_zh":"谨慎"},
+        {"field":"interpretation_up","label_en":"Elevated / risk-off","label_zh":"偏高 / 避险"}
+      ]
+    },
+    "regime-quadrant": {
+      "kind":"quadrant",
+      "readings":[
+        {"field":"interpretation_up","label_en":"Growth up · inflation down","label_zh":"增长上行 · 通胀下行"},
+        {"field":"interpretation_neutral","label_en":"Both move together","label_zh":"两者同向变化"},
+        {"field":"interpretation_down","label_en":"Growth down · inflation up","label_zh":"增长下行 · 通胀上行"}
+      ]
+    },
+    "transition-state": {"kind":"confirmation"},
+    "evidence-matrix": {"kind":"evidence"},
+    "sector-heat": {"kind":"rotation"}
+  },
+  "questions":[
+    {"id":"strength","label_en":"How strong is the market?","label_zh":"市场有多强？","entry_ids":["market-state-score","evidence-matrix","sector-heat"]},
+    {"id":"risk","label_en":"Is risk building?","label_zh":"风险正在累积吗？","entry_ids":["risk-radar","market-state-score"]},
+    {"id":"backdrop","label_en":"What is driving the backdrop?","label_zh":"什么在推动市场环境？","entry_ids":["regime-quadrant","transition-state","evidence-matrix"]}
+  ]
+}

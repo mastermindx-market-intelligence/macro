@@ -1,0 +1,304 @@
+{
+  "schema": "mastermind.market_reference/v1",
+  "entries": [
+    {
+      "id": "market-state-score",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Market State Score",
+      "label_zh": "市场状态分",
+      "aliases_en": [
+        "state dial"
+      ],
+      "aliases_zh": [
+        "市场状态评分"
+      ],
+      "short_definition_en": "Definition for Market State Score",
+      "short_definition_zh": "说明：市场状态分",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": "Higher score — trend, breadth, and cross-asset signals broadly align supportive.",
+      "interpretation_up_zh": "较高读数。",
+      "interpretation_down": "A lower reading.",
+      "interpretation_down_zh": "较低读数。",
+      "interpretation_neutral": "A mixed reading.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [
+        "https://fred.stlouisfed.org/series/VIXCLS"
+      ],
+      "related_ids": [
+        "risk-radar"
+      ],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    },
+    {
+      "id": "risk-radar",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Risk Radar",
+      "label_zh": "回撤风险雷达",
+      "aliases_en": [],
+      "aliases_zh": [],
+      "short_definition_en": "Definition for Risk Radar",
+      "short_definition_zh": "说明：回撤风险雷达",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": "Elevated or risk-off — historically higher-than-normal odds of a near-term pullback; a de-risking sizing consideration, not an exit signal.",
+      "interpretation_up_zh": "较高读数。",
+      "interpretation_down": "Calm or watch — no unusual pullback pressure detected among the tracked scare types.",
+      "interpretation_down_zh": "较低读数。",
+      "interpretation_neutral": "Caution — some scare types are stirring; a reason to tighten risk controls, not to override a supportive market read.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [],
+      "related_ids": [],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    },
+    {
+      "id": "regime-quadrant",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Regime Quadrant",
+      "label_zh": "宏观象限",
+      "aliases_en": [],
+      "aliases_zh": [],
+      "short_definition_en": "Definition for Regime Quadrant",
+      "short_definition_zh": "说明：宏观象限",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": "A higher reading.",
+      "interpretation_up_zh": "较高读数。",
+      "interpretation_down": "A lower reading.",
+      "interpretation_down_zh": "较低读数。",
+      "interpretation_neutral": "A mixed reading.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [],
+      "related_ids": [],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    },
+    {
+      "id": "transition-state",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Transition State",
+      "label_zh": "转换状态",
+      "aliases_en": [],
+      "aliases_zh": [],
+      "short_definition_en": "Definition for Transition State",
+      "short_definition_zh": "说明：转换状态",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": null,
+      "interpretation_down": null,
+      "interpretation_neutral": "No directional up/down reading — this describes confidence in the current regime label, not a market direction.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [],
+      "related_ids": [],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    },
+    {
+      "id": "evidence-matrix",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Evidence Matrix",
+      "label_zh": "证据矩阵",
+      "aliases_en": [],
+      "aliases_zh": [],
+      "short_definition_en": "Definition for Evidence Matrix",
+      "short_definition_zh": "说明：证据矩阵",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": "A higher reading.",
+      "interpretation_up_zh": "较高读数。",
+      "interpretation_down": "A lower reading.",
+      "interpretation_down_zh": "较低读数。",
+      "interpretation_neutral": "A mixed reading.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [],
+      "related_ids": [],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    },
+    {
+      "id": "sector-heat",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Sector Heat",
+      "label_zh": "板块热力",
+      "aliases_en": [],
+      "aliases_zh": [],
+      "short_definition_en": "Definition for Sector Heat",
+      "short_definition_zh": "说明：板块热力",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": "A higher reading.",
+      "interpretation_up_zh": "较高读数。",
+      "interpretation_down": "A lower reading.",
+      "interpretation_down_zh": "较低读数。",
+      "interpretation_neutral": "A mixed reading.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [],
+      "related_ids": [],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    },
+    {
+      "id": "market-regime",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Market Regime",
+      "label_zh": "市场状态",
+      "aliases_en": [
+        "regime badge"
+      ],
+      "aliases_zh": [
+        "市场状态徽标"
+      ],
+      "short_definition_en": "Definition for Market Regime",
+      "short_definition_zh": "说明：市场状态",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": "A higher reading.",
+      "interpretation_up_zh": "较高读数。",
+      "interpretation_down": "A lower reading.",
+      "interpretation_down_zh": "较低读数。",
+      "interpretation_neutral": "A mixed reading.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [],
+      "related_ids": [],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    },
+    {
+      "id": "posture-dial",
+      "kind": "indicator",
+      "family": "regime",
+      "label_en": "Posture Dial",
+      "label_zh": "态势仪表",
+      "aliases_en": [],
+      "aliases_zh": [],
+      "short_definition_en": "Definition for Posture Dial",
+      "short_definition_zh": "说明：态势仪表",
+      "why_it_matters_en": "Context, not a trade instruction.",
+      "why_it_matters_zh": "背景信息，并非交易指令。",
+      "unit_or_basis": "Context only",
+      "unit_or_basis_zh": "仅供理解",
+      "interpretation_up": "A higher reading.",
+      "interpretation_up_zh": "较高读数。",
+      "interpretation_down": "A lower reading.",
+      "interpretation_down_zh": "较低读数。",
+      "interpretation_neutral": "A mixed reading.",
+      "interpretation_neutral_zh": "分化读数。",
+      "caveats_en": [
+        "Not a timing call."
+      ],
+      "caveats_zh": [
+        "不是择时信号。"
+      ],
+      "owner_ref": "macro.html#regime-radar",
+      "public_source_refs": [],
+      "related_ids": [],
+      "authority_ceiling": "reference_only",
+      "status": "active"
+    }
+  ],
+  "coverage_exceptions": [
+    {
+      "element_en": "Regime Badge",
+      "element_zh": "市场状态徽标",
+      "state": "covered_by",
+      "surface": "us_stocks.html",
+      "see_ids": [
+        "market-regime"
+      ]
+    },
+    {
+      "element_en": "Posture Chip",
+      "element_zh": "态势标签",
+      "state": "covered_by",
+      "surface": "us_stocks.html",
+      "see_ids": [
+        "posture-dial"
+      ]
+    },
+    {
+      "element_en": "Prophet Stock Signals Board",
+      "element_zh": "个股信号看板",
+      "state": "not_an_indicator",
+      "surface": "us_stocks.html",
+      "see_ids": [
+        "market-state-score",
+        "risk-radar"
+      ],
+      "reason_en": "A board of names, not a measure.",
+      "reason_zh": "这是一个名单看板，不是一项指标。"
+    }
+  ],
+  "fixture_only": true
+}

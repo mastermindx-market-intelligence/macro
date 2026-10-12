@@ -1,0 +1,15 @@
+{
+  "scope": "Synthetic host-browser proof of non-invasive context mode; NOT actual Macro embedding or deployment",
+  "source_commit": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
+  "browser": "151.0.7922.34",
+  "entries": 46,
+  "browser_checks": {
+    "host_unchanged_mount_open_dispose": true,
+    "global_nav_unchanged": true,
+    "url_title_language_unchanged": true,
+    "delegated_data_guide_entry_click_opens_risk_help": true,
+    "full_guide_link_safe_same_origin": true
+  },
+  "errors": [],
+  "guide_view_sha256": "151da3992101f7b7c0b12cd01f69b8a0116027ce76ba2f4f077bcf5226048a28"
+}

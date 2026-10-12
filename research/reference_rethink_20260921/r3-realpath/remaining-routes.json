@@ -1,0 +1,18 @@
+{
+  "scope": "Independent remaining routes; prior native Tab assertion remains FAILED/UNRESOLVED",
+  "source_commit": "49f462dc67f6ea850a77d261a8a1a6a8f810b6df",
+  "browser": "151.0.7922.34",
+  "fixture_only": false,
+  "entries": 46,
+  "content_revision": "3986cc832462d070ff26ce142d2e412a0dd839b96aacd4b483a7b2b069fd5495",
+  "html_sha256": "997fe6efbc19ba943e18b725da0b5073ca404d29d8a27520513da57e29316481",
+  "checks_passed": [
+    "browser back/forward: exact query, membership and selected entry",
+    "unknown-link text preserves exact missing identity",
+    "empty results are explicit with recovery",
+    "46 real entries × 2 languages × 2 widths render without horizontal overflow"
+  ],
+  "browser_errors": [],
+  "full_qualification": "NOT_PASSED",
+  "held_failure": "qualify_real_guide.py line 82: dialog contains document.activeElement after Tab; cause not yet adjudicated"
+}

@@ -1,0 +1,67 @@
+{
+  "status": "R14_DESIGN_CANDIDATE_NOT_PRODUCTION",
+  "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+  "paper_file_name": "Mastermind · Market Guide · Re-envisioning",
+  "paper_url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-1-0",
+  "page_id": "p-1-0",
+  "repo_subject_before_evidence": "b5a250eb20b98712637e02565d4c8f08e96f108c",
+  "artboards": [
+    {
+      "id": "1RQ-1",
+      "name": "R14 · Guide · Light · EN · Desktop",
+      "screenshot": "home-light-en-desktop.png",
+      "screenshot_sha256": "0f41a02aeba0e4f903a686ab19c005993efa77a2de606993ea1ac6ff5d610599",
+      "jsx_sha256": "22c3bdc6b5fcf15a795f477425a2f32490eb310f158fd62d20122b4501cbb344"
+    },
+    {
+      "id": "1UC-1",
+      "name": "R14 · Guide · Dark · EN · Desktop",
+      "screenshot": "home-dark-en-desktop.png",
+      "screenshot_sha256": "80f8023c3475989a8f34c8fac4045cdf4a1b17944dc767ea7856142de460fa57",
+      "jsx_sha256": "a6c5303d6f9af41631355c19240595a1a15a32f63989948e2fe836084fcc45ff"
+    },
+    {
+      "id": "1WO-1",
+      "name": "R14 · Guide · Light · EN · Mobile",
+      "screenshot": "home-light-en-mobile.png",
+      "screenshot_sha256": "49b3f8216de2538b194f47da85b60a64633078e2733b76135a10295f6b6f8204",
+      "jsx_sha256": "dd044c5568ffff1e96486e9565427eed0c0a4eb1f632288df68eaecb46c0869f"
+    },
+    {
+      "id": "1Z0-1",
+      "name": "R14 · Guide · Light · ZH · Mobile",
+      "screenshot": "home-light-zh-mobile.png",
+      "screenshot_sha256": "9ada7e4ab48ff6b43b1e25e2dc211d9c4bac1a7630e512c3202ca96371441745",
+      "jsx_sha256": "777a37ca30a2ab7b1a3324482a91b80a53caab1c17079dfe7babaa2de0f2fe2a"
+    },
+    {
+      "id": "21C-1",
+      "name": "R14 · Risk Help · Light · EN",
+      "screenshot": "risk-help-light-en.png",
+      "screenshot_sha256": "a91a1b5ecf31a8b292672211e6a77fd30b0eb1f614f35e9668b5ddbaaba3e6b0",
+      "jsx_sha256": "f9049e48e7c3022a63acd53881d62871bd24fc65f8740e9f7ae869f027a551ed"
+    },
+    {
+      "id": "224-1",
+      "name": "R14 · Risk Help · Dark · ZH",
+      "screenshot": "risk-help-dark-zh.png",
+      "screenshot_sha256": "49335665413365865906dd60fc9ae2f9bc87a46869970227ce461653eaf5fab5",
+      "jsx_sha256": "1fa87a2b71eee7284dc31395d134bee4c1b45f0363171f6d016cfd56e79acbff"
+    }
+  ],
+  "design_delta": [
+    "Page identifies itself as Market Guide and promises a fast answer.",
+    "Question cards disclose their primary answer; mobile retains arrow affordance.",
+    "Contextual Risk Radar help shows a current-reading card before interpretation.",
+    "Current-reading example selects Watch consistently and keeps timing/exit caveat visible."
+  ],
+  "production_claim": false,
+  "note": "Current-reading values are design examples only. Editable Paper remains the native design source; screenshots are review evidence.",
+  "protected_authority_pin": "622d128d64a79c3e4dd45f748b8a8db7ec2e2741",
+  "macro_main_at_capture_close": "ad38f308945cdcd36a01111e88009ab895f9367c",
+  "current_base_merge_tree": "71cd1ba6dff2b583a172ad6ea2c1fd72b316a896",
+  "r13_ci_run": 35957027329,
+  "r13_fences_run": 35957027216,
+  "paper_working_indicators_released": true,
+  "baseline_artboards_preserved": true
+}

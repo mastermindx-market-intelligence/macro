@@ -1,0 +1,190 @@
+{
+  "operation": "reference-rethink-20260921",
+  "mission": "Replace the confusing text-first reference/glossary experience with an intuitive Market Guide plus in-context explanations on Macro",
+  "mission_complete": false,
+  "production_changed": false,
+  "finalization_classification": "MORE_WORK_EXISTS",
+  "boundary": "R15 search-answer and no-match recovery states are bound as native Paper evidence; R13 working source remains standalone-qualified/hosted-green; production integration and independent acceptance remain outstanding",
+  "protected_authority_pin": "622d128d64a79c3e4dd45f748b8a8db7ec2e2741",
+  "source_subject": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+  "view_subject": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+  "integrated_main": "ad38f308945cdcd36a01111e88009ab895f9367c",
+  "carrier": "claude/reference-rethink-20260921",
+  "pr": 7647,
+  "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+  "candidate_artboards": 29,
+  "last_material_delta": "R15 added exact-match desktop/mobile answer states and a mobile zero-match recovery state. Search now has a complete design journey without reverting to a catalog dump or pretending live-value/natural-language lookup exists.",
+  "local_tests": {
+    "python": 68,
+    "node": 60,
+    "total": 128,
+    "python_cleanup_warnings": 6,
+    "fresh_this_turn": true
+  },
+  "focused_browser_proof": "Superseded by full current-source standalone qualifier at 0ece90fc7b3d17b48cb7252327f03fae680ab4d5",
+  "proof_ceiling": "R13 exact-head standalone/source-backed guide qualification + R14/R15 native Paper interaction evidence + hosted CI/fences green on b5a250eb; not actual Macro Lens embedding, independent acceptance, merge, deployment or production proof",
+  "preview": "r7-evidence/guide.html",
+  "original_r3_proof": "r3-realpath/remaining-routes.json remains historical at 49f462dc67f6ea850a77d261a8a1a6a8f810b6df; do not claim 184 R3 cases as freshly run on R4",
+  "context_mode": "Built and hardened: host/title/URL/language ownership preserved; current-reading text/as-of plus allowed interpretation state can be supplied by the caller. Full Macro mount remains unproven.",
+  "blocked_lanes": {
+    "macro_integration": "Production canonical-registry -> Macro Lens consumer projection write was explicitly refused before dispatch. EFFECT_NONE; no retry/rephrase/failover. Actual Macro embedding remains unproven. The exact implementation must also keep caller-supplied live reading state modal-ephemeral so a later context-free open cannot inherit stale state.",
+    "reference_migration": "#6792 remains OPEN/DRAFT/HOLD at 7853ffeaca41d4d8f33995b1453db2be134ce8a3, last updated 2026-09-04, with unresolved independent REQUEST_CHANGES and no current movement. It is stale evidence/custody to reconcile, not accepted source. R14 does not overwrite its production reference paths.",
+    "independent_acceptance": "Reviewers mastermindx-2 and mastermindx-3 remain requested on #7647; no submitted review/START/acceptance observed.",
+    "hosted_ci_detail": "CLEARED for published R13 head b5a250eb20b98712637e02565d4c8f08e96f108c: fences run 35957027216 success and CI run 35957027329 success. R14 evidence-only descendants do not strengthen semantic source claims; fresh head checks after push are still observed separately.",
+    "release": "Requires independent design/reference acceptance, real Macro Lens integration with stale-state repair, current-head integration checks, merge/deploy, and live before/after proof.",
+    "current_base": "Current origin/main ad38f308945cdcd36a01111e88009ab895f9367c includes merged #7935 Risk Radar warning-duration context. `git merge-tree --write-tree origin/main b5a250...` produced 71cd1ba6dff2b583a172ad6ea2c1fd72b316a896 with no conflict output. #7935 duration is compatible: calm/watch renders no duration; future help may display duration only when canonical producer supplies it.",
+    "dashboard_same_file": "CLEARED: #7859 merged. Current-base dashboard composition is conflict-free at recorded merge tree; newer #7935 movement is consumed above.",
+    "risk_watch_copy": "Engine semantics establish Watch as an early flag with pullback odds below unconditional base; registry still collapses Calm + Watch copy. Exact registry wording edit was previously refused before dispatch (EFFECT_NONE) and not retried. R14 Paper expresses the intended plain-language distinction only as design copy, not canonical source mutation.",
+    "current_reading_fresh_visual": "R14 native Paper current-reading visual now exists and is bound to evidence head 36ec57e6fa77; this is design evidence only. Real source-backed Macro contextual-current-reading browser proof remains unperformed."
+  },
+  "effects": "Existing Paper file now contains 29 artboards: original 20 baseline + 6 R14 refinement boards + 3 R15 search/recovery boards. Working indicators released. R15 evidence committed at 5ebe4fbb935b. No production mutation. Previously refused source/registry writes remain pre-dispatch EFFECT_NONE and were not retried.",
+  "active_children": [],
+  "autonomous_return_path": null,
+  "principal_judgment": "Reject beautifying the bottom Look up rack as the end-state; move explanations beside the actual instruments and remove the rack only after verified in-context coverage is complete.",
+  "do_not_redo": [
+    "Do not recreate Paper artboards",
+    "Do not create a second editorial store",
+    "Do not invent values, weights or thresholds",
+    "Do not repeat the fixed keyboard work absent a material invalidator",
+    "Do not attach R3 browser evidence to R4",
+    "Do not green the unresolved Macro navigation comparison",
+    "Do not waive unenrolled suites",
+    "Do not overwrite the incumbent reference builder/template or bypass refused operations",
+    "Do not waive or repeat completed code-gate enrollment absent an invalidator",
+    "Do not claim standalone matrix proof as Macro embedding",
+    "Do not label requested review as START or acceptance",
+    "Do not reintroduce context-mode host class/content mutation",
+    "Do not call synthetic host-browser proof actual Macro embedding",
+    "Do not reintroduce the rejected noisy natural-language search without a materially new permitted implementation path",
+    "Do not beautify the bottom Look up rack as the final UX; migrate explanations in context",
+    "Do not retry/rephrase/failover the refused production consumer-projection or registry wording actions",
+    "Do not claim earlier current-reading screenshots are bound to the cleaned R13 subject",
+    "Do not overwrite the original 20 Paper artboards; R14 duplicates are the refinement lane",
+    "Do not synthesize Risk Radar warning duration in the guide; display it only when the canonical producer supplies it",
+    "Do not treat R14 Paper design copy as a canonical registry mutation or live market reading",
+    "Do not use the R15 no-match board to imply natural-language or live-value search capability",
+    "Do not reintroduce the full catalog underneath an exact search result at rest"
+  ],
+  "next_action": "After the previously refused production source-write action becomes permitted, fix modal-ephemeral caller reading state and implement the smallest real Macro Lens slice (Market State Score + Risk Radar) from canonical registry copy with deep-link fallback; prove real desktop/mobile EN/ZH behavior before expanding to the other four LOOK UP entries.",
+  "intended_resume_surface": "Same operation and PR; reconcile exact remote/local head and source custody before changes",
+  "proof": "r11-evidence/qualification.json; r14-paper/manifest.json; R14_PAPER_REFINEMENT.md; r15-paper/manifest.json; R15_SEARCH_RECOVERY.md; GitHub Actions ci 35957027329 success; fences 35957027216 success",
+  "independent_review": {
+    "requested_reviewers": [
+      "mastermindx-2",
+      "mastermindx-3"
+    ],
+    "carrier": "macro#7647",
+    "requested": true,
+    "started": false,
+    "acceptance": false
+  },
+  "ci_enrollment": "Hosted terminal result is green on b5a250eb20b98712637e02565d4c8f08e96f108c: CI run 35957027329 success; fences 35957027216 success. Green CI is not acceptance.",
+  "recovery": {
+    "device": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "local_head": "5ebe4fbb935bc380fa92b408b4641a1fb24c83d2",
+    "last_remote_head": "474d714b217ba1220a761178871527cf1d8592bb",
+    "prior_handoff_sha": "c3b2a849f929e15043f84da2ddd89eb5efb5e4d2",
+    "sha_disagreement": "Prior PR text named an incorrect local SHA; original-carrier git log and exact two-file patch establish d18ddc1e9623 as the actual fix.",
+    "download_destination_exists": false,
+    "matching_download_processes": 0,
+    "download_reconciliation": "The exact prior hosted-plan destination is absent and no matching download runs. No source or push effect was ambiguous.",
+    "push_verified": false
+  },
+  "targeted_browser_proof": {
+    "scope": "Targeted real-source Chromium proof of existing heading repair; not Macro integration or deployment",
+    "source_commit": "d18ddc1e9623952374af670b36b6069298aac4a0",
+    "browser": "151.0.7922.34",
+    "entries": 46,
+    "cases": [
+      {
+        "lang": "en",
+        "width": 1440,
+        "heading_membership_input_focus_url_history": true
+      },
+      {
+        "lang": "zh",
+        "width": 1440,
+        "heading_membership_input_focus_url_history": true
+      },
+      {
+        "lang": "en",
+        "width": 390,
+        "heading_membership_input_focus_url_history": true
+      },
+      {
+        "lang": "zh",
+        "width": 390,
+        "heading_membership_input_focus_url_history": true
+      }
+    ],
+    "errors": [],
+    "html_sha256": "fe650d8156971d2ef4515d3a1ead158eb724332562aff363cf11ee2b57203daf",
+    "view_sha256": "13b63fe47d63a3636d4e4b9b8b2a84906a3610859a2ce3fff5fa12f10cf52492"
+  },
+  "context_host_browser_proof": {
+    "scope": "Synthetic host-browser proof of non-invasive context mode; NOT actual Macro embedding or deployment",
+    "source_commit": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
+    "browser": "151.0.7922.34",
+    "entries": 46,
+    "browser_checks": {
+      "host_unchanged_mount_open_dispose": true,
+      "global_nav_unchanged": true,
+      "url_title_language_unchanged": true,
+      "delegated_data_guide_entry_click_opens_risk_help": true,
+      "full_guide_link_safe_same_origin": true
+    },
+    "errors": [],
+    "guide_view_sha256": "151da3992101f7b7c0b12cd01f69b8a0116027ce76ba2f4f077bcf5226048a28"
+  },
+  "published_implementation": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
+  "published_evidence_head": "5ebe4fbb935bc380fa92b408b4641a1fb24c83d2",
+  "r13_qualification": {
+    "source_commit": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+    "checks_passed": 13,
+    "entries": 46,
+    "detail_journeys": 184,
+    "screenshots": 48,
+    "no_js_entries": 46,
+    "errors": [],
+    "external_requests": [],
+    "receipt": "r11-evidence/qualification.json"
+  },
+  "r13_product_ruling": "Use existing site Lens for Macro contextual explanations; full Market Guide keeps richer guide/detail UI. Remove Look up row only after all six entries have verified in-context replacements.",
+  "r14_paper": {
+    "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+    "file_name": "Mastermind · Market Guide · Re-envisioning",
+    "url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-1-0",
+    "baseline_artboards_preserved": 20,
+    "r14_artboards": [
+      "1RQ-1",
+      "1UC-1",
+      "1WO-1",
+      "1Z0-1",
+      "21C-1",
+      "224-1"
+    ],
+    "evidence_head": "36ec57e6fa779cefe8f05616dc7f859598b3a8af",
+    "manifest": "r14-paper/manifest.json",
+    "production_claim": false
+  },
+  "r14_current_base": {
+    "macro_main": "ad38f308945cdcd36a01111e88009ab895f9367c",
+    "merge_tree": "71cd1ba6dff2b583a172ad6ea2c1fd72b316a896",
+    "conflict_free": true,
+    "material_new_dependency": "#7935 issued warning duration; neutral context only; no duration on calm/watch"
+  },
+  "r14_design_ruling": "Question cards should disclose the primary answer they open; contextual help should foreground the caller current reading, then interpretation, then limitation. Macro production should reuse Lens and remove LOOK UP only after all six contextual replacements are proven.",
+  "r15_paper": {
+    "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+    "artboards": [
+      "244-1",
+      "26W-1",
+      "2AP-1"
+    ],
+    "evidence_head": "5ebe4fbb935bc380fa92b408b4641a1fb24c83d2",
+    "manifest": "r15-paper/manifest.json",
+    "design_contract": "Exact match becomes one primary answer; zero-match explains recovery and suggests real signal names; no natural-language capability is implied.",
+    "production_claim": false
+  },
+  "r15_design_ruling": "Search is an answer workflow, not a filtered glossary. Exact unambiguous matches should foreground one explanation; ambiguous names must expose a choice; zero matches must recover explicitly; natural-language/live-value lookup stays unclaimed until independently validated."
+}

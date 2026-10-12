@@ -1,0 +1,73 @@
+(
+    <div style={{ backgroundColor: 'var(--dark-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '520px' }}>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '24px', paddingBlock: '24px', paddingInline: '28px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+            快速解读
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '24px', lineHeight: '24px' }}>
+            ×
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '28px', fontWeight: 600, letterSpacing: '-0.03em', lineHeight: '36px' }}>
+            市场状态分
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '17px', lineHeight: '26px', maxWidth: '720px' }}>
+            用一个读数，概括当前美股环境的支持程度。
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '32px', width: '100%' }}>
+          <div style={{ backgroundColor: 'var(--dark-panel2)', borderColor: 'var(--dark-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '20px', minWidth: '0px', padding: '20px' }}>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.08em', lineHeight: '24px' }}>
+                怎么看
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '24px' }}>
+                仅作示意
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '4px', width: '100%' }}>
+              <div style={{ borderRadius: '8px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '9px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  较低
+                </div>
+              </div>
+              <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '8px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '9px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  分化
+                </div>
+              </div>
+              <div style={{ borderRadius: '8px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '9px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  较高
+                </div>
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 600, letterSpacing: '-0.025em', lineHeight: '34px' }}>
+              分项不一致，先看拆解。
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', maxWidth: '640px' }}>
+              部分输入支持市场，另一些并不支持。只看总分，会错过这种分歧。
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '24px', width: '100%' }}>
+            <div style={{ borderLeftColor: 'var(--dark-warn)', borderLeftStyle: 'solid', borderLeftWidth: '3px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '16px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                不是预测。
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>
+                高分不保证上涨。它描述的是当前环境。
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+          打开完整指南 →
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+          关闭后，回到刚才的位置。
+        </div>
+      </div>
+    </div>
+  )

@@ -1,0 +1,200 @@
+(
+    <div style={{ backgroundColor: 'var(--dark-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>
+      <div style={{ alignItems: 'center', backgroundColor: 'var(--dark-panel)', borderBottomColor: 'var(--dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '64px', justifyContent: 'space-between', paddingInline: '40px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px' }}>
+          <div style={{ alignItems: 'center', backgroundColor: 'var(--dark-info)', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '28px', justifyContent: 'center', width: '28px' }}>
+            <div style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 700, lineHeight: '24px' }}>
+              M
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', lineHeight: '24px' }}>
+            MASTERMIND
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+          美国 中国 香港 加拿大 研究
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+          中文 ☼
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '28px', paddingBlock: '32px', paddingInline: '80px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+            ← 宏观看板
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.08em', lineHeight: '24px' }}>
+            学习指南 · 非实时数据
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '46px', fontWeight: 600, letterSpacing: '-0.035em', lineHeight: '56px' }}>
+            读懂每一个市场信号。
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>
+            看懂含义，理解变化，回到看板应用。
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '14px', height: '56px', paddingInline: '18px', width: '100%' }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+            <circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="var(--dark-muted)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="m16 16 5 5" fill="none" stroke="var(--dark-muted)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>
+            搜索指标，或你想了解的问题…
+          </div>
+          <div style={{ borderColor: 'var(--dark-line)', borderRadius: '4px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', paddingInline: '8px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+              /
+            </div>
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+            你想了解什么？
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', width: '100%' }}>
+            <div style={{ alignItems: 'start', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '20px', minWidth: '0px', padding: '22px', width: '0px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+                <path d="M4 18V13M10 18V9M16 18V5M22 18V2" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '5px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                  市场有多强？
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+                  趋势、参与度与整体状态。
+                </div>
+              </div>
+            </div>
+            <div style={{ alignItems: 'start', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '20px', minWidth: '0px', padding: '22px', width: '0px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+                <path d="M12 3 21 7v6c0 5-9 10-9 10S3 18 3 13V7Z" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 8v5m0 3v1" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '5px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                  风险正在累积吗？
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+                  压力、波动与预警信号。
+                </div>
+              </div>
+            </div>
+            <div style={{ alignItems: 'start', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '20px', minWidth: '0px', padding: '22px', width: '0px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+                <path d="M12 2v20M2 12h20" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m4 8 4-4m8 16 4-4" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '5px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                  什么在推动市场环境？
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+                  增长、通胀与金融条件。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--dark-panel2)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '48px', padding: '32px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '12px', minWidth: '0px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', lineHeight: '24px' }}>
+              先看整体
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '28px', fontWeight: 600, letterSpacing: '-0.025em', lineHeight: '36px' }}>
+              六项输入，一个整体判断。
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', maxWidth: '400px' }}>
+              市场状态分，将市场的多个侧面汇成一个读数。
+            </div>
+            <div style={{ boxSizing: 'border-box', paddingTop: '8px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+                了解市场状态分 →
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+              快速解读
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '18px', minWidth: '0px', width: '0px' }}>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.08em', lineHeight: '24px' }}>
+                看懂组合
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '24px' }}>
+                仅作示意
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', gap: '8px', width: '100%' }}>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    趋势
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    风险偏好
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    波动率
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', gap: '8px', width: '100%' }}>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    市场广度
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    流动性
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    压力
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center', width: '100%' }}>
+                综合观察 → 市场状态分
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '4px', width: '100%' }}>
+              <div style={{ borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '8px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  承压
+                </div>
+              </div>
+              <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '8px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  分化
+                </div>
+              </div>
+              <div style={{ borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '8px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  支持
+                </div>
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+              分项不一致时，别只看总分。
+            </div>
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '24px' }}>
+            想查某个术语？
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+            浏览全部指标 →
+          </div>
+        </div>
+      </div>
+    </div>
+  )

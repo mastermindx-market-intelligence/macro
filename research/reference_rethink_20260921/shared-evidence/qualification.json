@@ -1,0 +1,41 @@
+{
+  "scope": "Synthetic unit and static HTML qualification of the shared guide candidate. NOT browser, accessibility, source-backed real-registry, hosted CI, or production proof.",
+  "subject_commit": "4154dc2534e2ee696a6bc55297b2e8090bc2f721",
+  "repository": "mastermindx-market-intelligence/macro",
+  "branch": "claude/reference-rethink-20260921",
+  "pr": 7647,
+  "environment": {"python": "3.13.5", "node": "v22.16.0"},
+  "source_binding": "VERIFIED: all 13 local source/test/fixture/CSS Git blob hashes equal GitHub fetch_file readback at subject_commit.",
+  "input_kind": "eight synthetic entries and three synthetic coverage examples",
+  "results": {"python_tests": 67, "node_reader_tests": 28, "node_dom_adapter_tests": 19, "total_tests": 114},
+  "runs": [
+    {"command": ["python3", "-m", "pytest", "-q", "tests/test_market_guide.py", "tests/test_market_guide_preview.py"], "returncode": 0, "passed": 67, "log": "python.log", "log_sha256": "ccdd043c32edc78c22384b8d9c13c6b11be37a4f1cd6fa34f437bc6fa2dcfdda"},
+    {"command": ["node", "--test", "tests/test_market_guide_client.cjs", "tests/test_market_guide_view.cjs"], "returncode": 0, "passed": 47, "log": "node.log", "log_sha256": "f5052e275e3a1a6133a7cd2b8d45f11a8c4791b3d1ea2564f1bbfbcfd8653015"},
+    {"command": ["node", "--check", "research/reference_rethink_20260921/guide-client.js"], "returncode": 0, "passed": null, "log": "client-syntax.log", "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+    {"command": ["node", "--check", "research/reference_rethink_20260921/guide-view.js"], "returncode": 0, "passed": null, "log": "view-syntax.log", "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+  ],
+  "files": [
+    {"path": "lib/market_guide.py", "size": 12851, "git_blob_sha": "d3a2783d6a884fcb64765e0d70473102f899e331", "sha256": "f88c9628042e5a4d10076e0b01b43e4d160e7fca0ea52d8c6cc8eab9d7792cb3"},
+    {"path": "research/reference_rethink_20260921/guide-client.js", "size": 10760, "git_blob_sha": "180d774d1224a712b3a9bf3dbc5c98c196dc19c3", "sha256": "fbf4c1696f06b631f8938444a1b9d45aa97cca514fda216bb00ddfe1554fbce1"},
+    {"path": "research/reference_rethink_20260921/guide-presentation.json", "size": 1830, "git_blob_sha": "17748a466502dc837524ac06ebeaa2ced06ea257", "sha256": "39334bc8b469ece3cd4e32aa7bd28121e91f4d84ee18bf68547e454a7cbbeef2"},
+    {"path": "research/reference_rethink_20260921/guide-view.css", "size": 1194, "git_blob_sha": "10347fa95fbd1a022f96b9cc8c0191fa0bce32cb", "sha256": "5105f7707bda298784841e6d772ca1205d37ec0ca93b23fe302d21443660e7b0"},
+    {"path": "research/reference_rethink_20260921/guide-view.js", "size": 18334, "git_blob_sha": "cb4e7568e2c41648340d7419aaacd1b3954f8fb0", "sha256": "6a729ef4459bc89ced43dad7886d32d1a22ca5d4617e3a7ad6e34464dc27c91d"},
+    {"path": "research/reference_rethink_20260921/prototype.css", "size": 8652, "git_blob_sha": "ea5cc35de5768cd260bd845bcde04ca1020b95d8", "sha256": "e8ee98c61e5135c8d931ded82a3efb9425bc6adb214e4c8f82a75ad9a6f129fc"},
+    {"path": "research/reference_rethink_20260921/render_shared_preview.py", "size": 6467, "git_blob_sha": "4fda5b23837729f54b61a47418b83c375ffbd5b9", "sha256": "a96257890899649dda8646004f941c8292bb62269848b6b1d921ef3312b020e6"},
+    {"path": "tests/fixtures/market-guide/compile_fixture.py", "size": 800, "git_blob_sha": "4d4af0d7f9ec24fb6f28330af798dda781675855", "sha256": "bb7edf47452553d079fe3c7eeeddc09606a6e4298e500f33b79f7845012f184c"},
+    {"path": "tests/fixtures/market-guide/synthetic-source.json", "size": 10595, "git_blob_sha": "414a7de0eb7417697527694aa9605cd301309570", "sha256": "acb84f8b40edcc830fe95b709a8b14b2c57a8ccda8b0eb279a5d4237d8ed24e0"},
+    {"path": "tests/test_market_guide.py", "size": 12891, "git_blob_sha": "22936179cc93821031186621893d735479cd96a0", "sha256": "4f5b93d883f6cdc7c1843102505064b6d3c623c2c71a8e45c1305e8b05d6ac82"},
+    {"path": "tests/test_market_guide_client.cjs", "size": 5518, "git_blob_sha": "8abac1cc27d10aa2a852bb348075150a4f26eebe", "sha256": "87e6a2907efd8cbd39a351272ed0692a961a680c64d77960b9c70f14e1b321c4"},
+    {"path": "tests/test_market_guide_preview.py", "size": 4896, "git_blob_sha": "2b2b13c077629783c6df36108320ca7ad1617620", "sha256": "c7f703e8042336f836fe0ec50fb80bfa33ff669cecdbfd69c1349cd801f4fd68"},
+    {"path": "tests/test_market_guide_view.cjs", "size": 11984, "git_blob_sha": "837ebbd7e96a75fad8c5c3b735fb6e9339acc100", "sha256": "185ece6e74b78987115c90173e78610c457f91a650df6bce75a6166d604eb88f"}
+  ],
+  "limitations": [
+    "Real 46-entry registry and rendered owner-page qualification not run for this candidate.",
+    "Node view tests use an explicitly mocked DOM, not a browser.",
+    "New browser navigation was blocked with ERR_BLOCKED_BY_ADMINISTRATOR; no browser evidence from this turn.",
+    "Earlier prototype browser screenshots and 16 check groups bind only the original prototype, not this code.",
+    "No independent visual approval, hosted CI success, merge, deployment or user acceptance claimed."
+  ],
+  "proof_ceiling": "BUILT_NOT_PROVEN: shared candidate code passes isolated tests; no actual-site release.",
+  "logs_location": "Full stdout/stderr logs retained in the downloadable source-and-evidence archive; this receipt binds their SHA-256 digests."
+}
