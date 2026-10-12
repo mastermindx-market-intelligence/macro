@@ -4,6 +4,10 @@ Cross-source clustering is intentionally asymmetric toward false negatives: sour
 identity is exact; fuzzy joining requires a shared canonical security, compatible
 event family, a bounded time window, compatible material discriminators, and an
 immutable-anchor title match.
+
+v2 keeps that bias and stops merging different amount scales (million versus
+billion, 5bn versus 9bn), compact or spelled fiscal periods (2Q, 2Q25, second
+quarter), and contraction negation (isn't, cannot).
 """
 from __future__ import annotations
 
@@ -13,6 +17,10 @@ import hashlib
 import re
 
 from engine import qkernel
+
+# Discriminator behavior changed in v2 (word/stuck amount scales, compact and
+# spelled fiscal periods, contraction negation). new_cluster_id is unchanged.
+CLUSTER_POLICY_VERSION = "qbus_news_cluster.v2"
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,13 +65,34 @@ class ClusterDecision:
     candidate_truncated: bool
 
 
+# Single-letter scales stay on their own alternative so "$5B" is not rewritten
+# onto "$5 billion" / "$5bn" (that collapse would start joining pairs the prior
+# tokens kept apart). Stuck forms (5bn, 5mm) and words (5 million) are captured
+# only so two different scales stop comparing as the same digits.
 _NUM_RE = re.compile(
-    r"(?<![A-Za-z0-9])(?:[$€£])?\d+(?:[.,]\d+)*(?:\s?(?:%|[KMBT]))?\b",
+    r"(?<![A-Za-z0-9])(?:[$€£])?\d+(?:[.,]\d+)*"
+    r"(?:"
+    r"(?:\s?(?:%|[KMBT]))(?=\b)"
+    r"|"
+    r"\s*(?:million|billion|trillion|thousand|bln|mln|trn|bn|mn|mm|tn)"
+    r")?\b",
     re.I,
 )
-_PERIOD_RE = re.compile(r"\b(?:Q[1-4]|H[12]|FY\s*\d{2,4}|CY\s*\d{2,4})\b", re.I)
+_PERIOD_RE = re.compile(
+    r"\b(?:Q[1-4]|[1-4]Q(?:\d{2,4})?|H[12]|FY\s*\d{2,4}|CY\s*\d{2,4})\b",
+    re.I,
+)
+_COMPACT_QUARTER_RE = re.compile(r"([1-4])Q(\d{2,4})?")
+_SPELLED_QUARTER_RE = (
+    ("Q1", re.compile(r"\b(?:first|1st)[\s-]+quarters?\b", re.I)),
+    ("Q2", re.compile(r"\b(?:second|2nd)[\s-]+quarters?\b", re.I)),
+    ("Q3", re.compile(r"\b(?:third|3rd)[\s-]+quarters?\b", re.I)),
+    ("Q4", re.compile(r"\b(?:fourth|4th)[\s-]+quarters?\b", re.I)),
+)
+# "n't" has no leading word boundary: in "isn't" the n is still inside the stem.
 _NEG_RE = re.compile(
-    r"\b(?:not|no|denies?|rejects?|fails?|without|won't|will not)\b", re.I
+    r"\b(?:not|no|denies?|rejects?|fails?|without|won't|will not|cannot)\b|n't\b",
+    re.I,
 )
 _ACTIONS = (
     (
@@ -111,9 +140,29 @@ def _numbers(title: str) -> frozenset[str]:
 
 
 def _periods(title: str) -> frozenset[str]:
-    return frozenset(
-        re.sub(r"\s+", "", x).upper() for x in _PERIOD_RE.findall(title)
+    found: list[str] = []
+    for raw in _PERIOD_RE.findall(title):
+        token = re.sub(r"\s+", "", raw).upper()
+        compact = _COMPACT_QUARTER_RE.fullmatch(token)
+        if compact:
+            found.append("Q" + compact.group(1))
+            if compact.group(2):
+                found.append("FY" + compact.group(2))
+        else:
+            found.append(token)
+    for label, rx in _SPELLED_QUARTER_RE:
+        if rx.search(title):
+            found.append(label)
+    return frozenset(found)
+
+
+def _negated(title: str) -> bool:
+    folded = (
+        title.replace("\u2019", "'")
+        .replace("\u2018", "'")
+        .replace("\u02bc", "'")
     )
+    return bool(_NEG_RE.search(folded))
 
 
 def _actions(title: str) -> frozenset[str]:
@@ -137,7 +186,7 @@ def _compatible(a: str, b: str) -> bool:
     pa, pb = _periods(a), _periods(b)
     if pa and pb and pa != pb:
         return False
-    if bool(_NEG_RE.search(a)) != bool(_NEG_RE.search(b)):
+    if _negated(a) != _negated(b):
         return False
     aa, ab = _actions(a), _actions(b)
     if aa and ab and not (aa & ab):
