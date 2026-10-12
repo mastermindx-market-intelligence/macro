@@ -3104,3 +3104,28 @@ html[data-theme="light"] .ff-revisions-table tr.is-restated td:last-child {
   cursor: pointer;
 }
 .ff-revisions-retry button:hover { border-color: var(--gbtn-brd-hover); background: var(--gbtn-bg-hover); }
+
+/* ── P2 statement tree (spec row 6) ────────────────────────────────────────
+   As-reported labels lead, values are source controls, and the normalized
+   state table stays as the honest fallback when the tree cannot be opened. */
+.ff-statement-notice {
+  margin: 0 0 12px;
+  padding: 9px 11px;
+  border: 1px solid var(--ff-border);
+  border-radius: 9px;
+  color: var(--muted);
+  background: var(--ff-soft);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+.ff-statement-block { margin-top: 14px; }
+.ff-statement-block h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: -.015em;
+}
+.ff-statement-table td.ff-statement-label {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

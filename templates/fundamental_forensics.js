@@ -52,6 +52,8 @@
     financialToken: 0,
     financial: { phase: 'idle' },
     statementColumns: [],
+    statements: { phase: 'idle' },
+    statementCells: [],
     receipt: {
       phase: 'idle',
       requestToken: 0,
@@ -1009,6 +1011,7 @@
     state.evidenceKind = 'finding';
     resetReceiptState();
     resetFinancialState();
+    resetStatementsState();
     ui.search.value = resolved;
     ui.searchClear.hidden = false;
     closeSearch();
@@ -1597,6 +1600,22 @@
       cell.excerpt = String(node.display_excerpt || node.source_excerpt || '').trim();
       break;
     }
+    // Statement-tree cells resolve against the flat cell list the tree
+    // renderer collected; the as-reported label is the plain-word title.
+    if (!cell.titlePair) {
+      var statementCells = Array.isArray(state.statementCells) ? state.statementCells : [];
+      for (var cellIndex = 0; cellIndex < statementCells.length; cellIndex += 1) {
+        var entry = statementCells[cellIndex];
+        var byOccurrence = cell.occurrenceId && entry.occurrenceId === cell.occurrenceId;
+        var byRoot = cell.rootCellId && entry.rootCellId === cell.rootCellId;
+        if (!byOccurrence && !byRoot) continue;
+        cell.metricId = entry.metricId;
+        cell.titlePair = entry.label ? pair(entry.label, entry.label) : '';
+        cell.exactText = entry.value;
+        cell.unit = entry.unit;
+        break;
+      }
+    }
     // The revisions package supplies the three vintages verbatim for the
     // drawer; glance compacts, the drawer prints bytes.
     cell.revisionsRow = revisionsRowFor(cell.metricId);
@@ -1890,6 +1909,151 @@
     var disabled = !state.asOfDate && !clocksKnown;
     ui.asofLatest.disabled = disabled;
     ui.asofInput.disabled = disabled;
+  }
+
+  // ── Statement tree (§3.5 statements POST, spec row 6) ───────────────────
+  // Accession comes from the disclosure layer's current filing or the query
+  // provenance — never guessed from a ticker or a period label.
+  function currentAccession() {
+    var current = disclosureDocuments(company()).find(function (document) {
+      return document._filing_role === 'current';
+    });
+    if (current && (current.accession || current.accession_number)) {
+      return String(current.accession || current.accession_number);
+    }
+    var finding = selectedDisclosureFinding();
+    if (finding && finding.current_accession) return String(finding.current_accession);
+    var nodes = Array.isArray(state.queryNodes) ? state.queryNodes : [];
+    for (var index = 0; index < nodes.length; index += 1) {
+      var provenance = objectValue(nodes[index] && nodes[index].provenance) || {};
+      if (provenance.accession) return String(provenance.accession);
+    }
+    return '';
+  }
+
+  function resetStatementsState() {
+    state.statements = { phase: 'idle' };
+    state.statementCells = [];
+    state.statementColumns = [];
+  }
+
+  function ensureStatements() {
+    if (state.tab !== 'statements') return;
+    var target = company();
+    if (!target) return;
+    if (state.statements.phase === 'loading' || state.statements.phase === 'ready') return;
+    var entityId = String(target.entity_id || '');
+    var accession = currentAccession();
+    if (!entityId || !accession) {
+      state.statements = { phase: 'unavailable' };
+      renderStatementTree();
+      return;
+    }
+    var token = state.financialToken + 1;
+    state.financialToken = token;
+    state.statements = { phase: 'loading' };
+    renderStatementTree();
+    financialPost(FINANCIAL_STATEMENTS_URL, {
+      schema: 'fundamental_forensics.financial_statement_request/v1',
+      entity_id: entityId,
+      accession: accession
+    }).then(function (payload) {
+      if (token !== state.financialToken) return;
+      var statements = Array.isArray(payload && payload.statements) ? payload.statements.filter(objectValue) : [];
+      state.statements = { phase: statements.length ? 'ready' : 'empty', statements: statements };
+      state.statementCells = [];
+      var columns = [];
+      statements.forEach(function (statement) {
+        (Array.isArray(statement.columns) ? statement.columns : []).forEach(function (column) {
+          if (objectValue(column) && column.start && column.end) {
+            columns.push({ label: column.label, start: column.start, end: column.end });
+          }
+        });
+      });
+      state.statementColumns = columns;
+      renderStatementTree();
+    }).catch(function (error) {
+      if (token !== state.financialToken) return;
+      if (error && (error.status === 401 || error.status === 403)) {
+        showLoadError(error);
+        return;
+      }
+      state.statements = { phase: 'error' };
+      renderStatementTree();
+    });
+  }
+
+  function statementCellControl(cell, row) {
+    cell = objectValue(cell) || {};
+    var quality = String(cell.quality_state || '');
+    var exact = typeof cell.value === 'string' ? cell.value : '';
+    // A38/AM1: exact bytes render only as canonical decimal text; a JSON
+    // number or a non-available quality state renders the disabled control.
+    if (quality !== 'available' || !exact) {
+      return sourceControlHtml({ kind: 'statement' });
+    }
+    var control = controlFromStatementCell(cell, formatValue(cell.value, 'currency'));
+    control.metricId = String(row.standardized_metric_id || '');
+    state.statementCells.push({
+      occurrenceId: control.occurrenceId,
+      rootCellId: control.rootCellId,
+      label: String(row.as_reported_label || ''),
+      metricId: control.metricId,
+      value: exact,
+      unit: cell.unit == null ? '' : String(cell.unit),
+      accession: control.accession
+    });
+    return sourceControlHtml(control);
+  }
+
+  // S0 as-reported labels lead; spans come from each cell's source_receipt.
+  function renderStatementTree() {
+    if (!ui.statements) return;
+    var statements = state.statements || { phase: 'idle' };
+    if (statements.phase === 'idle' || statements.phase === 'unavailable' || statements.phase === 'error' || statements.phase === 'empty') {
+      var target = company() || {};
+      renderStatements(target);
+      var reason = statements.phase === 'unavailable'
+        ? pair('Issuer identity or filing accession unavailable, so the as-reported statement tree cannot be opened. The normalized state table below is unchanged.',
+               '发行人标识或财报文件编号不可用，因此无法打开按披露原样的报表树；下方标准化状态表保持不变。')
+        : statements.phase === 'error'
+          ? pair('The statement tree is temporarily unavailable, so the normalized state table is shown unchanged.',
+                 '报表树暂不可用，因此按原样显示标准化状态表。')
+          : statements.phase === 'empty'
+            ? pair('This filing carries no primary statements, so the normalized state table is shown unchanged.',
+                   '该财报没有主要报表，因此按原样显示标准化状态表。')
+            : '';
+      if (reason) {
+        ui.statements.insertAdjacentHTML('afterbegin', '<p class="ff-statement-notice">' + reason + '</p>');
+      }
+      return;
+    }
+    if (statements.phase === 'loading') {
+      ui.statements.innerHTML = '<div class="ff-loading" role="status"><span class="ff-loading-dot" aria-hidden="true"></span>' +
+        pair('Loading the as-reported statement tree…', '正在载入按披露原样的报表树…') + '</div>';
+      return;
+    }
+    state.statementCells = [];
+    var blocks = statements.statements.map(function (statement) {
+      var columns = Array.isArray(statement.columns) ? statement.columns.filter(objectValue) : [];
+      var rows = Array.isArray(statement.rows) ? statement.rows.filter(objectValue) : [];
+      var header = '<th>' + pair('Line item / 报表项目', 'Line item / 报表项目') + '</th>' + columns.map(function (column) {
+        return '<th>' + esc(column.label || '—') + '</th>';
+      }).join('');
+      var body = rows.map(function (row) {
+        var cells = Array.isArray(row.cells) ? row.cells : [];
+        var label = '<td data-label-en="Line item" data-label-zh="报表项目" class="ff-statement-label">' + esc(row.as_reported_label || '—') + '</td>';
+        var filled = columns.map(function (column, index) {
+          return '<td data-label-en="' + esc(column.label || '—') + '" data-label-zh="' + esc(column.label || '—') + '">' +
+            statementCellControl(cells[index], row) + '</td>';
+        }).join('');
+        return '<tr>' + label + filled + '</tr>';
+      }).join('');
+      return '<section class="ff-statement-block"><h3>' + esc(statement.title || statement.statement_type || 'Statement') + '</h3>' +
+        '<div class="ff-table-wrap"><table class="ff-table ff-statement-table"><thead><tr>' + header +
+        '</tr></thead><tbody>' + body + '</tbody></table></div></section>';
+    }).join('');
+    ui.statements.innerHTML = blocks;
   }
 
   function renderCellEvidence(cell) {
@@ -3558,6 +3722,10 @@
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
       ensureFinancialData();
+    } else if (tab === 'statements') {
+      state.evidenceKind = 'view';
+      renderTabEvidenceEmpty(tab);
+      ensureStatements();
     } else {
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
