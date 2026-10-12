@@ -1,11 +1,10 @@
 {
   "schema": "mastermind.p0_evidence.v2",
-  "generated_at": "2026-10-12T04:03:54.497Z",
+  "generated_at": "2026-10-12T04:40:08.964Z",
   "outcome": "captured",
   "tool": {
     "path": "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/p1a-normal-surface-capture-20261012.cjs",
-    "module_sha256": "8957257d193714a9e1d3a84abf6aaacfef7ddc92772d8d5b625de6e226844bea",
-    "retained_recipe_copy": "mockups/evidence/prophet-p1a-normal-surfaces-20261012/capture.cjs"
+    "module_sha256": "8957257d193714a9e1d3a84abf6aaacfef7ddc92772d8d5b625de6e226844bea"
   },
   "claims": {
     "production": "none",
@@ -108,7 +107,7 @@
           "file": "us-coverage-en-dark-390.png",
           "width": 390,
           "height": 844,
-          "sha256": "7e8f5fa7a8cc83399776c9e322fe62faffc0a38d5922895682c73f37a6f31202",
+          "sha256": "38fde6fbce03ecab05b564083df5d053d87ad2bba6a081ea19cd5c4b21e16b3f",
           "byte_length": 94707,
           "actual": {
             "theme": "dark",
@@ -191,8 +190,8 @@
           "file": "us-coverage-en-light-390.png",
           "width": 390,
           "height": 844,
-          "sha256": "eb7651f7e58a78839543d8119acd7b0c614534b16cbecebfc7f6424938494187",
-          "byte_length": 95405,
+          "sha256": "2a0458c2242b3f335c93b1c986f719c515920f443f4634d115841e6a3fdfabdd",
+          "byte_length": 95397,
           "actual": {
             "theme": "light",
             "locale": "en",
@@ -239,15 +238,15 @@
             "relationStates": [
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               }
             ],
             "coverage": []
@@ -285,7 +284,7 @@
             "scrollWidth": 390,
             "relationStates": [],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n230\n权限总数\n暂缺\n当前筛选\n0\n已显示\n0\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -322,15 +321,15 @@
             "relationStates": [
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               }
             ],
             "coverage": []
@@ -368,7 +367,7 @@
             "scrollWidth": 390,
             "relationStates": [],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n230\n权限总数\n暂缺\n当前筛选\n0\n已显示\n0\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -571,15 +570,15 @@
             "relationStates": [
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               }
             ],
             "coverage": []
@@ -617,7 +616,7 @@
             "scrollWidth": 1440,
             "relationStates": [],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n230\n权限总数\n暂缺\n当前筛选\n0\n已显示\n0\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -654,15 +653,15 @@
             "relationStates": [
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               },
               {
                 "state": "NONE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u65e0\u76f8\u5173\u8ba1\u5212"
+                "text": "计划关联\n无相关计划"
               }
             ],
             "coverage": []
@@ -700,7 +699,7 @@
             "scrollWidth": 1440,
             "relationStates": [],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n230\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n0\n\u5df2\u663e\u793a\n0\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n230\n权限总数\n暂缺\n当前筛选\n0\n已显示\n0\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -763,19 +762,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
@@ -836,19 +835,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -907,19 +906,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
@@ -980,19 +979,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -1031,43 +1030,43 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n17\n权限总数\n暂缺\n当前筛选\n5\n已显示\n5\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -1104,39 +1103,39 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -1175,43 +1174,43 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n17\n权限总数\n暂缺\n当前筛选\n5\n已显示\n5\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -1248,39 +1247,39 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -1339,19 +1338,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
@@ -1412,19 +1411,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -1483,19 +1482,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
@@ -1556,19 +1555,19 @@
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -1607,43 +1606,43 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n17\n权限总数\n暂缺\n当前筛选\n5\n已显示\n5\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -1680,39 +1679,39 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -1751,43 +1750,43 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": [
-              "\u751f\u4ea7\u603b\u6570\n17\n\u6743\u9650\u603b\u6570\n\u6682\u7f3a\n\u5f53\u524d\u7b5b\u9009\n5\n\u5df2\u663e\u793a\n5\n\u6240\u6709\u8005\u5b57\u6bb5\u6682\u7f3a: \u6743\u9650\u603b\u6570"
+              "生产总数\n17\n权限总数\n暂缺\n当前筛选\n5\n已显示\n5\n所有者字段暂缺: 权限总数"
             ]
           },
           "console_exceptions": []
@@ -1824,39 +1823,39 @@
             "relationStates": [
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "\u8ba1\u5212\u5173\u8054\n\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "计划关联\n本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               },
               {
                 "state": "UNAVAILABLE",
-                "text": "Plan relation\u8ba1\u5212\u5173\u8054Plan owner not available for this market\u672c\u5e02\u573a\u6682\u65e0\u8ba1\u5212\u5173\u7cfb\u6240\u6709\u8005"
+                "text": "Plan relation计划关联Plan owner not available for this market本市场暂无计划关系所有者"
               }
             ],
             "coverage": []
@@ -1880,26 +1879,26 @@
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/tier_preview.js": "d80100db5f8212a2260ef3493872ed58aeac1a6a35df2f177a323f75540edd7e",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/chart_i18n.js": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/timemachine.js": "92798ed78db8b33f238975e693b481137e33d4095aa3aa6bc81a45c9cf8bab9f",
-    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/tablesort.js": "995ddaf84cf481b2fc94a160fc755f9c9c6f3bd1b838dc7872f22c0e5a321b57",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/tablesort.js": "dc424cb1c002a92c4e2e0b38771ef501960040fc372daeaf6777142f0013f8e0",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/risk_state_live.js": "2b9d32d5ca0be24808c7fd9691c1224575cf2904d0fa8c582c5ed4466bca96dd",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/release_publications_live.js": "d9a19340843ef489606a3cd19f24a16e68ef33ff9966f71a814c6e4871646767",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/dashboard-icons.js": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
-    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live/basket_pulse.json": "9ffbe879ca70f5b5de304a0dc36978cb17b55291b4642b9782ff2c22d044a314",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/basketdata/baskets.json": "0a352d344265e86b353c88c36c8b400f58e4c7e393e3b10251b10b5fe4ff1150",
-    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live/breadth.json": "5c195802e6e24c484da11a8391ba908794c84b851d4a313ede8c8011c41faea7",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/live/risk_state.json": "039e8e87a5a8a01641efc1e5ea65e9de10875f0100f60c017e31c38c676a35f3",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
     "/Volumes/Mastermind/evidence/prophet-r6-local-20261008-01a11e89/p1a-composed-coverage-fixture-20261012/canada_stocks.html": "af1fbd0bc0ff864bdd07d9d1dcd7329cb3f9ec3e9c0414ee6dc6ce4533d8e7e3",
     "/Volumes/Mastermind/agent-workspaces/macro/web/prophet-four-market-p1a-20261004-sol-001/site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",

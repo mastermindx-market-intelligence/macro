@@ -91,26 +91,38 @@ verified:
     among owned paths. Premium conflict was only upstream built time; exact newer canonical native payload
     retained. All 1096 unrelated build outputs archived and byte-verified before narrow restoration; no
     reset or stash.
+- claim: The third composition retains the upstream table-filter fix and refreshes its actual browser evidence.
+  command: Canonical retained-VM stocks renderer; actual HK/Canada browser verifier; normal-surface
+    capture; pytest receipt and shipped checks; node --test tests/js/tablesort_browser.test.cjs.
+  result: Composed with main 99b8a6e107d82d8178db67a4b5d0b85888d9c95e. Forty-eight real images rebound
+    to loaded tablesort SHA dc424cb1c002a92c4e2e0b38771ef501960040fc372daeaf6777142f0013f8e0.
+    Nine affected receipt/artifact checks passed (87 deselected); table-sort browser suite 30 passed,
+    two explicit composed-only skips. Both planner checks passed in 202.34 seconds. Historical
+    evidence and reviewed application-source bytes are retained.
 unverified:
-- claim: Qualified visual adjudication, current-composition planner proof, hosted exact-head CI, source
-    release and authenticated four-market production acceptance.
-  what_would_verify: Adjudicate actual pixels at the published draft, consume the active planner execution
-    and exact-head semantic CI/gates, then normal merge, actual publication/adoption and required live
-    journeys.
+- claim: Qualified visual adjudication, hosted exact-head CI, source release and authenticated four-market
+    production acceptance.
+  what_would_verify: Human visual approval of the actual committed matrix, or a separately admitted
+    qualified Opus reviewer, followed by exact-head semantic CI/gates, normal merge, publication/adoption
+    and required live journeys.
 unresolved:
 - Pre-fix composition reviews remain consumed scoped evidence; later findings are preserved and repaired.
   Coverage markup and final label-tail reviews are accepted for their exact source/DOM deltas. The latter
   independently verified excerpts and narrow dependency files, with full build/test file hashes retained
   as parent bindings. Parent exact-source test execution remains separate. No source review proves visual
   taste or production.
-- Original integration is composed with pinned main 17afadc7ed8ab82ec3b49f8d88ffd3a193bee58c. Normal draft
-  publication, qualified visual review and exact-head release gates remain. Seven concrete CI dependencies
-  are retained alongside upstream additions; the new materialized planner check is active.
+- Original integration was published at 2196da598cb74b89a4a8d9157fc432b3b8029260 and then composed
+  with the newly released Daily Brief main 99b8a6e107d82d8178db67a4b5d0b85888d9c95e. Seven concrete
+  CI dependencies remain on existing jobs; both affected planner checks passed. Qualified visual
+  judgment and hosted exact-head release gates remain.
+- The existing claude-native Opus review route returned no eligible host before launch. The incumbent
+  Fabric owner confirmed that none is admitted. Do not retry, enroll a host or substitute an unqualified
+  worker. The human/Opus visual requirement remains; no visual approval has been inferred.
 - HK/China adoption depends on actual accepted shared P1a release; Canada native Plan remains unavailable
   until its real owner exists.
 next_actions:
-- Finish qualified visual judgment over the concrete draft and consume the existing current-composition
-  planner proof; retain scoped source acceptance and exact parent test evidence.
+- Obtain qualified visual judgment over the concrete published screenshots; retain the completed
+  scoped source acceptance, current planner checks and exact parent test evidence.
 - Finish original current-main integration and normal exact-head source release, then continue dependent
   owner-native integration and authenticated journeys.
 do_not_redo:

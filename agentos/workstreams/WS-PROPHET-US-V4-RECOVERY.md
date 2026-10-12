@@ -675,6 +675,16 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
+  2026-10-12 04:33 continuation: original DailyBrief8249 is source-released
+  at99b8a6e107d8; exact-head CI88jobs311passing0inherited/blocking, reviewed
+  source/dependencies and composition/squash/fetched-main parity verified.
+  Original P1a8444 published2196da598cb7; compose newly accepted main and
+  recapture actual browser evidence for upstream tablesort asset change.
+  Qualified Opus visual request has no eligible claude-native host; no reviewer
+  launched or approval claimed. Incumbent Fabric owner received the exact
+  capability boundary. Both human reopen approvals remain received. Preserve
+  normal release and product integration obligations. Earlier prose is history.
+  Historical source checkpoints retained below.
   2026-10-12 human-approved four-market continuation: use
   PROPHET-US-V4-RECOVERY-2026-10-12-p1a-composed-repair.md and programme6107291350.
   Original P1a8444 current-main integration and original DailyBrief8249 canonical
@@ -686,6 +696,28 @@ next_action: >
   source/browser/review and exact-head release, then dependent native owner
   integration and authenticated four-market acceptance. Earlier status below is
   historical and does not reopen closed B03/Return or other refused effects.
+  2026-10-12 02:50 source progress: independent object comparison PR8874 is
+  normally squash-merged to a278075e6197 with 88 logical CI jobs and 310 passing
+  proof steps, zero blocking or inherited failures. Its source/CI/review gates are
+  closed. Original DailyBrief8249 corrected-source review is accepted within its
+  source/helper scope; 139 parent tests and two planner checks passed. Integrate
+  this newly released shared workstream record on the original Brief carrier,
+  preserve exact reviewed module/test/dependency bytes, then complete exact-head
+  CI and normal source release. P1a fresh native build is active; actual generated
+  access and browser evidence remain owed. Both human reopen approvals remain
+  received. No new human decision is pending. Earlier entries are historical.
+  2026-10-12 approved four-market continuation: use
+  PROPHET-US-V4-RECOVERY-2026-10-12-daily-brief-repair.md and programme6107291350.
+  The human explicitly reopened original P1a8444 integration and selected original
+  DailyBrief8249 for repair. B03 and Return live acceptance completed20:33UTC
+  October11; do not replay those closed checks. The Brief repair preserves native
+  independent clocks and malformed-input regressions;139 tests pass on integrated
+  main f65b8376. Corrected-source review is accepted within source/helper scope;
+  two planner checks pass. Finish exact-head CI and normal release,
+  then native selection/provenance binding and product integration. Today/standouts
+  already owns selection; do not create a second selector. P1a fresh generated
+  access proof and browser recapture remain in progress on its original carrier.
+  All unrelated custody/refusals remain. Earlier checkpoints below are historical.
   2026-10-11 authenticated paging continuation: use
   PROPHET-US-V4-RECOVERY-2026-10-11-b03-attested-relations.md and programme6107291350.
   PR8832 and8845 are merged and closed. Live browse/filter succeeded but offset8
