@@ -241,3 +241,16 @@ The review is a separate commit by the reviewer. This draft does not name that p
 No backtest was run. `btc_impulse_radar_backtest.validate()` without an injected frame calls `store.read("vector", "signals")` (`engine/btc_impulse_radar_backtest.py:126-127`), which is under the omitted `data/` tree. No fixture file was passed in. `calibrate_vector.py` was not run. The canonical trial ledger was not written. No network call to a market-data provider was made.
 
 The next implementation step, when commissioned, is a harness that consumes this protocol and the existing `TrialLedger` / `validation` helpers. It is not a new platform.
+
+## 14. Contract tests
+
+`tests/test_crypto_t12_contract_invariants.py` pins this draft against the incumbent functions. It changes no rule in §1–§13.
+
+| Test | Pins |
+| --- | --- |
+| `test_class_split_renormalizes_onto_budget_and_drops_grid_cash` | §3.6 `_allocation` on `ALLOC_GRID` × budgets 0..100: an emitted split sums to `B`, no negative leg, grid cash column dropped |
+| `test_impulse_constants_match_t12_section_2` | §2 `HOLDOUT_START`, `LABEL_H`, `LABEL_THR`, `MIN_HOLDOUT_N`, act-leg floors |
+| `test_t12_declared_budget_is_counted_and_effective_n_never_falls_below_it` | §9 family `crypto_class_rotation_t12`, floor 24, temp ledger |
+| `test_honest_n_is_distinct_nonoverlapping_90_calendar_day_episodes` | §7 episode gap; spec of record, no engine owner yet |
+| `test_ethbtc_forward_fill_has_no_age_cap` | §3 current `ethbtc_signal` forward-fill |
+| `test_eth_one_bar_age_mask_is_not_engine_behavior` | §3 one-bar age mask, xfail: harness protocol, not engine behavior |
