@@ -33,6 +33,10 @@ import os
 import sys
 from pathlib import Path
 
+# File-path execution must select this checkout before any repository import.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 SCHEMA = "options_structure.matrix_observation/v1"
 TOKEN_SET_ENCODING = "options_structure.matrix_observed_side_token_set/v1"
 _UNIT = "\x1f"
@@ -594,8 +598,9 @@ def observe_publication(
 def _ensure_repo_path(repo) -> Path:
     path = Path(repo).resolve() if repo is not None else Path(__file__).resolve().parent.parent
     rendered = str(path)
-    if rendered not in sys.path:
-        sys.path.insert(0, rendered)
+    # An explicit deployed checkout takes precedence even if already on sys.path.
+    sys.path[:] = [entry for entry in sys.path if entry != rendered]
+    sys.path.insert(0, rendered)
     return path
 
 

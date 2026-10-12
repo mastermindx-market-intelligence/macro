@@ -186,6 +186,17 @@ class ObserveTests(unittest.TestCase):
             refs[root] = _install(self.out, self.store, _payload(root, session=session, **kwargs), root)
         return refs
 
+    def test_explicit_repo_is_first_even_when_already_on_import_path(self):
+        before = sys.path[:]
+        selected = str(Path(self.tmp.name).resolve())
+        try:
+            sys.path[:] = ["/unrelated", selected, *before]
+            self.assertEqual(observe_mod._ensure_repo_path(selected), Path(selected))
+            self.assertEqual(sys.path[0], selected)
+            self.assertEqual(sys.path.count(selected), 1)
+        finally:
+            sys.path[:] = before
+
     def test_import_does_not_create_client(self):
         self.assertFalse(hasattr(observe_mod, "_r2_client"))
         self.assertIsNone(observe_mod.observe_publication.__defaults__)
