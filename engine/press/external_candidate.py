@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -115,12 +115,18 @@ def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
         raise ValueError("source body hash mismatch")
     now, published = _instant(as_of), _instant(document["published"])
     observed = _instant(qualification["observed_at"])
+    event_text = qualification.get("event_date")
+    if not isinstance(event_text, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", event_text):
+        raise ValueError("reviewed event date must be an ISO calendar date")
+    event_date = date.fromisoformat(event_text)
     cfg = cfg if cfg is not None else planner.load_config(root)
     desk = cfg["desks"]["brief"]
     if (published > now or observed > now or observed < published
-            or (now.date() - published.date()).days > int(desk["window_days"])
-            or qualification["event_date"] != published.date().isoformat()):
-        raise ValueError("source is outside the current Brief publication window")
+            or event_date > published.date()):
+        raise ValueError("event, publication and observation clocks are inconsistent")
+    # A later publication must not move the reviewed event into a newer window.
+    if (now.date() - event_date).days > int(desk["window_days"]):
+        raise ValueError("event is outside the current Brief publication window")
     claims = q["reviewed_claims"]
     if not isinstance(claims, list) or not 1 <= len(claims) <= 20:
         raise ValueError("bounded reviewed source claims required")
@@ -184,6 +190,8 @@ def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
             "candidate_id": "press-external-" + planner.story_key(source_ref, document_sha256, qualification_sha256),
             "source_ref": source_ref, "document_sha256": document_sha256,
             "qualification_sha256": qualification_sha256, "body_sha256": body_sha,
+            "source_clocks": {"event_date": event_text, "published_at": published.isoformat(),
+                              "observed_at": observed.isoformat(), "as_of": now.isoformat()},
             "source_revisions": {source_ref: "sha256:" + document_sha256},
             "blocked_by_existing_coverage": blocked,
             "cadence_per_day": desk["cadence_per_day"], "cadence_consumed": False,

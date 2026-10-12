@@ -125,3 +125,36 @@ change is retained. `check_ci_trigger_closure.py` reports zero gaps; manifest
 `--validate-only --workflow .github/ci/legacy-jobs.yml` passes;28 Press workflow
 contract tests pass in3.90s. The curated import-closure test passed in131.78s.
 No application or test behavior changed after the154-test run.
+
+
+## Reviewed event clock versus publication clock — 2026-10-12
+
+A fresh primary-source read found a concrete reason to keep these clocks separate:
+[White House prepared remarks](https://www.whitehouse.gov/remarks/2026/10/remarks-by-director-michael-kratsios-at-the-science-a-new-golden-age-summit/)
+have an October9 page-publication date but explicitly date the speech October8.
+The later web date is not a new NVDA event and supplies no new ticker association.
+No source body was copied into a new candidate or admitted to staging.
+
+The opt-in planner now reads the qualification's separately reviewed ISO event
+date, requires it no later than publication, preserves publication/observation
+chronology, and applies the unchanged Brief window to that event date. Its result
+exposes event, publication, observation and as-of clocks. Facts retain their
+reviewed event date and all stage/emit/publication flags remain false. This is
+explicit reviewed metadata, not automatic event-date extraction from arbitrary prose.
+
+The earlier implementation already failed closed when dates differed, but could
+not represent a legitimate later publication of a still-current event. Seven new
+regressions cover that positive case, expired events, invalid date types/forms and
+a postpublication event date. Actual red:2failed/33passed in36.33seconds. Corrected
+external candidate, existing planner and validator suites:161passed in30.41seconds.
+Commands: `python3 -m pytest tests/test_press_external_candidate.py -q --tb=short`
+and `python3 -m pytest tests/test_press_external_candidate.py tests/test_press_planner.py tests/test_press_validators.py -q --tb=short`.
+Logs remain `/tmp/mmx-event-clock-red.log` and `/tmp/mmx-event-clock-green.log`.
+Source SHA256:f109055b0638d34193a50fe296bb2e545ee073184329e793dc1a5d98b1266675.
+The existing Fabric adapter admitted a bounded independent review under
+`mmx-press-event-clock-review-20261012-001`; the same retained result accepted
+the exact source hash with no blocking finding. Root adjudicated the source and
+161 passing tests before recording reviewer acceptance. The result is read-only
+source review, not a new live-source or publication qualification.
+Root made the small direct edit because dispatch/reintegration cost exceeded
+the bounded repair; independent review uses admitted Fabric.

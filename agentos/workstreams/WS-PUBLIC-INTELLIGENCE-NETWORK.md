@@ -55,3 +55,19 @@ The 2026-10-11 checkpoint contains the actual staging invocation and output, sou
 identities, regression evidence, current live probes and unresolved dependencies.
 The named incoming handoff was not available at entry; the direct commission supplied
 the scope. No prior handoff or archived chat is treated as execution evidence.
+
+
+Event-clock correction, October12: the follow-on planner now keeps the reviewed
+event date separate from a later page-publication date, validates chronology,
+and applies Brief freshness to the event. A real White House Oct9 page expressly
+dates its prepared speech Oct8; it is not a fresh NVDA event. Red2failed/33passed;
+affected planner/validator suites161passed in30.41seconds. Independent existing
+Fabric review `mmx-press-event-clock-review-20261012-001` accepted source SHA256
+f109055b0638d34193a50fe296bb2e545ee073184329e793dc1a5d98b1266675 with no blocker;
+root consumed the same result and accepted it after source/test adjudication.
+Evidence and exact commands are in SOURCE_RETENTION.md and event_clock_review.txt.
+No new writer, provider attempt, source admission, staging or publication occurred.
+Original PR8786 is nowcc5d31160dd3584b067453bc3b11d78440133000 after main7cb33d3a
+and Tiingo-record conflict resolution;29local refresh checks passed, all13source
+and3page hashes remain unchanged. CI38191946377 is running with protected landing
+armed; fences and authority passed. Terminal956 remains installed/browser accepted.

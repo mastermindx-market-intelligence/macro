@@ -122,3 +122,39 @@ def test_existing_coverage_blocks_same_source_even_with_new_revision(inputs):
 def test_missing_dossier_never_creates_a_route(inputs):
     (inputs['root'] / 'site/stocks/NVDA.html').unlink()
     with pytest.raises(ValueError, match='rendered dossier'): P.plan_external_candidate(**inputs)
+
+
+def republish(inputs, published):
+    from engine.whitehouse_feed import _slug_id
+    def patch_document(d):
+        d['published'] = published
+        d['id'] = _slug_id(d['url'], published)
+    mutate(inputs, 'document', patch_document)
+    d = json.loads(inputs['document_path'].read_text())
+    mutate(inputs, 'qualification', lambda q: q['existing_feed_ingress']['candidate'].update(
+        published=d['published'], id=d['id']))
+
+
+def test_later_publication_retains_reviewed_event_clock(inputs):
+    # The source event remains October 8 even when the page is published later.
+    republish(inputs, '2026-10-09T15:05:06+00:00')
+    result = P.plan_external_candidate(**inputs)
+    clocks = result['source_clocks']
+    assert clocks['event_date'] == '2026-10-08'
+    assert clocks['published_at'] == '2026-10-09T15:05:06+00:00'
+    assert {fact['dated'] for fact in result['validation_context']['facts']} == {'2026-10-08'}
+    assert result['allow_stage'] is result['allow_emit'] is False
+
+
+def test_later_publication_cannot_refresh_expired_event(inputs):
+    republish(inputs, '2026-10-09T15:05:06+00:00')
+    inputs['as_of'] = '2026-10-12T00:00:00Z'
+    with pytest.raises(ValueError, match='event.*window'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('event_date', ['2026-10-09', '2026-13-08', '20261008', None, 20261008])
+def test_invalid_or_postpublication_event_date_rejected(inputs, event_date):
+    mutate(inputs, 'qualification', lambda q: q.update(event_date=event_date))
+    with pytest.raises(ValueError):
+        P.plan_external_candidate(**inputs)
