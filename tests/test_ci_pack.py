@@ -4696,6 +4696,13 @@ CURATED_EXCLUSIVE = {
     # reads only its own config/contracts trees; its 3-path owner is the whole
     # closure (closure findings 0, gated-unrun 0), so no inference fallback.
     "single-name-coverage-profiles",
+    # 2026-10-12 Taxonomy V2 L05-L11: gmi-classification-axes. The geography
+    # reader names scripts/build_security_master.py by path (its subprocess
+    # call and parquet traversal join the closure) and the registry imports
+    # axis modules by computed name. Both smeared the job onto the
+    # build_free_content / plan_book packing probes. scope: exclusive pins it
+    # to its measured closure, so it must be listed here.
+    "gmi-classification-axes",
 }
 
 
