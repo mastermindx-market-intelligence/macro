@@ -1158,7 +1158,7 @@ def test_capture_epoch2_rejects_mutated_sealed_admission_before_us_transport():
         calls.append(path)
         return []
 
-    with pytest.raises(capture.CaptureContractError, match="sealed admission digest mismatch"):
+    with pytest.raises(capture.CaptureContractError, match="admission digest mismatch"):
         capture.measure_us_response(sealed, transport=transport)
     assert calls == []
 
@@ -1177,8 +1177,46 @@ def test_capture_epoch2_rejects_clock_downgrade_before_us_transport():
         calls.append(path)
         return []
 
-    with pytest.raises(capture.CaptureContractError, match="sealed admission digest mismatch"):
+    with pytest.raises(capture.CaptureContractError, match="admission digest mismatch"):
         capture.measure_us_response(sealed, transport=transport)
+    assert calls == []
+
+
+def test_capture_epoch2_rejects_marker_stripping_clock_downgrade_before_transport():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
+    for key in (
+        "sha256",
+        "source_epoch",
+        "source_admission_integrity",
+        "source_day_census_receipt",
+        "parent_cluster_id",
+    ):
+        sealed.pop(key, None)
+    sealed["available_at"] = "2026-10-05T13:45:00Z"
+    sealed["observed_at"] = "2026-10-05T13:46:00Z"
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="admission digest is missing"):
+        capture.measure_us_response(sealed, transport=transport)
+    assert calls == []
+
+
+def test_capture_legacy_admission_digest_removal_fails_before_transport():
+    admission = _capture_admission("2026-09-26T21:41:02Z")
+    admission.pop("sha256")
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="admission digest is missing"):
+        capture.measure_us_response(admission, transport=transport)
     assert calls == []
 
 

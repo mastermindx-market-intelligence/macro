@@ -224,9 +224,7 @@ def _integrity_chain_required(admission: Mapping[str, Any]) -> bool:
 
 
 def _admission_digest(admission: Mapping[str, Any]) -> str:
-    if _integrity_chain_required(admission):
-        return _verify_receipt(admission, "sealed admission")
-    return _payload_digest(_receipt_payload(admission))
+    return _verify_receipt(admission, "admission")
 
 
 def certify_source_day(
@@ -420,6 +418,7 @@ def seal_epoch2_admission(
         raise CaptureContractError("admission schema mismatch")
     if admission.get("outcome_state") != "NOT_READ":
         raise CaptureContractError("cannot seal Epoch-2 admission after outcome read")
+    _verify_receipt(admission, "admission")
     available = _utc(
         str(admission.get("available_at") or ""),
         "admission.available_at",
@@ -475,26 +474,17 @@ def seal_epoch2_admission(
 
 def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
     """Fail before transport when source-admission integrity is not measurement-safe."""
-    # Verify any already-sealed Epoch-2-shaped admission *before* trusting clocks
-    # that decide whether Epoch-2 rules apply. Otherwise mutating available_at +
-    # observed_at backward could downgrade a sealed receipt to the legacy path,
-    # allowing vendor transport before the later digest check rejects it.
-    integrity_markers = (
-        "sha256",
-        "source_epoch",
-        "source_admission_integrity",
-        "source_day_census_receipt",
-        "parent_cluster_id",
-    )
-    preverified_seal = any(key in admission for key in integrity_markers)
-    if preverified_seal:
-        _verify_receipt(admission, "sealed admission")
-
     event_id = str(admission.get("event_id") or "")
     if event_id in EPOCH1_QUARANTINED_EVENT_IDS:
         raise CaptureContractError("Epoch-1 event is quarantined from further measurement/HSI")
     if event_id in LATE_NON_EVALUABLE_EVENT_IDS:
         raise CaptureContractError("late-recovered event is non-evaluable and may not be measured")
+
+    # Every admission is authenticated before mutable clocks or eligibility fields
+    # can route it through legacy versus Epoch-2 logic. A sealed Epoch-2 receipt
+    # therefore cannot masquerade as legacy by stripping its seal markers and
+    # backdating clocks: deleting sha256 is itself a fail-closed error.
+    _verify_receipt(admission, "admission")
 
     available = _utc(
         str(admission.get("available_at") or ""),
@@ -541,8 +531,6 @@ def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
         raise CaptureContractError("Epoch-2 admitted_event_ids receipt is malformed")
     if event_id not in admitted_ids:
         raise CaptureContractError("Epoch-2 event is absent from its source-day receipt")
-    if not preverified_seal:
-        _verify_receipt(admission, "sealed admission")
 
 
 def admit_source_event(
@@ -591,7 +579,7 @@ def admit_source_event(
         else "DEVELOPMENT_ONLY"
     )
 
-    return {
+    return _seal_receipt({
         "schema": SCHEMA_ADMISSION,
         "authority": dict(AUTHORITY),
         "state": state,
@@ -615,7 +603,7 @@ def admit_source_event(
         },
         "outcome_state": "NOT_READ",
         "persistence": "none_stdout_only",
-    }
+    })
 
 
 def amend_source_state(
@@ -633,6 +621,7 @@ def amend_source_state(
         raise CaptureContractError("admission schema mismatch")
     if admission.get("outcome_state") != "NOT_READ":
         raise CaptureContractError("source-state amendment is forbidden after outcome read")
+    _verify_receipt(admission, "admission")
     if source_state not in SOURCE_STATES:
         raise CaptureContractError(f"unsupported source_state: {source_state}")
     if not str(source_name or "").strip():
