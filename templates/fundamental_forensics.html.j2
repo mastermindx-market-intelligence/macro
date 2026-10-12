@@ -293,7 +293,7 @@
           <span class="ff-tab-group-label">{{ t('Verify', '核对') }}</span>
           <button class="ff-tab" id="ff-tab-compare" type="button" role="tab"
             aria-selected="false" aria-controls="ff-panel-compare" tabindex="-1" data-tab="compare">
-            <span class="ff-tab-icon" aria-hidden="true">↔</span>{{ t('Compare periods', '期间对比') }}
+            <span class="ff-tab-icon" aria-hidden="true">↔</span>{{ t('Revisions', '重述对照') }}
           </button>
           <button class="ff-tab" id="ff-tab-trace" type="button" role="tab"
             aria-selected="false" aria-controls="ff-panel-trace" tabindex="-1" data-tab="trace">
@@ -415,6 +415,11 @@
           </label>
         </div>
       </header>
+      <section class="ff-revisions" id="ff-revisions" aria-labelledby="ff-revisions-title">
+        <h3 id="ff-revisions-title">{{ t('Original, latest, restated', '原始、截止最新、重述后') }}</h3>
+        <p>{{ t('Same period, three source vintages. A blank column is an absence, not a zero.', '同一期间、三种来源版本。空列是缺失，不是零。') }}</p>
+        <div id="ff-revisions-table"></div>
+      </section>
       <div class="ff-compare-grid" id="ff-compare-grid"></div>
     </section>
 

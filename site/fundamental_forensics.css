@@ -3074,3 +3074,33 @@ html[data-theme="light"] .ff-evidence {
   border-color: var(--line);
   box-shadow: var(--popover-shadow);
 }
+
+/* ── P2 revisions panel (§3, R4) ───────────────────────────────────────────
+   Same period, three source vintages. DARK: the restated column that moved
+   against its root takes a 6% --warn fill and nothing else. LIGHT: the same
+   tint plus a 1px left hairline — a ruled correction, not a glow. */
+.ff-revisions { padding: 13px 0; border-bottom: 1px solid var(--ff-border); }
+.ff-revisions h3 { margin: 0 0 4px; font-size: 14px; letter-spacing: -.018em; }
+.ff-revisions > p { margin: 0 0 11px; color: var(--muted); font-size: 11px; }
+.ff-revisions-echo { margin: 0 0 8px; color: var(--muted); font-family: var(--font-mono); font-size: 9px; }
+.ff-revisions-absence { color: var(--muted); font-size: 10px; white-space: normal; }
+.ff-revisions-table tr.is-restated td:last-child {
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
+}
+html[data-theme="light"] .ff-revisions-table tr.is-restated td:last-child {
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--warn) 40%, var(--line));
+}
+.ff-revisions-retry { margin-top: 9px; }
+.ff-revisions-retry button {
+  min-height: 36px;
+  padding: 6px 11px;
+  border: 1px solid var(--gbtn-brd);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--gbtn-bg);
+  font-size: 9px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.ff-revisions-retry button:hover { border-color: var(--gbtn-brd-hover); background: var(--gbtn-bg-hover); }

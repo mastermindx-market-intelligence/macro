@@ -9,6 +9,10 @@
     : '/api/forensics/state';
   var HEALTH_URL = '/api/forensics/health';
   var ATTESTED_HISTORY_URL = '/api/forensics/v1/attested-history';
+  var FINANCIAL_QUERY_URL = '/api/forensics/v1/financial/query';
+  var FINANCIAL_REVISIONS_URL = '/api/forensics/v1/financial/revisions';
+  var FINANCIAL_STATEMENTS_URL = '/api/forensics/v1/financial/statements';
+  var FINANCIAL_QUERY_XLSX_URL = '/api/forensics/v1/financial/query.xlsx';
   var DESKTOP_QUERY = '(min-width: 1100px)';
   var state = {
     payload: null,
@@ -45,6 +49,9 @@
     // against (populated by the financial query fetch).
     queryNodes: null,
     cellEvidence: null,
+    financialToken: 0,
+    financial: { phase: 'idle' },
+    statementColumns: [],
     receipt: {
       phase: 'idle',
       requestToken: 0,
@@ -1001,6 +1008,7 @@
     state.redlineId = '';
     state.evidenceKind = 'finding';
     resetReceiptState();
+    resetFinancialState();
     ui.search.value = resolved;
     ui.searchClear.hidden = false;
     closeSearch();
@@ -1011,6 +1019,7 @@
     }
     renderCompany();
     if (state.sourceMode === 'receipt') ensureReceiptForCompany();
+    ensureFinancialData();
   }
 
   function renderAll() {
@@ -1029,6 +1038,7 @@
   function applyHealth(health) {
     state.health = health && typeof health === 'object' ? health : { status: 'unavailable', clocks: {} };
     renderRunMeta();
+    setAsofControlsFromState();
   }
 
   function loadHealth() {
@@ -1076,6 +1086,7 @@
     if (ui.deskStamp) {
       ui.deskStamp.innerHTML = pair('As of ' + stampText + ' · ' + copy[0], '截止 ' + stampText + ' · ' + copy[1]);
     }
+    setAsofControlsFromState();
   }
 
   function renderCompany() {
@@ -1586,7 +1597,299 @@
       cell.excerpt = String(node.display_excerpt || node.source_excerpt || '').trim();
       break;
     }
+    // The revisions package supplies the three vintages verbatim for the
+    // drawer; glance compacts, the drawer prints bytes.
+    cell.revisionsRow = revisionsRowFor(cell.metricId);
     return cell;
+  }
+
+  // ── Cutoff + revisions panel (§3, R4) ───────────────────────────────────
+  // One as-of line drives both PIT clocks; a picked day expands to
+  // {date}T23:59:59Z on both, and Latest passes the health clocks through.
+  function policyClocks() {
+    if (state.asOfDate) {
+      return { source_snapshot_at: state.asOfDate + 'T23:59:59Z', recorded_at: state.asOfDate + 'T23:59:59Z' };
+    }
+    var clocks = (state.health && state.health.clocks) || {};
+    return { source_snapshot_at: clocks.broad_source_at || '', recorded_at: clocks.composed_state_at || '' };
+  }
+
+  function queryMetricIds() {
+    var ids = [];
+    METRICS.forEach(function (metric) {
+      // contract_liabilities is not in the S1 core 40: state table only.
+      if (metric.key === 'contract_liabilities') return;
+      if (METRIC_ID_BY_KEY[metric.key]) ids.push(METRIC_ID_BY_KEY[metric.key]);
+    });
+    return ids;
+  }
+
+  // Periods on the wire carry exactly {kind, start, end, label}. A state
+  // period without a start is skipped — the panel then says so; a start is
+  // never invented (AM1).
+  function queryPeriods(target) {
+    var periods = [];
+    if (state.statementColumns.length) {
+      state.statementColumns.forEach(function (column) {
+        if (column && column.start && column.end) {
+          periods.push({ kind: 'duration', start: column.start, end: column.end, label: column.label });
+        }
+      });
+      return periods;
+    }
+    (Array.isArray(target.periods) ? target.periods : []).forEach(function (period) {
+      if (!objectValue(period) || !period.start || !period.end) return;
+      periods.push({ kind: 'duration', start: String(period.start), end: String(period.end), label: periodLabel(period) });
+    });
+    return periods;
+  }
+
+  function buildQueryBody(selection) {
+    var target = company() || {};
+    return {
+      schema: 'fundamental_forensics.financial_query_request/v1',
+      entity_id: String(target.entity_id || ''),
+      policy: Object.assign({ selection: selection || state.policy || 'latest_known_as_of' }, policyClocks()),
+      metric_ids: queryMetricIds(),
+      periods: queryPeriods(target)
+    };
+  }
+
+  function revisionsRequestBody(latestBody) {
+    var body = Object.assign({}, latestBody, {
+      schema: 'fundamental_forensics.financial_revision_request/v1'
+    });
+    body.policy = Object.assign({}, latestBody.policy, { selection: 'latest_known_as_of' });
+    return body;
+  }
+
+  function financialPost(url, body) {
+    return withAuth({ 'Content-Type': 'application/json', Accept: 'application/json' })
+      .then(function (headers) {
+        return fetch(url, {
+          method: 'POST',
+          headers: headers,
+          credentials: 'same-origin',
+          cache: 'no-store',
+          body: JSON.stringify(body)
+        });
+      })
+      .then(function (response) {
+        if (!response.ok) {
+          var failure = new Error('Financial request failed');
+          failure.status = response.status;
+          throw failure;
+        }
+        // A38: the adapter-byte equality header is verified against the raw
+        // body before anything parses; a missing or mismatched digest is
+        // treated as a 503 and no number renders.
+        var claimed = String(response.headers.get('X-FIF-Response-SHA256') || '').toLowerCase();
+        return response.arrayBuffer().then(function (buffer) {
+          return sha256Hex(buffer).then(function (actual) {
+            if (!claimed || !actual || actual !== claimed) {
+              var mismatch = new Error('Financial response digest mismatch');
+              mismatch.status = 503;
+              throw mismatch;
+            }
+            return JSON.parse(new TextDecoder().decode(buffer));
+          });
+        });
+      });
+  }
+
+  function sha256Hex(buffer) {
+    if (!(window.crypto && window.crypto.subtle && typeof window.crypto.subtle.digest === 'function')) {
+      return Promise.resolve('');
+    }
+    return window.crypto.subtle.digest('SHA-256', buffer).then(function (digest) {
+      var bytes = new Uint8Array(digest);
+      var hex = '';
+      for (var index = 0; index < bytes.length; index += 1) {
+        hex += (bytes[index] < 16 ? '0' : '') + bytes[index].toString(16);
+      }
+      return hex;
+    });
+  }
+
+  function queryNodesFrom(payload) {
+    var receipt = objectValue(payload && payload.receipt) || {};
+    return Array.isArray(receipt.nodes) ? receipt.nodes.filter(objectValue) : [];
+  }
+
+  function revisionsRowsFrom(payload) {
+    return Array.isArray(payload && payload.revisions) ? payload.revisions.filter(objectValue) : [];
+  }
+
+  function resetFinancialState() {
+    state.financialToken += 1;
+    state.financial = { phase: 'idle' };
+    state.queryNodes = null;
+    state.statementColumns = [];
+  }
+
+  function ensureFinancialData() {
+    if (state.tab !== 'compare') return;
+    var target = company();
+    if (!target) return;
+    var latestBody = buildQueryBody('latest_known_as_of');
+    if (!latestBody.entity_id) {
+      state.financial = { phase: 'no-entity' };
+      renderRevisions();
+      return;
+    }
+    if (!latestBody.periods.length) {
+      state.financial = { phase: 'no-periods' };
+      renderRevisions();
+      return;
+    }
+    if (!latestBody.policy.source_snapshot_at || !latestBody.policy.recorded_at) {
+      state.financial = { phase: 'no-clocks' };
+      renderRevisions();
+      return;
+    }
+    var token = state.financialToken + 1;
+    state.financialToken = token;
+    state.financial = { phase: 'loading', queryBody: buildQueryBody() };
+    renderRevisions();
+    Promise.all([
+      financialPost(FINANCIAL_QUERY_URL, buildQueryBody('as_reported')),
+      financialPost(FINANCIAL_QUERY_URL, latestBody),
+      financialPost(FINANCIAL_QUERY_URL, buildQueryBody('latest_restated')),
+      financialPost(FINANCIAL_REVISIONS_URL, revisionsRequestBody(latestBody))
+    ]).then(function (answers) {
+      if (token !== state.financialToken) return;
+      state.financial = {
+        phase: 'ready',
+        asReported: queryNodesFrom(answers[0]),
+        latest: queryNodesFrom(answers[1]),
+        restated: queryNodesFrom(answers[2]),
+        revisions: revisionsRowsFrom(answers[3]),
+        receiptPolicy: objectValue(objectValue(answers[1] && answers[1].receipt) && objectValue(answers[1].receipt).policy) || {},
+        queryBody: buildQueryBody()
+      };
+      state.queryNodes = state.financial.latest;
+      renderRevisions();
+    }).catch(function (error) {
+      if (token !== state.financialToken) return;
+      if (error && (error.status === 401 || error.status === 403)) {
+        showLoadError(error);
+        return;
+      }
+      state.financial = { phase: 'error', errorStatus: error && error.status };
+      renderRevisions();
+    });
+  }
+
+  function revisionNodeFor(nodes, metricId) {
+    for (var index = 0; index < nodes.length; index += 1) {
+      if (String(nodes[index].metric_id || '') === String(metricId)) return nodes[index];
+    }
+    return null;
+  }
+
+  function revisionsRowFor(metricId) {
+    var rows = state.financial && Array.isArray(state.financial.revisions) ? state.financial.revisions : [];
+    for (var index = 0; index < rows.length; index += 1) {
+      if (String(rows[index].metric_id || '') === String(metricId)) return rows[index];
+    }
+    return null;
+  }
+
+  function absenceCell(copyEn, copyZh) {
+    return '<span class="ff-revisions-absence">' + pair(copyEn, copyZh) + '</span>';
+  }
+
+  function revisionControlCell(nodes, metricId) {
+    var node = revisionNodeFor(nodes, metricId);
+    if (!node) return absenceCell('No value at this cutoff', '该截止日无此值');
+    if (String(node.state || '') === 'missing') return absenceCell('No value at this cutoff', '该截止日无此值');
+    if (String(node.state || '') === 'not_evaluable') return absenceCell('Cannot evaluate', '无法评估');
+    var exact = typeof node.value === 'string' ? node.value : '';
+    if (!exact) return absenceCell('No value at this cutoff', '该截止日无此值');
+    var control = controlFromQueryNode(node, formatValue(node.value, 'currency'));
+    return sourceControlHtml(control);
+  }
+
+  // §3.3 — three columns map to the three policies; a restated value that
+  // differs from its root tints the column (dark fill / light hairline+fill).
+  function renderRevisions() {
+    var host = byId('ff-revisions-table');
+    if (!host) return;
+    var financial = state.financial || { phase: 'idle' };
+    var header = '<tr><th>' + pair('Metric / 指标', 'Metric / 指标') + '</th>' +
+      '<th>' + pair('Original reported', '原始披露') + '</th>' +
+      '<th>' + pair('Latest as of cutoff', '截止时点最新值') + '</th>' +
+      '<th>' + pair('Restated', '重述后') + '</th></tr>';
+    if (financial.phase === 'loading') {
+      host.innerHTML = '<div class="ff-loading" role="status"><span class="ff-loading-dot" aria-hidden="true"></span>' +
+        pair('Loading revisions…', '正在载入重述对照…') + '</div>';
+      return;
+    }
+    if (financial.phase === 'no-entity' || financial.phase === 'no-clocks' ||
+        (financial.phase === 'error' && financial.errorStatus === 400)) {
+      host.innerHTML = emptyState(
+        'Issuer identity unavailable', '发行人标识不可用',
+        'The desk cannot query this issuer yet, so no vintage is shown. Nothing is guessed from the ticker.',
+        '暂无法查询该发行人，因此不显示任何版本；不会从股票代码推测发行人标识。', '—'
+      );
+      return;
+    }
+    if (financial.phase === 'no-periods') {
+      host.innerHTML = emptyState(
+        'Period start unavailable', '期间起始日不可用',
+        'The state does not carry a period start date for this issuer, so no cutoff query can be built.',
+        '状态数据中没有该发行人的期间起始日，因此无法构建截止日查询。', '—'
+      );
+      return;
+    }
+    if (financial.phase === 'error') {
+      host.innerHTML = emptyState(
+        'Revisions temporarily unavailable', '重述服务暂不可用',
+        'The revisions service did not answer with verifiable bytes. Try again in a moment.',
+        '重述服务未返回可校验的数据，请稍后再试。', '↺'
+      ) + '<div class="ff-revisions-retry"><button type="button" data-financial-retry="1">' + pair('Retry', '重试') + '</button></div>';
+      return;
+    }
+    if (financial.phase !== 'ready') {
+      host.innerHTML = '';
+      return;
+    }
+    var hasRevision = Array.isArray(financial.revisions) && financial.revisions.length > 0;
+    var rows = queryMetricIds().map(function (metricId) {
+      var restatedCell = hasRevision
+        ? revisionControlCell(financial.restated, metricId)
+        : absenceCell('No revision in this package', '本数据包中无重述');
+      var revisionRow = revisionsRowFor(metricId);
+      var tinted = !!(revisionRow && revisionRow.revised_value !== revisionRow.root_value);
+      return '<tr' + (tinted ? ' class="is-restated"' : '') + '><td data-label-en="Metric" data-label-zh="指标">' + metricLabelById(metricId) + '</td>' +
+        '<td data-label-en="Original reported" data-label-zh="原始披露">' + revisionControlCell(financial.asReported, metricId) + '</td>' +
+        '<td data-label-en="Latest as of cutoff" data-label-zh="截止时点最新值">' + revisionControlCell(financial.latest, metricId) + '</td>' +
+        '<td data-label-en="Restated" data-label-zh="重述后">' + restatedCell + '</td></tr>';
+    }).join('');
+    var policy = financial.receiptPolicy || {};
+    var echo = policy.source_snapshot_at || policy.recorded_at
+      ? '<p class="ff-revisions-echo">' + pair(
+          'Cutoff ' + formatDate(policy.source_snapshot_at || '') + ' · ' + String(policy.selection || 'latest_known_as_of'),
+          '截止 ' + formatDate(policy.source_snapshot_at || '') + ' · ' + String(policy.selection || 'latest_known_as_of')
+        ) + '</p>'
+      : '';
+    host.innerHTML = echo + '<div class="ff-table-wrap"><table class="ff-table ff-revisions-table"><thead>' + header +
+      '</thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function setAsofControlsFromState() {
+    if (!ui.asofLatest || !ui.asofInput) return;
+    var latestActive = !state.asOfDate;
+    ui.asofLatest.classList.toggle('is-active', latestActive);
+    ui.asofLatest.setAttribute('aria-pressed', latestActive ? 'true' : 'false');
+    ui.asofInput.value = state.asOfDate || '';
+    // §3.1 — with no health clocks and no picked day there is no lawful
+    // cutoff, so the control is disabled rather than guessing one.
+    var clocks = (state.health && state.health.clocks) || {};
+    var clocksKnown = !!(clocks.broad_source_at || clocks.composed_state_at);
+    var disabled = !state.asOfDate && !clocksKnown;
+    ui.asofLatest.disabled = disabled;
+    ui.asofInput.disabled = disabled;
   }
 
   function renderCellEvidence(cell) {
@@ -1611,6 +1914,12 @@
         '<p class="ff-proof-compact-line">' + pair('Source span unavailable', '来源片段不可用') + '</p>') +
       (cell.accession ? '<p class="ff-proof-compact-line"><b>' + pair('Accession', '文件编号') + '</b> <span class="ff-accession">' + esc(cell.accession) + '</span></p>' : '') +
       '</section>' +
+      (cell.revisionsRow ? '<section class="ff-proof-section"><h3>' + pair('Original, latest, restated', '原始、截止最新、重述后') + '</h3>' +
+        '<dl class="ff-receipt-waterfall-fields">' +
+        '<div><dt>' + pair('Original reported', '原始披露') + '</dt><dd><code>' + esc(cell.revisionsRow.root_value == null ? '—' : String(cell.revisionsRow.root_value)) + '</code></dd></div>' +
+        '<div><dt>' + pair('Prior', '上期') + '</dt><dd><code>' + esc(cell.revisionsRow.prior_value == null ? '—' : String(cell.revisionsRow.prior_value)) + '</code></dd></div>' +
+        '<div><dt>' + pair('Restated', '重述后') + '</dt><dd><code>' + esc(cell.revisionsRow.revised_value == null ? '—' : String(cell.revisionsRow.revised_value)) + '</code></dd></div>' +
+        '</dl></section>' : '') +
       '<details class="ff-proof-details"><summary>' + pair('Technical ids', '技术编号') + '</summary><div><dl class="ff-receipt-waterfall-fields">' +
       (cell.occurrenceId ? '<div><dt>occurrence</dt><dd><code title="' + esc(cell.occurrenceId) + '">' + esc(shortTraceId(cell.occurrenceId)) + '</code></dd></div>' : '') +
       (cell.rootCellId ? '<div><dt>root cell</dt><dd><code title="' + esc(cell.rootCellId) + '">' + esc(shortTraceId(cell.rootCellId)) + '</code></dd></div>' : '') +
@@ -3245,6 +3554,10 @@
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
       setSourceMode(state.sourceMode, false);
+    } else if (tab === 'compare') {
+      state.evidenceKind = 'view';
+      renderTabEvidenceEmpty(tab);
+      ensureFinancialData();
     } else {
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
@@ -3521,6 +3834,7 @@
       renderCompareControls(company());
       renderCompare(company());
       renderRunMeta();
+      renderRevisions();
       renderCurrentEvidence();
       renderReceipt();
       renderReceiptInspector();
@@ -3706,6 +4020,34 @@
     ui.receiptInspectorBody.addEventListener('click', function (event) {
       if (!event.target.closest('[data-receipt-detail-retry]') || !state.receipt.rootCellId) return;
       requestReceiptRoot(state.receipt.rootCellId, state.receipt.lastFocus);
+    });
+
+    // §3.1 — Latest clears as_of; a picked day rewrites both clocks to that
+    // day's 23:59:59Z. Nothing queries per keystroke, only on change.
+    if (ui.asofLatest) {
+      ui.asofLatest.addEventListener('click', function () {
+        state.asOfDate = '';
+        setAsofControlsFromState();
+        writeUrl(true);
+        renderRunMeta();
+        ensureFinancialData();
+      });
+    }
+    if (ui.asofInput) {
+      ui.asofInput.addEventListener('change', function () {
+        var value = String(ui.asofInput.value || '');
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+        state.asOfDate = value;
+        setAsofControlsFromState();
+        writeUrl(true);
+        renderRunMeta();
+        ensureFinancialData();
+      });
+    }
+    ui.workspace.addEventListener('click', function (event) {
+      if (!event.target.closest('[data-financial-retry]')) return;
+      state.financial = { phase: 'idle' };
+      ensureFinancialData();
     });
 
     ui.currentPeriod.addEventListener('change', function () {
