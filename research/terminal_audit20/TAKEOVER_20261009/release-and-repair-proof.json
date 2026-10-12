@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T1402",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T2120",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -10124,5 +10124,27 @@
       "sha256": "f9aec12a410421a4fc5b5004b0a11f996b8fad7820c05446c6ac35d763fba0de"
     },
     "next_ready_phase": "Only relevant original-owner review/platform/rights/reconciliation/producer terminal event or independently useful new admitted mission work. Named PR962/967 J1 repair closed; no deploy/browser/source/CI/reply owed."
+  },
+  "current_capability_frontier_20261012T2120": {
+    "observed_at": "2026-10-12T21:20:00Z",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T1402",
+    "material": "NEW B-owned F12 Team account/read integrity: root completed scoped pre-repair authenticated read-only live-path qualification; source/release/candidate acceptance pending.",
+    "owner": "01a128b7-bd2b-7a91-891d-39d38f74ad55 retains sole source integration and end-to-end ownership; root retains Terminal release/live role. B reports one submitted Fabric child; root did not query or duplicate it.",
+    "receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/f12-team-read-20261012/live-path-qualification.json",
+      "bytes": 5964,
+      "sha256": "cc4b0abc3ddcfc537a5cf94035cdc8f80880eb142265f1a4fe882fb9c5539251"
+    },
+    "live_scope": "Existing Chris profile, EN/dark1728x694: normal Team opening, section re-entry and Settings reopen settle no-team. Generic role descriptions are not assigned roles; populated roster/invites/workspace settings unavailable. No account switch, creation, mutation, interception or fault.",
+    "source_context": "B baseline da02025d0b5cc0cfc1f169cd204a2a79d175bccd; public raw HTML21:18:37Z marker e24a6c9edd180edc719016b8281d9f2afd5733d7. SectionTeam.tsx source blobs equal SHA00f61441215f0cdb8c6b40536e66e243d0ae83ffa54d6f19ae8a67dd99d7a79d; baseline not ancestor of marker commit. No VPS install/full-tree/runtime qualification.",
+    "cleanup": "Own tab1925918037 closed21:19:25.789Z; Settings hidden, Terminal section restored, viewport1728x694/preferences unchanged. No cleanup owed.",
+    "delivery": "Meaningful exact receipt/limits/plan returned to B via first-party tool accepted/noerror; recipient consumption not yet observed. No repeat ACK or status message owed.",
+    "next_ready_phase": "Consume actual B exact reviewed/required-CI/protected-merged F12 source return, then reconcile installed lineage and fresh release gates; single guarded release only if needed, followed by scoped read-only Team proof at three sizes. Until then only actual relevant independent owner events or useful new admitted work. No duplicate writer/worker/CI observer, account switching or team changes.",
+    "named_J1_closed": true,
+    "F12_complete": false,
+    "whole_Audit20_complete": false,
+    "independent_holds_unchanged": true
   }
 }
