@@ -2056,6 +2056,149 @@
     ui.statements.innerHTML = blocks;
   }
 
+  // ── Peer panel (§4, R5) ─────────────────────────────────────────────────
+  // Read-only. URL state is the only persistence; no localStorage, no
+  // sessionStorage. The payload blob is C1's CohortTable.to_dict(); policy
+  // fields are not echoed by to_dict(), so the URL is the authority for the
+  // policy line.
+  var PEER_EXCLUSIONS = {
+    'A35-I1': ['Same company, another share class', '同一公司的另一类股份'],
+    'A35-X1': ['No observation in this package', '本数据包中无观察值'],
+    'A35-B1': ['This metric does not apply', '该指标不适用'],
+    'A35-P1': ['Reporting period does not line up', '报告期未对齐'],
+    'A35-P2': ['Shifted period', '期间已平移']
+  };
+
+  function peerCohort() {
+    var cohort = objectValue(state.payload && state.payload.peer_cohort);
+    return cohort && Array.isArray(cohort.members) && Array.isArray(cohort.emissions) ? cohort : null;
+  }
+
+  function peerPolicyLine() {
+    var alignCopy = state.peerAlign === 'shift_labeled'
+      ? ['shift and label misaligned periods', '平移并标注未对齐期间']
+      : ['exclude misaligned periods', '排除未对齐期间'];
+    return pair(
+      'Policy: ' + alignCopy[0] + ' · ' + state.peerTol + '-day window · at least ' + state.peerN + ' peers',
+      '策略：' + alignCopy[1] + ' · ' + state.peerTol + ' 天窗口 · 至少 ' + state.peerN + ' 家同业'
+    );
+  }
+
+  function selectedPeerEmission(cohort) {
+    var emissions = cohort.emissions.filter(objectValue);
+    if (!emissions.length) return null;
+    if (state.peerMetric) {
+      for (var index = 0; index < emissions.length; index += 1) {
+        if (String(emissions[index].metric_id || '') === state.peerMetric) return emissions[index];
+      }
+    }
+    state.peerMetric = String(emissions[0].metric_id || '');
+    return emissions[0];
+  }
+
+  function anchorIssuerId(cohort) {
+    var target = company() || {};
+    if (target.entity_id) return String(target.entity_id);
+    var wanted = String(state.symbol || '').toUpperCase();
+    var members = cohort.members.filter(objectValue);
+    for (var index = 0; index < members.length; index += 1) {
+      var tickers = Array.isArray(members[index].tickers) ? members[index].tickers : [];
+      for (var tickerIndex = 0; tickerIndex < tickers.length; tickerIndex += 1) {
+        if (String(tickers[tickerIndex]).toUpperCase() === wanted) return String(members[index].issuer_id || '');
+      }
+    }
+    return '';
+  }
+
+  function renderPeers() {
+    var policyNode = byId('ff-peer-policy');
+    var includedNode = byId('ff-peer-included');
+    var excludedNode = byId('ff-peer-excluded');
+    if (!policyNode || !includedNode || !excludedNode) return;
+    policyNode.innerHTML = peerPolicyLine();
+    var cohort = peerCohort();
+    if (!cohort) {
+      includedNode.innerHTML = emptyState(
+        'Peer cohort unavailable', '同业组不可用',
+        'This run did not publish a peer cohort, so no ranks or exclusions are shown. The link keeps its peer settings for when one lands.',
+        '本次更新未发布同业组，因此不显示排名或排除项。链接会保留同业设置，待其发布后生效。', '▦'
+      );
+      excludedNode.innerHTML = '';
+      return;
+    }
+    var emission = selectedPeerEmission(cohort);
+    if (!emission) {
+      includedNode.innerHTML = emptyState(
+        'Peer cohort unavailable', '同业组不可用',
+        'The published cohort carries no metric emissions.',
+        '发布的同业组不包含任何指标排放。', '▦'
+      );
+      excludedNode.innerHTML = '';
+      return;
+    }
+    var metricOptions = cohort.emissions.filter(objectValue).map(function (entry) {
+      var metricId = String(entry.metric_id || '');
+      return '<option value="' + esc(metricId) + '"' + (metricId === state.peerMetric ? ' selected' : '') + '>' +
+        (metricLabelById(metricId) || esc(metricId)) + '</option>';
+    }).join('');
+    var selector = '<label class="ff-topic-filter ff-peer-metric"><span>' + pair('Metric', '指标') + '</span>' +
+      '<select id="ff-peer-metric-select">' + metricOptions + '</select></label>';
+    if (String(emission.emission_state || '') === 'below_min_n') {
+      includedNode.innerHTML = selector + emptyState(
+        'Not enough peers to rank', '同业数量不足以排名',
+        'The qualifying group is smaller than the minimum, so no rank or average is computed.',
+        '符合条件的公司数量低于最小值，因此不计算排名或平均值。', '▦'
+      );
+    } else {
+      var anchorId = anchorIssuerId(cohort);
+      var rows = Array.isArray(emission.rows) ? emission.rows.filter(objectValue) : [];
+      var members = cohort.members.filter(objectValue);
+      var includedHtml = rows.map(function (row) {
+        var member = null;
+        for (var index = 0; index < members.length; index += 1) {
+          if (String(members[index].issuer_id || '') === String(row.issuer_id || '')) member = members[index];
+        }
+        var tickers = member && Array.isArray(member.tickers) ? member.tickers : [];
+        var isAnchor = anchorId && String(row.issuer_id || '') === anchorId;
+        // Row values are decimal strings from C1: compact on the face, and a
+        // control only where a span exists — peer rows carry none, so the
+        // disabled state keeps the number honest (no re-ranking in browser).
+        var valueControl = sourceControlHtml({ kind: 'peer', compactText: formatValue(row.value, 'currency') }, true);
+        return '<div class="ff-peer-row' + (isAnchor ? ' is-anchor' : '') + '"'+ (isAnchor ? ' aria-current="true"' : '') + '>' +
+          (isAnchor ? '<span class="ff-peer-anchor">' + pair('This company', '本公司') + '</span>' : '') +
+          '<span class="ff-peer-ticker">' + esc(tickers[0] || row.issuer_id || '—') + '</span>' +
+          '<span class="ff-peer-value">' + valueControl + '</span>' +
+          '<span class="ff-peer-period">' + esc(row.period_label || '—') + '</span>' +
+          (row.rank != null ? '<span class="ff-peer-rank">#' + esc(String(row.rank)) + '</span>' : '') +
+          '</div>';
+      }).join('');
+      includedNode.innerHTML = selector + (includedHtml || emptyState(
+        'Peer cohort unavailable', '同业组不可用',
+        'The selected emission carries no member rows.',
+        '所选指标排放不包含成员行。', '▦'
+      ));
+    }
+    var exclusions = Array.isArray(cohort.exclusions) ? cohort.exclusions.filter(objectValue) : [];
+    var exclusionHtml = exclusions.map(function (exclusion) {
+      var code = String(exclusion.code || '');
+      var known = PEER_EXCLUSIONS[code];
+      var copy = known ? pair(known[0], known[1]) : pair('Excluded', '已排除');
+      // Raw codes never sit on the glance tier; they fold into a details row.
+      return '<details class="ff-peer-exclusion"><summary>' + copy + '</summary><code>' + esc(code || '—') + '</code></details>';
+    }).join('');
+    excludedNode.innerHTML = exclusions.length
+      ? '<p class="ff-peer-subhead">' + pair('Excluded from this metric', '未计入本指标') + '</p>' + exclusionHtml
+      : '<p class="ff-peer-subhead">' + pair('No exclusions recorded for this metric.', '本指标没有记录排除项。') + '</p>';
+    var metricSelect = byId('ff-peer-metric-select');
+    if (metricSelect) {
+      metricSelect.addEventListener('change', function () {
+        state.peerMetric = metricSelect.value || '';
+        writeUrl(true);
+        renderPeers();
+      });
+    }
+  }
+
   function renderCellEvidence(cell) {
     if (!cell) {
       renderEvidence(null);
@@ -3683,7 +3826,7 @@
   }
 
   function setTab(tab, focusPanel) {
-    var allowed = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace'];
+    var allowed = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace', 'peers'];
     if (allowed.indexOf(tab) === -1) tab = 'radar';
     var previousTab = state.tab;
     state.tab = tab;
@@ -3726,6 +3869,10 @@
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
       ensureStatements();
+    } else if (tab === 'peers') {
+      state.evidenceKind = 'view';
+      renderTabEvidenceEmpty(tab);
+      renderPeers();
     } else {
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
@@ -3780,6 +3927,11 @@
       } else {
         ui.viewStatus.innerHTML = pair('Receipt on demand', '按需读取凭据');
       }
+    } else if (state.tab === 'peers') {
+      var cohort = peerCohort();
+      ui.viewStatus.innerHTML = cohort
+        ? pair((cohort.members_n != null ? cohort.members_n : cohort.members.length) + ' peer members', (cohort.members_n != null ? cohort.members_n : cohort.members.length) + ' 家同业成员')
+        : pair('Peer cohort unavailable', '同业组不可用');
     } else {
       ui.viewStatus.innerHTML = pair(evidenceCount + ' source links', evidenceCount + ' 条来源链接');
     }
@@ -4003,6 +4155,7 @@
       renderCompare(company());
       renderRunMeta();
       renderRevisions();
+      renderPeers();
       renderCurrentEvidence();
       renderReceipt();
       renderReceiptInspector();

@@ -299,6 +299,10 @@
             aria-selected="false" aria-controls="ff-panel-trace" tabindex="-1" data-tab="trace">
             <span class="ff-tab-icon" aria-hidden="true">✓</span>{{ t('Sources', '来源凭据') }}
           </button>
+          <button class="ff-tab" id="ff-tab-peers" type="button" role="tab"
+            aria-selected="false" aria-controls="ff-panel-peers" tabindex="-1" data-tab="peers">
+            <span class="ff-tab-icon" aria-hidden="true">▦</span>{{ t('Peers', '同业') }}
+          </button>
         </div>
       </div>
       <div class="ff-view-status" id="ff-view-status" role="status" aria-live="polite">
@@ -447,6 +451,19 @@
       <section id="ff-source-panel-receipt" role="tabpanel" aria-labelledby="ff-source-tab-receipt" tabindex="-1" hidden>
         <div class="ff-receipt-surface" id="ff-receipt" aria-live="polite"></div>
       </section>
+    </section>
+
+    <section class="ff-panel" id="ff-panel-peers" role="tabpanel" aria-labelledby="ff-tab-peers" tabindex="0" hidden>
+      <header class="ff-panel-head">
+        <div>
+          <p class="ff-kicker">{{ t('Peer set', '同业组') }}</p>
+          <h2>{{ t('Who is in, who is out', '谁在组内，谁被排除') }}</h2>
+          <p>{{ t('Ranks use only companies that qualify. Exclusions are listed with a reason.', '排名只计入符合条件的公司。排除项均附原因。') }}</p>
+        </div>
+      </header>
+      <p class="ff-peer-policy" id="ff-peer-policy"></p>
+      <div id="ff-peer-included"></div>
+      <div id="ff-peer-excluded"></div>
     </section>
   </main>
 
