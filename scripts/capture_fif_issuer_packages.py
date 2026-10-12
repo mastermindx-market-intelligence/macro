@@ -17,16 +17,32 @@ Frozen rules implemented here (G_PACK spec R5/R7/R8):
     plus every ``--extra-accession`` that is itself a D0 row of that issuer.
   - An accession not present in D0 (or belonging to an issuer outside the
     ``--issuer`` selection) is refused with a typed message and exit != 0.
-* Capture clock: ``--captured-at`` (aware ISO-8601 UTC) or, when omitted,
-  ``datetime.now(timezone.utc)`` read EXACTLY ONCE at the CLI edge. The
-  manifest ``fixture_recorded_at`` is minted from that injected clock via
+* Capture clock: ``--captured-at`` (aware ISO-8601 UTC) is REQUIRED; a run
+  without it is refused with ``gsrc_refusal: captured_at_required`` and the
+  script never falls back to the wall clock. The manifest
+  ``fixture_recorded_at`` is minted from that injected clock via
   ``mint_fixture_recorded_at`` and reused verbatim as ``capture_recorded_at``
   for self-admission. Pure helpers never read the clock.
 * Fetching: stdlib urllib through ONE ``SecRequestPacer`` instance
   (``--min-interval``, default 1.0 s; values below 1.0 s are refused — this
   lane's share of a 2 req/s budget shared with another lane). Bounded retry
-  on HTTP 429/503 or timeout: at most 3 attempts, 10 s then 30 s backoff,
-  every attempt appended to the issuer's request log line-by-line.
+  on HTTP 429/503, timeout, or a status-less ``URLError`` (DNS, refused or
+  reset connection): at most 3 attempts, 10 s then 30 s backoff, every
+  attempt appended to the issuer's request log line-by-line (a status-less
+  failure is logged as ``status: "url_error"``). Exhaustion raises
+  ``FetchFailure``, recorded as a typed ``fetch_failed:<what>`` row.
+* User agent: the FIF-family canonical SEC user agent,
+  ``collectors.edgar_forensics._user_agent`` (``config.yml``
+  ``edgar.user_agent``, the helper the FIF broad-SEC and wave-2 runners use),
+  resolved once at the CLI edge. It is imported there, not at module import,
+  so this stdlib-only module and its hermetic tests stay importable without
+  that collector's pandas/requests dependencies; an unresolvable user agent
+  is refused with ``gsrc_refusal: sec_user_agent_unavailable``.
+* Interrupted runs: if anything escapes an issuer's capture loop (an
+  unexpected error or an interrupt), ``capture_index.json`` is still written
+  but every planned accession that produced no row is recorded as
+  ``capture_incomplete:<ExceptionClass>`` and the exception propagates (exit
+  != 0) — a partial index is never presented as a complete one.
 * statement_roles (deterministic, NO hard-coded role URIs): candidate role
   URIs are the ``xlink:role`` values of ``presentationLink`` elements in the
   ``_pre.xml`` member whose role URI carries a ``roleType`` definition in the
@@ -92,7 +108,6 @@ from engine.fundamental_forensics.sec_document_spine import (
 )
 from engine.fundamental_forensics.statement_graph import mint_fixture_recorded_at
 
-USER_AGENT = "Mastermind FIF research lane fif-lane@mastermind.local"
 GOLDEN_PACKAGE_SCHEMA = "fundamental_forensics.golden_filing_package/v1"
 CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 SUBMISSIONS_ORIGIN = "https://data.sec.gov/submissions"
@@ -156,6 +171,11 @@ class SelectedAccession:
 # capture_index ``admission`` for a capture-only row. It is a fixed marker,
 # never an admission outcome: capture-only rows never reach D1.
 CAPTURE_ONLY_ADMISSION = "not_admitted:capture_only"
+
+# capture_index ``admission`` prefix for a planned accession that produced no
+# row because the issuer's capture loop was interrupted; suffixed with the
+# exception class name. Never an admission outcome.
+CAPTURE_INCOMPLETE_PREFIX = "capture_incomplete"
 
 
 # ---------------------------------------------------------------------------
@@ -589,6 +609,14 @@ class PacedFetcher:
             except (TimeoutError, socket.timeout) as exc:
                 status = "timeout"
                 failure = f"timeout:{type(exc).__name__}"
+            except urllib.error.URLError as exc:
+                # No HTTP status (DNS failure, refused/reset connection, a
+                # connect-phase timeout wrapped by urllib): retried within the
+                # same bound and logged as ``url_error``.
+                reason = exc.reason
+                kind = type(reason).__name__ if isinstance(reason, BaseException) else "URLError"
+                status = "url_error"
+                failure = f"url_error:{kind}"
             elapsed_ms = int((time.monotonic() - began) * 1000)
             self._log.record(
                 url=url,
@@ -600,7 +628,7 @@ class PacedFetcher:
             )
             if failure is None:
                 return body, last_modified
-            retryable = status == "timeout" or (
+            retryable = status in ("timeout", "url_error") or (
                 isinstance(status, int) and status in RETRY_STATUS_CODES
             )
             if not retryable or attempt >= MAX_ATTEMPTS:
@@ -909,7 +937,7 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--captured-at",
         default=None,
-        help="aware ISO-8601 UTC capture clock (default: now, read once at the CLI edge)",
+        help="REQUIRED aware ISO-8601 UTC capture clock (no wall-clock fallback)",
     )
     parser.add_argument(
         "--stage-root",
@@ -927,7 +955,7 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
 
 def _capture_clock(value: str | None) -> datetime:
     if value is None:
-        return datetime.now(timezone.utc)
+        raise SystemExit("gsrc_refusal: captured_at_required")
     text = value[:-1] + "+00:00" if value.endswith("Z") else value
     try:
         parsed = datetime.fromisoformat(text)
@@ -938,6 +966,75 @@ def _capture_clock(value: str | None) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
+def _resolve_sec_user_agent() -> str:
+    """The FIF-family canonical SEC user agent (``config.yml`` ``edgar.user_agent``).
+
+    Imported here, at the CLI edge, because ``collectors.edgar_forensics``
+    pulls pandas/requests at import time; the capture module itself and its
+    hermetic tests stay stdlib-only.
+    """
+    from collectors.edgar_forensics import _user_agent
+
+    return _user_agent(_ROOT)
+
+
+def _submissions_failure_rows(
+    ticker: str, plan_items: Sequence[SelectedAccession], note: str
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    rows: list[dict[str, Any]] = []
+    details: list[dict[str, Any]] = []
+    for item in plan_items:
+        rows.append(
+            {
+                "accession": item.accession,
+                "form": item.form,
+                "period_of_report": item.period_of_report,
+                "selection": item.selection,
+                "manifest_sha256": None,
+                "admission": "fetch_failed:submissions",
+                "statement_roles_state": None,
+            }
+        )
+        details.append(
+            {
+                "issuer": ticker,
+                "accession": item.accession,
+                "form": item.form,
+                "period_of_report": item.period_of_report,
+                "selection": item.selection,
+                "members_stored": 0,
+                "total_bytes": 0,
+                "admission": "fetch_failed:submissions",
+                "admission_message": note,
+                "statement_roles_state": None,
+                "statement_roles": None,
+                "manifest_sha256": None,
+                "d0_note": None,
+            }
+        )
+    return rows, details
+
+
+def _incomplete_rows(
+    plan_items: Sequence[SelectedAccession], rows: Sequence[Mapping[str, Any]], cause: str
+) -> list[dict[str, Any]]:
+    """Typed rows for every planned accession that produced no row."""
+    done = {row["accession"] for row in rows}
+    return [
+        {
+            "accession": item.accession,
+            "form": item.form,
+            "period_of_report": item.period_of_report,
+            "selection": item.selection,
+            "manifest_sha256": None,
+            "admission": f"{CAPTURE_INCOMPLETE_PREFIX}:{cause}",
+            "statement_roles_state": None,
+        }
+        for item in plan_items
+        if item.accession not in done
+    ]
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     if args.min_interval < MIN_INTERVAL_FLOOR_SECONDS:
@@ -945,6 +1042,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"gsrc_refusal: min_interval_below_floor: {args.min_interval} < "
             f"{MIN_INTERVAL_FLOOR_SECONDS}"
         )
+        return 2
+    if args.captured_at is None:
+        print("gsrc_refusal: captured_at_required: pass --captured-at <aware ISO-8601 UTC>")
         return 2
     clock = _capture_clock(args.captured_at)
     fixture_recorded_at = mint_fixture_recorded_at(clock)
@@ -1000,6 +1100,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         return 2
 
+    try:
+        user_agent = _resolve_sec_user_agent()
+    except (ImportError, OSError, ValueError) as exc:
+        print(f"gsrc_refusal: sec_user_agent_unavailable: {type(exc).__name__}: {exc}")
+        return 2
+
     summary: dict[str, Any] = {
         "fixture_recorded_at": fixture_recorded_at,
         "stage_root": str(stage_root),
@@ -1012,14 +1118,27 @@ def main(argv: Sequence[str] | None = None) -> int:
         out_issuer_dir = out_root / cik10
         log = IssuerRequestLog(out_issuer_dir / "request_log.jsonl")
         log.open()
-        fetch = PacedFetcher(pacer, USER_AGENT, log)
+        fetch = PacedFetcher(pacer, user_agent, log)
         started_wall = datetime.now(timezone.utc)
         rows: list[dict[str, Any]] = []
         details: list[dict[str, Any]] = []
+        interrupted: str | None = None
         try:
             wanted = {item.accession for item in plan[ticker]}
-            submissions_index = build_submissions_index(fetch, cik10, wanted)
-            for item in plan[ticker]:
+            # Only the submissions walk maps to ``fetch_failed:submissions``;
+            # anything raised while capturing a package is NOT relabelled here.
+            try:
+                submissions_index = build_submissions_index(fetch, cik10, wanted)
+            except (FetchFailure, KeyError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+                submissions_index = None
+                failed_rows, failed_details = _submissions_failure_rows(
+                    ticker,
+                    plan[ticker],
+                    f"submissions fetch unusable for issuer {ticker}: {exc}",
+                )
+                rows.extend(failed_rows)
+                details.extend(failed_details)
+            for item in plan[ticker] if submissions_index is not None else ():
                 row, detail = capture_package(
                     fetch=fetch,
                     issuer_row=issuer_row,
@@ -1032,40 +1151,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
                 rows.append(row)
                 details.append(detail)
-        except (FetchFailure, KeyError, json.JSONDecodeError, UnicodeDecodeError) as exc:
-            note = f"submissions fetch unusable for issuer {ticker}: {exc}"
-            for item in plan[ticker]:
-                if item.accession in {row["accession"] for row in rows}:
-                    continue
-                rows.append(
-                    {
-                        "accession": item.accession,
-                        "form": item.form,
-                        "period_of_report": item.period_of_report,
-                        "selection": item.selection,
-                        "manifest_sha256": None,
-                        "admission": "fetch_failed:submissions",
-                        "statement_roles_state": None,
-                    }
-                )
-                details.append(
-                    {
-                        "issuer": ticker,
-                        "accession": item.accession,
-                        "form": item.form,
-                        "period_of_report": item.period_of_report,
-                        "selection": item.selection,
-                        "members_stored": 0,
-                        "total_bytes": 0,
-                        "admission": "fetch_failed:submissions",
-                        "admission_message": note,
-                        "statement_roles_state": None,
-                        "statement_roles": None,
-                        "manifest_sha256": None,
-                        "d0_note": None,
-                    }
-                )
+        except BaseException as exc:
+            interrupted = type(exc).__name__
+            raise
         finally:
+            if interrupted is not None:
+                rows.extend(_incomplete_rows(plan[ticker], rows, interrupted))
             capture_index_payload = json.dumps(rows, indent=2) + "\n"
             _write_bytes(
                 out_issuer_dir / "capture_index.json", capture_index_payload.encode("utf-8")

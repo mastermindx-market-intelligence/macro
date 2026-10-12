@@ -13,6 +13,8 @@ import os
 import re
 from pathlib import Path
 
+import urllib.error
+
 import pytest
 
 from scripts import capture_fif_issuer_packages as gsrc
@@ -174,14 +176,26 @@ def test_selection_year_ago_absent_adds_nothing() -> None:
     }
 
 
+_CLOCK = "2026-10-12T00:00:00Z"
+
+
 def test_main_refuses_unknown_issuer(capsys: pytest.CaptureFixture[str]) -> None:
-    rc = gsrc.main(["--issuer", "NOSUCH"])
+    rc = gsrc.main(["--issuer", "NOSUCH", "--captured-at", _CLOCK])
     assert rc != 0
     assert "gsrc_refusal: unknown_issuer" in capsys.readouterr().out
 
 
 def test_main_refuses_non_d0_extra_accession(capsys: pytest.CaptureFixture[str]) -> None:
-    rc = gsrc.main(["--issuer", "SNOW", "--extra-accession", "1234567890-00-000001"])
+    rc = gsrc.main(
+        [
+            "--issuer",
+            "SNOW",
+            "--captured-at",
+            _CLOCK,
+            "--extra-accession",
+            "1234567890-00-000001",
+        ]
+    )
     assert rc != 0
     assert "extra_accession_not_in_d0" in capsys.readouterr().out
 
@@ -194,7 +208,250 @@ def test_main_refuses_min_interval_below_floor(capsys: pytest.CaptureFixture[str
 
 def test_min_interval_floor_is_one_second() -> None:
     assert gsrc.MIN_INTERVAL_FLOOR_SECONDS == 1.0
-    assert gsrc.USER_AGENT == "Mastermind FIF research lane fif-lane@mastermind.local"
+
+
+# M1: the capture clock is injected, never read from the wall clock.
+
+
+def test_main_refuses_missing_captured_at(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def _no_contract(_path: object) -> None:
+        raise AssertionError("a run without --captured-at must refuse before any other work")
+
+    monkeypatch.setattr(gsrc, "load_contract", _no_contract)
+    rc = gsrc.main(["--issuer", "SNOW"])
+    assert rc == 2
+    assert "gsrc_refusal: captured_at_required" in capsys.readouterr().out
+
+
+def test_capture_clock_has_no_wall_clock_fallback() -> None:
+    with pytest.raises(SystemExit, match="captured_at_required"):
+        gsrc._capture_clock(None)
+    assert gsrc._capture_clock(_CLOCK).isoformat() == "2026-10-12T00:00:00+00:00"
+
+
+# M3: the SEC user agent is the FIF-family canonical helper, never a literal.
+
+
+def test_script_carries_no_hard_coded_user_agent() -> None:
+    source = (_REPO / "scripts" / "capture_fif_issuer_packages.py").read_text(encoding="utf-8")
+    assert not hasattr(gsrc, "USER_AGENT")
+    assert "mastermind.local" not in source
+    assert not re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", source), "e-mail literal in script"
+    assert "from collectors.edgar_forensics import _user_agent" in source
+
+
+def test_resolved_user_agent_is_the_fif_canonical_helper() -> None:
+    edgar_forensics = pytest.importorskip("collectors.edgar_forensics")
+    assert gsrc._resolve_sec_user_agent() == edgar_forensics._user_agent(_REPO)
+
+
+def test_main_refuses_unresolvable_user_agent(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def _missing() -> str:
+        raise ValueError("config.yml edgar.user_agent is required")
+
+    monkeypatch.setattr(gsrc, "_resolve_sec_user_agent", _missing)
+    rc = gsrc.main(["--issuer", "SNOW", "--captured-at", _CLOCK])
+    assert rc == 2
+    assert "gsrc_refusal: sec_user_agent_unavailable: ValueError" in capsys.readouterr().out
+
+
+# M2: a status-less URLError is retried within the bound and logged.
+
+
+class _NoPacer:
+    def acquire(self) -> None:
+        return None
+
+
+class _FakeResponse:
+    status = 200
+    headers = {"Last-Modified": "Mon, 12 Oct 2026 00:00:00 GMT"}
+
+    def __init__(self, body: bytes) -> None:
+        self._body = body
+
+    def read(self) -> bytes:
+        return self._body
+
+    def __enter__(self) -> "_FakeResponse":
+        return self
+
+    def __exit__(self, *exc: object) -> bool:
+        return False
+
+
+def _scripted_fetcher(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, outcomes: list[object]
+) -> tuple["gsrc.PacedFetcher", "gsrc.IssuerRequestLog"]:
+    script = list(outcomes)
+
+    def _urlopen(request: object, timeout: object) -> _FakeResponse:
+        outcome = script.pop(0)
+        if isinstance(outcome, BaseException):
+            raise outcome
+        return _FakeResponse(outcome)
+
+    monkeypatch.setattr(gsrc.urllib.request, "urlopen", _urlopen)
+    monkeypatch.setattr(gsrc, "RETRY_BACKOFF_SECONDS", (0.0, 0.0))
+    log = gsrc.IssuerRequestLog(tmp_path / "request_log.jsonl")
+    log.open()
+    return gsrc.PacedFetcher(_NoPacer(), "test-agent", log), log
+
+
+def _log_lines(tmp_path: Path) -> list[dict]:
+    return [
+        json.loads(line)
+        for line in (tmp_path / "request_log.jsonl").read_text(encoding="utf-8").splitlines()
+    ]
+
+
+def test_url_error_is_retried_and_logged(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fetch, log = _scripted_fetcher(
+        tmp_path,
+        monkeypatch,
+        [
+            urllib.error.URLError(ConnectionResetError("reset")),
+            urllib.error.URLError("name resolution failed"),
+            b"ok",
+        ],
+    )
+    body, last_modified = fetch.get("https://www.sec.gov/Archives/edgar/data/42/x.htm")
+    log.close()
+    assert body == b"ok"
+    assert last_modified == "Mon, 12 Oct 2026 00:00:00 GMT"
+    lines = _log_lines(tmp_path)
+    assert [line["status"] for line in lines] == ["url_error", "url_error", 200]
+    assert [line["attempt"] for line in lines] == [1, 2, 3]
+
+
+def test_url_error_exhaustion_is_a_typed_fetch_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fetch, log = _scripted_fetcher(
+        tmp_path,
+        monkeypatch,
+        [urllib.error.URLError(ConnectionRefusedError("refused")) for _ in range(gsrc.MAX_ATTEMPTS)],
+    )
+    with pytest.raises(gsrc.FetchFailure) as caught:
+        fetch.get("https://www.sec.gov/Archives/edgar/data/42/x.htm")
+    log.close()
+    assert caught.value.status == "url_error"
+    assert "url_error:ConnectionRefusedError" in str(caught.value)
+    assert len(_log_lines(tmp_path)) == gsrc.MAX_ATTEMPTS
+
+
+def test_http_error_is_not_absorbed_by_the_url_error_clause(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    url = "https://www.sec.gov/Archives/edgar/data/42/x.htm"
+    fetch, log = _scripted_fetcher(
+        tmp_path,
+        monkeypatch,
+        [urllib.error.HTTPError(url, 404, "Not Found", hdrs=None, fp=None)],
+    )
+    with pytest.raises(gsrc.FetchFailure) as caught:
+        fetch.get(url)
+    log.close()
+    assert caught.value.status == 404
+    assert [line["status"] for line in _log_lines(tmp_path)] == [404]
+
+
+# M2 + M4: only the submissions walk maps to fetch_failed:submissions, and an
+# interrupted issuer loop never leaves a partial capture_index that reads as
+# complete.
+
+
+def _run_main_in_tmp(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ticker: str
+) -> tuple[list[object], Path]:
+    monkeypatch.setattr(gsrc, "_ROOT", tmp_path)
+    monkeypatch.setattr(gsrc, "_resolve_sec_user_agent", lambda: "test-agent")
+    cik10 = gsrc.canonical_cik(_d0_issuer_rows()[ticker]["cik"])
+    index_path = (
+        tmp_path / "tests" / "fixtures" / "fundamental_forensics" / "g_src" / cik10
+        / "capture_index.json"
+    )
+    argv: list[object] = [
+        "--issuer",
+        ticker,
+        "--captured-at",
+        _CLOCK,
+        "--contract",
+        str(_D0_PATH),
+        "--stage-root",
+        str(tmp_path / "stage"),
+    ]
+    return argv, index_path
+
+
+def test_capture_package_key_error_is_not_relabelled_as_submissions_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    argv, index_path = _run_main_in_tmp(tmp_path, monkeypatch, "SNOW")
+    plan = gsrc.select_issuer_accessions(_d0_issuer_rows()["SNOW"])
+    assert len(plan) >= 2
+    monkeypatch.setattr(
+        gsrc,
+        "build_submissions_index",
+        lambda fetch, cik10, wanted: {accession: {} for accession in wanted},
+    )
+    calls: list[str] = []
+
+    def _capture(**kwargs: object) -> tuple[dict, dict]:
+        selected = kwargs["selected"]
+        calls.append(selected.accession)
+        if len(calls) > 1:
+            raise KeyError("primaryDocument")
+        row = {
+            "accession": selected.accession,
+            "form": selected.form,
+            "period_of_report": selected.period_of_report,
+            "selection": selected.selection,
+            "manifest_sha256": None,
+            "admission": "ADMITTED",
+            "statement_roles_state": "extracted",
+        }
+        return row, {"admission": "ADMITTED"}
+
+    monkeypatch.setattr(gsrc, "capture_package", _capture)
+    with pytest.raises(KeyError):
+        gsrc.main([str(arg) for arg in argv])
+    rows = json.loads(index_path.read_text(encoding="utf-8"))
+    assert [row["accession"] for row in rows] == [item.accession for item in plan]
+    assert rows[0]["admission"] == "ADMITTED"
+    assert {row["admission"] for row in rows[1:]} == {
+        f"{gsrc.CAPTURE_INCOMPLETE_PREFIX}:KeyError"
+    }
+    assert all(row["admission"] != "fetch_failed:submissions" for row in rows)
+    assert all(row["manifest_sha256"] is None for row in rows[1:])
+
+
+def test_submissions_failure_still_maps_to_fetch_failed_submissions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    argv, index_path = _run_main_in_tmp(tmp_path, monkeypatch, "SNOW")
+    plan = gsrc.select_issuer_accessions(_d0_issuer_rows()["SNOW"])
+
+    def _broken_submissions(fetch: object, cik10: str, wanted: object) -> dict:
+        raise gsrc.FetchFailure("request failed after 3 attempt(s)", status="url_error")
+
+    def _never(**kwargs: object) -> None:
+        raise AssertionError("no package capture after an unusable submissions walk")
+
+    monkeypatch.setattr(gsrc, "build_submissions_index", _broken_submissions)
+    monkeypatch.setattr(gsrc, "capture_package", _never)
+    assert gsrc.main([str(arg) for arg in argv]) == 0
+    rows = json.loads(index_path.read_text(encoding="utf-8"))
+    assert [row["accession"] for row in rows] == [item.accession for item in plan]
+    assert {row["admission"] for row in rows} == {"fetch_failed:submissions"}
+    summary = json.loads(capsys.readouterr().out)
+    assert summary["totals"]["refusals"] == {"fetch_failed": len(plan)}
 
 
 # ---------------------------------------------------------------------------
