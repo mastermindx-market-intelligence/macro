@@ -16,9 +16,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -27,48 +27,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 646.78125,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 480.84375,
+        "top": 428.421875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 746.78125,
+        "bottom": 694.359375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 685.78125,
+        "top": 633.359375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -92,9 +114,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -103,48 +125,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 646.78125,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 480.84375,
+        "top": 428.421875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 746.78125,
+        "bottom": 694.359375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 685.78125,
+        "top": 633.359375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -168,9 +212,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -179,46 +223,166 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 646.78125,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 480.84375,
+        "top": 428.421875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 746.78125,
+        "bottom": 694.359375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 685.78125,
+        "top": 633.359375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 244.671875,
+        "found": true,
+        "height": 140.671875,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 501.796875,
+        "found": true,
+        "height": 131.828125,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 369.96875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 428.421875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 694.359375,
+        "found": true,
+        "height": 61,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 633.359375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 888,
+        "found": true,
+        "height": 876,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 12,
         "viewport_height": 900,
         "within_first_viewport": true
       }
@@ -244,9 +408,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -255,48 +419,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 646.78125,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 480.84375,
+        "top": 428.421875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 746.78125,
+        "bottom": 694.359375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 685.78125,
+        "top": 633.359375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -320,9 +506,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -331,48 +517,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 646.78125,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 480.84375,
+        "top": 428.421875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 746.78125,
+        "bottom": 694.359375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 685.78125,
+        "top": 633.359375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -396,9 +604,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -407,46 +615,166 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 646.78125,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 480.84375,
+        "top": 428.421875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 746.78125,
+        "bottom": 694.359375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 685.78125,
+        "top": 633.359375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 244.671875,
+        "found": true,
+        "height": 140.671875,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 501.796875,
+        "found": true,
+        "height": 131.828125,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 369.96875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 594.359375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 428.421875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 694.359375,
+        "found": true,
+        "height": 61,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 633.359375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 888,
+        "found": true,
+        "height": 876,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 12,
         "viewport_height": 900,
         "within_first_viewport": true
       }
@@ -472,9 +800,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -483,48 +811,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 634.90625,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 468.96875,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 734.90625,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 673.90625,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -548,9 +898,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -559,48 +909,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 634.90625,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 468.96875,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 734.90625,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 673.90625,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -624,9 +996,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -635,46 +1007,166 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 634.90625,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 468.96875,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 734.90625,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 673.90625,
+        "top": 605.484375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 244.671875,
+        "found": true,
+        "height": 140.671875,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 501.796875,
+        "found": true,
+        "height": 131.828125,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 369.96875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 400.546875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 666.484375,
+        "found": true,
+        "height": 61,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 605.484375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 888,
+        "found": true,
+        "height": 876,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 12,
         "viewport_height": 900,
         "within_first_viewport": true
       }
@@ -700,9 +1192,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -711,48 +1203,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 634.90625,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 468.96875,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 734.90625,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 673.90625,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -776,9 +1290,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -787,48 +1301,70 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 634.90625,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 468.96875,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 734.90625,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 673.90625,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
       }
     ],
     "mode": "populated",
@@ -852,9 +1388,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 252.421875,
+        "bottom": 244.671875,
         "found": true,
-        "height": 148.421875,
+        "height": 140.671875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -863,46 +1399,166 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 558.046875,
+        "bottom": 501.796875,
         "found": true,
-        "height": 107.78125,
+        "height": 131.828125,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 450.265625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 420.96875,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 400.96875,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 634.90625,
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 468.96875,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 734.90625,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 673.90625,
+        "top": 605.484375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 968,
+        "found": true,
+        "height": 864,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 244.671875,
+        "found": true,
+        "height": 140.671875,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 104,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 501.796875,
+        "found": true,
+        "height": 131.828125,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 369.96875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 340.671875,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 320.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 566.484375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 400.546875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 666.484375,
+        "found": true,
+        "height": 61,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 605.484375,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 888,
+        "found": true,
+        "height": 876,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 12,
         "viewport_height": 900,
         "within_first_viewport": true
       }
@@ -928,9 +1584,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 342.796875,
         "found": true,
-        "height": 373.96875,
+        "height": 212.796875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -939,46 +1595,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 920,
+        "bottom": 693.28125,
         "found": true,
-        "height": 169.375,
+        "height": 193.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 750.625,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1016,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 996,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1227.875,
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1061.9375,
+        "top": 849.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1308.875,
+        "bottom": 1096.09375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1259.875,
+        "top": 1047.09375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1004,9 +1682,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 342.796875,
         "found": true,
-        "height": 373.96875,
+        "height": 212.796875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1015,46 +1693,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 920,
+        "bottom": 693.28125,
         "found": true,
-        "height": 169.375,
+        "height": 193.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 750.625,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1016,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 996,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1227.875,
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1061.9375,
+        "top": 849.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1308.875,
+        "bottom": 1096.09375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1259.875,
+        "top": 1047.09375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1080,9 +1780,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 342.796875,
         "found": true,
-        "height": 373.96875,
+        "height": 212.796875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1091,48 +1791,168 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 920,
+        "bottom": 693.28125,
         "found": true,
-        "height": 169.375,
+        "height": 193.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 750.625,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1016,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 996,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1227.875,
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1061.9375,
+        "top": 849.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1308.875,
+        "bottom": 1096.09375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1259.875,
+        "top": 1047.09375,
         "viewport_height": 844,
         "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 342.796875,
+        "found": true,
+        "height": 212.796875,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 130,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 693.28125,
+        "found": true,
+        "height": 193.421875,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 499.859375,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 849.15625,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1096.09375,
+        "found": true,
+        "height": 49,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 1047.09375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 844,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 28,
+        "viewport_height": 844,
+        "within_first_viewport": true
       }
     ],
     "mode": "populated",
@@ -1156,9 +1976,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 342.796875,
         "found": true,
-        "height": 373.96875,
+        "height": 212.796875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1167,46 +1987,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 920,
+        "bottom": 693.28125,
         "found": true,
-        "height": 169.375,
+        "height": 193.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 750.625,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1016,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 996,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1227.875,
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1061.9375,
+        "top": 849.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1308.875,
+        "bottom": 1096.09375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1259.875,
+        "top": 1047.09375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1232,9 +2074,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 342.796875,
         "found": true,
-        "height": 373.96875,
+        "height": 212.796875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1243,46 +2085,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 920,
+        "bottom": 693.28125,
         "found": true,
-        "height": 169.375,
+        "height": 193.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 750.625,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1016,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 996,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1227.875,
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1061.9375,
+        "top": 849.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1308.875,
+        "bottom": 1096.09375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1259.875,
+        "top": 1047.09375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1308,9 +2172,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 342.796875,
         "found": true,
-        "height": 373.96875,
+        "height": 212.796875,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1319,48 +2183,168 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 920,
+        "bottom": 693.28125,
         "found": true,
-        "height": 169.375,
+        "height": 193.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 750.625,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1016,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 996,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1227.875,
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1061.9375,
+        "top": 849.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1308.875,
+        "bottom": 1096.09375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1259.875,
+        "top": 1047.09375,
         "viewport_height": 844,
         "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 342.796875,
+        "found": true,
+        "height": 212.796875,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 130,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 693.28125,
+        "found": true,
+        "height": 193.421875,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 499.859375,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 789.28125,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 769.28125,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 1015.09375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 849.15625,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1096.09375,
+        "found": true,
+        "height": 49,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 1047.09375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 844,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 28,
+        "viewport_height": 844,
+        "within_first_viewport": true
       }
     ],
     "mode": "populated",
@@ -1384,9 +2368,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 349.078125,
         "found": true,
-        "height": 373.96875,
+        "height": 219.078125,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1395,46 +2379,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 867.90625,
+        "bottom": 681.5625,
         "found": true,
-        "height": 134.328125,
+        "height": 175.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 733.578125,
+        "top": 506.140625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 963.90625,
+        "bottom": 777.5625,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 943.90625,
+        "top": 757.5625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1175.78125,
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1009.84375,
+        "top": 823.5,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1256.78125,
+        "bottom": 1070.4375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1207.78125,
+        "top": 1021.4375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1460,9 +2466,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 349.078125,
         "found": true,
-        "height": 373.96875,
+        "height": 219.078125,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1471,46 +2477,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 867.90625,
+        "bottom": 681.5625,
         "found": true,
-        "height": 134.328125,
+        "height": 175.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 733.578125,
+        "top": 506.140625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 963.90625,
+        "bottom": 777.5625,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 943.90625,
+        "top": 757.5625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1175.78125,
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1009.84375,
+        "top": 823.5,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1256.78125,
+        "bottom": 1070.4375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1207.78125,
+        "top": 1021.4375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1536,9 +2564,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 349.078125,
         "found": true,
-        "height": 373.96875,
+        "height": 219.078125,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1547,48 +2575,168 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 867.90625,
+        "bottom": 681.5625,
         "found": true,
-        "height": 134.328125,
+        "height": 175.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 733.578125,
+        "top": 506.140625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 963.90625,
+        "bottom": 777.5625,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 943.90625,
+        "top": 757.5625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1175.78125,
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1009.84375,
+        "top": 823.5,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1256.78125,
+        "bottom": 1070.4375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1207.78125,
+        "top": 1021.4375,
         "viewport_height": 844,
         "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 349.078125,
+        "found": true,
+        "height": 219.078125,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 130,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 681.5625,
+        "found": true,
+        "height": 175.421875,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 506.140625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 823.5,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1070.4375,
+        "found": true,
+        "height": 49,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 1021.4375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 844,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 28,
+        "viewport_height": 844,
+        "within_first_viewport": true
       }
     ],
     "mode": "populated",
@@ -1612,9 +2760,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 349.078125,
         "found": true,
-        "height": 373.96875,
+        "height": 219.078125,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1623,46 +2771,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 867.90625,
+        "bottom": 681.5625,
         "found": true,
-        "height": 134.328125,
+        "height": 175.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 733.578125,
+        "top": 506.140625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 963.90625,
+        "bottom": 777.5625,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 943.90625,
+        "top": 757.5625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1175.78125,
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1009.84375,
+        "top": 823.5,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1256.78125,
+        "bottom": 1070.4375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1207.78125,
+        "top": 1021.4375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1688,9 +2858,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 349.078125,
         "found": true,
-        "height": 373.96875,
+        "height": 219.078125,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1699,46 +2869,68 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 867.90625,
+        "bottom": 681.5625,
         "found": true,
-        "height": 134.328125,
+        "height": 175.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 733.578125,
+        "top": 506.140625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 963.90625,
+        "bottom": 777.5625,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 943.90625,
+        "top": 757.5625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1175.78125,
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1009.84375,
+        "top": 823.5,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1256.78125,
+        "bottom": 1070.4375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1207.78125,
+        "top": 1021.4375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
         "viewport_height": 844,
         "within_first_viewport": false
       }
@@ -1764,9 +2956,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 503.96875,
+        "bottom": 349.078125,
         "found": true,
-        "height": 373.96875,
+        "height": 219.078125,
         "name": "desk",
         "rendered": true,
         "selector": "#ff-desk-header",
@@ -1775,48 +2967,168 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 867.90625,
+        "bottom": 681.5625,
         "found": true,
-        "height": 134.328125,
+        "height": 175.421875,
         "name": "lead",
         "rendered": true,
         "selector": "#ff-quick-signal",
-        "top": 733.578125,
+        "top": 506.140625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 963.90625,
+        "bottom": 777.5625,
         "found": true,
         "height": 20,
         "name": "stats",
         "rendered": true,
         "selector": "#ff-stat-attention",
-        "top": 943.90625,
+        "top": 757.5625,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1175.78125,
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
         "found": true,
         "height": 165.9375,
         "name": "next",
         "rendered": true,
         "selector": ".ff-next-steps",
-        "top": 1009.84375,
+        "top": 823.5,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1256.78125,
+        "bottom": 1070.4375,
         "found": true,
         "height": 49,
         "name": "tabs",
         "rendered": true,
         "selector": ".ff-tablist",
-        "top": 1207.78125,
+        "top": 1021.4375,
         "viewport_height": 844,
         "within_first_viewport": false
+      },
+      {
+        "bottom": 1676,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 860,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|drawer_open",
+    "force_state": "drawer_open",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 349.078125,
+        "found": true,
+        "height": 219.078125,
+        "name": "desk",
+        "rendered": true,
+        "selector": "#ff-desk-header",
+        "top": 130,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 681.5625,
+        "found": true,
+        "height": 175.421875,
+        "name": "lead",
+        "rendered": true,
+        "selector": "#ff-quick-signal",
+        "top": 506.140625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "stats",
+        "rendered": true,
+        "selector": "#ff-stat-attention",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 777.5625,
+        "found": true,
+        "height": 20,
+        "name": "coverage",
+        "rendered": true,
+        "selector": "#ff-stat-coverage",
+        "top": 757.5625,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 989.4375,
+        "found": true,
+        "height": 165.9375,
+        "name": "next",
+        "rendered": true,
+        "selector": ".ff-next-steps",
+        "top": 823.5,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 1070.4375,
+        "found": true,
+        "height": 49,
+        "name": "tabs",
+        "rendered": true,
+        "selector": ".ff-tablist",
+        "top": 1021.4375,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 844,
+        "found": true,
+        "height": 816,
+        "name": "drawer",
+        "rendered": true,
+        "selector": "#ff-evidence",
+        "top": 28,
+        "viewport_height": 844,
+        "within_first_viewport": true
       }
     ],
     "mode": "populated",

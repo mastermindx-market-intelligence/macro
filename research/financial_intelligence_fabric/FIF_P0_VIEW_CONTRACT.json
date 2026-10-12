@@ -332,6 +332,7 @@
       "desktop_1440": {
         "viewport_height": 900,
         "within_first_viewport": [
+          "coverage",
           "desk",
           "lead",
           "nav",
@@ -341,12 +342,12 @@
         ],
         "lead_px": {
           "en": [
-            450,
-            558
+            370,
+            502
           ],
           "zh": [
-            450,
-            558
+            370,
+            502
           ]
         },
         "meets_contract": true
@@ -354,21 +355,24 @@
       "mobile_390": {
         "viewport_height": 844,
         "within_first_viewport": [
+          "coverage",
           "desk",
-          "nav"
+          "lead",
+          "nav",
+          "stats"
         ],
         "lead_px": {
           "en": [
-            751,
-            920
+            500,
+            693
           ],
           "zh": [
-            734,
-            868
+            506,
+            682
           ]
         },
-        "meets_contract": false,
-        "note": "The lead brief #ff-quick-signal starts above the 844px fold but ends below it in both locales; the desk header fills 130-504px at 390."
+        "meets_contract": true,
+        "note": "The lead brief #ff-quick-signal ends at 693px (EN) / 682px (ZH), inside the 844px fold, with the attention/coverage stats; the desk header fills 130-343px (EN) / 130-349px (ZH) at 390. Next steps and the tab rail start below the fold."
       }
     }
   },

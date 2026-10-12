@@ -1,0 +1,786 @@
+[
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 900,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "light",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "name": "nav",
+        "rendered": true,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "desk",
+        "rendered": false,
+        "selector": "#ff-desk-header",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "lead",
+        "rendered": false,
+        "selector": "#ff-quick-signal",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "stats",
+        "rendered": false,
+        "selector": "#ff-stat-attention",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "coverage",
+        "rendered": false,
+        "selector": "#ff-stat-coverage",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "next",
+        "rendered": false,
+        "selector": ".ff-next-steps",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "tabs",
+        "rendered": false,
+        "selector": ".ff-tablist",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 0,
+        "found": true,
+        "height": 0,
+        "name": "drawer",
+        "rendered": false,
+        "selector": "#ff-evidence",
+        "top": 0,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      }
+    ],
+    "mode": "unavailable",
+    "theme": "light",
+    "viewport": "mobile"
+  }
+]

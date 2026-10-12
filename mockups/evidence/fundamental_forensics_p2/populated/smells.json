@@ -19,24 +19,24 @@
         "asof_present": true,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1354,
+            "document_height_px": 1301,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1828,
+            "document_height_px": 1615,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 1,
-        "document_height_px": 1354,
+        "document_height_px": 1301,
         "duplicate_heading_texts": [
           "earnings moved further ahead of cash."
         ],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
-          "h1": 0,
+          "h1": 1,
           "h2": 3,
           "h3": 5,
           "h4": 0,
@@ -52,7 +52,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 2771523,
+        "payload_bytes_total": 3213477,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 27,
@@ -61,7 +61,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 385
+        "visible_word_count": 388
       },
       "page_id": "fundamental_forensics.html?symbol=AAPL",
       "route": "/fundamental_forensics.html?symbol=AAPL"
@@ -72,7 +72,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/home/ubuntu2/lanes/repos/macro/.git/worktrees/orchb-probe-p2",
-    "resolved_sha_or_none": "95aa0e55e0d5834b2eb60b112430d98a29ba04b4",
+    "resolved_sha_or_none": "e89ab0323ba3173402447ada34ba6d778fcf35e7",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /home/ubuntu2/lanes/repos/macro/.git/worktrees/orchb-probe-p2 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/home/ubuntu2/lanes/wt/orchb-probe-p2/site"
   },

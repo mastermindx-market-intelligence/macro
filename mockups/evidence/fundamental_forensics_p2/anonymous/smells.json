@@ -24,7 +24,7 @@
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1364,
+            "document_height_px": 1363,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 1079526,
+        "payload_bytes_total": 727919,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 27,
@@ -70,7 +70,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/home/ubuntu2/lanes/repos/macro/.git/worktrees/orchb-probe-p2",
-    "resolved_sha_or_none": "95aa0e55e0d5834b2eb60b112430d98a29ba04b4",
+    "resolved_sha_or_none": "e89ab0323ba3173402447ada34ba6d778fcf35e7",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /home/ubuntu2/lanes/repos/macro/.git/worktrees/orchb-probe-p2 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/home/ubuntu2/lanes/wt/orchb-probe-p2/site"
   },

@@ -239,8 +239,9 @@ def test_first_viewport_measured_records_the_fold_receipt():
     assert measured["desktop_1440"]["viewport_height"] == 900
     assert measured["mobile_390"]["viewport_height"] == 844
     assert measured["desktop_1440"]["meets_contract"] is True
-    # Recorded as measured, not as hoped: at 390 the lead brief crosses the fold.
-    assert measured["mobile_390"]["meets_contract"] is False
+    # Recorded as measured, not as hoped: after the seat repair round the lead brief
+    # ends inside the 390 fold (it crossed it before the desk header was compacted).
+    assert measured["mobile_390"]["meets_contract"] is True
 
 
 @pytest.mark.needs_full_checkout("mockups")
