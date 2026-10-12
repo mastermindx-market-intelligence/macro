@@ -254,3 +254,67 @@ def test_changed_vendor_price_alters_source_fingerprint_without_exposing_price_o
     assert original.input_digest!=modified.input_digest
     assert modified.actual_market_flow_computed is False
     assert not hasattr(modified,"vendor_close")
+
+
+_REFERENCE_BASIS_REFUSAL = "CONSOLIDATED_DERIVED_REFERENCE_OHLC_NOT_TRADE_PRICE_BASIS"
+
+
+def test_bridge_preserves_all_original_source_fitness_refusals():
+    from tiingo_source_fitness import assess_tiingo_view
+    candidate = source("AAPL")
+    upstream = assess_tiingo_view(candidate, required_symbols=NAMES)
+    result = audit((candidate,))
+    assert set(upstream.refusals).issubset(result.refusal_reasons)
+
+
+def test_later_cutoff_does_not_remove_reference_price_basis_incompatibility():
+    result = audit(scope=replace(SCOPE, cutoff_utc_ns=CUTOFF_LATER))
+    assert "SOURCE_AFTER_CUTOFF" not in result.refusal_reasons
+    assert _REFERENCE_BASIS_REFUSAL in result.refusal_reasons
+    assert not result.actual_market_flow_computed
+    assert not result.may_execute_market_pilot
+    assert not result.customer_publishable
+
+
+def test_complete_four_name_grid_preserves_reference_price_refusal():
+    result = audit(tuple(source(symbol, minutes=390) for symbol in NAMES),
+                   scope=replace(SCOPE, cutoff_utc_ns=CUTOFF_LATER))
+    assert result.preflight.represented_cells == 1560
+    assert result.preflight.missing_cells == 0
+    assert result.preflight.unknown_cells == 1560
+    assert _REFERENCE_BASIS_REFUSAL in result.refusal_reasons
+    assert result.preflight.status == "NOT_ADMITTED"
+
+
+def test_source_phase_refusal_survives_rows_outside_caller_calendar():
+    candidate = source("AAPL", minutes=1)
+    outside = dict(candidate.rows[0], bar_at_vendor="2026-10-09T03:59:00-04:00")
+    result = audit((replace(candidate, rows=(outside,)),))
+    assert result.source_rows_in_calendar_scope == 0
+    assert result.out_of_calendar_source_minutes == 1
+    assert "NOT_REGISTERED_DAYTIME_PHASE" in result.refusal_reasons
+
+
+def test_bridge_digest_binds_source_assessment_semantics_not_only_source_bytes(monkeypatch):
+    # Simulate a future upstream source-assessment finding without changing
+    # the supplied bytes. The original assessor still validates every input.
+    import tiingo_preflight_bridge as bridge
+    original = bridge.assess_tiingo_view
+    baseline = audit()
+    def with_additional_finding(*args, **kwargs):
+        result = original(*args, **kwargs)
+        return replace(result, refusals=tuple(sorted((*result.refusals,
+            "SYNTHETIC_SOURCE_ASSESSMENT_FINDING"))))
+    monkeypatch.setattr(bridge, "assess_tiingo_view", with_additional_finding)
+    changed = audit()
+    assert "SYNTHETIC_SOURCE_ASSESSMENT_FINDING" in changed.refusal_reasons
+    assert changed.input_digest != baseline.input_digest
+    assert changed.preflight.input_digest == baseline.preflight.input_digest
+
+
+def test_no_supplied_source_does_not_fabricate_an_endpoint_observation():
+    result = audit(())
+    assert _REFERENCE_BASIS_REFUSAL not in result.refusal_reasons
+    assert result.source_view_count == 0
+    assert result.preflight.missing_cells == 1560
+    assert not result.may_execute_market_pilot

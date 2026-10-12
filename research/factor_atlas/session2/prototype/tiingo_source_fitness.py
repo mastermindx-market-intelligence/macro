@@ -265,8 +265,14 @@ def assess_tiingo_view(view: object, *,
     elif source=="iex-bars":
         reasons.add("SINGLE_EXCHANGE_NOT_CONSOLIDATED")
     else:
+        # Tiingo's consolidated WebSocket documentation states that reference
+        # prices (validated quote mids OR trade prints) create REST OHLC bars.
+        # https://www.tiingo.com/documentation/websockets/equity-realtime-stock-data
+        # Current documentation is a source-selection warning, NOT an attested
+        # historical per-row lineage, adjustment vintage, or legal use grant.
         reasons.update({"CONSOLIDATED_VOLUME_UNIT_UNQUALIFIED",
-                        "BETA_INTRADAY_SOURCE_NOT_CANONICALLY_ADMITTED"})
+                        "BETA_INTRADAY_SOURCE_NOT_CANONICALLY_ADMITTED",
+                        "CONSOLIDATED_DERIVED_REFERENCE_OHLC_NOT_TRADE_PRICE_BASIS"})
     seen=set(); overnight=defaultdict(list); daytime=defaultdict(Counter)
     volumecount=zero=0
     for raw in rows:

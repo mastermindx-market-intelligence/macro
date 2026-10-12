@@ -732,3 +732,47 @@ def test_ten_original_search_results_only_use_exact_ticker_and_country():
     assert result.foreign_country_collision_observed is True
     assert result.candidate_us_vendor_permaticker=="US000000000038"
     assert not result.market_pilot_admitted
+
+
+# Current Tiingo consolidated endpoint documentation describes reference-price
+# OHLC made from validated quote mids or trade prints. These fabricated tests
+# must not turn a complete clock grid into executed-trade dollar evidence.
+_REFERENCE_BASIS_REFUSAL = "CONSOLIDATED_DERIVED_REFERENCE_OHLC_NOT_TRADE_PRICE_BASIS"
+
+
+@pytest.mark.parametrize("volume", [100, 0, None])
+def test_documented_reference_price_basis_survives_volume_presence(volume):
+    candidate = _synthetic_rth()
+    records = tuple(dict(item, vendor_volume=volume,
+                         volume_available=volume is not None)
+                    for item in candidate.rows)
+    result = assess(replace(candidate, rows=records))
+    assert _REFERENCE_BASIS_REFUSAL in result.refusals
+    assert result.daytime_clock_coverage[0].nominal_rth_grid_complete
+    assert not result.source_admitted
+    assert not result.may_compute_daytime_pressure
+    assert not result.customer_publishable
+    assert result.authority == m.AUTHORITY
+
+
+@pytest.mark.parametrize("family", ["boats-bars", "iex-bars", "eod-bars"])
+def test_consolidated_documentation_is_not_a_claim_about_other_endpoint_families(family):
+    if family == "boats-bars":
+        candidate = view()
+    elif family == "iex-bars":
+        candidate = _synthetic_rth(source=family)
+    else:
+        candidate = view(source=family, rows=(),
+            source_request_path="/tiingo/daily/AAPL/prices?startDate=2026-10-08&endDate=2026-10-09")
+    result = assess(candidate)
+    assert _REFERENCE_BASIS_REFUSAL not in result.refusals
+    # Absence of this endpoint-specific refusal does NOT admit any other feed.
+    assert not result.source_admitted and not result.may_compute_daytime_pressure
+
+
+def test_empty_consolidated_partition_keeps_documented_endpoint_basis_and_missing_rows_separate():
+    result = assess(replace(_synthetic_rth(), rows=()))
+    assert _REFERENCE_BASIS_REFUSAL in result.refusals
+    assert "NO_RETAINED_MINUTE_ROWS_IN_PARTITION" in result.refusals
+    assert result.audited_rows == 0
+    assert not result.source_admitted

@@ -175,6 +175,10 @@ def inspect_tiingo_preflight(views: Iterable[Any], *,
     # Native S2 preflight says every actual source entry remains unresolved.
     assert pre.status=="NOT_ADMITTED"
     reasons={reason for issue in pre.exceptions for reason in issue.reasons}
+    # Preserve the original source assessor's basis, coverage and venue
+    # findings, including rows outside the caller's selected calendar. The
+    # bridge must not discard a source incompatibility while mapping metadata.
+    reasons.update(reason for review in source_fitness for reason in review.refusals)
     reasons.update({
        "TIINGO_VENDOR_REFERENCE_NOT_CANONICAL",
        "ORIGINAL_EXCHANGE_CALENDAR_NOT_ATTESTED",
@@ -185,6 +189,9 @@ def inspect_tiingo_preflight(views: Iterable[Any], *,
     payload=m.digest({"scope":asdict(scope),
                       "preflight":pre.input_digest,
                       "original_research_view_refs":sorted(docs),
+                      "source_fitness_assessments":sorted(
+                          (review.source,review.source_sha256,review.status,
+                           review.refusals) for review in source_fitness),
                       "zero_vendor":zeros,"null_vendor_volume":nulls,
                       "outside_calendar":outside})
     return TiingoPreflightReview(

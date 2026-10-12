@@ -1523,3 +1523,12 @@ S2_SOURCE_NOT_ADMITTED / DRAFT_HOLD. This checkpoint
 is a save and explicit user-requested handoff, not product
 completion, autonomous background work or an authorization
 to merge, deploy, publish rankings/alerts, size or trade.
+
+
+## 2026-10-12 source-basis ruling and lossless refusal propagation
+
+Current source parent `d7e8b9560bb2cb47dbbaaf894bf60f729939a6ab`; same original PR #8677 and protected Mastermind `85807cf48e29e2fe5df19534d6b181fc25b9746f`. Current Tiingo documentation establishes a mixed reference-price construction, not an attested pure-trade OHLC source. Existing S2 assessor now exposes that endpoint-specific incompatibility; existing bridge retains all source-fitness refusals and binds their semantics into its fingerprint. No new source/calculation/admission plane.
+
+13 new synthetic tests: RED 9 failures/87 passes; targeted GREEN 96/96; original unchanged 17-suite registered command 570/570. Original log/source hashes and fabricated outputs: `evidence/native_tiingo_reference_basis_tests.json` and `evidence/tiingo_reference_basis_synthetic.json`. All market/PIT/rights/trading/customer flags remain false. No new vendor collection.
+
+Single current frontier remains `EXECUTION_HANDOFF_2026-10-12.md`; its current content is manifest-bound, superseding the earlier handoff-only hash above. It preserves the new exact pre-dispatch identity inspection denial, original P4/P6/BOATS/source-read denials, and unresolved original independent-review summon. Executive V3 01:18:23 UTC read failed before dispatch. Predecessor focused/fences passed; full Macro CI remains pending. No merge/deploy.
