@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import inspect
 from pathlib import Path
 
 import pytest
+import warnings
 
 from engine.fundamental_forensics import specialist_pack_contract as pack_contract
 from engine.fundamental_forensics.specialist_pack_contract import (
@@ -351,13 +353,6 @@ def test_unknown_pack_schema_load_raises() -> None:
 
 
 def test_referencing_registry_validates_minimal_result() -> None:
-    pytest.importorskip("referencing")
-    assert pack_contract._HAS_REFERENCING is True
-    assert validate_pack_result(_minimal_result("PK01")) == []
-
-
-def test_refresolver_fallback_validates_minimal_result(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(pack_contract, "_HAS_REFERENCING", False)
     assert validate_pack_result(_minimal_result("PK01")) == []
 
 
@@ -729,3 +724,33 @@ def test_catalogue_schema_additional_properties_false_everywhere() -> None:
     ]
     assert missing == []
     assert schema["$id"] == "https://mastermind-x.com/contracts/specialist_pack_catalogue.v1.schema.json"
+
+
+def test_module_source_has_no_refresolver_or_fallback_flag() -> None:
+    source = inspect.getsource(pack_contract)
+    assert "RefResolver" not in source
+    assert "_HAS_REFERENCING" not in source
+
+
+def test_envelope_validator_and_validate_pack_result_raise_no_deprecation_warning() -> None:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        assert pack_contract._envelope_validator(load_envelope_schema()) is not None
+        assert validate_pack_result(_minimal_result("PK01")) == []
+
+
+def test_cross_document_packet_ref_resolves_through_registry() -> None:
+    # Construction reused from test_absence_mismatched_non_value_state_rejected.
+    # The violated enum lives in financial_intelligence_packet.schema.json and is
+    # reached only through the envelope's cross-document $ref, so the schema-level
+    # error string proves the referencing.Registry resolves it unchanged.
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(non_value_state="bogus")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.non_value_state" in item for item in errors)
+    assert any(
+        item == "fields.0.non_value_state: 'bogus' is not valid under any of the given schemas"
+        for item in errors
+    )

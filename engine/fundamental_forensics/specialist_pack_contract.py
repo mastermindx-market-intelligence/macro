@@ -1,8 +1,8 @@
 """Specialist pack result contract: envelope + per-pack catalogues.
 
 Pure validator. No pack evaluation, mapping, or source I/O beyond reading the
-JSON contract files under contracts/. Third-party imports are jsonschema and,
-when present, referencing (yaml is permitted but unused).
+JSON contract files under contracts/. Third-party imports are jsonschema and
+referencing (yaml is permitted but unused).
 """
 from __future__ import annotations
 
@@ -14,14 +14,8 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
-from jsonschema.validators import RefResolver
-
-try:
-    from referencing import Registry, Resource
-    import referencing.jsonschema
-    _HAS_REFERENCING = True
-except ImportError:
-    _HAS_REFERENCING = False
+from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT202012
 
 
 PACK_IDS = (
@@ -115,21 +109,14 @@ def _error_path(error: Any) -> str:
 
 def _envelope_validator(schema: Mapping[str, Any]) -> Draft202012Validator:
     packet = _load_json(_PACKET_SCHEMA_PATH)
-    if _HAS_REFERENCING:
-        registry = Registry()
-        for contents in (schema, packet):
-            resource = Resource.from_contents(
-                contents,
-                default_specification=referencing.jsonschema.DRAFT202012,
-            )
-            registry = registry.with_resource(contents["$id"], resource)
-        return Draft202012Validator(schema, registry=registry)
-    store = {
-        schema["$id"]: schema,
-        packet["$id"]: packet,
-    }
-    resolver = RefResolver(base_uri=str(schema["$id"]), referrer=schema, store=store)
-    return Draft202012Validator(schema, resolver=resolver)
+    registry = Registry()
+    for contents in (schema, packet):
+        resource = Resource.from_contents(
+            contents,
+            default_specification=DRAFT202012,
+        )
+        registry = registry.with_resource(contents["$id"], resource)
+    return Draft202012Validator(schema, registry=registry)
 
 
 def _mapping_rows(value: Any) -> list[Mapping[str, Any]]:
