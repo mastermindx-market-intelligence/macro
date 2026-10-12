@@ -220,6 +220,110 @@ def _safe_url(raw: object, *, sec_only: bool) -> str | None:
     return raw
 
 
+def observation_from_pinned_sec_archive(
+    source_event: Mapping[str, object], *, authority: object,
+    manifest_key: str, first_retained_receipt_id: str,
+    checked_at_utc: datetime,
+) -> VerifiedDocumentObservation | None:
+    """Verify an EXISTING immutable SEC-archive read for Stage-A ingestion.
+
+    This helper adds no data store, network client, source grant or new clock.
+    It consumes the incumbent Filing Forensics *concrete* pinned source
+    authority, which validates the canonical source snapshot and reads both
+    the document's receipt sidecar and exact bytes by checksum. The caller's
+    first_retained_receipt_id must come from that source owner's historical
+    original-receipt selection, never from a request or a fresh reprocessing.
+    A single historical receipt does not itself prove issuer/window coverage;
+    the separately attested SourceCoverageReceipt remains mandatory.
+
+    Returns None on missing, stale, ambiguous or corrupted source evidence.
+    This is NOT a rights decision: the exact URL/digest still needs the current
+    source-rights owner's independently issued PublicSourceGrant.
+    """
+    try:
+        from engine.fundamental_forensics.filing_attestation import (
+            PinnedSourceAuthority,
+        )
+        from engine.fundamental_forensics.sec_document_spine import (
+            HARD_MAX_ARCHIVE_DOCUMENT_BYTES,
+            HARD_MAX_FILING_MANIFEST_BYTES,
+            manifest_from_json_bytes,
+        )
+        from collectors.sec_document_spine import manifest_storage_key
+        if (type(authority) is not PinnedSourceAuthority
+                or not isinstance(source_event, Mapping)
+                or source_event.get("source") != _EARNINGS_SOURCE
+                or not isinstance(manifest_key, str)
+                or not isinstance(first_retained_receipt_id, str)
+                or not first_retained_receipt_id.strip()
+                or len(first_retained_receipt_id) > 128):
+            return None
+        now = _utc(checked_at_utc)
+        pinned_at = _utc(authority.snapshot_at)
+        if (now is None or pinned_at is None or pinned_at > now
+                or now - pinned_at > timedelta(minutes=10)):
+            return None
+
+        filing_key = source_event.get("filing_key")
+        if not isinstance(filing_key, str) or not _ACCESSION.fullmatch(filing_key):
+            return None
+        cik = source_event.get("cik")
+        if (type(cik) is not int or cik <= 0
+                or not filing_key.startswith(f"{cik:010d}:")):
+            return None
+        expected_url = _safe_url(source_event.get("source_url"), sec_only=True)
+        accepted = _utc(source_event.get("acceptance_datetime"))
+        if expected_url is None or accepted is None or accepted > now:
+            return None
+
+        raw = authority.read_file(
+            kind="archive", relative_path=manifest_key,
+            maximum_bytes=HARD_MAX_FILING_MANIFEST_BYTES,
+        )
+        manifest = manifest_from_json_bytes(raw.content)
+        if (manifest_storage_key(manifest) != manifest_key
+                or manifest["issuer"]["cik"] != f"{cik:010d}"
+                or manifest["filing"]["accession"] != filing_key.split(":", 1)[1]
+                or manifest["filing"]["base_form"] != "8-K"
+                or (source_event.get("form") not in (None, "", manifest["filing"]["form"]))
+                or "2.02" not in {token.strip() for token in
+                                 str(manifest["filing"].get("items") or "").split(",")}
+                or _utc(manifest["clocks"]["accepted_at"]) != accepted):
+            return None
+
+        matched = [doc for doc in manifest["documents"]
+                   if doc["archive_url"] == expected_url
+                   and doc["availability"] == "stored"]
+        if len(matched) != 1:
+            return None
+        selected = matched[0]
+        receipt = selected["retrieval"]
+        original_at = _utc(receipt.get("retrieved_at"))
+        if (original_at is None or not accepted <= original_at <= pinned_at
+                or receipt["receipt_id"] != first_retained_receipt_id):
+            return None
+        verified_bytes = authority.read_archive_document(
+            storage_key=selected["storage_key"], expected_receipt=receipt,
+            maximum_bytes=HARD_MAX_ARCHIVE_DOCUMENT_BYTES,
+        )
+        if sha256(verified_bytes.content).hexdigest() != selected["content_sha256"]:
+            return None
+        return VerifiedDocumentObservation(
+            source_id="sec:" + filing_key,
+            document_url=expected_url,
+            document_sha256=selected["content_sha256"],
+            receipt_id=first_retained_receipt_id,
+            owner_ref="fundamental_forensics.sec_source_snapshot",
+            first_verified_at_utc=original_at,
+            checked_at_utc=now,
+            source_snapshot_version=authority.snapshot_id,
+            official_published_at_utc=None,
+        )
+    except Exception:
+        # A degraded incumbent source reader cannot admit a public packet.
+        return None
+
+
 def _allowed(source_id: str, document_url: str, resolver: RightsResolver,
              now: datetime, *, document_sha256: str = "") -> PublicSourceGrant | None:
     try:

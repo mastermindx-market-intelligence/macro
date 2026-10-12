@@ -730,3 +730,216 @@ def test_stage_a_first_appearance_before_acceptance_is_not_attested():
                    rights_resolver=versioned_rights)
     assert packet["public_safe"] is False
     assert "unqualified_verified_document_observation" in packet["missing_data"]
+
+
+def _pinned_sec_fixture(tmp_path, *, items="2.02,9.01"):
+    """Real private SEC archive contracts, synthetic bytes and clocks."""
+    from collectors.sec_document_spine import persist_archive_document, retain_filing_manifest
+    from engine.fundamental_forensics.sec_document_spine import (
+        build_filing_manifests, with_document_retrievals)
+    from engine.fundamental_forensics.source_sync import sync_source_roots
+    from engine.fundamental_forensics.filing_attestation import PinnedSourceAuthority
+    from engine.research_vault.r2_store import LocalStore
+
+    raw, archive = tmp_path / "raw", tmp_path / "archive"
+    raw.mkdir()
+    archive.mkdir()
+    accession = "0000078003-26-000094"
+    source = {"cik": 78003, "name": "Synthetic test issuer",
+              "filings": {"recent": {
+                  "accessionNumber": [accession], "form": ["8-K"],
+                  "filingDate": ["2026-08-04"], "reportDate": ["2026-06-28"],
+                  "acceptanceDateTime": ["2026-08-04T11:02:43Z"],
+                  "items": [items], "primaryDocument": ["test8k.htm"]}}}
+    manifest = build_filing_manifests(
+        source, ticker="PFE", recorded_at="2026-08-04T11:03:20Z")[0]
+    doc = manifest["documents"][0]
+    receipt = persist_archive_document(
+        archive, doc, b"synthetic test document",
+        retrieved_at="2026-08-04T11:03:10Z")
+    stored = with_document_retrievals(
+        manifest, {doc["document_id"]: receipt.to_dict()})
+    key, _, created = retain_filing_manifest(archive, stored)
+    assert created
+    local = LocalStore(tmp_path / "r2")
+    snap = sync_source_roots(
+        raw_root=raw, archive_root=archive, store=local,
+        snapshot_at="2026-08-05T11:59:00Z", publish_latest=False)
+    authority = PinnedSourceAuthority(store=local, snapshot_id=snap.snapshot_id)
+    raw_event = {**event(), "source_url": doc["archive_url"]}
+    raw_event.pop("publication_time_utc")
+    return raw_event, authority, key, receipt
+
+
+def test_pinned_sec_archive_exact_receipt_enters_v2_only_with_rights(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+    read = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert read is not None
+    assert read.document_url == raw["source_url"]
+    assert read.document_sha256 == receipt.content_sha256
+    assert read.source_snapshot_version == authority.snapshot_id
+    assert read.official_published_at_utc is None
+    assert read.first_verified_at_utc == datetime(2026, 8, 4, 11, 3, 10, tzinfo=UTC)
+    def approved(sid, now):
+        return replace(grants()(sid, now), document_url=raw["source_url"],
+                       document_sha256=receipt.content_sha256)
+    public = build(raw, rights_resolver=approved, document_observation=read)
+    assert public["public_disposition"] == "PUBLIC_READY"
+    assert public["schema"] == "catalyst.public_event/v2"
+    assert public["publication_time_utc"] is None
+    assert public["sources"][0]["observation_receipt_id"] == receipt.receipt_id
+    refused = build(raw, document_observation=read)
+    assert refused["public_disposition"] == "BLOCKED_PUBLIC"
+
+
+def test_pinned_sec_archive_refuses_unmatched_first_receipt_and_filing(tmp_path):
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+    args = dict(authority=authority, manifest_key=key,
+                first_retained_receipt_id=receipt.receipt_id,
+                checked_at_utc=NOW)
+    assert observation_from_pinned_sec_archive(
+        raw, **{**args, "first_retained_receipt_id": "not-the-original-receipt"}) is None
+    assert observation_from_pinned_sec_archive(
+        {**raw, "source_url": SEC_URL}, **args) is None
+    assert observation_from_pinned_sec_archive(
+        {**raw, "cik": 99999}, **args) is None
+    assert observation_from_pinned_sec_archive(
+        {**raw, "filing_key": "0000078003:0000078003-26-000095"}, **args) is None
+    assert observation_from_pinned_sec_archive(
+        {**raw, "acceptance_datetime": "2026-08-04T11:03:20Z"}, **args) is None
+    assert observation_from_pinned_sec_archive(
+        raw, **{**args, "authority": object()}) is None
+
+
+def test_pinned_sec_archive_fails_stale_or_unrelated_item(tmp_path):
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+    args = dict(authority=authority, manifest_key=key,
+                first_retained_receipt_id=receipt.receipt_id)
+    assert observation_from_pinned_sec_archive(
+        raw, checked_at_utc=NOW + timedelta(minutes=15), **args) is None
+    assert observation_from_pinned_sec_archive(
+        raw, checked_at_utc=NOW - timedelta(minutes=3), **args) is None
+
+    other = tmp_path / "other_archive"
+    other.mkdir()
+    alternate, pinned, other_key, other_receipt = _pinned_sec_fixture(
+        other, items="9.01")
+    assert observation_from_pinned_sec_archive(
+        alternate, authority=pinned, manifest_key=other_key,
+        first_retained_receipt_id=other_receipt.receipt_id,
+        checked_at_utc=NOW) is None
+
+
+def test_existing_sec_retention_owner_reuses_original_document_observation(tmp_path):
+    """Canonical collector preserves earliest retained receipt on rerender."""
+    from copy import deepcopy
+    from collectors.sec_document_spine import (
+        find_reusable_primary_retrieval, retain_filing_manifest)
+    from engine.fundamental_forensics.sec_document_spine import (
+        HARD_MAX_FILING_MANIFEST_BYTES, manifest_from_json_bytes, manifest_id_for)
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+    pinned = authority.read_file(
+        kind="archive", relative_path=key,
+        maximum_bytes=HARD_MAX_FILING_MANIFEST_BYTES)
+    original = manifest_from_json_bytes(pinned.content)
+    earliest = find_reusable_primary_retrieval(tmp_path / "archive", original)
+    assert earliest is not None
+    assert earliest["receipt_id"] == receipt.receipt_id
+    assert datetime.fromisoformat(
+        earliest["retrieved_at"].replace("Z", "+00:00")
+    ) == datetime(2026, 8, 4, 11, 3, 10, tzinfo=UTC)
+
+    reprocessed = deepcopy(original)
+    reprocessed["clocks"]["recorded_at"] = "2026-08-05T11:58:00.000000Z"
+    reprocessed["manifest_id"] = manifest_id_for(reprocessed)
+    key_again, retained, minted = retain_filing_manifest(
+        tmp_path / "archive", reprocessed)
+    assert not minted
+    assert key_again == key
+    assert datetime.fromisoformat(
+        retained["clocks"]["recorded_at"].replace("Z", "+00:00")
+    ) == datetime(2026, 8, 4, 11, 3, 20, tzinfo=UTC)
+
+    verified = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key_again,
+        first_retained_receipt_id=earliest["receipt_id"], checked_at_utc=NOW)
+    assert verified is not None
+    assert verified.first_verified_at_utc == datetime(2026, 8, 4, 11, 3, 10, tzinfo=UTC)
+
+
+def test_pinned_sec_source_rejects_event_form_mismatch(tmp_path):
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+    assert observation_from_pinned_sec_archive(
+        {**raw, "form": "10-K"},
+        authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id,
+        checked_at_utc=NOW) is None
+
+
+def test_real_pinned_sec_bytes_compose_complete_stage_a_scan_only_with_owner_window(tmp_path):
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    from engine.marketing.catalyst_scan import SourceCoverageReceipt, compose_scan
+
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+    observation = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observation is not None
+
+    def document_grant(sid, at):
+        return replace(grants()(sid, at), document_url=raw["source_url"],
+                       document_sha256=observation.document_sha256)
+    event_packet = build(
+        raw, document_observation=observation, rights_resolver=document_grant)
+    coverage = SourceCoverageReceipt(
+        source="edgar_8k_202", receipt_id="synthetic-owner-complete-read",
+        owner_ref="synthetic-incumbent-source-owner",
+        snapshot_version=authority.snapshot_id,
+        issuer_tickers=frozenset({"PFE"}),
+        window_start_utc=NOW - timedelta(days=7),
+        window_end_utc=NOW,
+        checked_at_utc=NOW,
+        outcome="COMPLETE", pagination_exhausted=True, truncated=False,
+        returned_events=1, event_limit=20,
+    )
+    missing = compose_scan(["PFE"], packets=[event_packet],
+                           issuers=universe(), as_of=NOW)
+    assert missing["publication_state"] == "UNAVAILABLE"
+    assert missing["results"][0]["what_changed"] == []
+    complete = compose_scan(["PFE", "OUT"], packets=[event_packet],
+                            issuers=universe(), as_of=NOW, coverage=coverage)
+    assert complete["schema"] == "catalyst.scan/v2"
+    assert [row["status"] for row in complete["results"]] == [
+        "SUPPORTED", "NOT_COVERED"]
+    assert complete["results"][0]["sources"][0]["published_at_utc"] is None
+    assert "source_snapshot_version" not in str(complete["results"][0])
+
+
+def test_corrupt_pinned_sec_receipt_sidecar_denies_document_observation(tmp_path):
+    from collectors.sec_document_spine import receipt_storage_key
+    from collectors.sec_document_spine import HARD_MAX_ARCHIVE_RECEIPT_BYTES
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+
+    raw, authority, manifest_key, receipt = _pinned_sec_fixture(tmp_path)
+    key = receipt_storage_key(receipt.receipt_id)
+    sidecar = authority.read_file(
+        kind="archive", relative_path=key,
+        maximum_bytes=HARD_MAX_ARCHIVE_RECEIPT_BYTES)
+    # The outer R2 object is private and content-addressed; mutate only the
+    # disposable test store to distinguish a pinned-byte failure from rights.
+    (tmp_path / "r2" / sidecar.witness.object_key).write_bytes(
+        b"synthetic-corrupted-sidecar")
+    refused = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=manifest_key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert refused is None
