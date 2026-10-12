@@ -25,7 +25,7 @@
     topic: 'all',
     tab: 'radar',
     // §6 URL state: everything below is serialised into the query string, so a
-    // permalink is the whole desk — no localStorage, no sessionStorage.
+    // permalink is the whole desk — no browser storage APIs are touched.
     asOfDate: '',
     policy: 'latest_known_as_of',
     cohortId: '',
@@ -2059,8 +2059,8 @@
   }
 
   // ── Peer panel (§4, R5) ─────────────────────────────────────────────────
-  // Read-only. URL state is the only persistence; no localStorage, no
-  // sessionStorage. The payload blob is C1's CohortTable.to_dict(); policy
+  // Read-only. URL state is the only persistence; no browser storage APIs
+  // are touched. The payload blob is C1's CohortTable.to_dict(); policy
   // fields are not echoed by to_dict(), so the URL is the authority for the
   // policy line.
   var PEER_EXCLUSIONS = {
@@ -4608,7 +4608,16 @@
       freshnessCopy: freshnessCopy,
       state: state,
       ui: ui,
-      cacheUi: cacheUi
+      cacheUi: cacheUi,
+      // P2 URL-state + exact-value seams for the dependency-free Node
+      // contract suite; production never sets this sentinel.
+      writeUrl: writeUrl,
+      readUrlParams: readUrlParams,
+      applyUrlState: applyUrlState,
+      closeDrawerAndSync: closeDrawerAndSync,
+      renderCellEvidence: renderCellEvidence,
+      cellEvidenceFromControl: cellEvidenceFromControl,
+      bindEvents: bindEvents
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });
