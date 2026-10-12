@@ -32,36 +32,36 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955, 8986, 9004, 9018]
+    pr: [8698, 945, 955, 8986, 9004, 9018, 9020]
 next_action: >-
-  Original EOD wave10 is fully settled and qualified: 5000 successful requests,
-  zero failures, 4970 nonempty histories, 30 empty responses and 12699484 bars.
-  Continue original disjoint wave11, started 2026-10-12 16:00:35 UTC after real
-  prior settlement and fresh quota/source/storage checks. Its accepted prefix03
-  brings the archive to 24451 nonempty histories and 54595389 distinct bars,
-  with 73 empty and 23165 uncaptured desired catalogue windows. Qualify only new
-  completed responses; preserve the unchanged original collector/current writer.
-  PR 9018 merged f5d1cec6e56b4f8e07e4ea9038293a3072f4b1dd after all twelve original
-  CI packs/final gate, active authority/fences and independent architecture review.
-  Canonical module/test bytes and unchanged owned Tiingo CI job were verified;
-  unrelated peer CI additions were preserved. Its reviewed rolling callback helper
-  is available only for future unlaunched wave12. Require actual successful prior
-  settlement, fresh quota/source/storage/collision checks, exact module/plan/method
-  binding, four in flight and unchanged byte/resource bounds before launch. All
-  sixteen held symbols and prior reservations remain excluded. Macro 8986's real
-  installed release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; its accepted
-  actual canonical Lab trial and installed reads remain valid. Evidence 9004
-  merged dad025903cd621b994ee9a18bcaba18138518b10 without a runtime reinstall.
-  Exactly four contracts are PRODUCED and twenty remain PROPOSED. Terminal 955
-  head 1a74e3cf93368a5c5381f0110b80601dff0ae3e3 passed all twelve original dispatched
-  jobs on 38272365047; original PR run 38272372019 remains action_required and
-  the required aggregate is absent from the PR rollup. Preserve
-  the original approval refusal before protected landing and fresh VPS builder
-  preflight. The next published BOATS opening is 2026-10-13 00:00 UTC; no future
-  subscriber or scheduler is launched. Standalone split and SHW/PFE failures remain
-  held; the 75 accepted fundamental captures across 25 companies serve roughly three years.
-  Deep/all-symbol serving, dated identity, PIT and responsive live BOATS acceptance
-  remain open. Save material deltas and continue ready work.
+  Original EOD wave11 is fully settled and qualified: 5000 successful requests,
+  zero failures, 4968 nonempty histories, 32 empty responses and 10531732 bars.
+  Eighteen accepted snapshots close every original request. Continue original
+  disjoint wave12, actually started 2026-10-12 18:29:54 UTC after successful prior
+  settlement and fresh quota/source/storage/collision checks. Its first 232
+  qualified responses bring the census to 28416 nonempty histories and 61901655
+  bars, with 100 empty and 19173 uncaptured desired windows. Verify only new
+  completed responses and accept the actual full admission trace after settlement.
+  Source 9018 and evidence 9020 are merged; the unchanged reviewed module is
+  actually running through the original collector. Prepared wave13 reserves all
+  wave12 selections and has zero preflight collisions; require successful prior
+  settlement and fresh quota/source/resource/collision checks before launch.
+  Preserve all sixteen held symbols, source/key custody, four in flight, rolling
+  local admissions no faster than four per five seconds, the 24 GiB byte stop
+  threshold and 40 GiB admission floor. Evidence 9020 merged b169a57fffe07ecff91fca0b830870e8b6318a96
+  after all twelve original CI packs/final gate and active protections passed.
+  Macro 8986's immutable installed release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886;
+  its accepted actual Lab trial and installed reads remain valid. Four contracts
+  are PRODUCED and twenty remain PROPOSED. At the wave11 closure frontier,
+  Terminal 955 remains OPEN/BLOCKED at 1a74e3cf93368a5c5381f0110b80601dff0ae3e3.
+  All twelve original dispatched jobs passed on 38272365047; original PR run
+  38272372019 is still action_required and the required aggregate is absent.
+  Preserve its original approval refusal before protected landing and fresh VPS
+  builder preflight. Next published BOATS opening is 2026-10-13 00:00 UTC; no
+  subscriber or scheduler is launched. Standalone split and SHW/PFE failures are
+  held. The 75 accepted fundamental captures across 25 companies serve roughly
+  three years; deep/all-symbol serving, dated identity, PIT and responsive live
+  BOATS acceptance remain open. Save material deltas and continue ready work.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -82,6 +82,7 @@ artifacts:
   - docs/tiingo-evidence/20261012-installed-research/
   - docs/tiingo-evidence/20261012-eod-finite-scopes/
   - docs/tiingo-evidence/20261012-canonical-capture-admission/
+  - docs/tiingo-evidence/20261012-wave11-rolling-continuation/
 landmines:
   - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
   - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.

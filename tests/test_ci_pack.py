@@ -4703,6 +4703,12 @@ CURATED_EXCLUSIVE = {
     # build_free_content / plan_book packing probes. scope: exclusive pins it
     # to its measured closure, so it must be listed here.
     "gmi-classification-axes",
+    # 2026-10-12 FIF kernel guards (seat ruling, candidate y): the class-A
+    # Financial Intelligence Fabric suites moved off the data-health lanes.
+    # Inference would union ~139 fallback roots (the app/ TestClient suites
+    # import app.main) and breach all three PACKING_PROBES; scope: exclusive
+    # pins the job to the FIF globs plus its measured static/runtime closure.
+    "fif-kernel-guards",
 }
 
 
