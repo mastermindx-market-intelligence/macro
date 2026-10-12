@@ -39,6 +39,7 @@ import logging
 import os
 import threading
 import time
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -861,6 +862,157 @@ def _has_live_subscription(customer_id: str) -> bool:
     return False
 
 
+def _checkout_idempotency_key(setup_intent_id: str) -> str:
+    """The Stripe idempotency key for ONE logical checkout completion.
+
+    The canonical checkout identity is the SetupIntent: /subscribe/init mints exactly one per
+    checkout, /complete re-retrieves it server-side and refuses it unless it belongs to THIS
+    user's customer — so the id is both stable across retries of one completion and unforgeable
+    across users. Keying the Subscription.create on it makes the create at-most-once for that
+    checkout in Stripe itself, which is the only place that survives a process restart or a
+    second uvicorn worker (an in-process lock does not).
+
+    The operation prefix is load-bearing: Stripe raises `idempotency_error` when a key is reused
+    on a request that does not match the first request's *endpoint and parameters*, so scoping the
+    key to this one operation keeps it from ever colliding with another call that happens to know
+    the same SetupIntent id.
+
+    Validity window: Stripe retains an idempotency result for AT LEAST 24 hours ("You can remove
+    keys from the system automatically after they're at least 24 hours old... We generate a new
+    request if a key is reused after the original is pruned" — docs.stripe.com/api/idempotent_requests).
+    After that a replay of the same SetupIntent would execute fresh — which is exactly why the
+    _has_live_subscription guard above is KEPT rather than replaced: past the retention window the
+    first subscription is long since visible, so the guard refuses the replay with 409. The key
+    covers the seconds-wide race; the guard covers the long tail.
+    """
+    return f"mm_sub_create:v1:{setup_intent_id}"
+
+
+def _is_idempotency_conflict(exc: Exception) -> bool:
+    """True when Stripe refused a keyed request because one with that key is already executing.
+
+    Stripe does NOT save a result for this case ("the request conflicts with another request
+    that's executing concurrently, we don't save the idempotent result... You can retry these
+    requests"), so the loser of a same-key race must retry to collect the winner's cached
+    response. The docs pin the 409 status only in the generic status table, so this is duck-typed
+    over http_status and the error payload rather than importing stripe.error — app.billing
+    imports the SDK lazily, and the offline tests raise plain exceptions.
+
+    Misclassification is deliberately benign: retries are bounded, and every exhausted path falls
+    through to the same converge-on-live-subscription check.
+    """
+    if getattr(exc, "http_status", None) == 409:
+        return True
+    err = getattr(exc, "error", None)
+    for probe in (err, exc):
+        if probe is None:
+            continue
+        kind = _field(probe, "type", None) or getattr(probe, "code", None)
+        if isinstance(kind, str) and "idempotency" in kind.lower():
+            return True
+    return False
+
+
+def _sub_created(sub: Any) -> int:
+    """Stripe `created` epoch for a subscription, 0 when absent (fakes/partial objects)."""
+    try:
+        return int(_field(sub, "created", 0) or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _live_subscriptions(customer_id: str) -> list[Any]:
+    """Every active|trialing subscription for the customer — the duplicate-detection read.
+
+    Same `status='all'` then filter as _has_live_subscription/_live_subscription/_compute_entitlement,
+    so all four agree on what "live" means.
+    """
+    stripe = _stripe()
+    out: list[Any] = []
+    for s in stripe.Subscription.list(customer=customer_id, status="all", limit=20).data:
+        status = s["status"] if isinstance(s, dict) else s.status
+        if status in ("active", "trialing"):
+            out.append(s)
+    return out
+
+
+_IDEMPOTENCY_RETRY_DELAYS_SEC = (0.4, 0.9)
+
+
+def _create_subscription_idempotent(create_args: dict[str, Any], idem_key: str) -> Any:
+    """Subscription.create under `idem_key`, retrying ONLY the concurrent-same-key conflict.
+
+    Stripe saves no result for a request that "conflicts with another request that's executing
+    concurrently" and tells the caller it may retry — so the loser of a two-tab race has to come
+    back for the winner's cached response. That retry is what turns the race into one subscription
+    reported twice instead of a spurious error. Every other failure is re-raised for the route's
+    own handling (sold-out 410 / generic 502), and the retries are bounded so a misread error
+    costs ~1.3s at worst.
+    """
+    stripe = _stripe()
+    for delay in (*_IDEMPOTENCY_RETRY_DELAYS_SEC, None):
+        try:
+            return stripe.Subscription.create(**create_args, idempotency_key=idem_key)
+        except Exception as exc:  # noqa: BLE001 — classified below; non-conflicts re-raise as-is
+            if delay is None or not _is_idempotency_conflict(exc):
+                raise
+            log.info("billing: idempotency conflict on %s — retrying in %.1fs", idem_key, delay)
+            time.sleep(delay)
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
+def _converge_duplicate_subscription(sub: Any, customer_id: str, user_id: str) -> bool:
+    """True when `sub` is a duplicate that has been stood down — the caller must then 409.
+
+    The idempotency key makes ONE checkout at-most-once, but a second tab that ran its own
+    /subscribe/init holds a DIFFERENT SetupIntent, i.e. a different Stripe request identity that
+    no key can merge. This is the backstop for exactly that case: if another live subscription is
+    already there and is strictly older than the row we just created, ours is the duplicate.
+
+    Two refusals keep this from ever destroying good billing state:
+      - we only ever cancel the subscription THIS request created, never the other caller's;
+      - we only cancel while ours is still `trialing`, where nothing has been charged. A
+        plans.yml `trial_days: 0` tier bills at creation, and silently cancelling a paid
+        invoice is a refund decision this route does not get to make — that case is logged
+        loudly for operator reconciliation and the subscription is kept.
+    """
+    sub_id = _sub_id(sub)
+    if not sub_id:
+        return False
+    try:
+        others = [s for s in _live_subscriptions(customer_id) if _sub_id(s) not in (None, sub_id)]
+    except Exception as exc:  # noqa: BLE001 — never fail a completed purchase on the audit read
+        log.warning("billing: duplicate-subscription check failed for %s (%s)", user_id, exc)
+        return False
+    if not others:
+        return False
+
+    # Deterministic winner: oldest `created`, id as the tiebreak, so two racing callers reading
+    # the same list always elect the same survivor and never cancel each other.
+    ours = (_sub_created(sub), sub_id)
+    winner = min((_sub_created(s), _sub_id(s) or "") for s in others)
+    if winner >= ours:
+        log.error("billing: customer %s holds %d live subscriptions; ours (%s) is the oldest — "
+                  "leaving the newer row to its own caller", customer_id, len(others) + 1, sub_id)
+        return False
+
+    status = _field(sub, "status", None)
+    if status != "trialing":
+        log.error("billing: DUPLICATE SUBSCRIPTION for %s — %s (status=%s) has already billed and "
+                  "was NOT auto-cancelled alongside %s; needs manual reconciliation",
+                  customer_id, sub_id, status, winner[1])
+        return False
+
+    try:
+        _stripe().Subscription.cancel(sub_id)
+    except Exception as exc:  # noqa: BLE001
+        log.error("billing: could not stand down duplicate sub %s for %s (%s)", sub_id, customer_id, exc)
+        return False
+    log.warning("billing: stood down duplicate trialing sub %s for %s (winner %s)",
+                sub_id, customer_id, winner[1])
+    return True
+
+
 def _live_subscription(customer_id: str) -> Any | None:
     """Return the customer's live (active|trialing) subscription OBJECT, or None.
 
@@ -1179,6 +1331,10 @@ def subscribe_complete(body: SubscribeCompleteRequest, user: dict = Depends(_cur
     si_customer = si["customer"] if isinstance(si, dict) else si.customer
     si_pm = si["payment_method"] if isinstance(si, dict) else si.payment_method
     si_metadata = _field(si, "metadata", {}) or {}
+    # Prefer the id Stripe echoes back over the one the client sent: the request string could
+    # differ by whitespace or case from the object's real id, and two spellings of one checkout
+    # would otherwise mint two idempotency keys — i.e. two subscriptions.
+    si_id = _field(si, "id", None) or body.setup_intent_id.strip()
     if si_status != "succeeded":
         raise HTTPException(400, f"setup intent not succeeded (status={si_status})")
     if si_customer != customer_id:
@@ -1190,15 +1346,17 @@ def subscribe_complete(body: SubscribeCompleteRequest, user: dict = Depends(_cur
         raise HTTPException(400, "setup intent offer mismatch")
 
     # Re-check the no-double-subscribe guard — a second tab could have subscribed in the card-capture
-    # window between /init and /complete.
+    # window between /init and /complete. Capture THEN raise (the /subscribe/init idiom): raising
+    # inside the try would let the `except HTTPException` arm rethrow anything the check itself
+    # raised — _stripe() answers 503 when unconfigured — reporting the probe's status as if it
+    # were this request's answer.
     try:
-        if _has_live_subscription(customer_id):
-            raise HTTPException(409, "already subscribed")
-    except HTTPException:
-        raise
+        already = _has_live_subscription(customer_id)
     except Exception as exc:  # noqa: BLE001
         log.warning("billing: subscribe complete sub-check failed (%s)", exc)
         raise HTTPException(502, "subscribe complete failed, please try again") from None
+    if already:
+        raise HTTPException(409, "already subscribed")
 
     try:
         create_args: dict[str, Any] = {
@@ -1218,14 +1376,38 @@ def subscribe_complete(body: SubscribeCompleteRequest, user: dict = Depends(_cur
         discounts = _offer_discount(offer_key, customer_id)
         if discounts:
             create_args["discounts"] = discounts
-        sub = stripe.Subscription.create(
-            **create_args
-        )
+        # The check above is NOT atomic with this create — two requests can both read "no live
+        # subscription" before either writes. The idempotency key closes that window in Stripe
+        # itself, which is the only owner that survives a process restart or a second worker:
+        # every retry of this one checkout collapses onto one subscription. See
+        # _checkout_idempotency_key for the identity and its >=24h validity window.
+        sub = _create_subscription_idempotent(create_args, _checkout_idempotency_key(si_id))
     except Exception as exc:  # noqa: BLE001
         log.warning("billing: subscription create failed for %s (%s)", user_id, exc)
+        # Converge before reporting a failure: a racer may have won while we were erroring
+        # (including the same-key conflict we ran out of retries on). If the customer is live
+        # now, the honest answer is the 409 the pre-check would have given, not a 502 that
+        # invites the client to retry into a duplicate.
+        # Same shape as the /subscribe/init guard: capture, THEN raise. Raising inside the try
+        # would make the `except HTTPException: raise` arm swallow-and-rethrow anything the probe
+        # itself raises — _stripe() answers with a 503 when unconfigured — masking the real
+        # failure below with a misleading status.
+        racer_won = False
+        try:
+            racer_won = _has_live_subscription(customer_id)
+        except Exception as probe:  # noqa: BLE001 — the original failure is the one to report
+            log.debug("billing: post-failure sub-check failed (%s)", probe)
+        if racer_won:
+            raise HTTPException(409, "already subscribed") from None
         if _offer_sold_out_after_error(offer_key):
             raise HTTPException(410, f"{_catalog()['offers'][offer_key]['name']} is sold out") from None
         raise HTTPException(502, "subscribe complete failed, please try again") from None
+
+    # A second tab that ran its own /subscribe/init holds a DIFFERENT SetupIntent, so its create
+    # carries a different idempotency key and Stripe cannot merge the two. Stand our row down if
+    # it lost that race (trialing only — see _converge_duplicate_subscription).
+    if _converge_duplicate_subscription(sub, customer_id, user_id):
+        raise HTTPException(409, "already subscribed")
 
     if offer_key:
         try:
