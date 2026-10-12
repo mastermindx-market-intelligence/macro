@@ -7965,6 +7965,12 @@ jobs:
         run: python -m pytest tests/test_model_routing_guard.py -q
       - name: agent routing control matrix (HOUSE-U2 — ROUTE registry, commission + return contracts)
         run: python -m pytest tests/test_agent_routing_control.py -q
+      - name: assigned Meta-CEO paid-Fabric guidance and read-only launcher attribution contracts
+        # Adjacent to the canonical agent-routing contract. Two previously
+        # unregistered source suites caused exact-head contract-delta failure;
+        # enroll them in this incumbent logical job rather than add another
+        # CI job or waive untested code. No network/provider launch in tests.
+        run: python -m pytest tests/test_meta_ceo_fabric_contract.py tests/test_fabric_harness_attribution.py -q
 
   contract-drift:
     if: ${{ false }}
