@@ -129,6 +129,20 @@ def _evidence(**extra):
     return _bound("prophet.daily_brief_evidence_input/v1", **args)
 
 
+def _quote(**extra):
+    args = {
+        "state": "CURRENT",
+        "observed_at": "2026-09-30T19:59:00Z",
+        "price": 101.0,
+        "basis": "trade:v1",
+        "owner_ref": "owner:daily-brief-quote:v1",
+        "source_receipt": "sha256:" + "6" * 64,
+    }
+    args.update(extra)
+    schema = args.pop("schema", "prophet.daily_brief_quote_input/v1")
+    return _bound(schema, **args)
+
+
 def _assembly(**extra):
     out = {
         "schema": "prophet.daily_brief_assembly_input/v1",
@@ -149,6 +163,7 @@ def _compose(**overrides):
         "plan": _plan(),
         "assessment": _assessment(),
         "evidence": _evidence(),
+        "quote": _quote(),
         "assembly": _assembly(),
         "recovery": None,
         "previous": None,
@@ -170,6 +185,7 @@ def test_entry_open_yields_entry_cleared_current_without_trading_authority():
     }
     assert out["clocks"]["assessment"] == "2026-09-30T19:58:00Z"
     assert out["clocks"]["quote"] == "2026-09-30T19:59:00Z"
+    assert out["clocks"]["entry_availability_quote"] == "2026-09-30T19:59:00Z"
     assert out["clocks"]["assembly"] == "2026-09-30T20:00:00Z"
     validate_daily_brief_view(out)
 
@@ -194,9 +210,13 @@ def test_stale_quote_only_changes_health_and_preserves_plan_assessment_clocks():
     out = _compose(entry_availability=stale)
     assert out["decision_state"] == "UNAVAILABLE"
     assert out["health_state"] == "STALE_QUOTE"
-    assert out["clocks"]["quote"] == "2026-09-30T19:00:00Z"
+    # B4's own quote clock stays visible as entry_availability_quote; the supplied
+    # quote owner keeps clocks.quote and cannot renew the stale B4 result.
+    assert out["clocks"]["entry_availability_quote"] == "2026-09-30T19:00:00Z"
+    assert out["clocks"]["quote"] == "2026-09-30T19:59:00Z"
     assert out["clocks"]["plan"] == "2026-09-30T19:58:00Z"
     assert out["clocks"]["assessment"] == "2026-09-30T19:58:00Z"
+    assert out["presentation"]["availability"]["state"] == "UNAVAILABLE_DATA"
 
 
 def test_partial_evidence_preserves_owner_records_but_cannot_promote_health():
@@ -397,6 +417,7 @@ def test_composition_does_not_mutate_owner_receipts():
     inputs = {
         "candidate": _candidate(), "plan": _plan(), "assessment": _assessment(),
         "evidence": _evidence(), "assembly": _assembly(), "entry_availability": _b4(),
+        "quote": _quote(),
     }
     before = copy.deepcopy(inputs)
     _compose(**inputs)
@@ -461,3 +482,315 @@ def test_explicit_no_related_plan_is_not_a_data_failure_or_entry_veto():
     assert out["presentation"]["plan"] == {
         "relation_state": "none", "exact_relation": "unavailable", "plan_ids": [],
     }
+
+
+@pytest.mark.parametrize("owner,field", [
+    ("plan", "relation_state"), ("plan", "plan_ids"), ("assembly", "state"),
+])
+@pytest.mark.parametrize("value", [None, True, 7, [], {}, [None]])
+def test_malformed_owner_json_degrades_without_raw_exception(owner, field, value):
+    record = {"plan": _plan, "assembly": _assembly}[owner]()
+    record[field] = value
+    out = _compose(**{owner: record})
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["health_state"] == "UNAVAILABLE"
+    validate_daily_brief_view(out)
+
+
+@pytest.mark.parametrize("field", ["decision_state", "health_state"])
+@pytest.mark.parametrize("value", [None, True, 7, [], {}, ["unexpected"]])
+def test_view_validator_uses_contract_errors_for_malformed_states(field, value):
+    malformed = _compose()
+    malformed[field] = value
+    with pytest.raises(DailyBriefContractError):
+        validate_daily_brief_view(malformed)
+
+
+@pytest.mark.parametrize("field", ["decision_state", "health_state"])
+@pytest.mark.parametrize("value", [[], {}, ["unexpected"]])
+def test_invalid_previous_view_never_crashes_current_unavailable_view(field, value):
+    previous = _compose()
+    previous[field] = value
+    out = _compose(assembly=_assembly(state="UNAVAILABLE"), previous=previous)
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["fallback"] is None
+
+
+def test_malformed_plan_is_typed_unavailable_in_presentation():
+    out = _compose(plan=_plan(relation_state={"unexpected": True}, plan_ids=7))
+    assert out["presentation"]["plan"] == {
+        "relation_state": "unavailable", "exact_relation": "unavailable", "plan_ids": [],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Independent caller-supplied quote owner (ported R4.8 behavior, original contract)
+# ---------------------------------------------------------------------------
+
+
+def test_legacy_call_omitting_quote_is_explicitly_unavailable_never_b4_backfill():
+    args = {
+        "candidate": _candidate(),
+        "entry_availability": _b4(),
+        "plan": _plan(),
+        "assessment": _assessment(),
+        "evidence": _evidence(),
+        "assembly": _assembly(),
+        "recovery": None,
+        "previous": None,
+        "now": NOW,
+    }
+    out = compose_daily_brief(**args)  # quote defaults to None
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "QUOTE_UNAVAILABLE" in out["issues"]
+    assert out["clocks"]["quote"] is None
+    assert out["owners"]["quote"] is None
+    assert out["presentation"]["quote"] == {
+        "state": "UNAVAILABLE", "observed_at": None, "price": None, "basis": None,
+    }
+    assert out["presentation"]["availability"]["state"] == "ENTRY_OPEN"
+    validate_daily_brief_view(out)
+
+
+def test_native_stale_quote_cannot_become_current_and_blocks_entry_publication():
+    out = _compose(quote=_quote(state="STALE"))
+    assert out["health_state"] == "STALE_QUOTE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["owners"]["quote"]["state"] == "STALE"
+    assert out["clocks"]["quote"] == "2026-09-30T19:59:00Z"
+    # Native quote state and facts are presented without calculation...
+    assert out["presentation"]["quote"] == {
+        "state": "STALE", "observed_at": "2026-09-30T19:59:00Z", "price": 101.0, "basis": "trade:v1",
+    }
+    # ...and the B4-owned result is preserved, not recomputed or downgraded by the quote.
+    assert out["presentation"]["availability"]["state"] == "ENTRY_OPEN"
+    validate_daily_brief_view(out)
+
+
+def test_native_unavailable_quote_carries_no_price_or_time_facts():
+    out = _compose(quote=_quote(state="UNAVAILABLE", observed_at=None, price=None, basis=None))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["owners"]["quote"]["state"] == "UNAVAILABLE"
+    assert out["clocks"]["quote"] is None
+    assert out["presentation"]["quote"] == {
+        "state": "UNAVAILABLE", "observed_at": None, "price": None, "basis": None,
+    }
+    validate_daily_brief_view(out)
+
+
+def test_unavailable_quote_cannot_smuggle_observed_price_facts():
+    out = _compose(quote=_quote(state="UNAVAILABLE"))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "QUOTE_INPUT_UNAVAILABLE" in out["issues"]
+    assert out["presentation"]["quote"]["price"] is None
+    assert out["presentation"]["quote"]["observed_at"] is None
+    validate_daily_brief_view(out)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("security_id", "SEC:US-XNAS-MSFT"),
+    ("episode_id", "ce:apple-2"),
+    ("candidate_generation_id", "cg:2026-09-29"),
+    ("market_session", "2026-09-29"),
+])
+def test_quote_identity_binding_is_exact_four_field(field, value):
+    out = _compose(quote=_quote(**{field: value}))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "OWNER_BINDING_MISMATCH" in out["issues"]
+    assert "QUOTE_INPUT_UNAVAILABLE" in out["issues"]
+    assert out["presentation"]["quote"]["price"] is None
+    validate_daily_brief_view(out)
+
+
+@pytest.mark.parametrize("observed_at", [
+    "2026-10-01T00:00:01Z",
+    "2026-09-30 19:59:00Z",
+    "2026-13-30T19:59:00Z",
+    "2026-09-30T19:59:00+01:00",
+    "not-a-time",
+    7,
+    None,
+])
+def test_quote_observed_at_must_be_valid_utc_and_not_future(observed_at):
+    out = _compose(quote=_quote(observed_at=observed_at))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["presentation"]["quote"]["observed_at"] is None
+    assert out["clocks"]["quote"] is None
+    validate_daily_brief_view(out)
+
+
+def test_future_quote_clock_reports_future_owner_clock():
+    out = _compose(quote=_quote(observed_at="2026-10-01T00:00:01Z"))
+    assert "FUTURE_OWNER_CLOCK" in out["issues"]
+
+
+def test_quote_older_than_b4_quote_is_not_a_latest_quote():
+    out = _compose(quote=_quote(observed_at="2026-09-30T19:58:00Z"))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "QUOTE_OLDER_THAN_ENTRY_AVAILABILITY" in out["issues"]
+    validate_daily_brief_view(out)
+
+
+@pytest.mark.parametrize("field,value", [("price", 102.5), ("basis", "trade:v2")])
+def test_same_clock_quote_cannot_contradict_the_b4_bound_quote(field, value):
+    out = _compose(quote=_quote(**{field: value}))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "QUOTE_CONTRADICTS_ENTRY_AVAILABILITY" in out["issues"]
+    validate_daily_brief_view(out)
+
+
+def test_newer_quote_preserves_b4_plan_and_assessment_clocks_and_decision():
+    out = _compose(quote=_quote(observed_at="2026-09-30T19:59:30Z", price=101.5))
+    assert out["decision_state"] == "ENTRY_CLEARED"
+    assert out["health_state"] == "CURRENT"
+    assert out["clocks"] == {
+        "candidate": "2026-09-30T19:58:00Z",
+        "quote": "2026-09-30T19:59:30Z",
+        "entry_availability": "2026-09-30T20:00:00Z",
+        "entry_availability_quote": "2026-09-30T19:59:00Z",
+        "plan": "2026-09-30T19:58:00Z",
+        "assessment": "2026-09-30T19:58:00Z",
+        "evidence": "2026-09-30T19:58:00Z",
+        "assembly": "2026-09-30T20:00:00Z",
+    }
+    assert out["presentation"]["availability"]["state"] == "ENTRY_OPEN"
+    validate_daily_brief_view(out)
+
+
+def test_quote_price_accepts_huge_integer_without_raw_exception():
+    huge = 10**80
+    out = _compose(quote=_quote(observed_at="2026-09-30T19:59:30Z", price=huge))
+    assert out["presentation"]["quote"]["price"] == huge
+    validate_daily_brief_view(out)
+    contradicted = _compose(quote=_quote(price=huge))
+    assert "QUOTE_CONTRADICTS_ENTRY_AVAILABILITY" in contradicted["issues"]
+    assert contradicted["presentation"]["quote"]["price"] is None
+
+
+@pytest.mark.parametrize("overrides", [
+    {"state": None}, {"state": True}, {"state": 7}, {"state": []}, {"state": {}},
+    {"state": "FRESH"},
+    {"owner_ref": ""},
+    {"source_receipt": "not-a-receipt"},
+    {"schema": "prophet.daily_brief_quote_input/v2"},
+    {"security_id": None},
+    {"price": "101.0"}, {"price": True}, {"price": 0}, {"price": -1.0},
+    {"price": float("inf")}, {"price": float("nan")},
+    {"basis": ""}, {"basis": 5},
+])
+def test_malformed_quote_json_degrades_to_typed_unavailable(overrides):
+    out = _compose(quote=_quote(**overrides))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "QUOTE_INPUT_UNAVAILABLE" in out["issues"]
+    assert out["presentation"]["quote"] == {
+        "state": "UNAVAILABLE", "observed_at": None, "price": None, "basis": None,
+    }
+    validate_daily_brief_view(out)
+
+
+def test_quote_input_is_not_aliased_into_the_view_and_vice_versa():
+    quote = _quote()
+    out = _compose(quote=quote)
+    validate_daily_brief_view(out)
+    frozen = copy.deepcopy(out)
+    quote["price"] = 1.0
+    quote["state"] = "STALE"
+    assert out == frozen
+    assert out["presentation"]["quote"]["price"] == 101.0
+    out["presentation"]["quote"]["price"] = 2.0
+    assert quote["price"] == 1.0
+
+
+def test_malformed_quote_still_allows_last_accepted_read_only_fallback():
+    previous = _compose()
+    out = _compose(quote=_quote(price="101.0"), previous=previous)
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["fallback"] == {
+        "kind": "LAST_ACCEPTED_READ_ONLY",
+        "view_id": previous["view_id"],
+        "decision_state": previous["decision_state"],
+        "health_state": previous["health_state"],
+    }
+
+
+def test_quote_owner_presence_does_not_change_authority_or_view_field_closure():
+    out = _compose()
+    assert set(out["authority"].values()) == {False}
+    assert set(out["owners"]) == {
+        "candidate", "plan", "assessment", "evidence", "quote",
+        "entry_availability", "assembly",
+    }
+    validate_daily_brief_view(out)
+
+
+@pytest.mark.parametrize("overrides", [
+    {"state": "NONE"},
+    {"state": "UNAVAILABLE"},
+    {"relation_state": "none", "plan_ids": []},
+    {"plan_ids": []},
+])
+def test_inconsistent_plan_state_cannot_retain_a_usable_presented_relation(overrides):
+    out = _compose(plan=_plan(**overrides))
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["health_state"] == "UNAVAILABLE"
+    assert "OWNER_INPUT_UNAVAILABLE" in out["issues"]
+    assert out["presentation"]["plan"] == {
+        "relation_state": "unavailable", "exact_relation": "unavailable", "plan_ids": [],
+    }
+    validate_daily_brief_view(out)
+
+
+@pytest.mark.parametrize("state,field,value", [
+    ("ENTRY_OPEN", "reasons", [None]),
+    ("ENTRY_OPEN", "reasons", [123]),
+    ("WAIT_PULLBACK", "blockers", [123]),
+    ("WAIT_PULLBACK", "blockers", {"unexpected": True}),
+])
+def test_malformed_b4_lists_close_decision_and_health_before_presentation(state, field, value):
+    b4 = _b4(state)
+    b4[field] = value
+    material = {k: v for k, v in b4.items() if k != "availability_id"}
+    b4["availability_id"] = "pea:" + hashlib.sha256(_canon(material).encode()).hexdigest()
+    validate_entry_availability(b4)
+    before = copy.deepcopy(b4)
+    out = _compose(entry_availability=b4)
+    assert "ENTRY_AVAILABILITY_INVALID" in out["issues"]
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["presentation"]["availability"][field] == []
+    assert b4 == before
+
+
+@pytest.mark.parametrize("field,value", [
+    ("current_price", "101.0"),
+    ("current_price", None),
+    ("current_price", True),
+    ("current_price_basis", None),
+    ("current_price_basis", {"unexpected": True}),
+])
+def test_same_clock_incomparable_b4_quote_cannot_authorize_latest_price(field, value):
+    b4 = _b4()
+    b4[field] = value
+    material = {k: v for k, v in b4.items() if k != "availability_id"}
+    b4["availability_id"] = "pea:" + hashlib.sha256(_canon(material).encode()).hexdigest()
+    validate_entry_availability(b4)
+    before = copy.deepcopy(b4)
+    quote = _quote(price=999.0 if field == "current_price" else 101.0)
+    out = _compose(entry_availability=b4, quote=quote)
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["health_state"] == "UNAVAILABLE"
+    assert "QUOTE_CONTRADICTS_ENTRY_AVAILABILITY" in out["issues"]
+    assert out["presentation"]["quote"] == {
+        "state": "UNAVAILABLE", "observed_at": None, "price": None, "basis": None,
+    }
+    assert b4 == before
