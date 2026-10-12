@@ -1,0 +1,2362 @@
+{
+  "schema": "qledger_continuity_source_plan/v1",
+  "operation": "rotation-risk-qledger-continuity-source-plan-20261009",
+  "mode": "SOURCE_ONLY_DESIGN_UNEXECUTED",
+  "source_pin": "94a20f53cdb2d866d07089df50567f059bf1073e",
+  "source_pin_origin": "Published refs/heads/main metadata",
+  "source_discovery": "GitHub code search for non-test/non-research qledger references plus linked configuration/workflow paths; every reviewed file fetched at source_pin",
+  "census_limit": "Indexed search is discovery, not a complete proof of all runtime or cross-repository consumers. Immutable examined inventory is explicit below. No raw data or tests read/executed.",
+  "custody": "UNKNOWN_NOT_EXPIRED",
+  "failed_run_effects": "UNRECONCILED",
+  "actual_operation_id": null,
+  "reviewed_source_files": 112,
+  "current_semantics": [
+    "register and register_batch keep first existing claim_id; batch also keeps first occurrence within input and preserves per-input result slots/per-claim preparation errors.",
+    "load_claims returns raw ordered JSONL rows; skips malformed legacy lines; no global deduplication.",
+    "operator_grading indexes by dictionary comprehension and therefore last occurrence; NW readers are stricter than legacy load_claims.",
+    "backfill_regime_stamps is an actual whole-file atomic rewrite exception, fill-null-only with recomputed_history provenance.",
+    "grades are separately append-only and linked by claim_id/horizon; clocks and downstream track_record remain under existing owner.",
+    "claims and grades currently use Git merge=union across separate publishing lanes; this is not same-clone process synchronization."
+  ],
+  "design": {
+    "logical_owner": "Existing engine/qledger.py / qualitative-intelligence / qledger-claims artifact",
+    "representation": "Versioned bounded native data segments plus a physically bounded paged catalog/index under data/qledger; one logical claims stream. A single ever-growing catalog JSONL is prohibited.",
+    "legacy_preservation": "Freeze the exact accepted published claims.jsonl byte-for-byte as an integrity anchor/base source; do not truncate, exclude or re-register history.",
+    "unpublished_tail_gate": "Original CI/publication owner must classify both failed-run tails/commits before any continuity acceptance. Preserve known rows and original clocks; no assumption that published main contains runner-only effects.",
+    "catalog": "Logical append-only ordered storage descriptors in immutable bounded leaf pages, reached through bounded-fanout copy-on-write index pages and a fixed-shape root containing format/base identity and one index-root reference. Descriptors hold storage transaction IDs, hashes, byte/row counts, order and revisions, not new claim/grade authority. Root/index files are not blindly line-union merged.",
+    "segment": "Bounded complete-line immutable parts under data/qledger/claims.parts/. Existing row bytes/unknown fields are retained. Proposed conservative part ceiling64MiB; final threshold and staged/reachable object limits require native publication-owner acceptance.",
+    "raw_order": "Legacy base followed by append descriptors in accepted published order; exact repeated storage descriptors are idempotent, while business-row duplicates are preserved. No sorting/dedup by claim_id/asof/timestamp.",
+    "registration": "Keep register/register_batch APIs, validation, return order, first-existing lookup, dedupe=False behavior, statuses and clock hooks. Extend read-dedupe-append over the logical stream.",
+    "rewrite_exception": "backfill_regime_stamps gets a storage-native compare-and-replace transaction targeting exact segment digests and row positions. Old bytes remain retained; replacement parts occupy identical logical positions. Only existing permitted null-fill/provenance changes may differ. Concurrent rewrite vs append/conflicting revisions fail or reconcile through incumbent owner; never generic last-writer JSON overwrite.",
+    "reader_modes": "Shared raw-line source seam supplies coherent ordered logical lines and receipt. Each consumer retains existing parser/count/order policy; storage-integrity failures in v2 never become empty history.",
+    "old_runners": "Reader-compatible release first. Actual old writers must be drained/reconciled/fenced at cutover. Old executables cannot be made safe merely by adding a manifest; no current drain is asserted.",
+    "concurrency": "Preserve existing separate-clone Git publication. Reconcile logical descriptor union against exact remote tree, preserve the exact accepted descriptor prefix and pending local order, then rebuild affected bounded index paths. Validate immutable data and metadata members. Never blindly line-union root/index files; reject incompatible revisions. No timestamp sorting or whole-file theirs authority.",
+    "interruption": "Publish complete parts before a committed descriptor; no partial batch success. Unreferenced files, missing/changed parts, incomplete final descriptor and stale base hash are explicit incomplete/corrupt states; preserve, do not delete or treat as no claims. Existing owner reconciles transaction outcome.",
+    "size_check": "Existing publishers examine staged/candidate and newly reachable blob sizes for every physical member: legacy base, data parts, catalog pages, index nodes and root. Removing an oversize file later does not erase rejected unpublished ancestry. Recovery preserves actual suffix bytes/clocks through incumbent owner without force push, truncation or unbounded metadata fallback.",
+    "local_concurrency": "Either enforce/prove incumbent per-workspace single writer or use a native local filesystem lock around read-dedupe-append; no new distributed lease/control service.",
+    "catalog_bounds": {
+      "status": "PROPOSED_BLOCKING_REQUIREMENT_BEFORE_FORMAT_ACTIVATION",
+      "limits": "Explicit byte, entry-count and descriptor-size limits for all metadata nodes; provisional metadata page ceiling 1 MiB and maximum index fanout 128 require native owner acceptance. Explicit supported depth/capacity limit fails before mutation when exhausted.",
+      "rollover": "Full leaf rolls to a new leaf; full index rolls/splits through copy-on-write ancestors. Rebuild only affected index paths; fixed-shape root never lists every page or part. Logical descriptor order remains append-only. Revision records use the same bounded representation.",
+      "snapshot": "All new data parts and metadata nodes precede root activation in the same accepted Git tree. Readers pin the root and resolve all descendants from one immutable tree or coherent local transaction snapshot. No mixed-root/worktree/HEAD generation.",
+      "integrity": "Missing/corrupt nodes, cycles, invalid depth, incomplete generation and capacity exhaustion fail completeness; no oversized emergency node or unbounded fallback catalog.",
+      "publication": "Existing publisher guards inspect every physical member including base, data parts, metadata pages, index nodes and root, plus newly reachable blobs. Final limits, rollover/recovery and concurrent-root reconciliation require source and synthetic proof before activation."
+    },
+    "registration_guarantee": "This proposal does not establish or retroactively claim global exactly-once or linearizable registration across independent clones. It preserves current observed ordering and duplicate semantics. Idempotence of an exact storage transaction replay is narrower than business-level uniqueness."
+  },
+  "waves": [
+    {
+      "wave": "A",
+      "scope": "Pure storage reader abstraction + all bypass consumers + synthetic fixtures; absent catalog preserves v1. No data files generated.",
+      "gate": "Independent source review and existing code CI; do not clear runtime custody."
+    },
+    {
+      "wave": "B",
+      "scope": "Storage-aware register/register_batch/rewrite and existing publication guards; disabled format activation until compatible reader/writer releases and owner admission.",
+      "gate": "Exact source closure, synthetic concurrency/rebase/interruption tests and native owner review."
+    },
+    {
+      "wave": "C",
+      "scope": "Original owner reconciles failed effects, binds exact base and all old publishers, authorizes one format cutover through canonical data publication.",
+      "gate": "No unknown competing writer/effect displaced; no denied capture/diagnostic reused; actual preservation proof."
+    },
+    {
+      "wave": "D",
+      "scope": "One normal non-skipped daily and other admitted native writer lanes demonstrate final publication and logical read/grade continuity.",
+      "gate": "Exact accepted pushed SHA and receipt/source clocks; fixtures and green gate-only entries are not production proof."
+    }
+  ],
+  "proposed_paths": {
+    "native_core": [
+      "engine/qledger.py",
+      "engine/qledger_store.py (optional private storage-only module)"
+    ],
+    "direct_readers": [
+      "scripts/backfill_qledger_us.py::_thesis_ids_with_placebos",
+      "engine/neuralweb/query.py::adapt_qledger",
+      "engine/neuralweb/evidence_clock.py::_adapt_qledger",
+      "engine/qledger_falsifier.py::evaluate_falsifiers",
+      "engine/operator_grading.py::_load_claims",
+      "engine/metabolism/til_fitness.py::_read_live_leg_quality",
+      "scripts/audit_claim_accountability.py::run",
+      "scripts/audit_grading_closure.py::audit_entry",
+      "scripts/check_qledger_metric_validity.py::main",
+      "scripts/build_intelligence_registry.py::_load_qledger/read_tracked"
+    ],
+    "metadata_gates": [
+      "config/synapse.yml",
+      "config/dag.yml",
+      "config/intelligence_registry_overlay.yml (only if ownership extraction needs physical-source declarations)",
+      "scripts/check_intelligence_registry.py",
+      "scripts/check_append_only_assertions.py",
+      ".gitattributes",
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "publication": [
+      "scripts/ci/daily_engine_commit_outputs.sh",
+      "scripts/ci/push_retry.sh",
+      "existing daily/asia-close/whitehouse-sentinel/backfill publishing seams; exact extra paths only after scoped owner admission"
+    ],
+    "tests": [
+      "new focused native storage/compatibility synthetic suites",
+      "existing QLedger, grading, adapter, NW, falsifier, operator, accountability, registry and publish-retry suites; no production-ledger fixtures"
+    ],
+    "excluded": [
+      "data/ or site/ mutation in source work",
+      "refused diagnostic-audit files/workspace",
+      "held options/#8257/#8191 capture or validation",
+      "metabolism and marketing stores named claims.jsonl",
+      "new scheduler/store/publishing service",
+      "QLedger grading equations or risk state"
+    ]
+  },
+  "acceptance": [
+    "Legacy fixture parity: raw byte/line order, valid rows, malformed-line policy, duplicate occurrences and unknown fields unchanged.",
+    "Existing claim across base/parts remains register winner; same-batch duplicate order, rejected claims, per-input errors and dedupe=False remain exact.",
+    "Clocks: byte-identical stored claim_id/timestamps/check_by/horizon_unit/clock_market/provenance, unchanged grades and family clock files; migration invokes no clock start or registration.",
+    "Both failed-run synthetic tails with overlapping base and different suffixes reconcile losslessly or report unknown; no fabricated historical first-issue receipt.",
+    "Two separate clone append/rebase races retain both suffixes and published prefix order under existing publisher; same claim ID/different content preserves raw occurrences and first-registration semantics.",
+    "Two concurrent incompatible rewrite descriptors fail closed; independent append plus allowed fill-null maintenance preserves all claims.",
+    "Crash at part temp/seal/catalog/stage/commit/push/clock hook boundaries is visibly uncommitted or fully attributable; retries do not drop prefix or duplicate storage transaction.",
+    "Missing/corrupt/hash-mismatched/reordered/path-escaping parts and truncated catalog refuse v2 completeness; no empty-history success.",
+    "Old reader/writer before activation behaves legacy; old binary after cutover cannot publish mutated frozen base or be treated as compatible. Enforce actual old-runner promotion gate separately.",
+    "Sparse Git-backed reader binds every manifest/part to one immutable tree; no mixed worktree/HEAD generation, and diagnostics remain data-plane reporting.",
+    "Native regime backfill parity: only allowed null fills and recomputed_history changes, identical logical row positions and identities, historical bytes retained.",
+    "Fresh publisher size guard catches oversize staged/reachable blob including rejected unpublished ancestor, gives non-retryable GH001 classification without unstage/truncate/force.",
+    "Grader/falsifier/operator/NW/registry/fitness outputs match synthetic legacy baseline; absence and corruption remain distinct.",
+    "Actual runtime promotion requires accepted owner/source + final non-skipped publication receipt; source fixtures alone cannot pass it.",
+    "High-descriptor small-batch case: many one-row batches cross multiple catalog leaf and index-level limits. Every physical member remains bounded and root stays fixed-shape; raw order and duplicate occurrences remain exact. Cover separate-clone rollover, interrupted root/index publication, missing/corrupt nodes, cycles, snapshot coherence and capacity exhaustion; no lost published prefix, unbounded fallback blob or invented global exactly-once/linearizable guarantee."
+  ],
+  "next_action": "Root may commission bounded source-only reader/compatibility implementation in a disjoint admitted workspace only after fresh exact-path source custody checks. Format/data cutover separately requires native QLedger claim binding, current writer/effect disposition, original failed-tail reconciliation, independent source review, compatible publisher deployment and explicit continuity acceptance. No action in this plan is executed or newly authorized.",
+  "inventory": [
+    {
+      "path": "engine/qledger_ui.py",
+      "blob": "d0a9450fe5e76ffc9a2a49e108bd6e6df7429ee5",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/qledger_ui.py",
+      "hits": []
+    },
+    {
+      "path": "engine/qledger_falsifier.py",
+      "blob": "3b23525f49a465a6e2b27072ccdaa76ad9df996d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/qledger_falsifier.py",
+      "hits": [
+        {
+          "line": 7,
+          "scope": "",
+          "text": "(verified: grade_qledger.py grades price returns only)."
+        },
+        {
+          "line": 9,
+          "scope": "",
+          "text": "This engine reads claims.jsonl, finds claims whose:"
+        },
+        {
+          "line": 21,
+          "scope": "",
+          "text": "claims.jsonl or grades.jsonl."
+        },
+        {
+          "line": 310,
+          "scope": "def evaluate_falsifiers(",
+          "text": "claims_path = root / \"data\" / \"qledger\" / \"claims.jsonl\""
+        },
+        {
+          "line": 315,
+          "scope": "def evaluate_falsifiers(",
+          "text": "log.info(\"qledger_falsifier: claims.jsonl absent — nothing to do\")"
+        },
+        {
+          "line": 316,
+          "scope": "def evaluate_falsifiers(",
+          "text": "return _null_summary(today, \"claims.jsonl absent or empty\")"
+        }
+      ]
+    },
+    {
+      "path": "scripts/backfill_qledger_cn.py",
+      "blob": "3f3c87bc8afca2ab12b9629082914c6ea273295e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/backfill_qledger_cn.py",
+      "hits": [
+        {
+          "line": 45,
+          "scope": "",
+          "text": "from engine.qledger import HORIZON_UNIT_TRADING, make_claim, register  # noqa: E402"
+        },
+        {
+          "line": 161,
+          "scope": "def run(root: Path, dry_run: bool = False) -> dict:",
+          "text": "stored = register(claim, root=root)"
+        }
+      ]
+    },
+    {
+      "path": "engine/qledger_evidence_clock.py",
+      "blob": "c98a197729ad1a0f29da8999212f55887e38872f",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/qledger_evidence_clock.py",
+      "hits": [
+        {
+          "line": 21,
+          "scope": "",
+          "text": "`merge=union` in .gitattributes, see data/qledger/claims.jsonl), a JSON object"
+        },
+        {
+          "line": 25,
+          "scope": "",
+          "text": "other's — exactly the failure class B4 warns about for claims.jsonl, just one"
+        }
+      ]
+    },
+    {
+      "path": "scripts/backfill_qledger_intel_hub.py",
+      "blob": "d5bf3a07c09bc746513f42dd31b1d6e770d45164",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/backfill_qledger_intel_hub.py",
+      "hits": [
+        {
+          "line": 55,
+          "scope": "",
+          "text": "from engine.qledger import HORIZON_UNIT_TRADING, make_claim, register, control_for_sector  # noqa: E402"
+        },
+        {
+          "line": 73,
+          "scope": "def _has_price(ticker: str, root: Path) -> bool:",
+          "text": "\"\"\"Quick existence check across the known price stores (same order as grade_qledger).\"\"\""
+        },
+        {
+          "line": 192,
+          "scope": "def run(root: Path, dry_run: bool = False) -> dict:",
+          "text": "stored = register(claim, root=root)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/check_qledger_metric_validity.py",
+      "blob": "f38c8073d0ec729b49fed342a847a48ff1dce46b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/check_qledger_metric_validity.py",
+      "hits": [
+        {
+          "line": 67,
+          "scope": "",
+          "text": "CLAIMS_REL = (\"data\", \"qledger\", \"claims.jsonl\")"
+        },
+        {
+          "line": 216,
+          "scope": "def main() -> int:",
+          "text": "claims_path = args.root.joinpath(*CLAIMS_REL)"
+        }
+      ]
+    },
+    {
+      "path": "engine/qledger_validity.py",
+      "blob": "94285ac29cf7ac3989b55b9d770692cf003e5793",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/qledger_validity.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/backfill_qledger_us.py",
+      "blob": "bc202b62d299968f3bc4ebb0d2ee653c63a4f660",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/backfill_qledger_us.py",
+      "hits": [
+        {
+          "line": 3,
+          "scope": "",
+          "text": "Populates data/qledger/claims.jsonl from three source ledgers:"
+        },
+        {
+          "line": 207,
+          "scope": "def _thesis_ids_with_placebos(root: Path) -> set[str]:",
+          "text": "registered in claims.jsonl.  Used to prevent duplicate placebo emission across"
+        },
+        {
+          "line": 214,
+          "scope": "def _thesis_ids_with_placebos(root: Path) -> set[str]:",
+          "text": "claims_path = root / \"data\" / \"qledger\" / \"claims.jsonl\""
+        },
+        {
+          "line": 294,
+          "scope": "def backfill_altdata(root: Path, *, dry_run: bool = False) -> int:",
+          "text": "\"\"\"Register all open altdata theses as qledger claims. Returns count registered."
+        },
+        {
+          "line": 398,
+          "scope": "def backfill_altdata(root: Path, *, dry_run: bool = False) -> int:",
+          "text": "# Emit-once guard: skip if placebos for this thesis already exist in claims.jsonl."
+        },
+        {
+          "line": 430,
+          "scope": "def backfill_altdata(root: Path, *, dry_run: bool = False) -> int:",
+          "text": "register_batch(all_claims, root)"
+        },
+        {
+          "line": 512,
+          "scope": "def backfill_radar(root: Path, *, dry_run: bool = False) -> int:",
+          "text": "stored = register(claim, root)"
+        },
+        {
+          "line": 625,
+          "scope": "def backfill_policy(root: Path, *, dry_run: bool = False) -> int:",
+          "text": "stored = register(claim, root)"
+        }
+      ]
+    },
+    {
+      "path": "engine/qledger_desk_adapter.py",
+      "blob": "e8f19e27d24b6424be6b47b572891617b4184ff2",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/qledger_desk_adapter.py",
+      "hits": [
+        {
+          "line": 286,
+          "scope": "def outcome_not_yet_determined(claim: dict, today: date) -> tuple[bool, str]:",
+          "text": "`qledger.register_batch`, which refuses it through its own, already-tested"
+        },
+        {
+          "line": 408,
+          "scope": "def register_prospective(rows: Iterable[dict], *, family: str,",
+          "text": "def register_prospective(rows: Iterable[dict], *, family: str,"
+        },
+        {
+          "line": 587,
+          "scope": "def register_prospective(rows: Iterable[dict], *, family: str,",
+          "text": "\"qledger[%s]: %d row(s) seen, 0 registered this run \""
+        },
+        {
+          "line": 596,
+          "scope": "def register_prospective(rows: Iterable[dict], *, family: str,",
+          "text": "results = qledger.register_batch(candidates, root=tmp, dedupe=True, today=today)"
+        },
+        {
+          "line": 598,
+          "scope": "def register_prospective(rows: Iterable[dict], *, family: str,",
+          "text": "results = qledger.register_batch(candidates, root=root, dedupe=True, today=today)"
+        },
+        {
+          "line": 601,
+          "scope": "def register_prospective(rows: Iterable[dict], *, family: str,",
+          "text": "print(f\"::error title={family}-qledger-register-failed::qledger[{family}] \""
+        },
+        {
+          "line": 603,
+          "scope": "def register_prospective(rows: Iterable[dict], *, family: str,",
+          "text": "log.error(\"qledger[%s]: register_batch failed: %s\", family, exc)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/sample_qledger_placebo.py",
+      "blob": "541412733ef73afd79c09e6e63f5ac535071b2ff",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/sample_qledger_placebo.py",
+      "hits": [
+        {
+          "line": 71,
+          "scope": "",
+          "text": "from engine.qledger import HORIZON_UNIT_TRADING, make_claim, register_batch  # noqa: E402"
+        },
+        {
+          "line": 308,
+          "scope": "def _register_one_event(",
+          "text": "for stored in register_batch(pending, root=root):"
+        }
+      ]
+    },
+    {
+      "path": "scripts/grade_qledger.py",
+      "blob": "6b31889b3a55a64d7c58d276f37935fae909fa9d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/grade_qledger.py",
+      "hits": [
+        {
+          "line": 1,
+          "scope": "",
+          "text": "\"\"\"scripts/grade_qledger.py — nightly qledger grading job (§2.2 W1-B1)."
+        },
+        {
+          "line": 3,
+          "scope": "",
+          "text": "Desk-independent: loads every open claim from data/qledger/claims.jsonl, grades"
+        },
+        {
+          "line": 36,
+          "scope": "",
+          "text": "python scripts/grade_qledger.py            # use repo root"
+        },
+        {
+          "line": 37,
+          "scope": "",
+          "text": "python scripts/grade_qledger.py --root /other/root"
+        },
+        {
+          "line": 38,
+          "scope": "",
+          "text": "python scripts/grade_qledger.py --dry-run  # compute only, no writes"
+        },
+        {
+          "line": 61,
+          "scope": "",
+          "text": "# Allow running as a top-level script (`python scripts/grade_qledger.py`)."
+        },
+        {
+          "line": 67,
+          "scope": "",
+          "text": "log = logging.getLogger(\"grade_qledger\")"
+        },
+        {
+          "line": 190,
+          "scope": "def compute_promotion_readiness(root: Path, families: list[str] | None = None,",
+          "text": "claims = q.load_claims(root)"
+        },
+        {
+          "line": 534,
+          "scope": "def _fire_grader_quiet_alert(n_open: int, quiet_days: int) -> None:",
+          "text": "f\"Broken ≠ quiet — check scripts/grade_qledger.py and data/qledger/run_status.json.\""
+        },
+        {
+          "line": 703,
+          "scope": "def run(root: Path | str | None = None, today: date | None = None,",
+          "text": "regime_backfill = q.backfill_regime_stamps(root)"
+        },
+        {
+          "line": 707,
+          "scope": "def run(root: Path | str | None = None, today: date | None = None,",
+          "text": "claims = q.load_claims(root)"
+        },
+        {
+          "line": 847,
+          "scope": "def run(root: Path | str | None = None, today: date | None = None,",
+          "text": "f\"[grade_qledger] open={n_open} graded_today={n_graded_today} \""
+        },
+        {
+          "line": 870,
+          "scope": "def run_as_collect_step(root: Path | str | None = None) -> None:",
+          "text": "log.error(\"[grade_qledger] grader crashed (non-fatal): %s\", exc)"
+        }
+      ]
+    },
+    {
+      "path": "engine/qledger.py",
+      "blob": "b8748e8c78896394bd8c1a5ffef8f6683d359fdd",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/qledger.py",
+      "hits": [
+        {
+          "line": 102,
+          "scope": "def _json_default(o: Any):",
+          "text": "_CLAIMS_FILE = (\"data\", \"qledger\", \"claims.jsonl\")"
+        },
+        {
+          "line": 1596,
+          "scope": "def membership_gics_sector_of(root: Path | str | None = None",
+          "text": "Handed to `qledger_desk_adapter.register_prospective(sector_of=...)`, whose"
+        },
+        {
+          "line": 1901,
+          "scope": "def _prepare_claim(claim: dict) -> dict:",
+          "text": "and register_batch(); extracted so batch registration is semantically"
+        },
+        {
+          "line": 2026,
+          "scope": "def register(claim: dict, root: Path | str | None = None,",
+          "text": "def register(claim: dict, root: Path | str | None = None,"
+        },
+        {
+          "line": 2029,
+          "scope": "def register(claim: dict, root: Path | str | None = None,",
+          "text": "`timestamp`, and `status`, then appends to data/qledger/claims.jsonl."
+        },
+        {
+          "line": 2039,
+          "scope": "def register(claim: dict, root: Path | str | None = None,",
+          "text": "O(file) PER CALL. Loop-callers must use register_batch() (one read, one"
+        },
+        {
+          "line": 2047,
+          "scope": "def register(claim: dict, root: Path | str | None = None,",
+          "text": "p = root.joinpath(*_CLAIMS_FILE)"
+        },
+        {
+          "line": 2051,
+          "scope": "def register(claim: dict, root: Path | str | None = None,",
+          "text": "for existing in load_claims(root):"
+        },
+        {
+          "line": 2064,
+          "scope": "def register_batch(claims: Iterable[dict], root: Path | str | None = None,",
+          "text": "def register_batch(claims: Iterable[dict], root: Path | str | None = None,"
+        },
+        {
+          "line": 2083,
+          "scope": "def register_batch(claims: Iterable[dict], root: Path | str | None = None,",
+          "text": "p = root.joinpath(*_CLAIMS_FILE)"
+        },
+        {
+          "line": 2088,
+          "scope": "def register_batch(claims: Iterable[dict], root: Path | str | None = None,",
+          "text": "for c in load_claims(root):          # ONE read for the whole batch"
+        },
+        {
+          "line": 2119,
+          "scope": "def backfill_regime_stamps(root: Path | str | None = None) -> dict:",
+          "text": "def backfill_regime_stamps(root: Path | str | None = None) -> dict:"
+        },
+        {
+          "line": 2138,
+          "scope": "def backfill_regime_stamps(root: Path | str | None = None) -> dict:",
+          "text": "p = root.joinpath(*_CLAIMS_FILE)"
+        },
+        {
+          "line": 2174,
+          "scope": "def backfill_regime_stamps(root: Path | str | None = None) -> dict:",
+          "text": "log.info(\"backfill_regime_stamps: skipped %d A-share/HK claim(s) (.SS/.SZ/.HK)\", n_skipped)"
+        },
+        {
+          "line": 2177,
+          "scope": "def backfill_regime_stamps(root: Path | str | None = None) -> dict:",
+          "text": "\"backfill_regime_stamps: %d claim(s) predate regime_vector coverage — vector_asof stays null\","
+        },
+        {
+          "line": 2372,
+          "scope": "def load_claims(root: Path | str | None = None) -> list[dict]:",
+          "text": "def load_claims(root: Path | str | None = None) -> list[dict]:"
+        },
+        {
+          "line": 2373,
+          "scope": "def load_claims(root: Path | str | None = None) -> list[dict]:",
+          "text": "return _read_jsonl(_root(root).joinpath(*_CLAIMS_FILE))"
+        },
+        {
+          "line": 2401,
+          "scope": "def count_unresolvable_clock_claims(root: Path | str | None = None,",
+          "text": "rows = list(claims) if claims is not None else load_claims(root)"
+        },
+        {
+          "line": 2531,
+          "scope": "def _leg_ret_in_window(ticker: str, root: Path, window: HorizonWindow) -> float | None:",
+          "text": "horizon, and `scripts/grade_qledger.py` counts exactly that outcome into"
+        },
+        {
+          "line": 2755,
+          "scope": "def grade_claim(claim: dict, root: Path | str | None = None,",
+          "text": "# bench, and `scripts/grade_qledger.py` counts it into"
+        },
+        {
+          "line": 3056,
+          "scope": "def _aggregate(claims: list[dict], grades: list[dict],",
+          "text": "scripts/grade_qledger.compute_promotion_readiness() (-> the admin Experiments"
+        },
+        {
+          "line": 3407,
+          "scope": "def compute_track_record(root: Path | str | None = None) -> dict:",
+          "text": "claims = load_claims(root)"
+        },
+        {
+          "line": 3739,
+          "scope": "def promotion_check(claim_family: str, horizon: int,",
+          "text": "claim_family: The `claim_family` tag (matches qledger claims.jsonl rows)."
+        },
+        {
+          "line": 3753,
+          "scope": "def promotion_check(claim_family: str, horizon: int,",
+          "text": "claims = load_claims(root)"
+        },
+        {
+          "line": 4082,
+          "scope": "def promotion_check_by_market(claim_family: str, horizon: int,",
+          "text": "`scripts.grade_qledger.compute_promotion_readiness`) ever names one, so a"
+        },
+        {
+          "line": 4242,
+          "scope": "def matched_control_check(claim_family: str, horizon: int,",
+          "text": "claims = load_claims(root)"
+        },
+        {
+          "line": 4680,
+          "scope": "def promotion_check_dispatch(claim_family: str, horizon: int,",
+          "text": "`scripts/grade_qledger.py --today` exists for replay, and it reaches"
+        },
+        {
+          "line": 4704,
+          "scope": "def emit_ladder_states(root: Path | str | None = None,",
+          "text": "claims.jsonl and emit the results into track_record.json under 'ladder_states'."
+        },
+        {
+          "line": 4706,
+          "scope": "def emit_ladder_states(root: Path | str | None = None,",
+          "text": "Called by grade_qledger.py at end-of-collect so the ladder state is always"
+        },
+        {
+          "line": 4714,
+          "scope": "def emit_ladder_states(root: Path | str | None = None,",
+          "text": "claims = load_claims(root)"
+        }
+      ]
+    },
+    {
+      "path": "engine/missing_tape.py",
+      "blob": "03baa656d5051dddaf046f71e0bfdcdf0194b0c5",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/missing_tape.py",
+      "hits": [
+        {
+          "line": 106,
+          "scope": "def _register_claim(asof: str, risk_level: str, divergence_z: float | None) -> None:",
+          "text": "LOG.warning(\"qledger import failed, claim not registered: %s\", exc)"
+        },
+        {
+          "line": 136,
+          "scope": "def _register_claim(asof: str, risk_level: str, divergence_z: float | None) -> None:",
+          "text": "result = qledger.register(claim)"
+        },
+        {
+          "line": 137,
+          "scope": "def _register_claim(asof: str, risk_level: str, divergence_z: float | None) -> None:",
+          "text": "LOG.info(\"qledger claim registered: claim_id=%s status=%s\","
+        },
+        {
+          "line": 140,
+          "scope": "def _register_claim(asof: str, risk_level: str, divergence_z: float | None) -> None:",
+          "text": "LOG.warning(\"qledger.register failed: %s\", exc)"
+        }
+      ]
+    },
+    {
+      "path": "engine/demand_ledger.py",
+      "blob": "c4b1975646e0c1d767a0b7bccbd8488f453d4ab5",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/demand_ledger.py",
+      "hits": [
+        {
+          "line": 292,
+          "scope": "def _register_qledger_claims(written: list, root, today=None) -> dict | None:",
+          "text": "return _qadapt.register_prospective("
+        }
+      ]
+    },
+    {
+      "path": "scripts/grade_thematic.py",
+      "blob": "d5f170d579cacd90d17add0c9f7fa42f09d931b7",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/grade_thematic.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_alt_data.py",
+      "blob": "3a5e812baee233e2541dd6c93e34aa9e610c90d8",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_alt_data.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_til_fitness.py",
+      "blob": "f018a0cce980c434c7b05421eb5b83156be2f962",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_til_fitness.py",
+      "hits": [
+        {
+          "line": 10,
+          "scope": "",
+          "text": "- data/qledger/claims.jsonl"
+        }
+      ]
+    },
+    {
+      "path": "engine/flip_confirmation.py",
+      "blob": "9b351d9689aa89f03660dad2b5027b26a4dfcc03",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/flip_confirmation.py",
+      "hits": [
+        {
+          "line": 472,
+          "scope": "def register_claims(events: list[dict], root: Path | None = None) -> list[dict]:",
+          "text": "return q.register_batch(claims_in, root=root, dedupe=True)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/shadow_importance_v0.py",
+      "blob": "ad9e5abd9e57eb984105d50251d6895ada43f6b1",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/shadow_importance_v0.py",
+      "hits": [
+        {
+          "line": 62,
+          "scope": "",
+          "text": "from engine.qledger import HORIZON_UNIT_TRADING, make_claim, register_batch  # noqa: E402"
+        },
+        {
+          "line": 222,
+          "scope": "def _register_lane(lane: str, df, root: Path, band_frac: float,",
+          "text": "results = register_batch(pending, root=root)"
+        },
+        {
+          "line": 270,
+          "scope": "def run(root: Path, dry_run: bool = False, band_frac: float = _BAND_FRAC_DEFAULT,",
+          "text": "# not load-bearing: grade_qledger only grades claims matured >= 5 days"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_communique_diff.py",
+      "blob": "97e4c5b6ffaafb0f79d837092a8c34778dabac8c",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_communique_diff.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/backfill_regime_stamps.py",
+      "blob": "53e0949c80dbd6040917f0d80db590d39b4e11f1",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/backfill_regime_stamps.py",
+      "hits": [
+        {
+          "line": 1,
+          "scope": "",
+          "text": "\"\"\"scripts/backfill_regime_stamps.py — Thin wrapper for qledger regime stamp backfill."
+        },
+        {
+          "line": 3,
+          "scope": "",
+          "text": "Calls engine.qledger.backfill_regime_stamps() which has NO CLI. Near-term yield"
+        },
+        {
+          "line": 7,
+          "scope": "",
+          "text": "in engine/qledger.py:backfill_regime_stamps()."
+        },
+        {
+          "line": 22,
+          "scope": "def main() -> int:",
+          "text": "\"\"\"Call engine.qledger.backfill_regime_stamps() and log the honest yield.\"\"\""
+        },
+        {
+          "line": 28,
+          "scope": "def main() -> int:",
+          "text": "log.error(\"backfill_regime_stamps: cannot import engine.qledger (%s) — skipping\", e)"
+        },
+        {
+          "line": 31,
+          "scope": "def main() -> int:",
+          "text": "fn = getattr(qledger, \"backfill_regime_stamps\", None)"
+        },
+        {
+          "line": 34,
+          "scope": "def main() -> int:",
+          "text": "\"backfill_regime_stamps: engine.qledger has no backfill_regime_stamps() — \""
+        },
+        {
+          "line": 41,
+          "scope": "def main() -> int:",
+          "text": "# engine.qledger.backfill_regime_stamps() returns a dict or count"
+        },
+        {
+          "line": 46,
+          "scope": "def main() -> int:",
+          "text": "f\"backfill_regime_stamps: {stamped} row(s) stamped, \""
+        },
+        {
+          "line": 51,
+          "scope": "def main() -> int:",
+          "text": "print(f\"backfill_regime_stamps: {result} row(s) stamped\")"
+        },
+        {
+          "line": 53,
+          "scope": "def main() -> int:",
+          "text": "print(f\"backfill_regime_stamps: complete (result={result!r})\")"
+        },
+        {
+          "line": 56,
+          "scope": "def main() -> int:",
+          "text": "log.warning(\"backfill_regime_stamps: backfill_regime_stamps() failed (%s) — non-fatal\", e)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_flip_confirmation.py",
+      "blob": "15c75321eb46f2d942630ae7829200dc9f84d64c",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_flip_confirmation.py",
+      "hits": [
+        {
+          "line": 43,
+          "scope": "def main() -> int:",
+          "text": "\"%d qledger claims registered (confirmed=%d, faded=%d, mixed=%d)\","
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_explanation_memory.py",
+      "blob": "6e17f36f5cc4e2358b8e7a488979182054b2042e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_explanation_memory.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_basket_turn_grading.py",
+      "blob": "c1c6778212ef171da5e9b7c1873c367ba4a1e5f3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_basket_turn_grading.py",
+      "hits": [
+        {
+          "line": 59,
+          "scope": "def main() -> int:",
+          "text": "\"%d qledger claim(s) registered\","
+        }
+      ]
+    },
+    {
+      "path": "scripts/audit_claim_accountability.py",
+      "blob": "cd1dda4d2da4caf83f0254a88ae8ad554df20a71",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/audit_claim_accountability.py",
+      "hits": [
+        {
+          "line": 7,
+          "scope": "",
+          "text": "data/qledger/claims.jsonl          — QI-owned claim store"
+        },
+        {
+          "line": 219,
+          "scope": "def run(root: Path | None = None, write: bool = True) -> dict:",
+          "text": "claims_path = root / \"data\" / \"qledger\" / \"claims.jsonl\""
+        }
+      ]
+    },
+    {
+      "path": "scripts/prophet_flagship_voi_report.py",
+      "blob": "512748d203ecf938c9d4e8a9b35b8e6df81b57c3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/prophet_flagship_voi_report.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/report_importance_duel.py",
+      "blob": "ac5af4c91403eb10f3a749d8decdb2329b50728e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/report_importance_duel.py",
+      "hits": [
+        {
+          "line": 5,
+          "scope": "",
+          "text": "nightly grader writes (data/qledger/claims.jsonl + grades.jsonl) and prints, per"
+        },
+        {
+          "line": 128,
+          "scope": "def build_report(root: Path | str | None = None) -> dict:",
+          "text": "claims = q.load_claims(root)"
+        }
+      ]
+    },
+    {
+      "path": "lib/ticker_aliases.py",
+      "blob": "7d1aacd5c32209f9e47461f50287db25e2404a65",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/lib/ticker_aliases.py",
+      "hits": []
+    },
+    {
+      "path": "engine/metabolism/til_fitness.py",
+      "blob": "31a73e78fe099cae275d28780e5b36a6a19687f6",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/metabolism/til_fitness.py",
+      "hits": [
+        {
+          "line": 10,
+          "scope": "",
+          "text": "- data/qledger/claims.jsonl                (claim registry)"
+        },
+        {
+          "line": 22,
+          "scope": "",
+          "text": "Source: cross of claims.jsonl + falsifier_evaluations."
+        },
+        {
+          "line": 255,
+          "scope": "def _read_live_leg_quality(root: Path) -> dict[str, Any]:",
+          "text": "'Covered leg' = a claim in claims.jsonl that has a falsifier + check_by."
+        },
+        {
+          "line": 260,
+          "scope": "def _read_live_leg_quality(root: Path) -> dict[str, Any]:",
+          "text": "claims_path = root / \"data\" / \"qledger\" / \"claims.jsonl\""
+        },
+        {
+          "line": 268,
+          "scope": "def _read_live_leg_quality(root: Path) -> dict[str, Any]:",
+          "text": "\"claims.jsonl or falsifier_evaluations.jsonl absent — \""
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_whitehouse.py",
+      "blob": "e4beac0957fb74a6e9dc47def713984dea3bcbbe",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_whitehouse.py",
+      "hits": [
+        {
+          "line": 459,
+          "scope": "def _register_wh_claim(rec: dict, root: Path) -> None:",
+          "text": "\"\"\"qledger adapter (W5): register one qledger claim per activated WH alert."
+        },
+        {
+          "line": 487,
+          "scope": "def _register_wh_claim(rec: dict, root: Path) -> None:",
+          "text": "\"the optional no-qledger path. Claims for %s will NOT be registered. \""
+        },
+        {
+          "line": 558,
+          "scope": "def _register_wh_claim(rec: dict, root: Path) -> None:",
+          "text": "stored = ql.register(claim, root)"
+        },
+        {
+          "line": 566,
+          "scope": "def _register_wh_claim(rec: dict, root: Path) -> None:",
+          "text": "log.error(\"qledger register FAILED for %s — claim dropped from the ledger (%s)\","
+        },
+        {
+          "line": 568,
+          "scope": "def _register_wh_claim(rec: dict, root: Path) -> None:",
+          "text": "log.info(\"wh qledger: registered %d/%d claims for %s\", n_ok, len(claims_to_register), rec.get(\"id\"))"
+        }
+      ]
+    },
+    {
+      "path": "engine/basket_turn_cohort.py",
+      "blob": "2e33ae0d0dc6154b0228aeba9c95bd9724703242",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/basket_turn_cohort.py",
+      "hits": [
+        {
+          "line": 90,
+          "scope": "",
+          "text": "# only 2 claims reached data/qledger/claims.jsonl)."
+        },
+        {
+          "line": 91,
+          "scope": "",
+          "text": "_OUTCOME_REGISTERED = \"registered\"   # claim row is in claims.jsonl, gradeable"
+        },
+        {
+          "line": 156,
+          "scope": "def _registration_outcome(result: Any) -> str:",
+          "text": "\"\"\"Map ONE ``qledger.register_batch`` result slot to its outcome word."
+        },
+        {
+          "line": 160,
+          "scope": "def _registration_outcome(result: Any) -> str:",
+          "text": "on a dedupe hit) — the claim row IS in data/qledger/claims.jsonl;"
+        },
+        {
+          "line": 185,
+          "scope": "def _load_cohort_log(data_root: Path | None = None) -> set[str]:",
+          "text": "'registered' or 'rejected' (a rejected row lives in claims.jsonl for audit,"
+        },
+        {
+          "line": 644,
+          "scope": "def register_cohort_claims(",
+          "text": "registered = q.register_batch(claims_to_register, root=_root, dedupe=True)"
+        },
+        {
+          "line": 681,
+          "scope": "def register_cohort_claims(",
+          "text": "f\"did not register into data/qledger/claims.jsonl\","
+        }
+      ]
+    },
+    {
+      "path": "engine/neuralweb/constitution.py",
+      "blob": "c04b835562dd06f580bea37b817a9df77d621221",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/constitution.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_intel_hub.py",
+      "blob": "cf63882c00342281b1023d83cd2f4ff3c3b4f26a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_intel_hub.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/grade_news_events.py",
+      "blob": "88a03fdeeceaa286cf7adc83ddf7bb62d96bcdae",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/grade_news_events.py",
+      "hits": [
+        {
+          "line": 24,
+          "scope": "",
+          "text": "(known prod bug — qledger claims.jsonl incident). This is tested explicitly."
+        }
+      ]
+    },
+    {
+      "path": "engine/source_registry.py",
+      "blob": "57ade8634ae9a4fa076e4b41195c4911a7809efb",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/source_registry.py",
+      "hits": [
+        {
+          "line": 460,
+          "scope": "def register_source_call_claims(",
+          "text": "existing_ids = {c.get(\"claim_id\") for c in q.load_claims(root) if c.get(\"claim_id\")}"
+        },
+        {
+          "line": 461,
+          "scope": "def register_source_call_claims(",
+          "text": "results = q.register_batch(claims_to_register, root=root, dedupe=True)"
+        },
+        {
+          "line": 563,
+          "scope": "def register_flare_state_claims(",
+          "text": "existing_ids = {c.get(\"claim_id\") for c in q.load_claims(root) if c.get(\"claim_id\")}"
+        },
+        {
+          "line": 564,
+          "scope": "def register_flare_state_claims(",
+          "text": "results = q.register_batch(claims_to_register, root=root, dedupe=True)"
+        },
+        {
+          "line": 595,
+          "scope": "def _resolve_source_call_claims(",
+          "text": "claims = q.load_claims(root)"
+        },
+        {
+          "line": 688,
+          "scope": "def _build_grading_summary(",
+          "text": "claims = q.load_claims(root)"
+        },
+        {
+          "line": 799,
+          "scope": "def _resolve_flare_state_claims(",
+          "text": "claims = q.load_claims(root)"
+        }
+      ]
+    },
+    {
+      "path": "engine/altdata_brain.py",
+      "blob": "97cba32f0d7f1f8e5de5ff5c9d13a5eefc58d3d0",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/altdata_brain.py",
+      "hits": []
+    },
+    {
+      "path": "engine/communique_diff.py",
+      "blob": "a2e4d3c1c8e392b3e85dbd79c32eb307bb221299",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/communique_diff.py",
+      "hits": [
+        {
+          "line": 778,
+          "scope": "def register_claims(result: dict, root: Path | str | None = None) -> int:",
+          "text": "# W0 Stage B-e: build the claim list first, then ONE register_batch() call —"
+        },
+        {
+          "line": 830,
+          "scope": "def register_claims(result: dict, root: Path | str | None = None) -> int:",
+          "text": "results = qledger.register_batch(pending, root=root)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_intelligence_registry.py",
+      "blob": "675abe958bae2a0c7820d1ede7fb6244b75b370c",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_intelligence_registry.py",
+      "hits": [
+        {
+          "line": 18,
+          "scope": "",
+          "text": "``data/qledger/claims.jsonl``   70 commits in the trailing 14 days (append-only)"
+        },
+        {
+          "line": 31,
+          "scope": "",
+          "text": "2026-08-03). Exactly ONE is advanced by an automated lane: ``data/qledger/claims.jsonl``."
+        },
+        {
+          "line": 46,
+          "scope": "",
+          "text": "data/qledger/claims.jsonl              desk row counts + declared horizons (SPARSE-TOLERANT)"
+        },
+        {
+          "line": 98,
+          "scope": "",
+          "text": "CLAIMS_REL = Path(\"data\") / \"qledger\" / \"claims.jsonl\""
+        },
+        {
+          "line": 104,
+          "scope": "",
+          "text": "#: for it. ``data/qledger/claims.jsonl`` is appended by the nightly (70 commits in the 14"
+        },
+        {
+          "line": 109,
+          "scope": "",
+          "text": "DATA_PLANE_INPUTS = frozenset({str(CLAIMS_REL)})"
+        },
+        {
+          "line": 114,
+          "scope": "",
+          "text": "str(CLAIMS_REL), ARTICLE2_INPUT,"
+        },
+        {
+          "line": 141,
+          "scope": "class SynapseUnavailable(SystemExit):",
+          "text": "#: In-process read cache. ``data/qledger/claims.jsonl`` is 45k rows behind a ``git show``"
+        },
+        {
+          "line": 274,
+          "scope": "def _load_qledger(root: Path) -> QLedgerRead:",
+          "text": "text, source = read_tracked(root, CLAIMS_REL)"
+        },
+        {
+          "line": 484,
+          "scope": "def build(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:",
+          "text": "unreadable_inputs.append(str(CLAIMS_REL))"
+        },
+        {
+          "line": 487,
+          "scope": "def build(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:",
+          "text": "f\"{CLAIMS_REL} ({qledger.unparseable} unparseable line(s) of \""
+        },
+        {
+          "line": 511,
+          "scope": "def build(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:",
+          "text": "str(CLAIMS_REL): qledger.source_label,"
+        }
+      ]
+    },
+    {
+      "path": "engine/stock_desk.py",
+      "blob": "66a58873c8f7a2dbb409f77f10d4de26743472a0",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/stock_desk.py",
+      "hits": [
+        {
+          "line": 456,
+          "scope": "def _register_qledger_claims(written: list, picks: list, root) -> dict | None:",
+          "text": "FORWARD-ONLY (engine.qledger_desk_adapter.register_prospective): only rows"
+        },
+        {
+          "line": 472,
+          "scope": "def _register_qledger_claims(written: list, picks: list, root) -> dict | None:",
+          "text": "return _qadapt.register_prospective("
+        }
+      ]
+    },
+    {
+      "path": "engine/explanation_memory.py",
+      "blob": "9629d7190be90263759ea4ca5e2bb2f549bacc66",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/explanation_memory.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/audit_grading_closure.py",
+      "blob": "e05835c38f1c1264d7e889416100aa8805cae8f3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/audit_grading_closure.py",
+      "hits": [
+        {
+          "line": 71,
+          "scope": "",
+          "text": "\"path\": \"data/qledger/claims.jsonl\","
+        },
+        {
+          "line": 73,
+          "scope": "",
+          "text": "\"graders\": [\"scripts/grade_qledger.py\"],"
+        },
+        {
+          "line": 83,
+          "scope": "",
+          "text": "\"graders\": [\"scripts/grade_qledger.py\"],"
+        }
+      ]
+    },
+    {
+      "path": "engine/entry_radar/replay/prereg.py",
+      "blob": "205129723f8e60a9d8d708f19aead193d952bcf0",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/entry_radar/replay/prereg.py",
+      "hits": []
+    },
+    {
+      "path": "engine/thematic_desk.py",
+      "blob": "0e8aef0b12dad6c69481c458d0fb50110fd8c8ac",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/thematic_desk.py",
+      "hits": [
+        {
+          "line": 606,
+          "scope": "def _register_qledger_claims(written: list, root) -> dict | None:",
+          "text": "return _qadapt.register_prospective("
+        }
+      ]
+    },
+    {
+      "path": "engine/experiments_registry.py",
+      "blob": "96348d19853be749e7b51e54aa9dbd96d01d4f01",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/experiments_registry.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/reconcile_entry_radar.py",
+      "blob": "ee7edba71d409903ae3164064c4599042fe81866",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/reconcile_entry_radar.py",
+      "hits": [
+        {
+          "line": 698,
+          "scope": "def register_live_forward(rows: Sequence[dict[str, Any]], *, root: Path,",
+          "text": "O(file)-per-call cost note on ``qledger.register()``).  Battery L asserts by"
+        },
+        {
+          "line": 711,
+          "scope": "def register_live_forward(rows: Sequence[dict[str, Any]], *, root: Path,",
+          "text": "results = q.register_batch(claims, root=root, dedupe=True)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/collect.py",
+      "blob": "cfc49059f287daf12f325f071aecae59f2a022a3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/collect.py",
+      "hits": [
+        {
+          "line": 1050,
+          "scope": "def main() -> int:",
+          "text": "# Non-fatal. NOTE the ordering vs grade_qledger below is NOT load-bearing:"
+        },
+        {
+          "line": 1138,
+          "scope": "def main() -> int:",
+          "text": "# qledger adapters — register today's claims from each desk so the nightly"
+        },
+        {
+          "line": 1152,
+          "scope": "def main() -> int:",
+          "text": "from scripts.grade_qledger import run_as_collect_step as _grade_qledger"
+        },
+        {
+          "line": 1153,
+          "scope": "def main() -> int:",
+          "text": "_grade_qledger()"
+        },
+        {
+          "line": 1213,
+          "scope": "def main() -> int:",
+          "text": "# Reads claims.jsonl + grades.jsonl + track_record.json; writes"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_evidence_clock.py",
+      "blob": "4d6b7c781a89ab47d0d04be418adfae1941e9953",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_evidence_clock.py",
+      "hits": []
+    },
+    {
+      "path": "engine/news_llm.py",
+      "blob": "c46fa13e1b5c2c20af26bc6fbc4d61d2451ba1c3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/news_llm.py",
+      "hits": []
+    },
+    {
+      "path": "engine/qbus.py",
+      "blob": "11f0948a7f7b54b7c67e502f479daae594a30f97",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/qbus.py",
+      "hits": []
+    },
+    {
+      "path": "engine/ai_desk.py",
+      "blob": "f171e4e61d5da2cb002e7d5be692ffa31e6f852f",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/ai_desk.py",
+      "hits": []
+    },
+    {
+      "path": "engine/metabolism/verify.py",
+      "blob": "d9d6d2eb1ea7f4677b2dceebdb0a119950b09700",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/metabolism/verify.py",
+      "hits": [
+        {
+          "line": 774,
+          "scope": "def _park_construction_from_falsifier(",
+          "text": "\"\"\"Append a parked_construction row to claims.jsonl (R-V8-9)."
+        },
+        {
+          "line": 854,
+          "scope": "def append_parked_construction(",
+          "text": "p = claims_path or (r / \"data\" / \"metabolism\" / \"claims.jsonl\")"
+        }
+      ]
+    },
+    {
+      "path": "collectors/special_situations.py",
+      "blob": "5b4356c8f5a2b830c077e023f0647ac22ff45d51",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/collectors/special_situations.py",
+      "hits": [
+        {
+          "line": 902,
+          "scope": "def _register_extraction_claims(df: pd.DataFrame, updates: dict[str, dict]) -> None:",
+          "text": "qledger.register(claim)"
+        },
+        {
+          "line": 908,
+          "scope": "def _register_extraction_claims(df: pd.DataFrame, updates: dict[str, dict]) -> None:",
+          "text": "log.info(\"special_situations extraction lane: registered %d qledger claims\", registered)"
+        }
+      ]
+    },
+    {
+      "path": "engine/neuralweb/evidence_clock.py",
+      "blob": "f3d6f5e361561b1bda91b3d1725686bfcc8c85fd",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/evidence_clock.py",
+      "hits": [
+        {
+          "line": 352,
+          "scope": "def _adapt_qledger(root: Path, cfg: dict, today: date) -> tuple[list[dict], list[str]]:",
+          "text": "\"\"\"Rollup rows from data/qledger/claims.jsonl.\"\"\""
+        },
+        {
+          "line": 353,
+          "scope": "def _adapt_qledger(root: Path, cfg: dict, today: date) -> tuple[list[dict], list[str]]:",
+          "text": "path = root / \"data\" / \"qledger\" / \"claims.jsonl\""
+        }
+      ]
+    },
+    {
+      "path": "scripts/check_extraction_drift.py",
+      "blob": "f0971b6f406399018aedf91a5933f076fd793ff0",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/check_extraction_drift.py",
+      "hits": []
+    },
+    {
+      "path": "engine/tape_disagreement.py",
+      "blob": "b9d7b5947e37ed54758e626015f1c77ccdc58c53",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/tape_disagreement.py",
+      "hits": []
+    },
+    {
+      "path": "engine/operator_grading.py",
+      "blob": "8bd53f09e372e62c7f53504e2dc88a52bf4db969",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/operator_grading.py",
+      "hits": [
+        {
+          "line": 92,
+          "scope": "",
+          "text": "_CLAIMS_PATH = Path(\"data\") / \"qledger\" / \"claims.jsonl\""
+        },
+        {
+          "line": 224,
+          "scope": "def _load_claims(data_root: Path) -> dict[str, dict]:",
+          "text": "def _load_claims(data_root: Path) -> dict[str, dict]:"
+        },
+        {
+          "line": 225,
+          "scope": "def _load_claims(data_root: Path) -> dict[str, dict]:",
+          "text": "\"\"\"Load claims.jsonl indexed by claim_id.\"\"\""
+        },
+        {
+          "line": 288,
+          "scope": "def _match_action_to_claims(",
+          "text": "# surface field in claims.jsonl; fall back to desk if absent"
+        },
+        {
+          "line": 652,
+          "scope": "def grade(",
+          "text": "claims = _load_claims(data_root)"
+        }
+      ]
+    },
+    {
+      "path": "engine/pb_d_cohort.py",
+      "blob": "12b4d15eb4aeaab6ca891b862a164c39e75fab71",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/pb_d_cohort.py",
+      "hits": []
+    },
+    {
+      "path": "engine/neuralweb/query.py",
+      "blob": "cae290b3fc856c9beb0b32f8171005b699562db5",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/query.py",
+      "hits": [
+        {
+          "line": 950,
+          "scope": "def adapt_qledger(root: Path | str | None = None) -> tuple[pd.DataFrame, list[str]]:",
+          "text": "\"\"\"Adapt data/qledger/claims.jsonl ⋈ data/qledger/grades.jsonl → ledger='qledger'."
+        },
+        {
+          "line": 963,
+          "scope": "def adapt_qledger(root: Path | str | None = None) -> tuple[pd.DataFrame, list[str]]:",
+          "text": "engine/qledger.py:_regime_stamp_for_asof.  However, the real claims.jsonl"
+        },
+        {
+          "line": 980,
+          "scope": "def adapt_qledger(root: Path | str | None = None) -> tuple[pd.DataFrame, list[str]]:",
+          "text": "claims_path = data / \"qledger\" / \"claims.jsonl\""
+        },
+        {
+          "line": 984,
+          "scope": "def adapt_qledger(root: Path | str | None = None) -> tuple[pd.DataFrame, list[str]]:",
+          "text": "gaps.append(\"qledger: data/qledger/claims.jsonl absent — zero rows\")"
+        },
+        {
+          "line": 992,
+          "scope": "def adapt_qledger(root: Path | str | None = None) -> tuple[pd.DataFrame, list[str]]:",
+          "text": "gaps.append(f\"qledger: claims.jsonl read failed ({e}) — zero rows\")"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_measurement.py",
+      "blob": "059446b173b98e296d7697df563876b2a15da931",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_measurement.py",
+      "hits": []
+    },
+    {
+      "path": "engine/importance_v0.py",
+      "blob": "7685534ce262c2bc9fa650ab235c347d4e076c85",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/importance_v0.py",
+      "hits": []
+    },
+    {
+      "path": "engine/altdata_ledger.py",
+      "blob": "a84ea31856ca93503251d086c03d85713b11e6e9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/altdata_ledger.py",
+      "hits": []
+    },
+    {
+      "path": "engine/intelligence_registry.py",
+      "blob": "b2201f15a3952eddf329cae737a58e1eec047fd6",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/intelligence_registry.py",
+      "hits": [
+        {
+          "line": 37,
+          "scope": "",
+          "text": "* ``data/qledger/claims.jsonl`` 70 commits in the trailing 14 days   [read as 13]"
+        },
+        {
+          "line": 556,
+          "scope": "def _cell_ledger_paths(artifact_entries: Sequence[Mapping[str, Any]]) -> list[str]:",
+          "text": "data/qledger/claims.jsonl                  (engine/qledger.py)"
+        },
+        {
+          "line": 625,
+          "scope": "def derive_ledger(",
+          "text": "``data/qledger/claims.jsonl``, demoting a zero-row desk down the waterfall. That would"
+        }
+      ]
+    },
+    {
+      "path": "engine/neuralweb/governance.py",
+      "blob": "d57ff582bea517fff3afa707c792a465d426366a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/governance.py",
+      "hits": []
+    },
+    {
+      "path": "engine/regime_vector.py",
+      "blob": "cc1a8ee066df4230823282dceb5065b1a045df1b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/regime_vector.py",
+      "hits": [
+        {
+          "line": 650,
+          "scope": "def get_vector_for_date(",
+          "text": "# json.dumps this dict (e.g. qledger claims.jsonl), and a leaked np.int64"
+        }
+      ]
+    },
+    {
+      "path": "scripts/check_intelligence_registry.py",
+      "blob": "3df94be8069ec19f824bc0330abc2e983e0d4f9a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/check_intelligence_registry.py",
+      "hits": [
+        {
+          "line": 10,
+          "scope": "",
+          "text": "Two earlier rounds shipped exactly that pin — first against ``data/qledger/claims.jsonl``,"
+        },
+        {
+          "line": 50,
+          "scope": "",
+          "text": "``data/qledger/claims.jsonl`` — 1 of 46,696, appended by the nightly, touched by no PR"
+        },
+        {
+          "line": 62,
+          "scope": "",
+          "text": "DATA-PLANE (``data/qledger/claims.jsonl`` alone — the only input an automated lane"
+        },
+        {
+          "line": 308,
+          "scope": "def _codes_for(registry: dict[str, Any], engine_id: str) -> set[str]:",
+          "text": "_FIXTURE_ROOT_PRODUCER_SOURCE = '\"\"\"Fixture producer. Imports no qledger, registers no desk.\"\"\"\\n'"
+        },
+        {
+          "line": 346,
+          "scope": "def write_fixture_root(",
+          "text": "\"data/qledger/claims.jsonl\": _FIXTURE_ROOT_CLAIMS if claims is None else claims,"
+        },
+        {
+          "line": 862,
+          "scope": "def _selftest() -> int:",
+          "text": "and \"claims.jsonl (2 unparseable line(s) of 4)\" in out_malformed,"
+        },
+        {
+          "line": 869,
+          "scope": "def _selftest() -> int:",
+          "text": "# data/qledger/claims.jsonl reddened the whole job. Representation is unchanged in"
+        },
+        {
+          "line": 900,
+          "scope": "def _selftest() -> int:",
+          "text": "partial_report[\"sources\"][str(builder.CLAIMS_REL)].endswith("
+        },
+        {
+          "line": 915,
+          "scope": "def _selftest() -> int:",
+          "text": "\"claims.jsonl (1 unparseable line(s) of 2)\" in name"
+        }
+      ]
+    },
+    {
+      "path": "engine/neuralweb/kernel.py",
+      "blob": "93556af51e7b0b4701f40f8e22fa73af04c1d862",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/kernel.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/shadow_importance_v0_pit.py",
+      "blob": "976bf041cf9f7257716f3d5fbfc313000b8dd398",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/shadow_importance_v0_pit.py",
+      "hits": [
+        {
+          "line": 69,
+          "scope": "",
+          "text": "from engine.qledger import HORIZON_UNIT_TRADING, make_claim, register_batch  # noqa: E402"
+        },
+        {
+          "line": 226,
+          "scope": "def _register_lane(lane: str, df, root: Path, band_frac: float,",
+          "text": "results = register_batch(pending, root=root)"
+        }
+      ]
+    },
+    {
+      "path": "engine/neuralweb/decay.py",
+      "blob": "9dbe2285abe966a883f1f407b13e3a8693fbfa16",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/decay.py",
+      "hits": []
+    },
+    {
+      "path": "engine/theme_graph/identity.py",
+      "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/theme_graph/identity.py",
+      "hits": []
+    },
+    {
+      "path": "engine/provenance_sidecar.py",
+      "blob": "cd79dca53be32fc4c5c7708d1a72492b84ce3bba",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/provenance_sidecar.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/run_kernel_decisions.py",
+      "blob": "e51dff7591f0ccf2dae64c5ed4d6958ce1b4c92b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/run_kernel_decisions.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/check_append_only_assertions.py",
+      "blob": "df434f2053ab7facc3e589224f59e0c3dc3231d4",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/check_append_only_assertions.py",
+      "hits": [
+        {
+          "line": 18,
+          "scope": "",
+          "text": "while the registry derived from data/qledger/claims.jsonl."
+        },
+        {
+          "line": 23,
+          "scope": "",
+          "text": "data/qledger/claims.jsonl content — and the law shipped in the same commit"
+        },
+        {
+          "line": 37,
+          "scope": "",
+          "text": "claims.jsonl and data/prophet/ledger.jsonl are both ``daily-engine``. A rule"
+        },
+        {
+          "line": 155,
+          "scope": "",
+          "text": "# defect's store says \"nightly\": data/qledger/claims.jsonl and"
+        },
+        {
+          "line": 369,
+          "scope": "def _path_parts(",
+          "text": "``args.root.joinpath(*CLAIMS_REL)``             -> ([\"data\",\"qledger\",\"claims.jsonl\"], args.root)"
+        },
+        {
+          "line": 371,
+          "scope": "def _path_parts(",
+          "text": "``Path(\"data/qledger/claims.jsonl\")``           -> (same tail, None)"
+        },
+        {
+          "line": 1021,
+          "scope": "def scan_tree(root: Path, stores: dict[str, Store], gates: set[str]) -> list[Hit]:",
+          "text": "\"data/qledger/claims.jsonl\": Store(\"data/qledger/claims.jsonl\", \"A\", \"selftest\"),"
+        },
+        {
+          "line": 1066,
+          "scope": "def test_registry_doc_is_current():",
+          "text": "claims = load_jsonl(ROOT / \"data\" / \"qledger\" / \"claims.jsonl\")"
+        },
+        {
+          "line": 1098,
+          "scope": "class T(unittest.TestCase):",
+          "text": "CLAIMS_REL = (\"data\", \"qledger\", \"claims.jsonl\")"
+        },
+        {
+          "line": 1105,
+          "scope": "def main() -> int:",
+          "text": "claims_path = args.root.joinpath(*CLAIMS_REL)"
+        },
+        {
+          "line": 1128,
+          "scope": "def main() -> int:",
+          "text": "CLAIMS_REL = (\"data\", \"qledger\", \"claims.jsonl\")"
+        },
+        {
+          "line": 1134,
+          "scope": "def main(argv=None) -> int:",
+          "text": "rows = (args.root.joinpath(*CLAIMS_REL)).read_text().splitlines()"
+        },
+        {
+          "line": 1205,
+          "scope": "def test_the_adapter_writes_claims():",
+          "text": "claims_path = d / \"data\" / \"qledger\" / \"claims.jsonl\""
+        },
+        {
+          "line": 1233,
+          "scope": "def test_every_row_carries_the_contract():",
+          "text": "for row in read_jsonl(ROOT / \"data\" / \"qledger\" / \"claims.jsonl\"):"
+        },
+        {
+          "line": 1247,
+          "scope": "def test_the_schema_is_stable():",
+          "text": "rows = read_jsonl(ROOT / \"data\" / \"qledger\" / \"claims.jsonl\")"
+        },
+        {
+          "line": 1275,
+          "scope": "def test_the_incident_prefix_is_frozen():",
+          "text": "raw = (ROOT / \"data\" / \"qledger\" / \"claims.jsonl\").read_bytes()"
+        },
+        {
+          "line": 1318,
+          "scope": "def test_every_line_parses():",
+          "text": "for line in (ROOT / \"data\" / \"qledger\" / \"claims.jsonl\").read_text().splitlines():"
+        },
+        {
+          "line": 1351,
+          "scope": "def main() -> int:",
+          "text": "rows = read_jsonl(ROOT / \"data\" / \"qledger\" / \"claims.jsonl\")"
+        }
+      ]
+    },
+    {
+      "path": "engine/k3e_eval_admission.py",
+      "blob": "af4088293b2b08f7a5e8a13d1733bfae2e046fe6",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/k3e_eval_admission.py",
+      "hits": []
+    },
+    {
+      "path": "engine/china_special_situations.py",
+      "blob": "9ff0dd97ab100e879f29747957df3ad75806b1ec",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/china_special_situations.py",
+      "hits": [
+        {
+          "line": 1904,
+          "scope": "def register_claims(snap: dict, root: Any = None) -> int:",
+          "text": "results = qledger.register_batch(pending, root=root)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/entry_radar_replay.py",
+      "blob": "fee9b6d1a498bbc177a5bcdb903ff5c6d65cf7d3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/entry_radar_replay.py",
+      "hits": []
+    },
+    {
+      "path": "engine/metabolism/propose.py",
+      "blob": "fb4998005b5b8d53823f664d516dd13d26bf26aa",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/metabolism/propose.py",
+      "hits": []
+    },
+    {
+      "path": "engine/local_projections.py",
+      "blob": "546b93ebe5ef3ce4879544f1a55642400616ac2f",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/local_projections.py",
+      "hits": []
+    },
+    {
+      "path": "engine/neuralweb/half_life.py",
+      "blob": "196b695034a87f01d6fe5abcf7d1ef3656121be1",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/half_life.py",
+      "hits": []
+    },
+    {
+      "path": "engine/neuralweb/cortex.py",
+      "blob": "65603662a1d5fa3257328286050cd3eb673a9e9b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/cortex.py",
+      "hits": []
+    },
+    {
+      "path": "engine/entry_radar/replay/panels.py",
+      "blob": "a2b89ed957770106ff51e3157eab095665d8fdea",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/entry_radar/replay/panels.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_adjudication_packet.py",
+      "blob": "0a678062bc8bb5f50e6591d6b04e3b79ccaa109b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_adjudication_packet.py",
+      "hits": []
+    },
+    {
+      "path": "admin/nw_lobe_descriptions.py",
+      "blob": "b64f9e21bd43caa59c7209fb62ef3096a0dd5540",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/admin/nw_lobe_descriptions.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/evaluate_cortex_hypotheses.py",
+      "blob": "2a3385c5caea00f6e13a11efa313139d67cc8185",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/evaluate_cortex_hypotheses.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/backtest_event_priors.py",
+      "blob": "66cc0d4e8163911ff5d04630340b3be933ed3903",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/backtest_event_priors.py",
+      "hits": []
+    },
+    {
+      "path": "engine/theme_graph/selection_cohort.py",
+      "blob": "2e2c1e013d6579259ed2702136b432347096b844",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/theme_graph/selection_cohort.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_security_master.py",
+      "blob": "4a042933f37f32d112bd4d77a704f233bbd7d4a9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_security_master.py",
+      "hits": []
+    },
+    {
+      "path": "engine/neuralweb/edge_outcomes.py",
+      "blob": "25cb30d30b415f0b52639ffc9765154209b00867",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/edge_outcomes.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_china_special_situations.py",
+      "blob": "b36b02219fe76219ae098d1b19aebe083bcee687",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_china_special_situations.py",
+      "hits": []
+    },
+    {
+      "path": "engine/research_factory/challenge.py",
+      "blob": "22e28cc41066f4df613a7364589f249a45c6adca",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/research_factory/challenge.py",
+      "hits": []
+    },
+    {
+      "path": "engine/neuralweb/mastermind_context.py",
+      "blob": "ebd494025920e4f0b2771d9bf1f17d6a83a1eecb",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/neuralweb/mastermind_context.py",
+      "hits": []
+    },
+    {
+      "path": "engine/prophet_strategy_definition.py",
+      "blob": "737401daaf29cae2ed26559703a283eeec5bd2b4",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/prophet_strategy_definition.py",
+      "hits": []
+    },
+    {
+      "path": "engine/metabolism/orchestrator_brain.py",
+      "blob": "e1bc564f85907ad99997af567683ce1729d032a7",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/metabolism/orchestrator_brain.py",
+      "hits": []
+    },
+    {
+      "path": "scripts/build_factor_intelligence_state.py",
+      "blob": "fe87fb425ed81c373ef3fbf63206a5018d68f6e7",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/build_factor_intelligence_state.py",
+      "hits": []
+    },
+    {
+      "path": ".github/workflows/backfill.yml",
+      "blob": "632bc998254543ccf88cd6edea38b4a7e03e0c80",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/.github/workflows/backfill.yml",
+      "hits": [
+        {
+          "line": 66,
+          "scope": "",
+          "text": "# site/qledger: a --full-history collect runs the same grade_qledger step the"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/whitehouse-sentinel.yml",
+      "blob": "762852a5659bd74bd4147a2a467e35e4faac7cf3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/.github/workflows/whitehouse-sentinel.yml",
+      "hits": [
+        {
+          "line": 86,
+          "scope": "",
+          "text": "# TRACKED data/qledger/claims.jsonl — it must ship with the alert, and any"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/weekly.yml",
+      "blob": "e0acaa8808b5b9f2c9feedfad7c6ad2c16fe239d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/.github/workflows/weekly.yml",
+      "hits": []
+    },
+    {
+      "path": ".github/workflows/asia-close.yml",
+      "blob": "8cfb53eb3c3037c5858d6cc91fbe2c30c2c05a17",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/.github/workflows/asia-close.yml",
+      "hits": []
+    },
+    {
+      "path": ".github/workflows/render.yml",
+      "blob": "6563155fbd7d9295caeaad89b76937a4779ff68a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/.github/workflows/render.yml",
+      "hits": []
+    },
+    {
+      "path": ".gitattributes",
+      "blob": "1e2c31c071ba53a2e1b284a3c0b8891a61200eef",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/.gitattributes",
+      "hits": [
+        {
+          "line": 6,
+          "scope": "",
+          "text": "data/whitehouse/alerts.jsonl merge=union"
+        },
+        {
+          "line": 9,
+          "scope": "",
+          "text": "# append-only JSONL, deduped on read by claim_id (register()/register_batch()"
+        },
+        {
+          "line": 15,
+          "scope": "",
+          "text": "# pushes carried merge=union before P3 (B4 in the P3 brief) — a real rebase"
+        },
+        {
+          "line": 23,
+          "scope": "",
+          "text": "data/qledger/claims.jsonl merge=union"
+        },
+        {
+          "line": 24,
+          "scope": "",
+          "text": "data/qledger/grades.jsonl merge=union"
+        },
+        {
+          "line": 31,
+          "scope": "",
+          "text": "data/trial_ledger.jsonl merge=union"
+        },
+        {
+          "line": 32,
+          "scope": "",
+          "text": "data/neuralweb/causal_edges.jsonl merge=union"
+        },
+        {
+          "line": 33,
+          "scope": "",
+          "text": "data/neuralweb/causal_nulls.jsonl merge=union"
+        },
+        {
+          "line": 34,
+          "scope": "",
+          "text": "data/neuralweb/causal_surprise_queue.jsonl merge=union"
+        },
+        {
+          "line": 35,
+          "scope": "",
+          "text": "data/neuralweb/causal_mechanisms.jsonl merge=union"
+        },
+        {
+          "line": 47,
+          "scope": "",
+          "text": "data/marketing/outbox/activity.jsonl merge=union"
+        },
+        {
+          "line": 48,
+          "scope": "",
+          "text": "data/marketing/outbox/status_ledger.jsonl merge=union"
+        },
+        {
+          "line": 49,
+          "scope": "",
+          "text": "data/marketing/outbox/items.jsonl merge=union"
+        },
+        {
+          "line": 50,
+          "scope": "",
+          "text": "data/marketing/outbox/media_urls.jsonl merge=union"
+        },
+        {
+          "line": 51,
+          "scope": "",
+          "text": "data/marketing/publications.jsonl merge=union"
+        },
+        {
+          "line": 52,
+          "scope": "",
+          "text": "data/marketing/post_metrics.jsonl merge=union"
+        },
+        {
+          "line": 58,
+          "scope": "",
+          "text": "data/marketing/hot_tape_ring.jsonl merge=union"
+        },
+        {
+          "line": 61,
+          "scope": "",
+          "text": "data/marketing/hot_tape_fired.jsonl merge=union"
+        },
+        {
+          "line": 73,
+          "scope": "",
+          "text": "data/marketing/press_wire/spend.jsonl merge=union"
+        },
+        {
+          "line": 78,
+          "scope": "",
+          "text": "data/marketing/press_wire/seen_ring.jsonl merge=union"
+        },
+        {
+          "line": 91,
+          "scope": "",
+          "text": "data/marketing/x_intel/corpus.jsonl merge=union"
+        }
+      ]
+    },
+    {
+      "path": "config/synapse.yml",
+      "blob": "bd5c95a3f0423a28bb2a95b65131847e3c48dc14",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/config/synapse.yml",
+      "hits": [
+        {
+          "line": 484,
+          "scope": "",
+          "text": "path: data/qledger/claims.jsonl"
+        },
+        {
+          "line": 513,
+          "scope": "",
+          "text": "- scripts/grade_qledger.py"
+        },
+        {
+          "line": 3082,
+          "scope": "",
+          "text": "- \"scripts/grade_qledger.py — reads + merges ladder_states into track_record.json at line 576\""
+        },
+        {
+          "line": 3096,
+          "scope": "",
+          "text": "- scripts/grade_qledger.py"
+        },
+        {
+          "line": 3102,
+          "scope": "",
+          "text": "notes: \"Two writers: engine/qledger.py:979 (emit_track_record) and scripts/grade_qledger.py:576 (merges ladder_states). Both are additive/in-place-update, not clobber.\""
+        },
+        {
+          "line": 4720,
+          "scope": "",
+          "text": "qledger claims+grades (data/qledger/claims.jsonl + grades.jsonl — joined"
+        },
+        {
+          "line": 14969,
+          "scope": "",
+          "text": "path: data/metabolism/claims.jsonl"
+        }
+      ]
+    },
+    {
+      "path": "config/dag.yml",
+      "blob": "68ca8883b6f09c64564f4f7904708684c3a55ee1",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/config/dag.yml",
+      "hits": [
+        {
+          "line": 61,
+          "scope": "",
+          "text": "grade_qledger) STAY inside this step (COLLECT_LANE=nightly) — the"
+        },
+        {
+          "line": 483,
+          "scope": "",
+          "text": "grade_qledger is NOT load-bearing: the grader only grades claims"
+        },
+        {
+          "line": 503,
+          "scope": "",
+          "text": "claims.jsonl rides the same push. Non-fatal (step always exits 0)."
+        },
+        {
+          "line": 791,
+          "scope": "",
+          "text": "- id: backfill_regime_stamps"
+        },
+        {
+          "line": 792,
+          "scope": "",
+          "text": "module: scripts.backfill_regime_stamps"
+        },
+        {
+          "line": 1198,
+          "scope": "",
+          "text": "data/qledger/claims.jsonl (via register_batch)]"
+        },
+        {
+          "line": 4376,
+          "scope": "",
+          "text": "- data/qledger/claims.jsonl"
+        }
+      ]
+    },
+    {
+      "path": "config/house_law_checks.yml",
+      "blob": "60ac675148587652ec9d84bbd37f123ef68c30b9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/config/house_law_checks.yml",
+      "hits": [
+        {
+          "line": 742,
+          "scope": "",
+          "text": "retires the known emitter (scripts/grade_qledger.py per-family excess_mean)."
+        },
+        {
+          "line": 2632,
+          "scope": "",
+          "text": "theme_placebo, qledger_falsifier, sample_qledger_placebo) are registered"
+        },
+        {
+          "line": 3343,
+          "scope": "",
+          "text": "whose --strict path is a function of data/qledger/claims.jsonl content and would"
+        },
+        {
+          "line": 3443,
+          "scope": "",
+          "text": "merely RELOCATED between rounds. Round 1 pinned against data/qledger/claims.jsonl"
+        },
+        {
+          "line": 3447,
+          "scope": "",
+          "text": "11,971 commits reachable): data/qledger/claims.jsonl 70 commits and"
+        },
+        {
+          "line": 3476,
+          "scope": "",
+          "text": "author can fix it. DATA-PLANE is exactly ONE input, data/qledger/claims.jsonl, the"
+        },
+        {
+          "line": 3488,
+          "scope": "",
+          "text": "count (`data/qledger/claims.jsonl (2 unparseable line(s) of 4)`) while the rows"
+        },
+        {
+          "line": 3514,
+          "scope": "",
+          "text": "The qledger desk literal is extracted by AST from register()/register_batch()/"
+        },
+        {
+          "line": 3628,
+          "scope": "",
+          "text": "matches carry `ledger` only in a directory — data/qledger/claims.jsonl,"
+        }
+      ]
+    },
+    {
+      "path": "config/intelligence_registry_overlay.yml",
+      "blob": "f6d6bed0f5127da14972e3facb476aff88196ff9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/config/intelligence_registry_overlay.yml",
+      "hits": [
+        {
+          "line": 156,
+          "scope": "",
+          "text": "asserts current cascade position, not a forward outcome, and no qledger claim is ever registered.'"
+        },
+        {
+          "line": 523,
+          "scope": "",
+          "text": "originates are registered INTO data/qledger/claims.jsonl, which the TOTAL/DISJOINT partition"
+        },
+        {
+          "line": 777,
+          "scope": "",
+          "text": "rationale: qledger:whitehouse claims register one dated directional claim per activated White"
+        },
+        {
+          "line": 843,
+          "scope": "",
+          "text": "rationale: 'engine/qledger_falsifier.py::evaluate_falsifiers reads data/qledger/claims.jsonl —"
+        },
+        {
+          "line": 900,
+          "scope": "",
+          "text": "rationale: data/metabolism/claims.jsonl rows are mutual-exclusion FILE-LOCK records — 'proposal"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/daily.yml",
+      "blob": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/.github/workflows/daily.yml",
+      "hits": [
+        {
+          "line": 123,
+          "scope": "",
+          "text": "# display legs, stamp_options_state is PIT-anchored, grade_qledger grades only"
+        },
+        {
+          "line": 591,
+          "scope": "",
+          "text": "#                              -> `run collectors`  (grade_qledger)   GATES"
+        },
+        {
+          "line": 628,
+          "scope": "",
+          "text": "# site/qledger: the qledger grader (scripts/collect.py -> grade_qledger)"
+        },
+        {
+          "line": 1376,
+          "scope": "",
+          "text": "# site/capital-structure-data together — never one file, never merge=union."
+        },
+        {
+          "line": 1424,
+          "scope": "",
+          "text": "# PIT-anchored to historical fire dates, grade_qledger grades only claims"
+        },
+        {
+          "line": 1755,
+          "scope": "",
+          "text": "# ids; grade_qledger (inside collect core's scripts.collect) grades only"
+        },
+        {
+          "line": 1787,
+          "scope": "",
+          "text": "- name: qledger backfill (altdata + radar + policy → claims.jsonl)"
+        },
+        {
+          "line": 1793,
+          "scope": "",
+          "text": "# BEFORE \"commit tail data\" so claims.jsonl is committed in the same push."
+        },
+        {
+          "line": 2319,
+          "scope": "",
+          "text": "# Calls engine.qledger.backfill_regime_stamps() — stamps regime columns onto qledger"
+        },
+        {
+          "line": 2326,
+          "scope": "",
+          "text": "python -m scripts.backfill_regime_stamps > \"$RUNNER_TEMP/backfill_regime_stamps.log\" 2>&1; rc=$?"
+        },
+        {
+          "line": 2327,
+          "scope": "",
+          "text": "cat \"$RUNNER_TEMP/backfill_regime_stamps.log\""
+        },
+        {
+          "line": 2328,
+          "scope": "",
+          "text": "if [ \"$rc\" -ne 0 ]; then echo \"::warning title=backfill_regime_stamps::rc=$rc (non-fatal)\"; fi"
+        },
+        {
+          "line": 2337,
+          "scope": "",
+          "text": "# and AFTER backfill_regime_stamps (qledger consistency). Non-fatal."
+        },
+        {
+          "line": 3981,
+          "scope": "",
+          "text": "# if: always() — PR-2 fix: backfill_regime_stamps had a shell bug that caused it to"
+        },
+        {
+          "line": 6019,
+          "scope": "",
+          "text": "# #6598) writes claims.jsonl + evidence_clock_start/stock_desk.json under"
+        }
+      ]
+    },
+    {
+      "path": "scripts/ci/daily_engine_commit_outputs.sh",
+      "blob": "52cef03e9eddbeb359d990b440259a1e711e7c31",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/ci/daily_engine_commit_outputs.sh",
+      "hits": []
+    },
+    {
+      "path": "scripts/ci/push_retry.sh",
+      "blob": "d75d06cd3054b201a7eb5e159a09da80ff0fd844",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/ci/push_retry.sh",
+      "hits": []
+    },
+    {
+      "path": "engine/metabolism/immune.py",
+      "blob": "c2b30bad68de19a815ba01eab48fccac9d450b0b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/metabolism/immune.py",
+      "hits": [
+        {
+          "line": 29,
+          "scope": "",
+          "text": "_CLAIMS_REL = (\"data\", \"metabolism\", \"immune_claims.jsonl\")"
+        },
+        {
+          "line": 107,
+          "scope": "def append_claim(",
+          "text": "\"\"\"Append one claim row to data/metabolism/immune_claims.jsonl."
+        },
+        {
+          "line": 114,
+          "scope": "def append_claim(",
+          "text": "claims_path = r.joinpath(*_CLAIMS_REL)"
+        },
+        {
+          "line": 126,
+          "scope": "def _load_raw_claims(root: Path) -> list[dict]:",
+          "text": "\"\"\"Load all raw rows from immune_claims.jsonl.  NEVER-RAISE.\"\"\""
+        },
+        {
+          "line": 128,
+          "scope": "def _load_raw_claims(root: Path) -> list[dict]:",
+          "text": "path = root.joinpath(*_CLAIMS_REL)"
+        }
+      ]
+    },
+    {
+      "path": "admin/metabolism_history.py",
+      "blob": "ceb36ed8d379e9a3a0f928861b5bc92af38c7850",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/admin/metabolism_history.py",
+      "hits": [
+        {
+          "line": 212,
+          "scope": "def _read_immune(base: Path) -> tuple[list[dict], str | None]:",
+          "text": "\"\"\"Source: data/metabolism/immune_claims.jsonl rows."
+        },
+        {
+          "line": 218,
+          "scope": "def _read_immune(base: Path) -> tuple[list[dict], str | None]:",
+          "text": "p = base / \"data\" / \"metabolism\" / \"immune_claims.jsonl\""
+        },
+        {
+          "line": 601,
+          "scope": "def _read_parked(base: Path) -> tuple[list[dict], str | None]:",
+          "text": "\"\"\"Source: data/metabolism/claims.jsonl rows WHERE schema == 'metabolism.parked_construction.v1'."
+        },
+        {
+          "line": 604,
+          "scope": "def _read_parked(base: Path) -> tuple[list[dict], str | None]:",
+          "text": "Other schemas in claims.jsonl are ignored."
+        },
+        {
+          "line": 607,
+          "scope": "def _read_parked(base: Path) -> tuple[list[dict], str | None]:",
+          "text": "p = base / \"data\" / \"metabolism\" / \"claims.jsonl\""
+        }
+      ]
+    },
+    {
+      "path": "engine/marketing/state.py",
+      "blob": "4acc5934c0c23316e6893cb50fde0b0199948bab",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/engine/marketing/state.py",
+      "hits": [
+        {
+          "line": 241,
+          "scope": "def build_state(root: Path | str | None = None, cfg: dict | None = None) -> dict:",
+          "text": "claims_raw = read_jsonl(_ledger(r, \"claims.jsonl\"))"
+        }
+      ]
+    },
+    {
+      "path": "scripts/metabolism_build.py",
+      "blob": "75e7d55082884b7595ebe312ab691d2a7495c6fb",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/metabolism_build.py",
+      "hits": [
+        {
+          "line": 9,
+          "scope": "",
+          "text": "data/metabolism/claims.jsonl and regenerating ACTIVE_BUILD_MAP."
+        },
+        {
+          "line": 36,
+          "scope": "",
+          "text": "data/metabolism/claims.jsonl (metabolism-build-claims artifact):"
+        },
+        {
+          "line": 79,
+          "scope": "",
+          "text": "_CLAIMS_REL = Path(\"data\") / \"metabolism\" / \"claims.jsonl\""
+        },
+        {
+          "line": 103,
+          "scope": "def _claims_path(root: Path | None = None) -> Path:",
+          "text": "return (root or _ROOT) / _CLAIMS_REL"
+        },
+        {
+          "line": 107,
+          "scope": "def _read_claims(root: Path | None = None) -> list[dict[str, Any]]:",
+          "text": "\"\"\"Read claims.jsonl; return a list of claim rows. NEVER raises.\"\"\""
+        },
+        {
+          "line": 196,
+          "scope": "def _is_construction_parked(",
+          "text": "A parked_construction row in claims.jsonl blocks re-builds of the same"
+        },
+        {
+          "line": 328,
+          "scope": "def claim_proposal(",
+          "text": "# BEFORE dispatch and claims.jsonl is committed, so on a re-attempt of a"
+        },
+        {
+          "line": 1742,
+          "scope": "def _open_draft_pr(",
+          "text": "f\"See `data/metabolism/claims.jsonl` for the file claim and \""
+        }
+      ]
+    },
+    {
+      "path": "scripts/metabolism_audit.py",
+      "blob": "6dfdc1750dea42c38666ac8d74ff9969c7aace68",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/metabolism_audit.py",
+      "hits": [
+        {
+          "line": 140,
+          "scope": "def _resolve_proposal_for_branch(",
+          "text": "uses claims.jsonl first (authoritative), then docket lobe fallback."
+        }
+      ]
+    },
+    {
+      "path": "scripts/metabolism_merge.py",
+      "blob": "2c118813fe5fff997df17461788114c05ca3089a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/94a20f53cdb2d866d07089df50567f059bf1073e/scripts/metabolism_merge.py",
+      "hits": [
+        {
+          "line": 57,
+          "scope": "",
+          "text": "# Path to claims.jsonl relative to repo root (same as metabolism_build._CLAIMS_REL)"
+        },
+        {
+          "line": 58,
+          "scope": "",
+          "text": "_CLAIMS_REL = (\"data\", \"metabolism\", \"claims.jsonl\")"
+        },
+        {
+          "line": 380,
+          "scope": "def _resolve_proposal_id_for_branch(",
+          "text": "1. claims.jsonl (authoritative — written atomically by the build lane):"
+        },
+        {
+          "line": 402,
+          "scope": "def _resolve_proposal_id_for_branch(",
+          "text": "# Step 1: claims.jsonl — authoritative proposal→branch mapping"
+        },
+        {
+          "line": 404,
+          "scope": "def _resolve_proposal_id_for_branch(",
+          "text": "claims_path = r.joinpath(*_CLAIMS_REL)"
+        },
+        {
+          "line": 427,
+          "scope": "def _resolve_proposal_id_for_branch(",
+          "text": "\"MERGE: branch %s → proposal %s (via claims.jsonl)\", pr_branch, pid"
+        },
+        {
+          "line": 634,
+          "scope": "def run_merge_lane(",
+          "text": "#   1. PRIMARY: consult claims.jsonl. The build lane writes one row per"
+        },
+        {
+          "line": 639,
+          "scope": "def run_merge_lane(",
+          "text": "#   2. FALLBACK: if claims.jsonl is absent or has no row for this cycle/branch,"
+        },
+        {
+          "line": 642,
+          "scope": "def run_merge_lane(",
+          "text": "#      This handles the in-flight window before claims.jsonl is committed."
+        }
+      ]
+    }
+  ]
+}

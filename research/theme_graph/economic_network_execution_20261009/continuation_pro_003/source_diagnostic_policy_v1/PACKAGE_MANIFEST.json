@@ -1,0 +1,31 @@
+{
+  "schema": "research.gmi.wp02.selection_policy_package_manifest/v1",
+  "created_at_utc": "2026-10-09T11:18:50.187115+00:00",
+  "status": "FROZEN_RECOMMENDATION_NOT_ADOPTED",
+  "policy_id": "GMI-WP02-RELATIVE-SOURCE-DIAGNOSTIC-20261009-v1",
+  "files": [
+    {
+      "path": "ARTIFACT_VALIDATION.json",
+      "bytes": 2102,
+      "sha256": "8042fa90e6cd48d80abdcd9a171dcc462914ed2313b1e8dc2c2d0313fbe480c3"
+    },
+    {
+      "path": "PRIMARY_SOURCE_REGISTER.json",
+      "bytes": 15881,
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "path": "RECOMMENDED_SELECTION_POLICY.json",
+      "bytes": 31323,
+      "sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd"
+    },
+    {
+      "path": "SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "bytes": 38864,
+      "sha256": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582"
+    }
+  ],
+  "manifest_self_excluded": true,
+  "source_scope": "Primary web research plus preserved fixed-reference frame audit; no raw webpage source-byte hash or actual cohort assertion.",
+  "owner_gate": "Principal adoption of A01/A02/A03 and lawful complete source inputs precede any selector run."
+}

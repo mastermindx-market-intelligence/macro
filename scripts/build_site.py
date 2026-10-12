@@ -4592,11 +4592,10 @@ def chart_risk_model(cf: pd.DataFrame) -> str:
 
 
 def chart_curve(cf: pd.DataFrame) -> str:
-    """Yield curve: the 2s10s slope RAW vs TERM-PREMIUM-ADJUSTED, ~25y, NBER-shaded.
-    Inversion (below 0) is the classic recession lead; the TP-adjusted line strips
-    the term premium so a low-TP flattening isn't misread as a recession signal
-    (it's why 2022-24's raw inversion didn't fire the composite). Colours sit
-    outside the zh swap map (a curve isn't a price-direction read)."""
+    """Yield curve: raw 2s10s vs the legacy TP10 compatibility heuristic.
+    The heuristic is 2s10s plus the 10y term-premium model estimate. It is context,
+    not a matched-maturity expectations-only decomposition and does not identify why
+    an inversion occurred. Colours sit outside the zh swap map."""
     start = cf.index.max() - pd.Timedelta(days=365 * 25)
     raw = cf.loc[start:, "curve_raw"].dropna().resample("W-FRI").last().dropna().round(2)
     adj = cf.loc[start:, "curve_tp_adj"].dropna().resample("W-FRI").last().dropna().round(2)
@@ -4612,7 +4611,7 @@ def chart_curve(cf: pd.DataFrame) -> str:
                               fillcolor="#8b93a1", opacity=0.16, line_width=0)
     fig.add_trace(go.Scatter(x=raw.index, y=raw, name="2s10s (raw)",
                              line={"color": "#7aa7e0", "width": 1.3}))
-    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s (term-premium adj.)",
+    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s + TP10 heuristic",
                              line={"color": "#c08af0", "width": 1.3}))
     fig.add_hline(y=0, line={"color": "#9aa4b2", "width": 0.8, "dash": "dot"})
     fig.update_layout(**PLOT_LAYOUT)
@@ -4917,11 +4916,12 @@ def _us_board_gate_cfg() -> dict:
         cfg = config.load().get("us_board_gate") or {}
         return {"gated": bool(cfg.get("gated", False)),
                 "preview_rows": int(cfg.get("preview_rows") or 3),
+                "today_preview_rows": int(cfg.get("today_preview_rows") or 6),
                 "panels": bool(cfg.get("panels", False)),
                 "panel_preview_rows": int(cfg.get("panel_preview_rows")
                                           or US_PANEL_PREVIEW_DEFAULT)}
     except Exception:  # noqa: BLE001
-        return {"gated": False, "preview_rows": 3,
+        return {"gated": False, "preview_rows": 3, "today_preview_rows": 6,
                 "panels": False, "panel_preview_rows": US_PANEL_PREVIEW_DEFAULT}
 
 
@@ -5037,6 +5037,22 @@ def us_stance_projection(entry_status: "str | None", board_read: "dict | None") 
         return {"verb": _US_STANCE_VERB_BY_STATUS.get(br_status, "wait"),
                 "stance_basis": "board_read"}
     return {"verb": None, "stance_basis": "no_read"}
+
+
+def _us_today_featured_preview(
+    us_standouts: "dict | None", preview_rows: int
+) -> list[dict]:
+    """Bounded Today shelf from the FULL owner-ordered Featured population.
+
+    The Screener gate intentionally exposes only a prefix of buy. Today used
+    to filter that already-sliced prefix, so a healthy 12-name Featured shelf
+    could collapse to two visible cards merely because rank #3 was not Featured.
+    This projection reads the full board before the split, preserves owner order,
+    and changes neither membership nor timing/entry semantics.
+    """
+    rows = (us_standouts or {}).get("buy") or []
+    limit = max(0, int(preview_rows))
+    return [row for row in rows if row.get("featured")][:limit]
 
 
 def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
@@ -5440,6 +5456,7 @@ def _plan_relation_for_row(
 def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
                        locked_rows: list[dict], us_standouts: "dict | None",
                        top_setups: "dict | None", built: str,
+                       today_rows: "list[dict] | None" = None,
                        pgate: "dict | None" = None,
                        panel_blocks: "dict | None" = None,
                        life_gate: "dict | None" = None,
@@ -5483,12 +5500,14 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     path = site / US_PAYLOAD_DIR / US_PAYLOAD_NAME
     path.parent.mkdir(parents=True, exist_ok=True)
     panel_blocks = panel_blocks or {}
+    today_rows = list(today_rows or [])
     if gate is None:
         # The board itself is whole (ungated, or smaller than the preview cap) but
         # the ADJACENT panels can still be withholding rows, so the payload is not
         # necessarily empty here — `gated` reports the BOARD, `panels` the rest.
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
-                   "built": built, "cards_html": "", "rows": []}
+                   "built": built, "cards_html": "", "rows": [],
+                   "today_cards_html": "", "today_preview": 0, "today_total": 0}
     else:
         full_buy = (us_standouts or {}).get("buy") or []
         # sg_any/bs_adj/xu_allfeat/trg_map mirror dashboard.html.j2's own derivation
@@ -5517,6 +5536,26 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         rw_zh = (("今晚无法检查"
                   + (("全部 " + str(_rw_n) + " 只股票") if _rw_n else "这些股票")
                   + "的上行空间，因此这一项不加分。") if _rw_dead else "")
+
+        # Today is a paid/full-access presentation shelf. Keep its extra rows in
+        # the already protected payload instead of baking them into anonymous HTML.
+        try:
+            today_cards_html = env.get_template("_us_board_cards.html.j2").render(
+                items=today_rows, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — front shelf fails soft to shell
+            log.error("us_stocks: Today card render failed (%s)", e)
+            today_cards_html = ""
+        _today_declared = ((us_standouts or {}).get("ranking") or {}).get("featured_count")
+        _today_total = (_today_declared
+                        if isinstance(_today_declared, int) and not isinstance(_today_declared, bool)
+                        and _today_declared >= len(feat)
+                        else len(feat))
+
         items = _us_board_group_items(locked_rows, sg_any, gate["stage_counts"])
         try:
             cards_html = env.get_template("_us_board_cards.html.j2").render(
@@ -5537,6 +5576,9 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "locked": gate["locked"], "as_of": (us_standouts or {}).get("as_of") or "",
             "cards_html": cards_html,
             "rows": [_table_row(n) for n in locked_rows],
+            "today_cards_html": today_cards_html,
+            "today_preview": len(today_rows),
+            "today_total": _today_total,
         }
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
@@ -6093,10 +6135,40 @@ def main() -> int:
     # surfaced via the card's as_of). Absent (first run) => the strip degrades to the
     # action_board notable cards below.
     us_standouts = None
+    _us_w3c = None
+    _us_w3c_refusal = None
+    _us_w3c_binding = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
-            us_standouts = json.loads(_us.read_text())
+            _us_source_bytes = _us.read_bytes()
+            us_standouts = json.loads(_us_source_bytes)
+            # Freeze raw owner binding before display attachments and tier splitting.
+            # An optional provenance import/read failure cannot hide the board.
+            try:
+                from hashlib import sha256 as _w3c_sha256
+                _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
+                from engine.theme_graph.selection_cohort_publication import (
+                    consume_us_source, default_capture_capability)
+                try:
+                    from functools import partial as _w3c_partial
+                    from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                    _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                    log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                    _w3c_attempts = (None,)
+                for _w3c_qr in _w3c_attempts:
+                    _us_w3c_read = consume_us_source(
+                        _us_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                    if _us_w3c_read["status"] == "AVAILABLE":
+                        _us_w3c = _us_w3c_read
+                        break
+                    _us_w3c_refusal = _us_w3c_read
+                    if _w3c_qr is not None:
+                        log.warning("W3C US qualified reads refused (%s); receipt-only", _us_w3c_read["reason_codes"])
+            except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
+                log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_standouts.json unreadable (%s)", e)
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
@@ -7003,6 +7075,8 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        # Internal machine binding only; no template/public-rights/tier expansion.
+        us_selection_cohort_internal=_us_w3c,
         us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
@@ -7045,7 +7119,7 @@ def main() -> int:
         alloc_card=alloc_card_state(),           # macro-page allocation CTA card
         risk_model=risk_model_view(f, hist, _cf),  # de-risk score + leg breakdown
         chart_risk_model=chart_risk_model(_cf),    # drawdown/recession risk-model chart
-        chart_curve=chart_curve(_cf),              # 2s10s raw vs term-premium-adjusted
+        chart_curve=chart_curve(_cf),              # raw 2s10s vs legacy TP10 heuristic
         chart_vix_term=chart_vix_term(f, _cf),     # VIX level + term-structure ratio
         cross_asset=cross_asset_snap,
         fear_euphoria=fear_euphoria_synthesis(latest, f),
@@ -7317,6 +7391,8 @@ def main() -> int:
     # an overridden copy of vm, and the withheld remainder is written to
     # site/premiumdata/us_stocks.json regardless of the switch (empty when off).
     _us_gate_cfg = _us_board_gate_cfg()
+    _us_today_featured = _us_today_featured_preview(
+        vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
     _us_shell_su, _us_gate, _us_locked = _split_us_board(
         vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
     # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
@@ -7348,6 +7424,7 @@ def main() -> int:
     _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
                        us_standouts=vm.get("us_standouts"),
                        top_setups=vm.get("top_setups"), built=generated,
+                       today_rows=_us_today_featured,
                        pgate=_us_pgate,
                        panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate, _us_plocked, vm,
@@ -7683,8 +7760,37 @@ def main() -> int:
         # error leaves the first-pass pages in place.
         try:
             _us_path = site / "factordata" / "us_standouts.json"
+            _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            _fresh_w3c = None
+            _fresh_w3c_refusal = None
+            _fresh_w3c_binding = None
+            if _fresh_source_bytes is not None:
+                try:
+                    from hashlib import sha256 as _w3c_sha256
+                    _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
+                    from engine.theme_graph.selection_cohort_publication import (
+                        consume_us_source, default_capture_capability)
+                    try:
+                        from functools import partial as _w3c_partial
+                        from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                        _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                    except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                        log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                        _w3c_attempts = (None,)
+                    for _w3c_qr in _w3c_attempts:
+                        _fresh_w3c_read = consume_us_source(
+                            _fresh_source_bytes, data_dir=config.data_dir(),
+                            authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                        if _fresh_w3c_read["status"] == "AVAILABLE":
+                            _fresh_w3c = _fresh_w3c_read
+                            break
+                        _fresh_w3c_refusal = _fresh_w3c_read
+                        if _w3c_qr is not None:
+                            log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
+                except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
+                    log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
             _fresh_su = _attach_board_display_chips(
-                site, json.loads(_us_path.read_text())) if _us_path.exists() else None
+                site, json.loads(_fresh_source_bytes)) if _fresh_source_bytes is not None else None
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
             _fresh_candidate_visibility = project_candidate_visibility(
@@ -7695,7 +7801,14 @@ def main() -> int:
                     # A same-session correction can change names, exclusion reasons,
                     # or availability without advancing the date/freshness clock.
                     # Compare the existing allowlisted view, not unrelated raw fields.
-                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")):
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")
+                    # Same-session source/reason/explanation corrections cannot pair
+                    # the fresh board with an older first-pass internal context.
+                    or _fresh_w3c_binding != _us_w3c_binding
+                    or _fresh_w3c != vm.get("us_selection_cohort_internal")):
+                vm["us_selection_cohort_internal"] = _fresh_w3c
+                _us_w3c_binding = _fresh_w3c_binding
+                _us_w3c_refusal = _fresh_w3c_refusal
                 vm["us_standouts"] = _fresh_su
                 vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
@@ -7745,6 +7858,8 @@ def main() -> int:
                 # payload from THIS generation — otherwise the re-render would bake
                 # the fresh board's full row set straight into the shell and
                 # silently reopen the leak on every one-build-lag refresh.
+                _us_today_featured2 = _us_today_featured_preview(
+                    vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
                 _us_shell_su2, _us_gate2, _us_locked2 = _split_us_board(
                     vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
                 # The plan book is not touched by this one-build-lag re-render
@@ -7773,6 +7888,7 @@ def main() -> int:
                 _write_us_payload(env, site, _us_gate2, locked_rows=_us_locked2,
                                    us_standouts=vm.get("us_standouts"),
                                    top_setups=vm.get("top_setups"), built=generated,
+                                   today_rows=_us_today_featured2,
                                    pgate=_us_pgate2,
                                    panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate2, _us_plocked2, vm,
@@ -7801,6 +7917,12 @@ def main() -> int:
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "us", vm.get("us_selection_cohort_internal") or _us_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
 
         # Bespoke single-stock chart data: a compact per-ticker OHLC JSON
         # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of

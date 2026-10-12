@@ -584,7 +584,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
           {% endif %}
         </div>
         {% if vm.curve.tax_en %}<p class="tax-note" style="margin-top:10px"><span class="l-en">{{ vm.curve.tax_en }}</span><span class="l-zh">{{ vm.curve.tax_zh }}</span></p>{% endif %}
-        <span class="pill" style="margin-top:10px">{{ t('Other curve reads', '其他曲线读数') }}{{ lens('Near-term forward spread ' ~ vm.curve.ntfs ~ 'pp — the front-end version of the slope, cleaner when markets are pricing Fed cuts. 2s10s ' ~ vm.curve.spread_2s10s ~ 'pp — the 2-year against the 10-year. Term-premium-adjusted slope ' ~ vm.curve.curve_tp_adj ~ 'pp — the slope with low-term-premium noise removed.', '近端远期利差 ' ~ vm.curve.ntfs ~ 'pp——斜率的前端版本，在市场为降息定价时更清晰。2年/10年利差 ' ~ vm.curve.spread_2s10s ~ 'pp——2年期对10年期。期限溢价调整斜率 ' ~ vm.curve.curve_tp_adj ~ 'pp——剔除低期限溢价噪音后的斜率。') }}</span>
+        <span class="pill" style="margin-top:10px">{{ t('Other curve reads', '其他曲线读数') }}{{ lens('Near-term forward spread ' ~ vm.curve.ntfs ~ 'pp — the front-end version of the slope, cleaner when markets are pricing Fed cuts. 2s10s ' ~ vm.curve.spread_2s10s ~ 'pp — the 2-year against the 10-year. Legacy TP10 curve heuristic ' ~ vm.curve.curve_tp_adj ~ 'pp — 2s10s plus the 10y term-premium model estimate; context only, not a matched-maturity expectations-only curve.', '近端远期利差 ' ~ vm.curve.ntfs ~ 'pp——斜率的前端版本，在市场为降息定价时更清晰。2年/10年利差 ' ~ vm.curve.spread_2s10s ~ 'pp——2年期对10年期。TP10曲线启发式 ' ~ vm.curve.curve_tp_adj ~ 'pp——剔除低期限溢价噪音后的斜率。') }}</span>
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
       </div>
 
@@ -798,12 +798,12 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
       <div class="sub" style="margin-top:12px"><b><span class="l-en">{{ compass.verdict_en }}</span><span class="l-zh">{{ compass.verdict_zh }}</span></b></div>
     </div>
     <div class="card" style="margin-top:14px">
-      <h2>{{ t('Recession spreads & TP-adjusted slope', '衰退利差与期限溢价调整斜率') }}</h2>
+      <h2>{{ t('Recession spreads & TP10 heuristic', '衰退利差与TP10启发式') }}</h2>
     <div class="kpis">
       {{ kpi('10y−3m (NY Fed)', '10年−3月（纽约联储）', vm.curve.spread_10y3m, 'pp') }}
       {{ kpi('Near-term fwd spread', '近端远期利差', vm.curve.ntfs, 'pp') }}
       {{ kpi('2s10s', '2年/10年', vm.curve.spread_2s10s, 'pp') }}
-      {{ kpi('TP-adjusted slope', '期限溢价调整斜率', vm.curve.curve_tp_adj, 'pp') }}
+      {{ kpi('TP10 curve heuristic', 'TP10曲线启发式', vm.curve.curve_tp_adj, 'pp') }}
       {{ kpi('NY Fed recession prob', '纽约联储衰退概率', vm.curve.nyfed_prob, '%') }}
     </div>
     <div style="margin-top:14px">
@@ -815,13 +815,13 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
     {% elif vm.curve.uninversion %}
     <div class="flag warn">⚑ {{ t('Curve un-inverted after a prior inversion — the dis-inversion, not the inversion, tends to lead recession.', '曲线在此前倒挂后解除 — 引领衰退的往往是解除倒挂而非倒挂本身。') }}</div>
     {% elif vm.curve.tp_adj_inverted %}
-    <div class="flag warn">⚑ {{ t('Term-premium-adjusted curve is inverted (a "real" inversion, not a low-term-premium artifact).', '期限溢价调整后的曲线倒挂（“真实”倒挂，非低期限溢价造成的假象）。') }}</div>
+    <div class="flag warn">⚑ {{ t('Legacy TP10 curve heuristic is below zero. This is context only; it does not prove an expectations-only or "real" inversion.', '旧版TP10曲线启发式低于零。该读数仅作背景，并不能证明纯预期或“真实”倒挂。') }}</div>
     {% endif %}
     <div style="margin-top:16px">
-      <div class="sub" style="margin-bottom:4px">{{ t('Recession spreads & TP-adjusted slope over time — zero = flat, below zero = inverted', '衰退利差与期限溢价调整斜率走势 · 0=平坦，负值=倒挂') }}</div>
+      <div class="sub" style="margin-bottom:4px">{{ t('Recession spreads & TP10 heuristic over time — zero = flat heuristic, below zero = negative heuristic', '衰退利差与TP10启发式走势 · 0=启发式为平，负值=启发式为负') }}</div>
       {{ charts.spreads | safe }}
     </div>
-    <div class="sub faint" style="margin-top:8px">{{ t('10y−3m feeds the NY Fed model. The near-term forward spread is cleaner when markets price Fed cuts. The TP-adjusted slope removes low-term-premium noise.', '10年−3月用于纽约联储模型。近端远期利差更能反映降息定价。期限溢价调整斜率剔除低期限溢价噪音。') }}</div>
+    <div class="sub faint" style="margin-top:8px">{{ t('10y−3m feeds the NY Fed model. The near-term forward spread is cleaner when markets price Fed cuts. The TP10 curve heuristic combines 2s10s with the 10y term-premium model estimate; it does not isolate expectations.', '10年−3月用于纽约联储模型。近端远期利差更能反映降息定价。TP10曲线启发式把2年/10年利差与10年期限溢价模型估计相加；它并不分离纯预期成分。') }}</div>
     </div>
   </section>
   {% endif %}
@@ -996,6 +996,12 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     <span class="l-en">Company bonds — credit watch</span><span class="l-zh">公司债 · 信用观察</span>
   </div>
 
+  {% if cc_vm.source_available is defined and not cc_vm.source_available %}
+  <div class="card cs-card cs-neutral" data-card="credit-source-unavailable">
+    <h2>{{ t('Credit reading unavailable', '信用读数不可用') }}</h2>
+    <p class="cc-verdict-lead">{{ t(cc_vm.hero.subtitle_en, cc_vm.hero.subtitle_zh) }}</p>
+  </div>
+  {% else %}
   {# 2. HERO STANCE CARD #}
   <div class="card cs-card {{ cc_vm.hero.hero_cs }}">
     <h2>{{ t('Overall read', '整体研判') }}</h2>
@@ -1224,6 +1230,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   <div class="cc-foot-note">
     <span class="l-en">Prices are fund-reported estimates · covers bonds inside major index funds only · daily prices start 14 Jul 2026</span><span class="l-zh">价格为基金披露估值 · 仅覆盖主要指数基金持仓债券 · 日度价格自2026年7月14日起</span>
   </div>
+{% endif %}
 {% endif %}
 {# END CCW-W4 corporate credit desk #}
 

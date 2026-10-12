@@ -14,19 +14,19 @@ an "error" per-check and page state "degraded" — the render proceeds WITH a ba
 The sentinel NEVER raises, NEVER blocks the nightly render.
 
 Seven checks against `lib.hk_calendar.expected_last_session()`:
-    1. Cache index.max() <= 2 calendar days behind expected (PRIMARY data source).
-    2. Bellwether spot-check: data/hk_stocks/9988.HK.parquet index.max() <= 2 cal days.
-    3. Standouts artifact: site/factordata/hk_standouts.json `.as_of` <= 2 cal days.
-    4. Regime artifact: data/hk_regime/latest.json `.date` <= 1 cal day.
-    5. Coherence: standouts.as_of and regime.date within <= 1 business day of each other.
+    1. Cache index.max() 0 completed sessions behind expected (PRIMARY data source).
+    2. Bellwether spot-check: data/hk_stocks/9988.HK.parquet index.max() 0 completed sessions behind expected.
+    3. Standouts artifact: site/factordata/hk_standouts.json `.as_of` 0 completed sessions behind expected.
+    4. Regime artifact: data/hk_regime/latest.json `.date` 0 completed sessions behind expected.
+    5. Coherence: standouts.as_of and regime.date within <= 1 HK session of each other.
     6. Regression: cache index.max() must never DECREASE run-over-run (detects the
        `-X theirs` clobber that caused the incident).
-    7. Southbound holdings: data/hk_southbound/holdings.parquet index.max() <= 2 cal days.
+    7. Southbound holdings: data/hk_southbound/holdings.parquet index.max() 0 completed sessions behind expected.
 
 State thresholds:
-    lag <= 2 cal days -> "fresh"
-    lag <= 4 cal days -> "slow" (weekend gaps, missed session)
-    lag >= 5 cal days -> "stale"     (present but too old)
+    0 missed sessions -> "fresh"
+    1–2 missed sessions -> "slow" (tight regime: 1)
+    >= 3 missed sessions -> "stale" (tight regime: >= 2)     (present but too old)
     file absent       -> "missing"   (never present this run — SECONDARY, degraded-only)
     read error        -> "error"     (present but unreadable — PRIMARY, red)
 
@@ -47,7 +47,7 @@ REVISION 2026-07-23 — stop the chronic false "STALE — do not act" red:
         regime.date — a normal, expected phase, not an incoherent snapshot. The old
         exact-equality check (standouts.as_of == regime.date) turned that normal phase
         into a full-red "do not act" banner all night. Coherence is now OK when the two
-        dates are within <= 1 business day of each other; a plain-word note explains the
+        dates are within <= 1 HK session of each other; a plain-word note explains the
         one-session lag, and `gap_sessions` records the size. A gap > 1 session (either
         direction) still breaks coherence -> stale.
 
@@ -71,6 +71,8 @@ import pandas as pd
 
 from lib import config
 from lib.hk_calendar import expected_last_session
+from lib.market_observations import observation_date_allowed
+from lib.market_session import calendar_verified, market_local_date, missed_sessions
 
 log = logging.getLogger("hk_freshness")
 
@@ -89,34 +91,16 @@ _FRESHNESS_JSON = "hk_freshness.json"
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _lag_state(lag_days: int | None, *, tight: bool = False) -> str:
-    """Convert a calendar-day lag to a staleness state label.
-
-    Thresholds:
-        0-2 cal days -> fresh   (normal: same day or weekend)
-        3-4 cal days -> slow    (one missed session, or long weekend)
-        >= 5 cal days -> stale  (two or more missed sessions; the 2026-07-08 incident
-                                 had a 5-day lag from Jul-02 to Jul-07)
-    When tight=True (regime check, tighter SLA):
-        0-1 cal days -> fresh
-        2   cal days -> slow
-        >= 3 cal days -> stale
-    """
-    if lag_days is None:
+def _lag_state(lag_sessions: int | None, *, tight: bool = False) -> str:
+    """Grade actual missed sessions; retain the tighter regime tolerance."""
+    if lag_sessions is None:
         return "dead"
-    if tight:
-        if lag_days <= 1:
-            return "fresh"
-        elif lag_days <= 2:
-            return "slow"
-        else:
-            return "stale"
-    if lag_days <= 2:
+    if lag_sessions == 0:
         return "fresh"
-    elif lag_days <= 4:
+    if lag_sessions <= (1 if tight else 2):
         return "slow"
-    else:
-        return "stale"
+    return "stale"
+
 
 
 def _parquet_index_max(path: Path) -> date | None:
@@ -188,7 +172,8 @@ def _save_state(state_path: Path, payload: dict) -> None:
 
 
 def _badge(asof: date | None, expected: date, *, tight: bool = False,
-           null_state: str = "dead") -> dict:
+           null_state: str = "dead", market: str = "HK",
+           now: datetime | None = None) -> dict:
     """Build a per-store staleness badge dict.
 
     `null_state` is the state assigned when `asof` is None (no readable date). It
@@ -203,7 +188,22 @@ def _badge(asof: date | None, expected: date, *, tight: bool = False,
     lag = (expected - asof).days
     # Negative lag (asof AFTER expected) = store has fresh data.
     lag = max(lag, 0)
-    return {"asof": str(asof), "lag_days": lag, "state": _lag_state(lag, tight=tight)}
+    comparison_year = market_local_date(market, now).year if now is not None else expected.year
+    verified = calendar_verified(market, comparison_year) and calendar_verified(market, expected.year)
+    accepted = observation_date_allowed(asof, market, now=now)
+    # No guessed closure can turn an unknown-year held observation fresh. Keep
+    # the incumbent error state so existing sentinel aggregation remains red.
+    if not accepted:
+        sessions, state, data_state = None, "error", "invalid"
+    elif not verified:
+        sessions, state, data_state = None, "error", "unverified"
+    else:
+        sessions = missed_sessions(market, asof, expected)
+        state = _lag_state(sessions, tight=tight)
+        data_state = "late" if sessions else "current"
+    return {"asof": str(asof), "lag_days": lag, "lag_sessions": sessions, "state": state,
+            "data_state": data_state, "calendar_verified": verified}
+
 
 
 # ---------------------------------------------------------------------------
@@ -263,7 +263,7 @@ def hk_freshness_sentinel(now: datetime | None = None) -> dict:
             # File present but returned no readable date -> unreadable/corrupt.
             checks["cache"] = {"asof": None, "lag_days": None, "state": "error"}
         else:
-            checks["cache"] = _badge(cache_max, expected)
+            checks["cache"] = _badge(cache_max, expected, now=now)
     except Exception as e:  # noqa: BLE001
         log.error("hk_freshness check 1 (cache) crashed: %s", e)
         checks["cache"] = {"asof": None, "lag_days": None, "state": "error"}
@@ -272,7 +272,7 @@ def hk_freshness_sentinel(now: datetime | None = None) -> dict:
     try:
         bell_path = data_root / "hk_stocks" / "9988.HK.parquet"
         bell_max = _parquet_index_max(bell_path)
-        checks["bellwether"] = _badge(bell_max, expected)
+        checks["bellwether"] = _badge(bell_max, expected, now=now)
     except Exception as e:  # noqa: BLE001
         log.error("hk_freshness check 2 (bellwether) crashed: %s", e)
         checks["bellwether"] = {"asof": None, "lag_days": None, "state": "error"}
@@ -283,39 +283,45 @@ def hk_freshness_sentinel(now: datetime | None = None) -> dict:
         standouts_asof_str = _json_field(standouts_path, "as_of")
         standouts_asof = (pd.Timestamp(standouts_asof_str).date()
                           if standouts_asof_str else None)
-        checks["standouts"] = _badge(standouts_asof, expected)
+        checks["standouts"] = _badge(standouts_asof, expected, now=now)
     except Exception as e:  # noqa: BLE001
         log.error("hk_freshness check 3 (standouts) crashed: %s", e)
         checks["standouts"] = {"asof": None, "lag_days": None, "state": "error"}
         standouts_asof = None
         standouts_asof_str = None
 
-    # Check 4: hk_regime/latest.json .date (tight: <= 1 cal day)
+    # Check 4: hk_regime/latest.json .date (tight session budget)
     try:
         regime_path = data_root / "hk_regime" / "latest.json"
         regime_date_str = _json_field(regime_path, "date")
         regime_date = (pd.Timestamp(regime_date_str).date()
                        if regime_date_str else None)
-        checks["regime"] = _badge(regime_date, expected, tight=True)
+        checks["regime"] = _badge(regime_date, expected, tight=True, now=now)
     except Exception as e:  # noqa: BLE001
         log.error("hk_freshness check 4 (regime) crashed: %s", e)
         checks["regime"] = {"asof": None, "lag_days": None, "state": "error"}
         regime_date = None
         regime_date_str = None
 
-    # Check 5: Coherence — standouts.as_of within <= 1 business day of regime.date.
+    # Check 5: Coherence — standouts.as_of within <= 1 HK session of regime.date.
     # The regime artifact advances one asia-close BEHIND the evening stock scan (the
     # committed data/ file lags the render lanes by one session); that one-session lag
     # is a normal pipeline phase, not an incoherent snapshot. Tolerate a gap of <= 1
-    # business day (either direction); a larger gap breaks coherence -> stale.
-    # See docstring revision 2026-07-23. HK-holiday exactness is not required here.
+    # HK session (either direction); a larger gap breaks coherence -> stale.
+    # Exchange closures are not missed coherence observations.
     try:
         if standouts_asof is not None and regime_date is not None:
-            # busday_count is signed and half-open [start, end); take the absolute
-            # count so either ordering yields the session distance between the dates.
-            gap_sessions = int(abs(np.busday_count(regime_date, standouts_asof)))
-            coherent = gap_sessions <= 1
-            if not coherent:
+            earlier, later = sorted((regime_date, standouts_asof))
+            verified = calendar_verified("HK", market_local_date("HK", now).year)
+            accepted = (observation_date_allowed(earlier, "HK", now=now)
+                        and observation_date_allowed(later, "HK", now=now))
+            gap_sessions = missed_sessions("HK", earlier, later) if verified and accepted else None
+            coherent = verified and accepted and gap_sessions <= 1
+            if not verified:
+                note = "exchange calendar is unverified — coherence cannot be confirmed"
+            elif not accepted:
+                note = "stock scan or regime has an invalid observation date"
+            elif not coherent:
                 note = (f"the stock scan and the regime read are {gap_sessions} "
                         "sessions apart — a bigger gap than the normal one-session lag")
             elif gap_sessions == 1:
@@ -325,14 +331,23 @@ def hk_freshness_sentinel(now: datetime | None = None) -> dict:
                 note = None
         else:
             # A missing date on either side cannot be judged coherent.
+            verified = calendar_verified("HK", market_local_date("HK", now).year)
+            accepted = False
             gap_sessions = None
             coherent = False
             note = "standouts or regime date unavailable — coherence cannot be checked"
+        coherence_data_state = (
+            "unverified" if not verified else
+            "missing" if standouts_asof is None or regime_date is None else
+            "invalid" if not accepted else "current" if coherent else "late"
+        )
         coherence = {
             "ok": coherent,
             "standouts_asof": str(standouts_asof) if standouts_asof else None,
             "regime_date": str(regime_date) if regime_date else None,
             "gap_sessions": gap_sessions,
+            "calendar_verified": verified,
+            "data_state": coherence_data_state,
             "note": note,
         }
     except Exception as e:  # noqa: BLE001
@@ -343,7 +358,10 @@ def hk_freshness_sentinel(now: datetime | None = None) -> dict:
     try:
         sb_path = data_root / "hk_southbound" / "holdings.parquet"
         sb_max = _parquet_index_max(sb_path)
-        checks["southbound"] = _badge(sb_max, expected)
+        from lib.market_session import expected_session
+        connect_expected = expected_session("CONNECT", now)
+        checks["southbound"] = _badge(sb_max, connect_expected, market="CONNECT", now=now)
+        checks["southbound"]["expected_session"] = str(connect_expected)
     except Exception as e:  # noqa: BLE001
         log.error("hk_freshness check 7 (southbound) crashed: %s", e)
         checks["southbound"] = {"asof": None, "lag_days": None, "state": "error"}

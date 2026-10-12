@@ -742,8 +742,8 @@
              letter-spacing: .01em; }
   .tm-state-tag { font-size: 11px; font-weight: 700; text-transform: uppercase;
                   letter-spacing: .05em; padding: 2px 8px; border-radius: 10px; }
-  .tm-state-tag.is-live { color: color-mix(in srgb, var(--up) 85%, var(--text));
-                  background: color-mix(in srgb, var(--up) 16%, var(--panel)); }
+  .tm-state-tag.is-live { color: var(--ink-ok, var(--ok));
+                  background: var(--wash-ok); }
   .tm-state-tag.is-hist { color: var(--muted);
                   background: color-mix(in srgb, var(--muted) 16%, var(--panel)); }
   .tm-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
@@ -2175,8 +2175,8 @@
   body.page-macro .cb-count { font-size: 11px; font-weight: 800; padding: 0 7px; border-radius: 8px;
     background: color-mix(in srgb, var(--act) 18%, var(--tile)); color: var(--ink-act, var(--act));
     font-family: var(--num); font-variant-numeric: tabular-nums; }
-  body.page-macro .cb-live { width: 8px; height: 8px; border-radius: 50%; background: var(--up);
-    box-shadow: 0 0 8px var(--up); flex: none; }
+  body.page-macro .cb-live { width: 8px; height: 8px; border-radius: var(--r-pill, 999px); background: var(--ok);
+    box-shadow: 0 0 8px var(--ok); flex: none; }
   body.page-macro .cb-sub { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 0 0 9px;
     display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
   body.page-macro .cb-sub a { margin-left: auto; }
@@ -12402,7 +12402,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <tr>
             <td style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))"><span class="l-en">{{ r.label_en }}</span><span class="l-zh">{{ r.label_zh or r.label_en }}</span></td>
             {% for tf in ['D','3D','W','M'] %}{% set cell = r.cells[tf] %}
-            <td>{% if cell %}<span class="ms-cell2 {{ cell.tone }}"><span class="ar">{{ cell.arrow }}</span><span class="rsi">{{ cell.rsi|round|int if cell.rsi is not none else '·' }}</span></span>{% else %}<span class="ms-cell2 flat"><span class="ar">·</span></span>{% endif %}</td>
+            <td{% if cell and cell.rsi is not none %} data-sort="{{ cell.rsi|round|int }}"{% else %} data-sort=""{% endif %}>{% if cell %}<span class="ms-cell2 {{ cell.tone }}"><span class="ar">{{ cell.arrow }}</span><span class="rsi">{{ cell.rsi|round|int if cell.rsi is not none else '·' }}</span></span>{% else %}<span class="ms-cell2 flat"><span class="ar">·</span></span>{% endif %}</td>
             {% endfor %}
             <td style="text-align:right"><span class="mx5-dlg-mtf-conf {{ r.tone }}"><span class="l-en">{{ r.confluence_en }}</span><span class="l-zh">{{ r.confluence_zh or r.confluence_en }}</span></span></td>
           </tr>
@@ -14652,22 +14652,43 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {# ── d. Inflation Read → glance row: state word + one plain line + ? receipt ── #}
       {# Guard: only render when core inflation values are present (fail-open path leaves them None). #}
       {% if _dlgrc_inf and _dlgrc_inf.core_pce_yoy is not none %}
-      {% set _inf_vst = _dlgrc_inf.vs_target_pp %}
-      {# Anchoring drives the state word + colour; the numbers are demoted to the ? tip. #}
-      {% set _inf_anchor = _dlgrc_inf.anchoring %}
-      {% set _inf_state_en = {'anchored':'Above target','drifting':'Drifting up','unanchored':'Unanchored'}.get(_inf_anchor, 'Above target') %}
-      {% set _inf_state_zh = {'anchored':'高于目标','drifting':'向上漂移','unanchored':'脱锚'}.get(_inf_anchor, '高于目标') %}
-      {% set _inf_col = 'var(--down,#ef4444)' if _inf_anchor == 'unanchored' else ('var(--warn,#f59e0b)' if (_inf_vst is not none and _inf_vst > 0.5) else 'var(--up,#22d97a)') %}
-      {# Plain "how far above target" phrase #}
-      {% set _inf_above_en = ((('%.1f'|format(_inf_vst)) ~ ' points above the Fed’s 2% target') if (_inf_vst is not none) else 'above the Fed’s 2% target') %}
-      {% set _inf_above_zh = ((('高于美联储2%目标 ' ~ ('%.1f'|format(_inf_vst)) ~ ' 个百分点')) if (_inf_vst is not none) else '高于美联储2%目标') %}
+      {% set _inf_vst = _dlgrc_inf.vs_target_pp if (_dlgrc_inf.vs_target_pp is defined and _dlgrc_inf.vs_target_pp is not none) else none %}
+      {# E0-G: the owner's inflation LEVEL token (engine/rate_inflation_transmission.current_state → state.inflation.regime)
+         drives the state word + colour; the owner's EXPECTATIONS token (state.expectations.anchoring) drives the second
+         clause. Both are carried verbatim and both are null-safe: an unknown or missing token reads "being updated",
+         never a default word. The numbers stay demoted to the ? tip. #}
+      {% set _inf_regime = _dlgrc_inf.regime if _dlgrc_inf.regime in ('above target', 'at target', 'below target') else none %}
+      {% set _inf_anchor = _dlgrc_inf.anchoring if _dlgrc_inf.anchoring in ('anchored', 'drifting up', 'drifting down') else none %}
+      {% set _inf_state_en = {'above target':'Above target','at target':'Near target','below target':'Below target'}.get(_inf_regime, 'Being updated') %}
+      {% set _inf_state_zh = {'above target':'高于目标','at target':'接近目标','below target':'低于目标'}.get(_inf_regime, '更新中') %}
+      {# Red only when expectations move the wrong way for the level; green when near target with steady expectations;
+         quiet blue while the level is being re-read; amber for every other state (a miss, or drifting expectations near target). #}
+      {% set _inf_wrong_way = (_inf_regime == 'above target' and _inf_anchor == 'drifting up') or (_inf_regime == 'below target' and _inf_anchor == 'drifting down') %}
+      {% set _inf_col = 'var(--down,#ef4444)' if _inf_wrong_way else ('var(--up,#22d97a)' if (_inf_regime == 'at target' and _inf_anchor == 'anchored') else ('var(--info,#60a5fa)' if _inf_regime is none else 'var(--warn,#f59e0b)')) %}
+      {# Plain level phrase: how far from the Fed's 2% target, in the direction the owner states #}
+      {% set _inf_gap = ('%.1f'|format(_inf_vst|abs)) if (_inf_vst is not none) else none %}
+      {% if _inf_regime == 'above target' %}
+      {% set _inf_level_en = ('still ' ~ _inf_gap ~ ' points above the Fed’s 2% target') if _inf_gap else 'still above the Fed’s 2% target' %}
+      {% set _inf_level_zh = ('仍高于美联储2%目标 ' ~ _inf_gap ~ ' 个百分点') if _inf_gap else '仍高于美联储2%目标' %}
+      {% elif _inf_regime == 'below target' %}
+      {% set _inf_level_en = (_inf_gap ~ ' points below the Fed’s 2% target') if _inf_gap else 'below the Fed’s 2% target' %}
+      {% set _inf_level_zh = ('低于美联储2%目标 ' ~ _inf_gap ~ ' 个百分点') if _inf_gap else '低于美联储2%目标' %}
+      {% elif _inf_regime == 'at target' %}
+      {% set _inf_level_en = 'close to the Fed’s 2% target' %}
+      {% set _inf_level_zh = '接近美联储2%目标' %}
+      {% else %}
+      {% set _inf_level_en = 'being re-read against the Fed’s 2% target' %}
+      {% set _inf_level_zh = '相对美联储2%目标的读数更新中' %}
+      {% endif %}
+      {% set _inf_exp_en = {'anchored':'longer-run expectations look steady','drifting up':'longer-run expectations are drifting up','drifting down':'longer-run expectations are drifting down'}.get(_inf_anchor, 'the longer-run expectations read is being updated') %}
+      {% set _inf_exp_zh = {'anchored':'长期预期看起来稳定','drifting up':'长期预期向上漂移','drifting down':'长期预期向下漂移'}.get(_inf_anchor, '长期预期读数更新中') %}
       <div class="mx5-dlg-eyebrow"><span class="l-en">Inflation Read</span><span class="l-zh">通胀读数</span></div>
       <div class="fbm-row">
         <span class="fbm-row-state" style="color:{{ _inf_col }}"><span class="fbm-row-dot" style="background:{{ _inf_col }}"></span><span class="l-en">{{ _inf_state_en }}</span><span class="l-zh">{{ _inf_state_zh }}</span></span>
-        <span class="fbm-row-line"><span class="l-en">Core prices are still {{ _inf_above_en }}; longer-run expectations look {{ {'anchored':'steady','drifting':'a touch loose','unanchored':'unmoored'}.get(_inf_anchor,'steady') }}.</span><span class="l-zh">核心物价仍{{ _inf_above_zh }}；长期预期看起来{{ {'anchored':'稳定','drifting':'略松动','unanchored':'不稳'}.get(_inf_anchor,'稳定') }}。</span></span>
+        <span class="fbm-row-line"><span class="l-en">Core prices are {{ _inf_level_en }}; {{ _inf_exp_en }}.</span><span class="l-zh">核心物价{{ _inf_level_zh }}；{{ _inf_exp_zh }}。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Core PCE {{ _dlgrc_inf.core_pce_yoy }}% y/y · Core CPI {{ _dlgrc_inf.core_cpi_yoy }}% · 3-month annualized PCE {{ _dlgrc_inf.core_pce_3m_ann }}% · 10y breakeven {{ _dlgrc_inf.breakeven_10y }}% (expectations: {{ _inf_anchor }})."
-          data-tip-zh="核心PCE {{ _dlgrc_inf.core_pce_yoy }}% 同比 · 核心CPI {{ _dlgrc_inf.core_cpi_yoy }}% · 3月年化PCE {{ _dlgrc_inf.core_pce_3m_ann }}% · 10年盈亏平衡 {{ _dlgrc_inf.breakeven_10y }}%（预期：{{ {'anchored':'稳定','drifting':'漂移','unanchored':'脱锚'}.get(_inf_anchor,_inf_anchor) }}）。">?</span>
+          data-tip-en="Core PCE {{ _dlgrc_inf.core_pce_yoy }}% y/y{% if _dlgrc_inf.core_cpi_yoy is not none %} · Core CPI {{ _dlgrc_inf.core_cpi_yoy }}%{% endif %}{% if _dlgrc_inf.core_pce_3m_ann is not none %} · 3-month annualized PCE {{ _dlgrc_inf.core_pce_3m_ann }}%{% endif %}{% if _dlgrc_inf.breakeven_10y is not none %} · 10y breakeven {{ _dlgrc_inf.breakeven_10y }}%{% endif %}{% if _inf_anchor is not none %} (expectations: {{ _inf_anchor }}){% endif %}."
+          data-tip-zh="核心PCE {{ _dlgrc_inf.core_pce_yoy }}% 同比{% if _dlgrc_inf.core_cpi_yoy is not none %} · 核心CPI {{ _dlgrc_inf.core_cpi_yoy }}%{% endif %}{% if _dlgrc_inf.core_pce_3m_ann is not none %} · 3月年化PCE {{ _dlgrc_inf.core_pce_3m_ann }}%{% endif %}{% if _dlgrc_inf.breakeven_10y is not none %} · 10年盈亏平衡 {{ _dlgrc_inf.breakeven_10y }}%{% endif %}{% if _inf_anchor is not none %}（预期：{{ {'anchored':'锚定','drifting up':'向上漂移','drifting down':'向下漂移'}.get(_inf_anchor,_inf_anchor) }}）{% endif %}。">?</span>
       </div>
       {% if _dlgrc_inf.nearest_cpi is defined and _dlgrc_inf.nearest_cpi %}
       {% set _ncpi = _dlgrc_inf.nearest_cpi %}
@@ -15529,13 +15550,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% endif %}{# /policy_lever #}
 
 
-  {# Combined "Regime — now & where it's headed": the current-regime HMM probability and the
-     base-effect forward path, merged into one scorecard (were two near-identical panels).
-     Stage-B: macro mode has this inside the policy tray (sx-policy-v2). Kept here for
-     stocks mode (stocks sees the regime-read panel if policy_lever data is present). #}
-  {% set be_note_en = 'Growth is point-in-time back to 1997; inflation uses latest-revision data until the core-CPI/PCE vintages backfill.' %}
-  {% set be_note_zh = '增长为 1997 年以来的时点数据；通胀在核心 CPI／PCE 修订版历史回填前使用最新修订数据。' %}
-  {% if mode != 'macro' %}{% include "_regime_read_panel.html.j2" %}{% endif %}
+  {# Regime read panel moved out of this macro-only section (MO-PAID-001_FIX_R1): the old
+     `mode != 'macro'` guard here was unreachable (the surrounding `mode == 'macro'`
+     block opens at line 2622 and closes at line 16081 with no else), so the two-axis
+     base-effect forward path rendered on no page. The reachable stocks-mode include
+     now sits below, just after `{% endif %}{# /market_state B4 #}`. #}
 
 
   {# ==================== RELEASE RADAR (MRI PR-D / W11-H MRI-R39) ====================
@@ -15980,8 +15999,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <div class="grid" style="margin-top:14px">
       {% if chart_curve %}
       <div class="span6">
-        <h3>{{ t('Yield curve — recession lead', '收益率曲线 — 衰退先行指标') }}
-          {{ help("The 2-year/10-year slope, raw vs term-premium-adjusted. Below zero (inversion) is the classic recession lead. The TP-adjusted line strips the term premium so a low-term-premium flattening (e.g. 2022-24) isn't misread as a recession signal. NBER recessions shaded.", "2年／10年期利差，原始值对比剥离期限溢价后。低于零（倒挂）是经典的衰退先行信号。剥离期限溢价的线条避免把低期限溢价导致的平坦化（如 2022–24）误读为衰退信号。阴影为 NBER 衰退期。") }}
+        <h3>{{ t('Yield curve — recession context', '收益率曲线 — 衰退背景') }}
+          {{ help("The 2-year/10-year slope, raw vs the legacy TP10 heuristic (2s10s plus the 10-year term-premium model estimate). A raw value below zero is an inversion. The heuristic is context only: it is not a matched-maturity expectations-only decomposition and does not identify why the curve flattened or inverted. NBER recessions shaded.", "2年／10年期利差：原始值与旧版TP10启发式（2年/10年利差加10年期限溢价模型估计）并列展示。原始值低于零表示倒挂。该启发式仅作背景，并非期限匹配的纯预期分解，也不能识别曲线平坦化或倒挂的原因。阴影为NBER衰退期。") }}
         </h3>
         <div>{{ chart_curve | safe }}</div>
       </div>
@@ -16166,6 +16185,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <a class="scx-more" href="macro.html#dlg-risk"><span class="l-en">Risk radar →</span><span class="l-zh">风险雷达 →</span></a>
   </div>
   {% endif %}{# /market_state B4 #}
+  {# Regime — now & where it's headed: the two-axis base-effect forward path (MO-PAID-001).
+     Until 2026-10-02 this include sat inside the macro-only block behind `mode != 'macro'`
+     and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
+     `_regime_read_panel.html.j2` hides itself unless latest.base_effect carries both axes. #}
+  {% include "_regime_read_panel.html.j2" %}
   {% if action_board %}
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
@@ -16509,6 +16533,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if not _su %}<span class="muted" style="font-size:11.5px">{{ t("Up to 10 names per sector · grouped by setup, strongest names first.", "每个板块最多 10 只 · 按形态分组，较强者优先。") }}
           {{ help("Shows up to ten holdings from each sector when their price action reaches a clear buy, turning or topping point. Cards are grouped by setup stage; stronger names within the sector appear first. A cap keeps one sector from taking over. Click any card for the full breakdown.", "当价格走势出现明确的买入、转向或见顶时，每个板块最多展示十只股票。卡片按形态阶段分组，同板块中较强者优先。数量上限可避免单一板块占满页面。点击卡片查看完整拆解。") }}</span>{% endif %}
       </div>
+      {% if gate or pgate or life_gate %}
+      <p id="us-board-load-status" class="muted" role="status" aria-live="polite" hidden>{{ t('Full board data could not load. The dated preview remains available. Reload to try again.', '完整榜单数据无法加载，带日期的预览仍可查看。请刷新页面重试。') }}</p>
+      {% endif %}
       {#- ── W-L1 SLOT B — the board-state note (spec §2 B, §5.1, §5.2) ────────────────
           ONE line, FOUR mutually exclusive contents, never two at once. Every variant is
           SSR-baked with its l-en/l-zh pair and its own Tier-2 `?` receipt, so the live
@@ -16592,6 +16619,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </section>
       {% endif %}
       {% include "_us_candidate_pool.html.j2" %}
+      {% include "_us_early_observations.html.j2" %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -16744,10 +16772,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          used to be filed under Blocked beside the falling knives and so was invisible
          (missed-ignitions audit D18). Watch words only: this shelf never says buy. #}
       {%- set _stage_order = ['live','setting_up','ran','basing','blocked'] -%}
-      {%- set _stage_en  = {'live':'Live now','setting_up':'Setting up','ran':'Ran — don’t chase','basing':'Basing','blocked':'Blocked'} -%}
-      {%- set _stage_zh  = {'live':'现在可操作','setting_up':'形成中','ran':'已启动 — 勿追','basing':'筑底中','blocked':'受阻'} -%}
-      {%- set _stage_sub_en = {'live':'entry window is open','setting_up':'not there yet — get ready','ran':'the move already started','basing':'no entry signal yet — watch, don’t chase','blocked':'stand aside for now'} -%}
-      {%- set _stage_sub_zh = {'live':'入场窗口已打开','setting_up':'尚未触发 — 做好准备','ran':'行情已经启动','basing':'尚无入场信号 — 观察，勿追高','blocked':'暂时观望'} -%}
+      {%- set _stage_en  = {'live':'Active setups','setting_up':'Setting up','ran':'Ran — don’t chase','basing':'Basing','blocked':'Blocked'} -%}
+      {%- set _stage_zh  = {'live':'活跃形态','setting_up':'形成中','ran':'已启动 — 勿追','basing':'筑底中','blocked':'受阻'} -%}
+      {%- set _stage_sub_en = {'live':'Check each card’s dated entry read','setting_up':'not there yet — get ready','ran':'the move already started','basing':'no entry signal yet — watch, don’t chase','blocked':'stand aside for now'} -%}
+      {%- set _stage_sub_zh = {'live':'请查看每张卡片的入场判读及日期','setting_up':'尚未触发 — 做好准备','ran':'行情已经启动','basing':'尚无入场信号 — 观察，勿追高','blocked':'暂时观望'} -%}
       {# Tier-2 receipts. One shared sentence carries the honest framing on every bucket:
          the ordering is a readiness rank, NOT a return forecast (§G0.7). #}
       {%- set _pri_en = ' Higher Priority means the setup is more ready today, not more likely to win.' -%}
@@ -16774,13 +16802,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _rw_zh = ('今晚无法检查' ~ (('全部 ' ~ _rw_n ~ ' 只股票') if _rw_n else '这些股票')
             ~ '的上行空间，因此这一项不加分。') if _rw_dead else '' -%}
       {%- set _stage_tip_en = {
-           'live':'The entry window is open now.' ~ _pri_en,
+           'live':'This group includes Buy and Near. Near requires confirmation; check each card’s dated entry read.' ~ _pri_en,
            'setting_up':'The setup is taking shape, but the signals do not agree yet. Get ready; there is nothing to do now.' ~ _pri_en,
            'ran':'The move has already started and the original entry has passed. Wait for a new setup.' ~ _pri_en,
            'basing':'These stocks may be building a low, but no entry has fired. Watch them; do not chase.' ~ _pri_en,
            'blocked':'The trend or entry is not healthy enough. Stand aside for now.' ~ _pri_en } -%}
       {%- set _stage_tip_zh = {
-           'live':'入场窗口现在已经打开。' ~ _pri_zh,
+           'live':'本组包含买入与临近；临近仍需确认。请查看每张卡片的入场判读及日期。' ~ _pri_zh,
            'setting_up':'形态正在形成，但信号尚未一致。做好准备，现在无需操作。' ~ _pri_zh,
            'ran':'行情已经启动，原有入场窗口已过。等待下一次机会。' ~ _pri_zh,
            'basing':'这些股票可能正在筑底，但尚无入场信号。观察，勿追高。' ~ _pri_zh,
@@ -16839,12 +16867,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           Today is a bounded preview of the board owner's existing buy[].featured
           shelf, never a new ranker or a positional pick rule. It preserves the
           candidate card's own entry chip/zone/trigger as the timing authority, so a
-          Featured bounce_wait row remains Wait. Three cards is presentation
-          capacity only; the owner count and remainder are printed explicitly and
-          every Featured name stays in Candidates. -#}
+          Featured bounce_wait row remains Wait. Three cards is shell capacity only;
+          paid/full access may hydrate a larger bounded Featured shelf from the
+          protected payload without widening these public bytes. -#}
       {%- set _today = namespace(rows=[]) -%}
-      {#- Filter the producer-ordered board directly. The Candidates render list is
-          stage-grouped and would therefore become an accidental Today reranker. -#}
+      {#- Filter the producer-ordered SHELL board directly. The Candidates render list
+          is stage-grouped and would therefore become an accidental Today reranker. -#}
       {%- for _n in _board -%}
         {%- if _n.get('featured') -%}
           {%- set _today.rows = _today.rows + [_n] -%}
@@ -16865,7 +16893,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
         </div>
         {%- if _today_more > 0 %}
-        <p class="mx-sec-note"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
+        <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
         {%- endif %}
         {%- elif _today_total > 0 %}
         <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Screener after access is available; no hidden name is inferred here.', '获得访问权限后请打开筛选器；此处不会推断任何隐藏股票。') }}</div></div>
@@ -17589,6 +17617,18 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       var clearBtn = document.getElementById('us-life-clear');
       if (clearBtn) clearBtn.addEventListener('click', function () { setLife(null); });
+      /* Detail links select an already-loaded model record by its native id.
+         This owner keeps the ladder, zero state and URL aligned before focus. */
+      window.USProphetLife = { selectPlan: function (card) {
+        if (!card || !card.classList.contains('pvcard') ||
+            card.getAttribute('data-record-only') !== '1' ||
+            !card.closest('#us-life-grid') ||
+            card.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return false;
+        var life = card.getAttribute('data-life');
+        if (!life || VALID_LIFE.indexOf(life) === -1) return false;
+        setLife(life);
+        return true;
+      } };
       /* A historical record can link to a newer episode in another lifecycle
          cell. Delegate from the stable panel rather than the replaceable grid,
          so entitled hydration and show-more do not strand the link. Select the
@@ -20341,7 +20381,10 @@ function initStockTableView(){
     applyView(currentView);
   }
 
-  window.USStockTable = { _setView: applyView, _mergeRows: mergeRows };
+  /* _getView is the read half of the existing view owner: the candidate→Plan return
+     restores the view the reader was actually in (table rows are never re-rendered by
+     applyView), so no second table owner, store or localStorage key is introduced. */
+  window.USStockTable = { _setView: applyView, _getView: function(){ return currentView; }, _mergeRows: mergeRows };
 
   StockTable.init(STINIT);
 
@@ -20378,6 +20421,13 @@ if (document.readyState === 'loading') {
   function setSrc(mode){
     if (mode !== 'today' && mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
     if (mode === 'today' && !document.getElementById('us-today')) mode = 'candidates';
+    /* The transient candidate→Plan journey (theme.js owns the one context) survives
+       only its own two hops: the Plans hop taken from inside a candidate detail and
+       the return hop that brings that same candidate back. Every other mode change —
+       the toggle, a Today shortcut, a provisional-board paint — is an explicit
+       unrelated navigation, and the pending return goes with it. */
+    var journey = window.PVSetupReturn;
+    if (journey && !journey.claim(mode)) journey.clear();
     /* the table renders CANDIDATE rows only, so Today/Plans must leave table view */
     if (mode !== 'candidates' && panel.classList.contains('st-table-mode') &&
         window.USStockTable && window.USStockTable._setView){
@@ -20394,20 +20444,33 @@ if (document.readyState === 'loading') {
     var b = ev.target && ev.target.closest ? ev.target.closest('button[data-src]') : null;
     if (b) setSrc(b.getAttribute('data-src'));
   });
-  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); } };
+  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); },
+    /* PR 8801 follow-up — the header row this owner already wires is where the journey's
+       single explicit action renders. It is not a fourth source option: it restores the
+       exact originating row, so no generic navigation is duplicated. */
+    returnHost: function(){ return tog.parentNode; } };
 
   document.addEventListener('click', function(event){
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
     if (!button) return;
     var target = button.getAttribute('data-pvs-plan-target');
     var dialog = document.getElementById('pv-setup-dialog');
+    /* Snapshot BEFORE the existing .pvs-close releases the live candidate source;
+       nothing is claimed until the exact target is confirmed further down. */
+    var pending = window.PVSetupReturn ? window.PVSetupReturn.snapshot({
+      mode: window.USProphetSource ? window.USProphetSource.get() : null,
+      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null}) : null;
     if (dialog && dialog.open) {
       var close = dialog.querySelector('.pvs-close');
       if (close) close.click();
     }
     if (window.USProphetSource) window.USProphetSource.set('plans');
     var card = document.getElementById(target);
-    if (!card) {
+    if (!card || !target || target.indexOf('pv-') !== 0 ||
+        !window.USProphetLife || !window.USProphetLife.selectPlan(card)) {
+      /* No confirmed target, so no journey — a hop into Plans must never inherit a
+         stale return from an earlier candidate. */
+      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
       document.body.dataset.pvsPlanLinkResult='missing';
       return;
     }
@@ -20417,6 +20480,8 @@ if (document.readyState === 'loading') {
     card.scrollIntoView({block:'center'});
     card.focus({preventScroll:true});
     document.body.dataset.pvsPlanLinkResult='ok';
+    /* Confirmed: same candidate, same Plan, one transient return. */
+    if (window.PVSetupReturn) window.PVSetupReturn.establish(pending, target, card);
   });
 })();
 </script>
@@ -20443,6 +20508,14 @@ if (document.readyState === 'loading') {
   var LIFE_GATE = {{ life_gate | tojson }};
   var SRC = (GATE && GATE.payload) || (PGATE && PGATE.payload) || (LIFE_GATE && LIFE_GATE.payload);
   if (!SRC) return;
+
+  function setLoadUnavailable(unavailable){
+    var status = document.getElementById('us-board-load-status');
+    if (!status) return;
+    status.hidden = !unavailable;
+    if (unavailable) status.setAttribute('data-state', 'unavailable');
+    else status.removeAttribute('data-state');
+  }
 
   /* Session trampoline: the shared cookie carries a ~1h access token, so a
      long-idle member can be signed in with a token the server will reject.
@@ -20533,7 +20606,61 @@ if (document.readyState === 'loading') {
     root.dispatchEvent(new Event('candidate-pool-hydrated'));
   }
 
+  function hydrateToday(html, preview, total){
+    if (!html) return;
+    var root = document.getElementById('us-today');
+    preview = Number(preview) || 0;
+    total = Number(total) || 0;
+    if (!root || preview < 1 || total < preview) return;
+
+    /* Parse and validate before touching the shell. The payload owns this bounded
+       shelf; an incomplete/malformed response leaves the honest shell untouched. */
+    var box = document.createElement('template');
+    box.innerHTML = html;
+    var cards = box.content.querySelectorAll('.pvcard[data-ticker]');
+    if (cards.length !== preview) return;
+
+    var grid = root.querySelector('#us-today-grid');
+    if (!grid){
+      grid = document.createElement('div');
+      grid.className = 'nbgrid';
+      grid.id = 'us-today-grid';
+      var intro = root.querySelector('.mx-sec-note');
+      if (intro) intro.insertAdjacentElement('afterend', grid);
+      else root.appendChild(grid);
+    }
+    grid.innerHTML = html;
+    root.querySelectorAll('.mx-empty').forEach(function(el){ el.remove(); });
+    root.setAttribute('data-today-visible', String(preview));
+    root.setAttribute('data-today-total', String(total));
+
+    var totalBox = root.querySelector('.mx-sec-total');
+    if (totalBox){
+      totalBox.innerHTML =
+        '<span class="l-en"><b>' + preview + '</b> of <b>' + total + '</b> Featured</span>' +
+        '<span class="l-zh">精选 <b>' + preview + '</b> / <b>' + total + '</b></span>';
+    }
+
+    var more = Math.max(0, total - preview);
+    var note = root.querySelector('.us-today-remainder');
+    if (more > 0){
+      if (!note){
+        note = document.createElement('p');
+        note.className = 'mx-sec-note us-today-remainder';
+        grid.insertAdjacentElement('afterend', note);
+      }
+      note.innerHTML =
+        '<span class="l-en">' + more + ' more Featured name' + (more === 1 ? '' : 's') +
+        ' remain in Screener; this ' + preview + '-card preview is not a pick quota.</span>' +
+        '<span class="l-zh">另有 ' + more + ' 只精选股票保留在筛选器；这 ' + preview +
+        ' 张卡只是预览容量，并非选股名额。</span>';
+    } else if (note){
+      note.remove();
+    }
+  }
+
   function hydratePanels(payload){
+    hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total);
     hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
@@ -20823,10 +20950,21 @@ if (document.readyState === 'loading') {
     .then(function(){
       return fetch(SRC, { credentials: 'same-origin', cache: 'no-store' });
     })
-    .then(function(r){ if (!r || !r.ok) throw new Error('locked'); return r.json(); })
+    .then(function(r){
+      if (!r || !r.ok){
+        var error = new Error('board payload unavailable');
+        error.status = r && r.status;
+        throw error;
+      }
+      return r.json();
+    })
     .then(hydrate)
-    .catch(function(){
-      /* Locked (or offline): the wall stays exactly as rendered. Offer
+    .then(function(){ setLoadUnavailable(false); })
+    .catch(function(error){
+      /* Access denial retains the existing wall. Transport, server and invalid
+         payload failures keep the dated preview and disclose missing full data. */
+      if (!error || (error.status !== 401 && error.status !== 403)) setLoadUnavailable(true);
+      /* The wall stays exactly as rendered. Offer
          sign-in when there is no session at all — a member on a fresh
          browser would otherwise only see an upgrade CTA. */
       var si = document.getElementById('us-tw-signin');

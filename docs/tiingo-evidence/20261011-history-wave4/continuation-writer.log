@@ -1,0 +1,19 @@
+{"schema": "tiingo_wave4_attended_continuation.v1", "observed_at_utc": "2026-10-11T22:43:33.997169+00:00", "original_plan_sha256": "8a4f60518d5b5c013ed7faa6e2f6386f35d8ac9e58e72d2b7bdaedf515083530", "calling_carrier_sha": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde", "loaded_source_sha256": {"scripts/tiingo_ingest.py": "ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6", "collectors/tiingo_archive.py": "54b694af53a940f8ea1148215b0a3ccfcfa5313270286b04a99c72d7dc004fa6"}, "source_worktree_dirty": true, "previous_successful_requests": 838, "previous_timeout_attempts": 1, "remaining_request_cap": 161, "combined_request_attempt_cap": 1000, "skips_failed_original_request": true, "quota_observation": "Signed-in intended account reports19620hourly/145592daily requests and98.09GBremaining; approximate22:26UTC, not a reservation", "free_reserve_gib": 35, "persistent_queue_created": false}
+{"phase": "progress", "elapsed_seconds": 47.421, "attempted": 25, "ok": 25, "new": 25, "failed": 0, "row_hints": 33298, "bytes": 7632612, "errors": []}
+{"phase": "progress", "elapsed_seconds": 114.86, "attempted": 50, "ok": 50, "new": 50, "failed": 0, "row_hints": 82735, "bytes": 19464358, "errors": []}
+{"phase": "progress", "elapsed_seconds": 174.886, "attempted": 75, "ok": 75, "new": 75, "failed": 0, "row_hints": 147968, "bytes": 34699689, "errors": []}
+{"phase": "progress", "elapsed_seconds": 234.182, "attempted": 100, "ok": 100, "new": 100, "failed": 0, "row_hints": 196310, "bytes": 45707047, "errors": []}
+{"phase": "progress", "elapsed_seconds": 290.96, "attempted": 125, "ok": 125, "new": 125, "failed": 0, "row_hints": 275989, "bytes": 64108951, "errors": []}
+{"phase": "progress", "elapsed_seconds": 347.7, "attempted": 150, "ok": 150, "new": 150, "failed": 0, "row_hints": 330529, "bytes": 77163444, "errors": []}
+{"phase": "progress", "elapsed_seconds": 368.882, "attempted": 161, "ok": 161, "new": 161, "failed": 0, "row_hints": 343787, "bytes": 80194781, "errors": []}
+{
+  "attempted": 161,
+  "bytes": 80194781,
+  "elapsed_seconds": 368.882,
+  "errors": [],
+  "failed": 0,
+  "new": 161,
+  "ok": 161,
+  "phase": "settled",
+  "row_hints": 343787
+}
