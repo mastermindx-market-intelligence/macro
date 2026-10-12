@@ -475,12 +475,21 @@ def read_qualified_event_context(
 
     Session 00 must bind an existing admitted source/issuer/rights adapter here,
     not a browser-supplied filename, a second ledger, or private qbus site-full.
-    Test doubles may monkeypatch this pure hook; without the incumbent's
-    successful document and complete-current source snapshot receipts the
-    public route must yield HTTP 503, not invented fixture content.
-    The source owner returns exactly (packets, issuers, coverage_receipt).
+    The only optional runtime bridge is the INCUMBENT Session00 SEC
+    admission owner. The source module does not configure it or grant rights.
+    A missing/legacy/erroring owner is denied by scan_tickers before display.
+    Test doubles may patch this seam with a separately qualified triple.
     """
-    return (), {}, None
+    try:
+        from engine.marketing.catalyst_admission import (
+            read_qualified_event_context as incumbent_reader,
+        )
+    except ImportError:
+        return (), {}, None
+    try:
+        return incumbent_reader(now_utc)
+    except Exception:
+        return (), {}, None
 
 
 def scan_tickers(tickers: list[str], *, event_id: str | None = None,

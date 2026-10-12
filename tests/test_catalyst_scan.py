@@ -585,3 +585,26 @@ def test_packet_event_reference_and_claim_text_cannot_carry_contact_data():
                           issuers=UNIVERSE, as_of=NOW)
     assert result["publication_state"] == "UNAVAILABLE"
     assert result["event_id"] is None
+
+
+def test_incumbent_admission_import_bridge_only_accepts_current_triple(monkeypatch):
+    import sys
+    import types
+    from engine.marketing import catalyst_scan as module
+    fake=types.ModuleType("engine.marketing.catalyst_admission")
+    name="engine.marketing.catalyst_admission"
+    monkeypatch.setitem(sys.modules,name,fake)
+    fake.read_qualified_event_context=lambda at: (
+        [verified_packet()],UNIVERSE,coverage_receipt())
+    joined=module.scan_tickers(["PFE","OUT"],now_utc=NOW)
+    assert (joined["schema"],joined["schema_version"]) == ("catalyst.scan/v2",2)
+    assert [r["status"] for r in joined["results"]] == ["SUPPORTED","NOT_COVERED"]
+    fake.read_qualified_event_context=lambda at: ([verified_packet()],UNIVERSE)
+    old=module.scan_tickers(["PFE"],now_utc=NOW)
+    assert old["publication_state"]=="UNAVAILABLE"
+    def failed_read(at):
+        raise RuntimeError("sensitive source port diagnostics never leave server")
+    fake.read_qualified_event_context=failed_read
+    refused=module.scan_tickers(["PFE"],now_utc=NOW)
+    assert refused["publication_state"]=="UNAVAILABLE"
+    assert "sensitive source" not in str(refused)
