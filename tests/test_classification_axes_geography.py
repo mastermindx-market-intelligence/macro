@@ -404,3 +404,78 @@ def test_source_text_guards():
     ):
         assert f"classification_axes.{sibling}" not in src
         assert f"classification_axes import {sibling}" not in src
+
+
+# ---------------------------------------------------------------------------
+# r3 defect 1 — an invalid as_of raises AxisCellError (docstring pins this;
+# expected GREEN on the pre-repair code: it pins existing behaviour)
+# ---------------------------------------------------------------------------
+
+def test_invalid_as_of_raises_axis_cell_error():
+    with pytest.raises(cell.AxisCellError):
+        _read(as_of="not-a-date", resolve=_resolver(), master=_master_frame())
+
+
+# ---------------------------------------------------------------------------
+# r3 defect 2 — the step-7 ingested_at tie-break (expected GREEN on the
+# pre-repair code: these pin the stable-sort behaviour SPEC step 7 requires)
+# ---------------------------------------------------------------------------
+
+def test_same_effective_at_later_ingested_at_wins():
+    rows = [
+        _master_row(
+            effective_at="2024-06-01",
+            ingested_at="2026-10-05T00:00:00Z",
+            mic="XNGS",
+        ),
+        _master_row(
+            effective_at="2024-06-01",
+            ingested_at="2026-10-01T00:00:00Z",
+            mic="XNAS",
+        ),
+    ]
+    got = _read(resolve=_resolver(), master=_master_frame(rows))
+    assert got["status"] == "available"
+    assert got["value"]["listing_mic"] == "XNGS"
+
+
+def test_same_effective_at_without_ingested_at_keeps_input_order():
+    rows = [
+        _master_row(effective_at="2024-06-01", mic="XNAS"),
+        _master_row(effective_at="2024-06-01", mic="XNGS"),
+    ]
+    got = _read(resolve=_resolver(), master=_master_frame(rows, drop="ingested_at"))
+    assert got["status"] == "available"
+    assert got["value"]["listing_mic"] == "XNGS"
+    flipped_rows = [
+        _master_row(effective_at="2024-06-01", mic="XNGS"),
+        _master_row(effective_at="2024-06-01", mic="XNAS"),
+    ]
+    flipped = _read(
+        resolve=_resolver(), master=_master_frame(flipped_rows, drop="ingested_at")
+    )
+    assert flipped["status"] == "available"
+    assert flipped["value"]["listing_mic"] == "XNAS"
+
+
+# ---------------------------------------------------------------------------
+# r3 defect 3 / R-root — an empty root falls back to the repo root, never the
+# process cwd (RED on the pre-repair code: the cwd-relative miss degrades)
+# ---------------------------------------------------------------------------
+
+def test_empty_root_falls_back_to_repo_root(monkeypatch, tmp_path):
+    ref_dir = tmp_path / "repo" / "data" / "reference"
+    ref_dir.mkdir(parents=True)
+    _master_frame().to_parquet(ref_dir / "security_master.parquet")
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    # raising=False so the RED run on the pre-repair head exercises the
+    # owner_missing defect instead of erroring on the absent constant.
+    monkeypatch.setattr(geography_mod, "_REPO_ROOT", tmp_path / "repo", raising=False)
+    monkeypatch.chdir(elsewhere)
+    expected = _read(resolve=_resolver(), master=None, root=tmp_path / "repo")
+    got = _read(resolve=_resolver(), master=None, root="")
+    assert cell.to_json(got) == cell.to_json(expected)
+    assert got["status"] == "available"
+    assert got["status"] != "unavailable"
+    assert cell.validate_cell(got) == []
