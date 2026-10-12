@@ -90,7 +90,7 @@ def _finite(value: object) -> object:
         return value if math.isfinite(value) else None
     if isinstance(value, dict):
         return {key: _finite(child) for key, child in value.items()}
-    if isinstance(value, list):
+    if isinstance(value, (list, tuple)):
         return [_finite(child) for child in value]
     return value
 
@@ -117,7 +117,7 @@ def _read_default_doc(symbol: str, root: object):
     file absent → value_missing, unreadable → owner_degraded.
     """
     safe = symbol.replace("=", "_").replace("^", "_")
-    directory = (Path(root) if root is not None else _REPO_ROOT) / "site" / "stockdata"
+    directory = Path(root or _REPO_ROOT) / "site" / "stockdata"
     path = directory / f"{safe}.json"
     if not directory.is_dir():
         return None, ("unavailable", "owner_missing", ("stockdata_dir_missing",))
@@ -145,6 +145,12 @@ def read_macro_sensitivity(
     nothing, never reaches the network, and derives every date from ``as_of``.
     """
     kind, _rest = cell.parse_subject(subject_id)
+    if not isinstance(as_of, str) or not _DATE_HEAD_RE.fullmatch(as_of):
+        raise cell.AxisCellError(f"as_of must be YYYY-MM-DD, got {as_of!r}")
+    try:
+        as_of_date = datetime.date.fromisoformat(as_of)
+    except ValueError:
+        raise cell.AxisCellError(f"as_of must be YYYY-MM-DD, got {as_of!r}") from None
     if kind not in SUBJECT_KINDS:
         return _no_cell(subject_id, as_of, "not_applicable", "not_applicable")
     market, symbol, epoch = cell.company_parts(subject_id)
@@ -199,7 +205,6 @@ def read_macro_sensitivity(
             "owner_degraded",
             provenance=("asof_unparseable",),
         )
-    as_of_date = datetime.date.fromisoformat(as_of)
     if observed > as_of_date:
         return _no_cell(
             subject_id,
