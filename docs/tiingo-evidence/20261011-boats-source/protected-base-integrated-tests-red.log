@@ -1,0 +1,33 @@
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+........................................................................ [ 37%]
+........................................................................ [ 50%]
+........................................................................ [ 63%]
+........................................................................ [ 75%]
+........................................................................ [ 88%]
+......................................................FF..........       [100%]
+=================================== FAILURES ===================================
+______ test_all_evidence_anchors_are_pinned_to_reproducible_file_receipts ______
+tests/test_r2_delivery_plane_classification.py:586: in test_all_evidence_anchors_are_pinned_to_reproducible_file_receipts
+    assert len(current_bytes.splitlines()) == line_count, (family_id, anchor)
+E   AssertionError: ('per_ticker_stock_intelligence', 'macro:scripts/build_stock_library.py:3951')
+E   assert 7177 == 7127
+E    +  where 7177 = len([b'"""Build the searchable stock-analysis library (site/stockdata/*.json).', b'', b'Architecture note: this is a stati...TF/stock/commodity/crypto gets', b'run through the SAME cycle/ladder engine as the sector pages, and each result', ...])
+E    +    where [b'"""Build the searchable stock-analysis library (site/stockdata/*.json).', b'', b'Architecture note: this is a stati...TF/stock/commodity/crypto gets', b'run through the SAME cycle/ladder engine as the sector pages, and each result', ...] = <built-in method splitlines of bytes object at 0xac70a4000>()
+E    +      where <built-in method splitlines of bytes object at 0xac70a4000> = b'"""Build the searchable stock-analysis library (site/stockdata/*.json).\n\nArchitecture note: this is a static site ...ark("write_outputs")\n    _write_timing_ledger()\n    return 0\n\n\nif __name__ == "__main__":\n    sys.exit(main())\n'.splitlines
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, orch, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+__________ test_content_pinned_anchors_match_their_line_fingerprints ___________
+tests/test_r2_delivery_plane_classification.py:666: in test_content_pinned_anchors_match_their_line_fingerprints
+    assert lines[line - 1].strip() == expected, (
+E   AssertionError: ('scripts/build_stock_library.py', 3951, ['per_ticker_stock_intelligence'], '_gc = gex_confirm.assess(_gp, opex_days=opex_days)', 'dchread = dchain.hiring_read(headcount_by_ticker[ticker], rec.get("revisions"))')
+E   assert '_gc = gex_co...ys=opex_days)' == 'dchread = dc..."revisions"))'
+E
+E     - dchread = dchain.hiring_read(headcount_by_ticker[ticker], rec.get("revisions"))
+E     + _gc = gex_confirm.assess(_gp, opex_days=opex_days)
+
+NOTE: sparse worktree — data, mockups, orch, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_r2_delivery_plane_classification.py::test_all_evidence_anchors_are_pinned_to_reproducible_file_receipts
+FAILED tests/test_r2_delivery_plane_classification.py::test_content_pinned_anchors_match_their_line_fingerprints
+2 failed, 568 passed in 13.91s

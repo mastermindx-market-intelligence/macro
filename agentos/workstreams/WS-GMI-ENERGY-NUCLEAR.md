@@ -24,6 +24,7 @@ landmines:
   - "tests/test_nuclear_research_route.py line 27 on #8002 @508d8c206357 builds VerticalRegistration with the OLD 12-keyword signature; the #7870 shell has 14 fields (view_keys, build_query), so the test raises TypeError on rebase. The arity patch is packet Energy-1 and is mechanical."
   - "#8002 is stacked on an Energy-owned snapshot of #7870 (claude/energy-stack-base-b-6cd958e9); it is never merged or retargeted before #7870 is released (R-ENE-41/R-ENE-44)."
   - "The Theme-Graph record's ENE-1 wave (pr 7881, the T9 non-regression guard) is historical and lives under the Astra-held WS:GMI-THEME-GRAPH; do not edit it from this record."
+  - "The generic private projection role in engine/earnings_narrative/private_publication.py (R-ENE-07, #7870 comment 5808374777) is authored once by #8245 (CDV-1 Task 4, head b019f975, draft, open at 2026-10-11T19:24:48Z), not by #7870 and not by Energy; Energy consumes it and registers no second role (#7870 comment 6112888232)."
 do_not_redo:
   - "Audits of nuclear's module are paused while #8002 and #7870 are unchanged (R-ENE-41); no generic test-pin or docstring round."
   - "The registration writer is settled: Energy lands nuclear itself (Robotics seat agreed in #7870 comment 5866989985)."
@@ -53,6 +54,11 @@ next_action: >
   Hold until WS:GMI-SEMICONDUCTORS SB-W1 releases. Packet Energy-1 (arity patch +
   reconcile) is ready to dispatch that day. The prior Energy handoff (2026-09-24) is
   filed under WS:GMI-THEME-GRAPH because this record did not exist then; it stays there.
+  R-ENE-07 was answered by the Semiconductors seat on 2026-10-11 (#7870 comment 6112888232): the
+  additive REGULATORY_MILESTONE predicate value is outside SB-W1's approved scope and is queued
+  under WS:GMI-SEMICONDUCTORS SB-W3 (V1.1) with Energy's admission terms; until it lands Energy
+  records the milestone under limitations.establishes of the DEPLOYMENT_TARGET assertion
+  (R-ENE-07(b)), and the generic private projection role is #8245's to author (Energy consumes).
 ---
 
 ## Carrier

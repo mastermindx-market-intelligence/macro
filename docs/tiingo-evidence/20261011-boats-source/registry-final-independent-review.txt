@@ -1,0 +1,62 @@
+Final independent BOATS registry/source qualification — 2026-10-11
+
+Verdict: PASS for the bounded source/registry/evidence changes at the exact hashes below. No actionable misclassified boundary or unsupported installed-runtime claim was found. This report does not authorize runtime scheduling, installation, publication or deployment.
+
+Reviewed source carrier
+
+/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009, dirty changes against HEAD 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde, for original Macro PR #8698. Review covered the classification registry, three changed existing evidence fixtures, classification test, appended census report qualification, and retained old/current evidence under docs/tiingo-evidence/20261011-boats-source. No source edits or test execution were performed by this reviewer.
+
+Classification and source boundary
+
+Only extended_quotes_current and terminal_extended_quote_gateway change classification/tier, from UNRESOLVED/HOLD_PRIVATE_PENDING_REVIEW to PUBLIC_FACT/ANONYMOUS. The complete existing R2 object and existing ext route are now defined as the reviewed BOATS-only projection. This is consistent with the previously accepted exact producer/consumer gates and the Chairman's stated licensed BOATS redistribution authority. Neither family grants acceptance to Yahoo, Webull, other inherited provider legs, vendor raw archives, PIT, NBBO or canonical candle use.
+
+All top-level registry fields are unchanged. Family IDs, key expressions, row schema and unrelated classification/tier values are unchanged. There is no new registry, family, endpoint, object, source-disposition field or tier exception. terminal_quote_gateway remains UNRESOLVED/HOLD_PRIVATE_PENDING_REVIEW, and the reviewed generic quote expose path removes BOATS ext fields. The complete-family projection rule remains intact.
+
+Installed and release claims
+
+The revised extended_quotes_current row explicitly says the installed object/cache policy remains unqualified and requires admitted complete replacement and fresh-read proof. Its migration dependency retains protected producer CI/landing, resolution of the original runtime/scheduling refusal, sole incumbent writer and source installation obligations.
+
+The revised terminal_extended_quote_gateway row identifies qualified Terminal source 07c777035b132e376b905a793065d1d611cc8918 on PR #955, then explicitly requires protected CI/landing, incumbent Terminal plus changed Hub installation/restart selection proof and genuine archive-to-R2-to-Hub-to-API/browser qualification. Its cache description is labeled reviewed source behavior, with installed behavior separately gated. I found no claim that BOATS has already been activated or observed live.
+
+The no-store source statement is supported by the producer PUT and by the ext API's successful, empty, unavailable and rate-limited response paths. The shared tooMany helper explicitly emits cache-control: no-store. The five-second overnight polling and independent expiry/invalidation claims remain supported by the accepted repaired source.
+
+Source/evidence binding
+
+The five updated/new external file receipts exactly match locally read blobs at committed Terminal source 07c777035b132e376b905a793065d1d611cc8918, including their line counts:
+- hub/lib/extfeed.js: 1202 lines; d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277
+- terminal/app/api/ext-quote/route.ts: 107 lines; bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc
+- terminal/app/api/quote/route.ts: 183 lines; 289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0
+- terminal/components/TerminalShell.tsx: 6472 lines; 495ae2f1ff45153888bbf04302cf8b99beec0055bf6c72dd6aeed848158ac7f1
+- terminal/lib/extQuoteFreshness.ts: 46 lines; f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76
+
+I re-read the new external source anchors, including the public BOATS guard, relay parser, freshness predicate, generic quote auth/cache branches and the existing Macro-intelligence fetch at TerminalShell line 2518. Their current locations support the same referenced claims; moving the Macro-intelligence anchor does not promote its family. Current source hashes equal those already accepted by the producer/consumer review and current-hash addendum.
+
+The Macro live receipts and anchor relocations implement the previously qualified first-two-file and additional-eight-file repairs. The index-history floor fingerprint change remains the explicitly reviewed semantic repin; the other inherited relocations preserve their original exact fingerprints. The BOATS producer receipt binds the accepted final 9d477b0128b744ed1423dd0135b697eb489f11aff156e3eee4f5e2af3febfc66 source, and its new public_boats_payload anchor identifies the actual publication gate.
+
+The registry census identity, source_snapshots and fixture identity headers are unchanged. Historical data/ and site/ receipt/anchor rows are unchanged. Old receipt rows, anchor rows and independent qualifications are retained in the dated evidence directory. The human report appends current qualified-source counts and scope without rewriting its historical census table. Its appended counts match the registry: PREMIUM_PRODUCT 43; PRIVATE_OPERATIONAL 27; PUBLIC_FACT 7; UNRESOLVED 19; VENDOR_RAW 12.
+
+Tests and limitations
+
+The classification-test diff changes only the expected two BOATS dispositions and the ext-route cache assertion. Existing drift, schema, accountancy, uniqueness and boundary assertions are not skipped or weakened. The owner-produced boats-registry-final-tests.log reports 96 passed in 3.87 seconds; I inspected that log but did not execute the suite.
+
+This PASS accepts the source/registry qualification and exact evidence linkage. It does not independently verify live cloud ACLs, installed services, market data, licensing documents beyond the given Chairman attestation, protected merge/CI results or end-to-end consumer operation. The original combined-action runtime/scheduling refusal remains controlling for that effect.
+
+Final SHA-256 hashes
+
+config/r2_delivery_plane_classification.v1.json
+65781e8cd72143a21d73a617d0dccd128a5b0b58047ad658e9fc9ca06d0e9f74
+
+tests/fixtures/r2_delivery_external_evidence.v1.json
+52423ae01c77b7aae0bf2122d0ed1a65e7e03a684a408a99345665e36209b9dc
+
+tests/fixtures/r2_delivery_macro_anchor_lines.v1.tsv
+211af7ded787a3c247eb3d0cf5994bcc32a7e386c5f4e3c344cd85962262fc1c
+
+tests/fixtures/r2_delivery_macro_evidence_files.v1.tsv
+5a40ea5f34e1a0ba9b198c0efd90c6a1a81a1e8ddc5792cd9b30d8911d6978c2
+
+tests/test_r2_delivery_plane_classification.py
+ff1a236b970caf09c6f8e49d3cf9515e429c147a6d3917f1a8fc3aef52626278
+
+research/R2_AND_DELIVERY_PLANE_TRUTH_CENSUS_2026-08.md
+ef93532e2f60586e2336fc240a442cdde87aaa472cc7cffb84fc3741b0abb93b

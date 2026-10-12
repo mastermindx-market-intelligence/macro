@@ -10,12 +10,17 @@ from __future__ import annotations
 
 import json
 import re
+import sys
+from collections.abc import Mapping
 from datetime import date
 from hashlib import sha256
 from pathlib import Path
+from threading import Lock
+from types import MappingProxyType
 
 from engine.us_candidate_episode import (
     EpisodeContractError,
+    attest_candidate_episode_store_bytes,
     canonical_json,
     load_candidate_episode_store_snapshot,
 )
@@ -37,11 +42,11 @@ def _relation(state, reason, *, episode_id=None, generation_id=None):
             "generation_id": generation_id}
 
 
-def _index_episode_snapshot(snapshot):
-    """Index only this request's fully validated B1 snapshot; never cache it.
+def _index_episode_snapshot(snapshot, source_receipt=None):
+    """Copy minimal immutable relations from a fully validated B1 snapshot.
 
-    Keep every event/suppression so duplicate keys remain ambiguous. The B1
-    reader still validates the current HEAD and all generation files each time.
+    Retain cardinality and first episode match, but never event payloads or the
+    large generation object. A receipt filter cannot substitute another source.
     """
     if snapshot is None:
         return None
@@ -50,13 +55,70 @@ def _index_episode_snapshot(snapshot):
                         (snapshot.generation.suppressions, suppressions)):
         for row in rows:
             if (row.get("source_system") == "turn_watch"
-                    and row.get("source_schema") == TURN_WATCH_SCHEMA):
+                    and row.get("source_schema") == TURN_WATCH_SCHEMA
+                    and (source_receipt is None or row.get("source_receipt") == source_receipt)):
                 key = (row.get("source_event_id"), row.get("source_receipt"))
-                index.setdefault(key, []).append(row)
+                fields = ("episode_id",) if index is events else ("security_id", "reason")
+                index.setdefault(key, []).append(MappingProxyType({k: row.get(k) for k in fields}))
+    wanted = {row["episode_id"] for matches in events.values() for row in matches}
     for row in snapshot.generation.episodes:
         # Preserve the prior first matching episode lookup, without another scan.
-        episodes.setdefault(row["episode_id"], row)
-    return snapshot.generation_id, events, suppressions, episodes
+        if row["episode_id"] in wanted:
+            episodes.setdefault(row["episode_id"], MappingProxyType({
+                "episode_id": row["episode_id"], "security_id": row["security_id"],
+            }))
+    return (snapshot.generation_id,
+            MappingProxyType({key: tuple(values) for key, values in events.items()}),
+            MappingProxyType({key: tuple(values) for key, values in suppressions.items()}),
+            MappingProxyType(episodes))
+
+
+def _relation_index_bytes(value):
+    """Conservative retained-size bound, counting shared strings more than once."""
+    if isinstance(value, Mapping):
+        return sys.getsizeof(value) + sys.getsizeof(dict(value)) + sum(
+            _relation_index_bytes(k) + _relation_index_bytes(v) for k, v in value.items())
+    if isinstance(value, tuple):
+        return sys.getsizeof(value) + sum(_relation_index_bytes(v) for v in value)
+    return sys.getsizeof(value)
+
+
+class _AttestedRelationCache:
+    """One compact entry; every reuse re-reads all B1 bytes through its owner.
+
+    Cold reads still perform full semantic validation. No stale entry survives a
+    failed read, and concurrent requests cannot publish a partially built index.
+    """
+    max_bytes = 4 * 1024 * 1024
+
+    def __init__(self):
+        self._lock = Lock()
+        self._entry = None
+
+    def read(self, root, source_receipt):
+        with self._lock:
+            try:
+                token = attest_candidate_episode_store_bytes(root)
+                key = (str(Path(root).resolve()), token, source_receipt)
+                if self._entry is not None and self._entry[0] == key:
+                    return self._entry[1]
+                self._entry = None
+                snapshot = load_candidate_episode_store_snapshot(root)
+                index = _index_episode_snapshot(snapshot, source_receipt)
+                # A concurrent publication or corruption during the cold read
+                # must not bind its derived relations to the earlier byte token.
+                if (snapshot.generation_id != token.generation_id
+                        or attest_candidate_episode_store_bytes(root) != token):
+                    raise EpisodeContractError("B1 generation changed during relation read")
+                if _relation_index_bytes(index) <= self.max_bytes:
+                    self._entry = (key, index)
+                return index
+            except Exception:
+                self._entry = None
+                raise
+
+
+_RELATION_CACHE = _AttestedRelationCache()
 
 
 def _episode_relation(event_id, receipt, security, index):
@@ -164,13 +226,12 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
         return out
     receipt = "sha256:" + digest
     coverage, featured = _source_coverage(doc, public_artifact_path)
-    snapshot = None
+    relation_index = None
     if episode_root is not None:
         try:
-            snapshot = load_candidate_episode_store_snapshot(episode_root)
+            relation_index = _RELATION_CACHE.read(episode_root, receipt)
         except (OSError, ValueError, EpisodeContractError):
             pass
-    relation_index = _index_episode_snapshot(snapshot)
     projected = []
     seen = set()
     for row in rows:
@@ -224,7 +285,7 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
     # Bind pagination to source, B1 generation and the actual current identity
     # projection. A changed receipt, alias resolution or B1 return invalidates it.
     material = {"source_receipt": receipt, "rows": projected, "coverage": coverage,
-                "generation_id": snapshot.generation_id if snapshot else None,
+                "generation_id": relation_index[0] if relation_index else None,
                 "identity_receipts": list(spine.source_receipts) if spine else []}
     out["snapshot_id"] = "early:" + sha256(canonical_json(material).encode()).hexdigest()
     return out
