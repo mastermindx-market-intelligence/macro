@@ -444,3 +444,70 @@ def test_logistic_objective_gradient_matches_finite_differences():
                 - stage1.logistic_objective_and_gradient(dn, X, y, C)[0]
             ) / (2 * eps)
         np.testing.assert_allclose(grad, num, rtol=1e-5, atol=1e-6)
+
+
+# ── prereg SS12 deviation INC_LABEL_INDEX: native-label alignment ───────────
+
+
+def _synthetic_spy_with_drop() -> pd.Series:
+    """Business-day SPY-like closes with one 6 % drop on day 30 (synthetic)."""
+    idx = pd.bdate_range("2024-01-01", periods=60)
+    px = np.full(60, 100.0)
+    px[30:] = 94.0
+    return pd.Series(px, index=idx)
+
+
+def test_native_event_on_dates_aligns_index_labels():
+    # The real producer: date is the INDEX, never a column.
+    from scripts.research.risk_radar_state_ladder_calibration import native_forward_labels
+
+    spy = _synthetic_spy_with_drop()
+    dates = pd.DatetimeIndex(
+        [spy.index[20], spy.index[25], spy.index[29], spy.index[40], spy.index[57], pd.Timestamp("2023-12-29")]
+    )
+    labels = native_forward_labels(spy, dates, 5, 0.05)
+    assert "date" not in labels.columns and labels.index.name == "date"
+    # The first W3 execution's idiom raised exactly this KeyError.
+    with pytest.raises(KeyError):
+        labels.drop_duplicates(subset="date")
+
+    y = stage1.native_event_on_dates(labels, dates)
+    assert y.dtype == float and y.shape == (len(dates),)
+    # day 20: window 21..25 stays at 100 -> no event; day 25: window 26..30
+    # reaches the 94 close -> event; day 29: next close is 94 -> event;
+    # day 40: flat at 94 -> no event; day 57: incomplete window -> NaN;
+    # a date outside the series -> NaN.
+    np.testing.assert_array_equal(y[:4], [0.0, 1.0, 1.0, 0.0])
+    assert np.isnan(y[4]) and np.isnan(y[5])
+
+
+def test_native_event_on_dates_keeps_first_duplicate_and_handles_empty():
+    dates = pd.DatetimeIndex(["2024-01-02", "2024-01-03"])
+    dup = pd.DataFrame(
+        {"end": dates[[0, 0, 1]], "loss": [-0.06, 0.0, 0.0], "event": [True, False, False]},
+        index=pd.DatetimeIndex(dates[[0, 0, 1]], name="date"),
+    )
+    np.testing.assert_array_equal(stage1.native_event_on_dates(dup, dates), [1.0, 0.0])
+    empty = pd.DataFrame(columns=["end", "loss", "event"])
+    assert np.isnan(stage1.native_event_on_dates(empty, dates)).all()
+
+
+def test_run_inc_types_a_code_defect_apart_from_an_absent_source(monkeypatch):
+    def raise_key(*_a, **_k):
+        raise KeyError("date")
+
+    def raise_import(*_a, **_k):
+        raise ImportError("no module")
+
+    monkeypatch.setattr(stage1, "_git", raise_key)
+    assert stage1.run_inc({}, pd.Series(dtype=float))["blocked"] == "INC_REPLAY_ERROR"
+    monkeypatch.setattr(stage1, "_git", raise_import)
+    assert stage1.run_inc({}, pd.Series(dtype=float))["blocked"] == "INC_SOURCE_UNAVAILABLE"
+
+
+def test_rerun_of_refuses_to_overwrite_the_original_output():
+    # SS12: the original output is kept - a rerun may never target the default directory.
+    with pytest.raises(SystemExit):
+        stage1.main(["--rerun-of", "dd67262e7ab8", "--rerun-defect", "x", "--dry-run"])
+    with pytest.raises(SystemExit):
+        stage1.main(["--rerun-of", "dd67262e7ab8", "--out-dir", "research/grey_deer/rerun", "--dry-run"])

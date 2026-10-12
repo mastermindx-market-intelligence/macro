@@ -104,8 +104,9 @@ Run order in :func:`main` (each step a named, separately testable function):
     ``risk_radar_displayed_probability_audit.py`` (blob pinned) does it,
     scored against its OWN CURRENT_VINTAGE native labels on the P-all
     evaluation origins it covers; own table, never pooled, never a gate;
-    the artifact records the calibration.json overlay blob sha; any import
-    or data failure -> {"blocked": "INC_SOURCE_UNAVAILABLE", ...}.
+    the artifact records the calibration.json overlay blob sha; an import,
+    file or source failure -> {"blocked": "INC_SOURCE_UNAVAILABLE", ...};
+    any other exception is a code defect -> {"blocked": "INC_REPLAY_ERROR"}.
 18. ``evaluate_and_write``       - assembles the SS12 artifacts: the JSON
     (key tree below) and the markdown GENERATED from it (aggregates only),
     prints the gate table, returns None (a failed gate is a result).
@@ -2234,6 +2235,21 @@ def run_negative_control(
 # ── step 17: INC replay (prereg SS6, own CURRENT_VINTAGE table) ──────────────
 
 
+def native_event_on_dates(labels: pd.DataFrame, dates: pd.DatetimeIndex) -> np.ndarray:
+    """Native-label events aligned to ``dates`` as floats; NaN where no complete window.
+
+    ``native_forward_labels`` returns the origin date as the frame INDEX (or an
+    empty frame with a RangeIndex), never as a column. The first W3 execution
+    (output commit dd67262e7ab8) treated ``date`` as a column and raised
+    ``KeyError``; prereg SS12 deviation ``INC_LABEL_INDEX`` repairs it here.
+    """
+    if labels.empty or "event" not in labels.columns:
+        return np.full(len(dates), np.nan)
+    event = labels["event"]
+    event = event[~event.index.duplicated(keep="first")]
+    return event.reindex(dates).to_numpy(dtype=float)
+
+
 def run_inc(comp_by_h: dict, close: pd.Series, deviations: list[dict] | None = None) -> dict:
     """The 2026-09-22 displayed-probability replay; never pooled, never a gate."""
     audit_rel = "scripts/research/risk_radar_displayed_probability_audit.py"
@@ -2289,12 +2305,7 @@ def run_inc(comp_by_h: dict, close: pd.Series, deviations: list[dict] | None = N
             probability = displayed_probability_series(state, hot_count, calib, int(h))
             # Vectorised alignment to the comparison-set dates; absent rows stay NaN.
             p = probability.reindex(dates).to_numpy(dtype=float)
-            y_native = (
-                labels.drop_duplicates(subset="date")
-                .set_index("date")["event"]
-                .reindex(dates)
-                .to_numpy(dtype=float)
-            )
+            y_native = native_event_on_dates(labels, dates)
             covered = np.isfinite(p) & np.isfinite(y_native)
             n_covered = int(covered.sum())
             if n_covered == 0:
@@ -2314,8 +2325,12 @@ def run_inc(comp_by_h: dict, close: pd.Series, deviations: list[dict] | None = N
                 "early_warning_vs_protocol_episodes": early,
             }
         return table
-    except Exception as exc:  # noqa: BLE001 - a replay failure blocks nothing else
+    except (ImportError, OSError, RuntimeError) as exc:
         return {"blocked": "INC_SOURCE_UNAVAILABLE", "detail": f"{type(exc).__name__}: {exc}"}
+    except Exception as exc:  # noqa: BLE001 - a replay failure blocks nothing else
+        # A code defect in this replay is typed apart from an absent source, so
+        # it can never read as "the incumbent's data is unavailable".
+        return {"blocked": "INC_REPLAY_ERROR", "detail": f"{type(exc).__name__}: {exc}"}
 
 
 # ── step 13c: early warning (prereg SS9, descriptive) ────────────────────────
@@ -2752,6 +2767,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skip-hydrate", action="store_true", help="use the existing store object (deviation HYDRATE_SKIPPED)")
     parser.add_argument("--allow-dirty", action="store_true", help="skip the script/test blob == HEAD check (deviation DIRTY_TREE)")
     parser.add_argument("--dry-run", action="store_true", help="verify identities, print the identity and configuration tables, exit 0")
+    parser.add_argument(
+        "--rerun-of",
+        metavar="COMMIT",
+        help="prereg SS12 code-defect rerun: the commit holding the kept original output (deviation CODE_DEFECT_RERUN); requires a non-default --out-dir",
+    )
+    parser.add_argument("--rerun-defect", default="", help="defect and fix named in the CODE_DEFECT_RERUN deviation")
     args = parser.parse_args(argv)
 
     out_dir = Path(args.out_dir)
@@ -2759,6 +2780,17 @@ def main(argv: list[str] | None = None) -> int:
         out_dir = ROOT / out_dir
 
     deviations: list[dict] = []
+    if args.rerun_of:
+        # SS12: "The original output is kept" - a rerun may never overwrite it.
+        if out_dir.resolve() == (ROOT / "research/grey_deer").resolve():
+            parser.error("--rerun-of needs a non-default --out-dir so the original output is kept")
+        if not args.rerun_defect.strip():
+            parser.error("--rerun-of needs --rerun-defect naming the defect and the fix")
+        _deviation(
+            deviations,
+            "CODE_DEFECT_RERUN",
+            f"original output kept at commit {args.rerun_of}; {args.rerun_defect.strip()}",
+        )
     identities: dict | None = None
     hydrate_info: dict[str, object] = {"performed": False, "rc": None}
 
