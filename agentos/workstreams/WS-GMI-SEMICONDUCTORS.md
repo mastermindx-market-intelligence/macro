@@ -276,7 +276,7 @@ next_action: >
   CEILING_RAISE RECORDED_NOT_ACCEPTED; SOURCE_CONTINUITY SUBSTITUTE_SUPERSEDED_NEEDS_NEW_AT_839bd6a1;
   CI RED_AT_1eb871d6 (run 38158831326), GREEN_AT_839bd6a1 (gating checks; check-runs read
   19:24:07Z; #7870 comment 6112888232); RELEASE BLOCKED_PENDING_NON_SEAT_RULING
-  (#8250 lands first); FABRIC RESPONSIVE at 2026-10-12T00:06Z (pool/lease-broker layer: grant_now=4 on every pool, remote lane hosts mb and ubuntu0..3 eligible; Executive OS connector OAuth-gated in this session); READY/MERGE NOT_YET.
+  (#8250 lands first); FABRIC RESPONSIVE at 2026-10-12T00:24:51Z (pool status, lease-broker layer: bailian cap 21 active 0; minimax cap 7 active 2; grok 17/0; cursor 11/0; glm 24/0; Executive OS connector OAuth-gated in this session); READY/MERGE NOT_YET.
 - Builder is not reviewer: the H1-B change was audited by an independent read-only
   Opus auditor at b76551be before the repairs were applied, and the repairs themselves
   (b76551be..acc72f3f) received a second independent read-only Opus review (#7870 comment

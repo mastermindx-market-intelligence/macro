@@ -74,5 +74,6 @@ next_action: >
   REPORTED_OPERATING_MEASURE / REPORTED_FACT) are PREPARED_NOT_MINTED; the 2025-05-29 SDA and
   the Nov-2023 CFPP termination are HELD under `milestone_predicate_unavailable`;
   `REGULATORY_MILESTONE` stays the shared request at #7870 comment 5808374777;
-  `nrc_official` / `doe_official` wait on the #7870 rights lane (QUEUED_NOT_STARTED); no
-  source change; head `508d8c206357` unchanged; merge stacked behind #7870.
+  `nrc_official` / `doe_official` wait on the #7870 rights lane (QUEUED_NOT_STARTED, blocked
+  on the Robotics R1 corpus per WS-GMI-SEMICONDUCTORS line 40), so the two rows are
+  PREPARED_NOT_MINTED as a row state and UNADMITTED as a rights state; no source change; head `508d8c206357` unchanged; merge stacked behind #7870.

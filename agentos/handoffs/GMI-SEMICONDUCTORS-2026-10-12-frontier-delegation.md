@@ -33,8 +33,10 @@ changed:
       Carry-overs (b) and (c) from #8847 comment 6113181732: line 37 now says the generic
       private projection role "is to be authored by #8245 (CDV-1 Task 4, head b019f975, draft,
       under a REQUEST_CHANGES read, not landed)" and names "its four curation-assertion program
-      paths". Line 279 corrects the fabric state from UNAVAILABLE to RESPONSIVE at
-      2026-10-12T00:06Z (pool/lease-broker layer; Executive OS connector OAuth-gated).
+      paths". Line 279 corrects the fabric state from UNAVAILABLE to RESPONSIVE, stamped at the
+      2026-10-12T00:24:51Z pool-status read recorded in the verified block below (bailian cap
+      21 active 0; minimax cap 7 active 2; grok 17/0; cursor 11/0; glm 24/0; Executive OS
+      connector OAuth-gated).
   - path: agentos/workstreams/WS-GMI-ENERGY-NUCLEAR.md
     what: >
       Carry-over (b): the line-27 landmine uses the same "is to be authored by #8245" tense.
@@ -44,47 +46,60 @@ changed:
       the shared request 5808374777, rights families on the #7870 lane, no source change.
   - path: agentos/workstreams/WS-GMI-TECHNOLOGY-EX-SEMIS.md
     what: >
-      New Carrier bullet: the #7891 CI-red repair lane is delegated to an Opus suborchestrator
-      on the SSD worktree pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e (lane branch
-      lane/pr-7891-ci-red at 861d4049), bound by Sol's CONTINUE ruling 5825752169; the original
-      worktree's two uncommitted prior-seat test files are recorded as in-flight, untouched.
+      New Carrier bullet: the #7891 CI-red repair lane is delegated to an Opus suborchestrator, a
+      session-native background child of the seat session launched about 2026-10-12T00:24Z (not
+      an Executive lease; it ends with that session), on the SSD worktree
+      pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e (lane branch lane/pr-7891-ci-red created at
+      861d4049; at 00:24Z it carried the throwaway merge c871e194 of origin/main 6e7ef32c into
+      861d4049, never to be pushed), bound by Sol's CONTINUE ruling 5825752169; the original
+      worktree's two uncommitted prior-seat test files are recorded as files of unknown
+      liveness, preserved untouched.
   - path: agentos/handoffs/GMI-SEMICONDUCTORS-2026-10-11-base-sync-delta-review.md
     what: >
       Carry-over (a): the validator claim now says the run was on the working tree after the
       R-ENE-07 edits and before the second commit, i.e. the exact content committed as
-      965315b3, not "the third re-read's repairs". Carry-over (e): the check-runs command
-      notes that `date` prints host-local time (PDT, UTC-7) and that the 19:13:06Z read time
-      is the seat's own log line, not reproducible from the carrier.
+      965315b3, not "the third re-read's repairs". Carry-over (e) (N7, the "read 19:13:06Z"
+      time that re-read #4 could not confirm from ground truth): the watcher-liveness command
+      (line 117) notes that `ps -o lstart=` prints host-local time (PDT, UTC-7), and the
+      acc72f3f/36e2064d result (line 124) now qualifies "read 19:13:06Z" as the seat's own log
+      timestamp, not reproducible from the carrier.
   - path: agentos/handoffs/GMI-SEMICONDUCTORS-2026-10-12-frontier-delegation.md
     what: >
-      New (this file). Carry-over (d): the verified block below carries the 839bd6a1 hosted-CI
-      entry that the 2026-10-11 handoff's summary omitted, together with the Autofix pilot
-      consumption, the #8002 P8 consumption, the frontier census, the three delegated lanes
-      and the fabric state at 00:24Z.
+      New (this file). Carry-over (d): re-read #4 (#8847 comment 6113181732, item (d)) found
+      that "the handoff's verified summary omits the 839bd6a1 hosted-CI entry (handoff lines
+      125-127; an omission, not a contradiction)", i.e. the prose summary of the 2026-10-11
+      base-sync handoff's verified block omitted the entry its own frontmatter carries at
+      lines 125-127; the verified block below restates that entry from the recorded read (not
+      re-run), together with the Autofix pilot consumption, the #8002 P8 consumption, the
+      frontier census, the three delegated lanes and the fabric state at 00:24Z.
 verified:
-  - claim: "839bd6a1 concluded hosted with 21 success, 4 skipped and one failure, the ci-authority/codex/merge-queue-pilot check run, which is the by-design inactive-base-context red and non-gating (consumed on #7870 as comment 6115346508 after the desktop Autofix event)."
-    command: "gh api --paginate 'repos/mastermindx-market-intelligence/macro/commits/839bd6a1b065959b90e48d3171edbbe85f4f74f3/check-runs?per_page=100' --jq '.check_runs[] | [.status,.conclusion,.name,.id]|@tsv' | sort | uniq -c; grep -n 'CI_AUTHORITY_INACTIVE_CONTEXT' scripts/merge_on_green.py scripts/metabolism_merge.py scripts/ci_authority.py"
-    result: "read 2026-10-11T19:24:07Z: 21 completed success, 4 completed skipped, 1 completed failure = ci-authority/codex/merge-queue-pilot check run 114540615313 (carried from the 2026-10-11 base-sync handoff, lines 125-127); scripts/merge_on_green.py:650-656, scripts/metabolism_merge.py:168-175 and scripts/ci_authority.py:58 name the pilot context inactive on PRs targeting main; #7870 comment 6115346508 posted 2026-10-11T23:58:21Z; no push, no head move"
+  - claim: "839bd6a1 concluded hosted with 21 success, 4 skipped and one failure, the ci-authority/codex/merge-queue-pilot check run, which is the by-design inactive-base-context red and non-gating; the hosted green was consumed on #7870 as comment 6112888232 and the desktop Autofix event naming that red was consumed separately as comment 6115346508."
+    command: "gh api --paginate \"repos/mastermindx-market-intelligence/macro/commits/839bd6a1b065959b90e48d3171edbbe85f4f74f3/check-runs?per_page=100\" --jq '.check_runs[] | [.status,.conclusion]|@tsv' | sort | uniq -c; the same read with --jq '.check_runs[] | select(.conclusion==\"failure\") | [.name,.html_url]|@tsv'; grep -n ALL_CONCLUDED watch-7870-839bd6a1-v2.log; sed -n '/ALL_CONCLUDED/,$p' watch-7870-839bd6a1-v2.log | tail -n +2 | awk -F'\\t' '{print $1, $2}' | sort | uniq -c; kill -0 37757 (the 2026-10-11 base-sync handoff line 126 command, not re-run in this window); grep -n -i 'inactive_context\\|merge-queue-pilot' scripts/merge_on_green.py scripts/metabolism_merge.py scripts/ci_authority.py (re-run 2026-10-12T01:06Z in the #7870 worktree at 839bd6a1, git status clean)"
+    result: "check-runs read 2026-10-11T19:24:07Z, carried from the 2026-10-11 base-sync handoff lines 125-127: 21 completed success, 4 completed skipped, 1 completed failure = ci-authority/codex/merge-queue-pilot check run 114540615313; grep at 839bd6a1: scripts/merge_on_green.py:656 CI_AUTHORITY_INACTIVE_CONTEXT = \"ci-authority/codex/merge-queue-pilot\", :670 (red for PRs targeting main), :685 (excluded from the gate), :5114 (standing failure); scripts/metabolism_merge.py:173 (not a red this PR owns); scripts/ci_authority.py:58 SUPPORTED_BASE_REFS = (\"main\", \"codex/merge-queue-pilot\")"
   - claim: "The seat's #8002 note consumed both P8 packets and was posted only after the carrier was asserted unchanged in the same command."
     command: "cnt=$(gh api repos/mastermindx-market-intelligence/macro/pulls/8002 --jq .comments); last=$(gh api --paginate 'repos/mastermindx-market-intelligence/macro/issues/8002/comments?per_page=100' --jq '.[-1].id'); head=$(gh api repos/.../pulls/8002 --jq .head.sha); [ $cnt = 4 ] && [ $last = 6011568715 ] && [ $head = 508d8c206357287a5f8ff9d1596efc32b3749459 ] && gh api -X POST repos/.../issues/8002/comments -F body=@p8-consumption-note.md; readback .[-1]"
     result: "posted as comment 6115561519 at 2026-10-12T00:23:37Z (anchor MMX-GMI-ENERGY-8002-P8-CONSUMED-6010460068-6011568715-20261012); readback: last comment 6115561519 by mastermindxryan; before the post the seat had 0 comments on #8002, the thread had 4 (last 6011568715 by mastermindx-2) and the head was 508d8c206357"
-  - claim: "The frontier census ranked the seat's next lanes and found no fence violation; the open-PR roster was above the 490 collision cap."
+  - claim: "Auditor-reported (the seat did not re-run its commands): the frontier census ranked the seat's next lanes and found no fence violation; the open-PR roster was above the 490 collision cap."
     command: "Agent(model: opus, ROUTE: AUDIT, MODE: READ_ONLY) census over the twelve carriers; commands recorded in its section 5 (gh api pulls/<n>, issues/<n>/comments ascending .[-3:], commits/<sha>/check-runs, pulls?state=open count)"
     result: "written to the seat scratchpad as CENSUS_2026-10-11.md (121 lines, census time 2026-10-12T00:00:14Z-00:07:11Z, no writes): rank 1 #8245 P2 repair, 2 #7870 Source Continuity substitute (deferred to the post-#8250 head), 3 #7891 red + Sol CONTINUE, 4 #8002 P8 packets, 5 #7284 P2 then #7769; 636 open PRs against _MAX_COLLISION_PRS=490; fence C-2 (Theme-Graph D2E/W3B/W3C under a live Astra principal) untouched"
   - claim: "Three Opus suborchestrators were launched for #8245, #7891 and #7284, each confined to its own SSD worktree, and none had pushed or moved a PR head when checked."
-    command: "Agent(subagent_type: general-purpose, model: opus, ROUTE: ORCHESTRATION, WHY OPUS: <stated>, run_in_background) x3; for w in pr-8245-cdv1-t4-scoped-reader-54c65dbcd080bd2b pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e pr-7284-sector-roster-p2-637f4aeeae8537fc; do git -C <base>/$w branch --show-current; git log --oneline -3; git status --short | wc -l; done"
-    result: "at 2026-10-12T00:24Z: #8245 worktree on claude/cdv1-t4-private-publication-v2 at b019f975, dirty 0; #7891 worktree on lane/pr-7891-ci-red with one THROWAWAY red-proof merge commit c871e194 of 861d4049 into origin/main 6e7ef32c, dirty 0; #7284 worktree on claude/us-sector-membership-reconcile-20260917-sol at 6ea0763e, dirty 0; remote tips of all three PR branches unchanged at launch (b019f975, 861d4049, 6ea0763e)"
-  - claim: "The fabric is responsive at the pool/lease-broker layer and lane A is consuming executor capacity."
+    command: "Agent(subagent_type: general-purpose, model: opus, ROUTE: ORCHESTRATION, WHY OPUS for #8245 'bounded suborchestration of a private-store reader-contract repair (review 5927055846) that must be decomposed into fabric executor contracts, adjudicated from returned evidence, integrated and locally verified; the seat keeps pickup-note, push, watcher, audit-consumption and merge gates', for #7891 'bounded suborchestration of a CI-red diagnosis and repair on a Draft/HOLD carrier with a strict-xfail law and an owner-contract seam ruled by Sol; each failure classified introduced-vs-inherited with evidence and the fix kept minimal', for #7284 'bounded suborchestration of a reviewer-specified owner repair whose discriminator spans the nightly workflow arguments, the all-universe quality gate in scripts/collect.py and a reconciler that also mutates regional memberships'; POOL_ORCHESTRATOR_ID orch-8245-20261011 / orch-7891-20261012 / orch-7284-20261012; run_in_background) x3; for w in pr-8245-cdv1-t4-scoped-reader-54c65dbcd080bd2b pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e pr-7284-sector-roster-p2-637f4aeeae8537fc; do git -C <base>/$w branch --show-current; git log --oneline -3; git status --short | wc -l; done"
+    result: "at 2026-10-12T00:24Z: #8245 worktree on claude/cdv1-t4-private-publication-v2 at b019f975, dirty 0; #7891 worktree on lane/pr-7891-ci-red with one THROWAWAY red-proof merge commit c871e194 of 861d4049 into origin/main 6e7ef32c, dirty 0; #7284 worktree on claude/us-sector-membership-reconcile-20260917-sol at 6ea0763e, dirty 0; remote tips of all three PR branches unchanged at launch (b019f975, 861d4049, 6ea0763e); each child is a session-native background child of the seat session, not an Executive lease, and ends with that session; the author identity of any lane commit is recorded on return"
+  - claim: "The fabric is responsive at the pool/lease-broker layer; minimax showed two active leases under one orchestrator, which the seat attributes to lane A from its launch logs (inferred, not read from the broker)."
     command: "pool status"
     result: "2026-10-12T00:24:51Z host=m2studio orchs=1: bailian cap 21 active 0; minimax cap 7 active 2 (one orchestrator); grok 17/0; cursor 11/0; glm 24/0; lane A's scratch directory holds E1/E2/E3 executor packets and launch logs; the Executive OS connector remains OAuth-gated in this session"
   - claim: "The Agent OS validator stays at zero errors with this PR's records."
     command: "python3 scripts/agentos.py validate"
-    result: "2026-10-12T00:30Z on the working tree with every file in this PR present: 1666 records (92 workstreams, 442 decisions, 496 discoveries, 636 handoffs), 0 error(s), 153 warning(s), all warnings pre-existing review-overdue notices; rerun on the exact committed content before the commit"
+    result: "2026-10-12T00:30Z on the working tree with every file in this PR present: 1666 records (92 workstreams, 442 decisions, 496 discoveries, 636 handoffs), 0 error(s), 153 warning(s), 153 warning(s) is the same count as the 965315b3 run and the warning set was not diffed; rerun on the exact committed content before the commit"
+  - claim: "At 2026-10-12T01:06:54Z no lane had moved a PR head: every lane branch's remote tip equalled its PR head; the cited comment authors, times and threads, the #7891 check-run ids and conclusions, and base main on all five carriers were confirmed; the #7284 P2 author login is spelled mastermidx4; the #8245 REQUEST_CHANGES read 5927055846 is an issue comment, not a GitHub review object."
+    command: "for b in claude/cdv1-t4-private-publication-v2 claude/ssd-technology-ex-semis-impl-c887181119dd2aaf claude/us-sector-membership-reconcile-20260917-sol sol/sector-focus-preserve-dossiers-20260923 claude/ssd-industry-intelligence-records-carryover-20261012; do git ls-remote origin refs/heads/$b; done; for n in 8245 7891 7284 7769 8876; do gh api repos/mastermindx-market-intelligence/macro/pulls/$n --jq '[.number,.head.sha[0:12],.base.ref,.draft,.state]|@tsv'; done; for c in 6115346508 6115561519 5790591847 5821628168 5942992966 5825752169 5927055846; do gh api repos/mastermindx-market-intelligence/macro/issues/comments/$c --jq '[.id,.user.login,.created_at,(.issue_url|split(\"/\")|last)]|@tsv'; done; gh api repos/mastermindx-market-intelligence/macro/pulls/8245/reviews --jq '.[] | [.id,.user.login,.state]|@tsv'; gh api --paginate 'repos/mastermindx-market-intelligence/macro/commits/861d4049ae4c/check-runs?per_page=100' --jq '.check_runs[] | select(.id==110192417496 or .id==110193113692 or .id==110193113734 or .id==110193113644) | [.id,.name,.status,.conclusion]|@tsv'"
+    result: "remote tips b019f975c695 / 861d4049ae4c / 6ea0763e6cbb / 9fb0a3ff5ff3 / 693b6a97a24c equal the heads of #8245 (draft) / #7891 (draft) / #7284 / #7769 / #8876 (draft), all base main, all open; comments 6115346508 (#7870, 2026-10-11T23:58:21Z) and 6115561519 (#8002, 2026-10-12T00:23:37Z) by mastermindxryan; 5790591847 (2026-09-23T07:08:32Z) and 5821628168 (2026-09-24T20:21:33Z) on #7769 by chriswong6031-creator; 5942992966 on #7284 by mastermidx4 at 2026-10-02T00:00:41Z; 5825752169 on #7891 by mastermindx-2 at 2026-09-25T02:36:17Z; 5927055846 on #8245 by mastermindx-3 at 2026-10-01T07:44:02Z while the #8245 reviews endpoint returns no review objects; #7891 at 861d4049: 110192417496 contract-delta failure, 110193113692 ci-pack-0 failure, 110193113734 ci-pack-11 failure, 110193113644 ci-pack-7 cancelled"
 unverified:
-  - "Suborchestrator outcomes for #8245 (ORCH_A_REPORT.md), #7891 (ORCH_C_REPORT.md) and #7284 (ORCH_D_REPORT.md): not returned at handoff time; whether the #7891 reds are introduced or inherited and whether the #7284 discriminator is red at 6ea0763e are both open until the seat verifies each delta in its worktree (diff + rerun) before any push."
+  - claim: "Suborchestrator outcomes for #8245 (ORCH_A_REPORT.md), #7891 (ORCH_C_REPORT.md) and #7284 (ORCH_D_REPORT.md) were not returned at handoff time; whether the #7891 reds are introduced or inherited and whether the #7284 discriminator is red at 6ea0763e are open."
+    what_would_verify: "Each report file plus the seat's own read of the lane worktree (git status --short; git log --oneline <base>..HEAD; git diff --stat) and a rerun of the named red-then-green commands with a 300 s or longer timeout; a lane whose session ended with no report is reconciled from git status and git log before reuse."
 unresolved:
   - "#7870 gates (4) and (5) are non-seat rulings already requested (6106057199, 6106134520, 6107602010, 6111839715, 6112182784); #8250 lands first; the post-#8250 merge of main into #7870, its non-author delta read and the five-leg Source Continuity census at that head are owed before any release decision."
-  - "#8002 rows NUC-V1-01 / NUC-V1-02 stay UNADMITTED until the #7870 rights lane returns nrc_official / doe_official; that lane is QUEUED_NOT_STARTED and sequenced after #8250 and the #7870 release; #8002 merge stays stacked behind #7870."
+  - "#8002 rows NUC-V1-01 / NUC-V1-02 are PREPARED_NOT_MINTED (row state) and stay UNADMITTED (rights state) until the #7870 rights lane returns nrc_official / doe_official; that lane is QUEUED_NOT_STARTED, blocked on the Robotics R1 corpus (WS-GMI-SEMICONDUCTORS line 40) and sequenced after #8250 and the #7870 release; #8002 merge stays stacked behind #7870."
   - "#7769 first-frame test repair (tests/test_stock_dashboard_first_frame.py, red ci-pack-9) is queued behind #7284; the hold-release 5790591847 covered 11c89b3c only, so any new head needs a fresh non-seat release; 8377ea535e is never pushed."
   - "Robotics (#7908 reverted by #8013) re-lands only after #7870; no re-land PR exists."
   - "Executive OS and Linear MCP connectors are unauthenticated in this session; fabric labor runs through the agent-pools CLI on the lease broker, not through the Executive connector."
@@ -95,12 +110,12 @@ next_actions:
 do_not_redo:
   - "Do not post a second P8 consumption on #8002 (6115561519 is it) and do not duplicate the REGULATORY_MILESTONE request (#7870 comment 5808374777)."
   - "Do not re-request #7870 gates (4) or (5); do not merge #8250 or #7870 on green alone; do not run the five-leg Source Continuity census at 839bd6a1 (superseded by the post-#8250 head rule)."
-  - "Do not spawn a second suborchestrator for #8245, #7891 or #7284 while the first is running; do not read a suborchestrator's JSONL output file; read its report file only."
-  - "Do not touch, read or copy the two uncommitted test files in the original #7891 worktree technology-ex-semis-impl-c887181119dd2aaf; they are prior-seat in-flight work."
+  - "Do not spawn a second suborchestrator for #8245, #7891 or #7284 while the session-native background child launched about 2026-10-12T00:24Z is still running; if the seat session has ended with no report, read that worktree's git status and git log and reconcile before reuse; do not read a suborchestrator's JSONL output file; read its report file only."
+  - "Do not touch, read or copy the two uncommitted test files in the original #7891 worktree technology-ex-semis-impl-c887181119dd2aaf; they are uncommitted prior-seat files of unknown liveness, preserved untouched."
   - "Do not hand-patch the ~54 current-v1 fixture errors on #7891 or add a local curation_assertion.v1 mirror (Sol CONTINUE 5825752169 points 1 and 3)."
 danger_areas:
-  - "The three lane worktrees are mutated only by their suborchestrators until each returns; the seat reads them but does not edit them while a lane is open."
-  - "Git identity in every worktree under agent-workspaces/claude/14851c4656838a3b is Sol CEO; commit with -c user.name='Chris Wong' -c user.email='actions@users.noreply.github.com' and --author to match."
+  - "The three lane worktrees are being mutated by session-native background children of the seat session (launched about 2026-10-12T00:24Z), not by Executive leases; they end with that session; the seat reads them but does not edit them while a child is open, and a worktree whose child ended with no report is reconciled from git status and git log before reuse."
+  - "The git identity configured in every worktree under agent-workspaces/claude/14851c4656838a3b is Sol CEO, which is not the seat's identity; a commit made there without an explicit author and committer carries the wrong name."
   - "gh pr view <N> twice within 300 s is blocked by the CI wait guard; read with gh api repos/<R>/pulls/<N>; comment readback must be ascending with .[-3:] (sort=created&direction=desc returns the oldest)."
   - "Post comment bodies with gh api -F body=@file; -f posts the literal path."
   - "Whole-tree git grep on origin/main exceeds the 60 s Bash timeout; scope greps to paths."
