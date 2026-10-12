@@ -54,6 +54,7 @@
     statementColumns: [],
     statements: { phase: 'idle' },
     statementCells: [],
+    exportUnavailable: false,
     receipt: {
       phase: 'idle',
       requestToken: 0,
@@ -1090,6 +1091,7 @@
       ui.deskStamp.innerHTML = pair('As of ' + stampText + ' · ' + copy[0], '截止 ' + stampText + ' · ' + copy[1]);
     }
     setAsofControlsFromState();
+    refreshExportState();
   }
 
   function renderCompany() {
@@ -2197,6 +2199,98 @@
         renderPeers();
       });
     }
+  }
+
+  // ── Export entry (§5, R6) ───────────────────────────────────────────────
+  // One Export control in the desk header. It POSTs the byte-identical query
+  // body for the current issuer, cutoff and policy; reload remains the only
+  // refresh. The route is X1: a 404/405 disables the control (AM3/R-D) and no
+  // JSON-download fallback is invented.
+  var XLSX_MEDIA_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+  function exportQueryBody() {
+    if (state.financial && state.financial.queryBody && state.financial.phase === 'ready') {
+      return state.financial.queryBody;
+    }
+    return buildQueryBody();
+  }
+
+  function exportPhase() {
+    if (state.access === 'signin' || state.access === 'pending') return 'signin';
+    if (state.access === 'upgrade') return 'upgrade';
+    if (state.exportUnavailable) return 'unavailable';
+    var target = company() || {};
+    var body = buildQueryBody();
+    var legal = !!target.entity_id && !!body.periods.length &&
+      !!body.policy.source_snapshot_at && !!body.policy.recorded_at;
+    return legal ? 'ready' : 'unavailable';
+  }
+
+  function refreshExportState() {
+    if (!ui.exportBtn) return;
+    var phase = exportPhase();
+    var copy = phase === 'signin' ? ['Sign in to export', '登录后导出'] :
+      phase === 'upgrade' ? ['Included in Essential', 'Essential 包含'] :
+        phase === 'unavailable' ? ['Export unavailable', '导出不可用'] : ['Export', '导出'];
+    ui.exportBtn.disabled = phase !== 'ready';
+    ui.exportBtn.innerHTML = pair(copy[0], copy[1]);
+    ui.exportBtn.setAttribute('data-label-en', copy[0]);
+    ui.exportBtn.setAttribute('data-label-zh', copy[1]);
+    var current = lang();
+    ui.exportBtn.setAttribute('aria-label', current === 'zh' ? copy[1] : copy[0]);
+  }
+
+  function exportFilename(response) {
+    var disposition = String(response.headers.get('Content-Disposition') || '');
+    var match = disposition.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+    if (match && match[1]) return match[1];
+    var queryId = String(response.headers.get('X-FIF-Query-Id') || '').trim();
+    if (queryId) return queryId + '.xlsx';
+    return 'fundamental_forensics.xlsx';
+  }
+
+  function runExport() {
+    if (!ui.exportBtn || ui.exportBtn.disabled) return;
+    var body = exportQueryBody();
+    withAuth({ 'Content-Type': 'application/json', Accept: XLSX_MEDIA_TYPE })
+      .then(function (headers) {
+        return fetch(FINANCIAL_QUERY_XLSX_URL, {
+          method: 'POST',
+          headers: headers,
+          credentials: 'same-origin',
+          cache: 'no-store',
+          body: JSON.stringify(body)
+        });
+      })
+      .then(function (response) {
+        if (response.status === 404 || response.status === 405) {
+          // The workbook route is not present at this base (X1): the control
+          // goes disabled and stays disabled — no fallback download.
+          state.exportUnavailable = true;
+          refreshExportState();
+          return null;
+        }
+        if (response.status === 401 || response.status === 403) {
+          showLoadError({ status: response.status });
+          return null;
+        }
+        if (!response.ok) throw new Error('Export request failed');
+        var filename = exportFilename(response);
+        return response.blob().then(function (blob) {
+          var url = URL.createObjectURL(blob);
+          var anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = filename;
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+          window.setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        });
+      })
+      .catch(function () {
+        state.exportUnavailable = true;
+        refreshExportState();
+      });
   }
 
   function renderCellEvidence(cell) {
@@ -4364,6 +4458,9 @@
         renderRunMeta();
         ensureFinancialData();
       });
+    }
+    if (ui.exportBtn) {
+      ui.exportBtn.addEventListener('click', runExport);
     }
     ui.workspace.addEventListener('click', function (event) {
       if (!event.target.closest('[data-financial-retry]')) return;

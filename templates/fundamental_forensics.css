@@ -3208,3 +3208,21 @@ html[data-theme="light"] .ff-peer-exclusion {
   border-color: color-mix(in srgb, var(--muted) 40%, var(--line));
   border-style: dashed;
 }
+
+/* ── P2 export entry (§5, R6) ──────────────────────────────────────────────
+   DARK: a quiet var(--panel2) chip that gains a restrained 1px --info ring
+   on keyboard focus. LIGHT: a white chip with a hairline that lifts with the
+   --popover-shadow token on hover — shadow, not glow. */
+.ff-export-btn:not(:disabled):hover {
+  border-color: color-mix(in srgb, var(--info) 40%, var(--line));
+}
+.ff-export-btn:not(:disabled):focus-visible {
+  outline: none;
+  border-color: var(--info);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--info) 45%, transparent);
+}
+html[data-theme="light"] .ff-export-btn:not(:disabled):hover {
+  border-color: var(--line);
+  background: var(--panel);
+  box-shadow: var(--popover-shadow);
+}
