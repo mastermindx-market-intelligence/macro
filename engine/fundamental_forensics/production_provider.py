@@ -32,6 +32,7 @@ from typing import Any, Mapping
 from .production_datasets import (
     ProductionDatasetError,
     ProductionDatasetGeneration,
+    load_entity_role,
     load_latest_generation,
     load_query_dataset_payloads,
 )
@@ -43,7 +44,6 @@ from .query_service import (
 )
 from .revision_service import FinancialPacketDataset
 from .statement_graph import GoldenFilingPackage
-from .statement_service import bind_production_issuer_identity
 
 
 @dataclass(frozen=True)
@@ -52,10 +52,13 @@ class ProductionFilingPackage(GoldenFilingPackage):
 
     ``GoldenFilingPackage`` proper (every committed golden fixture) carries
     none, which keeps the golden statement response byte-identical; a
-    production package carries the exact production delivery object.
+    production package carries the exact production delivery object plus the
+    accession's precomputed statement trees (FIF P1) so the request path
+    serves trees without ever parsing the members.
     """
 
     delivery: Mapping[str, Any] | None = None
+    statement_trees: Mapping[str, Any] | None = None
 
 
 class _ProductionProviderBase:
@@ -192,12 +195,14 @@ class ProductionFinancialPacketProvider(_ProductionProviderBase):
 class ProductionFinancialStatementProvider(_ProductionProviderBase):
     """Serves as-reported statement packages from immutable generations.
 
-    Statement identity binds at the issuer level (A14): the CIK comes from
-    the Data OS issuer axis via ``IssuerMaster.cik_of_issuer`` and must agree
-    with the generation manifest; the single listing label was chosen at
-    dataset admission and is read from the manifest. ``securities_of_issuer``
-    is never called on this path, so a two-class issuer contributes exactly
-    one dataset and can never be double-counted.
+    Statement identity binds at the issuer level (A14) from the generation
+    manifest (F5): the CIK and the single listing label were chosen at
+    dataset admission and are read from ``manifest["issuer"]``, the legal
+    name from the entity role. ``securities_of_issuer`` and
+    ``IssuerMaster`` are never consulted on this path, so a two-class issuer
+    contributes exactly one dataset and can never be double-counted, and the
+    served trees are the publication-time precomputed ones — the members are
+    never parsed at request time (FIF P1).
     """
 
     issuer_level_binding = True
@@ -210,28 +215,47 @@ class ProductionFinancialStatementProvider(_ProductionProviderBase):
         issuer_master: Any | None = None,
         issuer_metadata: dict[str, str] | None = None,
     ) -> dict[str, str]:
-        from .statement_service import (  # noqa: PLC0415
-            _load_issuer_metadata,
-            _load_security_records,
-        )
-        from lib.dataos.identity import IssuerMaster  # noqa: PLC0415
+        """Bind the issuer identity from the generation manifest only (F5).
 
+        The as-of identity was fixed at dataset admission:
+        ``entity_id``/``cik``/``ticker``/``source_entity_id`` come from
+        ``manifest["issuer"]``, the single listing label
+        (``security_id``/``listing_key``) from the same block, and the legal
+        name from the entity role's ``entity.name``. The request path never
+        constructs an ``IssuerMaster``, never calls ``cik_of_issuer``, and
+        never reads ``data/reference/*.parquet`` — drift against a live
+        master is an acquisition-lane concern, not a request-path pick.
+        ``issuer_master`` / ``issuer_metadata`` stay on the protocol for the
+        golden provider and are deliberately not read here.
+        """
+        del repo_root, issuer_master, issuer_metadata
         generation = self._cached_generation(entity_id)
         if generation is None:
             raise FinancialQueryAdmissionError(400, "unknown entity")
-        if issuer_master is None:
-            issuer_master = IssuerMaster.from_records(_load_security_records(Path(repo_root)))
-        if issuer_metadata is None:
-            issuer_metadata = _load_issuer_metadata(Path(repo_root), entity_id)
-        manifest_issuer = generation.manifest.get("issuer") or {}
-        return bind_production_issuer_identity(
-            entity_id,
-            issuer_master=issuer_master,
-            issuer_metadata=issuer_metadata,
-            security_id=manifest_issuer.get("security_id"),
-            listing_key=manifest_issuer.get("listing_key"),
-            expected_cik=manifest_issuer.get("cik"),
-        )
+        try:
+            binding = generation.binding
+            manifest_issuer = generation.manifest.get("issuer") or {}
+            security_id = manifest_issuer.get("security_id")
+            listing_key = manifest_issuer.get("listing_key")
+            entity = load_entity_role(generation).get("entity") or {}
+            legal_name = entity.get("name")
+        except ProductionDatasetError:
+            raise FinancialQueryUnavailableError() from None
+        if not isinstance(security_id, str) or not security_id:
+            raise FinancialQueryUnavailableError()
+        if not isinstance(listing_key, str) or not listing_key:
+            raise FinancialQueryUnavailableError()
+        if not isinstance(legal_name, str) or not legal_name:
+            raise FinancialQueryUnavailableError()
+        return {
+            "entity_id": binding.entity_id,
+            "cik": binding.cik,
+            "ticker": binding.ticker,
+            "source_entity_id": binding.source_entity_id,
+            "security_id": security_id,
+            "listing_key": listing_key,
+            "legal_name": legal_name,
+        }
 
     def resolve(self, entity_id: str, accession: str) -> GoldenFilingPackage:
         generation = self._cached_generation(entity_id)
@@ -241,6 +265,7 @@ class ProductionFinancialStatementProvider(_ProductionProviderBase):
             if accession not in generation.statement_accessions():
                 raise FinancialQueryAdmissionError(400, "unknown filing")
             manifest, members = generation.statement_package(accession)
+            trees = generation.statement_trees(accession)
         except FinancialQueryAdmissionError:
             raise
         except FinancialQueryUnavailableError:
@@ -251,6 +276,7 @@ class ProductionFinancialStatementProvider(_ProductionProviderBase):
             manifest=manifest,
             members=members,
             delivery=generation.delivery(),
+            statement_trees=trees,
         )
 
 

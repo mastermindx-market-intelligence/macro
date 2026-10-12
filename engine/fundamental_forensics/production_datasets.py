@@ -75,7 +75,21 @@ PRODUCTION_DATASET_ROLES: tuple[str, ...] = (
     "statement_packages_index_json",
     "lineage_evidence_json",
 )
+# FIF P1 (R2): precomputed statement trees. Computed ONLY inside
+# ``publish_production_dataset`` (the single operator writer) when the
+# material carries statement packages, content-addressed and digest-bound in
+# the manifest exactly like the core roles. The role is additive: a
+# package-less publication keeps the exact D3 six-role core (and therefore
+# its generation id), and the request path NEVER parses iXBRL to rebuild
+# trees — a generation that carries statement packages without this role, or
+# with a damaged one, is the same typed unavailability as any other damage.
+OPTIONAL_PRODUCTION_DATASET_ROLES: tuple[str, ...] = ("statement_trees_json",)
+PRODUCTION_DATASET_STATEMENT_TREES_SCHEMA = (
+    "fundamental_forensics.production_dataset_statement_trees/v1"
+)
 _ROLE_SET = frozenset(PRODUCTION_DATASET_ROLES)
+_OPTIONAL_ROLE_SET = frozenset(OPTIONAL_PRODUCTION_DATASET_ROLES)
+_LAWFUL_ROLE_SETS = frozenset((_ROLE_SET, _ROLE_SET | _OPTIONAL_ROLE_SET))
 
 GENERATION_ID_RE = re.compile(r"\Affprods_[a-f0-9]{64}\Z")
 _SHA256_RE = re.compile(r"\A[a-f0-9]{64}\Z")
@@ -413,6 +427,66 @@ def _package_manifest_payload(manifest: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _statement_trees_role_payload(
+    material: ProductionDatasetMaterial, registry: Any
+) -> bytes:
+    """Precompute the statement trees at publication (the only writer).
+
+    FIF P1 (R2): ``reconstruct_primary_statements`` runs exactly here, once
+    per accession, over the supplied packages with the dataset-pinned
+    registry — never on the request path. A reconstruction failure fails the
+    publication itself, so an admitted generation always carries servable
+    trees.
+    """
+    from .statement_graph import reconstruct_primary_statements  # noqa: PLC0415
+
+    trees: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for package in material.packages:
+        manifest = getattr(package, "manifest", None)
+        accession = manifest.get("accession") if isinstance(manifest, Mapping) else None
+        if not isinstance(accession, str) or not accession or accession in seen:
+            raise ProductionDatasetError("production statement package is malformed")
+        seen.add(accession)
+        reconstructed = reconstruct_primary_statements(package=package, registry=registry)
+        trees.append({"accession": accession, "reconstruction": reconstructed})
+    return canonical_json(
+        {"schema": PRODUCTION_DATASET_STATEMENT_TREES_SCHEMA, "trees": trees}
+    ).encode("utf-8")
+
+
+_TREES_RECONSTRUCTION_KEYS = frozenset(
+    {"parsed_document_kind", "fact_count", "context_count", "statements"}
+)
+
+
+def statement_trees_from_role_payload(payload: bytes, accession: str) -> dict[str, Any]:
+    """Rebuild one accession's precomputed statement trees from role bytes.
+
+    Every malformed shape — wrong schema, a torn trees list, a reconstruction
+    missing its envelope fields, or the accession simply absent — is one
+    typed ``ProductionDatasetError``; the caller NEVER falls back to parsing
+    the package members instead.
+    """
+    document = _decode_json_object(payload, field="statement trees role")
+    if document.get("schema") != PRODUCTION_DATASET_STATEMENT_TREES_SCHEMA:
+        raise ProductionDatasetError("statement trees role is malformed")
+    trees = document.get("trees")
+    if not isinstance(trees, list) or not trees:
+        raise ProductionDatasetError("statement trees role is malformed")
+    for item in trees:
+        if not isinstance(item, dict) or set(item) != {"accession", "reconstruction"}:
+            raise ProductionDatasetError("statement trees role is malformed")
+        if item.get("accession") == accession:
+            reconstruction = item.get("reconstruction")
+            if not isinstance(reconstruction, dict) or not _TREES_RECONSTRUCTION_KEYS <= set(
+                reconstruction
+            ):
+                raise ProductionDatasetError("statement trees role is malformed")
+            return reconstruction
+    raise ProductionDatasetError("statement trees role is missing the accession")
+
+
 def _lineage_role_payload(lineage_evidence: tuple[Any, ...]) -> bytes:
     receipts = []
     for item in lineage_evidence:
@@ -474,15 +548,20 @@ def _manifest_core(
         else None
     )
     roles = {row["role"]: row for row in role_rows}
-    if set(roles) != _ROLE_SET:
+    if set(roles) not in _LAWFUL_ROLE_SETS:
         raise ProductionDatasetError("production dataset role set is inexact")
+    ordered_roles = [
+        role
+        for role in (*PRODUCTION_DATASET_ROLES, *OPTIONAL_PRODUCTION_DATASET_ROLES)
+        if role in roles
+    ]
     return {
         "schema": PRODUCTION_DATASET_SCHEMA,
         "issuer": dict(issuer_block),
         "accessions": accessions,
         "roles": [
             {"role": role, "sha256": roles[role]["sha256"], "byte_length": roles[role]["byte_length"]}
-            for role in PRODUCTION_DATASET_ROLES
+            for role in ordered_roles
         ],
         "registry_content_sha256": roles["registry_json"]["sha256"],
         "packet_builder_digest": packet_builder_digest,
@@ -835,6 +914,12 @@ def publish_production_dataset(
     }
     index_payload, member_objects = _statement_index_role_payload(tuple(material.packages))
     role_payloads["statement_packages_index_json"] = index_payload
+    if tuple(material.packages):
+        # FIF P1 (R2): statement trees are precomputed HERE, at publication,
+        # with the dataset-pinned registry — the request path only reads them.
+        role_payloads["statement_trees_json"] = _statement_trees_role_payload(
+            material, registry_from_payload(material.registry_payload)
+        )
 
     for role, payload in role_payloads.items():
         if not isinstance(payload, bytes) or not payload:
@@ -852,7 +937,11 @@ def publish_production_dataset(
             "sha256": hashlib.sha256(role_payloads[role]).hexdigest(),
             "byte_length": len(role_payloads[role]),
         }
-        for role in PRODUCTION_DATASET_ROLES
+        for role in (
+            *PRODUCTION_DATASET_ROLES,
+            *OPTIONAL_PRODUCTION_DATASET_ROLES,
+        )
+        if role in role_payloads
     ]
     accessions = _index_accessions_for_manifest(index_payload)
     issuer_block = {
@@ -1095,6 +1184,20 @@ class ProductionDatasetGeneration:
             if isinstance(item, dict)
         )
 
+    def statement_trees(self, accession: str) -> dict[str, Any]:
+        """One accession's precomputed statement trees (request path).
+
+        A generation whose manifest admitted the trees role already had its
+        payload byte-verified at load. Reaching this point without the role
+        means the generation predates the role while still carrying statement
+        packages — every damage class is the same typed unavailability, and
+        the caller NEVER parses the package members instead.
+        """
+        payload = self.role_payloads.get("statement_trees_json")
+        if payload is None:
+            raise ProductionDatasetError("production dataset statement trees role is missing")
+        return statement_trees_from_role_payload(payload, accession)
+
 
 def load_generation(store: Any, issuer_id: str, generation_id: str) -> ProductionDatasetGeneration:
     """Load and verify one generation against its own digest binding.
@@ -1130,7 +1233,10 @@ def load_generation(store: Any, issuer_id: str, generation_id: str) -> Productio
     roles = manifest.get("roles")
     if not isinstance(objects, list) or not isinstance(roles, list):
         raise ProductionDatasetError("production dataset manifest is malformed")
-    if len(objects) != len(PRODUCTION_DATASET_ROLES):
+    if len(objects) not in (
+        len(PRODUCTION_DATASET_ROLES),
+        len(PRODUCTION_DATASET_ROLES) + len(OPTIONAL_PRODUCTION_DATASET_ROLES),
+    ):
         raise ProductionDatasetError("production dataset manifest is malformed")
     objects_by_role: dict[str, dict[str, Any]] = {}
     for row in objects:
@@ -1149,7 +1255,7 @@ def load_generation(store: Any, issuer_id: str, generation_id: str) -> Productio
         if length > HARD_MAX_PRODUCTION_ROLE_BYTES:
             raise ProductionDatasetError("production dataset manifest is malformed")
         objects_by_role[role] = row
-    if set(objects_by_role) != _ROLE_SET:
+    if set(objects_by_role) not in _LAWFUL_ROLE_SETS:
         raise ProductionDatasetError("production dataset manifest is malformed")
     # The manifest must re-derive its own generation id from its content core.
     clocks = manifest.get("clocks")
@@ -1192,9 +1298,10 @@ def load_generation(store: Any, issuer_id: str, generation_id: str) -> Productio
         raise ProductionDatasetError("production dataset generation id mismatch")
     if manifest.get("registry_content_sha256") != objects_by_role["registry_json"]["sha256"]:
         raise ProductionDatasetError("production dataset registry digest mismatch")
-    # A17: every required role object must exist with exact bytes.
+    # A17: every role object the manifest admits — core and optional alike —
+    # must exist with exact bytes.
     role_payloads: dict[str, bytes] = {}
-    for role in PRODUCTION_DATASET_ROLES:
+    for role in objects_by_role:
         row = objects_by_role[role]
         payload = _read_bounded_optional(
             store, row["object_key"], maximum=HARD_MAX_PRODUCTION_ROLE_BYTES
@@ -1237,6 +1344,18 @@ def latest_generation_summary(store: Any, issuer_id: str) -> dict[str, Any] | No
     }
 
 
+def _decode_entity_role_document(payload: bytes) -> dict[str, Any]:
+    document = _decode_json_object(payload, field="entity role")
+    if document.get("schema") != PRODUCTION_DATASET_ENTITY_SCHEMA:
+        raise ProductionDatasetError("entity role is malformed")
+    entity_raw = document.get("entity")
+    binding_raw = document.get("binding")
+    digests_raw = document.get("evidence_digests")
+    if not isinstance(entity_raw, dict) or not isinstance(binding_raw, dict) or not isinstance(digests_raw, dict):
+        raise ProductionDatasetError("entity role is malformed")
+    return document
+
+
 def load_query_dataset_payloads(generation: ProductionDatasetGeneration) -> dict[str, Any]:
     """Rebuild every query-servable payload from verified role bytes.
 
@@ -1254,16 +1373,10 @@ def load_query_dataset_payloads(generation: ProductionDatasetGeneration) -> dict
         generation.role_payloads["registry_json"], field="registry role"
     )
     registry = registry_from_payload(registry_payload)
-    entity_document = _decode_json_object(
-        generation.role_payloads["entity_json"], field="entity role"
-    )
-    if entity_document.get("schema") != PRODUCTION_DATASET_ENTITY_SCHEMA:
-        raise ProductionDatasetError("entity role is malformed")
+    entity_document = _decode_entity_role_document(generation.role_payloads["entity_json"])
     entity_raw = entity_document.get("entity")
     binding_raw = entity_document.get("binding")
     digests_raw = entity_document.get("evidence_digests")
-    if not isinstance(entity_raw, dict) or not isinstance(binding_raw, dict) or not isinstance(digests_raw, dict):
-        raise ProductionDatasetError("entity role is malformed")
     try:
         entity = EntityInput(
             entity_id=entity_raw["entity_id"],
@@ -1292,6 +1405,16 @@ def load_query_dataset_payloads(generation: ProductionDatasetGeneration) -> dict
         "input_digests": input_digests,
         "lineage_evidence": lineage,
     }
+
+
+def load_entity_role(generation: ProductionDatasetGeneration) -> dict[str, Any]:
+    """Decoded entity role document (admission-time binding + legal name).
+
+    FIF P1 (F5): the production request path binds issuer identity from the
+    manifest issuer block plus ``entity.name`` here — never from a live
+    IssuerMaster or ``data/reference/*.parquet``.
+    """
+    return _decode_entity_role_document(generation.role_payloads["entity_json"])
 
 
 # ---------------------------------------------------------------------------
@@ -1422,6 +1545,7 @@ __all__ = [
     "GENERATION_ID_RE",
     "InMemoryStrictConditionalStore",
     "LAWFUL_CAPTURE_BASES",
+    "OPTIONAL_PRODUCTION_DATASET_ROLES",
     "PRODUCTION_DATASET_ENTITY_SCHEMA",
     "PRODUCTION_DATASET_FILING_METADATA_SCHEMA",
     "PRODUCTION_DATASET_GENERATION_ID_PREFIX",
@@ -1431,6 +1555,7 @@ __all__ = [
     "PRODUCTION_DATASET_ROLES",
     "PRODUCTION_DATASET_SCHEMA",
     "PRODUCTION_DATASET_STATEMENT_INDEX_SCHEMA",
+    "PRODUCTION_DATASET_STATEMENT_TREES_SCHEMA",
     "ProductionDatasetEffectUnknownError",
     "ProductionDatasetError",
     "ProductionDatasetGeneration",
@@ -1441,6 +1566,7 @@ __all__ = [
     "filing_metadata_from_role_payload",
     "latest_generation_summary",
     "lineage_from_role_payload",
+    "load_entity_role",
     "load_generation",
     "load_latest_generation",
     "load_query_dataset_payloads",
@@ -1450,4 +1576,5 @@ __all__ = [
     "publish_production_dataset",
     "registry_from_payload",
     "snapshot_core_registry_payload",
+    "statement_trees_from_role_payload",
 ]

@@ -299,15 +299,27 @@ def execute_financial_statements(
         raise FinancialQueryUnavailableError()
     if package.manifest.get("accession") != admitted.accession:
         raise FinancialQueryUnavailableError()
-    try:
-        registry = load_core_registry(repo_root)
-        reconstructed = reconstruct_primary_statements(package=package, registry=registry)
-    except FinancialQueryAdmissionError:
-        raise
-    except StatementGraphError:
-        raise FinancialQueryUnavailableError() from None
-    except Exception:
-        raise FinancialQueryUnavailableError() from None
+    # FIF P1 (F1): a production package serves the statement trees that were
+    # precomputed at dataset publication; only the golden demonstration
+    # path (no delivery object) reconstructs — i.e. parses — at request
+    # time, byte-for-byte as before. A production package whose trees are
+    # missing NEVER falls back to parsing the members.
+    package_delivery = getattr(package, "delivery", None)
+    precomputed_trees = getattr(package, "statement_trees", None)
+    if precomputed_trees is not None:
+        reconstructed = precomputed_trees
+    elif package_delivery is None:
+        try:
+            registry = load_core_registry(repo_root)
+            reconstructed = reconstruct_primary_statements(package=package, registry=registry)
+        except FinancialQueryAdmissionError:
+            raise
+        except StatementGraphError:
+            raise FinancialQueryUnavailableError() from None
+        except Exception:
+            raise FinancialQueryUnavailableError() from None
+    else:
+        raise FinancialQueryUnavailableError()
 
     envelope = {
         "schema": _RESPONSE_SCHEMA,
@@ -360,7 +372,6 @@ def execute_financial_statements(
     # package) keeps today's exact golden object, so those responses stay
     # byte-identical; a production package supplies the exact production
     # object, fail-closed by the shared delivery law.
-    package_delivery = getattr(package, "delivery", None)
     if package_delivery is None:
         envelope["delivery"] = {
             "kind": "committed_golden_fixture",
