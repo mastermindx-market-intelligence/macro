@@ -11,7 +11,7 @@ Membership is the half-open interval ``[added, removed)``.
 from __future__ import annotations
 
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
 
@@ -20,6 +20,7 @@ from engine.company_theme_exposure.health import validate_generation
 from engine.company_theme_exposure.views import (
     THEME_STATE_MAX_AGE_DAYS,
     _active_membership,
+    _as_date,
     _canonical_theme_ids,
     _coverage,
     _crosswalk_index,
@@ -132,15 +133,6 @@ def test_theme_state_receipt_future_date_is_invalid() -> None:
     }
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "DEFECT CTE-N-THEMES-BOOL: views._theme_state_receipt treats bool n_themes as an int "
-        "(engine/company_theme_exposure/views.py:50-51; isinstance(True, int) and True == 1), "
-        "so a one-theme payload with n_themes true is fresh. contracts.py:149 rejects bool counts. "
-        "This xfail is strict: a fix that refuses bool n_themes must drop the marker."
-    ),
-)
 def test_boolean_n_themes_is_not_fresh() -> None:
     payload = _theme_state(RUN_AS_OF.isoformat(), n_themes=True)
     receipt, warnings = _receipt(payload)
@@ -148,20 +140,40 @@ def test_boolean_n_themes_is_not_fresh() -> None:
     assert warnings
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "DEFECT CTE-DATE-PREFIX: parse_date accepts text[:10] "
-        "(engine/company_intelligence/contracts.py:166) and views._as_date only drops ContractError "
-        "(engine/company_theme_exposure/views.py:23-29). as_of '2026-02-07garbage' is age 0 and fresh. "
-        "A non-ISO suffix must not produce a fresh receipt. Strict xfail until that path refuses it."
-    ),
-)
 def test_junk_suffix_date_is_not_fresh() -> None:
     payload = _theme_state("2026-02-07garbage")
     receipt, warnings = _receipt(payload)
     assert receipt["status"] != "fresh"
     assert warnings
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        pytest.param(None, None, id="none"),
+        pytest.param("2026-02-07", date(2026, 2, 7), id="plain-date"),
+        pytest.param("2026-02-07T14:30:00Z", date(2026, 2, 7), id="utc-datetime"),
+        pytest.param("2026-02-07T14:30:00+08:00", date(2026, 2, 7), id="offset-datetime"),
+        pytest.param(date(2026, 2, 7), date(2026, 2, 7), id="date-object"),
+        pytest.param(datetime(2026, 2, 7, 14, 30), date(2026, 2, 7), id="datetime-object"),
+        pytest.param("2026-02-07garbage", None, id="junk-suffix"),
+        pytest.param("2026-02-07 extra", None, id="space-suffix"),
+        pytest.param("20260207", None, id="basic-format-date"),
+        pytest.param(True, None, id="bool"),
+        pytest.param("", None, id="empty-string"),
+    ],
+)
+def test_as_date_accepts_exact_iso_only(value, expected) -> None:
+    """``_as_date`` accepts exact days and real ISO datetimes, refuses the rest.
+
+    Pins the local parser that replaced the shared ``parse_date`` delegation:
+    a truncated ``text[:10]`` prefix (junk suffix) and the basic/week forms
+    ``fromisoformat`` also accepts on 3.11+ must stay ``None`` — a stamp that
+    only looks like a date must never reach the freshness gate.
+    """
+    got = _as_date(value)
+    assert got == expected
+    assert (got is None) == (expected is None)
 
 
 def _closed_membership() -> dict:
