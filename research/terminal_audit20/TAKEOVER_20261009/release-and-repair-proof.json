@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T0919",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T0941",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -9564,6 +9564,48 @@
     },
     "coordination": "B first-party return verifies parent receipt5712B/5b279a711788bb4e583587f4f8727b695a230f39387cea1994a2a7d2322fdce0, attempt/log hashes and five blob pairs; accepts local6pass/2skip scope only. Hosted failures/causality open. Only narrow chart/test repair with exact source/preimage/dependencies/discriminating proof may be integrated by B into existing967. No broader804 merge or unrelated API/SQL/rights inheritance. Boundary sent through first-party tool to sole writer01a1101f-2a37-7320-9a9b-5df3ce1b890d accepted/noerror; no Paper ACK claimed. Receipt /Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-ci-chart-20261012/B-consumption-narrow-integration.json SHA0929d7522d776f5d952eac5f9bd31187623c4fa00417eb880418d7fe765e2fd3.",
     "next_ready_phase": "Consume actual Paper chart diagnosis/reviewed source return, then B existing PR967 integration/review/required CI/protected merge. Root exact release and existing archived-MU read-only fast-history proof only after qualified merged-source return. No blind CI rerun, timeout extension, duplicate writer/test, early deployment or effect replay.",
+    "whole_J1_accepted": false,
+    "whole_audit20_complete": false,
+    "cleanup_owed": false
+  },
+  "current_capability_frontier_20261012T0941": {
+    "observed_at": "2026-10-12T09:42:21.475508+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T0919",
+    "material": "Actual sole-owner Paper narrow quote-publication repair returned, source/proof independently qualified and sent to B for existing PR967 integration. No hosted CI/merge/install/live acceptance.",
+    "source": {
+      "commit": "5a3c6a56f7cab67f7d0560e0f0c35ba2b341f3be",
+      "parent": "b8a2955911b281ec20b8dfc7d2d2132510b43e60",
+      "paths": [
+        "terminal/components/TerminalShell.tsx",
+        "terminal/lib/__tests__/terminalQuotePublication.test.ts"
+      ],
+      "preimage": "6b49e34ed4b7d85e96beea212a873bf039969e7bb6409cb1c53c29cf9e8d8160",
+      "preimage_matches_B_head_and_CI_merge": true,
+      "shell_post": "3246b3e662cd83dd03720f0b57975d481caef66f04e5fc354e6610c0bb146645",
+      "test": "3b8f819d2a4ff6cb25e49957e83f2b05a861a7d69d2df5bebccd8cebf260c6b8",
+      "patch_sha256": "ddd09f38fbc13bc13410fba3a49e89dc9ddb9e881e8fe3c20dfac3b8db09609c",
+      "apply_check_on_exact8a": "PASS without applying"
+    },
+    "proof": {
+      "owner_bound_artifacts_verified": 14,
+      "independent_review": "4969B/SHA4f41e6d5b5c2dbe92923ccabaf6c0e327c0a50b51765c0a8b10e8b24ab78e5d8, retained acceptance and parent adjudication consumed",
+      "unit": "owner original5FAIL1PASS -> candidate6PASS",
+      "browser": "owner original CPU2 pair2FAIL -> candidate2PASS; final diagnostic-free original assertions/stimuli/timeouts with CPU2 pair2PASS/no retry",
+      "typecheck": "owner PASS",
+      "lint": "54errors14warnings all inherited; no new diagnostics",
+      "runtime_equivalence": "Parent independently transpiled tested8a943cff and published3246b3e; same emitted JS under ES2022/ESNext/ReactJSX. Type-only cleanup.",
+      "limits": "Owner tests were consumed, not root reruns. Source logic and exact original two quote writers independently inspected. No whole-suite/all-flake/hosted-green/production claim."
+    },
+    "parent_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-ci-chart-20261012/quote-publication-source-parent-qualification.json",
+      "bytes": 3300,
+      "sha256": "e84ffef7a838121d1746bb265da613a512fa64ec357fc54f602fc65a1f6721b1"
+    },
+    "custody": "Paper repair writer reservation completed by actual owner return; no active local runner reported. Paper retains sole PR804 observer38231220891. B retains PR967 narrow integration/review/CI/protectedmerge; root does not import broader804 or create product edits/observer/deployment.",
+    "delivery": "Concrete qualified narrow source return sent to B through first-party tool accepted/noerror; no recipient ACK claimed.",
+    "next_ready_phase": "Consume actual B integrated/reviewed/required-CI/protected-merged source return, then fresh release gates and existing archived-MU read-only fast-history acceptance. Do not poll/retry completed source/tests/paid review or Paper804observer.",
     "whole_J1_accepted": false,
     "whole_audit20_complete": false,
     "cleanup_owed": false
