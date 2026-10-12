@@ -54,6 +54,15 @@ verified:
   result: 2 passed in 277.56 seconds. Canonical planner selects washout-turn-organ for each path after
     inference across the 210-code-job manifest. The original missing-hook sparse-checkout failure is
     preserved separately. Hosted authoritative plan and final semantic evidence remain required.
+- claim: Released object comparison and current main compose without changing the reviewed Brief subject.
+  command: git merge --no-ff --no-commit a278075e6197e12ae13d37354813dccd9e70043a;
+    compare exact bytes of the two reviewed files and four dependencies to fc165a8b29fd97750e7716ad6f45ba9e117d21b8;
+    rerun the two affected canonical planner tests.
+  result: Only the shared workstream narrative conflicted; both histories are preserved with an accurate
+    current prefix. All six reviewed files are unchanged. Both planner checks pass again, and the existing
+    washout-turn-organ owner remains the inferred execution owner. No new source review is needed for
+    unchanged reviewed bytes. PR8874 is merged to a278075e6197; its 88 logical jobs and 310 passing proof
+    steps are closed evidence. Brief exact-head hosted checks remain separate.
 unverified:
 - claim: Exact-head hosted CI, source release and product integration are complete.
   what_would_verify: Normal exact-head semantic CI and merge; then native producer provenance/access

@@ -675,6 +675,16 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
+  2026-10-12 02:50 source progress: independent object comparison PR8874 is
+  normally squash-merged to a278075e6197 with 88 logical CI jobs and 310 passing
+  proof steps, zero blocking or inherited failures. Its source/CI/review gates are
+  closed. Original DailyBrief8249 corrected-source review is accepted within its
+  source/helper scope; 139 parent tests and two planner checks passed. Integrate
+  this newly released shared workstream record on the original Brief carrier,
+  preserve exact reviewed module/test/dependency bytes, then complete exact-head
+  CI and normal source release. P1a fresh native build is active; actual generated
+  access and browser evidence remain owed. Both human reopen approvals remain
+  received. No new human decision is pending. Earlier entries are historical.
   2026-10-12 approved four-market continuation: use
   PROPHET-US-V4-RECOVERY-2026-10-12-daily-brief-repair.md and programme6107291350.
   The human explicitly reopened original P1a8444 integration and selected original
@@ -695,6 +705,23 @@ next_action: >
   on every read through the B1 owner; cold construction retains full semantics
   and post-attestation. Parent213 tests and complete371-row byte comparison pass.
   Finish normal exact-head CI/release, ordinary API adoption and live paging/sign-out.
+  2026-10-12 four-market continuation: use programme6107291350 and the
+  PROPHET-US-V4-RECOVERY-2026-10-11-object-change.md handoff. PR8857 merged
+  normally to31afbfe1237e; B03 paging/filter/exact relation/sign-out and candidate
+  Return in EN grid/table/Today and settled ZH are accepted live in the retained
+  b03-and-return-live-acceptance-20261011.json receipt. All corresponding source,
+  review, CI, adoption and live checks are closed; do not repeat them.
+  Complete PR8874 with the upstream PR8870 calendar-dependency scope repair:
+  first CI38187164735 failed the unchanged import-closure test; its final semantic
+  evidence is consumed and closed. The reviewed comparison source/test bytes are
+  unchanged by current-main composition. Route integration remains behind
+  DailyBrief8249. Human explicitly reopened original P1a8444 main integration and
+  chose DailyBrief8249 as canonical with source repair; only refusals6029541334
+  and5924461491 are superseded. Both original operations are active, so do not
+  duplicate them or ask again. HK/China adoption waits for actual P1a release.
+  Today/standouts remains the selection owner; native object binding is required
+  before its own selection provenance can be emitted. No second selector or
+  manufactured owner/review/history receipt.
   Earlier progression below is historical and does not reopen closed evidence.
   2026-10-11 B1 validation continuation: use
   PROPHET-US-V4-RECOVERY-2026-10-11-b1-validation-performance.md and programme
