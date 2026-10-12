@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "contracts/single_name_intelligence/twin_record.v1.schema.json",
+  "title": "SNI twin_record.v1",
+  "description": "R1-gated DRAFT of one append-only Single-Name Intelligence reference-twin record. SNI-local contract that CONSUMES owner-supplied payload, owner_key, owner_digest and clocks; it does not fork Data OS identity, Company Event/Earnings, FIF, Capital Structure, Stock Identity, Options, Research Vault, or qledger/Evaluation. twin_key and any identity ids are caller-supplied opaque strings; this schema never mints HK/US issuer or security identifiers. Qualification/record facts only; never a signal, score, rank, gate, size, escalation or trade. Every authority flag is const false.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id", "twin_key", "generation", "supersedes", "owner_key",
+    "owner_digest", "payload", "clocks", "correction", "authority_flags",
+    "prev_hash", "row_hash"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "sha256 hex of canonical JSON of {twin_key, generation, owner_key, owner_digest, clocks, supersedes}."
+    },
+    "twin_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque caller-supplied twin key. Never constructed from a ticker, name, code or CIK."
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "supersedes": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "record_id of the prior generation of this twin_key, or null for generation 1."
+    },
+    "owner_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Registry key of the owner that supplied the payload. Not an identity id."
+    },
+    "owner_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "sha256 hex of canonical_json(payload) as the OWNER computed it (A15)."
+    },
+    "payload": {
+      "type": "object",
+      "description": "Owner-supplied body, consumed as given. Must not contain authority flag keys."
+    },
+    "clocks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["economic_period", "owner_known_at_utc", "sni_published_at_utc"],
+      "properties": {
+        "economic_period": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "start", "end"],
+          "properties": {
+            "kind": {"enum": ["period", "instant"]},
+            "start": {"type": "string", "format": "date"},
+            "end": {"type": ["string", "null"], "format": "date"}
+          }
+        },
+        "owner_known_at_utc": {"type": "string", "format": "date-time"},
+        "sni_published_at_utc": {"type": "string", "format": "date-time"}
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "corrected_at_utc"],
+      "properties": {
+        "reason": {"type": ["string", "null"]},
+        "corrected_at_utc": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
+    "authority_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank_authority", "gate_authority", "size_authority",
+        "signal_authority", "escalation_authority", "trade_authority"
+      ],
+      "properties": {
+        "rank_authority": {"const": false},
+        "gate_authority": {"const": false},
+        "size_authority": {"const": false},
+        "signal_authority": {"const": false},
+        "escalation_authority": {"const": false},
+        "trade_authority": {"const": false}
+      }
+    },
+    "prev_hash": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "row_hash of the previous JSONL line, or null at the start of the file. Filled by the store."
+    },
+    "row_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "sha256 hex of canonical_json(record without row_hash). Filled by the store."
+    }
+  }
+}
