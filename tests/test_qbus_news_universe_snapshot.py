@@ -381,7 +381,7 @@ def test_diagnosis_of_a_resolved_roster_counts_the_built_securities():
     snapshot = m.build_news_universe_snapshot(
         **kwargs, fresh_for=timedelta(hours=36), min_count=1
     )
-    diagnosis = m.diagnose_news_universe(**kwargs)
+    diagnosis = m.diagnose_news_universe(**kwargs, min_count=1)
 
     assert diagnosis["schema"] == "qbus.news_universe_diagnosis.v1"
     assert diagnosis["observed_at"] == NOW.isoformat()
