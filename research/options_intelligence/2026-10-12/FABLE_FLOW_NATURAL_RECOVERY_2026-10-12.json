@@ -1,0 +1,227 @@
+{
+  "schema": "fable.flow_natural_recovery/v1",
+  "accepted_scope": "Natural M1 October12 publication and authenticated OptionsTape advance beyond September25",
+  "natural_observation": {
+    "observed_at": "2026-10-12T14:14:53.608875+00:00",
+    "runtime_head": "2c9122681ab44f1a2f928b4dbec90c68f91e99ae",
+    "poller_sha256": "074699c4cd2bf9c3793758a30a514d871f1626b7463ae88666f6fa5b5ad2b45a",
+    "validator_sha256": "304a22f58b4ee2da08bbb4d8e678df3c1508b6d61ea3dd1cea00bf181fe496a0",
+    "plist_sha256": "cee37b807dcab3fabe59b08a8571623411f2f479b5b4bd0228988fada79f0817",
+    "stage_override": null,
+    "job": {
+      "state": "running",
+      "runs": "2",
+      "pid": "45274",
+      "immediate reason": "xpc event",
+      "last exit code": "0",
+      "process": "45274 Mon Oct 12 06:25:04 2026     49:49 /opt/homebrew/Caskroom/miniconda/base/bin/python -m scripts.live_flow_poller --rth-only",
+      "calendar_trigger_present": true,
+      "schedule": [
+        {
+          "Weekday": 1,
+          "Hour": 6,
+          "Minute": 25
+        },
+        {
+          "Weekday": 2,
+          "Hour": 6,
+          "Minute": 25
+        },
+        {
+          "Weekday": 3,
+          "Hour": 6,
+          "Minute": 25
+        },
+        {
+          "Weekday": 4,
+          "Hour": 6,
+          "Minute": 25
+        },
+        {
+          "Weekday": 5,
+          "Hour": 6,
+          "Minute": 25
+        }
+      ]
+    },
+    "published_receipt": {
+      "bytes": 730038,
+      "sha256": "5c08e56718a346a72983cc0d11860a797d4c812a349f70893727b2122843540c"
+    },
+    "receipt_file_sha256": "f241d8d4ec11e82349e3161989f4cb3adc2c7996f0a6b7ea39d6e398f4e84035",
+    "stage_current_bytes": 730038,
+    "stage_current_sha256": "5c08e56718a346a72983cc0d11860a797d4c812a349f70893727b2122843540c",
+    "receipt_file_unchanged_during_read": true,
+    "prefix_sha256": "5c08e56718a346a72983cc0d11860a797d4c812a349f70893727b2122843540c",
+    "prefix_bytes": 730038,
+    "strict_paired_events": 477,
+    "prefix_line_count": 954,
+    "strict_parser_pass": true,
+    "clocks": {
+      "ts": {
+        "min": "2026-10-12T13:30:02Z",
+        "max": "2026-10-12T14:10:04Z"
+      },
+      "observed_at": {
+        "min": "2026-10-12T13:37:25.063947Z",
+        "max": "2026-10-12T14:10:21.094370Z"
+      },
+      "decision_at": {
+        "min": "2026-10-12T13:39:33.991200Z",
+        "max": "2026-10-12T14:12:01.912565Z"
+      },
+      "available_at": {
+        "min": "2026-10-12T13:40:17.683744Z",
+        "max": "2026-10-12T14:12:02.554027Z"
+      }
+    },
+    "dates_index": {
+      "schema": "live_flow.event_dates/v1",
+      "sessions": [
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-10-12"
+      ]
+    },
+    "feed": {
+      "bytes": 718885,
+      "sha256": "8601c8ecfbf34345288b66e62bed95d0ba36fce28155e675a7d8933a1c680a22",
+      "session_date": "2026-10-12",
+      "events": 477,
+      "asof": "2026-10-12T14:12:12.701954Z",
+      "source_asof": "2026-10-12T14:10:21.094370Z"
+    },
+    "meta": {
+      "bytes": 7193,
+      "sha256": "a0b8b3edcb87d00bf58fbcb53d1ae0a98bb16ec8eaff4bc1f86e97eba067b153",
+      "asof": "2026-10-12T14:10:21.094370Z",
+      "built_at": "2026-10-12T14:12:12.701954Z",
+      "cycle_started_at": "2026-10-12T14:03:54.805272Z",
+      "observed_start_to_start_sec": 444.132,
+      "fetch_compute_sec": 487.176,
+      "source_response_at_first": "2026-10-12T14:05:26.045312Z",
+      "source_response_at_last": "2026-10-12T14:10:21.094370Z",
+      "roots_with_source_payload": 28,
+      "roots_polled": 28
+    },
+    "day_state": {
+      "bytes": 16652520,
+      "sha256": "804f039c1790f3084f2cfe54a1cb2b99c5112b9154619b46d6c4df3b96084353",
+      "mtime": "2026-10-12T14:12:03.145042+00:00"
+    },
+    "job_log": {
+      "path": "/tmp/liveflow.stderr.log",
+      "bytes": 470360,
+      "sha256": "66324dd5526136816adad478d109d1d0482de9fed56cdac66b56c13b42fe74ea",
+      "selected_lines": [
+        "2026-10-12 06:25:39,903 INFO __main__: poller: two-tier cycle=1 tier1=27 tier2_slot=0/4 (1 roots)",
+        "2026-10-12 06:25:39,903 INFO __main__: poller: cycle #1 starting (date=2026-10-12 delta_mode=time_window roots=28)",
+        "2026-10-12 06:25:39,949 INFO __main__: poller: rss phase=pre_fetch cycle=1 current_rss_bytes=517505024 peak_rss_bytes=1029193728",
+        "2026-10-12 06:39:08,473 INFO __main__: poller: rss phase=post_fetch cycle=1 current_rss_bytes=540688384 peak_rss_bytes=1029193728",
+        "2026-10-12 06:40:17,492 INFO __main__: poller: rss phase=post_oi_process cycle=1 current_rss_bytes=771932160 peak_rss_bytes=1029193728",
+        "2026-10-12 06:40:17,514 INFO __main__: poller: rss phase=post_gc cycle=1 current_rss_bytes=771932160 peak_rss_bytes=1029193728",
+        "2026-10-12 06:40:18,374 INFO __main__: poller: cycle #1 events=137 unusual=15 heat_groups=2 minutes=10 sectors=2 tickers=15 cycle_sec=877.6s",
+        "2026-10-12 06:40:18,376 INFO __main__: poller: rss phase=pre_publication cycle=1 current_rss_bytes=772014080 peak_rss_bytes=1029193728",
+        "2026-10-12 06:40:18,841 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/2026-10-12.jsonl",
+        "2026-10-12 06:40:19,151 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/dates.json",
+        "2026-10-12 06:40:19,545 INFO __main__: poller: R2 upload ok \u2192 live_flow/feed_current.json",
+        "2026-10-12 06:40:20,182 INFO __main__: poller: R2 upload ok \u2192 live_flow/meta.json",
+        "2026-10-12 06:40:33,198 INFO __main__: poller: rss phase=post_publication cycle=1 current_rss_bytes=773996544 peak_rss_bytes=1029193728",
+        "2026-10-12 06:40:33,199 INFO __main__: poller: cycle #2 starting (date=2026-10-12 delta_mode=time_window roots=28)",
+        "2026-10-12 06:48:23,563 INFO __main__: poller: cycle #2 events=236 unusual=28 heat_groups=2 minutes=16 sectors=2 tickers=28 cycle_sec=457.0s",
+        "2026-10-12 06:48:23,952 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/2026-10-12.jsonl",
+        "2026-10-12 06:48:24,277 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/dates.json",
+        "2026-10-12 06:48:24,609 INFO __main__: poller: R2 upload ok \u2192 live_flow/feed_current.json",
+        "2026-10-12 06:48:25,359 INFO __main__: poller: R2 upload ok \u2192 live_flow/meta.json",
+        "2026-10-12 06:48:41,555 INFO __main__: poller: cycle #3 starting (date=2026-10-12 delta_mode=time_window roots=28)",
+        "2026-10-12 06:56:12,071 INFO __main__: poller: cycle #3 events=326 unusual=28 heat_groups=2 minutes=24 sectors=2 tickers=28 cycle_sec=426.0s",
+        "2026-10-12 06:56:12,530 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/2026-10-12.jsonl",
+        "2026-10-12 06:56:12,852 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/dates.json",
+        "2026-10-12 06:56:13,157 INFO __main__: poller: R2 upload ok \u2192 live_flow/feed_current.json",
+        "2026-10-12 06:56:13,976 INFO __main__: poller: R2 upload ok \u2192 live_flow/meta.json",
+        "2026-10-12 06:56:30,672 INFO __main__: poller: cycle #4 starting (date=2026-10-12 delta_mode=time_window roots=27)",
+        "2026-10-12 07:03:37,090 INFO __main__: poller: cycle #4 events=382 unusual=27 heat_groups=2 minutes=32 sectors=2 tickers=27 cycle_sec=420.6s",
+        "2026-10-12 07:03:37,508 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/2026-10-12.jsonl",
+        "2026-10-12 07:03:37,856 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/dates.json",
+        "2026-10-12 07:03:38,221 INFO __main__: poller: R2 upload ok \u2192 live_flow/feed_current.json",
+        "2026-10-12 07:03:38,902 INFO __main__: poller: R2 upload ok \u2192 live_flow/meta.json",
+        "2026-10-12 07:03:54,805 INFO __main__: poller: cycle #5 starting (date=2026-10-12 delta_mode=time_window roots=28)",
+        "2026-10-12 07:12:13,055 INFO __main__: poller: cycle #5 events=477 unusual=27 heat_groups=2 minutes=41 sectors=2 tickers=28 cycle_sec=487.2s",
+        "2026-10-12 07:12:13,797 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/2026-10-12.jsonl",
+        "2026-10-12 07:12:14,184 INFO __main__: poller: R2 upload ok \u2192 live_flow/events/dates.json",
+        "2026-10-12 07:12:14,522 INFO __main__: poller: R2 upload ok \u2192 live_flow/feed_current.json",
+        "2026-10-12 07:12:15,250 INFO __main__: poller: R2 upload ok \u2192 live_flow/meta.json",
+        "2026-10-12 07:12:34,095 INFO __main__: poller: cycle #6 starting (date=2026-10-12 delta_mode=time_window roots=28)"
+      ]
+    },
+    "quarantine": {
+      "data/live_flow_state/quarantine/prior_session_wal_quarantine_2026-09-28.json": {
+        "bytes": 959,
+        "sha256": "4e514c1d725c0c07f718082fec9d098b7c07eac483ab484d4c2d0327c9ca1f3a",
+        "mtime": "2026-10-11T17:18:52.838997+00:00"
+      }
+    },
+    "preserved": {
+      "/Users/chriswong/liveflow-recovery-20261011/recovery-qualification.json": {
+        "bytes": 1076,
+        "sha256": "2362ffaedc32e4dccf0dc5b6c6969db6d770e611609901058d728069d9d0beb5",
+        "mtime": "2026-10-11T17:19:25.860436+00:00"
+      },
+      "/Users/chriswong/liveflow-recovery-20261011/state-restore-receipt.json": {
+        "bytes": 555929,
+        "sha256": "ec3745b871ef6ba02ea7a86f112816e4da3eb1cc6808f4f6a50b14f86c7284bd",
+        "mtime": "2026-10-11T17:15:32.612128+00:00"
+      },
+      "/Users/chriswong/liveflow-ops-wt/data/live_flow_state/day_state_2026-09-28.json": {
+        "bytes": 5281033,
+        "sha256": "d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06",
+        "mtime": "2026-09-30T23:53:18+00:00"
+      }
+    },
+    "forced_invocation": false,
+    "production_writes": false,
+    "public_r2_read_attempted": false,
+    "retained_prefix": "/Users/chriswong/.codex/visualizations/2026/10/03/01a10340-ddc1-7e41-9b42-9c8543c28c3d/flow-natural-stage-prefix-20261012-5c08e56718a3.jsonl"
+  },
+  "observation_report_sha256": "8ea05793b2787c45c1265b0fdd42d5a606867baee873bf8663b5107718bd329a",
+  "browser_acceptance": {
+    "observed_at": "2026-10-12T14:14:53.608875+00:00",
+    "report": "m1-flow-natural-session-verification-20261012.json",
+    "report_sha256": "8ea05793b2787c45c1265b0fdd42d5a606867baee873bf8663b5107718bd329a",
+    "source_head": "2c9122681ab44f1a2f928b4dbec90c68f91e99ae",
+    "job_runs_before": 1,
+    "job_runs_after": 2,
+    "pid": 45274,
+    "process_started_local": "2026-10-12 06:25:04 America/Vancouver",
+    "first_cycle_log_local": "2026-10-12 06:25:39.903",
+    "first_successful_upload_local": "2026-10-12 06:40:18.841",
+    "source_session": "2026-10-12",
+    "strict_paired_events": 477,
+    "prefix_bytes": 730038,
+    "prefix_sha256": "5c08e56718a346a72983cc0d11860a797d4c812a349f70893727b2122843540c",
+    "source_clock": "2026-10-12T14:10:21.094370Z",
+    "browser_feed_session": "2026-10-12",
+    "browser_feed_built_et": "10:12:12",
+    "browser_prints": 477,
+    "browser_snapshot_source_clock": "2026-10-12T14:10:21.094370Z",
+    "browser_session": "Existing authorized Chrome2 admin test profile; avatarA retained; no credential read or newlogin required.",
+    "browser_evidence": {
+      "flow-natural-session-browser-20261012.txt": "0dc990a7aa22713abe09fa1130f08929397045d74c355bcbd0e5938732051fe7",
+      "flow-natural-session-477prints-20261012.png": "1e93be6f13825d438bdbd7aaa76bb93b17df2e1a9eaba0b4c77206c20ba75151",
+      "flow-authenticated-natural-session-20261012.png": "08ec0ace68ade8ee3d43163c50fa65d281fa8ca4455a135a8e8965d27f1a17e1"
+    },
+    "quarantine_and_original_state_unchanged": true,
+    "restoration_receipts_unchanged": true,
+    "forced_invocation": false,
+    "production_mutations_during_verification": false,
+    "refused_public_r2_endpoint_retried": false,
+    "limitations": [
+      "Natural invocation remains running; this is observed publication/consumer recovery, not proof of full-day completion or perpetual future availability.",
+      "No direct public R2 read; publication receipt and positive producer upload logs plus real authenticated consumer prove this assigned result.",
+      "Does not accept quote/pulse, GEX, Matrix sessions, full-universe coverage or Terminal723."
+    ]
+  },
+  "remaining": "Matrix #8884 and merged observer qualification; two natural advancing Matrix sessions; genuine older/newer withholding proof; Terminal723 and wider workstreams remain separate."
+}
