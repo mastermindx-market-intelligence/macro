@@ -22226,6 +22226,7 @@ jobs:
       - "engine/fundamental_forensics/companyfacts_ledger.py"
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/excel_export.py"
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
