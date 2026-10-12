@@ -1413,6 +1413,71 @@ def test_targets_cap_boundary_fifteen_passes_sixteen_refuses(tmp_path, capsys) -
 # ---------------------------------------------------------------------------
 
 
+def test_d6_capture_report_files_member_capture_failure_not_no_retained_package(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """D6: capture-members writes a JSON capture report (--report-path) and
+    publish consumes it (--capture-report): an issuer whose accessions all
+    failed capture is excluded as member_capture_failed:<code>, never the
+    misleading no_retained_package."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    # Serve empty bytes for BOTH accessions' schema members: capture refuses
+    # each with malformed_member (a row-level code — capture still exits 0).
+    for accession in identity["accessions"]:
+        served = offline_collector["served"][accession.replace("-", "")]
+        schema_name = next(name for name in sorted(served) if name.endswith(".xsd"))
+        served[schema_name] = b""
+    capture_report = tmp_path / "capture_report.json"
+    rc = producer.main(
+        [
+            "capture-members",
+            "--coverage-file", str(contract),
+            "--raw-root", str(lane["raw_root"]),
+            "--archive-root", str(lane["archive_root"]),
+            "--recorded-at", CAPTURE_CLOCK,
+            "--user-agent", USER_AGENT,
+            "--report-path", str(capture_report),
+        ]
+    )
+    assert rc == 0
+    capture = json.loads(capture_report.read_text(encoding="utf-8"))
+    outcomes = [row["outcome"] for row in capture["issuers"][0]["accessions"]]
+    assert outcomes == [
+        "member_capture_failed:malformed_member",
+        "member_capture_failed:malformed_member",
+    ]
+
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    # Without the capture report the issuer is the (misleading)
+    # no_retained_package exclusion; with it, the capture failure is filed.
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    baseline = json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["reason"] for row in baseline["excluded"]] == ["no_retained_package"]
+
+    rc = producer.main(
+        [
+            "publish",
+            "--coverage-file", str(contract),
+            "--raw-root", str(lane["raw_root"]),
+            "--archive-root", str(lane["archive_root"]),
+            "--recorded-at", RUN_CLOCK,
+            "--store-dir", str(store),
+            "--repo-root", str(ROOT),
+            "--report-path", str(report_path),
+            "--capture-report", str(capture_report),
+        ]
+    )
+    assert rc == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["published"] == []
+    assert [row["reason"] for row in report["excluded"]] == [
+        "member_capture_failed:malformed_member"
+    ]
+
+
 def _empty_mint(_ledger, _packages, *, system_available_at):
     """A changed S2-p mint output (an empty receipt tuple is lawful): moves the
     generation id WITHOUT moving any content clock — exactly the ERRATA-3
@@ -1623,8 +1688,10 @@ def _stage_three_issuers(monkeypatch) -> None:
     """
     real_stage = producer._stage_contract_issuers
 
-    def _staged(issuers, *, archive_root):
-        staged, excluded = real_stage(issuers, archive_root=archive_root)
+    def _staged(issuers, *, archive_root, capture_failures=None):
+        staged, excluded = real_stage(
+            issuers, archive_root=archive_root, capture_failures=capture_failures
+        )
         assert len(staged) == 1
         base = staged[0]
         base_binding = base.binding

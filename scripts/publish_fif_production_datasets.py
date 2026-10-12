@@ -279,6 +279,15 @@ def _run_capture_members(args: argparse.Namespace) -> int:
         run_budget_bytes=args.run_budget_bytes,
     )
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
+    # D6: the capture report is an artifact too — written BEFORE any refusal
+    # below, so a red capture night still leaves its evidence on disk.
+    if args.report_path:
+        target = Path(args.report_path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
     # ERRATA E1: any accession that failed retained-package integrity makes
     # the whole capture exit non-zero (report first, refusal second). Other
     # capture failures (fetch/budget/mint) keep today's row-level behavior.
@@ -436,8 +445,46 @@ class _StagedIssuer:
     capture_clocks: tuple[datetime, ...]
 
 
+def _load_capture_failures(path_value: Any) -> dict[str, list[tuple[str, str]]]:
+    """D6: per-CIK capture-failure codes from the capture report, if given.
+
+    A --capture-report that is unreadable or wrong-shaped is the typed
+    ``contract_malformed`` refusal (fail closed: publish must not silently
+    lose the capture outcomes it was handed).
+    """
+    if not path_value:
+        return {}
+    try:
+        document = json.loads(Path(path_value).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise PublisherError(
+            f"capture report is unreadable: {path_value}", code="contract_malformed"
+        ) from exc
+    if not isinstance(document, dict) or not isinstance(document.get("issuers"), list):
+        _fail(f"capture report shape is invalid: {path_value}", code="contract_malformed")
+    failures: dict[str, list[tuple[str, str]]] = {}
+    for issuer in document["issuers"]:
+        if not isinstance(issuer, dict) or not isinstance(issuer.get("cik"), str):
+            _fail("capture report issuer row is malformed", code="contract_malformed")
+        rows: list[tuple[str, str]] = []
+        for row in issuer.get("accessions") or []:
+            if not isinstance(row, dict):
+                _fail(
+                    "capture report accession row is malformed",
+                    code="contract_malformed",
+                )
+            outcome = str(row.get("outcome") or "")
+            if outcome.startswith("member_capture_failed:"):
+                rows.append((outcome.split(":", 1)[1], str(row.get("error") or outcome)))
+        failures[issuer["cik"]] = rows
+    return failures
+
+
 def _stage_contract_issuers(
-    issuers: Sequence[Mapping[str, Any]], *, archive_root: Path
+    issuers: Sequence[Mapping[str, Any]],
+    *,
+    archive_root: Path,
+    capture_failures: Mapping[str, Sequence[tuple[str, str]]] | None = None,
 ) -> tuple[list[_StagedIssuer], list[dict[str, Any]]]:
     """Stage every contract issuer: bind identity, read + admit the CONTRACT
     accessions' retained packages, and collect their capture clocks. Every
@@ -482,9 +529,24 @@ def _stage_contract_issuers(
             )
             continue
         if not retained:
-            excluded.append(
-                {"ticker": ticker, "cik": cik, "reason": EXCLUSION_NO_RETAINED_PACKAGE}
-            )
+            # D6: when the capture report names this issuer's accessions as
+            # capture failures, file the capture code — not the misleading
+            # no_retained_package (which claims nothing was ever attempted).
+            issuer_failures = list((capture_failures or {}).get(cik) or ())
+            if issuer_failures:
+                code, detail = issuer_failures[0]
+                excluded.append(
+                    {
+                        "ticker": ticker,
+                        "cik": cik,
+                        "reason": f"member_capture_failed:{code}",
+                        "detail": detail,
+                    }
+                )
+            else:
+                excluded.append(
+                    {"ticker": ticker, "cik": cik, "reason": EXCLUSION_NO_RETAINED_PACKAGE}
+                )
             continue
         admitted = []
         refusals: list[str] = []
@@ -779,7 +841,9 @@ def _run_publish(args: argparse.Namespace) -> int:
     registry_clocks = _registry_available_clocks(registry_payload)
 
     staged, excluded = _stage_contract_issuers(
-        contract["issuers"], archive_root=archive_root
+        contract["issuers"],
+        archive_root=archive_root,
+        capture_failures=_load_capture_failures(args.capture_report),
     )
 
     # FUTURE-CLOCK REFUSAL (seat amendment (a)) — still FIRST and unchanged
@@ -1032,6 +1096,12 @@ def build_parser() -> argparse.ArgumentParser:
     # D12: the run budget's single source is the capture module's constant —
     # the publisher carries no second 256 MiB literal.
     capture.add_argument("--run-budget-bytes", type=int, default=DEFAULT_RUN_BUDGET_BYTES)
+    capture.add_argument(
+        "--report-path",
+        type=Path,
+        default=None,
+        help="Write the JSON capture report here (the workflow uploads it)",
+    )
 
     publish = subparsers.add_parser("publish", help="Publish production generations (hard gate)")
     publish.add_argument("--coverage-file", type=Path, required=True)
@@ -1041,6 +1111,12 @@ def build_parser() -> argparse.ArgumentParser:
     publish.add_argument("--store-dir", type=Path, default=None, help="Explicit local directory store")
     publish.add_argument("--repo-root", type=Path, default=_ROOT)
     publish.add_argument("--report-path", type=Path, default=None)
+    publish.add_argument(
+        "--capture-report",
+        type=Path,
+        default=None,
+        help="The capture step's report; capture failures file as member_capture_failed:<code>",
+    )
 
     verify = subparsers.add_parser("verify", help="Re-verify a publish report against the store")
     verify.add_argument("--coverage-file", type=Path, required=True)

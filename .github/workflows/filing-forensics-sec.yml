@@ -225,10 +225,12 @@ jobs:
           utc_now() { python -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"))'; }
           RAW="$HOME/.cache/mm-ffsec/raw"
           ARCHIVE="$HOME/.cache/mm-ffsec/archive"
+          CAPTURE_REPORT="$RUNNER_TEMP/fif-member-capture-report-${GITHUB_RUN_ID}.json"
           python -m scripts.publish_fif_production_datasets capture-members \
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --raw-root "$RAW" --archive-root "$ARCHIVE" \
-            --recorded-at "$(utc_now)"
+            --recorded-at "$(utc_now)" \
+            --report-path "$CAPTURE_REPORT"
       - name: publish FIF production datasets (hard gate)
         # C0-b publication: admit retained packages per contract issuer, compute
         # the CLOCK RULE admitted_at, mint lineage evidence through the S2-p
@@ -248,10 +250,14 @@ jobs:
           RAW="$HOME/.cache/mm-ffsec/raw"
           ARCHIVE="$HOME/.cache/mm-ffsec/archive"
           REPORT="$RUNNER_TEMP/fif-production-publish-report-${GITHUB_RUN_ID}.json"
+          # D6: the capture step's report (same RUNNER_TEMP path, same run id)
+          # feeds publish so capture failures file as member_capture_failed:<code>.
+          CAPTURE_REPORT="$RUNNER_TEMP/fif-member-capture-report-${GITHUB_RUN_ID}.json"
           python -m scripts.publish_fif_production_datasets publish \
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --raw-root "$RAW" --archive-root "$ARCHIVE" \
             --recorded-at "$(utc_now)" \
+            --capture-report "$CAPTURE_REPORT" \
             --report-path "$REPORT"
           python -m scripts.publish_fif_production_datasets verify \
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \

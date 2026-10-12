@@ -136,6 +136,20 @@ def test_ticker_cap_is_single_sourced_at_fifteen() -> None:
     assert len(re.findall(r"^\s*MAX_TICKERS=", text, re.MULTILINE)) == 1
 
 
+def test_d6_capture_report_written_and_consumed() -> None:
+    """D6: the capture step writes its JSON report to RUNNER_TEMP and the
+    publish step consumes the SAME path via --capture-report."""
+    workflow = _workflow()
+    steps = _steps(workflow)
+    capture = next(step for step in steps if step.get("name") == CAPTURE_STEP)
+    publish = next(step for step in steps if step.get("name") == PUBLISH_STEP)
+    pattern = "fif-member-capture-report-${GITHUB_RUN_ID}.json"
+    assert pattern in capture["run"]
+    assert '--report-path "$CAPTURE_REPORT"' in capture["run"]
+    assert pattern in publish["run"]
+    assert '--capture-report "$CAPTURE_REPORT"' in publish["run"]
+
+
 def test_capture_step_uses_the_contract_coverage_file() -> None:
     workflow = _workflow()
     steps = _steps(workflow)
