@@ -62,6 +62,10 @@ Configured-but-not-running is not evidence. These are not proof that capture sta
 
 Proof that capture started: a row in `data/okx/source_observations.parquet` or `data/bgeo/source_observations.parquet` whose `schema` is `crypto.public_response_observation.v1` and whose `capture_id`, `received_at`, and `source_id` survive `checked`. File absent means capture has not started, or every attempt failed before a successful append. Those two are not the same fact. Today only the in-memory record separates them, and only when `record_response` actually ran.
 
+That file is repo evidence only after the collect job commits it. `daily.yml:622` runs the data commit only when `steps.collectors.outcome == 'success'`. The step does `git add data/` (`daily.yml:638`) and does not unstage `data/okx` or `data/bgeo` (the reset at lines 648-663 is hk/china/capital-structure). `git check-ignore -v` on `data/okx/source_observations.parquet` and `data/bgeo/source_observations.parquet` prints no rule, so a successful collectors step would stage a new receipt file. `git ls-tree -r --name-only origin/main -- data/okx data/bgeo` lists the legacy metric parquets and does not list `source_observations.parquet` (the writer is not on main). A red collectors step skips this commit; the salvage step under it is the cboe chain, not these receipts. A parquet written in a failed run dies with the checkout.
+
+`persist_capture` also creates `source_observations.lock` beside the parquet (line 137). That path is not gitignored either, so the same `git add data/` can stage the lock file. Accrual, not a patch in this lane: ignore or delete the lock before commit. Do not treat the lock as a receipt.
+
 ## 3. First-available record
 
 A correction never overwrites the first receipt. The stored shape is the `COLUMNS` tuple (lines 36-38), one dict per occurrence:
@@ -129,4 +133,5 @@ Accrual that stays explicit, with no patch:
 - No promotion of `funding_asof` into `btc_decision`, `btc_signals`, or a score.
 - No display wiring in `build_crypto` / `build_vector` in this prep. The parent return path is a read of the nightly parquet, not a new process.
 - Store growth is unbounded except the per-response `MAX_ROWS`. A retention cap is a later decision, not a silent delete.
+- `source_observations.lock` is not gitignored and can ride `git add data/`. It is not a receipt.
 - The three patches are unverified until applied. This lane's test covers the R2 collector as it stands, not the patched skip paths.
