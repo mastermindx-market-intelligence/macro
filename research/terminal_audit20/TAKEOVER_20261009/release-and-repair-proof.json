@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T2352",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T0106",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -8883,5 +8883,74 @@
       "release": false,
       "whole_Audit20": false
     }
+  },
+  "current_capability_frontier_20261012T0106": {
+    "observed_at": "2026-10-12T01:08:33.150603+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261011T2352",
+    "material": "Actual Chris commissioning of B-owned J1 consumer continuity independently verified; parent completed a new authenticated read-only baseline on existing archived MU thesis A. Natural current Transmission link retains context through Company Intelligence/Your theses, then selecting saved same-company A drops symbol/all mo_* and return link. Baseline reproduced, repair/release/acceptance remain B owning lane.",
+    "qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/j1-thesis-reopen-20261012/final-parent-qualification.json",
+      "bytes": 6306,
+      "sha256": "8b3edb9cd16e7daf56d0c21583acfdac68807011f9d8f82d27f2833325f2c2e7"
+    },
+    "served_application_source": {
+      "served_dpl": "8520e5d77e9f0b83973a988cf4f4adff300994cf",
+      "DOM_asset_query_observed": true,
+      "matches_B_baseline": true,
+      "canonical_git_marker_or_runtime_bytes_independently_read": false,
+      "CI_merge_install_accepted_by_this_baseline": false
+    },
+    "natural_entry": {
+      "chain": "tx-chain-dollar_spike_em_multinational",
+      "href": "https://app.mastermind-x.com/analysis?symbol=MU&page=intelligence&mo_from=transmission&mo_chain=dollar_spike_em_multinational&mo_channel=em_revenue_exposure&mo_asof=2026-10-08&mo_security=SEC%3AUS-XNAS-MU",
+      "section": "Affected companies — EM revenue exposure · 101 with company research · not ranked",
+      "text": "MU",
+      "url": "https://www.mastermind-x.com/transmission.html"
+    },
+    "baseline": {
+      "arrival_and_thesis_list_context_retained": true,
+      "selected_thesis": "988274e8-b335-4887-89bf-556564c16f3c",
+      "selected_subject": "MU · Listing-scoped identity",
+      "lifecycle": "Archived",
+      "version": "3 · Current",
+      "before_selection_URL": "https://app.mastermind-x.com/analysis?view=theses&symbol=MU&mo_from=transmission&mo_chain=dollar_spike_em_multinational&mo_channel=em_revenue_exposure&mo_security=SEC%3AUS-XNAS-MU&mo_asof=2026-10-08",
+      "after_selection_URL": "https://app.mastermind-x.com/analysis?view=theses&thesis=988274e8-b335-4887-89bf-556564c16f3c",
+      "after_context_label_count": 0,
+      "after_return_link_count": 0,
+      "all_symbol_and_mo_fields_dropped": true,
+      "defect": "Normal same-company saved-thesis selection discards the transient navigation context and Back to Transmission link.",
+      "both_existing_list_entries_observed": [
+        "MU\nArchived\nAUDIT20 DISPOSABLE B — UI verification only\nVersion 2",
+        "MU\nArchived\nAUDIT20 DISPOSABLE A — UI verification only\nVersion 3"
+      ],
+      "B_detail_selected": false,
+      "not_a_race_or_fault_test": true
+    },
+    "zero_record_source_SQL_deploy_effects": true,
+    "browser_cleanup": {
+      "at": "2026-10-12T01:05:37.416Z",
+      "tabId": "1925917806",
+      "closed": true,
+      "profile": "Chris",
+      "extensionInstanceId": "8c79a09c-f98f-4027-8969-f620ae705b18",
+      "viewportOverrideUsed": false,
+      "settingsOrPreferenceControlsUsed": false,
+      "recordMutatingControlsUsed": false,
+      "typingUsed": false,
+      "preexistingTabs": "No claim or input on any preexisting user, Options, Tiingo, Press or Executive tab.",
+      "cleanupOwed": false
+    },
+    "delivery": {
+      "first_party_send_accepted": true,
+      "isError": false,
+      "recipient_ACK_observed": false,
+      "baseline_receipt_sent": "baseline-browser-observations.json/5195060fad59787f9598533f5a5ac39646bddf7990b6f013a6883116efaf4c64"
+    },
+    "ownership": "B source/CI/merge and same paid b-j1-same-company-reopen-01a128b7-v1; root live baseline/post-release acceptance. A F04/PL6 and E20 host/deploy custody preserved. No duplicate source/review/worker/observer/deployment.",
+    "retained_holds": "All781 reserved numeric/IW2 explicit cyber HUMAN/separate SQL access rights release/exact887 ALLOW/MoneySCP+OAuth UNKNOWN/A19 operational intake/same873 producer publication/other original unqualified outcomes unchanged. All settled946/storage/releases/PL6/UI effects remain complete and never replayed.",
+    "next_ready_phase": "Actual B reviewed/released exact-source return and fresh source/writer/resource admission for any new release, then bounded read-only same-company navigation acceptance using existing archived identities. No unchanged baseline/CI/runtime/browser/provider/producer polls or notice-only delegation.",
+    "whole_audit20_complete": false
   }
 }
