@@ -105,7 +105,7 @@ def test_first_wave2_invocation_consumes_derived_targets() -> None:
     assert "publish_fif_production_datasets targets" in run
     assert "--coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json" in run
     assert "$CONTRACT_TARGETS" in run
-    assert "--max-tickers 15" in run
+    assert '--max-tickers "$MAX_TICKERS"' in run
     # The bundle publish step keeps the incumbent pinned file ALONE, so the
     # render bundle stays at the incumbent universe.
     bundle = next(
@@ -116,6 +116,24 @@ def test_first_wave2_invocation_consumes_derived_targets() -> None:
     assert "--targets-file" in bundle["run"]
     assert "$CONTRACT_TARGETS" not in bundle["run"]
     assert re.search(r"--target\b", bundle["run"]) is None  # no per-issuer extras
+
+
+def test_ticker_cap_is_single_sourced_at_fifteen() -> None:
+    """ERRATA E2-R (T6): the cap literal 15 appears EXACTLY once in the workflow
+    and EVERY --max-tickers use (targets call + both wave-2 calls) reads it."""
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert text.count("MAX_TICKERS=15") == 1
+    uses = []
+    for line in text.splitlines():
+        if line.lstrip().startswith("#"):
+            continue  # prose mentions are not call sites
+        uses.extend(re.findall(r'--max-tickers\s+"[^"]*"', line))
+    assert len(uses) == 3, uses  # targets + first wave-2 + second wave-2
+    assert all(use == '--max-tickers "$MAX_TICKERS"' for use in uses), uses
+    # No bare numeric cap anywhere: the value lives only in MAX_TICKERS=15.
+    assert not re.search(r"--max-tickers\s+[0-9]+", text)
+    # No second definition of the variable.
+    assert len(re.findall(r"^\s*MAX_TICKERS=", text, re.MULTILINE)) == 1
 
 
 def test_capture_step_uses_the_contract_coverage_file() -> None:

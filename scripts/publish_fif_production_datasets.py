@@ -60,6 +60,7 @@ from engine.fundamental_forensics.admitted_filing_package import (  # noqa: E402
     admit_retained_filing_package,
 )
 from engine.fundamental_forensics.fif_member_capture import (  # noqa: E402
+    RETAINED_PACKAGE_INTEGRITY_CODES,
     FifMemberCaptureError,
     capture_fif_filing_packages,
     read_retained_fif_packages,
@@ -105,6 +106,11 @@ PUBLISHER_ERROR_CODES = frozenset(
         "verify_failed",
         "lineage_mint_failed",
         "golden_input_refused",
+        # ERRATA E1: a retained package that fails integrity verification
+        # (RETAINED_PACKAGE_INTEGRITY_CODES) fails the WHOLE run — capture
+        # exits non-zero after its report, and publish refuses before any
+        # store write. Never a per-issuer exclusion.
+        "retained_package_integrity",
     }
 )
 
@@ -258,6 +264,27 @@ def _run_capture_members(args: argparse.Namespace) -> int:
         run_budget_bytes=args.run_budget_bytes,
     )
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
+    # ERRATA E1: any accession that failed retained-package integrity makes
+    # the whole capture exit non-zero (report first, refusal second). Other
+    # capture failures (fetch/budget/mint) keep today's row-level behavior.
+    integrity_failures = []
+    for issuer in report["issuers"]:
+        for row in issuer["accessions"]:
+            outcome = str(row.get("outcome") or "")
+            if not outcome.startswith("member_capture_failed:"):
+                continue
+            code = outcome.split(":", 1)[1]
+            if code in RETAINED_PACKAGE_INTEGRITY_CODES:
+                integrity_failures.append(
+                    f"{issuer['cik']}/{row['accession']}: {code}"
+                )
+    if integrity_failures:
+        _fail(
+            "retained-package integrity refusal — a retained package failed "
+            "verify-before-reuse, so nothing may publish tonight and no clock "
+            "was re-minted: " + "; ".join(integrity_failures),
+            code="retained_package_integrity",
+        )
     return 0
 
 
@@ -464,6 +491,12 @@ def _run_publish(args: argparse.Namespace) -> int:
                 # Golden contamination is a run-level integrity refusal, never
                 # a per-issuer exclusion.
                 _fail(str(exc), code="golden_input_refused")
+            if exc.code in RETAINED_PACKAGE_INTEGRITY_CODES:
+                # ERRATA E1: a tampered/partially-restored package refuses the
+                # WHOLE run — nothing is published tonight, no generation is
+                # written, no latest.json moves. This raise happens in the
+                # staging loop, before any store exists.
+                _fail(str(exc), code="retained_package_integrity")
             excluded.append(
                 {
                     "ticker": ticker,
@@ -668,7 +701,10 @@ def build_parser() -> argparse.ArgumentParser:
     targets = subparsers.add_parser("targets", help="Print --target extras derived from the contract")
     targets.add_argument("--coverage-file", type=Path, required=True)
     targets.add_argument("--targets-file", type=Path, required=True)
-    targets.add_argument("--max-tickers", type=int, default=15)
+    # ERRATA E2-R: the ticker cap is REQUIRED with no default — the single
+    # value lives in the workflow (defined exactly once there) and the
+    # publisher carries no second literal.
+    targets.add_argument("--max-tickers", type=int, required=True)
 
     capture = subparsers.add_parser("capture-members", help="D1 member capture over retained primaries")
     capture.add_argument("--coverage-file", type=Path, required=True)
@@ -723,11 +759,12 @@ def main(argv: list[str] | None = None) -> int:
         traceback.print_exc(file=sys.stderr)
         code = "publish_failed"
         if isinstance(exc, FifMemberCaptureError):
-            code = (
-                exc.code
-                if exc.code == "golden_input_refused"
-                else f"member_capture_failed-{exc.code}"
-            )
+            if exc.code == "golden_input_refused":
+                code = "golden_input_refused"
+            elif exc.code in RETAINED_PACKAGE_INTEGRITY_CODES:
+                code = "retained_package_integrity"
+            else:
+                code = f"member_capture_failed-{exc.code}"
         _error_annotation(f"fif_production_datasets-{code}", f"{type(exc).__name__}: {exc}")
         return 1
 

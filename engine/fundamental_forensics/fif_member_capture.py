@@ -14,9 +14,14 @@ Submissions bytes in the raw root, and writes one package subtree::
         sec_submissions_witness.json     # the minted witness slice
         members/<name>                   # the six retained role members
 
-``fif-packages/`` is a NEW prefix under ``--archive-root``: it is not part of
-the wave-2 retained-manifest vocabulary and the observation-root outside-law
-(``fundamental_forensics_acquisition``) is untouched. The wave-2 receipt
+``fif-packages/`` lives under ``--archive-root`` and the observation-root
+outside-law (``fundamental_forensics_acquisition``) is untouched. ERRATA E1
+corrected the original claim that the source sync never syncs this prefix:
+``source_sync`` rglobs the WHOLE archive root, so packages ARE snapshotted from
+night 2. Reuse of a restored package is therefore VERIFY-BEFORE-REUSE and FAILS
+CLOSED — the digests inside the package manifest are the anchor, and an
+integrity-code refusal (``RETAINED_PACKAGE_INTEGRITY_CODES``) never re-captures
+with a new clock and never publishes that night. The wave-2 receipt
 schema, the exactly-two comparables law, and every already-retained object are
 never edited here.
 
@@ -31,6 +36,8 @@ import hashlib
 import json
 import os
 import re
+import secrets
+import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -62,6 +69,26 @@ WITNESS_NAME = "sec_submissions_witness.json"
 INDEX_NAME = "index.json"
 MANIFEST_NAME = "package_manifest.json"
 MEMBERS_DIR = "members"
+# Finished packages are assembled in a staging prefix OUTSIDE every
+# <cik>/<accession> reader path, then renamed into place as a directory —
+# readers never observe a half-written package, and a leftover staging dir
+# (a killed run) is never read back as one.
+STAGING_DIR_NAME = ".staging"
+
+# ERRATA E1: the codes that make a RETAINED package untrustworthy. A package
+# whose reuse verification raises one of these must FAIL CLOSED — it is never
+# silently re-captured with tonight's clock (that would re-mint the capture
+# clock the CLOCK RULE and generation id derive from), and publish refuses the
+# WHOLE run rather than excluding the issuer. Defined once here; the producer
+# imports it for its run-level refusal.
+RETAINED_PACKAGE_INTEGRITY_CODES = frozenset(
+    {
+        "package_bytes_mismatch",
+        "package_manifest_malformed",
+        "inventory_mismatch",
+        "golden_input_refused",
+    }
+)
 
 # Census byte ceilings: 32 MiB per member, 20k members per archive index, and
 # a per-run budget across every fetched member document.
@@ -96,6 +123,7 @@ _REFUSAL_CODES = frozenset(
         "package_manifest_malformed",
         "package_bytes_mismatch",
         "inventory_mismatch",
+        "staging_device_mismatch",
     }
 )
 
@@ -608,16 +636,48 @@ def _verify_retained_package(package_dir: Path) -> RetainedFifPackage:
 def read_retained_fif_packages(
     archive_root: Path, *, cik: str
 ) -> tuple[RetainedFifPackage, ...]:
-    """Every digest-verified retained package for one CIK, in accession order."""
+    """Every digest-verified retained package for one CIK, in accession order.
+
+    A leftover staging directory (or any dot-prefixed sibling) is never read
+    back as a package: staging lives under ``fif-packages/.staging/`` and is
+    structurally outside every ``<cik>/`` path, and this listing skips
+    dot-entries defensively as well.
+    """
     root = Path(archive_root) / PACKAGE_PREFIX / cik
     if not root.is_dir():
         return ()
     out: list[RetainedFifPackage] = []
     for accession_dir in sorted(root.iterdir()):
+        if accession_dir.name.startswith("."):
+            continue
+        if not accession_dir.is_dir():
+            continue
         if not (accession_dir / MANIFEST_NAME).is_file():
             continue
         out.append(_verify_retained_package(accession_dir))
     return tuple(out)
+
+
+def _retained_package_state(package_dir: Path) -> str:
+    """``absent`` | ``empty`` | ``partial`` | ``manifest`` for one package dir.
+
+    ERRATA E1: ``partial`` — the directory EXISTS and is non-empty but carries
+    no ``package_manifest.json`` — is the typed refusal
+    ``package_manifest_malformed`` in the capture loop. A restore that lost the
+    manifest must never fall through to the capture branch, which would
+    re-capture the accession with tonight's clock and silently re-mint the
+    capture clock every downstream id derives from. An absent or empty package
+    dir still captures normally (nothing is half-restored there).
+    """
+    if not package_dir.exists():
+        return "absent"
+    if not package_dir.is_dir():
+        return "partial"
+    if not any(package_dir.iterdir()):
+        return "empty"
+    if not (package_dir / MANIFEST_NAME).is_file():
+        return "partial"
+    return "manifest"
 
 
 def _write_package(
@@ -633,7 +693,18 @@ def _write_package(
     stored_members: Mapping[str, bytes],
     statement_roles: Mapping[str, dict[str, str]],
     capture_recorded_at: str,
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], int, int]:
+    """Assemble the package in staging and rename it into place atomically.
+
+    ERRATA E1: the whole package directory becomes visible to readers in ONE
+    ``os.rename`` — never file-by-file into the reader path. The staging dir is
+    a sibling OUTSIDE every ``<cik>/<accession>`` reader path
+    (``<archive_root>/fif-packages/.staging/<cik>-<accession>-<random>``), and
+    the rename is asserted to stay on one filesystem (``st_dev``) first: a
+    cross-device rename would not be atomic, and the typed refusal never falls
+    back to a copy. Returns ``(manifest, files_written, bytes_written)`` so the
+    run report can state the real per-night snapshot delta.
+    """
     index_payload = json.loads(index_bytes.decode("utf-8"))
     items = index_payload["directory"]["item"]
     if len(items) > MAX_INDEX_MEMBERS:
@@ -721,15 +792,47 @@ def _write_package(
             value = identity.get(field)
             if isinstance(value, str) and value:
                 manifest[field] = value
-    for name, payload in sorted(stored_members.items()):
-        _atomic_write(package_dir / MEMBERS_DIR / name, payload)
-    _atomic_write(package_dir / INDEX_NAME, index_bytes)
-    _atomic_write(package_dir / WITNESS_NAME, witness_bytes)
-    _atomic_write(
-        package_dir / MANIFEST_NAME,
-        (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8"),
+    manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode(
+        "utf-8"
     )
-    return manifest
+
+    final_parent = package_dir.parent
+    final_parent.mkdir(parents=True, exist_ok=True)
+    staging_parent = final_parent.parent / STAGING_DIR_NAME
+    staging_parent.mkdir(parents=True, exist_ok=True)
+    # The rename is only atomic within one filesystem; a cross-device staging
+    # root is a typed refusal, never a copy-based fallback.
+    if os.stat(staging_parent).st_dev != os.stat(final_parent).st_dev:
+        raise FifMemberCaptureError(
+            f"package staging root is on a different filesystem than the package "
+            f"parent, so the directory rename would not be atomic: {staging_parent}",
+            code="staging_device_mismatch",
+        )
+    staging_dir = staging_parent / (
+        f"{final_parent.name}-{package_dir.name}-{secrets.token_hex(8)}"
+    )
+    try:
+        for name, payload in sorted(stored_members.items()):
+            _atomic_write(staging_dir / MEMBERS_DIR / name, payload)
+        _atomic_write(staging_dir / INDEX_NAME, index_bytes)
+        _atomic_write(staging_dir / WITNESS_NAME, witness_bytes)
+        _atomic_write(staging_dir / MANIFEST_NAME, manifest_bytes)
+        if package_dir.exists():
+            # Only reachable as an EMPTY dir (a partial dir was refused before
+            # capture); an occupied target would make the rename clobber bytes.
+            os.rmdir(package_dir)
+        os.rename(staging_dir, package_dir)
+    except Exception:
+        shutil.rmtree(staging_dir, ignore_errors=True)
+        raise
+    files_written = len(stored_members) + 3
+    bytes_written = (
+        sum(len(payload) for payload in stored_members.values())
+        + len(index_bytes)
+        + len(witness_bytes)
+        + len(manifest_bytes)
+    )
+    return manifest, files_written, bytes_written
 
 
 def capture_fif_filing_packages(
@@ -761,6 +864,12 @@ def capture_fif_filing_packages(
     report: dict[str, Any] = {
         "schema": "fundamental_forensics.fif_member_capture_run/v1",
         "recorded_at": normalized_clock,
+        # ERRATA E1 instrumentation: the per-night snapshot delta this run added
+        # under the (snapshotted) fif-packages/ prefix. Reused packages
+        # contribute nothing, so an unchanged night reports 0/0 and the first
+        # schedule-born run reports the real one-time footprint.
+        "package_files_written": 0,
+        "package_bytes_written": 0,
         "issuers": [],
     }
     for issuer in issuers:
@@ -777,7 +886,17 @@ def capture_fif_filing_packages(
             }
             package_dir = package_dir_for(Path(archive_root), cik, accession)
             try:
-                if (package_dir / MANIFEST_NAME).is_file():
+                state = _retained_package_state(package_dir)
+                if state == "partial":
+                    # ERRATA E1: a restored-but-manifest-less package dir is a
+                    # typed refusal — NEVER a fall-through to the capture
+                    # branch, which would re-capture with tonight's clock.
+                    raise FifMemberCaptureError(
+                        f"retained package directory exists without "
+                        f"{MANIFEST_NAME} (partial restore?): {package_dir}",
+                        code="package_manifest_malformed",
+                    )
+                if state == "manifest":
                     retained = _verify_retained_package(package_dir)
                     row.update(
                         outcome="retained_reused",
@@ -831,7 +950,7 @@ def capture_fif_filing_packages(
                     Path(archive_root), retained_manifest
                 )
                 statement_roles = mint_statement_roles(stored[f"{stem}.xsd"])
-                _write_package(
+                _manifest, files_written, bytes_written = _write_package(
                     package_dir,
                     cik=cik,
                     accession=accession,
@@ -846,6 +965,8 @@ def capture_fif_filing_packages(
                     statement_roles=statement_roles,
                     capture_recorded_at=normalized_clock,
                 )
+                report["package_files_written"] += files_written
+                report["package_bytes_written"] += bytes_written
                 row.update(
                     outcome="captured",
                     capture_recorded_at=normalized_clock,
@@ -879,7 +1000,9 @@ __all__ = [
     "MAX_MEMBER_BYTES",
     "MEMBER_SUFFIX_ROLES",
     "PACKAGE_PREFIX",
+    "RETAINED_PACKAGE_INTEGRITY_CODES",
     "RetainedFifPackage",
+    "STAGING_DIR_NAME",
     "capture_fif_filing_packages",
     "find_retained_primary_manifest",
     "mint_acceptance_witness",

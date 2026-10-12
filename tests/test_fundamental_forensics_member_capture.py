@@ -9,6 +9,7 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -677,3 +678,257 @@ def test_no_ticker_or_cik_literal_in_member_capture_module() -> None:
     for issuer in contract["issuers"]:
         assert issuer["ticker"] not in source
         assert issuer["cik"] not in source
+
+
+# ---------------------------------------------------------------------------
+# ERRATA E1: verify-before-reuse fails closed, never re-mints a clock
+# ---------------------------------------------------------------------------
+
+
+def test_retained_package_integrity_codes_are_the_errata_set() -> None:
+    assert CAP.RETAINED_PACKAGE_INTEGRITY_CODES == frozenset(
+        {
+            "package_bytes_mismatch",
+            "package_manifest_malformed",
+            "inventory_mismatch",
+            "golden_input_refused",
+        }
+    )
+    assert CAP.RETAINED_PACKAGE_INTEGRITY_CODES <= CAP._REFUSAL_CODES
+
+
+def test_tampered_retained_member_never_recaptures_or_restamps(tmp_path) -> None:
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    victim_dir = package_dir_for(
+        lane["archive_root"], identity["cik"], identity["accessions"][0]
+    )
+    manifest_before = (victim_dir / "package_manifest.json").read_bytes()
+    member = sorted((victim_dir / "members").iterdir())[0]
+    member.write_bytes(member.read_bytes()[:-1])
+    fetched_before = list(lane["collector"].fetched)
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=LATER_CAPTURE_CLOCK,
+    )
+    rows = report["issuers"][0]["accessions"]
+    assert rows[0]["outcome"] == "member_capture_failed:package_bytes_mismatch"
+    assert rows[1]["outcome"] == "retained_reused"
+    assert rows[1]["capture_recorded_at"] == CAPTURE_CLOCK
+    # No row anywhere carries tonight's clock: the tampered package was NOT
+    # re-captured, so no new capture clock exists in the report.
+    assert all(row["capture_recorded_at"] != LATER_CAPTURE_CLOCK for row in rows)
+    assert lane["collector"].fetched == fetched_before
+    # The on-disk manifest (and its capture_recorded_at) is untouched.
+    assert (victim_dir / "package_manifest.json").read_bytes() == manifest_before
+
+
+def test_partial_package_dir_is_a_typed_refusal_not_a_recapture(tmp_path) -> None:
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    victim_dir = package_dir_for(
+        lane["archive_root"], identity["cik"], identity["accessions"][0]
+    )
+    members_before = {
+        path.name: path.read_bytes() for path in sorted((victim_dir / "members").iterdir())
+    }
+    (victim_dir / "package_manifest.json").unlink()
+    fetched_before = list(lane["collector"].fetched)
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=LATER_CAPTURE_CLOCK,
+    )
+    rows = report["issuers"][0]["accessions"]
+    assert rows[0]["outcome"] == "member_capture_failed:package_manifest_malformed"
+    assert rows[1]["outcome"] == "retained_reused"
+    # ZERO fetches for the manifest-less accession (and none for the reused one).
+    assert lane["collector"].fetched == fetched_before
+    # Member files are untouched and the package was not re-minted.
+    members_after = {
+        path.name: path.read_bytes() for path in sorted((victim_dir / "members").iterdir())
+    }
+    assert members_after == members_before
+    assert not (victim_dir / "package_manifest.json").exists()
+
+
+def test_absent_and_empty_package_dirs_still_capture(tmp_path) -> None:
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    # An EMPTY package dir (restore created the directory but nothing else)
+    # still captures normally, as does the absent one.
+    empty_dir = package_dir_for(
+        lane["archive_root"], identity["cik"], identity["accessions"][1]
+    )
+    empty_dir.mkdir(parents=True)
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    assert [row["outcome"] for row in report["issuers"][0]["accessions"]] == [
+        "captured",
+        "captured",
+    ]
+    assert (empty_dir / "package_manifest.json").is_file()
+
+
+def test_leftover_staging_dir_is_ignored_by_readers_and_capture(tmp_path) -> None:
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    staging_root = lane["archive_root"] / CAP.PACKAGE_PREFIX / CAP.STAGING_DIR_NAME
+    staging_root.mkdir(parents=True, exist_ok=True)
+    leftover = staging_root / f"{identity['cik']}-{identity['accessions'][0]}-deadbeef"
+    (leftover / CAP.MEMBERS_DIR).mkdir(parents=True)
+    (leftover / CAP.MEMBERS_DIR / "schema.xsd").write_bytes(b"partial garbage")
+    (leftover / CAP.MANIFEST_NAME).write_text("{ truncated", encoding="utf-8")
+    # A dot-prefixed sibling inside the CIK dir is never read as a package.
+    hidden = (
+        lane["archive_root"] / CAP.PACKAGE_PREFIX / identity["cik"] / CAP.STAGING_DIR_NAME
+    )
+    hidden.mkdir(parents=True)
+    (hidden / "junk").write_bytes(b"junk")
+    packages = read_retained_fif_packages(lane["archive_root"], cik=identity["cik"])
+    assert [package.accession for package in packages] == sorted(identity["accessions"])
+    fetched_before = list(lane["collector"].fetched)
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=LATER_CAPTURE_CLOCK,
+    )
+    assert [row["outcome"] for row in report["issuers"][0]["accessions"]] == [
+        "retained_reused",
+        "retained_reused",
+    ]
+    assert lane["collector"].fetched == fetched_before
+    assert leftover.is_dir()  # ignored, never consumed or cleaned by readers
+
+
+def test_successful_capture_leaves_no_staging_dir_behind(tmp_path) -> None:
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    staging_root = lane["archive_root"] / CAP.PACKAGE_PREFIX / CAP.STAGING_DIR_NAME
+    if staging_root.exists():
+        assert not any(staging_root.iterdir())
+    for accession in identity["accessions"]:
+        package_dir = package_dir_for(lane["archive_root"], identity["cik"], accession)
+        assert (package_dir / "package_manifest.json").is_file()
+        assert (package_dir / "index.json").is_file()
+        assert (package_dir / "sec_submissions_witness.json").is_file()
+        assert (package_dir / "members").is_dir()
+
+
+def test_capture_report_counts_files_and_bytes_written(tmp_path) -> None:
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    expected_files = 0
+    expected_bytes = 0
+    for accession in identity["accessions"]:
+        package_dir = package_dir_for(lane["archive_root"], identity["cik"], accession)
+        files = [path for path in package_dir.rglob("*") if path.is_file()]
+        expected_files += len(files)
+        expected_bytes += sum(path.stat().st_size for path in files)
+    assert report["package_files_written"] == expected_files
+    assert report["package_bytes_written"] == expected_bytes
+    # A fully reused night adds nothing to the snapshot.
+    second = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=LATER_CAPTURE_CLOCK,
+    )
+    assert second["package_files_written"] == 0
+    assert second["package_bytes_written"] == 0
+
+
+def test_cross_device_staging_is_a_typed_refusal_never_a_copy(tmp_path, monkeypatch) -> None:
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    real_stat = os.stat
+
+    class _ForeignDevice:
+        def __init__(self, inner: os.stat_result) -> None:
+            self._inner = inner
+            self.st_dev = inner.st_dev + 1  # a different filesystem
+
+        def __getattr__(self, name: str):
+            return getattr(self._inner, name)
+
+    def fake_stat(path, *args, **kwargs):
+        result = real_stat(path, *args, **kwargs)
+        if str(path).endswith(CAP.STAGING_DIR_NAME):
+            return _ForeignDevice(result)
+        return result
+
+    monkeypatch.setattr(os, "stat", fake_stat)
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    monkeypatch.undo()
+    outcomes = [row["outcome"] for row in report["issuers"][0]["accessions"]]
+    assert all(item == "member_capture_failed:staging_device_mismatch" for item in outcomes)
+    # Never fell back to a copy: no package directory appeared at all.
+    for accession in identity["accessions"]:
+        assert not package_dir_for(
+            lane["archive_root"], identity["cik"], accession
+        ).exists()

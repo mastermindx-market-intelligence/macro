@@ -106,6 +106,15 @@ jobs:
           OBS="$HOME/.cache/mm-ffsec/observations"
           mkdir -p "$RAW" "$ARCHIVE" "$OBS"
 
+          # ERRATA E2-R: ONE ticker cap value, defined exactly ONCE here and
+          # consumed by EVERY --max-tickers in this workflow (the targets
+          # derivation and both wave-2 invocations). Base was 12; the frozen
+          # contract union (incumbents 12 + 3 contract issuers) is 15, and
+          # keeping 12 would make normalize_targets refuse every night. Any
+          # further contract growth fails closed at this cap; raising it again
+          # needs a seat ruling.
+          MAX_TICKERS=15
+
           # Issuer-generic target derivation (C0-b): the frozen coverage
           # contract names the issuers; the producer subcommand derives the
           # extra TICKER=CIK target arguments over the incumbent pinned file
@@ -114,21 +123,21 @@ jobs:
           CONTRACT_TARGETS="$(python -m scripts.publish_fif_production_datasets targets \
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --targets-file config/fundamental_forensics/wave2_targets.v1.json \
-            --max-tickers 15)"
+            --max-tickers "$MAX_TICKERS")"
 
           python -m scripts.run_fundamental_forensics_wave2 \
             --targets-file config/fundamental_forensics/wave2_targets.v1.json \
             $CONTRACT_TARGETS \
             --raw-root "$RAW" --archive-root "$ARCHIVE" --observation-root "$OBS" \
             --restore --verify-local-restore --acquire --reuse-local-archive --require-complete-acquisition \
-            --max-tickers 15 --as-of "$as_of" --recorded-at "$recorded_at" --computed-at "$recorded_at"
+            --max-tickers "$MAX_TICKERS" --as-of "$as_of" --recorded-at "$recorded_at" --computed-at "$recorded_at"
 
           computed_at="$(utc_now)"   # sampled after all retained SEC receipts exist.
           python -m scripts.run_fundamental_forensics_wave2 \
             --targets-file config/fundamental_forensics/wave2_targets.v1.json \
             --raw-root "$RAW" --archive-root "$ARCHIVE" --observation-root "$OBS" \
             --build-projections --sync --incremental-sync \
-            --max-tickers 12 --as-of "$as_of" --recorded-at "$recorded_at" --computed-at "$computed_at"
+            --max-tickers "$MAX_TICKERS" --as-of "$as_of" --recorded-at "$recorded_at" --computed-at "$computed_at"
       - name: publish disclosure-projection bundle (the engine's render input)
         # One immutable content-addressed object plus a CAS latest pointer. A missing or
         # invalid local projection refuses the whole publication — a partial bundle would

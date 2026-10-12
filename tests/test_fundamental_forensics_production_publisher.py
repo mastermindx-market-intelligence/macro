@@ -601,9 +601,10 @@ def test_exclusion_admission_refused_is_typed(
     ]
 
 
-def test_exclusion_member_capture_failed_is_typed(
-    tmp_path, monkeypatch, offline_collector
+def test_tampered_package_refuses_the_whole_publish_run(
+    tmp_path, monkeypatch, offline_collector, capsys
 ) -> None:
+    """ERRATA E1.5: an integrity code is a RUN-level refusal, never an exclusion."""
     lane = _materialize_lane(tmp_path)
     identity = lane["identity"]
     contract = _write_contract(tmp_path, identity, None)
@@ -615,12 +616,59 @@ def test_exclusion_member_capture_failed_is_typed(
         )
         victim = sorted(members_dir.iterdir())[0]
         victim.write_bytes(victim.read_bytes()[:-1])
+    store = tmp_path / "store"
     report_path = tmp_path / "publish_report.json"
-    assert _publish_cli(lane, contract, tmp_path / "store", report_path) == 0
-    report = json.loads(report_path.read_text(encoding="utf-8"))
-    assert [row["reason"] for row in report["excluded"]] == [
-        "member_capture_failed:package_bytes_mismatch"
-    ]
+    rc = _publish_cli(lane, contract, store, report_path)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::error") and "retained_package_integrity" in line
+        for line in out.splitlines()
+    )
+    # NOTHING was published that night: no report, no store, no pointer.
+    assert not report_path.exists()
+    assert not store.exists() or not any(store.rglob("latest.json"))
+
+
+def test_publish_never_emits_an_integrity_member_capture_exclusion(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """The verify vocabulary KEEPS the member_capture_failed:<code> entry, but
+    publish itself can never emit one for an integrity code — those refuse the
+    whole run before a report exists (ERRATA E1.5)."""
+    # The closed vocabulary still accepts the prefix for non-integrity codes.
+    producer.verify_report(
+        {
+            "published": [],
+            "excluded": [
+                {
+                    "ticker": "derived",
+                    "cik": "0000000001",
+                    "reason": "member_capture_failed:member_fetch_failed",
+                }
+            ],
+        },
+        None,
+    )
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    _install_fake_lineage(monkeypatch)
+    assert _capture_cli(lane, contract) == 0
+    members_dir = (
+        lane["archive_root"]
+        / "fif-packages"
+        / identity["cik"]
+        / identity["accessions"][0]
+        / "members"
+    )
+    victim = sorted(members_dir.iterdir())[0]
+    victim.write_bytes(victim.read_bytes()[:-1])
+    report_path = tmp_path / "publish_report.json"
+    rc = _publish_cli(lane, contract, tmp_path / "store", report_path)
+    assert rc == 1
+    # No report was written, so no exclusion row for an integrity code exists.
+    assert not report_path.exists()
 
 
 # ---------------------------------------------------------------------------
@@ -835,7 +883,12 @@ def test_targets_over_the_real_contract_within_the_cap(capsys) -> None:
     out = capsys.readouterr().out
     assert set(out.split()) >= set(" ".join(expected).split())
     assert set(out.strip().splitlines()) == expected
-    assert len(incumbent) + len(expected) <= 15
+    # ERRATA E2-R (T8): the REAL configs compute a union of exactly 15 —
+    # 12 incumbents + 3 contract extras. Fail closed at 15; growth needs a
+    # seat ruling.
+    assert len(incumbent) == 12
+    assert len(expected) == 3
+    assert len(incumbent) + len(expected) == 15
 
 
 # ---------------------------------------------------------------------------
@@ -951,3 +1004,226 @@ def test_no_ticker_or_cik_literal_in_producer_or_workflow() -> None:
         for issuer in contract["issuers"]:
             assert issuer["ticker"] not in source, (name, issuer["ticker"])
             assert issuer["cik"] not in source, (name, issuer["cik"])
+
+
+# ---------------------------------------------------------------------------
+# ERRATA E1: capture-members fails closed on retained-package integrity
+# ---------------------------------------------------------------------------
+
+
+def _stdout_json(out: str) -> dict:
+    """Parse the capture report from stdout (drops trailing ::error lines)."""
+    payload = "\n".join(
+        line for line in out.splitlines() if not line.startswith("::")
+    )
+    return json.loads(payload)
+
+
+def test_capture_members_exits_nonzero_on_tampered_retained_member(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """T1: tampered restored member -> rc != 0, code retained_package_integrity,
+    the package's capture_recorded_at unchanged on disk, no new clock in the report."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    _install_fake_lineage(monkeypatch)
+    assert _capture_cli(lane, contract) == 0
+    package_dir = (
+        lane["archive_root"] / "fif-packages" / identity["cik"] / identity["accessions"][0]
+    )
+    manifest_before = (package_dir / "package_manifest.json").read_bytes()
+    member = sorted((package_dir / "members").iterdir())[0]
+    member.write_bytes(member.read_bytes()[:-1])
+
+    capsys.readouterr()  # drop the first run's stdout before the refusing run
+    rc = _capture_cli(lane, contract, clock=NEXT_NIGHT_CAPTURE)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::error") and "retained_package_integrity" in line
+        for line in out.splitlines()
+    )
+    report = _stdout_json(out)
+    rows = report["issuers"][0]["accessions"]
+    assert rows[0]["outcome"] == "member_capture_failed:package_bytes_mismatch"
+    assert rows[1]["outcome"] == "retained_reused"
+    # No new clock: no accession row carries tonight's capture clock.
+    assert all(row["capture_recorded_at"] != NEXT_NIGHT_CAPTURE for row in rows)
+    assert rows[1]["capture_recorded_at"] == CAPTURE_CLOCK
+    # The on-disk manifest — capture_recorded_at included — is unchanged.
+    assert (package_dir / "package_manifest.json").read_bytes() == manifest_before
+    # The re-run fetched nothing (the clean accession reused, the tampered one refused).
+    assert offline_collector["collectors"][-1].fetched == []
+
+
+def test_capture_members_exits_nonzero_on_manifest_less_package_dir(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """T2: manifest deleted -> package_manifest_malformed, nothing re-captured,
+    ZERO fetches for that accession, member files untouched."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    _install_fake_lineage(monkeypatch)
+    assert _capture_cli(lane, contract) == 0
+    package_dir = (
+        lane["archive_root"] / "fif-packages" / identity["cik"] / identity["accessions"][0]
+    )
+    members_before = {
+        path.name: path.read_bytes() for path in sorted((package_dir / "members").iterdir())
+    }
+    (package_dir / "package_manifest.json").unlink()
+
+    capsys.readouterr()  # drop the first run's stdout before the refusing run
+    rc = _capture_cli(lane, contract, clock=NEXT_NIGHT_CAPTURE)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::error") and "retained_package_integrity" in line
+        for line in out.splitlines()
+    )
+    report = _stdout_json(out)
+    rows = report["issuers"][0]["accessions"]
+    assert rows[0]["outcome"] == "member_capture_failed:package_manifest_malformed"
+    assert rows[1]["outcome"] == "retained_reused"
+    # ZERO fetches for the manifest-less accession (and none anywhere this run).
+    assert offline_collector["collectors"][-1].fetched == []
+    members_after = {
+        path.name: path.read_bytes() for path in sorted((package_dir / "members").iterdir())
+    }
+    assert members_after == members_before
+    assert not (package_dir / "package_manifest.json").exists()
+
+
+def _store_files(store: Path) -> list[str]:
+    if not store.exists():
+        return []
+    return sorted(str(path.relative_to(store)) for path in store.rglob("*") if path.is_file())
+
+
+def test_publish_over_one_tampered_package_moves_no_latest_json(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """T3: one tampered package (the issuer's other package clean) -> run-level
+    refusal, ZERO generations written, no latest.json moves.
+
+    A synthetic second CIK cannot ride the fixture bytes: admission binds the
+    package CIK to the filing's own dei EntityCentralIndexKey, so a derived
+    CIK is inadmissible by incumbent law. The run-level claim is proven the
+    stronger way instead: the whole STORE's file set is identical after the
+    refused run, so nothing was written for any issuer.
+    """
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    _install_fake_lineage(monkeypatch)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    first_report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["ticker"] for row in first_report["published"]] == [identity["ticker"]]
+    latest_path = _latest_json_path(store, identity["entity_id"])
+    latest_before = latest_path.read_bytes()
+    files_before = _store_files(store)
+    assert files_before  # the lawful night actually wrote generations
+
+    # Tamper ONE member of the FIRST package; the second package stays clean.
+    members_dir = (
+        lane["archive_root"]
+        / "fif-packages"
+        / identity["cik"]
+        / identity["accessions"][0]
+        / "members"
+    )
+    victim = sorted(members_dir.iterdir())[0]
+    victim.write_bytes(victim.read_bytes()[:-1])
+
+    capsys.readouterr()  # drop the lawful publish's stdout
+    rc = _publish_cli(lane, contract, store, report_path)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::error") and "retained_package_integrity" in line
+        for line in out.splitlines()
+    )
+    # ZERO generations written; no latest.json for ANY issuer moved.
+    assert _store_files(store) == files_before
+    assert latest_path.read_bytes() == latest_before
+
+
+# ---------------------------------------------------------------------------
+# ERRATA E2-R: one cap value (15), single-sourced, fail-closed at the boundary
+# ---------------------------------------------------------------------------
+
+# sha256 of config/fundamental_forensics/wave2_targets.v1.json at the C0-b
+# base commit 82830feb (git show 82830feb:...). The incumbent wave file is
+# unchanged by C0-b; an edit needs a seat ruling.
+WAVE2_TARGETS_BASE_SHA256 = "e80181f72cece207e722c7b7238249a01d533a9e6b845c8b4900f1f49529cf56"
+
+
+def test_incumbent_wave2_targets_bytes_unchanged_from_base() -> None:
+    digest = hashlib.sha256(
+        (
+            ROOT / "config" / "fundamental_forensics" / "wave2_targets.v1.json"
+        ).read_bytes()
+    ).hexdigest()
+    assert digest == WAVE2_TARGETS_BASE_SHA256
+
+
+def test_targets_requires_max_tickers() -> None:
+    """T6: the publisher carries no second cap literal — the argument is required."""
+    with pytest.raises(SystemExit) as caught:
+        producer.build_parser().parse_args(
+            ["targets", "--coverage-file", "c.json", "--targets-file", "t.json"]
+        )
+    assert caught.value.code == 2
+
+
+def test_targets_cap_boundary_fifteen_passes_sixteen_refuses(tmp_path, capsys) -> None:
+    """T7: through the REAL targets subcommand with temp config files."""
+    identity = _fixture_identity()
+    contract = _write_contract(tmp_path, identity, None)  # one contract issuer
+    targets15 = _write_targets_file(tmp_path, 14)          # 14 incumbents + 1 = 15
+    rc = producer.main(
+        [
+            "targets",
+            "--coverage-file", str(contract),
+            "--targets-file", str(targets15),
+            "--max-tickers", "15",
+        ]
+    )
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert out.strip() == f"--target {identity['ticker']}={identity['cik']}"
+
+    alt = tmp_path / "alt"
+    alt.mkdir()
+    targets16 = alt / "targets.json"
+    targets16.write_text(
+        json.dumps(
+            {
+                "schema": "fundamental_forensics.wave2_targets/v1",
+                "targets": [
+                    {"ticker": f"U{i:03d}", "cik": f"0000001{i + 1:02d}"}
+                    for i in range(15)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )  # 15 incumbents + 1 contract issuer = 16 > 15
+    rc = producer.main(
+        [
+            "targets",
+            "--coverage-file", str(contract),
+            "--targets-file", str(targets16),
+            "--max-tickers", "15",
+        ]
+    )
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::error") and "targets_overflow" in line
+        for line in out.splitlines()
+    )
