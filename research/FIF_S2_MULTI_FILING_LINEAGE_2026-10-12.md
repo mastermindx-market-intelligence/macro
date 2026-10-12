@@ -74,15 +74,17 @@ missing with `no eligible explicitly typed reported revision vintage`, and
 - `_duplicates_agree` remains duplicated in `query.py` / `raw_ledger.py`
   (census §7): untouched here by order.
 
-## Known incumbent casualty (reported, not edited)
+## Incumbent test re-scoped (orchestrator amendment)
 
-`tests/test_fundamental_forensics_cross_filing_lineage.py::test_envelope_rule_version_mismatch_is_refused_at_both_gates[2]`
-pinned version 2 as "a version the current rule never minted" →
+`tests/test_fundamental_forensics_cross_filing_lineage.py::test_envelope_rule_version_mismatch_is_refused_at_both_gates`
+pinned version 2 as "a version the current rule never minted" ->
 `receipt_rule_mismatch`. Under the S2 law version 2 IS admitted, and that
 golden twin's 2026-08-25 availability is below the chain rule clock, so both
 gates now refuse it `receipt_system_availability_backdated` (still fail-closed;
-only the named reason changed). The file is frozen for this lane; re-pin or
-re-parametrize (e.g. to version 3) in a follow-up that owns that suite.
+only the named reason changed). The orchestrator re-parametrized the case in the
+same PR: version 2 -> `REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED`; versions 3
+and `True` (never minted by any admitted rule) -> `REFUSAL_RECEIPT_RULE_MISMATCH`,
+each asserted at both gates.
 
 ## Follow-ons
 
@@ -90,8 +92,7 @@ re-parametrize (e.g. to version 3) in a follow-up that owns that suite.
    (the S2 mint is engine-tested only).
 2. Surface the typed chain state (with per-edge refusals) as a Calibration-Lab
    tier diagnostic, never user-facing vocabulary.
-3. Re-parametrize the T1b version-mismatch case above once a lane owns that
-   suite; consider `[3, True]`.
+3. (Done in this PR: the T1b version-mismatch case now covers versions 2, 3 and `True`.)
 4. Revisit `_effective_roots` caching if per-key version heterogeneity is ever
    admitted (today admission enforces homogeneity).
 5. Extend `applied_lineage_evidence`/response lineage for multi-receipt chains
