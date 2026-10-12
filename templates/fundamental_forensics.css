@@ -2943,6 +2943,10 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: 
   background: var(--ff-tint-info-18-panel);
   box-shadow: 0 0 0 1px var(--ff-tint-info-35);
 }
+/* P2 r3 item b: the Latest control stays one line at 390 — CJK breaks between
+   glyphs, so a flex-squeezed "最新" wrapped to two lines while "Latest"
+   (one word) never could. No other change to this control. */
+.ff-asof-latest { white-space: nowrap; }
 .ff-asof-input {
   min-height: 36px;
   padding: 0 10px;
@@ -3370,4 +3374,11 @@ html[data-theme="light"] .ff-quick-signal::after { display: none; }
   .ff-export-btn,
   .ff-export-link { width: auto; padding: 0 10px; }
   .ff-quick-signal-copy { padding-right: 46px; }
+  /* P2 r3 item c: page-local launcher clearance. The shared copilot stub
+     #mmb-boot is a fixed 54x54 box at right:16/bottom:16(+safe-area); its
+     measured rect at 390 is x 320-374, y 774-828, and the coverage stat sat
+     under it. Reserve 54px launcher + 16px right offset + 8px gap from the
+     viewport edge so the stat row's boxes end at x <= 312. Scoped to this
+     page's <=700px block only; nothing changes at >=701px. */
+  .ff-snapshot-stats { padding-right: 78px; }
 }

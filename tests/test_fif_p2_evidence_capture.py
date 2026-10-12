@@ -12,7 +12,10 @@ import gzip
 import hashlib
 import json
 import ast
+import contextlib
+import io
 import os
+import re
 import subprocess
 import sys
 import types
@@ -827,6 +830,224 @@ def test_parse_fold_selectors() -> None:
         tool.parse_fold_selectors(["no-equals-sign"])
     with pytest.raises(Exception):
         tool.parse_fold_selectors(["=x"])
+
+
+# ---------------------------------------------------------------------------
+# render guard (P2 r3 repair d): refuse an unrendered or stale served page
+# ---------------------------------------------------------------------------
+
+GUARD_TEMPLATE = (
+    '<div id="ff-desk-header">{{ t("As of", "As of") }}</div>'
+    '<button id="ff-asof-latest">{{ t("Latest", "Latest") }}</button>'
+)
+GUARD_CLEAN_HTML = (
+    '<div id="ff-desk-header">As of</div>'
+    '<button id="ff-asof-latest">Latest</button>'
+)
+
+
+def test_render_guard_pins_the_commands_and_a_distinct_exit_code() -> None:
+    assert tool.RENDER_COMMAND == (
+        "python3 -c \"from pathlib import Path; "
+        "from scripts.build_fundamental_forensics import render_shell; "
+        "render_shell(Path('.').resolve())\""
+    )
+    assert tool.RESTORE_COMMAND == "git checkout -- site/fundamental_forensics.html"
+    assert tool.EXIT_STALE_PAGE == 5
+    assert tool.EXIT_STALE_PAGE not in {
+        tool.EXIT_OK,
+        tool.EXIT_USAGE,
+        tool.EXIT_PARTIAL,
+        tool.EXIT_MODE_UNAVAILABLE,
+    }
+
+
+def test_render_guard_help_epilog_prints_both_commands() -> None:
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        tool.build_parser().print_help()
+    text = buffer.getvalue()
+    assert f"render first with: {tool.RENDER_COMMAND}" in text
+    assert f"restore afterwards with: {tool.RESTORE_COMMAND}" in text
+
+
+def test_render_guard_refuses_unrendered_jinja_markers() -> None:
+    html = (
+        '<main>{{ company.name }}</main>'
+        '<div id="ff-desk-header">x</div><button id="ff-asof-latest">x</button>'
+    )
+    problems = tool.served_page_problems(html, GUARD_TEMPLATE)
+    assert len(problems) == 1
+    assert problems[0].startswith("unrendered Jinja marker {{ at byte")
+    assert "company.name" in problems[0]
+
+
+def test_render_guard_reports_only_the_first_offending_marker() -> None:
+    html = (
+        'a {% if x %} b {{ y }} c '
+        '<div id="ff-desk-header">x</div><button id="ff-asof-latest">x</button>'
+    )
+    problems = tool.served_page_problems(html, GUARD_TEMPLATE)
+    assert len(problems) == 1
+    assert "marker {% at byte" in problems[0]
+
+
+def test_render_guard_refuses_a_stale_render_by_template_id_census() -> None:
+    # Zero Jinja markers, both literal template ids present except one: only
+    # the id census separates this stale page from a fresh render.
+    html = '<html><body><div id="ff-desk-header">As of</div></body></html>'
+    assert tool.served_page_problems(html, GUARD_TEMPLATE) == [
+        "stale render: 1 template id(s) missing from the served page: ff-asof-latest"
+    ]
+
+
+def test_render_guard_caps_the_missing_id_list_at_ten() -> None:
+    template = "".join(f'<i id="ff-i{i:02d}"></i>' for i in range(12))
+    problems = tool.served_page_problems("<html></html>", template)
+    assert len(problems) == 1
+    assert "12 template id(s) missing from the served page: " in problems[0]
+    assert "(+2 more)" in problems[0]
+    assert "ff-i11" not in problems[0].split("(+2 more)", 1)[0]
+
+
+def test_render_guard_clean_pass() -> None:
+    assert tool.served_page_problems(GUARD_CLEAN_HTML, GUARD_TEMPLATE) == []
+
+
+def _forbid_browser(monkeypatch) -> None:
+    def _forbidden(name: str):
+        def _boom(*_args: Any, **_kwargs: Any) -> Any:
+            raise AssertionError(f"{name} ran although the served page is stale")
+
+        return _boom
+
+    # The wrapped capture import is what pulls in Playwright; the forensics
+    # import and the env scrub both precede it in main(), so guarding all
+    # three proves the refusal happened before any browser could launch.
+    monkeypatch.setattr(tool, "_run_wrapped_capture", _forbidden("_run_wrapped_capture"))
+    monkeypatch.setattr(tool, "load_forensics_module", _forbidden("load_forensics_module"))
+    monkeypatch.setattr(tool, "scrub_process_env", _forbidden("scrub_process_env"))
+
+
+def test_main_refuses_a_stale_site_dir_before_any_browser(monkeypatch, tmp_path: Path) -> None:
+    site_dir = tmp_path / "site"
+    site_dir.mkdir()
+    (site_dir / "fundamental_forensics.html").write_text(
+        "<html><body>stale, no ff ids</body></html>", encoding="utf-8"
+    )
+    out_dir = tmp_path / "out"
+    _forbid_browser(monkeypatch)
+    rc = tool.main(
+        [
+            "--mode",
+            tool.MODE_ANONYMOUS,
+            "--out-dir",
+            str(out_dir),
+            "--site-dir",
+            str(site_dir),
+        ]
+    )
+    assert rc == tool.EXIT_STALE_PAGE
+    assert not out_dir.exists()
+
+
+def test_main_refusal_names_the_render_and_restore_commands(
+    monkeypatch, tmp_path: Path, capsys
+) -> None:
+    site_dir = tmp_path / "site"
+    site_dir.mkdir()
+    (site_dir / "fundamental_forensics.html").write_text(
+        "<html><body>stale, no ff ids</body></html>", encoding="utf-8"
+    )
+    _forbid_browser(monkeypatch)
+    rc = tool.main(
+        [
+            "--mode",
+            tool.MODE_ANONYMOUS,
+            "--out-dir",
+            str(tmp_path / "out"),
+            "--site-dir",
+            str(site_dir),
+        ]
+    )
+    assert rc == tool.EXIT_STALE_PAGE
+    err = capsys.readouterr().err
+    assert err.startswith("refusing to capture:")
+    assert "stale render:" in err
+    assert f"render first with: {tool.RENDER_COMMAND}" in err
+    assert f"restore afterwards with: {tool.RESTORE_COMMAND}" in err
+
+
+def test_main_refuses_a_stale_base_url_page_through_the_fetch_hook(
+    monkeypatch, tmp_path: Path
+) -> None:
+    fetched: list[str] = []
+
+    def fake_fetch(base_url: str, route: str) -> str:
+        fetched.append(base_url + route)
+        return "<html>no ff ids here</html>"
+
+    monkeypatch.setattr(tool, "fetch_served_page", fake_fetch)
+    _forbid_browser(monkeypatch)
+    rc = tool.main(
+        [
+            "--mode",
+            tool.MODE_ANONYMOUS,
+            "--out-dir",
+            str(tmp_path / "out"),
+            "--base-url",
+            "http://127.0.0.1:8123",
+        ]
+    )
+    assert rc == tool.EXIT_STALE_PAGE
+    # Fetched exactly once, from the already loopback-checked origin.
+    assert fetched == ["http://127.0.0.1:8123/fundamental_forensics.html?symbol=AAPL"]
+
+
+def test_main_render_guard_reads_the_committed_template(tmp_path: Path) -> None:
+    # The census compares against THIS tree's template, not a passed-in one:
+    # an html holding the synthetic guard ids is still stale against the real
+    # template (which has 90+ more literal ids, so the report cap engages too).
+    site_dir = tmp_path / "site"
+    site_dir.mkdir()
+    (site_dir / "fundamental_forensics.html").write_text(GUARD_CLEAN_HTML, encoding="utf-8")
+    refusals = tool.render_guard_refusals(
+        tree_root=ROOT,
+        site_dir=site_dir,
+        base_url=None,
+        route="/fundamental_forensics.html?symbol=AAPL",
+    )
+    assert len(refusals) == 1
+    match = re.match(r"stale render: (\d+) template id\(s\) missing", refusals[0])
+    assert match and int(match.group(1)) > tool.STALE_ID_REPORT_CAP
+    assert "(+" in refusals[0] and "more)" in refusals[0]
+
+
+def test_render_guard_missing_served_page_is_a_refusal(tmp_path: Path) -> None:
+    refusals = tool.render_guard_refusals(
+        tree_root=ROOT,
+        site_dir=tmp_path,
+        base_url=None,
+        route="/fundamental_forensics.html?symbol=AAPL",
+    )
+    assert len(refusals) == 1
+    assert refusals[0].startswith("served page missing:")
+
+
+def test_fold_measurement_records_left_and_right_geometry() -> None:
+    script = tool._FOLD_MEASURE_SCRIPT
+    assert "const scrollX = window.scrollX || 0;" in script
+    assert "entry.left = rect.left + scrollX;" in script
+    assert "entry.right = rect.right + scrollX;" in script
+
+    class Gone:
+        def evaluate(self, script: str, arg: Any = None) -> Any:
+            raise RuntimeError("no page")
+
+    rows: list[dict[str, Any]] = []
+    tool.measure_fold(Gone(), _cell(), selectors=[("fab", "#mmb-boot")], mode="populated", sink=rows)
+    assert rows[0]["measurements"][0]["left"] is None
+    assert rows[0]["measurements"][0]["right"] is None
 
 
 # ---------------------------------------------------------------------------

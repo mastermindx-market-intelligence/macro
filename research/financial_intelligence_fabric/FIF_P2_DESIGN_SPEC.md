@@ -50,7 +50,7 @@
 4. Supporting module 1: two glance stats (`#ff-stat-attention`, `#ff-stat-coverage`).
 5. Supporting module 2: three next-step buttons (`.ff-next-steps`).
 
-Tab bar and panels start below the fold. Evidence rail is sticky on the right at ≥1100px and is not a first-viewport module.
+Tab bar and panels start below the fold (amended by AM7). Evidence rail is sticky on the right at ≥1100px and is not a first-viewport module.
 
 **390 (`max-width: 700px`, `css:2023,2822`):** first swipe = nav + desk header (one band) + lead brief (`#ff-quick-signal`). Stats and next-steps may sit in the same brief card, stacked, still inside the first swipe. Hero visual stays `display:none` (`css:2827`).
 
@@ -1087,3 +1087,4 @@ The spec above is FROZEN for the P2 writer. Writer implements; amendments below 
 - **AM4 (tab rename).** DEVIATION accepted: disclosures tab visible copy "What changed" → "Wording / 措辞"; ids unchanged.
 - **AM5 (evidence).** The 8-cell matrix (dark/light × EN/ZH × 1440/390) is a NOT-DONE-UNLESS for the P2 PR body; fold measurement replaces `measured: false` in `FIF_P0_VIEW_CONTRACT.json` with the measured value in the same PR.
 - **AM6 (commit the spec).** Commit this frozen file as `research/financial_intelligence_fabric/FIF_P2_DESIGN_SPEC.md` in P2's first commit.
+- **AM7 (1440 tab rail in the first viewport; seat ruling 10-12 18:5xZ after the P2 changed-cell re-review).** Measured at 1440×900, the glance tier (desk header 104–245, stats 321–341, lead brief 370–502, next steps ≤594) is complete above the tab rail (633–694 EN / 605–666 ZH). Moving the rail below 900px would take roughly 200px of padding or an inflated glance tier, and the density law forbids both. The §1.1 1440 clause "Tab bar and panels start below the fold" is therefore amended: at ≥1100px the tab rail and the top of the active panel MAY be visible inside the first viewport, directly below the complete glance tier, as navigation chrome. They are not first-viewport modules: they are neither counted nor required to be in or out of the fold, and every glance-tier module must be fully understandable without them. At 390 §1.1 is UNCHANGED: the tab bar and panels start below the first swipe. `FIF_P0_VIEW_CONTRACT.json` `first_viewport.measured.desktop_1440` must cite AM7 by name, must not list `tabs` as a first-viewport module, and its `meets_contract` is judged under the amended clause only.

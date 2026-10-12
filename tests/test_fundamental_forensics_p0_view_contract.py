@@ -227,6 +227,7 @@ def test_i18n_template_title_attribute_count():
 
 
 FOLD_RECEIPT = "mockups/evidence/fundamental_forensics_p2/populated/fold_measurement.json"
+SPEC = ROOT / "research" / "financial_intelligence_fabric" / "FIF_P2_DESIGN_SPEC.md"
 
 
 def test_first_viewport_measured_records_the_fold_receipt():
@@ -244,21 +245,57 @@ def test_first_viewport_measured_records_the_fold_receipt():
     assert measured["mobile_390"]["meets_contract"] is True
 
 
+def test_am7_amends_the_desktop_fold_clause():
+    """AM7 (seat ruling 10-12): at >=1100px the tab rail is navigation chrome."""
+    measured = _contract()["first_viewport"]["measured"]
+    desktop = measured["desktop_1440"]
+    assert desktop["amended_by"] == "AM7"
+    assert "AM7" in desktop["note"]
+    for viewport in (desktop, measured["mobile_390"]):
+        assert "tabs" not in viewport["within_first_viewport"]
+    assert desktop["navigation_chrome_in_first_viewport"] == ["tabs"]
+    spec = SPEC.read_text(encoding="utf-8")
+    assert any(
+        line.startswith("- **AM7 (1440 tab rail in the first viewport;")
+        for line in spec.splitlines()
+    )
+    assert "Tab bar and panels start below the fold (amended by AM7)." in spec
+
+
 @pytest.mark.needs_full_checkout("mockups")
 def test_first_viewport_measured_matches_the_committed_receipt():
     measured = _contract()["first_viewport"]["measured"]
+    probes = set(measured["probes"])
     cells = json.loads((ROOT / measured["receipt"]).read_text(encoding="utf-8"))
     rest = [c for c in cells if c["force_state"] is None and c["mode"] == "populated"]
     assert len(rest) == 8
     for cell in rest:
         want = measured["desktop_1440" if cell["viewport"] == "desktop" else "mobile_390"]
         found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
-        inside = sorted(n for n, m in found.items() if m["within_first_viewport"])
+        inside = sorted(
+            n
+            for n, m in found.items()
+            if m["within_first_viewport"] and n not in probes
+        )
         assert inside == want["within_first_viewport"], cell["cell_id"]
         lead = found["lead"]
         assert lead["viewport_height"] == want["viewport_height"]
         span = [int(round(lead["top"])), int(round(lead["bottom"]))]
         assert span == want["lead_px"][cell["locale"]], cell["cell_id"]
+        tabs = found["tabs"]
+        if cell["viewport"] == "desktop":
+            # AM7: the rail may sit inside the fold as navigation chrome, its top
+            # pinned by the receipt, with every glance module ending above it.
+            assert tabs["within_first_viewport"] is True, cell["cell_id"]
+            assert [
+                int(round(tabs["top"])),
+                int(round(tabs["bottom"])),
+            ] == want["tabs_px"][cell["locale"]], cell["cell_id"]
+            for name in want["within_first_viewport"]:
+                assert found[name]["bottom"] <= tabs["top"], (cell["cell_id"], name)
+        else:
+            # §1.1 at 390 is unchanged by AM7: the tab bar starts below the fold.
+            assert tabs["within_first_viewport"] is False, cell["cell_id"]
 
 
 def test_doc_mentions_journeys_and_every_dom_id():

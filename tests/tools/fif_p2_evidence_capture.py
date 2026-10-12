@@ -64,6 +64,10 @@ HOW IT WORKS
 * Every exchange is appended to ``network_log.json`` (metadata + digests only;
   response bodies are never stored), and ``--fold-selector`` measures named
   selectors' fold position at screenshot time into ``fold_measurement.json``.
+* Render guard (P2 r3 repair d): before any browser import/launch the served
+  page must be a fresh render of this tree's template — any unrendered Jinja
+  marker, or any literal template ``id="ff-…"`` missing from the served html,
+  is refused with exit code 5 and the render/restore commands on stderr.
 
 USAGE
 -----
@@ -97,6 +101,7 @@ import hashlib
 import ipaddress
 import json
 import os
+import re
 import shlex
 import shutil
 import sys
@@ -275,6 +280,8 @@ EXIT_OK = 0
 EXIT_USAGE = 2
 EXIT_PARTIAL = 3
 EXIT_MODE_UNAVAILABLE = 4
+# P2 r3 repair d: the served page is unrendered or stale (render guard).
+EXIT_STALE_PAGE = 5
 
 
 class FifEvidenceError(RuntimeError):
@@ -331,6 +338,113 @@ def refuse_non_local_targets(*, base_url: str | None, route: str) -> list[str]:
         if parsed.scheme not in ("http", "https") or not is_local_origin_host(parsed.hostname or ""):
             refusals.append(f"{flag} {url!r} is not a loopback or *.localhost origin")
     return refusals
+
+
+# ---------------------------------------------------------------------------
+# render guard (P2 r3 repair d): refuse an unrendered or stale served page
+# ---------------------------------------------------------------------------
+
+# The one-liner that renders this tree's template into site/ (the same command
+# the ORCH-B capture recipe runs) and the step that puts the render output back
+# afterwards. Both are printed in --help and in every refusal message.
+RENDER_COMMAND = (
+    "python3 -c \"from pathlib import Path; "
+    "from scripts.build_fundamental_forensics import render_shell; "
+    "render_shell(Path('.').resolve())\""
+)
+RESTORE_COMMAND = "git checkout -- site/fundamental_forensics.html"
+PAGE_RELATIVE = "fundamental_forensics.html"
+TEMPLATE_RELATIVE = "templates/fundamental_forensics.html.j2"
+JINJA_MARKERS = ("{{", "{%")
+STALE_ID_REPORT_CAP = 10
+REFUSAL_PREFIX = "refusing to capture"
+
+
+def served_page_problems(html: str, template: str) -> list[str]:
+    """Why this served page must not be captured, or ``[]``.
+
+    Two checks, both required: (i) any unrendered Jinja marker means the served
+    file is the raw template; (ii) STALE RENDER — every literal ``id="ff-…"``
+    in the template must appear verbatim in the served html. Check (i) alone is
+    vacuous here: the stale committed ``site/fundamental_forensics.html`` and a
+    fresh render both contain zero Jinja markers, so only the id census tells
+    them apart (measured: 18 template ids missing from the stale page).
+    """
+    problems: list[str] = []
+    present = [
+        (html.find(marker), marker) for marker in JINJA_MARKERS if html.find(marker) >= 0
+    ]
+    if present:
+        index, marker = min(present)
+        excerpt = html[max(0, index - 12) : index + 28].replace("\n", " ").replace("\r", " ")
+        problems.append(f"unrendered Jinja marker {marker} at byte {index}: …{excerpt}…")
+    template_ids = sorted(
+        {value for value in re.findall(r'id="(ff-[^"]*)"', template) if "{" not in value}
+    )
+    missing = [value for value in template_ids if f'id="{value}"' not in html]
+    if missing:
+        shown = ", ".join(missing[:STALE_ID_REPORT_CAP])
+        extra = len(missing) - STALE_ID_REPORT_CAP
+        suffix = f" (+{extra} more)" if extra > 0 else ""
+        problems.append(
+            f"stale render: {len(missing)} template id(s) missing from the served page: "
+            f"{shown}{suffix}"
+        )
+    return problems
+
+
+def fetch_served_page(base_url: str, route: str) -> str:
+    """Fetch the route's html ONCE from the already loopback-checked origin.
+
+    Module-level hook on purpose: tests replace it instead of touching a
+    network. Errors are the caller's refusal, never a capture.
+    """
+    import urllib.request  # noqa: PLC0415
+
+    url = route if "://" in route else base_url.rstrip("/") + "/" + route.lstrip("/")
+    with urllib.request.urlopen(url, timeout=15) as response:
+        return response.read().decode("utf-8", errors="replace")
+
+
+def render_guard_refusals(
+    *,
+    tree_root: Path,
+    site_dir: Path | None,
+    base_url: str | None,
+    route: str,
+) -> list[str]:
+    """Pre-flight: the served page must be a fresh render of this tree's template.
+
+    Runs before any browser import/launch and before the kernel build. Reading
+    the page is injectable through the plain module hooks (``fetch_served_page``
+    here; ``--site-dir`` mode reads the file directly), so tests run without
+    rendering — the committed ``site/fundamental_forensics.html`` is stale in CI.
+    """
+    if base_url is not None:
+        try:
+            html = fetch_served_page(base_url, route)
+        except Exception as exc:  # noqa: BLE001 - a fetch failure is a refusal, never a capture
+            return [f"could not fetch the served page from {base_url}: {type(exc).__name__}: {exc}"]
+    else:
+        directory = Path(site_dir) if site_dir is not None else tree_root / "site"
+        page = directory / PAGE_RELATIVE
+        if not page.is_file():
+            return [f"served page missing: {page}"]
+        html = page.read_text(encoding="utf-8", errors="replace")
+    template_path = tree_root / TEMPLATE_RELATIVE
+    if not template_path.is_file():
+        return [f"template missing: {template_path}"]
+    template = template_path.read_text(encoding="utf-8", errors="replace")
+    return served_page_problems(html, template)
+
+
+def print_render_refusal(problems: Sequence[str]) -> None:
+    print(
+        f"{REFUSAL_PREFIX}: {'; '.join(problems)}; "
+        f"render first with: {RENDER_COMMAND}; "
+        f"restore afterwards with: {RESTORE_COMMAND}",
+        file=sys.stderr,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -568,6 +682,7 @@ def make_route_handler(
 _FOLD_MEASURE_SCRIPT = """
 (selectors) => {
   const scrollY = window.scrollY || 0;
+  const scrollX = window.scrollX || 0;
   const viewportHeight = window.innerHeight;
   const measurements = [];
   for (const item of selectors) {
@@ -577,6 +692,8 @@ _FOLD_MEASURE_SCRIPT = """
       found: false,
       top: null,
       bottom: null,
+      left: null,
+      right: null,
       height: null,
       viewport_height: viewportHeight,
       rendered: false,
@@ -589,6 +706,8 @@ _FOLD_MEASURE_SCRIPT = """
         entry.found = true;
         entry.top = rect.top + scrollY;
         entry.bottom = rect.bottom + scrollY;
+        entry.left = rect.left + scrollX;
+        entry.right = rect.right + scrollX;
         entry.height = rect.height;
         // A display:none element is found but has no box: its zero rect sits
         // at y=0, which must not read as "above the fold".
@@ -626,6 +745,8 @@ def measure_fold(
                 "found": False,
                 "top": None,
                 "bottom": None,
+                "left": None,
+                "right": None,
                 "height": None,
                 "viewport_height": None,
                 "rendered": False,
@@ -1481,7 +1602,15 @@ def parse_fold_selectors(raw_values: Sequence[str]) -> list[tuple[str, str]]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "render guard (P2 r3):\n"
+            "  The served page must be a fresh render of this tree's template. An\n"
+            "  unrendered or stale page is refused BEFORE any browser launch.\n"
+            f"    render first with: {RENDER_COMMAND}\n"
+            f"    restore afterwards with: {RESTORE_COMMAND}\n"
+        ),
     )
     parser.add_argument("--mode", required=True, choices=ALL_MODES)
     parser.add_argument("--route", default="/fundamental_forensics.html?symbol=AAPL")
@@ -1492,6 +1621,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="optional LOCAL origin already serving site/ (loopback or *.localhost only; "
         "anything else is refused before capture). Default: the wrapped tool's own "
         "127.0.0.1 server for site/",
+    )
+    parser.add_argument(
+        "--site-dir",
+        default=None,
+        metavar="DIR",
+        dest="site_dir",
+        help="optional site/ directory to capture instead of <tree>/site; its "
+        f"{PAGE_RELATIVE} must be a fresh render (the render guard reads it before "
+        "any browser launches)",
     )
     parser.add_argument("--as-of", help="pin the capture tool's generated_at (ISO)")
     parser.add_argument("--generated-at", help="kernel state clock for compose_state (ISO)")
@@ -1600,6 +1738,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     except argparse.ArgumentTypeError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_USAGE
+
+    # P2 r3 repair d: the served page must be a fresh render of this tree's
+    # template — refuse BEFORE the env scrub, the kernel build and any browser
+    # import/launch. The committed site html is stale in CI on purpose.
+    stale_page = render_guard_refusals(
+        tree_root=tree_root,
+        site_dir=getattr(args, "site_dir", None),
+        base_url=args.base_url,
+        route=args.route,
+    )
+    if stale_page:
+        print_render_refusal(stale_page)
+        return EXIT_STALE_PAGE
 
     scrub = scrub_process_env()
     prior_macro_repo = os.environ.get("MACRO_REPO")
@@ -1768,7 +1919,9 @@ def _run_wrapped_capture(
     from scripts.capture_page_evidence import main as capture_main  # noqa: PLC0415
 
     base_url = getattr(args, "base_url", None)
-    origin_argv = ["--base-url", base_url] if base_url else ["--site-dir", str(tree_root / "site")]
+    site_dir = getattr(args, "site_dir", None)
+    capture_site_dir = Path(site_dir) if site_dir else tree_root / "site"
+    origin_argv = ["--base-url", base_url] if base_url else ["--site-dir", str(capture_site_dir)]
     capture_argv: list[str] = [
         *origin_argv,
         "--routes",

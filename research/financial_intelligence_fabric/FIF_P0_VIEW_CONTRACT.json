@@ -329,6 +329,12 @@
     "measured": {
       "receipt": "mockups/evidence/fundamental_forensics_p2/populated/fold_measurement.json",
       "evidence": "fixture-backed golden, local; dark and light measured identical; rest cells only",
+      "probes": {
+        "tabs": "AM7 navigation chrome at >=1100px; below the first swipe at 390",
+        "fab": "shared copilot launcher stub #mmb-boot, the geometry mirror of #mmb-launch pinned by tests/test_chat_launcher_stub.py; measured for clearance only",
+        "covstat": "whole coverage stat incl. its label; measured for launcher clearance only",
+        "latest": "as-of Latest button; measured for the 390 one-line check only"
+      },
       "desktop_1440": {
         "viewport_height": 900,
         "within_first_viewport": [
@@ -337,9 +343,23 @@
           "lead",
           "nav",
           "next",
-          "stats",
+          "stats"
+        ],
+        "amended_by": "AM7",
+        "navigation_chrome_in_first_viewport": [
           "tabs"
         ],
+        "tabs_px": {
+          "en": [
+            633,
+            694
+          ],
+          "zh": [
+            605,
+            666
+          ]
+        },
+        "note": "AM7: every glance module (nav, desk, lead, stats, coverage, next) ends inside the 900px fold above the tab rail; the rail plus the top of the active panel are navigation chrome, not modules.",
         "lead_px": {
           "en": [
             370,
