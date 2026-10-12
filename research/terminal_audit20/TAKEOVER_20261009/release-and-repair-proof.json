@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261012T0415",
+  "current_capability_frontier_key": "current_capability_frontier_20261012T0637",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -9469,6 +9469,47 @@
     "no_replay": "Closed962 source/CI/merge and completed e0 release/tab never reused or polled. No fast failure replay, duplicate reviewer/sourcewriter/worker/observer, new record or old946 effect.",
     "retained_holds": "All original independent781reservednumeric/IW2cyberHUMAN/separateSQLaccessrightsrelease/887ALLOW/MoneySCP+OAuthUNKNOWN/A19intake/same873terminalpublication/other outcomes unchanged. A/E20 custody preserved.",
     "next_ready_phase": "Actual B owning history diagnosis/new reviewed and merged source return, relevant A source/release resolution or original-owner reviewer/platform/rights/reconciliation/producer terminal event; no unchanged polling or notice-only delegation.",
+    "whole_J1_accepted": false,
+    "whole_audit20_complete": false,
+    "cleanup_owed": false
+  },
+  "current_capability_frontier_20261012T0637": {
+    "observed_at": "2026-10-12T06:37:13.145743+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261012T0415",
+    "material": "Installed Fabric instruction correction: temporary Grok quota-use priority is disabled; new ordinary requests return to normal economical task-aware routing. This instruction-only material delta does not change J1 product acceptance, existing operations or independent holds.",
+    "parent_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/fabric-normal-routing-parent-consumption-20261012T0635.json",
+      "bytes": 2651,
+      "sha256": "3157c14e3cffb6a8ae306c40fabca100f737534a01f67ca5c7e239b0149ce1d6"
+    },
+    "installed_files": [
+      {
+        "path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/orch/fabric/pools.yaml",
+        "resolved_path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/orch/fabric/pools.yaml",
+        "bytes": 21758,
+        "sha256": "987a1237c6d93ab02bc2ac6a3be2ca2a771daf5eca135799cd3c4a8bace8e60c"
+      },
+      {
+        "path": "/Users/chriswong/.codex/skills/mastermind-fabric-delegate/SKILL.md",
+        "resolved_path": "/Users/chriswong/.codex/skills/mastermind-fabric-delegate/SKILL.md",
+        "bytes": 10775,
+        "sha256": "f6653a5732d597319a97176dd95a7f234db70add01b0e793427d90111cba6508"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/fabric-reliability-codex-20261008/recovery-engineering/normal-routing-20261012/INSTALL_RECEIPT.json",
+        "resolved_path": "/Volumes/Mastermind/evidence/fabric-reliability-codex-20261008/recovery-engineering/normal-routing-20261012/INSTALL_RECEIPT.json",
+        "bytes": 1059,
+        "sha256": "868880b81eda376374ef41ed5368735516c303e1bbdf3db079981f2c871945d4"
+      }
+    ],
+    "grok_expiring_priority_enabled": false,
+    "ordinary_new_request": "Omit --pool grok; use existing direct shell Fabric adapter/router with normal task, quality, cost, capacity and review-independence admission. Fresh-load skill and verify current native root/parent before next useful new leaf.",
+    "existing_operations": "Original IDs, providers, root/parent, owners, grants and result/acceptance paths retained; no cancellation/replay/replacement/reset or uncertain/refused-effect retry.",
+    "owner_report_only": "Existing PR1337 commit91c06705 source attribution and unchanged Ubuntu capacity from owner receipt are not independently source/CI/live-capacity qualified here.",
+    "no_effects": "Fresh installed policy and skill read; future instruction correction only. No worker submission, status/result query, capacity probe, installed product acceptance, or outgoing ACK.",
+    "next_ready_phase": "Actual B diagnosis or qualified new source edge, other relevant original-owner event, or independently useful newly admitted mission work; no notice-only delegation or repeated polling.",
     "whole_J1_accepted": false,
     "whole_audit20_complete": false,
     "cleanup_owed": false
