@@ -24214,7 +24214,7 @@ jobs:
     timeout-minutes: 10
     paths:
       - "engine/short_pressure.py"
-      - "collectors/ibkr_borrow.py"
+      - ".github/ci/legacy-jobs.yml"
       - "tests/test_c19_wp24_short_pressure_availability.py"
     runs-on: ubuntu-latest
     steps:
