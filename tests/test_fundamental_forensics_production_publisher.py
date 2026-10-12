@@ -13,6 +13,7 @@ import ast
 import gzip
 import hashlib
 import json
+import subprocess
 import sys
 import types
 from datetime import datetime, timezone
@@ -881,17 +882,52 @@ def test_producer_direct_imports_are_off_the_golden_and_mint_layers() -> None:
     assert "importlib" in source
 
 
-def test_producer_import_loads_no_mint_layer_or_golden_provider() -> None:
-    sys.modules.pop("scripts.publish_fif_production_datasets", None)
-    import scripts.publish_fif_production_datasets as fresh  # noqa: PLC0415
+# The import-graph probe runs in a SUBPROCESS on purpose: importing the
+# producer here after popping it from sys.modules rebinds the name to a
+# different module object, which MM_MODULE_GUARD fails the whole pytest
+# process for (rc=1 with every test green). A fresh interpreter observes
+# the producer's import graph without ever touching this process's
+# sys.modules. No ``-I``: the repo root must stay importable via cwd.
+_PRODUCER_IMPORT_PROBE = """
+import json
+import sys
 
-    assert "engine.fundamental_forensics.production_lineage" not in sys.modules
-    golden_attrs = [name for name in dir(fresh) if "GOLDEN" in name.upper()]
-    assert golden_attrs == []
-    assert not hasattr(fresh, "GoldenAaplFinancialQueryProvider")
-    assert not hasattr(fresh, "load_golden_aapl_package")
-    assert not hasattr(fresh, "derive_confirmation_receipts")
-    assert not hasattr(fresh, "derive_chain_confirmation_receipts")
+import scripts.publish_fif_production_datasets as producer
+
+findings = []
+if "engine.fundamental_forensics.production_lineage" in sys.modules:
+    findings.append("sys.modules: engine.fundamental_forensics.production_lineage")
+findings.extend(
+    "producer attr: " + name
+    for name in dir(producer)
+    if "GOLDEN" in name.upper()
+)
+findings.extend(
+    "producer attr: " + name
+    for name in (
+        "GoldenAaplFinancialQueryProvider",
+        "load_golden_aapl_package",
+        "derive_confirmation_receipts",
+        "derive_chain_confirmation_receipts",
+    )
+    if hasattr(producer, name)
+)
+print(json.dumps(sorted(findings)))
+"""
+
+
+def test_producer_import_loads_no_mint_layer_or_golden_provider() -> None:
+    result = subprocess.run(
+        [sys.executable, "-c", _PRODUCER_IMPORT_PROBE],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert result.returncode == 0, (result.returncode, result.stdout, result.stderr)
+    findings = json.loads(result.stdout.strip().splitlines()[-1])
+    assert findings == [], findings
 
 
 def test_no_ticker_or_cik_literal_in_producer_or_workflow() -> None:
