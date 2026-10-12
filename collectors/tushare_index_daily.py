@@ -17,6 +17,9 @@ STORE (merge by session, refuse disagreement):
   two series. The run prints a ``::warning`` naming the session and both
   closes. To accept a vendor revision, delete the store in a reviewed commit;
   the next asia-close run rebuilds it from the anchor.
+  Asia-close slots run before the settle buffer (17:00 CST), so a session is
+  stored only once ``lib.cn_calendar`` counts it as settled; an earlier bar is
+  left for the next run, never held and later refused as a revision.
 
 DISPLAY/CONTEXT-ONLY — an observation of closes that already settled; no score,
 forecast or sizing reads it.
@@ -25,7 +28,7 @@ from __future__ import annotations
 
 import logging
 import math
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 
 import pandas as pd
 
@@ -114,10 +117,17 @@ def merge(held: pd.DataFrame | None, fetched: pd.DataFrame, *, first_seen: str) 
     return out.sort_values("trade_date", kind="stable").reset_index(drop=True)
 
 
-def refresh(*, today: date | None = None) -> int:
+def refresh(*, today: date | None = None, now: datetime | None = None) -> int:
     if not tc.enabled():
         return 0
-    today = today or datetime.now(timezone.utc).date()
+    from lib import cn_calendar
+
+    if now is None:
+        # A given ``today`` is a whole past day: its close has settled.
+        now = (datetime.combine(today, time(23, 59), tzinfo=cn_calendar.CST)
+               if today is not None else datetime.now(timezone.utc))
+    today = today or now.date()
+    settled = cn_calendar.expected_last_session(now).isoformat()
     held = _held()
     start = ANCHOR
     if held is not None:
@@ -125,6 +135,9 @@ def refresh(*, today: date | None = None) -> int:
     fetched = normalize(tc.query("index_daily", fields=_FIELDS, ts_code=TS_CODE,
                                  start_date=start.strftime("%Y%m%d"),
                                  end_date=today.strftime("%Y%m%d")))
+    if fetched is not None:
+        fetched = fetched[fetched["trade_date"] <= settled].reset_index(drop=True)
+        fetched = fetched if not fetched.empty else None
     if fetched is None:
         log.warning("tushare index_daily: no admissible %s closes; last-good store retained", TICKER)
         return 0

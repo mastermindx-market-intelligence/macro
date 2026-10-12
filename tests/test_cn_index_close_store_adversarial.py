@@ -232,3 +232,31 @@ def test_reader_refuses_a_store_older_than_its_session_tolerance():
     assert out["quality"] == "delayed"
     assert out["drawdown_pct"] is None
     assert pb.present(out)["phase"] == "unavailable"
+
+
+def test_a_bar_fetched_before_the_settle_buffer_is_left_for_a_later_run(
+        store, monkeypatch, capsys):
+    from datetime import datetime, timezone
+
+    # 2026-10-09 is a session; 07:20 UTC is 15:20 CST, before the 17:00 settle.
+    early = datetime(2026, 10, 9, 7, 20, tzinfo=timezone.utc)
+    _serve(monkeypatch, _vendor([("20261008", 3290.5), ("20261009", 3300.0)]))
+    assert tid.refresh(now=early) == 1
+    assert list(pd.read_parquet(store)["trade_date"]) == ["2026-10-08"]
+    # The settled print differs from the early one; nothing early was kept, so
+    # this is a first sighting, not a revision to refuse.
+    _serve(monkeypatch, _vendor([("20261008", 3290.5), ("20261009", 3301.25)]))
+    capsys.readouterr()
+    assert tid.refresh(now=datetime(2026, 10, 9, 9, 5, tzinfo=timezone.utc)) == 1
+    assert not _warning_lines(capsys)[0]
+    held = pd.read_parquet(store)
+    assert list(held["trade_date"]) == ["2026-10-08", "2026-10-09"]
+    assert held["close"].iloc[-1] == 3301.25
+
+
+def test_a_run_with_only_unsettled_bars_keeps_the_store(store, monkeypatch):
+    from datetime import datetime, timezone
+
+    _serve(monkeypatch, _vendor([("20261009", 3300.0)]))
+    assert tid.refresh(now=datetime(2026, 10, 9, 6, 0, tzinfo=timezone.utc)) == 0
+    assert not store.exists()
