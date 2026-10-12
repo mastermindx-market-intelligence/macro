@@ -675,17 +675,23 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  2026-10-11 four-market continuation: use programme6107291350 and the new
+  2026-10-12 four-market continuation: use programme6107291350 and the
   PROPHET-US-V4-RECOVERY-2026-10-11-object-change.md handoff. PR8857 merged
   normally to31afbfe1237e; B03 paging/filter/exact relation/sign-out and candidate
   Return in EN grid/table/Today and settled ZH are accepted live in the retained
   b03-and-return-live-acceptance-20261011.json receipt. All corresponding source,
   review, CI, adoption and live checks are closed; do not repeat them.
-  Complete the independent pure per-object change projection and its code-gated
-  proof. It compares supplied native-owner reads only; route integration remains
-  behind DailyBrief8249. Preserve P1a8444 integration refusal and DailyBrief8249
-  source-edit refusal. HK/China shared adoption waits for actual P1a release;
-  owner-issued selection/review/history are not manufactured here.
+  Complete PR8874 with the upstream PR8870 calendar-dependency scope repair:
+  first CI38187164735 failed the unchanged import-closure test; its final semantic
+  evidence is consumed and closed. The reviewed comparison source/test bytes are
+  unchanged by current-main composition. Route integration remains behind
+  DailyBrief8249. Human explicitly reopened original P1a8444 main integration and
+  chose DailyBrief8249 as canonical with source repair; only refusals6029541334
+  and5924461491 are superseded. Both original operations are active, so do not
+  duplicate them or ask again. HK/China adoption waits for actual P1a release.
+  Today/standouts remains the selection owner; native object binding is required
+  before its own selection provenance can be emitted. No second selector or
+  manufactured owner/review/history receipt.
   Earlier progression below is historical and does not reopen closed evidence.
   2026-10-11 B1 validation continuation: use
   PROPHET-US-V4-RECOVERY-2026-10-11-b1-validation-performance.md and programme

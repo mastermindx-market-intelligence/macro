@@ -4284,6 +4284,12 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # PR #7861: Options matrix source/session/retention checks are hermetic.
+    # The exclusive manifest scope retains both suites, their concrete import
+    # closure, config.yml fallback and the retention-fixture wildcard. This
+    # removes only the filesystem probes' unrelated opaque fallback scopes;
+    # the code gate, closure audit and packing ceilings remain unchanged.
+    "options-matrix-code",
     "push-retry-policy",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
