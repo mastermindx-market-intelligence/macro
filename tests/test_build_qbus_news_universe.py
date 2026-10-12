@@ -154,6 +154,28 @@ def test_wrapper_refuses_missing_or_unreadable_owner_artifact(tmp_path):
     assert exc.value.code == "owner_artifact_unreadable"
 
 
+def test_read_parquet_reads_owner_artifacts_single_threaded(monkeypatch, tmp_path):
+    """Owner parquets are read with use_threads=False: once pyarrow's process-wide
+    CPU thread pool has run tasks, its exit-time teardown intermittently aborts the
+    interpreter (SIGABRT, "terminate called without an active exception") after the
+    receipt is already printed, which is what made the direct-subprocess test flaky
+    on multi-core Linux runners."""
+    paths = _fixtures(tmp_path / "data")
+    forwarded = {}
+    real_read_parquet = pd.read_parquet
+
+    def spy(path, **kwargs):
+        forwarded[Path(path).name] = dict(kwargs)
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(cli.pd, "read_parquet", spy)
+
+    rows = cli._read_parquet(paths["current"], include_index=True)
+
+    assert forwarded["constituents.parquet"] == {"use_threads": False}
+    assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
+
+
 def test_cli_defaults_to_check_only_and_emits_metadata_not_roster(monkeypatch, tmp_path, capsys):
     paths = _fixtures(tmp_path / "data")
     out = tmp_path / "qbus" / "news_universe.json"
