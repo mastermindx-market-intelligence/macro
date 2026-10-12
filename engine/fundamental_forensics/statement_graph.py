@@ -20,6 +20,8 @@ from xml.etree import ElementTree as ET
 
 from collectors.sec_filing_parser import parse_sec_filing_document
 
+from .disclosure_diff import _attribute_map, _span_attribute, _span_overflow
+
 LINK = "http://www.xbrl.org/2003/linkbase"
 XLINK = "http://www.w3.org/1999/xlink"
 XML = "http://www.w3.org/XML/1998/namespace"
@@ -497,6 +499,122 @@ def _is_ix_numeric(tag: str) -> bool:
     return compact.endswith("nonfraction") or compact.endswith(":nonfraction")
 
 
+_DISPLAYED_LAYOUT_UNSUPPORTED = "displayed statement layout unsupported:"
+
+
+def _layout_unsupported(detail: str) -> StatementGraphError:
+    return StatementGraphError(f"{_DISPLAYED_LAYOUT_UNSUPPORTED} {detail}")
+
+
+def _grid_slot(*, text: str, facts: list[dict[str, Any]], colspan: int, rowspan: int, rowspan_carry: bool, colspan_carry: bool) -> dict[str, Any]:
+    return {
+        "text": text,
+        "facts": facts,
+        "colspan": colspan,
+        "rowspan": rowspan,
+        "rowspan_carry": rowspan_carry,
+        "colspan_carry": colspan_carry,
+    }
+
+
+def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> list[list[dict[str, Any]]]:
+    """Place source cells onto a (row, col) grid honoring rowspan/colspan.
+
+    Origin slots keep text and facts. Colspan continuations are empty placeholders so
+    spacer groups (the AAPL pattern) do not duplicate dates or facts. A label rowspan
+    carries its text down the occupied rows with ``rowspan_carry``. Overlap, a span
+    past the captured table, a span overflow, or a hole after expansion is
+    ``displayed statement layout unsupported``.
+    """
+    if not raw_rows:
+        return []
+    occupied: dict[int, dict[int, dict[str, Any]]] = {}
+    row_count = len(raw_rows)
+    max_col = 0
+
+    def place(row: int, col: int, cell: dict[str, Any]) -> None:
+        slot = occupied.setdefault(row, {})
+        if col in slot:
+            raise _layout_unsupported(f"overlapping cell at row {row} column {col}")
+        slot[col] = cell
+
+    for row_index, raw in enumerate(raw_rows):
+        column = 0
+        for source in raw:
+            if source.get("span_overflow"):
+                raise _layout_unsupported("span exceeds the supported bound")
+            colspan = int(source.get("colspan") or 1)
+            rowspan = int(source.get("rowspan") or 1)
+            if rowspan == 0:
+                rowspan = row_count - row_index
+            if colspan < 1 or rowspan < 1:
+                raise _layout_unsupported("span is not a positive occupancy")
+            while column in occupied.get(row_index, {}):
+                column += 1
+            for row_delta in range(rowspan):
+                target_row = row_index + row_delta
+                if target_row >= row_count:
+                    raise _layout_unsupported("rowspan overruns the table")
+                for col_delta in range(colspan):
+                    target_col = column + col_delta
+                    if row_delta == 0 and col_delta == 0:
+                        cell = _grid_slot(
+                            text=str(source.get("text") or ""),
+                            facts=list(source.get("facts") or []),
+                            colspan=colspan,
+                            rowspan=rowspan,
+                            rowspan_carry=False,
+                            colspan_carry=False,
+                        )
+                    elif row_delta == 0:
+                        cell = _grid_slot(
+                            text="",
+                            facts=[],
+                            colspan=1,
+                            rowspan=1,
+                            rowspan_carry=False,
+                            colspan_carry=True,
+                        )
+                    elif col_delta == 0:
+                        cell = _grid_slot(
+                            text=str(source.get("text") or ""),
+                            facts=[],
+                            colspan=1,
+                            rowspan=1,
+                            rowspan_carry=True,
+                            colspan_carry=False,
+                        )
+                    else:
+                        cell = _grid_slot(
+                            text="",
+                            facts=[],
+                            colspan=1,
+                            rowspan=1,
+                            rowspan_carry=True,
+                            colspan_carry=True,
+                        )
+                    place(target_row, target_col, cell)
+            column += colspan
+            if column > max_col:
+                max_col = column
+        while column in occupied.get(row_index, {}):
+            column += 1
+            if column > max_col:
+                max_col = column
+
+    grid: list[list[dict[str, Any]]] = []
+    for row_index in range(row_count):
+        row_map = occupied.get(row_index, {})
+        row_cells: list[dict[str, Any]] = []
+        for column in range(max_col):
+            cell = row_map.get(column)
+            if cell is None:
+                raise _layout_unsupported(f"ragged grid at row {row_index} column {column}")
+            row_cells.append(cell)
+        grid.append(row_cells)
+    return grid
+
+
 class _StatementTableParser(HTMLParser):
     """Visible HTML table for one captured primary statement title."""
 
@@ -515,6 +633,16 @@ class _StatementTableParser(HTMLParser):
         self._cell_facts: list[dict[str, Any]] = []
         self._row_cells: list[dict[str, Any]] = []
         self._ix_open: dict[str, Any] | None = None
+        self._cell_colspan = 1
+        self._cell_rowspan = 1
+        self._cell_span_overflow = False
+        self._grid_finalized = False
+
+    def _finalize_grid(self) -> None:
+        if self._grid_finalized:
+            return
+        self._grid_finalized = True
+        self.rows = _expand_displayed_statement_grid(self.rows)
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if self._ended:
@@ -534,9 +662,15 @@ class _StatementTableParser(HTMLParser):
             self._row_cells = []
             return
         if tag in {"td", "th"} and self._in_row:
+            attr_map = _attribute_map(attrs)
             self._in_cell = True
             self._cell_text = []
             self._cell_facts = []
+            self._cell_colspan = _span_attribute(attr_map.get("colspan"))
+            self._cell_rowspan = _span_attribute(attr_map.get("rowspan"), rowspan=True)
+            self._cell_span_overflow = _span_overflow(attr_map.get("colspan")) or _span_overflow(
+                attr_map.get("rowspan")
+            )
             return
         if self._in_cell and _is_ix_numeric(tag):
             self._ix_open = {
@@ -560,10 +694,23 @@ class _StatementTableParser(HTMLParser):
             return
         if tag in {"td", "th"} and self._in_cell:
             text = re.sub(r"\s+", " ", "".join(self._cell_text)).strip()
-            self._row_cells.append({"text": text, "facts": list(self._cell_facts)})
+            self._row_cells.append(
+                {
+                    "text": text,
+                    "facts": list(self._cell_facts),
+                    "colspan": self._cell_colspan,
+                    "rowspan": self._cell_rowspan,
+                    "span_overflow": self._cell_span_overflow,
+                    "rowspan_carry": False,
+                    "colspan_carry": False,
+                }
+            )
             self._in_cell = False
             self._cell_text = []
             self._cell_facts = []
+            self._cell_colspan = 1
+            self._cell_rowspan = 1
+            self._cell_span_overflow = False
             return
         if tag == "tr" and self._in_row:
             self._in_row = False
@@ -576,6 +723,7 @@ class _StatementTableParser(HTMLParser):
                     if "see accompanying notes" in joined.lower():
                         self._ended = True
                         self._row_cells = []
+                        self._finalize_grid()
                         return
                     self.rows.append(self._row_cells)
             self._row_cells = []
@@ -584,6 +732,7 @@ class _StatementTableParser(HTMLParser):
             self._table_depth -= 1
             if self._capturing and self._table_depth == 0:
                 self._ended = True
+                self._finalize_grid()
         if self._ix_open is not None and _is_ix_numeric(tag):
             self._cell_facts.append(self._ix_open)
             self._ix_open = None
@@ -601,6 +750,8 @@ def parse_displayed_primary_table(html: str, *, title: str) -> dict[str, Any]:
     """Source-backed composition of one captured primary filing table."""
     parser = _StatementTableParser(title)
     parser.feed(html)
+    parser.close()
+    parser._finalize_grid()
     if not parser.rows:
         raise StatementGraphError(f"displayed statement table is absent: {title}")
     header_dates: list[str] = []
@@ -634,6 +785,8 @@ def parse_displayed_primary_table(html: str, *, title: str) -> dict[str, Any]:
                 "label": label,
                 "value_facts": value_facts,
                 "abstract": not bool(value_facts),
+                "rowspan_carry": bool(label_cell and label_cell.get("rowspan_carry")),
+                "order": len(display_rows),
             }
         )
     if len(header_dates) < 2:
