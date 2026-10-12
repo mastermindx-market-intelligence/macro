@@ -27,6 +27,20 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  microstructure-pressure-response-r0:
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install deterministic source-research test dependencies
+        run: pip install pytest
+      - name: point-in-time equity pressure and private pilot projection
+        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py -q
+
   yahoo-daily-archive-refresh:
     if: ${{ false }}
     gate: code
