@@ -55,8 +55,10 @@ def window_last_session(s_date: date, h: int) -> date | None:
 
 
 def purge_flag(split: str, coverage: date | None) -> bool:
+    """Unknown window coverage is purged (never fail-open). TRAIN purges when
+    coverage >= 2024-01-01; TUNE purges when coverage >= 2026-10-01."""
     if coverage is None:
-        return False
+        return True
     if split == "TRAIN" and coverage >= SPLIT_TUNEE_START:
         return True
     if split == "TUNE" and coverage >= SPLIT_QUARANTINE_START:
@@ -152,7 +154,13 @@ def build_membership(protocol_id: str, episodes_by_h: dict[int, list],
 
 def membership_table_rows(sha_table: dict, count_table: dict,
                           protocol_id: str) -> list[dict]:
-    """The seal's membership table rows for one protocol."""
+    """The seal's membership table rows for one protocol.
+
+    Extra graded-only fields are NEVER added here: s2_state copies these
+    rows into the prereg spec, and the prereg digest must stay identical
+    to v1. Graded fields are attached by enrich_membership_rows_with_graded
+    in the seal builder only.
+    """
     rows = []
     for h in GRADE_HORIZONS:
         for split in ("TRAIN", "TUNE", "QUARANTINE"):
@@ -166,3 +174,35 @@ def membership_table_rows(sha_table: dict, count_table: dict,
                 "membership_sha256": shas.get(split),
             })
     return rows
+
+
+def enrich_membership_rows_with_graded(rows: list[dict],
+                                       lines_by_h: dict) -> list[dict]:
+    """Attach graded-only count/digest fields for the v1.1 seal.
+
+    membership_sha256 (all lines, including census-only) is left unchanged.
+    graded_membership_sha256 hashes the canonical lines whose flags.census_only
+    is false, in the same episode_key order they already have in the manifest.
+    """
+    out = []
+    for row in rows:
+        h = int(row["horizon"])
+        split = row["split"]
+        graded: list[str] = []
+        census_n = 0
+        for line in lines_by_h.get(h, []) or lines_by_h.get(str(h), []):
+            obj = json.loads(line)
+            if obj.get("split") != split:
+                continue
+            if obj.get("flags", {}).get("census_only"):
+                census_n += 1
+            else:
+                graded.append(line if line.endswith("\n") else line + "\n")
+        payload = "".join(graded)
+        enriched = dict(row)
+        enriched["graded_membership_count"] = len(graded)
+        enriched["graded_membership_sha256"] = hashlib.sha256(
+            payload.encode("utf-8")).hexdigest()
+        enriched["census_only_count"] = census_n
+        out.append(enriched)
+    return out
