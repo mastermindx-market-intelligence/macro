@@ -619,3 +619,28 @@ def test_incumbent_admission_import_bridge_only_accepts_current_triple(monkeypat
     refused=module.scan_tickers(["PFE"],now_utc=NOW)
     assert refused["publication_state"]=="UNAVAILABLE"
     assert "sensitive source" not in str(refused)
+
+
+@pytest.mark.parametrize("days", [8, 10, 100])
+def test_historical_backfill_window_cannot_certify_current_complete_empty(days):
+    from dataclasses import replace
+    receipt = replace(coverage_receipt(returned_events=0),
+                      window_start_utc=NOW - timedelta(days=days))
+    scan = compose_scan(["PFE"], packets=[], issuers=UNIVERSE,
+                        coverage=receipt, as_of=NOW)
+    assert scan["publication_state"] == "UNAVAILABLE"
+    assert scan["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    assert not scan["results"][0]["what_changed"]
+
+
+def test_verified_current_seven_day_window_with_small_clock_lag_is_eligible():
+    from dataclasses import replace
+    lag = timedelta(minutes=5)
+    checked = NOW - lag
+    receipt = replace(coverage_receipt(returned_events=0),
+                      window_start_utc=checked-timedelta(days=7),
+                      window_end_utc=checked, checked_at_utc=checked)
+    scan = compose_scan(["PFE"], packets=[], issuers=UNIVERSE,
+                        coverage=receipt, as_of=NOW)
+    assert scan["publication_state"] == "COMPLETE_EMPTY"
+    assert scan["results"][0]["status"] == "NO_QUALIFIED_EVENT"

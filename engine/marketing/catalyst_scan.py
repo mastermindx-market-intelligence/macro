@@ -339,6 +339,7 @@ def _complete_current_coverage(receipt: SourceCoverageReceipt | None,
                            _utc(receipt.window_end_utc), _utc(receipt.checked_at_utc))
     if (start is None or end is None or checked is None
             or start > end or start > now - _PILOT_WINDOW
+            or start < now - _PILOT_WINDOW - _CURRENT_RECEIPT
             or end > checked
             or checked > now
             or now - checked > _CURRENT_RECEIPT
