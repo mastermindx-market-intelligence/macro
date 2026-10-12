@@ -73,6 +73,88 @@ danger_areas:
 prs: [8698, 8870, 8875, 945, 955]
 ---
 
+Active continuation, 2026-10-12 09:38 UTC. The historical blocked ending in the
+frontmatter predates the Chairman's instruction to continue; the mission is now
+being executed in the same original task. This paragraph supersedes dated queued
+CI, archive-settled and ticker-entitlement inferences below.
+
+The completed prefix04 snapshot qualifies 11,690 nonempty EOD histories and
+24,600,974 distinct bars. Reused-catalogue coverage records 21 empty candidates
+and 35,978 uncaptured windows; absence of an accepted capture does not prove an
+unattempted request. Its qualification and coverage hashes are bound in
+`docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json`. Capture
+continues on the same original operation; whole-batch completion is not assumed.
+
+Two new fundamentals cohorts qualify 75 successful requests, 146,717 projected
+rows and 1,598 original/revised differences over 25,342 unambiguous fiscal metric
+keys. The installed immutable 2c90 reader consumes new JPM and AXP original,
+revised and daily modes, plus EBAY/DWCH EOD. Actual served depth is three years.
+SHW and PFE exact original-statement HTTP 400 failures remain held; no purchase,
+account change, denied-request replay or support email occurred.
+
+The independently adjudicated source change registers exactly four existing
+EOD/fundamentals L0/L1 contracts as PRODUCED for this completed research corpus.
+Its storage/context declarations are corrected; partition-dependent fundamentals
+grains retain their actual statement/daily shapes. The other twenty contracts,
+all adapter qualifiers, source-access and host bindings remain unchanged. All
+100 affected tests and architectural integration review passed. Hosted CI, landing
+and selecting/testing a new immutable installed registry are the next source lane;
+the existing 2c90 installation is retained until then.
+
+A new artifact-worker request `tiingo-four-contract-registration-builder-01a12ab6-v1`
+failed before launch with PermissionError in its original adapter state directory.
+Same-id status was NOT_FOUND: no lease/worker/result is claimed, and no denied
+dispatch retry or native labor replacement occurred. The principal applied the
+frozen bounded change directly in its already-permitted SSD worktree. The separate
+native reasoning coordinator performed source-contract adjudication only.
+
+Macro evidence PR #8981 merged at 63592923260e240d5cbbd24916ad4d8dc865db9a;
+its original hosted CI 38227044117 completed SUCCESS at tested head 6ced964c.
+This closes that source/evidence chain, not the Tiingo mission. Continue the
+original capture and remaining authorized lanes without ending at this save.
+
+The original finite operation `eod-wave8-fixed-unattempted-20261012-01a12ab6` is
+running on unchanged collector head 2a08250f, with four in flight and twelve prior
+failed exact requests excluded. Retained scope hash
+38aafc8460af7dead299c92bbafc1b64f3770752a1d86c1e552e474cd005ecda binds actual quota,
+source, prior settlement and method. The original exec return and task artifact log
+remain its return path; no observer, recurring runtime or completion is inferred.
+The temporary credential/counter overwrite was reproduced offline and independently
+reviewed fixed at 9c471937. Fabric review completed on stable ID
+`tiingo-eod-fixed-harness-review-01a12ab6-v1`; parent code acceptance is proven, but
+the denied ledger lock write remains unrecorded and unretried on its original carrier.
+DVVDF/DVXB/DVYA/EA do not prove ticker entitlement and remain excluded anyway.
+
+Latest qualified snapshot: 9916 nonempty histories / 20761012 distinct bars, 191
+new immutable responses qualified, and reused-catalogue census 37755 uncaptured
+windows / 18 empty candidates. Installed 2c90 Data and Lab read new EBAY/DWCH
+histories, retaining raw/adjusted prices and source lineage. Thirty new ten-company
+fundamentals captures qualified 58501 rows with 9940 unambiguous compared fiscal
+keys / 518 changed original-revised values. Three new JPM modes were read by the
+installed selector. Actual response dates remain about three years despite deep
+request starts. PIT, dated canonical identity and full served scope remain open.
+
+A first standalone AAPL splits request returned HTTP 403 with the stable correct
+credential; the cohort settled after one failure. That exact request stays held,
+with no retry, alternate account or successful corporate-action projection. No
+purchase, support email or account change was made. The metadata approximate quota
+clock has an explicit erratum; corrected EOD continuation uses an actual loaded
+browser timestamp and a nonnegative maximum 900-second quota age.
+
+Current Terminal 955 head de8aca83cd6a3072eba861ce494d9e644baca75f passed all twelve
+dispatched jobs on 38214240947. Its original run 38214248199 is still action_required.
+The exact human approval request is pending; no approval or protected merge is
+assumed. Continue completed-response qualification while capture runs. After actual
+required CI/merge, refresh narrow VPS preflight, invoke the single prepared existing
+builder only when all real preconditions pass, then complete original finite BOATS
+publication and raw/relay/Hub/API/responsive-browser joins. Preserve every earlier
+refusal and same-carrier reconciliation obligation.
+
+Current safe evidence: `docs/tiingo-evidence/20261012-delivery-frontier/safe-frontier.json`
+and `capture-harness-and-consumer-delta.json`. This is a material save during active
+execution, not another programme stop.
+
+
 The assigned mission remains active and incomplete. This checkpoint saves a real
 human CI admission gate after independent permitted work; it creates no observer,
 schedule or promise of unattended continuation. Current aggregate evidence is
@@ -89,3 +171,86 @@ Specific human admission:
 [current run 38209480199](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38209480199).
 Existing installed research and settled archive evidence can be consumed without
 repeating accepted installation or collection.
+
+## Contract discovery adoption — hosted wiring repair
+
+PR #8986 registers exactly four existing EOD/fundamentals L0/L1 research contracts
+as PRODUCED. The original hosted run 38233444256 tested head
+`5dc4c86aa6711a480f9a6b08b80bc852e0cfd678` and reported one introduced defect:
+the new `tests/test_tiingo_produced_contracts.py` suite was not named by a hosted
+run step. The repair wires it into the existing `dataos-web-workspace` job and
+adds job/workflow triggers for the suite and its actual accepted-corpus evidence.
+No waiver, permission, secret, approval rule or qualification boundary changes.
+The 39 affected consumer tests pass; the existing planner's inferred closure has
+no uncovered paths for that job and the audit recognizes the run-step binding.
+The repaired source requires its own original hosted CI acceptance before merge
+and immutable Data & Lab release preparation or selection.
+
+The newer completed-response snapshot has 12336 nonempty histories / 26192729
+distinct bars. Its reused-catalogue census records 23 empty candidates and 35330
+uncaptured windows; uncaptured does not imply unattempted. A disjoint next finite
+5000-symbol EOD plan excludes all 16 known held symbols and existing/reserved EOD
+requests. It has launched no requests and requires the original running batch to
+settle plus fresh source, storage and account-quota checks before capture.
+Fundamentals expansion remains held after the new PFE statements HTTP 400; the
+previous 75 successful captures and installed-reader proof remain accepted.
+
+Terminal #955 still has head `de8aca83cd6a3072eba861ce494d9e644baca75f` and its
+original run **38214248199** requires maintainer approval. This exact current
+binding supersedes the historical run links above. No new dispatch, approval,
+runtime release or public BOATS publication is implied by this save.
+
+
+## Paired publication fixture repair and completed archive delivery
+
+The original repaired PR #8986 run **38236030243** at
+`55808ccf2925ba39e9a4b53b3f7e1d7fec1eb26d` concluded FAILURE. The protected
+semantic gate found 505 passed and three unknown proofs. Both failing macro
+preservation tests also failed on the actual base, but their signatures differ;
+no inherited-failure waiver is accepted. A full fourteen-target diagnostic found
+both publication-context and real national-debt freshness/coverage drift, so
+provenance restamping and production-page rebaking were rejected.
+
+The repair changes only the preservation tests' data root to fifteen original
+manifest/snapshot JSON blobs from published Git commit
+`a58cf3cb6de26b702069515292beeba8309e32ab`. All 1347546 source bytes remain
+unchanged. All fourteen original contract/content-hash/manifest-size validations
+pass and their generation hashes match the actual committed pages. Complete
+region comparisons remain unconditional, including the hub's fourteen inputs,
+per-page and altered build clocks, body mutations and a new rendered-provenance
+mutation. The existing CI job explicitly owns the fixture folder. No renderer,
+page, producer, failure-signature or CI-acceptance rule changes. Independent
+architecture review accepts the actual paired-input repair; 175 affected tests
+pass in 30.24 seconds. Fresh hosted proof for the new exact head is still required.
+
+The original 5000-symbol EOD scope is settled: 4988 successful captures are
+qualified (4980 nonempty, eight empty; 11045978 bars), with twelve original vendor
+failures held. Its fixed remaining operation completed 3541 successes with no
+failures. A disjoint next 5000-symbol operation started at 10:27:56 UTC after real
+source, quota and reserve checks, preserving all sixteen known held symbols and
+existing requests. It remains running, without retries of failed vendor effects.
+Its accepted prefix03 brings the archive to **14641 nonempty histories /
+31135440 bars**, with 26 empty and 33022 uncaptured catalogue windows. These are
+bounded research facts, not full-vendor history or point-in-time admission.
+
+The actually selected existing Data & Lab release read the new CHFN history
+through its unchanged launcher and produced version-pinned source/query receipts.
+Its 4050 adjusted-price bars pass the real retrospective Lab input profile. The
+new registry release and one actual Tiingo-input Lab canary remain prepared and
+unexecuted behind PR #8986's fresh hosted/merge gate. No installation replay or
+new runtime selection is claimed.
+
+Terminal #955 is now at incumbent head
+`0e63c97ddb5d60a19c4c6ade1487f1a662b73199`, after a base refresh whose only
+changes from `de8aca83` are the peer ticker-news hook and its race tests. Original
+pull-request run **38237168665** requires maintainer approval; original dispatched
+run **38237161644** was running when observed. This exact binding supersedes all
+earlier Terminal run links, without another approval attempt or replacement
+dispatch. Deployment and public BOATS consumer acceptance remain unexecuted.
+
+Official BOATS venue scheduling places the next published opening at
+**2026-10-13 00:00 UTC**; the current venue session is closed. There is no scheduler
+or subscriber launch receipt for that future opening. Preserve authentic venue
+semantics and the original human CI gate, frozen provider/permission effects,
+incumbent writers, current consumer ceilings and original retained evidence while
+continuing independent capture and qualification.

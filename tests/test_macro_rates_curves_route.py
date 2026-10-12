@@ -15,6 +15,7 @@ never imports scripts.build_bonds.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import math
 import re
@@ -34,6 +35,7 @@ from scripts import build_macro_suite_pages as builder
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / "templates"
 BUILT_AT = "2026-09-09T12:00:00Z"
+T11_DATA = ROOT / "tests" / "fixtures" / "macro_suite_t11"
 
 NOMINAL_TENORS = ("3m", "6m", "1y", "2y", "3y", "5y", "7y", "10y", "20y", "30y")
 TENOR_TO_SERIES = {
@@ -727,13 +729,16 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     Each target is rendered with that committed page's own page-built stamp
     so a stamp sitting inside the region cannot itself become a mismatch, and
     so a sibling rebake that moves one stamp cannot disable this test.
+
+    The immutable paired publication inputs are the original Git bytes behind
+    these committed page regions. Nightly site/macrodata republishes independently
+    of the HTML goldens; comparing two different generations tests input drift,
+    not preservation by the current renderer. No provenance is substituted.
     """
-    assert (ROOT / "site" / "macrodata").is_dir(), (
-        "site/ is not materialised — python3 scripts/worktree_sparse.py add site"
-    )
+    assert T11_DATA.is_dir(), "the paired T11 publication fixture is missing"
     _copy_site_assets(tmp_path)
     env = builder._environment(ROOT)
-    data = ROOT / "site" / "macrodata"
+    data = T11_DATA
     entries: list[Any] = []
     for page in builder.SUITE_PAGES:
         committed_path = ROOT / "site" / page.output
@@ -815,7 +820,7 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     # that uses the altered stamp. A skip is impossible here — there is no
     # shared-stamp gate.
     env = builder._environment(ROOT)
-    data = ROOT / "site" / "macrodata"
+    data = T11_DATA
     page = next(p for p in builder.SUITE_PAGES if p.output == name)
     out = tmp_path / "rendered"
     out.mkdir()
@@ -830,6 +835,49 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     assert before == after
     assert altered_stamp in before
     assert stamp not in before
+
+
+def test_11_paired_publication_bytes_and_generations_are_preserved() -> None:
+    binding = json.loads((T11_DATA / "source-binding.json").read_text())
+    assert binding["source_commit"] == "a58cf3cb6de26b702069515292beeba8309e32ab"
+    expected_paths = {"workspaces/manifest.json"} | {
+        f"workspaces/{page.workspace_id}/{page.region}/latest.json"
+        for page in builder.SUITE_PAGES
+    }
+    assert {item["path"] for item in binding["files"]} == expected_paths
+    assert len(binding["files"]) == len(expected_paths) == 15
+    for item in binding["files"]:
+        original_bytes = (T11_DATA / item["path"]).read_bytes()
+        assert len(original_bytes) == item["bytes"]
+        assert hashlib.sha256(original_bytes).hexdigest() == item["sha256"]
+    for page in builder.SUITE_PAGES:
+        # The production reader still validates contract, content hash and the
+        # original manifest's byte count before any rendering happens.
+        snapshot, _artifact = builder.read_workspace(T11_DATA, page)
+        committed = (ROOT / "site" / page.output).read_text()
+        assert snapshot["generation"]["content_sha256"] in committed
+        assert snapshot["generation"]["generation_id"] in committed
+
+
+def test_11_wrong_rendered_provenance_still_fails(tmp_path, monkeypatch) -> None:
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "trade_flows")
+    committed = (ROOT / "site" / page.output).read_text()
+    evidence = macro_suite_view._evidence
+
+    def wrong_producer_revision(*args, **kwargs):
+        result = evidence(*args, **kwargs)
+        result["generation"]["code_version"] = "0" * 40
+        return result
+
+    monkeypatch.setattr(macro_suite_view, "_evidence", wrong_producer_revision)
+    builder.build_page(
+        ROOT, page, data_root=T11_DATA, out_dir=tmp_path,
+        env=builder._environment(ROOT), page_built_at=_page_built_stamp(committed),
+    )
+    with pytest.raises(AssertionError, match="NOT byte-identical"):
+        _assert_same_macro_suite_region(
+            committed, (tmp_path / page.output).read_text(), page.output,
+        )
 
 
 # ---------------------------------------------------------------------------
