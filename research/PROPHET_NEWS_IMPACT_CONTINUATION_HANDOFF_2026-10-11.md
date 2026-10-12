@@ -69,8 +69,8 @@ successor loses at most one cycle. Masterplan:
 
 ## 3. OPEN
 
-- O1. Commission A freeze — awaiting ORCH-W1's synthesis (nine lane artifacts + one
-  recommendation). The seat adjudicates by artifact, not by the orchestrator's report.
+- O1. Commission A freeze — ORCH-W1 returned C2 + D1 ACCEPTED; D2/D3/C3 DELIVERED and D1_repair RUNNING on
+  ubuntu2; ORCH-W1b verifies all four by artifact. The seat adjudicates by artifact, not by the orchestrator's report.
 - O2. Whether `SourceDocument`/`verify_span` admit non-filing news URLs as-is or need a
   LEAF adapter (C2 lane answers with executed probes).
 - O3. (answered) `.github/workflows/ci.yml` triggers on every path; the selector,
@@ -79,10 +79,10 @@ successor loses at most one cycle. Masterplan:
 
 ## 4. NEXT
 
-- N1. Judge ORCH-W1 by artifact (`$S/census/C{1,2,3}_*.md`, `$S/design/D{1,2,3}_*`,
-  `$S/design/SYNTHESIS_RECOMMENDATION.md`, kit record
-  `orch/fabric/reviews/PROPHET_NI_W1_r1.md`); re-run the `additionalProperties` walk
-  and the forbidden-name grep (confidence|score|target|fair_value) in the seat.
+- N1. Judge ORCH-W1b by artifact (`$S/design/D2_*`, `$S/design/D3_*`, `$S/census/C3_owners_remote_r1.md`,
+  `$S/design/D1r/*` once D1_repair lands, kit record `orch/fabric/reviews/PROPHET_NI_W1b_r1.md`); re-run
+  `$S/orch/validate_schema.py` and the forbidden-name grep (confidence|score|target|fair_value) in the seat;
+  then the seat judge panel D1r vs D2 vs D3 -> freeze doc sections 2/3/5/9/10.
 - N2. Write `PHASE0_FREEZE_2026-10-11.md` and `contracts/news_impact/*.schema.json`;
   one native opus `reviewer` attack pass; commit; `git fetch origin`; open the Phase 0
   PR; carry it to merged on concluded checks; verify against freshly fetched
@@ -94,10 +94,11 @@ successor loses at most one cycle. Masterplan:
 
 | lane | role | tier/pool | cwd | sentinel | budget | state |
 |---|---|---|---|---|---|---|
-| ORCH-W1 | native Opus orchestrator, Phase 0 judge panel | opus (native `orchestrator`) | seat scratchpad `$S` | task notification | one wave | RUNNING (spawned 2026-10-11) |
-| C1_tape / C2_contracts / C3_owners | read-only census | glm-5.3-flash, local glm pool | shared RO worktree `prophet-ni-w1-ro` | `<LANE>: <VERDICT> <sha>` in `$S/out/<lane>.out` | ≤40 min each | owned by ORCH-W1 |
-| D1_fact_integrity / D2_labeler_first / D3_consumer_first | design candidates (commission A) | glm-5.3, local glm pool | same RO worktree | same | ≤60 min each | owned by ORCH-W1 |
-| R1 / R2 / R3 | attack reviews, different lane than author | glm-5.3 | same RO worktree | same | ≤45 min each | owned by ORCH-W1 |
+| ORCH-W1 | native Opus orchestrator, Phase 0 census + D1 judge | opus (native `orchestrator`) | seat scratchpad `$S` | task notification | one wave | RETURNED 2026-10-11; C2 + D1 ACCEPTED by artifact (record `orch/fabric/reviews/PROPHET_NI_W1_r1.md`); D2/D3/C1/C3/R1-R3 never launched there (m2 load gate 16 vs load 25-101) |
+| ORCH-W1b | native Opus orchestrator, fabric-only verification of D2/D3/C3 + one bounded wait on D1_repair | opus (native `orchestrator`) | seat scratchpad `$S` | task notification + `orch/fabric/reviews/PROPHET_NI_W1b_r1.md` | one wave | DIED 2026-10-11 20:1xZ on the Opus session limit (HTTP 429) before writing its record (0 bytes, nothing verified); verification re-commissioned as ORCH-W1c after the 21:50Z reset |
+| C1_tape / C2_contracts / C3_owners | read-only census | C2 grok on m2 under ORCH-W1; C1 seat-direct (`$S/census/c1_tape.py`); C3 glm-5.3-flash on ubuntu2 via `remote_sub.sh` (census class) | ORCH-W1 RO worktree `prophet-ni-w1-ro` / ubuntu2 lane clone (empty working tree; reads via show HEAD) | `<LANE>: <VERDICT> <sha>` in `$S/out/<lane>.out` or `.return.md` | <=40 min each | C2 ACCEPTED 08:14Z; C1 DELIVERED (seat); C3 DELIVERED PARTIAL 20:02Z (K=1 adapter; K3-D propagation contract ABSENT on main; 17-row reuse matrix) |
+| D1_fact_integrity / D2_labeler_first / D3_consumer_first / D1_repair | design candidates (commission A) + D1 repair under D13-D17 | D1 grok on m2 under ORCH-W1; D2/D3/D1_repair glm-5.3 on ubuntu2 (architecture, C2_COMPLEX_BOUNDED, escalation reason recorded) | same | same | <=60 min each (ubuntu2 cap 7200 s) | D1 ACCEPTED 08:2xZ (16/16 closed nodes, 6/6 cases); D2 + D3 DELIVERED PASS 19:54Z; D1_repair DELIVERED 20:23Z sentinel PARTIAL (suite 19/19 expected-matched; PARTIAL only because the host clone's pre-existing staged deletions fail the empty-porcelain item; clone untouched, `.git` only) - seat verification pending |
+| R1 / R2 / R3 | attack reviews, different lane than author | never launched (m2 load gate); D1 reviewed instead by a native Opus `reviewer` -> `$S/design/D1_review_opus.md` = USABLE_WITH_GRAFTS -> seat rulings D13-D17 | n/a | n/a | n/a | SUPERSEDED; R_D1r adversarial review to be commissioned after the judge panel |
 
 `$S` = the seat session scratchpad (not in the repository); the durable copies of the
 accepted artifacts land under `research/prophet_v4/news_to_business_impact_20261006/`
@@ -105,4 +106,4 @@ in the Phase 0 PR.
 
 ## 6. Ladder rung reached
 
-Phase 0: RUNNING (orchestrator live; no artifact DELIVERED yet). Nothing MERGED.
+Phase 0 (updated 2026-10-11 23:5xZ): ORCH-W1 ACCEPTED by artifact (C2 ACCEPT 08:14Z; D1 ACCEPT 16/16 closed nodes, 6/6 worked cases; record `orch/fabric/reviews/PROPHET_NI_W1_r1.md`). D2_labeler_first + D3_consumer_first DELIVERED PASS 19:54Z, C3_owners DELIVERED PARTIAL 20:02Z, D1_repair DELIVERED PARTIAL 20:23Z (suite 19/19), all on ubuntu2 via `remote_sub.sh`. ORCH-W1b DIED on the Opus session limit before verifying anything; verification of D1r/D2/D3/C3 by artifact is NOT STARTED at this checkpoint (re-commissioned as ORCH-W1c). Freeze doc drafted (sections 0/1/4/6/7/8 written; 2/3/5/9/10 pending the judge panel). This checkpoint commit opens the Phase 0 PR as DRAFT. Nothing at CI or beyond.
