@@ -33,7 +33,7 @@ import re
 import time
 from typing import Any, Callable, Iterable, Mapping
 
-from collectors.edgar_forensics import SecForensicsCollector, SecRequestPacer
+from collectors.edgar_forensics import SecForensicsCollector
 from collectors.sec_document_spine import (
     ArchiveResponseTooLarge,
     SecFilingArchiveCollector,
@@ -41,6 +41,7 @@ from collectors.sec_document_spine import (
     retain_filing_manifest,
     stored_manifest_content_index,
 )
+from collectors.sec_request_pacer import SecRequestPacer
 from engine.fundamental_forensics.models import canonical_json, parse_utc, utc_text
 from engine.fundamental_forensics.sec_document_spine import (
     FilingManifestError,

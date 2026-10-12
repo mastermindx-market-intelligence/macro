@@ -42,7 +42,7 @@ from typing import Any, Callable, Iterable, Iterator, Mapping
 
 import requests
 
-from collectors.edgar_forensics import SecRequestPacer
+from collectors.sec_request_pacer import SecRequestPacer
 from collectors.fundamental_forensics_acquisition import (
     AcquisitionError,
     AcquisitionTarget,

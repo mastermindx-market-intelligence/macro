@@ -21,7 +21,7 @@ from typing import Any, Callable, Mapping
 
 import requests
 
-from collectors.edgar_forensics import SecRequestPacer
+from collectors.sec_request_pacer import SecRequestPacer
 
 # Re-export the engine's exact pure contracts; HTTP and persistence stay here.
 from engine.fundamental_forensics.sec_document_spine import (

@@ -17,14 +17,17 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
 import threading
 
 import pytest
 
-from collectors.edgar_forensics import SecForensicsCollector, SecRequestPacer
+from collectors.edgar_forensics import SecForensicsCollector
 from collectors.fundamental_forensics_acquisition import acquire_bounded_filings
 from collectors.fundamental_forensics_companyfacts import SecCompanyFactsCollector
 from collectors.sec_document_spine import SecFilingArchiveCollector
+from collectors.sec_request_pacer import SecRequestPacer
 
 USER_AGENT = "MastermindX research@example.com"
 
@@ -267,3 +270,29 @@ def test_concurrent_acquires_never_mark_twice_inside_one_interval():
         assert later - earlier >= 0.12 - 1e-9
     # Every non-first acquire had to wait a positive interval.
     assert len(clock.sleeps) >= 2 * acquires_per_thread - 2
+
+
+def test_edgar_forensics_re_exports_the_stdlib_pacer() -> None:
+    import collectors.edgar_forensics
+    import collectors.sec_request_pacer
+
+    assert (
+        collectors.edgar_forensics.SecRequestPacer
+        is collectors.sec_request_pacer.SecRequestPacer
+    )
+
+
+def test_the_pacer_module_imports_without_heavy_dependencies() -> None:
+    code = (
+        "import sys\n"
+        "for name in ('pandas', 'requests', 'yaml'):\n"
+        "    sys.modules[name] = None\n"
+        "import collectors.sec_request_pacer\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=Path(__file__).resolve().parents[1],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
