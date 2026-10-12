@@ -32,25 +32,40 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955]
+    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Continue original finite EOD operation eod-wave8-fixed-unattempted-20261012-01a12ab6
-  and qualify only its completed immutable responses, excluding twelve held requests.
-  Latest accepted snapshot covers 9916 nonempty histories and 20761012 distinct bars;
-  capture is running and whole-batch completion is not claimed. The temporary harness
-  credential/counter collision was reproduced offline, corrected without changing
-  the collector or credential, independently reviewed at SHA 9c471937, and verified
-  by consecutive real successful captures. Exact failed requests remain held. Existing
-  Data and Lab consumed new EBAY/DWCH histories and three new JPM fundamentals modes.
-  Current Terminal 955 head de8aca83cd6a3072eba861ce494d9e644baca75f passed all twelve
-  dispatched jobs on 38214240947. Original PR run 38214248199 remains action_required
-  and requires actual maintainer approval before protected landing and fresh VPS
-  builder preflight. Preserve the prior automatic approval refusal. Standalone AAPL
-  split history returned HTTP 403 and its cohort stopped; do not retry it. Thirty
-  new fundamentals requests passed but serve roughly three years, with 518 changed
-  original/revised fiscal metric values. Full history, dated identity, PIT admission
-  and real BOATS production/consumer acceptance remain open. Save material deltas
-  and continue ready work; a checkpoint is not a mission stop.
+  Wave13 now accounts for all original 5000 selections exactly once across five
+  settled phases: 4994 qualified successes, six held transport failures and zero
+  never-admitted remainder. Qualified responses add 10976717 bars and 2468556453
+  raw bytes. All 28 proof hashes, actual admission mappings and phase receipt
+  clocks match. Preserve the original and three intermediate false completion
+  flags; no attempted failure was retried. LDHOF, LDHUF, LDKYQ, LDSSF, LFYC and
+  LIBHB remain held. The reused census is 38165 nonempty histories, 80781264 bars,
+  112 empty responses, 9411 uncaptured catalogue windows and one WTFNF whole-receipt
+  source-quality quarantine; uncaptured is not never-attempted or a retry queue.
+  Independent review accepted truthful outcome accounting and corrected the next
+  scope gate so a new final authentication/access refusal cannot admit further
+  capture merely through a symbol hold. Actual serial3 succeeded and qualified.
+  Continue original wave14, actually started 2026-10-12 22:45:37 UTC after fresh
+  source, collision, quota and storage checks. Its 5000 selections exclude every
+  earlier whole reservation and all 22 held symbols. Qualify only owned completed
+  responses; keep the unchanged collector/key/module, four in flight, rolling
+  local admissions no faster than four per five seconds, 24 GiB raw threshold,
+  40 GiB admission floor and first-error stop. Save actual settlement and quality
+  partition, then advance the remaining disjoint eligible catalogue work.
+  Macro source/evidence 9018, 9020, 9022 and 9027 are merged. New safe proof lives
+  in docs/tiingo-evidence/20261012-wave13-held-outcome/. The installed research
+  release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; accepted real Lab/reader
+  proof remains valid. Four contracts are PRODUCED, twenty PROPOSED.
+  Terminal 955 was observed OPEN/BLOCKED at 628dc9e1a0bc87ecb0b94347a63624a4bfcb9681;
+  dispatched CI 38308545171 has all twelve actual jobs successful. Current PR run
+  38308552647 remains action_required and its required aggregate absent. Preserve
+  the original approval refusal and require protected landing before the existing
+  VPS builder path. No release or browser acceptance is claimed. The next BOATS
+  opening is 2026-10-13 00:00 UTC. Standalone split, SHW/PFE and provider access
+  holds remain; 75 accepted fundamental captures across 25 companies serve about
+  three years. Deep/all-symbol serving, dated identity, PIT and responsive live
+  BOATS acceptance remain open. Continue ready work.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -58,6 +73,8 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261012-wave13-held-outcome/
+  - docs/tiingo-evidence/20261012-wave12-quality-partition/
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/20261011-producer-integrity/
   - docs/tiingo-evidence/20261011-live-qualification/
@@ -67,13 +84,18 @@ artifacts:
   - docs/tiingo-evidence/20261011-boats-source/
   - docs/tiingo-evidence/20261012-real-open-case-repair/
   - docs/tiingo-evidence/20261012-delivery-frontier/
+  - docs/tiingo-evidence/20261012-research-contracts/
+  - docs/tiingo-evidence/20261012-installed-research/
+  - docs/tiingo-evidence/20261012-eod-finite-scopes/
+  - docs/tiingo-evidence/20261012-canonical-capture-admission/
+  - docs/tiingo-evidence/20261012-wave11-rolling-continuation/
 landmines:
   - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
   - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
   - Full fundamentals activation is Chairman-attested but AMD current-key responses still expose evaluation restrictions; do not infer absent purchase or purchase again.
   - Authentic BOATS controls and historical bars do not prove actual Q/T/B or session coverage.
   - Reviewed source admits a complete BOATS-only public projection; installation and old object/cache replacement still need proof. Never inject BOATS under a legacy provider label.
-  - Registry PROPOSED and research PIT/identity/availability refusals remain until their incumbent owners admit real production capability.
+  - Exactly four EOD/fundamentals contracts and their selected immutable research release are verified; all other twenty stay PROPOSED. Dated identity, PIT, availability and live publication remain separate gates.
 do_not_redo:
   - Do not publish the previously blocked untracked CEO handoff by another route.
   - Do not reacquire the accepted ticker ZIP or re-download already verified histories merely to obtain another checkpoint.
