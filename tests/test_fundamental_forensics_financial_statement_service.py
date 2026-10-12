@@ -1246,14 +1246,19 @@ def test_conflicting_cik_observations_refused() -> None:
             listing_key="US-XNAS-AAPL",
         )
     provider = _production_statement_provider()
-    # A generation binding that disagrees with the identity owner is drift.
-    with pytest.raises(FinancialQueryUnavailableError):
-        provider.bind_issuer(
-            ROOT,
-            "ISS:US-XNAS-AAPL",
-            issuer_master=conflicting,
-            issuer_metadata=_AAPL_METADATA,
-        )
+    # FIF P1 (F5): the request path binds from the generation manifest only —
+    # it never consults a live IssuerMaster, so even an identity owner that
+    # now disagrees with the admitted binding cannot move the served
+    # identity. Reconciling drift is the acquisition lane's job (re-publish).
+    binding = provider.bind_issuer(
+        ROOT,
+        "ISS:US-XNAS-AAPL",
+        issuer_master=conflicting,
+        issuer_metadata=_AAPL_METADATA,
+    )
+    assert binding["cik"] == "0000320193"
+    assert binding["security_id"] == "SEC:US-XNAS-AAPL"
+    assert binding["listing_key"] == "US-XNAS-AAPL"
 
 
 def test_statement_delivery_reflects_provider_not_hardcode() -> None:
@@ -1314,6 +1319,7 @@ def test_statement_delivery_reflects_provider_not_hardcode() -> None:
                 manifest=package.manifest,
                 members=package.members,
                 delivery={"kind": "production_issuer_dataset", "attested": True},
+                statement_trees=package.statement_trees,
             )
 
     with pytest.raises(FinancialQueryUnavailableError):
@@ -1322,3 +1328,61 @@ def test_statement_delivery_reflects_provider_not_hardcode() -> None:
             issuer_metadata=_AAPL_METADATA,
             provider=_TamperingProvider(),
         )
+
+
+# ---------------------------------------------------------------------------
+# FIF P1: precomputed statement trees on the production path (F1 remainder)
+# ---------------------------------------------------------------------------
+
+
+def test_precomputed_trees_equal_golden_reconstruction() -> None:
+    """Publication precomputes exactly what the demonstration path reconstructs."""
+    result = _execute(provider=_production_statement_provider())
+    package = load_golden_aapl_package(ROOT, accession=_GOLDEN_ACCESSION)
+    direct = reconstruct_primary_statements(
+        package=package, registry=load_core_registry(ROOT)
+    )
+    assert result.envelope["statements"] == direct["statements"]
+    assert result.envelope["coverage"] == {
+        "parsed_document_kind": direct["parsed_document_kind"],
+        "fact_count": direct["fact_count"],
+        "context_count": direct["context_count"],
+    }
+
+
+def test_production_package_without_trees_never_parses(monkeypatch) -> None:
+    """A production package missing its trees is unavailable — never a parse."""
+    from engine.fundamental_forensics.production_provider import ProductionFilingPackage
+
+    inner = _production_statement_provider()
+    package = inner.resolve(_GOLDEN_ENTITY, _GOLDEN_ACCESSION)
+
+    def _forbidden(*_args, **_kwargs):
+        raise AssertionError("a tree-less production package must never be parsed")
+
+    import collectors.sec_filing_parser as parser_module
+    import engine.fundamental_forensics.statement_graph as statement_graph_module
+
+    monkeypatch.setattr(parser_module, "parse_sec_filing_document", _forbidden)
+    monkeypatch.setattr(statement_graph_module, "parse_sec_filing_document", _forbidden)
+
+    stripped = ProductionFilingPackage(
+        manifest=package.manifest,
+        members=package.members,
+        delivery=package.delivery,
+    )
+    assert stripped.statement_trees is None
+
+    class _TreelessProvider:
+        issuer_level_binding = True
+
+        def bind_issuer(self, repo_root, entity_id, *, issuer_master=None, issuer_metadata=None):
+            return inner.bind_issuer(
+                repo_root, entity_id, issuer_master=issuer_master, issuer_metadata=issuer_metadata
+            )
+
+        def resolve(self, entity_id, accession):
+            return stripped
+
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(provider=_TreelessProvider())
