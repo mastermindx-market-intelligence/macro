@@ -291,10 +291,13 @@ def _finite_signed_number(value: object) -> float | None:
     return number
 
 
-def _accumulators_finite(g: dict) -> bool:
-    """True when every money accumulator in a group is finite."""
-    if not all(math.isfinite(g[key]) for key in _CHAIN_HEAT_FINITE_ACCUMULATORS):
-        return False
+def _legacy_accumulators_finite(g: dict) -> bool:
+    """True when every legacy money accumulator in a group is finite."""
+    return all(math.isfinite(g[key]) for key in _CHAIN_HEAT_FINITE_ACCUMULATORS)
+
+
+def _measured_accumulators_finite(g: dict) -> bool:
+    """True when every measured-location accumulator in a group is finite."""
     if not all(
         math.isfinite(g[key])
         for key in ("meas_source_prem", "meas_covered_prem", "unmeasured_member_prem")
@@ -303,18 +306,44 @@ def _accumulators_finite(g: dict) -> bool:
     return all(math.isfinite(value) for value in g["meas_share_num"].values())
 
 
+def _unmeasured_disclosure(g: dict) -> dict:
+    """Unmeasured-member disclosure. A non-finite premium is null, not inf."""
+    prem = g["unmeasured_member_prem"]
+    return {
+        "unmeasured_member_count": g["unmeasured_member_count"],
+        "unmeasured_member_premium_usd": (
+            round(prem, 2) if math.isfinite(prem) else None
+        ),
+    }
+
+
+def _measured_location_without_measurements(g: dict) -> dict:
+    """Null sums and ratios, the shape used when no trusted block is usable."""
+    return {
+        "method": _MEASURED_LOCATION_METHOD,
+        "source_premium_usd": None,
+        "nbbo_covered_premium_usd": None,
+        "nbbo_premium_coverage": None,
+        **{name: None for name in _MEASURED_LOCATION_SHARES},
+        **_unmeasured_disclosure(g),
+    }
+
+
 def _measured_location_object(g: dict) -> dict:
     """Campaign location from trusted blocks only. Ratios are null when uncovered."""
+    if g["meas_block_count"] == 0:
+        return _measured_location_without_measurements(g)
     covered = g["meas_covered_prem"]
     source = g["meas_source_prem"]
-    if g["meas_block_count"] == 0:
-        source_out: float | None = None
-        covered_out: float | None = None
-    else:
-        source_out = round(source, 2)
-        covered_out = round(covered, 2)
+    source_out = round(source, 2)
+    covered_out = round(covered, 2)
     if covered <= 0.0 or source <= 0.0:
-        coverage: float | None = None
+        # Zero covered premium is an observed ratio when source premium was
+        # present.  Source of 0 (or none) leaves the ratio undefined.
+        if source > 0.0 and covered == 0.0:
+            coverage: float | None = 0.0
+        else:
+            coverage = None
         shares = {name: None for name in _MEASURED_LOCATION_SHARES}
     else:
         coverage = round(covered / source, 6)
@@ -330,8 +359,7 @@ def _measured_location_object(g: dict) -> dict:
         "nbbo_covered_premium_usd": covered_out,
         "nbbo_premium_coverage": coverage,
         **shares,
-        "unmeasured_member_count": g["unmeasured_member_count"],
-        "unmeasured_member_premium_usd": round(g["unmeasured_member_prem"], 2),
+        **_unmeasured_disclosure(g),
     }
 
 
@@ -390,11 +418,17 @@ def aggregate_chain_heat(
     ``measured_block_rejection_reason`` accepts.  ``source_premium_usd`` and
     ``nbbo_covered_premium_usd`` are sums of those blocks.  Each share is
     Σ(share × covered) / Σ covered, and ``nbbo_premium_coverage`` is covered /
-    source.  When covered premium is ≤ 0, every ratio field is null — never a
-    filled zero.  Members with no trusted block are disclosed as
-    ``unmeasured_member_count`` and ``unmeasured_member_premium_usd`` and do
-    not enter the shares.  The object never reads ``side``, ``ask_share``,
-    ``category_proxy_share``, or ``category_proxy``.
+    source.  When no trusted block was admitted, source and covered are null.
+    When covered premium is 0 and source premium is positive, coverage is 0.0
+    and every share and aggression field is null; when source is 0 those
+    ratios are null too.  Dollar sums stay at the observed values whenever a
+    trusted block was admitted.  Members with no trusted block are disclosed
+    as ``unmeasured_member_count`` and ``unmeasured_member_premium_usd`` and
+    do not enter the shares.  An event whose premium is not a finite
+    nonnegative amount is not a member.  A non-finite measured accumulator
+    nulls the sums and ratios and keeps the legacy campaign fields.  The
+    object never reads ``side``, ``ask_share``, ``category_proxy_share``, or
+    ``category_proxy``.
 
     Reliability contract
     --------------------
@@ -490,6 +524,9 @@ def aggregate_chain_heat(
 
         # measured_location reads only a trusted microstructure block.  The
         # event's side / ask_share / category_proxy fields are not inputs.
+        # An event whose premium fails _finite_nonneg_amount is not a campaign
+        # member and is excluded from this object, disclosed only through
+        # category_proxy.invalid_premium_count.
         block = ev.get("microstructure")
         if measured_block_rejection_reason(block) is None and isinstance(block, dict):
             block_source = _finite_nonneg_amount(block.get("source_premium_usd"))
@@ -518,13 +555,20 @@ def aggregate_chain_heat(
         # value, REFUSE the whole campaign and omit it rather than clip, bound,
         # or invent a total.  Each addend can be finite while the sum is not
         # (e.g. two 1e308 premiums), so this must be checked after accumulation.
-        if not _accumulators_finite(g):
+        if not _legacy_accumulators_finite(g):
             log.warning(
                 "chain_heat: refusing campaign %s — non-finite premium "
                 "accumulator (overflow); omitting rather than fabricating mass",
                 key,
             )
             continue
+        measured_overflow = not _measured_accumulators_finite(g)
+        if measured_overflow:
+            log.warning(
+                "chain_heat: campaign %s measured accumulator overflowed; "
+                "legacy fields kept, measured_location sums and ratios left null",
+                key,
+            )
 
         total_prem_mn = g["total_premium"] / 1_000_000.0
         if total_prem_mn < min_premium_mn:
@@ -622,7 +666,11 @@ def aggregate_chain_heat(
             "direction_reliability": "soft",
             "authority_tier":      AUTHORITY_DISPLAY,
             "category_proxy":      category_proxy,
-            "measured_location":   _measured_location_object(g),
+            "measured_location":   (
+                _measured_location_without_measurements(g)
+                if measured_overflow
+                else _measured_location_object(g)
+            ),
         })
 
     campaigns.sort(key=lambda c: c["total_premium_mn"], reverse=True)

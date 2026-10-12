@@ -441,6 +441,11 @@ _LOCATION_SHARE_KEYS = (
 _LOCATION_IDENTITY_TOL = 6e-6
 
 
+def _within_unit_interval(number: float) -> bool:
+    """True when ``number`` lies in [0, 1] within the location tolerance."""
+    return -_LOCATION_IDENTITY_TOL <= number <= 1.0 + _LOCATION_IDENTITY_TOL
+
+
 def _block_number(value: Any) -> float | None:
     """Finite float from a block field, or None when the value is not one."""
     import math
@@ -458,9 +463,13 @@ def measured_block_rejection_reason(block: dict | None) -> str | None:
     """Return why ``block`` must not be read as a trade-vs-NBBO measurement.
 
     ``None`` means the block is admissible: exact v1 schema, no legacy category
-    key, location shares all present or all absent, the four shares sum to 1
-    within 6e-6, aggression equals at_ask + at_bid within 6e-6, covered premium
-    does not exceed source premium, and each coverage ratio is inside [0, 1].
+    key, location shares all present or all absent. When all four are present
+    they sum to 1 within 6e-6, each of them and ``aggression_share`` lie in
+    [0, 1] within 6e-6, aggression equals at_ask + at_bid within 6e-6, and a
+    present ``aggression_balance`` equals at_ask - at_bid within 6e-6. When
+    all four are absent, ``aggression_share`` and ``aggression_balance`` are
+    absent or null too. Covered premium is not negative and does not exceed
+    source premium, and each coverage ratio is inside [0, 1].
     """
     if not isinstance(block, dict) or block.get("schema") != MICROSTRUCTURE_SCHEMA:
         return "SCHEMA_MISMATCH"
@@ -481,19 +490,40 @@ def measured_block_rejection_reason(block: dict | None) -> str | None:
             numbers.append(number)
     if "bad" in states or ("absent" in states and "number" in states):
         return "LOCATION_IDENTITY"
-    if states and all(state == "number" for state in states):
+    if all(state == "absent" for state in states):
+        # No location shares: aggression is not an independent measurement.
+        if block.get("aggression_share") is not None:
+            return "LOCATION_IDENTITY"
+        if block.get("aggression_balance") is not None:
+            return "LOCATION_IDENTITY"
+    elif all(state == "number" for state in states):
+        if any(not _within_unit_interval(number) for number in numbers):
+            return "LOCATION_IDENTITY"
         if abs(sum(numbers) - 1.0) > _LOCATION_IDENTITY_TOL:
             return "LOCATION_IDENTITY"
         aggression = _block_number(block.get("aggression_share"))
         edge = numbers[0] + numbers[1]
-        if aggression is None or abs(aggression - edge) > _LOCATION_IDENTITY_TOL:
+        if (
+            aggression is None
+            or abs(aggression - edge) > _LOCATION_IDENTITY_TOL
+            or not _within_unit_interval(aggression)
+        ):
             return "LOCATION_IDENTITY"
+        if block.get("aggression_balance") is not None:
+            balance = _block_number(block.get("aggression_balance"))
+            if (
+                balance is None
+                or abs(balance - (numbers[0] - numbers[1])) > _LOCATION_IDENTITY_TOL
+            ):
+                return "LOCATION_IDENTITY"
 
     for key in ("source_premium_usd", "nbbo_covered_premium_usd"):
         if key in block and block[key] is not None and _block_number(block[key]) is None:
             return "COVERAGE_BOUNDS"
     source = _block_number(block.get("source_premium_usd"))
     covered = _block_number(block.get("nbbo_covered_premium_usd"))
+    if covered is not None and covered < -_LOCATION_IDENTITY_TOL:
+        return "COVERAGE_BOUNDS"
     if (
         source is not None
         and covered is not None
