@@ -75,7 +75,11 @@ def _records(frame: pd.DataFrame, *, include_index: bool = False) -> list[dict]:
 
 def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
     try:
-        frame = pd.read_parquet(path)
+        # Single-threaded read: once pyarrow's process-wide CPU thread pool has run
+        # tasks, its teardown at process exit can intermittently abort the interpreter
+        # (SIGABRT, "terminate called without an active exception") after the receipt
+        # is already printed.
+        frame = pd.read_parquet(path, use_threads=False)
     except Exception as exc:
         raise NewsUniverseBuildError("owner_artifact_unreadable") from exc
     try:
