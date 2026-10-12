@@ -144,6 +144,11 @@ def _run_one(key: str, cls, full_history: bool):
     return res, round(dt, 1)
 
 
+
+def _current_result_status(results: list[FetchResult], source: str) -> str | None:
+    """Status for one adapter in THIS invocation; never an older store receipt."""
+    return next((result.status for result in results if result.source == source), None)
+
 def all_adapters() -> dict:
     """Import lazily so one module's import-time failure can't kill the run."""
     registry = {}
@@ -558,7 +563,8 @@ def _required_group_health(
     return check_china_search_core(now)
 
 
-def main() -> int:
+def _build_arg_parser() -> argparse.ArgumentParser:
+    """The scripts.collect CLI (main() and the nightly-path tests parse with this)."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--full-history", action="store_true")
     ap.add_argument("--only", default="")
@@ -574,7 +580,55 @@ def main() -> int:
                     help="skip the shadow_importance_v0 + _pit passes (~13-14 min); "
                          "daily.yml collect-core sets this — the passes run standalone "
                          "in the collect_tail job so the engine job starts earlier")
-    args = ap.parse_args()
+    return ap
+
+
+def _end_of_collect_quality(args: argparse.Namespace, registry: dict,
+                            results: list[FetchResult]) -> None:
+    """End-of-collect quality steps; main() calls this once, after every adapter ran.
+
+    1. U.S. structural-roster audit — OBSERVATIONAL (never mutates membership), so it is
+       NOT behind the all-universe gate: the ordinary nightly lane is a partial run
+       (--exclude-group asia) and must still refresh its receipt. It runs whenever this
+       shard's registry includes breadth, and audits only when breadth qualified in THIS
+       invocation (reconcile_membership.audit_us_sector_membership writes nothing otherwise).
+    2. DATA-QUALITY GATE — unchanged: skipped on a partial run (the universe/macro audits
+       would falsely flag the sources that run never refreshed) and behind an explicit
+       opt-out. The regional membership reconciler MUTATES basket files, so it stays here.
+       A >5% universe failure raises RuntimeError — the intended, conspicuous abort.
+    """
+    if not args.skip_quality and "breadth" in registry:
+        from scripts import reconcile_membership
+        try:
+            reconcile_membership.audit_us_sector_membership(
+                _current_result_status(results, "breadth"))
+        except Exception as e:  # noqa: BLE001 — an observational audit never aborts collect
+            log.error("[us-sector-audit] U.S. structural audit crashed (non-fatal): %s", e)
+
+    if args.skip_quality:
+        log.info("[quality] data-quality gate skipped (--skip-quality).")
+    elif args.only or args.group or args.exclude_group:
+        log.info("[quality] data-quality gate skipped on partial run "
+                 "(only=%s group=%s exclude=%s) — the all-universe audit would false-flag "
+                 "sources this shard did not refresh.", args.only or "-",
+                 args.group or "-", args.exclude_group or "-")
+    else:
+        # Membership↔cache reconciler runs FIRST: it may prune basket members that drifted
+        # off a rebuilt *_search close cache (dated changelog entry), so the read-only
+        # audits grade the healed state. Its guard refusals abort like the gate; its own
+        # crash is non-fatal like any audit's.
+        from scripts import reconcile_membership
+        try:
+            reconcile_membership.run()
+        except reconcile_membership.PruneGuardError:
+            raise
+        except Exception as e:  # noqa: BLE001 — a safety net's crash must not abort the run
+            log.error("[reconcile] membership reconciler crashed (non-fatal): %s", e)
+        run_quality_audits()
+
+
+def main() -> int:
+    args = _build_arg_parser().parse_args()
 
     registry = all_adapters()
     if args.only:
@@ -1020,30 +1074,7 @@ def main() -> int:
     ok = sum(1 for r in results if r.status in ("ok", "stale"))
     log.info("collection done: %d/%d sources usable", ok, len(results))
 
-    # End-of-collection DATA-QUALITY GATE. Runs LAST so it audits everything just collected.
-    # Skipped on a partial `--only` run (the universe/macro audits would falsely flag the
-    # sources that run never refreshed) and behind an explicit opt-out. A >5% universe
-    # failure raises RuntimeError here — the intended, conspicuous abort.
-    if args.skip_quality:
-        log.info("[quality] data-quality gate skipped (--skip-quality).")
-    elif args.only or args.group or args.exclude_group:
-        log.info("[quality] data-quality gate skipped on partial run "
-                 "(only=%s group=%s exclude=%s) — the all-universe audit would false-flag "
-                 "sources this shard did not refresh.", args.only or "-",
-                 args.group or "-", args.exclude_group or "-")
-    else:
-        # Membership↔cache reconciler runs FIRST: it may prune basket members that drifted
-        # off a rebuilt *_search close cache (dated changelog entry), so the read-only
-        # audits grade the healed state. Its guard refusals abort like the gate; its own
-        # crash is non-fatal like any audit's.
-        from scripts import reconcile_membership
-        try:
-            reconcile_membership.run()
-        except reconcile_membership.PruneGuardError:
-            raise
-        except Exception as e:  # noqa: BLE001 — a safety net's crash must not abort the run
-            log.error("[reconcile] membership reconciler crashed (non-fatal): %s", e)
-        run_quality_audits()
+    _end_of_collect_quality(args, registry, results)
 
     # importance_v0 SHADOW lane (W3) — score the qbus store + register the
     # novelty-first challenger's HIGH/LOW band claims. Shadow-only; never rendered.
