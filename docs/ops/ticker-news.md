@@ -268,11 +268,23 @@ does not write the store.
 运营者可以用一条只读命令查看 REST 补齐是否已经送达、各传输分别送达了多少、
 以及每条传输有多新。该命令不访问网络、不读取凭证、不写入数据库。
 
-From a checkout of this repo:
+From the service checkout, as root:
 
-    python scripts/ticker_news_inventory.py \
+    cd /opt/macro && sudo /opt/macro-api/.venv/bin/python \
+      scripts/ticker_news_inventory.py \
       --database /var/lib/macro-ticker-news/qbus.sqlite3 \
       --health /var/lib/macro-ticker-news/health.json
+
+The state directory is root-only (`StateDirectoryMode=0700`; the service runs
+as root), so run the command as root from the service checkout, for example
+`cd /opt/macro && sudo /opt/macro-api/.venv/bin/python scripts/ticker_news_inventory.py --database ... --health ...`.
+Without root it exits 2 with `{"error":"database_unreadable"}`. Any sidecars
+it creates are then owned by root, like the files the service itself creates.
+
+状态目录仅 root 可访问（`StateDirectoryMode=0700`，服务以 root 运行），因此应在
+服务检出目录以 root 运行该命令，例如 `cd /opt/macro && sudo /opt/macro-api/.venv/bin/python scripts/ticker_news_inventory.py --database ... --health ...`。
+不以 root 运行时退出码为 2，并打印 `{"error":"database_unreadable"}`。命令创建
+的任何伴随文件归 root 所有，与服务自身创建的文件一致。
 
 `--json` is the default and prints schema `ticker_news.inventory.v1`.
 `--text` prints a short English and Chinese summary. `--now <iso>` fixes the
@@ -284,17 +296,19 @@ created.
 中英摘要。`--now <iso>` 固定 `generated_at` 与健康投影所用的时钟。数据库
 不存在时退出码为 2，并打印 `{"error":"database_missing"}`，且不会创建该文件。
 
-The database is opened with SQLite `mode=ro` and `query_only`. A run leaves
-the database file's bytes and mtime unchanged. While the writer is running,
-the report reads the existing WAL, so uncheckpointed deliveries are included,
-and it does not rewrite the `-wal` or `-shm` siblings. If those siblings are
-already absent, SQLite may create empty ones beside the database; the
-database file itself is still not modified.
+The database is opened with SQLite `mode=ro` and `query_only`. While the
+writer is running, the report reads the existing WAL, so uncheckpointed
+deliveries are included, and it does not rewrite the `-wal` or `-shm`
+siblings. Against a cleanly closed store, a run creates a 0-byte `-wal` and
+a 32 KiB `-shm` (the wal-index), and both remain after the command exits
+because a read-only connection cannot remove them; the database file's
+bytes and mtime are still unchanged.
 
-数据库以 SQLite `mode=ro` 与 `query_only` 打开。运行后数据库文件的字节与
-修改时间保持不变。写入进程仍在运行时，报告读取已有的 WAL，因此未 checkpoint
-的送达也会计入，且不会改写 `-wal` 或 `-shm`。若这两个伴随文件已经不存在，
-SQLite 可能会在数据库旁创建空的伴随文件；数据库文件本身仍然不会被修改。
+数据库以 SQLite `mode=ro` 与 `query_only` 打开。写入进程仍在运行时，报告读取
+已有的 WAL，因此未 checkpoint 的送达也会计入，且不会改写 `-wal` 或 `-shm`。
+对一个已干净关闭的库，一次运行会创建 0 字节的 `-wal` 和 32 KiB 的 `-shm`
+（wal-index），且两者在命令退出后依然留存，因为只读连接无法删除它们；数据
+库文件的字节与修改时间仍然保持不变。
 
 Fields / 字段:
 

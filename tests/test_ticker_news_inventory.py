@@ -4,10 +4,13 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import json
+import os
 from pathlib import Path
 import sqlite3
 import subprocess
 import sys
+
+import pytest
 
 from engine.qbus_news_contract import normalize_news
 from engine.qbus_news_receipts import load_health_receipt
@@ -694,6 +697,78 @@ def test_direct_script_invocation_reports_missing_database(tmp_path):
     assert not missing.exists()
 
 
+@pytest.mark.skipif(os.geteuid() == 0, reason="root ignores directory modes")
+def test_untraversable_store_directory_fails_closed(tmp_path, capsys):
+    """A root-owned 0700 state dir must refuse, never traceback (D1)."""
+
+    store = tmp_path / "s"
+    store.mkdir()
+    db = _empty_store(store)
+    before = _snapshot(db)
+
+    store.chmod(0o000)
+    try:
+        rc, out = _invoke(capsys, db)
+    finally:
+        store.chmod(0o700)
+
+    assert rc == 2
+    assert out == '{"error":"database_unreadable"}\n'
+    assert _snapshot(db) == before
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root ignores directory modes")
+def test_untraversable_store_directory_exits_2_without_traceback(tmp_path):
+    store = tmp_path / "s"
+    store.mkdir()
+    db = _empty_store(store)
+
+    store.chmod(0o000)
+    try:
+        proc = subprocess.run(
+            [
+                sys.executable,
+                "scripts/ticker_news_inventory.py",
+                "--database",
+                str(db),
+                "--now",
+                NOW.isoformat(),
+            ],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+    finally:
+        store.chmod(0o700)
+
+    assert proc.returncode == 2, proc.stderr
+    assert proc.stdout.decode("utf-8") == '{"error":"database_unreadable"}\n'
+    assert proc.stderr == b""
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root ignores directory modes")
+def test_health_in_untraversable_directory_still_prints_report(tmp_path, capsys):
+    """Pins engine.qbus_news_receipts: an unreadable health dir is not fatal."""
+
+    db = _empty_store(tmp_path)
+    receipts = tmp_path / "receipts"
+    receipts.mkdir()
+    health = receipts / "health.json"
+
+    receipts.chmod(0o000)
+    try:
+        rc, out = _invoke(capsys, db, "--health", str(health))
+    finally:
+        receipts.chmod(0o700)
+
+    assert rc == 0
+    report = json.loads(out)
+    assert report["health"]["state"] == "unavailable"
+    assert report["health"]["reason"] == "receipt_missing"
+    assert not health.exists()
+
+
 def test_docs_inventory_section_describes_the_command():
     text = (REPO_ROOT / "docs" / "ops" / "ticker-news.md").read_text(encoding="utf-8")
     section = text.split("## Inventory / 库存", 1)
@@ -706,3 +781,18 @@ def test_docs_inventory_section_describes_the_command():
     assert "delivery_json" in body
     assert "validated" not in body.lower()
     assert "title=" not in body
+
+
+def test_docs_inventory_section_describes_sidecars_and_root_privilege():
+    text = (REPO_ROOT / "docs" / "ops" / "ticker-news.md").read_text(encoding="utf-8")
+    section = text.split("## Inventory / 库存", 1)
+    assert len(section) == 2
+    body = section[1]
+    assert "may create empty ones" not in body
+    assert "-shm" in body
+    assert "32 KiB" in body
+    assert "sudo" in body
+    assert "database_unreadable" in body
+    # The ZH mirror carries the same measured facts.
+    assert "32 KiB 的" in body
+    assert "仅 root" in body

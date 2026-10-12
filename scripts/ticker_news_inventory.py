@@ -126,12 +126,19 @@ def build_inventory(
         raise InventoryError("invalid_now")
     current = now.astimezone(timezone.utc)
     path = Path(database)
-    if not path.exists():
-        raise InventoryError("database_missing")
-    if not path.is_file():
-        raise InventoryError("database_unreadable")
+    try:
+        # pathlib re-raises EACCES and friends instead of reporting the
+        # path as absent, so an untraversable state directory must map to
+        # the same fail-closed refusal as every other unreadable store.
+        if not path.exists():
+            raise InventoryError("database_missing")
+        if not path.is_file():
+            raise InventoryError("database_unreadable")
 
-    size = path.stat().st_size
+        size = path.stat().st_size
+    except OSError as exc:
+        raise InventoryError("database_unreadable") from exc
+
     conn = _connect_readonly(path)
     try:
         _require_store_schema(conn)
