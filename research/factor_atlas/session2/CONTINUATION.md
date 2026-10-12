@@ -1389,3 +1389,88 @@ immutable GitHub head and hosted
 research CI, then proceed through
 original Data OS source/rights to
 valid alias/canonical monetary admission.
+
+## Direct real Tiingo L1 research views into existing S2 source-preflight metadata — native
+
+At phase entry original S2 Macro #8677 `872854be94a4bba1d67af5ff6c0105f5ddf09bbd`,
+Draft/HOLD, unmerged, branch
+`claude/factor-atlas-capital-pressure-20261008`.
+Protected Mastermind
+`85807cf48e29e2fe5df19534d6b181fc25b9746f`;
+compatible Sol 1.0.1/bootstrap1 Skillpack read at same
+protected commit. The original merged Tiingo Data OS
+source remains at `2a08250fe61aa59ad3e1581149f0b93e9d5a17cf`.
+
+**Independent native integration delivered:** pure
+`prototype/tiingo_preflight_bridge.py` accepts original
+owner-provided `TiingoView` source shapes + caller
+provided explicit calendar, cohort labels and original
+evaluation cutoff. Reuses the previously accepted
+Tiingo source-fitness and its context-SHA collision
+check, then the EXISTING `source_preflight.MinuteClaim`
+and `preflight` — no second source/revision/
+identity/PIT/rights/store/calendar/publisher plane.
+Original actual source first-received ns is bound to
+minute metadata; genuine reader-completed receipt,
+historical source prefix, selected correction,
+monetary basis, listing identity and use rights
+stay NULL, not imagined from request URL or
+vendor data. A source vendor reported zero is
+counted but NEVER treated as admitted no-trade.
+No price numeric values are returned or signed
+pressure calculated. All authority gates FALSE.
+
+**Actual read-only original Data OS source proof:**
+same 4 original authentic retained 2026-10-09
+AAPL/MSFT/NVDA/SPY Tiingo L1 research partitions,
+read via `read_research_view` in
+`RETROSPECTIVE_EXPLORATORY`, with hindsight.
+Under an explicit UNQUALIFIED nominal Oct09
+09:30–16:00 ET calendar and cutoff Oct09 20Z,
+the incumbent S2 preflight reported 1,560
+expected AND 1,560 represented, 0 missing,
+1,560 measurement-UNKNOWN, 2,503 vendor source
+rows outside RTH, and 1,560 `SOURCE_AFTER_CUTOFF`
+because original acquisition happened Oct11.
+Other source-basis/listing/rights/reader/revision
+issues were correctly preserved for ALL 1,560;
+no BVC, signal, market PILOT or customer data
+effect executed; no licensed raw prices copied.
+
+**TDD:** missing implementation red; source
+SHA used under two vendor symbols red until
+reusing original `aggregate_cohort_fitness`
+alias test; 21/21 new cases green and **557/557
+local full 17-suite native tests green** on M2
+Python 3.12. Existing read-only Actions workflow
+enrolls all 17, repository unrun auditor zero.
+`evidence/tiingo_preflight_synthetic.json`
+contains ONLY fabricated source-shaped bars and
+sanitized metadata refusals. Source/test/log SHA
+and exact inherited source refs bound by
+`evidence/native_tiingo_preflight_tests.json`.
+
+**No denied effects replayed:** prior explicit
+four source reads, benchmark repair, current-main
+changed-path comparison, S2-P4 read-model integrity
+patch, S2-P6 future-forecast-decision source edit,
+and the precise earlier BOATS derived live-result
+packaging all DO_NOT_REDO; no alternate worker
+or account used. Executive independent
+scientific-review summons original operation
+remains effect-unknown and was not repeated.
+The two S2-P4 uncommitted red WIP files stay
+excluded from source/manifest/hosted CI.
+
+**Completion frontier:** source clock/price-volume
+rights and 390-minute grid presence are distinct
+from genuine PIT research eligibility. Original
+Data OS identity/ETF SPY, Tiingo vendor selected
+alias known-at, reader receipt/correction, actual
+consolidated interval share-unit/price-split
+basis and dataset-derived/use rights remain
+NOT_ADMITTED. S6 evaluation and Terminal
+customer release also HELD. Next original branch
+publish this distinct metadata bridge with
+exact head readback and hosted CI; do not
+insert real vendor prices or invent cash/trades.
