@@ -2638,6 +2638,45 @@ jobs:
       - name: cycles payload split contract tests (lossless recombine, no-mutate, family rules)
         run: python -m pytest tests/test_cycles_payload_split.py -q
 
+  options-matrix-code:
+    if: ${{ false }}
+    gate: code
+    # Hermetic source-contract gate for the matrix producer/publisher repair.
+    # The broader flow-surface lane stays gate:data for nightly/data health,
+    # but source/session/publication invariants must also be able to block a PR.
+    # Cover the concrete import closure, fixtures and lib.config fallback.
+    # Retention filesystem probes otherwise add unrelated repository-wide
+    # opaque fallback patterns to this hermetic job.
+    scope: exclusive
+    paths:
+      - "config.yml"
+      - "engine/__init__.py"
+      - "engine/gex_engine.py"
+      - "engine/greeks.py"
+      - "engine/options_matrix.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_structure.py"
+      - "engine/thetadata_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/build_options_matrix.py"
+      - "site/options_structure/examples/matrix.json"
+      - "tests/fixtures/options_matrix_retention/**"
+      - "tests/test_options_matrix.py"
+      - "tests/test_options_matrix_retention.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install matrix-test deps
+        run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
+      - name: options matrix source/session/publication contracts
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py -q
+
   flow-surface:
     if: ${{ false }}
     gate: data
@@ -2796,6 +2835,7 @@ jobs:
       - "engine/options_market_memory_local_replica.py"
       - "engine/options_market_memory_receipt_store.py"
       - "engine/options_matrix.py"
+      - "engine/options_matrix_retention.py"
       - "engine/options_scenario_surface.py"
       - "engine/options_payoff.py"
       - "engine/options_signal_campaign.py"
@@ -3041,6 +3081,7 @@ jobs:
       - "scripts/build_flow_surface.py"
       - "scripts/build_options_focused_quote.py"
       - "scripts/build_options_issue_desk.py"
+      - "scripts/build_options_matrix.py"
       - "scripts/build_options_prophet.py"
       - "scripts/build_options_screener.py"
       - "scripts/build_options_scenario_surface.py"
@@ -20807,6 +20848,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - lib/__init__.py
       - lib/config.py
+      - lib/nyse_calendar.py
       - lib/dataos/**
       - lib/delisted_symbols.py
       - lib/nyse_calendar.py
