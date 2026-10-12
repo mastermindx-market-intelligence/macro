@@ -44,7 +44,7 @@ def test_installed_adapter_route_is_root_bound_and_preserves_existing_carrier():
     )
     for phrase in expected:
         assert phrase in PLAYBOOK, phrase
-    assert "rather than" in PLAYBOOK
+    assert "not a paid Fabric worker" in PLAYBOOK
     assert "new scheduler" in PLAYBOOK
 
 
@@ -58,7 +58,7 @@ def test_principal_context_and_worker_evidence_are_not_conflated():
 
 
 def test_no_empty_capacity_spawning_or_automatic_permission_escalation():
-    assert "do not start a child just to reach a concurrency count" in PLAYBOOK.lower()
+    assert "don't start a child just to reach a concurrency count" in PLAYBOOK.lower()
     assert "per-root fair-share" in PLAYBOOK
     assert "workspace custody" in PLAYBOOK
     assert "does not" in PLAYBOOK
