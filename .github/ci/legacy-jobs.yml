@@ -4394,6 +4394,7 @@ jobs:
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_raw_ledger.py
           tests/test_fundamental_forensics_periods.py
+          tests/test_fundamental_forensics_excel_export.py
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_financial_intelligence_packet.py
           tests/test_fundamental_forensics_financial_intelligence_packet_r2.py
