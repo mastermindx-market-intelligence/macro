@@ -1187,7 +1187,8 @@ def test_flow_pulse_quality_rejects_age_fresh_no_data(tmp_path: Path):
     }))
     assert "mode=no_data" in (vlo.flow_pulse_error(path, min_coverage=0.8) or "")
     path.write_text(json.dumps({
-        "mode": "fastpath", "n_tickers": 2,
+        "mode": "fastpath", "n_tickers": 2, "n_universe": 2,
+        "source_asof": "2026-10-13T14:10:00+00:00",
         "tickers": [
             {"ticker": "AAPL", "bars_today": 4},
             {"ticker": "AMD", "bars_today": 4},
@@ -1602,6 +1603,19 @@ def _healthy_vps_status() -> dict:
                 "mode": "fastpath",
                 "n_tickers": 116,
                 "with_bars": 116,
+                "n_universe": 116,
+                "source_asof": (
+                    _HEALTHY_STATUS_NOW - timedelta(minutes=40)
+                ).isoformat().replace("+00:00", "Z"),
+            },
+            "intraday_quotes": {
+                "requested": 116,
+                "resolved": 116,
+                "coverage": 1.0,
+                "source_asof": (
+                    _HEALTHY_STATUS_NOW - timedelta(minutes=20)
+                ).isoformat().replace("+00:00", "Z"),
+                "built_at": _fresh,
             },
         },
     }
