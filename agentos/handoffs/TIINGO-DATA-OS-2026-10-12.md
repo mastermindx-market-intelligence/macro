@@ -467,3 +467,108 @@ Terminal aggregate is absent from the PR rollup. The incumbent auto-merge reques
 remains enabled. The original approval refusal is preserved without retry,
 replacement workflow or protection change. This blocks protected consumer
 landing, not the independent history capture and qualification lane.
+
+
+### Wave11 closed; reviewed rolling source in real use
+
+Original wave11 settled at 18:27:54 UTC with all 5000 requests successful, zero
+failures, 10531732 row hints and 2558966794 raw bytes. All eighteen qualification
+snapshots were accepted. Its finite closure proves 4968 nonempty histories,
+32 empty responses and 10531732 distinct bars. Closure SHA256:
+`222790d101450e63407f8ebaaedc0ae529102e5974bdf9eaf37b97009722b293`.
+The closed census has 28184 histories, 61704769 bars, 100 empty responses and
+19405 uncaptured windows; actual coverage SHA256:
+`901aae3d0d477bd76e4edbb3d36657480e1c77c9108de1e636bece44cf21e6a1`.
+No accepted history was re-downloaded or rebuilt for closure.
+
+PR #9020 merged at 17:28:19 UTC as
+`b169a57fffe07ecff91fca0b830870e8b6318a96` after all twelve original CI packs,
+contract delta, final gate and active protections passed on run 38281575777 at
+`8578aaeba46e6dac8a85d37a1ed849259197a3d1`. The inactive advisory failure was
+retained; no admin bypass was used. The root moved to a clean fresh current-main
+carrier, `claude/tiingo-catalogue-closure-20261012-01a12ab6`, for continued delivery.
+
+Wave12 actually started at 18:29:54.081664 UTC on original session 7500, through
+unchanged method `18ea2c8062c2185536810f10d0dc649dcc3c993e30b1a8727fed79194206d270`
+and reviewed canonical module `3d204f2e7a6ebc5d3693606a7b59b665be8f53546314c0b8053bee2be4154926`.
+Actual scope SHA256: `baf73cb8682b735f2aa371b4c5d524fda436341959b155aeebd5580929df4a10`.
+The fresh original browser-2 company quota and 198.118 GiB archive free space
+passed; actual prior settlement, source pins, all sixteen held exclusions and
+zero EOD collisions were rechecked before effect. Its first 232 responses were
+materialized and qualified: census 28416 histories, 61901655 bars, 100 empty and
+19173 uncaptured windows. Full settlement/admission timing proof remains pending.
+The unexecuted coverage helper's base-path template mistake was preserved and
+corrected before use; no running capture changed. Safe proof is in
+`docs/tiingo-evidence/20261012-wave11-rolling-continuation/`.
+
+Future wave13 plan `cfff5523c630fad205112d255fbd4e46cf0765e16179cfa41993e2c1aac8c9ce`
+selects 5000 from 14392 unreserved candidates and reserves every wave12 selection.
+Its source-bound derivative `f535d930cf085e8137dac946326a68905c6d85d877b2071f87077daf3c3fd5c0`
+passed read-only preflight with no provider/credential access, but remains
+unlaunched. Require actual successful prior settlement and a fresh quota/source/
+resource/collision pass before launch. No scheduler, queue or service was added.
+
+Fresh #955 carrier/read at this frontier still found OPEN/BLOCKED/unmerged at
+`1a74e3cf93368a5c5381f0110b80601dff0ae3e3`, incumbent auto-merge enabled and the
+required aggregate absent. Its original PR run 38272372019 remains
+`action_required`; original dispatched all-twelve success 38272365047 remains
+accepted. The original approval refusal, all provider holds, unchanged installed
+0b204cde consumer and incomplete programme acceptance remain binding. Continue
+wave12 and the next lawful phases in the same healthy turn.
+
+
+### Wave12 raw closure, explicit source-quality partition and running wave13
+
+Original wave12 settled at 20:14:21.478478 UTC on its original session 7500,
+rc0: 5000 successful requests, zero capture failures, 8103921 row hints and
+1772986058 uncompressed bytes. Actual result SHA256:
+`8cb214544744d61305840998aee173495196d247fdb53135efc4d0bb37e29b33`.
+The unchanged reviewed module admitted every selected index exactly once. Actual
+four-admission minimum separation was 5.000027749920264 seconds, with at most
+2879 admissions per half-open hour. Accepted trace SHA256:
+`9c9cdf43deff4de06ac722d4a76e501adbf4e29841d5ae03dd72cb11ba91ec1e`.
+This proves local wrapper timing, not vendor arrival or causal throughput.
+
+Acquisition success did not qualify every response. Prefix18 correctly stopped
+on a negative raw and adjusted volume row in WTFNF. The entire original receipt
+`d7a46db383115e15506af654b925f1161102d4f2278524c35ea2df6e7e505eec`
+is retained with raw digest
+`0db1843d1e955139353b2b8478e5cf55d70e6845644cea2d7891efc435671fd2`.
+It has no admitted projection. Validation and vendor values are unchanged; no
+provider retry occurred. Original failed scope and diagnostic evidence remain.
+Reconciliation accepted the other 194 responses in that exact snapshot: 145
+existing views verified/reused and 49 newly written. Independent architecture
+review passed the whole-receipt quarantine and disjoint continuation. Count this
+quarantine once by receipt identity; missing qualified coverage is not retry
+permission. Original all-qualified closure methods remain unexecuted.
+
+The final quality partition accounts for every original request exactly once:
+4999 qualified responses, 4987 nonempty histories, 12 empty responses and
+8099778 accepted bars, plus one captured source-quality quarantine. Partition
+SHA256 `8756be9d711d8f5a75fad75b3cc59f40909ac45eed4adbbde270963619ff954e`.
+The final census has 33171 nonempty histories, 69804547 bars, 112 empty, 14405
+uncaptured windows and one quarantine; census SHA256
+`d42dbd99a5164eeb3e6307077f1850be16484170cbf592430f5e9161cc0fc226`.
+Safe source proof: `docs/tiingo-evidence/20261012-wave12-quality-partition/`.
+
+Wave13 actually started at 20:17:46.458008 UTC on original session 2406 using
+method `f535d930cf085e8137dac946326a68905c6d85d877b2071f87077daf3c3fd5c0`.
+Scope SHA256 `98e8bb8fbfa59a3b0de7d86a2486fad121e049f9da6c7477d3adda24dc770240`.
+Its original plan selects 5000 disjoint windows and excludes every wave12
+reservation, including WTFNF. Actual prior raw settlement, source pins, zero
+EOD collisions and fresh original Chrome-2 quota/storage proof passed. Quota
+proof SHA256 `b16f2018141d7a47c28ffc39ac6bda3026b1a6eb117a96865737d7be3235bb4b`:
+19704 hourly requests, 126838 daily requests, 84.96 GB month and 197.465 GiB free.
+Collector, key, four-in-flight/rate/resource/first-error gates remain unchanged.
+Qualify only new responses and continue the next lawful phase after settlement.
+
+Source #9022 merged at 19:09:14 UTC as
+`8b450b8fcf14ba9bfbb05b5d80608342804070b6`, exact reviewed head 0746a158b4ec,
+original CI 38293488714 all twelve/final gates successful. Source #9018/#9020
+are also merged. The installed 0b204cde research release remains unchanged.
+A fresh original #955 carrier/read at this material frontier remains OPEN/BLOCKED
+at 1a74e3cf, with original PR run 38272372019 still action_required and required
+aggregate absent. Preserve the original approval refusal and incumbent auto-merge.
+All provider holds, next BOATS opening 2026-10-13 00:00 UTC and remaining identity,
+PIT, fundamentals and production/browser acceptance obligations remain. No
+subscriber, scheduler, alternate approval or replacement carrier was launched.
