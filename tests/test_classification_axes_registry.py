@@ -74,14 +74,17 @@ def _ok_cell(axis: str, subject_id: str, as_of: str = AS_OF, **overrides: object
     )
 
 
-def _recorder(axis: str, log: list, out: object = None):
+_UNSET = object()
+
+
+def _recorder(axis: str, log: list, out: object = _UNSET):
     """An injected reader: logs its axis, raises/returns ``out`` when given."""
 
     def reader(subject_id: str, *, as_of: str, root: object = None) -> dict:
         log.append(axis)
         if isinstance(out, Exception):
             raise out
-        if out is not None:
+        if out is not _UNSET:
             return out  # type: ignore[no-any-return]
         return _ok_cell(axis, subject_id, as_of=as_of)
 
@@ -436,6 +439,15 @@ def test_validate_row_reports_each_targeted_violation():
     assert any("cells" in problem for problem in registry_mod.validate_row(non_dict_cells))
 
 
+def _has_ref_key(node: object) -> bool:
+    """True when any schema position carries a ``$ref`` keyword."""
+    if isinstance(node, dict):
+        return "$ref" in node or any(_has_ref_key(value) for value in node.values())
+    if isinstance(node, list):
+        return any(_has_ref_key(value) for value in node)
+    return False
+
+
 def test_row_schema_document_shape():
     assert ROW_SCHEMA["$schema"] == "https://json-schema.org/draft/2020-12/schema"
     assert ROW_SCHEMA["$id"] == "axis_row.v1"
@@ -463,7 +475,7 @@ def test_row_schema_document_shape():
     assert "axis_cell.v1.schema.json" in description
     assert "registry.validate_row" in description
     assert "Python-only" in description
-    assert "$ref" not in ROW_SCHEMA_PATH.read_text(encoding="utf-8")
+    assert not _has_ref_key(ROW_SCHEMA)
 
 
 def test_produced_row_and_cells_validate_against_the_schemas():
