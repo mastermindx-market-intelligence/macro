@@ -1,5 +1,5 @@
 {
-  "belief_time": "2026-10-07",
+  "belief_time": "2026-10-09",
   "capability_counts": {
     "measurement_candidate": 505,
     "semantic_only": 138
@@ -18,22 +18,22 @@
       "symbol": "VMRK"
     }
   ],
-  "computed_at": "2026-10-07T08:00:17Z",
+  "computed_at": "2026-10-09T14:11:34Z",
   "counts": {
     "capability": 644,
-    "edges": 25101,
-    "edges_latest_belief": 12863,
-    "evidence": 23,
+    "edges": 25194,
+    "edges_latest_belief": 12956,
+    "evidence": 24,
     "identity_resolution": 2807,
     "node_lifecycle": 3,
-    "nodes": 3882
+    "nodes": 3960
   },
   "engine_version": "theme_graph.v1",
   "era": "observed",
   "identity_resolution_state_counts": {
     "DEFERRED_IDENTITY_EXCEPTION": 1,
-    "NOT_IN_MASTER": 195,
-    "RESOLVED": 2375,
+    "NOT_IN_MASTER": 194,
+    "RESOLVED": 2376,
     "UNSUPPORTED_MARKET": 233
   },
   "lane": "nightly",

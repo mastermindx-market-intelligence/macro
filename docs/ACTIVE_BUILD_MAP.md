@@ -2,599 +2,867 @@
 
 # Active Build Map
 
-Generated: 2026-10-08T05:43:26.832971+00:00  |  Open PRs: 100  |  Merged (window): 500  |  base: `44284be4a18ac358c0e71f185d10d07e9e63e132`
+Generated: 2026-10-12T05:56:21.667465+00:00  |  Open PRs: 100  |  Merged (window): 500  |  base: `94c53929fb5e4e0fc0dd15e5a0ce44e2384ca130`
 
 ## Open PRs
 
 | PR | Title | Branch | Updated | Flags |
 |----|-------|--------|---------|-------|
-| #8645 | research(slr-p0): complete shock-resilience research and freeze outcome-blind study | `sol/slr-p0-deep-research-20261007-c3` | 2026-10-08 | — |
-| #8643 | theme-graph(W-C7): PIT category shadow in US Context Vector (dependent draft) | `sol/gmi-wc7-context-vector-20261007` | 2026-10-08 | DRAFT |
-| #8642 | [research-only] Reusable swing-confluence recipe planner and rates/event study protocol | `sol/swing-confluence-lab-20261007-c1` | 2026-10-08 | DRAFT |
-| #8641 | fix(flow-leaders): gate live boards on canonical ThetaData tape, retire frozen Polygon source | `fix/discover-flow-leaders-thetadata-cutover-20261007` | 2026-10-08 | DRAFT / ⚠ protected:1 |
-| #8640 | docs(temporal-scale): archive Adaptive Signal Clock deep-research scoping | `sol/temporal-grain-deep-research-scoping-20261007` | 2026-10-07 | DRAFT |
-| #8639 | Fix compressed theme-cycle chart on detail pages | `sol/fix-theme-cycle-graph-20261007` | 2026-10-07 | — |
-| #8637 | feat(dataos): validate identity views with observation receipts | `worktree-rs-pullback-identity-frontier-20261007` | 2026-10-07 | DRAFT |
-| #8635 | theme-graph(census): whole-GMI classification census G1-G5, hierarchy V1.1 input (docs only) | `claude/gmi-k-gmi-census-20261007` | 2026-10-07 | DRAFT |
-| #8633 | theme-graph(census): micro-theme membership census Q1-Q6, GMI hierarchy V1.1 input (docs only) | `claude/gmi-k-micro-census-20261007` | 2026-10-07 | DRAFT |
-| #8631 | market-ontology(F04): optional display-only ancestors on exposure_map rows via injected hierarchy_paths (W-C8) | `claude/gmi-hier-wc8-mo-ancestors-20261007` | 2026-10-07 | DRAFT |
-| #8630 | research(k3e): EVAL-1 challenger trial identity (K3E-EVAL-1-V1) | `claude/itp-eval1-challenger-identity-2026-10-07` | 2026-10-07 | DRAFT |
-| #8629 | theme-graph(content): populate the house theme hierarchy \u2014 10 categories / 68 micro-themes / 93 PARENT_OF (W-C4) | `claude/gmi-hier-wc4-populate-20261007` | 2026-10-07 | DRAFT / ⚠ CONFLICTING / ⚠ protected:1 |
-| #8626 | security master: admit mid/small R1 constituents into the universe (ITP A8) | `claude/itp-issuer-universe-r1-constituents-2026-10-07` | 2026-10-07 | DRAFT |
-| #8623 | Entry Radar: preserve acquisition roles in retained minute evidence | `claude/rs-pullback-raw-v3-20261007` | 2026-10-07 | DRAFT |
-| #8622 | feat(research-vault): stored canonical full-text derivative + bounded producer pass (F5-M) | `claude/rv-f5m-store-20261007` | 2026-10-07 | — |
-| #8599 | research(k3e): EVAL-1 owner acceptance + activation receipt (K3E-EVAL-1-V1) | `claude/ssd-k3e-eval1-pr2-activation-f0064895247c832a` | 2026-10-07 | DRAFT |
-| #8586 | feat(leadership-lab): restore Alpha + Top RS continuation research | `sol/web-alpha-rs-leadership-recovery-20261005-astra-001` | 2026-10-07 | DRAFT / ⚠ CONFLICTING |
-| #8580 | research(PB-G): integrate policy-behavior findings and freeze owner architecture | `claude/pb-g-integration-synthesis-20261007` | 2026-10-07 | DRAFT |
-| #8578 | feat(options): cross-name options risk pricing map in Macro Risk Detail | `sol/options-compare-risk-detail-20261006` | 2026-10-07 | — |
-| #8577 | feat(macro): add relative options pricing map | `sol/options-compare-macro-20261006` | 2026-10-07 | DRAFT |
-| #8575 | research(PB-F): complete independent adversarial review of PB-A–E | `research/policy-behavior-pbf-redteam-20261007` | 2026-10-07 | DRAFT |
-| #8574 | research(PB-D): reproduce T2 event-quality discovery and freeze zero-authority prospective test | `research/pb-d-t2-event-quality-20261007` | 2026-10-07 | DRAFT |
-| #8573 | research(PB-B): U.S.–Japan constraint return [HOLD-FOR-SOL] | `claude/pb-b-us-japan-constraint-20261007` | 2026-10-07 | DRAFT |
-| #8572 | research: PB-E circular financing and selective protection return | `research/pb-e-circular-financing-20261007` | 2026-10-07 | DRAFT |
-| #8568 | research(PB-A): source-time casebook and frozen baseline pilot | `research/pb-a-policy-behavior-baseline-20261007` | 2026-10-07 | DRAFT |
-| #8565 | research(PB-C): prospective-only announcement timing return | `research/pb-c-announcement-study-20261007` | 2026-10-07 | DRAFT |
-| #8563 | feat(china): wire Communiqué Diff into Asia production lane | `astra/cie09-production-wire-20261006` | 2026-10-07 | DRAFT / ⚠ protected:2 |
-| #8560 | research(policy): revealed-preference and strategic-support program | `research/policy-behavior-revealed-preference-20261007` | 2026-10-07 | DRAFT |
-| #8555 | research(options): dealer pressure, extremes and closing intelligence [MAS-260] | `claude/dealer-pressure-research-2026-10-06` | 2026-10-06 | DRAFT |
-| #8549 | fix(edge): prevent untrusted www origin certificate | `fix-www-origin-tls-20261006` | 2026-10-06 | — |
-| #8548 | perf(entry_radar): run_c3 derives StochRSI and the 4H histogram once per name (exact prefix-stable tables) | `claude/ssd-idr-c3-daily-leg-once-7a049b7188e0e30b` | 2026-10-06 | — |
-| #8547 | perf(entry_radar): load_pack verifies a spool pack once — byte-pinned receipt skips the per-pass re-fingerprint | `claude/ssd-idr-load-pack-verified-receipt-6f644dbbe12b0267` | 2026-10-06 | — |
-| #8545 | Record twenty Terminal Fabric reviews, scoped deliveries and owner continuation gates | `claude/ssd-macro-terminal-audit20-01a10f92-fed0fcce78dc426d` | 2026-10-07 | — |
-| #8540 | theme-graph(D2E): D2 acceptance gate matrix \u2014 Phase-1 interim record (HOLD pending natural receipt) | `claude/gmi-d2e-acceptance-20261006` | 2026-10-07 | DRAFT |
-| #8535 | agentos: record bounded worker runtime and context policy | `sol/lane-kit-runtime-context-policy-20261006` | 2026-10-08 | DRAFT |
-| #8533 | research(prophet): publish news-to-business-impact masterplan packet | `research/prophet-news-impact-masterplan-20261006` | 2026-10-06 | DRAFT |
-| #8531 | research(prophet): complete emergence + ignition audit and R6 handoff | `claude/prophet-emergence-ignition-research-20261006` | 2026-10-06 | — |
-| #8527 | feat(intl): build Paper workspace, Inspector and Compare foundation | `claude/ssd-paper-international-waves-ad8d40c8d3b06fff` | 2026-10-07 | DRAFT / files-truncated |
-| #8526 | fix(brain): improve mobile targets and preserve selected focus | `claude/iw2-brain-mobile-targets-20261006` | 2026-10-06 | DRAFT |
-| #8495 | research(prophet): NVDA golden-case, emergence + ignition audit | `sol/prophet-nvda-conversion-audit-20261006` | 2026-10-06 | DRAFT |
-| #8481 | [HOLD-FOR-SOL] brain-eval: regime-outlook analytical pair benchmark (G1) alongside the NVDA pair | `claude/ssd-gri-g1-outlook-pair-0d7689f6` | 2026-10-05 | DRAFT / ⚠ protected:4 |
-| #8479 | docs(agentos): record Mastermind OS production handoff | `sol/mastermind-os-production-handoff-20261005` | 2026-10-05 | DRAFT |
-| #8476 | feat(sectors): publish reconstructed 21D/63D RS history for Terminal | `claude/leadership-migration-w3a-sector-rs-history-20261005` | 2026-10-05 | DRAFT |
-| #8468 | Catalyst P5: accrue post-clock Bio source outcomes | `claude/catalyst-p5-outcome-accrual-20261005` | 2026-10-05 | DRAFT |
-| #8458 | fix(prophet): preserve private quote event-time provenance | `sol/web-ptse-b4-private-quote-provenance-20261004-astra-001` | 2026-10-05 | DRAFT / ⚠ CONFLICTING |
-| #8451 | feat(data): establish ES-first futures market tape plane | `sol/futures-tape-plane-20261005` | 2026-10-04 | ⚠ CONFLICTING / ⚠ protected:1 |
-| #8450 | Record Mini lane storage admission bypass incident | `sol/mini-lane-storage-admission-incident-20261004` | 2026-10-04 | DRAFT |
-| #8444 | feat(prophet): share coverage and plan-relation anatomy | `sol/web-prophet-four-market-p1a-20261004-sol-001` | 2026-10-07 | DRAFT / ⚠ CONFLICTING |
-| #8438 | docs(research): Fable-ready Research Vault AI intelligence fabric masterplan | `sol/research-vault-ai-fabric-masterplan-20261004` | 2026-10-07 | DRAFT |
-| #8428 | fix(confluence): clear stale share card when source is empty | `claude/toi-confluence-empty-source-repair-20261004` | 2026-10-04 | DRAFT |
-| #8427 | feat(china): compose CIE-14 evidence recognition context | `astra/cie14-recognition-composition-20261004` | 2026-10-06 | DRAFT / ⚠ CONFLICTING |
-| #8421 | research(c11): hardened short, borrow, securities-lending and crowding masterplan | `research/commission11-crowding-hardening-20261004` | 2026-10-04 | — |
-| #8420 | research: harden Commission 16 operational sensors — complete A–L masterplan | `claude/commission-16-operational-sensors-hardening-20261004` | 2026-10-04 | — |
-| #8419 | [RESEARCH][HOLD-FOR-SOL] Commission 13: audited capital-actions and share-count masterplan | `research/commission-13-capital-actions-hardening-20261004` | 2026-10-04 | DRAFT |
-| #8413 | Make orchestrator CI waits asynchronous | `claude/ssd-ci-async-continuation-3138859aac36f06b` | 2026-10-04 | DRAFT / ⚠ CONFLICTING |
-| #8412 | fix(rotation): isolate scratch replay alert writes | `claude/leadership-migration-rc-scratch-isolation-20261004` | 2026-10-05 | DRAFT / ⚠ CONFLICTING |
-| #8409 | feat(china): add CIE-18 pre-outcome preregistration admission guard | `astra/cie18-prereg-admission-20261003` | 2026-10-06 | DRAFT |
-| #8406 | research: Commission 4 economic exposure graph — second-pass deep research | `research/commission4-effective-dated-economic-graph-20261004` | 2026-10-05 | — |
-| #8404 | feat(stsi): add typed v2 dossier contracts with truthful source clocks | `claude/gmi-stsi-technology-composer-20261004-astra-001` | 2026-10-04 | DRAFT / ⚠ protected:2 |
-| #8401 | research: harden Commission 3 company KPI and fundamental driver models | `research/company-kpi-driver-models-hardening-20261004` | 2026-10-04 | — |
-| #8399 | research: audit and harden event-to-earnings intelligence architecture | `sol/event-intelligence-audit-20261004` | 2026-10-05 | DRAFT |
-| #8398 | feat(china): accrue point-in-time public-fund holdings | `astra/cie12-fund-portfolio-accrual-20261003` | 2026-10-06 | DRAFT |
-| #8391 | [HANDOFF][MAS-258] Transfer Grey Deer orchestration to Fable | `handoff/grey-deer-fable-orchestration-20261003` | 2026-10-04 | DRAFT |
-| #8385 | draft(options): resolve weighted calibration method and support decisions | `codex/options-alpha-calibration-method-draft-20261004` | 2026-10-04 | DRAFT |
-| #8363 | docs(prophet): harden Astra research takeover context and existing-plan map | `docs/prophet-astra-regime-indicator-handoff-20261004` | 2026-10-05 | DRAFT / ⚠ CONFLICTING |
-| #8338 | docs: Intelligence Workspace 2.0 research, master architecture and Astra CEO revival | `sol/intelligence-workspace-2-masterplan-20261003` | 2026-10-06 | DRAFT |
-| #8333 | [OLI / Draft] Validator repairs pass; current-base CI closure healed; native integration gates remain | `sol/oli-recovery-c0-20261003` | 2026-10-06 | DRAFT |
-| #8332 | docs(TOI): recommission existing program — source packet and gated initiation | `sol/toi-recommissioning-packet-20261003` | 2026-10-07 | DRAFT / files-truncated |
-| #8330 | docs(china): harden Information-Edge research and add Astra CEO end-to-end handoff | `sol/china-information-edge-pro-audit-20261003` | 2026-10-07 | DRAFT |
-| #8329 | docs: harden Intelligence Workspace 2.0 and prepare Astra CEO handoff | `claude/iw2-pro-audit-astra-handoff-20261003` | 2026-10-03 | DRAFT |
-| #8327 | docs(K3E): audited full masterplan and Astra CEO execution handoff | `astra/k3e-standard-pro-audit-handoff-20261003-c4` | 2026-10-03 | DRAFT |
-| #8325 | research: Prophet Timing State Engine audit and implementation masterplan | `sol/prophet-timing-state-masterplan-20261003` | 2026-10-04 | DRAFT |
-| #8324 | research(gmi): audited v3 report, full master plan and Astra CEO handoff | `research/gmi-theme-subtheme-completion-blueprint-20261003` | 2026-10-07 | DRAFT |
-| #8319 | perf(ci): prepare Macro sweeper for native merge queue | `sol/merge-queue-throughput-20261003` | 2026-10-04 | DRAFT / ⚠ protected:1 |
-| #8316 | fix(codex-ui): show native windows, reset times and permission evidence | `claude/codex-limits-viewer-20261003-sol-001` | 2026-10-03 | DRAFT |
-| #8315 | [HOLD] Forex: add carry and funding evidence workflow | `claude/forex-carry-funding-r19-20261003-sol-c1` | 2026-10-06 | DRAFT |
-| #8308 | [HOLD-FOR-SOL] feat(prophet): model Cycle funding and original-equity recovery | `sol/prophet-cycle-equity-v1-20261001` | 2026-10-03 | DRAFT |
-| #8306 | [HOLD-FOR-SOL] Qualify regime mechanisms and recorded-change evidence | `claude/ssd-regime-mechanism-evidence-20261002-64f38c11f25bde3b` | 2026-10-04 | DRAFT / ⚠ protected:4 |
-| #8304 | [HOLD-FOR-SOL] Preserve historical regime input-window provenance | `claude/ssd-regime-window-basis-20261002-f915359b3743a2e4` | 2026-10-03 | DRAFT / ⚠ protected:1 |
-| #8303 | [HOLD-FOR-SOL] Prophet regime research: native identity, ETF pilots and clock qualification | `sol/prophet-regime-indicator-program-20261002` | 2026-10-03 | DRAFT |
-| #8302 | [DRAFT] Marketing frontier upgrade: shadow caller, blinded evaluation and fail-closed CLI | `claude/marketing-frontier-upgrade-20261002` | 2026-10-03 | DRAFT |
-| #8301 | [HOLD-FOR-SOL] Distinguish stock-trend and macro-regime research readiness | `claude/ssd-regime-axis-scope-20261002-79a8a68a9b2b11a7` | 2026-10-03 | DRAFT |
-| #8299 | fix(subthemes): separate measured leadership from missing data | `sol/subtheme-replay-qualification-20261002` | 2026-10-04 | DRAFT |
-| #8271 | feat(prophet-w3): add guarded post-floor validation report | `claude/ssd-prophet-w3-guardrail-20261002-5167b974f63e6828` | 2026-10-04 | DRAFT / ⚠ CONFLICTING / ⚠ protected:1 |
-| #8270 | perf(charts): fix slow-device Plotly startup race | `sol/web-mobile-chart-performance-20261002` | 2026-10-03 | DRAFT |
-| #8259 | fix(validation): fence Special Situations prior-event windows | `sol/special-situations-control-boundary-20261002` | 2026-10-02 | DRAFT |
-| #8258 | fix(catalysts): exclude event-overlapping pre-event controls | `claude/catalyst-pre-event-boundary-20261002` | 2026-10-02 | DRAFT |
-| #8257 | [HOLD-FOR-SOL] Granular, source-dated regime intelligence in Mastermind AI | `claude/ssd-granular-regime-context-20261001-b4fa9445a470c68c` | 2026-10-05 | DRAFT / ⚠ CONFLICTING / ⚠ protected:4 |
-| #8255 | [CODEX][PREVIEW] Deterministic reset economics and limits viewer | `claude/codex-reset-economics-20261001-sol-001` | 2026-10-03 | DRAFT |
-| #8250 | [GMI Industrials][T02] Enroll Exponent/Pentair issuer profiles | `codex/industrials-t02-issuer-enrollment-20260930-sol-001` | 2026-10-03 | DRAFT / ⚠ CONFLICTING |
-| #8249 | feat(prophet): add pure Daily Brief compositor contract | `sol/prophet-daily-brief-compositor-20260930` | 2026-10-07 | DRAFT / ⚠ CONFLICTING |
-| #8245 | feat(earnings): bind economic evidence into existing private generations (CDV-1 Task 4) | `claude/cdv1-t4-private-publication-v2` | 2026-10-01 | DRAFT / ⚠ CONFLICTING |
-| #8242 | [Agent OS] Preserve Web communications source repairs and live-proof boundary | `sol/web-executive-communications-continuity-20260930-c3-001` | 2026-10-03 | — |
-| #8241 | [HOLD] Bonds: integrate Paper R11 duration review into the existing route | `claude/bonds-duration-r11-20260930-sol-c1` | 2026-10-07 | DRAFT |
-| #8240 | feat(prophet): compile source-bound Early Leadership evidence | `sol/prophet-early-leadership-evidence-v1-20260930` | 2026-10-07 | DRAFT / ⚠ CONFLICTING |
-| #8237 | docs(agentos): preserve four-Codex/four-Claude headless convergence | `sol/headless-eight-realm-convergence-20260930` | 2026-09-30 | — |
-| #8196 | feat(china): integrate receipt-bound economy overview and macro dialogs | `worktree-china-macro-evidence-20260929-sol-001` | 2026-10-03 | DRAFT / ⚠ CONFLICTING / files-truncated |
-| #8192 | feat(prophet): release complete prospective capture and integrity verification | `sol/prophet-h1-accrual-checker-20260929` | 2026-10-05 | ⚠ protected:1 |
-| #8191 | [HOLD: verification blocked] feat(options): daily expansion and source coverage | `claude/options-coverage-expansion-20260929` | 2026-09-30 | DRAFT |
-| #8188 | [MAS-258][DRAFT/HOLD] Show observed China pullbacks separately from forecast risk | `claude/ssd-cn-pullback-lifecycle-20260929-68e848e41de4db74` | 2026-10-04 | DRAFT / ⚠ CONFLICTING / files-truncated |
+| #8953 | crypto(T18b): bind btc.decision/v1 DecisionState into crypto + vector (patches + contract test) | `claude/cx-t18b-20261012` | 2026-10-12 | DRAFT |
+| #8952 | FIF S1-a: metric applicability, period basis and denominator qualification (registry-only) | `claude/fif-s1-metric-qualification-20261012` | 2026-10-12 | — |
+| #8951 | FIF D3: production filing-dataset provider behind FIF_FINANCIAL_DATASET_MODE | `claude/fif-d3-production-provider-20261012` | 2026-10-12 | — |
+| #8950 | FIF C1: peer cohort lab (eligibility, A35 exclusion codes, rank emission) | `claude/fif-c1-peer-cohort-20261012` | 2026-10-12 | — |
+| #8949 | FIF X1: deterministic stdlib xlsx export, API sibling route, Power Query workflow | `claude/fif-x1-excel-export-20261012` | 2026-10-12 | — |
+| #8948 | feat(gmi): sub_theme tier in crosswalk hierarchy materialization (Taxonomy V2 L02) | `claude/gmi-g2-l02-sub-theme-materialize` | 2026-10-12 | DRAFT |
+| #8947 | T16 build: ETH/SOL display-tier transfer of BTC price-path signals | `claude/cx-t16b-20261012` | 2026-10-12 | DRAFT |
+| #8946 | T19 prep: crypto consumer evidence plan and controlled-state render test | `claude/cx-t19p-20261012` | 2026-10-12 | DRAFT |
+| #8945 | feat(gmi): sub_theme tier in theme-graph contracts + checker (Taxonomy V2 L01) | `claude/gmi-g2-l01-tier-contracts` | 2026-10-12 | DRAFT / ⚠ protected:1 |
+| #8944 | agentos: open WS-NATIVE-CHART-ENGINE with first handoff and hold discovery | `claude/ce-handoff-1012` | 2026-10-12 | — |
+| #8943 | feat(c19-wp08): integrated answer binds consumer receipts to its six refs | `claude/c19-wp08-consumer-receipt-20261012` | 2026-10-12 | — |
+| #8942 | feat(gmi): probation hierarchy proposals may target sub_theme (Taxonomy V2 L16) | `claude/gmi-g2-l16-probation-sub-theme` | 2026-10-12 | DRAFT |
+| #8941 | feat(gmi): sub_theme tier in structural hierarchy paths (Taxonomy V2 L03) | `claude/gmi-g2-l03-hierarchy-paths` | 2026-10-12 | DRAFT |
+| #8940 | test(gmi): tier guards refuse sub_theme in exposure map and selection cohort (Taxonomy V2 L04) | `claude/gmi-g2-l04-tier-guard-tests` | 2026-10-12 | DRAFT / ⚠ files:error |
+| #8939 | docs(crypto): T23 pre-review of #8901 at 0dc4915d | `claude/cx-t23p-20261012` | 2026-10-12 | DRAFT |
+| #8938 | research(grey-deer): W3 pullback stage-1 frozen run — SPY-only null, INC deviation logged | `claude/grey-deer-w3-pullback-stage1-20261011` | 2026-10-12 | ⚠ protected:1 |
+| #8937 | crypto(T05): prefix-causality + outcome-maturity regression tests | `claude/cx-t05-20261012` | 2026-10-12 | DRAFT |
+| #8936 | FIF T2: pre-T1 compatibility hash seal (manifest + pinning tests) | `claude/fif-t2-compat-seal-20261012` | 2026-10-12 | — |
+| #8935 | docs(crypto): add T24 production journey plan and capability ledger | `claude/cx-t24p-20261012` | 2026-10-12 | DRAFT |
+| #8934 | T22 prep: observation capture design and collector contract | `claude/cx-t22p-20261012` | 2026-10-12 | DRAFT |
+| #8933 | T14 prereg: cohort breadth and relative-leadership incremental information | `claude/cx-t14p-20261012` | 2026-10-12 | DRAFT |
+| #8932 | crypto(T06): builder-level budget truth tests (decision -> projection -> crypto+vector render) | `claude/cx-t06-20261012` | 2026-10-12 | DRAFT |
+| #8931 | T17 forecast adjudication protocol and scoring-property tests | `claude/cx-t17p-20261012` | 2026-10-12 | DRAFT |
+| #8930 | FIF E0: detector applicability by issuer class with not-applicable reasons | `claude/fif-e0-detector-applicability-20261012` | 2026-10-12 | — |
+| #8929 | FIF T1: bind lineage confirmation receipts to their positive-evidence payload | `claude/fif-t1-evidence-binding-20261012` | 2026-10-12 | — |
+| #8928 | FIF S0: grid-correct displayed statement parsing (rowspan/colspan, repeated rows) | `claude/fif-s0-statement-grid-20261012` | 2026-10-12 | — |
+| #8927 | T13 prep: regime/cycle look-ahead census and prefix tests | `claude/cx-t13p-20261012` | 2026-10-12 | DRAFT |
+| #8926 | crypto(T07): dated universe snapshot fixture + coverage-denominator tests | `claude/cx-t07-20261012` | 2026-10-12 | DRAFT |
+| #8925 | P0B receipts: digest-only tier with browser-free --refresh-digests | `claude/p0b-receipt-digest-refresh` | 2026-10-12 | DRAFT / ⚠ protected:1 |
+| #8924 | crypto(T09): elapsed-coverage + funding-semantics tests for the derivatives flow view | `claude/cx-t09-20261012` | 2026-10-12 | DRAFT |
+| #8923 | fix(intraday-flow): D04-A source clocks on flow_pulse and intraday_quotes; orchestrator requires them | `claude/ssd-d04a-source-clocks-c806f9326acfb446` | 2026-10-12 | ⚠ protected:1 |
+| #8920 | test(options): M02 pin #8684 hedge-target A02–A05 (mutant-proven), stacked on #8684 | `claude/ssd-m02-pin-8684-e23c6b266a18ef7f` | 2026-10-12 | — |
+| #8919 | fix(mobile): repair poisoned immutable Quick Jump asset cache key | `sol/web-mobile-quickjump-cdn-rekey-20261011` | 2026-10-12 | — |
+| #8917 | T04 prep: capture-capacity release dependency | `claude/cx-t04p-20261012` | 2026-10-12 | DRAFT |
+| #8916 | T10 prep: descriptive cross-asset rotation on a fixed basis | `claude/cx-t10p-20261012` | 2026-10-12 | DRAFT |
+| #8915 | crypto(T03): fake-HTTP capture pipeline tests (occurrence identity, idempotency, failed persist) | `claude/cx-t03-20261012` | 2026-10-12 | DRAFT |
+| #8914 | T12 PREP: freeze the class/rotation/cycle measurement contract draft | `claude/cx-t12p-20261012` | 2026-10-12 | DRAFT |
+| #8913 | crypto(T02): input field eligibility matrix + clock/absence injection tests | `claude/cx-t02-20261012` | 2026-10-12 | DRAFT |
+| #8912 | T15 prep: preregister transition detection vs advance prediction vs response value | `claude/cx-t15p-20261012` | 2026-10-12 | DRAFT |
+| #8911 | crypto(T11): on-chain/valuation family map + MVRV/NUPL dependence tests | `claude/cx-t11-20261012` | 2026-10-12 | DRAFT |
+| #8910 | crypto(T08): cap vs breadth vs issuance vs subscription separation (market state + fixtures) | `claude/cx-t08-20261012` | 2026-10-12 | DRAFT |
+| #8909 | T20 prep: crypto and vector assistant context census | `claude/cx-t20p-20261012` | 2026-10-12 | DRAFT |
+| #8908 | crypto(T18): design-to-source binding map for crypto + vector | `claude/cx-t18-20261012` | 2026-10-12 | DRAFT / ⚠ files:error |
+| #8907 | T16 prep: ETH/SOL class-transfer availability census and experiment design | `claude/cx-t16p-20261012` | 2026-10-12 | DRAFT |
+| #8905 | mi-g10-n-clu: pin news-cluster false positives and add a read-only audit | `claude/mi-g10-n-clu` | 2026-10-12 | DRAFT |
+| #8904 | crypto(T21): publication/freshness/recovery contract for crypto + vector pages | `claude/cx-t21-20261012` | 2026-10-12 | DRAFT |
+| #8903 | Pin ticker-news failure and privacy states | `claude/mi-g10-n-matrix` | 2026-10-12 | DRAFT |
+| #8902 | Add descriptive per-security news-flow counts | `claude/mi-g10-n-vel` | 2026-10-12 | DRAFT |
+| #8901 | crypto: R2 candidate source split from #8050 (fd8095012e91) on current main | `claude/cx-t01b-20261012` | 2026-10-12 | — |
+| #8900 | Add a read-only ticker-news inventory report | `claude/mi-g10-n-ops` | 2026-10-12 | DRAFT |
+| #8899 | integrated answer: page provenance for shared sources (flag stays off) | `claude/mi-g10-i-matrix` | 2026-10-12 | DRAFT |
+| #8898 | test(qbus-news): pin catch-up gap and overlap replay | `claude/mi-g10-n-gap` | 2026-10-12 | DRAFT |
+| #8897 | Add deterministic rights-gated ticker-news annotations | `claude/mi-g10-n-ann` | 2026-10-12 | DRAFT |
+| #8896 | Add read-only per-ticker diagnosis for the qbus news universe | `claude/mi-g10-n-uni` | 2026-10-12 | DRAFT |
+| #8895 | Pin qbus news reducer/store lifecycle coverage | `claude/mi-g10-n-store` | 2026-10-12 | DRAFT |
+| #8894 | test: pin company theme exposure staleness and coverage edges | `claude/mi-g10-cte-health` | 2026-10-12 | DRAFT |
+| #8893 | SNI S2: conditional event-response lane (P04-P06, repair r1) + REG section 6/7 fold + program ledger | `claude/sni-s2-ship-20261012` | 2026-10-12 | — |
+| #8892 | docs(temporal-scale): Fable Adaptive Signal Clock masterplan and native Opus operator handoff | `sol/adaptive-signal-clock-fable-masterplan-20261011` | 2026-10-12 | DRAFT |
+| #8891 | [DEFENSE][MASTERPLAN][DRAFT] Investor-product recovery census and Fable end-to-end handoff | `sol/defense-e2e-masterplan-20261011` | 2026-10-12 | DRAFT |
+| #8890 | feat(intl): source-bound gap-aware Compare charts and SVG geometry | `sol/web-intl-r10-im02-gap-aware-series-20261011` | 2026-10-12 | DRAFT |
+| #8889 | fix(mobile): unblock Macro Dashboard loading and defer noncritical scripts | `sol/mobile-macro-perf-20261011` | 2026-10-12 | — |
+| #8888 | fix(macro): stack AI Brief and Alerts Centre cards on narrow screens | `sol/mobile-ai-alerts-stack-20261011` | 2026-10-12 | — |
+| #8884 | test(options): qualify matrix publications and older snapshot withholding | `claude/ssd-fable-matrix-acceptance-tools-20261012-640f098b1567f308` | 2026-10-12 | — |
+| #8881 | [FIF][MASTERPLAN][DRAFT] Evidence-tested Fable end-to-end handoff and current census | `sol/fif-e2e-masterplan-20261011` | 2026-10-12 | DRAFT |
+| #8880 | docs(crypto): Fable end-to-end masterplan with native Opus and fabric operators | `sol/crypto-intelligence-fable-masterplan-20261011` | 2026-10-12 | DRAFT |
+| #8871 | fix(research-vault): neutral live-loading counts and date-clean SEO titles | `sol/rv-neutral-firstpaint-20261011-c2` | 2026-10-12 | DRAFT |
+| #8869 | [DRAFT/HOLD][ETF] Offline QTUM parser with future-date refusal (no fetch activation) | `sol/web-qtum-offline-parser-integration-20261011-sol-001` | 2026-10-12 | DRAFT |
+| #8860 | [DRAFT/HOLD][GMI] Guard BEA geographic industry input research without Graph1 promotion | `sol/web-bea-io-native-research-adapter-20261011-sol-001` | 2026-10-12 | DRAFT |
+| #8859 | [TP-2][DRAFT/HOLD] Private off-exchange observed/history view, source-free Phase A | `sol/tp2-private-offexchange-view-20261011` | 2026-10-12 | DRAFT |
+| #8810 | feat(company-intelligence): add private disclosure owner and staged publisher | `sol/gmi-native-disclosures-20261011` | 2026-10-12 | — |
+| #8800 | fix(signal-quality): refuse future washout artifacts on truncated price tapes | `sol/pit-washout-future-session-fence-20261011` | 2026-10-11 | — |
+| #8793 | [DRAFT/HOLD-FOR-SOL] Inspect equity ownership as a distinct private economic relationship | `sol/gmi-economic-equity-interest-inspector-20261011-sol-001` | 2026-10-11 | DRAFT |
+| #8791 | [DRAFT/HOLD] Factor Atlas S3: qualified basket IV and modeled-risk native pilot | `sol/web-factor-atlas-s3-native-20261011-c1` | 2026-10-12 | DRAFT |
+| #8789 | fix(m2): guard macstudio heredocs and sourced Bash helpers | `sol/web-m2-heredoc-workflow-hardening-20261011` | 2026-10-11 | ⚠ protected:14 |
+| #8787 | fix(m2): prevent Homebrew Bash heredoc deadlocks in nightly and tests | `sol/web-m2-closepass-bash-heredoc-20261011` | 2026-10-11 | ⚠ protected:1 |
+| #8786 | press: harden staged publication and qualify durable event sources | `claude/mmx-public-intelligence-press-20261011` | 2026-10-12 | ⚠ files:error |
+| #8784 | [TP-B][DRAFT/HOLD] Private historical TRF ruler + minute-conditioned calibration | `sol/tpb-history-calibration-20261011` | 2026-10-11 | DRAFT |
+| #8773 | [SNI][MASTERPLAN][DRAFT] End-to-end Fable handoff, current census and Opus/operator execution plan | `sol/sni-e2e-masterplan-20261011` | 2026-10-11 | DRAFT |
+| #8772 | docs(grey-deer): Fable end-to-end masterplan and native Opus operator handoff | `sol/grey-deer-fable-masterplan-20261011` | 2026-10-11 | DRAFT |
+| #8770 | [PLAN] Options end-to-end completion — Fable native Opus and Fabric handoff | `claude/options-fable-completion-20261011` | 2026-10-11 | DRAFT |
+| #8759 | docs(prophet): CEO master direction and execution handoff (2026-10-10) | `sol/web-prophet-ceo-master-handoff-20261010-sol-001` | 2026-10-11 | DRAFT |
+| #8756 | [DRAFT/HOLD][QLedger] Qualify lossless oversize legacy history before native cutover | `sol/web-rotation-qledger-native-conversion-preflight-20261010` | 2026-10-11 | DRAFT |
+| #8754 | fix(intl): restore Paper presentation and owner evidence bridge | `sol/manual-paper-waves-01a1101f-release-r2` | 2026-10-11 | DRAFT |
+| #8753 | docs(gmi): Astra CEO master handoff and Sol 6.1 Subagent Fabric execution contract | `sol/gmi-astra-ceo-handoff-20261010` | 2026-10-10 | DRAFT |
+| #8731 | fix(pss-w3): dedupe shadow source events and measure only first-seen prospective closes | `sol/pss-w3-event-identity-causal-20261009` | 2026-10-10 | DRAFT |
+| #8729 | feat(cot): source-correct positioning board and release-time repairs | `sol/web-cot-positioning-20261009-sol-001` | 2026-10-10 | DRAFT |
+| #8728 | [C2][DRAFT/HOLD] Recover Risk Center after transient factor-model reads | `sol/c2-risk-center-load-recovery-20261010` | 2026-10-10 | DRAFT |
+| #8726 | research: publish healthcare pivot audit and 23-stock strategy hypotheses (#8718) | `research/healthcare-pivots-20261009-8718` | 2026-10-10 | — |
+| #8725 | [CATALYST LOOP][SESSION 03][DRAFT/HOLD] Anonymous scan-first responsive UX with verified opt-in | `web/mmx-acq-catalyst-ux-20261009` | 2026-10-10 | DRAFT |
+| #8724 | fix(china): restore CSI 300 and ChiNext quotes after market close | `fix/china-index-close-hydration-20261009` | 2026-10-09 | — |
+| #8721 | [MAS-258][DRAFT] Risk Radar pullback-depth research, Paper states and arithmetic slice | `sol/risk-radar-pullback-depth-20261009` | 2026-10-12 | DRAFT / ⚠ CONFLICTING / ⚠ protected:1 |
+| #8715 | feat(intl): qualify user-facing delayed EOD index and FX returns | `sol/intl-r10-qualified-publisher-20261009` | 2026-10-12 | DRAFT |
+| #8714 | [Draft/HOLD] China Prophet — completed research and implementation handoff | `claude/cn-prophet-census-20261009` | 2026-10-10 | DRAFT / files-truncated |
+| #8713 | [DRAFT/HOLD] Keep Desk Watch feed outages distinct from quiet signals | `claude/desk-watch-availability-20261009-c3` | 2026-10-09 | DRAFT / ⚠ protected:1 |
+| #8706 | [DRAFT/HOLD] Fix HK lookup stale-issuer evidence and retry recovery | `sol/c2-hk-lookup-intent-20261009` | 2026-10-09 | DRAFT |
+| #8704 | [WEB-P1][G1][DRAFT/HOLD] Preview BLS/BEA source before seen/ETag consumption | `sol/web-min-webp1-official-intake-20261009` | 2026-10-11 | DRAFT |
+| #8703 | feat(f04): source-bound Factor Atlas evidence preview — read-only | `sol/web-factor-atlas-s4-native-excerpts-20261009` | 2026-10-11 | DRAFT |
+| #8701 | [CATALYST LOOP][COMPOSED TEST][DRAFT/HOLD] Verify Sessions 00+01+02 imports, CI and restart | `sol/mmx-acq-catalyst-integration-proof-20261009` | 2026-10-09 | DRAFT / ⚠ CONFLICTING |
+| #8700 | [CATALYST LOOP][SESSION 01][DRAFT/HOLD] Public-safe earnings event packet + anonymous scan backend | `web/mmx-acq-catalyst-intel-20261008` | 2026-10-12 | DRAFT |
+| #8699 | [WEB-P1][G1][STACKED DRAFT/HOLD] Stream-only Desk acceptance canary (default OFF) | `sol/web-min-webp1-g1-canary-20261009` | 2026-10-09 | DRAFT |
 
 > ⚠ CONFLICTING means mergeStateStatus=DIRTY — pull_request CI is suppressed on conflicting PRs (known repo failure mode).
+> ℹ 2 of 100 PRs: mergeability not yet computed by GitHub (UNKNOWN).
+> ⚠ 3 PR(s) marked `files:error` — file fetch failed; collision data for those PRs is unknown.
 
 ## File Collisions
 
 | PR A | PR B | Shared files | Files |
 |------|------|-------------|-------|
-| #8444 | #8188 | 5 | `.github/ci/legacy-jobs.yml`, `mockups/evidence/prophet-p0b-zero-fouc/manifest.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json`, `mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json` |
-| #8643 | #8192 | 3 | `data/us_prophet_rank/README.md`, `engine/us_context_vector.py`, `tests/test_us_context_vector.py` |
-| #8306 | #8257 | 3 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh`, `tests/test_deploy_update_self_heal.py` |
-| #8306 | #8245 | 3 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh`, `tests/test_deploy_update_self_heal.py` |
-| #8257 | #8245 | 3 | `.github/ci/legacy-jobs.yml`, `app/deploy/update.sh`, `tests/test_deploy_update_self_heal.py` |
-| #8586 | #8444 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8586 | #8245 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8586 | #8192 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8444 | #8245 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8444 | #8192 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8306 | #8304 | 2 | `.github/ci/legacy-jobs.yml`, `config/unrun_test_baseline.json` |
-| #8306 | #8301 | 2 | `.github/ci/legacy-jobs.yml`, `config/unrun_test_baseline.json` |
-| #8304 | #8301 | 2 | `.github/ci/legacy-jobs.yml`, `config/unrun_test_baseline.json` |
-| #8245 | #8192 | 2 | `.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py` |
-| #8641 | #8630 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8629 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8626 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8622 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8586 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8578 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8527 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8641 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8629 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8626 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8622 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8586 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8578 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8527 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8630 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8626 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8622 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8586 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8578 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8527 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8629 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8622 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8586 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8578 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8527 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8626 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8586 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8578 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8527 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8622 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8578 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8527 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8586 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8527 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8578 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8549 | #8196 | 1 | `app/deploy/Caddyfile` |
-| #8527 | #8481 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8527 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8444 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8481 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8427 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8444 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8404 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8427 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8333 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8404 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8315 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8333 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8308 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8315 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8306 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8304 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8308 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8306 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8302 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8304 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8301 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8302 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8271 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8301 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8258 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8271 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8259 | #8258 | 1 | `scripts/validate_special_situations.py` |
-| #8258 | #8257 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8258 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8250 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8257 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8249 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8250 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8245 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8249 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #8241 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8245 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #8240 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8241 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #8196 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8240 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8196 | #8192 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8196 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8196 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8191 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8192 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
-| #8191 | #8188 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8953 | #8947 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8946 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8937 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8934 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8933 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8932 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8931 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8953 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8946 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8937 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8934 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8933 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8932 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8931 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8947 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8937 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8934 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8933 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8932 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8931 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8946 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8934 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8933 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8932 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8931 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8937 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8933 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8932 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8931 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8934 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8932 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8931 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8933 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8931 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8932 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8927 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8931 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8926 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8927 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8924 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8926 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8917 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8924 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8916 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8917 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8915 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8916 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8914 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8915 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8914 | #8913 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8914 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8914 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8914 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8914 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8914 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8914 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8913 | #8912 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8913 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8913 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8913 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8913 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8913 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8912 | #8911 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8912 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8912 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8912 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8912 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8911 | #8910 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8911 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8911 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8911 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8910 | #8909 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8910 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8910 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8909 | #8907 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8909 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8907 | #8901 | 27 | `collectors/_crypto_observations.py`, `collectors/bgeo.py`, `collectors/okx.py`, `engine/btc_decision.py`, `engine/btc_impulse_radar.py`, `engine/btc_impulse_radar_backtest.py`, `engine/btc_inputs.py`, `engine/btc_intraday_cvd.py` +19 more |
+| #8701 | #8700 | 4 | `engine/marketing/catalyst_packets.py`, `engine/marketing/catalyst_scan.py`, `tests/test_catalyst_packet_public.py`, `tests/test_catalyst_scan.py` |
+| #8919 | #8721 | 3 | `mockups/evidence/prophet-p0b-zero-fouc/manifest.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`, `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json` |
+| #8754 | #8715 | 3 | `.github/ci/legacy-jobs.yml`, `scripts/build_intl.py`, `templates/intl_workspace/shell.html.j2` |
+| #8953 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8947 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8946 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8943 | #8899 | 2 | `.github/ci/legacy-jobs.yml`, `app/integrated_answer.py` |
+| #8937 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8934 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8933 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8932 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8931 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8927 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8926 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8924 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8917 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8916 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8915 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8914 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8913 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8912 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8911 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8910 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8909 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8907 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8901 | #8729 | 2 | `engine/btc_inputs.py`, `engine/btc_signals.py` |
+| #8889 | #8754 | 2 | `app/deploy/Caddyfile`, `config/site_access.yml` |
+| #8810 | #8721 | 2 | `.github/ci/legacy-jobs.yml`, `config/dataset_registry.yml` |
+| #8810 | #8701 | 2 | `.github/ci/legacy-jobs.yml`, `app/main.py` |
+| #8951 | #8949 | 1 | `app/forensics.py` |
+| #8943 | #8938 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8925 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8904 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8903 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8902 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8901 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8900 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8943 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8925 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8904 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8903 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8902 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8901 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8900 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8899 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8938 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8904 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8903 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8902 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8901 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8900 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8899 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8925 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8903 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8902 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8901 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8900 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8899 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8904 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8902 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8901 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8900 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8899 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8903 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8901 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8900 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8899 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8902 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8900 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8899 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8901 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8899 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8900 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8898 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8899 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8896 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8898 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8895 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8896 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8894 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8895 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8893 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8894 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8890 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8893 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8884 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8890 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8889 | #8888 | 1 | `templates/dashboard.html.j2` |
+| #8889 | #8721 | 1 | `templates/dashboard.html.j2` |
+| #8888 | #8721 | 1 | `templates/dashboard.html.j2` |
+| #8884 | #8869 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8884 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8810 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8869 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8810 | #8791 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8810 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8810 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8810 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8810 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8791 | #8754 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8791 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8791 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8791 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8791 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8791 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8754 | #8731 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8754 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8754 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8754 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8731 | #8721 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8731 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8731 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8731 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8729 | #8721 | 1 | `scripts/build_site.py` |
+| #8721 | #8715 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8721 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8721 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8715 | #8703 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8715 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
+| #8703 | #8701 | 1 | `.github/ci/legacy-jobs.yml` |
 
 ## Recently Merged (last 14 days) (showing most recent 500; window truncated)
 
 | PR | Title | Merged |
 |----|-------|--------|
+| #8922 | fix(flow): F01 chain heat keeps unknown null; reject contradictory location blocks | 2026-10-12 |
+| #8921 | fix(gamma): M01 regime follows the engine direct sign; guard the gex_SPX read | 2026-10-12 |
+| #8918 | test(options): N01-F2 maturity-clock and Q02-U1 pilot-adapter pins (test-only) | 2026-10-12 |
+| #8906 | docs(c19-wp30): paid PIT estimates decision — defer buy, SRC-A1 baseline | 2026-10-12 |
+| #8887 | agentos(c19): W2 done, W3 in progress on Grok lanes | 2026-10-12 |
+| #8886 | test(company-intelligence): C19 WP12 event evolution across chained generations and views | 2026-10-12 |
+| #8885 | fix(mobile): prevent Quick Jump Terminal iframe from expanding beyond the viewport | 2026-10-12 |
+| #8883 | semantic proof: resolve the PR proof base by ancestry, not byte equality | 2026-10-12 |
+| #8882 | fix(stockdata): consumers re-ask the index once after a transient failure (S3-01) | 2026-10-12 |
+| #8879 | docs(options): record live Matrix release and M1 Flow recovery | 2026-10-12 |
+| #8878 | SNI S1: residual-baseline lane (P01-P03) + REG section 6/7 seal fold + program ledger | 2026-10-12 |
+| #8877 | agentos(rs-leader): close out the RS LEADER recovery handoff | 2026-10-12 |
+| #8876 | records(gmi): 2026-10-12 frontier-delegation handoff + #8847 wording carry-overs | 2026-10-12 |
+| #8875 | fix(tiingo): accept authentic BOATS ticker casing for display | 2026-10-12 |
+| #8874 | Prophet: compare native object changes within owner boundaries | 2026-10-12 |
+| #8873 | prophet-ni: Phase 0 freeze — contract v1, cases, hermetic test, CI job, freeze record, DEC + handoff | 2026-10-12 |
+| #8872 | agentos: DSC canvas font wait — fonts.ready misses canvas-only faces | 2026-10-12 |
+| #8870 | Fix Tiingo Data OS CI calendar dependency scope | 2026-10-12 |
+| #8868 | records(market-intelligence): W9-7 nightly-outage gate — M2 runner listener self-cancel DSC + GH001 commit tail | 2026-10-11 |
+| #8867 | docs(sni): program ledger records-4 (cycles 19:0xZ–22:0xZ) | 2026-10-11 |
+| #8866 | agentos: E20 program records — landing trains, solo migration landing, open-ledger-row landmine | 2026-10-11 |
+| #8865 | records(market-intelligence): W9-6 — #8864 lane-freeze fix MERGED + PRODUCTION_PROOF; W9-5 timer expectation retracted | 2026-10-11 |
+| #8864 | fix(deploy): W2C owner-replay refusal freezes its lane instead of aborting the deploy | 2026-10-11 |
+| #8863 | records(mi): W9-5 — press-feeds 401 resolved by the seat; identity runway lane dropped on measurement | 2026-10-11 |
+| #8862 | fix(composer): thread request clocks and derive leg as_of from receipt nodes (C19 WP05) | 2026-10-11 |
+| #8861 | records(mi): W9-4 checkpoint — Package N + G3 PRODUCTION_PROOF, update.sh W2C refusal discovery, ORCH-D lane | 2026-10-11 |
+| #8858 | fix(validation): count initial loss in _maxdd and abstain on rank-deficient vif (C19 WP07) | 2026-10-11 |
+| #8857 | perf(prophet): reattest B1 bytes before reusing observation relations | 2026-10-11 |
+| #8856 | fix(thetadata): a store on an unmounted volume stops the resolver chain instead of falling through (D16a) | 2026-10-11 |
+| #8855 | feat(leader-radar): deep corrections and recovery panel (WP2) | 2026-10-11 |
+| #8854 | feat(grey-deer): W2 observed-move primitives per the frozen pullback preregistration | 2026-10-11 |
+| #8853 | SNI E1+E2 evidence packs + S0 frozen protocols | 2026-10-11 |
+| #8852 | research(grey-deer): O8/T22 pullback preregistration, frozen before outcome inspection | 2026-10-11 |
+| #8851 | fix(greeks): V01 — the IV inversion refuses inside MIN_T; the kernel declares its conventions and applicability | 2026-10-11 |
+| #8850 | docs(sni): records-3 ledger fold (#8843 landed, #8837 repair 3) | 2026-10-11 |
+| #8849 | fix(hk_fundamentals): stop trusting the vendor "HKD" label — suppress mixed-currency PE/PB | 2026-10-11 |
+| #8848 | fix(ticker-news): record secret-free catch-up/stream error codes in health | 2026-10-11 |
+| #8847 | agentos(gmi): semiconductors SB-W1 through 839bd6a1, census-cap DSC, base-sync handoff | 2026-10-11 |
+| #8846 | records(market-intelligence): W9-3 checkpoint — Alpaca refresh proven, #8841 installed, dispatch-resolution discovery | 2026-10-11 |
+| #8845 | fix(prophet): reduce B1 validation and replay cost without weakening integrity | 2026-10-11 |
+| #8844 | site20 S1 follow-up: stable account id, api() timeout, one pref writer | 2026-10-11 |
+| #8843 | docs(sni): fold 17:5x-18:0x seat cycle into program ledger | 2026-10-11 |
+| #8842 | Provision private Company Intelligence runtime boundaries | 2026-10-12 |
+| #8841 | deploy(market-memory): lift identity unit budget to CPUQuota=100% / TimeoutStartSec=600 | 2026-10-11 |
+| #8840 | docs(agentos): W9 records — #8830 proven, P2 401 blocker, #8838 secret-sync remedy | 2026-10-11 |
+| #8839 | docs(sni): refold program ledger + fabric pool-admission discovery | 2026-10-11 |
+| #8838 | ops(vps): deploy-alpaca-secrets dispatch workflow refreshes the VPS Alpaca pair from repository secrets | 2026-10-11 |
+| #8837 | sni(e0,m0): Alibaba/Tencent coverage profiles + market-data qualification on existing owners | 2026-10-11 |
+| #8836 | fix(event-window): bind MRI surprise-dispersion reader to release_forecast.v2 (C19 WP11) | 2026-10-11 |
+| #8835 | fix(heartbeat): clear an open ledger stall only on a strictly newer asof (Grey Deer O7/T03) | 2026-10-11 |
+| #8834 | research(sni): V0 evaluation support + U0 composition contracts (decision artifacts) | 2026-10-11 |
+| #8833 | records(grey-deer): O1/T02 pullback source-clock-basis-rights qualification (manifest v1.0.0) | 2026-10-11 |
+| #8832 | perf(prophet): index B1 relations once per observations request | 2026-10-11 |
+| #8831 | fix(trial-ledger): durable append-before-memory + counted corrupt lines (C19 WP06) | 2026-10-11 |
+| #8830 | fix(market-memory): let identity intake finish when the deploy pull moves unrelated paths | 2026-10-11 |
+| #8829 | agentos(market-intelligence): W8 records-3 — #8818/#8826 merged, main proof SUCCESS, SKYD FOLD ruling, Massive REST-snapshot entitlement DSC | 2026-10-11 |
+| #8828 | fix(dataos): date the PSKY->SKYD rename so the current S&P roster resolves | 2026-10-11 |
+| #8827 | fix(prophet): return from related Plans to the original candidate | 2026-10-11 |
+| #8826 | agentos(market-intelligence): W8 records-2 — SKYD rename DSC, fail-closed DECs, prereg-v2 WS, 10-11 handoff refresh | 2026-10-11 |
+| #8825 | records(itp): autonomous round D55-D64 + A9 handoff, partition-clock DEC, WS next_action | 2026-10-11 |
+| #8823 | fix(ticker-news): alpaca provider hardening (review M1/M3/M4 + M2 docs) | 2026-10-11 |
+| #8822 | Record CEO A private issuer delivery and remaining adoption gates | 2026-10-11 |
+| #8821 | Deploy admin catalog before unrelated W2C attestation failures | 2026-10-11 |
+| #8820 | agentos(market-intelligence): W8 records — Alpaca rights DEC, MM identity/options DECs, 10-11 handoff + continuation | 2026-10-11 |
+| #8819 | fix(market-memory): make identity ingest idempotent over captured dates | 2026-10-11 |
+| #8818 | fix(market-memory): tolerate EACCES on a provisioner-owned store-root parent | 2026-10-11 |
+| #8816 | fix(w2c): writer-lock recovery discards a torn pre-publication pending instead of wedging | 2026-10-11 |
+| #8815 | refactor(agent-context): bound Fable startup without losing detailed doctrine | 2026-10-11 |
+| #8814 | fix(marketdesk): requeue transient PDF TLS and 5xx failures | 2026-10-11 |
+| #8813 | test(composer): pin current-source clock contract (C19 WP16) | 2026-10-11 |
+| #8812 | fix(sentinel): served-file reads use a measured whole-file cap, not the HTML truncation cap | 2026-10-11 |
+| #8811 | deploy(integrated-answer): flag-on MACRO_INTEGRATED_ANSWER_ENABLED=1 in macro-api.service | 2026-10-11 |
+| #8809 | feat(ticker-news): Alpaca (Benzinga-sourced) provider for the qbus news writer | 2026-10-11 |
+| #8808 | Register private Company Intelligence entitlement and reload issuer catalogs | 2026-10-11 |
+| #8807 | fix(massive): already-current incremental run refreshes the stale freshness manifest | 2026-10-11 |
+| #8806 | fix(prophet): show known source stage and setup labels | 2026-10-11 |
+| #8805 | research: EVAL-1 partition clock receipt builder (ITP A9) | 2026-10-11 |
+| #8804 | config(leader-radar): activate first-seen recovery observation capture | 2026-10-11 |
+| #8803 | Add bounded WP02 economic source diagnostic and native source witnesses | 2026-10-12 |
+| #8802 | feat(leader-lineage): read-only deep-recovery lineage descriptor, tests and consumer spec | 2026-10-11 |
+| #8801 | Fix Prophet Plan return and full-board unavailable states | 2026-10-11 |
+| #8799 | docs(marketontology): preserve W17 delivery and publication gates | 2026-10-11 |
+| #8798 | fix(prophet): distinguish active setups from open entries | 2026-10-11 |
+| #8797 | fix(news): preserve enrichment when China context has tone only | 2026-10-11 |
+| #8796 | agentos(c19): W0 done, W2 under O1/O8 Opus orchestrators, successor-seat handoff | 2026-10-11 |
+| #8795 | fix(agent-context): put continuation rules inside Codex's default instruction budget | 2026-10-11 |
+| #8794 | fix(tablesort): filter status counts only rows visible after filtering | 2026-10-12 |
+| #8792 | dec(gmi): adopt economic-network architecture and native-owner acceptance contract | 2026-10-11 |
+| #8790 | fix(research): recover strict R2 corpus TLS reads through version-pinned ranges | 2026-10-11 |
+| #8788 | fix(pricing): prevent double signup overlay from one CTA click | 2026-10-11 |
+| #8785 | records(grey-deer): Fable seat W0 reconcile and admit for the pullback operation | 2026-10-11 |
+| #8783 | fix(theme-state): bind live shadow query to completed capture | 2026-10-11 |
+| #8782 | research(sni): seat continuation ledger for SNI program completion (2026-10-11) | 2026-10-11 |
+| #8781 | agentos(c19): WS-COMMISSION-19-DATA-INTELLIGENCE workstream + 2026-10-11 Fable handoff | 2026-10-11 |
+| #8780 | Bonds: keep unreadable credit sources unavailable | 2026-10-11 |
+| #8779 | MarketOntology W16: product merges, natural J1 producer proof and bounded gaps | 2026-10-11 |
+| #8778 | Morning Edition: retain dated market and macroeconomic regime context | 2026-10-11 |
+| #8777 | research(prophet): news-to-business-impact masterplan packet + Phase 0 records (WS:PROPHET-NEWS-IMPACT) | 2026-10-11 |
+| #8776 | site20 S1: account and preference continuity | 2026-10-11 |
+| #8775 | Add bounded event-family consequence views to News | 2026-10-11 |
+| #8774 | agentos: WS-TERMINAL-ENHANCEMENTS20 program record | 2026-10-11 |
+| #8771 | Keep available AM context readings visible during partial coverage | 2026-10-11 |
+| #8769 | fix(marketontology): preserve chain-date integrity in J1 company links | 2026-10-11 |
+| #8768 | Publish receipt-bound themes membership metadata | 2026-10-11 |
+| #8767 | hooks: a quarantined session remedies itself; worktree mint delegates to the SSD storage helper | 2026-10-11 |
+| #8766 | site20 S5: calculator input and output integrity | 2026-10-11 |
+| #8765 | site20 S2: generic table sort/filter correctness | 2026-10-11 |
+| #8764 | site20 S3: stock data index/ticker cache resilience | 2026-10-11 |
+| #8763 | site20 S4: chart zoom/scaling and stock-brief freshness | 2026-10-11 |
+| #8762 | Prophet: add lossless early-observation discovery | 2026-10-11 |
+| #8761 | docs(agentos): consolidate industry intelligence under the Fable Meta-CEO seat; record H1-B | 2026-10-11 |
+| #8760 | ship_loop_guard: adopt native worktree-<name> session trees instead of quarantining them | 2026-10-11 |
+| #8758 | Expose bounded data and Lab access to web sessions | 2026-10-11 |
+| #8755 | fix(brain): recover thinking-only token exhaustion once | 2026-10-11 |
+| #8752 | docs(marketontology): CEO B seat handoff 2026-10-10 — checkpoint + full-throttle successor brief | 2026-10-10 |
+| #8751 | records(marketontology): CEO A wave 15 — D95–D97 + seat transfer to Claude3 (full throttle) | 2026-10-10 |
+| #8750 | feat(leader-radar): deep recovery, failed repair, expectations and observed-history evidence | 2026-10-11 |
+| #8749 | records: quant assessment 2026-10 Q01–Q20 ledger + Agent OS records | 2026-10-10 |
+| #8747 | quant(Q20): Dependence-aware challenger comparison on the existing trial budget — KEEP | 2026-10-10 |
+| #8746 | quant(Q19): First-passage ambiguity and censoring-aware outcome diagnostics — INSUFFICIENT_DATA | 2026-10-10 |
+| #8745 | quant(Q18): Asynchronous-session covariance and lead/lag measurement qualification — KEEP | 2026-10-10 |
+| #8744 | quant(Q17): Stable factor whitening under collinearity and missing observations — REJECT | 2026-10-10 |
+| #8743 | quant(Q16): Delayed-feedback and regime-shift calibration of existing forecast intervals — REJECT | 2026-10-10 |
+| #8742 | quant(Q15): Microstructure-noise-aware realized variance measurement — REJECT | 2026-10-10 |
+| #8741 | quant(Q14): Horizon-matched variance-risk-premium research — REJECT | 2026-10-10 |
+| #8740 | quant(Q13): Risk-neutral tail-density estimation with quote-uncertainty bounds — INSUFFICIENT_DATA | 2026-10-10 |
+| #8739 | quant(Q12): Robust option-implied forward and carry-consistency estimates — INSUFFICIENT_DATA | 2026-10-10 |
+| #8738 | quant(Q11): Persistent off-exchange activity regimes with explicit detection delay — KEEP | 2026-10-10 |
+| #8737 | quant(Q10): Condition-adjusted abnormal off-exchange participation — KEEP | 2026-10-10 |
+| #8736 | quant(Q09): Publication-vintage ATS/non-ATS concentration and venue-change analysis — INSUFFICIENT_DATA | 2026-10-10 |
+| #8735 | agentos: DSC Terminal build panic is Tailwind scanning public/data | 2026-10-10 |
+| #8734 | docs(agentos): close RS30 research lab delivery with production evidence | 2026-10-10 |
+| #8733 | quant(Q08): Regularized covariance and uncertainty-aware independent-bet counts — REJECT | 2026-10-10 |
+| #8732 | quant(Q02): American-exercise and discrete-dividend pricing/Greek qualification — INSUFFICIENT_DATA | 2026-10-10 |
+| #8730 | quant(Q01): Bid/ask-aware, arbitrage-constrained volatility surfaces — INSUFFICIENT_DATA | 2026-10-10 |
+| #8727 | fix(hooks): mint session worktrees on claude/<name>, not worktree-<name> | 2026-10-10 |
+| #8723 | agentos: DSC Terminal evidence lock rows do not prove the crops are current | 2026-10-09 |
+| #8722 | quant(Q06): Feasible sparse-data calibration for the existing FS-3 study — REJECT | 2026-10-10 |
+| #8720 | quant(Q05): Option outcome sensitivity to latency, available size and execution cost — INSUFFICIENT_DATA | 2026-10-09 |
+| #8719 | agentos: DSC dataCache IndexedDB copy hides a refresh failure | 2026-10-09 |
+| #8717 | quant(Q04): Trade-sign uncertainty and measurement-error calibration — INSUFFICIENT_DATA | 2026-10-10 |
+| #8716 | fix(live-quotes): raise DISPLAY_BOARD_CAP 320 -> 480 (main ci-pack-8 red) | 2026-10-09 |
+| #8712 | Brain: ground turns in qualified live risk context | 2026-10-09 |
+| #8711 | feat(company-intelligence): preserve reviewed relationship observations | 2026-10-11 |
+| #8710 | quant(Q03): Corporate-action-correct off-exchange participation history — KEEP | 2026-10-10 |
+| #8709 | docs: record incumbent cash-pressure integration and delivery gates | 2026-10-09 |
+| #8708 | fix(stock-library): bind published price to its own observation date | 2026-10-09 |
+| #8707 | quant(Q07): Fitted, leakage-controlled HAR volatility challenger — KEEP | 2026-10-09 |
+| #8705 | feat(gmi): isolate retained readers and add bounded relationship review sets | 2026-10-09 |
+| #8702 | agentos: record two Terminal CodeQL merge-gate discoveries | 2026-10-09 |
+| #8698 | Tiingo: preserve receipt identity and qualify bounded BOATS delivery | 2026-10-11 |
+| #8693 | QLedger: preserve claims semantics and harden publication | 2026-10-09 |
+| #8691 | docs(agentos): retain GMI refusal repair and acceptance frontier | 2026-10-09 |
+| #8672 | docs(agentos): align Autonomy frontier with installed 326c | 2026-10-10 |
+| #8671 | docs: record normal rotation publication and QLedger continuity design | 2026-10-09 |
+| #8670 | fix(prophet): separate source clocks from publication and fill proof | 2026-10-11 |
+| #8669 | Record rotation risk delivery and remaining proof gates | 2026-10-09 |
+| #8667 | feat(company-intelligence): source-backed economic relationship inspection | 2026-10-09 |
+| #8663 | fix(prophet): retain private session-open and NBBO evidence | 2026-10-09 |
+| #8662 | Connect dated rotation and risk context without duplicate confirmation | 2026-10-09 |
+| #8661 | research(gmi): economic relationships and multi-layer network architecture | 2026-10-09 |
+| #8659 | research(microstructure): point-in-time equity pressure/response R0 | 2026-10-12 |
+| #8656 | fix(market-memory): verify M0D sealed source bindings | 2026-10-09 |
+| #8654 | fix(PB-D): make the M2 example runnable with one clear command | 2026-10-08 |
+| #8653 | fix(theme-graph): retain native build and guard witnesses | 2026-10-08 |
+| #8652 | docs(agentos): exclude historical jobs from Autonomy V1 canary | 2026-10-08 |
+| #8651 | fix(theme-graph): verify coverage observations against eligible graph paths | 2026-10-08 |
+| #8650 | fix(theme-scoring): exclude unavailable moving averages from breadth | 2026-10-08 |
 | #8646 | research(theme-fabric): complete Theme Fabric research commission | 2026-10-08 |
 | #8644 | docs(agentos): preserve Finviz Discover consumer acceptance gate | 2026-10-08 |
 | #8638 | fix(market): preserve registered US calendar with live holiday adapter | 2026-10-07 |
 | #8636 | Preserve RS Pullback source evidence and listing research | 2026-10-07 |
+| #8635 | theme-graph: converge C0 research, execution, and acceptance records | 2026-10-09 |
 | #8634 | test(research-vault): F10-p4 evidence offsets survive both adapters' JSON round trip under hostile Unicode | 2026-10-07 |
+| #8631 | market-ontology(F04): optional display-only ancestors on exposure_map rows via injected hierarchy_paths (W-C8) | 2026-10-08 |
+| #8630 | research(k3e): EVAL-1 challenger trial identity (K3E-EVAL-1-V1) | 2026-10-11 |
+| #8629 | theme-graph(content): populate house hierarchy — 10 categories / 68 micros / 93 parents | 2026-10-08 |
 | #8628 | theme-graph(prereg): E1 Amendment A1 (pre-read) \u2014 outcome endpoints and clock freeze (W-C9, R-J.11) | 2026-10-07 |
 | #8627 | theme-graph(relation-events): curated PARENT_OF withdrawal on the v2 relation-event path (W-C2w) | 2026-10-07 |
+| #8626 | security master: admit mid/small R1 constituents into the universe (ITP A8) | 2026-10-11 |
 | #8625 | Retain bounded split-history evidence through the existing close-pass owner | 2026-10-07 |
 | #8624 | feat(research-vault): evidence match locator + search scope on the Research Read port (F10-p3) | 2026-10-07 |
 | #8621 | theme-graph(prereg): E1 child-leads-parent pre-registration, display tier, no read before accrual (W-C9) | 2026-10-07 |
@@ -619,6 +887,7 @@ Generated: 2026-10-08T05:43:26.832971+00:00  |  Open PRs: 100  |  Merged (window
 | #8602 | Entry Radar: bind replay calendar to observed source evidence | 2026-10-07 |
 | #8601 | theme-graph(consumers): tier guard \u2014 theme consumers ignore macro_category/micro_theme nodes (W-C2b) | 2026-10-07 |
 | #8600 | theme-graph(hierarchy content C3): materials/health/solar micro-themes (draft vocabulary) | 2026-10-07 |
+| #8599 | research(k3e): EVAL-1 owner acceptance + activation receipt (K3E-EVAL-1-V1) | 2026-10-11 |
 | #8598 | docs(agentos): preserve Terminal optional-slice cold-chart finding | 2026-10-07 |
 | #8597 | theme-graph(hierarchy content C1): macro-categories, theme->category, compute/energy micro-themes (draft vocabulary) | 2026-10-07 |
 | #8596 | feat(integrated-answer): v0 default-off composer route — 9 owner legs, per-leg trace + known-at clocks (Package I) | 2026-10-07 |
@@ -668,6 +937,8 @@ Generated: 2026-10-08T05:43:26.832971+00:00  |  Open PRs: 100  |  Merged (window
 | #8532 | agentos: Information-to-Price wave-3 release round records (D41-D49) | 2026-10-06 |
 | #8529 | feat(measurement): Preserved Research Verdicts section (V1, display-tier, read-only) | 2026-10-06 |
 | #8528 | research(intraday): S1 theme-relative intraday hypothesis proposal + prospective registration draft (doc only) | 2026-10-06 |
+| #8527 | feat(intl): compose Paper workspace with History and scenarios | 2026-10-09 |
+| #8526 | Preserve Brain mobile controls and honest inspector freshness | 2026-10-09 |
 | #8525 | agentos+research(itp): Information-to-Price wave-3 records refresh (docs only) | 2026-10-06 |
 | #8524 | theme-graph(projection): Chairman gate #8 lane A — read-only selection-cohort product projection (us/cn) over the canonical read packet | 2026-10-06 |
 | #8523 | fix(claude): align provider Stop cap with ship-loop escape ladder | 2026-10-06 |
@@ -727,6 +998,7 @@ Generated: 2026-10-08T05:43:26.832971+00:00  |  Open PRs: 100  |  Merged (window
 | #8461 | [K3E][A9][DRAFT/HOLD] Add fail-closed descriptive coupling composer (HOLD-RELEASED 2026-10-06) | 2026-10-06 |
 | #8460 | research(prophet-regime): wave-1 follow-up — C2 r2 + D0 r3 records, rulings, waivers | 2026-10-05 |
 | #8459 | Agent OS: close WS-TREND-PERSISTENCE at Wave C (C1-NULL) — records, decision, kill row | 2026-10-05 |
+| #8458 | fix(prophet): preserve private quote clocks and public projection | 2026-10-08 |
 | #8457 | feat(entry-radar): decision-time EDGAR owner read for live catalyst coverage, opt-in on the two real producers (wave 2b; DEC:ENTRY-RADAR-CATALYST-LIVE-READ-IS-OPT-IN) | 2026-10-04 |
 | #8456 | agentos: WS-EXECUTIVE-AUTONOMY-V1-CLOSURE — XH-1/2/3 done on installed 5b244a2b, Slack ceremony gate; DEC A2 ceremony receipt | 2026-10-04 |
 | #8455 | feat(gmi): recover sealed state owner and accepted-generation reader | 2026-10-06 |
@@ -874,6 +1146,7 @@ Generated: 2026-10-08T05:43:26.832971+00:00  |  Open PRs: 100  |  Merged (window
 | #8256 | Fix US Prophet Today preview collapsing to two Featured names | 2026-10-02 |
 | #8254 | Fix Prophet international freshness stamping and monitoring | 2026-10-02 |
 | #8251 | r2-delivery-plane: re-pin drifted evidence receipts/anchors + register the two unregistered publisher dirs | 2026-10-01 |
+| #8249 | Harden original Daily Brief and preserve independent quote clocks | 2026-10-12 |
 | #8248 | docs(agentos): reconcile fleet storage repairs and rollout gates | 2026-10-01 |
 | #8247 | docs(cdv1): record the T3 R6a acceptance and merge, and the T4 round-B packet | 2026-09-30 |
 | #8246 | fix(earnings): exact EPS growth rounding, runtime-independent clock text and five pins (CDV-1 Task 3 R6a) | 2026-09-30 |
@@ -910,184 +1183,6 @@ Generated: 2026-10-08T05:43:26.832971+00:00  |  Open PRs: 100  |  Merged (window
 | #8209 | records: the ipo basis is unreachable in production, and why that is fine | 2026-09-29 |
 | #8208 | industrials: guard the typed-absence and required/optional distinctions (IND-D23, IND-R215) | 2026-09-29 |
 | #8207 | records: canonical 2D/3D session bar identity, and two landmines it exposed | 2026-09-29 |
-| #8206 | industrials: write the owed handoff for the recovered-authority session | 2026-09-29 |
-| #8205 | test(options): drive the session-part rollover at the real 48 MiB ceiling (continues #7265) | 2026-09-29 |
-| #8204 | industrials: amend a superseded discovery at source and mint the two findings behind it | 2026-09-29 |
-| #8203 | fix(thetadata): a drained store is not a store — refuse to resolve it | 2026-09-29 |
-| #8202 | records: carrier adoption + the failed-index-read landmine | 2026-09-29 |
-| #8201 | fix(options): preserve decision-time source clocks in Flow history | 2026-10-04 |
-| #8200 | industrials: bind the receipt's derived identity to the formula version (IND-R214) | 2026-09-29 |
-| #8199 | [GMI ROBOTICS] Record the four-family rule revalidation and rule the shared-type mirror seam | 2026-09-29 |
-| #8198 | records(energy): the ENERGY directive — audits paused, cutoff readers ruled for the integration, target-window rewind reported (R-ENE-41..43) | 2026-09-29 |
-| #8197 | industrials: record the specification-authority PAUSE and the recovery pointers at source | 2026-09-29 |
-| #8195 | agentos: EXECUTIVE-CAPACITY-FABRIC retract the credits/spend-control human gate | 2026-09-29 |
-| #8194 | prophet: US journey correctness — readable decision labels, honest plan relation, source clocks (F1/F2/F3/F4) | 2026-09-30 |
-| #8193 | agentos: EXECUTIVE-CAPACITY-FABRIC 2026-09-29 headless-delivery closer records | 2026-09-29 |
-| #8190 | agentos: record the Finance 09-28 wave (one date per observation; the wave handoff) | 2026-09-29 |
-| #8189 | feat(prophet): version earnings evidence semantics without changing C1 default | 2026-10-05 |
-| #8187 | test(macro): isolate E4 fixture from live freshness | 2026-10-01 |
-| #8183 | fix(dataos): bind selected price reads to exact source evidence | 2026-10-05 |
-| #8181 | worktree-gc: an external liveness check that can see a run that never happened (W17) | 2026-09-29 |
-| #8180 | docs(storage): the SSD tmp pool's proven reclaim is unreachable by this sweeper (W16) | 2026-09-29 |
-| #8179 | records: close W12-W14, correct the runner-store lever, name the four-day non-start cause | 2026-09-29 |
-| #8178 | gc: a protective key absent from an older config must not read as "off" | 2026-09-29 |
-| #8177 | records: fleet storage after the deny-list and availability waves — and the bound nobody had measured | 2026-09-29 |
-| #8176 | gc: the launchd sweeper's timeouts fail silently — 13 of 45 runs crashed, 15 swept nothing, 4 days never started | 2026-09-29 |
-| #8175 | worktree-gc: make the protection of human-driven checkouts deliberate (human_driven_roots) | 2026-09-29 |
-| #8174 | guards: two that printed a PASS having examined zero subjects | 2026-09-29 |
-| #8173 | agentos: fleet storage waves 7-9 records | 2026-09-29 |
-| #8172 | worktree_gc: state the sweeper's REACH and print its refusals | 2026-09-29 |
-| #8171 | law: fetch BEFORE the landed-bytes check -- the verifier false-alarmed on its own author | 2026-09-29 |
-| #8170 | law: arm merge-on-green LAST -- a push into an armed PR can land after its merge | 2026-09-29 |
-| #8169 | storage: the eleventh pool -- 201 GiB the sweeper is TCC-forbidden to read | 2026-09-29 |
-| #8168 | fix(agent): make internal blockers nonterminal | 2026-09-29 |
-| #8167 | fix(finance-intelligence): an observation has one date, and every reader reads it | 2026-09-29 |
-| #8166 | agentos: mint WS-FLEET-STORAGE-LIFECYCLE plus the sweeper-race landmine that orphaned it once | 2026-09-29 |
-| #8165 | fix(finance-intelligence): answer #8159's review; two inputs it made crash compose again | 2026-09-29 |
-| #8163 | storage: census the INTERNAL disk -- the agent bytes were never on either external volume | 2026-09-29 |
-| #8162 | storage: attribute /Volumes/Worktrees by bytes -- the fleet is 6.5% of it | 2026-09-29 |
-| #8161 | house-law: register the ten unregistered guards and give the census a code-gated home | 2026-09-29 |
-| #8160 | industrials: recover the plan's requirement index and refuse a fabricated anchor (IND-T04c) | 2026-09-29 |
-| #8159 | fix(finance-intelligence): an owner input reads the same whatever container holds its rows | 2026-09-29 |
-| #8158 | docs(worktree-gc): the non-git bucket judgement and the transfers pool (195 GiB landmine) | 2026-09-29 |
-| #8157 | fda(collector): completeness must compare raw_count, not the deduped unique_count — the feed could never qualify | 2026-09-29 |
-| #8156 | storage: record the SSD's first full attribution and two more null pools | 2026-09-29 |
-| #8155 | records(energy): round-10 closure, round-11 ruling R-ENE-40, the relay corrected again at source (#8002) | 2026-09-28 |
-| #8153 | docs(agentos): ruling 14b's remedy is in-class, and v1.1 subject_role is unemittable | 2026-09-28 |
-| #8152 | storage: correct #8150's runner-tree risk claim; record the scratchpad null result | 2026-09-28 |
-| #8151 | records(energy): round-9 closure, round-10 rulings R-ENE-37..39, relay corrected at source (#8002) | 2026-09-28 |
-| #8150 | storage: record the shared-mint-root and ungoverned-volume scope defects | 2026-09-28 |
-| #8149 | storage: reap the contract-delta base leak at its mint site; correct the widened-roots claim | 2026-09-28 |
-| #8148 | docs(energy): nuclear round-8 closure, rulings R-ENE-35/36, at-source corrections | 2026-09-28 |
-| #8146 | fix(finance-intelligence): the registration limitations read theme evidence as the dossier read it | 2026-09-29 |
-| #8145 | records(finance-intelligence): 2026-09-27 wave checkpoint through #8138 | 2026-09-28 |
-| #8143 | records(energy): round-7 closure, R-ENE-33/34, at-source corrections, registration dry-run | 2026-09-28 |
-| #8140 | worktree_sparse: clean --force never deletes files a nested include checked out | 2026-09-28 |
-| #8139 | records(energy): round-6 closure, R-ENE-31/32, registration packet re-verified at #7870 a0d7b054ff23 | 2026-09-28 |
-| #8138 | fix(finance-intelligence): the knowledge cutoff binds every dated owner row, not only the valuation anchor | 2026-09-28 |
-| #8137 | hc(d1): adjudicate the published falsifier — the UNAVAILABLE FDA chip is correct (R-D1-FALS-01) | 2026-09-28 |
-| #8135 | fix(finance-intelligence): a slice publishes only its own valuation anchor and constraints; a conflict reads what its plane publishes | 2026-09-28 |
-| #8134 | fix(finance-intelligence): the composer never mints an evidence ref, and a slice publishes no reading or date without one | 2026-09-28 |
-| #8131 | ci: move the packed self-mod fence payloads off argv | 2026-09-28 |
-| #8130 | fix(finance-intelligence): the composer looks an owner value up only as a string, so no malformed owner value crashes it | 2026-09-28 |
-| #8129 | mining ledger: five rows justified their status by a test NAME, which this file forbids | 2026-09-28 |
-| #8127 | mining tests: pin the two MGD clauses whose own cited tests could not observe them | 2026-09-28 |
-| #8126 | perf(ci): reuse immutable scope setup across packing-contract tests | 2026-09-28 |
-| #8124 | mining ledger: two rows cited a pin that does not assert what their note claims | 2026-09-28 |
-| #8123 | mining T08/T03: receipt the last unreceipted claims, and un-stale the evidence header | 2026-09-28 |
-| #8122 | ci-scope: drop full-line comments before tokenizing a run block | 2026-09-28 |
-| #8121 | fix(finance-intelligence): owner metric keys cross only through the schema vocabulary; the forbidden-key guard runs | 2026-09-28 |
-| #8120 | agentos: IND-T04b merged and proven; a correct CI verdict expires when the head moves | 2026-09-28 |
-| #8119 | mining T02: fix a delivery gate that could never have executed, and pin the premise three NOT_RUN reasons cite | 2026-09-28 |
-| #8118 | agentos: record the null-handle and run-block-quote CI landmines; hand off the contract-delta work | 2026-09-28 |
-| #8117 | consumer cyclical: pin the one producible degraded state, close the correctness sweep (wave 10) | 2026-09-28 |
-| #8116 | ci: let cancel-in-progress stop a superseded PR's packs | 2026-09-28 |
-| #8115 | agentos: a guard named in the docstring can have zero call sites (CC-V1 wave 9) | 2026-09-28 |
-| #8114 | fix(ci): accept the planner null handle on main proofs in the p0b closure gate | 2026-09-28 |
-| #8113 | fix(finance-intelligence): projection freshness fails closed — unknown is NO_EVIDENCE, never FRESH | 2026-09-28 |
-| #8111 | consumer-cyclical wave 8: make the authority guard enforce what it claims | 2026-09-28 |
-| #8110 | mining coverage: close the subject audit — all 40 rows measured, twelve rows moved, and MGD-19 pinned | 2026-09-28 |
-| #8109 | agentos: two landmines about reading an absent check as a passing one | 2026-09-27 |
-| #8108 | feat(prophet): journey reconciliation harness (release-integration proof tool) | 2026-10-07 |
-| #8107 | fix(ship-loop): quarantine Claude sessions rebound to shared root | 2026-10-06 |
-| #8106 | consumer-cyclical: refuse a provenance pointer that resolves to nothing | 2026-09-27 |
-| #8105 | industrials: build the 13 missing plan-named requirement anchors, cure 4 unenforced requirements (IND-T04b) | 2026-09-28 |
-| #8104 | agentos: Consumer Cyclical wave-6 closeout — two nulls, one landmine, dated gate re-measurement | 2026-09-27 |
-| #8103 | consumer-cyclical: the declared basis binds the pair, and the guard derives from the contract (CC-V1 wave 6) | 2026-09-27 |
-| #8102 | ci(contract-delta): gate packing probes, skip-only gates and trigger gaps on the PR's own head | 2026-09-27 |
-| #8101 | test(industrials): make T02's mandated two-run gate able to fail (IND-T02a) | 2026-09-27 |
-| #8100 | mining T04: close MGD-08 clause 2 — empty economic path no longer reports ready on W-R | 2026-09-27 |
-| #8099 | consumer-cyclical: refuse minted envelope values, not only empty ones (CC-V1 wave 5) | 2026-09-27 |
-| #8098 | test(options): run the session-ordinal fit guards on the code gate | 2026-09-27 |
-| #8097 | hc(d2): preflight — resolve T03's consumption symbols and rule v1-only scope | 2026-09-27 |
-| #8093 | fix(ci): make Intelligence Hub watch proof deterministic | 2026-09-27 |
-| #8092 | storage: the completion signal is the MERGED PR, not HEAD-ancestry (corrects R9) | 2026-09-27 |
-| #8086 | test(agentos): scope warning-tier assertions to their own fixture subject | 2026-09-27 |
-| #8085 | docs(agentos): restore the GMI Robotics operation record the #8013 revert removed | 2026-09-28 |
-| #8084 | records(industrials): close T04 in the checkpoint at its merge sha | 2026-09-27 |
-| #8080 | storage: only a POSITIVE completion signal authorizes worktree reclaim (incident 2026-09-26) | 2026-09-27 |
-| #8078 | consumer-cyclical: reconcile the synthetic case with its own contract | 2026-09-27 |
-| #8077 | records(industrials): land the T05/T06 dispatch rulings as repo records | 2026-09-27 |
-| #8075 | records(agentos): advance the Industrials workstream to the real wave boundary | 2026-09-27 |
-| #8074 | feat(news): ship scan-first News Intelligence experience | 2026-09-27 |
-| #8073 | records(agentos): two discoveries from the T04 adjudication | 2026-09-27 |
-| #8072 | records(industrials): correct the remaining-task ordering against the frozen plan | 2026-09-27 |
-| #8071 | mining(records): R-MIN-33g corrects the pack-presence rule, R-MIN-34 pins MGD-08 clause 2, mint MGD execution status | 2026-09-27 |
-| #8070 | records(industrials): T04 two-round adversarial adjudication + first-vertical checkpoint | 2026-09-27 |
-| #8069 | research(prophet): Q06 SEC comparable-revenue source contract | 2026-10-05 |
-| #8067 | records(healthcare): D1 wave-2 — reviews, seat rulings, four discoveries, handoff, WS update | 2026-09-27 |
-| #8065 | [NORTH STAR][RECORDS] Persist current W2/W3 nightly frontier | 2026-09-27 |
-| #8062 | feat(industrials): result-to-cash derivations module and comparison receipts (T04) | 2026-09-27 |
-| #8060 | records(mining): T04a round 3 reviewed, repaired, armed (wave 3) | 2026-09-27 |
-| #8059 | docs(industrials): T01 W1 checkpoint + the three Opus red-team reports | 2026-09-27 |
-| #8054 | consumer-cyclical: refuse facts the projection cannot lawfully publish | 2026-09-27 |
-| #8053 | docs(mining): table R-MIN-31/R-MIN-32 and record the T04a round-3 state (WS:GMI-MINING-M1-INTEGRATION) | 2026-09-27 |
-| #8052 | [MO-A] MO-J1A: identity-safe affected-company continuation under each active transmission blast channel | 2026-09-28 |
-| #8051 | [MO-A][RIC-F3] W3: credit_momentum display-only yield_momentum block beside interim_tlt | 2026-09-27 |
-| #8047 | ci: deepen only the exact tested tree before history fallback | 2026-09-27 |
-| #8037 | feat(brain): route technician doctrine from chart context | 2026-09-26 |
-| #8035 | fix(macro): re-bake the liquidity page's next-action line with current copy | 2026-09-25 |
-| #8034 | [MO-A][RECORDS] RIC F3 W2 handoff + workstream next_action after #8030 | 2026-09-25 |
-| #8033 | ci: run the CI control plane's own contracts on the PR code gate | 2026-09-26 |
-| #8032 | fix(macro): stale-source next action drops banned copy; its tests stop reading the day's data | 2026-09-25 |
-| #8031 | ci: host the Finance site-wiring assertion in public-render-fastlane (frees one job on each packing probe) | 2026-09-25 |
-| #8030 | [MO-A] RIC F3 W2: trailing publication-lag tolerance — yield momentum measured at the last captured row (fixed_grid_origin.v4) | 2026-09-25 |
-| #8029 | fix(ci): strip the nightly's banner tag in the ontology byte guard (ci-pack-0 heal) | 2026-09-25 |
-| #8027 | feat(research): project rights-safe belief context | 2026-09-27 |
-| #8023 | records(energy): wave 2 module rounds 3–6 — reviews, rulings R-ENE-23..30, registration packet, handoff §12–13 | 2026-09-26 |
-| #8021 | fix(risk): keep missing evidence out of calm and recovery | 2026-09-26 |
-| #8018 | records(energy): wave 2 module review rounds 1–2, rulings R-ENE-10..22, handoff §10–11 | 2026-09-25 |
-| #8017 | test(ship-loop): run every hold-wrapper regression in fence-pack, and keep it that way | 2026-09-25 |
-| #8016 | docs(energy): Power-Demand vertical scope census (read-only; seat reviews before any merge) | 2026-09-25 |
-| #8015 | fix(china): refresh Act Now sector intelligence before assembly | 2026-09-29 |
-| #8013 | Revert #7908: heal main — 11 unresolved first-party imports block ci-pack-10 repo-wide | 2026-09-25 |
-| #8011 | ci(fleet): page-bake lanes are starved of a runner, not livelocked — dead-man switch for a job held queued with no carrier | 2026-09-26 |
-| #8010 | ci(finance): run the Finance page + hydration suites in the Finance job | 2026-09-25 |
-| #8009 | Finance Intelligence T11 — connected-state conformance (round 1 lane · round 2 seat · round 3 seat) | 2026-09-28 |
-| #8006 | feat(finance-intelligence): fixture-only shared-shell registration adapter + envelope contracts (Finance T10) | 2026-09-28 |
-| #8003 | ci(bc2): grade top-level page builders' display copy in the merge gate | 2026-09-25 |
-| #8001 | records(energy): wave 2 — nuclear vertical module built on B's shell (stacked, merges after #7870) | 2026-09-25 |
-| #8000 | fix(ship-loop): never PARK a hold whose rollup lacks the sweeper's proof anchors | 2026-09-25 |
-| #7999 | fix(brain): bind Chart Bus v2 wire identity | 2026-09-26 |
-| #7998 | ci(bc2): grade PR-authored 'validated' claims in the merge gate | 2026-09-25 |
-| #7996 | ci(markets): return the fresh-render byte guard to the code gate, retire the data twin | 2026-09-25 |
-| #7995 | [MO-A] agentos(market-os): Meta-CEO A wave-2 handoff (F04 served + MOR-2b landed); remove stray root PR_BODY.md | 2026-09-25 |
-| #7994 | fix(fable-mode): verify returns and qualify Codex discovery | 2026-09-25 |
-| #7993 | fix(ship-loop): never call a rollup without ci-gate "concluded clean" | 2026-09-25 |
-| #7991 | fix(render): own the three builders render runs but its push filter missed | 2026-09-25 |
-| #7988 | perf(agentos): batch canonical workstream Git dates | 2026-09-27 |
-| #7987 | [MO-J1][RECORDS] Freeze joined MarketOntology research journey seam | 2026-09-25 |
-| #7986 | test(markets): fresh-render byte guard bakes into tmp with the strip's inputs pinned from the committed page (heal markets-regime-strip) | 2026-09-25 |
-| #7985 | perf(ci): make font-ui guard token-directed | 2026-09-25 |
-| #7981 | docs(agentos): Finance T8/T9 production wave records (#7968 #7974 #7973 #7977 + T9 live) | 2026-09-25 |
-| #7979 | fix(bc-2): heal 75 unearned 'validated' claims red on the data gate | 2026-09-25 |
-| #7977 | fix(finance-intelligence): name the tracker card in the page language (Finance T9) | 2026-09-25 |
-| #7975 | [MO-A] evidence(f04-x1): served journey at the baked revision — nav-reachable WTI Live Path 8/8 + anonymous matrix 24/24 | 2026-09-25 |
-| #7974 | fix(finance-intelligence): paint the page canvas in both art directions (Finance T8) | 2026-09-25 |
-| #7973 | fix(finance-intelligence): connected-state review response — rights fail closed, missing states as words, resilient deep links (Finance T8) | 2026-09-25 |
-| #7972 | [MO-A3] A-MOR-2b-B: VPS premarket owner — scripts/am_edition_live.py, macro-am-edition.timer/.service, update.sh self-install, Caddy overlay, docs row | 2026-09-25 |
-| #7971 | ci(p0b): give the receipt-closure gate its own curated job so a sibling red cannot shadow it (#6872 postmortem) | 2026-09-25 |
-| #7970 | HOLD-FOR-SOL: [MO-A3] A-MOR-2b-C: Morning Orientation surface (3 blocks + aibrief band + nav entry) | 2026-09-25 |
-| #7968 | fix(finance-intelligence): load theme.js so the nav theme + EN/中文 toggles work (Finance T8) | 2026-09-25 |
-| #7966 | fix(news): preserve provider confidence, clocks, and ticker semantics | 2026-09-26 |
-| #7964 | fix(merge-on-green): an empty tested surface is an answer, not an unknown (#7958 records-only livelock) | 2026-09-25 |
-| #7962 | fix(p0b-evidence): re-mint the stock-dashboard browser receipts after #6872 moved the rendered fixture (ci-pack-9 main red) | 2026-09-24 |
-| #7961 | fix(tests): pin GITHUB_RUN_ATTEMPT in the workflow_dispatch acceptance test so ci-pack-9 re-runs can go green | 2026-09-24 |
-| #7960 | test(f04-x1): builder failure test renders into tmp_path — heals the ontology-explorer data-guard red on main | 2026-09-24 |
-| #7959 | fix(f04-x1): 'WTI Live Path' gate/eyebrow copy + drift guard tolerates the render-public re-stamp | 2026-09-24 |
-| #7958 | agentos(market-os): CEO A wave checkpoint 2026-09-24 — F04-X1 served proof + MOR-2b A2 ratified | 2026-09-24 |
-| #7957 | feat(finance-intelligence): Theme Tracker sector deep-dive entry + Financials launch module (Finance T9) | 2026-09-24 |
-| #7956 | fix(finance-intelligence): register the public shell assets at the Caddy regwall edge (mirror biocatalyst) | 2026-09-24 |
-| #7955 | fix(news): stop quiet and invalid attention from boosting stories | 2026-09-26 |
-| #7952 | feat(finance-intelligence): dossier page shell + client hydration from the frozen design spec (Finance T8) | 2026-09-24 |
-| #7951 | agentos(finance): D1 closed — design-rulings DEC, surgical-lane DSC, handoff + next_action | 2026-09-24 |
-| #7950 | feat(themes): closed Mining research schema and per-sector composition — no kernel copy (T04a) | 2026-09-27 |
-| #7948 | docs(healthcare): T02 red-team verdict + r2 repair checkpoint (seat records, wave 1) | 2026-09-24 |
-| #7945 | fix(consumer-cyclical): make the R6 §7.1 economic lead reachable | 2026-09-24 |
-| #7944 | agentos(mining): wave-1 close — T01' merged (#7932), R-MIN-29/30 tabled, MIN-W2 opened | 2026-09-24 |
-| #7943 | fable-mode: Revision 3 — the seat edition (Fable 5.1 orchestration doctrine) | 2026-09-24 |
-| #7942 | feat(consumer-cyclical): V1-CORE deterministic PLNT economic-change contract + projection | 2026-09-24 |
-| #7941 | [MO-B-REC] Meta-CEO B recovery handoff 2026-09-24 (records only) | 2026-09-24 |
 
 ---
 

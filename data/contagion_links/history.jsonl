@@ -428,3 +428,14 @@
 {"asof":"2026-10-07","data_session":"2026-10-07","session_source":"bench","market":"au","p_raw":0.2388,"pct":0.5913,"level":"low","top_exporter":"in"}
 {"asof":"2026-10-06","data_session":"2026-10-06","session_source":"bench","market":"gb","p_raw":0.2196,"pct":0.5536,"level":"low","top_exporter":"in"}
 {"asof":"2026-10-06","data_session":"2026-10-06","session_source":"bench","market":"ez","p_raw":0.2255,"pct":0.5794,"level":"low","top_exporter":"gb"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"us","p_raw":0.3455,"pct":0.8056,"level":"moderate","top_exporter":"kr"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"cn","p_raw":0.3299,"pct":0.7837,"level":"moderate","top_exporter":"hk"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"hk","p_raw":0.3145,"pct":0.7758,"level":"moderate","top_exporter":"gb"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"ca","p_raw":0.318,"pct":0.7798,"level":"moderate","top_exporter":"in"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"kr","p_raw":0.2664,"pct":0.6667,"level":"low","top_exporter":"in"}
+{"asof":"2026-10-09","data_session":"2026-10-09","session_source":"bench","market":"jp","p_raw":0.3527,"pct":0.7917,"level":"moderate","top_exporter":"kr"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"tw","p_raw":0.4123,"pct":0.8294,"level":"moderate","top_exporter":"kr"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"in","p_raw":0.2846,"pct":0.7857,"level":"moderate","top_exporter":"gb"}
+{"asof":"2026-10-09","data_session":"2026-10-09","session_source":"bench","market":"au","p_raw":0.3744,"pct":0.7976,"level":"moderate","top_exporter":"in"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"gb","p_raw":0.3207,"pct":0.75,"level":"moderate","top_exporter":"in"}
+{"asof":"2026-10-08","data_session":"2026-10-08","session_source":"bench","market":"ez","p_raw":0.342,"pct":0.7659,"level":"moderate","top_exporter":"in"}

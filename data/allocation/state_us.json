@@ -3,18 +3,16 @@
   "crash": false,
   "eligible": [
     "ai_infra",
-    "ai_neoclouds",
     "ai_semiconductors",
     "ai_software",
     "big_pharma",
-    "crypto",
     "cybersecurity",
-    "data_center_power",
     "energy_complex",
     "industrial_distribution",
     "mag7",
     "managed_care",
     "memory_storage",
+    "non_ai_software",
     "non_ai_tech",
     "reshoring",
     "robotics_automation",
@@ -28,7 +26,7 @@
     "ai_infra",
     "cybersecurity",
     "semicap_equipment",
-    "non_ai_tech"
+    "energy_complex"
   ],
   "leader": "ai_infra",
   "names": {

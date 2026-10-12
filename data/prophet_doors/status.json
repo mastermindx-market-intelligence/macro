@@ -1,13 +1,13 @@
 {
-  "appended": 3,
-  "asof": "2026-10-07",
+  "appended": 0,
+  "asof": "2026-10-08",
   "candidates": {
-    "R": 1,
-    "T": 10,
+    "R": 3,
+    "T": 8,
     "W": 4
   },
   "deduped": {
-    "R": 0,
+    "R": 3,
     "T": 8,
     "W": 4
   },
@@ -15,38 +15,19 @@
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-10-07",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 6
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Education Technology": {
-          "theme_thrust_frac": 0.0,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Virtual & Augmented Reality": {
-          "theme_thrust_frac": 0.0952,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 35,
-      "tickers_read": 41
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -64,21 +45,10 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 114,
-      "n_covered": 72,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-10-07",
-      "n_tickers": 1547,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -106,56 +76,51 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "ABBV"
-    ],
-    "T": [
-      "GHC",
-      "AAPL"
-    ],
+    "R": [],
+    "T": [],
     "W": []
   },
-  "n_universe": 1493,
+  "n_universe": 1491,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-08 16:52:08",
-  "runtime_s": 96.5,
+  "run_utc": "2026-10-11 06:13:33",
+  "runtime_s": 106.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-10-07",
-    "n_members": 114,
+    "age_days": -1,
+    "asof": "2026-10-09",
+    "n_members": 126,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 1.975,
+        "emerging_score": 2.764,
         "rank": 1,
-        "theme": "Industrial Automation"
-      },
-      {
-        "emerging_score": 1.719,
-        "rank": 2,
-        "theme": "Space Tech"
-      },
-      {
-        "emerging_score": 1.52,
-        "rank": 3,
         "theme": "Education Technology"
       },
       {
-        "emerging_score": 1.35,
-        "rank": 4,
-        "theme": "Virtual & Augmented Reality"
+        "emerging_score": 2.268,
+        "rank": 2,
+        "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 1.305,
+        "emerging_score": 2.006,
+        "rank": 3,
+        "theme": "Consumer Goods"
+      },
+      {
+        "emerging_score": 1.885,
+        "rank": 4,
+        "theme": "E-commerce"
+      },
+      {
+        "emerging_score": 1.686,
         "rank": 5,
-        "theme": "Internet of Things"
+        "theme": "Commodities Agriculture"
       }
     ]
   },
@@ -165,15 +130,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-10-07",
+    "asof_max": "2026-10-08",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-07",
+    "asof_run": "2026-10-08",
     "evaluated": 713,
     "fresh": 5,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 17.8,
+    "runtime_s": 19.6,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 61,

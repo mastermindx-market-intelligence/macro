@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "INGR-BULL-20261005",
-  "asof": "2026-10-08",
+  "asof": "2026-10-09",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 16.8,
@@ -13,24 +13,24 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 47.4,
-    "overlay": 47.0
+    "retention": 48.3,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.131,
+    "dist_to_stop_r": -0.426,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 6.7,
-    "p1": -1.4204,
-    "p2": -0.7102,
+    "horizon_pct_used": 8.9,
+    "p1": -0.9506,
+    "p2": -0.4753,
     "p3": null,
-    "move_r": -2.131,
+    "move_r": -1.426,
     "mfe_r": 0.0,
     "mae_r": -2.131
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 3,
-  "tau": 0.0667
+  "days_elapsed": 4,
+  "tau": 0.0889
 }

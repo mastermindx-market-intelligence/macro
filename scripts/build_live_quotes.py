@@ -224,7 +224,20 @@ DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
 # 24/7 btc-live Action and the 30-min intraday fastpath). The
 # vps_live_orchestrator quality gate (min_resolved=50, min_coverage=0.10) is
 # unaffected: more requested symbols only raises the resolved count.
-DISPLAY_BOARD_CAP = 320
+#
+# Cap raised 320 -> 480 (2026-10-09) after main's own ci.yml proof went red on
+# test_the_board_leg_has_headroom_over_the_cap (320/320) and on the payload
+# coverage test (us_stocks.json pills WLK..ZTS uncovered). Measured on main's
+# committed site/ bytes at 3d90aad6 with this module's own board_display_symbols:
+# uncapped board leg 342 (china_stocks 149, us_stocks 105, hk_stocks 30, crypto
+# 26, canada_stocks 10, macro 10, canada 6, china/commodities/hk 4 each), so the
+# 22 names sorting last (WLK..ZTS, then the ^-index symbols) were being cut.
+# The leg grew 190 -> 342 in seven weeks; 480 puts it at 71% of the cap (~138
+# slots of swing). Cost at the new ceiling: ~88KB serialized at the
+# same ~183B/symbol (vs the 500KB budget), <=24 Yahoo batch requests plus <=5
+# Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
+# orchestrator gate above is unaffected for the same reason.
+DISPLAY_BOARD_CAP = 480
 
 
 def payload_html(path: Path) -> str:
