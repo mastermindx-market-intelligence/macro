@@ -39,6 +39,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import tempfile
 import threading
 from datetime import datetime, timezone
@@ -84,6 +85,11 @@ class TrialLedger:
         # family -> max declared research budget (a floor on effective_n; see log_declared_budget)
         self._declared: dict[str, int] = {}
         self._declared_seen: set[str] = set()
+        # durability diagnostics (C19 WP06): set BEFORE _load() so the load itself
+        # can record them. An unreadable ledger still loads EMPTY — the policy is
+        # unchanged; it is now RECORDED, not silently swallowed.
+        self.corrupt_lines: int = 0
+        self.load_error: str | None = None
         self._load()
 
     # -- internals --------------------------------------------------------- #
@@ -99,6 +105,7 @@ class TrialLedger:
                     try:
                         row = json.loads(line)
                     except Exception:
+                        self.corrupt_lines += 1
                         continue  # tolerate a torn final line; never crash a calibrator
                     if row.get("kind") == "declared_budget":
                         fam, n = row.get("family"), row.get("n")
@@ -111,7 +118,8 @@ class TrialLedger:
                     fam, h = row.get("family"), row.get("config_hash")
                     if fam and h:
                         self._seen.setdefault(fam, set()).add(h)
-        except OSError:
+        except OSError as exc:
+            self.load_error = f"{type(exc).__name__}: {exc}"
             return
 
     def _fam(self, family: str | None) -> str:
@@ -123,6 +131,18 @@ class TrialLedger:
         return fam
 
     # -- writing ----------------------------------------------------------- #
+    def _append_rows(self, rows) -> None:
+        """Durably append rows as JSONL: flush + fsync before returning, and let
+        exceptions propagate (nothing swallowed). Callers must hold _WRITE_LOCK and
+        mutate in-memory state only AFTER this returns, so memory never claims a
+        row that was not persisted."""
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with self.path.open("a", encoding="utf-8") as fh:
+            for row in rows:
+                fh.write(json.dumps(row, default=str) + "\n")
+            fh.flush()
+            os.fsync(fh.fileno())
+
     def log_trial(self, config, *, family: str | None = None, info_cutoff=None,
                   source: str = "grid", note: str | None = None) -> bool:
         """Record one config tried for ``family``. Append-only + deduplicated.
@@ -132,29 +152,52 @@ class TrialLedger:
         so a later leakage audit can check the config could not have peeked ahead."""
         fam = self._fam(family)
         h = _hash(fam, config)
-        seen = self._seen.setdefault(fam, set())
-        if h in seen:
-            return False
-        seen.add(h)
-        row = {
-            "ts": datetime.now(timezone.utc).isoformat(),
-            "family": fam,
-            "config_hash": h,
-            "config": config,
-            "source": source,
-            "info_cutoff": info_cutoff,
-            "note": note,
-        }
-        with _WRITE_LOCK:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            with self.path.open("a", encoding="utf-8") as fh:
-                fh.write(json.dumps(row, default=str) + "\n")
+        with _WRITE_LOCK:  # dedup check + append are atomic (C19 WP06)
+            seen = self._seen.setdefault(fam, set())
+            if h in seen:
+                return False
+            row = {
+                "ts": datetime.now(timezone.utc).isoformat(),
+                "family": fam,
+                "config_hash": h,
+                "config": config,
+                "source": source,
+                "info_cutoff": info_cutoff,
+                "note": note,
+            }
+            self._append_rows([row])
+            seen.add(h)  # memory only AFTER the row is flushed + fsynced
         return True
 
-    def log_grid(self, configs, *, family: str | None = None, **kw) -> int:
+    def log_grid(self, configs, *, family: str | None = None, info_cutoff=None,
+                 source: str = "grid", note: str | None = None) -> int:
         """Bulk-log an iterable of configs (the whole search grid, at generation).
+        One locked, fsynced append for the whole batch of newly-distinct configs.
         Returns the count of NEWLY-distinct trials added this call."""
-        return sum(int(self.log_trial(c, family=family, **kw)) for c in configs)
+        fam = self._fam(family)
+        with _WRITE_LOCK:
+            seen = self._seen.setdefault(fam, set())
+            new_hashes: list[str] = []
+            rows: list[dict] = []
+            for config in configs:
+                h = _hash(fam, config)
+                if h in seen or h in new_hashes:  # dedup vs disk-memory AND this batch
+                    continue
+                new_hashes.append(h)
+                rows.append({
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                    "family": fam,
+                    "config_hash": h,
+                    "config": config,
+                    "source": source,
+                    "info_cutoff": info_cutoff,
+                    "note": note,
+                })
+            if not rows:
+                return 0
+            self._append_rows(rows)
+            seen.update(new_hashes)  # memory only AFTER the batch is flushed + fsynced
+            return len(rows)
 
     def log_declared_budget(self, n: int, *, family: str | None = None,
                             reason: str | None = None) -> bool:
@@ -171,22 +214,22 @@ class TrialLedger:
         if n < 1:
             raise ValueError("declared budget must be >= 1")
         h = _hash(fam, {"__declared_budget__": n, "reason": reason})
-        self._declared[fam] = max(self._declared.get(fam, 0), n)
-        if h in self._declared_seen:
-            return False
-        self._declared_seen.add(h)
-        row = {
-            "ts": datetime.now(timezone.utc).isoformat(),
-            "family": fam,
-            "kind": "declared_budget",
-            "n": n,
-            "reason": reason,
-            "config_hash": h,
-        }
         with _WRITE_LOCK:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            with self.path.open("a", encoding="utf-8") as fh:
-                fh.write(json.dumps(row, default=str) + "\n")
+            if h in self._declared_seen:
+                return False
+            row = {
+                "ts": datetime.now(timezone.utc).isoformat(),
+                "family": fam,
+                "kind": "declared_budget",
+                "n": n,
+                "reason": reason,
+                "config_hash": h,
+            }
+            self._append_rows([row])
+            # the floor rises only once the row is durable (a duplicate (n, reason)
+            # was already applied when first logged or loaded)
+            self._declared[fam] = max(self._declared.get(fam, 0), n)
+            self._declared_seen.add(h)
         return True
 
     @classmethod

@@ -33,31 +33,34 @@ decisions:
 waves:
   - id: W0
     title: "Publication — preserve the 2026-10-11 successor packet verbatim in Mastermind research/ with the continuation ledger; backlink from #1243"
-    status: awaiting_ci
+    status: done
     pr: [1330]
-    next_action: "Mastermind PR #1330 (head d71b644a) is bound as the single CI watcher. On green: merge, blob-verify both paths on origin/master, then move this wave to done. #1243 backlink comment 6107098780 is posted and read back."
+    next_action: "None: #1330 merged 2026-10-11T09:33:16Z as 8e38a4ce (ancestor of origin/master f60b1ba7); the 2026-10-11 packet (9 prompt entries) and the continuation ledger are blob-verified on origin/master; #1243 backlink comment 6107098780 read back."
   - id: W1
     title: "WP00 research reconciliation + WP02 producer-to-consumer qualification decisions (planning level, Fable direct under L.7)"
     status: done
     depends_on: [W0]
     next_action: "None at planning level: ledger §4 records the MAS-267/268/271/272/273/274 decision rows (claim, source owner, required evidence, consumer, acceptance, effect boundary), the H06 split into H06a (FIF private-default seam, Mastermind #673) and H06b (MAS-273 typed macro release bundle, MRI seam BROKEN), and the WP01 evidence index with the C6 NOT_LOCATED obligation. Each row still needs its qualification lane (W2+)."
   - id: W2
-    title: "First wave — O1-WP03 time/identity contract census on the composer clock seam (MAS-268 row) and O8-WP08 consumer/release evidence census; read-only, external pool lanes"
-    status: todo
+    title: "First wave — O1-WP03 time/identity contract census on the composer clock seam (MAS-268 row) and O8-WP08 consumer/release evidence census, then the first qualification builds; external pool lanes under native Opus orchestrators"
+    status: done
     depends_on: [W1]
-    next_action: "Write the two frozen read-only packets (owned paths, acceptance gates, return-packet shape, turn-ending clause) and run each via `pool remote ubuntu0 glm <packet> <remote_cwd>` with one sentinel watcher per lane; judge returns by artifact and record them in ledger §5."
+    next_action: "None: both censuses returned and were judged by artifact, and the first qualification builds merged and landed on main — WP16-D1 #8813, WP11 #8836, WP06 #8831, WP07 #8858, WP05 #8862 (blob-verified against origin/main), plus Mastermind ledger #1352 and this record's W0-W2 refresh #8796. WP03/WP04 are DO_NOT_REDO. WP12 (event evolution contract tests) was judged ACCEPT by artifact (7/7 new tests, 120 neighbouring tests green, a mutation of event_workspace.py previous_generation_id kills 3 of 7) and ships as PR #8886."
   - id: W3
-    title: "Qualification lanes WP04-WP33 per the masterplan seat map (O1-O8) — admitted only as a ready subset under observed capacity"
-    status: todo
+    title: "Qualification lanes WP08-WP33 per the masterplan seat map — admitted only as a ready, path-disjoint subset under observed capacity"
+    status: in_progress
     depends_on: [W2]
-    next_action: "After W2 returns, pick the highest-value path-disjoint ready subset from the masterplan WORK_PACKAGES seat map and freeze one packet per lane; do not open a lane whose owned files overlap a live writer."
-next_action: "Watch Mastermind #1330 to green and merge it; in parallel write and launch the W2 O1-WP03 census packet on the external pool (not a native child)."
+    pr: [8886]
+    next_action: "Seat 7ab343c8 pivoted labor to Grok (grok-4.6) lanes on ubuntu0/ubuntu2/ubuntu3 via `pool remote <host> grok <packet> '~/lanes/repos/macro' grok-4.6` (never `pool remote auto`; ubuntu1 fails its load gate, mb and m1 are not used). Two native Opus orchestrators run the wave: ORCH-G (builds — WP08 consumer receipt on app/integrated_answer.py, test hygiene on tests/test_event_window.py + engine/trial_ledger.py, WP09 k3e pins) and ORCH-H (nine read-only census lanes WP10/13/14/15-pre/23/24/25/26/30 with delegated authority for up to six builds, never WP15 or WP30). The seat judges every return by artifact, opens, arms and merges the PRs, and runs the landing check."
+next_action: "Merge WP12 PR #8886 on concluded-green checks and blob-verify it on origin/main; judge the ORCH-G and ORCH-H returns by artifact (lane stdout sentinels, diffs, test output); open, arm last, merge and land each accepted build; record accepted results in the Mastermind ledger (r4) on a fresh branch off origin/master; then admit the next path-disjoint ready subset after a fresh writer-lease read on app/integrated_answer.py and engine/fundamental_forensics/*."
 landmines:
   - "C19 is sticky: the original effects (native parent 01a108b6-7f12-76a2-9123-2b49492f654c, ops c19-program-recovery-20261004-01a108b6 and c19-mas269-exposure-custody-20261004-01a108b6, request req-4a8daf76317cfe92f436991444c58281) are frozen. Never retry with a fresh key, invent an intent ID, submit an equivalent new root, switch account/carrier, or transfer them before original-target reconciliation."
   - "MAS-282 owns recovery of the missing original full C19 package and C6 (surprise/residual methods) remains NOT_LOCATED_IN_BOUNDED_SEARCH. The 2026-10-11 packet is a successor masterplan, not that recovery; a bounded search that finds nothing is an absence claim with search bounds, never a verdict that C6 does not exist."
   - "The I1 spec's H06 label 'MAS-273 FIF publication' conflates two seams. H06a is the FIF private-default publication seam (query_snapshots.py, Mastermind #673, WS:FUNDAMENTAL-FORENSICS). H06b is MAS-273 proper, the typed macro release/expectations bundle (C17) whose MRI seam is BROKEN. Acceptance namespace is MAS issue + owner, never the Hxx label."
   - "The composer (Macro #8596, app/integrated_answer.py) is default-OFF with an AAPL-only financial leg; activation is a Chairman decision gated on all four legs (DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS). A census that reads it ON in a dev tree proves nothing about the deployed flag."
   - "Native Claude children are not labor lanes on this program: census, build, review go to the external pool or the Fabric. `pool placement` eligibility (ubuntu0/ubuntu1/ubuntu3) is host eligibility, not runnable-capacity proof; m2 fails its load gate. Fabric admission needs the authenticated Executive connector (human OAuth) and QUEUED is not STARTED."
+  - "The kit's `pool` launcher deadlocks under the host's bash 5.3 and refuses an unclassified packet (ECONOMIC_POLICY_REFUSED unknown_task_class): launch with a bash shim first on PATH, REMOTE_SUB_PYTHON set to the Homebrew python3, and POOL_TASK_CLASS set to one of census/build/review/extract/mechanical. grok-4.6 refuses the draft, research, analysis, implementation and code task classes. Never `pool remote auto`, never reuse a burned run id, and key every wait on the lane's final `<LANE>: PASS|PARTIAL|FAIL <sha>` sentinel or the kit log's `DONE rc=` line, never on the nohup pid."
+  - "Earnings story/press publication dependencies — the a0e1546f generation bound in site/stocks/earnings/route-catalog.json, engine/press/earnings_adapter.py allowed_links, storypacket/storyrev admission in the R2 journal — are owned by WS:EARNINGS-INTELLIGENCE-OS (coo-fable, DEC:EARNINGS-INTELLIGENCE-PROGRAM-OWNERSHIP), not by C19. The ONE C19 reply on #1243 comment 6107955309 is comment 6108389713 (2026-10-11T11:09:05Z); do not post on that dependency again, never synthesize a story-packet or revision id (they are content hashes), and route any further ask to the owner carrier."
   - "The writer-lease read is a title/body search heuristic (`gh pr list --search '<term> in:title,body'`), not a file-path search. Only Macro #8630 (draft) touched expectation_state as of 2026-10-11; re-read before any lane that writes near integrated_answer.py, query_snapshots.py or the macro release seam."
 do_not_redo:
   - "Composer app/integrated_answer.py (Macro #8596, merge 55e8cf84): do not build a second canonical answer composer; qualify legs against it."
@@ -65,6 +68,7 @@ do_not_redo:
   - "News (Macro #8454) and Research Vault (Macro #8438) are incumbents with their own carriers; C19 consumes them by reference."
   - "H01 / MAS-268 FIF golden query kernel is ACCEPTED (DEC:FIF-3A3-ACCEPTED-GOLDEN-QUERY-ON-MAIN); do not re-qualify the kernel, qualify its consumers."
   - "Mastermind #1246 (90b7b32f) holds the 2026-10-04 reconciliation dossiers and addenda; never edit or overwrite them. The 2026-10-11 packet lives beside them at research/commission_19_fable_masterplan/2026-10-11/."
+  - "Seat lineage: session dd5239a9 (Macro worktree c19-agentos-ws-20261011-5ce9a7d447aee3ab, Mastermind worktree mastermind-data-intelligence-2d6be0) ended 2026-10-11T09:41Z on a provider session limit after W0 landed. Session 7ab343c8-3a34-4a9e-8edd-17f2b5215ecb is the successor seat (Macro worktree fable-ceo-project-init-9656b2-da5ad30a59bedaa7, Mastermind ledger worktree c19-fable-successor-ledger-20261011-4cb51ef4b1a1a063). The prior seat's worktrees are never written; the operation is never re-ACKed or re-STARTed; the packet is never re-published (corrections go in the ledger)."
 artifacts:
   - mastermind:research/commission_19_fable_masterplan/2026-10-11/FABLE_START_HERE.md
   - mastermind:research/commission_19_fable_masterplan/2026-10-11/EFFECTS_AND_CONTINUITY.md
@@ -84,8 +88,8 @@ verification, and truthful acceptance. It is published verbatim (33 hash-verifie
 ## Where the durable state lives
 
 - **Program ledger** (DECIDED / FACTS / OPEN / NEXT, WP02 decision table, lane matrix):
-  Mastermind `research/COMMISSION_19_DATA_INTELLIGENCE_CONTINUATION_HANDOFF_2026_10_11.md`.
-  Until #1330 merges, the PR head is the durable state; this record summarizes it.
+  Mastermind `research/COMMISSION_19_DATA_INTELLIGENCE_CONTINUATION_HANDOFF_2026_10_11.md`,
+  on origin/master since #1330 merged (8e38a4ce); this record summarizes it.
 - **Umbrella**: `WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT` (Mastermind #1202 / #1258) carries
   the Package F2-F5 blocker that names C19's original-request reconciliation as an exact human gate.
   This record does not lift that gate; it owns the successor masterplan work that is independent of it.
@@ -93,7 +97,8 @@ verification, and truthful acceptance. It is published verbatim (33 hash-verifie
 ## Topology
 
 Fable principal (this seat) -> native Opus suborchestrators only for bounded decomposition judgment
-(ROUTE: ORCHESTRATION, read-only) -> external pool lanes (`pool remote <host> glm ...`) or Fabric
+(ROUTE: ORCHESTRATION) -> external pool lanes (`pool remote <host> grok <packet> <cwd> grok-4.6`
+on ubuntu0/2/3 since 2026-10-11 W3; never `pool remote auto`) or Fabric
 operators for all census/build/review labor -> workers. Seat map from the packet: O1 -> WP03/04/05,
 O2 -> WP12/15/22, O3 -> WP09/10/11/30, O4 -> WP13/14/28, O5 -> WP23/24/25, O6 -> WP26/27/29,
 O7 -> WP06/07/31, O8 -> WP08/16-20/32. Fable retains WP00/WP01/WP02/WP21/WP33. Only the useful

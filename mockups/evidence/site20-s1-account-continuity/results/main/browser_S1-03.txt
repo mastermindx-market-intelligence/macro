@@ -1,0 +1,13 @@
+# account.js sha256 647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be
+# S1-03 failed account read vs signed-out browser acceptance — variant=main page=site/alerts.html (local-only, fictional fixtures)
+# result: 2 pass / 8 fail
+FAIL K 503 -> unavailable (not guest, not account) :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+FAIL K 503 shows 'Can’t load your account right now' :: Account✕Access sessionYou’re in with the site access password. Sign in with an a
+FAIL K abort -> unavailable (not guest, not account) :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+FAIL K malformed -> unavailable (not guest, not account) :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+FAIL K nonjson -> unavailable (not guest, not account) :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+PASS K 401 -> signed-out guest flow :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+PASS K anon -> signed-out guest flow :: {'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}
+FAIL K 503 ZH copy :: 账户✕访问会话你正通过站点访问密码登录。使用账户登录以管理邮箱、密码与偏好。
+FAIL K retry journey completed :: TimeoutError('Page.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator("[data-act=retry-load]")\n')
+FAIL K late 503 from older load ignored; account stays :: ({'unavail': False, 'name': False, 'guest': True, 'text': 'Account✕Access sessionYou’re in with the site access password. Sign in with an account to manage email, password & preferences.'}, 2)

@@ -7,13 +7,7 @@ objective: >-
   artifact on origin/main, is handed to its lawful incumbent owner with a RESULT on that owner's
   carrier, or is recorded as an exact human/authority gate for the Chairman. Done when the
   Chairman-facing blocker list is the only remaining work.
-status: blocked
-blocked_by:
-  - "Package I activation: the v0 route (#8596) is default-OFF. H05 capital_structure is held_unavailable and there is no H05/W2 natural proof, so turning it on is a Chairman decision."
-  - "Package N activation: provider source rights, the writer secret plus the armed macro-ticker-news.service, a canary and natural sessions, then TICKER_NEWS_RAIL=1 on Terminal Vercel. These are operator/Chairman acts (DEC:MI-BUILDOUT-N-MERGES-INERT-ACTIVATION-IS-AN-OPERATOR-FLAG)."
-  - "Package F2-F5: C19 original-request reconciliation (req-4a8daf76317cfe92f436991444c58281) and Executive OAuth. EXACT_HUMAN_GATE."
-  - "Package R: Research Vault custody is human-only under carrier #8438"
-  - "ITP GAP-E-BASIS / ALIAS: the K3E owner closes the basis/alias gaps (the nine strict-xfail GAP-E-* tests)"
+status: active
 program: sector-rotation-intelligence
 repos: [macro, terminal, mastermind]
 owner: coo-fable
@@ -30,9 +24,25 @@ decisions:
   - DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS
   - DEC:MI-BUILDOUT-I-COMPOSER-READS-PRODUCT-ARTIFACTS-BY-REFERENCE
   - DEC:MI-BUILDOUT-N-MERGES-INERT-ACTIVATION-IS-AN-OPERATOR-FLAG
+  - DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS
+  - DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW
+  - DEC:MM-IDENTITY-INGEST-IDEMPOTENT-OVER-CAPTURED-DATES
+  - DEC:MM-PIT-UNOWNED-PARENT-FSYNC-EACCES-IS-TOLERATED
+  - DEC:TICKER-NEWS-UNIVERSE-STAYS-FAIL-CLOSED-ON-UNRESOLVED-ALIAS
+  - DEC:PRODUCTION-RECORDS-ROW-BOUND-STAYS-FAIL-CLOSED-UNTIL-PREREG-V2
 discoveries:
+  - DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES
+  - DSC:PRESS-FEEDS-RESTART-AFTER-AN-AUTH-GAP-NEEDS-THE-ALPACA-CURSOR-REPRIMED
+  - DSC:UPDATE-SH-W2C-REFUSAL-EXITS-BEFORE-LATER-DEPLOY-BLOCKS
+  - DSC:GH-QUOTA-GUARD-PARSES-ANY-DO-TOKEN-AS-A-LOOP-BODY
+  - DSC:WORKFLOW-DISPATCH-RESOLVES-AGAINST-THE-DEFAULT-BRANCH
   - DSC:KIT-HOST-QUEUE-GATE-IS-MACOS-ONLY
   - DSC:CONTRACT-DELTA-TRIPS-TWICE-ON-NEW-MODULE-PLUS-NEW-SUITE
+  - DSC:PSKY-SKYD-RENAME-IS-ONE-CIK-DATED-BOUNDARY
+  - DSC:MASSIVE-REST-OPTIONS-SNAPSHOT-NOT-ENTITLED-ON-STOCK-PLAN
+  - DSC:A-VENUE-MOVING-RENAME-MISSES-THE-COMMITTED-LISTING-KEY
+  - DSC:DEPTH-ONE-DEPLOY-CLONE-DEFEATS-ANCESTRY-CHECKS
+  - DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04
 waves:
   - id: W1
     title: Phase A reconcile — read-only census lanes N0 / E0 / L0 (cursor composer-2.5, GLM tier unavailable)
@@ -74,12 +84,14 @@ waves:
     status: done
     pr: [8596, 8454, 8613, 8614, 8616]
     depends_on: [W6]
-    next_action: "None for code. #8454 e3e3eff48cf4 (live, auth-gated, writer not armed), #8596 55e8cf84 (DEFAULT-OFF), #8613 643dcc3e, #8614 ca93b99f and Terminal #831 2cb3e164 (TICKER_NEWS_RAIL off) are MERGED. Activation is the blocked_by list."
-    wait:
-      kind: external_action
-      review_after: 2026-10-14
-      condition: "Chairman: Package I flag, Package N rights + writer enable + TICKER_NEWS_RAIL, F2 C19 + OAuth, R ceremony, K3E basis/alias closure"
-next_action: "Everything this seat can build is merged dark (W1-W7). What remains is the blocked_by list of activation and rights gates, owned by the Chairman/operators. Two of the three pre-existing data-health reds (stale test anchors) are healed by #8616 f595967f. The third, the options-context auditor row boundary, needs the options owner's preregistration v2 (research/options_estate/OPTIONS_CONTEXT_AUDIT_LEDGER_BOUND_ADJUDICATION_2026-08-13.md)."
+    next_action: "None for code. #8454 e3e3eff48cf4 (live, auth-gated, writer not armed), #8596 55e8cf84 (DEFAULT-OFF), #8613 643dcc3e, #8614 ca93b99f and Terminal #831 2cb3e164 (TICKER_NEWS_RAIL off) are MERGED. Activation moved to W8 under the Chairman's 2026-10-11 autonomy directive."
+  - id: W8
+    title: "Activation and VPS unit recovery under the Chairman's 2026-10-11 autonomy directive: Package N via Alpaca-sourced Benzinga headlines (#8809, then P2 VPS enable, P3 Terminal rail), Package I flag (#8811), market-memory unit recovery (#8807 massive manifest refresh, #8812 sentinel served cap, D-experience torn-pending discard, D-identity idempotent ingest, D-options pit EACCES tolerance + stage token), #7711 charter judgment"
+    status: in_progress
+    pr: [8809, 8811, 8807, 8812, 8816, 7711, 8820, 8823, 8818, 8819, 8826, 8828, 8829, 8830]
+    depends_on: [W7]
+    next_action: "Seat: #8828 SKYD-IDENTITY is MERGED 2026-10-11 as c50af4eb0421 (fold head 005c81ed737e; 8/8 blobs verified; the VPS pulled it; DSC:A-VENUE-MOVING-RENAME-MISSES-THE-COMMITTED-LISTING-KEY). P2 BLOCKED 17:04Z on HTTP 401 — the VPS holds the pre-rotation Alpaca pair (rotated 2026-08-04; DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04); remedy = #8838 .github/workflows/deploy-alpaca-secrets.yml (DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW), armed merge-on-green; after its merge the seat dispatches it from main (restart_press_feeds=false), then ORCH-N re-arms the writer (ticker-news-setup.sh --disarm/--arm), canary x2 >=10 min apart, then P3 (Terminal drop-in TICKER_NEWS_RAIL=1); the seat judges READY_FOR_SEAT_PROOF by artifact (is-active, two health reads, newsRailEnabled true at .deployment-id 707648d52014). DIDC #8830 (identity-intake checkout race; net-tree diff because /opt/macro is a depth-1 clone — DSC:DEPTH-ONE-DEPLOY-CLONE-DEFEATS-ANCESTRY-CHECKS) MERGED 17:26:55Z as 8a75b657d821 (--match-head-commit 3418a0e579bf; 2/2 blobs verified) and at PRODUCTION_PROOF: the 17:30:25Z identity-timer run saw HEAD move 8a75b657->b79cd122 mid-run, exited 0, completion_commit != deployed_commit (ORCH-OPS read 17:34:37Z, seat-judged). Open: the run used 165 s of TimeoutStartSec=180 (CPUQuota=50%) — lift the unit budget before the corpus times it out; the covering main proof is dispatched after run 38158841888 concludes and #8838 merges. #8823, #8818, #8819 MERGED (d39672a34aaa / 56e269cf2e3f / b8a839236ddd); #8819 PRODUCTION_PROOF. Live proofs still owed: #8807 technicals replay + #8816 W2C activation after the 10-12 nightly republishes the manifest. D-options: failure line PROVEN (fail-closed stage token at 15:00:23Z); capture is EXACT_HUMAN_GATE — Massive REST options snapshot 403 NOT_AUTHORIZED on the stock-plan key (plan entitlement = money), timer stays disarmed."
+next_action: "W9-6 (2026-10-11 21:15Z): ORCH-D update.sh lane-freeze fix PR #8864 MERGED 2026-10-11T20:50:48Z (squash eb3df04e64fd8f4d74cf3f2f3bb1045c5c84ef35) and PRODUCTION_PROOF 2026-10-11T21:13:16Z: a W2C owner-replay refusal now freezes the W2C lane (W2C_LANE_FREEZE / W2C_LANE_FROZEN_CONTINUE / DEPLOY_EXIT_STATUS blocks; all 15 refusal sites), skips only the W2C-dependent region, runs the lane-independent tail (press feeds, ticker news) and exits 1 with `deploy finished with status 1 (frozen lanes: w2c)` as the last line. RETRACTED: the W9-4/W9-5 expectation that the options timer is no longer disarmed every 3 min — the fail-closed disarm once per frozen run is by design until the 10-12 nightly completes the owner replay; the W9-5 rule that a merged PR touching a source service needs a seat restart under the updater lock is RETIRED. Package N extras: writer PRODUCTION proof DONE (20:22Z VPS read: state=live, 4 real Benzinga items FDS/BLK/GS/UNH via the stream, catch-up advancing, disconnects 0); signed-in Terminal rail browser check BLOCKED on this seat (browser hook timeout x2; anon API 401 fails closed; zero signed-in production reads yet) — a GAP for any browser-capable seat or the operator. Open next: post-nightly live proofs on 10-12 (B first :53 technicals tick; D-experience W2C activation = first tick with no refusal and no frozen line; #8828 roster; data-health.yml). Human-only (LAST): Massive options-snapshot entitlement (money); F2-F5 (C19 reconciliation + Executive OAuth); R (Research Vault custody under #8438); ITP GAP-E-BASIS/ALIAS (K3E owner); Package N body/image display (direct Benzinga contract + NEW receipt); PSKY store-key migration (#4622) and KHC venue-transfer supersession (owner PRs); options-context auditor / production-records row bounds wait on Sol acceptance of the #7711 preregistration v2 charter; twitterapi.io press_stream websocket 403 (billed X push lane — marketing-lane owner / billing, observed only); signed-in rail browser check. Program state is research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-11.md."
 landmines:
   - "Package N is owned by Terminal #831 (Astra, sol/web-ticker-news-r1-20261004-astra-001, DRAFT 'DO NOT MERGE yet', the lawful Macro #8454 child). Never relaunch a Terminal news server lane; #832 is closed superseded and kept only as a cherry-pick reference."
   - "E1's nine strict-xfail GAP-E-* tests (tests/test_k3e_provider_family_qualification.py, tests/test_k3e_semantic_seam_qualification.py, intelligence-registry job) go RED as a strict XPASS the moment an owner closes the matching gap: the PR that closes a gap flips its xfail in the same change; never relax strict."
@@ -96,6 +108,13 @@ landmines:
   - "app/deploy/update.sh's macro-api restart regex is one long alternation line. Concurrent PRs always conflict on it (#8454 vs #8596, 2026-10-07). Heal with a keep-both union merge of origin/main plus `bash -n`."
   - "A new /etc/*.env secret must be masked (InaccessiblePaths=-) in every networked market-memory unit that lists secret masks. The deploy tests pin the full list only for options and technicals (#8613); #8614 masks it in the other 10 units."
   - "gate: data legacy jobs (e.g. market-memory-contract) run only in data-health.yml. A red there never blocks PR CI and is easy to blame on the newest merge."
+  - "ORCH-OPS lanes pushed through the Git Data REST API or `git push --no-thin` because receive-pack answered HTTP 500 from ubuntu3/ubuntu2 (2026-10-11): a lane that reports 'pushed' is verified by ls-remote on the exact head, never by its own log."
+  - "production-records is capacity-contract bound (29,509 source rows > MAX_SOURCE_ROWS 25,000, engine/neuralweb/market_memory_production_records.py:76): the ceiling belongs to WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2 / #7711 — never widen it from this program."
+  - "/var/lib/macro-market-memory-options is root-owned 0710 by reviewed design (app/deploy/README.md:74-80): never chmod it; the option-OI fix is the narrow EACCES tolerance in market_memory_pit._ensure_store_directory_chain (DEC:MM-PIT-UNOWNED-PARENT-FSYNC-EACCES-IS-TOLERATED)."
+  - "The identity store's refusal of a different digest for an already-captured date (engine/neuralweb/market_memory_identity_store.py:1537) is correct point-in-time behaviour: the fix is ingest idempotence plus a typed divergence receipt, never a store relaxation or a data/ rewrite (DEC:MM-IDENTITY-INGEST-IDEMPOTENT-OVER-CAPTURED-DATES)."
+  - "Never start a market-memory production unit by hand on the VPS: live proof is the next SCHEDULED run's journald line; a hand start is invisible to every staleness instrument and contends for the shared update lock that app/deploy/update.sh and the setup scripts take."
+  - "us_board_provisional staleness over a weekend is producer-side (the VPS mirror timer runs Mon..Fri 20..23:02/5:00 UTC with Persistent=false; the GitHub backstop published after the mirror's last tick): the next tick heals it; nothing to patch on the VPS."
+  - "The Alpaca receipt caps every consumer of alpaca-rest rows at headline/teaser/source-link display; body_display and image_display are FALSE. A surface that renders body or image needs a NEW receipt with a basis that supports it, never an edit of config/ticker_news_rights_alpaca_benzinga.json."
 do_not_redo:
   - "ACK on Mastermind #1202 exists once (comment 6009097528, 2026-10-06 04:05Z) — never re-ACK or re-START."
   - "N0/E0/L0/V0/I0/S0 censuses and the L2 review are ACCEPTED by artifact (seat re-showed every path:line claim on the pinned heads); do not re-census the same questions."
@@ -108,6 +127,10 @@ do_not_redo:
   - "V1 verdict preservation (#8529, head 56ad83f4c22045fe45f9c42c625b4becd17eba0a, squash 3af2f39752e7046a4a7996b21ea5467ab90b1192) is MERGED — config/verdict_preservation_registry.json (8 rows, exactly one actual C2) + engine/verdict_preservation.py + #vp-section on the Calibration Lab; display tier only, Trend Persistence C1-NULL stays closed; do not rebuild or re-pin."
   - "S1 theme-relative intraday hypothesis proposal (#8528, head fd56364b7e9303ac11ad7548ce226e0b5cf34791, squash 52fcb1dc1b6e5bd8e7fb7a1e8a0e38863e516308) is MERGED — research only; S2 registration needs product-owner acceptance of its section 0 ask first; no outcome scan before registration."
   - "W6/W7 PRs #8567/#8583/#8587/#8588/#8454/#8596/#8613/#8614 and Terminal #831 are MERGED. Never re-open, rebuild a second composer, writer, API or rail, or re-register S2. Activation is a flag and a service enable, not code (DEC:MI-BUILDOUT-N-MERGES-INERT-ACTIVATION-IS-AN-OPERATOR-FLAG)."
+  - "Alpaca rights basis is DECIDED (DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS): do not re-ask whether the writer may ingest Benzinga-sourced headlines via Alpaca, do not buy a direct Benzinga feed for headline display, and never self-issue a receipt from API possession."
+  - "D-identity option (a) and D-options fix (b) are DECIDED in the two DEC:MM-* records; repair rounds amend the lane packet, never the decision. The PIT correction class in the identity store is deferred OPEN under program market-memory, not this seat's to build."
+  - "#7711 charter judgment is recorded ONCE (ten gaps F-G1..F-G10 in research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-11.md section 3); the GLM docs lane fixes them on the same branch and PR — never open a second charter, a second judgment lane, or a second preregistration."
+  - "ORCH-OPS diagnoses D1-D6 (collector already-current path, daily.yml producer gap, update.sh timer cascade, production-records ceiling, sentinel BODY_CAP, us_board_provisional timer) are verified by artifact and recorded in the 2026-10-11 continuation file — do not re-diagnose."
 artifacts:
   - research/product_intelligence_local_delivery/L0_LEADERSHIP_THEME_CONTEXT_RECONCILIATION_2026-10-06.md
   - research/product_intelligence_local_delivery/N0_TICKER_NEWS_TASK_MATRIX_2026-10-06.md
@@ -122,6 +145,9 @@ artifacts:
   - engine/verdict_preservation.py
   - config/verdict_preservation_registry.json
   - research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-06.md
+  - research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-11.md
+  - config/ticker_news_rights_alpaca_benzinga.json
+  - collectors/alpaca_news.py
 ---
 
 ## Context
@@ -142,4 +168,7 @@ Execution shape: each wave is a set of path-disjoint external lanes (B-kit `remo
 on ubuntu1/ubuntu2, cursor composer-2.5) returning a DRAFT PR; the seat judges every return by
 artifact, posts one ACCEPT, marks READY, and arms `merge-on-green` LAST; the sweeper owns the
 merge and the seat blob-verifies on `origin/main` afterwards. Program state lives in
-`research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-06.md`.
+`research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-11.md` (W8; the 2026-10-06
+file holds W1-W7). From W8 on, Opus 5.5 orchestrators (Chairman 2026-10-05/10-11) administer the
+GLM fabric lanes for this program; they never spawn native children, never post, label, ready
+or merge — those acts stay with the seat.
