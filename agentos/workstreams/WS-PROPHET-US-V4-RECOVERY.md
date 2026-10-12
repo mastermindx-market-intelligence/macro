@@ -675,6 +675,18 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
+  2026-10-12 06:12 continuation: P1a8444 exact published48c2813d CI failed only
+  because its non-US parity module imported a missing origin/main ref. Exact
+  traceback and actual tested-merge parents/tree are verified; prior run38205318192
+  and all artifacts are consumed. Repair only the owning job's history/base setup,
+  with six discriminating shallow-Git cases red before/green after and existing29
+  parity tests passing. Corrected-delta technical review is accepted; owner contract,
+  curated import closure and non-vacuous planner checks pass. Next is normal
+  publication/new exact-head CI after current-main compatibility adjudication. Application/capture bytes remain unchanged.
+  Human P1a visual decision is still pending on the existing48-image gallery;
+  do not repeat the question or infer approval. DailyBrief8249 and comparison8874
+  source releases remain closed; full native caller and production mission stays open.
+  Earlier prose is historical.
   2026-10-12 04:33 continuation: original DailyBrief8249 is source-released
   at99b8a6e107d8; exact-head CI88jobs311passing0inherited/blocking, reviewed
   source/dependencies and composition/squash/fetched-main parity verified.

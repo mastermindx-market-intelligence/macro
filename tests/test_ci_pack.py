@@ -1646,6 +1646,88 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
         assert "unowned path" not in reason, reason
 
 
+@pytest.mark.parametrize("mode", ["pr", "base_replay", "missing", "malformed", "absent_object", "non_ancestor"])
+def test_stock_dashboard_parity_baseline_in_shallow_pack(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: str
+) -> None:
+    """The actual owner setup must resolve its pinned base without moving main.
+
+    Exercise real Git history and the pack's provided-action/environment path.
+    Only pytest itself is excluded: this regression checks its Git prerequisite;
+    the unchanged compatibility suite still grades the real application bytes.
+    """
+    for key in PACK.REPO_BINDING_GIT_VARS:
+        monkeypatch.delenv(key, raising=False)
+    for key in ("TESTED_BASE_SHA", "CI_BASE_SHA"):
+        monkeypatch.delenv(key, raising=False)
+
+    remote = tmp_path / "remote"
+    remote.mkdir()
+    _git_in(remote, "init", "-b", "main")
+    _git_in(remote, "config", "user.email", "ci@example.invalid")
+    _git_in(remote, "config", "user.name", "CI Fixture")
+    (remote / "parity.txt").write_text("common\n")
+    common = _commit_fixture(remote, "common")
+    (remote / "base.txt").write_text("base\n")
+    base = _commit_fixture(remote, "base")
+    _git_in(remote, "checkout", "-b", "candidate", common)
+    (remote / "parity.txt").write_text("candidate\n")
+    _commit_fixture(remote, "candidate")
+    _git_in(remote, "checkout", "main")
+    _git_in(remote, "merge", "--no-ff", "candidate", "-m", "tested merge")
+    merge = _git_in(remote, "rev-parse", "HEAD").stdout.strip()
+    (remote / "later.txt").write_text("moving main must not become the baseline\n")
+    moving_main = _commit_fixture(remote, "later main")
+    tested = base if mode == "base_replay" else merge
+    if mode == "base_replay":
+        # The real replay has a base-only origin, with no PR object/ref authority.
+        replay_remote = tmp_path / "base-only.git"
+        _git_in(remote, "init", "--bare", str(replay_remote))
+        _git_in(remote, "push", replay_remote.as_uri(), f"{base}:refs/heads/main")
+        remote_url = replay_remote.as_uri()
+    else:
+        remote_url = remote.as_uri()
+    runner = tmp_path / "runner"
+    runner.mkdir()
+    _git_in(runner, "init")
+    _git_in(runner, "remote", "add", "origin", remote_url)
+    _git_in(runner, "fetch", "--depth=1", "origin", tested)
+    _git_in(runner, "checkout", "--detach", "FETCH_HEAD")
+    assert _git_in(runner, "rev-parse", "--is-shallow-repository").stdout.strip() == "true"
+    assert _git_in(runner, "rev-parse", "--verify", "origin/main", check=False).returncode
+    original_bytes = (runner / "parity.txt").read_bytes()
+
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST) if j.job_id == "stock-dashboard-first-frame")
+    PACK._prepare_provided_actions(job, root=runner, tested_tree_sha=tested)
+    if mode == "base_replay":
+        monkeypatch.setenv("CI_BASE_SHA", base)
+    elif mode != "missing":
+        value = {"malformed": "HEAD", "absent_object": "f" * 40, "non_ancestor": moving_main}.get(mode, base)
+        if mode == "non_ancestor":
+            _git_in(runner, "fetch", "origin", moving_main)
+        monkeypatch.setenv("TESTED_BASE_SHA", value)
+    env = PACK._dependency_environment(None)
+    command = next(s["run"] for s in _yaml(MANIFEST)["jobs"][job.job_id]["steps"]
+                   if s.get("name") == "P1a shared Prophet non-US compatibility")
+    setup, invocation, _ = command.partition("python -m pytest")
+    assert invocation, "the parity suite must remain an executing proof"
+    result = subprocess.run(["bash", "-eo", "pipefail", "-c", setup], cwd=runner,
+                            env=env, capture_output=True, text=True)
+    if mode in {"pr", "base_replay"}:
+        assert result.returncode == 0, result.stderr
+        assert _git_in(runner, "merge-base", "origin/main", "HEAD").stdout.strip() == base
+        assert _git_in(runner, "rev-parse", "origin/main").stdout.strip() == base
+        if mode == "pr":
+            assert base != tested
+            assert _git_in(runner, "show", f"{base}:parity.txt").stdout == "common\n"
+            assert original_bytes == b"candidate\n"
+    else:
+        assert result.returncode != 0, "missing/invalid baseline must fail closed"
+        assert _git_in(runner, "rev-parse", "--verify", "origin/main", check=False).returncode
+    assert _git_in(runner, "rev-parse", "HEAD").stdout.strip() == tested
+    assert (runner / "parity.txt").read_bytes() == original_bytes
+
+
 def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """BC-2 ran only on the data gate, so nothing graded a claim before merge.
 

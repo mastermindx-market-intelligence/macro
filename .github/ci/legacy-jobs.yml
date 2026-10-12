@@ -5222,6 +5222,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -5230,7 +5232,17 @@ jobs:
       - name: stock dashboard first-frame source contract
         run: python -m pytest tests/test_stock_dashboard_first_frame.py -q
       - name: P1a shared Prophet non-US compatibility
-        run: python -m pytest tests/test_p_mp1_shell_nonus_byte_parity.py -q
+        run: |
+          # The pack deepens the exact tested tree but need not create remote
+          # refs. Bind the legacy suite's origin/main alias to the plan's fixed
+          # base: TESTED_BASE_SHA in hosted CI, CI_BASE_SHA in isolated replay.
+          # Never fetch moving main or substitute the tested head as its base.
+          baseline="${TESTED_BASE_SHA:-${CI_BASE_SHA:-}}"
+          [[ "$baseline" =~ ^[0-9a-f]{40}$ ]] || { echo "missing exact parity baseline" >&2; exit 1; }
+          git cat-file -e "$baseline^{commit}"
+          git merge-base --is-ancestor "$baseline" HEAD
+          git update-ref refs/remotes/origin/main "$baseline"
+          python -m pytest tests/test_p_mp1_shell_nonus_byte_parity.py -q
 
   prophet-lab:
     if: ${{ false }}

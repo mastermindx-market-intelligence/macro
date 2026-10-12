@@ -24,7 +24,11 @@ changed:
     markup and hostile-text proof.
 - path: .github/ci/legacy-jobs.yml
   what: Keep the P1a non-US compatibility suite on its existing code-gate job; declare seven concrete
-    dependencies exposed by the unchanged import-closure check.
+    dependencies exposed by the unchanged import-closure check. Declare exact-tree ancestry for this
+    owner job and bind the unchanged parity suite to the plan-pinned Git base before it runs.
+- path: tests/test_ci_pack.py
+  what: Exercise the actual owner setup and child environment against shallow Git fixtures, including
+    isolated base replay and missing, malformed, absent-object and non-ancestor rejection.
 - path: mockups/evidence/prophet-p0b-zero-fouc
   what: Regenerate actual composed fixtures and browser receipts, preserving historical baseline identity
     and refreshing only the repair extension.
@@ -99,6 +103,29 @@ verified:
     Nine affected receipt/artifact checks passed (87 deselected); table-sort browser suite 30 passed,
     two explicit composed-only skips. Both planner checks passed in 202.34 seconds. Historical
     evidence and reviewed application-source bytes are retained.
+- claim: The hosted compatibility error was a missing Git ref at collection, not a failed byte-parity assertion.
+  command: gh run view 38205318192 --job 114668170060 --log; git show -s --format=%H:%T:%P
+    4fca7501291f42b6b38b622d6620f1cf99e3a3ec
+  result: Exact failed log reports fatal Not a valid object name origin/main at the eager merge-base
+    lookup. Actual fetched merge parents and tree equal the canonical plan and prior local composition.
+    Final semantic evidence remains failed with one blocking proof; all old run evidence is consumed.
+- claim: The owner-job setup preserves a fixed base and fails closed without one.
+  command: python3 -m pytest tests/test_ci_pack.py -k stock_dashboard_parity_baseline_in_shallow_pack -q
+  result: Six real-Git cases failed before repair and passed after repair (168 other tests deselected).
+    The PR fixture has different current/base content and a newer remote main, so a moving or self
+    comparison cannot pass. Base replay uses its isolated base-only origin. No parity assertion changed.
+- claim: Existing non-US byte-parity assertions still pass on the actual original carrier.
+  command: python3 -m pytest tests/test_p_mp1_shell_nonus_byte_parity.py -q
+  result: 29 passed, zero skip/deselect, 2.97 seconds after the owner-job setup repair.
+- claim: The corrected owner setup is independently reviewed and selected by the existing planner.
+  command: fabric_task.py result/accept/status prophet-p1a-ci-baseline-corrected-review-01a11e89;
+    python3 -m pytest tests/test_ci_pack.py -k 'stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate or stock_dashboard_parity_baseline_in_shallow_pack or curated_exclusive_scopes_cover_their_own_import_closure' -q;
+    python3 -m pytest tests/test_ci_pack.py::test_real_manifest_has_non_vacuous_derived_scopes -q
+  result: Exact-delta static review approved; canonical original-root/parent reviewer acceptance verified.
+    Eight targeted tests passed (166 deselected, 143.04 seconds); the separate non-vacuous scope test
+    passed in 105.49 seconds. No full-repository or independent pytest execution claim by the reviewer.
+    AgentOS validation passes with zero errors and 103 existing warnings after correcting one local
+    narrative indentation error; owned whitespace is clean.
 unverified:
 - claim: Qualified visual adjudication, hosted exact-head CI, source release and authenticated four-market
     production acceptance.
@@ -121,6 +148,8 @@ unresolved:
 - HK/China adoption depends on actual accepted shared P1a release; Canada native Plan remains unavailable
   until its real owner exists.
 next_actions:
+- Publish the independently reviewed CI prerequisite repair on original PR8444 after current-main
+  compatibility adjudication, then consume new exact-head semantic CI. Do not reread failed run38205318192.
 - Obtain qualified visual judgment over the concrete published screenshots; retain the completed
   scoped source acceptance, current planner checks and exact parent test evidence.
 - Finish original current-main integration and normal exact-head source release, then continue dependent
