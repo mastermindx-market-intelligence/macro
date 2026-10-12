@@ -1,0 +1,65 @@
+{
+  "actual_trade_or_quote_data_consumed": false,
+  "canonical_identity_admitted": false,
+  "feature": "Pure source-independent synthetic candidate trade print minute reconstruction; no original source authority",
+  "hosted_ci_status_for_this_head": "NOT_OBSERVED",
+  "independent_science_review_status": "EFFECT_UNKNOWN_ORIGINAL_OPERATION",
+  "logs": {
+    "full": {
+      "bytes": 741,
+      "path": ".session2-proof/trade-print-full-20261012.log",
+      "sha256": "173fa6c75c66e19234f5c883e77dbb88189278f1e100085ed6cfa1ac189faa61"
+    },
+    "trade_only": {
+      "bytes": 99,
+      "path": ".session2-proof/trade-print-trade-only-20261012.log",
+      "sha256": "0a7b785000809ed5c480bedfcf792425918c0ac1eae5c729458108e62fa5daa5"
+    }
+  },
+  "market_pilot_admitted": false,
+  "market_price_basis_admitted": false,
+  "may_publish": false,
+  "may_trade": false,
+  "no_new_lifecycle_or_publisher": true,
+  "original_pr": "mastermindx-market-intelligence/macro#8677",
+  "prepared_at_utc": "2026-10-12T04:26:19.810561+00:00",
+  "protected_mastermind_pin": "85807cf48e29e2fe5df19534d6b181fc25b9746f",
+  "provider_requests_or_reads": 0,
+  "schema": "factor_atlas.session2.native_trade_print_minutes_tests.v1",
+  "source_files": {
+    "session2/TRADE_PRINT_MINUTE_RECONSTRUCTION.md": {
+      "bytes": 9397,
+      "sha256": "a2f4c7dbffc410df8166a7a7c8967045ccb206c667f9169a6fea8c048136b0a4"
+    },
+    "session2/prototype/test_trade_print_minutes.py": {
+      "bytes": 7582,
+      "sha256": "386a610abb16bff68b5de3cde232e092a8793b59ddf0281c05c97bdd79fe8ad8"
+    },
+    "session2/prototype/trade_print_minutes.py": {
+      "bytes": 8165,
+      "sha256": "94ba5d2f0f0171a45e93e5856caa97cd863a0f48347f1bc1e083cb45fab86bb2"
+    }
+  },
+  "source_parent": "05edae3edcac4de8ca8938459ec90f09cd44d775",
+  "source_rights_admitted": false,
+  "synthetic_witness": {
+    "bytes": 934,
+    "path": "session2/evidence/trade_print_minutes_synthetic.json",
+    "sha256": "45bab3319e1edd900c81255c1c755ed187c569b251db64750ef21263e8cb51dd"
+  },
+  "test_counts": {
+    "failed": 0,
+    "full_registered": 596,
+    "native_trade_print_minutes": 21,
+    "registered_suites": 18
+  },
+  "test_first_initial_red": "ModuleNotFoundError trade_print_minutes during targeted test collection (before implementation)",
+  "test_first_secondary_red": "2 expected AttributeError failures on withheld-versus-matched coverage counters; 19 deselected; subsequently repaired",
+  "unrun_suite_auditor": {
+    "registered": 18,
+    "run_step_named": 18,
+    "unrun": 0
+  },
+  "workflow_path": ".github/workflows/factor-atlas-reference.yml",
+  "workflow_sha256": "1ed9e10d53b18d7f5311a654d87a2e10d39b7c37aa5ed0934d9a74986647d434"
+}
