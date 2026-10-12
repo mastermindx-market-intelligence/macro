@@ -22838,6 +22838,7 @@ jobs:
       - "tests/test_qbus_news_store.py"
       - "tests/test_qbus_news_store_api_reads.py"
       - "tests/test_qbus_news_store_clusters.py"
+      - "tests/test_qbus_news_store_lifecycle.py"
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
       - "tests/test_qbus_news_universe_diagnose.py"
@@ -22895,6 +22896,7 @@ jobs:
           tests/test_qbus_news_store.py
           tests/test_qbus_news_store_api_reads.py
           tests/test_qbus_news_store_clusters.py
+          tests/test_qbus_news_store_lifecycle.py
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
           tests/test_qbus_news_universe_diagnose.py
