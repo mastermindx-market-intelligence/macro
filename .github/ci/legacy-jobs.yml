@@ -4522,6 +4522,9 @@ jobs:
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_q0_quality_protocol.py
           tests/test_intraday_flow_w11_r5.py
+          tests/test_fundamental_forensics_sec_request_pacer.py
+          tests/test_fundamental_forensics_filing_observation_state.py
+          tests/test_fundamental_forensics_public_summary_freshness.py
           tests/test_intraday_flow_ncp_js.py
           tests/test_standout_audit.py
           tests/test_fundamental_forensics_query_exports.py
@@ -6564,6 +6567,7 @@ jobs:
     scope: exclusive
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -11116,6 +11120,7 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -22123,6 +22128,7 @@ jobs:
     scope: exclusive
     paths:
       - "collectors/flow_signals.py"
+      - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -22997,6 +23003,7 @@ jobs:
       - collectors/fundamental_forensics_acquisition.py
       - collectors/fundamental_forensics_companyfacts.py
       - collectors/sec_document_spine.py
+      - collectors/sec_request_pacer.py
       - contracts/fundamental_forensics_broad_sec_issuer_manifest.schema.json
       - engine/fundamental_forensics/broad_sec_store.py
       - engine/fundamental_forensics/models.py
@@ -24199,6 +24206,7 @@ jobs:
       - collectors/fundamental_forensics_companyfacts.py
       - collectors/sec_document_spine.py
       - collectors/sec_filing_parser.py
+      - collectors/sec_request_pacer.py
       - config/dataset_registry.yml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - engine/__init__.py
