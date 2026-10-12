@@ -1,0 +1,48 @@
+R3_COMPLETE: defaults and current funding unchanged; all input/source/gate hashes stable
+{
+  "funding": {
+    "physical_column_order": [
+      "funding_rate_fundingRate",
+      "funding_rate_markPrice",
+      "funding_rate"
+    ],
+    "current_rate_nonnull": 80,
+    "legacy_rate_nonnull": 1089,
+    "overlap_rows": 1,
+    "overlap_exact_equal": true,
+    "current_values_unchanged": true,
+    "old_new_semantic_equivalence": "NOT_ESTABLISHED",
+    "annualization_interval": "8h assumption remains unqualified; no rescale/merge applied"
+  },
+  "observations": {
+    "d2": {
+      "observed_days": 1952,
+      "unknown_days": 2441,
+      "known_condition_parity": true
+    },
+    "d3": {
+      "observed_days": 4381,
+      "unknown_days": 12,
+      "known_condition_parity": true
+    },
+    "u1": {
+      "observed_days": 4381,
+      "unknown_days": 12,
+      "known_condition_parity": true
+    }
+  },
+  "cohort_rows": 48,
+  "episode_rows": 2090
+}
+{"policy": "R2_mature_only", "leg": "d2", "eligible_days": 997, "trigger_rows": 61, "conditional_event_frequency": 0.19672131147540983, "lift": 1.8502938447262602, "mature_episodes": 35, "hit_episodes": 8, "episode_hit_fraction": 0.22857142857142856, "false_episodes_per_30_eligible_days": 0.8124373119358074, "episode_hit_fraction_block95": [0.07407407407407407, 0.4]}
+{"policy": "R2_mature_only", "leg": "d3", "eligible_days": 997, "trigger_rows": 31, "conditional_event_frequency": 0.12903225806451613, "lift": 1.2136335970785148, "mature_episodes": 18, "hit_episodes": 2, "episode_hit_fraction": 0.1111111111111111, "false_episodes_per_30_eligible_days": 0.48144433299899697, "episode_hit_fraction_block95": [0.0, 0.27285353535353524]}
+{"policy": "R2_mature_only", "leg": "u1", "eligible_days": 997, "trigger_rows": 14, "conditional_event_frequency": 0.21428571428571427, "lift": 1.6434065934065933, "mature_episodes": 8, "hit_episodes": 1, "episode_hit_fraction": 0.125, "false_episodes_per_30_eligible_days": 0.21063189568706117, "episode_hit_fraction_block95": [0.0, 0.5]}
+{"policy": "observed_lag0", "leg": "d2", "eligible_days": 997, "trigger_rows": 61, "conditional_event_frequency": 0.19672131147540983, "lift": 1.8502938447262602, "mature_episodes": 35, "hit_episodes": 8, "episode_hit_fraction": 0.22857142857142856, "false_episodes_per_30_eligible_days": 0.8124373119358074, "episode_hit_fraction_block95": [0.07407407407407407, 0.4]}
+{"policy": "observed_lag0", "leg": "d3", "eligible_days": 993, "trigger_rows": 31, "conditional_event_frequency": 0.12903225806451613, "lift": 1.2087644552647596, "mature_episodes": 18, "hit_episodes": 2, "episode_hit_fraction": 0.1111111111111111, "false_episodes_per_30_eligible_days": 0.48338368580060426, "episode_hit_fraction_block95": [0.0, 0.27285353535353524]}
+{"policy": "observed_lag0", "leg": "u1", "eligible_days": 993, "trigger_rows": 14, "conditional_event_frequency": 0.21428571428571427, "lift": 1.649501661129568, "mature_episodes": 8, "hit_episodes": 1, "episode_hit_fraction": 0.125, "false_episodes_per_30_eligible_days": 0.21148036253776434, "episode_hit_fraction_block95": [0.0, 0.5]}
+{"policy": "observed_assumed_lag1d", "leg": "d2", "eligible_days": 997, "trigger_rows": 61, "conditional_event_frequency": 0.13114754098360656, "lift": 1.233529229817507, "mature_episodes": 35, "hit_episodes": 6, "episode_hit_fraction": 0.17142857142857143, "false_episodes_per_30_eligible_days": 0.872617853560682, "episode_hit_fraction_block95": [0.03445402298850575, 0.34214638157894733]}
+{"policy": "observed_assumed_lag1d", "leg": "d3", "eligible_days": 994, "trigger_rows": 31, "conditional_event_frequency": 0.12903225806451613, "lift": 1.2099817407181983, "mature_episodes": 18, "hit_episodes": 1, "episode_hit_fraction": 0.05555555555555555, "false_episodes_per_30_eligible_days": 0.5130784708249497, "episode_hit_fraction_block95": [0.0, 0.2]}
+{"policy": "observed_assumed_lag1d", "leg": "u1", "eligible_days": 994, "trigger_rows": 14, "conditional_event_frequency": 0.2857142857142857, "lift": 2.1846153846153844, "mature_episodes": 8, "hit_episodes": 3, "episode_hit_fraction": 0.375, "false_episodes_per_30_eligible_days": 0.15090543259557343, "episode_hit_fraction_block95": [0.0, 0.8]}
+{"policy": "observed_assumed_lag2d", "leg": "d2", "eligible_days": 997, "trigger_rows": 61, "conditional_event_frequency": 0.09836065573770492, "lift": 0.9251469223631301, "mature_episodes": 35, "hit_episodes": 3, "episode_hit_fraction": 0.08571428571428572, "false_episodes_per_30_eligible_days": 0.9628886659979939, "episode_hit_fraction_block95": [0.0, 0.17779761904761904]}
+{"policy": "observed_assumed_lag2d", "leg": "d3", "eligible_days": 995, "trigger_rows": 31, "conditional_event_frequency": 0.16129032258064516, "lift": 1.5139987827145465, "mature_episodes": 18, "hit_episodes": 2, "episode_hit_fraction": 0.1111111111111111, "false_episodes_per_30_eligible_days": 0.4824120603015075, "episode_hit_fraction_block95": [0.0, 0.2857142857142857]}
+{"policy": "observed_assumed_lag2d", "leg": "u1", "eligible_days": 995, "trigger_rows": 14, "conditional_event_frequency": 0.14285714285714285, "lift": 1.0934065934065933, "mature_episodes": 8, "hit_episodes": 2, "episode_hit_fraction": 0.25, "false_episodes_per_30_eligible_days": 0.18090452261306533, "episode_hit_fraction_block95": [0.0, 0.6666666666666666]}

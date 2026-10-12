@@ -1,0 +1,76 @@
+{
+  "classification": "SYNTHETIC_PHYSICAL_PARQUET_MEASUREMENT_NOT_CAPACITY_APPROVAL",
+  "rows": [
+    {
+      "existing": 0,
+      "payload_bytes_per_capture": 17301,
+      "logical_capture_bytes": 20848,
+      "before": {
+        "file_bytes": 0,
+        "rows": 0,
+        "declared_uncompressed_bytes": 0
+      },
+      "after": {
+        "file_bytes": 19047,
+        "rows": 1,
+        "declared_uncompressed_bytes": 19277
+      },
+      "append_seconds": 0.17058150004595518,
+      "duplicate_seconds": 0.0056569576263427734,
+      "peak_rss_bytes": 122732544,
+      "input_shape": "synthetic480triplets/repeatedpayload;notobservedproductionresponse",
+      "unit_note": "macOS ru_maxrss is bytes; highwater includes interpreter, imports and synthetic seed."
+    },
+    {
+      "existing": 100,
+      "payload_bytes_per_capture": 17301,
+      "logical_capture_bytes": 2105648,
+      "before": {
+        "file_bytes": 27674,
+        "rows": 100,
+        "declared_uncompressed_bytes": 35042
+      },
+      "after": {
+        "file_bytes": 27752,
+        "rows": 101,
+        "declared_uncompressed_bytes": 35197
+      },
+      "append_seconds": 0.1124463751912117,
+      "duplicate_seconds": 0.06303429184481502,
+      "peak_rss_bytes": 148881408,
+      "input_shape": "synthetic480triplets/repeatedpayload;notobservedproductionresponse",
+      "unit_note": "macOS ru_maxrss is bytes; highwater includes interpreter, imports and synthetic seed."
+    },
+    {
+      "existing": 1000,
+      "payload_bytes_per_capture": 17301,
+      "logical_capture_bytes": 20868848,
+      "before": {
+        "file_bytes": 100375,
+        "rows": 1000,
+        "declared_uncompressed_bytes": 179187
+      },
+      "after": {
+        "file_bytes": 100527,
+        "rows": 1001,
+        "declared_uncompressed_bytes": 179382
+      },
+      "append_seconds": 0.639146083034575,
+      "duplicate_seconds": 0.5724710002541542,
+      "peak_rss_bytes": 301842432,
+      "input_shape": "synthetic480triplets/repeatedpayload;notobservedproductionresponse",
+      "unit_note": "macOS ru_maxrss is bytes; highwater includes interpreter, imports and synthetic seed."
+    }
+  ],
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "pandas": "3.0.5",
+    "pyarrow": "25.0.1"
+  },
+  "candidate": "372cdf9f443a9b53e32df01feef718a00d07783f",
+  "sources": {
+    "collectors/_crypto_observations.py": "e039fa729877003303475b76a2384e7caa0a38dbdfb61ba5245b724904bd880c",
+    "collectors/_first_seen_store.py": "a0181f69793e599f6fbd82091c10afe2d65ec1096f6fc13636752a5a509ae1de"
+  },
+  "limits": "One append/duplicate per size, warm seeded files, no throughput percentiles, live cadence, host isolation or multihost guarantee."
+}

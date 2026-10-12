@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_r10_claimed_final_receipt_before_window_completion_is_rejected ______
+tests/test_btc_impulse_falsifier.py:1079: in test_r10_claimed_final_receipt_before_window_completion_is_rejected
+    assert not q['causally_usable']
+E   assert not True
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_r10_claimed_final_receipt_before_window_completion_is_rejected
+1 failed, 43 warnings in 2.25s

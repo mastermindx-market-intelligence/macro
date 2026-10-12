@@ -1,0 +1,11 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+__________ test_r12_boolean_reference_price_withholds_divergence_only __________
+tests/test_btc_intraday_cvd.py:294: in test_r12_boolean_reference_price_withholds_divergence_only
+    assert after['price_alignment_complete'] is False
+E   assert True is False
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_intraday_cvd.py::test_r12_boolean_reference_price_withholds_divergence_only
+1 failed, 1 passed, 20 deselected, 43 warnings in 2.20s

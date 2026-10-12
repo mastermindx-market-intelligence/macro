@@ -1,0 +1,3 @@
+R6_VERIFIED: 543 valid-price continuous feature records; 122 quarter fits (130 fitted likelihoods); 1100 predictions; 7425 policy rows.
+All forecast scores/reliability bins/Brier intervals and 72 action summary cells independently recomputed. Future cutoff and inherited hash fences hold.
+Same-session independent arithmetic; not independent researcher review or live calibration.

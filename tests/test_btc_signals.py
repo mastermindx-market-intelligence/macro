@@ -349,8 +349,112 @@ def test_allocation_midterm_gate_forces_flat() -> None:
             f"{c} must be 0 in mid-blackout window"
 
 
+def test_completed_three_day_closes_preserve_membership_and_completion_date():
+    close = pd.Series([10., 20., 30., 40., 50.],
+                      index=pd.date_range("2026-01-01", periods=5))
+    got = S._completed_three_day_closes(close)
+    assert list(got.index) == [pd.Timestamp("2026-01-03")]
+    assert got.iloc[0] == 30.0
+    completed = pd.concat([close, pd.Series([60.], index=[pd.Timestamp("2026-01-06")])])
+    got = S._completed_three_day_closes(completed)
+    assert list(got.index) == [pd.Timestamp("2026-01-03"), pd.Timestamp("2026-01-06")]
+    assert got.tolist() == [30., 60.]
+    assert S._completed_three_day_closes(close.iloc[:0]).empty
+
+
+def test_completed_three_day_closes_all_prefixes_and_invalid_bins():
+    close = pd.Series(np.arange(1., 15.), index=pd.date_range("2026-01-01", periods=14))
+    full = S._completed_three_day_closes(close)
+    for end in range(1, len(close) + 1):
+        partial = S._completed_three_day_closes(close.iloc[:end])
+        pd.testing.assert_series_equal(partial, full.loc[:close.index[end - 1]], check_freq=False)
+    for bad in [np.nan, np.inf, 0., -1.]:
+        broken = close.copy()
+        broken.iloc[1] = bad
+        result = S._completed_three_day_closes(broken)
+        assert pd.isna(result.iloc[0]), "Incomplete or invalid bins are not complete evidence"
+        assert result.iloc[1] == 6.0
+    sparse = close.drop(close.index[1])
+    assert pd.isna(S._completed_three_day_closes(sparse).iloc[0])
+
+
+def test_completed_three_day_closes_reject_malformed_daily_indices():
+    close = pd.Series([10., 20., 30., 40.], index=pd.date_range("2026-01-01", periods=4))
+    invalid = [close.iloc[::-1], pd.concat([close.iloc[:2], close.iloc[1:]])]
+    intraday = close.copy()
+    intraday.index = intraday.index + pd.Timedelta(hours=1)
+    invalid.extend([intraday, close.reset_index(drop=True)])
+    for series in invalid:
+        try:
+            S._completed_three_day_closes(series)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Malformed time index must not form completed daily bins")
+
+
+def test_bottom_pressure_matches_every_recent_prefix_without_repainting():
+    # Fixed synthetic path: incumbent code repaints 2020-11-11 by 0.0930233.
+    price = _synthetic(n=360, trend=-0.0005, vol=0.05, seed=19)["price"]
+    full = S.bottom_pressure(price)
+    mismatches = []
+    for date in price.index[-90:]:
+        actual = S.bottom_pressure(price.loc[:date]).iloc[-1]
+        if not np.isclose(actual, full.loc[date], rtol=0, atol=1e-12):
+            mismatches.append((str(date), float(actual), float(full.loc[date])))
+    assert not mismatches, f"Historical bottom pressure repainted: {mismatches}"
+    assert full.between(0, 1).all()
+
+
+def _read_funding_fixture(frame):
+    from engine import btc_inputs as inputs
+    original = inputs.store.read
+    inputs.store.read = lambda group, name: frame
+    try:
+        return inputs._funding()
+    finally:
+        inputs.store.read = original
+
+
+def test_funding_selects_named_rate_regardless_of_physical_column_order():
+    idx = pd.date_range("2026-01-01", periods=4)
+    df = pd.DataFrame({"funding_rate_markPrice": [60000.] * 4,
+                       "funding_rate": [9.] * 4,
+                       "funding_rate_fundingRate": [0.0, -0.001, 0.002, np.nan]}, index=idx)
+    expected = df["funding_rate_fundingRate"]
+    pd.testing.assert_series_equal(_read_funding_fixture(df), expected)
+    pd.testing.assert_series_equal(_read_funding_fixture(df.iloc[:, ::-1]), expected)
+    source = (Path(__file__).resolve().parent.parent / "engine/btc_inputs.py").read_text()
+    assert '"funding": _funding()' in source
+
+
+def test_funding_never_falls_back_to_mark_price_or_unproven_legacy_field():
+    idx = pd.date_range("2026-01-01", periods=3)
+    for frame in [None, pd.DataFrame(),
+                  pd.DataFrame({"funding_rate_markPrice": [60000.] * 3}, index=idx),
+                  pd.DataFrame({"funding_rate": [0.001] * 3}, index=idx),
+                  pd.DataFrame(np.ones((3, 2)), index=idx,
+                               columns=["funding_rate_fundingRate"] * 2)]:
+        assert _read_funding_fixture(frame) is None
+
+
+def test_funding_keeps_signed_zero_and_unknown_instead_of_invented_rescale():
+    df = pd.DataFrame({"funding_rate_fundingRate": ["0", "-0.01", "bad", np.inf, -np.inf]},
+                      index=pd.date_range("2026-01-01", periods=5))
+    result = _read_funding_fixture(df)
+    assert result.iloc[0] == 0 and result.iloc[1] == -0.01
+    assert result.iloc[2:].isna().all()
+
+
 if __name__ == "__main__":
-    for fn in [test_momentum_bounds_and_direction, test_risk_index_range_and_regime,
+    for fn in [test_funding_selects_named_rate_regardless_of_physical_column_order,
+               test_funding_never_falls_back_to_mark_price_or_unproven_legacy_field,
+               test_funding_keeps_signed_zero_and_unknown_instead_of_invented_rescale,
+               test_completed_three_day_closes_preserve_membership_and_completion_date,
+               test_completed_three_day_closes_all_prefixes_and_invalid_bins,
+               test_completed_three_day_closes_reject_malformed_daily_indices,
+               test_bottom_pressure_matches_every_recent_prefix_without_repainting,
+               test_momentum_bounds_and_direction, test_risk_index_range_and_regime,
                test_hysteresis_reduces_flips, test_allocation_base_grid_preserved,
                test_conviction_multiplier_monotone_in_tier,
                test_drawdown_brake_reduces_exposure_when_underwater,

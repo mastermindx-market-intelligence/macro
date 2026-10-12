@@ -1,0 +1,77 @@
+{
+  "classification": "BOUNDED_RESEARCH_EVIDENCE_NOT_PRODUCTION_ACCEPTANCE",
+  "source_candidate": "cc5f0a2d16311db7639aba5f8f54ef6772a30374",
+  "plan_commit": "953eedfa53a5a201efebc03b74853316cad6a2cf",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4133,
+      "sha256": "cf17416213192f5ad23971b5e6b71d1c1bce9d2ad268acb84c35d94262551905"
+    },
+    {
+      "path": "cohort_results.json",
+      "bytes": 48048,
+      "sha256": "b2f1f9e447f485ee40cc75115008f73f31c4609cc992d94e2e956fc550cb8658"
+    },
+    {
+      "path": "episode_outcomes.csv",
+      "bytes": 189761,
+      "sha256": "21211771eef91ed6fb0a6cb3021c3c8067c3f65874f386dc7692fcd2afa356e1"
+    },
+    {
+      "path": "green_combined.txt",
+      "bytes": 1124,
+      "sha256": "d9d6709ec270589ccac7a582e17b4ac161eacbd7b368c2a0f4078fe70f2fc26d"
+    },
+    {
+      "path": "green_core.txt",
+      "bytes": 113,
+      "sha256": "23f766fbe8c5110dcd9caf6dffeabdd1cc37c9e2abdc766982832ddc3743f7ab"
+    },
+    {
+      "path": "green_study.txt",
+      "bytes": 126,
+      "sha256": "8fc486cb07a13b923aa9e34a145d067fdff087d073cc9370ed1146a02464f172"
+    },
+    {
+      "path": "public_contract_receipt.json",
+      "bytes": 1727,
+      "sha256": "cfc6ec90d261e78ed6cb8fa0b10da75633ed81c8021a4066b7de61c9985fd905"
+    },
+    {
+      "path": "red_funding.txt",
+      "bytes": 2328,
+      "sha256": "df90aac5430aafc134ece1b92c61f47e409879ce901546782ca7458069f75f4a"
+    },
+    {
+      "path": "red_observations.txt",
+      "bytes": 4292,
+      "sha256": "660d4dbd156db31747b55dda7c1c6c0bd92d6a0bf2011f42efd8db53db38aea9"
+    },
+    {
+      "path": "red_study.txt",
+      "bytes": 1948,
+      "sha256": "7543772ca5f6fcb94bbb7713b82c71771c21e8f6915c51f5d95a5f0b273e35a2"
+    },
+    {
+      "path": "source_observed_conditions.csv",
+      "bytes": 114665,
+      "sha256": "618d9beab40c429d42e909cdae532a4bd35b2e0dda1eacbb471ca9de203f7b5d"
+    },
+    {
+      "path": "study_log.txt",
+      "bytes": 5320,
+      "sha256": "bdcf1f6aa9a1dbf2789709760e394125f1571ace61aa0d570557991aabcda9d7"
+    },
+    {
+      "path": "verification.txt",
+      "bytes": 2044,
+      "sha256": "92eee28fd4489926dc00a68b5ca453294bfdd1881d369ec627227f085971362b"
+    },
+    {
+      "path": "verify_evidence.py",
+      "bytes": 5924,
+      "sha256": "2e0310a106201635280ab58a6a893d73275a1128eba4635541b25cfa58ae150b"
+    }
+  ]
+}

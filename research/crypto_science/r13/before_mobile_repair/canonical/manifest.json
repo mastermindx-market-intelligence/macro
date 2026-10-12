@@ -1,0 +1,532 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "flow-focus",
+        "spec": "flow-focus:focus([data-flow-evidence] > summary)",
+        "value": "[data-flow-evidence] > summary"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-30T03:15:06Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:58118/product-nav-icons.css?v=093ad1ea",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/nav_market.js?v=20260913-account-actions",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58118/fonts/Inter-900.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/product-nav-icons.css?v=093ad1ea"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/fonts/Inter-800.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/nav_market.js?v=20260913-account-actions"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/terminal_overlay.js"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58118/fonts/Inter-900.woff2"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3547,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6119,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 3547,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 2,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 10,
+        "payload_bytes_total": 1258710,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 23,
+        "screenshot_completion": 1.0,
+        "section_count": 8,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 502
+      },
+      "page_id": "vector_derivatives_review.html",
+      "registry_route": "/vector_derivatives_review.html",
+      "route": "/vector_derivatives_review.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 456444,
+          "captured": true,
+          "file": "2748156b4c716c28.png",
+          "force_state": null,
+          "height": 3547,
+          "locale": "en",
+          "sha256": "2748156b4c716c28b69ad03b7ff1224e6682c1615d08235d9b5e41cee5ed105c",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 436220,
+          "captured": true,
+          "file": "bee327e7d4d61a1a--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 3547,
+          "locale": "en",
+          "sha256": "bee327e7d4d61a1a0770d1732d0115e06788a5ebd4abc2198c7ff23d320865d6",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 446447,
+          "captured": true,
+          "file": "c66d9739a01e9f0f.png",
+          "force_state": null,
+          "height": 3547,
+          "locale": "en",
+          "sha256": "c66d9739a01e9f0f450fbdff9c128b192beaf4cabff2cdb0464912c3030ff180",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 433499,
+          "captured": true,
+          "file": "2aa2c02ccf4109d0--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 3547,
+          "locale": "en",
+          "sha256": "2aa2c02ccf4109d0d38be3b20e064435cd09a7492dcab9f68e146ee289cfa516",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 465496,
+          "captured": true,
+          "file": "517c22178c809fdf.png",
+          "force_state": null,
+          "height": 3547,
+          "locale": "zh",
+          "sha256": "517c22178c809fdffe00f1ddb86d304fff44491fc84949dce3fee12c06abba15",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 447336,
+          "captured": true,
+          "file": "99a342ad2a216bf7--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 3547,
+          "locale": "zh",
+          "sha256": "99a342ad2a216bf7cebc1a7a90eaa111528489303afc851ff137f72037cde861",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 455504,
+          "captured": true,
+          "file": "72020633ff37c8c9.png",
+          "force_state": null,
+          "height": 3547,
+          "locale": "zh",
+          "sha256": "72020633ff37c8c9d7ea6ab73f63908ecb46e7ce41fc9eb7d671fbc3d5c77e5d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 443804,
+          "captured": true,
+          "file": "0c9e1886f7e04bce--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 3547,
+          "locale": "zh",
+          "sha256": "0c9e1886f7e04bce2446d581f5b4e18134a4b6785fb43eb1b968e2db8ec0574b",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 396338,
+          "captured": true,
+          "file": "a844393fd0b7458e.png",
+          "force_state": null,
+          "height": 6119,
+          "locale": "en",
+          "sha256": "a844393fd0b7458ee0013a76ab5dc9c4399c10eed33808fcb25824e84e370c66",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 373913,
+          "captured": true,
+          "file": "20905632534709fd--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 6119,
+          "locale": "en",
+          "sha256": "20905632534709fdf7c84bb8d48c21f16b9caa98bef7dc2a21365c3f45d08b6f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 393550,
+          "captured": true,
+          "file": "c0096f10bd1f8816.png",
+          "force_state": null,
+          "height": 6119,
+          "locale": "en",
+          "sha256": "c0096f10bd1f8816d8be61275b590e12b1d3d42741bc86222da44adee4678cc5",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 374747,
+          "captured": true,
+          "file": "53303883042c1e16--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 6119,
+          "locale": "en",
+          "sha256": "53303883042c1e1627c10e11f158e00940d2ce1104f78adb72200ab72127c312",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 402400,
+          "captured": true,
+          "file": "9bf3e449bdff41c6.png",
+          "force_state": null,
+          "height": 6110,
+          "locale": "zh",
+          "sha256": "9bf3e449bdff41c613c693f7274b6ab49f2ee2283e842d7b224a2ac975149770",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 381828,
+          "captured": true,
+          "file": "7016b4d7d76046a5--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 6110,
+          "locale": "zh",
+          "sha256": "7016b4d7d76046a54fbd235870716ffeac8adf3318cdbd9621778712128c4a49",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 400317,
+          "captured": true,
+          "file": "d35a9bb0345c912a.png",
+          "force_state": null,
+          "height": 6110,
+          "locale": "zh",
+          "sha256": "d35a9bb0345c912ae941fd878b65e3d18b90a69764f32e4f01ab6c162e2736c1",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "flow-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 382756,
+          "captured": true,
+          "file": "a7f206ae332e9e6e--flow-focus.png",
+          "force_state": "flow-focus",
+          "height": 6110,
+          "locale": "zh",
+          "sha256": "a7f206ae332e9e6ecb47b7b5166ffebf5973e51d132a11ea5565740296cb76ee",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/vector_derivatives_review.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 331,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r13_actual"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}

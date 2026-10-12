@@ -1,0 +1,26 @@
+[
+  {
+    "viewboxLength": 1348.34521484375,
+    "screenLength": 1207.639711961974,
+    "dashArray": "none",
+    "dashOffset": "0px",
+    "vectorEffect": "non-scaling-stroke",
+    "endStroke": true,
+    "tailPoint": {},
+    "scaleX": 0.6071428571428571,
+    "scaleY": 1,
+    "width": 390
+  },
+  {
+    "viewboxLength": 1348.34521484375,
+    "screenLength": 1559.985506907893,
+    "dashArray": "none",
+    "dashOffset": "0px",
+    "vectorEffect": "non-scaling-stroke",
+    "endStroke": true,
+    "tailPoint": {},
+    "scaleX": 1.675,
+    "scaleY": 1,
+    "width": 1440
+  }
+]

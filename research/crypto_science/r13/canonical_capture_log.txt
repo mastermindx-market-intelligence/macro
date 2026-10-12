@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 16/16 captured
+manifest: mockups/evidence/crypto-vector-r13-context/manifest.json
+smells: mockups/evidence/crypto-vector-r13-context/smells.json

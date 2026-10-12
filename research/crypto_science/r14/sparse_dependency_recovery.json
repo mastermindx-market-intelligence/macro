@@ -1,0 +1,20 @@
+{
+  "classification": "TEST_DEPENDENCY_MATERIALIZATION_NOT_PRODUCT_SOURCE_CHANGE",
+  "head": "b74875a6171a4d52cb48decf70d608f106a9fa8e",
+  "before_present": {
+    "admin/ai_cost.py": false,
+    ".claude/hooks/gh_quota_guard.py": false
+  },
+  "included_patterns": [
+    "/admin/",
+    "/.claude/hooks/gh_quota_guard.py"
+  ],
+  "checked_tracked_source_sha256": {
+    "admin/ai_cost.py": "e2393c98d55cfe484482cad94372260a4ee4423b5540aac0d58017c2ee0f6617",
+    ".claude/hooks/gh_quota_guard.py": "7bda273dd6c8fc8974503824e134163e8f7cdf89cd8d1e6976a65407b8ebd6ed"
+  },
+  "manifest_unchanged": true,
+  "full_checkout": false,
+  "no_hook_or_admin_service_executed": true,
+  "prior_full_suite": "3 failed, 132 passed, 43 warnings; failures named missing tracked hook/admin code"
+}

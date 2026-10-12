@@ -1,0 +1,17 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_r11_legacy_diagnostic_is_pinned_while_current_gap_guard_is_fixed _____
+tests/test_btc_intraday_cvd.py:229: in test_r11_legacy_diagnostic_is_pinned_while_current_gap_guard_is_fixed
+    assert legacy['reference_commit']=='d636e9c405c0283209eb75b09d477d32003ff827'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'reference_commit'
+______ test_r10_legacy_row_count_diagnostic_does_not_label_gaps_complete _______
+tests/test_btc_impulse_falsifier.py:1052: in test_r10_legacy_row_count_diagnostic_does_not_label_gaps_complete
+    assert r['incumbent_gap_detected'] is False and r['strict_window_status']=='incomplete'
+E   assert (True is False)
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_intraday_cvd.py::test_r11_legacy_diagnostic_is_pinned_while_current_gap_guard_is_fixed
+FAILED tests/test_btc_impulse_falsifier.py::test_r10_legacy_row_count_diagnostic_does_not_label_gaps_complete
+2 failed, 43 warnings in 17.24s

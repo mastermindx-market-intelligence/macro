@@ -1,0 +1,9 @@
+R2_EVIDENCE_VERIFIED: 4393 cutoffs; 0 candidate repaint; 55 input,18 gate,9 source hashes unchanged; R1 retained.
+DIAGNOSTIC ONLY: no live-gate write, no independent review, no out-of-sample or production acceptance.
+........................................................................ [ 30%]
+........................................................................ [ 61%]
+........................................................................ [ 91%]
+...................                                                      [100%]
+235 passed, 25 warnings in 13.87s
+check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] — every affirmative 'validated' claim is backed.
+R2_FINAL_LOCAL_CHECKS_PASS

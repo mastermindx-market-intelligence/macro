@@ -1,0 +1,3 @@
+R15_FINAL_RECEIPTS_VERIFIED:112 complete browser cells;4 assistant failure cells;32 canonical states and their image identities; original evidence preserved.
+UNCHANGED:57 input identities,18 gates,137 prior artifacts; canonical fonts verified but not published.
+Exact current runtime/source, completed chart animations, seven budget/history states, five main-integration runtime blobs and sibling table integration verified. Same-session evidence, not independent review or deployment.

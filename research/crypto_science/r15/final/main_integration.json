@@ -1,0 +1,36 @@
+{
+  "classification": "TEXT_INTEGRATION_ONLY_NOT_REVIEW_OR_RELEASE",
+  "candidate": "b847f7bbb898b1f00f4a42aadef5f8ef9dc9d684",
+  "main": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+  "exit": 0,
+  "tree": "d40454be4c2ccea4071a10329ed07e7b2aa6538d",
+  "conflicts": [],
+  "runtime_blobs": {
+    "templates/crypto.html.j2": {
+      "candidate": "0d0b68924330d5545e60ad4e7ace7bfe2dce756c",
+      "integrated": "0d0b68924330d5545e60ad4e7ace7bfe2dce756c",
+      "same": true
+    },
+    "scripts/build_crypto.py": {
+      "candidate": "30b020f253fc77e03580d5c02c8d76ea74320941",
+      "integrated": "30b020f253fc77e03580d5c02c8d76ea74320941",
+      "same": true
+    },
+    "engine/btc_intraday_cvd.py": {
+      "candidate": "0b703ff62cec776b8ffefd3ec0c047ff2e20ffd1",
+      "integrated": "0b703ff62cec776b8ffefd3ec0c047ff2e20ffd1",
+      "same": true
+    },
+    "collectors/_crypto_observations.py": {
+      "candidate": "bd6daab35e7fe3a4dc6a09eab8a28556409c037e",
+      "integrated": "bd6daab35e7fe3a4dc6a09eab8a28556409c037e",
+      "same": true
+    },
+    "templates/_crypto_house_style.html.j2": {
+      "candidate": "3e9c3009215b5fb538d7da47da65e145d73b9834",
+      "integrated": "3e9c3009215b5fb538d7da47da65e145d73b9834",
+      "same": true
+    }
+  },
+  "stderr": ""
+}

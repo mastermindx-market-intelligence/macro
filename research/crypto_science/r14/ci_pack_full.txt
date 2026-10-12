@@ -1,0 +1,30 @@
+......................FF..........................F..................... [ 53%]
+...............................................................          [100%]
+=================================== FAILURES ===================================
+______________ test_real_manifest_has_non_vacuous_derived_scopes _______________
+tests/test_ci_pack.py:816: in test_real_manifest_has_non_vacuous_derived_scopes
+    assert ".claude/hooks/gh_quota_guard.py" in scoped["unrun-dark-guards"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert '.claude/hooks/gh_quota_guard.py' in {'collectors/__init__.py', 'collectors/_drip.py', 'collectors/base.py', 'collectors/cboe.py', 'collectors/china_analyst.py', 'collectors/china_credit.py', ...}
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — .claude not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+__________ test_derived_closure_follows_relative_first_party_imports ___________
+tests/test_ci_pack.py:822: in test_derived_closure_follows_relative_first_party_imports
+    assert "admin/ai_cost.py" in closure.files  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 'admin/ai_cost.py' in ('collectors/base.py', 'collectors/fred.py', 'collectors/holdings.py', 'config/capability_manifest.yml', 'engine/__init__.py', 'engine/alerts.py', ...)
+E    +  where ('collectors/base.py', 'collectors/fred.py', 'collectors/holdings.py', 'config/capability_manifest.yml', 'engine/__init__.py', 'engine/alerts.py', ...) = DependencyClosure(files=('collectors/base.py', 'collectors/fred.py', 'collectors/holdings.py', 'config/capability_mani...y:460: filesystem roots=data,engine suffixes=.parquet', 'scripts/preflight_claude_auth.py:260: subprocess invocation')).files
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — admin not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_____________ test_unscoped_hook_diff_does_not_pull_the_full_suite _____________
+tests/test_ci_pack.py:1595: in test_unscoped_hook_diff_does_not_pull_the_full_suite
+    assert any(job.job_id == "unrun-dark-guards" for job in selected)
+E   assert False
+E    +  where False = any(<generator object test_unscoped_hook_diff_does_not_pull_the_full_suite.<locals>.<genexpr> at 0x10db2f1d0>)
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_real_manifest_has_non_vacuous_derived_scopes
+FAILED tests/test_ci_pack.py::test_derived_closure_follows_relative_first_party_imports
+FAILED tests/test_ci_pack.py::test_unscoped_hook_diff_does_not_pull_the_full_suite
+3 failed, 132 passed, 43 warnings in 527.50s (0:08:47)

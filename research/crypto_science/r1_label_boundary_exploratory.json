@@ -1,0 +1,27 @@
+{
+  "classification": "EXPLORATORY_SOURCE_LABEL_AUDIT_NOT_PERFORMANCE_RESULT",
+  "source_sha256": "1c5c6945f2df644a7d72df5b87a65a143ec835fbc8403a95a9b4e47d92bf1dc2",
+  "hypothesis": "The historical research snippet misaligns the forward window; current canonical extrema fix that but comparisons coerce immature tail NaNs to False.",
+  "example_date": "2026-01-03",
+  "documented_snippet_min": 101.0,
+  "correct_forward_min": 103.0,
+  "expected_window": [
+    "2026-01-04",
+    "2026-01-05",
+    "2026-01-06"
+  ],
+  "canonical_down_tail": [
+    false,
+    false,
+    false
+  ],
+  "canonical_up_tail": [
+    false,
+    false,
+    false
+  ],
+  "canonical_tail_nonnull": 3,
+  "mature_windows": 5,
+  "naive_label_nonnull": 8,
+  "notes": "Did not call validate(), write_gate(), collectors, PnL or model promotion. Forward extrema implementation is correct; horizon-unavailable mask is not preserved by boolean comparison."
+}

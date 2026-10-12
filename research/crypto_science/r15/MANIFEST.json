@@ -1,0 +1,316 @@
+{
+  "classification": "CONTROLLED_DESK_PROOF_NOT_DEPLOYED_OR_INDEPENDENT_REVIEW",
+  "recovered_source": "c4e939f49ffc13ef705b4110dc0ad48bb08f0fa2",
+  "final_runtime_candidate": "ba258da9217c6fc905475511d5597be5d8f37af0",
+  "browser_cases": 112,
+  "assistant_failure_cases": 4,
+  "canonical_states": 32,
+  "broad_host_tests": 448,
+  "warnings": 10,
+  "artifacts": {
+    "mockups/evidence/crypto-desk-r15-completion/13b9a7feb8d38ddb--brain-hover.png": {
+      "sha256": "13b9a7feb8d38ddbd8244fdad09a4d6fea06a1cb61ff48e4c7170644ef61e5ea",
+      "bytes": 667091
+    },
+    "mockups/evidence/crypto-desk-r15-completion/15ba613a70af965b.png": {
+      "sha256": "15ba613a70af965b4d4079619fc3ecb0de6d0ea7ae850ba5e7ca6cfa40b08254",
+      "bytes": 666644
+    },
+    "mockups/evidence/crypto-desk-r15-completion/16655d959465ce2b--brain-hover.png": {
+      "sha256": "16655d959465ce2bf12b4b179b8be2a39a2825565e268417fab1727bd158e9dd",
+      "bytes": 551720
+    },
+    "mockups/evidence/crypto-desk-r15-completion/1732ef1966a5c86a.png": {
+      "sha256": "1732ef1966a5c86a802f479713b35e06a2d319fe10896e4929a812f5b9b53332",
+      "bytes": 538950
+    },
+    "mockups/evidence/crypto-desk-r15-completion/1be76af28eb54a5b--brain-focus.png": {
+      "sha256": "1be76af28eb54a5b34c0b323dc13ed659f766b2e850fc72d3571538bf7d6288e",
+      "bytes": 533719
+    },
+    "mockups/evidence/crypto-desk-r15-completion/1d928de5b8da6961--brain-focus.png": {
+      "sha256": "1d928de5b8da696162aa59e55a4bce5b11c7f49c6c888cee7db44d1eac1244eb",
+      "bytes": 667950
+    },
+    "mockups/evidence/crypto-desk-r15-completion/3820cd36b5600eb9.png": {
+      "sha256": "3820cd36b5600eb9ce00c5bae5506a00a18a42620ba2d47bfc7b303b081b980c",
+      "bytes": 532767
+    },
+    "mockups/evidence/crypto-desk-r15-completion/65d569b0208e38e9--brain-hover.png": {
+      "sha256": "65d569b0208e38e9fb9b4b00de471823b93df3e3d0136f13c6e0cc3874642217",
+      "bytes": 542960
+    },
+    "mockups/evidence/crypto-desk-r15-completion/66bd7e738acf7fe9.png": {
+      "sha256": "66bd7e738acf7fe99de2560e00d044adcddfa7f430c985309e6e6660f2abdedd",
+      "bytes": 668209
+    },
+    "mockups/evidence/crypto-desk-r15-completion/680e8a5db2c46e49.png": {
+      "sha256": "680e8a5db2c46e49bbd8582b21243ddb5f15fc94c9af89c806bdd77d5f85e10c",
+      "bytes": 551719
+    },
+    "mockups/evidence/crypto-desk-r15-completion/7111bb68e6742fb5--chart-review.png": {
+      "sha256": "7111bb68e6742fb549605df3cc0b386aa8c6ad00ae788f3ef76fdb5d12e593aa",
+      "bytes": 534262
+    },
+    "mockups/evidence/crypto-desk-r15-completion/72304e889caccb29--chart-review.png": {
+      "sha256": "72304e889caccb29f49d9dfdd283f4365770bccc8fe3c54368dd1773461077d7",
+      "bytes": 656564
+    },
+    "mockups/evidence/crypto-desk-r15-completion/7d27cb2d6aedc0c5--brain-hover.png": {
+      "sha256": "7d27cb2d6aedc0c5bdd84a01bd4cf3050229803dec841b2c018d021456601b7c",
+      "bytes": 684491
+    },
+    "mockups/evidence/crypto-desk-r15-completion/7d4a342f1430c55e--brain-hover.png": {
+      "sha256": "7d4a342f1430c55e82d9b9a0e34f629653841e67ab45023db76f2b25ffc38e8f",
+      "bytes": 684156
+    },
+    "mockups/evidence/crypto-desk-r15-completion/88c364cc4ed8cfc4--brain-hover.png": {
+      "sha256": "88c364cc4ed8cfc4cea88e35eaaa1250c2f2568aaaa2a672c21beac009fa0b98",
+      "bytes": 532902
+    },
+    "mockups/evidence/crypto-desk-r15-completion/9c82c9669accf9b8--brain-focus.png": {
+      "sha256": "9c82c9669accf9b864f725b46aed4d75215678209ce0d543223fe70708c0e0b6",
+      "bytes": 685148
+    },
+    "mockups/evidence/crypto-desk-r15-completion/9f7b3ef1c31fe450--brain-hover.png": {
+      "sha256": "9f7b3ef1c31fe450403b728d92285e8a6e6b614e367d6f5c5c3427340cd65626",
+      "bytes": 668464
+    },
+    "mockups/evidence/crypto-desk-r15-completion/EVIDENCE.yml": {
+      "sha256": "1087621a7d4235498adf98477dc013a6f84913a3003c2b8e079ac4eb3842ce9a",
+      "bytes": 156
+    },
+    "mockups/evidence/crypto-desk-r15-completion/a26ac106b46c6805--brain-focus.png": {
+      "sha256": "a26ac106b46c68054b9a341c0e24617db73a87b0c6e3adc221519a2e6eb50065",
+      "bytes": 543226
+    },
+    "mockups/evidence/crypto-desk-r15-completion/a2d75582e8bd3e3e--chart-review.png": {
+      "sha256": "a2d75582e8bd3e3e51fa322d3666b52ef77c4c8ae1a1c7179183e41a9d6a9074",
+      "bytes": 659507
+    },
+    "mockups/evidence/crypto-desk-r15-completion/a8048fe436b87b08--brain-focus.png": {
+      "sha256": "a8048fe436b87b08c51430c46d5b60112a389eca4f77b1ca5e42ada23300d9c4",
+      "bytes": 669445
+    },
+    "mockups/evidence/crypto-desk-r15-completion/bc0ad0bfb49fa5c1.png": {
+      "sha256": "bc0ad0bfb49fa5c1329dcaf6a024473793fd64ffdc0ea67f6b0c9de01a45405e",
+      "bytes": 683752
+    },
+    "mockups/evidence/crypto-desk-r15-completion/c00965ff28f99a4a--brain-focus.png": {
+      "sha256": "c00965ff28f99a4a31ded6e0fb92f65674cb89b13410d8e11764f50da5b579b8",
+      "bytes": 552465
+    },
+    "mockups/evidence/crypto-desk-r15-completion/c2f64d0af444cc94--brain-focus.png": {
+      "sha256": "c2f64d0af444cc9489710df4546808d84e8c0a081e07b8f76717ab8d10c53b66",
+      "bytes": 685417
+    },
+    "mockups/evidence/crypto-desk-r15-completion/c780131ee755d4a6--brain-hover.png": {
+      "sha256": "c780131ee755d4a6612ad51a0fe45748e2460e417905437ddd264606947e87b9",
+      "bytes": 539022
+    },
+    "mockups/evidence/crypto-desk-r15-completion/c95722d431aaebaa--chart-review.png": {
+      "sha256": "c95722d431aaebaa79376f79799a0272e6c66848856abc99b79a7dc67aa4acbb",
+      "bytes": 525238
+    },
+    "mockups/evidence/crypto-desk-r15-completion/d9c605230ae7e075.png": {
+      "sha256": "d9c605230ae7e07526eefd5fc804be3336fd94c55ba812617939961a15e7582e",
+      "bytes": 543062
+    },
+    "mockups/evidence/crypto-desk-r15-completion/ddc5e69f307b3ae0.png": {
+      "sha256": "ddc5e69f307b3ae01d906e782064f2fe583274981bd5ac187f4324fe7bbb4d40",
+      "bytes": 684017
+    },
+    "mockups/evidence/crypto-desk-r15-completion/e57f1afe04355e66--chart-review.png": {
+      "sha256": "e57f1afe04355e66a190bcce61edb1671efc3c99a1c1a5140653be9fcde241db",
+      "bytes": 672503
+    },
+    "mockups/evidence/crypto-desk-r15-completion/e9148b83a4a369a5--chart-review.png": {
+      "sha256": "e9148b83a4a369a55fc6d709fbcf8d76e85dc5ce050eb9ffc76b3d34f8bcf666",
+      "bytes": 531057
+    },
+    "mockups/evidence/crypto-desk-r15-completion/eb4a3a1e4b5e14d6--brain-focus.png": {
+      "sha256": "eb4a3a1e4b5e14d6c0ee73e977880daac95a2068e6cb08544303873b15c35470",
+      "bytes": 539817
+    },
+    "mockups/evidence/crypto-desk-r15-completion/ef6d7db9fdfb67f8--chart-review.png": {
+      "sha256": "ef6d7db9fdfb67f896686bc0cfb785323f0eeca2e2751f095a644673161b4763",
+      "bytes": 523912
+    },
+    "mockups/evidence/crypto-desk-r15-completion/f90983cbf7978af7--chart-review.png": {
+      "sha256": "f90983cbf7978af7ab2319b19f2e56e60976f0b5bb4caa97dd7a457b7dd9700a",
+      "bytes": 667615
+    },
+    "mockups/evidence/crypto-desk-r15-completion/manifest.json": {
+      "sha256": "9440146088b5a14cd37ffcaaa4307d97d8d46b3dfc6ff5944e515865a5edfe6d",
+      "bytes": 25355
+    },
+    "mockups/evidence/crypto-desk-r15-completion/smells.json": {
+      "sha256": "f27ff9e08e6addb7fe0282d9bff42e6f112613dea781a20512c26b789e7d3c00",
+      "bytes": 3533
+    },
+    "research/CRYPTO_R15_DESK_INTEGRATION_RESULTS.md": {
+      "sha256": "b989ae2c31006b062b26929f5bd52666cdd880415d82c84d7b220fb1cabd9637",
+      "bytes": 13833
+    },
+    "research/crypto_science/r15/README.md": {
+      "sha256": "978e3220006b4123c5afda604903da3881e138eb0aa22c3146745cdeb5d4ebfb",
+      "bytes": 4015
+    },
+    "research/crypto_science/r15/capture_canonical.py": {
+      "sha256": "90d88963908396f481bc47905a7048dae09ed9372d5f064d038cecf2e89e6400",
+      "bytes": 2518
+    },
+    "research/crypto_science/r15/check_assistant_failure.py": {
+      "sha256": "4dd1e5bf2587b93b334b50bc96c4037d99d9d80d43a67e5512a103d11baa048b",
+      "bytes": 3735
+    },
+    "research/crypto_science/r15/check_trace_paint.py": {
+      "sha256": "7d876b7fc7d38b8d9fdac354e9dcec19952b932d10f3b3b96396deafb26acd51",
+      "bytes": 2568
+    },
+    "research/crypto_science/r15/completion/assistant_failure.json": {
+      "sha256": "0818318458958e6c20e9aa21265c31ae11908e1bbd93ab499a365f6161a25c48",
+      "bytes": 1379
+    },
+    "research/crypto_science/r15/completion/assistant_failure_run.txt": {
+      "sha256": "76cbabf52640ba5bca40be15c8fd2a7fbe0ca5b904edeef4fa2ee5c7eef552fb",
+      "bytes": 88
+    },
+    "research/crypto_science/r15/completion/browser_proof.json": {
+      "sha256": "e68a5cc621ec0578dbd6c43ce037525c50fb3919f78231ae1415acdaca9aeece",
+      "bytes": 141356
+    },
+    "research/crypto_science/r15/completion/browser_run.txt": {
+      "sha256": "457bf05fe368193ace1b9a583f54be834c73fac74c9530d7e8f4bb9c746af4c4",
+      "bytes": 6675
+    },
+    "research/crypto_science/r15/completion/capture_run.txt": {
+      "sha256": "68630dca3c50ed6d166babe5b69e341c9a2cc0574abcd726d71de14b6b2e45f9",
+      "bytes": 325
+    },
+    "research/crypto_science/r15/completion/capture_run_receipt.json": {
+      "sha256": "edf23f4c0b1407bf4099cd34575fccb255dd4a02c5dc3c2cb589003e39598d7a",
+      "bytes": 1547
+    },
+    "research/crypto_science/r15/completion/combined_crypto.html.j2": {
+      "sha256": "f08c84aa16ed46d155321f7c044b7e57bfbff9a36321b7e938f549951714ed13",
+      "bytes": 58826
+    },
+    "research/crypto_science/r15/completion/design_gate.txt": {
+      "sha256": "7777aadb836877545bacac9d6342742a4b19f8f501c00dd2a61970887330cab3",
+      "bytes": 279
+    },
+    "research/crypto_science/r15/completion/integration.json": {
+      "sha256": "6829cb773e5ae14c9c1808b60c40ff1417ac16db41ff6c16b84e4af210b16d7a",
+      "bytes": 509
+    },
+    "research/crypto_science/r15/completion/main_integration.json": {
+      "sha256": "128351bf22b1b0148ce3077f41e1f94ffc4ed6e2691b390d6f429b5630f1cdb0",
+      "bytes": 1254
+    },
+    "research/crypto_science/r15/completion/ours.j2": {
+      "sha256": "32125327ab7c65e7297e5ad1a33be8ee6d978138813eb4f723bf164ff447b6c7",
+      "bytes": 57606
+    },
+    "research/crypto_science/r15/completion/reviewed/breakdown_1440_dark_en.png": {
+      "sha256": "907389b34d2d685a6deaae269557cb03b24d8119c4fff85b4603f7ba58e9aa45",
+      "bytes": 204240
+    },
+    "research/crypto_science/r15/completion/reviewed/breakdown_390_light_zh.png": {
+      "sha256": "8801a94c98bd95bcdc9f37c78383866dda8ac4d349d6ef0ead24ba3e9202c404",
+      "bytes": 138579
+    },
+    "research/crypto_science/r15/completion/reviewed/combined_1440_dark_en.png": {
+      "sha256": "31da8256b4305053d3bfa17d6b1bc0ff84e98470d6e48887e1923d7523bb0c1d",
+      "bytes": 187008
+    },
+    "research/crypto_science/r15/completion/reviewed/combined_390_light_zh.png": {
+      "sha256": "32657c4eaad77a2191525de515bb18069e367ab7011edbf404cc5550acf9f38c",
+      "bytes": 133863
+    },
+    "research/crypto_science/r15/completion/reviewed/history_missing_1440_dark_en.png": {
+      "sha256": "526585130dda85aebcbb4c5b09c03f3ad16aabd1910648691acbe4b3df71ba90",
+      "bytes": 159570
+    },
+    "research/crypto_science/r15/completion/reviewed/history_missing_390_light_zh.png": {
+      "sha256": "f461a619c60c31d2cd3f66ef32155428ae2c0c5139050abe581f67947d45b10a",
+      "bytes": 144633
+    },
+    "research/crypto_science/r15/completion/reviewed/known_1440_dark_en.png": {
+      "sha256": "485ba72e18ff08255317875e0260f3a4a81b0cce1e34493a982cb542805e5dea",
+      "bytes": 187101
+    },
+    "research/crypto_science/r15/completion/reviewed/known_390_light_zh.png": {
+      "sha256": "450c464060e7931b55deda319655a317539a6e63a5691c9f028f8eb363f2405e",
+      "bytes": 134522
+    },
+    "research/crypto_science/r15/completion/reviewed/stale_1440_dark_en.png": {
+      "sha256": "98680bdfb27723f1d13df19813781e3ad8ab2227ab1b564d2e44535a443f35c4",
+      "bytes": 195212
+    },
+    "research/crypto_science/r15/completion/reviewed/stale_390_light_zh.png": {
+      "sha256": "2f9367edeb7509f0b10e2754b2182a69cce01b624f25c00015f6058f59e610ed",
+      "bytes": 135945
+    },
+    "research/crypto_science/r15/completion/reviewed/unavailable_1440_dark_en.png": {
+      "sha256": "05d210747b9732852f621883d528e936fe340ec08d54a3de1c4632dda5f24c46",
+      "bytes": 195226
+    },
+    "research/crypto_science/r15/completion/reviewed/unavailable_390_light_zh.png": {
+      "sha256": "4e14bac525c9d3f12f8886a9f269c08af7879b4b075e8c8603f4c5f0805d33b7",
+      "bytes": 135954
+    },
+    "research/crypto_science/r15/completion/reviewed/zero_1440_dark_en.png": {
+      "sha256": "6ab0b8581dfdf3c6584c7b09c8845a982d16b7cfba2b683dd3f156a86cc34de7",
+      "bytes": 201988
+    },
+    "research/crypto_science/r15/completion/reviewed/zero_390_light_zh.png": {
+      "sha256": "304b1b42b77062c3015b9b5689aa1d3e31dcd74031f103712f43ae3d9fb74514",
+      "bytes": 138260
+    },
+    "research/crypto_science/r15/completion/verification_host.txt": {
+      "sha256": "ac926d096cda1d66c2994b4a91dd2732719d3e9b8a603962d5f041aa23592dde",
+      "bytes": 1966
+    },
+    "research/crypto_science/r15/completion/verification_receipts.txt": {
+      "sha256": "e30b24f902e81b7ccc361373116b82ad4d19921d8e260d164ef65b5fe5a797fe",
+      "bytes": 486
+    },
+    "research/crypto_science/r15/completion/visual_gate.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/crypto_science/r15/render_and_check.py": {
+      "sha256": "246d5b7cb597154c451a1b49fa4fd34d59f2421694d7d1d33d01fbb1067a7dd5",
+      "bytes": 16814
+    },
+    "research/crypto_science/r15/trace_paint_green.json": {
+      "sha256": "910b9ff3c158293a6468c0a37d5e86e5c9bb0a7600e0945079661b9903bb94a9",
+      "bytes": 707
+    },
+    "research/crypto_science/r15/trace_paint_red.json": {
+      "sha256": "98705c1a523d15959a16f166a3ee00237fe171e3773c653c3e8fd1c332adbe7a",
+      "bytes": 716
+    },
+    "research/crypto_science/r15/trace_source_green_verified.txt": {
+      "sha256": "dbf72e377ffc837e9eac5dc2a780f579bf283c88a13fe6f29a087107a6598703",
+      "bytes": 125
+    },
+    "research/crypto_science/r15/trace_source_red.txt": {
+      "sha256": "e566214e553785f5dd01fb1d0e0ed1896adadbf60d2dd18c287bd4d8b452e635",
+      "bytes": 4674
+    },
+    "research/crypto_science/r15/verify_final.py": {
+      "sha256": "75f1034cf4d29f6efb2aee4bcce07e1fed8174cc3b283119e0aa1deaa4b30134",
+      "bytes": 6108
+    },
+    "templates/crypto.html.j2": {
+      "sha256": "32125327ab7c65e7297e5ad1a33be8ee6d978138813eb4f723bf164ff447b6c7",
+      "bytes": 57606
+    },
+    "tests/test_crypto_wave2.py": {
+      "sha256": "4b85e8b3ea64c68cac9306eacfb518d2ff15b046df1797bc8d17c7882a355797",
+      "bytes": 35992
+    }
+  }
+}

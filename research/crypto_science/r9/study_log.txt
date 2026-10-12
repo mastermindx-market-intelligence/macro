@@ -1,0 +1,5 @@
+R9 clock/target pass 1 15686
+R9 clock/target pass 6 15686
+R9 chronological fit pass 1
+R9 chronological fit pass 6
+R9_COMPLETE {"clock_rows": 31372, "fits": 70, "prediction_rows": 25526, "warnings": 4665, "events": 1176, "matches": 65, "account_rows": 13995}

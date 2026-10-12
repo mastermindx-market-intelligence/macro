@@ -1,0 +1,20 @@
+...FF.............................                                       [100%]
+=================================== FAILURES ===================================
+_________________ test_engine_accruing_and_distribution_state __________________
+tests/test_btc_intraday_cvd.py:86: in test_engine_accruing_and_distribution_state
+    assert o["flow_state"] == "distribution"         # net aggressor selling
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 'unavailable' == 'distribution'
+E
+E     - distribution
+E     + unavailable
+________________ test_engine_divergence_when_history_sufficient ________________
+tests/test_btc_intraday_cvd.py:107: in test_engine_divergence_when_history_sufficient
+    assert o["divergence"] is not None
+E   assert None is not None
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_intraday_cvd.py::test_engine_accruing_and_distribution_state
+FAILED tests/test_btc_intraday_cvd.py::test_engine_divergence_when_history_sufficient
+2 failed, 32 passed, 43 warnings in 3.35s

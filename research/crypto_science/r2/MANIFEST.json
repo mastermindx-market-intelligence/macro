@@ -1,0 +1,66 @@
+{
+  "engine_candidate": "a5a2d98cbb192f02113fc957fba28f40f37deff2",
+  "classification": "CORRECTION_AND_REPLAY_EVIDENCE_NOT_RELEASE",
+  "files": {
+    "README.md": {
+      "sha256": "07aad255c6fac707c0710cbf409230d8c6edb3df6b6b7737ae6fb3cb494f47ea",
+      "bytes": 5523
+    },
+    "green_bottom.txt": {
+      "sha256": "9322bad05128a1670ea67661f59e04b9c84d693ceba305dd4a68fe5998515718",
+      "bytes": 112
+    },
+    "green_combined.txt": {
+      "sha256": "dfc1bae7cbb8744e63ba8914de1b991d957244e3732552da9aa6d974cf507710",
+      "bytes": 354
+    },
+    "green_labels.txt": {
+      "sha256": "f855ae6e066434779b00fb35251db131384619abe9d07e4ebaf30cdd166054eb",
+      "bytes": 112
+    },
+    "input_contract_findings.json": {
+      "sha256": "0c2f400fc92855e7845c7e28b24ea8aad9f06b722b01f8a345573d2685559ef7",
+      "bytes": 1690
+    },
+    "input_contract_probe.py": {
+      "sha256": "a5f73e43eace67d84c8b825b162626e8459a1619e87cadddae55bf8efd092d43",
+      "bytes": 2559
+    },
+    "paired_replay.json": {
+      "sha256": "d220c97cee4c2d4386d597c128ea3d8bfa8d18ef205b62461e837c41bb2f6494",
+      "bytes": 64459
+    },
+    "prefix_all_dates.csv": {
+      "sha256": "161380170f6a15c00fda79de98d69e72489ea7859fef59d85a5a341828951fc3",
+      "bytes": 314922
+    },
+    "red_bottom.txt": {
+      "sha256": "5f7f2032165d175d6ade1925d8bf379821b554fb39fb8985755f55ebc983956a",
+      "bytes": 15337
+    },
+    "red_enrollment.txt": {
+      "sha256": "ada58ce25ade7f93e1dffa44b31d6d44d1026f07a909d00bf70c5afd38d84640",
+      "bytes": 1046
+    },
+    "red_labels.txt": {
+      "sha256": "d14f15a8f96183552754a90db7d8ab44e204b2d851df6da03651624ee143904e",
+      "bytes": 4533
+    },
+    "replay_log.txt": {
+      "sha256": "ca7fa4e0105337450bd4a78ab20a00cb745df0e24ab47ee4799f741cf05ca121",
+      "bytes": 6000
+    },
+    "test_log_normalization.json": {
+      "sha256": "1ec116433e265aa65ae9aca37482c019d9e2635dff68392e477709bab45500ef",
+      "bytes": 351
+    },
+    "verification.txt": {
+      "sha256": "acbcc5c61ac765534c3cd69018be22e56333e2cda3cbaf75e4eb44c114a5195a",
+      "bytes": 759
+    },
+    "verify_evidence.py": {
+      "sha256": "ddacc96ebfbdc48f1753d9be124f56c4c6733c5d190385eac7377006d5b6fd9f",
+      "bytes": 3539
+    }
+  }
+}

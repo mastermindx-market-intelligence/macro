@@ -1,0 +1,33 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_____ test_funding_selects_named_rate_regardless_of_physical_column_order ______
+tests/test_btc_signals.py:425: in test_funding_selects_named_rate_regardless_of_physical_column_order
+    pd.testing.assert_series_equal(_read_funding_fixture(df), expected)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_btc_signals.py:414: in _read_funding_fixture
+    return inputs._funding()
+           ^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.btc_inputs' has no attribute '_funding'
+_____ test_funding_never_falls_back_to_mark_price_or_unproven_legacy_field _____
+tests/test_btc_signals.py:438: in test_funding_never_falls_back_to_mark_price_or_unproven_legacy_field
+    assert _read_funding_fixture(frame) is None
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_btc_signals.py:414: in _read_funding_fixture
+    return inputs._funding()
+           ^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.btc_inputs' has no attribute '_funding'
+____ test_funding_keeps_signed_zero_and_unknown_instead_of_invented_rescale ____
+tests/test_btc_signals.py:444: in test_funding_keeps_signed_zero_and_unknown_instead_of_invented_rescale
+    result = _read_funding_fixture(df)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_btc_signals.py:414: in _read_funding_fixture
+    return inputs._funding()
+           ^^^^^^^^^^^^^^^
+E   AttributeError: module 'engine.btc_inputs' has no attribute '_funding'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_signals.py::test_funding_selects_named_rate_regardless_of_physical_column_order
+FAILED tests/test_btc_signals.py::test_funding_never_falls_back_to_mark_price_or_unproven_legacy_field
+FAILED tests/test_btc_signals.py::test_funding_keeps_signed_zero_and_unknown_instead_of_invented_rescale
+3 failed, 22 deselected, 19 warnings in 6.08s

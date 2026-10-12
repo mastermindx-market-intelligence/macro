@@ -1,0 +1,21 @@
+FF..                                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_r11_readable_but_corrupt_history_blocks_append ______________
+tests/test_crypto_collectors.py:302: in test_r11_readable_but_corrupt_history_blocks_append
+    assert o.persist_capture(_capture('2026-01-01T04:00:00Z'),root=tmp_path)['status']=='unavailable'
+E   AssertionError: assert 'stored' == 'unavailable'
+E
+E     - unavailable
+E     + stored
+___ test_r11_endpoint_and_instrument_mismatches_cannot_claim_a_known_source ____
+tests/test_crypto_collectors.py:314: in test_r11_endpoint_and_instrument_mismatches_cannot_claim_a_known_source
+    assert a.fetch_result_status(out)=='stale'
+E   AssertionError: assert None == 'stale'
+E    +  where None = fetch_result_status({'funding_rate':             funding_rate_okx\ndate                        \n2026-01-01            0.0002})
+E    +    where fetch_result_status = <collectors.okx.OkxAdapter object at 0x111dc6120>.fetch_result_status
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_crypto_collectors.py::test_r11_readable_but_corrupt_history_blocks_append
+FAILED tests/test_crypto_collectors.py::test_r11_endpoint_and_instrument_mismatches_cannot_claim_a_known_source
+2 failed, 2 passed, 19 deselected, 43 warnings in 2.88s

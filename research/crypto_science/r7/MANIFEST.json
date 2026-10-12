@@ -1,0 +1,73 @@
+{
+  "classification": "DERIVED_RESEARCH_EVIDENCE_NOT_MODEL_PROMOTION",
+  "baseline": "b445029abd6c84a66cadc572929e0beb702be4b7",
+  "plan_commit": "2e8709464b643a33a5bca53b53999f53ad4756f5",
+  "candidate": "01a2b9c1ad89bfaae9200f581c5ef3ffa6cf29e1",
+  "result_sha256": "e276b09c84989d4373c9fec3b78a8f9f3729f675279e91f52a84366327981d6d",
+  "artifacts": {
+    "research/CRYPTO_SCIENCE_R7_CALIBRATION_PREREG_2026-09-29.md": {
+      "bytes": 11249,
+      "sha256": "30f515d8f18dc5f5e9515d3856f019f297771e33861906721ee0247c683e2c5b"
+    },
+    "research/CRYPTO_SCIENCE_R7_CALIBRATION_RESULTS_2026-09-29.md": {
+      "bytes": 20449,
+      "sha256": "097b98b50a4a9517bbb27f17a3bac4be805bed43bcedab713bcf336e4f900dce"
+    },
+    "research/crypto_science/r7/README.md": {
+      "bytes": 3230,
+      "sha256": "134939b227ff08660bd76badaf059154a5be8881d7c50fa744a2eae2b85a330a"
+    },
+    "research/crypto_science/r7/accounts.csv": {
+      "bytes": 727247,
+      "sha256": "5ed2416e12f0e0f9d9c15d6e8e1ef6a08aad50d20a7a7e46212837b7fe8c7980"
+    },
+    "research/crypto_science/r7/green_core.txt": {
+      "bytes": 14845,
+      "sha256": "49762f78b9129db8a4808ab8b8ee4f39d5f93c9084a64b05b7480326befa7c03"
+    },
+    "research/crypto_science/r7/green_research.txt": {
+      "bytes": 14831,
+      "sha256": "26b408efe3fda09c91ff887a5b5840d0a744b9828819875c057118fb854fa995"
+    },
+    "research/crypto_science/r7/policies.csv": {
+      "bytes": 10392836,
+      "sha256": "5cd902da694cd2d81b81f7bf2ce6382f0ae7619d89b7bfd356ac6635d381a662"
+    },
+    "research/crypto_science/r7/predictions.csv": {
+      "bytes": 186517,
+      "sha256": "9bb683c9f9dd19414f27dbdb6ebbf6cabf8d1b8e6179f624a7708ca891e9a89b"
+    },
+    "research/crypto_science/r7/red_tests.txt": {
+      "bytes": 19301,
+      "sha256": "40e22757d4752d32d15eb9281e992d45cada20e82873909995126ca7fc7985af"
+    },
+    "research/crypto_science/r7/results.json": {
+      "bytes": 1762478,
+      "sha256": "e276b09c84989d4373c9fec3b78a8f9f3729f675279e91f52a84366327981d6d"
+    },
+    "research/crypto_science/r7/study_log.txt": {
+      "bytes": 218,
+      "sha256": "6b71b7d210cda66bf06d8764c63dc905d0b9feeddff580163ce60e925ebd40c4"
+    },
+    "research/crypto_science/r7/verification_arithmetic.txt": {
+      "bytes": 454,
+      "sha256": "ea450c31c857c018bcece79716e0d25614c2f2bfd82b310ef4b60197c481de4c"
+    },
+    "research/crypto_science/r7/verification_final.txt": {
+      "bytes": 1633,
+      "sha256": "cec9ab20c254adad72e4db4c3a7e4f718a2ae50cc985485c2a54d1462d812b9b"
+    },
+    "research/crypto_science/r7/verify_evidence.py": {
+      "bytes": 12696,
+      "sha256": "fde5888204c52a1bcd81c436d9fe8c402b67faa82b1e24aae4d9259bfc8ef781"
+    },
+    "research/crypto_science/r7_calibration_study.py": {
+      "bytes": 18068,
+      "sha256": "45eaa8d7090c4eb4bef6241d87b48e4d9a5ca9bd48af9d3eba99a5630d5eea2d"
+    },
+    "tests/test_btc_impulse_falsifier.py": {
+      "bytes": 35811,
+      "sha256": "9f2fb549c17dca48a23f2fb9dddfe234c2b730723bb0410cf117ec5a2e184331"
+    }
+  }
+}

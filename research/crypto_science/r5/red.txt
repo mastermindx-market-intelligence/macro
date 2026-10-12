@@ -1,0 +1,31 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+________ test_r5_landmark_uses_only_completed_followup_and_prior_volume ________
+tests/test_btc_impulse_falsifier.py:524: in test_r5_landmark_uses_only_completed_followup_and_prior_volume
+    from research.crypto_science.r5_participation_study import downside_observation
+E   ModuleNotFoundError: No module named 'research.crypto_science.r5_participation_study'
+________ test_r5_volume_missing_is_not_a_negative_but_zero_is_observed _________
+tests/test_btc_impulse_falsifier.py:540: in test_r5_volume_missing_is_not_a_negative_but_zero_is_observed
+    from research.crypto_science.r5_participation_study import downside_observation
+E   ModuleNotFoundError: No module named 'research.crypto_science.r5_participation_study'
+______ test_r5_reclaim_volume_gate_never_searches_a_later_prettier_entry _______
+tests/test_btc_impulse_falsifier.py:555: in test_r5_reclaim_volume_gate_never_searches_a_later_prettier_entry
+    from research.crypto_science.r5_participation_study import early_reclaim
+E   ModuleNotFoundError: No module named 'research.crypto_science.r5_participation_study'
+__________ test_r5_no_entry_differs_from_missing_price_and_bad_index ___________
+tests/test_btc_impulse_falsifier.py:570: in test_r5_no_entry_differs_from_missing_price_and_bad_index
+    from research.crypto_science.r5_participation_study import early_reclaim, downside_observation
+E   ModuleNotFoundError: No module named 'research.crypto_science.r5_participation_study'
+_____________ test_r5_cash_overlay_cannot_exit_before_the_landmark _____________
+tests/test_btc_impulse_falsifier.py:581: in test_r5_cash_overlay_cannot_exit_before_the_landmark
+    from research.crypto_science.r5_participation_study import cash_after
+E   ModuleNotFoundError: No module named 'research.crypto_science.r5_participation_study'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_r5_landmark_uses_only_completed_followup_and_prior_volume
+FAILED tests/test_btc_impulse_falsifier.py::test_r5_volume_missing_is_not_a_negative_but_zero_is_observed
+FAILED tests/test_btc_impulse_falsifier.py::test_r5_reclaim_volume_gate_never_searches_a_later_prettier_entry
+FAILED tests/test_btc_impulse_falsifier.py::test_r5_no_entry_differs_from_missing_price_and_bad_index
+FAILED tests/test_btc_impulse_falsifier.py::test_r5_cash_overlay_cannot_exit_before_the_landmark
+5 failed, 29 deselected, 21 warnings in 2.45s

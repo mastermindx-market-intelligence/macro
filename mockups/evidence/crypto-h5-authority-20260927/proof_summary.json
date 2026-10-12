@@ -1,0 +1,41 @@
+{
+  "source_commit": "d079adb6d532b7af20a487bd0ebdeddc3a414ee0",
+  "source_sha256": {
+    "scripts/build_crypto.py": "fdda6647f06832688b364031d9817b008c739ac534c609e2070d9f9742e62e8d",
+    "templates/crypto.html.j2": "859db8a24fb6e43adfe533dd22a10c1856b03be534564341100889c24b52377b",
+    "tests/test_crypto_wave2.py": "fd19daeea0864bad899ea7c79c82a18f1ff841cbaebd03cedc7455cde8d7ac89"
+  },
+  "canonical_capture_count": 40,
+  "canonical_route_count": 5,
+  "semantic_cells": 112,
+  "semantic_passed": 112,
+  "viewports": [
+    320,
+    390,
+    768,
+    1440
+  ],
+  "locales": [
+    "en",
+    "zh"
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "minimum_explanation_font_px": 14,
+  "fixture_status": "controlled_generated_pages_not_production",
+  "limitation": "Fixture does not include complete font, account, icon and Terminal overlay resources; failed requests are retained. No production/font-parity or participant-usability acceptance.",
+  "network_exclusions": [
+    "account.js?v=20260913-account-actions",
+    "fonts/Inter-400.woff2",
+    "fonts/Inter-500.woff2",
+    "fonts/Inter-600.woff2",
+    "fonts/Inter-700.woff2",
+    "fonts/Inter-800.woff2",
+    "fonts/Inter-900.woff2",
+    "product-nav-icons.css?v=093ad1ea",
+    "terminal_overlay.js"
+  ],
+  "excluded_identical_state_captures": "Zero with missing class inputs and malformed target remain in the 112 semantic checks; canonical screenshots cover five distinct states."
+}

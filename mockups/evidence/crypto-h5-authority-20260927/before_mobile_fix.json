@@ -1,0 +1,96 @@
+{
+  "source_commit": "2bfa46242f782c11376733d8795fd90b16bc84ca",
+  "cells": 112,
+  "failures": [
+    {
+      "state": "happy",
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "http": 200,
+      "overflow": false,
+      "h5Count": 1,
+      "h6Count": 1,
+      "renderedState": "available",
+      "expectedState": "available",
+      "exposure": "60%\nTOTAL CRYPTO",
+      "h5GeometryFailures": [
+        {
+          "class": "alloc-main",
+          "sw": 288,
+          "cw": 288,
+          "x": 30,
+          "right": 319.328125
+        },
+        {
+          "class": "alloc-side",
+          "sw": 289,
+          "cw": 289,
+          "x": 30,
+          "right": 319.328125
+        }
+      ],
+      "allocBar": 1,
+      "allocLegend": 1,
+      "canonicalReceipt": true,
+      "rawSignalText": false,
+      "pageErrors": [],
+      "requestFailures": [
+        "http://127.0.0.1:8766/product-nav-icons.css?v=093ad1ea",
+        "http://127.0.0.1:8766/fonts/Inter-400.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-700.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-800.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-900.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-600.woff2",
+        "http://127.0.0.1:8766/account.js?v=20260913-account-actions",
+        "http://127.0.0.1:8766/terminal_overlay.js"
+      ],
+      "semanticPass": true
+    },
+    {
+      "state": "happy",
+      "width": 320,
+      "theme": "light",
+      "lang": "en",
+      "http": 200,
+      "overflow": false,
+      "h5Count": 1,
+      "h6Count": 1,
+      "renderedState": "available",
+      "expectedState": "available",
+      "exposure": "60%\nTOTAL CRYPTO",
+      "h5GeometryFailures": [
+        {
+          "class": "alloc-main",
+          "sw": 288,
+          "cw": 288,
+          "x": 30,
+          "right": 319.328125
+        },
+        {
+          "class": "alloc-side",
+          "sw": 289,
+          "cw": 289,
+          "x": 30,
+          "right": 319.328125
+        }
+      ],
+      "allocBar": 1,
+      "allocLegend": 1,
+      "canonicalReceipt": true,
+      "rawSignalText": false,
+      "pageErrors": [],
+      "requestFailures": [
+        "http://127.0.0.1:8766/product-nav-icons.css?v=093ad1ea",
+        "http://127.0.0.1:8766/fonts/Inter-400.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-900.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-800.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-600.woff2",
+        "http://127.0.0.1:8766/fonts/Inter-700.woff2",
+        "http://127.0.0.1:8766/account.js?v=20260913-account-actions",
+        "http://127.0.0.1:8766/terminal_overlay.js"
+      ],
+      "semanticPass": true
+    }
+  ]
+}

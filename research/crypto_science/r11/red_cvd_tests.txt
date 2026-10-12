@@ -1,0 +1,48 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+________ test_r11_short_gap_cannot_be_called_a_complete_24_hour_window _________
+tests/test_btc_intraday_cvd.py:164: in test_r11_short_gap_cannot_be_called_a_complete_24_hour_window
+    out=CVD.compute(as_of='2026-01-02T02:00:00Z')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: compute() got an unexpected keyword argument 'as_of'
+__________ test_r11_future_data_never_changes_a_historical_flow_view ___________
+tests/test_btc_intraday_cvd.py:173: in test_r11_future_data_never_changes_a_historical_flow_view
+    a=CVD.compute(as_of=cut.tz_localize('UTC'))
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: compute() got an unexpected keyword argument 'as_of'
+_________ test_r11_zero_activity_and_balanced_activity_are_not_missing _________
+tests/test_btc_intraday_cvd.py:182: in test_r11_zero_activity_and_balanced_activity_are_not_missing
+    out=CVD.compute(as_of=zero.index[-1].tz_localize('UTC'))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: compute() got an unexpected keyword argument 'as_of'
+________ test_r11_invalid_or_duplicate_flow_is_not_sanitized_to_neutral ________
+tests/test_btc_intraday_cvd.py:193: in test_r11_invalid_or_duplicate_flow_is_not_sanitized_to_neutral
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: compute() got an unexpected keyword argument 'as_of'
+___________ test_r11_equal_old_sources_are_stale_against_wall_clock ____________
+tests/test_btc_intraday_cvd.py:202: in test_r11_equal_old_sources_are_stale_against_wall_clock
+    out=CVD.compute(as_of=(h.index[-1]+pd.Timedelta(days=4)).tz_localize('UTC'))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: compute() got an unexpected keyword argument 'as_of'
+____________ test_r11_unknown_volume_units_never_turn_into_dollars _____________
+tests/test_btc_intraday_cvd.py:210: in test_r11_unknown_volume_units_never_turn_into_dollars
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: compute() got an unexpected keyword argument 'as_of'
+____ test_r11_missing_price_hour_blocks_divergence_instead_of_forward_fill _____
+tests/test_btc_intraday_cvd.py:221: in test_r11_missing_price_hour_blocks_divergence_instead_of_forward_fill
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: compute() got an unexpected keyword argument 'as_of'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_intraday_cvd.py::test_r11_short_gap_cannot_be_called_a_complete_24_hour_window
+FAILED tests/test_btc_intraday_cvd.py::test_r11_future_data_never_changes_a_historical_flow_view
+FAILED tests/test_btc_intraday_cvd.py::test_r11_zero_activity_and_balanced_activity_are_not_missing
+FAILED tests/test_btc_intraday_cvd.py::test_r11_invalid_or_duplicate_flow_is_not_sanitized_to_neutral
+FAILED tests/test_btc_intraday_cvd.py::test_r11_equal_old_sources_are_stale_against_wall_clock
+FAILED tests/test_btc_intraday_cvd.py::test_r11_unknown_volume_units_never_turn_into_dollars
+FAILED tests/test_btc_intraday_cvd.py::test_r11_missing_price_hour_blocks_divergence_instead_of_forward_fill
+7 failed, 8 deselected, 43 warnings in 3.08s

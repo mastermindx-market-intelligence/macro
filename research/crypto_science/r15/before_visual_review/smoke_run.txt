@@ -1,0 +1,16 @@
+INFO cycles: loaded fitted bands from /Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/data/regime/cycle_bands_fit.json
+INFO cycles: crypto dc_band override (56, 70) → (22, 45) (fitted)
+INFO cycles: crypto ic_band_w override (24, 40) → (11, 22) (fitted)
+INFO cycles: loaded ladder risk calibration from /Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/data/regime/ladder_risk_calibration.json (validated=False, any_bound=False)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_known/crypto.html (158 KB, 50 universe assets)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_zero/crypto.html (158 KB, 50 universe assets)
+WARNING Crypto H5 budget unavailable (CANONICAL_DECISION_UNAVAILABLE); rendering a non-actionable H5 state
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_unavailable/crypto.html (158 KB, 50 universe assets)
+WARNING Crypto H5 budget unavailable (CANONICAL_DECISION_AS_OF_MISMATCH); rendering a non-actionable H5 state
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_stale/crypto.html (158 KB, 50 universe assets)
+WARNING Crypto H5 breakdown unavailable (CLASS_SPLIT_INPUT_UNAVAILABLE); preserving the known model budget
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_breakdown/crypto.html (158 KB, 50 universe assets)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_history_missing/crypto.html (134 KB, 50 universe assets)
+INFO wrote /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r15_actual/_work_combined/crypto.html (161 KB, 50 universe assets)
+R15_BROWSER_SCENARIO known 3 cells
+R15_BROWSER_RESULT 3 cases 0 failures

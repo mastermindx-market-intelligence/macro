@@ -1,0 +1,20 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index cec14399de..95a2c67a97 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -1728,6 +1728,7 @@ jobs:
+       - "engine/btc_impulse_radar.py"
+       - "engine/btc_impulse_radar_backtest.py"
+       - "engine/btc_inputs.py"
++      - "engine/btc_intraday_cvd.py"
+       - "engine/btc_leverage_cascade.py"
+       - "engine/btc_master.py"
+       - "engine/btc_mtf.py"
+@@ -13388,6 +13389,7 @@ jobs:
+       - "engine/btc_impulse_radar.py"
+       - "engine/btc_impulse_radar_backtest.py"
+       - "engine/btc_inputs.py"
++      - "engine/btc_intraday_cvd.py"
+       - "engine/btc_leverage_cascade.py"
+       - "engine/btc_master.py"
+       - "engine/btc_mtf.py"

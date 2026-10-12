@@ -1,0 +1,513 @@
+{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% macro tone(tone) -%}
+{{- 'tone-up' if tone == 'bull' else ('tone-down' if tone == 'bear' else 'tone-flat') -}}
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var la=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh'}catch(e){}return''})();if(la)document.documentElement.setAttribute('data-lang',la)}catch(e){}</script>
+<title>Crypto Intelligence Cockpit — {{ as_of }}</title>
+{% set seo_title = "Crypto Intelligence Cockpit — MastermindX" %}
+{% set seo_desc = "A daily crypto market-state cockpit: top assets, money flows, leverage, volatility, allocation, Bitcoin, Ethereum and listed crypto equities." %}
+{% set seo_path = "crypto.html" %}
+{% include "_seo_head.html.j2" %}
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="illus.css">
+<style>
+*{box-sizing:border-box}
+:root{--crypto:#8d75ff;--crypto-soft:color-mix(in srgb,var(--crypto) 11%,transparent);
+  --crypto-line:color-mix(in srgb,var(--crypto) 36%,var(--line));--tone:var(--muted)}
+html[data-theme="light"]{--crypto:#6248d8}
+body.crypto-page{margin:0;padding:18px 0 0;background:var(--bg);color:var(--text);
+  font:14px/1.5 var(--font-ui);letter-spacing:-.005em}
+body.crypto-page::before{opacity:.34}
+.crypto-rail{width:min(1500px,calc(100% - 40px));margin:0 auto;padding:10px 0 72px}
+.crypto-shelf{position:relative;margin-top:18px;border:1px solid var(--line);background:var(--panel);
+  box-shadow:var(--card-shadow);overflow:hidden}
+.crypto-shelf::before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--crypto)}
+.shelf-pad{padding:22px 24px}
+.shelf-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.shelf-index,.shelf-kicker{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--crypto)}
+.shelf-title{margin:0;font-size:17px;font-weight:780;letter-spacing:-.02em}
+.shelf-sub{margin-left:auto;color:var(--muted);font-size:11px}
+.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.tone-up{--tone:var(--up)}.tone-down{--tone:var(--down)}.tone-flat{--tone:var(--muted)}
+.state{display:inline-flex;align-items:center;gap:7px;color:var(--tone);font-weight:720}
+.state::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--tone);box-shadow:0 0 0 3px color-mix(in srgb,var(--tone) 12%,transparent)}
+.muted{color:var(--muted)}
+
+/* H1 */
+.hero{background:color-mix(in srgb,var(--crypto) 3%,var(--panel))}
+.hero-grid{display:grid;grid-template-columns:minmax(320px,.74fr) minmax(520px,1.26fr);gap:42px;align-items:end;padding:32px 32px 26px}
+.hero-word{margin:8px 0 0;font-size:clamp(54px,7.2vw,108px);line-height:.82;letter-spacing:-.07em;font-weight:850}
+.hero-stance{margin-top:25px;font-size:clamp(20px,2.2vw,32px);font-weight:780;letter-spacing:-.035em;max-width:640px}
+.hero-copy{max-width:620px;margin:10px 0 0;color:var(--muted);font-size:13px}
+.hero-meta{display:flex;align-items:center;gap:10px;margin-top:18px;color:var(--muted);font-size:10.5px}
+.live-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 9px;border:1px solid var(--crypto-line);color:var(--text)}
+.live-chip i{width:5px;height:5px;border-radius:50%;background:var(--crypto)}
+.hero-viz{padding-left:26px;border-left:1px solid var(--line)}
+.hero-viz-head{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:12px}
+.hero-viz-head b{font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-bottom:12px}
+.hero-stat{padding:12px 14px;border-right:1px solid var(--line)}
+.hero-stat:last-child{border-right:0}.hero-stat b{display:block;font:760 20px/1.1 var(--font-mono)}
+.hero-stat span{display:block;margin-top:5px;color:var(--muted);font-size:10px}
+.hero-stat em{font-style:normal;color:var(--tone)}
+.hero-tape .ilx{margin:0}
+
+/* R15: scoped first-read desk; no shared tokens or Market Board styles change. */
+body.crypto-page #crypto-overview{border:0;background:transparent;box-shadow:none;backdrop-filter:none;overflow:visible}
+#crypto-overview .desk-page-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:8px 0 24px}
+#crypto-overview .desk-page-title{margin:7px 0 0;font-size:var(--fs-h1,28px);font-weight:650;line-height:1.15;letter-spacing:-.035em}
+#crypto-overview .desk-page-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#crypto-overview .desk-brain-entry{font-family:inherit;background:var(--panel2);cursor:pointer}
+#crypto-overview .desk-brain-entry:focus-visible{outline:2px solid var(--info);outline-offset:3px}
+#crypto-overview .desk-brain-entry:hover{color:var(--ink-link,var(--link))}
+#crypto-overview .desk-brain-entry:disabled{cursor:wait}
+#crypto-overview .desk-brain-status{font-size:var(--fs-body,14px);color:var(--muted);line-height:1.5}
+body.crypto-page.crypto-desk-ready #mmb-boot,body.crypto-page.crypto-desk-ready #mmb-launch{display:none!important}
+#crypto-overview .shelf-kicker{font-size:var(--fs-sm,12.5px);font-weight:600;letter-spacing:.05em;line-height:1.5}
+#crypto-overview .desk-vector-link{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:10px 15px;border:1px solid var(--line);border-radius:var(--r-btn,10px);color:var(--text);font-size:var(--fs-body,14px);text-decoration:none}
+#crypto-overview .desk-nav{display:flex;align-items:center;flex-wrap:wrap;gap:6px 24px;border-bottom:1px solid var(--line);padding-bottom:4px}
+#crypto-overview .desk-nav a{display:inline-flex;align-items:center;min-height:44px;padding:10px 0;color:var(--muted);font-size:var(--fs-body,14px);text-decoration:none;border-bottom:2px solid transparent}
+#crypto-overview .desk-nav a:first-child{color:var(--text);border-color:var(--info)}
+#crypto-overview a:focus-visible{outline:2px solid var(--info);outline-offset:3px;border-radius:var(--r-ctl,8px)}
+#crypto-overview a:hover{color:var(--ink-link,var(--link))}
+#crypto-overview .desk-lead{display:grid;grid-template-columns:minmax(0,1fr) 304px;gap:32px;padding:28px 0}
+#crypto-overview .desk-lead-copy{min-width:0}
+#crypto-overview .hero-stance{margin-top:8px;max-width:760px;font-size:clamp(30px,3.6vw,46px);font-weight:650;line-height:1.1;letter-spacing:-.035em;overflow-wrap:anywhere}
+#crypto-overview .hero-copy{max-width:740px;font-size:var(--fs-body,14px);line-height:1.65;margin-top:12px}
+#crypto-overview .hero-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:var(--fs-sm,12.5px);line-height:1.5}
+#crypto-overview .desk-context-rule{margin:0;align-self:center;border-left:1px solid var(--line);padding-left:22px;color:var(--text);font-size:var(--fs-body,14px);line-height:1.6}
+#crypto-overview .desk-context-rule>span{display:block;margin-top:8px;color:var(--muted)}
+#crypto-overview .desk-context-rule>span.l-zh{display:none}
+html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-en{display:none}
+html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block}
+#crypto-overview .desk-grid{display:grid;grid-template-columns:minmax(0,1fr) 304px;gap:28px;align-items:stretch}
+#crypto-overview .desk-market-panel{min-width:0;padding:22px 24px;border:1px solid var(--line);border-radius:var(--r-panel,14px);background:var(--panel)}
+#crypto-overview .desk-instrument-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+#crypto-overview .desk-instrument-head h2{margin:0;font-size:var(--fs-h2,17px);font-weight:650;line-height:1.4}
+#crypto-overview .desk-instrument-head p{margin:6px 0 0;font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.5}
+#crypto-overview .desk-observation-tag{flex:none;color:var(--muted);font-size:var(--fs-sm,12.5px);padding:5px 8px;background:var(--panel2);border-radius:var(--r-ctl,8px)}
+#crypto-overview .desk-market-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding:24px 0 18px}
+#crypto-overview .desk-market-stats>div{min-width:0}
+#crypto-overview .desk-market-stats>div>span{display:block;font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.5}
+#crypto-overview .desk-market-stats b{display:block;margin:7px 0;font-size:var(--fs-num-lg,22px);font-weight:650;line-height:1.25;letter-spacing:-.025em}
+#crypto-overview .desk-market-stats small{display:block;color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.5}
+#crypto-overview .desk-market-stats em{font-style:normal;color:var(--tone)}
+#crypto-overview .desk-tape{min-height:240px;padding-top:8px}
+#crypto-overview .desk-tape .ilx{margin:0}
+#crypto-overview .desk-chart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;text-align:center;padding:24px;gap:12px;color:var(--muted)}
+#crypto-overview .desk-chart-empty p{margin:0;max-width:480px;font-size:var(--fs-body,14px);line-height:1.6}
+#crypto-overview .desk-chart-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);margin-top:18px;padding-top:12px;color:var(--muted);font-size:var(--fs-sm,12.5px)}
+#crypto-overview .desk-chart-foot a,#crypto-overview .desk-next-step a{display:inline-flex;align-items:center;min-height:44px;gap:8px;color:var(--ink-link,var(--link));text-decoration:none;font-size:var(--fs-body,14px)}
+#crypto-overview .desk-budget{min-width:0;padding:0 0 0 2px;display:flex;flex-direction:column}
+#crypto-overview .desk-budget-head h2{margin:0;font-size:var(--fs-body,14px);font-weight:600;line-height:1.5}
+#crypto-overview .desk-budget-head>span{display:block;margin-top:5px;font-size:var(--fs-sm,12.5px);color:var(--muted)}
+#crypto-overview .desk-target{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin:18px 0}
+#crypto-overview .desk-target strong{font-size:var(--fs-display,46px);font-weight:650;letter-spacing:-.04em;line-height:1.1}
+#crypto-overview .desk-target>span{font-size:var(--fs-sm,12.5px);color:var(--muted)}
+#crypto-overview .desk-target-rail{height:6px;border-radius:var(--r-pill,999px);background:var(--line);overflow:hidden}
+#crypto-overview .desk-target-rail i{display:block;height:100%;background:var(--info)}
+#crypto-overview .desk-cash{display:flex;justify-content:space-between;gap:12px;padding:12px 0;font-size:var(--fs-body,14px);color:var(--muted)}
+#crypto-overview .desk-cash strong{color:var(--text);font-weight:600}
+#crypto-overview .desk-budget-limit{margin:0 0 10px;color:var(--muted);font-size:var(--fs-body,14px);line-height:1.6}
+#crypto-overview .desk-budget-meta{margin:4px 0 0;padding:10px 0;border-top:1px solid var(--line)}
+#crypto-overview .desk-budget-meta>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:var(--fs-sm,12.5px);line-height:1.5}
+#crypto-overview .desk-budget-meta dt{color:var(--muted)}
+#crypto-overview .desk-budget-meta dd{margin:0}
+#crypto-overview .desk-holdings-note{margin:0 0 16px;font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.5}
+#crypto-overview .desk-budget-cta{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:12px 15px;border:1px solid var(--line);border-radius:var(--r-btn,10px);color:var(--ink-link,var(--link));background:var(--panel2);font-size:var(--fs-body,14px);font-weight:600;text-decoration:none}
+#crypto-overview .desk-next-step{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}
+#crypto-overview .desk-next-step h3{font-size:var(--fs-h2,17px);font-weight:600;line-height:1.4;margin:8px 0}
+#crypto-overview .desk-next-step p{font-size:var(--fs-body,14px);line-height:1.6;color:var(--muted);margin:0 0 8px}
+#leverage-heat [data-crypto-funding-state] .reading{font-size:var(--fs-num-lg,22px);line-height:1.3}
+#leverage-heat [data-crypto-funding-state] .receipt{font-size:var(--fs-body,14px);line-height:1.6}
+@media(max-width:1000px){
+  #crypto-overview .desk-lead{grid-template-columns:minmax(0,1fr);gap:18px}
+  #crypto-overview .desk-context-rule{border-left:0;padding:0;max-width:740px}
+  #crypto-overview .desk-grid{grid-template-columns:minmax(0,1fr);gap:24px}
+  #crypto-overview .desk-budget{padding:22px 24px;border:1px solid var(--line);border-radius:var(--r-panel,14px);background:var(--panel)}
+}
+@media(max-width:600px){
+  #crypto-overview .desk-page-head{align-items:flex-start;flex-direction:column;gap:14px;padding:4px 0 18px}
+  #crypto-overview .desk-page-actions{width:100%;gap:10px}
+  #crypto-overview .desk-page-actions>*{flex:1}
+  #crypto-overview .desk-page-title{font-size:var(--fs-num-lg,22px)}
+  #crypto-overview .desk-vector-link{padding:10px;font-size:var(--fs-sm,12.5px);max-width:none;text-align:center}
+  #crypto-overview .desk-nav{gap:0 18px}
+  #crypto-overview .desk-lead{padding:22px 0}
+  #crypto-overview .hero-stance{font-size:32px;line-height:1.15}
+  #crypto-overview .desk-market-panel,#crypto-overview .desk-budget{padding:18px 16px}
+  #crypto-overview .desk-instrument-head{display:block}
+  #crypto-overview .desk-observation-tag{display:inline-flex;margin-top:10px}
+  #crypto-overview .desk-market-stats{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 12px;padding:20px 0 12px}
+  #crypto-overview .desk-market-stats>div:first-child{grid-column:1/-1;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  #crypto-overview .desk-market-stats>div:first-child b{font-size:var(--fs-num-xl,38px)}
+  #crypto-overview .desk-chart-foot{align-items:flex-start;flex-direction:column;gap:4px}
+  #crypto-overview .desk-tape{min-height:180px}
+}
+
+/* H2 */
+.market-board{border-top:1px solid var(--line)}
+.market-row{display:grid;grid-template-columns:minmax(170px,1.3fr) 140px 94px minmax(150px,1fr) 115px;
+  min-height:58px;align-items:center;border-bottom:1px solid var(--line)}
+.market-row:last-child{border-bottom:0}
+.market-row>div{padding:8px 15px;min-width:0}
+.market-head{min-height:35px;background:var(--panel2);color:var(--muted);font-size:9px;font-weight:760;letter-spacing:.1em;text-transform:uppercase}
+.asset{display:grid;grid-template-columns:30px 48px minmax(0,1fr);align-items:center;gap:8px}
+.rank{color:var(--muted);font:650 10px/1 var(--font-mono)}
+.asset b{font:780 13px/1 var(--font-mono)}.asset small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.market-value,.market-change{font:700 12px/1 var(--font-mono);font-variant-numeric:tabular-nums}
+.market-change{color:var(--tone)}
+.spark-cell{height:50px;padding-block:4px!important}.spark-cell .ilx{margin:0;height:42px}.spark-cell .ilx-tag,.spark-cell .ilx-d{display:none}
+.history-null{display:inline-flex;align-items:center;height:100%;color:var(--muted);font-size:10px}
+.history-chip{font:650 9px/1 var(--font-mono);padding:4px 6px;border:1px solid var(--line);color:var(--muted);margin-left:6px}
+.source-line{display:flex;justify-content:space-between;gap:20px;padding:10px 15px;border-top:1px solid var(--line);color:var(--muted);font-size:10px}
+.more-market{border-top:1px solid var(--line)}.more-market summary{padding:13px 15px;cursor:pointer;font-weight:720;font-size:11px}
+.compact-market{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
+.compact-asset{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;background:var(--panel);font:650 10px/1 var(--font-mono)}
+
+/* H3/H4 */
+.triptych{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}
+.sensor{position:relative;min-height:160px;padding:20px;border-right:1px solid var(--line)}
+.sensor:last-child{border-right:0}.sensor .eyebrow{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:760}
+.sensor .reading{margin-top:16px;font:780 28px/1 var(--font-mono);letter-spacing:-.04em}
+.sensor .read-label{margin-top:9px}.sensor .receipt{margin-top:17px;color:var(--muted);font-size:10.5px}
+.heat-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(240px,.7fr);border:1px solid var(--line)}
+.heat-cards{display:grid;grid-template-columns:repeat(3,1fr)}
+.heat-meter{padding:24px;border-left:1px solid var(--line);background:var(--panel2)}
+.meter-score{display:flex;align-items:flex-end;justify-content:space-between;margin:20px 0 13px}
+.meter-score b{font:800 42px/.9 var(--font-mono)}.meter-score span{color:var(--muted);font-size:10px}
+.meter-rail{height:8px;background:var(--line);position:relative}.meter-rail i{position:absolute;inset:0 auto 0 0;background:var(--tone);width:var(--v)}
+.meter-scale{display:flex;justify-content:space-between;margin-top:7px;color:var(--muted);font-size:9px}
+.deriv-fold{border:1px solid var(--line);border-top:0}.deriv-fold summary{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;font-size:11px;font-weight:740}
+.deriv-fold summary span:last-child{margin-left:auto;color:var(--muted);font:650 10px/1 var(--font-mono)}
+.deriv-grid{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line)}
+.deriv-fact{min-height:92px;padding:15px;border-right:1px solid var(--line)}.deriv-fact:last-child{border-right:0}
+.deriv-fact span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em}.deriv-fact b{display:block;margin-top:13px;font:760 16px/1 var(--font-mono)}
+.deriv-note{padding:10px 15px;border-top:1px solid var(--line);color:var(--muted);font-size:10px}
+
+/* H5 */
+.alloc-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);border:1px solid var(--line)}
+.alloc-main{padding:22px;border-right:1px solid var(--line)}
+.alloc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.alloc-top h3{margin:0;font-size:23px;letter-spacing:-.035em}.alloc-top p{margin:6px 0 0;color:var(--muted);font-size:11px}
+.exposure-big{text-align:right}.exposure-big b{display:block;font:820 46px/.9 var(--font-mono)}.exposure-big span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.alloc-bar{display:flex;height:44px;margin:24px 0 12px;background:var(--line);overflow:hidden}
+.alloc-seg{display:grid;place-items:center;min-width:0;color:white;font:760 10px/1 var(--font-mono);overflow:hidden}
+.alloc-btc{background:#d97813}.alloc-eth{background:#6173d9}.alloc-alts{background:#7a5dc7}.alloc-cash{background:#65707d}
+.alloc-legend{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.alloc-key{border-top:2px solid var(--line);padding-top:8px}
+.alloc-key b{display:block;font:760 18px/1 var(--font-mono)}.alloc-key span{font-size:10px;color:var(--muted)}
+.alloc-side{padding:22px}.alloc-side dl{margin:16px 0 0}.alloc-side div{display:flex;justify-content:space-between;gap:18px;padding:10px 0;border-bottom:1px solid var(--line)}
+.alloc-side dt{color:var(--muted);font-size:10px}.alloc-side dd{margin:0;font:700 11px/1 var(--font-mono)}
+.alloc-note{margin-top:16px;color:var(--muted);font-size:10px}
+
+/* Snapshot evidence is separate from the independently owned Market Board rows. */
+#universe-snapshot{margin:16px 0 0;padding:14px 18px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);font-size:var(--fs-body,14px);line-height:1.5}
+#universe-snapshot .snapshot-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#universe-snapshot p{margin:8px 0;color:var(--muted)}
+#universe-snapshot summary{display:list-item;min-height:44px;padding:12px 0;cursor:pointer;color:var(--ink-link,var(--link))}
+#universe-snapshot .breadth-receipt{padding:12px 0;border-top:1px solid var(--line)}
+#universe-snapshot .excluded-observation{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,2fr);gap:14px;padding:12px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+#universe-snapshot small{display:block;color:var(--muted);font-size:var(--fs-sm,12.5px)}
+@media(max-width:600px){
+  #universe-snapshot .excluded-observation{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  #universe-snapshot .excluded-observation>div:last-child{grid-column:1/-1}
+}
+/* H5-only reading hierarchy; keep the shared shell and Market Board untouched. */
+#allocation .alloc-main,#allocation .alloc-side{min-width:0}
+#allocation .alloc-top p,#allocation .alloc-note{font-size:var(--fs-body,14px);line-height:1.6}
+#allocation .alloc-side dt,#allocation .alloc-side dd,#allocation .source-line{font-size:var(--fs-sm,12.5px);line-height:1.5}
+#allocation .alloc-side dd{text-align:right;overflow-wrap:anywhere}
+#allocation .source-line a{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:720px){
+  #allocation .alloc-grid{grid-template-columns:minmax(0,1fr)}
+  #allocation .alloc-top{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+  #allocation .exposure-big{display:flex;align-items:baseline;gap:12px;text-align:left}
+  #allocation .exposure-big span{font-size:var(--fs-sm,12.5px);white-space:nowrap;letter-spacing:normal}
+  #allocation .alloc-main{border-right:0}
+  #allocation .alloc-side div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start;gap:12px}
+}
+
+
+/* H6/H7/H8 */
+.lane-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}
+.asset-lane{padding:24px;border-right:1px solid var(--line);text-decoration:none;color:inherit}.asset-lane:last-child{border-right:0}
+.lane-top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.lane-symbol{font:820 34px/.9 var(--font-mono);letter-spacing:-.05em}
+.lane-name{margin-top:5px;color:var(--muted);font-size:10px}.lane-price{text-align:right;font:760 18px/1 var(--font-mono)}
+.lane-price small{display:block;margin-top:7px;color:var(--tone);font-size:10px}
+.lane-state{margin-top:24px;font-size:17px;font-weight:760}.lane-copy{min-height:42px;margin:8px 0 20px;color:var(--muted);font-size:11px}
+.lane-coverage{min-height:28px;margin:-10px 0 17px;color:var(--muted);font-size:9px}
+.lane-cta{font-size:10px;font-weight:740;color:var(--ink-link, var(--link))}
+.equity-grid{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--line)}
+.equity{padding:16px 14px;border-right:1px solid var(--line);text-decoration:none;color:inherit}.equity:last-child{border-right:0}
+/* Rails member with no dossier page — the basket names a wider universe than
+   we render. Tile and quote stay; the click does not. */
+.equity-off{cursor:default}
+.equity b{font:780 14px/1 var(--font-mono)}.equity .eq-price{margin-top:18px;font:720 13px/1 var(--font-mono)}
+.equity .eq-change{margin-top:6px;color:var(--tone);font:680 10px/1 var(--font-mono)}.equity .state{margin-top:13px;font-size:9.5px}
+.calendar-grid{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line)}
+.event{min-height:145px;padding:17px 15px;border-right:1px solid var(--line)}.event:last-child{border-right:0}
+.event-date{display:flex;justify-content:space-between;color:var(--muted);font:650 9px/1 var(--font-mono)}
+.event-date b{color:var(--crypto)}.event h3{margin:24px 0 7px;font-size:13px;line-height:1.2}.event p{margin:0;color:var(--muted);font-size:10px}
+.page-foot{padding:26px 4px 0;color:var(--muted);font-size:10px;text-align:center}
+
+@media(max-width:1050px){
+  .hero-grid{grid-template-columns:1fr;gap:28px}.hero-viz{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}
+  .heat-layout,.alloc-grid{grid-template-columns:1fr}.heat-meter,.alloc-side{border-left:0;border-top:1px solid var(--line)}
+  .deriv-grid{grid-template-columns:repeat(3,1fr)}.deriv-fact{border-bottom:1px solid var(--line)}
+  .equity-grid{grid-template-columns:repeat(4,1fr)}.equity{border-bottom:1px solid var(--line)}
+  .calendar-grid{grid-template-columns:repeat(3,1fr)}.event{border-bottom:1px solid var(--line)}
+}
+@media(max-width:720px){
+  body.crypto-page{padding-top:10px}.crypto-rail{width:min(100% - 20px,1500px)}.shelf-pad{padding:17px 15px}
+  .hero-grid{padding:24px 17px}.hero-word{font-size:55px}.hero-stats{grid-template-columns:1fr}.hero-stat{border-right:0;border-bottom:1px solid var(--line)}
+  .hero-stat:last-child{border-bottom:0}.shelf-sub{display:none}
+  .market-row{grid-template-columns:minmax(145px,1.2fr) 92px 72px}.market-row>div:nth-child(4),.market-row>div:nth-child(5){display:none}
+  .triptych,.heat-cards{grid-template-columns:1fr}.sensor{border-right:0;border-bottom:1px solid var(--line)}.sensor:last-child{border-bottom:0}
+  .alloc-legend{grid-template-columns:repeat(2,1fr)}.lane-grid{grid-template-columns:1fr}.asset-lane{border-right:0;border-bottom:1px solid var(--line)}
+  .equity-grid{grid-template-columns:repeat(2,1fr)}.calendar-grid{grid-template-columns:repeat(2,1fr)}
+  .compact-market{grid-template-columns:repeat(2,1fr)}.source-line{display:block}
+}
+{% include "_crypto_house_style.html.j2" %}
+</style>
+</head>
+<body class="crypto-page">
+{% include "_site_nav.html.j2" %}
+<main class="crypto-rail">
+  <section class="crypto-shelf hero" data-shelf="H1" id="crypto-overview">
+    <header class="desk-page-head">
+      <div><div class="shelf-kicker">{{ t('Digital assets · research','数字资产 · 研究') }}</div><h1 class="desk-page-title">{{ t('Crypto intelligence','加密资产情报') }}</h1></div>
+      <div class="desk-page-actions"><a class="desk-vector-link" href="vector.html">{{ t('Bitcoin Vector','比特币向量') }} <span aria-hidden="true">↗</span></a><button class="desk-vector-link desk-brain-entry" type="button" data-crypto-brain aria-haspopup="dialog" aria-controls="mmb-panel"><span>{{ t('Ask Mastermind','询问 Mastermind') }}</span></button></div>
+    </header>
+    <p class="desk-brain-status" hidden role="status">{{ t("The assistant is not ready. Market research remains available.","助手暂未就绪；您仍可查看市场研究。") }}</p>
+    <nav class="desk-nav" data-crypto-desk-nav aria-label="Crypto research sections / 加密研究分区">
+      <a href="#crypto-overview">{{ t('Overview','概览') }}</a><a href="#market-board">{{ t('Assets','资产') }}</a><a href="#money-flows">{{ t('Capital','资金') }}</a><a href="#leverage-heat">{{ t('Leverage','杠杆') }}</a><a href="#allocation">{{ t('Model budget','模型预算') }}</a>
+    </nav>
+    <div class="desk-lead">
+      <div class="desk-lead-copy">
+        <div class="shelf-kicker">{{ t('The daily market read','每日市场解读') }}</div>
+        <div class="hero-stance">{{ t(market.stance, market.stance_zh) }}</div>
+        <p class="hero-copy">{{ t(market.summary, market.summary_zh) }}</p>
+        <div class="hero-meta"><span class="live-chip"><i></i>{{ t('Daily class read','每日市场解读') }}</span><span class="num">{{ t('As of','截至') }} {{ as_of }}</span></div>
+      </div>
+      <p class="desk-context-rule">{{ t('Market context is not an allocation instruction.','市场背景并非仓位指令。') }} <span>{{ t('Read the recorded market. Inspect the model budget separately.','先看市场，再单独查看已记录的模型预算。') }}</span></p>
+    </div>
+    <div class="desk-grid">
+      <div class="desk-market-panel">
+        <div class="desk-instrument-head"><div><h2>{{ t('The market behind the headline','标题背后的市场') }}</h2><p>{{ t('Derived total market capitalization · descriptive regime history','衍生总市值 · 描述性阶段历史') }}</p></div><span class="desk-observation-tag">{{ t('Dated observations','有日期的观测') }}</span></div>
+        <div class="desk-market-stats">
+          <div class="{{ tone(market.total_tone) }}"><span>{{ t('Total market cap','加密总市值') }}</span><b>{{ market_total }}</b><small>{{ t('30-day change','30日变化') }} <em>{{ market_30d }}</em></small></div>
+          <div class="{{ tone(market.dominance_tone) }}"><span>{{ t('Bitcoin market share','比特币市值占比') }}</span><b>{{ dominance }}</b><small>{{ t(market.dominance_state,dominance_state_zh) }} · {{ dominance_30d }}</small></div>
+          <div class="{{ tone(market.fear_tone) }}"><span>{{ t('Fear & Greed index','恐惧与贪婪指数') }}</span><b>{{ fear }}</b><small>{{ t(market.fear_state,fear_state_zh) }} · {{ t('Sentiment, not probability','情绪，并非概率') }}</small></div>
+        </div>
+        {% if market.history.dates|length >= 2 and tape %}
+        <div class="hero-tape desk-tape" data-market-history-state="available">{{ tape|safe }}</div>
+        {% else %}
+        <div class="desk-chart-empty" data-market-history-state="unavailable" role="status"><strong>{{ t('Market history unavailable','市场历史暂不可用') }}</strong><p>{{ t('No market path is inferred. Other available observations and the model budget remain separate.','不推断市场路径。其他可用观测与模型预算仍分别展示。') }}</p></div>
+        {% endif %}
+        <div class="desk-chart-foot"><span>{{ t('Recorded history, not a forward forecast.','已记录历史，并非未来预测。') }}</span><a href="#universe-snapshot">{{ t('Inspect snapshot coverage','查看快照覆盖') }} <span aria-hidden="true">→</span></a></div>
+      </div>
+      <aside class="desk-budget" data-desk-budget-state="{{ 'available' if allocation.available else ('breakdown-unavailable' if allocation.budget_available else 'unavailable') }}" aria-labelledby="desk-budget-title">
+        <div class="desk-budget-head"><h2 id="desk-budget-title">{{ t('Recorded model budget','已记录的模型预算') }}</h2><span>{{ t('Bitcoin Vector','比特币向量') }}</span></div>
+        {% if allocation.available or allocation.budget_available %}
+        <div class="desk-target"><strong data-desk-budget-value>{{ allocation.exposure }}%</strong><span>{{ t('crypto exposure','加密资产仓位') }}</span></div>
+        <div class="desk-target-rail" aria-hidden="true"><i style="width:{{ allocation.exposure }}%"></i></div>
+        <div class="desk-cash"><span>{{ t('Cash remainder','剩余现金仓位') }}</span><strong data-desk-cash-value>{{ allocation.cash }}%</strong></div>
+        {% if not allocation.available %}<p class="desk-budget-limit">{{ t('Total budget known; asset breakdown unavailable.','总预算已知；资产拆分暂不可用。') }}</p>{% elif allocation.exposure == 0 %}<p class="desk-budget-limit">{{ t('The recorded target is cash—not missing data.','已记录目标为现金，并非数据缺失。') }}</p>{% endif %}
+        {% else %}
+        <div class="desk-target"><strong data-desk-budget-value>—</strong><span>{{ t('Budget unavailable','预算暂不可用') }}</span></div>
+        <p class="desk-budget-limit">{{ t('No usable model decision for this snapshot. An unavailable target is not a cash recommendation.','当前快照没有可用模型决策。目标不可用，不代表现金配置建议。') }}</p>
+        {% endif %}
+        <dl class="desk-budget-meta"><div><dt>{{ t('Decision date','决策日期') }}</dt><dd data-desk-decision-date>{{ allocation.decision_as_of or '—' }}</dd></div></dl>
+        <p class="desk-holdings-note">{{ t('Not your account holdings','并非您的账户持仓') }}</p>
+        <a class="desk-budget-cta" href="#allocation">{{ t('Inspect the allocation','查看模型配置') }} <span aria-hidden="true">→</span></a>
+        <div class="desk-next-step"><span class="shelf-kicker">{{ t('Next research question','下一步研究问题') }}</span><h3>{{ t('Is participation broadening?','参与是否正在扩大？') }}</h3><p>{{ t('Check the eligible assets and their recorded histories. Market share, returns and breadth are different observations.','查看合资格资产与已记录历史。市值占比、回报与广度是不同的观测。') }}</p><a href="#market-board">{{ t('Explore the asset board','查看资产看板') }} <span aria-hidden="true">→</span></a></div>
+      </aside>
+    </div>
+  </section>
+
+    {# Universe snapshot receipt #}
+    <div id="universe-snapshot" data-universe-as-of="{{ universe_snapshot.as_of or '' }}">
+      <div class="snapshot-summary">
+        <div>{% if universe_snapshot.as_of %}{{ t('Market Board snapshot','市场看板快照') }} <strong>{{ universe_snapshot.as_of }}</strong>{% else %}<strong>{{ t('No ranked snapshot available','暂无可用的排名快照') }}</strong>{% endif %}</div>
+        <div>{{ universe_count }} / {{ universe_snapshot.requested }} {{ t('assets listed','项资产已列出') }}</div>
+      </div>
+      <p>{{ t('Ranks and research use this date. Quote cells may refresh separately. Older observations never fill missing ranks.','排名与研究采用此快照日期，报价可能单独刷新。不会用旧观测补足当前排名。') }}</p>
+      <details class="universe-coverage">
+        <summary>{{ t('Review excluded observations','查看未纳入的观测') }} · {{ universe_snapshot.excluded|length }}</summary>
+        <div class="breadth-receipt">{% if breadth.available %}<strong>{{ t('Positive 30-day returns','30日回报为正') }}: {{ breadth.positive }} / {{ breadth.eligible }}</strong>{% else %}<strong>{{ t('Insufficient comparable returns','可比回报数据不足') }}</strong> · {{ breadth.eligible }} / {{ breadth.required }} {{ t('minimum','最低所需') }}{% endif %}<p>{{ t('Only assets with sufficient recorded history and a numeric 30-day return enter that count. Missing returns are not losses. Not a Bitcoin-relative or altseason measure.','仅历史记录充分且有数值型30日回报的资产纳入统计。缺失回报不等于下跌；此指标并非相对比特币强弱或山寨季指标。') }}</p><p>{{ breadth.excluded }} {{ t('listed assets excluded from the return count','项已列资产未纳入回报统计') }}</p></div>
+        {% set reasons = {
+          'OLDER_SNAPSHOT': ['Older snapshot', '较早的快照'],
+          'FUTURE_OBSERVATION': ['Future-dated observation', '观测日期尚未到来'],
+          'INVALID_RANK': ['Invalid rank', '排名无效'],
+          'OUTSIDE_RANK_RANGE': ['Outside requested rank range', '超出所选排名范围'],
+          'INVALID_LATEST_PRICE': ['Latest price unavailable or invalid', '最新价格缺失或无效'],
+          'MISSING_ASSET_IDENTITY': ['Asset identity missing', '缺少资产身份'],
+          'EMPTY_HISTORY': ['No observations', '暂无观测'],
+          'UNREADABLE_HISTORY': ['Source history could not be read', '无法读取来源历史']
+        } %}
+        {% for item in universe_snapshot.excluded %}
+        <div class="excluded-observation"><div><strong>{{ item.symbol or item.file }}</strong><small>{{ item.source or '—' }}</small></div><div>{{ item.as_of or '—' }}</div><div>{{ t(*reasons.get(item.reason, ['Not comparable', '不可比较'])) }}</div></div>
+        {% endfor %}
+        {% if not universe_snapshot.excluded %}<p>{{ t('No stored observations were excluded from this ranked snapshot.','本排名快照没有排除任何已存观测。') }}</p>{% endif %}
+        <p>{{ t('Excluded source records are retained for review. Histories restart at unqualified source or asset-identity changes.','未纳入的原始记录会保留供复核。来源或资产身份发生尚未确认可衔接的变化时，历史序列会重新积累。') }}</p>
+      </details>
+    </div>
+    {# End universe snapshot receipt #}
+
+  <section class="crypto-shelf" data-shelf="H2" id="market-board">
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H2</span><h2 class="shelf-title">{{ t('Market Board','市场看板') }}</h2><span class="shelf-sub">{{ universe_count }} {{ t('assets accruing daily','项资产每日积累') }}</span></div></div>
+    <div class="market-board">
+      <div class="market-row market-head"><div>{{ t('Asset','资产') }}</div><div>{{ t('Price','价格') }}</div><div>24H</div><div>{{ t('90D tape','90日走势') }}</div><div>{{ t('State','状态') }}</div></div>
+      {% for a in top_assets %}
+      <div class="market-row {{ tone(a.tone) }}">
+        <div class="asset"><span class="rank">{{ "%02d"|format(a.rank) }}</span><b>{{ a.symbol }}</b><small>{{ a.name }}</small></div>
+        <div class="market-value nb-px" data-sym="{{ a.live_symbol }}">{{ a.price_label }}</div>
+        <div class="market-change nb-chg" data-sym="{{ a.live_symbol }}">{{ a.change_label }}</div>
+        <div class="spark-cell">{% if a.spark %}{{ a.spark|safe }}{% else %}<span class="history-null">{{ t('Building history','积累历史中') }}</span>{% endif %}<span class="history-chip">{{ a.history_chip }}</span></div>
+        <div><span class="state">{{ t(a.state,a.state_zh) }}</span></div>
+      </div>
+      {% endfor %}
+      {% if not top_assets %}<div class="source-line"><span>{{ t('Universe snapshot awaiting the next CoinGecko collection.','市场快照正在等待下一次 CoinGecko 采集。') }}</span></div>{% endif %}
+    </div>
+    {% if more_assets %}<details class="more-market"><summary>{{ t('Expand ranks 21–50','展开第 21–50 名') }}</summary><div class="compact-market">{% for a in more_assets %}<div class="compact-asset"><span>{{ "%02d"|format(a.rank) }} · {{ a.symbol }}</span><span class="{{ tone(a.tone) }}" style="color:var(--tone)">{{ a.change_label }}</span></div>{% endfor %}</div></details>{% endif %}
+    <div class="source-line"><span>{{ t('Universe data: CoinGecko primary' ~ (', ' ~ universe_sources|join(' / ') ~ ' observed' if universe_sources else '') ~ '; CoinPaprika is the disclosed availability fallback.','市场数据：CoinGecko 为主源；CoinPaprika 为明确披露的可用性备用源。') }}</span><span>{{ t('History is shown only after it accrues; BTC, ETH and SOL use existing deep daily stores.','仅在历史积累后绘图；BTC、ETH 与 SOL 使用现有深度日频数据。') }}</span></div>
+  </section>
+
+  <section class="crypto-shelf" data-shelf="H3" id="money-flows">
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H3</span><h2 class="shelf-title">{{ t('Money Flows','资金流') }}</h2><span class="shelf-sub">{{ t('three class-level receipts','三项资产类别收据') }}</span></div>
+      <div class="triptych">
+        <div class="sensor {{ tone(market.flows.etf.tone) }}"><div class="eyebrow">{{ t('US spot-BTC ETFs · 5D','美国现货比特币 ETF · 5日') }}</div><div class="reading">{% if market.flows.etf.value is not none %}{{ "${:+,.0f}M".format(market.flows.etf.value) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.etf.state,market.flows.etf.state_zh) }}</span></div><div class="receipt">{{ t('Farside fund-level net flows; class liquidity context, not a trade signal.','Farside 基金级净流量；仅作全市场流动性情况。') }}</div></div>
+        <div class="sensor {{ tone(market.flows.stablecoins.tone) }}"><div class="eyebrow">{{ t('Stablecoin tide · 30D','稳定币潮汐 · 30日') }}</div><div class="reading">{{ fmt_money(market.flows.stablecoins.change_30d_usd, compact=True) }}</div><div class="read-label"><span class="state">{{ t(market.flows.stablecoins.state,market.flows.stablecoins.state_zh) }} · {{ fmt_pct(market.flows.stablecoins.change_30d_pct) }}</span></div><div class="receipt">{{ t('Aggregate circulating supply from DefiLlama.','DefiLlama 汇总流通供应量。') }}</div></div>
+        <div class="sensor {{ tone(market.flows.volume.tone) }}"><div class="eyebrow">{{ t('Spot participation proxy','现货参与度代理') }}</div><div class="reading">{% if market.flows.volume.percentile is not none %}P{{ market.flows.volume.percentile }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.volume.state,market.flows.volume.state_zh) }}</span></div><div class="receipt">{{ t('BTC spot-volume percentile is an honest proxy until full class volume accrues.','在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。') }}</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="crypto-shelf" data-shelf="H4" id="leverage-heat">
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H4</span><h2 class="shelf-title">{{ t('Leverage & Heat','杠杆与热度') }}</h2><span class="shelf-sub">{{ t('pressure without a new score','压力读数，不新增评分') }}</span></div>
+      <div class="heat-layout">
+        <div class="heat-cards">
+          <div class="sensor tone-flat" data-crypto-funding-state="interval-unqualified"><div class="eyebrow">{{ t('Perpetual funding','永续合约资金费率') }}</div><div class="reading">—</div><div class="read-label">{{ t('Settlement interval not established','尚未确认结算间隔') }}</div><div class="receipt">{{ t('An annualized cost needs a qualified interval and source. Predicted funding is not a settled payment.','年化成本需要明确的结算间隔与来源。预测资金费率并非实际结算支付。') }}</div></div>
+          <div class="sensor {{ tone(market.heat.open_interest.tone) }}"><div class="eyebrow">{{ t('Open interest / BTC cap','未平仓量 / BTC 市值') }}</div><div class="reading">{% if market.heat.open_interest.value is not none %}{{ "%.2f%%"|format(market.heat.open_interest.value*100) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.heat.open_interest.state,market.heat.open_interest.state_zh) }}</span></div><div class="receipt">{% if market.heat.open_interest.percentile is not none %}{{ market.heat.open_interest.percentile|round|int }}{{ t('th percentile','百分位') }}{% else %}{{ t('Coverage unavailable','暂无覆盖') }}{% endif %}</div></div>
+          <div class="sensor {{ tone(market.heat.volatility.tone) }}"><div class="eyebrow">{{ t('Bitcoin implied volatility','比特币隐含波动率') }}</div><div class="reading">{{ market.heat.volatility.value if market.heat.volatility.value is not none else '—' }}</div><div class="read-label"><span class="state">{{ t(market.heat.volatility.state,market.heat.volatility.state_zh) }}</span></div><div class="receipt">DVOL{% if market.heat.volatility.percentile is not none %} · P{{ market.heat.volatility.percentile|round|int }}{% endif %}</div></div>
+        </div>
+        <div class="heat-meter {{ tone(market.heat.altseason.tone) }}"><div class="shelf-kicker">{{ t('Altseason meter','山寨季仪表') }}</div><div class="meter-score"><b>{{ market.heat.altseason.value if market.heat.altseason.value is not none else '—' }}</b><span>/ 100</span></div><div class="meter-rail" style="--v:{{ market.heat.altseason.value if market.heat.altseason.value is not none else 0 }}%"><i></i></div><div class="meter-scale"><span>BTC</span><span>{{ t('Mixed','混合') }}</span><span>ALTS</span></div><div class="read-label" style="margin-top:18px"><span class="state">{{ t(market.heat.altseason.state,market.heat.altseason.state_zh) }}</span></div><div class="receipt" style="margin-top:15px;color:var(--muted);font-size:10px">{{ t('ETH/BTC relative trend plus BTC dominance; display context only.','ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。') }}</div></div>
+      </div>
+      <details class="deriv-fold" id="btc-derivatives">
+        <summary><span>{{ t('Bitcoin derivatives desk','比特币衍生品台') }}</span><span>{{ btc_options.as_of or t('Awaiting data','等待数据') }}</span></summary>
+        <div class="deriv-grid">
+          <div class="deriv-fact"><span>{{ t('30D implied vol','30日隐含波动') }}</span><b>{{ "%.1f"|format(btc_options.volatility.atm_iv_30d) if btc_options.volatility.atm_iv_30d is not none else '—' }}</b></div>
+          <div class="deriv-fact"><span>{{ t('Gamma flip','Gamma 翻转位') }}</span><b>{% if btc_options.gamma.flip is not none %}${{ "{:,.0f}".format(btc_options.gamma.flip) }}{% else %}—{% endif %}</b></div>
+          <div class="deriv-fact"><span>{{ t('Distance to flip','距翻转位') }}</span><b>{{ "%+.1f%%"|format(btc_options.gamma.distance_pct) if btc_options.gamma.distance_pct is not none else '—' }}</b></div>
+          <div class="deriv-fact"><span>{{ t('Put / call OI','看跌/看涨持仓') }}</span><b>{{ "%.2f×"|format(btc_options.positioning.put_call_oi_ratio) if btc_options.positioning.put_call_oi_ratio is not none else '—' }}</b></div>
+          <div class="deriv-fact"><span>{{ t('Max pain','最大痛点') }}</span><b>{% if btc_options.positioning.max_pain is not none %}${{ "{:,.0f}".format(btc_options.positioning.max_pain) }}{% else %}—{% endif %}</b></div>
+          <div class="deriv-fact"><span>{{ t('Futures basis','期货基差') }}</span><b>{{ "%+.1f%%"|format(btc_options.basis.annualized_pct) if btc_options.basis.annualized_pct is not none else '—' }}</b></div>
+        </div>
+        <div class="deriv-note">{{ t(btc_options.coverage.note_en,btc_options.coverage.note_zh) }} {{ t(btc_options.gamma.assumption_en,btc_options.gamma.assumption_zh) }}</div>
+      </details>
+    </div>
+  </section>
+
+  <section class="crypto-shelf" data-shelf="H5" id="allocation" data-allocation-state="{{ 'available' if allocation.available else ('breakdown-unavailable' if allocation.budget_available else 'unavailable') }}">
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H5</span><h2 class="shelf-title">{{ t('Allocation','配置') }}</h2><span class="shelf-sub">{{ t('model budget · asset breakdown','模型预算 · 类别明细') }}</span></div>
+      <div class="alloc-grid">
+        {% if allocation.available %}
+        <div class="alloc-main">
+          <div class="alloc-top"><div><h3>{% if allocation.exposure == 0 %}{{ t('Model holds cash.','模型保持现金仓位。') }}{% else %}{{ t('One budget. Four destinations.','一个预算，四个去向。') }}{% endif %}</h3><p>{{ t('Bitcoin Vector sets total crypto exposure; the class overlay only splits it.','比特币向量决定加密总仓位；全市场叠加层仅负责拆分。') }}</p></div><div class="exposure-big"><b>{{ allocation.exposure }}%</b><span>{{ t('total crypto','加密总仓位') }}</span></div></div>
+          <div class="alloc-bar" aria-label="BTC ETH altcoins cash allocation"><span class="alloc-seg alloc-btc" style="width:{{ allocation.btc }}%">{% if allocation.btc >= 7 %}BTC{% endif %}</span><span class="alloc-seg alloc-eth" style="width:{{ allocation.eth }}%">{% if allocation.eth >= 7 %}ETH{% endif %}</span><span class="alloc-seg alloc-alts" style="width:{{ allocation.alts }}%">{% if allocation.alts >= 7 %}ALTS{% endif %}</span><span class="alloc-seg alloc-cash" style="width:{{ allocation.cash }}%">{% if allocation.cash >= 7 %}CASH{% endif %}</span></div>
+          <div class="alloc-legend"><div class="alloc-key"><b>{{ allocation.btc }}%</b><span>Bitcoin</span></div><div class="alloc-key"><b>{{ allocation.eth }}%</b><span>Ethereum</span></div><div class="alloc-key"><b>{{ allocation.alts }}%</b><span>{{ t('Altcoins','山寨币') }}</span></div><div class="alloc-key"><b>{{ allocation.cash }}%</b><span>{{ t('Cash','现金') }}</span></div></div>
+          <p class="alloc-note">{{ t('Model allocation, not your account holdings.','模型仓位，并非您的账户持仓。') }}</p>
+        </div>
+        <aside class="alloc-side"><span class="shelf-kicker">{{ t('Model & evidence','模型与依据') }}</span><dl><div><dt>{{ t('Budget source','预算来源') }}</dt><dd>btc.decision/v1</dd></div><div><dt>{{ t('Decision date','决策日期') }}</dt><dd>{{ allocation.decision_as_of or '—' }}</dd></div>{% if allocation.split_context_available %}<div><dt>{{ t('BTC cycle regime','BTC 周期阶段') }}</dt><dd>{{ allocation.regime|upper }}</dd></div><div><dt>{{ t('Alt-season bucket','山寨季区间') }}</dt><dd>{{ allocation.season }}</dd></div><div><dt>ETH/BTC</dt><dd>{{ allocation.ethbtc if allocation.ethbtc is not none else '—' }}</dd></div><div><dt>{{ t('Alt-season score','山寨季评分') }}</dt><dd>{{ allocation.season_score if allocation.season_score is not none else '—' }}</dd></div>{% else %}<div><dt>{{ t('Asset split','类别拆分') }}</dt><dd>{{ t('Not needed','无需计算') }}</dd></div>{% endif %}</dl><p class="alloc-note">{% if allocation.exposure == 0 %}{{ t('A valid 0% crypto target means 100% cash. No asset-ranking or class-split signal is needed.','有效的 0% 加密仓位意味着 100% 现金，无需资产排名或类别拆分信号。') }}{% else %}{{ t('Cash is the remainder after the model crypto budget. The class split cannot change that total.','现金为模型加密预算之外的剩余部分，类别拆分不能改变总预算。') }}{% endif %}</p></aside>
+        {% elif allocation.budget_available %}
+        <div class="alloc-main" role="status">
+          <div class="alloc-top"><div><h3>{{ t('Breakdown unavailable','类别明细暂不可用') }}</h3><p>{{ t('The total model budget is still known. We cannot currently show how it is divided between Bitcoin, Ethereum and altcoins.','模型总预算仍然明确，但目前无法展示比特币、以太坊与山寨币之间的拆分。') }}</p></div><div class="exposure-big"><b>{{ allocation.exposure }}%</b><span>{{ t('total crypto','加密总仓位') }}</span></div></div>
+          <p class="alloc-note">{{ t(allocation.reason_en, allocation.reason_zh) }}</p>
+          <div class="source-line"><span>{{ t('No asset percentages are inferred. Model allocation, not your account holdings.','不推断各资产占比。此处为模型仓位，并非您的账户持仓。') }}</span><span><a href="vector.html">{{ t('Inspect Bitcoin Vector','查看比特币向量') }} →</a></span></div>
+        </div>
+        <aside class="alloc-side"><span class="shelf-kicker">{{ t('What is still known','仍然明确的信息') }}</span><dl><div><dt>{{ t('Total crypto','加密总仓位') }}</dt><dd>{{ allocation.exposure }}%</dd></div><div><dt>{{ t('Cash','现金') }}</dt><dd>{{ allocation.cash }}%</dd></div><div><dt>{{ t('Decision date','决策日期') }}</dt><dd>{{ allocation.decision_as_of or '—' }}</dd></div><div><dt>{{ t('Budget source','预算来源') }}</dt><dd>btc.decision/v1</dd></div><div><dt>{{ t('Asset breakdown','类别明细') }}</dt><dd>{{ t('Unavailable','暂不可用') }}</dd></div></dl><p class="alloc-note">{{ t('A missing breakdown does not invalidate an otherwise valid, matching model budget.','类别明细缺失，不会使有效且日期匹配的模型总预算失效。') }}</p></aside>
+        {% else %}
+        <div class="alloc-main" role="status" aria-live="polite">
+          <div class="alloc-top"><div><h3>{{ t('Allocation unavailable','配置暂不可用') }}</h3><p>{{ t(allocation.reason_en or 'No usable model decision is available for this snapshot.', allocation.reason_zh or '本次快照没有可用的模型决策。') }}</p><p>{{ t('Mastermind will not infer a crypto budget or treat missing data as 0%.','Mastermind 不会推断加密预算，也不会把缺失数据当作 0%。') }}</p></div><div class="exposure-big"><b>—</b><span>{{ t('total crypto','加密总仓位') }}</span></div></div>
+          <div class="source-line"><span>{{ t('Other available Crypto research remains below.','下方仍可查看其他可用的加密资产研究。') }}</span><span><a href="vector.html">{{ t('Inspect Bitcoin Vector','查看比特币向量') }} →</a></span></div>
+        </div>
+        <aside class="alloc-side"><span class="shelf-kicker">{{ t('Model & evidence','模型与依据') }}</span><dl><div><dt>{{ t('Budget source','预算来源') }}</dt><dd>btc.decision/v1</dd></div><div><dt>{{ t('Decision status','决策状态') }}</dt><dd>{{ t('Unavailable for this snapshot','当前快照不可用') }}</dd></div><div><dt>{{ t('Decision date','决策日期') }}</dt><dd>{{ allocation.decision_as_of or '—' }}</dd></div><div><dt>{{ t('Asset split','类别拆分') }}</dt><dd>{{ t('Not calculated','未计算') }}</dd></div></dl><p class="alloc-note">{{ t('A valid 0% target is shown as 0%. An unavailable decision is not a cash recommendation.','有效的 0% 目标会显示为 0%；不可用的决策不代表现金配置建议。') }}</p></aside>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="crypto-shelf" data-shelf="H6" id="asset-lanes">
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H6</span><h2 class="shelf-title">{{ t('Asset Lanes','资产通道') }}</h2><span class="shelf-sub">{{ t('BTC authority · ETH/SOL states','BTC 权威 · ETH/SOL 状态') }}</span></div>
+      <div class="lane-grid">{% for lane in lanes %}<a class="asset-lane {{ tone(lane.tone) }}" href="{{ lane.href }}"><div class="lane-top"><div><div class="lane-symbol">{{ lane.symbol }}</div><div class="lane-name">{{ t(lane.name,lane.name_zh) }}</div></div><div class="lane-price nb-px" data-sym="{{ lane.live_symbol }}">{{ lane.price }}<small class="nb-chg" data-sym="{{ lane.live_symbol }}">{{ lane.change }}</small></div></div><div class="lane-state">{{ t(lane.state,lane.state_zh) }}</div><p class="lane-copy">{{ t(lane.summary,lane.summary_zh) }}</p>{% if lane.coverage %}<p class="lane-coverage">{{ t(lane.coverage,lane.coverage_zh) }}</p>{% endif %}<span class="lane-cta">{{ t(lane.cta,lane.cta_zh) }} →</span></a>{% endfor %}</div>
+    </div>
+  </section>
+
+  <section class="crypto-shelf" data-shelf="H7">
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H7</span><h2 class="shelf-title">{{ t('Crypto Equities','加密概念股') }}</h2><span class="shelf-sub">{{ t('listed rails and cycle proxies','上市轨道与周期代理') }}</span></div>
+      <div class="equity-grid">{% for eq in equities %}{% if eq.href %}<a class="equity {{ tone(eq.tone) }}" href="{{ eq.href }}">{% else %}<div class="equity equity-off {{ tone(eq.tone) }}">{% endif %}<b>{{ eq.ticker }}</b><div class="eq-price nb-px" data-sym="{{ eq.ticker }}">{{ eq.price }}</div><div class="eq-change nb-chg" data-sym="{{ eq.ticker }}">{{ eq.change }}</div><span class="state">{{ t(eq.state,eq.state_zh) }}</span>{% if eq.href %}</a>{% else %}</div>{% endif %}{% endfor %}</div>
+      <div class="source-line"><span>{{ t('Membership follows the curated Crypto & Digital Rails basket; this is a regime sensor, not a buy list.','成分来自经策划的“加密与数字轨道”篮子；这是阶段传感器，不是买入清单。') }}</span></div>
+    </div>
+  </section>
+
+  <section class="crypto-shelf" data-shelf="H8">
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H8</span><h2 class="shelf-title">{{ t('Catalyst Calendar','催化日历') }}</h2><span class="shelf-sub">{{ t('scheduled only · context only','仅限已排期 · 仅供参考') }}</span></div>
+      <div class="calendar-grid">{% for event in calendar %}<article class="event"><div class="event-date"><span>{{ event.date }}</span><b>{{ event.type }}</b></div><h3>{{ t(event.label,event.label_zh) }}</h3><p>{{ t(event.note,event.note_zh) }}</p></article>{% endfor %}</div>
+    </div>
+  </section>
+  <div class="page-foot">Crypto Intelligence Cockpit · {{ t('built','生成于') }} {{ built }} · {{ t('data through','数据截至') }} {{ as_of }}<br>© 2026 MastermindX Inc</div>
+</main>
+<script defer src="illus.js"></script>
+<script src="theme.js"></script>
+<script>
+(function(){
+  'use strict';
+  var entry=document.querySelector('[data-crypto-brain]');
+  if(!entry)return;
+  var timer=null,observer=null,openedHere=false;
+  var note=document.querySelector('.desk-brain-status');
+  function ready(){entry.disabled=false;entry.removeAttribute('aria-busy');if(timer){clearInterval(timer);timer=null}}
+  function bindPanel(){
+    var panel=document.getElementById('mmb-panel');if(!panel||observer)return;
+    var wasOpen=panel.classList.contains('open');
+    observer=new MutationObserver(function(){
+      var open=panel.classList.contains('open');
+      if(wasOpen&&!open&&openedHere){
+        var focused=document.activeElement;
+        if(focused===document.body||panel.contains(focused)){entry.focus()}
+        openedHere=false;
+      }
+      wasOpen=open;
+    });
+    observer.observe(panel,{attributes:true,attributeFilter:['class']});
+  }
+  function openExisting(){
+    if(!window.MMBrain||typeof window.MMBrain.open!=='function')return false;
+    var panel=document.getElementById('mmb-panel');openedHere=true;
+    if(!panel||!panel.classList.contains('open'))window.MMBrain.open();
+    bindPanel();ready();return true;
+  }
+  entry.addEventListener('click',function(){
+    if(timer)return;note.hidden=true;entry.disabled=true;entry.setAttribute('aria-busy','true');
+    if(openExisting())return;
+    var boot=document.getElementById('mmb-boot');if(boot)boot.click();
+    var tries=0;
+    timer=setInterval(function(){
+      if(openExisting())return;
+      if(++tries>=60){ready();note.hidden=false;}
+    },50);
+  });
+  document.body.classList.add('crypto-desk-ready');
+  window.addEventListener('pagehide',function(){ready();if(observer){observer.disconnect();observer=null;}});
+})();
+</script>
+</body>
+</html>

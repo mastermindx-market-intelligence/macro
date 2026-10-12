@@ -1,0 +1,6 @@
+{
+  "path": "research/crypto_science/r11/red_receipt_types.txt",
+  "original_sha256": "b47f9aacc631691b655410e256b62407b5711ba32878e3b12dfc506604bd7d5c",
+  "normalized_sha256": "bb88341e4ba85deb64b7286489b651b23daee2a218c3d5fd1f66d461ecf4499e",
+  "reason": "git diff check rejected pytest rendering whitespace before commit and before synthetic rerun; no assertion, test result or source change"
+}

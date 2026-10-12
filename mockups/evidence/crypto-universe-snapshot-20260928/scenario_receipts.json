@@ -1,0 +1,608 @@
+{
+  "fixture_status": "controlled_generated_pages_not_production",
+  "created_at": "2026-09-28T07:31:02.136035+00:00",
+  "source_head": "31a60448e058f09b5cea4795cb4bdcfc3f7cfcba",
+  "source_sha256": {
+    "engine/crypto_universe.py": "b25fcbefd7d776d236467ee7dd798908eb84d42bedf1cc8fc729361a177e4fa3",
+    "scripts/build_crypto.py": "760dc577202b1d20c64779f6cd68dab5d1087576f6aa88f7db8553e398c60bfa",
+    "templates/crypto.html.j2": "7e9d1aeb506b04f2c8e532d4af9d4a48eccfb124733928a16728c8f788678ed1"
+  },
+  "combined_template_sha256": "6e8d1cb2b3d752022d4e7180a4a009673c66fab3c428b8eaa1d6a635db2c991e",
+  "input_sha256": {
+    "market_aave.parquet": "ae9ea6cdc9c8f37baa8cd2ea5f10e6a957579b37ea88d994582b42090603845e",
+    "market_ada.parquet": "ea01ded3bf95ab68ea1cce2f2f0eea5ab899ed541e9ba7e33f109e5450a5206a",
+    "market_aster.parquet": "148b73b0a39652b1d379fd9e705243f14012b7caae7c3eb550f32cc32c62c29f",
+    "market_avax.parquet": "44ae86658c80f710fc22ec637327179166d73f1a6ac44c355fc08ff5597202ae",
+    "market_bch.parquet": "21e52bac5a67c3000a17637c4387e117b873f36c6afebf3822b0086b0a59553a",
+    "market_bnb.parquet": "e0a90b67df68df351916ce80b8d580226a85eb0ec86c00f2c73169e23b12fc2c",
+    "market_btc.parquet": "3948e292e169cf3230843e65c421ae3214b941e43e449f37dce61581397e2d7f",
+    "market_btw.parquet": "f196b3c17fa23a3255140c05f0aad5b5ebba31888bf38a1125234a06cb40cf1b",
+    "market_buidl.parquet": "5547364a3f207ce982896d9a684646d818e7345144acac10484c8d5e310beca3",
+    "market_cbbtc.parquet": "26ab25318ef4730bd5486a950669f76314353e2ddd46ef1174a0b73f64652743",
+    "market_cc.parquet": "5cdc0950ce55d3cdf6770f1766d746a2060ce61b1b74b3ad9ae54ded92e60c00",
+    "market_cro.parquet": "f5178055cdf848037051bc157e68bba5f628efc01923302003ed19f411533904",
+    "market_dai.parquet": "2ba861b1ddf72d4ee1867230065d9597fe8fc989ca30f7a4dbd0eeb018f189b9",
+    "market_dark.parquet": "b648796258c6b9c6664e489e322e9d23f4bde2fa275f3ed91c817066c537a371",
+    "market_doge.parquet": "04b52d8476b2d149535a1b211f6498bf882aa53164c770b90d12dd26413b82d2",
+    "market_dot.parquet": "be3573f113722d95a66bea1ca2aba2b83c8a7866ecb18db37c367a2b6c0d8236",
+    "market_ena.parquet": "70d864bbd39fd80b93fff9d5c8632aaf64eb3c48a3613d7c7b853521b298f914",
+    "market_eth.parquet": "52003967a85ebb7aa3d4f13336da1c0fe8d0926f9acdbfe0938813237c93a4ab",
+    "market_figr_heloc.parquet": "5a12acd51bc8f3f0ab41b3a7b25b1ff06420dc2a50e97b363c8f51c1d2e5387c",
+    "market_gram.parquet": "b41706c796a8a1642d81177c9f029b42219159f2604c21c658db8aaea60d1b1e",
+    "market_hbar.parquet": "6495ea8f0d037aecb4f50a95b39e9fc64b5b0cfa793393382f4d5b76151f81e2",
+    "market_hype.parquet": "5767cca4b318bcff824f4338958ebe2fc8ade32c1a7f236df3c46263cb9b8e6a",
+    "market_leo.parquet": "cdbbae78263c5539612559ee46d884058507007af2130a343a184b2b1ed30f24",
+    "market_link.parquet": "f8ba6817eee4f6aad407d27d673ef0c269771bf0b0b64d05cac75f4afbdc422c",
+    "market_ltc.parquet": "ba1c24cdf173c415521ff5b859bc5c7da1748f7c857b0cc6661917ee78b30781",
+    "market_m.parquet": "4b132fade22024b72470881ded350a069fbf444b80d5a085b6d6b949c9819d10",
+    "market_mnt.parquet": "7ced0015fdb93eb67e68e6551764b4a2fa0350618ef7dd6ebcee54502aaf8138",
+    "market_near.parquet": "e816fdba096d36a1c7a4b53633e74d15fa8de683863cff271d549465ec9a7600",
+    "market_okb.parquet": "cd1c651f66bb4f972f4a37c7052857eb0ff4322d4f3842841ffb6523163a29f8",
+    "market_ondo.parquet": "f2862a7a88a4a61dce65c92b0897f1d30ca545a8f6abd37c8eb410593d092225",
+    "market_paxg.parquet": "53db44898510afac46c541c12933c34cca9e573d10828aff85b02789ab0e0b6d",
+    "market_pepe.parquet": "62fb918b18c794dc50ce654837b52dc81b4e8f9a9b87c6dcdac8d656a2730fb4",
+    "market_polydoge.parquet": "b17e72ccfaa8474ebcb7cfc208bf27a25dfe40e5752be86909f34391a3fd346b",
+    "market_pump.parquet": "e56c881812c640e11161b02e6cf723be4bc9a42eaf3212d23b4a261bc6374646",
+    "market_pyusd.parquet": "86d4ff12a735b64ad146e835cd7d96339031cc97c8b9c9729b0dcbeeac4d7d62",
+    "market_rain.parquet": "642b3320e7e191f7c72f83042af43c5865815d6e8a1a2669500a4ac41529f0b9",
+    "market_rlusd.parquet": "0ad9400153261bdbe9d6b6b0e5b0b656533f7518b6b19197f9dc4f9073715053",
+    "market_shib.parquet": "950f951a148430bf5cc2cf6be1de06d224b85c5176ef71c5c3c8f5a57e337f6b",
+    "market_sol.parquet": "7d6953186069ea5b5fbb54f2443b2cc5fe9a51696fa1df6f1ea79d8012fa3ae8",
+    "market_steth.parquet": "0985bfdb3d30b10f19ea0d98284992963faf445e73f61c2fac56af58502f734b",
+    "market_sui.parquet": "2d9c63b66ae12bf80d4ea9e5c0e164dfbe86873026dda597b7236371903aeb7c",
+    "market_susde.parquet": "227d9112a97a490481b5c71f530aec94def9bd6aac50c3569da6b6f67a39903c",
+    "market_susds.parquet": "aaba391bc45a665686ca1823c4ad045fa457732636a4aac56946959555f49a6a",
+    "market_tao.parquet": "19c932d78f99698370dfd3853c2c1e1857edf599f8854139dcfa2bc862c80fb7",
+    "market_trx.parquet": "774d0960ac93a483642a2f2a502a1709f582b04782f396328134ea3b6b14b93b",
+    "market_uni.parquet": "ef3f7cbdd89a7183f6fc405074004308a8f636156f167af50c345cf4593ec4dd",
+    "market_usd1.parquet": "22920fe4a39eb69669fb8cbee53a2f93e988fc5c6d59585b5f4a7d9220ddb7da",
+    "market_usdc.parquet": "3c514c20e361d16a3e77690a1daf2d460f76419e0cd5a1fbc8b6eb47a21e96d2",
+    "market_usde.parquet": "2c6eca8b5f4ecd61c6a942107df1b85f1d64e728122f1c11a466f58a4f426172",
+    "market_usdf.parquet": "28e1c9fd0ede536c0b7dbf48882319022f025b22b5e4e31e2f7df8278ebd4a38",
+    "market_usdg.parquet": "dad266ea4542693427a2ec111b4e755c011d20ab61d2dbef9c54eb8726031d82",
+    "market_usds.parquet": "ba8bf846ff9241f946bd7acb277549d7729f6e904bd8b9628800087a38863a05",
+    "market_usdt.parquet": "05649c2bd0626773627e8e4fd1eb606e0f8ccfb01b8a98f4e56633bfa5d8df3d",
+    "market_usdy.parquet": "c2eeb7a83ec9fefeb24e10cb560cba3e5d0a0cad80e5400a0567cc05d8737ebf",
+    "market_usyc.parquet": "c9dc1ef8bf85473541ad0aa75ceb31bda53bf9438650085bee43c5459e2ab127",
+    "market_wbt.parquet": "3f608b51ace5fc61e52db90b57812d38172aeb0a7641a113c108a6209e963cf5",
+    "market_wbtc.parquet": "3d153fa8696bde4f79a2c4b15b3bbab0b7a1d9ea2c847d05ba5537fd049f6648",
+    "market_weeth.parquet": "d0e42c8a78f6a07d01f1a33b30a63b748ba39e937dcd3d3d62bac73ea1c14619",
+    "market_weth.parquet": "4cbd6c1ebe41bceb958def718b7454ef8e32c8c48915410a0cde4debbca2074e",
+    "market_wld.parquet": "8f69e1e5ca4d1a584fc334973bc3049a49227f5e80791ef4d84848aa0a976d1f",
+    "market_wlfi.parquet": "73e933c43fb10f94674fbd64382724a7e154d5ee713940c7bb6ccf58aace9a2f",
+    "market_wsteth.parquet": "6f448b51d5f947da85bcd4d9c434812256f2a841e41e3f3f3ab32820b063797f",
+    "market_xaut.parquet": "77dad909cead97f334040cb2bf150b64d5ae7537c5a492635eb2855a98e20424",
+    "market_xlm.parquet": "d031165266c730d21c0d7e9cb21b92bb366d3098d9429e0c0f56c3fbc1a86146",
+    "market_xmr.parquet": "2b28f913e4d4ae52d12d7b218c91b372730d48ca0b98ce68a4004ab90d8efb25",
+    "market_xrp.parquet": "f1f1748ce032050b8b72dcc0da4c04abfd9661a036c42886bc07df73b7072fca",
+    "market_zec.parquet": "20c90b565161af809ef4a06605d26c86615fb78b8de2e31e95e6ec29bfa1d740"
+  },
+  "inputs_unchanged": true,
+  "routes": [
+    {
+      "mode": "stored",
+      "file": "crypto-stored.html",
+      "sha256": "b511596ecfa5638cfe08490083fd86c036b144d314a3f8853cd7d397bb3f1e52",
+      "snapshot_as_of": "2026-09-26",
+      "listed": 50,
+      "universe_coverage": {
+        "as_of": "2026-09-26",
+        "listed": 50,
+        "requested": 50,
+        "excluded": [
+          {
+            "file": "market_aster.parquet",
+            "symbol": "ASTER",
+            "id": "aster-2",
+            "source": "CoinGecko",
+            "as_of": "2026-09-24",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_cbbtc.parquet",
+            "symbol": "CBBTC",
+            "id": "cbbtc-coinbase-wrapped-btc",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_dark.parquet",
+            "symbol": "DARK",
+            "id": "dark-dark-frontiers",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-01",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_paxg.parquet",
+            "symbol": "PAXG",
+            "id": "paxg-pax-gold",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-19",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_pepe.parquet",
+            "symbol": "PEPE",
+            "id": "pepe",
+            "source": "CoinGecko",
+            "as_of": "2026-09-23",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_polydoge.parquet",
+            "symbol": "POLYDOGE",
+            "id": "polydoge-polydoge",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-05",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_pump.parquet",
+            "symbol": "PUMP",
+            "id": "pump-pumpfun",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-21",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_steth.parquet",
+            "symbol": "STETH",
+            "id": "steth-lido-staked-ether",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_susde.parquet",
+            "symbol": "SUSDE",
+            "id": "susde-ethena-staked-usde",
+            "source": "CoinPaprika",
+            "as_of": "2026-08-21",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_susds.parquet",
+            "symbol": "SUSDS",
+            "id": "susds-susds",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_usdf.parquet",
+            "symbol": "USDF",
+            "id": "usdf-falcon-finance",
+            "source": "CoinPaprika",
+            "as_of": "2026-08-19",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wbtc.parquet",
+            "symbol": "WBTC",
+            "id": "wbtc-wrapped-bitcoin",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_weeth.parquet",
+            "symbol": "WEETH",
+            "id": "weeth-wrapped-eeth",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_weth.parquet",
+            "symbol": "WETH",
+            "id": "weth-weth",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wld.parquet",
+            "symbol": "WLD",
+            "id": "wld-worldcoin",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-08",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wlfi.parquet",
+            "symbol": "WLFI",
+            "id": "wlfi-official-world-liberty-financial",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-17",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wsteth.parquet",
+            "symbol": "WSTETH",
+            "id": "wsteth-wrapped-liquid-staked-ether-20",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          }
+        ],
+        "breadth": {
+          "as_of": "2026-09-26",
+          "eligible": 3,
+          "required": 10,
+          "excluded": 47,
+          "positive": 3,
+          "basis": "reported_30d_return_positive",
+          "available": false,
+          "value": null,
+          "state": "Building history",
+          "tone": "neutral",
+          "state_zh": "积累历史中"
+        }
+      }
+    },
+    {
+      "mode": "empty",
+      "file": "crypto-empty.html",
+      "sha256": "266ea35f19016086174bc6196f89b49bc51265bb19b6ff5813c26bf74b0a4fd6",
+      "snapshot_as_of": null,
+      "listed": 0,
+      "universe_coverage": {
+        "as_of": null,
+        "listed": 0,
+        "requested": 50,
+        "excluded": [
+          {
+            "file": "controlled-unavailable",
+            "symbol": "",
+            "id": null,
+            "source": null,
+            "as_of": null,
+            "reason": "UNREADABLE_HISTORY"
+          }
+        ],
+        "breadth": {
+          "as_of": null,
+          "eligible": 0,
+          "required": 10,
+          "excluded": 0,
+          "positive": 0,
+          "basis": "reported_30d_return_positive",
+          "available": false,
+          "value": null,
+          "state": "Building history",
+          "tone": "neutral",
+          "state_zh": "积累历史中"
+        }
+      }
+    },
+    {
+      "mode": "returns-missing",
+      "file": "crypto-returns-missing.html",
+      "sha256": "7764f2312388a08bf5fcfacff33f67d497e467873dcd7a5da20ec89f14168a9c",
+      "snapshot_as_of": "2026-09-26",
+      "listed": 50,
+      "universe_coverage": {
+        "as_of": "2026-09-26",
+        "listed": 50,
+        "requested": 50,
+        "excluded": [
+          {
+            "file": "market_aster.parquet",
+            "symbol": "ASTER",
+            "id": "aster-2",
+            "source": "CoinGecko",
+            "as_of": "2026-09-24",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_cbbtc.parquet",
+            "symbol": "CBBTC",
+            "id": "cbbtc-coinbase-wrapped-btc",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_dark.parquet",
+            "symbol": "DARK",
+            "id": "dark-dark-frontiers",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-01",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_paxg.parquet",
+            "symbol": "PAXG",
+            "id": "paxg-pax-gold",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-19",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_pepe.parquet",
+            "symbol": "PEPE",
+            "id": "pepe",
+            "source": "CoinGecko",
+            "as_of": "2026-09-23",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_polydoge.parquet",
+            "symbol": "POLYDOGE",
+            "id": "polydoge-polydoge",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-05",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_pump.parquet",
+            "symbol": "PUMP",
+            "id": "pump-pumpfun",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-21",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_steth.parquet",
+            "symbol": "STETH",
+            "id": "steth-lido-staked-ether",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_susde.parquet",
+            "symbol": "SUSDE",
+            "id": "susde-ethena-staked-usde",
+            "source": "CoinPaprika",
+            "as_of": "2026-08-21",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_susds.parquet",
+            "symbol": "SUSDS",
+            "id": "susds-susds",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_usdf.parquet",
+            "symbol": "USDF",
+            "id": "usdf-falcon-finance",
+            "source": "CoinPaprika",
+            "as_of": "2026-08-19",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wbtc.parquet",
+            "symbol": "WBTC",
+            "id": "wbtc-wrapped-bitcoin",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_weeth.parquet",
+            "symbol": "WEETH",
+            "id": "weeth-wrapped-eeth",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_weth.parquet",
+            "symbol": "WETH",
+            "id": "weth-weth",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wld.parquet",
+            "symbol": "WLD",
+            "id": "wld-worldcoin",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-08",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wlfi.parquet",
+            "symbol": "WLFI",
+            "id": "wlfi-official-world-liberty-financial",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-17",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wsteth.parquet",
+            "symbol": "WSTETH",
+            "id": "wsteth-wrapped-liquid-staked-ether-20",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          }
+        ],
+        "breadth": {
+          "as_of": "2026-09-26",
+          "eligible": 0,
+          "required": 10,
+          "excluded": 50,
+          "positive": 0,
+          "basis": "reported_30d_return_positive",
+          "available": false,
+          "value": null,
+          "state": "Building history",
+          "tone": "neutral",
+          "state_zh": "积累历史中"
+        }
+      }
+    },
+    {
+      "mode": "combined",
+      "file": "crypto-combined.html",
+      "sha256": "2e8cfc2d3de1fd1f87c3ca62bf3d46b99f9211e9408add9a3ba0ea35614e3ab7",
+      "snapshot_as_of": "2026-09-26",
+      "listed": 50,
+      "universe_coverage": {
+        "as_of": "2026-09-26",
+        "listed": 50,
+        "requested": 50,
+        "excluded": [
+          {
+            "file": "market_aster.parquet",
+            "symbol": "ASTER",
+            "id": "aster-2",
+            "source": "CoinGecko",
+            "as_of": "2026-09-24",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_cbbtc.parquet",
+            "symbol": "CBBTC",
+            "id": "cbbtc-coinbase-wrapped-btc",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_dark.parquet",
+            "symbol": "DARK",
+            "id": "dark-dark-frontiers",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-01",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_paxg.parquet",
+            "symbol": "PAXG",
+            "id": "paxg-pax-gold",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-19",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_pepe.parquet",
+            "symbol": "PEPE",
+            "id": "pepe",
+            "source": "CoinGecko",
+            "as_of": "2026-09-23",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_polydoge.parquet",
+            "symbol": "POLYDOGE",
+            "id": "polydoge-polydoge",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-05",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_pump.parquet",
+            "symbol": "PUMP",
+            "id": "pump-pumpfun",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-21",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_steth.parquet",
+            "symbol": "STETH",
+            "id": "steth-lido-staked-ether",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_susde.parquet",
+            "symbol": "SUSDE",
+            "id": "susde-ethena-staked-usde",
+            "source": "CoinPaprika",
+            "as_of": "2026-08-21",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_susds.parquet",
+            "symbol": "SUSDS",
+            "id": "susds-susds",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_usdf.parquet",
+            "symbol": "USDF",
+            "id": "usdf-falcon-finance",
+            "source": "CoinPaprika",
+            "as_of": "2026-08-19",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wbtc.parquet",
+            "symbol": "WBTC",
+            "id": "wbtc-wrapped-bitcoin",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_weeth.parquet",
+            "symbol": "WEETH",
+            "id": "weeth-wrapped-eeth",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_weth.parquet",
+            "symbol": "WETH",
+            "id": "weth-weth",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wld.parquet",
+            "symbol": "WLD",
+            "id": "wld-worldcoin",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-08",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wlfi.parquet",
+            "symbol": "WLFI",
+            "id": "wlfi-official-world-liberty-financial",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-17",
+            "reason": "OLDER_SNAPSHOT"
+          },
+          {
+            "file": "market_wsteth.parquet",
+            "symbol": "WSTETH",
+            "id": "wsteth-wrapped-liquid-staked-ether-20",
+            "source": "CoinPaprika",
+            "as_of": "2026-09-22",
+            "reason": "OLDER_SNAPSHOT"
+          }
+        ],
+        "breadth": {
+          "as_of": "2026-09-26",
+          "eligible": 3,
+          "required": 10,
+          "excluded": 47,
+          "positive": 3,
+          "basis": "reported_30d_return_positive",
+          "available": false,
+          "value": null,
+          "state": "Building history",
+          "tone": "neutral",
+          "state_zh": "积累历史中"
+        }
+      }
+    }
+  ],
+  "local_font_files": 9
+}

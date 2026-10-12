@@ -1,0 +1,12 @@
+{
+  "classification": "THREE_WAY_TEMPLATE_COMPATIBILITY_NOT_BRANCH_MERGE",
+  "sibling": 7645,
+  "sibling_head": "74298e32bbbbc7f00884ece259455b9bbe46fd6f",
+  "common_base": "2b62f49603e731daf68877516d3f6f748497b160",
+  "exit": 0,
+  "conflict_markers": 0,
+  "combined_sha256": "dafa3bb1ea7ec2484daf669ecb454405a2bc639ec2adb24f3fb90b9c7844a622",
+  "sibling_table_preserved": true,
+  "sibling_snapshot_label_preserved": true,
+  "ours_sha256": "b581ba77ccbd8967e901c970dafa32e1b6f15c15b7cd92edd8944584f7b4baa6"
+}

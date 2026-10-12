@@ -1,0 +1,3 @@
+R5_VERIFIED: 647 parent observations, 1279 mature barrier paths, 3843 independent inventory accounts, 48 policy summaries.
+R5_HASHES: 54 input identities, 18 gates, 58 prior evidence files unchanged.
+Same-session independent arithmetic, not independent-review or production acceptance.

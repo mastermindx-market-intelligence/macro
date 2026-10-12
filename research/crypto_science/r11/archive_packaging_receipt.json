@@ -1,0 +1,7 @@
+{
+  "reason": "Historical source snapshot is data, not an independently enrolled runnable test suite. Actual tests remain in tests/test_btc_impulse_falsifier.py. No waiver or gate change.",
+  "original_manifest_sha256": "df1e67b0ec15e4eacd2599fee2c79e41b3ef5ebfe5c677a2405acd758e2c99f7",
+  "snapshot_bytes_sha256": "c65254c4903b7e343ab370c3d1d9c7b6bc6f55aed01ee90e17c4974a7bd5cd37",
+  "renamed_from": "research/crypto_science/r10/initial/test_btc_impulse_falsifier.py",
+  "renamed_to": "research/crypto_science/r10/initial/test_btc_impulse_falsifier.py.txt"
+}

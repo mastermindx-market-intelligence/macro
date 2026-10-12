@@ -1,0 +1,21 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+___ test_r3_episode_selection_requires_observed_onsets_and_no_future_labels ____
+tests/test_btc_impulse_falsifier.py:366: in test_r3_episode_selection_requires_observed_onsets_and_no_future_labels
+    from research.crypto_science.r3_cohort_study import episode_starts
+E   ModuleNotFoundError: No module named 'research.crypto_science.r3_cohort_study'
+____________ test_r3_delay_uses_calendar_days_and_preserves_unknown ____________
+tests/test_btc_impulse_falsifier.py:378: in test_r3_delay_uses_calendar_days_and_preserves_unknown
+    from research.crypto_science.r3_cohort_study import delayed_observations
+E   ModuleNotFoundError: No module named 'research.crypto_science.r3_cohort_study'
+____________ test_r3_episode_interval_abstains_with_one_event_block ____________
+tests/test_btc_impulse_falsifier.py:390: in test_r3_episode_interval_abstains_with_one_event_block
+    from research.crypto_science.r3_cohort_study import block_hit_interval
+E   ModuleNotFoundError: No module named 'research.crypto_science.r3_cohort_study'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_r3_episode_selection_requires_observed_onsets_and_no_future_labels
+FAILED tests/test_btc_impulse_falsifier.py::test_r3_delay_uses_calendar_days_and_preserves_unknown
+FAILED tests/test_btc_impulse_falsifier.py::test_r3_episode_interval_abstains_with_one_event_block
+3 failed, 17 deselected, 19 warnings in 7.38s

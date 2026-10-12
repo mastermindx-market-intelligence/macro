@@ -1,0 +1,11 @@
+Downside evaluated on 588 unchanged parents
+{
+  "counts": {
+    "downside_parents": 588,
+    "recovery_parents": 59,
+    "events": 1294,
+    "policies": 3882
+  },
+  "summary_rows": 48,
+  "hashes_unchanged": true
+}

@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/research/crypto_science/r10/verify_evidence.py", line 110, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/research/crypto_science/r10/verify_evidence.py", line 38, in main
+    equal(c['max_label_gap_hours'],max(np.diff(ix.asi8))/H.value)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/research/crypto_science/r10/verify_evidence.py", line 15, in equal
+    else:assert np.isclose(a,b,rtol=1e-10,atol=1e-10),(a,b)
+                ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (10.0, np.float64(1e-05))

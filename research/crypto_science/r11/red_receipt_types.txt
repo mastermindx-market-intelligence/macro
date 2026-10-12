@@ -1,0 +1,23 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+___ test_r11_projection_rejects_noninteger_or_boolean_settlement_timestamps ____
+tests/test_crypto_collectors.py:404: in test_r11_projection_rejects_noninteger_or_boolean_settlement_timestamps
+    assert o.funding_asof(pd.DataFrame([c]),'2026-01-10T00:00:00Z')==[],raw
+E   AssertionError: True
+E   assert [{'instrument... 0.0002, ...}] == []
+E
+E     Left contains one more item: {'instrument': 'BTC-USDT-SWAP', 'settlement_at': '1970-01-01T00:00:00.001000+00:00', 'received_at': '2026-01-09T01:00:00+00:00', 'predicted_rate': 0.0002, ...}
+E     Use -v to get more diff
+_______ test_r11_missing_http_status_is_not_recorded_as_observed_success _______
+tests/test_crypto_collectors.py:415: in test_r11_missing_http_status_is_not_recorded_as_observed_success
+    assert result['status']=='unavailable'
+E   AssertionError: assert 'stored' == 'unavailable'
+E
+E     - unavailable
+E     + stored
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_crypto_collectors.py::test_r11_projection_rejects_noninteger_or_boolean_settlement_timestamps
+FAILED tests/test_crypto_collectors.py::test_r11_missing_http_status_is_not_recorded_as_observed_success
+2 failed, 43 warnings in 2.62s

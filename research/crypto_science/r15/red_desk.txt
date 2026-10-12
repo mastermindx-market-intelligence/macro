@@ -1,0 +1,41 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+_ test_r15_overview_separates_recorded_budget_from_market_context[available-60-True-True] _
+tests/test_crypto_wave2.py:768: in test_r15_overview_separates_recorded_budget_from_market_context
+    assert f'data-desk-budget-state="{kind}"' in html
+E   assert 'data-desk-budget-state="available"' in '\n\n  <section class="crypto-shelf hero" data-shelf="H1">\n    <div class="hero-grid">\n      <div>\n        <div cla...  <div class="hero-tape"><svg data-preserved-market-tape="true"></svg></div>\n      </div>\n    </div>\n  </section>\n'
+_ test_r15_overview_separates_recorded_budget_from_market_context[available-0-True-True] _
+tests/test_crypto_wave2.py:768: in test_r15_overview_separates_recorded_budget_from_market_context
+    assert f'data-desk-budget-state="{kind}"' in html
+E   assert 'data-desk-budget-state="available"' in '\n\n  <section class="crypto-shelf hero" data-shelf="H1">\n    <div class="hero-grid">\n      <div>\n        <div cla...  <div class="hero-tape"><svg data-preserved-market-tape="true"></svg></div>\n      </div>\n    </div>\n  </section>\n'
+_ test_r15_overview_separates_recorded_budget_from_market_context[breakdown-unavailable-60-False-True] _
+tests/test_crypto_wave2.py:768: in test_r15_overview_separates_recorded_budget_from_market_context
+    assert f'data-desk-budget-state="{kind}"' in html
+E   assert 'data-desk-budget-state="breakdown-unavailable"' in '\n\n  <section class="crypto-shelf hero" data-shelf="H1">\n    <div class="hero-grid">\n      <div>\n        <div cla...  <div class="hero-tape"><svg data-preserved-market-tape="true"></svg></div>\n      </div>\n    </div>\n  </section>\n'
+_ test_r15_overview_separates_recorded_budget_from_market_context[unavailable-None-False-False] _
+tests/test_crypto_wave2.py:768: in test_r15_overview_separates_recorded_budget_from_market_context
+    assert f'data-desk-budget-state="{kind}"' in html
+E   assert 'data-desk-budget-state="unavailable"' in '\n\n  <section class="crypto-shelf hero" data-shelf="H1">\n    <div class="hero-grid">\n      <div>\n        <div cla...  <div class="hero-tape"><svg data-preserved-market-tape="true"></svg></div>\n      </div>\n    </div>\n  </section>\n'
+_________ test_r15_missing_market_history_does_not_render_a_fake_tape __________
+tests/test_crypto_wave2.py:785: in test_r15_missing_market_history_does_not_render_a_fake_tape
+    assert 'data-market-history-state="unavailable"' in html
+E   assert 'data-market-history-state="unavailable"' in '\n\n  <section class="crypto-shelf hero" data-shelf="H1">\n    <div class="hero-grid">\n      <div>\n        <div cla...  <div class="hero-tape"><svg data-preserved-market-tape="true"></svg></div>\n      </div>\n    </div>\n  </section>\n'
+_ test_r15_navigation_uses_existing_research_sections_without_new_state_owner __
+tests/test_crypto_wave2.py:793: in test_r15_navigation_uses_existing_research_sections_without_new_state_owner
+    assert 'data-crypto-desk-nav' in source
+E   assert 'data-crypto-desk-nav' in '{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...mindX Inc</div>\n</main>\n<script defer src="illus.js"></script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+_____ test_r15_crypto_does_not_reintroduce_unqualified_annualized_funding ______
+tests/test_crypto_wave2.py:805: in test_r15_crypto_does_not_reintroduce_unqualified_annualized_funding
+    assert 'data-crypto-funding-state="interval-unqualified"' in h4
+E   assert 'data-crypto-funding-state="interval-unqualified"' in 'data-shelf="H4">\n    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H4</span><h2 class="sh..._options.gamma.assumption_zh) }}</div>\n      </details>\n    </div>\n  </section>\n\n  <section class="crypto-shelf" '
+
+NOTE: sparse worktree — .agents, .codex, .cursor, .grok, .warp, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_crypto_wave2.py::test_r15_overview_separates_recorded_budget_from_market_context[available-60-True-True]
+FAILED tests/test_crypto_wave2.py::test_r15_overview_separates_recorded_budget_from_market_context[available-0-True-True]
+FAILED tests/test_crypto_wave2.py::test_r15_overview_separates_recorded_budget_from_market_context[breakdown-unavailable-60-False-True]
+FAILED tests/test_crypto_wave2.py::test_r15_overview_separates_recorded_budget_from_market_context[unavailable-None-False-False]
+FAILED tests/test_crypto_wave2.py::test_r15_missing_market_history_does_not_render_a_fake_tape
+FAILED tests/test_crypto_wave2.py::test_r15_navigation_uses_existing_research_sections_without_new_state_owner
+FAILED tests/test_crypto_wave2.py::test_r15_crypto_does_not_reintroduce_unqualified_annualized_funding
+7 failed, 53 deselected in 1.59s
