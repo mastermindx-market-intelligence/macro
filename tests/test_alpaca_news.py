@@ -650,6 +650,25 @@ def test_contract_non_benzinga_source_is_refused():
     assert exc.value.code == "unsupported_source"
 
 
+def test_contract_source_absent_is_refused_on_both_transports():
+    for transport in ("alpaca_rest", "alpaca_ws"):
+        payload = _item(1)
+        del payload["source"]
+        with pytest.raises(NewsContractError) as exc:
+            normalize_news(payload, transport=transport, received_at=POLL_AT)
+        assert exc.value.code == "unsupported_source"
+
+
+def test_contract_source_case_and_space_variance_still_accepted():
+    for transport in ("alpaca_rest", "alpaca_ws"):
+        revision = normalize_news(
+            _item(1, source="Benzinga "),
+            transport=transport,
+            received_at=POLL_AT,
+        )
+        assert revision.source == "benzinga"
+
+
 # ── rights receipts ──────────────────────────────────────────────────────────
 
 

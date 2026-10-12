@@ -470,3 +470,78 @@ html[data-lang="zh"] .stage-pill.LEADERSHIP{background:rgba(220,38,38,0.18);colo
 html[data-lang="zh"] .rerating-stage-chip.s-breakaway{background:rgba(239,68,68,0.12);color:#f87171;}
 /* Leg chip green (breakaway context) */
 html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f87171;}
+/* RS leader watch: observation tier, built from existing radar rows. */
+.rs-highs-panel{margin-top:20px;padding:20px 22px;}
+.rs-highs-description{color:var(--text-secondary);font-size:13px;line-height:1.65;margin:6px 0 16px;}
+.rs-highs-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.rs-highs-col{padding:15px;border:1px solid var(--border);border-radius:var(--r-card,12px);background:var(--tile);}
+.rs-highs-col-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.rs-highs-col-title{font-size:14px;font-weight:700;color:var(--text-primary);}
+.rs-highs-count{font-family:var(--num);font-size:16px;font-weight:700;color:var(--col-ignition);}
+.rs-highs-tickers{display:flex;flex-wrap:wrap;gap:8px;}
+.rs-highs-ticker{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border-strong);border-radius:var(--r-ctl,8px);padding:5px 8px;font:600 12px var(--num);color:var(--text-primary);}
+.rs-highs-ticker:hover,.rs-highs-ticker:focus-visible{outline:1px solid var(--col-ignition);color:var(--col-ignition);}
+.rs-highs-leads{color:var(--col-ignition);font:600 10px var(--font-ui);}
+.rs-highs-foot{color:var(--text-secondary);font-size:12px;margin-top:10px;}
+.rs-highs-recents{grid-column:1/-1;}
+.rs-highs-ticker-date{font:500 10px var(--num);color:var(--text-secondary);}
+.rs-highs-entry{font:600 10px var(--font-ui);color:var(--text-secondary);white-space:nowrap;}
+.rs-highs-entry.staged{color:var(--col-ignition);}
+.rs-highs-entry.caution{color:var(--col-crowded);}
+
+
+@media(max-width:680px){.rs-highs-panel{padding:14px}.rs-highs-columns{grid-template-columns:1fr}}
+/* Deep corrections and recovery: descriptive observation tier, leader_recovery.v1 rows joined by ticker. Stage colour via data-stage, no new tokens. */
+.lr-rec-panel{margin-top:20px;padding:20px 22px;}
+.lr-rec-description{color:var(--text-secondary);font-size:13px;line-height:1.65;margin:6px 0 16px;}
+.lr-rec-partial{color:var(--text-muted);font-size:12px;margin:0 0 10px;}
+.lr-rec-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:12px;}
+.lr-rec-tools label{display:inline-flex;align-items:center;gap:8px;font:500 11px var(--font-ui);color:var(--text-muted);}
+.lr-rec-tools label>span{white-space:nowrap;}
+.lr-rec-find,.lr-rec-order{border:1px solid var(--border-strong);border-radius:var(--r-ctl,8px);background:var(--tile);color:var(--text-primary);font:500 12.5px var(--font-ui);padding:6px 9px;min-height:32px;}
+.lr-rec-find{width:180px;max-width:100%;}
+.lr-rec-list{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--r-card,12px);background:var(--tile);overflow:hidden;}
+.lr-rec-list.is-capped .lr-rec-row:nth-child(n+9){display:none;}
+.lr-rec-list.is-open{max-height:640px;overflow-y:auto;}
+.lr-rec-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 14px;padding:12px 14px;border-top:1px solid var(--border);}
+.lr-rec-row:first-child{border-top:0;}
+.lr-rec-row.is-hidden{display:none;}
+.lr-rec-row>.rs-highs-ticker{grid-column:1;grid-row:1/span 4;justify-self:start;align-self:start;}
+.lr-rec-row>:not(.rs-highs-ticker){grid-column:2;}
+.lr-rec-state{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;}
+.lr-rec-dot{display:inline-block;width:8px;height:8px;border-radius:var(--r-pill,999px);margin-right:6px;}
+.lr-rec-label{font:600 12.5px var(--font-ui);color:var(--text-primary);}
+.lr-rec-stance{font:400 12.5px var(--font-ui);color:var(--text-secondary);}
+.lr-rec-ledger{display:grid;grid-template-columns:auto minmax(80px,1fr) auto auto;align-items:center;gap:10px;margin-top:4px;}
+.lr-rec-end{font:500 11px var(--font-ui);color:var(--text-muted);white-space:nowrap;}
+.lr-rec-end b{font-weight:600;color:var(--text-secondary);}
+.lr-rec-track{position:relative;height:6px;border-radius:var(--r-pill,999px);background:var(--border-strong);overflow:hidden;}
+.lr-rec-fill{position:absolute;inset:0 auto 0 0;border-radius:inherit;}
+.lr-rec-depth{font:600 12.5px var(--font-ui);white-space:nowrap;}
+.lr-rec-facts{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:4px;}
+.lr-rec-fact{font:400 11px var(--font-ui);color:var(--text-muted);}
+.lr-rec-fact b{font-weight:600;color:var(--text-secondary);}
+.lr-rec-more{margin-top:6px;}
+.lr-rec-more summary{cursor:pointer;font:500 11px var(--font-ui);color:var(--text-muted);}
+.lr-rec-more-body{margin-top:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-ctl,8px);background:var(--bg-glass-2);}
+[data-theme="light"] .lr-rec-more-body{box-shadow:var(--mx5-glass-shadow);}
+.lr-rec-trail{list-style:none;margin:0;padding:0;display:grid;gap:3px;}
+.lr-rec-trail li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;font:400 11px var(--font-ui);color:var(--text-secondary);}
+.lr-rec-trail time{color:var(--text-muted);}
+.lr-rec-sub{font:600 11px var(--font-ui);color:var(--text-muted);margin:8px 0 4px;}
+.lr-rec-note{font:400 11px var(--font-ui);color:var(--text-muted);line-height:1.5;margin:0;}
+.lr-rec-showall{margin-top:10px;border:1px solid var(--border-strong);border-radius:var(--r-ctl,8px);background:var(--tile);color:var(--text-primary);font:500 12px var(--font-ui);padding:6px 12px;cursor:pointer;}
+.lr-rec-foot{color:var(--text-secondary);font-size:12px;margin-top:10px;}
+.lr-rec-row[data-stage="failed"] .lr-rec-dot,.lr-rec-row[data-stage="failed"] .lr-rec-fill{background:var(--col-failed);}
+.lr-rec-row[data-stage="failed"] .lr-rec-depth{color:var(--col-failed);}
+.lr-rec-row[data-stage="correcting"] .lr-rec-dot,.lr-rec-row[data-stage="correcting"] .lr-rec-fill{background:var(--col-crowded);}
+.lr-rec-row[data-stage="correcting"] .lr-rec-depth{color:var(--col-crowded);}
+.lr-rec-row[data-stage="repairing"] .lr-rec-dot,.lr-rec-row[data-stage="repairing"] .lr-rec-fill{background:var(--col-ignition);}
+.lr-rec-row[data-stage="repairing"] .lr-rec-depth{color:var(--col-ignition);}
+.lr-rec-row[data-stage="price"] .lr-rec-dot,.lr-rec-row[data-stage="price"] .lr-rec-fill{background:var(--col-quiet);}
+.lr-rec-row[data-stage="price"] .lr-rec-depth{color:var(--col-quiet);}
+.lr-rec-row[data-stage="restored"] .lr-rec-dot,.lr-rec-row[data-stage="restored"] .lr-rec-fill{background:var(--col-leading);}
+.lr-rec-row[data-stage="restored"] .lr-rec-depth{color:var(--col-leading);}
+.lr-rec-row[data-stage="none"] .lr-rec-dot,.lr-rec-row[data-stage="none"] .lr-rec-fill{background:var(--text-dim);}
+.lr-rec-row[data-stage="none"] .lr-rec-depth{color:var(--text-dim);}
+@media(max-width:680px){.lr-rec-panel{padding:14px}.lr-rec-row{grid-template-columns:auto minmax(0,1fr);gap:6px;padding:12px}.lr-rec-row>.rs-highs-ticker{grid-row:auto}.lr-rec-row>.lr-rec-ledger,.lr-rec-row>.lr-rec-facts,.lr-rec-row>.lr-rec-more{grid-column:1/-1}.lr-rec-ledger{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"peak depth" "track track" "trough trough"}.lr-rec-end.is-peak{grid-area:peak}.lr-rec-track{grid-area:track}.lr-rec-depth{grid-area:depth}.lr-rec-end.is-trough{grid-area:trough}.lr-rec-find{width:100%}}

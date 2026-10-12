@@ -20381,7 +20381,10 @@ function initStockTableView(){
     applyView(currentView);
   }
 
-  window.USStockTable = { _setView: applyView, _mergeRows: mergeRows };
+  /* _getView is the read half of the existing view owner: the candidate→Plan return
+     restores the view the reader was actually in (table rows are never re-rendered by
+     applyView), so no second table owner, store or localStorage key is introduced. */
+  window.USStockTable = { _setView: applyView, _getView: function(){ return currentView; }, _mergeRows: mergeRows };
 
   StockTable.init(STINIT);
 
@@ -20418,6 +20421,13 @@ if (document.readyState === 'loading') {
   function setSrc(mode){
     if (mode !== 'today' && mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
     if (mode === 'today' && !document.getElementById('us-today')) mode = 'candidates';
+    /* The transient candidate→Plan journey (theme.js owns the one context) survives
+       only its own two hops: the Plans hop taken from inside a candidate detail and
+       the return hop that brings that same candidate back. Every other mode change —
+       the toggle, a Today shortcut, a provisional-board paint — is an explicit
+       unrelated navigation, and the pending return goes with it. */
+    var journey = window.PVSetupReturn;
+    if (journey && !journey.claim(mode)) journey.clear();
     /* the table renders CANDIDATE rows only, so Today/Plans must leave table view */
     if (mode !== 'candidates' && panel.classList.contains('st-table-mode') &&
         window.USStockTable && window.USStockTable._setView){
@@ -20434,13 +20444,22 @@ if (document.readyState === 'loading') {
     var b = ev.target && ev.target.closest ? ev.target.closest('button[data-src]') : null;
     if (b) setSrc(b.getAttribute('data-src'));
   });
-  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); } };
+  window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); },
+    /* PR 8801 follow-up — the header row this owner already wires is where the journey's
+       single explicit action renders. It is not a fourth source option: it restores the
+       exact originating row, so no generic navigation is duplicated. */
+    returnHost: function(){ return tog.parentNode; } };
 
   document.addEventListener('click', function(event){
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
     if (!button) return;
     var target = button.getAttribute('data-pvs-plan-target');
     var dialog = document.getElementById('pv-setup-dialog');
+    /* Snapshot BEFORE the existing .pvs-close releases the live candidate source;
+       nothing is claimed until the exact target is confirmed further down. */
+    var pending = window.PVSetupReturn ? window.PVSetupReturn.snapshot({
+      mode: window.USProphetSource ? window.USProphetSource.get() : null,
+      view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null}) : null;
     if (dialog && dialog.open) {
       var close = dialog.querySelector('.pvs-close');
       if (close) close.click();
@@ -20449,6 +20468,9 @@ if (document.readyState === 'loading') {
     var card = document.getElementById(target);
     if (!card || !target || target.indexOf('pv-') !== 0 ||
         !window.USProphetLife || !window.USProphetLife.selectPlan(card)) {
+      /* No confirmed target, so no journey — a hop into Plans must never inherit a
+         stale return from an earlier candidate. */
+      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
       document.body.dataset.pvsPlanLinkResult='missing';
       return;
     }
@@ -20458,6 +20480,8 @@ if (document.readyState === 'loading') {
     card.scrollIntoView({block:'center'});
     card.focus({preventScroll:true});
     document.body.dataset.pvsPlanLinkResult='ok';
+    /* Confirmed: same candidate, same Plan, one transient return. */
+    if (window.PVSetupReturn) window.PVSetupReturn.establish(pending, target, card);
   });
 })();
 </script>

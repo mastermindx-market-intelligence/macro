@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 import signal
 import sys
 import threading
@@ -32,6 +33,7 @@ from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_receipts import (
     HEALTH_SCHEMA,
     NewsReceiptError,
+    QualifiedNewsRights,
     load_rights_receipt,
     write_health_receipt,
 )
@@ -67,6 +69,21 @@ def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _rights_receipt_for(
+    rights_path: Path, *, now: datetime, provider: str
+) -> QualifiedNewsRights | None:
+    """Load the site_full receipt, binding alpaca runs to alpaca-issued rights.
+
+    A receipt qualifies for provider == "alpaca" only when its own provider is
+    "alpaca"; any other runner provider gets exactly what load_rights_receipt
+    returns.
+    """
+    receipt = load_rights_receipt(rights_path, now=now, audience="site_full")
+    if receipt is not None and provider == "alpaca" and receipt.provider != "alpaca":
+        return None
+    return receipt
+
+
 def stream_url(token: str) -> str:
     if not isinstance(token, str) or not token:
         raise ValueError("qbus_news:missing_stream_token")
@@ -84,6 +101,21 @@ def _frame_size(raw: object) -> int:
     if isinstance(raw, (bytes, bytearray)):
         return len(raw)
     return 0
+
+
+def _error_code(exc: BaseException) -> str:
+    # Secret-free by construction: only a pre-sanitized ``code`` attribute or
+    # the exception class name is ever read. This must NEVER use str(exc),
+    # repr(exc), exc.args, or any message text — exception messages can carry
+    # URLs, headers, and credential material.
+    code = getattr(exc, "code", None)
+    if (
+        isinstance(code, str)
+        and re.fullmatch(r"[a-z0-9_]{1,64}", code) is not None
+    ):
+        return code
+    fallback = re.sub(r"[^a-z0-9_]", "_", type(exc).__name__.lower())
+    return ("exception_" + fallback)[:64]
 
 
 class NewsIngestRunner:
@@ -145,6 +177,8 @@ class NewsIngestRunner:
         self._last_successful_catchup: datetime | None = None
         self._last_stream_event_at: datetime | None = None
         self._gap_unresolved = False
+        self._last_catchup_error: str | None = None
+        self._last_stream_error: str | None = None
 
     def _health_payload(self, state: str) -> dict:
         observed = self.clock()
@@ -168,6 +202,8 @@ class NewsIngestRunner:
             "connect_attempts": self.stats.connect_attempts,
             "disconnects": self.stats.disconnects,
             "catchups_failed": self.stats.catchups_failed,
+            "last_catchup_error": self._last_catchup_error,
+            "last_stream_error": self._last_stream_error,
         }
 
     def _publish_health(self, state: str) -> None:
@@ -197,8 +233,9 @@ class NewsIngestRunner:
                 universe=self.universe_provider(),
                 observed_at=observed_at,
             )
-        except Exception:  # source/service loop records class, never raw secret text
+        except Exception as exc:  # source/service loop records class, never raw secret text
             self.stats.catchups_failed += 1
+            self._last_catchup_error = _error_code(exc)
             state = "degraded" if self._last_successful_catchup else "catching_up"
             self._publish_health(state)
             return
@@ -209,6 +246,7 @@ class NewsIngestRunner:
         elif result.committed:
             self.stats.catchups_ok += 1
             self._last_successful_catchup = observed_at
+            self._last_catchup_error = None
             self._gap_unresolved = False
             self._publish_health("live")
 
@@ -297,6 +335,7 @@ class NewsIngestRunner:
                         if self.stream_handshake is not None:
                             self.stream_handshake(ws)
                         backoff = self.reconnect_base_seconds
+                        self._last_stream_error = None
                         next_catchup = (
                             self.monotonic() + self.catchup_interval_seconds
                         )
@@ -318,8 +357,9 @@ class NewsIngestRunner:
                                 self.stop.set()
                                 break
                             self._handle_frame(raw)
-                except Exception:
+                except Exception as exc:
                     self.stats.disconnects += 1
+                    self._last_stream_error = _error_code(exc)
                     state = (
                         "degraded"
                         if self._last_successful_catchup is not None
@@ -476,17 +516,25 @@ def main(argv=None) -> int:
         return 2
 
     now = _utc_now()
-    if load_rights_receipt(
-        rights_path,
-        now=now,
-        audience="site_full",
-    ) is None:
+    if _rights_receipt_for(rights_path, now=now, provider=provider) is None:
+        error = "activation_rights_unqualified"
+        if provider == "alpaca":
+            # A loadable receipt whose provider is not "alpaca" misses the
+            # alpaca binding specifically; an unloadable receipt keeps the
+            # generic fault.
+            loaded = load_rights_receipt(
+                rights_path,
+                now=now,
+                audience="site_full",
+            )
+            if loaded is not None and loaded.provider != "alpaca":
+                error = "activation_rights_provider_mismatch"
         print(
             json.dumps(
                 {
                     **report,
                     "activation_qualified": False,
-                    "error": "activation_rights_unqualified",
+                    "error": error,
                 },
                 sort_keys=True,
             )
@@ -519,11 +567,12 @@ def main(argv=None) -> int:
         return 0
 
     def rights_admitted() -> bool:
-        return load_rights_receipt(
-            rights_path,
-            now=_utc_now(),
-            audience="site_full",
-        ) is not None
+        return (
+            _rights_receipt_for(
+                rights_path, now=_utc_now(), provider=provider
+            )
+            is not None
+        )
 
     stop = StopFlag()
     for sig in (signal.SIGINT, signal.SIGTERM):

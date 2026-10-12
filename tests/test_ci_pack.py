@@ -4284,6 +4284,12 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # PR #7861: Options matrix source/session/retention checks are hermetic.
+    # The exclusive manifest scope retains both suites, their concrete import
+    # closure, config.yml fallback and the retention-fixture wildcard. This
+    # removes only the filesystem probes' unrelated opaque fallback scopes;
+    # the code gate, closure audit and packing ceilings remain unchanged.
+    "options-matrix-code",
     "push-retry-policy",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
@@ -4667,6 +4673,26 @@ CURATED_EXCLUSIVE = {
     # that probe to 5,802 (main) / 5,805 (this head) against its 5,800 ceiling.
     # Register the reviewed 18-path owner; closure audits and ceilings stay fixed.
     "information-to-price-eval-receipts",
+    # 2026-10-11 lineage wave (#8802): leader-radar-unit gained the lineage
+    # descriptor step (+3 weight) while still an opaque always-on selector:
+    # inference smeared the builder's jinja loader (templates/**), the
+    # integration suite's data/site roots and the lineage suite's AST import
+    # scan (engine/**, scripts/**) onto it, so two packing probes breached on
+    # the PR's merge ref (templates/index.html 5,806 > 5,800, where main was
+    # already over at 5,802; scripts/build_free_content.py 5,603 > 5,600).
+    # paths: = the measured 43-path import/read closure + the rendered
+    # template and its include chain. Measured on the merged FULL checkout:
+    # index.html 5,806 -> 5,781, build_free_content 5,603 -> 5,578, plan_book
+    # 5,563 -> 5,538; the fallback tier drops to (); ceilings unchanged. Derive
+    # the closure against a FULL checkout: the two site/ JSON literals are
+    # invisible on a sparse tree, exactly as the options-estate-guards note warns.
+    "leader-radar-unit",
+    # The private runtime boundary has a closed helper/unit/updater/test scope.
+    "company-intelligence-private-runtime",
+    # 2026-10-11 SNI E0/M0 (#8837): the Alibaba/Tencent coverage-profile suite
+    # reads only its own config/contracts trees; its 3-path owner is the whole
+    # closure (closure findings 0, gated-unrun 0), so no inference fallback.
+    "single-name-coverage-profiles",
 }
 
 

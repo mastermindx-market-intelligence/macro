@@ -758,3 +758,110 @@ class TestLedgerIdempotency:
             assert ("NFP", "2026-08-07") in keys
         finally:
             os.environ["COLLECT_LANE"] = env_save
+
+
+# ---------------------------------------------------------------------------
+# 12. MRI surprise-dispersion reader bound to release_forecast.v2
+# ---------------------------------------------------------------------------
+_TODAY = date(2026, 10, 11)
+
+
+def _write_rf_v2(tmp_path, upcoming, asof="2026-10-09T15:17:19Z"):
+    """Write a minimal release_forecast.v2 artifact; return its Path."""
+    p = tmp_path / "latest.json"
+    p.write_text(json.dumps({"schema": "release_forecast.v2", "asof": asof, "upcoming": upcoming}))
+    return p
+
+
+_F1_UPCOMING = [
+    {"release_type": "cpi_headline", "period": "2026-08", "release_date": "2026-09-11",
+     "surprise_skew": {"sigma": 0.5, "sigma_scale_pp": 0.2, "tag": "hotter"}},
+    {"release_type": "cpi_headline", "period": "2026-10", "release_date": "2026-11-10",
+     "surprise_skew": {"sigma": -1.268, "sigma_scale_pp": 0.2069, "tag": "cooler"}},
+    {"release_type": "cpi_headline", "period": "2026-09", "release_date": "2026-10-14",
+     "surprise_skew": {"sigma": -0.143, "sigma_scale_pp": 0.2069, "tag": "inline"},
+     "expectation_read": {"stance": "x"}},
+    {"release_type": "cpi_core", "period": "2026-09", "release_date": "2026-10-14",
+     "surprise_skew": {"sigma": -0.1676, "sigma_scale_pp": 0.1304, "tag": "inline"}},
+    {"release_type": "nfp", "period": "2026-10", "release_date": "2026-11-06",
+     "surprise_skew": {"sigma": None, "tag": None}},
+]
+
+
+class TestMriReleaseForecastV2Reader:
+
+    def test_mri_reader_picks_nearest_future_release_forecast_v2_element(self, tmp_path):
+        """Nearest upcoming cpi_headline element on/after today wins; full v2 field set."""
+        p = _write_rf_v2(tmp_path, _F1_UPCOMING)
+        r = ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p])
+        assert r is not None
+        assert r["available"] is True
+        assert r["sigma_surprise"] == pytest.approx(-0.143)
+        assert r["sigma_scale_pp"] == pytest.approx(0.2069)
+        assert r["skew_tag"] == "inline"
+        assert r["period"] == "2026-09"
+        assert r["release_date"] == "2026-10-14"
+        assert r["release_type"] == "CPI"
+        assert r["forecast_release_type"] == "cpi_headline"
+        assert r["consumed_asof"] == r["asof"] == "2026-10-09T15:17:19Z"
+        assert r["pred_spread_sigma"] is None
+        assert r["is_context_only"] is True
+        assert r["source_path"] == str(p)
+        assert r["expectation_read"] == {"stance": "x"}
+
+    def test_mri_reader_null_skew_returns_unavailable_dict(self, tmp_path):
+        """A matched element with a null sigma yields an available=False dict, not None."""
+        p = _write_rf_v2(tmp_path, [
+            {"release_type": "nfp", "period": "2026-10", "release_date": "2026-11-06",
+             "surprise_skew": {"sigma": None, "tag": None}},
+        ])
+        r = ew._read_mri_surprise_dispersion("NFP", today=_TODAY, paths=[p])
+        assert r is not None
+        assert r["available"] is False
+        assert r["sigma_surprise"] is None
+        assert r["sigma_scale_pp"] is None
+        assert r["release_date"] == "2026-11-06"
+
+    def test_mri_reader_missing_file_returns_none(self, tmp_path):
+        """No candidate file exists → None."""
+        r = ew._read_mri_surprise_dispersion("CPI", today=_TODAY,
+                                             paths=[tmp_path / "absent.json"])
+        assert r is None
+
+    def test_mri_reader_rejects_legacy_uppercase_key_payload(self, tmp_path):
+        """A legacy uppercase-keyed payload (no schema/upcoming) is rejected outright."""
+        p = tmp_path / "legacy.json"
+        p.write_text(json.dumps({"CPI": {"surprise_skew": {"sigma": 0.3}, "asof": "2026-10-09"}}))
+        r = ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p])
+        assert r is None
+
+    def test_mri_reader_release_type_match_is_exact_not_prefix(self, tmp_path):
+        """'CPI' must never match cpi_core: exact release_type equality only."""
+        p = _write_rf_v2(tmp_path, [
+            {"release_type": "cpi_core", "period": "2026-09", "release_date": "2026-10-14",
+             "surprise_skew": {"sigma": -0.1676, "sigma_scale_pp": 0.1304, "tag": "inline"}},
+        ])
+        assert ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p]) is None
+        r = ew._read_mri_surprise_dispersion("cpi_core", today=_TODAY, paths=[p])
+        assert r is not None
+        assert r["sigma_surprise"] == pytest.approx(-0.1676)
+
+    def test_mri_reader_fomc_has_no_release_forecast_element(self, tmp_path):
+        """FOMC maps to 'fomc', which no producer emits → None."""
+        p = _write_rf_v2(tmp_path, _F1_UPCOMING)
+        assert ew._read_mri_surprise_dispersion("FOMC", today=_TODAY, paths=[p]) is None
+
+    def test_ex_ante_read_glance_labels_standardized_sigma_not_pp(self, tmp_path, monkeypatch):
+        """Glance copy labels the standardized skew in σ; the pp scale is appended."""
+        p = _write_rf_v2(tmp_path, _F1_UPCOMING)
+        monkeypatch.setattr(ew, "_mri_release_forecast_paths", lambda: [p])
+        out = ew.ex_ante_read("CPI", today=_TODAY)
+        mri = out["mri_surprise_dispersion"]
+        assert mri is not None
+        assert mri["sigma_surprise"] == pytest.approx(-0.143)
+        glance_en = out["glance_en"]
+        assert isinstance(glance_en, str)
+        assert "-0.14σ" in glance_en
+        assert "(scale 0.21pp)" in glance_en
+        assert "-0.14pp" not in glance_en
+        assert "Trailing surprise" not in glance_en

@@ -294,20 +294,21 @@ def _cte_dir() -> Path:
     return Path(os.environ.get("MACRO_CTE_DIR") or REPO / "data" / "company_theme_exposure")
 
 
-def _leg_financial_facts(ticker: str) -> dict[str, Any]:
+def _leg_financial_facts(ticker: str, composed_at: str | None = None) -> dict[str, Any]:
     leg = _leg_shell("financial_facts")
     if ticker != "AAPL":
         leg["status"] = "absent"
         leg["degraded_reason"] = "not_covered:golden_corpus_is_aapl_only"
         _apply_copy(leg)
         return leg
+    request_clock = _normalize_clock(composed_at) or _utc_now()
     req = {
         "schema": "fundamental_forensics.financial_query_request/v1",
         "entity_id": "ISS:US-XNAS-AAPL",
         "policy": {
             "selection": "latest_known_as_of",
-            "source_snapshot_at": "2026-08-01T00:00:00Z",
-            "recorded_at": "2026-08-23T12:00:00Z",
+            "source_snapshot_at": request_clock,
+            "recorded_at": request_clock,
         },
         "metric_ids": [
             "revenue",
@@ -331,7 +332,33 @@ def _leg_financial_facts(ticker: str) -> dict[str, Any]:
             "response_sha256": result.sha256,
             "replay_route": "/api/forensics/v1/financial/query",
         }
-        as_of = _normalize_clock(req["policy"]["recorded_at"]) or "2026-08-23T12:00:00Z"
+        # Producer-derived source clock: max normalized per-node
+        # provenance.recorded_at, else max provenance.accepted_at, else the
+        # threaded request clock. provenance.recorded_cutoff_at and
+        # provenance.source_snapshot_at echo the REQUEST — never read those.
+        envelope = result.envelope if isinstance(result.envelope, dict) else {}
+        receipt = envelope.get("receipt")
+        nodes = receipt.get("nodes") if isinstance(receipt, dict) else None
+        node_clocks: list[str] = []
+        accepted_clocks: list[str] = []
+        for node in nodes or []:
+            if not isinstance(node, dict):
+                continue
+            provenance = node.get("provenance")
+            if not isinstance(provenance, dict):
+                continue
+            recorded = _normalize_clock(provenance.get("recorded_at"))
+            if recorded:
+                node_clocks.append(recorded)
+            accepted = _normalize_clock(provenance.get("accepted_at"))
+            if accepted:
+                accepted_clocks.append(accepted)
+        if node_clocks:
+            as_of = max(node_clocks)
+        elif accepted_clocks:
+            as_of = max(accepted_clocks)
+        else:
+            as_of = request_clock
         leg["status"] = "ok"
         leg["payload"] = payload
         leg["ref"] = _make_ref(
@@ -620,7 +647,7 @@ def _leg_fixed_absent(leg_id: str, degraded_reason: str) -> dict[str, Any]:
 def _compose_page(ticker: str) -> dict[str, Any]:
     composed_at = _utc_now()
     legs = [
-        _leg_financial_facts(ticker),
+        _leg_financial_facts(ticker, composed_at),
         _leg_earnings_expectation(ticker, composed_at),
         _leg_capital_structure(),
         _leg_publication_seam(),

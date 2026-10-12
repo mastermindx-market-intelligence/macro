@@ -1,0 +1,38 @@
+{
+  "checks": {
+    "browser_cases_passed": 6,
+    "browser_matrix": "dark EN/ZH x desktop1440/tablet820/mobile390",
+    "guard_diff_includes_new_copy_file": true,
+    "typecheck_rc": 0,
+    "unchanged_plain_language_guard_rc": 0,
+    "vitest_existing_todo": 4,
+    "vitest_files_passed": 554,
+    "vitest_tests_passed": 9141
+  },
+  "evidence_sha256": {
+    "boats-feature-copy-architecture-review.txt": "6102373525da4011b320eefed3ee508138eaf01331c626fc6191a40500f7482e",
+    "feature-copy-boats-desktop-en.png": "12a561adbd92d9333201d4b97d070da9e773b9146234f5dc4a192425879640be",
+    "feature-copy-boats-desktop-zh.png": "eb25b605d760106cd08e55bc8c10e7c8f9b374c757d831d2e333f18944626c15",
+    "feature-copy-boats-mobile-en.png": "82f4795026c882a9c944c714db957d0fd5b7574b1f2385935675160e01220004",
+    "feature-copy-boats-mobile-zh.png": "1b390366fc733808ea32b2bf1581055c951898885aca93e95d9d4308fe199565",
+    "feature-copy-boats-tablet-en.png": "559ad5fe7f8994a8341886ed20aadb4b167e39a8fae6d810b46c82173509aac0",
+    "feature-copy-boats-tablet-zh.png": "6128fb6a72f4b55e2e952423cbb28fc4e0fbd48b64c0250e3d09b863b1dbd95e",
+    "terminal-955-c0bf-hosted-red.log": "35e00f5337743c6f3817dd8e920db1bab21dfd1f1cb0e3ad870eb95b3a8d4ea3",
+    "terminal-boats-feature-copy-browser.log": "88fb101cce9306ddf1e45e712f499bec9124728d360db4a98dac1a74f9306e6c",
+    "terminal-boats-feature-copy-full-vitest.log": "c844c0e2ddddc14e54ce4e97b874c075f7f1fce83c7be687e92567833438cda7",
+    "terminal-boats-feature-copy-plain-language.log": "5a012f47da31496a5d29c0952d7fb6c6a3d1f56db86a4823490feda802910b3c",
+    "terminal-boats-feature-copy-typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "genuine_live_boats_acceptance": false,
+  "global_i18n_restored_to_base": true,
+  "historical_screenshot_receipts_unchanged": true,
+  "protected_base": "85ad93866dcd9daf203c89a7d5e23280b5d6ed50",
+  "schema": "tiingo_boats_feature_copy_qualification.v1",
+  "source_commit_before_patch": "c0bf8a744a0d963360de45dab8c655a575776280",
+  "source_sha256": {
+    "terminal/components/TerminalShell.tsx": "58840d35751af8cc0e47bf9259193e5dd9652375dfb53be778c7678cf5c6580d",
+    "terminal/lib/extQuoteCopy.ts": "dd9af6864d0c521b33f66658c79daf7581d77d7c70a2eca48e2cacbf007cad6e",
+    "terminal/lib/i18n.tsx": "cfad0a8290b9b872fe919b7b9855bbd3a4cee095eb26ebd902c399942196a65d"
+  },
+  "source_worktree_dirty": true
+}

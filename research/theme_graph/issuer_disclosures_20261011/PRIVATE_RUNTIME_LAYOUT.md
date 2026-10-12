@@ -48,6 +48,39 @@ Lost acknowledgements are reconciled by readback of the same write. Unknown
 effects and CAS conflicts prohibit automatic retries. No public R2 fallback,
 Research/FF credential inheritance or source-body HTTP capability is present.
 
+The attended CLI additionally requires `--expected-deployment-json` naming a
+bounded, closed `company_intelligence.expected_deployment/v1` record prepared
+from the released producer source and the deployment owner's current API census.
+It binds the protected source commit, STAGE_MEMBERS or PROMOTE_CURRENT mode, fixed
+root, producer account/repository, API PID/starttime/mount namespace, systemd unit,
+cgroup, InvocationID, and qualified runtime source receipt. The census must
+precede invocation and remain within its stated age bound (at most 300 seconds)
+at the final gate. A new service generation requires fresh owner qualification;
+updating a hash in an old receipt is insufficient.
+
+In the publishing interpreter, the CLI captures producer identity and on-disk
+source provenance, prepares the existing publication intent once, then binds
+that same intent at the final pre-reservation gate. This gate revalidates source,
+producer/API identities, and the seven provisioned roots with their current mount
+options and directory identities. Each root's open descriptor supplies its
+actual mount ID through Linux `fdinfo`; pathname length or mount-table ordering
+does not select among stacked mounts. Both that mount and its filesystem must
+report read-write options, and the final journal descriptor must retain the
+qualified mount ID. `python -m` entrypoint provenance is checked
+through the running `__main__` module. On-disk source hashes rely on a fresh
+trusted interpreter and qualified deployment; they are not exhaustive loaded-code
+attestation. Read-write mount metadata does not guarantee a later write succeeds.
+
+The immutable operation envelope retains the complete bounded
+`producer_preflight` evidence and `producer_preflight_sha256` as siblings of the
+unchanged inner intent. No second intent or evidence journal is created. A
+pre-reservation refusal has no journal, retained-body read, artifact Store or
+publication effect. O_EXCL reporting an existing name means this attempt did not
+create that file; an error after successful creation requires reconciliation of
+the same operation. Never rerun the CLI as a diagnostic probe or change the ID
+to bypass an existing journal. The separate outcome retains the original staging
+or promotion semantics.
+
 Installation acceptance requires exact released source, provisioned modes and
 mount separation, one retained-source publication receipt, immutable member and
 current-pointer readback, fresh authenticated v2 positive/refusal, and matching

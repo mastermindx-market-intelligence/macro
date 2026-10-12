@@ -741,3 +741,82 @@ operations or turn a diagnosis into collector/rebuild authority. Existing GMI ow
 retains its private-native inputs. F03 and MO-PAID-032 natural-time gates and all
 named held/Sol-OPEN work in §8 remain. MISSION_COMPLETE:false. This is a checkpoint,
 not a claim of autonomous wake or program completion.
+
+## 10. W18 — private issuer foundation and actual deployment boundary (2026-10-11)
+
+The original root remains `01a128b5-e26b-7b12-94b5-231bfe0b8036`. A owns
+F01–F05 and the sole F00C writer; B retains F06–F13 and signed-in J1. This is
+a working checkpoint, not a new control plane or a claim of mission completion.
+
+- **D109 — issuer source landed; account adoption remains separate.** Macro
+  #8808 reviewed head `efc418564fe17f6ca6ba76d170767d8e73f03009` merged as
+  `5b7513b3b5995a5634b5ea66e55fcff737cde19d` at13:43:46Z.27 checks concluded
+  with no nonstanding failure and all9changed blobs matched fresh main.169
+  catalog/billing checks and258 deployment checks passed; the reload repair
+  had4discriminating baseline failures. The existing Pro plan now declares
+  `company_intelligence_private_read`, and both cached catalog consumers have
+  source reload triggers. This changes no existing entitlement row. The real
+  account baseline is Pro/active/comp/lifetime with the original3features and
+  no private feature. The mapped Stripe customer is null in the successful
+  canonical roster read; this is not a universal claim about Stripe. No grant,
+  cancellation, force action or private artifact read has occurred.
+- **D110 — installed API proof does not prove admin adoption.** The13:45:33Z
+  read-only VPS receipt pins checkout5b7513, installed catalog SHA256
+  `cc7de54a72dcf5c9deee5f0396dd6901a0ada9b9f03e4d258e578cab5fc17477`,
+  updater SHA256 `6f01f561a1eb24d9b79c14ae0c0e1d57f481da039ceed22a43cd5741c94f8496`.
+  API PID2915728
+  started13:45:16. Admin remained PID2719081/start08:12:21, generation
+  `2026-08-09-prophet-integrity-v1`; installed unit differs from source.
+  No updater remained running13:46:54, and the latest log ends at13:45:20
+  with `W2C installation and terminal state were not authenticated`. The
+  existing updater exits before the independent admin reconciliation block.
+  A owns source-order PR#8821. Reviewed source head
+  `de00e5765b6e6f24fc82ca82fa52bae5906654c7` was normally refreshed to CI head
+  `8370d5dd1a9032f18f6814771e8a45ac5689a14d`; both source postimages are unchanged.
+  The fresh branch is
+  `claude/ssd-f04-admin-order-01a128b5-4913511afaca83d4`; the admin block is
+  relocated unchanged after API adoption and before W2C attestation. All
+  W2C/Options guards remain byte-identical. Existing #8807/#8816 repairs keep
+  their owners; no manual timer/service workaround is authorized by this record.
+- **D111 — concrete native contract and bounded consumer source.** GMI #8810
+  now publishes exact `9bf268e2035886a5efa086d6c4a1f2f31c102f1f`, with a
+  GMI-owned merge hold pending kernel#8803. Its current issuer selection is
+  owner-resolved, bounded to16sorted unique facts, with exact issuer/CIK/
+  snapshot binding; fact reads pin original full Admission through retrieval.
+  GMI retains current generation, lawful purpose, resolver and actual private
+  artifact installation. C01 remainsNOT_ADMITTED. A's Sol coordinator uses
+  stable Fabric child `mo-a-f04-private-build-01a128b5-v1` on the original root,
+  one request/lease/launch. Six new Terminal decoder/proxy/test files are the
+  only source scope on `claude/ssd-f04-private-consumer-01a128b5-8b0f9f674ee81012`.
+  The slice supports current mode only, explicitly refuses historical query
+  overrides, authenticates before fresh canonical entitlement before native
+  I/O, and retains private/no-store bounded closed responses. B confirmed no
+  competing B writer on this private scope; shared auth/UI and other owners'
+  #804/#915/ChartPanel remain untouched. Source implementation is permitted
+  independently of the later real grant and production-positive gates.
+- **D112 — publication and infrastructure boundaries remain distinct.** News
+  #8797 landed `69d6326bec3f155fb769ab1839409c232ad23e44` at12:04:47Z with
+ 26concludedchecks,3blobmatches and152focusedPASS. W17#8799 landed
+  `abce5baaa235ca29d8d3d096d9e31cdd8797ea6e` at11:57:46Z. Neither proves
+  covering page publication. Prophet retains sole observation of existing
+  render38141694842; prior38137913516 had runner_id0/no steps for
+  `render-linux`, and repo-visible runners were four online Macs. Org inventory
+  returned403 and is not retried or interpreted as org absence. The existing
+  runner-mitigation owner holds that dependency; A creates no dispatch/observer.
+  Attended Fabric returns are usable and accepted; the native runtime still
+  advertises12total slots, not16children. Executive arms/full acceptance and
+  original-parent Wake remain with their existing infrastructure owners.
+
+Only MO-PAID-005 and MO-DELTA-004 receive W18 evidence/gap updates. Their
+capability states, all other rows,15columns and CRLF remain unchanged. This
+private foundation does not satisfy shock-to-company mapping or signed-in J1.
+Canonical checkpoint: https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-6109871544.
+Evidence stays under `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5/`,
+particularly `f04-private-adoption/entitlement-qualification/issuer-runtime-postmerge-20261011.json`,
+`admin-deploy-order/`, `consumer-source/`, and the existing source/CI receipts.
+The next source release must follow exact-head concluded CI, manual seat merge
+and fresh blob comparison, followed by updater-mediated admin adoption. Then
+qualify the actual account action and fresh /api/me, native owner installation,
+and authenticated consumer journey separately. Preserve F03/MO-PAID-032 natural
+time gates, held carriers and all earlier do_not_redo obligations.
+MISSION_COMPLETE: false.

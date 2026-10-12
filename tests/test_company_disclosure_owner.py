@@ -250,11 +250,28 @@ def test_readonly_constructor_never_creates_missing_root(tmp_path):
     assert not missing.exists()
 
 
+def _prepare_cli_deployment(source, root, monkeypatch):
+    # The host census is synthetic, while the existing intent/publication and
+    # exclusive journal behavior under test remain real.
+    from tests.test_company_disclosure_preflight import (
+        preflight, GitStub, make_expected, provision, write_expected,
+        provenance_for, api_ok, stub_linux_collectors)
+    monkeypatch.setattr(preflight, 'PRODUCTION_ROOT', root)
+    provision(root)
+    source.git = GitStub(root, source.value.code_version)
+    stub_linux_collectors(monkeypatch)
+    monkeypatch.setattr(preflight, 'collect_on_disk_provenance', provenance_for)
+    monkeypatch.setattr(preflight, 'revalidate_api_census', lambda census: api_ok(census))
+    expected = make_expected(root, code=source.value.code_version, mode='PROMOTE_CURRENT')
+    path = root / 'synthetic-expected-deployment.json'
+    write_expected(path, expected)
+    return path
+
+
 def test_cli_reserves_same_operation_once_before_effects(case, tmp_path, monkeypatch):
     from scripts import publish_company_disclosure as cli
     source = case[0]
-    for key in ['publisher/source', 'publisher/operations']:
-        (tmp_path/key).mkdir(parents=True)
+    deployment = _prepare_cli_deployment(source, tmp_path, monkeypatch)
     monkeypatch.setattr(cli.owner, 'CommittedDisclosureSource', lambda repo: source)
     calls = []
     def operation(*args, **kwargs):
@@ -267,11 +284,11 @@ def test_cli_reserves_same_operation_once_before_effects(case, tmp_path, monkeyp
         return {'status': 'COMMITTED_OBSERVED'}
     monkeypatch.setattr(cli, 'publish_generation', operation)
     monkeypatch.setattr('sys.argv', ['publisher', '--repo', str(tmp_path), '--root', str(tmp_path),
-                                    '--operation-id', 'synthetic', '--expect-empty'])
+                                    '--operation-id', 'synthetic', '--expected-deployment-json', str(deployment), '--expect-empty'])
     old = os.umask(0o077)
     try:
         assert cli.main() == 0
-        with pytest.raises(FileExistsError): cli.main()
+        assert cli.main() == 1  # Same ID is refused before new effects.
     finally:
         os.umask(old)
     assert calls == [1]
@@ -286,8 +303,7 @@ def test_cli_reserves_same_operation_once_before_effects(case, tmp_path, monkeyp
 def test_unknown_effect_retains_exact_immutable_intent_without_replay(case, tmp_path, monkeypatch, boundary):
     from scripts import publish_company_disclosure as cli
     source = case[0]
-    for key in ['publisher/source', 'publisher/operations']:
-        (tmp_path/key).mkdir(parents=True)
+    deployment = _prepare_cli_deployment(source, tmp_path, monkeypatch)
     body = (tmp_path/'input/source.html').read_bytes()
     (tmp_path/'publisher/source'/(source.value.spec['edition']['source_sha256']+'.html')).write_bytes(body)
     monkeypatch.setattr(cli.owner, 'CommittedDisclosureSource', lambda repo: source)
@@ -306,7 +322,7 @@ def test_unknown_effect_retains_exact_immutable_intent_without_replay(case, tmp_
     monkeypatch.setattr(LocalStore, 'put_bytes_strict_conditional', lost)
     monkeypatch.setattr(LocalStore, 'get_bytes_strict_bounded_versioned', unavailable)
     monkeypatch.setattr('sys.argv', ['publisher', '--repo', str(tmp_path), '--root', str(tmp_path),
-                                    '--operation-id', 'unknown', '--expect-empty'])
+                                    '--operation-id', 'unknown', '--expected-deployment-json', str(deployment), '--expect-empty'])
     old = os.umask(0o077)
     try: assert cli.main() == 2
     finally: os.umask(old)
