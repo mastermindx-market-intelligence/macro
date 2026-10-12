@@ -149,9 +149,10 @@ _MISS_RE = re.compile(
 # surface verb, so "upgraded to Buy" still merges with "raised to Buy". The
 # neutral spellings accept hyphen, space and the Mkt abbreviation, so
 # "Equal Weight", "Equal-Weight", "In Line", "Mkt Perform" and "Market
-# Perform" all land in the same class.
+# Perform" all land in the same class. An optional opening quote is read
+# past, so "to 'Buy'" and "to ‘Buy’" classify too.
 _RATING_TARGET_RE = re.compile(
-    r"\bto\s+(strong\s+buy|outperform|overweight|accumulate|buy|add|"
+    r"\bto\s+['\"‘“]?(strong\s+buy|outperform|overweight|accumulate|buy|add|"
     r"strong\s+sell|underperform|underweight|sell|reduce|hold|neutral|"
     r"equal[-\s]+weight|(?:market|mkt)\s+perform|sector\s+perform|"
     r"in[-\s]+line|peer\s+perform)\b",

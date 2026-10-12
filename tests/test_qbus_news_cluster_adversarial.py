@@ -515,3 +515,23 @@ def test_mkt_perform_still_joins_market_perform():
         "Wells Fargo upgrades Chevron to Mkt Perform",
         "Wells Fargo upgrades Chevron to Market Perform",
     )
+
+
+def test_quoted_buy_does_not_join_quoted_sell():
+    """Dropping the rating-target check in _compatible joins these titles."""
+    _blocked(
+        "Citi moves NVDA to 'Buy' on strong AI demand",
+        "Citi moves NVDA to 'Sell' on strong AI demand",
+    )
+    _blocked(
+        "Citi moves NVDA to ‘Buy’ on strong AI demand",
+        "Citi moves NVDA to ‘Sell’ on strong AI demand",
+    )
+
+
+def test_quoted_buy_still_joins_bare_buy():
+    """Failing to read past the opening quote splits this duplicate pair."""
+    _joined(
+        "Citi upgrades NVDA to 'Buy' on strong AI demand",
+        "Citi upgrades NVDA to Buy on strong AI demand",
+    )
