@@ -3753,6 +3753,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -4639,6 +4640,26 @@ jobs:
       # as the step above.
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
+
+  c19-wp13-debt-maturity-as-of:
+    if: ${{ false }}
+    gate: code
+    # C19 WP13: point-in-time (as_of) debt-maturity ladder — later filings never visible (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp13_debt_maturity_as_of.py"
+      - "engine/debt_maturity.py"
+      - "tests/fixtures/debt_maturity/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: c19-wp13-debt-maturity-as-of
+        run: python -m pytest tests/test_c19_wp13_debt_maturity_as_of.py -q -p no:cacheprovider
 
   international-workspace-pure-js:
     if: ${{ false }}
@@ -13526,6 +13547,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rate_inflation_transmission.py"
       - "engine/yield_momentum.py"
       - "engine/rebalance_calendar.py"
@@ -14033,6 +14055,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -16704,6 +16727,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -20765,6 +20789,7 @@ jobs:
       - "engine/qbus_news_reducer.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
@@ -22892,6 +22917,7 @@ jobs:
       - "tests/test_qbus_news_cluster_adversarial.py"
       - "tests/test_qbus_news_cluster_audit.py"
       - "tests/test_qbus_news_contract.py"
+      - "tests/test_qbus_news_flow_store.py"
       - "tests/test_qbus_news_migration.py"
       - "tests/test_qbus_news_receipts.py"
       - "tests/test_qbus_news_reducer.py"
@@ -22899,6 +22925,7 @@ jobs:
       - "tests/test_qbus_news_store_api_reads.py"
       - "tests/test_qbus_news_store_clusters.py"
       - "tests/test_qbus_news_store_lifecycle.py"
+      - "tests/test_qbus_news_store_uri_paths.py"
       - "tests/test_qbus_news_task5_repairs.py"
       - "tests/test_qbus_news_universe.py"
       - "tests/test_qbus_news_universe_diagnose.py"
@@ -22911,6 +22938,7 @@ jobs:
       - "tests/test_ticker_news_annotation_api.py"
       - "tests/test_ticker_news_api.py"
       - "tests/test_ticker_news_end_to_end.py"
+      - "tests/test_ticker_news_flow_api.py"
       - "tests/test_ticker_news_inventory.py"
       - "tests/test_ticker_news_package_n_matrix.py"
       - "tests/test_ticker_news_receipt_binding.py"
@@ -22951,6 +22979,7 @@ jobs:
           tests/test_qbus_news_cluster_adversarial.py
           tests/test_qbus_news_cluster_audit.py
           tests/test_qbus_news_contract.py
+          tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
           tests/test_qbus_news_reducer.py
@@ -22958,6 +22987,7 @@ jobs:
           tests/test_qbus_news_store_api_reads.py
           tests/test_qbus_news_store_clusters.py
           tests/test_qbus_news_store_lifecycle.py
+          tests/test_qbus_news_store_uri_paths.py
           tests/test_qbus_news_task5_repairs.py
           tests/test_qbus_news_universe.py
           tests/test_qbus_news_universe_diagnose.py
@@ -22970,6 +23000,7 @@ jobs:
           tests/test_ticker_news_annotation_api.py
           tests/test_ticker_news_api.py
           tests/test_ticker_news_end_to_end.py
+          tests/test_ticker_news_flow_api.py
           tests/test_ticker_news_inventory.py
           tests/test_ticker_news_package_n_matrix.py
           tests/test_ticker_news_receipt_binding.py
