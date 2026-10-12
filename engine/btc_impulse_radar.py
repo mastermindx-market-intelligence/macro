@@ -148,10 +148,41 @@ def _u1_cond(sopr: pd.Series, sopr_w: int, p5: pd.Series, index) -> pd.Series:
     return (sz < -1.5) & (p5 <= -0.05)                          # reactive wash-out bounce
 
 
-def fire_series(sig_df: pd.DataFrame | None = None) -> pd.DataFrame:
-    """Per-day act-tier leg fire booleans over FULL history (d2/d3 DOWN, u1 UP).
-    Drives the alert engine's transition detection. Returns an empty frame on any
-    failure / missing inputs (never raises). Columns present only when buildable."""
+def _observed_daily_window(valid: pd.Series, periods: int, index) -> pd.Series:
+    """All required calendar-day observations, not just N surviving rows.
+
+    This records stored observation completeness, not historical publication
+    availability. The caller also checks that derived feature values are finite.
+    """
+    source = valid.index
+    if (not isinstance(source, pd.DatetimeIndex) or source.has_duplicates
+            or not source.is_monotonic_increasing
+            or not source.equals(source.normalize())):
+        raise ValueError("Source observation dates must be unique, ordered and daily")
+    if len(source) == 0 or len(index) == 0 or source[0] > index[-1]:
+        return pd.Series(False, index=index)
+    days = pd.date_range(min(source[0], index[0]), index[-1], freq="D")
+    present = valid.reindex(days, fill_value=False).fillna(False).astype(int)
+    return present.rolling(periods, min_periods=periods).sum().eq(periods).reindex(index, fill_value=False)
+
+
+def fire_series(sig_df: pd.DataFrame | None = None, *, preserve_unknown: bool = False) -> pd.DataFrame:
+    """Per-day act-tier conditions from the same canonical builders.
+
+    Default booleans preserve the existing alert transition contract. The opt-in
+    research view keeps absent, immature, invalid and gapped source observations
+    nullable. It does not assert as-published availability or promote a signal.
+    Invalid target dates raise only in the opt-in view; default failure behavior
+    remains an empty frame. Missing source legs are all-unknown in that view.
+    """
+    if preserve_unknown:
+        if sig_df is None:
+            sig_df = store.read("vector", "signals")
+        if sig_df is not None and not sig_df.empty:
+            idx = sig_df.index
+            if (not isinstance(idx, pd.DatetimeIndex) or idx.has_duplicates
+                    or not idx.is_monotonic_increasing or not idx.equals(idx.normalize())):
+                raise ValueError("Source-observed view requires unique ordered daily target dates")
     try:
         cfg = config.load().get("btc_impulse_radar", {}) or {}
         dvol_w = int(cfg.get("dvol_z_w", 60))
@@ -162,14 +193,27 @@ def fire_series(sig_df: pd.DataFrame | None = None) -> pd.DataFrame:
             return pd.DataFrame()
         df = sig_df.copy(); df.index = pd.to_datetime(df.index); df = df.sort_index()
         p5 = df["close"] / df["close"].shift(5) - 1.0
-        out = {}
+        out = ({k: pd.Series(pd.NA, index=df.index, dtype="boolean") for k in ("d2", "d3", "u1")}
+               if preserve_unknown else {})
+        price_known = None
+        if preserve_unknown:
+            price_known = _observed_daily_window(np.isfinite(df["close"]) & (df["close"] > 0), 6, df.index)
         try:
             dv = store.read("deribit", "dvol")
             if dv is not None and not dv.empty and {"dvol_high", "dvol_low", "dvol_close"} <= set(dv.columns):
                 dv = dv.copy(); dv.index = pd.to_datetime(dv.index); dv = dv.sort_index()
                 rng = (dv["dvol_high"] - dv["dvol_low"]) / dv["dvol_close"]
                 if rng.dropna().shape[0] >= dvol_w:
-                    out["d2"] = _d2_cond(rng, dvol_w, df.index).fillna(False)
+                    fired = _d2_cond(rng, dvol_w, df.index).fillna(False)
+                    if preserve_unknown:
+                        valid = (np.isfinite(dv[["dvol_high", "dvol_low", "dvol_close"]]).all(axis=1)
+                                 & (dv["dvol_close"] > 0) & (dv["dvol_low"] > 0)
+                                 & (dv["dvol_high"] >= dv["dvol_low"]))
+                        known = _observed_daily_window(valid, dvol_w + 2, df.index)
+                        z = _causal_z(rng, dvol_w)
+                        known &= np.isfinite(z.reindex(df.index)) & np.isfinite(z.shift(1).reindex(df.index))
+                        fired = fired.astype("boolean").where(known)
+                    out["d2"] = fired
         except Exception as e:  # noqa: BLE001
             log.debug("fire_series d2 skipped: %s", e)
         try:
@@ -178,8 +222,14 @@ def fire_series(sig_df: pd.DataFrame | None = None) -> pd.DataFrame:
                 sp = sp.copy(); sp.index = pd.to_datetime(sp.index)
                 sopr = sp["sopr"].sort_index()
                 if sopr.dropna().shape[0] >= sopr_w:
-                    out["d3"] = _d3_cond(sopr, sopr_w, p5, df.index).fillna(False)
-                    out["u1"] = _u1_cond(sopr, sopr_w, p5, df.index).fillna(False)
+                    d3 = _d3_cond(sopr, sopr_w, p5, df.index).fillna(False)
+                    u1 = _u1_cond(sopr, sopr_w, p5, df.index).fillna(False)
+                    if preserve_unknown:
+                        known = _observed_daily_window(np.isfinite(sopr) & (sopr > 0), sopr_w + 1, df.index)
+                        known &= price_known & np.isfinite(p5) & np.isfinite(_causal_z(sopr, sopr_w).reindex(df.index))
+                        d3 = d3.astype("boolean").where(known)
+                        u1 = u1.astype("boolean").where(known)
+                    out["d3"], out["u1"] = d3, u1
         except Exception as e:  # noqa: BLE001
             log.debug("fire_series sopr skipped: %s", e)
         return pd.DataFrame(out, index=df.index)
