@@ -1255,12 +1255,15 @@ def test_cluster_audit_skips_over_cap_with_hand_run_line(tmp_path):
 
 def test_cluster_audit_under_cap_projects_counts_only(tmp_path, capsys):
     db = tmp_path / "mismatch.sqlite3"
-    base = FLOW_NOW - timedelta(hours=2)
+    # Two subject groups, 28 hours apart, so no cross-subject pair falls
+    # inside the 6-hour window: the audit lists exactly one near miss.
+    base = FLOW_NOW - timedelta(hours=30)
+    ace_base = FLOW_NOW - timedelta(hours=2)
     rows = (
         (9300001, base, "Zed Corp wins contract worth 3 million", "sec-931"),
         (9300002, base + timedelta(minutes=5), "Zed Corp wins contract worth 4 million", "sec-931"),
-        (9300003, base + timedelta(minutes=20), "Ace Ltd lifts target to 20 dollars", "sec-932"),
-        (9300004, base + timedelta(minutes=25), "Ace Ltd lifts target to 30 dollars", "sec-932"),
+        (9300003, ace_base, "Ace Ltd lifts target to 20 dollars", "sec-932"),
+        (9300004, ace_base + timedelta(minutes=5), "Ace Ltd lifts target to 30 dollars", "sec-932"),
     )
     routed = [
         RoutedRevision(
@@ -1419,7 +1422,10 @@ def test_flow_latency_unavailable_reasons(tmp_path, capsys):
     assert flow(out) == {"state": "no_reports_7d", "reads": 0, "known_at": KNOWN_AT}
 
 
-def test_new_sections_use_no_ranking_words(tmp_path, capsys):
+def test_new_sections_use_no_ranking_words(tmp_path_factory, capsys):
+    # A neutrally-named directory: the audit hand-run line echoes the
+    # database path as given, and pytest embeds the test name in tmp_path.
+    tmp_path = tmp_path_factory.mktemp("w12clean")
     db = _flow_store(tmp_path)
     universe = _flow_universe(tmp_path)
     held = _write_universe(
