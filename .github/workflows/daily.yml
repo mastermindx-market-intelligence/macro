@@ -2439,6 +2439,8 @@ jobs:
         if: steps.prophet_checkpoint.outputs.r2_ready == 'true'
         timeout-minutes: 5
         continue-on-error: true
+        # macstudio Homebrew Bash 5.3.9 wedges on large heredocs.
+        shell: /bin/bash -e {0}
         env:
           PROPHET_CHECKPOINT_SHA: ${{ steps.prophet_checkpoint.outputs.checkpoint_sha }}
           PROPHET_INDEX_SHA256: ${{ steps.prophet_checkpoint.outputs.index_sha256 }}
@@ -2629,6 +2631,8 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 5
         continue-on-error: true
+        # Pin macstudio to a Bash without the Homebrew heredoc deadlock.
+        shell: /bin/bash -e {0}
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -2782,6 +2786,8 @@ jobs:
         # the immediately-following narrow checkpoint is their sole publisher.
         # Seconds; non-fatal to the wider engine job.
         continue-on-error: true
+        # Pin macstudio to a Bash without the Homebrew heredoc deadlock.
+        shell: /bin/bash -e {0}
         env:
           COLLECT_LANE: nightly
         run: |
@@ -5167,6 +5173,8 @@ jobs:
       - name: Time Machine freshness tripwire (loud — the feed must advance daily)
         # Reads the just-built manifest; date_to older than 4 calendar days means the store
         # fetch or panel build produced stale data. Loud, never silent-rot; never blocks.
+        # Run this Python heredoc under system Bash on macstudio.
+        shell: /bin/bash -e {0}
         run: |
           python - <<'PY' || echo "::warning::TM freshness guard errored (non-fatal)"
           import json, datetime, pathlib, sys
