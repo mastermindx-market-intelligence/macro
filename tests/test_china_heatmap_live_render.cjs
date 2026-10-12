@@ -39,12 +39,12 @@ test('uncovered live name remains null and is excluded from live aggregates',()=
  assert.deepEqual({...api.breadth(data,tiles,'1D')},{adv:1,dec:0});
 });
 
-test('China leaves the legacy live.js hidden-span overlay while HK and Canada retain it',()=>{
+test('China and HK use coherent overlays, while Canada retains legacy hidden spans',()=>{
  const raw=source();
  const map=/var _LIVE_MKT\s*=\s*\{([^}]+)\}/.exec(raw);
  assert.ok(map,'legacy market map missing');
  assert.doesNotMatch(map[1],/china\s*:/);
- assert.match(map[1],/hk\s*:\s*'hk'/);
+ assert.doesNotMatch(map[1],/hk\s*:/);
  assert.match(map[1],/canada\s*:\s*'ca'/);
 });
 

@@ -6400,6 +6400,7 @@ jobs:
       - "scripts/backfill_cctv_archive.py"
       - "scripts/backfill_qledger_intel_hub.py"
       - "scripts/build_china_heatmap_live.py"
+      - "scripts/build_live_quotes.py"
       - "scripts/build_operator_exposure_log.py"
       - "scripts/build_oracle_memory.py"
       - "scripts/build_polygon_gex.py"
@@ -6447,6 +6448,7 @@ jobs:
       - "site/factordata/us_standouts.json"
       - "site/factordata/us_standouts_v2.json"
       - "site/factordata/us_track_ledger.json"
+      - "scripts/vps_live_orchestrator.py"
       - "site/heatmap.js"
       - "site/marketdata/experiments.json"
       - "site/rr_banner.json"
@@ -6460,6 +6462,8 @@ jobs:
       - "tests/test_china_heatmap_live_producer.py"
       - "tests/test_china_heatmap_live_refresh.cjs"
       - "tests/test_china_heatmap_live_render.cjs"
+      - "tests/test_hk_heatmap_live.cjs"
+      - "tests/test_hk_heatmap_live_source.py"
       - "tests/test_market_heatmap.py"
     # Whole-board 沪深 涨跌家数 (~5,200 names) behind the A-share heatmap's breadth
     # card. WIRING LAW (#1253 precedent): tests/test_market_heatmap.py was named by
@@ -6486,11 +6490,12 @@ jobs:
           tests/test_china_heatmap_live_producer.py
           tests/test_china_heatmap_live_deploy.py
           tests/test_china_heatmap_live_health.py
+          tests/test_hk_heatmap_live_source.py
           -q
       - name: China live heatmap browser contract and render (source and served)
         run: |
-          node --test tests/test_china_heatmap_live_refresh.cjs tests/test_china_heatmap_live_render.cjs
-          LIVE_REFRESH_SOURCE=site/heatmap.js LIVE_RENDER_SOURCE=site/heatmap.js HEATMAP_SOURCE=site/heatmap.js REFRESH_SOURCE=site/heatmap.js node --test tests/test_china_heatmap_live_refresh.cjs tests/test_china_heatmap_live_render.cjs
+          node --test tests/test_china_heatmap_live_refresh.cjs tests/test_china_heatmap_live_render.cjs tests/test_hk_heatmap_live.cjs
+          LIVE_REFRESH_SOURCE=site/heatmap.js LIVE_RENDER_SOURCE=site/heatmap.js HEATMAP_SOURCE=site/heatmap.js REFRESH_SOURCE=site/heatmap.js node --test tests/test_china_heatmap_live_refresh.cjs tests/test_china_heatmap_live_render.cjs tests/test_hk_heatmap_live.cjs
 
   china-search-universe:
     if: ${{ false }}

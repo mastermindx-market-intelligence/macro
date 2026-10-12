@@ -341,12 +341,13 @@ def board_display_symbols(site_dir: Path,
 
 def display_universe(site_dir: Path) -> list[str]:
     """The same-origin ``site/live/quotes.json`` universe: the hand-kept macro
-    tiles FIRST (so a cap squeeze or a board-page surprise can never cost the
-    market strips their feed), then the scraped board leg. De-duped and
-    charset-validated exactly like build_universe()."""
+    tiles FIRST, then the existing HK heatmap members, then the scraped board
+    leg. This is the actual one-minute VPS/public endpoint: adding HK to the
+    private five-minute full-universe snapshot alone changes NO browser tiles.
+    De-duped and charset-validated exactly like build_universe()."""
     ordered: list[str] = []
     seen: set[str] = set()
-    for s in list(DISPLAY_SYMBOLS) + board_display_symbols(site_dir):
+    for s in list(DISPLAY_SYMBOLS) + heatmap_hk_symbols(site_dir) + board_display_symbols(site_dir):
         s = str(s).strip().upper()
         if s and s not in seen and _SYMBOL_RE.match(s):
             seen.add(s)
@@ -392,6 +393,39 @@ def top_conviction(site_dir: Path, n: int) -> list[str]:
     return [r["t"] for r in rows[:n]]
 
 
+def heatmap_hk_symbols(site_dir: Path) -> list[str]:
+    """Enroll the *entire* existing HK heatmap universe in the incumbent snapshot.
+
+    The HK map is a membership consumer, not another quote collector. It can
+    render same-session changes only if most canonical tiles have current HK
+    quotes; the old page/GTAA/basket scrape included only a subset. Keep the
+    source of membership in the existing published daily-close artifact.
+    """
+    path = site_dir / "marketdata" / "hk_heatmap.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeDecodeError):
+        return []
+    if not isinstance(data, dict) or data.get("market") != "hk" or data.get("map_type") != "stocks":
+        return []
+    tiles = data.get("tiles")
+    if not isinstance(tiles, list) or not (1 <= len(tiles) <= 2000):
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    for tile in tiles:
+        if not isinstance(tile, dict):
+            continue
+        ticker = tile.get("t")
+        if not isinstance(ticker, str):
+            continue
+        symbol = ticker.strip().upper()
+        if symbol.endswith(".HK") and _SYMBOL_RE.fullmatch(symbol) and symbol not in seen:
+            seen.add(symbol)
+            out.append(symbol)
+    return out
+
+
 def build_universe(site_dir: Path, extra: list[str] | None = None,
                    cap: int = 3000, top_n: int = 120) -> list[str]:
     """CORE index/futures symbols first (never dropped by the cap), then every
@@ -415,7 +449,7 @@ def build_universe(site_dir: Path, extra: list[str] | None = None,
     the priority)."""
     ordered: list[str] = []
     seen: set[str] = set()
-    for s in (CORE_SYMBOLS + basket_member_symbols() + scrape_site_symbols(site_dir)
+    for s in (CORE_SYMBOLS + heatmap_hk_symbols(site_dir) + basket_member_symbols() + scrape_site_symbols(site_dir)
               + top_conviction(site_dir, top_n) + list(extra or [])):
         s = str(s).strip().upper()
         if s and s not in seen and _SYMBOL_RE.match(s):
@@ -598,8 +632,11 @@ def main() -> None:
     symbols = [s for s in (args.symbols or "").split(",") if s.strip()] or None
     if args.display:
         symbols = display_universe(site_dir)
-        log.info("display universe: %d tiles + %d board symbols from %s",
-                 len(DISPLAY_SYMBOLS), len(symbols) - len(DISPLAY_SYMBOLS),
+        log.info("display universe: %d core tiles + %d HK heatmap members + "
+                 "%d remaining board symbols (deduplicated), boards=%s",
+                 len(DISPLAY_SYMBOLS), len(heatmap_hk_symbols(site_dir)),
+                 max(0, len(symbols) - len(DISPLAY_SYMBOLS)
+                     - len(heatmap_hk_symbols(site_dir))),
                  ", ".join(DISPLAY_BOARD_PAGES))
     snap = build(
         site_dir,

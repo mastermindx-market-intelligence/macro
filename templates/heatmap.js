@@ -534,6 +534,149 @@
     return quote ? quote.changePct : null;
   }
 
+  /* HK quote marks reuse the existing five-minute live/quotes.json publisher.
+     No second vendor connection, and no claim of exchange real-time entitlement.
+     All 1D surfaces use one >=95%-covered, source-timestamped HK cohort. */
+  var _hkLiveStates = Object.create(null);
+  var HK_LIVE_URL = 'live/quotes.json', HK_LIVE_POLL_MS = 60000;
+  var HK_LIVE_MAX_AGE_MS = 12 * 60000;
+  function hkLiveDay(ts) { return new Date(ts + 28800000).toISOString().slice(0, 10); }
+  function hkLiveMinute(ts) {
+    var d = new Date(ts + 28800000);
+    return d.getUTCHours() * 60 + d.getUTCMinutes();
+  }
+  function hkLiveProject(snapshot, base, now) {
+    if (!base || base.market !== 'hk' || base.map_type !== 'stocks' ||
+        !Array.isArray(base.tiles) || !base.tiles.length ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(base.asof || '') ||
+        !snapshot || snapshot.source !== 'snapshot' ||
+        !snapshot.quotes || typeof snapshot.quotes !== 'object' || Array.isArray(snapshot.quotes) ||
+        !Number.isFinite(snapshot.ts) || snapshot.ts > now + 5000 ||
+        now - snapshot.ts > HK_LIVE_MAX_AGE_MS) return null;
+    var today = hkLiveDay(now), clock = hkLiveMinute(now);
+    var running = clock >= 570 && clock < 975;
+    var ageLimit = running ? ((clock >= 720 && clock < 780) ? 90 : 55) * 60000 : 18 * 3600000;
+    var rows = Object.create(null), allowed = Object.create(null), session = '';
+    base.tiles.forEach(function (tile) {
+      var symbol = tile && tile.t;
+      if (typeof symbol !== 'string' || !/^[0-9]{4,5}\.HK$/.test(symbol) || allowed[symbol]) return;
+      allowed[symbol] = true;
+      var q = snapshot.quotes[symbol];
+      if (!q || q.source !== 'yahoo' || q.basis !== 'regular' ||
+          !Number.isFinite(q.ts) || q.ts <= 0 || q.ts > now + 5000 ||
+          q.ts > snapshot.ts + 60000 || now - q.ts > ageLimit ||
+          !Number.isFinite(q.price) || q.price <= 0 ||
+          !Number.isFinite(q.prevClose) || q.prevClose <= 0 ||
+          !Number.isFinite(q.changePct)) return;
+      var day = hkLiveDay(q.ts), pc = (q.price / q.prevClose - 1) * 100;
+      if (day < base.asof || day > today || !Number.isFinite(pc) ||
+          Math.abs(pc - q.changePct) > 0.15 || pc < -99 || pc > 500) return;
+      // Do not present a pre-auction price as the post-close HK settlement.
+      if (clock >= 975 && day === today && hkLiveMinute(q.ts) < 945) return;
+      rows[symbol] = { session: day, ts: q.ts, changePct: pc };
+      if (day > session) session = day;
+    });
+    if (!session) return null;
+    var quotes = Object.create(null), newest = 0, resolved = 0;
+    Object.keys(rows).forEach(function (symbol) {
+      if (rows[symbol].session !== session) return;
+      quotes[symbol] = { ts: rows[symbol].ts, changePct: rows[symbol].changePct };
+      newest = Math.max(newest, rows[symbol].ts);
+      resolved++;
+    });
+    return {
+      baselineAsOf: base.asof, asof: session, generatedAt: snapshot.ts,
+      quotes: quotes, resolved: resolved, requested: base.tiles.length,
+      usable: resolved / base.tiles.length >= 0.95, newestQuoteTs: newest
+    };
+  }
+  function hkLiveMeta(base) {
+    var state = base && _hkLiveStates[base._url || 'marketdata/hk_heatmap.json'];
+    var m = state && state.data, now = Date.now();
+    return m && m.baselineAsOf === base.asof && m.generatedAt <= now + 5000 &&
+      now - m.generatedAt <= HK_LIVE_MAX_AGE_MS && m.asof >= base.asof &&
+      m.asof <= hkLiveDay(now) ? m : null;
+  }
+  function hkLiveValue(base, tile, timeframe) {
+    if (timeframe !== '1D') return tile && tile.perf ? tile.perf[timeframe] : null;
+    var m = hkLiveMeta(base);
+    if (!m || !m.usable) return tile && tile.perf ? tile.perf[timeframe] : null;
+    var q = tile && m.quotes[tile.t];
+    return q ? q.changePct : null;
+  }
+  function hkLiveDescriptor(base) {
+    if (!base || base.market !== 'hk' || base.map_type !== 'stocks') return null;
+    var m = hkLiveMeta(base);
+    if (!m) return { dot: '', en: 'Daily close · ' + base.asof + ' · ' + base.n_tiles + ' names',
+      zh: '日线收盘 · ' + base.asof + ' · ' + base.n_tiles + ' 只' };
+    if (!m.usable) return { dot: 'degraded',
+      en: 'HK quotes incomplete · ' + m.resolved + '/' + m.requested + ' · Daily fallback ' + base.asof,
+      zh: '港股行情不完整 · ' + m.resolved + '/' + m.requested + ' · 回退日线 ' + base.asof };
+    var stamp = new Date(m.newestQuoteTs).toLocaleTimeString('en-GB', {
+      timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    var isRunning = m.asof === hkLiveDay(Date.now()) &&
+      hkLiveMinute(Date.now()) >= 570 && hkLiveMinute(Date.now()) < 975;
+    return { dot: 'delayed', breadth: null,
+      en: (isRunning ? 'HK delayed quotes' : 'HK last observed · delayed') + ' · ' + m.asof + ' ' + stamp + ' HKT · ' + m.resolved + '/' + m.requested + ' · 1D only',
+      zh: (isRunning ? '港股延迟行情' : '港股上次观测 · 延迟行情') + ' · ' + m.asof + ' ' + stamp + ' 香港时间 · ' + m.resolved + '/' + m.requested + ' · 仅1日' };
+  }
+  function startHKLiveRefresh(base) {
+    if (!base || base.market !== 'hk' || base.map_type !== 'stocks') return;
+    var url = base._url || 'marketdata/hk_heatmap.json';
+    var st = _hkLiveStates[url] || (_hkLiveStates[url] = {
+      data: null, owner: false, generation: 0, inFlight: false,
+      emittedKey: 'daily'
+    });
+    st.base = base;
+    if (st.owner) return;
+    st.owner = true;
+    function viewKey() {
+      var m = hkLiveMeta(st.base);
+      return m ? m.asof + ':' + m.usable + ':' + m.resolved + ':' +
+        Object.keys(m.quotes).sort().map(function (s) {
+          return s + ':' + m.quotes[s].ts + ':' + m.quotes[s].changePct.toFixed(4);
+        }).join(',') : 'daily';
+    }
+    function publishViewChange() {
+      var nextKey = viewKey();
+      if (st.emittedKey === nextKey) return;
+      st.emittedKey = nextKey;
+      try { document.dispatchEvent(new CustomEvent('hm-live-refresh', { detail: { url: url } })); }
+      catch (e) { /* older browser */ }
+    }
+    function loop() {
+      // A quote can expire even if the next HTTP request fails. Compare
+      // against the last PAINTED state, not the already-expired value at tick.
+      publishViewChange();
+      if (document.hidden) { setTimeout(loop, HK_LIVE_POLL_MS); return; }
+      if (st.inFlight) return;
+      st.inFlight = true;
+      var generation = ++st.generation;
+      // Reuse the shared bounded no-store transport; no new source endpoint.
+      chinaLiveFetch(HK_LIVE_URL, generation).then(function (raw) {
+        var next = hkLiveProject(raw, st.base, Date.now()), prev = st.data;
+        if (next && prev && prev.baselineAsOf === next.baselineAsOf) {
+          if (next.asof < prev.asof || next.generatedAt < prev.generatedAt) return;
+          if (next.asof === prev.asof && Object.keys(next.quotes).some(function (s) {
+            return prev.quotes[s] && next.quotes[s].ts < prev.quotes[s].ts;
+          })) return;
+        }
+        st.data = next;
+      }).catch(function () { /* retain valid prior quote until its clock expires */ })
+        .then(function () {
+          if (st.generation !== generation) return;
+          st.inFlight = false;
+          publishViewChange();
+          setTimeout(loop, HK_LIVE_POLL_MS);
+        });
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) publishViewChange();
+    });
+    setTimeout(loop, 0);
+  }
+
   /* ---- per-timeframe colour-scale floors (set the bin widths). 1D keeps the
      canonical ±1/2/3%; every other window scales by FLOOR[tf]/FLOOR['1D'] so a
      1Y / 3M map still has contrast instead of a wall of saturated colour. ---- */
@@ -737,6 +880,7 @@
   }
   function heatmapValue(data, tile, tf) {
     if (data && data.market === 'china') return chinaLiveValue(data, tile, tf);
+    if (data && data.market === 'hk') return hkLiveValue(data, tile, tf);
     return tile && tile.perf ? tile.perf[tf] : null;
   }
   function medianPc(data, tiles, tf) {
@@ -1530,7 +1674,7 @@
         + '<span class="hm-lg-step">' + L('bins', '分档') + ' ±' + edgeFmt(e[0]) + '/' + edgeFmt(e[1]) + '/' + edgeFmt(e[2]) + '</span>';
     }
     function updateRead() {
-      var descriptor = (data.market === 'china' && TF === '1D') ? chinaLiveDescriptor(data) : null;
+      var descriptor = TF === '1D' ? (chinaLiveDescriptor(data) || hkLiveDescriptor(data)) : null;
       var liveBreadth = descriptor && descriptor.breadth;
       var b = data.board_breadth;
       var br = liveBreadth
@@ -1736,7 +1880,7 @@
     var _liveObserver = null;  // MutationObserver watching .nb-chg[data-sym] mutations
 
     // Live market-id for each market key (matches live.js regionOf() logic).
-    var _LIVE_MKT = { hk: 'hk', canada: 'ca' };
+    var _LIVE_MKT = { canada: 'ca' };
 
     function _parsePc(text) {
       // Parse live.js chg% text like "+1.23%" or "-0.45%" -> float, or null.
@@ -1876,7 +2020,7 @@
         var pc = heatmapValue(data, rec.t, TF);
         // HK/Canada retain the existing live.js overlay. China has its own
         // full-universe, atomically validated current-session contract.
-        if (data.market !== 'china' && TF === '1D' && rec.el) {
+        if (data.market !== 'china' && data.market !== 'hk' && TF === '1D' && rec.el) {
           var chgSpan = rec.el.querySelector('.nb-chg.hm-live-chg[data-sym]');
           var legacyPc = chgSpan && chgSpan.textContent ? _parsePc(chgSpan.textContent) : null;
           if (legacyPc != null) pc = legacyPc;
@@ -2267,6 +2411,7 @@
     buildTabs(); buildSort(); updateLegend(); updateRead(); layout(); renderDash();
     startAutoRefresh(data._url || JSON_URL);
     startChinaLiveRefresh(data);
+    startHKLiveRefresh(data);
 
     return {
       destroy: function () {
@@ -2318,7 +2463,7 @@
     root.querySelector('.hm-sc-exp').addEventListener('click', openOverlay);
 
     function paintMeta() {
-      var descriptor = chinaLiveDescriptor(data);
+      var descriptor = chinaLiveDescriptor(data) || hkLiveDescriptor(data);
       var live = data.source === 'polygon-live';
       var when = live ? (fmtUpdated(data) || data.asof || '—') : (data.asof || '—');
       var dot = descriptor ? descriptor.dot : (live ? 'live' : '');
@@ -2438,7 +2583,7 @@
         + '<span class="hm-lg-end">+' + edgeFmt(e[2]) + '%</span>';
     }
     function paintBreadth() {
-      var descriptor = chinaLiveDescriptor(data);
+      var descriptor = chinaLiveDescriptor(data) || hkLiveDescriptor(data);
       var lb = descriptor && descriptor.breadth;
       var br = lb ? { adv: lb.adv, dec: lb.dec } : breadth(data, data.tiles, TF);
       var tot = Math.max(1, br.adv + br.dec);
@@ -2502,6 +2647,7 @@
     document.addEventListener('hm-live-refresh', onScoreRefresh);
     startAutoRefresh(data._url || JSON_URL);
     startChinaLiveRefresh(data);
+    startHKLiveRefresh(data);
   }
 
   /* ====================================================================== */
@@ -2613,6 +2759,7 @@
       + '.hm-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;}'
       + '.hm-dot.live{background:var(--ok);box-shadow:0 0 0 3px var(--ring-ok);}'
       + '.hm-dot.break{background:var(--warn);box-shadow:none;}'
+      + '.hm-dot.delayed{background:var(--warn);box-shadow:none;}'
       + '.hm-dot.auction{background:var(--act);box-shadow:0 0 0 3px color-mix(in srgb,var(--act) 20%,transparent);}'
       + '.hm-dot.closed{background:var(--muted);box-shadow:none;}'
       + '.hm-dot.degraded{background:var(--warn);box-shadow:none;}'
