@@ -3,7 +3,41 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Current delivery frontier — October12 import-path repair
+## October12 aggregate-feed follow-on save
+
+PR8786 remains armed at9019a29c2e35da499fb5c822e515be9ce9c21027. Its
+CI38202742004 has19passing checks and ci-pack-11 pending in the retained
+observer result at04:42:20Z; the inactive merge-queue pilot is nonbinding.
+No merged/installed Macro claim follows. Existing observer PID17880 survived
+the local tool-session interruption; do not duplicate it.
+
+A separate owned SSD worktree at
+`/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-aggregate-feed-20261012-a9aa65ed7b847bd2`
+contains the next bounded source phase. Base209f77267304 integrates fresh
+protected main4bb93ef35d45 with the fixed8786 release. It has no separate PR
+yet and must not be pushed onto8786. The exact Fabric aggregate-feed patch
+was consumed and reviewed; parent closed a URL-normalization hole. The actual
+four affected suites pass186tests in9.50seconds after materializing tracked
+data; contract-delta has zero introduced/inherited findings in514.2seconds.
+Source, returned-artifact hashes and red/green evidence are in
+research/agentic_media/public_intelligence_20261011/AGGREGATE_FEED_QUALIFICATION.md
+and aggregate_feed_review.json. These are local source results, not live proof.
+
+Root independently qualified the October10 CEA release only as a government
+source reference. The actual reader refuses it before candidate admission;
+its RSS body has no ticker associations. The October8 science item differs in
+body bytes between aggregate and section feeds and remains expired. Neither
+qualification enables a writer, stage, emit or publication. The original12:07
+provider attempt remains EFFECT_UNKNOWN and is not replayed.
+
+Next: consume the original exact-head CI and protected merge, verify21source
+and3page installed bindings plus installed staging and real browser routes.
+Run the existing promote=false full earnings audit and fixed baseline workflow
+once only after protected-main source qualification. Integrate that merged
+main into this follow-on branch and ship only its bounded new diff through
+normal protected checks. Terminal956 remains live and accepted.
+
+## Historical delivery frontier — October12 import-path repair
 
 CI38199822739 on66541c0866a83bf6280cac5e9b6277ac56368407 exposed a real
 `ci-pack-7` failure in `unrun-import-hygiene`: the new fixed baseline CLI had

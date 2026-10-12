@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Normal authored push of import-pin repair d3c29264609e plus main integration b7f4710ae24a after82 passing affected tests and zero introduced/inherited contract findings to disarmed PR8786, exact-head readback and re-arm last. The66541c hosted run exposed a genuine missing repository import pin;82 affected tests and hostile-cwd CLI proof now pass. Complete protected landing, installed source/staging/browser evidence, then existing earnings discovery and the fixed analytical workflow. Terminal956 is already live; no new Press article is admitted.
+next_action: Complete protected delivery of original PR8786 at9019a29c2e35da499fb5c822e515be9ce9c21027 through CI38202742004, installed parity and browser proof; then dispatch the existing nonpromoting earnings audit and fixed analytical qualifier. Separate aggregate-feed repair is locally accepted after186 passing tests and zero contract findings, awaiting fresh-main integration after8786 lands. Publication remains unapproved.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
