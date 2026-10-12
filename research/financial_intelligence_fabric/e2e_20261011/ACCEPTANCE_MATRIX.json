@@ -1,0 +1,534 @@
+{
+  "document_type": "required_acceptance_cases",
+  "count": 54,
+  "note": "Planned implementation requirements. Fresh diagnostic results are separately documented; no product completion implied.",
+  "cases": [
+    {
+      "id": "A01",
+      "tasks": [
+        "T1"
+      ],
+      "condition": "Every required positive-evidence field changed independently with valid recomputed receipt ID/hash",
+      "required_behavior": "Refuse forged semantic evidence; test all18 fields, not only stale hashes.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A02",
+      "tasks": [
+        "T2"
+      ],
+      "condition": "Genuine AAPL confirmation, no-lineage, pre-lineage, as-reported and latest-restated",
+      "required_behavior": "Retain correct values, immutable source hashes and historical refusals; no invented revision.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A03",
+      "tasks": [
+        "S2"
+      ],
+      "condition": "Same-report duplicates with different decimals; precision-compatible nontransitive chain",
+      "required_behavior": "Keep source occurrences and distinguish exact/consistent/inconsistent; no greedy transitive equality.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A04",
+      "tasks": [
+        "S2"
+      ],
+      "condition": "Ordinary comparative reprint vs amendment vs changed reported fact",
+      "required_behavior": "Confirmation is not revision; latest_restated remains missing without explicit revision evidence.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A05",
+      "tasks": [
+        "S2"
+      ],
+      "condition": "Three or more accession lineage with contradiction or ambiguity",
+      "required_behavior": "Version and review multi-filing law; preserve v1 refusal instead of disabling its guard.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A06",
+      "tasks": [
+        "S1"
+      ],
+      "condition": "Currency, units, scaling, fiscal and calendar periods differ",
+      "required_behavior": "Refuse incompatible comparisons or expose an explicitly governed conversion and basis.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A07",
+      "tasks": [
+        "S1"
+      ],
+      "condition": "Known dimensions, empty dimensions and unknown dimensions",
+      "required_behavior": "Do not treat unknown as consolidated; dimensional lineage does not confer metric eligibility.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A08",
+      "tasks": [
+        "S1"
+      ],
+      "condition": "Derived ratio with zero/missing/negative or mismatched denominator",
+      "required_behavior": "Version formula/applicability; print missing/not-applicable reason, never invented zero.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A09",
+      "tasks": [
+        "S0"
+      ],
+      "condition": "Repeated visual rows, rowspan tables and instant cash inside duration columns",
+      "required_behavior": "Preserve statement presentation and semantic period separately; no accidental duplicate loss.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A10",
+      "tasks": [
+        "D1",
+        "S0"
+      ],
+      "condition": "Inline transforms, hidden values, taxonomy changes and malformed source package",
+      "required_behavior": "Retain parse evidence and explicit unsupported states; independent validator is not mapping authority.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A11",
+      "tasks": [
+        "T1",
+        "D1"
+      ],
+      "condition": "Invented or unsupported namespace URI with plausible concept/value",
+      "required_behavior": "Reject; preserve approved original taxonomy identity, not a guessed namespace.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A12",
+      "tasks": [
+        "D3",
+        "S2"
+      ],
+      "condition": "Later filing, correction, mapping or rule available after query cutoff",
+      "required_behavior": "Exclude from then-known view under each required source/system/policy clock.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A13",
+      "tasks": [
+        "D2",
+        "D3"
+      ],
+      "condition": "Historical filing fetched today without historic capture evidence",
+      "required_behavior": "Label reconstruction; never mint historical operational attestation.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A14",
+      "tasks": [
+        "D3",
+        "G4"
+      ],
+      "condition": "CIK, security aliases and multiple share classes",
+      "required_behavior": "Use Data OS owner binding; no new identity namespace or double-counted issuer.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A15",
+      "tasks": [
+        "P1"
+      ],
+      "condition": "Production provider unavailable or invalid",
+      "required_behavior": "No silent synthetic/golden fallback; retain separate demonstration delivery labels.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A16",
+      "tasks": [
+        "P1"
+      ],
+      "condition": "Unsupported issuer/accession/metric/query size",
+      "required_behavior": "Return bounded typed refusal; no arbitrary source fetch or misleading empty success.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A17",
+      "tasks": [
+        "D1",
+        "D3"
+      ],
+      "condition": "Incomplete package, digest mismatch, stale manifest or correction",
+      "required_behavior": "Do not publish a complete generation until required components verify.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A18",
+      "tasks": [
+        "D1",
+        "D3",
+        "V0"
+      ],
+      "condition": "Write response lost, immediate absence or delayed commit",
+      "required_behavior": "Preserve original-target EFFECT_UNKNOWN; no replay/failover until reconciliation.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A19",
+      "tasks": [
+        "D1"
+      ],
+      "condition": "Untrusted source markup, XML expansion, scripts, unexpected redirects or huge input",
+      "required_behavior": "Bound parser resources, sanitize display, deny execution and unsafe source traversal.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A20",
+      "tasks": [
+        "D1",
+        "C0"
+      ],
+      "condition": "Many operators request SEC sources concurrently",
+      "required_behavior": "Use one incumbent shared request budget; no10-per-worker multiplication or limit evasion.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A21",
+      "tasks": [
+        "C0"
+      ],
+      "condition": "No new filings, source outage, duplicate delivery and retry",
+      "required_behavior": "Differentiate checked-no-change from source_outage and stale; idempotent generation, no rerender freshness.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A22",
+      "tasks": [
+        "P1"
+      ],
+      "condition": "Signed-out, unauthorized or wrong-entitlement request",
+      "required_behavior": "Deny before opening private provider; no secret/source body in error or logging.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A23",
+      "tasks": [
+        "P1",
+        "X2"
+      ],
+      "condition": "Different users or temporal query policies hit shared cache",
+      "required_behavior": "Tenant/entitlement/policy/generation isolation; saved research does not alter canonical facts.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A24",
+      "tasks": [
+        "P1",
+        "P2"
+      ],
+      "condition": "Public shell, source drawer, browser bundle and network errors",
+      "required_behavior": "Do not leak locked licensed content or private receipts; authorized source trace works.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A25",
+      "tasks": [
+        "E1",
+        "E2",
+        "K1",
+        "K2",
+        "K3",
+        "K4"
+      ],
+      "condition": "Model candidate contains invented figure or injected instruction",
+      "required_behavior": "Deterministic evidence admission rejects; narrative never creates canonical number or action authority.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A26",
+      "tasks": [
+        "E0"
+      ],
+      "condition": "Large percentage move from tiny base or basis change",
+      "required_behavior": "Expose amount/base/period, source and materiality rationale; no opaque universal risk score.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A27",
+      "tasks": [
+        "E0",
+        "Q1"
+      ],
+      "condition": "Accounting anomaly with legitimate alternative explanation",
+      "required_behavior": "Label observation/inference and uncertainty; never assert fraud or alpha without supporting evidence.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A28",
+      "tasks": [
+        "E1"
+      ],
+      "condition": "Missing disclosure vs failed extraction vs moved/rephrased section",
+      "required_behavior": "Distinguish source absence from process failure; do not invent removed disclosure.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A29",
+      "tasks": [
+        "E2",
+        "G1"
+      ],
+      "condition": "KPI definition changes; revenue/ARR/guide/consensus; GAAP vs non-GAAP",
+      "required_behavior": "Retain issuer definition/version and reconciliation; do not splice unlike histories.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A30",
+      "tasks": [
+        "G3",
+        "K4"
+      ],
+      "condition": "Bank/financial-institution statement or denominator",
+      "required_behavior": "No industrial gross-margin/FCF detector leakage; print applicability and sector-native basis.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A31",
+      "tasks": [
+        "G2"
+      ],
+      "condition": "Industrial company financing subsidiary and eliminations",
+      "required_behavior": "Distinguish group/segment/consolidated scope; no inventory or cash-flow double-counting.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A32",
+      "tasks": [
+        "G4"
+      ],
+      "condition": "Alphabet multiple securities with one filing issuer",
+      "required_behavior": "One issuer filing truth, supported security projection, no duplicate peer weight.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A33",
+      "tasks": [
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "A1"
+      ],
+      "condition": "Four additional accounting stress issuers",
+      "required_behavior": "Same general provider and kernel with governed packs; no ticker-specific patched answers.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A34",
+      "tasks": [
+        "K1",
+        "K2",
+        "K3",
+        "K4"
+      ],
+      "condition": "Twelve specialist packs with different quality/coverage",
+      "required_behavior": "Each pack gets its own schema/gold/held-out/review/live proof; group summary cannot hide gaps.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A35",
+      "tasks": [
+        "C1"
+      ],
+      "condition": "Peers with misaligned periods, missing scope or incompatible metrics",
+      "required_behavior": "Explicit exclusions and denominators, comparability controls and no synthetic ranks from missing data.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A36",
+      "tasks": [
+        "C2",
+        "V1"
+      ],
+      "condition": "250-deep/1000-core coverage targets",
+      "required_behavior": "Predeclare issuer/period/field thresholds; prove them by manifest, not ticker loop count.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A37",
+      "tasks": [
+        "Q0",
+        "Q1"
+      ],
+      "condition": "Previously unseen issuer/report format or negative example",
+      "required_behavior": "Untouched held-out tests, false-positive/abstention report and failed-family disposition.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A38",
+      "tasks": [
+        "P1",
+        "P2",
+        "X0"
+      ],
+      "condition": "Same query in Python/kernel/API/UI/CSV/Parquet/JSON",
+      "required_behavior": "Identical normalized value, cutoff, basis and provenance; serialization differences explicit.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A39",
+      "tasks": [
+        "X1"
+      ],
+      "condition": "Source-linked Excel formula, refresh, signed-out state and correction",
+      "required_behavior": "Real supported Excel environment demonstration; static workbook does not satisfy refresh.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A40",
+      "tasks": [
+        "X0",
+        "X1"
+      ],
+      "condition": "CSV/Excel formula injection, precise decimals, dates and null values",
+      "required_behavior": "Safe cell encoding and exact numerical/vintage roundtrip; no hidden numeric-to-string ambiguity.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A41",
+      "tasks": [
+        "X2"
+      ],
+      "condition": "Reload/direct link/back navigation of saved query or alert",
+      "required_behavior": "Restore exact subject/metric/period/policy/cutoff/cohort; reuse existing user-state/notification owners.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A42",
+      "tasks": [
+        "P0",
+        "P2"
+      ],
+      "condition": "Primary analyst asks what changed and why it matters",
+      "required_behavior": "Readable first viewport and drilldown; do not bury insight in a dense database wall.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A43",
+      "tasks": [
+        "P2",
+        "Z0"
+      ],
+      "condition": "EN/ZH desktop/tablet/mobile and keyboard use",
+      "required_behavior": "Readable responsive layout, focus restore, no clipping and correct disabled/unavailable text.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A44",
+      "tasks": [
+        "P2"
+      ],
+      "condition": "Evidence source click from number, change or finding",
+      "required_behavior": "Resolve to relevant authorized source span and occurrence/version, not a generic home page.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A45",
+      "tasks": [
+        "A0",
+        "A1"
+      ],
+      "condition": "Newly admitted real filing through installed production path",
+      "required_behavior": "Source/capture/query/publication/browser linkage and natural-cycle proof; no fixture-only acceptance.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A46",
+      "tasks": [
+        "V0",
+        "V1"
+      ],
+      "condition": "Predeclared load/network/corpus benchmark and slow owner",
+      "required_behavior": "Meet accepted latency SLOs with measured distributions; no request-time SEC and no silent stale-green.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A47",
+      "tasks": [
+        "V0"
+      ],
+      "condition": "Restart, lost publication, restore and rollback",
+      "required_behavior": "Exact generation/receipt recovery, tenant protection, originals intact; no duplicate writers.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A48",
+      "tasks": [
+        "Q2"
+      ],
+      "condition": "Finding outcome learned later or corrected after publication",
+      "required_behavior": "Preserve original judgment/version; delayed evidence does not rewrite past apparent knowledge.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A49",
+      "tasks": [
+        "R0",
+        "Z1"
+      ],
+      "condition": "Native Opus to Fabric operator to worker execution",
+      "required_behavior": "Actual supported/admitted starts and consumed returns; one global envelope, no simulated fleet.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A50",
+      "tasks": [
+        "R0",
+        "Z1"
+      ],
+      "condition": "Pressure to finish excluded adjacent programs",
+      "required_behavior": "No SNI/Grey Deer Risk/Market OS/Options/Prophet/Market Ontology/GMI/Executive/Fabric implementation; excluded legacy work recorded, not marked done.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A51",
+      "tasks": [
+        "Z0",
+        "Z1"
+      ],
+      "condition": "Phase, research report or CI is green but product obligations remain",
+      "required_behavior": "No premature finalization; clear included-scope acceptance and remaining natural/human/effect obligations.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A52",
+      "tasks": [
+        "D0",
+        "D2"
+      ],
+      "condition": "Unverified rights, licence renewal or attestation trust change",
+      "required_behavior": "No purchase/credential/permission bypass; block only dependent release and continue safe independent work.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A53",
+      "tasks": [
+        "S1",
+        "S2"
+      ],
+      "condition": "Historical query after a mapping/rule revision",
+      "required_behavior": "Return the cutoff-valid policy version; no newest-rules hindsight contamination.",
+      "result": "not_run_in_authoring"
+    },
+    {
+      "id": "A54",
+      "tasks": [
+        "X0",
+        "V0"
+      ],
+      "condition": "Async export resumes after entitlement/cancellation or source change",
+      "required_behavior": "Use existing job/export owner; immutable input refs and reauthorization; no second lifecycle.",
+      "result": "not_run_in_authoring"
+    }
+  ]
+}
