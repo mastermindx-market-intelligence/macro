@@ -21942,6 +21942,8 @@ jobs:
       - tests/test_dataos_web_lab_worker.py
       - tests/test_dataos_web_readers.py
       - tests/test_dataos_web_workspace.py
+      - tests/test_tiingo_produced_contracts.py
+      - docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21956,7 +21958,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
-          tests/test_dataos_web_workspace.py -q -rs
+          tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
 
   dataos-foundation:
     scope: exclusive
@@ -23276,6 +23278,9 @@ jobs:
       # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
       - "templates/_curve_panel.html.j2"
       - "tests/test_macro_rates_curves_route.py"
+      # Preservation renders use the original paired input generation rather
+      # than the independently refreshed nightly macrodata publication.
+      - "tests/fixtures/macro_suite_t11/**"
       # T11 reads these fourteen committed pages (thirteen siblings + the hub).
       # Listed literally: they are computed from SUITE_PAGES at runtime and
       # would otherwise be invisible to the trigger-closure checker. T10 no
