@@ -69,9 +69,13 @@ def test_control_scripts_parse_and_requirements_are_pinned():
     }
 
 
-def test_bootstrap_check_verifies_installed_and_loaded_agent():
+def test_bootstrap_check_verifies_rendered_install_and_loaded_agent():
     source = BOOTSTRAP.read_text(encoding="utf-8")
-    assert '/usr/bin/cmp -s "$PLIST" "$DEST_PLIST"' in source
+    assert 'ENV_FILE="${EARNINGS_ENV_FILE:-}"' in source
+    assert "ERROR: EARNINGS_ENV_FILE is required" in source
+    assert 'render_plist "$PLIST" "$RENDERED_PLIST" "$ENV_FILE"' in source
+    assert '/usr/bin/cmp -s "$RENDERED_PLIST" "$DEST_PLIST"' in source
+    assert '/usr/bin/install -m 0644 "$RENDERED_PLIST" "$TMP_PLIST"' in source
     assert '"$LAUNCHCTL" print "$DOMAIN/$LABEL"' in source
     assert "EARNINGS_LAUNCHCTL" in source
     assert 'payload.get("initialized") is not True' in source
@@ -84,7 +88,7 @@ def test_plist_is_tcc_safe_secretless_and_has_two_retry_windows():
     assert payload["WorkingDirectory"] == "/Users/chriswong/earnings-ops-wt"
     assert payload["ProgramArguments"] == [
         "/Users/chriswong/earnings-ops-wt/ops/launchd/run_with_env.sh",
-        "/Users/chriswong/hub-ops-wt/.env",
+        "__EARNINGS_ENV_FILE__",
         "/Users/chriswong/earnings-ops-wt/ops/launchd/run_earnings_worker.sh",
     ]
     assert payload["StartCalendarInterval"] == [
@@ -103,6 +107,30 @@ def test_plist_is_tcc_safe_secretless_and_has_two_retry_windows():
     )
     assert "/Documents/" not in " ".join(payload["ProgramArguments"])
     assert "/Documents/" not in payload["WorkingDirectory"]
+
+
+def test_earnings_worker_never_borrows_another_worktree_env_by_default():
+    sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (
+            BOOTSTRAP,
+            PLIST,
+            RUNNER,
+            ROOT / "tools" / "earnings_worker" / "README.md",
+        )
+    )
+    assert "hub-ops-wt/.env" not in sources
+    assert "__EARNINGS_ENV_FILE__" in PLIST.read_text(encoding="utf-8")
+    assert "EARNINGS_ENV_FILE is required" in BOOTSTRAP.read_text(encoding="utf-8")
+
+
+def test_bootstrap_render_contract_replaces_only_the_env_path():
+    source = BOOTSTRAP.read_text(encoding="utf-8")
+    assert 'if args[1] != placeholder:' in source
+    assert 'args[1] = env_file' in source
+    assert 'plistlib.dump(payload, handle, sort_keys=False)' in source
+    assert 'EARNINGS_ENV_FILE must be an absolute path' in source
+    assert 'EARNINGS_ENV_FILE must live outside ~/Documents' in source
 
 
 def test_plist_model_matches_the_config_openai_compat_default():
