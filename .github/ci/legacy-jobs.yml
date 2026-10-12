@@ -21959,6 +21959,7 @@ jobs:
       - scripts/tiingo_corpus_audit.py
       - tests/test_tiingo_corpus_audit.py
       - tests/test_tiingo_additional_history.py
+      - tests/test_tiingo_capture_admission.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21978,7 +21979,8 @@ jobs:
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
-          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q
+          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
+          tests/test_tiingo_capture_admission.py -q
 
 
   dataos-web-workspace:
