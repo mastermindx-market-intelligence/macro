@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.p0_evidence.v2",
-  "generated_at": "2026-10-12T04:45:23.411155+00:00",
+  "generated_at": "2026-10-12T07:29:25.882730+00:00",
   "outcome": "captured",
   "tool": {
     "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
@@ -60,7 +60,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -88,7 +88,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -116,7 +116,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -144,7 +144,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -172,7 +172,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -200,7 +200,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -228,7 +228,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -256,7 +256,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-            "sha256": "77cac6c55dde007a325ab54f837ac9a1e6552e5596a9abd45fa8fe785cd931be"
+            "sha256": "00b13d4a22b98361d56a9f18d1605258fa8b71ad5e504d8ca896ff6a10d07209"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         }
@@ -291,7 +291,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -319,7 +319,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -347,7 +347,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -375,7 +375,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -403,7 +403,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -431,7 +431,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -459,7 +459,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         },
@@ -487,7 +487,7 @@
           "actual_interaction": "Select Show all for the owner-empty board/watch-only fixture before capture.",
           "raw_receipt": {
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "sha256": "5082d727a1d50d749acb09958b66af8a6e1bfe6387c3449d2ec3c1e1a56ec66b"
+            "sha256": "b2f0a2910bc85a7673652f28f11e65b7d1fa2254a227186b52568a188d4a4ad0"
           },
           "capture_tool_module_sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
         }
