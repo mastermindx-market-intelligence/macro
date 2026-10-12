@@ -840,3 +840,19 @@ def ticker_news_stream(
         media_type="text/event-stream",
         headers=dict(_STREAM_HEADERS),
     )
+
+
+@router.get("/api/ticker-news/{rest:path}", include_in_schema=False)
+def ticker_news_unmatched(
+    rest: str,
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for decoded-slash and other unmatched paths.
+
+    Starlette decodes %2F, so paths like /api/ticker-news/..%2Fx or any
+    trailing/multi-segment shape never match a single-segment route; without
+    this catch-all the framework default 404 leaks without private headers.
+    """
+    _rate_or_429(user)
+    _safe_ticker_or_422(rest.split("/", 1)[0])
+    raise _private_error(404, "not found")
