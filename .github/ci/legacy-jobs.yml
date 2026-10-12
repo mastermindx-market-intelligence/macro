@@ -10565,6 +10565,7 @@ jobs:
       - engine/commodity_strategies.py
       - engine/company_intelligence/__init__.py
       - engine/company_intelligence/documents.py
+      - engine/company_intelligence/economic_observations.py
       - engine/company_intelligence/event_id_adapter.py
       - engine/company_intelligence/event_workspace.py
       - engine/company_intelligence/event_workspace_build.py
@@ -10598,9 +10599,11 @@ jobs:
       - engine/donor.py
       - engine/earnings_blackout.py
       - engine/earnings_catalyst.py
+      - engine/earnings_narrative/__init__.py
       - engine/earnings_narrative/context_packets.py
       - engine/earnings_narrative/contracts.py
       - engine/earnings_narrative/digest.py
+      - engine/earnings_narrative/economic_interpretation.py
       - engine/earnings_narrative/private_publication.py
       - engine/earnings_narrative/promotion.py
       - engine/earnings_narrative/public_wire.py
@@ -21484,6 +21487,7 @@ jobs:
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
       - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/economic_observations.py"
       - "engine/company_intelligence/event_id_adapter.py"
       - "engine/company_intelligence/event_workspace.py"
       - "engine/company_intelligence/event_workspace_build.py"
@@ -21522,10 +21526,12 @@ jobs:
       - "engine/donor.py"
       - "engine/earnings_blackout.py"
       - "engine/earnings_catalyst.py"
+      - "engine/earnings_narrative/__init__.py"
       - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
       - "engine/earnings_narrative/context_packets.py"
       - "engine/earnings_narrative/contracts.py"
       - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/economic_interpretation.py"
       - "engine/earnings_narrative/private_publication.py"
       - "engine/earnings_narrative/promotion.py"
       - "engine/earnings_narrative/public_wire.py"
