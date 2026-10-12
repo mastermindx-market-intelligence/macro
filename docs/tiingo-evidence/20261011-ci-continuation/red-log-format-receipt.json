@@ -1,0 +1,7 @@
+{
+  "asserted_failure_unchanged": "lib/nyse_calendar.py outside dataos-prospective-reference paths; 1 introduced",
+  "committed_sha256": "cbd7cf2df3ec31bdbddbf8b308840c48e0318705fda4f96150e003dd877b798a",
+  "original_sha256": "296049c4045cf559ea64aa88e399de80e15a6ebcc2cee653897467141b8e0716",
+  "schema": "evidence_log_format_only.v1",
+  "transform": "strip ANSI SGR and trailing whitespace only"
+}
