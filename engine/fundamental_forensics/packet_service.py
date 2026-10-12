@@ -21,6 +21,7 @@ from .query_service import (
     FinancialQueryAdmissionError,
     FinancialQueryUnavailableError,
     admit_financial_request,
+    enforce_dataset_admission_floor,
 )
 from .revision_service import (
     FinancialPacketProvider,
@@ -60,6 +61,11 @@ def execute_financial_packet(
         provider = provider_factory()
     dataset = provider.resolve(admitted.entity_id)
     binding = validate_packet_dataset(admitted.entity_id, dataset)
+    # FIF D3 (A12): the dataset's own admission clock gates the system view.
+    # The canonical packet bytes themselves stay exactly the frozen assembler's
+    # output — the production delivery object rides the revisions envelope,
+    # never the packet body, whose content_sha256 is a frozen contract.
+    enforce_dataset_admission_floor(admitted.policy, dataset)
     try:
         packet = assemble_financial_intelligence_packet(
             entity=dataset.entity,
