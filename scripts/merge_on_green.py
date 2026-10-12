@@ -6093,6 +6093,21 @@ def update_branch_conflict(detail: str) -> bool:
     return "merge conflict" in normalized or "merge conflicts" in normalized
 
 
+def affirmatively_conflicted(pull: dict[str, Any]) -> bool:
+    """Affirmative conflict fields on a LIVE pull, never unknown or stale state.
+
+    GitHub answers ``mergeable: null`` while it is still computing and may omit
+    both fields on error shapes, so only the strict pair — ``mergeable`` is
+    exactly ``False`` AND ``mergeable_state`` is ``dirty`` — classifies a real
+    conflict. Anything else (unknown, missing, clean, blocked, unstable) keeps
+    the pull on the existing write-then-classify admission path, where
+    `update_branch` judges the 422 it actually receives.
+    """
+    if pull.get("mergeable") is not False:
+        return False
+    return str(pull.get("mergeable_state") or "").lower() == "dirty"
+
+
 def update_branch(repo: str, pull: dict[str, Any], token: str) -> str:
     """Merge `main` into a judged head and classify any live-state race.
 
@@ -6239,6 +6254,25 @@ def attempt_update_branch(
             "sweep budget; no branch write attempted.",
         )
         return "refresh-deferred"
+    if affirmatively_conflicted(live):
+        # The same fresh authorized read that just proved head/open/main/armed/
+        # draft also carried GitHub's own computed merge verdict: this head can
+        # take no update-branch write at all. Declining here keeps a known
+        # conflicting pull request from consuming a workload slot, a bounded
+        # attempt, or — at saturation — the ONE durable lease claim a clean head
+        # behind it needs (observed live: one conflicting owner drained the only
+        # high-load slot, released the lease on the decline, and the sweep's
+        # claim latch still denied every later pull at 0/1 used). Only the
+        # affirmative pair classifies; unknown/missing mergeability falls
+        # through to the write-then-classify path below unchanged.
+        _annotate(
+            "notice",
+            "merge-on-green",
+            f"PR #{pull.get('number')}: GitHub reports the live head unmergeable "
+            "against main (mergeable=false, mergeable_state=dirty); declining the "
+            "refresh — no update-branch write attempted, no refresh budget spent.",
+        )
+        return "declined"
     if not budget.take_refresh(live):
         return refresh_deferred(pull.get("number"), why, budget)
     if budget.requires_refresh_lease:
@@ -6383,9 +6417,9 @@ def reprove(
             f"but the proof is no longer trustworthy: {reason}.\n\n"
             "A check proves the head against the base it was handed, not against the "
             "base that exists at merge time — that is how PR #4583's honest 15-hour-old "
-            "green turned main red. The sweeper tried to merge `main` into this branch "
-            "so fresh checks could re-prove it, and GitHub declined, which means a REAL "
-            "content conflict. Resolve it by hand and the next sweep will pick it up "
+            "green turned main red. GitHub reports a REAL content conflict that prevents "
+            "refreshing this branch with `main` for fresh checks. Resolve the conflict "
+            "and the next sweep will pick it up "
             "(the label stays armed)."
         ),
         merge_token,
@@ -7225,9 +7259,8 @@ def sweep_pull(
             (
                 "`merge-on-green` sweeper: **not merging.** Every check was clean, but "
                 f"GitHub refused the squash merge: _{detail}_\n\n"
-                "The sweeper then tried to merge `main` into this branch itself and "
-                "GitHub declined that too, which means a REAL content conflict rather "
-                "than a stale base. Resolve it by hand and the next sweep will pick it "
+                "GitHub also reports a REAL content conflict that prevents refreshing this "
+                "branch with `main`. Resolve the conflict and the next sweep will pick it "
                 "up (the label stays armed)."
             ),
             merge_token,

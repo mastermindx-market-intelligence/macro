@@ -2,6 +2,28 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-12",
+      "tickers": [
+        "AMG",
+        "AVGO",
+        "BKH",
+        "CCOI",
+        "CGNX",
+        "CTVA",
+        "ELF",
+        "FLO",
+        "GAP",
+        "JBGS",
+        "PLG",
+        "SEZL",
+        "ST",
+        "SYF",
+        "TBBK",
+        "ULS",
+        "VMI"
+      ]
+    },
+    {
       "as_of": "2026-10-11",
       "tickers": [
         "AIG",
@@ -182,16 +204,6 @@
         "VCIG",
         "WING",
         "WS"
-      ]
-    },
-    {
-      "as_of": "2026-10-05",
-      "tickers": [
-        "DAL",
-        "ELF",
-        "HLNE",
-        "KRC",
-        "PPLI"
       ]
     }
   ]

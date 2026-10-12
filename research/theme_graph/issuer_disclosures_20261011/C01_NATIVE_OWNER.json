@@ -1,5 +1,5 @@
 {
-  "schema": "company_intelligence.native_owner_decision/v1",
+  "schema": "company_intelligence.native_owner_decision/v2",
   "case_id": "C01-micron-planned-product-integration",
   "ruling_reference": {
     "sha256": "5b3fc66029456f38d40358496ba308596751ef7ffae0d3711adb1ab5caa84117",
@@ -96,6 +96,13 @@
       "evidence_source": "sec_company_tickers",
       "evidence_snapshot": "2026-08-18"
     }
+  },
+  "identity_continuity": {
+    "schema": "company_intelligence.identity_continuity_policy/v1",
+    "policy": "provenance_refresh",
+    "semantic_fields": ["schema", "identity_mode", "issuer_id", "evidenced_cik", "evidence_source", "evidence_snapshot"],
+    "provenance_fields": ["source_commit", "sources"],
+    "parties": ["MU", "NVDA"]
   },
   "temporal_decision": {
     "identity_mode": "current",
