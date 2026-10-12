@@ -158,6 +158,20 @@ def test_non_finite_floats_become_none_and_the_cell_stays_valid():
 
 
 # --------------------------------------------------------------------------- #
+# repair r3 defect 2 — a tuple walks exactly like a list
+# --------------------------------------------------------------------------- #
+def test_tuple_with_nan_becomes_list_with_null():
+    doc = {
+        "asof": ASOF,
+        "macro_sensitivity": {"tier": "medium", "persist": (1.0, float("nan"))},
+    }
+    got = read_macro_sensitivity("co:us:A", as_of=ASOF, stock_doc=doc)
+    assert cell.validate_cell(got) == []
+    assert got["status"] == "available"
+    assert got["value"]["persist"] == [1.0, None]
+
+
+# --------------------------------------------------------------------------- #
 # freshness window
 # --------------------------------------------------------------------------- #
 def test_age_8_days_is_stale_with_the_value():
@@ -314,6 +328,25 @@ def test_default_path_maps_the_symbol_name_verbatim(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
+# repair r3 defect 1 (R-root) — a falsy root falls back to the repo root
+# --------------------------------------------------------------------------- #
+def test_empty_root_falls_back_to_repo_root(monkeypatch, tmp_path):
+    repo = tmp_path / "repo"
+    directory = repo / "site" / "stockdata"
+    directory.mkdir(parents=True)
+    (directory / "A.json").write_bytes(json.dumps(FIXTURE_DOC).encode("utf-8"))
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.setattr(macro_mod, "_REPO_ROOT", repo)
+    monkeypatch.chdir(elsewhere)
+    got = read_macro_sensitivity("co:us:A", as_of=ASOF, root="")
+    assert cell.validate_cell(got) == []
+    assert got["status"] != "unavailable"
+    reference = read_macro_sensitivity("co:us:A", as_of=ASOF, root=repo)
+    assert cell.to_json(got) == cell.to_json(reference)
+
+
+# --------------------------------------------------------------------------- #
 # the AxisCellError fallback
 # --------------------------------------------------------------------------- #
 def test_nested_forbidden_key_degrades_to_invalid_record():
@@ -359,6 +392,16 @@ def test_market_provenance_and_identity_epoch_reasons():
 def test_invalid_subjects_propagate_the_contract_error(subject_id):
     with pytest.raises(cell.AxisCellError):
         read_macro_sensitivity(subject_id, as_of=ASOF, stock_doc=FIXTURE_DOC)
+
+
+# --------------------------------------------------------------------------- #
+# repair r3 defect 3 — an invalid as_of is an AxisCellError on every path
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("subject_id", ["co:us:A", "theme:ai_compute"])
+@pytest.mark.parametrize("as_of", ["not-a-date", "2026-13-01", "20261012", None])
+def test_invalid_as_of_raises_axis_cell_error(subject_id, as_of):
+    with pytest.raises(cell.AxisCellError):
+        read_macro_sensitivity(subject_id, as_of=as_of, stock_doc=FIXTURE_DOC)
 
 
 # --------------------------------------------------------------------------- #
