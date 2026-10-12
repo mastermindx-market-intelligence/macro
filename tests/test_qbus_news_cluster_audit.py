@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import sqlite3
 import subprocess
+import sys
 
 import pytest
 
@@ -34,7 +35,7 @@ REPORT_KEYS = (
 
 def _run(args: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["/usr/bin/python3", str(SCRIPT), *args],
+        [sys.executable, str(SCRIPT), *args],
         cwd=ROOT,
         capture_output=True,
         text=True,
