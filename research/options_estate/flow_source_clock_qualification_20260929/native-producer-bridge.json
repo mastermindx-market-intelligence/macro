@@ -1,0 +1,98 @@
+{
+  "schema": "options.flow_native_clock_bridge_evidence.v1",
+  "operation": "options-flow-source-clocks-20260929-sol-001",
+  "source_parent": "607cf56dd4a272d3db9f3401dcb84d3b4743a0b9",
+  "protected_skillpack": "32aebf0379f77a7d359a64f01187d5d2a978556f",
+  "compatible_main": "9b613935ba9a461394c3dddc5a50c4fcad28aa70",
+  "question": "Do real durable stage, state-clear, feed serialization and harvest owners preserve source clocks, not merely manually enriched fixture rows?",
+  "fixture_class": "synthetic software-contract input; no market performance evidence",
+  "native_path": [
+    "_save_day_state",
+    "_stage_raw_events",
+    "_drain_pending_learning_events",
+    "_write_json",
+    "harvest",
+    "_append_rows",
+    "ledger_stats",
+    "_write_gate"
+  ],
+  "external_boundaries_mocked": [
+    "R2 client/list/download",
+    "source clock",
+    "test directories; no provider or account access"
+  ],
+  "checks": {
+    "producer_bridge": {
+      "command": "python3 -m pytest tests/test_flow_signals.py -q -k native_stage",
+      "passed": 4
+    },
+    "complete_owner_suites": {
+      "command": "python3 -m pytest tests/test_flow_signals.py tests/test_live_flow.py -q",
+      "passed": 366,
+      "warnings": 6,
+      "elapsed_seconds": 11.52
+    },
+    "clock_loss_mutation": {
+      "command": "python3 -c 'from collectors import flow_signals as f; import pytest; f._source_clock_cols=lambda e,i:{}; raise SystemExit(pytest.main(['\"'\"'tests/test_flow_signals.py'\"'\"','\"'\"'-q'\"'\"','\"'\"'-k'\"'\"','\"'\"'native_stage_to_harvest'\"'\"']))'",
+      "expected_failed": 2,
+      "observed_failed": 2,
+      "reason": "actual staged available_at was lost before native persisted row, in both local and archive transport paths"
+    },
+    "agentos": {
+      "command": "python3 scripts/agentos.py validate",
+      "errors": 0,
+      "warnings": 110
+    }
+  },
+  "behaviour": [
+    "source availability survives fsynced stage/WAL and both native harvest paths",
+    "source precision retained",
+    "publication remains null when not proved",
+    "same-event source replay and reharvest preserve original bytes",
+    "dry harvest reports without writing the history"
+  ],
+  "production_source_blobs_unchanged": {
+    "collectors/flow_signals.py": {
+      "before": "8dc8d7473f8b7aa538b9a1d23fc65972e9e86597",
+      "now": "8dc8d7473f8b7aa538b9a1d23fc65972e9e86597"
+    },
+    "scripts/build_flow_signals.py": {
+      "before": "05119a165370c99ab9aff6e2f3c23a1081d0224d",
+      "now": "05119a165370c99ab9aff6e2f3c23a1081d0224d"
+    },
+    "scripts/live_flow_poller.py": {
+      "before": "d6af1b0951a2adcd727c63802a53d919115bddd8",
+      "now": "d6af1b0951a2adcd727c63802a53d919115bddd8"
+    },
+    "engine/live_flow.py": {
+      "before": "323be029c88ef8ee03d97c2ae3a878fce95ba191",
+      "now": "323be029c88ef8ee03d97c2ae3a878fce95ba191"
+    },
+    "engine/flow_signals_grade.py": {
+      "before": "14afdd90e11f5d22f60ce3ed376fe70c5013db4c",
+      "now": "14afdd90e11f5d22f60ce3ed376fe70c5013db4c"
+    },
+    "config/flow_score.yml": {
+      "before": "878a70e1a51bb1baa249624b7105eec4f2f16b10",
+      "now": "878a70e1a51bb1baa249624b7105eec4f2f16b10"
+    },
+    "lib/flow_score.py": {
+      "before": "9513513892f789ce7584dc5f2ae6d2b07e8deb10",
+      "now": "9513513892f789ce7584dc5f2ae6d2b07e8deb10"
+    }
+  },
+  "test_file_sha256": "1e40787c9cfc06ebf9a8e4a2aef4bed16c49a1499fc04cf032d4dc00a26a1a9c",
+  "log_sha256": {
+    "native-bridge-tests.log": "b45d51e2fcd0cbb4ce883caa25295180410b963306eb1d88a47d8cacae1d168a",
+    "mutation-drop-source-clocks.log": "7e8a845d34fe3a6299e0e468de654d96f2b3cf014c2caa41b4baa936f5d69b3a",
+    "owner-suites.log": "75650621d399423529c51cccefff925eca6776591012cd7b00c9a432b4e7c59c"
+  },
+  "release_state": {
+    "review_requested": "MastermindX1 via native GitHub request; no pickup or approval claimed",
+    "draft": true,
+    "merged": false,
+    "production_enabled": false,
+    "natural_scheduled_proof": false
+  },
+  "held_action": "Effective main rules/classic protection inspection was pre-dispatch safety-blocked. No retry, alternate transport, rule/status change, or merge attempted."
+}

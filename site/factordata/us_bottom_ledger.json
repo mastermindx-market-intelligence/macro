@@ -1,35 +1,72 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-09-23",
+ "as_of": "2026-10-09",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-09-23",
-  "n_new_flags": 62,
-  "n_newly_graded": 0,
+  "as_of": "2026-10-09",
+  "n_new_flags": 148,
+  "n_newly_graded": 56,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
-  "n_rows": 2603,
+  "n_rows": 3427,
   "store_repairs": {
    "renormalized": 0,
    "unreadable": []
   },
   "unreadable_flag_dates": []
  },
- "maturity_state": "accruing",
- "n_accruing": 2603,
- "n_matured": 0,
- "first_maturity_est": "2026-09-25",
+ "maturity_state": "maturing",
+ "n_accruing": 3202,
+ "n_matured": 225,
+ "first_maturity_est": null,
  "accrual_by_source": {
-  "board_buy": 2260,
-  "prophet_plan": 343
+  "board_buy": 2922,
+  "prophet_plan": 505
  },
  "summary": {
-  "pin5": null,
-  "held_pct": null,
-  "prox_med": null
+  "pin5": 0.1244,
+  "held_pct": 0.4667,
+  "prox_med": 0.1104
  },
- "cohorts": [],
+ "cohorts": [
+  {
+   "source": "board_buy",
+   "lane": "bottoming",
+   "n": 65,
+   "prox_med": 0.10322738111061347,
+   "pin5": 0.2,
+   "held_pct": 0.4153846153846154,
+   "broke_pct": 0.27692307692307694,
+   "mfe60_med": 0.07302795218655289,
+   "fwd60_med": -0.04444395504378729,
+   "undercut_med": 0.030715391536559666
+  },
+  {
+   "source": "board_buy",
+   "lane": "continuation",
+   "n": 63,
+   "prox_med": 0.13862162311909887,
+   "pin5": 0.015873015873015872,
+   "held_pct": 0.5079365079365079,
+   "broke_pct": 0.3333333333333333,
+   "mfe60_med": 0.10809896185631285,
+   "fwd60_med": -0.05258818938575438,
+   "undercut_med": 0.0037071607044002475
+  },
+  {
+   "source": "board_buy",
+   "lane": "unknown",
+   "n": 97,
+   "prox_med": 0.11036461829794231,
+   "pin5": 0.14432989690721648,
+   "held_pct": 0.4742268041237113,
+   "broke_pct": 0.14432989690721648,
+   "mfe60_med": 0.08229951712050343,
+   "fwd60_med": -0.0534585763317702,
+   "undercut_med": 0.0214224619073341
+  }
+ ],
  "baseline_ref": "calibration/bottom_ruler_baseline.json",
  "reliability": {
   "tier": "display",
@@ -38,8 +75,8 @@
   "one_grader_law": "grades are computed once at maturity and never recomputed (SA-R14)"
  },
  "integrity_projection": {
-  "raw_rows": 2603,
-  "effective_rows": 2603,
+  "raw_rows": 3427,
+  "effective_rows": 3427,
   "excluded_prophet_rows": 0,
   "error": null,
   "effect": "raw learning rows remain append-only; Prophet rows require a stable plan source_ref and the current canonical signal-family date, and correction/quarantine authority excludes superseded claims from grades and cohorts"

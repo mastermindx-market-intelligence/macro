@@ -386,7 +386,7 @@ def test_a_cause_is_relayed_only_when_the_producer_attests_one():
     # would print "as of 4:15 pm ET" at 11:20 in the morning. (The line it would have
     # occupied is still reserved — see test_as_of_reserves_its_line_even_with_nothing_to_stamp.)
     flat = _nc(_strip_js()).replace(" ", "")
-    assert "varstampOn=(stampMin!==null&&res.why!=='none_today')" in flat
+    assert "asEl.dataset.plvAsofState='prior_day'" in flat
 
 
 def test_closed_mode_is_resolved_before_the_staleness_gates():
@@ -693,13 +693,14 @@ def test_as_of_reserves_its_line_even_with_nothing_to_stamp():
     render = js[js.index("function _plvRender"):js.index("function _plvFetch")]
     # slice to the AS-OF call: the footer's _plvStack ends in the same characters, so an
     # unscoped assertion here is satisfied by a different call site entirely
-    i = render.index("_plvStack(asEl,")
-    call = render[i:render.index(";", render.index("_plvAsOf(720)", i))]
-    assert "_plvAsOf(720)" in call, "the reserver is formatter-built, never hand-written"
+    i = render.index("var stampVars={rsv:")
+    call = render[i:render.index("  }", i)]
+    assert "_plvAsOfToday(720)" in call, "the reserver is formatter-built, never hand-written"
     # the reserver may never be the ACTIVE variant: a visible 12:00 would be a fabricated
     # stamp, which is the very thing the none_today honesty fix removed
-    assert call.rstrip().endswith("'on')"), \
-        f"'on' must always be the as-of's active key, found: {call.strip()[-40:]!r}"
+    stamp_block = render[render.index("var stampVars={rsv:"):render.index("if(mode!==_plvLastMode)", render.index("var stampVars={rsv:"))]
+    assert "rsv:_plvAsOfToday(720)" in stamp_block
+    assert stamp_block.count("dataset.plvAsofState") == 3 and stamp_block.count("_plvStack(asEl,") == 3
 
 
 def test_empty_body_fills_the_reservation_and_has_no_height_of_its_own():
@@ -930,10 +931,26 @@ def test_as_of_stamp_comes_from_the_artifact_never_the_browser_clock():
     exactly the lie the freshness gate exists to prevent."""
     js = _nc(_strip_js())
     render = js[js.index("function _plvRender"):js.index("function _plvFetch")]
-    line = [ln for ln in render.split("\n") if "stampMin=" in ln]
+    line = [ln for ln in render.split("\n") if "var stamp=" in ln]
     assert line, "the as-of stamp assignment must exist"
     assert "meta.quote_asof" in line[0] and "meta.pass_ts" in line[0]
     assert "Date.now" not in line[0] and "new Date" not in line[0]
+
+
+def test_as_of_stamp_discloses_today_prior_day_and_unavailable_states():
+    js = _nc(_strip_js())
+    render = js[js.index("function _plvRender"):js.index("function _plvFetch")]
+    stamp = render[render.index("var stamp="):render.index("if(mode!==_plvLastMode)", render.index("var stamp="))]
+    assert "new Date(" not in stamp and "Date.now" not in stamp
+    assert "stamp.ymd===et.ymd" in stamp
+    stamp_path = stamp + js[js.index("function _plvAsOfToday"):js.index("function _plvNum")]
+    for text in ("quotes as of ", "last read ", "quote time unavailable"):
+        assert text in stamp_path
+    for text in ("报价截至 美东 ", "上次判读 ", "报价时间不可用"):
+        assert text in stamp_path
+    assert "asEl.dataset.plvAsofState='today'" in stamp
+    assert "asEl.dataset.plvAsofState='prior_day'" in stamp
+    assert "asEl.dataset.plvAsofState='unavailable'" in stamp
 
 
 def test_first_fetch_is_never_gated_on_document_hidden():

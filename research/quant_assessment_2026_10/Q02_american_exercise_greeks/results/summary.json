@@ -1,0 +1,33 @@
+{
+ "code_baseline_reproduced": true,
+ "dates": 28,
+ "e1_all_pass": true,
+ "e1_failed": [],
+ "e2": "NOT_RUN",
+ "empirical_baseline_reproducible": false,
+ "hg_sensitivity": false,
+ "hg_strict": false,
+ "missing_inputs_strict_cumulative": [
+  "exercise_style",
+  "deliverable_multiplier",
+  "settlement_clock",
+  "pit_dividend_schedule",
+  "option_price",
+  "rate"
+ ],
+ "real_contract_outputs": "UNAVAILABLE (every row)",
+ "reason": "HG fails (PREREG section 9), so E2 (the single trial) is not run; stages with zero marginal row support in the retained chains: exercise_style, deliverable_multiplier, settlement_clock, pit_dividend_schedule, option_price",
+ "rows": 4418705,
+ "selector_rows_not_unavailable": [
+  0,
+  0
+ ],
+ "verdict": "INSUFFICIENT_DATA",
+ "zero_support_stages_marginal": [
+  "exercise_style",
+  "deliverable_multiplier",
+  "settlement_clock",
+  "pit_dividend_schedule",
+  "option_price"
+ ]
+}

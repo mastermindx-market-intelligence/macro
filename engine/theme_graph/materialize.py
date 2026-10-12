@@ -32,6 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -119,6 +120,217 @@ MATERIAL_EDGE_FIELDS: tuple[str, ...] = (
     "valid_to", "evidence_time", "source_class", "date_provenance",
     "evidence_refs", "confidence_basis",
 )
+
+
+HIERARCHY_EPOCH = "2026-10-07"
+_HIERARCHY_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_]{1,62}$")
+_HIERARCHY_FORBIDDEN_KEY_WORDS = ("weight", "share", "count", "score")
+_HIERARCHY_TIER_ADJACENCIES = frozenset({
+    ("macro_category", "theme"), ("theme", "micro_theme")})
+
+
+class ThemeHierarchyError(ValueError):
+    """The crosswalk hierarchy block is structurally or semantically invalid."""
+
+    def __init__(self, reason: str, message: str) -> None:
+        super().__init__(f"{reason}: {message}")
+        self.reason = reason
+
+
+def _hierarchy_row(row: object, *, allowed: tuple[str, ...], required: tuple[str, ...],
+                   context: str) -> dict:
+    if not isinstance(row, dict):
+        raise ThemeHierarchyError("BLOCK_SHAPE", f"{context} row must be a mapping")
+    for key in sorted(set(row) - set(allowed)):
+        lowered = str(key).lower()
+        if any(word in lowered for word in _HIERARCHY_FORBIDDEN_KEY_WORDS):
+            raise ThemeHierarchyError("FORBIDDEN_KEY", f"{context} key {key!r}")
+        raise ThemeHierarchyError("BLOCK_SHAPE", f"unknown {context} key {key!r}")
+    missing = [key for key in required if _text(row.get(key)) is None]
+    if missing:
+        if "asserted_on" in missing:
+            raise ThemeHierarchyError("ASSERTED_ON_MISSING", context)
+        raise ThemeHierarchyError("BLOCK_SHAPE",
+                                  f"{context} missing required key {missing[0]!r}")
+    return row
+
+
+def _hierarchy_date(row: dict, context: str) -> str:
+    value = _text(row.get("asserted_on"))
+    if value is None or not _is_date(value):
+        raise ThemeHierarchyError("ASSERTED_ON_MISSING", context)
+    if value < HIERARCHY_EPOCH:
+        raise ThemeHierarchyError("ASSERTED_ON_PRE_EPOCH",
+                                  f"{context} asserted_on {value}")
+    return value
+
+
+def _hierarchy_id(row: dict, context: str) -> str:
+    value = _text(row.get("id"))
+    if not value or not value.startswith("theme:"):
+        raise ThemeHierarchyError("SLUG_GRAMMAR", f"{context} id {value!r}")
+    slug = value[len("theme:"):]
+    if not _HIERARCHY_SLUG_RE.fullmatch(slug):
+        raise ThemeHierarchyError("SLUG_GRAMMAR", f"{context} id {value!r}")
+    return value
+
+
+def _validate_nominated_from(value: object) -> None:
+    """Delegate to the single nominator rule: probation.nominated_from_errors."""
+    from engine.theme_graph import probation
+
+    errors = probation.nominated_from_errors("" if value is None else str(value))
+    if errors:
+        reason, _, detail = errors[0].partition(": ")
+        raise ThemeHierarchyError(reason, detail)
+
+
+def _values(value: object) -> list[object]:
+    if isinstance(value, dict):
+        return list(value.values())
+    if isinstance(value, list):
+        return value
+    return [value]
+
+
+def validate_theme_hierarchy(doc: object) -> dict:
+    """Validate the complete hierarchy block before any PIT filtering."""
+    hierarchy = (doc or {}).get("hierarchy") if isinstance(doc, dict) else None
+    if hierarchy is None:
+        return {"categories": [], "micro_themes": [], "parents": []}
+    if not isinstance(hierarchy, dict):
+        raise ThemeHierarchyError("BLOCK_SHAPE", "hierarchy must be a mapping")
+    unknown = set(hierarchy) - {"categories", "micro_themes", "parents"}
+    if unknown:
+        raise ThemeHierarchyError("BLOCK_SHAPE",
+                                  f"unknown hierarchy key {sorted(unknown)[0]!r}")
+    lists: dict[str, list] = {}
+    for key in ("categories", "micro_themes", "parents"):
+        value = hierarchy.get(key, [])
+        if not isinstance(value, list):
+            raise ThemeHierarchyError("BLOCK_SHAPE", f"hierarchy.{key} must be a list")
+        lists[key] = value
+
+    categories = []
+    for position, row in enumerate(lists["categories"], start=1):
+        context = f"category {position}"
+        row = _hierarchy_row(row, allowed=("id", "name_en", "name_zh", "asserted_on", "note"),
+                             required=("id", "name_en", "name_zh", "asserted_on"),
+                             context=context)
+        node_id = _hierarchy_id(row, context)
+        asserted_on = _hierarchy_date(row, context)
+        categories.append({"id": node_id, "tier": "macro_category",
+                           "asserted_on": asserted_on, "row": row})
+
+    micro_themes = []
+    for position, row in enumerate(lists["micro_themes"], start=1):
+        context = f"micro_theme {position}"
+        row = _hierarchy_row(
+            row,
+            allowed=("id", "name_en", "name_zh", "asserted_on", "nominated_from", "note"),
+            required=("id", "name_en", "name_zh", "asserted_on", "nominated_from"),
+            context=context)
+        node_id = _hierarchy_id(row, context)
+        asserted_on = _hierarchy_date(row, context)
+        micro_themes.append({"id": node_id, "tier": "micro_theme",
+                             "asserted_on": asserted_on, "row": row})
+
+    declared: dict[str, dict] = {}
+    for declaration in categories + micro_themes:
+        node_id = declaration["id"]
+        if node_id in declared:
+            raise ThemeHierarchyError("DUPLICATE_ID", node_id)
+        declared[node_id] = declaration
+    themes = doc.get("themes") if isinstance(doc.get("themes"), list) else []
+    for row in themes:
+        theme_id = _text(row.get("theme_node_id")) or identity.theme_node_id(_text(row.get("id")))
+        if theme_id in declared:
+            raise ThemeHierarchyError("CROSS_TIER_REUSE", theme_id)
+
+    parent_rows = []
+    for position, row in enumerate(lists["parents"], start=1):
+        context = f"parent {position}"
+        row = _hierarchy_row(row, allowed=("parent", "child", "asserted_on"),
+                             required=("parent", "child", "asserted_on"), context=context)
+        asserted_on = _hierarchy_date(row, context)
+        parent = _text(row.get("parent"))
+        child = _text(row.get("child"))
+        for role, endpoint in (("parent", parent), ("child", child)):
+            declaration = declared.get(endpoint)
+            if declaration is None and not any(
+                    (_text(theme.get("theme_node_id")) or identity.theme_node_id(
+                        _text(theme.get("id")))) == endpoint for theme in themes):
+                raise ThemeHierarchyError("UNDECLARED_ENDPOINT", f"{context} {endpoint!r}")
+            if declaration and asserted_on < declaration["asserted_on"]:
+                raise ThemeHierarchyError(
+                    "UNDECLARED_ENDPOINT",
+                    f"{context} precedes {endpoint!r} declaration")
+        parent_rows.append({"parent": parent, "child": child,
+                            "asserted_on": asserted_on})
+
+    theme_ids = {
+        _text(row.get("theme_node_id"))
+        or identity.theme_node_id(_text(row.get("id")))
+        for row in themes
+    }
+    children: dict[str, set[str]] = {
+        node_id: set() for node_id in set(declared) | theme_ids}
+    parent_count: dict[str, int] = {}
+    for row in parent_rows:
+        parent_tier = declared.get(row["parent"], {}).get("tier", "theme")
+        child_tier = declared.get(row["child"], {}).get("tier", "theme")
+        if row["parent"] == row["child"]:
+            raise ThemeHierarchyError("CYCLE", row["parent"])
+        if (parent_tier, child_tier) not in _HIERARCHY_TIER_ADJACENCIES:
+            raise ThemeHierarchyError("NON_ADJACENT_TIERS",
+                                      f"{row['parent']} -> {row['child']}")
+        children[row["parent"]].add(row["child"])
+        parent_count[row["child"]] = parent_count.get(row["child"], 0) + 1
+    if any(parent_count.get(node_id, 0) > 3
+           for node_id in set(declared) | theme_ids):
+        raise ThemeHierarchyError("TOO_MANY_PARENTS", "a hierarchy node has 4 parents")
+
+    state: dict[str, int] = {}
+
+    def visit(node_id: str) -> None:
+        if state.get(node_id) == 1:
+            raise ThemeHierarchyError("CYCLE", node_id)
+        if state.get(node_id) == 2:
+            return
+        state[node_id] = 1
+        for child in children[node_id]:
+            visit(child)
+        state[node_id] = 2
+
+    for node_id in declared:
+        visit(node_id)
+
+    new_tier_ids = set(declared)
+    for row in themes:
+        for value in (row.get("id"), row.get("theme_node_id")):
+            if _text(value) in new_tier_ids:
+                raise ThemeHierarchyError("NEW_TIER_IN_EXPRESSES_MAP", _text(value))
+
+    def contains_new_tier_id(value: object) -> bool:
+        if isinstance(value, dict):
+            return any(key in new_tier_ids or contains_new_tier_id(item)
+                       for key, item in value.items())
+        if isinstance(value, list):
+            return any(contains_new_tier_id(item) for item in value)
+        return _text(value) in new_tier_ids
+
+    for key, value in doc.items():
+        if key == "hierarchy":
+            continue
+        if key in new_tier_ids or contains_new_tier_id(value):
+            raise ThemeHierarchyError("NEW_TIER_IN_EXPRESSES_MAP",
+                                      key if key in new_tier_ids else "mapping value")
+
+    for row in micro_themes:
+        _validate_nominated_from(row["row"].get("nominated_from"))
+
+    return {"categories": categories, "micro_themes": micro_themes,
+            "parents": parent_rows}
 
 
 # ---------------------------------------------------------------------------
@@ -575,6 +787,20 @@ class _Builder:
                 else list(history or ()))
         membership_rows = [row for row in rows
                            if _text(row.get("source_shape")) == "membership"]
+        collection_rows = [row for row in membership_rows
+                           if row.get("record_kind") == "collection.v2"]
+        # A precise source receipt cannot be emitted as knowledge before it was
+        # known. Legacy daily rows have no fabricated intraday clock.
+        from engine import basket_membership_pit
+        for marker in collection_rows:
+            emitted = basket_membership_pit._collection_clock(self.computed_at)
+            receipt = json.loads(marker["collection_receipt"])
+            known = basket_membership_pit._collection_clock(receipt["known_at"])
+            if known > emitted or known.date().isoformat() > self.belief_time:
+                raise ValueError("collection known after graph knowledge/emission clock")
+            if (known.date().isoformat() == self.belief_time
+                    and known.time().isoformat() != "00:00:00"):
+                raise ValueError("DAILY_GRAPH_UNREPRESENTABLE: intraday collection knowledge")
         excluded_shapes = sorted({
             _text(row.get("source_shape")) or "unknown" for row in rows
             if _text(row.get("source_shape")) != "membership"
@@ -589,7 +815,8 @@ class _Builder:
 
         # Shape filter lives inside ths_membership_intervals (default membership-only).
         intervals = local_sources.ths_membership_intervals(rows)
-        basket_ids = sorted({iv.basket_id for iv in intervals})
+        basket_ids = sorted({iv.basket_id for iv in intervals}
+                            | {row["basket_id"] for row in collection_rows})
         companies: set[str] = set()
         n_closed = 0
         n_edges = 0
@@ -620,7 +847,8 @@ class _Builder:
             opening = self._evidence_ref(
                 kind="scrape",
                 source_ref=(f"data/{THS_SUITE}/membership_history.parquet@"
-                            f"{iv.valid_from}"),
+                            f"{iv.valid_from}"
+                            + (f"#{iv.opening_collection_id}" if iv.opening_collection_id else "")),
                 published_at=iv.valid_from, licensing=_licensing(THS_FAMILY),
             )
             refs = [opening]
@@ -628,7 +856,8 @@ class _Builder:
                 refs.append(self._evidence_ref(
                     kind="scrape",
                     source_ref=(f"data/{THS_SUITE}/membership_history.parquet@"
-                                f"{iv.closed_by}"),
+                                f"{iv.closed_by}"
+                                + (f"#{iv.closing_collection_id}" if iv.closing_collection_id else "")),
                     published_at=iv.closed_by, licensing=_licensing(THS_FAMILY),
                 ))
                 n_closed += 1
@@ -656,7 +885,9 @@ class _Builder:
         self.out.per_suite[THS_SUITE] = self._ths_per_suite(
             baskets=len(basket_ids), companies=len(companies),
             member_edges=n_edges, closed_member_edges=n_closed,
-            membership_pit_rows=len(membership_rows),
+            membership_pit_rows=len(membership_rows) - len(collection_rows),
+            collection_records=len(collection_rows),
+            collection_scope="PER_BASKET_ONLY",
             excluded_source_shapes=excluded_shapes,
             skipped_unidentifiable=skipped_unidentifiable,
             unlabelled_nodes=unlabelled,
@@ -820,7 +1051,10 @@ class _Builder:
                     "parent_source_key": meta.parent_theme_key,
                     # The unlabelled layer above themes that the committed schema
                     # flattens: carried as METADATA, never resurrected as hierarchy
-                    # (PARENT_OF edges are W4's).
+                    # here. PARENT_OF is GMI-owned on the incumbent producer and is
+                    # emitted only from the crosswalk hierarchy block
+                    # (DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK; seat ruling 2026-10-07
+                    # retires standalone W4).
                     "supergroup_index": meta.supergroup_index,
                     "key_aliases": [],
                     "rights_family": FINVIZ_FAMILY,
@@ -1133,6 +1367,52 @@ class _Builder:
             "ths_codes_unknown": len(unknown),
         }
 
+    def build_hierarchy(self) -> None:
+        doc = yaml.safe_load(self.crosswalk_path.read_text(encoding="utf-8")) or {}
+        validated = validate_theme_hierarchy(doc)
+        belief_date = self.belief_time[:10]
+        evidence_cache: dict[str, str] = {}
+
+        def emittable(src: str, dst: str) -> bool:
+            source_node = self._nodes.get(src)
+            destination_node = self._nodes.get(dst)
+            if source_node is None or destination_node is None:
+                return False
+            return (source_node.get("kind") == "theme"
+                    and destination_node.get("kind") == "theme"
+                    and (source_node.get("tier"), destination_node.get("tier"))
+                    in _HIERARCHY_TIER_ADJACENCIES)
+
+        for entry in validated["categories"] + validated["micro_themes"]:
+            if entry["asserted_on"] > belief_date:
+                continue
+            row = entry["row"]
+            self._node(
+                entry["id"], kind="theme", market_scope="global", tier=entry["tier"],
+                provenance="crosswalk:config/theme_crosswalk.yml",
+                name_en=row.get("name_en"), name_zh=row.get("name_zh"),
+                external_ids={}, birth_date=entry["asserted_on"],
+                source_meta={"nominated_from": row.get("nominated_from")}
+                if entry["tier"] == "micro_theme" else None)
+
+        for row in validated["parents"]:
+            if row["asserted_on"] > belief_date:
+                continue
+            if not emittable(row["parent"], row["child"]):
+                continue
+            published_at = row["asserted_on"]
+            evidence_ref = evidence_cache.get(published_at)
+            if evidence_ref is None:
+                evidence_ref = self._evidence_ref(
+                    kind="operator_curation", source_ref="config/theme_crosswalk.yml",
+                    published_at=published_at,
+                    licensing=_licensing("mastermind_curated"))
+                evidence_cache[published_at] = evidence_ref
+            self._edge(edge_type="PARENT_OF", src=row["parent"], dst=row["child"],
+                       valid_from=published_at, valid_to=None,
+                       evidence_time=published_at, source_class="curated",
+                       date_provenance="crosswalk", evidence_refs=[evidence_ref])
+
     # -- drive -------------------------------------------------------------
 
     def run(self) -> Materialization:
@@ -1162,6 +1442,7 @@ class _Builder:
                 log.warning("theme_graph: local plane %s failed (%s)", plane_name, exc)
                 self.out.local_plane[plane_name] = {"error": str(exc)}
         self.build_crosswalk()
+        self.build_hierarchy()
         self.out.nodes = [self._nodes[k] for k in sorted(self._nodes)]
         self.out.edges = [self._edges[k] for k in sorted(self._edges)]
         self.out.evidence = [self._evidence[k] for k in sorted(self._evidence)]
@@ -1324,9 +1605,75 @@ def source_family_of(node_id: object) -> str | None:
     return rights.family_for_node_id(node_id)
 
 
+
+def _explained_ths_closures(computed: list[dict], history, stored=None) -> set[str]:
+    """Derive exact closure proofs from the same validated owner history.
+
+    No caller-provided exemption ids: a qualifying owner interval must match the
+    computed identity/window/evidence and only its own closure is explained.
+    """
+    if history is None:
+        return set()
+    intervals = local_sources.ths_membership_intervals(history)
+    expected = {}
+    for iv in intervals:
+        if iv.valid_to is None or iv.closure_basis not in {"complete_collection", "removed"}:
+            continue
+        src = identity.company_node_id(THS_SUITE, iv.ticker)
+        dst = identity.basket_node_id(THS_SUITE, iv.basket_id)
+        eid = edge_id_for("MEMBER_OF", src, dst, iv.valid_from)
+        ref = (f"data/{THS_SUITE}/membership_history.parquet@{iv.closed_by}"
+               + (f"#{iv.closing_collection_id}" if iv.closing_collection_id else ""))
+        evidence = evidence_id_for("scrape", ref, iv.closed_by)
+        expected[eid] = (src, dst, iv.valid_from, iv.valid_to, iv.closed_by, evidence)
+    explained = set()
+    for row in computed:
+        proof = expected.get(row.get("edge_id"))
+        if proof is None or row.get("confidence_basis") != "membership_pit.ths.v1":
+            continue
+        src, dst, start, end, known, evidence = proof
+        if (row.get("type") == "MEMBER_OF" and row.get("src") == src
+                and row.get("dst") == dst and row.get("valid_from") == start
+                and row.get("valid_to") == end and row.get("evidence_time") == known
+                and row.get("source_class") == "scrape"
+                and row.get("date_provenance") == "membership_pit"
+                and evidence in _normalize_evidence_refs(row.get("evidence_refs"))):
+            explained.add(row["edge_id"])
+    # Preserve accepted legacy-generation annulment, scoped to the exact pairs
+    # this owner actually observed. A cutover is not a family-wide exemption.
+    birth = ths_membership_pit_birth(history)
+    pairs = set()
+    for iv in intervals:
+        try:
+            pairs.add((identity.company_node_id(THS_SUITE, iv.ticker),
+                       identity.basket_node_id(THS_SUITE, iv.basket_id)))
+        except ValueError:
+            continue
+    cache = {}
+    if birth and stored is not None:
+        for row in computed:
+            if row.get("confidence_basis") != THS_MEMBERSHIP_DOC_BASIS:
+                continue
+            clock = (row.get("belief_time"), row.get("era"), row.get("computed_at"))
+            if clock not in cache:
+                cache[clock] = {r["edge_id"]: r for r in supersede_ths_membership_doc_edges(
+                    stored, valid_to=birth, belief_time=clock[0], era=clock[1],
+                    computed_at=clock[2], pit_pairs=pairs)}
+            expected_row = cache[clock].get(row.get("edge_id"))
+            fields = ("type", "src", "dst", "valid_from", "valid_to", "evidence_time",
+                      "confidence_basis", "source_class", "date_provenance")
+            if (expected_row is not None
+                    and all(row.get(k) == expected_row.get(k) for k in fields)
+                    and _normalize_evidence_refs(row.get("evidence_refs"))
+                    == _normalize_evidence_refs(expected_row.get("evidence_refs"))):
+                explained.add(row["edge_id"])
+    return explained
+
+
 def source_shrink_refusals(computed: list[dict], stored, *,
                            allow: frozenset[str] | set[str] | tuple[str, ...] = (),
-                           max_shrink: float = MAX_SOURCE_SHRINK) -> list[str]:
+                           max_shrink: float = MAX_SOURCE_SHRINK,
+                           owner_membership_history=None) -> list[str]:
     """Refusal messages for every family whose live memberships would shrink too far.
 
     Behind the refresh contract's own interlocks, and aimed at a different attacker: a
@@ -1354,8 +1701,14 @@ def source_shrink_refusals(computed: list[dict], stored, *,
     if not live_by_family:
         return []
 
+    try:
+        explained = _explained_ths_closures(computed, owner_membership_history, stored)
+    except ValueError as exc:
+        return [f"THS membership closure proof refused: {exc}"]
     closing_by_family: dict[str, int] = {}
     for row in computed:
+        if str(row.get("edge_id")) in explained:
+            continue
         if _null(row.get("valid_to")):
             continue
         family = source_family_of(row.get("dst"))
@@ -1570,6 +1923,100 @@ def supersede_ths_canonical_expression_edges(
         out.append(closed)
     out.sort(key=lambda row: str(row["edge_id"]))
     return out
+
+
+def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: list,
+                          *, belief_time: str, era: str, computed_at: str
+                          ) -> tuple[list[dict], list[dict]]:
+    """Consume only the probation owner's accepted events, never snapshot absence.
+
+    Precise event clocks stay on the evidence receipt. The daily graph refuses
+    any effect/knowledge cut it cannot represent, before any append occurs.
+    """
+    from engine.theme_graph import probation
+
+    prior_by_id = {str(row["edge_id"]): row for row in stored.to_dict("records")}
+    closings, evidence, acted = [], [], set()
+    for event in events:
+        row = probation.require_daily_relation_event(
+            event, belief_time=belief_time, emitted_at=computed_at)
+        prior = row["prior_relation"]
+        old = prior_by_id.get(prior["edge_id"])
+        if old is None or any(str(old.get(key)) != value for key, value in prior.items()):
+            raise ValueError("relation event prior scope is not the stored owner relation")
+        if (old.get("source_class") != "curated"
+                or old.get("date_provenance") != "crosswalk"):
+            raise ValueError("relation event prior is not a canonical curation relation")
+        if prior["edge_id"] in acted:
+            raise ValueError("multiple relation events for one prior relation")
+        acted.add(prior["edge_id"])
+        effective = probation._relation_clock(row["effective_at"]).date().isoformat()
+        source_ref = ("data/theme_graph/probation/relation_events.v2.jsonl#"
+                      + row["event_id"])
+        eid = evidence_id_for("operator_curation", source_ref, row["known_at"])
+        if not _null(old.get("valid_to")):
+            if str(old["valid_to"]) == effective and eid in _normalize_evidence_refs(old.get("evidence_refs")):
+                continue  # exact already-applied event; no rewriting history
+            raise ValueError("relation event conflicts with a prior closure")
+        if not _is_date(_text(old.get("belief_time"))) or belief_time <= str(old["belief_time"]):
+            raise ValueError("daily relation event must advance the stored belief")
+        if prior["type"] == "EXPRESSES":
+            live = [candidate for candidate in computed
+                    if candidate.get("type") == "EXPRESSES"
+                    and candidate.get("src") == prior["src"]
+                    and str(candidate.get("dst", "")).startswith("theme:")
+                    and _null(candidate.get("valid_to"))]
+        else:
+            live = [candidate for candidate in computed
+                    if candidate.get("type") == prior["type"]
+                    and candidate.get("src") == prior["src"]
+                    and candidate.get("dst") == prior["dst"]
+                    and _null(candidate.get("valid_to"))]
+        if any(candidate.get("dst") == prior["dst"] for candidate in live):
+            raise ValueError("relation event contradicts the current curated mapping")
+        if row["action"] == "DESTINATION_CHANGE":
+            if prior["type"] == "PARENT_OF":
+                raise ValueError(
+                    "PARENT_OF_DESTINATION_CHANGE_REFUSED: curated hierarchy edges are "
+                    "withdrawn, never re-pointed")
+            matches = [candidate for candidate in live
+                       if candidate.get("dst") == row["new_destination"]
+                       and candidate.get("source_class") == "curated"
+                       and candidate.get("date_provenance") == "crosswalk"
+                       and candidate.get("valid_from") == effective]
+            if len(matches) != 1:
+                raise ValueError("destination change lacks the exact current owner mapping")
+        internal, display, redistribution = _licensing("mastermind_curated")
+        evidence.append({
+            "evidence_id": eid, "kind": "operator_curation",
+            "published_at": row["known_at"], "effective_at": row["effective_at"],
+            "source_ref": source_ref, "licensing_internal_ok": internal,
+            "licensing_display_ok": display,
+            "licensing_redistribution_ok": redistribution, "retention": None,
+            "computed_at": computed_at, "provider": None, "claim_type": None,
+        })
+        authority = event.authority_receipt
+        owner_eid = evidence_id_for("operator_curation", authority["receipt_ref"], authority["known_at"])
+        evidence.append({
+            "evidence_id": owner_eid, "kind": "operator_curation",
+            "published_at": authority["known_at"], "effective_at": authority["accepted_at"],
+            "source_ref": authority["receipt_ref"], "licensing_internal_ok": internal,
+            "licensing_display_ok": display, "licensing_redistribution_ok": redistribution,
+            "retention": None, "computed_at": computed_at, "provider": None, "claim_type": None,
+        })
+        closed = {field: old.get(field) for field in RESERVED_EDGE_FIELDS}
+        closed.update({
+            "edge_id": prior["edge_id"], "type": prior["type"],
+            "src": prior["src"], "dst": prior["dst"],
+            "valid_from": prior["valid_from"], "valid_to": effective,
+            "evidence_time": effective, "belief_time": belief_time, "era": era,
+            "source_class": "curated", "date_provenance": "crosswalk",
+            "evidence_refs": sorted(set(_normalize_evidence_refs(old.get("evidence_refs")) + [eid, owner_eid])),
+            "confidence_basis": old.get("confidence_basis") or CONFIDENCE_BASIS,
+            "computed_at": computed_at, "engine_version": ENGINE_VERSION,
+        })
+        closings.append(closed)
+    return closings, evidence
 
 
 # ---------------------------------------------------------------------------

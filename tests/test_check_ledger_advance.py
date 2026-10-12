@@ -517,3 +517,136 @@ def test_latest_asof_missing_file(tmp_path):
     """_latest_asof returns None when file does not exist."""
     result = M._latest_asof(tmp_path / "nonexistent.jsonl")
     assert result is None
+
+
+# ── Stall-marker integrity (Grey Deer O7/T03, 2026-10-11) ────────────────
+# Production replay: on 2026-10-08 the 15:05Z run recorded risk_radar and
+# leadership_crack as stalled since 2026-10-07 (asof 2026-10-06), and the
+# 16:17Z same-day rerun wrote stalled_since=None with the asof unchanged
+# (state-file commits e65335239332^ -> e65335239332). A non-stall branch is
+# not an advance: only a strictly newer asof may clear an open stall.
+
+_RR = "data/risk_radar/forward_log.jsonl"
+_RR_MANIFEST = [{"path": _RR, "label": "risk_radar"}]
+_MON = datetime(2026, 7, 20, 22, 0, 0, tzinfo=timezone.utc)  # next session after _D2
+
+
+def _run(tmp_path, state_path, *, now, render_happened=True):
+    dispatch = _Dispatch()
+    with (
+        patch.object(M, "_LEDGER_MANIFEST", _RR_MANIFEST),
+        patch("engine.alert_triage.push_ops_alert", dispatch),
+    ):
+        stalled = M.run_check(
+            root=tmp_path,
+            state_path=state_path,
+            render_happened=render_happened,
+            _now=now,
+        )
+        M._dispatch_stall_alert(stalled, tmp_path)
+    return stalled, dispatch
+
+
+def test_same_day_rerun_preserves_open_stall(tmp_path):
+    """A same-day rerun with an unchanged ledger keeps the open stall marker."""
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    # State as written by today's first run: stall already open since yesterday.
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-17",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, dispatch = _run(tmp_path, state_path, now=_D2)
+
+    assert stalled == []          # idempotent: no second alert today
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_RR]
+    assert entry["asof"] == "2026-07-15"
+    assert entry["stalled_since"] == "2026-07-16"   # not erased by the rerun
+
+    # Next session, still unchanged: the stall keeps its original start date.
+    stalled, _ = _run(tmp_path, state_path, now=_MON)
+    assert len(stalled) == 1
+    assert stalled[0]["stalled_since"] == "2026-07-16"
+
+
+def test_same_day_rerun_with_changed_ledger_clears_stall(tmp_path):
+    """Changed issuer data clears the stall, even on a same-day rerun."""
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}, {"asof": "2026-07-17"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-17",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, _ = _run(tmp_path, state_path, now=_D2)
+
+    assert stalled == []
+    entry = _load_state(state_path)["ledgers"][_RR]
+    assert entry["asof"] == "2026-07-17"
+    assert entry["stalled_since"] is None
+
+
+def test_no_render_night_preserves_open_stall(tmp_path):
+    """A night without a republish neither alerts nor clears an open stall."""
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-16",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, _ = _run(tmp_path, state_path, now=_D2, render_happened=False)
+
+    assert stalled == []
+    assert _load_state(state_path)["ledgers"][_RR]["stalled_since"] == "2026-07-16"
+
+
+def test_unreadable_ledger_keeps_snapshot_and_open_stall(tmp_path):
+    """An unreadable ledger is not an advance: snapshot and stall marker survive."""
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-16",
+              "stalled_since": "2026-07-16"},
+    })
+    # Ledger absent (the reader returns None, same as an unparseable file).
+    stalled, _ = _run(tmp_path, state_path, now=_D2)
+
+    assert stalled == []
+    entry = _load_state(state_path)["ledgers"][_RR]
+    assert entry["asof"] == "2026-07-15"
+    assert entry["stalled_since"] == "2026-07-16"
+
+    # The ledger reappears unchanged: the stall is still reported from its start.
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    stalled, _ = _run(tmp_path, state_path, now=_MON)
+    assert len(stalled) == 1
+    assert stalled[0]["prev_asof"] == "2026-07-15"
+    assert stalled[0]["stalled_since"] == "2026-07-16"
+
+
+def test_regressed_asof_is_a_stall_and_rerun_keeps_marker(tmp_path):
+    """An out-of-order (older) newest asof is a stall, never an advance.
+
+    It alerts once, a same-day rerun does not alert again, and the open
+    marker keeps its original start date through both runs.
+    """
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-16", "last_check_date": "2026-07-16",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, dispatch = _run(tmp_path, state_path, now=_D2)
+    assert len(stalled) == 1
+    assert stalled[0]["curr_asof"] == "2026-07-15"
+    assert stalled[0]["stalled_since"] == "2026-07-16"
+    assert len(dispatch.calls) == 1
+    assert _load_state(state_path)["ledgers"][_RR]["stalled_since"] == "2026-07-16"
+
+    stalled, dispatch = _run(tmp_path, state_path, now=_D2)
+    assert stalled == []
+    assert dispatch.calls == []
+    assert _load_state(state_path)["ledgers"][_RR]["stalled_since"] == "2026-07-16"

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import json
+import subprocess
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,6 +25,726 @@ HEAD = "a" * 40
 BASE = "b" * 40
 MERGE = "c" * 40
 WITNESS_TREE = "d" * 40
+
+
+def _git(repo: Path, *args: str) -> str:
+    return subprocess.run(
+        ("git", *args),
+        cwd=repo,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    ).stdout.strip()
+
+
+def _root_fixture(tmp_path: Path) -> Path:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-b", "main")
+    _git(repo, "config", "user.name", "Test")
+    _git(repo, "config", "user.email", "test@example.com")
+    (repo / "kept.txt").write_text("baseline\\n", encoding="utf-8")
+    _git(repo, "add", "kept.txt")
+    _git(repo, "commit", "-m", "initial")
+    return repo
+
+
+def _linked_root_fixture(tmp_path: Path) -> tuple[Path, Path]:
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "session-worktree"
+    _git(primary, "worktree", "add", "-b", "claude/delivery-root", str(worktree))
+    return primary, worktree
+
+
+def test_delivery_root_rejects_primary_even_on_claude_branch(tmp_path):
+    primary = _root_fixture(tmp_path)
+    _git(primary, "checkout", "-b", "claude/primary-is-still-shared")
+
+    admitted, reason = GUARD._delivery_root_admission(primary)
+
+    assert admitted is False
+    assert "primary/shared checkout" in reason
+
+
+def test_delivery_root_accepts_linked_claude_worktree(tmp_path):
+    _primary, worktree = _linked_root_fixture(tmp_path)
+    assert GUARD._delivery_root_admission(worktree) == (True, "")
+
+
+def test_linked_handoff_seat_is_quarantined_and_stop_does_not_loop(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "handoff-seat"
+    _git(
+        primary,
+        "worktree",
+        "add",
+        "-b",
+        "handoff/information-to-price-fable-program-ceo-20261005",
+        str(worktree),
+    )
+
+    admitted, reason = GUARD._delivery_root_admission(worktree)
+    assert admitted is False
+    assert "branch handoff/information-to-price-fable-program-ceo-20261005 is not claude/*" in reason
+
+    state_path = tmp_path / "handoff-state.json"
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    start = json.loads(capsys.readouterr().out.strip())
+    context = start["hookSpecificOutput"]["additionalContext"]
+    assert "SESSION ROOT QUARANTINE" in context
+    assert "MANDATORY SHIP LOOP" in context
+
+    GUARD._stop(
+        worktree,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_quarantined_root_denies_bash_before_side_effect(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._pre_tool_use(
+        primary,
+        tmp_path / "state.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    out = json.loads(capsys.readouterr().out.strip())
+    specific = out["hookSpecificOutput"]
+    assert specific["permissionDecision"] == "deny"
+    assert "SESSION ROOT QUARANTINE" in specific["permissionDecisionReason"]
+    assert "fresh worktree-backed Claude session" in specific["permissionDecisionReason"]
+
+
+def test_admitted_worktree_does_not_intercept_bash(tmp_path, capsys):
+    _primary, worktree = _linked_root_fixture(tmp_path)
+
+    GUARD._pre_tool_use(
+        worktree,
+        tmp_path / "state.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_quarantined_root_lets_enterworktree_repair_itself(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    # ExitWorktree (keeping the tree) is step 2 of the remedy when the conversation
+    # sits in a native .claude/worktrees tree, so it is a repair tool too (2026-10-10).
+    for tool in ("EnterWorktree", "ExitWorktree", "Read", "Grep"):
+        GUARD._pre_tool_use(
+            primary,
+            tmp_path / "state.json",
+            {"hook_event_name": "PreToolUse", "tool_name": tool},
+        )
+        assert capsys.readouterr().out.strip() == "", tool
+
+    for tool in ("Bash", "Edit", "Write", "Agent", "mcp__x__y"):
+        GUARD._pre_tool_use(
+            primary,
+            tmp_path / "state.json",
+            {"hook_event_name": "PreToolUse", "tool_name": tool},
+        )
+        out = json.loads(capsys.readouterr().out.strip())
+        assert out["hookSpecificOutput"]["permissionDecision"] == "deny", tool
+        assert "EnterWorktree" in out["hookSpecificOutput"]["permissionDecisionReason"]
+
+
+# ── the quarantine's own remedy is an in-session act (Chairman 2026-10-10) ──────
+#
+# DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR. A Meta-CEO
+# seat ended on EXACT_HUMAN_GATE handing the operator the worktree-mint command,
+# because the guard denied every execution tool — including the mint its own
+# remedy needs — and its text read as "start a fresh session". The guard now
+# prints the filled-in remedy and admits exactly that Bash shape.
+
+_REMEDY_REQUEST = json.dumps({"cwd": "/r/primary", "name": "seat", "session_id": "s-1"})
+
+REMEDY_SHAPES = (
+    "printf '%s' '" + _REMEDY_REQUEST
+    + "' | python3 /Users/x/.local/lib/mastermind/worktree-storage/worktree_storage.py create",
+    "printf '%s' '{\"cwd\":\"/r\",\"name\":\"n\"}' | python3 "
+    "~/.local/lib/mastermind/worktree-storage/worktree_storage.py "
+    "--config /Users/x/.config/mastermind/worktree-storage.json create",
+    "python3 ~/.local/lib/mastermind/worktree-storage/worktree_storage.py check",
+    "echo '{\"cwd\":\"/r\",\"name\":\"n\"}' | python3 /repo/.claude/hooks/worktree_create_sparse.py",
+    "python \"/Users/x y/.claude/hooks/worktree_create_sparse.py\"",
+    "git worktree list --porcelain",
+    "git worktree unlock /Volumes/Mastermind/agent-workspaces/claude/abc/seat-abc",
+    "git fetch origin",
+    "git branch --show-current",
+    "git rev-parse --show-toplevel",
+    "git status --porcelain",
+    "  df -h /Volumes/Mastermind  ",
+    "ls -la /Volumes/Mastermind/agent-workspaces/claude",
+    "cat ~/.config/mastermind/worktree-storage.json",
+    "test -d /Volumes/Mastermind",
+    "grep -n root ~/.config/mastermind/worktree-storage.json",
+)
+
+NON_REMEDY_SHAPES = (
+    "",
+    "git worktree list; rm -rf /tmp/x",
+    "python3 ~/.local/lib/mastermind/worktree-storage/worktree_storage.py create && git push",
+    "printf '%s' '{}' | python3 /x/worktree_storage.py create > /tmp/out",
+    "printf '%s' '{}' | python3 /x/worktree_storage.py create | tee /tmp/log",
+    "python3 /x/worktree_storage.py create\ngit push origin main",
+    "ls $(cat secret)",
+    "cat `whoami`",
+    "echo \"$HOME\"",
+    "git push origin main",
+    "git worktree remove /x",
+    "git checkout -b claude/x",
+    "git commit -m x",
+    "python3 other_script.py create",
+    "python3 /x/worktree_storage.py",
+    "python3 /x/worktree_storage.py delete",
+    "rm -rf /Volumes/Mastermind",
+    "lsblk",
+    "testing",
+    "cd /x && ls",
+)
+
+
+@pytest.mark.parametrize("command", REMEDY_SHAPES)
+def test_remedy_shaped_bash_is_recognised(command):
+    assert GUARD._is_quarantine_remedy_command(command), command
+
+
+@pytest.mark.parametrize("command", NON_REMEDY_SHAPES)
+def test_non_remedy_bash_is_not_recognised(command):
+    assert not GUARD._is_quarantine_remedy_command(command), command
+
+
+def test_quarantined_root_allows_the_remedy_mint_and_denies_other_bash(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    state = tmp_path / "state.json"
+
+    for command in REMEDY_SHAPES:
+        GUARD._pre_tool_use(
+            primary,
+            state,
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Bash",
+                "tool_input": {"command": command},
+            },
+        )
+        assert capsys.readouterr().out.strip() == "", command
+
+    for command in NON_REMEDY_SHAPES:
+        GUARD._pre_tool_use(
+            primary,
+            state,
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Bash",
+                "tool_input": {"command": command},
+            },
+        )
+        out = json.loads(capsys.readouterr().out.strip())
+        assert out["hookSpecificOutput"]["permissionDecision"] == "deny", command
+
+    # A Bash call without tool_input (older payloads) is still denied.
+    GUARD._pre_tool_use(
+        primary, state, {"hook_event_name": "PreToolUse", "tool_name": "Bash"}
+    )
+    assert json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecision"
+    ] == "deny"
+    # The remedy shape never opens a non-Bash tool.
+    GUARD._pre_tool_use(
+        primary,
+        state,
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Edit",
+            "tool_input": {"command": REMEDY_SHAPES[0]},
+        },
+    )
+    assert json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecision"
+    ] == "deny"
+
+
+def _assert_remedy_text(text: str, root: Path) -> None:
+    assert "never hand it to the operator" in text
+    assert "never end the session on this blocker" in text
+    assert "EnterWorktree" in text
+    assert "printf '%s'" in text
+    assert str(root) in text
+    assert "worktree_storage.py" in text or "worktree_create_sparse.py" in text
+    # The printed mint is a shape the guard itself admits while quarantined.
+    mint = text.split("with `", 1)[1].split("`", 1)[0]
+    assert GUARD._is_quarantine_remedy_command(mint), mint
+    assert "fresh worktree-backed Claude session" in text
+
+
+def test_quarantine_denial_prints_the_filled_in_remedy(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._pre_tool_use(
+        primary,
+        tmp_path / "state.json",
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Edit",
+            "session_id": "sess-123",
+        },
+    )
+    reason = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecisionReason"
+    ]
+    _assert_remedy_text(reason, primary)
+    assert "sess-123" in reason
+    # Not a native session tree: no ExitWorktree step is demanded.
+    assert "ExitWorktree" not in reason
+
+
+def test_quarantine_context_prints_the_filled_in_remedy(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._session_start(
+        primary,
+        tmp_path / "state.json",
+        {"hook_event_name": "SessionStart", "source": "startup", "session_id": "sess-9"},
+    )
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION ROOT QUARANTINE" in context
+    _assert_remedy_text(context, primary)
+    assert "sess-9" in context
+    assert "MANDATORY SHIP LOOP" in context
+
+
+def test_native_session_tree_remedy_adds_the_exitworktree_step(tmp_path, capsys):
+    """A conversation in `.claude/worktrees/<name>` must leave that tree first."""
+    primary = _root_fixture(tmp_path)
+    tree = primary / ".claude" / "worktrees" / "worktree-handoff-seat"
+    tree.parent.mkdir(parents=True)
+    _git(primary, "worktree", "add", "-b", "handoff/not-admitted", str(tree))
+    admitted, _reason = GUARD._delivery_root_admission(tree)
+    assert admitted is False
+
+    GUARD._pre_tool_use(
+        tree,
+        tmp_path / "state.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Write", "session_id": "s"},
+    )
+    reason = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecisionReason"
+    ]
+    _assert_remedy_text(reason, tree)
+    assert "call ExitWorktree keeping the tree" in reason
+    # The suggested name drops the legacy prefix and stays branch-safe.
+    assert '"name": "handoff-seat"' in reason
+
+
+def test_quarantine_suggested_name_is_branch_safe():
+    assert GUARD._quarantine_suggested_name(Path("/x/worktree-rs leader(1)")) == "rs-leader-1"
+    assert GUARD._quarantine_suggested_name(Path("/x/.hidden")) == "hidden"
+    assert GUARD._quarantine_suggested_name(Path("/x/---")) == "seat"
+    assert len(GUARD._quarantine_suggested_name(Path("/x/" + "a" * 200))) == 80
+
+
+def test_quarantine_context_names_the_in_session_repair(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._session_start(
+        primary,
+        tmp_path / "state.json",
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION ROOT QUARANTINE" in context
+    assert "EnterWorktree" in context
+
+
+def test_relocated_session_seeds_completion_state_once(tmp_path, capsys):
+    _primary, worktree = _linked_root_fixture(tmp_path)
+    state_path = tmp_path / "relocated-state.json"
+    (worktree / "kept.txt").write_text("dirty before the first effectful call\\n")
+
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["root"] == str(worktree)
+    assert state["start_head"] == _git(worktree, "rev-parse", "HEAD")
+    assert state["root_admitted"] is True
+    assert state["root_admission_v"] == GUARD._ROOT_ADMISSION_VERSION
+    assert state["seeded_by"] == "pre_tool_use_relocation"
+    assert "kept.txt" in json.dumps(state["baseline"])
+
+    state["blocker_count"] = 3
+    GUARD._save(state_path, state)
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Edit"},
+    )
+    assert GUARD._load(state_path)["blocker_count"] == 3
+
+
+def test_quarantined_root_never_seeds_completion_state(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    state_path = tmp_path / "quarantined-state.json"
+
+    GUARD._pre_tool_use(
+        primary,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "EnterWorktree"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    assert GUARD._load(state_path) is None
+
+
+def _native_session_tree(tmp_path: Path, name: str = "seat") -> tuple[Path, Path]:
+    """A tree shaped like Claude Code's native mint: .claude/worktrees/<n> on worktree-<n>."""
+    primary = _root_fixture(tmp_path)
+    worktree = primary / ".claude" / "worktrees" / name
+    _git(primary, "worktree", "add", "-b", f"worktree-{name}", str(worktree))
+    return primary, worktree
+
+
+def _assert_bash_denied(worktree: Path, state_path: Path, capsys) -> None:
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+    out = json.loads(capsys.readouterr().out.strip())
+    assert out["hookSpecificOutput"]["permissionDecision"] == "deny"
+
+
+def test_native_session_tree_is_adopted_at_first_effectful_call(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    state_path = tmp_path / "native-state.json"
+
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    assert _git(worktree, "branch", "--show-current") == "claude/seat"
+    assert GUARD._delivery_root_admission(worktree) == (True, "")
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["seeded_by"] == "pre_tool_use_relocation"
+
+
+def test_native_session_tree_is_adopted_at_session_start(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    state_path = tmp_path / "native-start.json"
+
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION BRANCH ADOPTED" in context
+    assert "claude/seat" in context
+    assert "SESSION ROOT QUARANTINE" not in context
+    assert "MANDATORY SHIP LOOP" in context
+    assert _git(worktree, "branch", "--show-current") == "claude/seat"
+    assert GUARD._load(state_path)["root_admitted"] is True
+
+
+def test_adoption_refuses_a_tree_outside_claude_worktrees(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "seat"
+    _git(primary, "worktree", "add", "-b", "worktree-seat", str(worktree))
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+
+
+def test_adoption_refuses_a_branch_that_does_not_match_its_directory(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = primary / ".claude" / "worktrees" / "seat"
+    _git(primary, "worktree", "add", "-b", "worktree-other", str(worktree))
+    # A `worktree-seat` that exists but is NOT checked out here: without the
+    # current-branch check, `git branch -m worktree-seat claude/seat` would succeed
+    # and rename a branch this tree does not own.
+    _git(primary, "branch", "worktree-seat")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-other"
+    assert _git(primary, "for-each-ref", "--format=%(refname)", "refs/heads/claude/") == ""
+    assert _git(primary, "rev-parse", "--verify", "refs/heads/worktree-seat")
+
+
+def test_adoption_refuses_a_branch_with_an_upstream(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    _git(worktree, "config", "branch.worktree-seat.remote", "origin")
+    _git(worktree, "config", "branch.worktree-seat.merge", "refs/heads/worktree-seat")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+
+
+def test_adoption_refuses_a_branch_with_a_remote_tracking_copy(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    _git(worktree, "update-ref", "refs/remotes/origin/worktree-seat", "HEAD")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+
+
+def test_adoption_never_clobbers_an_existing_claude_branch(tmp_path, capsys):
+    primary, worktree = _native_session_tree(tmp_path)
+    _git(primary, "branch", "claude/seat")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+    assert _git(primary, "rev-parse", "--verify", "refs/heads/claude/seat")
+
+
+def test_adoption_refuses_a_packed_case_variant_of_its_target(tmp_path, capsys):
+    primary, worktree = _native_session_tree(tmp_path)
+    _git(primary, "branch", "claude/SEAT")
+    _git(primary, "pack-refs", "--all")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+    assert (
+        _git(primary, "for-each-ref", "--format=%(refname)", "refs/heads/claude/")
+        == "refs/heads/claude/SEAT"
+    )
+
+
+def test_a_lost_adoption_race_still_admits_the_tree(monkeypatch, tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+
+    def sibling_hook_won(_root):
+        # A concurrent PreToolUse process renamed the branch first; this one's
+        # own attempt therefore adopts nothing.
+        _git(worktree, "branch", "-m", "worktree-seat", "claude/seat")
+        return ""
+
+    monkeypatch.setattr(GUARD, "_adopt_native_session_branch", sibling_hook_won)
+    GUARD._pre_tool_use(
+        worktree,
+        tmp_path / "race.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    assert GUARD._load(tmp_path / "race.json")["root_admitted"] is True
+
+
+def test_adoption_refuses_a_primary_checkout_in_native_shape(tmp_path, capsys):
+    primary = tmp_path / ".claude" / "worktrees" / "host"
+    primary.mkdir(parents=True)
+    _git(primary, "init", "-b", "worktree-host")
+    _git(primary, "config", "user.name", "Test")
+    _git(primary, "config", "user.email", "test@example.com")
+    (primary / "kept.txt").write_text("baseline\n", encoding="utf-8")
+    _git(primary, "add", "kept.txt")
+    _git(primary, "commit", "-m", "initial")
+
+    _assert_bash_denied(primary, tmp_path / "state.json", capsys)
+    assert _git(primary, "branch", "--show-current") == "worktree-host"
+
+
+def test_root_admitted_in_place_readmits_its_quarantined_record(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "handoff-seat"
+    _git(primary, "worktree", "add", "-b", "handoff/seat", str(worktree))
+    state_path = tmp_path / "in-place.json"
+
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    capsys.readouterr()
+    born = GUARD._load(state_path)
+    assert born["root_admitted"] is False
+    assert born["baseline_captured"] is False
+
+    _git(worktree, "branch", "-m", "handoff/seat", "claude/seat")
+    (worktree / "kept.txt").write_text("dirty before the first admitted call\n")
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["seeded_by"] == "pre_tool_use_admission"
+    assert state["baseline_captured"] is True
+    assert state["start_head"] == _git(worktree, "rev-parse", "HEAD")
+    assert "kept.txt" in json.dumps(state["baseline"])
+
+
+def test_resume_admitting_a_born_quarantined_root_captures_its_baseline(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "handoff-seat"
+    _git(primary, "worktree", "add", "-b", "handoff/seat", str(worktree))
+    state_path = tmp_path / "resume.json"
+
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    capsys.readouterr()
+    _git(worktree, "branch", "-m", "handoff/seat", "claude/seat")
+    (worktree / "kept.txt").write_text("dirty before admission\n")
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "resume"},
+    )
+    capsys.readouterr()
+
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["baseline_captured"] is True
+    assert "kept.txt" in json.dumps(state["baseline"])
+
+
+def test_readmission_after_a_quarantined_compact_keeps_the_sessions_work(tmp_path, capsys):
+    """Admitted -> work -> compact while not admissible -> re-admitted -> Stop blocks.
+
+    Re-seeding a fresh record at re-admission would absorb the session's commit
+    into start_head and its dirt into the baseline, releasing unshipped work.
+    """
+    _primary, worktree = _linked_root_fixture(tmp_path)
+    state_path = tmp_path / "compact.json"
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    capsys.readouterr()
+    born = GUARD._load(state_path)
+    assert born["root_admitted"] is True
+
+    (worktree / "work.txt").write_text("committed by the session\n", encoding="utf-8")
+    _git(worktree, "add", "work.txt")
+    _git(worktree, "commit", "-m", "session work")
+    (worktree / "kept.txt").write_text("edited by the session\n", encoding="utf-8")
+
+    _git(worktree, "checkout", "--detach")
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "compact"},
+    )
+    capsys.readouterr()
+    assert GUARD._load(state_path)["root_admitted"] is False
+
+    _git(worktree, "checkout", "claude/delivery-root")
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["seeded_by"] == "pre_tool_use_admission"
+    assert state["start_head"] == born["start_head"]
+    assert state["baseline"] == born["baseline"]
+
+    GUARD._stop(
+        worktree,
+        state_path,
+        {"hook_event_name": "Stop", "last_assistant_message": "SESSION END: PROVEN_OUTCOME"},
+    )
+    out = json.loads(capsys.readouterr().out.strip())
+    assert out["decision"] == "block"
+    assert "kept.txt" in out["reason"]
+
+
+def test_quarantined_session_stops_cleanly_when_shared_main_moves(
+    monkeypatch, tmp_path, capsys
+):
+    primary = _root_fixture(tmp_path)
+    state_path = tmp_path / "state.json"
+
+    GUARD._session_start(
+        primary,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    start = json.loads(capsys.readouterr().out.strip())
+    assert "SESSION ROOT QUARANTINE" in start["hookSpecificOutput"]["additionalContext"]
+    state = GUARD._load(state_path)
+    assert state["root_admission_v"] == GUARD._ROOT_ADMISSION_VERSION
+    assert state["root_admitted"] is False
+
+    (primary / "bot.txt").write_text("independent publication\\n", encoding="utf-8")
+    _git(primary, "add", "bot.txt")
+    _git(primary, "commit", "-m", "bot: move shared main")
+    monkeypatch.setattr(
+        GUARD,
+        "_github_slug",
+        lambda *_a: pytest.fail("a quarantined root reached GitHub"),
+    )
+
+    GUARD._stop(
+        primary,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_settings_gate_effectful_tools_before_existing_guards():
+    settings = json.loads((ROOT / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    admission = [
+        group for group in settings["hooks"]["PreToolUse"]
+        if "ship_loop_guard.py" in json.dumps(group)
+    ]
+    assert len(admission) == 1
+    matcher = admission[0]["matcher"]
+    for required in (
+        "Bash",
+        "Edit",
+        "Write",
+        "Agent",
+        "Workflow",
+        "Skill",
+        "EnterWorktree",
+        "mcp__.*",
+    ):
+        assert required in matcher
 
 
 def _check(name: str, conclusion: str, *, details: bool = False) -> dict:

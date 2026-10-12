@@ -35,6 +35,7 @@ from engine.options_matrix import (
     _bs_gamma_scalar,
     _bs_vanna_scalar,
     _compute_max_pain,
+    _extract_spot,
     _gex_dollar,
     _heat_seeker,
     _median_iv,
@@ -1374,3 +1375,42 @@ def test_options_matrix_example_tracks_live_unusual_contract():
     )
     assert validate_matrix(example) == []
     assert set(example["cells"][0]["unusual"]) == {"call", "put"}
+
+
+def test_spot_never_uses_option_premiums():
+    option_eod = pd.DataFrame({"close": [1.25, 2.0, 4.75]})
+    assert _extract_spot(pd.DataFrame(), option_eod) is None
+    assert _extract_spot(pd.DataFrame({"implied_vol": [0.2]}), option_eod) is None
+
+
+@pytest.mark.parametrize("invalid", [None, np.nan, np.inf, -np.inf, 0.0, -1.0, "bad", True])
+def test_spot_rejects_invalid_underlying_price(invalid):
+    greeks = pd.DataFrame({"underlying_price": [invalid]})
+    assert _extract_spot(greeks, pd.DataFrame({"close": [2.0]})) is None
+
+
+def test_spot_preserves_valid_underlying_price_without_premium_fallback():
+    greeks = pd.DataFrame({"underlying_price": [np.nan, -1.0, np.inf, 500.0, 501.0]})
+    assert _extract_spot(greeks, pd.DataFrame({"close": [2.0]})) == 500.0
+
+
+@pytest.mark.parametrize("greeks_date", [None, "2026-07-06"])
+def test_matrix_missing_same_session_underlying_price_is_unavailable(tmp_path, greeks_date):
+    root, expiry, asof = "SPY", "2026-08-15", "2026-07-07"
+    store = _make_store(
+        tmp_path, root, [_base_oi_row(root, 500.0, expiry)],
+        eod_rows=[{"root": root, "expiration": expiry, "strike": 500.0,
+                   "right": "C", "close": 2.0, "volume": 100, "count": 10}],
+    )
+    if greeks_date:
+        greeks_path = store / "greeks" / root
+        greeks_path.mkdir(parents=True)
+        pd.DataFrame([{
+            "root": root, "expiration": expiry, "strike": 500.0, "right": "C",
+            "date": greeks_date, "underlying_price": 500.0, "implied_vol": 0.2,
+        }]).to_parquet(greeks_path / "2026.parquet", index=False)
+    payload = build_matrix(root, store=str(store), asof=asof)
+    assert payload["spot"] is None
+    assert payload["cells"] == []
+    assert payload["_no_data_reason"] == f"spot unavailable on {asof}"
+    assert validate_matrix(payload) == []

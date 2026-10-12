@@ -1,0 +1,39 @@
+{
+  "schema": "tiingo_incumbent_history_comparison.v1",
+  "observed_at_utc": "2026-10-11T19:03:12.933235+00:00",
+  "macro_head": "fa2580e1615db9cf5bade13ca8c8667f08d3ff6b",
+  "symbol": "AMD",
+  "start": "2026-09-01",
+  "end": "2026-10-08",
+  "incumbent": {
+    "ref": "macro_snapshot:stocks/AMD.parquet",
+    "file_version": "statv1:85d6bc7d3bf61042f98ec4131c2e97b8a87504198d34fd40b0044127d57dccbe",
+    "version_basis": "device_inode_size_mtime_ctime_not_content_hash",
+    "registry_contract": "equity.bars.daily.stocks",
+    "declared_vendor": "yahoo",
+    "declared_close_basis": "total_return",
+    "actual_rows": 27,
+    "adapter_revision": "a4d48836a69eedd8572a63bd926cd99d036c65cc",
+    "evidence_kind": "unqualified_snapshot"
+  },
+  "tiingo": {
+    "source_receipt_ids": [
+      "800057381a9ca095a9d0c144204010c54606ce764ba1cb39730f06fdb3cd3720",
+      "b74b6d44273178d16f1885a6b78b7592aa955ffb951ce3ec1997dbccd3935787"
+    ],
+    "close_basis": "total_return",
+    "actual_rows": 27
+  },
+  "matched_dates": 27,
+  "missing_tiingo_dates": [],
+  "close_tolerance_abs": 0.0001,
+  "close_outside_tolerance": 1,
+  "max_close_absolute_difference": 0.004975585937472715,
+  "max_close_relative_difference": 0.000009548327920000604,
+  "volume_tolerance_abs": 0.5,
+  "volume_outside_tolerance": 27,
+  "max_volume_relative_difference": 0.0027360163186871483,
+  "interpretation": "Bounded same-basis comparison against an unqualified local snapshot; volumes preserved as stored. Agreement does not establish provider completeness, identity, point-in-time availability, current production freshness or trading authority.",
+  "licensed_row_values_published": false,
+  "close_mismatch_dates": ["2026-09-09"]
+}

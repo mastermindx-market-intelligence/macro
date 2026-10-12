@@ -1,0 +1,19 @@
+{
+  "account_history_coverage_complete": false,
+  "all_us_request_seconds_at_measured_500_batch_rate": 121019.23076399999,
+  "all_us_response_gb_at_measured_500_batch_mean": 23.899164374652,
+  "candidate_listing_identity_admitted": false,
+  "catalogue_history_ended_before_2026_10_08": 17256,
+  "catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0",
+  "current_candidate_membership_is_pit_universe": false,
+  "estimates_are_extrapolations_not_quotas_or_reservations": true,
+  "etfs": 8115,
+  "measured_500_batch_requests_per_second": 0.39406133801162957,
+  "observed_at_utc": "2026-10-11T18:44:54.799746+00:00",
+  "public_audit_elapsed_seconds": 42.173,
+  "reacquired_catalogue": false,
+  "schema": "tiingo_eod_actual_scope_denominator.v1",
+  "stocks": 39574,
+  "us_exchange_candidates": 47689,
+  "usd_stock_etf_unambiguous_catalogue_candidates": 47960
+}

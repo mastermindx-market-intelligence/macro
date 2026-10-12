@@ -106,6 +106,44 @@ def _cmd_full_fixture() -> dict:
     }
 
 
+def _cmd_full_cie_fixture() -> dict:
+    row = _cmd_row(
+        "600519.SS", "贵州茅台",
+        {
+            "state": "ok", "coverage_start": "2026-08-01",
+            "recent": [{
+                **_RESOLVED_ROW,
+                "announcement_id": "A-CIE-UI-1",
+                "system_recorded_at": "2026-08-19T10:00:00+00:00",
+                "source_url": "https://static.cninfo.com.cn/finalpage/2026-08-19/A-CIE-UI-1.PDF",
+            }],
+            "n_total": 1,
+        },
+    )
+    row["company_evidence"] = {
+        "schema": "china_intel.company_evidence.v1",
+        "is_context_only": True,
+        "market_context": {
+            "ret_20d": -4.2,
+            "rs_20d": -1.5,
+            "rs_60d": 2.0,
+            "off_high_pct": -8.3,
+            "rolling_over": True,
+        },
+        "contradictions": [{
+            "basis": "existing_hub_risk_context",
+            "detail_en": "price is rolling over (20d drawdown + RS falling)",
+            "detail_zh": "价格正在转弱（20 日回撤 + 相对强度走低）",
+        }],
+        "unknowns": ["visitor_identity_not_available"],
+    }
+    return {
+        "command": [row],
+        "discovery": [],
+        "visits_coverage_start": "2026-08-01",
+    }
+
+
 _UNSET = object()
 
 
@@ -253,6 +291,57 @@ def test_no_translated_text_in_a_bare_title_attribute():
         val = m.group(1)
         assert not re.search(r"[一-鿿]", val), (
             f"Chinese text found inside a bare title= attribute: {val!r}")
+
+
+# --------------------------------------------------------------------------- #
+# CIE-04/05/06 — source-linked company evidence consumer
+# --------------------------------------------------------------------------- #
+
+def test_cie_source_filing_link_is_exact_and_hardened():
+    html = _render(cmd_full=_cmd_full_cie_fixture())
+    assert 'href="https://static.cninfo.com.cn/finalpage/2026-08-19/A-CIE-UI-1.PDF"' in html
+    assert 'target="_blank"' in html
+    assert 'rel="noopener noreferrer"' in html
+    assert "Source filing" in html
+    assert "原始公告" in html
+
+
+def test_cie_market_context_and_contradiction_render_as_plain_context():
+    html = _render(cmd_full=_cmd_full_cie_fixture())
+    section = html.split("Institutional visits", 1)[1]
+    section = section.split("<h2", 1)[0]
+    assert "Market context" in section
+    assert "市场背景" in section
+    assert "20d -4.2%" in section
+    assert "RS20 -1.5%" in section
+    assert "off high" in section
+    assert "What could be wrong" in section
+    assert "可能存在的问题" in section
+    assert "price is rolling over" in section
+
+
+def test_cie_consumer_never_renders_internal_unknown_or_authority_slugs():
+    html = _render(cmd_full=_cmd_full_cie_fixture())
+    section = html.split("Institutional visits", 1)[1]
+    section = section.split("<h2", 1)[0]
+    for banned in (
+        "visitor_identity_not_available",
+        "existing_hub_ticker",
+        "china_intel.company_evidence.v1",
+        "prophet\":",
+        "ranking\":",
+    ):
+        assert banned not in section
+
+
+def test_cie_consumer_keeps_context_free_of_directional_classes():
+    html = _render(cmd_full=_cmd_full_cie_fixture())
+    section = html.split("Institutional visits", 1)[1]
+    section = section.split("<h2", 1)[0]
+    for banned in ("rs-pos", "rs-neg", "cmd-dot up", "cmd-dot down",
+                   "stage-emerging", "stage-exhausted"):
+        assert banned not in section
+
 
 
 # --------------------------------------------------------------------------- #

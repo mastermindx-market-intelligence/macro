@@ -1,13 +1,13 @@
 {
   "appended": 0,
-  "asof": "2026-09-22",
+  "asof": "2026-10-08",
   "candidates": {
-    "R": 0,
+    "R": 3,
     "T": 8,
     "W": 4
   },
   "deduped": {
-    "R": 0,
+    "R": 3,
     "T": 8,
     "W": 4
   },
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1494,
+  "n_universe": 1491,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-23 22:05:42",
-  "runtime_s": 101.5,
+  "run_utc": "2026-10-11 06:13:33",
+  "runtime_s": 106.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-09-23",
-    "n_members": 127,
+    "asof": "2026-10-09",
+    "n_members": 126,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 5.189,
+        "emerging_score": 2.764,
         "rank": 1,
-        "theme": "Semiconductors"
+        "theme": "Education Technology"
       },
       {
-        "emerging_score": 2.236,
+        "emerging_score": 2.268,
         "rank": 2,
-        "theme": "Quantum Computing"
+        "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 1.962,
+        "emerging_score": 2.006,
         "rank": 3,
-        "theme": "Crypto & Blockchain"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.396,
+        "emerging_score": 1.885,
         "rank": 4,
-        "theme": "Space Tech"
+        "theme": "E-commerce"
       },
       {
-        "emerging_score": 1.384,
+        "emerging_score": 1.686,
         "rank": 5,
-        "theme": "Nanotechnology"
+        "theme": "Commodities Agriculture"
       }
     ]
   },
@@ -130,18 +130,18 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-23",
-    "asof_mismatch": 4,
-    "asof_run": "2026-09-22",
+    "asof_max": "2026-10-08",
+    "asof_mismatch": 0,
+    "asof_run": "2026-10-08",
     "evaluated": 713,
-    "fresh": 4,
+    "fresh": 5,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.5,
+    "runtime_s": 19.6,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 76,
+    "state_turn": 61,
     "universe_n": 717
   }
 }

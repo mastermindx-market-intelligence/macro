@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-09-23",
+  "as_of": "2026-10-11",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -23,14 +23,210 @@
       "mastermind_arming"
     ]
   },
-  "pathways": [],
-  "no_pathway": {
-    "reason": "no_attributable_driver",
-    "printed": true,
-    "trigger_context": {
-      "quad": "Q3",
-      "label": "Q3",
-      "note": "regime present but no attributable driver family resolved"
+  "pathways": [
+    {
+      "family": "equity-leadership",
+      "driver": "ai_semis",
+      "pathway_role": "primary",
+      "as_of": "2026-10-11",
+      "direction_en": "AI/semis unwind — tech-led de-rating",
+      "direction_zh": "AI/半导体回吐 — 科技主导的回调",
+      "confidence_ceiling": "context_only",
+      "coverage_score": 1.0,
+      "coherence": "supported",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_ai_semis",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "ai_semis",
+          "observation": {
+            "en": "AI/semis unwind — tech-led de-rating",
+            "zh": "AI/半导体回吐 — 科技主导的回调"
+          },
+          "direction": -1,
+          "value": 1.11,
+          "z_or_percentile": 1.64,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        },
+        {
+          "node_id": "leg_ai_semis_0",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "semis RS",
+          "observation": {
+            "en": "semis RS (-1.6σ)",
+            "zh": "半导体相对强度 (-1.6σ)"
+          },
+          "direction": "negative",
+          "value": -1.6,
+          "z_or_percentile": -1.6,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[0]"
+          ]
+        },
+        {
+          "node_id": "leg_ai_semis_1",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "tech vs utilities",
+          "observation": {
+            "en": "tech vs utilities (-1.2σ)",
+            "zh": "科技对公用事业 (-1.2σ)"
+          },
+          "direction": "negative",
+          "value": -1.2,
+          "z_or_percentile": -1.2,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[1]"
+          ]
+        },
+        {
+          "node_id": "leg_ai_semis_2",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "cap-weight vs equal-weight",
+          "observation": {
+            "en": "cap-weight vs equal-weight (-0.7σ)",
+            "zh": "市值加权对等权重 (-0.7σ)"
+          },
+          "direction": "negative",
+          "value": -0.7,
+          "z_or_percentile": -0.7,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[2]"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "src_node": "driver_ai_semis",
+          "dst_node": "leg_ai_semis_0",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
+          "status": "measured",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[0]"
+          ]
+        },
+        {
+          "src_node": "driver_ai_semis",
+          "dst_node": "leg_ai_semis_1",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
+          "status": "measured",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[1]"
+          ]
+        },
+        {
+          "src_node": "driver_ai_semis",
+          "dst_node": "leg_ai_semis_2",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
+          "status": "measured",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[2]"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "liquidity",
+      "driver": "liquidity_impulse",
+      "pathway_role": "alternate",
+      "as_of": "2026-10-11",
+      "direction_en": "net liquidity draining — risk headwind",
+      "direction_zh": "",
+      "confidence_ceiling": "context_only",
+      "coverage_score": null,
+      "coherence": "partial",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_liquidity_impulse",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "liquidity_impulse",
+          "observation": {
+            "en": "net liquidity draining — risk headwind",
+            "zh": ""
+          },
+          "direction": "",
+          "value": 0.68,
+          "z_or_percentile": null,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        }
+      ],
+      "edges": [],
+      "coverage_basis": "scare_trigger"
+    },
+    {
+      "family": "crypto",
+      "driver": "crypto_liquidity",
+      "pathway_role": "alternate",
+      "as_of": "2026-10-11",
+      "direction_en": "crypto liquidity draining — BTC/ETH lead down",
+      "direction_zh": "",
+      "confidence_ceiling": "context_only",
+      "coverage_score": null,
+      "coherence": "partial",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_crypto_liquidity",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "crypto_liquidity",
+          "observation": {
+            "en": "crypto liquidity draining — BTC/ETH lead down",
+            "zh": ""
+          },
+          "direction": "",
+          "value": 0.58,
+          "z_or_percentile": null,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        }
+      ],
+      "edges": [],
+      "coverage_basis": "scare_trigger"
     }
-  }
+  ]
 }
