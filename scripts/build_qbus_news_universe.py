@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timedelta, timezone
+import inspect
 import json
 import os
 from pathlib import Path
@@ -20,6 +21,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 import pandas as pd
+import pyarrow.fs
 
 from engine.qbus_news_universe import qualify_universe
 from engine.qbus_news_universe_snapshot import (
@@ -34,6 +36,11 @@ class NewsUniverseBuildError(RuntimeError):
     def __init__(self, code: str) -> None:
         self.code = code
         super().__init__(f"qbus_news_universe_build:{code}")
+
+
+_READ_PARQUET_HAS_TO_PANDAS_KWARGS = (
+    "to_pandas_kwargs" in inspect.signature(pd.read_parquet).parameters
+)
 
 
 def _observed_at(raw: str | None) -> datetime:
@@ -75,11 +82,25 @@ def _records(frame: pd.DataFrame, *, include_index: bool = False) -> list[dict]:
 
 def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
     try:
-        # Single-threaded read: once pyarrow's process-wide CPU thread pool has run
-        # tasks, its teardown at process exit can intermittently abort the interpreter
-        # (SIGABRT, "terminate called without an active exception") after the receipt
-        # is already printed.
-        frame = pd.read_parquet(path, use_threads=False)
+        # pandas opens plain local paths as Python file objects and hands those to
+        # pyarrow, so buffer reads run as Python-backed arrow::py::PyBuffer objects
+        # on Arrow's process-wide IO pool. When such a completion is delayed past
+        # the start of interpreter finalization, its destructor's PyGILState_Ensure
+        # makes CPython force pthread_exit for the worker, and the forced unwind
+        # ends in std::terminate (SIGABRT, "terminate called without an active
+        # exception") after the receipt is already printed (~10% of runs at 4 CPUs).
+        # Reading through the native LocalFileSystem keeps every pool task free of
+        # Python objects; use_threads/pre_buffer False (and a serial to_pandas
+        # conversion where pandas accepts it) keep the reads from scheduling Arrow
+        # pool work at all (measured: 5 -> 6 process threads instead of 5 -> 10).
+        kwargs: dict[str, object] = {
+            "filesystem": pyarrow.fs.LocalFileSystem(),
+            "use_threads": False,
+            "pre_buffer": False,
+        }
+        if _READ_PARQUET_HAS_TO_PANDAS_KWARGS:
+            kwargs["to_pandas_kwargs"] = {"use_threads": False}
+        frame = pd.read_parquet(path, **kwargs)
     except Exception as exc:
         raise NewsUniverseBuildError("owner_artifact_unreadable") from exc
     try:
