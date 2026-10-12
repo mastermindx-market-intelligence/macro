@@ -30,6 +30,7 @@ from engine.qbus_news_cluster import (
     ClusterItem,
     ClusterPolicy,
     cluster_candidates,
+    cluster_policy_version,
 )
 from engine.qbus_news_reducer import NewsState, reduce_revision
 from engine.qbus_news_velocity import (
@@ -257,7 +258,8 @@ CREATE TABLE IF NOT EXISTS news_clusters (
     anchor_title TEXT NOT NULL,
     anchor_observed_at TEXT NOT NULL,
     subject_ids_json TEXT NOT NULL,
-    event_family TEXT NOT NULL
+    event_family TEXT NOT NULL,
+    cluster_policy_version TEXT
 );
 
 CREATE TABLE IF NOT EXISTS news_cluster_members (
@@ -578,6 +580,19 @@ def _redact_story(
     )
 
 
+def _cluster_policy_label(versions: list[str]) -> str:
+    """One string naming every policy that minted the 24h cluster stories.
+
+    An empty list means no stored cluster contributed to stories_24h, so the
+    policy in force is named, as before the per-row stamp existed.
+    """
+    if not versions:
+        return CLUSTER_POLICY_VERSION
+    if len(versions) == 1:
+        return versions[0]
+    return " + ".join(sorted(versions))
+
+
 class NewsStore:
     """One local transactional store bound to one provider cursor namespace."""
 
@@ -677,6 +692,33 @@ class NewsStore:
             )
         elif row["value"] != SCHEMA:
             raise StoreSchemaError("qbus_news_store:schema_mismatch")
+        # Additive column for stores created before the policy stamp existed.
+        # Only a writable open runs here; a wrong-schema store was already
+        # refused above. Pre-existing rows stay NULL (never backfilled), so a
+        # reader labels them "unknown (pre-column)".
+        columns = self._conn.execute(
+            "PRAGMA table_info(news_clusters)"
+        ).fetchall()
+        if not any(str(col[1]) == "cluster_policy_version" for col in columns):
+            # A second concurrent writable open of the same legacy store can
+            # add this column between our PRAGMA and our ALTER; only that race.
+            try:
+                self._conn.execute(
+                    "ALTER TABLE news_clusters"
+                    " ADD COLUMN cluster_policy_version TEXT"
+                )
+            except sqlite3.OperationalError as exc:
+                recheck = self._conn.execute(
+                    "PRAGMA table_info(news_clusters)"
+                ).fetchall()
+                if (
+                    "duplicate column name" not in str(exc).lower()
+                    or not any(
+                        str(col[1]) == "cluster_policy_version"
+                        for col in recheck
+                    )
+                ):
+                    raise
         self._backfill_read_projection()
 
     def _backfill_read_projection(self) -> None:
@@ -1018,8 +1060,9 @@ class NewsStore:
                 """
                 INSERT INTO news_clusters(
                     cluster_id, anchor_story_id, anchor_title,
-                    anchor_observed_at, subject_ids_json, event_family
-                ) VALUES(?,?,?,?,?,?)
+                    anchor_observed_at, subject_ids_json, event_family,
+                    cluster_policy_version
+                ) VALUES(?,?,?,?,?,?,?)
                 """,
                 (
                     cluster_id,
@@ -1028,6 +1071,7 @@ class NewsStore:
                     incoming.observed_at.isoformat(),
                     _stable_json(list(incoming.subject_ids)),
                     incoming.event_family,
+                    cluster_policy_version(self.cluster_policy),
                 ),
             )
         self._conn.execute(
@@ -1559,7 +1603,9 @@ class NewsStore:
                 "news_cluster_members.cluster_id; "
                 "a report in no cluster is its own story"
             ),
-            "cluster_policy_version": CLUSTER_POLICY_VERSION,
+            "cluster_policy_version": _cluster_policy_label(
+                velocity["cluster_policy_versions_24h"]
+            ),
             "windows": {
                 "reports_24h": (
                     "rolling, closed at both ends: [as_of - 24h, as_of]"

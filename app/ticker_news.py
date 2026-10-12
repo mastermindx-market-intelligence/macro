@@ -13,7 +13,8 @@ from __future__ import annotations
 import asyncio
 from collections import deque
 import copy
-from dataclasses import asdict
+from contextvars import ContextVar
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import json
 import logging
@@ -27,7 +28,11 @@ from typing import Any, AsyncIterator, Mapping
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.routing import APIRoute
+from starlette.requests import Request
+from starlette.responses import Response
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
 from engine.qbus_news_annotate import (
@@ -35,7 +40,11 @@ from engine.qbus_news_annotate import (
     annotate_row,
     derivative_permitted,
 )
-from engine.qbus_news_receipts import load_health_receipt, load_rights_receipt
+from engine.qbus_news_receipts import (
+    QualifiedNewsRights,
+    load_health_receipt,
+    load_rights_receipt,
+)
 from engine.qbus_news_store import (
     ChangePage,
     NewsReadRights,
@@ -44,10 +53,8 @@ from engine.qbus_news_store import (
     StoreSchemaError,
     StoreUnavailable,
 )
-from engine.qbus_news_universe import qualify_universe
+from engine.qbus_news_universe import QualifiedSecurity, qualify_universe
 from lib import config
-
-router = APIRouter()
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +68,48 @@ _STREAM_HEADERS = {
     **_PRIVATE_HEADERS,
     "X-Accel-Buffering": "no",
 }
+
+
+class _PrivateValidationRoute(APIRoute):
+    """Give this router's query-validation 422s the private error headers.
+
+    Out-of-range Query constraints are rejected by FastAPI's default
+    RequestValidationError handling before the route body runs; re-issue that
+    same 422 body with the private headers instead of the bare default.
+    """
+
+    def get_route_handler(self):
+        original = super().get_route_handler()
+
+        async def handler(request: Request) -> Response:
+            try:
+                return await original(request)
+            except RequestValidationError as exc:
+                return JSONResponse(
+                    status_code=422,
+                    content={"detail": jsonable_encoder(exc.errors())},
+                    headers=dict(_PRIVATE_HEADERS),
+                )
+
+        return handler
+
+
+router = APIRouter(route_class=_PrivateValidationRoute)
+
+
+# W11-07 additive snapshot provenance.  The snapshot route installs a fresh
+# holder per request; the REAL gating reads populate it as a side effect, so
+# provenance adds no file read.  Deliberately mutable: mutation is visible
+# regardless of thread or context copying.
+@dataclass
+class _SnapshotProvenance:
+    rights: QualifiedNewsRights | None = None
+    security: QualifiedSecurity | None = None
+
+
+_SNAPSHOT_PROVENANCE: ContextVar[_SnapshotProvenance | None] = ContextVar(
+    "ticker_news_snapshot_provenance", default=None
+)
 
 # Wave B news-flow rail (ticker_news.flow.v1).  The store method is owned by
 # lane B1; this layer only computes, validates, and applies feed-health
@@ -245,7 +294,16 @@ def _security_for_ticker(ticker: str, now: datetime) -> str | None:
     }
     if len(hits) > 1:
         raise UniverseUnavailable("ticker-news alias ambiguous")
-    return next(iter(hits)) if hits else None
+    if not hits:
+        return None
+    security_id = next(iter(hits))
+    holder = _SNAPSHOT_PROVENANCE.get()
+    if holder is not None:
+        for security in qualified.securities:
+            if security.security_id == security_id:
+                holder.security = security
+                break
+    return security_id
 
 
 def _rights_receipt_path() -> Path | None:
@@ -274,7 +332,12 @@ def _rights_for_user(user: Mapping[str, Any]) -> NewsReadRights | None:
         now=datetime.now(timezone.utc),
         audience="site_full",
     )
-    return None if qualified is None else qualified.rights
+    if qualified is None:
+        return None
+    holder = _SNAPSHOT_PROVENANCE.get()
+    if holder is not None:
+        holder.rights = qualified
+    return qualified.rights
 
 
 def _source_health() -> dict[str, Any]:
@@ -555,6 +618,20 @@ def _story_row(row, *, permitted: bool) -> dict[str, Any]:
     )
 
 
+def _rights_basis(provenance: _SnapshotProvenance | None) -> dict[str, Any] | None:
+    """The shareable receipt identity; owner_ref/product_id/audience stay out."""
+    receipt = None if provenance is None else provenance.rights
+    if receipt is None:
+        return None
+    return {
+        "receipt_id": receipt.receipt_id,
+        "source": receipt.source,
+        "provider": receipt.provider,
+        "effective_at": receipt.effective_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "expires_at": receipt.expires_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+
 def _snapshot_payload(
     *,
     ticker: str,
@@ -563,6 +640,7 @@ def _snapshot_payload(
     health: Mapping[str, Any],
     permitted: bool,
     flow: dict | None = None,
+    provenance: _SnapshotProvenance | None = None,
 ) -> dict[str, Any]:
     state = _state_from_health(health, row_count=len(snapshot.rows))
     payload: dict[str, Any] = {
@@ -575,6 +653,12 @@ def _snapshot_payload(
         "has_more": snapshot.has_more,
         "source_health": dict(health),
         "annotations": _annotations_payload(permitted),
+        "universe_known_at": (
+            None
+            if provenance is None or provenance.security is None
+            else provenance.security.known_at.strftime("%Y-%m-%dT%H:%M:%SZ")
+        ),
+        "rights_basis": _rights_basis(provenance),
     }
     if flow is not None:
         payload["flow"] = _apply_flow_coverage(flow, snapshot_state=state)
@@ -684,36 +768,42 @@ def ticker_news_snapshot(
     cursor: int | None = Query(default=None, ge=1),
     user: dict = Depends(require_site_full_user),
 ) -> JSONResponse:
-    _rate_or_429(user)
-    rights = _rights_or_503(user)
-    normalized, security_id = _security_or_404(
-        ticker,
-        now=datetime.now(timezone.utc),
-    )
+    provenance = _SnapshotProvenance()
+    token = _SNAPSHOT_PROVENANCE.set(provenance)
     try:
-        with _open_store() as store:
-            snapshot = store.snapshot(
-                security_id,
-                limit=limit,
-                cursor=cursor,
-                rights=rights,
-            )
-            flow = _compute_flow(store, security_id, rights=rights) if cursor is None else None
-    except HTTPException:
-        raise
-    except Exception:
-        raise _private_error(503, "ticker news temporarily unavailable") from None
-    return JSONResponse(
-        _snapshot_payload(
-            ticker=normalized,
-            security_id=security_id,
-            snapshot=snapshot,
-            health=_source_health(),
-            permitted=_derivative_permitted_after_rights(),
-            flow=flow,
-        ),
-        headers=dict(_PRIVATE_HEADERS),
-    )
+        _rate_or_429(user)
+        rights = _rights_or_503(user)
+        normalized, security_id = _security_or_404(
+            ticker,
+            now=datetime.now(timezone.utc),
+        )
+        try:
+            with _open_store() as store:
+                snapshot = store.snapshot(
+                    security_id,
+                    limit=limit,
+                    cursor=cursor,
+                    rights=rights,
+                )
+                flow = _compute_flow(store, security_id, rights=rights) if cursor is None else None
+        except HTTPException:
+            raise
+        except Exception:
+            raise _private_error(503, "ticker news temporarily unavailable") from None
+        return JSONResponse(
+            _snapshot_payload(
+                ticker=normalized,
+                security_id=security_id,
+                snapshot=snapshot,
+                health=_source_health(),
+                permitted=_derivative_permitted_after_rights(),
+                flow=flow,
+                provenance=provenance,
+            ),
+            headers=dict(_PRIVATE_HEADERS),
+        )
+    finally:
+        _SNAPSHOT_PROVENANCE.reset(token)
 
 
 def _sse_encode(event: str, payload: Mapping[str, Any]) -> str:
@@ -811,3 +901,19 @@ def ticker_news_stream(
         media_type="text/event-stream",
         headers=dict(_STREAM_HEADERS),
     )
+
+
+@router.get("/api/ticker-news/{rest:path}", include_in_schema=False)
+def ticker_news_unmatched(
+    rest: str,
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for decoded-slash and other unmatched paths.
+
+    Starlette decodes %2F, so paths like /api/ticker-news/..%2Fx or any
+    trailing/multi-segment shape never match a single-segment route; without
+    this catch-all the framework default 404 leaks without private headers.
+    """
+    _rate_or_429(user)
+    _safe_ticker_or_422(rest.split("/", 1)[0])
+    raise _private_error(404, "not found")

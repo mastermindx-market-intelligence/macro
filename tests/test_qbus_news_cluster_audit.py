@@ -473,7 +473,7 @@ def test_news_store_file_audits_without_rewriting_bytes(tmp_path):
 def test_audit_source_does_not_write_or_read_env():
     text = SCRIPT.read_text(encoding="utf-8")
     assert 'sqlite3.connect(uri, uri=True)' in text or "mode=ro" in text
-    assert "file:{path.resolve()}?mode=ro" in text
+    assert "file:{urllib.parse.quote(str(path.resolve()))}?mode=ro" in text
     for banned in ("INSERT ", "UPDATE ", "DELETE ", "DROP ", "ALTER ", "os.environ", "requests."):
         assert banned not in text
     assert "news_clusters" in text

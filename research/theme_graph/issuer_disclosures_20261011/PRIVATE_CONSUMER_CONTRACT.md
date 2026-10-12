@@ -404,6 +404,67 @@ The host was only inspected; source installation and authenticated API serving
 still require postmerge proof. No Git upgrade, service restart or account change
 was performed for these compatibility checks.
 
+## Identity provenance continuity (C01 owner v2)
+
+The immutable identity decision and the current identity observation are
+different things, and the owner now names that difference explicitly instead of
+failing closed on metadata-only reference drift.
+
+The recorded receipts inside the protected specification remain the identity
+decision: their digests are and stay pinned in the native fact's
+`subject_identity`/`object_identity`, validated on every qualification. They are
+never rewritten when the incumbent reference bundle refreshes, and no new
+semantic fact revision or predecessor link is created by a refresh.
+
+Specification `company_intelligence.native_owner_decision/v2` adds exactly one
+closed field, `identity_continuity`, carrying
+`company_intelligence.identity_continuity_policy/v1` with policy
+`provenance_refresh`. Under that explicit policy — and only under it — a fresh
+current receipt is admitted when all six semantic/evidence fields (`schema`,
+`identity_mode`, `issuer_id`, `evidenced_cik`, `evidence_source`,
+`evidence_snapshot`) equal the recorded decision for that party, both parties
+observe one shared current source generation (same `source_commit` and identical
+`sources`), and the full receipt shape is valid and closed. A legacy v1
+specification keeps the original exact-equality contract; provenance drift under
+v1 refuses. Changed CIK, issuer, evidence source, evidence date, schema, mode,
+missing/unknown/malformed fields, malformed hashes, negative or boolean lengths
+refuse before any content access. The policy admits no different issuer, no
+different evidence date, no historical mapping, and no source-rights or
+loaded-code attestation: provenance freshness is not authenticity or license
+evidence, and the chairman ruling, registry adoption, correction, temporal and
+review decisions continue to bind byte-exactly.
+
+`qualify_records` validates the recorded receipt and its digest against the fact
+separately from the fresh current receipt, and freezes the full observed MU/NVDA
+receipts as canonical bytes in `OwnerSnapshot.current_identities_raw`. The
+observed bytes always exist on the production path; the dataclass default
+(absent observation) exists only so the existing five-argument synthetic
+preflight fixture constructor keeps working, and is safe solely because a v1
+specification admits no drift — a v2 specification with absent observed bytes
+refuses outright rather than falling back to the recorded receipts.
+
+`Admission.subject_binding` snapshot fields name the exact current MU receipt
+(schema, SHA256, byte length); `decision_revision` stays the original
+`fact.subject_identity`. The aggregate `Admission.identity_revision` now binds
+both full current receipts plus the protected continuity policy as
+`company_intelligence.identity_continuity_binding/v1`, separate from the
+manifest's protected `decisions` (spec/purpose/adoption), which stay pinned to
+the immutable records and do not move on provenance refresh. Public JSON fields
+remain the exact current composition — they are the current binding, not an
+exemption from context matching. `SubjectIdentityBinding` continues to
+distinguish the current snapshot from the immutable decision; no native kernel,
+identity resolver, Store, intent/envelope, registry-status or adoption change is
+made.
+
+`_PublicationAuthority` and `CurrentDisclosureOwner` rechecks now compare the
+full current identity qualification (the continuity binding) in addition to the
+stable protected decisions, so a reference refresh during a read or publication
+refuses instead of slipping through, and publication adds a final continuity
+recheck before certifying its result. A provenance-only refresh between separate
+requests requalifies normally; a refresh during one operation never changes the
+admitted identity, and an older pinned admission refuses with
+`ADMISSION_CHANGED` after such a refresh.
+
 ## Implemented C01 owner and staged publication
 
 The original source owner now supplies `CommittedDisclosureSource`,
@@ -427,3 +488,30 @@ exclusive, fsynced files. An unknown acknowledgement retains one exact candidate
 for same-operation reconciliation; no automatic retry or operation-ID replacement
 is authorized. Native artifact publication and private current promotion are
 independent of browser acceptance, which still requires the entitled F04 path.
+
+
+### Identity-continuity publication audit and failure semantics
+
+The publication receipt records `identity_binding`, the digest of the protected
+continuity policy, original decision receipts and actual current MU/NVDA receipts
+that admitted that operation. This field is present for both STAGE_MEMBERS and
+PROMOTE_CURRENT. It supplements the existing code and decision bindings; it does
+not change the manifest, intent, native fact or generation on its own. Offline
+receipt consumers must qualify this explicit additional field before use.
+
+After a current-pointer CAS, every failed final observation reports
+`effect_unknown=True` and `automatic_retry_permitted=False`, including identity
+continuity drift, final readback mismatch, a domain refusal or an unexpected read
+failure. The pointer and all immutable members remain in place for same-operation
+reconciliation. The CLI already journals every post-reservation exception as
+RECONCILIATION_REQUIRED; this rule also covers direct publication callers.
+
+An operation ID is an attended caller-supplied name, not a digest derived from a
+specification or generation. The v1-to-v2 protected policy amendment changes the
+specification decision digest and therefore a newly prepared generation. It does
+not rename the original operation. The original C01 attempt refused before intent
+reservation and was independently reconciled to have no publication effects.
+Only accepted and installed source repair, explicit same-operation recovery
+adjudication, fresh deployment qualification and another absence check can permit
+its first immutable reservation under the same operation ID. A started or uncertain
+operation never receives a replacement intent or generation by this rule.
