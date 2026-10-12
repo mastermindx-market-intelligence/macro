@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-10-12T03:56:58.305260+00:00",
+  "script_sha256": "b6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05",
+  "bare_file_invocation": true,
+  "foreign_engine_and_lib_on_pythonpath": true,
+  "exit_code": 0,
+  "provider_called": false,
+  "result": "help_resolved_from_own_repository"
+}
