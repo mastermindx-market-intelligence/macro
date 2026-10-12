@@ -1,0 +1,47 @@
+# coverage_profile.v1 DRAFT — SNI US/Mag-7 science stress set (acceptance A36/A37).
+# Qualification-fact shape only. Every authority flag is false.
+# canonical_issuer_id is null: Stock Identity / Data OS owns issuer ids;
+# this draft does not mint, derive, or guess them from a ticker or name.
+# observation.data_read is false: parquet presence confirmed via git ls-tree
+# on origin/main; parquet contents were not read and no statistic is claimed
+# from real data in this file.
+# Descriptive-only. Not a product surface, signal, rank, gate, size,
+# escalation, trade path, or forecast.
+schema_version: coverage_profile.v1
+as_of: "2026-10-12"
+profile_kind: qualification_facts
+issuer_key: meta
+display_name: Meta Platforms, Inc.
+canonical_issuer_id: null
+canonical_issuer_id_owner: stock_identity
+canonical_issuer_id_scope: "NOT CONSULTED IN THIS DRAFT — stress set only"
+observation:
+  repo_ref: origin/main
+  data_read: false
+  observed_at_utc: "2026-10-12T04:41:04Z"
+  census:
+    yahoo_parquet_path: data/yahoo/META.parquet
+    present_on_main: true
+authority:
+  rank_authority: false
+  gate_authority: false
+  size_authority: false
+  signal_authority: false
+  escalation_authority: false
+  trade_authority: false
+counters:
+  meta:
+    label: NASDAQ META
+    venue_mic: XNAS
+    local_code: META
+    currency: USD
+    security_id: null
+    security_id_owner: stock_identity
+    issuer_link: UNRESOLVED
+    issuer_link_owner: stock_identity
+stress_set:
+  benchmarks:
+    - SPY
+    - QQQ
+  sector_etf: XLC
+  descriptive_only: true
