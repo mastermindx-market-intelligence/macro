@@ -2194,3 +2194,285 @@ def test_overdue_source_failure_lineage_survives_then_recovers(monkeypatch) -> N
         if row["event_id"] == "claims:2026-09-10"
     )
     assert publication["status"] == "published"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# D04-A — quote/pulse source clocks, universe-true pulse coverage, ABSENT-OK dead-man
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _epoch_ms(iso: str) -> int:
+    return int(datetime.fromisoformat(iso).timestamp() * 1000)
+
+
+def test_quotes_payload_never_stamps_build_time_as_source_clock():
+    ms = _epoch_ms("2026-10-13T14:00:00+00:00")
+    payload = build_flow_quotes(
+        {"leaders": [{"ticker": "AAA"}, {"ticker": "BBB"}]},
+        {
+            "quotes": {
+                "AAA": {"price": 10.0, "ts": ms},
+                "BBB": {"price": 20.0, "ts": ms + 60_000},
+            },
+            "meta": {},
+        },
+    )
+    assert payload["asof"] is None
+    assert payload["ts"] is None
+    assert payload["meta"]["upstream_asof"] is None
+
+
+def test_quotes_meta_source_asof_is_median_of_real_quote_clocks():
+    leaders = [{"ticker": name} for name in ("AAA", "BBB", "CCC", "DDD", "EEE")]
+    priced = {
+        "AAA": {"price": 10.0, "ts": _epoch_ms("2026-10-13T14:00:00+00:00")},
+        "BBB": {"price": 11.0, "ts": _epoch_ms("2026-10-13T14:10:00+00:00")},
+        "CCC": {"price": 12.0, "ts": _epoch_ms("2026-10-13T14:20:00+00:00")},
+        "DDD": {
+            "price": 13.0,
+            "ts": _epoch_ms("2026-10-13T15:59:00+00:00"),
+            "tsSynthetic": True,
+        },
+        "EEE": {"price": 14.0},
+    }
+    payload = build_flow_quotes(
+        {"leaders": leaders},
+        {"quotes": priced, "meta": {}},
+    )
+    assert payload["meta"]["source_asof"] == "2026-10-13T14:10:00+00:00"
+    assert isinstance(payload["meta"]["built_at"], str) and payload["meta"]["built_at"]
+    datetime.fromisoformat(payload["meta"]["built_at"])
+    assert payload["meta"]["requested"] == 5
+    assert payload["meta"]["resolved"] == 5
+    assert payload["meta"]["coverage"] == 1.0
+
+    synthetic_only = build_flow_quotes(
+        {"leaders": [{"ticker": "DDD"}, {"ticker": "EEE"}]},
+        {
+            "quotes": {
+                "DDD": {
+                    "price": 13.0,
+                    "ts": _epoch_ms("2026-10-13T15:59:00+00:00"),
+                    "tsSynthetic": True,
+                },
+                "EEE": {"price": 14.0},
+            },
+            "meta": {},
+        },
+    )
+    assert synthetic_only["meta"]["source_asof"] is None
+
+
+def test_quote_validator_rejects_board_payload_without_source_clock(tmp_path: Path):
+    import inspect
+
+    path = tmp_path / "intraday_quotes.json"
+    path.write_text(json.dumps({
+        "quotes": {f"S{i}": {"price": float(i + 1)} for i in range(5)},
+        "meta": {"requested": 5, "resolved": 5, "source_asof": None},
+    }))
+    assert vlo.quote_snapshot_error(path, min_resolved=5, min_coverage=0.9) is None
+
+    missing = vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    )
+    assert isinstance(missing, str) and missing and "source clock" in missing
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["meta"]["source_asof"] = "2026-10-13T14:10:00+00:00"
+    path.write_text(json.dumps(payload))
+    assert vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    ) is None
+
+    payload["meta"]["source_asof"] = "garbage"
+    path.write_text(json.dumps(payload))
+    garbage = vlo.quote_snapshot_error(
+        path, min_resolved=5, min_coverage=0.9, require_source_clock=True,
+    )
+    assert isinstance(garbage, str) and garbage
+
+    module_src = inspect.getsource(vlo)
+    snapshot_src = inspect.getsource(vlo.Orchestrator.snapshot)
+    assert module_src.count("require_source_clock=True") == 1
+    assert snapshot_src.count("require_source_clock=True") == 1
+
+
+def test_fastpath_stamps_source_clock_from_bars_not_build_time(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    now_et = pd.Timestamp.now(tz="America/New_York").normalize()
+    start_9 = (now_et + pd.Timedelta(hours=9)).tz_convert("UTC")
+    start_10 = (now_et + pd.Timedelta(hours=10)).tz_convert("UTC")
+    index = pd.DatetimeIndex([start_9, start_10], name="ts")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 2000.0],
+        },
+        index=index,
+    )
+    intraday = tmp_path / "intraday"
+    intraday.mkdir()
+    (intraday / "AAA.parquet").touch()
+    monkeypatch.setattr(bif.pd, "read_parquet", lambda _: frame.copy())
+    monkeypatch.delenv("MACRO_INTRADAY_DIR", raising=False)
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+
+    today = datetime.now(timezone.utc).date()
+    as_of = datetime(today.year, today.month, today.day, 16, 0, tzinfo=timezone.utc)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site, as_of_arg=as_of.isoformat())
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    assert datetime.fromisoformat(pulse["source_asof"]) == start_10.to_pydatetime()
+    assert datetime.fromisoformat(pulse["as_of"]) == as_of
+    assert pulse["stale"] is False
+    assert bif._today_bars("AAA", tmp_path)[-1]["ts"]
+
+
+def test_fastpath_failed_ticker_stays_in_denominator_as_unknown(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars(ticker: str, data_root: Path) -> list[dict]:
+        if ticker == "BBB":
+            raise RuntimeError("boom")
+        return [
+            {
+                "ts": "2026-10-13T13:00:00+00:00",
+                "open": 1.0, "high": 2.0, "low": 0.5, "close": 1.5, "volume": 100.0,
+            },
+            {
+                "ts": "2026-10-13T14:00:00+00:00",
+                "open": 1.5, "high": 2.5, "low": 1.0, "close": 2.0, "volume": 200.0,
+            },
+        ]
+
+    monkeypatch.setattr(bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB", "CCC"])
+    monkeypatch.setattr(bif, "_today_bars", today_bars)
+    site = tmp_path / "site"
+    bif._run_fastpath({}, tmp_path, site)
+    pulse = json.loads((site / "live" / "flow_pulse.json").read_text(encoding="utf-8"))
+
+    assert pulse["n_tickers"] == 3
+    assert pulse["n_universe"] == 3
+    bbb = next(row for row in pulse["tickers"] if row["ticker"] == "BBB")
+    assert bbb["bars_today"] is None
+    assert bbb["error"] == "RuntimeError"
+    for key in (
+        "vwap", "cum_vol", "vol_durability", "higher_lows", "rvol_tod",
+        "session_high", "session_low", "bars_above_vwap",
+        "last_close", "last_high", "last_low",
+    ):
+        assert bbb.get(key) is None
+    assert pulse["mode"] == "fastpath"
+
+
+def test_flow_pulse_validator_measures_coverage_against_universe(tmp_path: Path):
+    path = tmp_path / "flow_pulse.json"
+    clock = "2026-10-13T14:10:00+00:00"
+
+    def rows(with_bars: int, total: int) -> list[dict]:
+        out = [{"ticker": f"T{i}", "bars_today": 2} for i in range(with_bars)]
+        out.extend(
+            {"ticker": f"E{i}", "bars_today": None, "error": "RuntimeError"}
+            for i in range(total - with_bars)
+        )
+        return out
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 8,
+        "tickers": rows(8, 8),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(8, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "source_asof": clock,
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(7, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+    path.write_text(json.dumps({
+        "mode": "fastpath",
+        "n_universe": 10,
+        "n_tickers": 10,
+        "tickers": rows(8, 10),
+    }))
+    assert vlo.flow_pulse_error(path, min_coverage=0.80) is not None
+
+
+def _no_source_clock_failure(failures: list[str]) -> bool:
+    return not any(
+        failure.startswith("flow_pulse: source") or failure.startswith("intraday_quotes:")
+        for failure in failures
+    )
+
+
+def test_deadman_ages_pulse_and_board_quotes_from_source_clocks():
+    now = _HEALTHY_STATUS_NOW
+    stale = _healthy_vps_status()
+    stale["checks"]["flow_pulse"]["source_asof"] = (
+        now - timedelta(minutes=180)
+    ).isoformat().replace("+00:00", "Z")
+    stale["checks"]["intraday_quotes"] = {
+        "source_asof": (now - timedelta(minutes=120)).isoformat().replace("+00:00", "Z"),
+    }
+    failures = evaluate_live_health(stale, now=now)
+    assert any(failure.startswith("flow_pulse: source stale") for failure in failures), failures
+    assert any(failure.startswith("intraday_quotes: source stale") for failure in failures), failures
+
+    removed = _healthy_vps_status()
+    removed["checks"]["flow_pulse"].pop("source_asof", None)
+    removed["checks"].pop("intraday_quotes", None)
+    assert _no_source_clock_failure(evaluate_live_health(removed, now=now))
+
+    missing = _healthy_vps_status()
+    missing["checks"]["flow_pulse"].pop("source_asof", None)
+    missing["checks"]["intraday_quotes"] = {"status": "missing"}
+    assert _no_source_clock_failure(evaluate_live_health(missing, now=now))
+
+    absent = _healthy_vps_status()
+    absent["checks"]["flow_pulse"]["source_asof"] = None
+    absent["checks"]["intraday_quotes"] = {"source_asof": None}
+    assert _no_source_clock_failure(evaluate_live_health(absent, now=now))
+
+    fresh = _healthy_vps_status()
+    fresh["checks"]["flow_pulse"]["source_asof"] = (
+        now - timedelta(minutes=100)
+    ).isoformat().replace("+00:00", "Z")
+    fresh["checks"]["intraday_quotes"] = {
+        "source_asof": (now - timedelta(minutes=20)).isoformat().replace("+00:00", "Z"),
+    }
+    assert _no_source_clock_failure(evaluate_live_health(fresh, now=now))
+
+    unparseable = _healthy_vps_status()
+    unparseable["checks"]["flow_pulse"]["source_asof"] = "not-a-time"
+    unparseable["checks"]["intraday_quotes"] = {"source_asof": "not-a-time"}
+    failures = evaluate_live_health(unparseable, now=now)
+    assert "flow_pulse: invalid source_asof" in failures
+    assert "intraday_quotes: invalid source_asof" in failures
+
+    for when in (
+        datetime(2026, 7, 20, 14, 30, tzinfo=timezone.utc),
+        datetime(2026, 7, 20, 20, 30, tzinfo=timezone.utc),
+        datetime(2026, 7, 19, 15, 0, tzinfo=timezone.utc),
+    ):
+        failures = evaluate_live_health(stale, now=when)
+        assert _no_source_clock_failure(failures), (when.isoformat(), failures)
