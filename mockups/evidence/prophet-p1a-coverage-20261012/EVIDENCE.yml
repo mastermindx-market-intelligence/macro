@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_prophet_coverage.html.j2
+manifest: mockups/evidence/prophet-p1a-coverage-20261012/manifest.json

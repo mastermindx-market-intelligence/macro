@@ -452,6 +452,12 @@
     if (empty) { empty.hidden = !emptyProjection; if (emptyProjection) empty.innerHTML = emptyStateHtml(); }
     var board = boardPopulation(), result = qs("#ca-v36-result"), watch = watchPopulation(), unique = uniquePopulation();
     if (result) result.innerHTML = populationCopy(shown, board, watch, unique);
+    var cov = qs("[data-pv-coverage]");
+    if (cov) {
+      var filterCount = qs("[data-pv-coverage-filter]", cov), displayedCount = qs("[data-pv-coverage-displayed]", cov);
+      if (filterCount) filterCount.textContent = String(shown);
+      if (displayedCount) displayedCount.textContent = String(shown);
+    }
     var pill = qs("#ca-v36-filter");
     if (pill) { pill.hidden = !item; pill.classList.toggle("is-on", !!item); pill.innerHTML = item ? bi(item.kind === "theme" ? "Theme" : "Sector", item.kind === "theme" ? "主题" : "板块") + ': ' + bi(item.name.en, item.name.zh) + ' ×' : ""; }
     markLeadership(); applyTableFilter();

@@ -1,4 +1,5 @@
 {% import "_prophet_card.html.j2" as pv %}
+{% import "_prophet_coverage.html.j2" as pvc %}
 {% import "_decision_card.html.j2" as dc %}
 {% import "_lens.html.j2" as lens %}
 {% import "_risk_radar_dlg.html.j2" as rrd %}{# shared country Risk Radar dialog (CN/HK/CA) #}
@@ -2358,6 +2359,15 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
       </span>
     </div>
   </div>
+  {{ pvc.coverage({
+    'producer_total': _ca_unique_n if _ca_union_known else none,
+    'entitled_total': none,
+    'filter_total': _ca_initial_shown_n,
+    'displayed_total': _ca_initial_shown_n,
+    'as_of': _ca_setups.get('as_of') if _ca_setups else none,
+    'missing_owner_en': 'Entitled total' if _ca_union_known else 'Producer total, Entitled total',
+    'missing_owner_zh': '权限总数' if _ca_union_known else '生产总数、权限总数'
+  }) }}
   <div class="ca-v36-card-grid" id="ca-v36-card-grid"{% if _ca_owner.board_valid %} data-owner-population="{{ _ca_board_n }}"{% endif %}{% if _ca_owner.watch_valid %} data-owner-watch-population="{{ _ca_watch_n }}"{% endif %}{% if _ca_union_known %} data-owner-unique-population="{{ _ca_unique_n }}"{% endif %}>
 {% if _ca_board %}
 {# ── W8-G: JSON data block — feeds StockTable.init(); serialized in system (board) order.
@@ -2615,6 +2625,7 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
       'price_txt': ('$' ~ ('%.2f'|format(s.price))) if (s.price is defined and s.price is not none) else none,
       'show_change': true,
       'verb': _verb,
+      'plan_relation': {'state':'UNAVAILABLE','reason_en':'Plan owner not available for this market','reason_zh':'本市场暂无计划关系所有者'},
       'trigger': ({'kind': _trg_kind, 'tip_en': _trg_tip_en, 'tip_zh': _trg_tip_zh} if _trg_kind else none),
       'marks': _mk.rows[:2],
       'edge': none, 'edge_txt': ('#' ~ s.board_pos) if s.board_pos is defined and s.board_pos is not none else none,

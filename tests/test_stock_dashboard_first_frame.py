@@ -2212,3 +2212,34 @@ def test_zero_cards_do_not_abort_static_shell_enhancement(market: str) -> None:
     start = re.search(r"function start\b.*?(?=\n  if \(document\.readyState)", text, re.S)
     assert start
     assert "if (!state.cards.length) return" not in start.group(0)
+
+
+def test_p1a_shared_coverage_is_presentation_only_and_owner_bound() -> None:
+    coverage = _read(ROOT / "templates" / "_prophet_coverage.html.j2")
+    us = _read(ROOT / "templates" / "_us_candidate_pool.html.j2")
+    canada = _read(ROOT / "templates" / "canada.html.j2")
+    canada_js = _read(ROOT / "site" / "canada-stock-v36.js")
+
+    for field in ("producer", "entitled", "filter", "displayed"):
+        assert f"data-pv-coverage-{field}" in coverage
+    assert "candidate selection" in coverage
+    assert "entitlement math" in coverage
+    assert "freshness arithmetic" in coverage
+    assert "de-duplication" in coverage
+    assert "missing-value inference" in coverage
+
+    assert "'producer_total': _pc.eligible" in us
+    assert "'entitled_total': none" in us
+    assert "'missing_owner_en': 'Entitled total'" in us
+    assert "'missing_owner_zh': '权限总数'" in us
+    assert "data-pv-coverage-filter" in us
+    assert "data-pv-coverage-displayed" in us
+
+    assert "pvc.coverage({" in canada
+    assert "'producer_total': _ca_unique_n if _ca_union_known else none" in canada
+    assert "'entitled_total': none" in canada
+    assert "Plan owner not available for this market" in canada
+    assert "data-pv-coverage-filter" in canada_js
+    assert "data-pv-coverage-displayed" in canada_js
+    assert "data-pv-coverage-producer" not in canada_js
+    assert "data-pv-coverage-entitled" not in canada_js

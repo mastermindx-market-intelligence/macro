@@ -1,4 +1,5 @@
 {% autoescape true %}
+{% import '_prophet_coverage.html.j2' as pvc %}
 {# Lossless candidate visibility through the existing US payload/auth path. #}
 {% if us_candidate_visibility is defined and us_candidate_visibility %}
 {% set _pool = us_candidate_visibility %}
@@ -21,6 +22,15 @@
   <div class="ucp-body">
     <p class="ucp-note"><span class="l-en">Eligibility is not an entry recommendation. Display limits do not remove names from this view.</span><span class="l-zh">候选资格并非入场推荐。展示上限不会使候选从此视图消失。</span>
       {% if _pool.as_of %}<span class="l-en">As of</span><span class="l-zh">截至</span> {{ _pool.as_of }}.{% endif %}</p>
+    {{ pvc.coverage({
+      'producer_total': _pc.eligible,
+      'entitled_total': none,
+      'filter_total': _pool.rows|length,
+      'displayed_total': _pool.rows|length,
+      'as_of': _pool.as_of,
+      'missing_owner_en': 'Entitled total',
+      'missing_owner_zh': '权限总数'
+    }) }}
     {% if _pool.get('archive') %}
     {% set _arc = _pool.archive %}{% set _ac = _arc.counts %}
     <details class="ucp-receipt ucp-archive" data-archive-status="{{ _arc.status|e }}">
@@ -75,6 +85,12 @@
     }
     root.querySelector('[data-ucp-matched]').textContent=String(shown);
     root.querySelector('[data-ucp-loaded]').textContent=String(rows.length);
+    var cov=root.querySelector('[data-pv-coverage]');
+    if(cov){
+      var cf=cov.querySelector('[data-pv-coverage-filter]'), cd=cov.querySelector('[data-pv-coverage-displayed]');
+      if(cf) cf.textContent=String(shown);
+      if(cd) cd.textContent=String(shown);
+    }
     root.querySelector('.ucp-no-match').hidden=shown!==0;
   }
   search.addEventListener('input',filter); outside.addEventListener('change',filter);

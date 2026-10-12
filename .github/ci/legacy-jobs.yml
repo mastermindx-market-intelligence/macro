@@ -3479,6 +3479,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "collectors/flow_signals.py"
       - "config/flow_detector.yml"
       - "engine/ledger_lane.py"
@@ -5258,6 +5259,14 @@ jobs:
     paths:
       - "templates/hk.html.j2"
       - "templates/canada.html.j2"
+      - "templates/_prophet_coverage.html.j2"
+      # P1a composed first-frame and non-US compatibility dependency closure.
+      - "templates/_prophet_card.html.j2"
+      - "templates/_us_candidate_pool.html.j2"
+      - "templates/china.html.j2"
+      - "templates/dashboard.html.j2"
+      - "templates/intl.html.j2"
+      - "templates/stocktable.js"
       - "templates/stock-dashboard.css"
       - "templates/dashboard-icons.js"
       - "engine/__init__.py"
@@ -5291,9 +5300,12 @@ jobs:
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png"
       - "tests/test_stock_dashboard_first_frame.py"
+      - "tests/test_p_mp1_shell_nonus_byte_parity.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -5301,6 +5313,18 @@ jobs:
         run: pip install beautifulsoup4 jinja2 pytest
       - name: stock dashboard first-frame source contract
         run: python -m pytest tests/test_stock_dashboard_first_frame.py -q
+      - name: P1a shared Prophet non-US compatibility
+        run: |
+          # The pack deepens the exact tested tree but need not create remote
+          # refs. Bind the legacy suite's origin/main alias to the plan's fixed
+          # base: TESTED_BASE_SHA in hosted CI, CI_BASE_SHA in isolated replay.
+          # Never fetch moving main or substitute the tested head as its base.
+          baseline="${TESTED_BASE_SHA:-${CI_BASE_SHA:-}}"
+          [[ "$baseline" =~ ^[0-9a-f]{40}$ ]] || { echo "missing exact parity baseline" >&2; exit 1; }
+          git cat-file -e "$baseline^{commit}"
+          git merge-base --is-ancestor "$baseline" HEAD
+          git update-ref refs/remotes/origin/main "$baseline"
+          python -m pytest tests/test_p_mp1_shell_nonus_byte_parity.py -q
 
   prophet-lab:
     if: ${{ false }}
@@ -6548,6 +6572,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "collectors/flow_signals.py"
       - "lib/live_flow_event_stage.py"
       - "lib/intl_history_mount.py"
@@ -11100,6 +11125,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "collectors/flow_signals.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"
@@ -13139,6 +13165,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -13845,6 +13872,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -16513,6 +16541,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -17962,9 +17991,12 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "engine/session_digest.py"
+      # Render-contract fixture read reached through this job's test closure.
+      - "site/stockdata/AAPL.json"
       - "engine/intl_performance_records.py"
       - "engine/intl_workspace_overview.py"
       # MO-PAID-006 closure widening 2026-10-02 (#8276): engine/international_macro_dashboard.py
@@ -20576,6 +20608,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -22105,6 +22138,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Exact import-closure edges found in current-main composition.
       - "collectors/flow_signals.py"
       - "config/flow_detector.yml"
       - "engine/options_signal_episode.py"

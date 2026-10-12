@@ -3,7 +3,9 @@
 The healthy path must not enumerate the repository's branch/tag namespace or
 walk all history. It deepens the authoritative tested tree through a bounded
 ladder until the synthetic merge exposes both parents and their merge base.
-Current consumers then fetch their canonical base themselves.
+Consumers then either fetch their canonical base themselves or bind the one
+legacy alias they need to the planner's already-available exact base. The latter
+must not introduce a network fetch or depend on any other remote namespace.
 
 If exact tested-tree ancestry cannot be established, the established recovery
 ladder remains available: all branches -> main only -> a 30-day main window.
@@ -30,6 +32,7 @@ EXPECTED_FETCH_DEPTH_ZERO_CONSUMERS = {
     "design-governance",
     "p0b-receipt-closure",
     "self-mod-fence",
+    "stock-dashboard-first-frame",
 }
 
 
@@ -248,6 +251,37 @@ def test_deepen_raises_when_every_recovery_rung_fails(
     assert len(calls) == 4
 
 
+def _assert_narrow_history_consumer(job_id: str, runs: list[str]) -> None:
+    command_surface = "\n".join(runs)
+    if job_id == "stock-dashboard-first-frame":
+        # This suite needs one historical alias, not moving main. Its six real-Git
+        # cases in test_ci_pack.py exercise exact-base selection and fail-closed
+        # validation; this guard owns the allowed history/namespace footprint.
+        assert "git fetch " not in command_surface, "pinned-base consumer must not fetch moving refs"
+        assert "TESTED_BASE_SHA" in command_surface and "CI_BASE_SHA" in command_surface
+        alias = 'git update-ref refs/remotes/origin/main "$baseline"'
+        updates = [line.strip() for line in command_surface.splitlines()
+                   if line.strip().startswith("git update-ref ")]
+        assert updates == [alias], "pinned-base consumer may bind only its exact legacy alias"
+        command_surface = command_surface.replace(alias, "")
+    else:
+        assert any(
+            "git fetch origin " in run and "github.base_ref" in run for run in runs
+        ), f"{job_id} must fetch its canonical base explicitly"
+
+    for forbidden in (
+        "--tags",
+        "refs/tags/",
+        "refs/remotes/",
+        "+refs/heads/*",
+        "git branch -r",
+        "git for-each-ref",
+    ):
+        assert forbidden not in command_surface, (
+            f"{job_id} depends on unrelated remote namespace via {forbidden!r}"
+        )
+
+
 def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
     payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
     consumers: dict[str, dict[str, object]] = {}
@@ -269,19 +303,19 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             for step in definition.get("steps", [])
             if isinstance(step, dict) and "run" in step
         ]
-        assert any(
-            "git fetch origin " in run and "github.base_ref" in run for run in runs
-        ), f"{job_id} must fetch its canonical base explicitly"
+        _assert_narrow_history_consumer(job_id, runs)
 
-        command_surface = "\n".join(runs)
-        for forbidden in (
-            "--tags",
-            "refs/tags/",
-            "refs/remotes/",
-            "+refs/heads/*",
-            "git branch -r",
-            "git for-each-ref",
-        ):
-            assert forbidden not in command_surface, (
-                f"{job_id} depends on unrelated remote namespace via {forbidden!r}"
-            )
+
+@pytest.mark.parametrize("extra", [
+    "git fetch origin main",
+    "git fetch --tags origin",
+    'git update-ref refs/remotes/origin/other "$baseline"',
+    "git branch -r",
+    "git for-each-ref",
+])
+def test_pinned_base_consumer_rejects_additional_history_dependencies(extra: str) -> None:
+    definition = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"]["stock-dashboard-first-frame"]
+    runs = [str(step["run"]) for step in definition["steps"] if "run" in step]
+    _assert_narrow_history_consumer("stock-dashboard-first-frame", runs)
+    with pytest.raises(AssertionError):
+        _assert_narrow_history_consumer("stock-dashboard-first-frame", [*runs, extra])
