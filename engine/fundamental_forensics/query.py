@@ -56,11 +56,18 @@ from .metric_registry import (
 )
 from .periods import CalendarKind, PeriodKind, TypedPeriod
 from .lineage_evidence import (
+    CONFIRMATION_CHAIN_RULE_VERSION,
     MAX_LINEAGE_RECEIPTS,
+    REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE,
+    REFUSAL_MISSING_OCCURRENCE,
     LineageEvidenceError,
     LineageEvidenceReceipt,
     _approved_taxonomy_uri,
+    _chain_accepted_by_accession,
+    _freeze_evidence,
+    _positive_evidence_payload,
     evaluate_confirmation,
+    receipt_envelope_refusal,
 )
 from .raw_ledger import (
     FactEventType,
@@ -87,6 +94,17 @@ _EMPTY_ROOT_MAP: Mapping[str, str] = MappingProxyType({})
 
 # Per-engine memo ceiling for confirmation-unified roots.
 MAX_EFFECTIVE_ROOT_CACHE_ENTRIES = 4096
+
+# Revalidation refusal reasons for a receipt that is simply not applicable
+# under the query policy's clocks.  Engine-level diagnostics only: they
+# classify why an admitted receipt is not applied under a policy and never
+# enter a response body.  Every other refusal vocabulary used when
+# re-proving a receipt comes from ``lineage_evidence``; in particular any
+# mismatch between the receipt's positive evidence and the current eligible
+# ledger is classified ``REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE``.
+REFUSAL_RECEIPT_NOT_YET_SOURCE_VISIBLE = "receipt_not_yet_source_visible"
+REFUSAL_RECEIPT_NOT_YET_SYSTEM_AVAILABLE = "receipt_not_yet_system_available"
+REFUSAL_OCCURRENCE_NOT_TEMPORALLY_ELIGIBLE = "occurrence_not_temporally_eligible"
 
 
 QUERY_SCHEMA = "fundamental_forensics.metric_query/v1"
@@ -5063,13 +5081,53 @@ class BitemporalMetricQueryEngine:
                 raise LineageEvidenceError("lineage evidence references an unknown occurrence")
             if parent.logical_key != receipt.logical_key or child.logical_key != receipt.logical_key:
                 raise LineageEvidenceError("lineage evidence logical_key does not bind its facts")
+            # The full per-accession groups the mint path groups by — the
+            # same groups the envelope pin and the payload bind re-derive
+            # from below, never a cutoff-filtered subset.
+            parent_group = self._accession_group(parent)
+            child_group = self._accession_group(child)
+            # FIF T1b: pin the receipt ENVELOPE before any payload work.  A
+            # correctly recomputed digest over genuine evidence still says
+            # nothing about the envelope around it: a backdated
+            # ``system_available_at`` (below the mint floor) or a foreign
+            # rule id/version would make the receipt visible under policies
+            # where the honest mint is not, flipping lineage answers.  The
+            # named refusal is an engine-level diagnostic, never a response
+            # body, and admission fail-closes the whole provider bundle.
+            envelope_refusal = receipt_envelope_refusal(receipt, parent_group, child_group)
+            if envelope_refusal is not None:
+                raise LineageEvidenceError(
+                    "lineage evidence envelope is not the one the current rule "
+                    f"mints ({envelope_refusal})"
+                )
+            evidence = receipt.positive_evidence or {}
+            # FIF T1: bind the WHOLE payload, not just the edge.  A receipt
+            # digest only proves internal self-consistency, so a forged
+            # bundle with a correctly recomputed receipt_id must still equal
+            # what the canonical builder reconstructs from THIS ledger before
+            # it is ever visible to a selection.  Admission has no policy, so
+            # the groups are the full per-accession groups the constructor
+            # can already resolve here; the cutoff-filtered re-derivation
+            # runs per query in ``_receipt_still_proves_confirmation``.  The
+            # taxonomy URI pair is the mint-time attestation the canonical
+            # ledger cannot re-derive, reconstructed in its canonical equal
+            # form so a one-sided URI edit is an evidence mismatch too.
+            expected = self._expected_positive_evidence(
+                parent_group,
+                child_group,
+                common_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
+            )
+            if _freeze_evidence(expected) != receipt.positive_evidence:
+                raise LineageEvidenceError(
+                    "lineage evidence positive payload does not match the current "
+                    f"ledger ({REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE})"
+                )
             # Re-prove the edge against the ledger now, not only per query. A
             # bundle assembled without ``derive_confirmation_receipts`` cannot
             # smuggle in an edge the v1 rule would never have minted.
-            evidence = receipt.positive_evidence or {}
             if evaluate_confirmation(
-                self._accession_group(parent),
-                self._accession_group(child),
+                parent_group,
+                child_group,
                 parent_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
                 child_taxonomy_uri=evidence.get("child_taxonomy_uri"),
                 require_taxonomy_uri=True,
@@ -5077,15 +5135,60 @@ class BitemporalMetricQueryEngine:
                 raise LineageEvidenceError("lineage evidence is not a v1 positive for this ledger")
             by_key.setdefault(receipt.logical_key, []).append(receipt)
         for key, values in by_key.items():
-            accessions: set[str] = set()
-            for receipt in values:
-                for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
-                    accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
-            if len(accessions) > 2:
-                # v1 admits exactly one parent and one child per logical key.
-                # Chained receipts across three filings have no unique parent.
+            versions = {receipt.evidence_rule_version for receipt in values}
+            if len(versions) != 1:
                 raise LineageEvidenceError(
-                    "lineage evidence spans more than two filings for one logical key"
+                    "lineage evidence mixes confirmation rule versions for one logical key"
+                )
+            if values[0].evidence_rule_version != CONFIRMATION_CHAIN_RULE_VERSION:
+                accessions: set[str] = set()
+                for receipt in values:
+                    for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
+                        accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
+                if len(accessions) > 2:
+                    # v1 admits exactly one parent and one child per logical key.
+                    # Chained receipts across three filings have no unique parent.
+                    raise LineageEvidenceError(
+                        "lineage evidence spans more than two filings for one logical key"
+                    )
+                continue
+            # FIF S2 (A05): the versioned v2 chain rule admits 3+ filings of one
+            # logical key, but only as ONE strictly ordered adjacent path over
+            # every filing the ledger holds for the key — L is rebuilt from the
+            # dataset's own events via ``_event_by_occurrence_id``.  A skip
+            # edge, a fork, a cycle, or a missing accession is a malformed
+            # provider, not a smaller answer.
+            chain_by_accession: dict[str, list[RawFactOccurrence]] = {}
+            for event in self._event_by_occurrence_id.values():
+                if event.logical_key == key:
+                    chain_by_accession.setdefault(event.source.accession, []).append(event)
+            _times, ordered_accessions = _chain_accepted_by_accession(
+                chain_by_accession
+            )
+            if (
+                len(chain_by_accession) < 3
+                or ordered_accessions is None
+                or len(values) != len(chain_by_accession) - 1
+            ):
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
+                )
+            edge_pairs = sorted(
+                (
+                    self._event_by_occurrence_id[receipt.parent_occurrence_id].source.accession,
+                    self._event_by_occurrence_id[receipt.child_occurrence_id].source.accession,
+                )
+                for receipt in values
+            )
+            expected_pairs = sorted(
+                (ordered_accessions[index], ordered_accessions[index + 1])
+                for index in range(len(ordered_accessions) - 1)
+            )
+            if edge_pairs != expected_pairs:
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
                 )
         return MappingProxyType(
             {
@@ -5142,16 +5245,50 @@ class BitemporalMetricQueryEngine:
                     receipt.child_occurrence_id,
                 ):
                     continue
-                if not self._receipt_still_proves_confirmation(receipt, policy):
+                if self._receipt_still_proves_confirmation(receipt, policy) is not None:
                     continue
                 applied[receipt.receipt_id] = receipt
         return tuple(applied[key] for key in sorted(applied))
+
+    def _expected_positive_evidence(
+        self,
+        parent_group: Sequence[RawFactOccurrence],
+        child_group: Sequence[RawFactOccurrence],
+        *,
+        common_taxonomy_uri: str | None,
+    ) -> Mapping[str, Any]:
+        """The canonical positive-evidence payload the current groups carry.
+
+        FIF T1: a receipt's internal digest proves only self-consistency,
+        never that its source fields still describe the current eligible
+        ledger.  This rebuilds the expected payload with the canonical
+        builder from ``lineage_evidence`` — the same builder
+        ``derive_confirmation_receipts`` minted the receipt with — so the
+        comparisons in admission and in ``_receipt_still_proves_confirmation``
+        bind all eighteen fields to live facts.
+
+        The two ``*_taxonomy_uri`` fields are the one thing the canonical
+        ledger cannot re-derive (it retains ``us-gaap:Assets``, not the
+        original Clark namespace), so the caller passes the receipt's
+        attested URI, which is only reached after that URI has passed the
+        guard-11 namespace gauntlet.  Guard 11 mints both URI fields from one
+        original namespace and requires them equal, so the canonical expected
+        form carries that one common URI on both sides; a receipt that edited
+        only one of the two fields fails the payload equality instead of
+        merely the namespace check.
+        """
+        return _positive_evidence_payload(
+            parent_group,
+            child_group,
+            parent_taxonomy_uri=common_taxonomy_uri,
+            child_taxonomy_uri=common_taxonomy_uri,
+        )
 
     def _receipt_still_proves_confirmation(
         self,
         receipt: LineageEvidenceReceipt,
         policy: QueryPolicy,
-    ) -> bool:
+    ) -> str | None:
         """Re-prove a receipt against live facts and both cutoffs.
 
         A receipt is an assertion about source facts, never a cached answer.
@@ -5159,29 +5296,56 @@ class BitemporalMetricQueryEngine:
         re-checks the receipt's asserted evidence against it, so mutating a
         confirmed value refuses the relation and restores the unlinked
         ``NOT_EVALUABLE`` state instead of silently rescuing it.
+
+        Returns ``None`` while the receipt still proves its confirmation, else
+        the refusal reason the receipt is reported unavailable with.  The
+        reason is an engine-level diagnostic only and never enters a response
+        body.  Any mismatch between the receipt's positive evidence and the
+        current eligible ledger — accessions, document ids, source occurrence
+        keys, parsed value, accuracy tokens, dimensional scope, nil state,
+        clocks, concept, or the attested namespace pair — is classified
+        ``evidence_does_not_match_source``.  A receipt whose envelope is not
+        the one the current rule mints — foreign rule id/version, or a system
+        availability backdated below the mint floor — is classified
+        ``receipt_rule_mismatch`` / ``receipt_system_availability_backdated``.
         """
         if receipt.source_known_at > policy.source_snapshot_at:
-            return False
+            return REFUSAL_RECEIPT_NOT_YET_SOURCE_VISIBLE
         if receipt.system_available_at > policy.recorded_at:
-            return False
+            return REFUSAL_RECEIPT_NOT_YET_SYSTEM_AVAILABLE
         parent = self._event_by_occurrence_id.get(receipt.parent_occurrence_id)
         child = self._event_by_occurrence_id.get(receipt.child_occurrence_id)
         if parent is None or child is None:
-            return False
+            return REFUSAL_MISSING_OCCURRENCE
         # A confirmation cannot make an otherwise invisible fact visible.
         if not self._event_temporally_eligible(parent, policy):
-            return False
+            return REFUSAL_OCCURRENCE_NOT_TEMPORALLY_ELIGIBLE
         if not self._event_temporally_eligible(child, policy):
-            return False
+            return REFUSAL_OCCURRENCE_NOT_TEMPORALLY_ELIGIBLE
         evidence = receipt.positive_evidence or {}
         parent_group = self._visible_accession_group(parent, policy)
         child_group = self._visible_accession_group(child, policy)
-        if evaluate_confirmation(
+        # FIF T1b: pin the envelope against the SAME full groups the mint
+        # path groups by — never the cutoff-filtered subsets above, whose
+        # floor can only be weaker than the one the receipt was minted
+        # under.  Passing the policy cutoffs merely means the receipt is not
+        # claiming to be newer than the policy; it must additionally not be
+        # OLDER than the lawful floor, or the relation would be visible
+        # under policies the honest mint cannot serve.
+        envelope_refusal = receipt_envelope_refusal(
+            receipt,
+            self._accession_group(parent),
+            self._accession_group(child),
+        )
+        if envelope_refusal is not None:
+            return envelope_refusal
+        refusal = evaluate_confirmation(
             parent_group,
             child_group,
             require_taxonomy_uri=False,
-        ) is not None:
-            return False
+        )
+        if refusal is not None:
+            return refusal
         # Guard 11 (original source taxonomy namespace/version) is attested by
         # the mint-time receipt because the canonical ledger does not retain the
         # original Clark URI.  Re-prove that the facts the receipt was minted
@@ -5191,37 +5355,51 @@ class BitemporalMetricQueryEngine:
         parent_uri = evidence.get("parent_taxonomy_uri")
         child_uri = evidence.get("child_taxonomy_uri")
         if not parent_uri or parent_uri != child_uri:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         # An attested URI is only believed when it is a policy-approved standard
         # namespace whose prefix matches the concept the ledger still carries.
         # Two matching but invented URIs are not evidence of anything.
         if not _approved_taxonomy_uri(parent_uri, parent_representative.concept_qname):
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if not _approved_taxonomy_uri(child_uri, representative.concept_qname):
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if parent_representative.occurrence_id != receipt.parent_occurrence_id:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if representative.occurrence_id != receipt.child_occurrence_id:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("concept_qname") != representative.concept_qname:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("parsed_value") != decimal_text(representative.parsed_value):
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("decimals") != representative.decimals:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("precision") != representative.precision:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("is_nil") is not representative.is_nil:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("parent_accession") != parent_representative.source.accession:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("child_accession") != representative.source.accession:
-            return False
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if receipt.source_known_at != max(
             parent_representative.accepted_at, representative.accepted_at
         ):
-            return False
-        return True
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        # FIF T1 full bind: after the identity, namespace and cutoff checks,
+        # the ENTIRE payload must still equal what the canonical builder
+        # reconstructs from the current eligible groups — including the fields
+        # the named checks above never reached (document ids, source
+        # occurrence keys, dimensions_known, the per-filing accepted/recorded
+        # clocks).  A forged payload with a correctly recomputed receipt_id —
+        # a valid digest over invented evidence — fails here.
+        expected = self._expected_positive_evidence(
+            parent_group,
+            child_group,
+            common_taxonomy_uri=parent_uri,
+        )
+        if _freeze_evidence(expected) != receipt.positive_evidence:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        return None
 
     def _visible_accession_group(
         self,
@@ -5254,6 +5432,10 @@ class BitemporalMetricQueryEngine:
         receipts = self._confirmations_by_logical_key.get(logical_key, ())
         if not receipts:
             return _EMPTY_ROOT_MAP
+        # FIF S2: admission proves the receipts of one key are
+        # version-homogeneous, so the first receipt names the rule the whole
+        # union-find below runs under.
+        chain_rule = receipts[0].evidence_rule_version == CONFIRMATION_CHAIN_RULE_VERSION
         cache_key = (logical_key, policy.source_snapshot_at, policy.recorded_at)
         cached = self._effective_root_cache.get(cache_key)
         if cached is not None:
@@ -5278,7 +5460,7 @@ class BitemporalMetricQueryEngine:
             parent_of[high] = low
 
         for receipt in receipts:
-            if not self._receipt_still_proves_confirmation(receipt, policy):
+            if self._receipt_still_proves_confirmation(receipt, policy) is not None:
                 continue
             parent_meta = self._lineage_by_occurrence_id.get(receipt.parent_occurrence_id)
             child_meta = self._lineage_by_occurrence_id.get(receipt.child_occurrence_id)
@@ -5288,17 +5470,23 @@ class BitemporalMetricQueryEngine:
             parent_of.setdefault(child_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
             union(parent_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
         resolved = {node: find(node) for node in parent_of}
-        # v1 admits exactly one parent and one child. A component that has
-        # transitively accumulated a third filing has an ambiguous parent, so
-        # refuse the whole component rather than chaining across vintages: the
-        # cell then keeps the honest unlinked-vintage refusal. Widening this is
-        # a separately adjudicated v2 question, not an implementation detail.
-        sizes: dict[str, int] = {}
-        for label in resolved.values():
-            sizes[label] = sizes.get(label, 0) + 1
-        resolved = {
-            node: label for node, label in resolved.items() if sizes[label] <= 2
-        }
+        # FIF S2: for a version-2 key keep every component.  Admission already
+        # proved the receipts are one strictly ordered adjacent path over
+        # every filing of the key, so a still-proving cutoff-visible subset is
+        # a union of contiguous sub-paths — no rounded or skip link can join a
+        # component, and unification can never outrun the admitted path.
+        if not chain_rule:
+            # v1 admits exactly one parent and one child. A component that has
+            # transitively accumulated a third filing has an ambiguous parent, so
+            # refuse the whole component rather than chaining across vintages: the
+            # cell then keeps the honest unlinked-vintage refusal. Widening this is
+            # a separately adjudicated v2 question, not an implementation detail.
+            sizes: dict[str, int] = {}
+            for label in resolved.values():
+                sizes[label] = sizes.get(label, 0) + 1
+            resolved = {
+                node: label for node, label in resolved.items() if sizes[label] <= 2
+            }
         projection = MappingProxyType(resolved)
         # Bounded even if an engine is pooled and callers vary cutoffs: the
         # cache is a speed aid, never a correctness input, so evicting is safe.

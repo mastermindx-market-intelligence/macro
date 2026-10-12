@@ -215,11 +215,17 @@
     function isZh() {
       return document.documentElement.getAttribute('data-lang') === 'zh';
     }
+    // a row the PAGE hid inline (not marked by this filter) stays hidden whatever
+    // the query, so it is never counted as shown (site20 S2 r6)
+    function pageHidden(r) {
+      return r.style.display === 'none' && !r.hasAttribute('data-tablesort-hidden');
+    }
     function liveCount() {
       var q = input.value.trim().toLowerCase();
       var rows = dataRows(table); // the LIVE population — rows can appear and disappear
       var shown = 0;
       rows.forEach(function (r) {
+        if (pageHidden(r)) return;
         if (!q || (r.textContent || '').toLowerCase().indexOf(q) !== -1) shown++;
       });
       return {q: q, shown: shown, total: rows.length};
@@ -251,7 +257,6 @@
     function apply(immediate) {
       var rows = dataRows(table); // the LIVE population — rows can appear and disappear
       var q = input.value.trim().toLowerCase();
-      var shown = 0;
       rows.forEach(function (r) {
         var hit = !q || (r.textContent || '').toLowerCase().indexOf(q) !== -1;
         // touch only rows this filter hid itself (marked): a row the PAGE hid
@@ -261,7 +266,6 @@
             r.style.display = '';
             r.removeAttribute('data-tablesort-hidden');
           }
-          shown++;
         } else if (r.style.display !== 'none') {
           r.style.display = 'none';
           r.setAttribute('data-tablesort-hidden', '1');

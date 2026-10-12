@@ -1288,26 +1288,70 @@ def _semantic_evidence_for_run(
         )
     source = _semantic_json_from_archive(_download_semantic_artifact(download_url, token))
     expected_tree = head_sha if role == "main" else None
+    # PR-head evidence seals the tested merge commit's FIRST PARENT as
+    # ``base_sha``; the advertised ``pull_requests[].base`` is GitHub's lazily
+    # refreshed PR-object snapshot and lags it whenever main moves between PR
+    # creation and the run (PR #8844, 2026-10-11).  The exact identity is the
+    # head; the base is resolved below by ancestry, never by byte equality.
     loaded = semantic_proof.load_semantic_evidence(
         source,
         advertised=True,
         expected_run_id=run_id,
         expected_subject_head_sha=head_sha,
         expected_tested_tree_sha=expected_tree,
-        expected_base_sha=bound_base_sha or None,
+        expected_base_sha=None if role == "pr_head" else (bound_base_sha or None),
         expected_event=expected_event,
         expected_role=role,
         expected_workflow="ci",
     )
     if role == "pr_head":
+        proof_base_sha = semantic_proof.resolve_pr_proof_base(
+            loaded,
+            advertised_base_sha=bound_base_sha,
+            subject_head_sha=head_sha,
+            is_ancestor=lambda ancestor, descendant: _github_is_ancestor(
+                repo, token, ancestor, descendant
+            ),
+        )
         return _bind_pr_tested_tree(
             repo,
             token,
             loaded,
-            bound_base_sha=bound_base_sha,
+            bound_base_sha=proof_base_sha,
             subject_head_sha=head_sha,
         )
     return loaded
+
+
+def _github_is_ancestor(repo: str, token: str, ancestor: str, descendant: str) -> bool:
+    """True when ``ancestor`` is reachable from ``descendant`` on GitHub.
+
+    One compare call (``per_page=1`` — only ``status`` is read).  ``identical``
+    and ``ahead`` mean the descendant contains the ancestor; ``behind`` and
+    ``diverged`` mean it does not.  A quota refusal surfaces as ``RateLimited``
+    and any other failure or unknown relation as ``RuntimeError`` so the caller's
+    existing handlers keep an unanswerable probe from reading as a clean base.
+    """
+    ancestor = str(ancestor or "").lower()
+    descendant = str(descendant or "").lower()
+    if ancestor == descendant:
+        return True
+    status, payload = _request(
+        "GET",
+        f"{GITHUB_API}/repos/{repo}/compare/{ancestor}...{descendant}?per_page=1",
+        token,
+    )
+    if status >= 400 or not isinstance(payload, dict):
+        raise _read_failed(status, payload, "semantic proof-base ancestry compare failed")
+    relation = str(payload.get("status") or "")
+    if relation in {"identical", "ahead"}:
+        return True
+    if relation in {"behind", "diverged"}:
+        return False
+    raise RuntimeError(
+        "semantic proof-base ancestry compare returned an unknown relation "
+        f"({relation or 'missing'})"
+    )
 
 
 def _semantic_pr_base_sha(
